@@ -18,7 +18,6 @@
 
 #include "term.h"
 #include "utilities/qutils.h"
-#include <sstream>
 
 const char * Term::separator =
 #ifdef _WIN32
@@ -28,14 +27,22 @@ const char * Term::separator =
 #endif
 
 
-Term::Term(const std::vector<std::string>	components, const columnTypeVec&	types)	{ initFrom(tq(components),	types);		}
-Term::Term(const std::string				component,	columnType				type)	{ initFrom(tq(component),	type);		}
-Term::Term(const QStringList				components, const columnTypeVec&	types)	{ initFrom(components,		types);		}
-Term::Term(const QString					component,	columnType				type)	{ initFrom(component,		type);		}
+Term::Term(const std::vector<std::string>	& components,	const columnTypeVec	&	types)	{ initFrom(tq(components),	types);		}
+Term::Term(const std::string				& component,	const columnType		type)	{ initFrom(tq(component),	type);		}
+Term::Term(const QStringList				& components,	const columnTypeVec	&	types)	{ initFrom(components,		types);		}
+Term::Term(const QString					& component,	const columnType		type)	{ initFrom(component,		type);		}
+Term::Term(const QString					& value,		const QString		&	label,	const QString	& info)
+{
+	_components.append(value);
+	_label	= label;
+	_value	= value;
+	_info	= info;
+	_types	= {columnType::unknown};
+}
 
 void Term::initFrom(const QStringList components, const columnTypeVec& types)
 {
-	_asQString	= components.join(separator);
+	_value = _label	= components.join(separator);
 	_components = components;
 	_types = types;
 }
@@ -43,7 +50,7 @@ void Term::initFrom(const QStringList components, const columnTypeVec& types)
 void Term::initFrom(const QString component, columnType type)
 {
 	_components.append(component);
-	_asQString = component;
+	_value = _label = component;
 	_types = {type};
 }
 
@@ -55,11 +62,6 @@ const QStringList &Term::components() const
 std::vector<std::string> Term::scomponents() const
 {
 	return fq(_components);
-}
-
-std::string Term::asString() const
-{
-	return fq(_asQString);
 }
 
 bool Term::contains(const QString &component) const
@@ -87,11 +89,6 @@ bool Term::containsAny(const Term &term) const
 			return true;
 
 	return false;
-}
-
-const QString &Term::asQString() const
-{
-	return _asQString;
 }
 
 Term::iterator Term::begin()
@@ -124,7 +121,7 @@ bool Term::operator!=(const Term &other) const
 
 bool Term::operator<(const Term &other) const
 {
-	return asQString() < other.asQString();
+	return value() < other.value();
 }
 
 
@@ -133,13 +130,13 @@ size_t Term::size() const
 	return _components.size();
 }
 
-bool Term::replaceVariableName(const std::string & oldName, const std::string & newName)
+bool Term::replaceVariableName(const std::string & oldValue, const std::string & newValue)
 {
 	bool changed = false;
 	for(int i=0; i<_components.size(); i++)
-		if(_components[i] == tq(oldName))
+		if(_components[i] == tq(oldValue))
 		{
-			_components[i] = tq(newName);
+			_components[i] = tq(newValue);
 			changed = true;
 		}
 
@@ -206,7 +203,7 @@ Json::Value Term::toJson(bool useArray, bool useValueAndType) const
 	}
 	else
 	{
-		value = asString();
+		value = fq(this->value());
 		types = columnTypeToString(type());
 	}
 

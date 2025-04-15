@@ -53,7 +53,7 @@ void VariablesFormBase::componentComplete()
 			VariablesListBase* variablesList = qobject_cast<VariablesListBase*>(control);
 			if (variablesList)
 			{
-				if (variablesList->listViewType() == JASPControl::ListViewType::AvailableVariables || variablesList->listViewType() == JASPControl::ListViewType::AvailableInteraction)
+				if (variablesList->listViewType() == JASPControl::ListViewType::AvailableVariables)
 				{
 					if (_availableVariablesList)
 						addControlError(tr("Only 1 Available Variables list can be set in a VariablesForm"));

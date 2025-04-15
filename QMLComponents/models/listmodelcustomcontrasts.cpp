@@ -40,7 +40,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
 	connect(VariableInfo::info(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged);
 	connect(VariableInfo::info(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered);
-	connect(VariableInfo::info(),	&VariableInfo::columnsChanged,		this,		&ListModelCustomContrasts::sourceColumnsChanged);
+	connect(VariableInfo::info(),	&VariableInfo::variablesChanged,		this,		&ListModelCustomContrasts::sourceVariablesChanged);
 	connect(infoProviderModel(),	&QAbstractItemModel::modelReset	,	this,		&ListModelCustomContrasts::sourceTermsReset);
 }
 
@@ -65,8 +65,8 @@ void ListModelCustomContrasts::getVariablesAndLabels(Terms& variables, QVector<Q
 	for (const Term& newVariable : variables)
 	{
 		QList<QString> labels;
-		if (_factors.contains(newVariable.asQString()))
-			labels = _factors[newVariable.asQString()];
+		if (_factors.contains(newVariable.value()))
+			labels = _factors[newVariable.value()];
 		else
 		{
 			if (newVariable.type() == columnType::scale)
@@ -81,7 +81,7 @@ void ListModelCustomContrasts::getVariablesAndLabels(Terms& variables, QVector<Q
 				}
 			}
 			else
-				labels = requestInfo(VariableInfo::Labels, newVariable.asQString()).toStringList();
+				labels = requestInfo(VariableInfo::Labels, newVariable.value()).toStringList();
 		}
 
 		QVector<QVector<QVariant> > copyAllLabels = allLabels;
@@ -118,7 +118,7 @@ void ListModelCustomContrasts::_resetValuesEtc()
 	// Maps the new variables with the old ones (if they existed)
 	QMap<int, int> variablesMap;
 	for (int i = 0; i < newVariables.size(); i++)
-		variablesMap[i] = _tableTerms.variables.indexOf(newVariables.at(i));
+		variablesMap[i] = _tableTerms.variables.indexOfValue(newVariables.at(i));
 
 	int newMaxRows = newValues.length() > 0 ? newValues[0].length() : 0;
 
@@ -226,7 +226,7 @@ QString ListModelCustomContrasts::getDefaultColName(size_t index) const
 	int indexi = int(index);
 
 	if (indexi < _tableTerms.variables.size())
-		return _tableTerms.variables.at(indexi).asQString();
+		return _tableTerms.variables.at(indexi).label();
 	else
 		return tr("Contrast %1").arg(indexi - _tableTerms.variables.size() + 1);
 }
@@ -297,7 +297,7 @@ bool ListModelCustomContrasts::sourceLabelsChanged(QString columnName, QMap<QStr
 bool ListModelCustomContrasts::_labelChanged(const Term& columnName, const QString& originalLabel, const QString& newLabel)
 {
 	bool isChanged = false;
-	int col = _tableTerms.variables.indexOf(columnName);
+	int col = _tableTerms.variables.indexOfValue(columnName.value());
 
 	if (col >= 0 && col < _tableTerms.values.length())
 	{
@@ -350,11 +350,11 @@ bool ListModelCustomContrasts::sourceLabelsReordered(QString )
 	return true;
 }
 
-void ListModelCustomContrasts::sourceColumnsChanged(QStringList columns)
+void ListModelCustomContrasts::sourceVariablesChanged(QStringList columns)
 {
 	bool doReset = false;
 	for (const QString& col : columns)
-		if (_tableTerms.variables.contains(col)) doReset = true;
+		if (_tableTerms.variables.containsValue(col)) doReset = true;
 
 	if (doReset) _resetValuesEtc();
 }

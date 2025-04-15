@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -19,15 +19,47 @@
 #ifndef LISTMODELTERMSAVAILABLE_H
 #define LISTMODELTERMSAVAILABLE_H
 
-#include "listmodelavailableinterface.h"
+#include "listmodeldraggable.h"
+#include "terms.h"
+#include "sortmenumodel.h"
+#include "sortable.h"
 
-class ListModelTermsAvailable : public ListModelAvailableInterface
+class ListModelAssignedInterface;
+
+class ListModelTermsAvailable: public ListModelDraggable, public Sortable
 {
 	Q_OBJECT
 public:
-	ListModelTermsAvailable(JASPListControl* listView) : ListModelAvailableInterface(listView) {}
-		
-	void	resetTermsFromSources()		override;
+	ListModelTermsAvailable(JASPListControl* listView, const Terms& terms = Terms());
+
+	virtual const Terms& allTerms()																											const { return _allSortedTerms; }
+			void initTerms(const Terms &terms, const RowControlsValues& _rowControlsValues = RowControlsValues(), bool reInit = false)	override;
+	virtual void removeTermsInAssignedList();
+	
+			void sortItems(SortType sortType)											override;
+			Terms addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
+
+			void										addAssignedModel(ListModelAssignedInterface* model);
+			const QList<ListModelAssignedInterface*>&	assignedModels()	const			{ return _assignedModels; }
+
+signals:
+			void availableTermsReset(Terms termsAdded, Terms termsRemoved);
+
+public slots:
+			void sourceTermsReset()															override;
+			void sourceVariableNamesChanged(QMap<QString, QString> map)						override;
+			void sourceVariablesChanged(QStringList columns)								override;
+			bool sourceVariableTypeChanged(Term name)										override;
+			bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})		override;
+			bool sourceLabelsReordered(QString columnName)									override;
+			void removeAssignedModel(ListModelAssignedInterface *assignedModel);
+			void clearAssignedModels() { _assignedModels.clear(); }
+
+protected:
+	Terms								_allTerms;
+	Terms								_allSortedTerms;
+
+	QList<ListModelAssignedInterface*>	_assignedModels;
 };
 
 #endif // LISTMODELTERMSAVAILABLE_H

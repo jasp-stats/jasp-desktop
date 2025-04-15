@@ -52,7 +52,7 @@ void ListModelAssignedInterface::refresh()
 		ListModelDraggable::refresh();
 }
 
-void ListModelAssignedInterface::setAvailableModel(ListModelAvailableInterface *source)
+void ListModelAssignedInterface::setAvailableModel(ListModelTermsAvailable *source)
 {
 	_availableModel = source;
 }
@@ -95,7 +95,7 @@ bool ListModelAssignedInterface::checkAllowedTerms(Terms& terms)
 	if (!_availableModel->keepTerms())
 		_availableModel->addTerms(notAllowedTerms);
 
-	QString notAllowedTermsStr = notAllowedTerms.asQList().join(", ");
+	QString notAllowedTermsStr = notAllowedTerms.labels().join(", ");
 	if (notAllowedTerms.size() == 1)
 		listView()->addControlWarningTemporary(tr("This variable has been removed, because it is not allowed: %1").arg(notAllowedTermsStr));
 	else

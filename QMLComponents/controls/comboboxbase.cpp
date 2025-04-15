@@ -30,58 +30,36 @@ ComboBoxBase::ComboBoxBase(QQuickItem* parent)
 
 void ComboBoxBase::bindTo(const Json::Value& value)
 {
-	_model->resetTermsFromSources();
+	_model->sourceTermsReset();
 
 	Json::Value valuePart = _isValueWithTypes(value) ? value["value"] : value;
 	std::string selectedValue = valuePart.asString();
 
-	std::vector<std::string> values = _model->getValues();
+	const Terms& terms = _model->terms();
 	int index = -1;
 
-	if (values.size() > 0)
+	if (terms.size() > 0)
 	{
 		if (selectedValue.empty())	index = 0;
 		else
 		{
-			auto itr = std::find(values.begin(), values.end(), selectedValue);
+			index = terms.indexOfValue(tq(selectedValue));
 
-			if (itr == values.end())
+			if (index == -1)
 			{
 				// Buggy situation: the value is not one of the available values of the DropDown.
 				// This might happen with a corrupted JASP file, or an old bug like https://github.com/jasp-stats/jasp-test-release/issues/1836
-				// Before throwing an error message, let's be a bit flexible: if we can find a value which is case-insensitive equal to the selectedValue,
-				// then we can be confident that it is the right one.
-				auto caseInsensitiveEquals = [&](const std::string& s)
-				{
-					return std::equal(s.begin(), s.end(),
-									  selectedValue.begin(), selectedValue.end(),
-									  [](char a, char b) { return tolower(a) == tolower(b); });
-				};
-				itr = std::find_if(values.begin(), values.end(), caseInsensitiveEquals);
-				if (itr != values.end())
-					Log::log() << "Option " << selectedValue << " in DropDown " << name() << " found but not with the same case: " << *itr << std::endl;
+				// Try to find a label equals to the selectedValue.
+				index = terms.indexOfLabel(tq(selectedValue));
 			}
 
-			if (itr == values.end())
-			{
-				// Try also to find a label equals to the selectedValue.
-				auto labelEqualts = [&](const std::string& s)
-				{
-					return fq(_model->getLabel(tq(s))) == selectedValue;
-				};
-				itr = std::find_if(values.begin(), values.end(), labelEqualts);
-				if (itr != values.end())
-					Log::log() << "Option " << selectedValue << " in DropDown " << name() << " found but as label." << std::endl;
-			}
-
-			if (itr == values.end())
+			if (index == -1)
 			{
 				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
 				index = 0;
 				// Maybe the values will be reset afterwards due to some QML/JavaScript dependencies: use this selectedValue if the model is reset during the initialization of the form
 				_unusedInitialValue = selectedValue;
 			}
-			index = int(std::distance(values.begin(), itr));
 		}
 	}
 	else if (!selectedValue.empty())
@@ -110,23 +88,25 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 
 int ComboBoxBase::_getStartIndex() const
 {
-	if (!startValue().isEmpty())	return _model->getIndexOfValue(startValue());
-	if (currentIndex() != -1)		return currentIndex();
-	if (!currentValue().isEmpty())	return _model->getIndexOfValue(currentValue());
-	if (!currentText().isEmpty())	return _model->getIndexOfLabel(currentText());
+	const Terms & terms = _model->terms();
+
+	if (!startValue().isEmpty())			return terms.indexOfValue(startValue());
+	if (currentIndex() != -1)				return currentIndex();
+	if (!currentValue().isEmpty())			return terms.indexOfValue(currentValue());
+	if (!currentLabel().isEmpty())			return terms.indexOfLabel(currentLabel());
 	return -1;
 }
 
 Json::Value ComboBoxBase::createJson() const
 {
-	std::vector<std::string> options = _model->getValues();
+	const Terms & terms = _model->terms();
 	
 	int index = _getStartIndex();
 
-	if (options.size() == 0)								index = -1;
-	else if (index == -1 || (index >= int(options.size())))	index = 0;
+	if (terms.size() == 0)									index = -1;
+	else if (index == -1 || (index >= int(terms.size())))	index = 0;
 	
-	std::string selected = index >= 0 ? options[size_t(index)] : "";
+	std::string selected = index >= 0 ? fq(terms[size_t(index)].value()) : "";
 	
 	if (_control->encodeValue())
 	{
@@ -149,23 +129,23 @@ void ComboBoxBase::setUp()
 {
 	JASPListControl::setUp();
 
-	_model->resetTermsFromSources();
+	_model->sourceTermsReset();
 
 	connect(this,	&ComboBoxBase::activated,					this,	&ComboBoxBase::activatedSlot);
-	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->resetTermsFromSources(); }	);
+	connect(this,	&JASPListControl::addEmptyValueChanged,		[this] () { _model->sourceTermsReset(); }	);
 	connect(this,	&ComboBoxBase::currentIndexChanged,			[this] () { _setCurrentProperties(currentIndex()); } ); // Case when currentIndex is changed in QML
 	connect(this,	&ComboBoxBase::currentValueChanged,			[this] () { if (containsVariables()) checkLevelsConstraints(); } );
 
 	if (form())
 	{
-		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->resetTermsFromSources(); }	);
+		connect(form(), &AnalysisForm::languageChanged,			[this] () { _model->sourceTermsReset(); }	);
 		connect(form(), &AnalysisForm::analysisChanged,			[this] () { _unusedInitialValue = ""; });
 	}
 }
 
 void ComboBoxBase::setUpModel()
 {
-	_model = new ListModelLabelValueTerms(this);
+	_model = new ListModelTermsAvailable(this);
 	JASPListControl::setUpModel();
 }
 
@@ -179,33 +159,32 @@ void ComboBoxBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	std::vector<std::string> values = _model->getValues();
+	const Terms& terms = _model->terms();
 	int index = -1;
 
-	if (values.size() > 0)
+	if (terms.size() > 0)
 	{
 		if (initialized())
 		{
-			auto itr = std::find(values.begin(), values.end(), fq(_currentValue));
+			index = terms.indexOfValue(_currentValue);
 
 			if (!_unusedInitialValue.empty())
 			{
-				auto lostValueItr = std::find(values.begin(), values.end(), _unusedInitialValue);
-				if (lostValueItr != values.end())
+				int lostValueIndex = terms.indexOfValue(tq(_unusedInitialValue));
+				if (lostValueIndex != -1)
 				{
-					itr = lostValueItr;
+					index = lostValueIndex;
 					_orgValue = _unusedInitialValue;
 					_unusedInitialValue = "";
 					clearControlError();
 				}
 			}
-
-			if (itr == values.end())	index = _getStartIndex();
-			else						index = int(std::distance(values.begin(), itr));
 		}
-		else							index = _getStartIndex();
+		if (index == -1)
+			index = _getStartIndex();
 
-		if (index < 0 || index > int(values.size())) index = 0;
+		if (index < 0 || index > int(terms.size()))
+			index = 0;
 	}
 
 	_setCurrentProperties(index);
@@ -226,46 +205,46 @@ bool ComboBoxBase::_checkLevelsConstraints()
 void ComboBoxBase::_resetItemWidth()
 {
 	double maxWidth = 0;
-	QString longestValue;
+	QString longestLabel;
 
 	QFontMetricsF& metrics = JaspTheme::fontMetrics();
 
 	if (_addEmptyValue)
 	{
 		maxWidth = metrics.horizontalAdvance(_placeHolderText);
-		longestValue = _placeHolderText;
+		longestLabel = _placeHolderText;
 	}
 	for (const Term& term : model()->terms())
 	{
-		double termWidth = metrics.horizontalAdvance(term.asQString());
+		double termWidth = metrics.horizontalAdvance(term.label());
 		if (maxWidth < termWidth)
 		{
 			maxWidth = termWidth;
-			longestValue = term.asQString();
+			longestLabel = term.label();
 		}
 	}
 
-	if (_longestValue != longestValue)
+	if (_longestLabel != longestLabel)
 	{
-		_longestValue = longestValue;
+		_longestLabel = longestLabel;
 		emit longestValueChanged();
 	}
 }
 
-void ComboBoxBase::setCurrentText(QString text)
+void ComboBoxBase::setCurrentLabel(QString label)
 {
 	if (initialized())
-		_setCurrentProperties(_model->getIndexOfLabel(text));
+		_setCurrentProperties(_model->terms().indexOfLabel(label));
 	else
-		_currentText = text;
+		_currentLabel = label;
 }
 
 void ComboBoxBase::setCurrentValue(QString value)
 {
 	if (initialized())
-		_setCurrentProperties(_model->getIndexOfValue(value));
+		_setCurrentProperties(_model->terms().indexOfValue(value));
 	else
-		_currentValue = value;	
+		_currentValue = value;
 }
 void ComboBoxBase::setCurrentIndex(int index)
 {
@@ -277,7 +256,7 @@ void ComboBoxBase::setCurrentIndex(int index)
 
 void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 {
-	QString currentColumnType, currentColumnRealType, currentValue, currentText, currentColumnTypeIcon;
+	QString currentColumnType, currentColumnRealType, currentValue, currentLabel, currentColumnTypeIcon;
 
 	if (index >= _model->rowCount())	
 		index = 0;
@@ -285,31 +264,32 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 	if (index >= 0)
 	{
 		QModelIndex modelIndex(_model->index(index, 0));
+		const Term& term = _model->terms().at(index);
 		
-		currentColumnType		= _model->data(modelIndex, ListModel::ColumnTypeRole	).toString();
+		currentColumnType		= columnTypeToQString(term.type());
+		currentLabel			= term.label();
+		currentValue			= term.value();
 		currentColumnRealType	= _model->data(modelIndex, ListModel::ColumnRealTypeRole).toString();
 		currentColumnTypeIcon	= _model->data(modelIndex, ListModel::ColumnTypeIconRole).toString();
-		currentText				= _model->data(modelIndex, ListModel::NameRole			).toString();
-		currentValue			= _model->data(modelIndex, ListModel::ValueRole			).toString();
 	}
 
 	// emit signals when all values are set, so that when 1 of the signals is caught,
 	// all values are coherent
-	bool	emitCurrentTextSignal				= _currentText				!= currentText,
+	bool	emitCurrentLabelSignal				= _currentLabel				!= currentLabel,
 			emitCurrentValueSignal				= _currentValue				!= currentValue,
 			emitCurrentIndexSignal				= _currentIndex				!= index,
 			emitCurrentColumnTypeSignal			= _currentColumnType		!= currentColumnType,
 			emitCurrentColumnRealTypeSignal		= _currentColumnRealType	!= currentColumnRealType,
 			emitCurrentColumnTypeIconSignal		= _currentColumnTypeIcon	!= currentColumnTypeIcon;
 
-			_currentText						= currentText;
+			_currentLabel						= currentLabel;
 			_currentValue						= currentValue;
 			_currentIndex						= index;
 			_currentColumnType					= currentColumnType;
 			_currentColumnRealType				= currentColumnRealType;
 			_currentColumnTypeIcon				= currentColumnTypeIcon;
 
-	if (emitCurrentTextSignal)				emit currentTextChanged();
+	if (emitCurrentLabelSignal)				emit currentLabelChanged();
 	if (emitCurrentValueSignal)				emit currentValueChanged();
 	if (emitCurrentColumnTypeSignal)		emit currentColumnTypeChanged();
 	if (emitCurrentColumnTypeIconSignal)	emit currentColumnTypeIconChanged();
@@ -335,8 +315,8 @@ QString	ComboBoxBase::helpMD(int depth) const
 	{
 		for (const Term& term : _model->terms())
 		{
-			QString label = term.asQString(),
-					info = _model->getInfo(label);
+			QString label = term.label(),
+					info = term.info();
 			markdown << "\n" << QString{depth * 2, ' '} << "- *" << label << "*";
 			if (!info.isEmpty())
 				markdown << (": " + info);
@@ -346,7 +326,7 @@ QString	ComboBoxBase::helpMD(int depth) const
 	{
 		markdown << "\n" << QString{depth * 2, ' '};
 		// Display the options in one line separated by a comma.
-		markdown << model()->terms().asQList().join(", ");
+		markdown << model()->terms().labels().join(", ");
 	}
 
 
@@ -357,7 +337,7 @@ bool ComboBoxBase::_hasOptionInfo() const
 {
 	for (const Term& term : _model->terms())
 	{
-		if (!_model->getInfo(term.asQString()).isEmpty())
+		if (!term.info().isEmpty())
 			return true;
 	}
 
@@ -376,7 +356,7 @@ std::string ComboBoxBase::_findType(std::string value) const
 	if (!value.empty())
 	{
 		const Terms& terms = model()->terms();
-		int index = terms.indexOf(value);
+		int index = terms.indexOfValue(tq(value));
 		if (index >= 0)
 			type = terms.at(index).type();
 	}

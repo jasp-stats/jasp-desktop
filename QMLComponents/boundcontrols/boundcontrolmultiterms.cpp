@@ -66,7 +66,7 @@ void BoundControlMultiTerms::resetBoundValue()
 	for (const Terms& terms : tuples)
 	{
 		Json::Value rowValue;
-		for (std::string val : terms.asVector())
+		for (std::string val : terms.valuesAsVector())
 			rowValue.append(val);
 		boundValue.append(rowValue);
 	}

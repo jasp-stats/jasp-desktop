@@ -65,7 +65,7 @@ bool ListModelMultinomialChi2Test::sourceLabelsReordered(QString columnName)
 			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
 
 	beginResetModel();
-	_tableTerms.rowNames = getSourceTerms().asQList();
+	_tableTerms.rowNames = getSourceTerms().values();
 	_tableTerms.values.clear();
 	_tableTerms.values.resize(columnCount());
 

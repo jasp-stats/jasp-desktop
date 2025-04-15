@@ -25,7 +25,7 @@ ComponentsListBase
 {
 	id						: tabView
 	background				: rectangleItem
-	implicitWidth 			: parent.width
+	implicitWidth 			: parent ? parent.width : 0
 	implicitHeight			: itemStack.y + itemStack.height
 	shouldStealHover		: false
 	innerControl			: itemTabBar
@@ -35,10 +35,13 @@ ComponentsListBase
 	controlType				: JASPControl.TabView
 	focusOnTab				: false
 	Layout.columnSpan		: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
-	preferredWidth			: parent.width
+	preferredWidth			: parent ? parent.width : 0
 	preferredHeight			: implicitHeight
+	newItemLabel			: newItemValue
+	optionKeyLabel			: (values != null && values.length > 0 && values[0].hasOwnProperty("label")) ? "keyLabel" : ""
 
 	property alias	label				: tabView.title
+	property alias	newItemName			: tabView.newItemValue		// For backward compatibility
 	property bool	showAddIcon			: addItemManually
 	property bool	showRemoveIcon		: addItemManually
 	property bool	tabNameEditable		: addItemManually
@@ -132,7 +135,7 @@ ComponentsListBase
 					value				: model.name
 					fieldWidth			: parent.width
 					fieldHeight			: parent.height
-					onEditingFinished	: tabView.nameChanged(index, displayValue)
+					onEditingFinished	: tabView.keyValueChanged(index, displayValue)
 
 					onActiveFocusChanged: if (!activeFocus) visible = false
 				}
@@ -285,7 +288,7 @@ ComponentsListBase
 		}
 
 		currentIndex		: itemTabBar.currentIndex
-		onCurrentIndexChanged: height = Qt.binding( function() { return rep.itemAt(currentIndex).height; });
+		onCurrentIndexChanged: height = Qt.binding( function() { return currentIndex >= 0 ? rep.itemAt(currentIndex).height : 0; });
 
 		Repeater
 		{

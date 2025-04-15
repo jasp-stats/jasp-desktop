@@ -117,7 +117,7 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 			bool isEmpty = true;
 			for (int i = 0; i < _columns; i++)
 			{
-				if (i != col && !terms.at(size_t(i)).asQString().isEmpty())
+				if (i != col && !terms.at(size_t(i)).value().isEmpty())
 					isEmpty = false;
 			}
 			if (isEmpty)
@@ -141,7 +141,7 @@ void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms , Terms terms
 	int i = 0;
 	for (const Term& oneTerm : terms())
 	{
-		if (termsToRemove.contains(oneTerm))		indexes.append(i);
+		if (termsToRemove.containsValue(oneTerm))		indexes.append(i);
 		i++;
 	}
 
@@ -184,12 +184,12 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			Terms row = _tuples[realRow];
 			const Term& termToAdd = termsToAdd.at(0);
 
-			if (row.contains(termToAdd) && !_allowDuplicatesInMultipleColumns)
+			if (row.containsValue(termToAdd) && !_allowDuplicatesInMultipleColumns)
 				termsToReturn.add(termToAdd);
 			else
 			{
 				const Term& term = row[size_t(realCol)];
-				if (!term.asQString().isEmpty())
+				if (!term.value().isEmpty())
 					termsToReturn.add(term);
 				row.replace(realCol, termToAdd);
 				_tuples[realRow] = row;
@@ -208,10 +208,10 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			bool changed = false;
 			for (int col = 0; col < _columns && index < termsToAdd.size(); col++)
 			{
-				if (tuple[size_t(col)].asQString().isEmpty())
+				if (tuple[size_t(col)].value().isEmpty())
 				{
 					const Term& termToAdd = termsToAdd.at(index);
-					if (tuple.contains(termToAdd) && !_allowDuplicatesInMultipleColumns)
+					if (tuple.containsValue(termToAdd) && !_allowDuplicatesInMultipleColumns)
 						termsToReturn.add(termsToAdd);
 					else
 					{
@@ -270,7 +270,7 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 	bool addNewRow = false;
 	Term fromValue = fromTuple[size_t(fromCol)];
 
-	if (fromValue.asQString().isEmpty())
+	if (fromValue.value().isEmpty())
 		return;
 
 	beginResetModel();
@@ -298,7 +298,7 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 			else
 			{
 				// If it does not allow duplicates, and the dropTuple contains the fromValue or the fromTuple contains the dropValue (if not empty), then do not exchange the values.
-				if (!(!_allowDuplicatesInMultipleColumns && (dropTuple.contains(fromValue) || (!dropValue.asQString().isEmpty() && fromTuple.contains(dropValue)))))
+				if (!(!_allowDuplicatesInMultipleColumns && (dropTuple.containsValue(fromValue) || (!dropValue.value().isEmpty() && fromTuple.containsValue(dropValue)))))
 				{
 					dropTuple.replace(dropCol, fromValue);
 					fromTuple.replace(fromCol, dropValue);
@@ -326,11 +326,11 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 		addNewRow = true;
 
 		// It it does not allow duplicates, and the last row contains the fromValue, then do not try to add the fromValue to the last row
-		if (!(!_allowDuplicatesInMultipleColumns && dropTuple.contains(fromValue)))
+		if (!(!_allowDuplicatesInMultipleColumns && dropTuple.containsValue(fromValue)))
 		{
 			for (int i = 0; i < _columns && !addNewRow; i++)
 			{
-				if (dropTuple[size_t(i)].asQString().isEmpty())
+				if (dropTuple[size_t(i)].value().isEmpty())
 				{
 					dropTuple.replace(i, fromValue);
 					_tuples[dropRow] = dropTuple;
@@ -352,7 +352,7 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 	bool removeFromTuple = true;
 	for (int i = 0; i < _columns; i++)
 	{
-		if (!fromTuple[size_t(i)].asQString().isEmpty())
+		if (!fromTuple[size_t(i)].value().isEmpty())
 			removeFromTuple = false;
 	}
 	if (removeFromTuple)

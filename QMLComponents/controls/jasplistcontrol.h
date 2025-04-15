@@ -46,7 +46,8 @@ class JASPListControl : public JASPControl
 	Q_PROPERTY( QVariant			values							READ values								WRITE setValues								NOTIFY sourceChanged				)
 	Q_PROPERTY( int					count							READ count																			NOTIFY countChanged					)
 	Q_PROPERTY( int					maxRows							READ maxRows							WRITE setMaxRows							NOTIFY maxRowsChanged				)
-	Q_PROPERTY( QString				optionKey						READ optionKey							WRITE setOptionKey																)
+	Q_PROPERTY( QString				optionKey						READ optionKeyValue						WRITE setOptionKeyValue															)
+	Q_PROPERTY( QString				optionKeyLabel					READ optionKeyLabel						WRITE setOptionKeyLabel															)
 	Q_PROPERTY( bool				addEmptyValue					READ addEmptyValue						WRITE setAddEmptyValue						NOTIFY addEmptyValueChanged			)
 	Q_PROPERTY( QString				placeholderText					READ placeholderText					WRITE setPlaceHolderText					NOTIFY placeHolderTextChanged		)
 	Q_PROPERTY( bool				containsVariables				READ containsVariables																NOTIFY containsVariablesChanged		)
@@ -86,7 +87,8 @@ public:
 	virtual	bool					addRowControl(const QString& key, JASPControl* control);
 			bool					hasRowComponent()			const;
 
-			const QString		&	optionKey()					const			{ return _optionKey; }
+			const QString		&	optionKeyValue()			const		{ return _optionKeyValue; }
+			const QString		&	optionKeyLabel()			const		{ return _optionKeyLabel; }
 			JASPControl			*	getChildControl(const QString & key, const QString & name) override;
 
 	Q_INVOKABLE QString				getSourceType(QString name);
@@ -158,7 +160,8 @@ protected slots:
 			void					_termsChangedHandler();
 			void					sourceChangedHandler();
 
-			void					setOptionKey(const QString& optionKey)	{ _optionKey = optionKey; }
+			void					setOptionKeyValue(const QString& optionKeyValue)		{ _optionKeyValue = optionKeyValue; }
+			void					setOptionKeyLabel(const QString& optionKeyLabel)		{ _optionKeyLabel = optionKeyLabel; }
 			bool					checkLevelsConstraints();
 
 protected:
@@ -192,7 +195,8 @@ private:
 			
 protected:
 	QVector<SourceItem*>	_sourceItems;
-	QString					_optionKey							= "value";
+	QString					_optionKeyValue						= "value",
+							_optionKeyLabel						= "";
 	QVariant				_source;
 	QVariant				_rSource;
 	QVariant				_values;

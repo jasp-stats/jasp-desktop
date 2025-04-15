@@ -19,7 +19,6 @@
 #include "variableslistbase.h"
 #include "checkboxbase.h"
 #include "models/listmodeltermsavailable.h"
-#include "models/listmodelinteractionavailable.h"
 #include "models/listmodeltermsassigned.h"
 #include "models/listmodelmeasurescellsassigned.h"
 #include "models/listmodelinteractionassigned.h"
@@ -29,7 +28,6 @@
 #include "boundcontrols/boundcontrollayers.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "boundcontrols/boundcontrolmultiterms.h"
-#include "utilities/desktopcommunicator.h"
 #include "rowcontrols.h"
 #include "analysisform.h"
 #include "sourceitem.h"
@@ -50,7 +48,7 @@ void VariablesListBase::setUp()
 
 	_setRelations();
 
-	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
+	ListModelTermsAvailable* availableModel = qobject_cast<ListModelTermsAvailable*>(_draggableModel);
 
 	if (availableModel)
 	{
@@ -113,11 +111,6 @@ void VariablesListBase::setUpModel()
 	case ListViewType::AvailableVariables:
 		_isBound		= false;
 		_draggableModel = new ListModelTermsAvailable(this);
-		break;
-
-	case ListViewType::AvailableInteraction:
-		_isBound				= false;
-		_draggableModel			= new ListModelInteractionAvailable(this);
 		break;
 
 	case ListViewType::Layers:
@@ -271,7 +264,7 @@ void VariablesListBase::moveItems(QList<int> &indexes, ListModelDraggable* targe
 
 bool VariablesListBase::containsInteractions() const
 {
-	if (_listViewType == ListViewType::AvailableInteraction || _listViewType == ListViewType::Interaction)
+	if (_listViewType == ListViewType::Interaction)
 		return true;
 
 	return JASPListControl::containsInteractions();
@@ -327,7 +320,7 @@ void VariablesListBase::_setRelations()
 		ListModel* relatedModel = getRelatedModel();
 		if (relatedModel)
 		{
-			ListModelAvailableInterface* availableModel = dynamic_cast<ListModelAvailableInterface*>(relatedModel);
+			ListModelTermsAvailable* availableModel = dynamic_cast<ListModelTermsAvailable*>(relatedModel);
 			if (!availableModel)
 				addControlError(tr("Wrong kind of source for VariableList %1").arg(name()));
 			else
@@ -369,7 +362,7 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 		if (otherTerm == keyTerm)
 			continue;
 
-		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.asQString());
+		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.value());
 		if (!rowControls) continue; // Apparently the controls are not created yet for this row. Does not matter: this function will be called when they are created
 		CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControl(_interactionHighOrderCheckBox));
 		bool otherChecked = otherCheckBox->checked();

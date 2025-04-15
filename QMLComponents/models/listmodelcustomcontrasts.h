@@ -48,7 +48,7 @@ public slots:
 	void sourceTermsReset()														override;
 	bool sourceLabelsChanged(QString columnName, QMap<QString, QString> = {})	override;
 	bool sourceLabelsReordered(QString columnName)								override;
-	void sourceColumnsChanged(QStringList columns)								override;
+	void sourceVariablesChanged(QStringList columns)								override;
 	void scaleFactorChanged();
 	void setColName(QString colName);
 	void factorsSourceChanged();

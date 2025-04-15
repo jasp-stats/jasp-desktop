@@ -23,7 +23,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 {
 	if(VariableInfo::info())
 	{
-		connect(VariableInfo::info(), &VariableInfo::namesChanged,		this, &RSyntaxHighlighter::handleNamesChanged);
+		connect(VariableInfo::info(), &VariableInfo::variableNamesChanged,		this, &RSyntaxHighlighter::handleNamesChanged);
 		connect(VariableInfo::info(), &VariableInfo::rowCountChanged,	this, &RSyntaxHighlighter::handleRowCountChanged);
 	}
 

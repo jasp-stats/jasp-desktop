@@ -17,7 +17,6 @@
 //
 
 #include "sortmenumodel.h"
-#include "models/listmodelavailableinterface.h"
 #include "jasptheme.h"
 
 QMap<Sortable::SortType, QString> SortMenuModel::_labels; //Only set this constructor because otherwise it might cause a crash on Windows

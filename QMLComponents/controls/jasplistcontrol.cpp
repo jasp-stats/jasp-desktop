@@ -108,7 +108,7 @@ void JASPListControl::termsChangedHandler()
 	if (checkLevelsConstraints())
 	{
 		setColumnsTypes(model()->getUsedTypes());
-		setColumnsNames(model()->terms().asQList());
+		setColumnsNames(model()->terms().values());
 	}
 }
 
@@ -247,14 +247,14 @@ double JASPListControl::maxTermsWidth()
 
 	QFontMetricsF& metrics = JaspTheme::fontMetrics();
 	for (const Term& term : model()->terms())
-		maxWidth = std::max(maxWidth, metrics.horizontalAdvance(term.asQString()));
+		maxWidth = std::max(maxWidth, metrics.horizontalAdvance(term.label()));
 
 	return maxWidth;
 }
 
 std::vector<std::string> JASPListControl::usedVariables() const
 {
-	if (containsVariables() && isBound() && model())	return model()->terms().asVector();
+	if (containsVariables() && isBound() && model())	return model()->terms().valuesAsVector();
 	else												return {};
 }
 
@@ -346,7 +346,7 @@ bool JASPListControl::_checkLevelsConstraints()
 
 	for (const Term& term : model()->terms())
 	{
-		if (!_checkLevelsConstraintsForVariable(term.asQString()))
+		if (!_checkLevelsConstraintsForVariable(term.value()))
 		{
 			checked = false;
 			break;

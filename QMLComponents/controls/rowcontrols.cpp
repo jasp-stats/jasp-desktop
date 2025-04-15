@@ -45,7 +45,10 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	context->setContextProperty("listView", listView);
 	context->setContextProperty("isNew", isNew);
 	context->setContextProperty("rowIndex",	row);
-	context->setContextProperty("rowValue", key.asQString());
+	context->setContextProperty("rowLabel", key.label());
+	context->setContextProperty("rowValue", key.value());
+	context->setContextProperty("rowType", columnTypeToQString(key.type()));
+
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
 	_rowObject->setParent(_parentModel);
@@ -95,11 +98,13 @@ void RowControls::_initializeControls(bool useInitialValue)
 		emit parentControl->boundValueChanged(parentControl);
 }
 
-void RowControls::setContext(int row, const QString &key)
+void RowControls::setContext(int row, const Term &key)
 {
 	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
 	_context->setContextProperty("rowIndex", row);
-	_context->setContextProperty("rowValue", key);
+	_context->setContextProperty("rowLabel", key.label());
+	_context->setContextProperty("rowValue", key.value());
+	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
 	_context->setContextProperty("isNew", false);
 
 	_initializeControls(false);

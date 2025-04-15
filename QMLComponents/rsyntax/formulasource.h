@@ -52,7 +52,8 @@ public:
 					variablesControl	= "randomComponents",
 					checkControl		= "randomSlopes",
 					correlationControl	= "correlations",
-					variablesKey		= "value";
+					variablesKeyValue	= "value",
+					variablesKeyLabel	= "";
 		ListModel*	fixedEffectsModel = nullptr;
 		ComponentsListBase* componentsList = nullptr; // A RandomEffects can be made only from a ComponentsList item
 

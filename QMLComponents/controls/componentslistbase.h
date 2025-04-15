@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,8 @@ class ComponentsListBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( bool			addItemManually			READ addItemManually		WRITE setAddItemManually		NOTIFY addItemManuallyChanged		)
 	Q_PROPERTY( int				minimumItems			READ minimumItems			WRITE setMinimumItems			NOTIFY minimumItemsChanged			)
 	Q_PROPERTY( int				maximumItems			READ maximumItems			WRITE setMaximumItems			NOTIFY maximumItemsChanged			)
-	Q_PROPERTY( QString			newItemName				READ newItemName			WRITE setNewItemName			NOTIFY newItemNameChanged			)
+	Q_PROPERTY( QString			newItemValue			READ newItemValue			WRITE setNewItemValue			NOTIFY newItemValueChanged			)
+	Q_PROPERTY( QString			newItemLabel			READ newItemLabel			WRITE setNewItemLabel			NOTIFY newItemLabelChanged			)
 	Q_PROPERTY( QList<QVariant>	defaultValues			READ defaultValues			WRITE setDefaultValues			NOTIFY defaultValuesChanged			)
 	Q_PROPERTY( bool			duplicateWhenAdding		READ duplicateWhenAdding	WRITE setDuplicateWhenAdding	NOTIFY duplicateWhenAddingChanged	)
 	Q_PROPERTY( QList<QVariant>	controlNameXOffsetMap	READ controlNameXOffsetMap									NOTIFY controlNameXOffsetMapChanged	)
@@ -47,7 +48,8 @@ public:
 	void			setUp()												override;
 	void			setUpModel()										override;
 
-	QString			newItemName()						const			{ return _newItemName;			}
+	QString			newItemValue()						const			{ return _newItemValue;			}
+	QString			newItemLabel()						const			{ return _newItemLabel;			}
 	bool			addItemManually()					const			{ return _addItemManually;		}
 	int				minimumItems()						const			{ return _minimumItems;			}
 	int				maximumItems()						const			{ return _maximumItems;			}
@@ -62,8 +64,9 @@ public:
 signals:
 	void			addItem();
 	void			removeItem(int index);
-	void			nameChanged(int index, QString name);
-	void			newItemNameChanged();
+	void			keyValueChanged(int index, QString displayValue);
+	void			newItemValueChanged();
+	void			newItemLabelChanged();
 	void			addItemManuallyChanged();
 	void			minimumItemsChanged();
 	void			maximumItemsChanged();
@@ -73,7 +76,8 @@ signals:
 	void			headerLabelsChanged();
 
 public slots:
-	GENERIC_SET_FUNCTION(NewItemName,			_newItemName,			newItemNameChanged,				QString			)
+	GENERIC_SET_FUNCTION(NewItemValue,			_newItemValue,			newItemValueChanged,			QString			)
+	GENERIC_SET_FUNCTION(NewItemLabel,			_newItemLabel,			newItemLabelChanged,			QString			)
 	GENERIC_SET_FUNCTION(AddItemManually,		_addItemManually,		addItemManuallyChanged,			bool			)
 	GENERIC_SET_FUNCTION(MinimumItems,			_minimumItems,			minimumItemsChanged,			int				)
 	GENERIC_SET_FUNCTION(MaximumItems,			_maximumItems,			maximumItemsChanged,			int				)
@@ -85,7 +89,7 @@ protected slots:
 	void			termsChangedHandler()								override;
 	void			addItemHandler();
 	void			removeItemHandler(int index);
-	void			nameChangedHandler(int index, QString name);
+	void			keyValueChangedHandler(int index, QString displayValue);
 	void			resetDefaultValue();
 
 protected:
@@ -95,7 +99,8 @@ protected:
 
 private:
 	ListModelTermsAssigned*		_termsModel				= nullptr;
-	QString						_newItemName			= "#";
+	QString						_newItemValue			= "#",
+								_newItemLabel			= "#";
 	bool						_addItemManually		= false,
 								_duplicateWhenAdding	= false;
 	int							_minimumItems			= 0,

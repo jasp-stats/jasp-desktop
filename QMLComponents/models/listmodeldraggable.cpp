@@ -106,7 +106,7 @@ bool ListModelDraggable::isAllowed(const Term &term) const
 {
 	if (!listView()->allowAnalysisOwnComputedColumns())
 	{
-		if (listView()->form()->isOwnComputedColumn(term.asString()))
+		if (listView()->form()->isOwnComputedColumn(fq(term.value())))
 			return false;
 	}
 

@@ -127,7 +127,7 @@ Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int drop
 		{
 			const Term& newTerm = termsToAdd.at(0);
 			const Term& oldTerm = terms().at(size_t(dropItemIndex));
-			if (!oldTerm.asString().empty())
+			if (!oldTerm.value().isEmpty())
 				termsToSendBack.add(Term(oldTerm));
 			_replaceTerm(dropItemIndex, newTerm);
 		}
@@ -138,7 +138,7 @@ Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int drop
 		for (size_t i = 0; i < terms().size() && index < termsToAdd.size(); i++)
 		{
 			const Term& oldTerm = terms().at(i);
-			if (oldTerm.asQString().isEmpty())
+			if (oldTerm.value().isEmpty())
 			{
 				const Term& newTerm = termsToAdd.at(index);
 				_replaceTerm(int(i), newTerm);
@@ -212,13 +212,13 @@ QVariant ListModelMeasuresCellsAssigned::data(const QModelIndex &index, int role
 	if (role == Qt::DisplayRole || role == ListModel::NameRole)
 	{
 		if (realCol == 0)
-			return terms()[size_t(realRow)].asQString();
+			return terms()[size_t(realRow)].label();
 		else
 			return _levels[realRow];
 	}
 	else if (role == ListModel::SelectableRole)
 	{
-		return realCol == 0 && !terms().at(size_t(realRow)).asString().empty();
+		return realCol == 0 && !terms().at(size_t(realRow)).value().isEmpty();
 	}
 	else if (role == ListModel::SelectedRole)
 	{

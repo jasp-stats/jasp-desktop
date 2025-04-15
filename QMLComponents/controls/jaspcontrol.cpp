@@ -231,7 +231,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
-				connect(parentlistView->model(), &ListModel::oneTermChanged, this, &JASPControl::parentListViewKeyChanged);
+				connect(parentlistView->model(), &ListModel::keyTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
 				_parentListViewKey = context->contextProperty("rowIndex").toString();
@@ -741,7 +741,7 @@ QVector<JASPControl::ParentKey> JASPControl::getParentKeys()
 
 	while (parentControl)
 	{
-		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKey().toStdString(), Term::readTerm(parentKeyValue).scomponents()});
+		parentKeys.prepend({parentControl->name().toStdString(), parentControl->optionKeyValue().toStdString(), Term::readTerm(parentKeyValue).scomponents()});
 		parentKeyValue = parentControl->parentListViewKey();
 		parentControl = parentControl->parentListView();
 	}

@@ -47,7 +47,7 @@ public slots:
 	void datasetChanged(QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool hasNewColumns);
 
 signals:
-	void namesChanged(		QMap<QString, QString>	changedNames);
+	void columnNamesChanged(QMap<QString, QString>	changedNames);
 	void columnsChanged(	QStringList				changedColumns);
 	void columnTypeChanged(	QString					colName);
 	void labelsChanged(		QString					columnName, QMap<QString, QString> changedLabels);

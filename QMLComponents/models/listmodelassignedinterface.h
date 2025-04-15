@@ -20,7 +20,7 @@
 #define LISTMODELASSIGNEDINTERFACE_H
 
 #include "listmodeldraggable.h"
-#include "listmodelavailableinterface.h"
+#include "listmodeltermsavailable.h"
 
 class ListModelAssignedInterface : public ListModelDraggable
 {
@@ -30,8 +30,8 @@ public:
 	
 	void							refresh()														override;
 
-	virtual void					setAvailableModel(ListModelAvailableInterface *availableModel);
-	ListModelAvailableInterface*	availableModel() const													{ return _availableModel; }
+	virtual void					setAvailableModel(ListModelTermsAvailable *availableModel);
+	ListModelTermsAvailable*		availableModel() const													{ return _availableModel; }
 	bool							checkAllowedTerms(Terms& terms);
 
 public slots:
@@ -40,7 +40,7 @@ public slots:
 			bool sourceLabelsReordered(QString columnName)											override;
 
 protected:
-	ListModelAvailableInterface*			_availableModel = nullptr;
+	ListModelTermsAvailable*			_availableModel = nullptr;
 };
 
 #endif // LISTMODELASSIGNEDINTERFACE_H

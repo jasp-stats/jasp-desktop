@@ -117,44 +117,49 @@ std::string BoundControlBase::getName() const
 	return fq(_control->name());
 }
 
-void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& key, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
+void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& keyValue, const std::string& keyLabel, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
 {
 	for (const Json::Value& row : value)
 	{
-		Json::Value keyValue = row[key];
-
-		Term term = Term::readTerm(keyValue);
+		Term term = Term::readTerm(row[keyValue]);
+		if (!keyLabel.empty() && row.isMember(keyLabel) && row[keyLabel].isString())
+			term.setLabel(tq(row[keyLabel].asString()));
 		if (term.size() > 0)
 		{
-			int termInd = sourceTerms.indexOf(term);
+			int termInd = sourceTerms.indexOfValue(term);
 			if (termInd >= 0)
+			{
 				term.setTypes(sourceTerms[termInd].types());
+				term.setLabel(sourceTerms[termInd].label());
+			}
 			terms.add(term);
 
 			QMap<QString, Json::Value> controlMap;
 			for (auto itr = row.begin(); itr != row.end(); ++itr)
 			{
 				const std::string& name = itr.key().asString();
-				if (name != key)
+				if (name != keyValue)
 					controlMap[tq(name)] = *itr;
 			}
 
-			allControlValues[term.asQString()] = controlMap;
+			allControlValues[term.value()] = controlMap;
 		}
 	}
 }
 
-Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasInteraction, bool keyHasVariables)
+Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
 	Json::Value result(Json::arrayValue);
 
 	for (const Term& term : terms)
 	{
-		QMap<QString, Json::Value> componentValues = componentValuesMap[term.asQString()];
+		QMap<QString, Json::Value> componentValues = componentValuesMap[term.value()];
 
 		Json::Value rowValues(Json::objectValue);
 
-		rowValues[key] = term.toJson(hasInteraction, keyHasVariables);
+		rowValues[keyValue] = term.toJson(hasInteraction, keyHasVariables);
+		if (!keyLabel.empty())
+			rowValues[keyLabel] = fq(term.label());
 
 		QMapIterator<QString, Json::Value> it2(componentValues);
 		while (it2.hasNext())
@@ -168,9 +173,9 @@ Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const Lis
 	return result;
 }
 
-void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& key, bool hasInteraction, bool keyHasVariables)
+void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
-	setBoundValue(_getTableValueOption(terms, componentValuesMap, key, hasInteraction, keyHasVariables));
+	setBoundValue(_getTableValueOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
 }
 
 bool BoundControlBase::_isValueWithTypes(const Json::Value &value) const

@@ -36,7 +36,6 @@ int ListModelInputValue::rowCount(const QModelIndex &parent) const
 QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 {
 	int row = index.row();
-	size_t rowU = size_t(row);
 	
 	if (row >= rowCount())
 	{
@@ -44,30 +43,24 @@ QVariant ListModelInputValue::data(const QModelIndex &index, int role) const
 		return QVariant();
 	}
 
-	QString value;
 	if (role == Qt::DisplayRole || role == ListModelInputValue::NameRole)
 	{
-		QString value;
-		if (rowU < terms().size())
-			value = terms().at(rowU).asQString();
-		else if (_addVirtual)
-			value = _placeholder;
-		return value;
+		if (row >= terms().size() && _addVirtual)
+			return _placeholder;
 	}
 	else if (role == ListModelInputValue::TypeRole)
 	{
-		bool isVirtual = (_addVirtual && rowU == terms().size());
+		bool isVirtual = (_addVirtual && row == terms().size());
 		QStringList listValues;
 		if (isVirtual)
 			listValues.push_back(tq("virtual"));
 
 		if (row >= _minRows && !isVirtual)
 			listValues.push_back(tq("deletable"));
-		value = listValues.join(',');
-		return value;
+		return listValues.join(',');
 	}
-	else
-		return ListModel::data(index, role);
+
+	return ListModel::data(index, role);
 }
 
 
@@ -100,7 +93,7 @@ QString ListModelInputValue::_changeLastNumber(const QString &val)
 QString ListModelInputValue::_makeUnique(const QString &val, int row)
 {
 	QString result = val;
-	QList<QString> values = terms().asQList();
+	QList<QString> values = terms().values();
 	bool isUnique = true;
 	do
 	{
@@ -161,7 +154,7 @@ void ListModelInputValue::itemChanged(int row, QVariant value)
 		{
 			beginResetModel();
 			val = _makeUnique(val, row);
-			QList<QString> values = terms().asQList();
+			QList<QString> values = terms().values();
 			values[row] = val;
 			_setTerms(values);
 			endResetModel();

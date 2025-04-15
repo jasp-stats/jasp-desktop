@@ -42,7 +42,7 @@ public:
 			, const QMap<QString, Json::Value>& rowValues);
 
 	void										init(int row, const Term& key, bool isNew);
-	void										setContext(int row, const QString& key);
+	void										setContext(int row, const Term& key);
 	QQmlComponent*								getComponent()								const	{ return _rowComponent; }
 	QQuickItem*									getRowObject()								const	{ return _rowObject;			}
 	const QMap<QString, JASPControl*>&			getJASPControlsMap()						const	{ return _rowJASPControlMap;	}

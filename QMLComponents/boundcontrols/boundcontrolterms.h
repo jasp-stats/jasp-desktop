@@ -37,7 +37,7 @@ public:
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
 
-	static Json::Value makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues, const std::string& optionKey, bool containsInteractions, bool hasRowComponent, bool isSingleRow);
+	static Json::Value makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow);
 
 private:
 	Terms		_getTermsFromOptions(const Json::Value& option)								const;
@@ -48,7 +48,8 @@ private:
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;
 	bool							_isSingleRow			= false;
-	std::string						_optionKey;
+	std::string						_optionKeyValue,
+									_optionKeyLabel;
 };
 
 #endif // BOUNDQMLLISTVIEWTERMS_H

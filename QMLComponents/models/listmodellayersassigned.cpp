@@ -117,7 +117,7 @@ Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, c
 		indexInLayer = 0;
 	
 	for (const Term& term : terms)
-		_variablesPerLayer[layer].insert(indexInLayer, term.asQString());
+		_variablesPerLayer[layer].insert(indexInLayer, term.value());
 
 	_setTerms();
 	
@@ -267,7 +267,7 @@ QList<int> ListModelLayersAssigned::indexesFromTerms(const Terms &terms) const
 			ind++;
 			for (const QString& var : variables)
 			{
-				if (var == term.asQString())
+				if (var == term.value())
 				{
 					found = true;
 					indexes.append(ind);

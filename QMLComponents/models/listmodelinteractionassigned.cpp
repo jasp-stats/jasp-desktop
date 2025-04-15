@@ -48,7 +48,7 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowContro
 				bool add = true;
 				for (const QString& comp : oldInteraction.components())
 				{
-					if (!terms.contains(Term(comp)))
+					if (!terms.containsValue(comp))
 						add = false;
 				}
 				if (add)
@@ -91,17 +91,17 @@ void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWit
 		QString itemType = getItemType(term);
 		if (itemType == "fixedFactors")
 		{
-			if (!_fixedFactors.contains(term))
+			if (!_fixedFactors.containsValue(term))
 				fixedFactors.add(term);
 		}
 		else if (itemType == "randomFactors")
 		{
-			if (!_randomFactors.contains(term))
+			if (!_randomFactors.containsValue(term))
 				randomFactors.add(term);
 		}
 		else if (itemType == "covariates")
 		{
-			if (!_covariates.contains(term))
+			if (!_covariates.containsValue(term))
 				covariates.add(term);
 		}
 		else
@@ -210,7 +210,7 @@ void ListModelInteractionAssigned::setTerms()
 	endResetModel();
 }
 
-void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map)
+void ListModelInteractionAssigned::sourceVariableNamesChanged(QMap<QString, QString> map)
 {
 	// In an interaction model, if a name is changed, maybe a part of the interaction term has to be changed.
 	QSet<int>				allChangedTermsIndex;
@@ -231,10 +231,10 @@ void ListModelInteractionAssigned::sourceNamesChanged(QMap<QString, QString> map
 	QMap<QString, QString>	allTermsChangedMap;
 	const Terms& newInteractionTerms = interactionTerms();
 	for (int index : allChangedTermsIndex)
-		allTermsChangedMap[oldInteractionTerms.at(size_t(index)).asQString()] = newInteractionTerms.at(size_t(index)).asQString();
+		allTermsChangedMap[oldInteractionTerms.at(size_t(index)).value()] = newInteractionTerms.at(size_t(index)).value();
 
 	if (allTermsChangedMap.size() > 0)
-		emit namesChanged(allTermsChangedMap);
+		emit variableNamesChanged(allTermsChangedMap);
 
 	// setTerms will re-initialize the terms of this model, and will also provoke the re-initialization of the models that depend on this model.
 	// So setTerms must be called after the namesChanged is emitted, so that the other models which depend on this model can change first the names of their terms.

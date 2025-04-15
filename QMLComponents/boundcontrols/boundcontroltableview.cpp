@@ -39,7 +39,7 @@ Json::Value BoundControlTableView::createJson() const
 	Json::Value levels(Json::arrayValue);
 
 	for (const Term& term : terms)
-		levels.append(term.asString());
+		levels.append(fq(term.value()));
 
 	for (int row = int(terms.size()); row < _tableView->initialRowCount(); row++)
 		levels.append(fq(_tableView->tableModel()->getDefaultRowName(size_t(row))));

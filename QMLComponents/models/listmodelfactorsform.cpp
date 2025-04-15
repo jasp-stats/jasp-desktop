@@ -65,7 +65,7 @@ void ListModelFactorsForm::initFactors(const FactorVec &factors)
 	beginResetModel();
 	
 	_factors.clear();
-	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_factorsForm->availableVariablesList()->model());
+	ListModelTermsAvailable* availableModel = qobject_cast<ListModelTermsAvailable*>(_factorsForm->availableVariablesList()->model());
 	if (availableModel) availableModel->clearAssignedModels();
 
 	Terms newTerms;
@@ -141,7 +141,7 @@ void ListModelFactorsForm::removeFactor()
 
 			const Terms& lastTerms = listView->model()->terms();
 			_removeTerms(lastTerms);
-			ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_factorsForm->availableVariablesList()->model());
+			ListModelTermsAvailable* availableModel = qobject_cast<ListModelTermsAvailable*>(_factorsForm->availableVariablesList()->model());
 			ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(listView->model());
 			availableModel->removeAssignedModel(assignedModel);
 			_factors.pop_back();

@@ -59,14 +59,14 @@ public:
 
 signals:
 	void refresh();
-	void namesChanged(		QMap<QString, QString> changedNames);
+	void variableNamesChanged(		QMap<QString, QString> changedNames);
 	void filterChanged();
 	void labelsChanged(		QString columnName, QMap<QString, QString> changedLabels);
-	void columnsChanged(	QStringList changedColumns);
+	void variablesChanged(	QStringList changedColumns);
 	void dataSetChanged();
 	void rowCountChanged();
 	void labelsReordered(	QString columnName);
-	void columnTypeChanged(	QString colName);
+	void variableTypeChanged(	QString colName);
 	void dataAvailableChanged();
 
 private:	

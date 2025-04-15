@@ -139,9 +139,8 @@ void ListModelTermsAssigned::removeTerm(int index)
 	beginResetModel();
 
 	const Term& term = terms().at(size_t(index));
-	const QString& termQ = term.asQString();
 
-	RowControls* controls = _rowControlsMap.value(termQ);
+	RowControls* controls = _rowControlsMap.value(term.value());
 	if (controls)
 	{
 		for (JASPControl* control : controls->getJASPControlsMap().values())
@@ -150,27 +149,27 @@ void ListModelTermsAssigned::removeTerm(int index)
 			listView()->form()->clearControlError(control);
 		}
 
-		_rowControlsMap.remove(termQ);
+		_rowControlsMap.remove(term.value());
 	}
 	_removeTerm(term);
 
 	endResetModel();
 }
 
-void ListModelTermsAssigned::changeTerm(int index, const QString& name)
+void ListModelTermsAssigned::changeTerm(int index, const Term& term)
 {
-	QString oldName = terms()[size_t(index)].asQString();
-	if (oldName != name)
+	Term oldTerm = terms().at(index);
+	if (oldTerm.value() != term.value())
 	{
-		_rowControlsMap[name] = _rowControlsMap.value(oldName);
-		_rowControlsValues[name] = _rowControlsValues.value(oldName);
-		_rowControlsMap.remove(oldName);
-		_rowControlsValues.remove(oldName);
-		_replaceTerm(index, Term(name));
-
-		emit oneTermChanged(oldName, name);
-		QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
-		emit dataChanged(modelIndex, modelIndex);
+		_rowControlsMap[term.value()] = _rowControlsMap.value(oldTerm.value());
+		_rowControlsValues[term.value()] = _rowControlsValues.value(oldTerm.value());
+		_rowControlsMap.remove(oldTerm.value());
+		_rowControlsValues.remove(oldTerm.value());
 	}
+	_replaceTerm(index, term);
+
+	QModelIndex modelIndex = ListModelTermsAssigned::index(index, 0);
+	emit dataChanged(modelIndex, modelIndex);
+	emit keyTermChanged(oldTerm.value(), term.value()); // Change the key term for row component: this must be done after the data change is processed (the bound value must be first set)
 }
 

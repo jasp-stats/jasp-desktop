@@ -105,7 +105,7 @@ QString FormulaBase::toString(const QString& newLine, const QString& indent, boo
 		if (!model) 
 			continue;
 
-		QStringList elements = model->terms().asQList();
+		QStringList elements = model->terms().values();
 
 		if (elements.isEmpty()) 
 			continue;
@@ -229,7 +229,7 @@ bool FormulaBase::_parseFormulaSources(const QVector<FormulaSource*>& formulaSou
 		parsedTerms = formulaSource->fillOptionsWithParsedTerms(parsedTerms, options);
 
 	if (!parsedTerms.fixedTerms.terms().empty() && !_rSyntax->hasError())
-		_rSyntax->addError(tr("Could not find term %1 in Formula").arg(parsedTerms.fixedTerms.terms()[0].asQString()));
+		_rSyntax->addError(tr("Could not find term %1 in Formula").arg(parsedTerms.fixedTerms.terms()[0].label()));
 
 	return !_rSyntax->hasError();
 }

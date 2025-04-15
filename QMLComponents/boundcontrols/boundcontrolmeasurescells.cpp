@@ -80,7 +80,7 @@ void BoundControlMeasuresCells::resetBoundValue()
 	const Terms& terms = _measuresCellsModel->terms();
 	
 	for (const Term& term : terms)
-		boundValue.append(term.asString());
+		boundValue.append(fq(term.value()));
 
 	setBoundValue(boundValue);
 }

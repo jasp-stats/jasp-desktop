@@ -22,7 +22,7 @@
 #include <QAbstractListModel>
 #include "sortable.h"
 
-class ListModelAvailableInterface;
+class ListModelTermsAvailable;
 
 class SortMenuModel : public QAbstractListModel
 {

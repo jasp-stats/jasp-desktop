@@ -47,7 +47,7 @@ Json::Value BoundControlContrastsTableView::createJson() const
 		for (const Term& variable : variables)
 		{
 			Json::Value row(Json::objectValue);
-			row["name"] = variable.asString();
+			row["name"] = fq(variable.value());
 			row["levels"] = rowNames;
 			row["isContrast"] = false;
 

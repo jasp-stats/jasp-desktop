@@ -65,7 +65,8 @@ FormulaSource::RandomEffects::RandomEffects(const QVariant &var)
 		if (map.contains("variablesControl"))	variablesControl = map["variablesControl"].toString();
 		if (map.contains("checkControl"))		checkControl = map["checkControl"].toString();
 		if (map.contains("correlationControl"))	correlationControl = map["correlationControl"].toString();
-		if (map.contains("variablesKey"))		variablesKey = map["variablesKey"].toString();
+		if (map.contains("variablesKeyValue"))	variablesKeyValue = map["variablesKeyValue"].toString();
+		if (map.contains("variablesKeyLabel"))	variablesKeyLabel = map["variablesKeyLabel"].toString();
 	}
 }
 
@@ -183,7 +184,7 @@ QStringList FormulaSource::modelSources() const
 		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model);
 		if (assignedModel)
 		{
-			ListModelAvailableInterface* availableModel = assignedModel->availableModel();
+			ListModelTermsAvailable* availableModel = assignedModel->availableModel();
 			if (availableModel) findSources(availableModel, sources);
 		}
 
@@ -217,7 +218,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 	QMap<QString, RowControls*> allRowControls = _model->getAllRowControls();
 	for (const Term& term : terms)
 	{
-		QString key = term.asQString();
+		QString key = term.value();
 		if (!allRowControls.contains(key))
 		{
 			Log::log() << "Cannot find key " << key << " in rowControls for RandomEffetcs Source" << std::endl;
@@ -271,7 +272,7 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 	while (!sortedTerms.empty())
 	{
 		const Term& term = sortedTerms.at(sortedTerms.size() - 1);
-		int orgInd = terms.indexOf(term);
+		int orgInd = terms.indexOfValue(term);
 		const Json::Value& changedType = changedTypes.size() > orgInd ? changedTypes[orgInd] : Json::nullValue;
 		sortedTerms.pop_back();
 		if (term.components().size() == 1)
@@ -353,7 +354,7 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 	for (const Term& term : terms)
 	{
 		const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
-		JASPControl* control = _model->getRowControl(term.asQString(), controlName);
+		JASPControl* control = _model->getRowControl(term.value(), controlName);
 		BoundControl* boundControl = control ? control->boundControl() : nullptr;
 		if (boundControl && boundControl->boundValue().asBool())	
 		{
@@ -380,7 +381,7 @@ ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Jso
 			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error))
 			{
 				for (const Term& parsedTerm : parsedTerms.fixedTerms)
-					extraTermsMap[parsedTerm.asQString()][extraControlName] = true;
+					extraTermsMap[parsedTerm.value()][extraControlName] = true;
 			}
 		}
 		else if (extraOptionJson.isString())
@@ -398,7 +399,7 @@ ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Jso
 					for (const Json::Value& jsonComponent : jsonTerm)
 						if (jsonComponent.isString())
 							components.append(tq(jsonComponent.asString()));
-					extraTermsMap[Term(components).asQString()][extraControlName] = true;
+					extraTermsMap[Term(components).value()][extraControlName] = true;
 				}
 			}
 		}
@@ -417,7 +418,7 @@ bool FormulaSource::_checkIntercept(Terms &terms) const
 	bool hasIntercept = false;
 	for (const Term& term : terms)
 	{
-		if (term.asQString() == interceptTerm)
+		if (term.value() == interceptTerm)
 		{
 			hasIntercept = true;
 			terms.remove(term);
@@ -489,7 +490,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 		}
 	}
 
-	ListModelAvailableInterface* availableModel = assignedModel->availableModel();
+	ListModelTermsAvailable* availableModel = assignedModel->availableModel();
 	if (availableModel)
 	{
 		const QVector<SourceItem*>& sourceItems = availableModel->listView()->sourceItems();
@@ -508,7 +509,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 	remainingParsedTerms.randomTerms = parsedTerms.randomTerms;
 	for (const Term& parsedTerm : parsedTerms.fixedTerms)
 	{
-		if (parsedTerms.randomTerms.contains(parsedTerm.asQString()))
+		if (parsedTerms.randomTerms.contains(parsedTerm.value()))
 		{
 			remainingParsedTerms.fixedTerms.add(parsedTerm);
 			continue;
@@ -550,7 +551,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 					found = true;
 					const Terms& availableTerms = sourceModel->availableModel()->allTerms();
 					for (const Term& term : termsToSearch)
-						if (!availableTerms.contains(term))
+						if (!availableTerms.containsValue(term))
 							found = false;
 
 					if (found)
@@ -571,7 +572,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithFixedTerms(ListModel* 
 			found = true;
 			const Terms& availableTerms = availableModel->allTerms();
 			for (const Term& term : termsToSearch)
-				if (!availableTerms.contains(term))
+				if (!availableTerms.containsValue(term))
 					found = false;
 		}
 
@@ -625,7 +626,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 			if (model->availableModel() != nullptr)
 			{
 				const Terms& availableTerms = model->availableModel()->allTerms();
-				if (availableTerms.contains(mainTerm))
+				if (availableTerms.containsValue(mainTerm))
 				{
 					Terms sourceMainTerms = sourceMainTermsMap[model];
 					sourceMainTerms.add(mainTerm);
@@ -648,12 +649,12 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		{
 			variables.add(fixedTerm);
 			QMap<QString, Json::Value> checkValue;
-			checkValue[_randomEffects.checkControl] = randomTerm.terms.contains(fixedTerm);
-			controlValues[fixedTerm.asQString()] = checkValue;
+			checkValue[_randomEffects.checkControl] = randomTerm.terms.containsValue(fixedTerm);
+			controlValues[fixedTerm.value()] = checkValue;
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
-		componentValues[_randomEffects.variablesControl] = BoundControlTerms::makeOption(variables, controlValues, fq(_randomEffects.variablesKey), true, true, false);
-		randomTermsMap[mainTerm.asQString()] = componentValues;
+		componentValues[_randomEffects.variablesControl] = BoundControlTerms::makeOption(variables, controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
+		randomTermsMap[mainTerm.value()] = componentValues;
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)

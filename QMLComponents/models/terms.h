@@ -93,19 +93,18 @@ public:
 
 	void clear();
 
-	const Term &at(size_t index)								const;
+	const Term &at(size_t index)										const;
 	Term &at(size_t index);
-	bool contains(const Term		&	term)					const;
-	bool contains(const QString		&	component);
-	bool contains(const std::string &	component);
-	int	 indexOf(const QString		&	component)				const;
-	int	 indexOf(const Term			&	component)				const;
+	bool containsValue(const Term				&	term)				const;
+	bool containsValue(const QString			&	value)				const;
+	int	 indexOfLabel(const QString				&	component)			const;
+	int	 indexOfValue(const QString				&	value	)			const;
+	int	 indexOfValue(const Term				&	value	)			const;
 
-	std::vector<std::string>				asVector()			const;
-	std::set<std::string>					asSet()				const;
-	std::vector<std::vector<std::string> >	asVectorOfVectors()	const;
-	QList<QString>							asQList()			const;
-	QList<QList<QString> >					asQListOfQLists()	const;
+	std::vector<std::string>				valuesAsVector()			const;
+	std::vector<std::vector<std::string> >	asVectorOfVectors()			const;
+	QStringList								values()					const;
+	QStringList								labels()					const;
 
 	Term	sortComponents(const Term &term)	const;
 	Terms	sortComponents(const Terms &terms)	const;
@@ -115,7 +114,6 @@ public:
 	Terms ffCombinations(const Terms &terms);
 	Terms combineTerms(JASPControl::CombinationType type);
 
-	std::string asString() const;
 	bool hasDuplicate() const	{ return _hasDuplicate; }
 
 	bool operator==(const Terms &terms) const;

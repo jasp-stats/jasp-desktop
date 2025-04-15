@@ -32,10 +32,10 @@ void ComponentsListBase::setUpModel()
 	_termsModel = new ListModelTermsAssigned(this);
 	JASPListControl::setUpModel();
 
-	connect(this, &ComponentsListBase::nameChanged, this, &ComponentsListBase::nameChangedHandler);
-	connect(this, &ComponentsListBase::addItem,		this, &ComponentsListBase::addItemHandler);
-	connect(this, &ComponentsListBase::removeItem,	this, &ComponentsListBase::removeItemHandler);
-	connect(this, &ComponentsListBase::initializedChanged, this, &ComponentsListBase::resetDefaultValue);
+	connect(this, &ComponentsListBase::keyValueChanged,		this, &ComponentsListBase::keyValueChangedHandler);
+	connect(this, &ComponentsListBase::addItem,				this, &ComponentsListBase::addItemHandler);
+	connect(this, &ComponentsListBase::removeItem,			this, &ComponentsListBase::removeItemHandler);
+	connect(this, &ComponentsListBase::initializedChanged,	this, &ComponentsListBase::resetDefaultValue);
 	connect(this, &ComponentsListBase::headerLabelsChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged);
 }
 
@@ -43,11 +43,10 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
-	std::string keyName = fq(_optionKey);
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
-	_readTableValue(value, keyName, containsInteractions(), terms, allControlValues, _termsModel->getSourceTerms());
+	_readTableValue(value, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), terms, allControlValues, _termsModel->getSourceTerms());
 
 	_termsModel->initTerms(terms, allControlValues);
 }
@@ -72,7 +71,8 @@ void ComponentsListBase::setUp()
 
 Json::Value ComponentsListBase::createJson() const
 {
-	std::string keyName = fq(_optionKey);
+	std::string keyValue = fq(_optionKeyValue),
+				keyLabel = fq(_optionKeyLabel);
 	Json::Value result(Json::arrayValue);
 
 	if (hasSource())
@@ -84,25 +84,29 @@ Json::Value ComponentsListBase::createJson() const
 			if (containsInteractions())
 			{
 				Json::Value keyTerm(Json::arrayValue);
-				for (const std::string& term: term.scomponents())
-					keyTerm.append(term);
-				row[keyName] = keyTerm;
+				for (const std::string& termComp: term.scomponents())
+					keyTerm.append(termComp);
+				row[keyValue] = keyTerm;
+				if (!keyLabel.empty())
+					row[keyLabel] = keyTerm;
 			}
 			else
-				row[keyName] = term.asString();
+			{
+				row[keyValue] = fq(term.value());
+				if (!keyLabel.empty())
+					row[keyLabel] = fq(term.label());
+			}
 			result.append(row);
 		}
 	}
 	else
 	{
-		QString			defaultName			= property("newItemName").toString();
-		QList<QVariant>	defaultValues		= property("defaultValues").toList();
-		int				minimumItems		= property("minimumItems").toInt();
+		QList<QVariant>	defaultValues		= _defaultValues;
 
-		while (defaultValues.length() < minimumItems)
-			defaultValues.push_back(defaultName);
+		while (defaultValues.length() < _minimumItems)
+			defaultValues.push_back(_newItemValue);
 
-		QList<QString> keyValues;
+		QList<QString> keyValues, keyLabels;
 
 		int nbOfRows = _defaultValues.length();
 		if (_minimumItems > nbOfRows) nbOfRows = _minimumItems;
@@ -112,14 +116,18 @@ Json::Value ComponentsListBase::createJson() const
 			if (rowNb < _defaultValues.length()) defaultValuesMap = _defaultValues[rowNb].toMap();
 			Json::Value row(Json::objectValue);
 
-			QString keyValue = _newItemName;
-			if (defaultValuesMap.contains(_optionKey))
-				keyValue = defaultValuesMap[_optionKey].toString();
+			QString newItemValue = _newItemValue,
+					newItemLabel = _newItemLabel;
+			if (defaultValuesMap.contains(_optionKeyValue))
+				newItemValue = defaultValuesMap[_optionKeyValue].toString();
 
-			keyValue = _makeUnique(keyValue, keyValues);
-			keyValues.push_back(keyValue);
+			newItemValue = _makeUnique(newItemValue, keyValues);
+			newItemLabel = _makeUnique(newItemLabel, keyLabels);
+			keyValues.push_back(newItemValue);
+			keyLabels.push_back(newItemLabel);
 
-			row[keyName] = fq(keyValue);
+			row[keyValue] = fq(newItemValue);
+			row[keyLabel] = fq(newItemLabel);
 
 			QMapIterator<QString, QVariant> it(defaultValuesMap);
 			while (it.hasNext())
@@ -127,7 +135,7 @@ Json::Value ComponentsListBase::createJson() const
 				it.next();
 				QString name = it.key();
 
-				if (name != _optionKey)
+				if (name != _optionKeyValue)
 				{
 					QVariant valueVar = it.value();
 					switch (valueVar.typeId())
@@ -170,7 +178,7 @@ void ComponentsListBase::resetDefaultValue()
 		{
 			if (terms.size() > i)
 			{
-				const QString& key = terms.at(i).asQString();
+				const QString& key = terms.at(i).value();
 				RowControls* rowControls = allRowControls[key];
 				if (!rowControls)
 				{
@@ -180,7 +188,7 @@ void ComponentsListBase::resetDefaultValue()
 				const QMap<QString, JASPControl*>& controlMap = rowControls->getJASPControlsMap();
 				Json::Value row(Json::objectValue);
 
-				row[fq(_optionKey)] = fq(key);
+				row[fq(_optionKeyValue)] = fq(key);
 				for (const QString& controlName : controlMap.keys())
 				{
 					JASPControl* control = controlMap[controlName];
@@ -206,7 +214,7 @@ void ComponentsListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions(), containsVariables());
+	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();
 }
@@ -215,7 +223,7 @@ void ComponentsListBase::bindOffsets()
 {
 	if (_termsModel && _termsModel->rowCount() > 0)
 	{
-		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).asQString());
+		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).value());
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
 			{
@@ -243,7 +251,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 	std::vector<int> xOffsets;
 	QMap<QString, int> nameXOffsetMap;
-	QString key = _termsModel->terms().at(0).asQString();
+	QString key = _termsModel->terms().at(0).value();
 	auto rowControls = _termsModel->getAllRowControls();
 	if (!rowControls.contains(key))
 		return result;
@@ -304,14 +312,15 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKey), containsInteractions(), containsVariables());
+	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 }
 
 void ComponentsListBase::addItemHandler()
 {
 	Terms newTerms;
-	QString newTerm = _makeUnique(_newItemName);
-	newTerms.add(newTerm);
+	QString newItemValue = _makeUnique(_newItemValue, _termsModel->terms().values());
+	QString newItemLabel = _makeUnique(_newItemLabel, _termsModel->terms().labels());
+	newTerms.add(Term(newItemValue, newItemLabel));
 	ListModel::RowControlsValues rowValues;
 
 	if (_duplicateWhenAdding)
@@ -324,11 +333,11 @@ void ComponentsListBase::addItemHandler()
 		
 		if (boundVal.isArray() && int(terms.size()) >= currentIndex)
 		{
-			std::string keyString = terms.at(size_t(currentIndex)).asString();
+			std::string keyString = fq(terms.at(size_t(currentIndex)).value());
 			
 			for (const Json::Value& jsonVal : boundVal)
 			{
-				const Json::Value& keyVal = jsonVal.get(fq(_optionKey), Json::nullValue);
+				const Json::Value& keyVal = jsonVal.get(fq(_optionKeyValue), Json::nullValue);
 				
 				if (keyVal.asString() == keyString)
 				{
@@ -336,10 +345,12 @@ void ComponentsListBase::addItemHandler()
 						jsonValues[tq(member)] = jsonVal.get(member, Json::nullValue);
 				}
 				
-				jsonValues[_optionKey] = fq(newTerm);
+				jsonValues[_optionKeyValue] = fq(newItemValue);
+				if (!_optionKeyLabel.isEmpty())
+					jsonValues[_optionKeyLabel] = fq(newItemLabel);
 			}
 		}
-		rowValues[newTerm] = jsonValues;
+		rowValues[newItemValue] = jsonValues;
 	}
 	_termsModel->addTerms(newTerms, -1, rowValues);
 	setProperty("currentIndex", _termsModel->rowCount() - 1);
@@ -351,34 +362,19 @@ void ComponentsListBase::removeItemHandler(int index)
 	setProperty("currentIndex", index >= _termsModel->rowCount() ? index - 1 : index);
 }
 
-void ComponentsListBase::nameChangedHandler(int index, QString name)
+void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 {
-	if (index < 0)
+	if (index < 0 || index >= _termsModel->rowCount())
 		return;
-	if (index >= _termsModel->rowCount())
-	{
-		Log::log()  << "Index " << index << " in ListModelTabView is greater than the maximum " << _termsModel->rowCount() << std::endl;
-		return;
-	}
 
-	if (name.isEmpty())
-		name = property("newItemName").toString();
+	Term term = _termsModel->terms().at(index);
+	if (newLabel.isEmpty())
+		newLabel = _newItemLabel;
 
-	name = _makeUnique(name, index);
+	newLabel = _makeUnique(newLabel, _termsModel->terms().labels(), index);
+	QString newValue = _optionKeyLabel.isEmpty() ? newLabel : term.value();
 
-	if (isBound())
-	{
-		// The name is the key value that allows to distinguish the elements of the components list.
-		// So this must be also updated in the bound value.
-		Json::Value val = boundValue();
-		if (val.isArray() && val.size() > index)
-		{
-			val[index][fq(_optionKey)] = fq(name);
-			setBoundValue(val, false);
-		}
-	}
-
-	_termsModel->changeTerm(index, name);
+	_termsModel->changeTerm(index, Term(newValue, newLabel));
 }
 
 QString ComponentsListBase::_changeLastNumber(const QString &val) const
@@ -410,9 +406,7 @@ QString ComponentsListBase::_changeLastNumber(const QString &val) const
 
 QString ComponentsListBase::_makeUnique(const QString &val, int index) const
 {
-	QList<QString> values = _termsModel->terms().asQList();
-
-	return _makeUnique(val, values, index);
+	return _makeUnique(val, _termsModel->terms().values(), index);
 }
 
 QString ComponentsListBase::_makeUnique(const QString &val, const QList<QString> &values, int index) const

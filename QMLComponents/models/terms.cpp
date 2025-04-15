@@ -133,7 +133,7 @@ void Terms::add(const Term &term, bool isUnique)
 {
 	if (!isUnique || _hasDuplicate)
 	{
-		if (!_hasDuplicate && contains(term)) _hasDuplicate = true;
+		if (!_hasDuplicate && containsValue(term)) _hasDuplicate = true;
 		_terms.push_back(term);
 	}
 	else if (_parent != nullptr)
@@ -160,7 +160,7 @@ void Terms::add(const Term &term, bool isUnique)
 	}
 	else
 	{
-		int i = indexOf(term);
+		int i = indexOfValue(term);
 		if (i < 0)
 			_terms.push_back(term);
 		else
@@ -223,22 +223,31 @@ Term &Terms::at(size_t index)
 	return _terms.at(index);
 }
 
-bool Terms::contains(const Term &term) const
+bool Terms::containsValue(const Term &term) const
 {
-	return std::find(_terms.begin(), _terms.end(), term) != _terms.end();
+	return containsValue(term.value());
 }
 
-bool Terms::contains(const std::string & component)
+bool Terms::containsValue(const QString &value) const
 {
-	return contains(tq(component));
+	for (const Term& term : _terms)
+		if (term.value() == value)
+			return true;
+
+	return false;
 }
 
-int Terms::indexOf(const QString &component) const
+int Terms::indexOfValue(const Term &term) const
+{
+	return indexOfValue(term.value());
+}
+
+int Terms::indexOfValue(const QString &value) const
 {
 	int i = 0;
-	for(const Term &term : _terms)
+	for (const Term& term : _terms)
 	{
-		if (term.contains(component))
+		if (term.value() == value)
 			return i;
 		i++;
 	}
@@ -246,44 +255,25 @@ int Terms::indexOf(const QString &component) const
 	return -1;
 }
 
-int Terms::indexOf(const Term &term) const
+int Terms::indexOfLabel(const QString &label) const
 {
-	auto it = std::find(_terms.begin(), _terms.end(), term);
-	if (it == _terms.end())
-		return -1;
-	else
-		return it - _terms.begin();
-}
-
-
-bool Terms::contains(const QString & component)
-{
+	int i = 0;
 	for(const Term &term : _terms)
 	{
-		if (term.contains(component))
-			return true;
+		if (term.label() == label)
+			return i;
+		i++;
 	}
 
-	return false;
+	return -1;
 }
 
-vector<string> Terms::asVector() const
+vector<string> Terms::valuesAsVector() const
 {
 	vector<string> items;
 
 	for(const Term &term : _terms)
-		items.push_back(term.asString());
-
-	return items;
-}
-
-std::set<std::string> Terms::asSet() const
-{
-	std::set<std::string> items;
-
-	for(const Term &term : _terms)
-		for(std::string termComp : term.scomponents())
-			items.insert(termComp);
+		items.push_back(fq(term.value()));
 
 	return items;
 }
@@ -301,25 +291,22 @@ vector<vector<string> > Terms::asVectorOfVectors() const
 	return items;
 }
 
-QList<QString> Terms::asQList() const
+QStringList Terms::values() const
 {
-	QList<QString> items;
+	QStringList items;
 
 	for(const Term &term : _terms)
-		items.append(term.asQString());
+		items.append(term.value());
 
 	return items;
 }
 
-QList<QList<QString> > Terms::asQListOfQLists() const
+QStringList Terms::labels() const
 {
-	QList<QList<QString> > items;
+	QStringList items;
 
 	for(const Term &term : _terms)
-	{
-		QList<QString> components = term.components();
-		items.append(components);
-	}
+		items.append(term.label());
 
 	return items;
 }
@@ -472,22 +459,6 @@ Terms Terms::combineTerms(JASPControl::CombinationType type)
 	return combinedTerms;
 }
 
-
-string Terms::asString() const
-{
-	if (_terms.size() == 0)
-		return "";
-
-	stringstream ss;
-
-	ss << _terms.at(0).asString();
-
-	for (size_t i = 1; i < _terms.size(); i++)
-		ss << ", " << _terms.at(i).asString();
-
-	return ss.str();
-}
-
 bool Terms::operator==(const Terms &terms) const
 {
 	return _terms == terms._terms;
@@ -524,7 +495,7 @@ void Terms::setUndraggableTerms(const Terms& undraggableTerms)
 	// All undraggable terms that are not in undraggableTerms will be then automatically removed.
 	for (Term term : _terms)
 	{
-		if (term.isDraggable() && !undraggableTerms.contains(term))
+		if (term.isDraggable() && !undraggableTerms.containsValue(term))
 			newTerms.push_back(term);
 	}
 
@@ -535,9 +506,9 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 {
 	Json::Value types(Json::arrayValue);
 
-	auto changedType = [&, onlyChanged, info] (const QString& term, columnType type) -> Json::Value
+	auto changedType = [&, onlyChanged, info] (const QString& variable, columnType type) -> Json::Value
 	{
-		if (onlyChanged && info && (columnType)info->requestInfo(VariableInfo::VariableType, term).toInt() == type)
+		if (onlyChanged && info && (columnType)info->requestInfo(VariableInfo::VariableType, variable).toInt() == type)
 			return Json::nullValue;
 		else
 			return columnTypeToString(type);
@@ -546,7 +517,7 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 	for (const Term& term : _terms)
 	{
 		if (term.components().size() == 1)
-			types.append(changedType(term.asQString(), term.type()));
+			types.append(changedType(term.value(), term.type()));
 		else
 		{
 			Json::Value componentTypes(Json::arrayValue);
@@ -600,7 +571,7 @@ int Terms::rankOf(const QString &component) const
 
 	for(const Term& compare : _parent->terms())
 	{
-		if (compare.asQString() == component)
+		if (compare.label() == component)
 			break;
 		index++;
 	}
@@ -684,7 +655,7 @@ bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
 			[&](Term& existingTerm)
 			{
 				for (const string &str : existingTerm.scomponents())
-					if (! terms.contains(str))
+					if (! terms.containsValue(str))
 					{
 						changed = true;
 						return true;
@@ -761,7 +732,7 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				if (!term.asString().empty() && !terms.contains(term))
+				if (!term.value().isEmpty() && !terms.containsValue(term))
 				{
 					if (discarded != nullptr)
 						discarded->add(term);
@@ -820,14 +791,14 @@ void Terms::remove(const Term &term)
 		_terms.erase(itr);
 }
 
-QSet<int> Terms::replaceVariableName(const std::string & oldName, const std::string & newName)
+QSet<int> Terms::replaceVariableName(const std::string & oldValue, const std::string & newValue)
 {
 	QSet<int> change;
 
 	int i = 0;
 	for(Term & t : _terms)
 	{
-		if (t.replaceVariableName(oldName, newName))
+		if (t.replaceVariableName(oldValue, newValue))
 			change.insert(i);
 		i++;
 	}

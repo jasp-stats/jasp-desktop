@@ -21,17 +21,17 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 	auto * info = new VariableInfo(_singleton);
 
 
-	connect(this, &ColumnsModel::namesChanged,							info, &VariableInfo::namesChanged		);
-	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::columnsChanged		);
-	connect(this, &ColumnsModel::columnTypeChanged,						info, &VariableInfo::columnTypeChanged	);
-	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged		);
-	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered	);
-	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged		);
-	connect(this, &ColumnsModel::dataSetChanged,						info, &VariableInfo::dataSetChanged		);
-	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged	);
-	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged	);
-	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged	);
-	connect(MainWindow::singleton(), &MainWindow::dataAvailableChanged, info, &VariableInfo::dataAvailableChanged );
+	connect(this, &ColumnsModel::columnNamesChanged,					info, &VariableInfo::variableNamesChanged	);
+	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::variablesChanged		);
+	connect(this, &ColumnsModel::columnTypeChanged,						info, &VariableInfo::variableTypeChanged	);
+	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged			);
+	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered		);
+	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged			);
+	connect(this, &ColumnsModel::dataSetChanged,						info, &VariableInfo::dataSetChanged			);
+	connect(this, &QTransposeProxyModel::columnsInserted,				info, &VariableInfo::rowCountChanged		);
+	connect(this, &QTransposeProxyModel::columnsRemoved,				info, &VariableInfo::rowCountChanged		);
+	connect(this, &QTransposeProxyModel::modelReset,					info, &VariableInfo::rowCountChanged		);
+	connect(MainWindow::singleton(), &MainWindow::dataAvailableChanged, info, &VariableInfo::dataAvailableChanged	);
 }
 
 ColumnsModel::~ColumnsModel()
@@ -258,7 +258,7 @@ void ColumnsModel::datasetChanged(  QStringList                             chan
 	   if(! (missingColumns.size() > 0 || hasNewColumns))
 	   {
 			   if (changeNameColumns.size() > 0)
-					   emit namesChanged(changeNameColumns);
+					   emit columnNamesChanged(changeNameColumns);
 			   else if (changedColumns.size() > 0 || rowCountChanged)
 			   {
 					   if (rowCountChanged)

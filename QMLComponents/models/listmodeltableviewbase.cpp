@@ -377,7 +377,7 @@ void ListModelTableViewBase::sourceTermsReset()
 			tempStore[_tableTerms.rowNames[row]].push_back(_tableTerms.values[col][row]);
 
 	_tableTerms.values.clear();
-	_tableTerms.rowNames = getSourceTerms().asQList();
+	_tableTerms.rowNames = getSourceTerms().values();
 	if (_tableTerms.colNames.size() == 0)
 		_tableTerms.colNames.push_back(getDefaultColName(0));
 

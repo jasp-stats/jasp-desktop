@@ -225,7 +225,7 @@ void ListModelFactorLevels::itemChanged(int row, QVariant value)
 			}
 		}
 		else
-			emit namesChanged({ {oldVal, item.value} });
+			emit variableNamesChanged({ {oldVal, item.value} });
 
 		_setAllLevelsCombinations();
 	}

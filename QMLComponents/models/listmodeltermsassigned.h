@@ -34,7 +34,7 @@ public:
 	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
 	void			removeTerm(int index);
 
-	virtual void	changeTerm(int index, const QString& name);
+	virtual void	changeTerm(int index, const Term& term);
 
 public slots:
 	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;

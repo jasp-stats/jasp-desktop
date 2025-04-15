@@ -51,12 +51,11 @@ void InputListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
-	std::string keyName = fq(_optionKey);
 	Terms terms;
 	ListModel::RowControlsValues allControlValues;
 
 	if (hasRowComponent())
-		_readTableValue(value, keyName, containsInteractions(), terms, allControlValues);
+		_readTableValue(value, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), terms, allControlValues);
 	else
 	{
 		for (const Json::Value& variable : value)
@@ -69,7 +68,7 @@ void InputListBase::bindTo(const Json::Value& value)
 Json::Value InputListBase::createJson() const
 {
 	Json::Value result(Json::arrayValue);
-	std::string keyName = fq(_optionKey);
+	std::string keyName = fq(_optionKeyValue);
 	
 	if (_defaultValues.size() > 0)
 	{
@@ -114,13 +113,13 @@ void InputListBase::termsChangedHandler()
 	JASPListControl::termsChangedHandler();
 
 	if (hasRowComponent())
-		_setTableValue(_inputModel->terms(), _inputModel->getTermsWithComponentValues(), fq(_optionKey), containsInteractions());
+		_setTableValue(_inputModel->terms(), _inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions());
 	else
 	{
 		const Terms& terms = _inputModel->terms();
 		Json::Value boundValue(Json::arrayValue);
 		for (const Term& term : terms)
-			boundValue.append(term.asString());
+			boundValue.append(fq(term.value()));
 		setBoundValue(boundValue);
 	}
 }

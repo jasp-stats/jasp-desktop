@@ -51,7 +51,6 @@ public:
 		ColumnDescriptionRole,
 		ColumnTypeDisabledIconRole,
 		RowComponentRole,
-		ValueRole,
 		VirtualRole,
 		DeletableRole
     };
@@ -114,22 +113,22 @@ public:
 
 signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
-			void namesChanged(QMap<QString, QString> map);
-			void columnTypeChanged(Term term);
+			void variableNamesChanged(QMap<QString, QString> map);
+			void variableTypeChanged(Term term);
 			void labelsChanged(QString columnName, QMap<QString, QString> = {});
 			void labelsReordered(QString columnName);
 			void filterChanged();
-			void columnsChanged(QStringList columns);
+			void variablesChanged(QStringList columns);
 			void selectedItemsChanged();
-			void oneTermChanged(const QString& oldName, const QString& newName);
+			void keyTermChanged(const QString& oldName, const QString& newName);
 
 public slots:	
 	virtual void sourceTermsReset();
-	virtual void sourceNamesChanged(QMap<QString, QString> map);
-	virtual bool sourceColumnTypeChanged(Term sourceTerm);
+	virtual void sourceVariableNamesChanged(QMap<QString, QString> map);
+	virtual bool sourceVariableTypeChanged(Term sourceTerm);
 	virtual bool sourceLabelsChanged(QString columnName, QMap<QString, QString> changedLabels = {});
 	virtual bool sourceLabelsReordered(QString columnName);
-	virtual void sourceColumnsChanged(QStringList columns);
+	virtual void sourceVariablesChanged(QStringList columns);
 
 			void dataChangedHandler(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles = QVector<int>());
 

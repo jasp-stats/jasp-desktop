@@ -120,7 +120,7 @@ void BoundControlRlangTextArea::checkSyntax()
 
 		for (const Term& term : sourceColumns)
 		{
-			QStringList variables = term.asQString().split(separator);
+			QStringList variables = term.label().split(separator);
 			for (const QString& variable : variables)
 				sourceVariables.insert(fq(variable));
 		}

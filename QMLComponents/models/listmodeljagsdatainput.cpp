@@ -60,7 +60,7 @@ void ListModelJAGSDataInput::sourceTermsReset()
 		for (size_t row = 1; row <= rowCount; row++)
 			_tableTerms.rowNames.push_back(getDefaultRowName(row));
 
-		QList<QString>		firstColumnValues = sourceTerms.asQList();
+		QList<QString>		firstColumnValues = sourceTerms.values();
 		QVector<QVariant>	firstColumn,
 							secondColumn;
 
