@@ -253,6 +253,15 @@ else()
             "${FRAMEWORK_RESOURCES}/opt/R/x86_64/lib/"
             NEW_ID
             ${FILE})
+	    
+      elseif(FILE MATCHES "/opt/R/x86_64/gfortran/lib/")
+
+        string(
+          REPLACE
+            "${R_HOME_PATH}/opt/R/x86_64/gfortran/lib/"
+			"${FRAMEWORK_RESOURCES}/opt/R/x86_64/gfortran/lib/"
+            NEW_ID
+            ${FILE})	    
 
       elseif(FILE MATCHES "/Modules/jasp")
 
