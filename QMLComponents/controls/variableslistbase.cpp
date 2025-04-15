@@ -48,22 +48,6 @@ void VariablesListBase::setUp()
 {
 	JASPListControl::setUp();
 
-	if (listViewType() == ListViewType::RepeatedMeasures)
-	{
-		for (SourceItem* sourceItem : _sourceItems)
-		{
-			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->sourceListModel());
-			if (!factorsModel)
-				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
-			else
-			{
-				addDependency(factorsModel->listView());
-				BoundControlMeasuresCells* measuresCellsControl = dynamic_cast<BoundControlMeasuresCells*>(_boundControl);
-				measuresCellsControl->addFactorModel(factorsModel);
-			}
-		}
-	}
-
 	_setRelations();
 
 	ListModelAvailableInterface* availableModel = qobject_cast<ListModelAvailableInterface*>(_draggableModel);
@@ -96,6 +80,22 @@ void VariablesListBase::_setInitialized(const Json::Value &value)
 		if (assignedModel && assignedModel->availableModel())
 			assignedModel->initTerms(assignedModel->availableModel()->terms());
 	}
+
+	if (listViewType() == ListViewType::RepeatedMeasures)
+	{
+		for (SourceItem* sourceItem : _sourceItems)
+		{
+			ListModelFactorLevels* factorsModel = dynamic_cast<ListModelFactorLevels*>(sourceItem->sourceListModel());
+			if (!factorsModel)
+				addControlError(tr("Source model of %1 must be from a Factor List").arg(name()));
+			else
+			{
+				BoundControlMeasuresCells* measuresCellsControl = dynamic_cast<BoundControlMeasuresCells*>(_boundControl);
+				measuresCellsControl->addFactorModel(factorsModel);
+			}
+		}
+	}
+
 
 	JASPListControl::_setInitialized(value);
 }
