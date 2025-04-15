@@ -12,7 +12,6 @@ ImportColumn::~ImportColumn()
 	JASPTIMER_SCOPE(ImportColumn::~ImportColumn());
 }
 
-
 const std::string & ImportColumn::name() const
 {
 	return _name;

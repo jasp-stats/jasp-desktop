@@ -12,7 +12,8 @@ public:
 	~ExcelImportColumn()	override;
 
 	size_t	size()	const	override;
-	const	stringvec	&	allValuesAsStrings()    const	override { return  _data; }
+	const	stringvec		allValuesAsStrings()    const	override { return  _data; }
+	std::string				valueLookup(size_t row)					const override;
 	void					addValue(const std::string &value);
 	const	stringvec	&	getValues()     const;
 

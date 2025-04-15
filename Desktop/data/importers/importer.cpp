@@ -23,10 +23,11 @@ public:
 	
 	void run() override
 	{
-		_column->initFromStrings(
+		_column->initFromLookups(
 					_importColumn->name(),
-					_importColumn->allValuesAsStrings(),
-					_importColumn->allLabelsAsStrings(),
+					_importColumn->size(),
+					[this](size_t row) { return _importColumn->valueLookup(row); },
+					[this](size_t row) { return _importColumn->labelLookup(row); },
 					_importColumn->title(),
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
@@ -116,9 +117,11 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	}
 	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
 	
+	DataSetPackage::pkg()->endLoadingData();
+	
 	_importDataSet->clearColumns();
 	delete _importDataSet;
-	DataSetPackage::pkg()->endLoadingData();
+	
 	
 	long totalS = (Utils::currentSeconds() - timeBeginS);
 	Log::log() << "Loading '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;

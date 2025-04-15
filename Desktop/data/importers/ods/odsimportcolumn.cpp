@@ -51,9 +51,9 @@ const
 	return _rows.size();
 }
 
-const stringvec & ODSImportColumn::allValuesAsStrings() const
+const stringvec  ODSImportColumn::allValuesAsStrings() const
 {
-	static stringvec values;
+	stringvec values;
 	values.resize(_rows.size());
 	
 	for(size_t i=0; i<_rows.size(); i++)
@@ -62,15 +62,25 @@ const stringvec & ODSImportColumn::allValuesAsStrings() const
 	return values;
 }
 
-const stringvec & ODSImportColumn::allLabelsAsStrings() const
+const stringvec  ODSImportColumn::allLabelsAsStrings() const
 {
-	static stringvec labels;
+	stringvec labels;
 	labels.resize(_rows.size());
 	
 	for(size_t i=0; i<_rows.size(); i++)
 		labels[i] = _rows[i].labelAsString();
 
 	return labels;
+}
+
+string ODSImportColumn::valueLookup(size_t row) const
+{
+	return _rows[row].valueAsString();
+}
+
+string ODSImportColumn::labelLookup(size_t row) const
+{
+	return _rows[row].labelAsString();
 }
 
 void insert(int row, const std::string& data);

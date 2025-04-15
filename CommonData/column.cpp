@@ -502,19 +502,30 @@ void Column::updateLabelsPostLocaleChange()
 
 columnType Column::setValues(const stringvec & values, const stringvec & labels, int thresholdScale, bool * aChange)
 {
+	assert(values.size() == labels.size() || labels.size() == 0);
+	
+	return setValues(
+				values.size(),
+				[&values](size_t r){return values[r];},
+				[&labels](size_t r){return r < labels.size() ? labels[r] : "";},
+				thresholdScale,
+				aChange
+				);
+}
+
+columnType Column::setValues(size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * aChange)
+{
 	JASPTIMER_SCOPE(Column::setValues);
 
-	if(aChange && _dbls.size() != values.size())
+	if(aChange && _dbls.size() != rows)
 		(*aChange) = true;
-
-	assert(values.size() == labels.size() || labels.size() == 0);
 
 	size_t prevSize = _ints.size();
 	
 	JASPTIMER_RESUME(Column::setValues set size etc);
 	
-	_dbls.resize(values.size());
-	_ints.resize(values.size());
+	_dbls.resize(rows);
+	_ints.resize(rows);
 	
 	for(size_t resetRow=prevSize; resetRow<_ints.size(); resetRow++)
 	{
@@ -535,19 +546,21 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 	
 	JASPTIMER_RESUME(Column::setValues call setValue and count integers);
 	
-	for(size_t i=0; i<values.size(); i++)
+	for(size_t i=0; i<rows; i++)
 	{
-		if(setValue(i, values[i], labels.size() ? labels[i] : "", false) && aChange)
+		const std::string	value = valueLookup(i),
+							label = labelLookup(i);
+		if(setValue(i, value, label, false) && aChange)
 			(*aChange) = true;
 				
-		if(values[i] != "" || (labels.size() && labels[i] != ""))
+		if(value != "" || label != "")
 		{
-			if(ColumnUtils::getIntValue(values[i], tmpInt))
+			if(ColumnUtils::getIntValue(value, tmpInt))
 				ints.insert(tmpInt);
-			else if(!isEmptyValue(values[i]))
+			else if(!isEmptyValue(value))
 				onlyInts = false;
 			
-			if(!ColumnUtils::getDoubleValue(values[i], tmpDbl) && !isEmptyValue(values[i]))
+			if(!ColumnUtils::getDoubleValue(value, tmpDbl) && !isEmptyValue(value))
 				onlyDoubles = false;
 		}
 	}
@@ -1451,8 +1464,8 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
 				itsMissingVal	= isEmptyValue(userEntered);
 	JASPTIMER_RESUME(Column::setStringValue nothingThereYet);		
-	bool		nothingThereYet	=	!std::any_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
-								&&	!std::any_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
+	bool		nothingThereYet	=	std::none_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+								&&	std::none_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
 	JASPTIMER_STOP(Column::setStringValue nothingThereYet);		
 	
 	if(nothingThereYet && !itsMissingVal)
@@ -2254,6 +2267,23 @@ stringvec Column::previewTransform(columnType transformType)
 
 bool Column::initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished)
 {
+	return initFromLookups(
+				newName,
+				values.size(),
+				[&values](size_t r){ return values[r]; },
+				[&labels](size_t r){ return r < labels.size() ? labels[r] : ""; },
+				title,
+				desiredType,
+				emptyValues,
+				threshold,
+				orderLabelsByValue,
+				leaveBatchedUnfinished
+				);
+}
+
+bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished)
+
+{
 									setHasCustomEmptyValues(emptyValues.size());
 									setCustomEmptyValues(emptyValues);
 									setName(newName);
@@ -2262,7 +2292,7 @@ bool Column::initFromStrings(const std::string & newName, const stringvec &value
 	
 	bool		anyChanges		=	title != Column::title() || newName != name();
 	columnType	prevType		=	type(),
-				suggestedType	=	setValues(values, labels,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);			
 	if(orderLabelsByValue)			labelsOrderByValue();
 	if(!leaveBatchedUnfinished)		endBatchedLabelsDB();

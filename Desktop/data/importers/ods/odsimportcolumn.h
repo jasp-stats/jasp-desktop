@@ -49,8 +49,10 @@ public:
 
 	size_t size() const override;
 
-	const stringvec &	allValuesAsStrings()					const	override;
-	const stringvec &	allLabelsAsStrings()					const	override;
+	const stringvec			allValuesAsStrings()					const	override;
+	const stringvec			allLabelsAsStrings()					const	override;
+	std::string				valueLookup(size_t row)					const override;
+	std::string				labelLookup(size_t row)					const override;
 
 	inline bool hasCell(size_t row) const
 	{

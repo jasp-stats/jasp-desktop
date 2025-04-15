@@ -20,6 +20,11 @@ size_t ExcelImportColumn::size() const
 	return _data.size();
 }
 
+std::string ExcelImportColumn::valueLookup(size_t row) const
+{
+	return _data[row];
+}
+
 void ExcelImportColumn::addValue(const std::string &value)
 {
 	_data.push_back(value);

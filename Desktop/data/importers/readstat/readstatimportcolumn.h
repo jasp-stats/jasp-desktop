@@ -20,8 +20,10 @@ public:
 
 			size_t						size()									const	override;
 			columnType					getColumnType()							const	override	{ return _type; }
-			const stringvec		&		allValuesAsStrings()					const	override;
-			const stringvec		&		allLabelsAsStrings()					const	override	{ return labels();			}
+			const stringvec				allValuesAsStrings()					const	override;
+			const stringvec				allLabelsAsStrings()					const	override	{ return labels();			}
+			std::string					valueLookup(size_t row)					const override;
+			std::string					labelLookup(size_t row)					const override;
 			const stringset		&		allEmptyValuesAsStrings()				const	override	{ return emptyValues();		}
 			bool						hasLabels()								const				{ return _labelsID != "";	}
 			const std::string	&		labelsID()								const				{ return  _labelsID;		}
@@ -38,7 +40,7 @@ public:
 	static	std::string			readstatValueToString(const readstat_value_t & val);
 
 			const stringvec	&	values()		const { return _values;	}
-			const stringvec	&	labels()		const;
+			const stringvec		labels()		const;
 			const stringset	&	emptyValues()	const { return _missing; }
 
 
@@ -51,7 +53,8 @@ private:
 	columnType					_type;
 	stringvec					_values;
 	stringset					_missing;
-	strstrmap					_strLabels;
+	strstrmap					_strLabelsMap;
+	//stringvec					_labels;
 };
 
 #endif // ReadStatImportColumn_H

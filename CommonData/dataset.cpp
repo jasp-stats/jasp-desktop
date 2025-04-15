@@ -82,6 +82,13 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 		columns = _columns;
 	
 	assert(columns.size() != _columns.size() || _writeBatchedToDB);
+	
+	//lets also write the labels now if they werent yet:
+	db().labelsWrite(columns);
+	for(Column * col : columns)
+		if(col->batchedLabelDepth())
+			col->endBatchedLabelsDB(false);
+	
 	_writeBatchedToDB = false;
 	
 	db().dataSetBatchedValuesUpdate(this, columns, progressCallback);

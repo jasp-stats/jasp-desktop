@@ -18,16 +18,26 @@ size_t ReadStatImportColumn::size() const
 	return _values.size();
 }
 
-const stringvec & ReadStatImportColumn::allValuesAsStrings() const
+const stringvec  ReadStatImportColumn::allValuesAsStrings() const
 {
 	return _values;
+}
+
+string ReadStatImportColumn::valueLookup(size_t row) const
+{
+	return _values[row];
+}
+
+string ReadStatImportColumn::labelLookup(size_t row) const
+{
+	return _strLabelsMap.count(_values[row]) ? _strLabelsMap.at(_values[row]) : _values[row];
 }
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)
 {
 	//Log::log() << "ReadStatImportColumn::addLabel(str '" << val << "', '" << label << "');" <<std::endl;
 
-	_strLabels[val] = label;
+	_strLabelsMap[val] = label;
 }
 
 void ReadStatImportColumn::addMissingValue(const std::string & missingValue)
@@ -53,17 +63,20 @@ std::string ReadStatImportColumn::readstatValueToString(const readstat_value_t &
 	return "???";
 }
 
-const stringvec &ReadStatImportColumn::labels() const
+const stringvec  ReadStatImportColumn::labels() const
 {
-	static stringvec local;
+	stringvec labels;
 	
-	local = _values;
+	if(labels.size() == _values.size())
+		return labels;
+	
+	labels.resize(_values.size());
 	
 	for(size_t i=0; i<_values.size(); i++)
-		if(_strLabels.count(_values[i]))
-			local[i] = _strLabels.at(_values[i]);
+		if(_strLabelsMap.count(_values[i]))
+			labels[i] = _strLabelsMap.at(_values[i]);
 	
-	return local;
+	return labels;
 }
 
 void ReadStatImportColumn::addValue(const readstat_value_t & value)

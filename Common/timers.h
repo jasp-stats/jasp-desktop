@@ -25,8 +25,8 @@ void _printAllTimers();
 
 struct _JaspTimerScopeMeasure
 {
-	_JaspTimerScopeMeasure(const char * name) : _name(name) { _getTimer(_name)->resume(); }
-	~_JaspTimerScopeMeasure()								{ _getTimer(_name)->stop(); }
+	_JaspTimerScopeMeasure(const char * name) : _name(name) { try{ _getTimer(_name)->resume();	} catch(...) {} }
+	~_JaspTimerScopeMeasure()								{ try{ _getTimer(_name)->stop();	} catch(...) {} }
 
 	const char * _name;
 };

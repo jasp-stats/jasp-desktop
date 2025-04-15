@@ -86,8 +86,8 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	_engineSync = engineSync;
 
 	//These signals should *ONLY* be called from a different thread than _engineSync!
-	connect(this,	&DataSetPackage::enginesPrepareForDataSignal,	_engineSync,	&EngineSync::enginesPrepareForData,	Qt::BlockingQueuedConnection);
-	connect(this,	&DataSetPackage::enginesReceiveNewDataSignal,	_engineSync,	&EngineSync::enginesReceiveNewData,	Qt::BlockingQueuedConnection);
+	connect(this,	&DataSetPackage::enginesPrepareForDataSignal,	_engineSync,	&EngineSync::enginesPrepareForData,	Qt::QueuedConnection);
+	connect(this,	&DataSetPackage::enginesReceiveNewDataSignal,	_engineSync,	&EngineSync::enginesReceiveNewData,	Qt::QueuedConnection);
 
 	reset();
 }

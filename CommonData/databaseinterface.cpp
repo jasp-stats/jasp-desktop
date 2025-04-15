@@ -573,7 +573,6 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 
 	transactionWriteBegin();
 
-	//Clear the entire dataset, then insert each row, including filter.
 	// But maybe we should update instead, maybe it speeds up the application?
 	//As this data isnt synced anyway this shouldnt be a problem because it'd be invalidated after a single edit anyway
 	runStatements("DELETE FROM " + dataSetName(data->id()) + " WHERE rowNumber > " + std::to_string(columns.front()->rowCount()));
@@ -638,13 +637,7 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 
 			return true;
 		});
-	
-	
-	//lets also write the labels now:
-	for(Column * col : columns)
-		if(col->batchedLabelDepth())
-			col->endBatchedLabelsDB();
-	
+		
 	transactionWriteEnd();
 }
 
@@ -1417,7 +1410,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 
 void DatabaseInterface::labelsWrite(Column *column)
 {
-	JASPTIMER_SCOPE(DatabaseInterface::labelsWrite);
+	JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Column);
 	transactionWriteBegin();
 
 	runStatements("DELETE From Labels WHERE columnId=?", [&](sqlite3_stmt *stmt) { sqlite3_bind_int( stmt,	1, column->id()); });
@@ -1464,6 +1457,82 @@ void DatabaseInterface::labelsWrite(Column *column)
 	
 	transactionWriteEnd();
 }
+
+void DatabaseInterface::labelsWrite(const Columns & columns)
+{
+	 JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Columns);
+	 transactionWriteBegin();
+	 
+	 Labels allLabels;
+	 
+	 {
+		 auto columnIter = columns.begin();
+		 
+		 bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
+		 {
+			 const Column		*	column			= *columnIter;
+			 
+			 for(Label * label : column->labels())
+				 allLabels.push_back(label);
+			 
+			 sqlite3_bind_int( stmt,	1, column->id());
+			 
+			 columnIter++;
+		 };
+		 
+		 _runStatementsRepeatedly("DELETE From Labels WHERE columnId=?", [&](bindParametersType ** bindParams, size_t)
+			 {
+				 (*bindParams) = &_bindParams;
+				 
+				 return columnIter != columns.end();
+			 });
+	}
+	 
+	auto labelIter = allLabels.begin();
+	
+	if(labelIter != allLabels.end())
+	{
+ 
+		 bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
+		 {
+			 const Label			*	label			= *labelIter;
+			 const std::string			labelDisplay	= label->label(),
+										origValJson		= label->originalValue().toStyledString();
+			 
+			 Column					*	column			= static_cast<Column*>(label->parent());
+			 
+			 sqlite3_bind_int( stmt,	1, column->id());
+			 sqlite3_bind_int( stmt,	2, label->intsId());
+			 sqlite3_bind_text(stmt,	3, labelDisplay.c_str(),			labelDisplay.length(),				SQLITE_TRANSIENT);
+			 sqlite3_bind_int( stmt,	4, label->filterAllows());
+			 sqlite3_bind_text(stmt,	5, label->description().c_str(),	label->description().length(),		SQLITE_TRANSIENT);
+			 sqlite3_bind_text(stmt,	6, origValJson.c_str(),				origValJson.length(),				SQLITE_TRANSIENT);
+			 sqlite3_bind_int( stmt,	7, label->order());
+		 };
+	 
+		 std::function<void(size_t,size_t, sqlite3_stmt*)> processRow = [&](size_t row, size_t rep, sqlite3_stmt * stmt)
+		 {
+			 assert(sqlite3_column_count(stmt) == 1);
+	 
+			 Label * label = *labelIter;
+			 
+			 label->setDbId(sqlite3_column_int(stmt, 0));
+	 
+			 labelIter++;
+		 };
+		 
+		 _runStatementsRepeatedly("INSERT OR REPLACE INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+			 {
+				 (*bindParams) = &_bindParams;
+				 
+				 return labelIter != allLabels.end();
+			 }, & processRow);
+	 }
+	 
+	 transactionWriteEnd();
+}
+
+
 
 std::string DatabaseInterface::dbFile(bool onlyName) const
 {
@@ -1593,7 +1662,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 			do
 			{
 				ret = sqlite3_step(dbStmt);
-
+				
 				switch(ret)
 				{
 				case SQLITE_ERROR:
@@ -1602,15 +1671,20 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					Log::log() << errorMsg << std::endl;
 					throw std::runtime_error(errorMsg);
 				}
-
-				case SQLITE_ROW:
+				 
+			   case SQLITE_ROW:
 					if(processRow)
 						(*processRow)(row, dbStmt);
-
+					row++;
 					break;
-				}
+					
+				case SQLITE_BUSY:
+					std::this_thread::sleep_for(std::chrono::nanoseconds(10000));
+					break;
+			   }
+				
+				
 
-				row++;
 			}
 			while((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
 

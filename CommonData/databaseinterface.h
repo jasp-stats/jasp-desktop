@@ -11,6 +11,7 @@
 
 class DataSet;
 class Column;
+typedef std::vector<Column*> Columns;
 class DatabaseInterface;
 struct sqlite3_stmt;
 struct sqlite3;
@@ -91,7 +92,7 @@ public:
 	void		dataSetInsertEmptyRow(	int dataSetId, size_t row);
 	void		dataSetCreateTable(		DataSet * dataSet); ///< Assumes you are importing fresh data and havent created any DataSet_? table yet
 
-	void		dataSetBatchedValuesUpdate(DataSet * data, std::vector<Column*> columns, std::function<void(float)> progressCallback = [](float){});
+	void		dataSetBatchedValuesUpdate(DataSet * data, Columns columns, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedValuesUpdate(DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Filters
@@ -156,6 +157,7 @@ public:
 	void		labelSetOrder(	int id, int order);
 	void		labelsLoad(		Column * column);
 	void		labelsWrite(	Column * column);
+	void		labelsWrite(const Columns & columns);
 	void		labelsSetOrder(	const intintmap & orderPerDbId);
 
 	//Transactions

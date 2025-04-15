@@ -15,15 +15,21 @@ size_t DatabaseImportColumn::size() const
 	return _data.size();
 }
 
-const stringvec & DatabaseImportColumn::allValuesAsStrings() const 
+const stringvec  DatabaseImportColumn::allValuesAsStrings() const 
 { 
-	static stringvec strs;
-	strs.resize(_data.size());
+	stringvec out;
+	
+	out.resize(_data.size());
 	
 	for(size_t i=0; i<_data.size(); i++)
-		strs[i] = fq(_data[i].toString());
+		out[i] = fq(_data[i].toString());
 	
-	return  strs;
+	return  out;
+}
+
+std::string DatabaseImportColumn::valueLookup(size_t row) const
+{
+	return fq(_data[row].toString());
 }
 
 void DatabaseImportColumn::addValue(const QVariant & value)

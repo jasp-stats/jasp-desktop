@@ -21,8 +21,10 @@ public:
 	virtual								~ImportColumn();
 
 	virtual			size_t				size()									const = 0;
-	virtual const	stringvec		&	allValuesAsStrings()					const = 0;
-	virtual const	stringvec		&	allLabelsAsStrings()					const	{ static stringvec a; return a; };
+	virtual const	stringvec			allValuesAsStrings()					const = 0;
+	virtual const	stringvec			allLabelsAsStrings()					const	{ return {}; };
+	virtual			std::string			valueLookup(size_t row)					const = 0;
+	virtual			std::string			labelLookup(size_t row)					const	{ return ""; }
 	virtual const	stringset		&	allEmptyValuesAsStrings()				const	{ static stringset a; return a; }
 	virtual			columnType			getColumnType()							const	{ return columnType::unknown; }
 			const	std::string		&	title()									const;

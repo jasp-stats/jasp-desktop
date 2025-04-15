@@ -81,6 +81,7 @@ public:
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
 
 			bool					initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished = false);
+			bool					initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished = false);
 			bool					overwriteDataAndType(	stringvec		data, columnType colType);
 			
 			bool					allLabelsPassFilter()	const;
@@ -157,7 +158,9 @@ public:
 			bool					setValue(					size_t row, int					value,								bool writeToDB = true);
 			bool					setValue(					size_t row, double				value,								bool writeToDB = true);
 			bool					setValue(					size_t row, int					valueInt, double valueDbl,			bool writeToDB = true);
-			columnType				setValues(			const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
+			columnType				setValues(				const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
+			columnType				setValues(size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * changedSomething = nullptr); ///< Returns what would be the most sensible columntype
+			
 			bool					setDescriptions(	strstrmap labelToDescriptionMap); ///<Returns any changes
 			void					rowInsertEmptyVal(size_t row);
 			void					rowDelete(size_t row);
