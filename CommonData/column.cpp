@@ -1586,6 +1586,8 @@ void Column::labelDisplayChanged(Label *label, const std::string & previousDispl
 	
 	if(_labelsTemp.size() > labelIdx)
 		_labelsTemp[labelIdx] = label->label();
+
+	nonFilteredCountersReset();
 	
 	//So we know that label is about to trigger an incRevision for the column through dbUpdate and checkForChanges
 	_labelsTempRevision++;
