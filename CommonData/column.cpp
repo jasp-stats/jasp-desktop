@@ -1910,6 +1910,8 @@ void Column::incRevision()
 		_revision = db().columnIncRevision(_id);
 		checkForChanges();
 	}
+	else
+		_data->batchColumnHadChange(this);
 }
 
 bool Column::checkForUpdates()

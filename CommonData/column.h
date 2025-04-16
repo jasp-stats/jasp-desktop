@@ -87,7 +87,7 @@ public:
 			bool					allLabelsPassFilter()	const;
 			bool					hasFilter()				const;
 			void					resetFilter();
-			void					incRevision();
+			void					incRevision() override;
 			bool					checkForUpdates();
 
 			bool					isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const;
@@ -287,5 +287,6 @@ private:
 };
 
 typedef std::vector<Column*> Columns;
+typedef std::set<Column*> ColumnSet;
 
 #endif // COLUMN_H

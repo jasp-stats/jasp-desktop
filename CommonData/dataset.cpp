@@ -71,28 +71,35 @@ void DataSet::dbDelete()
 
 void DataSet::beginBatchedToDB()
 {
-	assert(!_writeBatchedToDB);
-	_writeBatchedToDB = true;
+	if(_writeBatchedToDBDepth == 0)
+		_changedDuringBatch = {};
+	
+	_writeBatchedToDBDepth++;
 }
 
 void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Columns columns)
 {
-	
 	if(columns.size() == 0)
-		columns = _columns;
+		columns = _changedDuringBatch.size() ? Columns(_changedDuringBatch.begin(), _changedDuringBatch.end()) : _columns;
 	
-	assert(columns.size() != _columns.size() || _writeBatchedToDB);
+	assert(columns.size() != _columns.size() || _writeBatchedToDBDepth);
 	
-	//lets also write the labels now if they werent yet:
-	db().labelsWrite(columns);
-	for(Column * col : columns)
-		if(col->batchedLabelDepth())
-			col->endBatchedLabelsDB(false);
+	if(_writeBatchedToDBDepth > 0)
+	{
+		//lets also write the labels now if they werent yet:
+		db().labelsWrite(columns);
+		for(Column * col : columns)
+			if(col->batchedLabelDepth())
+				col->endBatchedLabelsDB(false);
 	
-	_writeBatchedToDB = false;
+		_writeBatchedToDBDepth--;
+	}
 	
-	db().dataSetBatchedValuesUpdate(this, columns, progressCallback);
-	incRevision(); //Should trigger reload at engine end
+	if(_writeBatchedToDBDepth == 0)
+	{
+		db().dataSetBatchedValuesUpdate(this, columns, progressCallback);
+		incRevision(); //Should trigger reload at engine end
+	}
 }
 
 int DataSet::getColumnIndex(const std::string & name) const 
@@ -419,6 +426,11 @@ int DataSet::columnCount() const
 int DataSet::rowCount() const
 {
 	return _rowCount;
+}
+
+void DataSet::batchColumnHadChange(Column *col)
+{
+	_changedDuringBatch.insert(col);
 }
 
 void DataSet::setColumnCount(size_t colCount)
