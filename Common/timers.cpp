@@ -57,7 +57,7 @@ void _printAllTimers()
 	});
 
 	for(const nameTimerPair & keyval : sortMe)
-		std::cout << keyval.first << " ran for " << keyval.second->format() << std::endl;
+		std::cerr << keyval.first << " ran for " << keyval.second->format() << std::endl;
 }
 
 #endif

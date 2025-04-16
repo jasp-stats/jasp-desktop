@@ -106,7 +106,6 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
 			values.push_back(syntaxBridgeDataSet->columns[colNr].values[rowNr]);
 		dataset->initColumnWithStrings(colNr, syntaxBridgeDataSet->columns[colNr].name, values, {}, syntaxBridgeDataSet->columns[colNr].name, columnType::unknown, {}, threshold, orderLabelsByValue);
-		dataset->columns()[colNr]->labelsTempCount(); // Needs to do this to set the label temp stuff
 	}
 
 	dataset->endBatchedToDB([](float f) {});
