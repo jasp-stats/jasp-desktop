@@ -250,23 +250,24 @@ private:
 			EmptyValues		* const	_emptyValues;
 			Labels					_labels;
 			Label			* const	_doubleDummy;		///< Only used to work around node problems in DataSetPackage. Should probably be replaced with something less hacky later on. (when rewriting DataSetPackage models)
-			columnType				_type				= columnType::unknown;
-			int						_id					= -1,
-									_analysisId			= -1,	// Actually initialized in DatabaseInterface::columnInsert
-									_highestIntsId		= -1;
+			columnType				_type						= columnType::unknown;
+			int						_id							= -1,
+									_analysisId					= -1,	// Actually initialized in DatabaseInterface::columnInsert
+									_highestIntsId				= -1;
             stringvec				_nonFilteredLevels;
 			int						_nonFilteredNumericsCount	= -1;
-			bool					_invalidated		= false,
-									_autoSortByValue;
-			dropLevelsType			_dropLevels			= dropLevelsType::noChoice;
-			computedColumnType		_codeType			= computedColumnType::notComputed;
+			bool					_invalidated				= false,
+									_autoSortByValue,
+									_hasShadows					= false;
+			dropLevelsType			_dropLevels					= dropLevelsType::noChoice;
+			computedColumnType		_codeType					= computedColumnType::notComputed;
 			std::string				_name,
 									_title,
 									_description,
 									_error,
 									_rCode,
 									_computeFilter;
-			Json::Value				_constructorJson	= Json::objectValue;
+			Json::Value				_constructorJson			= Json::objectValue;
 			doublevec				_dbls;
 			intvec					_ints;
 			stringset				_dependsOnColumns;
@@ -276,7 +277,9 @@ private:
 			LabelByStrStr			_labelByValDis;
 			LabelsByStr				_labelsByValue,
 									_labelsByDisplay;
-			int						_batchedLabelDepth	= 0;
+			int						_batchedLabelDepth			= 0,
+									_maxWidthLabel				= -1,
+									_maxWidthValue				= -1;
 	static	bool					_autoSortByValuesByDefault;
 			
 			

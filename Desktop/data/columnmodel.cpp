@@ -534,6 +534,9 @@ int ColumnModel::chosenColumn() const
 	if(!c)
 		return -1;
 	
+	if(!c->data())
+		return -1;
+	
 	return c->data()->columnIndex(c);
 }
 

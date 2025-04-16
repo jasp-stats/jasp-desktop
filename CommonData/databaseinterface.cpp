@@ -1822,7 +1822,7 @@ void DatabaseInterface::create()
 		std::filesystem::remove(dbFile());
 	}
 	
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_WAL | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -1845,7 +1845,7 @@ void DatabaseInterface::load()
 	if(!std::filesystem::exists(dbFile()))
 		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
 
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_WAL | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{

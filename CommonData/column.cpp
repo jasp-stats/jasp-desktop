@@ -773,6 +773,9 @@ void Column::labelsClear(bool doIncRevision)
 	_labelByValDis.clear();
 	_labels.clear();
 	
+	_maxWidthLabel = -1;
+	_maxWidthValue = -1;
+	
 	_highestIntsId = 0;
 	
 	if(doIncRevision)
@@ -861,6 +864,8 @@ int Column::_labelMapIt(Label * label)
 	_labelsByValue		[ label->originalValueAsString()].insert(	label);
 
 	_highestIntsId = std::max(_highestIntsId, label->intsId());
+	_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(label->originalValueAsString())));
+	_maxWidthLabel = std::max(_maxWidthLabel, int(stringUtils::approximateVisualLength(label->labelDisplay())));
 
 	_dbUpdateLabelOrder(true);
 	return label->intsId();
@@ -1012,6 +1017,8 @@ int Column::nonFilteredNumericsCount()
 {
 	if (_nonFilteredNumericsCount == -1)
 	{
+		JASPTIMER_SCOPE(Column::nonFilteredNumericsCount);
+		
 		doubleset numerics;
 
 		for(size_t r=0; r<_data->rowCount(); r++)
@@ -1020,7 +1027,7 @@ int Column::nonFilteredNumericsCount()
 
 		if(!shouldDropLevels())
 			for(Label * label : _labels)
-				if(label->originalValue().isDouble())
+				if(label->originalValue().isDouble() && label->isEmptyValue())
 					numerics.insert(label->originalValue().asDouble());
 
 		_nonFilteredNumericsCount = numerics.size();
@@ -1033,6 +1040,7 @@ stringvec Column::nonFilteredLevels()
 {
 	if (_nonFilteredLevels.empty())
 	{
+		JASPTIMER_SCOPE(Column::nonFilteredLevels);
 		stringset levels;
 		for(size_t r=0; r<_data->rowCount(); r++)
 			if(_data->filter()->filtered()[r])
@@ -1370,12 +1378,66 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 	{
 		_labelsByValue[previousOriginal]				.erase(label);
 		_labelsByValue[label->originalValueAsString()]	.insert(label);
+		
+		size_t prevL = stringUtils::approximateVisualLength(previousOriginal),
+				newL = stringUtils::approximateVisualLength(label->originalValueAsString());
+		if(newL > _maxWidthValue)
+			_maxWidthValue = newL;
+		else if(prevL < newL && prevL == _maxWidthValue) 
+		{
+			//So maybe the max width went down?
+			bool sameMax = false;
+			size_t newMax = 0;
+			
+			for(const auto & valueLabel : _labelsByValue)
+			{
+				size_t l = stringUtils::approximateVisualLength(valueLabel.first);
+				
+				newMax = std::max(newMax, l);
+				
+				if(l >= _maxWidthValue)
+				{
+					sameMax = true;
+					break;
+				}
+			}
+			
+			if(!sameMax)
+				_maxWidthValue = newMax;
+		}
 	}
 
 	if(displayChanged)
 	{
 		_labelsByDisplay[previousDisplay]				.erase(label);
 		_labelsByDisplay[label->labelDisplay()]			.insert(label);
+		
+		size_t prevL = stringUtils::approximateVisualLength(previousDisplay),
+				newL = stringUtils::approximateVisualLength(label->labelDisplay());
+		if(newL > _maxWidthLabel)
+			_maxWidthLabel = newL;
+		else if(prevL < newL && prevL == _maxWidthLabel) 
+		{
+			//So maybe the max width went down?
+			bool sameMax = false;
+			size_t newMax = 0;
+			
+			for(const auto & displayLabel : _labelsByDisplay)
+			{
+				size_t l = stringUtils::approximateVisualLength(displayLabel.first);
+				
+				newMax = std::max(newMax, l);
+				
+				if(l >= _maxWidthLabel)
+				{
+					sameMax = true;
+					break;
+				}
+			}
+			
+			if(!sameMax)
+				_maxWidthLabel = newMax;
+		}
 	}
 }
 
@@ -1462,11 +1524,9 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	
 	double		newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
-				itsMissingVal	= isEmptyValue(userEntered);
-	JASPTIMER_RESUME(Column::setStringValue nothingThereYet);		
+				itsMissingVal	= isEmptyValue(userEntered);	
 	bool		nothingThereYet	=	std::none_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
-								&&	std::none_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });
-	JASPTIMER_STOP(Column::setStringValue nothingThereYet);		
+								&&	std::none_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });	
 	
 	if(nothingThereYet && !itsMissingVal)
 	{
@@ -1492,8 +1552,6 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(value == "" && label == "")
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
-	JASPTIMER_RESUME(Column::setValue(stringstring) INIT);
-	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble,
 			oldDouble		= _dbls[row];
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
@@ -1509,7 +1567,6 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(justAValue && !newLabel)
 		newLabel = labelByValueAndDisplay(value, value);
 
-	JASPTIMER_STOP(Column::setValue(stringstring) INIT);
 
 	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
 		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
@@ -1520,21 +1577,17 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(newLabel)
 		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 
-	JASPTIMER_STOP(Column::setValue(stringstring) last leg);
-		
 	return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
 
 }
 
 bool Column::setValue(size_t row, int value, bool writeToDB)
 {
-	JASPTIMER_SCOPE(Column::setValue int);
 	return setValue(row, value, EmptyValues::missingValueDouble, writeToDB);
 }
 
 bool Column::setValue(size_t row, double value, bool writeToDB)
 {
-	JASPTIMER_SCOPE(Column::setValue double);
 	return setValue(row, Label::NO_LABEL, value, writeToDB);
 }
 
@@ -2182,17 +2235,7 @@ bool Column::isEmptyValue(const double val) const
 
 size_t Column::getMaximumWidthInCharactersIncludingShadow()
 {
-	bool thereIsAShadow = false;
-	
-	//If there are no labels there no shadows? 
-	for(Label * label : labels())
-		if(label->originalValueAsString(true) != label->label())
-		{
-			thereIsAShadow = true;
-			break;
-		}
-		
-	if(!thereIsAShadow)
+	if(!_hasShadows)
 		return getMaximumWidthInCharacters(true, false);
 	
 	return getMaximumWidthInCharacters(true, false) + getMaximumWidthInCharacters(true, true, 0);
@@ -2201,18 +2244,20 @@ size_t Column::getMaximumWidthInCharactersIncludingShadow()
 
 size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlease, size_t	extraPad)
 {
-	size_t	maxWidth	= 0;
+	int		&	_maxWidth = valuesPlease ? _maxWidthValue : _maxWidthLabel;
+	
 	std::string takeWidth;
 	
-	for(Label * label : labels())
-		if(!label->isEmptyValue())
-		{
-			takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
-			maxWidth	= std::max(maxWidth, size_t(stringUtils::approximateVisualLength(takeWidth)));
-		}
+	if(_maxWidth < 0)
+		for(Label * label : labels())
+			if(!label->isEmptyValue())
+			{
+				takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
+				_maxWidth	= std::max(_maxWidth, int(stringUtils::approximateVisualLength(takeWidth)));
+			}
 	
 	
-	return maxWidth + extraPad;
+	return size_t(_maxWidth) + extraPad;
 }
 
 stringvec Column::previewTransform(columnType transformType)
