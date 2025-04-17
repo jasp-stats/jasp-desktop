@@ -3,13 +3,10 @@ import QtQuick.Controls
 import JASP.Widgets
 import JASP.Controls
 
-ScrollView
+PrefsScrollView
 {
 	id:						scrollPrefs
-	focus:					true
-	onActiveFocusChanged:	if(activeFocus) rememberModulesSelected.forceActiveFocus();
-	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
-
+	
 	Column
 	{
 		width:			scrollPrefs.width
@@ -37,8 +34,8 @@ ScrollView
 				checked:			preferencesModel.modulesRemember
 				onCheckedChanged:	preferencesModel.modulesRemember = checked
 				toolTip:			qsTr("Continue where you left of the next time JASP starts.\nEnabling this option makes JASP remember which Modules you've enabled.")
-				
-				KeyNavigation.tab:		cranRepoUrl
+				focus:				true
+				KeyNavigation.tab:	cranRepoUrl
 			}
 
 			Item

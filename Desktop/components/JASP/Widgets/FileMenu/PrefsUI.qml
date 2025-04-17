@@ -4,13 +4,10 @@ import QtQuick.Layouts	as L
 import JASP.Widgets
 import JASP.Controls
 
-ScrollView
+PrefsScrollView
 {
 	id:						scrollPrefs
-	focus:					true
-	onActiveFocusChanged:	if(activeFocus) interfaceFonts.forceActiveFocus();
-	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
-	hoverEnabled:			false
+	
 
 	function resetMe()
 	{
@@ -95,7 +92,7 @@ ScrollView
 					placeholderText:		qsTr("default: %1").arg(defaultInterfaceFont.fontInfo.family)
 					startValue:				preferencesModel.interfaceFont
 					onValueChanged: 		preferencesModel.interfaceFont = (currentIndex <= 0 ? "" : value)
-
+					focus:					true
 					KeyNavigation.tab:		codeFonts
 				}
 			

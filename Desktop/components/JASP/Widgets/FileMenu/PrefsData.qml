@@ -4,12 +4,9 @@ import JASP.Widgets
 import JASP.Controls
 
 
-QTC.ScrollView
+PrefsScrollView
 {
 	id:                     scrollPrefs
-	focus:                  true
-	onActiveFocusChanged:	if(activeFocus) useDefaultEditor.forceActiveFocus();
-	Keys.onLeftPressed:		resourceMenu.forceActiveFocus();
 
 	Column
 	{
@@ -44,7 +41,7 @@ QTC.ScrollView
 					checked:                LINUX || preferencesModel.useDefaultEditor
 					onCheckedChanged:       preferencesModel.useDefaultEditor = checked
 					enabled:                !LINUX
-
+					focus:					true
 					KeyNavigation.tab:      editCustomEditor
 				}
 
