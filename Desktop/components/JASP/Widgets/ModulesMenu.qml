@@ -86,6 +86,38 @@ FocusScope
 			anchors.fill:	parent
 			z:				-6
 		}
+		
+		ScrollMoreIndicator 
+		{
+			id: 		scrollingGuideBottom
+			
+			anchors
+			{
+				left:			parent.left
+				right:			vertScroller.left
+				bottom:			parent.bottom
+				bottomMargin:	slidePart.border.width
+			}
+			
+			extraSpace: modulesFlick.contentHeight - (modulesFlick.contentY + modulesFlick.height)
+		}
+
+		ScrollMoreIndicator 
+		{
+			id: 		scrollingGuideTop
+			anchors
+			{
+				left:		parent.left
+				right:		vertScroller.left
+				top:		parent.top
+				topMargin:	slidePart.border.width
+			}
+			
+			upsideDown:	true
+			extraSpace: modulesFlick.contentY
+		}
+		
+		
 
 		Flickable
 		{

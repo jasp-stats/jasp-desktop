@@ -407,9 +407,11 @@ FocusScope
 			{
 				id:						showSelectedSubScreen
 				anchors.fill:			parent
+				anchors.margins:		parent.border.width
 				source:					resourceScreen.currentQML === "" && resourceScreen.x > resourceScreen.desiredX ? resourceScreen.previousQML : resourceScreen.currentQML
 				Keys.onLeftPressed:		resourceMenu.forceActiveFocus()
 				Keys.onEscapePressed:	resourceMenu.forceActiveFocus()
+				clip:					true
 			}
 		}
 
