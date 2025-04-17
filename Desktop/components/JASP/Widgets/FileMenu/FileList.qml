@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import JASP.Controls as JC
+import JASP.Widgets
 
 
 ListView

@@ -44,6 +44,34 @@ Item
 		width:				rect.width
 		orientation:		Qt.Horizontal
 	}
+	
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			top:			firstSeparator.bottom
+			topMargin:		-firstSeparator.height / 2
+			left:			parent.left
+			right:			parent.right
+		}
+		
+		upsideDown:	true
+		extraSpace:	computerList.contentY
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			left:			 parent.left
+			right:			 parent.right
+			bottom:			 parent.bottom
+		}
+		
+		upsideDown:	false
+		extraSpace:	computerList.contentHeight - (computerList.contentY + computerList.height)
+	}
 
 	FileList
 	{

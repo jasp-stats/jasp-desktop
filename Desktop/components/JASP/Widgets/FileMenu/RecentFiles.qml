@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import JASP.Widgets
 
 
 Item
@@ -13,6 +14,33 @@ Item
 	{
 		id:					menuHeader
 		headertext:			qsTr("Recent Files")
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			top:			menuHeader.bottom
+			left:			parent.left
+			right:			parent.right
+			topMargin:		-menuHeader.separatorHalve
+		}
+		
+		upsideDown:	true
+		extraSpace:	recentFilesList.contentY
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			left:			 parent.left
+			right:			 parent.right
+			bottom:			 parent.bottom
+		}
+		
+		upsideDown:	false
+		extraSpace:	recentFilesList.contentHeight - (recentFilesList.contentY + recentFilesList.height)
 	}
 
 
@@ -28,7 +56,6 @@ Item
 			left:			menuHeader.left
 			right:			menuHeader.right
 			bottom:			parent.bottom
-			topMargin:		2 * jaspTheme.generalMenuMargin
 			bottomMargin:	jaspTheme.generalAnchorMargin
 		}
 	}

@@ -353,6 +353,34 @@ Item
 		width						: parent.width  / 2
 		height						: parent.height / 2
 	}
+	
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			top:			fileExportDialog.visible ? fileExportDialog.bottom  :  firstSeparator.bottom
+			topMargin:		fileExportDialog.visible ? 0						: -firstSeparator.height/2
+			left:			parent.left
+			right:			parent.right
+		}
+		
+		upsideDown:	true
+		extraSpace:	osfList.contentY
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			left:			 parent.left
+			right:			 parent.right
+			bottom:			 parent.bottom
+		}
+		
+		upsideDown:	false
+		extraSpace:	osfList.contentHeight - (osfList.contentY + osfList.height)
+	}
 
 	FileList
 	{

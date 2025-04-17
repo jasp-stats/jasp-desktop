@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-
+import JASP.Widgets
 
 Item
 {
@@ -69,6 +69,33 @@ Item
 		anchors.top:			datalibrarybreadcrumbs.bottom
 		width:					rect.width
 		orientation:			Qt.Horizontal
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			top:			secondseparator.bottom
+			topMargin:		-secondseparator.height / 2
+			left:			parent.left
+			right:			parent.right
+		}
+		
+		upsideDown:	true
+		extraSpace:	datalibrarylist.contentY
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			left:			 parent.left
+			right:			 parent.right
+			bottom:			 parent.bottom
+		}
+		
+		upsideDown:	false
+		extraSpace:	datalibrarylist.contentHeight - (datalibrarylist.contentY + datalibrarylist.height)
 	}
 
 	FileList

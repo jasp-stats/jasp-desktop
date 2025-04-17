@@ -44,6 +44,32 @@ Item
 		text:				fileMenuModel.currentFile.getHeaderText()	//For shorcut key
 		font:				jaspTheme.font
 	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			top:			headListLabel.bottom
+			left:			parent.left
+			right:			parent.right
+		}
+		
+		upsideDown:	true
+		extraSpace:	currentFileList.contentY
+	}
+	
+	ScrollMoreIndicator
+	{
+		anchors
+		{
+			left:			 parent.left
+			right:			 parent.right
+			bottom:			 parent.bottom
+		}
+		
+		upsideDown:	false
+		extraSpace:	currentFileList.contentHeight - (currentFileList.contentY + currentFileList.height)
+	}
 	 
 	FileList
 	{
