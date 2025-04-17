@@ -35,7 +35,7 @@ FocusScope
 					right:				parent.right
 					topMargin:			levelsTableView.headerHeight + 1
 					leftMargin:			1
-					rightMargin:		levelsTableView.verticalScrollWidth + 1
+					rightMargin:		levelsTableView.verticalScrollWidth + 2
 				}
 				
 				upsideDown:	true
@@ -50,7 +50,7 @@ FocusScope
 					right:				parent.right
 					bottom:				parent.bottom
 					leftMargin:			1
-					rightMargin:		levelsTableView.verticalScrollWidth + 1
+					rightMargin:		levelsTableView.verticalScrollWidth + 2
 					bottomMargin:		levelsTableView.horizontalScrollHeight + 1
 				}
 				extraSpace:	levelsTableView.contentHeight - levelsTableView.contentY1
@@ -91,7 +91,22 @@ FocusScope
 					}
 				}
 				
-				property real	filterColWidth:		60  * jaspTheme.uiScale
+				/*TextMetrics
+				{
+					id:		measureFilterName
+					font:	jaspTheme.font
+					text:	qsTr("Filter")
+				}
+				
+				TextMetrics
+				{
+					id:		measureEraseName
+					font:	jaspTheme.font
+					text:	qsTr("Remove")
+				}
+				
+				property real	maxTransName:		Math.max(measureFilterName.width, measureEraseName.width)*/
+				property real	filterColWidth:		80  * jaspTheme.uiScale //Math.max(maxTransName, 60  * jaspTheme.uiScale)
 				property real	remainingWidth:		width - (2* filterColWidth) - randomWidths
 				property real	valueColWidth:		Math.min((columnModel.valueMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5)
 				property real	labelColWidth:		Math.min((columnModel.labelMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5) 
@@ -107,7 +122,7 @@ FocusScope
 				columnHeaderDelegate:	Rectangle
 				{
 						z:				-2
-						implicitWidth:	levelsTableView.width -  (levelsTableView.itemHorizontalPadding * 2)
+						implicitWidth:	levelsTableView.width
 						color:			"transparent"
 						border.width:	1
 						border.color:	jaspTheme.uiBorder
@@ -195,14 +210,18 @@ FocusScope
 								height:					parent.height
 								color:					jaspTheme.uiBorder
 							}
-							Text
+							Item
 							{
-								text:					qsTr("Remove")
-								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
-								anchors.verticalCenter:	parent.verticalCenter
-								horizontalAlignment:	Text.AlignHCenter
 								width:					levelsTableView.filterColWidth;
+								height:					parent.height
+								Text
+								{
+									id:						removeText
+									text:					qsTr("Remove")
+									font:					jaspTheme.font
+									color:					jaspTheme.textEnabled
+									anchors.centerIn:		parent
+								}
 							}
 						}
 				}

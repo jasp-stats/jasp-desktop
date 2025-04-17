@@ -603,11 +603,11 @@ void DataSetViewBase::buildNewLinesAndCreateNewItems()
 	addLine(_viewportX,							_viewportY + 0.5f,					_viewportX + _viewportW,			_viewportY+ 0.5f);
 	addLine(_viewportX,							_viewportY + _dataRowsMaxHeight,	_viewportX + _viewportW,			_viewportY + _dataRowsMaxHeight);
 
-	if(_extraColumnItem != nullptr && !expandDataSet())
-	{
-		addLine(_viewportX + _viewportW - extraColumnWidth(),	_viewportY,		_viewportX + _viewportW - extraColumnWidth(),	_viewportY + _dataRowsMaxHeight);
-		addLine(_viewportX + _viewportW,						_viewportY,		_viewportX + _viewportW,						_viewportY + _dataRowsMaxHeight);
-	}
+	//if(_extraColumnItem != nullptr && !expandDataSet())
+	//{
+	//	addLine(_viewportX + _viewportW - extraColumnWidth(),	_viewportY,		_viewportX + _viewportW - extraColumnWidth(),	_viewportY + _dataRowsMaxHeight);
+	//	addLine(_viewportX + _viewportW,						_viewportY,		_viewportX + _viewportW,						_viewportY + _dataRowsMaxHeight);
+	//}
 #endif
 
 	for(int row=_currentViewportRowMin; row<_currentViewportRowMax; row++)

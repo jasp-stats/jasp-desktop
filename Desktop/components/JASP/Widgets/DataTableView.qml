@@ -236,27 +236,47 @@ FocusScope
 			columnHeaderDelegate:	DataTableViewColumnHeader {}
 
 			leftTopCornerItem:
-				JaspControls.RectangularButton
+				Item
 				{
-					id:				filterToggleButton
 					width:			dataTableView.rowNumberWidth
-					toolTip:		filterWindow.opened ? qsTr("Hide filter") : qsTr("Show filter")
-					iconSource:		jaspTheme.iconPath + "filter.png"
-					onClicked:		filterWindow.toggle()
-					border.width:	0
+					
+					JaspControls.RectangularButton
+					{
+						id:				filterToggleButton
+						
+						toolTip:		filterWindow.opened ? qsTr("Hide filter") : qsTr("Show filter")
+						iconSource:		jaspTheme.iconPath + "filter.png"
+						onClicked:		filterWindow.toggle()
+						border.color:	"gray"
+						
+						anchors
+						{
+							fill:		parent
+							margins:	-1
+						}
+					}
 				}
 
 			extraColumnItem:
+			Item
+			{
+				width:				addColumnButton.width
+				height:				addColumnButton.height
+				
 				JaspControls.RectangularButton
 				{
 					id:				addColumnButton
-					width:			visible ? height : 0
+					x:				2.5
+					y:				-1
+					width:			visible ? height + 2 : 0
 					toolTip:		qsTr("Add computed column")
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
-					border.width:	0
+					border.width:	1
+					border.color:	"gray"
 					visible:		!dataTableView.expandDataSet
 				}
+			}
 
 
 		}
