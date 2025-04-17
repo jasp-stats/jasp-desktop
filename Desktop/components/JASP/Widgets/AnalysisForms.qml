@@ -125,7 +125,7 @@ FocusScope
 				anchors
 				{
 					left: 	parent.left
-					right: 	itemScrollbar.left
+					right: 	verticalScrollbar.left
 					bottom: parent.bottom
 				}
 				
@@ -138,7 +138,7 @@ FocusScope
 				anchors
 				{
 					left: 	parent.left
-					right: 	itemScrollbar.left
+					right: 	verticalScrollbar.left
 					top:	parent.top
 				}
 				
