@@ -191,6 +191,9 @@ GET_PREF_FUNC_STR(	localConfigurationPATH,		Settings::LOCAL_CONFIGURATION_PATH  
 GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION                     	)
 GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
 GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					)
+GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
+
+
 
 
 int PreferencesModel::maxEngines() const
@@ -375,6 +378,7 @@ SET_PREF_FUNCTION(				QString,	setLocalConfigurationPATH,	localConfigurationPATH
 SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		remoteConfigurationChanged,     Settings::REMOTE_CONFIGURATION  					)
 SET_PREF_FUNCTION(				QString,	setRemoteConfigurationURL,	remoteConfigurationURL,		remoteConfigurationURLChanged,	Settings::REMOTE_CONFIGURATION_URL					)
 SET_PREF_FUNCTION(				bool,   	setUseConfigurationFile, 	useConfigurationFile,		useConfigurationFileChanged,    Settings::USE_CONFIGURATION_FILE  					)
+SET_PREF_FUNCTION(				bool,   	setStartMaximized,			startMaximized,				startMaximizedChanged,			Settings::START_MAXIMIZED		  					)
 
 
 void PreferencesModel::setGithubPatCustom(QString newPat)

@@ -391,7 +391,19 @@ PrefsScrollView
 				onCheckedChanged:	preferencesModel.safeGraphics = checked
 				toolTip:			qsTr("Switches to a \"safer\" mode for graphics aka software rendering.\nIt will make your interface slower but if you have some problems (weird glitches, cannot see results or anything even) might fix them.\nAnalyses will still be just as fast though.")
 				
-				KeyNavigation.tab:			disableAnimations
+				KeyNavigation.tab:	startMaximized
+
+			}
+			
+			CheckBox
+			{
+				id:					startMaximized
+				label:				qsTr("Start Maximized")
+				checked:			preferencesModel.startMaximized
+				onCheckedChanged:	preferencesModel.startMaximized = checked
+				toolTip:			qsTr("Should JASP open its window maximized on startup?")
+				
+				KeyNavigation.tab:	disableAnimations
 
 			}
 

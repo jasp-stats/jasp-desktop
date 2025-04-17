@@ -81,6 +81,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
 	Q_PROPERTY(bool			useConfigurationFile	READ useConfigurationFile		WRITE setUseConfigurationFile		NOTIFY useConfigurationFileChanged		)
+	Q_PROPERTY(bool			startMaximized			READ startMaximized				WRITE setStartMaximized				NOTIFY startMaximizedChanged			)
 
 
 public:
@@ -168,7 +169,10 @@ public:
 	
 	bool checkUpdates() const;
 	void setCheckUpdates(bool newCheckUpdates);
-
+	
+	bool startMaximized() const;
+	void setStartMaximized(bool newStartMaximized);
+	
 public slots:
 	bool useNativeFileDialog()					const;
 	void setUiScale(					double		uiScale);
@@ -301,7 +305,8 @@ signals:
 	void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
 	void useConfigurationFileChanged(	bool		enabled);
-
+	void startMaximizedChanged(			bool		startMaximized);
+	
 private slots:
 	void dataLabelNAChangedSlot(QString label);
 	

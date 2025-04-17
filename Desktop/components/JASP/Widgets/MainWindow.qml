@@ -32,11 +32,12 @@ Window
 	color:				jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
 	minimumHeight:		400 * jaspTheme.uiScale
+	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
 
 	onVisibleChanged:
 		if(!visible)
 		{
-			helpModel.visible = false;
+			helpModel.visible  = false;
 			aboutModel.visible = false;
 		}
 
