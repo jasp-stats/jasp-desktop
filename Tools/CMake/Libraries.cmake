@@ -221,8 +221,8 @@ if(LINUX)
 
   # ---- librdata ----
   message(CHECK_START "Looking for `librdata`")
-    set(LIBRDATA_INCLUDE_DIRS /usr/include /app/lib64/)
-    set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+    set(LIBRDATA_INCLUDE_DIRS /usr/include /usr/local/include /app/include)
+    set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 
   message(CHECK_START "Looking for librdata.so")
   find_library(LIBRDATA_LIBRARIES librdata.so
