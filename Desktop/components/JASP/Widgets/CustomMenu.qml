@@ -216,6 +216,21 @@ FocusScope
 
 			extraSpace: itemFlickable.contentHeight - (itemFlickable.contentY + itemFlickable.height)
 		}
+		
+		ScrollMoreIndicator 
+		{
+			id: 		scrollingGuideTop
+			
+			anchors
+			{
+				left: 	parent.left
+				right: 	itemScrollbar.left
+				top:	parent.top
+			}
+			
+			upsideDown:	true
+			extraSpace: itemFlickable.contentY
+		}
 
 		Flickable
 		{

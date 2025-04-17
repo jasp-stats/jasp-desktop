@@ -128,19 +128,22 @@ FocusScope
 					right: 	itemScrollbar.left
 					bottom: parent.bottom
 				}
+				
+				extraSpace: analysesFlickable.contentHeight - (analysesFlickable.contentY + analysesFlickable.height)
 			}
 
 			ScrollMoreIndicator 
 			{
-				id: 		scrollingGuide
+				id: 		scrollingGuideTop
 				anchors
 				{
 					left: 	parent.left
-					right: 	verticalScrollbar.left
-					bottom: parent.bottom
+					right: 	itemScrollbar.left
+					top:	parent.top
 				}
 				
-				extraSpace: analysesFlickable.contentHeight - (analysesFlickable.contentY + analysesFlickable.height)
+				upsideDown:	true
+				extraSpace: analysesFlickable.contentY
 			}
 
 			MouseArea
