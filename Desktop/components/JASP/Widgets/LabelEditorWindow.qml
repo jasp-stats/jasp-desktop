@@ -25,6 +25,36 @@ FocusScope
 				bottom:			newLabelContainer.top
 				leftMargin:		jaspTheme.generalAnchorMargin
 			}
+			
+			ScrollMoreIndicator
+			{
+				anchors
+				{
+					top:				parent.top
+					left:				parent.left
+					right:				parent.right
+					topMargin:			levelsTableView.headerHeight + 1
+					leftMargin:			1
+					rightMargin:		levelsTableView.verticalScrollWidth + 1
+				}
+				
+				upsideDown:	true
+				extraSpace:	levelsTableView.contentY
+			}
+			
+			ScrollMoreIndicator
+			{
+				anchors
+				{
+					left:				parent.left
+					right:				parent.right
+					bottom:				parent.bottom
+					leftMargin:			1
+					rightMargin:		levelsTableView.verticalScrollWidth + 1
+					bottomMargin:		levelsTableView.horizontalScrollHeight + 1
+				}
+				extraSpace:	levelsTableView.contentHeight - levelsTableView.contentY1
+			}
 
 
 			JASPDataView
@@ -44,12 +74,12 @@ FocusScope
 				toolTip:					qsTr("Edit the labels here or choose which values should be filtered out.")
 				mouseArea.enabled:			false
                 mouseArea.visible:			false
-
+				
 				Binding 
 				{ 
 					target:		columnModel
 					property:	"rowWidth"
-					value:		levelsTableView.width; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
+					value:		levelsTableView.width - levelsTableView.itemHorizontalPadding * 2; //Math.max(levelsTableView.flickableWidth - 1, levelsTableView.filterColWidth + levelsTableView.valueColWidth + levelsTableView.labelColMinWidth + 2) 
 				}
 				
 				Connections
@@ -60,39 +90,74 @@ FocusScope
 						levelsTableView.selectedRow = -1;
 					}
 				}
-
+				
 				property real	filterColWidth:		60  * jaspTheme.uiScale
-				property real	remainingWidth:		width - (2* filterColWidth)
-				property real	valueColWidth:		Math.min(columnModel.valueMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
-				property real	labelColWidth:		Math.min(columnModel.labelMaxWidth + 10, remainingWidth * 0.5) * jaspTheme.uiScale
+				property real	remainingWidth:		width - (2* filterColWidth) - randomWidths
+				property real	valueColWidth:		Math.min((columnModel.valueMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5)
+				property real	labelColWidth:		Math.min((columnModel.labelMaxWidth + 10) * jaspTheme.uiScale, remainingWidth * 0.5) 
+				property real	labelColWidthMaxed:	Math.max(labelColWidth, remainingWidth - valueColWidth)
 				property int	selectedRow:		-1
+				property real	randomWidths:		3 + (6 * jaspTheme.uiScale)// :'(
 				
 				property bool	isBasicComputed:	columnModel.computedType == "rCode" || columnModel.computedType == "constructorCode"
 				property bool	valueEditable:		!isBasicComputed || columnModel.currentColumnType != "scale"
 				property bool	labelEditable:		!isBasicComputed || columnModel.currentColumnType == "scale"
 				property bool	filterEditable:		true // columnModel.computedType == "notComputed"
 
-				columnHeaderDelegate:	Item
+				columnHeaderDelegate:	Rectangle
 				{
-						z: -2
+						z:				-2
+						implicitWidth:	levelsTableView.width -  (levelsTableView.itemHorizontalPadding * 2)
+						color:			"transparent"
+						border.width:	1
+						border.color:	jaspTheme.uiBorder
+						
 						Rectangle
 						{
 							color:						jaspTheme.uiBackground
-							height:						parent.height
-							width:						levelsTableView.width
-						}
+							anchors
+							{
+									top:                    parent.top
+									left:                   parent.left
+									right:					parent.right
+									bottom:                 parent.bottom
+									topMargin:				-2 //otherwise you see bits of the items scrolling by above headers
 
+							}
+						}
+						
 						Row
 						{
-							height:						parent.height
-							Text
+							anchors
 							{
-								text:					qsTr("Filter")
-								font:					jaspTheme.font
-								color:					levelsTableView.filterEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
-								width:					levelsTableView.filterColWidth;
-								anchors.verticalCenter:	parent.verticalCenter
-								horizontalAlignment:	Text.AlignHCenter
+									top:                    parent.top
+									left:                   parent.left
+									right:					parent.right
+									bottom:                 parent.bottom
+									leftMargin:				-0.5 //compensate for datasetview moving everything 0.5 x/y for headers
+									/*
+									topMargin:              -levelsTableView.itemVerticalPadding
+									leftMargin:             -levelsTableView.itemHorizontalPadding
+									rightMargin:            -levelsTableView.itemHorizontalPadding
+									bottomMargin:			-levelsTableView.itemVerticalPadding
+									DataSetView does not apply padding to headers
+									*/
+							}
+							
+							Item
+							{
+								width:					levelsTableView.filterColWidth
+								height:					parent.height
+								
+								Text
+								{
+									text:					qsTr("Filter")
+									font:					jaspTheme.font
+									color:					levelsTableView.filterEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+									anchors.centerIn:		parent
+									horizontalAlignment:	Text.AlignHCenter
+									verticalAlignment:		Text.AlignVCenter
+								}
 							}
 							Rectangle
 							{
@@ -105,7 +170,7 @@ FocusScope
 								text:					qsTr("Value")
 								font:					jaspTheme.font
 								color:					levelsTableView.valueEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
-								width:					levelsTableView.valueColWidth;
+								width:					levelsTableView.valueColWidth
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
 							}
@@ -122,7 +187,7 @@ FocusScope
 								color:					levelsTableView.labelEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
-								width:					levelsTableView.remainingWidth - (levelsTableView.valueColWidth + 2 + (2 * levelsTableView.itemHorizontalPadding))
+								width:					levelsTableView.labelColWidthMaxed
 							}							
 							Rectangle
 							{
@@ -146,10 +211,301 @@ FocusScope
 
 				itemDelegate: FocusScope
 				{
-					id:						backgroundItem
+					id:				backgroundItem
+					
+					implicitWidth:			levelsTableView.width -  (levelsTableView.itemHorizontalPadding * 2)
 					
 					onActiveFocusChanged:	if(activeFocus)	levelsTableView.selectedRow = rowIndex
+					
 
+					Row
+					{
+						id:					itemRow
+						z:					1
+						
+						anchors
+						{
+								top:                    parent.top
+								left:                   parent.left
+								right:					parent.right
+								bottom:                 parent.bottom
+								topMargin:              -levelsTableView.itemVerticalPadding
+								leftMargin:             -levelsTableView.itemHorizontalPadding
+								rightMargin:            -levelsTableView.itemHorizontalPadding
+								bottomMargin:			-levelsTableView.itemVerticalPadding
+						}
+						
+						
+						Item
+						{
+							width:					levelsTableView.filterColWidth;
+							height:					parent.height
+							z:						-1
+
+							MouseArea
+							{
+								id:						filterCheckButton
+								anchors.fill:			parent	
+								cursorShape:			Qt.PointingHandCursor
+								enabled:				levelsTableView.filterEditable
+								
+	
+								onClicked:				
+								{
+									columnModel.setChecked(rowIndex, !itemFiltered); // Case when all labels are unchecked.
+								}
+	
+								Image
+								{
+									source:					jaspTheme.iconPath + (itemFiltered ? "check-mark.png" : "cross.png")
+									sourceSize.width:		Math.max(40, width)
+									sourceSize.height:		Math.max(40, height)
+									width:					height
+									anchors
+									{
+										top:				filterCheckButton.top
+										bottom:				filterCheckButton.bottom
+										margins:			levelsTableView.itemVerticalPadding
+										horizontalCenter:	filterCheckButton.horizontalCenter
+									}
+								}
+							}
+						}
+
+						Rectangle
+						{
+							width:					1
+							height:					parent.height
+							color:					jaspTheme.uiBorder
+						}
+						
+						Item
+						{
+							width:				levelsTableView.valueColWidth;
+							height:				parent.height
+							clip:				true
+							enabled:			levelsTableView.valueEditable
+						
+							MouseArea
+							{
+								acceptedButtons:			Qt.LeftButton
+								cursorShape:				Qt.IBeamCursor
+								z:							3
+								onClicked:					(mouse)=>
+															{
+																if(valueInput.activeFocus)
+																{
+																	mouse.accepted = false;
+																	return
+																}
+
+																if(mouse.modifiers === Qt.NoModifier)
+																	valueInput.forceActiveFocus();
+																else
+																	levelsTableView.forceActiveFocus();
+
+																columnModel.setSelected(rowIndex, mouse.modifiers)
+																mouse.accepted = true; //dont let text input enable itself
+															}
+								onPressed:					(mouse) => { if(valueInput.activeFocus) mouse.accepted = false; }
+								anchors.fill:				parent
+								enabled:					!valueInput.activeFocus
+
+							}
+
+							TextInput
+							{
+								id:					valueInput
+								color:				jaspTheme.textEnabled
+
+								text:				itemValue
+								font:				jaspTheme.font
+								selectByMouse:		true
+								autoScroll:			true
+								z:					1
+
+								leftPadding:		3 * jaspTheme.uiScale
+
+								anchors
+								{
+									fill:			parent
+									topMargin:		levelsTableView.itemVerticalPadding
+									bottomMargin:	levelsTableView.itemVerticalPadding
+								}
+
+
+								verticalAlignment:	Text.AlignVCenter
+
+								property int	chosenColumnWas: -1
+								property string lastActiveText: ""
+								property int	lastActiveRow:	-1
+
+								onEditingFinished:
+								{
+									messages.log("Label value editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
+
+									//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
+									//To ignore this here some ugly faintly persistent memory
+									var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
+
+									if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
+									{
+										columnModel.setValue(rowIndex, text)
+
+										lastActiveRow  = activeFocus ? rowIndex		:	-1
+										lastActiveText = activeFocus ? text			:	""
+									}
+								}
+
+								onActiveFocusChanged:
+								{
+									if (activeFocus)
+									{
+										chosenColumnWas = columnModel.chosenColumn
+									}
+								}
+							}
+						}
+						
+						Rectangle
+						{
+							width:					1
+							height:					parent.height
+							color:					jaspTheme.uiBorder
+						}
+						
+						Item
+						{
+							
+							width:				levelsTableView.labelColWidthMaxed
+							height:				parent.height
+							clip:				true
+							enabled:			levelsTableView.labelEditable
+							
+							MouseArea
+							{
+								acceptedButtons:			Qt.LeftButton
+								cursorShape:				Qt.IBeamCursor
+								z:							3
+								onClicked:					(mouse)=>
+															{
+																if(mouse.modifiers === Qt.NoModifier)
+																	labelInput.forceActiveFocus();
+																else
+																	levelsTableView.forceActiveFocus();
+
+																mouse.accepted = true; //dont let text input enable itself
+																columnModel.setSelected(rowIndex, mouse.modifiers)
+															}
+								
+								anchors.fill:				parent
+								enabled:					!labelInput.activeFocus
+							}
+
+							TextInput
+							{
+								id:					labelInput
+								color:				jaspTheme.textEnabled
+
+								text:				itemText
+								font:				jaspTheme.font
+								selectByMouse:		true
+								autoScroll:			true
+								z:					1
+								//width:				contentWidth
+								leftPadding:		3 * jaspTheme.uiScale
+
+								anchors
+								{
+									fill:			parent
+									topMargin:		levelsTableView.itemVerticalPadding
+									bottomMargin:	levelsTableView.itemVerticalPadding
+								}
+
+
+								verticalAlignment:	Text.AlignVCenter
+
+								property int chosenColumnWas: -1
+
+								property string lastActiveText: ""
+								property int	lastActiveRow:	-1
+
+								onEditingFinished:
+								{
+									messages.log("Label label editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
+
+									//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
+									//To ignore this here some ugly faintly persistent memory
+									var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
+
+									if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
+									{
+										columnModel.setLabel(rowIndex, text)
+
+										lastActiveRow  = activeFocus ? rowIndex		:	-1
+										lastActiveText = activeFocus ? text			:	""
+									}
+								}
+
+								onActiveFocusChanged:
+								{
+									if (activeFocus)
+									{
+										chosenColumnWas = columnModel.chosenColumn
+									}
+								}
+							}
+						}
+					
+						
+						Rectangle
+						{
+							width:					1
+							height:					parent.height
+							color:					jaspTheme.uiBorder
+						}
+						
+						MouseArea
+						{
+							id:						deleteButton
+							width:					levelsTableView.filterColWidth;
+							height:					parent.height
+							z:						-1
+							cursorShape:			Qt.PointingHandCursor
+							
+
+							onClicked:				
+							{
+								columnModel.deleteLabel(rowIndex);
+							}
+							
+							Text
+							{
+								text:					"⌫"
+								font:					jaspTheme.font
+								color:					jaspTheme.textEnabled
+								anchors.verticalCenter:	parent.verticalCenter
+								horizontalAlignment:	Text.AlignHCenter
+								width:					levelsTableView.filterColWidth;
+							}
+
+							/*Image
+							{
+								source:					jaspTheme.iconPath + ("eraser.png")
+								sourceSize.width:		Math.max(40, width)
+								sourceSize.height:		Math.max(40, height)
+								width:					height
+								anchors
+								{
+									top:				deleteButton.top
+									bottom:				deleteButton.bottom
+									margins:			levelsTableView.itemVerticalPadding
+									horizontalCenter:	deleteButton.horizontalCenter
+								}
+							}*/
+						}
+					}
+				
 					MouseArea
 					{
 						width:				levelsTableView.width
@@ -201,320 +557,9 @@ FocusScope
 						}
 						z:					-10
 					}	
-						
-					Item
-					{
-						z:					100
-						width:				levelsTableView.width
-						anchors
-						{
-							top:			parent.top
-							left:			parent.left
-							bottom:			parent.bottom
-							topMargin:		-levelsTableView.itemVerticalPadding
-							leftMargin:		-levelsTableView.itemHorizontalPadding
-							bottomMargin:	-levelsTableView.itemVerticalPadding
-						}
-
-						
 					
-					
-					
-						Row
-						{
-							id:					itemRow
-							height:				parent.height
-							z:					1
-							
-							MouseArea
-							{
-								id:						filterCheckButton
-								width:					levelsTableView.filterColWidth;
-								height:					parent.height
-								z:						-1
-								cursorShape:			Qt.PointingHandCursor
-								enabled:				levelsTableView.filterEditable
-								
-	
-								onClicked:				
-								{
-									columnModel.setChecked(rowIndex, !itemFiltered); // Case when all labels are unchecked.
-								}
-	
-								Image
-								{
-									source:					jaspTheme.iconPath + (itemFiltered ? "check-mark.png" : "cross.png")
-									sourceSize.width:		Math.max(40, width)
-									sourceSize.height:		Math.max(40, height)
-									width:					height
-									anchors
-									{
-										top:				filterCheckButton.top
-										bottom:				filterCheckButton.bottom
-										margins:			levelsTableView.itemVerticalPadding
-										horizontalCenter:	filterCheckButton.horizontalCenter
-									}
-								}
-							}
-	
-							Item
-							{
-								width:					1
-								height:					parent.height
-								
-								Rectangle
-								{
-									x:						0.5
-									width:					1
-									height:					parent.height
-									color:					jaspTheme.uiBorder
-								}
-							}
-							
-							Item
-							{
-								width:				levelsTableView.valueColWidth;
-								height:				parent.height
-								clip:				true
-								enabled:			levelsTableView.valueEditable
-							
-								MouseArea
-								{
-									acceptedButtons:			Qt.LeftButton
-									cursorShape:				Qt.IBeamCursor
-									z:							3
-									onClicked:					(mouse)=>
-																{
-																	if(valueInput.activeFocus)
-																	{
-																		mouse.accepted = false;
-																		return
-																	}
-
-																	if(mouse.modifiers === Qt.NoModifier)
-																		valueInput.forceActiveFocus();
-																	else
-																		levelsTableView.forceActiveFocus();
-
-																	columnModel.setSelected(rowIndex, mouse.modifiers)
-																	mouse.accepted = true; //dont let text input enable itself
-																}
-									onPressed:					(mouse) => { if(valueInput.activeFocus) mouse.accepted = false; }
-									anchors.fill:				parent
-									enabled:					!valueInput.activeFocus
-
-								}
-
-								TextInput
-								{
-									id:					valueInput
-									color:				jaspTheme.textEnabled
-
-									text:				itemValue
-									font:				jaspTheme.font
-									selectByMouse:		true
-									autoScroll:			true
-									z:					1
-
-									leftPadding:		3 * jaspTheme.uiScale
-
-									anchors
-									{
-										fill:			parent
-										topMargin:		levelsTableView.itemVerticalPadding
-										bottomMargin:	levelsTableView.itemVerticalPadding
-									}
-
-
-									verticalAlignment:	Text.AlignVCenter
-
-									property int	chosenColumnWas: -1
-									property string lastActiveText: ""
-									property int	lastActiveRow:	-1
-
-									onEditingFinished:
-									{
-										messages.log("Label value editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
-
-										//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
-										//To ignore this here some ugly faintly persistent memory
-										var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
-
-										if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
-										{
-											columnModel.setValue(rowIndex, text)
-
-											lastActiveRow  = activeFocus ? rowIndex		:	-1
-											lastActiveText = activeFocus ? text			:	""
-										}
-									}
-
-									onActiveFocusChanged:
-									{
-										if (activeFocus)
-										{
-											chosenColumnWas = columnModel.chosenColumn
-										}
-									}
-								}
-							}
-							
-							Item
-							{
-								width:					1
-								height:					parent.height
-								
-								Rectangle
-								{
-									x:						0.5
-									width:					1
-									height:					parent.height
-									color:					jaspTheme.uiBorder
-								}
-							}
-	
-							Item
-							{
-								
-								width:				levelsTableView.remainingWidth - (levelsTableView.valueColWidth + 2 + (2 * levelsTableView.itemHorizontalPadding)) //+2 for line-rectangles!
-								height:				parent.height
-								clip:				true
-								enabled:			levelsTableView.labelEditable
-								
-								MouseArea
-								{
-									acceptedButtons:			Qt.LeftButton
-									cursorShape:				Qt.IBeamCursor
-									z:							3
-									onClicked:					(mouse)=>
-																{
-																	if(mouse.modifiers === Qt.NoModifier)
-																		labelInput.forceActiveFocus();
-																	else
-																		levelsTableView.forceActiveFocus();
-
-																	mouse.accepted = true; //dont let text input enable itself
-																	columnModel.setSelected(rowIndex, mouse.modifiers)
-																}
-									
-									anchors.fill:				parent
-									enabled:					!labelInput.activeFocus
-								}
-
-								TextInput
-								{
-									id:					labelInput
-									color:				jaspTheme.textEnabled
-
-									text:				itemText
-									font:				jaspTheme.font
-									selectByMouse:		true
-									autoScroll:			true
-									z:					1
-									//width:				contentWidth
-									leftPadding:		3 * jaspTheme.uiScale
-
-									anchors
-									{
-										fill:			parent
-										topMargin:		levelsTableView.itemVerticalPadding
-										bottomMargin:	levelsTableView.itemVerticalPadding
-									}
-
-
-									verticalAlignment:	Text.AlignVCenter
-
-									property int chosenColumnWas: -1
-
-									property string lastActiveText: ""
-									property int	lastActiveRow:	-1
-
-									onEditingFinished:
-									{
-										messages.log("Label label editing finished, '%1' was entered for row %2 and %3".arg(text).arg(rowIndex).arg((activeFocus ? "activeFocus!" : focus ? "focus." : "no focus.")))
-
-										//If we press enter in the thing we get this slot fired twice, once with activeFocus and once without focus
-										//To ignore this here some ugly faintly persistent memory
-										var shouldISet = activeFocus || lastActiveRow !== rowIndex || lastActiveText !== text
-
-										if(shouldISet && chosenColumnWas === columnModel.chosenColumn && rowIndex >= 0)
-										{
-											columnModel.setLabel(rowIndex, text)
-
-											lastActiveRow  = activeFocus ? rowIndex		:	-1
-											lastActiveText = activeFocus ? text			:	""
-										}
-									}
-
-									onActiveFocusChanged:
-									{
-										if (activeFocus)
-										{
-											chosenColumnWas = columnModel.chosenColumn
-										}
-									}
-								}
-							}
-						
-							
-							Item
-							{
-								width:					1
-								height:					parent.height
-								
-								Rectangle
-								{
-									x:						0.5
-									width:					1
-									height:					parent.height
-									color:					jaspTheme.uiBorder
-								}
-							}
-							
-							MouseArea
-							{
-								id:						deleteButton
-								width:					levelsTableView.filterColWidth;
-								height:					parent.height
-								z:						-1
-								cursorShape:			Qt.PointingHandCursor
-								
-	
-								onClicked:				
-								{
-									columnModel.deleteLabel(rowIndex);
-								}
-								
-								Text
-								{
-									text:					"⌫"
-									font:					jaspTheme.font
-									color:					jaspTheme.textEnabled
-									anchors.verticalCenter:	parent.verticalCenter
-									horizontalAlignment:	Text.AlignHCenter
-									width:					levelsTableView.filterColWidth;
-								}
-	
-								/*Image
-								{
-									source:					jaspTheme.iconPath + ("eraser.png")
-									sourceSize.width:		Math.max(40, width)
-									sourceSize.height:		Math.max(40, height)
-									width:					height
-									anchors
-									{
-										top:				deleteButton.top
-										bottom:				deleteButton.bottom
-										margins:			levelsTableView.itemVerticalPadding
-										horizontalCenter:	deleteButton.horizontalCenter
-									}
-								}*/
-							}
-						}
-					}
 				}
 			}
-
 		}
 		
 		RowLayout

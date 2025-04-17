@@ -3,7 +3,6 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
 
-
 ComboBoxBase
 {
 	id:					comboBox
@@ -187,31 +186,63 @@ ComboBoxBase
 				}
 			}
 
-			contentItem: ListView
+			contentItem: Item
 			{
-				id:				popupView
-				implicitWidth:	Math.max(control.longestFieldWidth, control.width)
-				implicitHeight:	Math.min(contentHeight, maxHeight)
-				model:			control.delegateModel
-				currentIndex:	control.highlightedIndex
-				clip:			true
-
-				property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height	// Case Dropdowns used in Desktop
-										 : typeof rcmdRoot			!== 'undefined' ? rcmdRoot.height			// Case Dropdown used in R Command
-										 : typeof backgroundForms	!== 'undefined' ? backgroundForms.height	// Case Dropdowns used in Analysis forms
-										 : typeof scrollPrefs		!== 'undefined' ? scrollPrefs.height		// When its used in a Prefs* page ?
-										 : Infinity
-
-				//onMaxHeightChanged:		messages.log("maxHeight is now " + maxHeight + " for " + popupView);
-
-				Rectangle
+				id:					popupItem
+				implicitWidth:		popupView.implicitWidth
+				implicitHeight:		popupView.implicitHeight
+				
+				ListView
 				{
-					anchors.centerIn:	parent
-					width:				parent.width + 4
-					height:				parent.height + 4
-					border.color:		jaspTheme.focusBorderColor
-					border.width:		2
-					color:				"transparent"
+					id:				popupView
+					implicitWidth:	Math.max(control.longestFieldWidth, control.width)
+					implicitHeight:	Math.min(contentHeight, maxHeight)
+					model:			control.delegateModel
+					currentIndex:	control.highlightedIndex
+					clip:			true
+					anchors.fill:	parent
+	
+					property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height	// Case Dropdowns used in Desktop
+											 : typeof rcmdRoot			!== 'undefined' ? rcmdRoot.height			// Case Dropdown used in R Command
+											 : typeof backgroundForms	!== 'undefined' ? backgroundForms.height	// Case Dropdowns used in Analysis forms
+											 : typeof scrollPrefs		!== 'undefined' ? scrollPrefs.height		// When its used in a Prefs* page ?
+											 : Infinity
+	
+					//onMaxHeightChanged:		messages.log("maxHeight is now " + maxHeight + " for " + popupView);
+	
+					Rectangle
+					{
+						anchors.centerIn:	parent
+						width:				parent.width + 4
+						height:				parent.height + 4
+						border.color:		jaspTheme.focusBorderColor
+						border.width:		2
+						color:				"transparent"
+					}
+				}
+				
+				ScrollMoreIndicator
+				{
+					anchors
+					{
+						top:	parent.top
+						left:	parent.left
+						right:	parent.right
+					}
+					
+					upsideDown:	true
+					extraSpace:	popupView.contentY
+				}
+				
+				ScrollMoreIndicator
+				{
+					anchors
+					{
+						left:	parent.left
+						right:	parent.right
+						bottom:	parent.bottom
+					}
+					extraSpace:	popupView.contentHeight - popupView.contentY + popupView.height 
 				}
 			}
 			
@@ -219,7 +250,7 @@ ComboBoxBase
 			{
 				border.color:			jaspTheme.borderColor
 				border.width:			1
-				color:					jaspTheme.white
+				color:					jaspTheme.fileMenuColorBackground
 			}
 		}
 
@@ -233,7 +264,7 @@ ComboBoxBase
 			{
 				id:									itemRectangle
 				anchors.fill:						parent
-				color:								comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : jaspTheme.controlBackgroundColor)
+				color:								comboBox.currentIndex === index ? jaspTheme.itemSelectedColor : (control.highlightedIndex === index ? jaspTheme.itemHoverColor : "transparent")
 
 				property bool isEmptyValue:			comboBox.addEmptyValue && index === 0
 				property bool showEmptyValueStyle:	!comboBox.showEmptyValueAsNormal && isEmptyValue

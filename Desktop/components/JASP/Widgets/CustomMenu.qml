@@ -203,7 +203,7 @@ FocusScope
 			}
 		}
 
-		ScrollMoreIndicator 
+		JASPControl.ScrollMoreIndicator 
 		{
 			id: 		scrollingGuideBottom
 			
@@ -217,7 +217,7 @@ FocusScope
 			extraSpace: itemFlickable.contentHeight - (itemFlickable.contentY + itemFlickable.height)
 		}
 		
-		ScrollMoreIndicator 
+		JASPControl.ScrollMoreIndicator 
 		{
 			id: 		scrollingGuideTop
 			

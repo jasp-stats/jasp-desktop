@@ -6,7 +6,7 @@ Rectangle
 	height:		horizontal  ? implicitHeight : Math.min(maxExtend, Math.max(0, extraSpace * 0.25))
 	width:		!horizontal ? implicitWidth  : Math.min(maxExtend, Math.max(0, extraSpace * 0.25))
 	
-	property real extraSpace:	maxHeight
+	property real extraSpace:	maxExtend
 	property real maxExtend:	30 * jaspTheme.uiScale
 	property bool upsideDown:	false
 	property bool horizontal:	false
