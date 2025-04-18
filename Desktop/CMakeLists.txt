@@ -116,10 +116,8 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
     # ReadStat
-    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_H}>
     ${LIBREADSTAT_INCLUDE_DIRS}
     # librdata
-    $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBRDATA_H}>
     ${LIBRDATA_INCLUDE_DIRS}
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>

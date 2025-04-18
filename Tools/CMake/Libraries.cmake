@@ -221,7 +221,7 @@ if(LINUX)
 
   # ---- librdata ----
   message(CHECK_START "Looking for `librdata`")
-    set(LIBRDATA_INCLUDE_DIRS /usr/include /usr/local/include /app/include)
+    set(LIBRDATA_INCLUDE_DIRS /usr/include/ /usr/include/rdata /usr/local/include /usr/local/include/rdata /app/include)
     set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 
   message(CHECK_START "Looking for librdata.so")
@@ -286,7 +286,8 @@ if(WIN32)
 
   if(EXISTS ${RTOOLS_LIBREADSTAT_H})
     message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBREADSTAT_H}")
+    message(STATUS "Now copy ${RTOOLS_LIBREADSTAT_H} to source directory.")
+    configure_file("${RTOOLS_LIBREADSTAT_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h" COPYONLY)
   else()
     message(CHECK_FAIL "not found")
     message(
@@ -341,7 +342,8 @@ if(WIN32)
   
     if(EXISTS ${RTOOLS_LIBRDATA_H})
       message(CHECK_PASS "found")
-      message(STATUS "  ${RTOOLS_LIBRDATA_H}")
+      message(STATUS "Now copy ${RTOOLS_LIBRDATA_H} to source directory")
+      configure_file("${RTOOLS_LIBRDATA_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h" COPYONLY)
     else()
       message(CHECK_FAIL "not found")
       message(

@@ -39,12 +39,11 @@ ImportDataSet *RDataImporter::loadFile(const std::string &locator, std::function
 	RDataReader reader(locator);
 	reader.open();
 
-	size_t rowCount, colCount;
-	stringvec colNames;
+	size_t		rowCount, colCount;
+	stringvec	colNames;
 
 	rowCount = reader.getRowCount();
 	colCount = reader.getColCount();
-
 	colNames = reader.getColumnNames();
 	const auto &columns = reader.getColData();
 
