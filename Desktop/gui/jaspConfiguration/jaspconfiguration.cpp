@@ -75,7 +75,7 @@ void JASPConfiguration::processConfiguration()
 		if(Settings::value(Settings::REMOTE_CONFIGURATION).toBool())
 		{
 			auto conn = std::make_shared<QMetaObject::Connection>();
-			*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [=, this](QNetworkReply* reply) {
+			*conn = connect(&_networkManager, &QNetworkAccessManager::finished, this, [this, conn, localOK](QNetworkReply* reply) {
 				QObject::disconnect(*conn);
 				reply->deleteLater();
 
