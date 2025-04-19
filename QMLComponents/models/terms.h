@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -21,11 +21,9 @@
 
 #include <vector>
 #include <string>
-#include <set>
 
 #include <QString>
 #include <QList>
-#include <QByteArray>
 
 #include "term.h"
 #include "controls/jaspcontrol.h"
@@ -44,21 +42,16 @@ class VariableInfoConsumer;
 class Terms
 {
 public:
-	Terms(const QList<QList<QString> >						& terms,	Terms *parent = nullptr);
 	Terms(const QList<QString>								& terms,	Terms *parent = nullptr);
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
-	Terms(const std::vector<std::string>					& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
 
-	void set(const QList<QList<QString> >					& terms, bool isUnique = true);
 	void set(const QList<QString>							& terms, bool isUnique = true);
 	void set(const std::vector<Term>						& terms, bool isUnique = true);
-	void set(const std::vector<std::string>					& terms, bool isUnique = true);
 	void set(const std::vector<std::vector<std::string> >	& terms, bool isUnique = true);
 	void set(const QList<Term>								& terms, bool isUnique = true);
 	void set(const Terms									& terms, bool isUnique = true);
-	void set(const QByteArray								& array, bool isUnique = true);
 
 	void removeParent();
 	void setSortParent(const Terms &parent);
@@ -84,7 +77,6 @@ public:
 	void remove(const Terms &terms);
 	void remove(size_t pos, size_t n = 1);
 	void replace(int pos, const Term& term);
-	bool discardWhatDoesntContainTheseComponents(	const Terms &terms);
 	bool discardWhatDoesContainTheseComponents(		const Terms &terms);
 	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
 	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
@@ -105,9 +97,6 @@ public:
 	std::vector<std::vector<std::string> >	asVectorOfVectors()			const;
 	QStringList								values()					const;
 	QStringList								labels()					const;
-
-	Term	sortComponents(const Term &term)	const;
-	Terms	sortComponents(const Terms &terms)	const;
 
 	Terms crossCombinations()					const;
 	Terms wayCombinations(int ways)				const;
@@ -132,10 +121,13 @@ private:
 	int		termCompare(const Term& t1, const Term& t2)				const;
 	bool	termLessThan(const Term &t1, const Term &t2)			const;
 	bool	componentLessThan(const QString &c1, const QString &c2)	const;
+	void	resetValueMap();
 
 	const Terms			*	_parent;
 	std::vector<Term>		_terms;
 	bool					_hasDuplicate = false;
+	std::map<QString, int>	_valueMap;
+
 };
 
 #endif // TERMS_H

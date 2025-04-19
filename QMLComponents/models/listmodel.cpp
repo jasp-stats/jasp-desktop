@@ -778,13 +778,6 @@ void ListModel::_setTerms(const Terms &terms, const Terms& parentTerms)
 	_terms.setSortParent(parentTerms);
 }
 
-void ListModel::_setTerms(const std::vector<Term> &terms)
-{
-	checkTermsTypes(terms);
-	_terms.set(terms);
-	setUpRowControls();
-}
-
 void ListModel::_setTerms(const Terms &terms)
 {
 	_terms.set(checkTermsTypes(terms));

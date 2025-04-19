@@ -38,7 +38,8 @@ public:
 	Term(const std::string				&	component,	const columnType		type	= columnType::unknown		);
 	Term(const QStringList				&	components, const columnTypeVec	&	types	= { columnType::unknown }	);
 	Term(const QString					&	component,	const columnType		type	= columnType::unknown		);
-	Term(const QString					&	value,		const QString		&	label,	const QString	& info = QString());
+	Term(const QString					&	value,		const QString		&	label,		const QString		& info = QString());
+	Term(const Json::Value				&	json,		const std::string	&	keyValue,	const std::string	& keyLabel);
 
 	const QStringList		&	components()			const;
 	const QString			&	label()					const { return _label;	}
@@ -79,13 +80,12 @@ public:
 	static const char* separator;
 	static Term	readTerm(std::string str);
 	static Term	readTerm(QString str);
-	static Term readTerm(const Json::Value& json, columnType defaultType = columnType::unknown);
 
 	Json::Value toJson(bool useArray = true, bool useValueAndType = true) const;
 
 private:
-	void initFrom(const QStringList components, const columnTypeVec& type);
-	void initFrom(const QString		component,	columnType type);
+	void initFrom(const QStringList	& components,	const QString	& label, const columnTypeVec& type, const QString	& info = "");
+	void initFrom(const QString		& value,		const QString	& label, columnType type,			const QString	& info = "");
 
 	QStringList		_components;
 	QString			_label,

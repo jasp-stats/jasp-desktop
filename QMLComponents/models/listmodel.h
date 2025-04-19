@@ -135,7 +135,6 @@ public slots:
 protected:
 			void	_setTerms(const Terms& terms);
 			void	_setTerms(const Terms& terms, const Terms& parentTerms);
-			void	_setTerms(const std::vector<Term>& terms);
 			void	_removeTerms(const Terms& terms);
 			void	_removeTerm(int index);
 			void	_removeTerm(const Term& term);

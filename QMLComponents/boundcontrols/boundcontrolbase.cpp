@@ -121,9 +121,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 {
 	for (const Json::Value& row : value)
 	{
-		Term term = Term::readTerm(row[keyValue]);
-		if (!keyLabel.empty() && row.isMember(keyLabel) && row[keyLabel].isString())
-			term.setLabel(tq(row[keyLabel].asString()));
+		Term term(row, keyValue, keyLabel);
 		if (term.size() > 0)
 		{
 			int termInd = sourceTerms.indexOfValue(term);

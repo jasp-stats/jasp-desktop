@@ -278,17 +278,10 @@ Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const
 
 bool BoundControlTerms::areTermsInOption(const Json::Value &option, Terms &terms) const
 {
-	if (terms.size() == 0) return false;
+	int sizeBefore = terms.size();
+	terms.remove(_getTermsFromOptions(option));
 
-	bool result = true;
-	Terms termsInOptions = _getTermsFromOptions(option);
-	Terms termsToSearch = terms;
-
-	for (const Term& term : termsToSearch)
-		if (termsInOptions.containsValue(term))	terms.remove(term);
-		else									result = false;
-
-	return result;
+	return terms.size() != sizeBefore;
 }
 
 Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2013-2018 University of Amsterdam
+// Copyright (C) 2013-2025 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -18,21 +18,11 @@
 
 #include "terms.h"
 
-#include <sstream>
-
-#include <QDataStream>
-#include <QIODevice>
 #include <QSet>
 #include "utilities/qutils.h"
 #include "variableinfo.h"
 
 using namespace std;
-
-Terms::Terms(const QList<QList<QString> > &terms, Terms *parent)
-{
-	_parent = parent;
-	set(terms);
-}
 
 Terms::Terms(const QList<QString> &terms, Terms *parent)
 {
@@ -41,12 +31,6 @@ Terms::Terms(const QList<QString> &terms, Terms *parent)
 }
 
 Terms::Terms(const std::vector<std::vector<string> > &terms, Terms *parent)
-{
-	_parent = parent;
-	set(terms);
-}
-
-Terms::Terms(const std::vector<string> &terms, Terms *parent)
 {
 	_parent = parent;
 	set(terms);
@@ -66,14 +50,7 @@ Terms::Terms(Terms *parent)
 void Terms::set(const std::vector<Term> &terms, bool isUnique)
 {
 	_terms.clear();
-
-	for(const Term &term : terms)
-		add(term, isUnique);
-}
-
-void Terms::set(const std::vector<string> &terms, bool isUnique)
-{
-	_terms.clear();
+	_valueMap.clear();
 
 	for(const Term &term : terms)
 		add(term, isUnique);
@@ -82,42 +59,42 @@ void Terms::set(const std::vector<string> &terms, bool isUnique)
 void Terms::set(const std::vector<std::vector<string> > &terms, bool isUnique)
 {
 	_terms.clear();
+	_valueMap.clear();
 
 	for(const Term &term : terms)
 		add(term, isUnique);
+
 }
 
 void Terms::set(const QList<Term> &terms, bool isUnique)
 {
 	_terms.clear();
+	_valueMap.clear();
 
 	for(const Term &term : terms)
 		add(term, isUnique);
+
 }
 
 void Terms::set(const Terms &terms, bool isUnique)
 {
 	_terms.clear();
+	_valueMap.clear();
 	_hasDuplicate = terms.hasDuplicate();
 
 	for(const Term &term : terms)
 		add(term, isUnique);
-}
 
-void Terms::set(const QList<QList<QString> > &terms, bool isUnique)
-{
-	_terms.clear();
-
-	for(const QList<QString> &term : terms)
-		add(Term(term), isUnique);
 }
 
 void Terms::set(const QList<QString> &terms, bool isUnique)
 {
 	_terms.clear();
+	_valueMap.clear();
 
-	for(const QString &term : terms)
-		add(Term(term), isUnique);
+	for(const QString &value : terms)
+		add(Term(value), isUnique);
+
 }
 
 void Terms::setSortParent(const Terms &parent)
@@ -135,38 +112,51 @@ void Terms::add(const Term &term, bool isUnique)
 	{
 		if (!_hasDuplicate && containsValue(term)) _hasDuplicate = true;
 		_terms.push_back(term);
+		_valueMap[term.value()] = _terms.size() - 1;
 	}
 	else if (_parent != nullptr)
 	{
 		vector<Term>::iterator itr = _terms.begin();
 		int result = -1;
+		int index = 0;
 
 		for (; itr != _terms.end(); itr++)
 		{
 			result = termCompare(term, *itr);
 			if (result >= 0)
 				break;
+			index++;
 		}
 
 		if (result > 0)
-			_terms.insert(itr, term);
+		{
+			itr = _terms.insert(itr, term);
+			for (; itr != _terms.end(); itr++)
+				_valueMap[itr->value()] = index++;
+		}
 		else if (result == 0)
 		{
 			itr->setDraggable(term.isDraggable());
 			itr->setTypes(term.types());
 		}
 		else if (result < 0)
+		{
 			_terms.push_back(term);
+			_valueMap[term.value()] = _terms.size() - 1;
+		}
 	}
 	else
 	{
-		int i = indexOfValue(term);
-		if (i < 0)
+		int index = indexOfValue(term);
+		if (index < 0)
+		{
 			_terms.push_back(term);
+			_valueMap[term.value()] = _terms.size() - 1;
+		}
 		else
 		{
-			_terms.at(i).setDraggable(term.isDraggable());
-			_terms.at(i).setTypes(term.types());
+			_terms.at(index).setDraggable(term.isDraggable());
+			_terms.at(index).setTypes(term.types());
 		}
 	}
 }
@@ -175,34 +165,23 @@ void Terms::insert(int index, const Term &term)
 {
 	if (_parent == nullptr)
 	{
-		vector<Term>::iterator itr = _terms.begin();
+		if (index > _terms.size())
+			index = _terms.size();
 
-		for (int i = 0; i < index; i++)
-			itr++;
+		vector<Term>::iterator itr = std::next(_terms.begin(), index);
 
-		_terms.insert(itr, term);
+		itr = _terms.insert(itr, term);
+		for (; itr != _terms.end(); itr++)
+			_valueMap[itr->value()] = index++;
 	}
 	else
-	{
 		add(term);
-	}
 }
 
 void Terms::insert(int index, const Terms &terms)
 {
-	if (_parent == nullptr)
-	{
-		vector<Term>::iterator itr = _terms.begin();
-
-		for (int i = 0; i < index; i++)
-			itr++;
-
-		_terms.insert(itr, terms.begin(), terms.end());
-	}
-	else
-	{
-		add(terms);
-	}
+	for (const Term& term : terms)
+		insert(index++, term);
 }
 
 void Terms::add(const Terms &terms)
@@ -230,11 +209,7 @@ bool Terms::containsValue(const Term &term) const
 
 bool Terms::containsValue(const QString &value) const
 {
-	for (const Term& term : _terms)
-		if (term.value() == value)
-			return true;
-
-	return false;
+	return _valueMap.find(value) != _valueMap.end();
 }
 
 int Terms::indexOfValue(const Term &term) const
@@ -244,15 +219,8 @@ int Terms::indexOfValue(const Term &term) const
 
 int Terms::indexOfValue(const QString &value) const
 {
-	int i = 0;
-	for (const Term& term : _terms)
-	{
-		if (term.value() == value)
-			return i;
-		i++;
-	}
-
-	return -1;
+	auto itr = _valueMap.find(value);
+	return (itr == _valueMap.end()) ? -1 : itr->second;
 }
 
 int Terms::indexOfLabel(const QString &label) const
@@ -309,16 +277,6 @@ QStringList Terms::labels() const
 		items.append(term.label());
 
 	return items;
-}
-
-Terms Terms::sortComponents(const Terms &terms) const
-{
-	QList<Term> ts;
-
-	for (const Term &term : terms)
-		ts.append(sortComponents(term));
-
-	return Terms(ts);
 }
 
 Terms Terms::crossCombinations() const
@@ -499,7 +457,7 @@ void Terms::setUndraggableTerms(const Terms& undraggableTerms)
 			newTerms.push_back(term);
 	}
 
-	_terms = newTerms;
+	set(newTerms);
 }
 
 Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) const
@@ -533,33 +491,6 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 	}
 
 	return types;
-}
-
-void Terms::set(const QByteArray & array, bool isUnique)
-{
-	QDataStream stream(array);
-
-	if (stream.atEnd())
-		throw exception();
-
-	int count;
-	stream >> count;
-
-	clear();
-
-	while ( ! stream.atEnd())
-	{
-		QStringList variable;
-		stream >> variable;
-		add(Term(variable), isUnique);
-	}
-}
-
-Term Terms::sortComponents(const Term &term) const
-{
-	QStringList components = term.components();
-	std::sort(components.begin(), components.end(), [&](const QString & l, const QString & r)->bool{ return componentLessThan(l,r); });
-	return Term(components);
 }
 
 int Terms::rankOf(const QString &component) const
@@ -619,7 +550,13 @@ void Terms::remove(const Terms &terms)
 	{
 		vector<Term>::iterator itr = find(_terms.begin(), _terms.end(), term);
 		if (itr != _terms.end())
-			_terms.erase(itr);
+		{
+			int index = std::distance(_terms.begin(), itr);
+			itr = _terms.erase(itr);
+			_valueMap.erase(term.value());
+			for (; itr != _terms.end(); itr++)
+				_valueMap[itr->value()] = index++;
+		}
 	}
 }
 
@@ -631,7 +568,13 @@ void Terms::remove(size_t pos, size_t n)
 		itr++;
 
 	for (; n > 0 && itr != _terms.end(); n--)
-		_terms.erase(itr);
+	{
+		itr = _terms.erase(itr);
+		_valueMap.erase(itr->value());
+	}
+
+	for (; itr != _terms.end(); itr++)
+		_valueMap[itr->value()] = pos++;
 }
 
 void Terms::replace(int pos, const Term &term)
@@ -642,32 +585,6 @@ void Terms::replace(int pos, const Term &term)
 		remove(pos_t);
 		insert(pos, term);
 	}
-}
-
-bool Terms::discardWhatDoesntContainTheseComponents(const Terms &terms)
-{
-	bool changed = false;
-
-	_terms.erase(
-		std::remove_if(
-			_terms.begin(),
-			_terms.end(),
-			[&](Term& existingTerm)
-			{
-				for (const string &str : existingTerm.scomponents())
-					if (! terms.containsValue(str))
-					{
-						changed = true;
-						return true;
-					}
-
-				return false;
-			}
-		),
-		_terms.end()
-	);
-
-	return changed;
 }
 
 bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
@@ -684,7 +601,7 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 					for (const QString &component : term.components())
 						if (existingTerm.contains(component))
 						{
-							changed			= true;
+							changed	= true;
 							return true;
 						}
 
@@ -693,6 +610,9 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 			}),
 		_terms.end()
 	);
+
+	if (changed)
+		resetValueMap();
 
 	return changed;
 }
@@ -718,6 +638,9 @@ bool Terms::discardWhatDoesContainTheseTerms(const Terms &terms)
 			}),
 		_terms.end()
 	);
+
+	if (changed)
+		resetValueMap();
 
 	return changed;
 }
@@ -746,12 +669,25 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 		_terms.end()
 	);
 
+	if (changed)
+		resetValueMap();
+
 	return changed;
 }
 
 void Terms::clear()
 {
 	_terms.clear();
+	_valueMap.clear();
+}
+
+void Terms::resetValueMap()
+{
+	_valueMap.clear();
+	int index = 0;
+
+	for (const Term& term : _terms)
+		_valueMap[term.value()] = index++;
 }
 
 size_t Terms::size() const
@@ -788,7 +724,14 @@ void Terms::remove(const Term &term)
 {
 	vector<Term>::iterator itr = std::find(_terms.begin(), _terms.end(), term);
 	if (itr != end())
-		_terms.erase(itr);
+	{
+		int index = std::distance(_terms.begin(), itr);
+		_valueMap.erase(itr->value());
+		itr = _terms.erase(itr);
+
+		for (; itr != _terms.end(); itr++)
+			_valueMap[itr->value()] = index++;
+	}
 }
 
 QSet<int> Terms::replaceVariableName(const std::string & oldValue, const std::string & newValue)
@@ -798,8 +741,13 @@ QSet<int> Terms::replaceVariableName(const std::string & oldValue, const std::st
 	int i = 0;
 	for(Term & t : _terms)
 	{
+		QString oldTermValue = t.value();
 		if (t.replaceVariableName(oldValue, newValue))
+		{
 			change.insert(i);
+			_valueMap.erase(oldTermValue);
+			_valueMap[t.value()] = i;
+		}
 		i++;
 	}
 
