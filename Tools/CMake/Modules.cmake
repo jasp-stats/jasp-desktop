@@ -1,14 +1,8 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
 
-#prepare some cmake vars for script
-SET(MODULES_OS "Windows-x86_64")
-if(APPLE)
-  SET(MODULES_OS "MacOS-x86_64")
-  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-    SET(MODULES_OS "MacOS-arm64")
-  endif()
-endif()
+configure_file(${PROJECT_SOURCE_DIR}/Modules/modules-settings.json
+               ${MODULES_BINARY_PATH}/modules-settings.json)
 
 #configure modules install script
 configure_file(${PROJECT_SOURCE_DIR}/Modules/install-modules.R.in

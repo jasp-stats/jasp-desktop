@@ -18,6 +18,7 @@ mkdir(c(R_CPP_INCLUDES_LIBRARY, JUNCTION_HANDLING_LIBRARY, JASP_MODULE_BUNDLE_MA
 
 .libPaths(RENV_LIBRARY)
 
+options(INSTALL_opts = "--no-test-load")
 cat("Restoring Rcpp & RInside\n")
 renv::restore(
   library  = R_CPP_INCLUDES_LIBRARY,
@@ -35,7 +36,6 @@ if (.Platform$OS.type == "windows") {
   )
 }
 
-options(INSTALL_opts = "--no-test-load")
 cat("installing jaspModuleBundleManager\n")
 renv::install(
   file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),

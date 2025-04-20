@@ -24,17 +24,13 @@
 #define ACTIVEMODULES_H
 
 #include <vector>
-#include <set>
 #include <string>
 
 /**
  * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
  *
- * @details 	This class exists only to dynamically adjust the active modules of the ribbon, in
- *           	case we decide not to have them all. So, the changes in `JASP_COMMON_MODULES` and
- *           	`JASP_EXTRA_MODULES` variables in `Tools/CMake/Modules.cmake` will be reflected
- *           	here. By commenting any of the modules in the CMake file, they'll be excluded from
- *           	the build, and will not be available to JASP.
+ * @details 	Reads all available shipped and installed modules and divides them into two groups common (on ribbon) and extra (selectable)
+ *				The order equals the order in the Modules/modules.json which specifies these groups
  */
 class ActiveModules {
 public:
@@ -44,7 +40,10 @@ public:
 	static std::vector<std::string> getActiveExtraModules();
 
 private:
-	static const std::set<std::string> defaultExtraModules; //only theses modules will be marked as extra. (usefull while developing)
+	static std::vector<std::string> getModules(bool extra = false);
+
+	static const std::string settingsPath;
+
 };
 
 #endif // ACTIVEMODULES_H

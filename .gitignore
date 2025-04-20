@@ -3,6 +3,9 @@
 *.lo
 *.o
 
+# Module Bundles
+*.JASPModule
+
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -83,4 +86,3 @@ QMLComponents/utilities/appdirs.h
 CommonData/jaspBase_distributionSamplers.h
 CommonData/jaspBase_friendlyConstructorFunctions.h
 CommonData/jaspBase_transformFunctions.h
-Modules/downloads/

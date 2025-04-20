@@ -230,6 +230,10 @@ if(LINUX)
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
+  install(
+    FILES ${MODULES_BINARY_PATH}/modules-settings.json
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+  )
   # we do not need renv-root in an install
   #install(DIRECTORY ${MODULES_RENV_ROOT_PATH}/
   #        DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-root)
