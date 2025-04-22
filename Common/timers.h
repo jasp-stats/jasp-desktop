@@ -14,11 +14,12 @@
 
 
 boost::timer::cpu_timer * _getTimer(std::string timerName);
+boost::timer::cpu_timer * _getTimerC(std::string timerName);
 void _printAllTimers();
 
 #define JASPTIMER_START(  TIMERNAME ) _getTimer( #TIMERNAME )->start()
 #define JASPTIMER_RESUME( TIMERNAME ) _getTimer( #TIMERNAME )->resume()
-#define JASPTIMER_STOP(   TIMERNAME ) _getTimer( #TIMERNAME )->stop()
+#define JASPTIMER_STOP(   TIMERNAME ) _getTimerC( #TIMERNAME )->stop()
 #define JASPTIMER_PRINT(  TIMERNAME ) Log::log() << #TIMERNAME << " ran for " << _getTimer( #TIMERNAME )->format() << std::endl
 #define JASPTIMER_FINISH( TIMERNAME ) JASPTIMER_STOP(TIMERNAME); JASPTIMER_PRINT(TIMERNAME)
 #define JASPTIMER_PRINTALL() _printAllTimers()
@@ -26,7 +27,7 @@ void _printAllTimers();
 struct _JaspTimerScopeMeasure
 {
 	_JaspTimerScopeMeasure(const char * name) : _name(name) { try{ _getTimer(_name)->resume();	} catch(...) {} }
-	~_JaspTimerScopeMeasure()								{ try{ _getTimer(_name)->stop();	} catch(...) {} }
+	~_JaspTimerScopeMeasure()								{ try{ _getTimerC(_name)->stop();	} catch(...) {} }
 
 	const char * _name;
 };

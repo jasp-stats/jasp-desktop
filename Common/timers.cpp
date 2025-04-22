@@ -32,13 +32,19 @@ boost::timer::cpu_timer * _getTimer(std::string timerName)
 	{
 		dontClobberYourself.lock();
 		if(timers->count(timerName) == 0)
-		{
 			(*timers)[timerName] = new boost::timer::cpu_timer(); //starts automatically
-			(*timers)[timerName]->stop();
-		}
 		dontClobberYourself.unlock();
 	}
 	
+	return timers->at(timerName);
+}
+
+boost::timer::cpu_timer * _getTimerC(std::string timerName)
+{
+	std::stringstream timerNameStream;
+	timerNameStream << timerName << "_" << std::this_thread::get_id();
+	timerName = timerNameStream.str();
+
 	return timers->at(timerName);
 }
 
