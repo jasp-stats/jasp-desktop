@@ -764,6 +764,80 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 	transactionReadEnd();
 }
 
+//Shouldve probably been more generic here
+void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<void (float)> progressCallback)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::dataSetBatchedLabelsLoad);
+
+	if(data->columns().size() == 0)
+		return;
+
+	transactionReadBegin();
+	
+	//Set up some functions and such for concurrent loading:
+	std::mutex	progressMutex;
+	size_t 		totalCols	= data->columnCount(), // for progressbar
+				progressCol = 0;
+	
+	
+	std::function<void(float)> localProgressBar = [&progressMutex, &progressCol, &totalCols, &progressCallback](int rows)
+	{
+		progressMutex.lock();
+		progressCol += rows;
+		
+		const size_t rowPercent = std::max(1, int(totalCols) / 100);
+		static size_t lastRow = 0;
+		
+		if(progressCol - lastRow > rowPercent || progressCol >= totalCols - 1)
+		{
+			progressCallback(float(progressCol) / float(totalCols));
+			lastRow = progressCol;
+		}
+		progressMutex.unlock();
+	};
+	
+	auto loadBatchOfColumns = [this, data, &localProgressBar](Columns group, size_t groupNum)
+	{
+		for(Column * col : group)
+		{
+			labelsLoad(col);
+			localProgressBar(1);
+		}		
+	};
+	
+	//Ok, split up columns into some groups so we can use multiple threads
+	
+	size_t	groupCount	= std::max((unsigned int)1, std::thread::hardware_concurrency()),
+			groupSize	= data->columns().size() / groupCount,
+			groupSize0	= data->columns().size() - groupSize * (groupCount-1);
+			
+
+	std::vector<std::thread>	threads;
+	
+	size_t	curCol	= 0,
+			nextEnd = groupSize0;
+	
+	for(size_t group=0; group < groupCount; group++)
+	{
+		Columns cols;
+		for(; curCol < nextEnd; curCol++)
+			cols.push_back(data->column(curCol));
+		
+		
+		threads.push_back(std::thread([cols, group, &loadBatchOfColumns]()
+		{
+			loadBatchOfColumns(cols, group);
+		}));
+		
+		nextEnd += groupSize;
+	}
+	
+	for(std::thread & t : threads)
+		t.join();
+		
+	transactionReadEnd();
+}
+
 void DatabaseInterface::columnSetValues(int columnId, const intvec &ints, const doublevec &dbls)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetValues);
@@ -1399,7 +1473,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 		column->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id);
 	};
 
-	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
+	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ?;", prepare, processRow);
 
 	column->labelsRemoveBeyond(labelsSize);
 	 

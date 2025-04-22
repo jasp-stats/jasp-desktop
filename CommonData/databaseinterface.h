@@ -146,7 +146,9 @@ public:
 	size_t		columnGetLabelCount(		int columnId);
 	void		columnGetValues(			int columnId,	intvec		& ints, doublevec & dbls);
 	std::string columnBaseName(				int columnId) const;
+	
 	void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
+	void		dataSetBatchedLabelsLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
 
 	//Labels
 	void		labelsClear(			int columnId);

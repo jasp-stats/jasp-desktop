@@ -343,7 +343,8 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, boo
 
 	_columns.resize(colCount);
 
-	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.5 + p * 0.5); });
+	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.50 + (p * 0.25)); });
+	db().dataSetBatchedLabelsLoad(this, [&](float p){ progressCallback(0.75 + (p * 0.25)); });
 	
 	Json::Value emptyValsJson;
 	Json::Reader().parse(emptyVals, emptyValsJson);
