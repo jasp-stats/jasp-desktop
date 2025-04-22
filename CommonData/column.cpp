@@ -1222,96 +1222,54 @@ stringvec Column::displaysAsStrings() const
 stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels )
 {
 	JASPTIMER_SCOPE(Column::dataAsRLevels);
-	
-	stringvec	levels;
-	stringset	levelsIncluded,
-				levelsAdded;
-		
-	auto _addLabel = [&](const std::string & display, bool fromData)
-	{
-		if(!levelsAdded.count(display))
-		{
-			levelsAdded.insert(display);
-			levels.push_back(display);
-		}
-		
-		if(fromData)
-			levelsIncluded.insert(display);
-	};
-	
-	//make sure we have temp labels for any doubles/ints outside of labels
-	size_t nonEmpty = 0;
-		
-	//First we try to find all levels, start with the known labels and then add any  doubles as labels.
-	for(Label * label : _labels)
-		if(!label->isEmptyValue())
-		{
-			_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), false);
-			nonEmpty++;
-		}
-	
+
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
 	//We ignore emptyvalues and depending on whether filter is usable (length is data length) we filter out rows we dont need
-	bool useFilter = filter.size() == rowCount();
-	
+	const bool 	useFilter 	= filter.size() == rowCount();
+	int  		valuesSize	= 0;
+
+	intset ids, usedIds;
+
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
 		{
-			if(_ints[row] != Label::NO_LABEL)
-			{
-				Label * label = labelByIntsId(_ints[row]);
-				
-				assert(label || _ints[row] == EmptyValues::missingValueInteger);
-				
-				if(label && !label->isEmptyValue())
-					_addLabel(useLabels ? label->labelDisplay() : label->originalValueAsString(false), true);
-			}
-			else
-			{
-				double val = _dbls[row];
-				
-				if(!isEmptyValue(val))
-					_addLabel(doubleToDisplayString(val, false), true);
-			}
+			valuesSize++;
+			ids.insert(_ints[row]);
 		}
 	
-	//At the end we make a mapping of the levels we have and need
-	//We make sure the map is up to date afterwards
-	//for(int levelI=levels.size()-1; levelI >= 0; levelI--)
-	//	if(!levelsIncluded.count(levels[levelI]))
-	//		levels.erase(levels.begin() + levelI);
+	for(int id : ids)
+		if(id != Label::NO_LABEL && id != EmptyValues::missingValueInteger)
+		{
+			Label * label = labelByIntsId(id);
+			
+			if(label && !label->isEmptyValue())
+				usedIds.insert(id);
+		}
 	
-	strintmap levelToValueMap;
-	for(size_t levelI=0; levelI<levels.size(); levelI++)
-		levelToValueMap[levels[levelI]] = levelI;
-	
-	//Then we fill values with the correct values
-	values.resize(0); //make sure there is nothing in it
-	
-	for(size_t row=0; row<rowCount(); row++)
+	stringvec levels;
+	levels.reserve(usedIds.size());
+
+	intintmap idToLevel;
+
+	for(Label * label : _labels)
+		if(usedIds.count(label->intsId()))
+		{
+			levels.push_back(useLabels ? label->labelDisplay() : label->originalValueAsString(false));
+			idToLevel[label->intsId()] = levels.size();
+		}
+
+	values.resize(valuesSize);
+
+	for(size_t row=0, valueRow=0; row<rowCount() && valueRow < valuesSize; row++)
 		if(!useFilter || filter[row])
 		{
-			if(_ints[row] != Label::NO_LABEL)
-			{
-				Label * label = labelByIntsId(_ints[row]);
-				
-				assert(label || _ints[row] == EmptyValues::missingValueInteger);
-				
-				if(label && !label->isEmptyValue())
-					values.push_back(levelToValueMap[useLabels ? label->labelDisplay() : label->originalValueAsString(false)]);
-				else
-					values.push_back(EmptyValues::missingValueInteger);
-			}
-			else
-			{
-				double val = _dbls[row];
-				
-				if(!isEmptyValue(val))
-					values.push_back(levelToValueMap[doubleToDisplayString(val, false)]);
-				else
-					values.push_back(EmptyValues::missingValueInteger);
-			}
+			values[valueRow] = EmptyValues::missingValueInteger;
+
+			if(_ints[row] != Label::NO_LABEL && _ints[row] != EmptyValues::missingValueInteger && idToLevel.count(_ints[row]))
+				values[valueRow] = idToLevel.at(_ints[row]);
+			
+			valueRow++;
 		}
 	
 	return levels;
@@ -1328,6 +1286,7 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 
 	//depending on whether filter is usable (length is data length) we filter out rows we dont need
 	bool useFilter = filter.size() == rowCount();
+	doubles.reserve(_dbls.size());
 	
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])

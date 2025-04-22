@@ -263,6 +263,7 @@ void DataSetViewBase::calculateCellSizesAndClear(bool clearStorage)
 {
 	JASPTIMER_SCOPE(DataSetViewBase::calculateCellSizes);
 
+	
 	_cellSizes.clear();
 	_dataColsMaxWidth.clear();
 	_storedLineFlags.clear();

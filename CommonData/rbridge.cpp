@@ -461,9 +461,8 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			
 			stringvec levels = column->dataAsRLevels(vals, filterToUse, true);
 			
-			for(size_t i=0; i<vals.size(); i++)
-				resultCol.ints[i] = vals[i] == EmptyValues::missingValueInteger ? vals[i] : vals[i] + 1; //R chokes on 0-based indices
-
+			memcpy(resultCol.ints, vals.data(), vals.size() * sizeof(int));
+			
 			resultCol.labels = rbridge_getLabels(levels, resultCol.nbLabels);
 		}
 	}
