@@ -340,6 +340,7 @@ public slots:
 				bool				requestComputedColumnDestruction(	const std::string & columnName, Analysis * analysis);
 				void				checkDataSetForUpdates();
 				void				delayedRefresh();
+				void				doWalCheckPoint();
 				void				resetFilterCounters();
 				void				prepareForLanguageChange();
 				void				languageChangeDone();
@@ -392,7 +393,8 @@ private:
 							*	_labelsSubModel;
 	
 	QTimer						_databaseIntervalSyncher,
-								_delayedRefreshTimer;
+								_delayedRefreshTimer,
+								_doWalCheckPointTimer;
 	UndoStack				*	_undoStack					= nullptr;
 	
 };

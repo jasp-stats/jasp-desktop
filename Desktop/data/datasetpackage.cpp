@@ -64,8 +64,13 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	
 	connect(&_databaseIntervalSyncher,	&QTimer::timeout, this, &DataSetPackage::synchingIntervalPassed);
 	connect(&_delayedRefreshTimer,		&QTimer::timeout, this, &DataSetPackage::delayedRefresh);
-
+	connect(&_doWalCheckPointTimer,		&QTimer::timeout, this, &DataSetPackage::doWalCheckPoint);
+	
 	_undoStack = new UndoStack(this);
+	
+	_doWalCheckPointTimer.setInterval(5*60*1000);
+	_doWalCheckPointTimer.setSingleShot(false);
+	_doWalCheckPointTimer.start();
 }
 
 DataSetPackage::~DataSetPackage() 
@@ -183,6 +188,8 @@ void DataSetPackage::onDataModeChanged(bool dataMode)
 {
 	Log::log() << "Data Mode " << (dataMode ? "on" : "off") << "!" << std::endl;
 	_dataMode = dataMode;
+	
+	doWalCheckPoint();
 
 	beginResetModel();
 	endResetModel();
@@ -1289,6 +1296,14 @@ void DataSetPackage::delayedRefresh()
 	refresh();	
 }
 
+void DataSetPackage::doWalCheckPoint()
+{
+	if(DatabaseInterface::singleton())
+		DatabaseInterface::singleton()->doWalCheckPoint();
+}
+
+
+
 void DataSetPackage::refreshColumn(QString columnName)
 {
 	beginResetModel();
@@ -1364,6 +1379,8 @@ void DataSetPackage::endLoadingData(bool informEngines)
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
 
 	Log::log() << "DataSetPackage::endLoadingData" << std::endl;
+	
+	doWalCheckPoint();
 
 	endResetModel();
 	enginesReceiveNewData();

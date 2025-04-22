@@ -1896,7 +1896,7 @@ void DatabaseInterface::create()
 		std::filesystem::remove(dbFile());
 	}
 	
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_WAL | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -1906,9 +1906,27 @@ void DatabaseInterface::create()
 	else
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
 	
+	runStatements("pragma journal_mode=wal;");
+	runStatements("pragma synchronous=normal;");
+	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
 	transactionWriteEnd();
+}
+
+void DatabaseInterface::doWalCheckPoint()
+{
+	if(!_db)
+		return;
+	
+	int sizeWalLogInFrames, totalNumberOfFramesCheckpointed;
+	
+	sqlite3_wal_checkpoint_v2(_db, NULL, SQLITE_CHECKPOINT_RESTART, &sizeWalLogInFrames, &totalNumberOfFramesCheckpointed);
+	
+	if(sizeWalLogInFrames || totalNumberOfFramesCheckpointed)
+	{
+		Log::log() << "DatabaseInterface::doWalCheckPoint: sizeWalLogInFrames=" << sizeWalLogInFrames << " and totalNumberOfFramesCheckpointed=" << totalNumberOfFramesCheckpointed << std::endl;
+	}
 }
 
 void DatabaseInterface::load()
@@ -1919,7 +1937,7 @@ void DatabaseInterface::load()
 	if(!std::filesystem::exists(dbFile()))
 		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
 
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_WAL | SQLITE_OPEN_FULLMUTEX, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
