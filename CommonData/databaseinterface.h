@@ -165,9 +165,10 @@ public:
 	void		labelDelete(	int id);
 	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order);
 	void		labelSetOrder(	int id, int order);
-	void		labelsLoad(		Column * column);
-	void		labelsWrite(	Column * column);
-	void		labelsWrite(const Columns & columns, std::function<void(float)> progressCallback);
+	void		labelsLoad(			Column  * column);
+	void		labelsLoad(	const	Columns & columns);//, std::function<void(float)> progressCallback);
+	void		labelsWrite(const	Columns & columns, std::function<void(float)> progressCallback);
+	void		labelsWrite(		Column  * column);
 	void		labelsSetOrder(	const intintmap & orderPerDbId);
 
 	//Transactions

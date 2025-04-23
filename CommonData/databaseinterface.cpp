@@ -794,11 +794,8 @@ void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<vo
 	
 	auto loadBatchOfColumns = [this, data, &localProgressBar](Columns group, size_t groupNum)
 	{
-		for(Column * col : group)
-		{
-			labelsLoad(col);
-			localProgressBar(1);
-		}		
+		labelsLoad(group);
+		localProgressBar(groupNum);
 	};
 	
 	//Ok, split up columns into some groups so we can use multiple threads
@@ -1473,6 +1470,67 @@ void DatabaseInterface::labelsLoad(Column * column)
 	column->labelsRemoveBeyond(labelsSize);
 	 
 	column->endBatchedLabelsDB(false);
+	
+	transactionReadEnd();
+}
+
+void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void (float)> progressCallback)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::labelsLoad);
+	
+	transactionReadBegin();
+	
+	std::map<int,Column*>	localColMap;
+	intintmap				labelsPerCol;
+	
+	for(Column * column : columns)
+	{
+		column->beginBatchedLabelsDB();
+	
+		localColMap [column->id()] = column;
+		labelsPerCol[column->id()] = 0;
+   }
+	
+
+	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	{
+	};
+	
+	Json::Reader reader;
+
+	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
+	{
+		int colCount = sqlite3_column_count(stmt);
+
+		assert(colCount == 8);
+
+		int			id						= sqlite3_column_int(stmt,			0);
+		int			value					= sqlite3_column_int(stmt,			1);
+		std::string	label					= _wrap_sqlite3_column_text(stmt,	2);
+		int			order					= sqlite3_column_int(stmt,			3);
+		bool		filterAllows			= sqlite3_column_int(stmt,			4);
+		std::string	description				= _wrap_sqlite3_column_text(stmt,	5);
+		std::string	originalValueJsonStr	= _wrap_sqlite3_column_text(stmt,	6);
+		int			columnId				= sqlite3_column_int(stmt,			7);
+		
+		Json::Value originalValueJson;
+		
+		reader.parse(originalValueJsonStr, originalValueJson);
+
+		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
+			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
+
+		if(localColMap.count(columnId))
+			labelsPerCol[localColMap.at(columnId)->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id)]++;
+	};
+
+	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson, columnId FROM Labels WHERE columnId = ?;", prepare, processRow);
+
+	for(Column * column : columns)
+	{
+		column->labelsRemoveBeyond(labelsPerCol[column->id()]);
+		column->endBatchedLabelsDB(false);
+	}
 	
 	transactionReadEnd();
 }
