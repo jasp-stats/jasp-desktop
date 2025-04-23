@@ -184,8 +184,7 @@ private:
 				_transactionReadDepth	= 0;
 
 	sqlite3	*	_db = nullptr;
-	bool		_inMemory = false;
-	std::mutex	_transactionMutex;
+	static bool	_inMemory;
 
 	static			std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
 	static const	std::string _dbConstructionSql;
