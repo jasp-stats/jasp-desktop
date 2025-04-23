@@ -39,6 +39,7 @@ public:
 
 	static bool			toCout() { return _where == logType::cout; }
 	static const char * getTimestamp();
+	static std::string	getLocalTime();
 
 private:
 						Log() { }

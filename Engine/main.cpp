@@ -106,9 +106,15 @@ int main(int argc, char *argv[])
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
 		Log::setWhere(logTypeFromString(logFileWhere));
 		Log::setEngineNo(slaveNo);
+		
+		
+		Log::log(false) << "\n\n###########################################################################################\n" 
+						<< "#######         Engine #" << slaveNo << " starts at " << Log::getLocalTime() 
+						<< "\n\n###########################################################################################\n" 
+						<< std::endl;
 
 		Log::log() << "Log and possible redirects initialized!" << std::endl;
-		Log::log() << "jaspEngine started and has slaveNo " << slaveNo << " and it's parent PID is " << parentPID << std::endl;
+		Log::log() << "jaspEngine started and is #" << slaveNo << " and it's parent PID is " << parentPID << std::endl;
 		Log::log() << "Current directory is: '" << std::filesystem::current_path().string() << "'" << std::endl;
 
 		try

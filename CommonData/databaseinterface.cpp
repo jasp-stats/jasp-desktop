@@ -1482,14 +1482,23 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 	
 	std::map<int,Column*>	localColMap;
 	intintmap				labelsPerCol;
+	std::stringstream		statement;
+	
+	statement << "SELECT id, value, label, ordering, filterAllows, description, originalValueJson, columnId FROM Labels WHERE columnId IN (";
 	
 	for(Column * column : columns)
 	{
 		column->beginBatchedLabelsDB();
-	
+		
+		if(localColMap.size() > 0)
+			statement << ", ";
+		statement << column->id();
+		
 		localColMap [column->id()] = column;
 		labelsPerCol[column->id()] = 0;
-   }
+	}
+	
+	statement << ");";
 	
 
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -1521,10 +1530,13 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
 
 		if(localColMap.count(columnId))
-			labelsPerCol[localColMap.at(columnId)->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id)]++;
+		{
+			localColMap.at(columnId)->labelsSet(labelsPerCol[columnId],	value, label, filterAllows, description, originalValueJson, order, id);
+			labelsPerCol[columnId]++;
+		}
 	};
 
-	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson, columnId FROM Labels WHERE columnId = ?;", prepare, processRow);
+	runStatements(statement.str(), prepare, processRow);
 
 	for(Column * column : columns)
 	{
@@ -1592,27 +1604,23 @@ void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(
 	 
 	 Labels allLabels;
 	 
+	 if(columns.size() > 0)
 	 {
-		 auto columnIter = columns.begin();
+		 std::stringstream statement;
+		 int count=0;
 		 
-		 bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
+		 statement << "(";
+		 for(Column * column : columns)
 		 {
-			 const Column		*	column			= *columnIter;
+			 if(count > 0)
+				 statement << ", ";
+			 statement << column->id();
 			 
-			 for(Label * label : column->labels())
-				 allLabels.push_back(label);
-			 
-			 sqlite3_bind_int( stmt,	1, column->id());
-			 
-			 columnIter++;
-		 };
+			 count++;
+		 }
+		 statement << ")";
 		 
-		 _runStatementsRepeatedly("DELETE From Labels WHERE columnId=?", [&](bindParametersType ** bindParams, size_t)
-			 {
-				 (*bindParams) = &_bindParams;
-				 
-				 return columnIter != columns.end();
-			 });
+		 runStatements("DELETE From Labels WHERE columnId in " + statement.str());
 	}
 	 
 	auto labelIter = allLabels.begin();
@@ -1824,19 +1832,20 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					break;
 				
 				case SQLITE_NOTADB:
+				case SQLITE_CORRUPT:
 				{
 					Log::log() << "Database is malformed..." << std::endl;
 					throw dbMalformedException();
 				}
 
 					
-				case SQLITE_CORRUPT:
-				{
-					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
-					Log::log() << errorMsg << std::endl;
-					throw std::runtime_error(errorMsg);
-				}
-					break;
+				//case SQLITE_CORRUPT:
+				//{
+				//	std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
+				//	Log::log() << errorMsg << std::endl;
+				//	throw std::runtime_error(errorMsg);
+				//}
+				//	break;
 					
 				default:
 				{
@@ -1942,17 +1951,18 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 						break;
 					
 					case SQLITE_NOTADB:
+					case SQLITE_CORRUPT:
 					{
 						Log::log() << "Database is malformed..." << std::endl;
 						throw dbMalformedException();
 					}
 						
-					case SQLITE_CORRUPT:
-					{
-						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
-						Log::log() << errorMsg << std::endl;
-						throw std::runtime_error(errorMsg);
-					}
+					//case SQLITE_CORRUPT:
+					//{
+					//	std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
+					//	Log::log() << errorMsg << std::endl;
+					//	throw std::runtime_error(errorMsg);
+					//}
 						break;
 						
 					default:

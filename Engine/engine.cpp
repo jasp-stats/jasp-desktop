@@ -66,11 +66,6 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	_EngineInstance = this;
 
 	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
-	
-	Log::log(false) << "\n\n###########################################################################################\n" 
-					<< "#######         Engine #" << _engineNum << " starts at " << Log::getTimestamp() 
-					<< "\n\n###########################################################################################\n" 
-					<< std::endl;
 }
 
 void Engine::initialize()
