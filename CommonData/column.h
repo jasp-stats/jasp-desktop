@@ -90,7 +90,7 @@ public:
 			void					incRevision() override;
 			bool					checkForUpdates();
 
-			bool					isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const;
+			bool					isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const;
 
 			columnType				type()					const	{ return _type;				}
 			int						id()					const	{ return _id;				}

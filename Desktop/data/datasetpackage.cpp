@@ -175,7 +175,7 @@ void DataSetPackage::generateEmptyData()
 		createDataSet();
 	
 	setDataSetSize(1, 1);
-	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault());
+	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), true);
 
 	endLoadingData();
 	emit newDataLoaded();
@@ -1515,13 +1515,12 @@ std::map<std::string,columnType> DataSetPackage::getColumnTypesMap()
 	return _dataSet ? _dataSet->getColumnTypesMap() : std::map<std::string,columnType>();
 }
 
-
-bool DataSetPackage::isColumnDifferentFromStringValues(const std::string & columnName, const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals)
+bool DataSetPackage::isColumnDifferentFromStringLookUps(const std::string & columnName, const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals)
 {
 	Column * col = _dataSet->column(columnName);
 	
 	if(col)
-		return col->isColumnDifferentFromStringValues(title, strVals, strLabs, strEmptyVals);
+		return col->isColumnDifferentFromStringLookUps(title, rows, valueLookup, labelLookup, strEmptyVals);
 
 	return true;
 }

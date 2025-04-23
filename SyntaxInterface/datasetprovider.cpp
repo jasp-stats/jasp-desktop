@@ -45,10 +45,10 @@ void DataSetProvider::resetDataSet()
 	if (_dataset)
 	{
 		_dataset->dbDelete();
-		_dataset->dbCreate();
+		delete _dataset;
 	}
-	else
-		_dataset = new DataSet();
+	
+	_dataset = new DataSet();
 }
 
 int	DataSetProvider::rowCount(const QModelIndex &) const

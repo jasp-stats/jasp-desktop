@@ -46,26 +46,18 @@ void DataSet::dbDelete()
 	JASPTIMER_SCOPE(DataSet::dbDelete);
 
 	assert(_dataSetID != -1);
+	
+	//We know there is only a single dataset, so we can truncate every table superquickly instead of doing it carefully
 
 	db().transactionWriteBegin();
 
-	if(_filter && _filter->id() != -1)
-		_filter->dbDelete();
-	delete _filter;
-	_filter = nullptr;
-
-	for(Column * col : _columns)
-	{
-		col->dbDelete(false);
-		delete col;
-	}
 	_columns.clear();
 
 	db().dataSetDelete(_dataSetID);
 
 	_dataSetID = -1;
-
 	
+	db().truncateAllTables();	
 	db().transactionWriteEnd();
 }
 

@@ -160,7 +160,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		{
 			missingColumns.erase(syncColumnName);
 
-			if(DataSetPackage::pkg()->isColumnDifferentFromStringValues(syncColumnName, syncColumn->title(), syncColumn->allValuesAsStrings(), syncColumn->allLabelsAsStrings(), syncColumn->allEmptyValuesAsStrings()))
+			if(DataSetPackage::pkg()->isColumnDifferentFromStringLookUps(syncColumnName, syncColumn->title(), syncColumn->size() ,[&syncColumn](size_t r){ return syncColumn->valueLookup(r); }, [&syncColumn](size_t r){ return syncColumn->labelLookup(r); }, syncColumn->allEmptyValuesAsStrings()))
 			{
 				//Log::log() << "Something changed in column: " << syncColumnName << std::endl;
 				changedColumns.push_back(std::pair<int, std::string>(syncColNo, syncColumnName));
@@ -177,7 +177,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 				const std::string	& newColName	= newColIt->first;
 				ImportColumn		* newColumn		= _importDataSet->getColumn(newColName);
 
-				if(!DataSetPackage::pkg()->isColumnDifferentFromStringValues(nameMissing, newColumn->title(), newColumn->allValuesAsStrings(), newColumn->allLabelsAsStrings(), newColumn->allEmptyValuesAsStrings()))
+				if(!DataSetPackage::pkg()->isColumnDifferentFromStringLookUps(nameMissing, newColumn->title(), newColumn->size(), [&newColumn](size_t r){ return newColumn->valueLookup(r); }, [&newColumn](size_t r){ return newColumn->labelLookup(r); }, newColumn->allEmptyValuesAsStrings()))
 				{
 					changeNameColumns[nameMissing] = newColName;
 					newColumns.erase(newColIt);

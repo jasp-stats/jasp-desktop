@@ -684,10 +684,10 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 	
 		std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt) {};
 	
-		const size_t	rowCount	= dataSetRowCount(data->id());
+		const int	rowCount	= dataSetRowCount(data->id());
 	
 		for(Column * col : group)
-			col->setRowCount(rowCount);
+			col->setRowCount(rowCount > -1 ? rowCount : 0);
 	
 		if(groupNum == 0)
 			data->filter()->setRowCount(rowCount);
@@ -1928,7 +1928,7 @@ void DatabaseInterface::create()
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
 	
 	runStatements("pragma journal_mode=wal;");
-	runStatements("pragma synchronous=normal;");
+	runStatements("pragma synchronous=full;");
 	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
@@ -2052,6 +2052,20 @@ void DatabaseInterface::transactionReadEnd()
 	
 	if(--_transactionReadDepth == 0)
 		runStatements("COMMIT");
+}
+
+void DatabaseInterface::truncateAllTables()
+{
+	JASPTIMER_SCOPE(DatabaseInterface::truncateAllTables);
+	runStatements(R"MultiPower(
+	DELETE FROM Labels;
+	DELETE FROM Columns;
+	DELETE FROM Filters;
+	DELETE FROM DataSets;
+)MultiPower");
+	
+	
+	
 }
 
 

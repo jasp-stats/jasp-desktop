@@ -879,9 +879,6 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 	if(_labelByValDis.count(valDisplay))
 		return _labelByValDis.at(valDisplay)->intsId();
-	
-	if(Label::originalValueAsString(this, originalValue) == "" || display == "")
-		Log::log() << "!";
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
@@ -1887,9 +1884,22 @@ bool Column::checkForUpdates()
 	return true;
 }
 
-bool Column::isColumnDifferentFromStringValues(const std::string & title, const stringvec & strVals, const stringvec & strLabs, const stringset & strEmptyVals) const 
+bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const 
 {
-	return !(title == _title && strEmptyVals == emptyValues()->emptyStrings() && strVals == valuesAsStrings() && strLabs == labelsAsStrings());
+	if(!(title == _title && strEmptyVals == emptyValues()->emptyStrings() || rows != rowCount()))
+			return true;
+			
+			
+	for(size_t r=0; r<rowCount(); r++)
+	{
+		if(valueLookup(r) != getValue(r))
+			return true;
+		
+		if(labelLookup(r) != getLabel(r))
+			return true;
+	}
+	
+	return false;
 }
 
 void Column::upgradeSetDoubleLabelsInInts()
