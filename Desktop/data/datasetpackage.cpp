@@ -144,10 +144,10 @@ void DataSetPackage::reset(bool newDataSet)
 	_analysesData				= Json::arrayValue;
 	_warningMessage				= std::string();
 	_hasAnalysesWithoutData		= false;
+	_filterShouldRunInit		= false;
 	_analysesHTMLReady			= false;
 	_database					= Json::nullValue;
 	_isJaspFile					= false;
-	_filterShouldRunInit		= false;
 	_dataMode					= false;
 	_manualEdits				= false;
 

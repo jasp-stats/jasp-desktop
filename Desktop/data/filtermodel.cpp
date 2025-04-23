@@ -3,6 +3,7 @@
 #include "columnencoder.h"
 #include "timers.h"
 #include <QMap>
+#include "log.h"
 
 FilterModel::FilterModel(labelFilterGenerator * labelFilterGenerator)
 	: QObject(DataSetPackage::pkg()), _labelFilterGenerator(labelFilterGenerator)
@@ -216,7 +217,13 @@ void FilterModel::processFilterErrorMsg(QString filterErrorMsg, int requestId)
 void FilterModel::sendGeneratedAndRFilter()
 {
 	JASPTIMER_SCOPE(FilterModel::sendGeneratedAndRFilter);
-
+	
+	if(!DataSetPackage::pkg()->isLoaded())
+	{
+		Log::log() << "An attempt was made to run a filter while the DataSetPackage is not loaded!" << std::endl;
+		return;
+	}
+	
 	setFilterErrorMsg("");
 	_lastSentRequestId = emit sendFilter(generatedFilter(), rFilter());
 }
