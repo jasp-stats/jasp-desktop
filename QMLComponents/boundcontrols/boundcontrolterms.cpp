@@ -206,7 +206,7 @@ Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::R
 	Json::Value optionValue;
 
 	if (hasRowComponent || containsInteractions)
-		optionValue = _getTableValueOption(terms, controlValues, optionKeyName, optionKeyValue, containsInteractions, false);
+		optionValue = _createTableOption(terms, controlValues, optionKeyName, optionKeyValue, containsInteractions, false);
 	else if (isSingleRow)
 		optionValue = terms.size() > 0 ? fq(terms[0].value()) : "";
 	else

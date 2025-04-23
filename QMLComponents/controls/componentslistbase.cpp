@@ -312,7 +312,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _getTableValueOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	return _createTableOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 }
 
 void ComponentsListBase::addItemHandler()

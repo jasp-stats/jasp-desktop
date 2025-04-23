@@ -145,7 +145,7 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 	}
 }
 
-Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
+Json::Value BoundControlBase::_createTableOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
 	Json::Value result(Json::arrayValue);
 
@@ -173,7 +173,7 @@ Json::Value BoundControlBase::_getTableValueOption(const Terms& terms, const Lis
 
 void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
-	setBoundValue(_getTableValueOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
+	setBoundValue(_createTableOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
 }
 
 bool BoundControlBase::_isValueWithTypes(const Json::Value &value) const

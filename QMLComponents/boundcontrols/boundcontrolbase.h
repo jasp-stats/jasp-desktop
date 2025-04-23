@@ -48,7 +48,7 @@ protected:
 	std::string					getName()													const;
 	void						handleComputedColumn(const Json::Value& value);
 
-	static Json::Value			_getTableValueOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables);
+	static Json::Value			_createTableOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables);
 	void						_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables = false);
 	void						_readTableValue(const Json::Value& value, const std::string& keyValue, const std::string& keyLabel, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms = Terms());
 	bool						_isValueWithTypes(const Json::Value &value)					const;
