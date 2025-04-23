@@ -49,8 +49,8 @@ public:
 	std::pair<std::string
 		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), labelDisplay()); }
 
-	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false);
-			std::string			originalValueAsString(bool fancyEmptyValue = false)		const;
+	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);
+			std::string			originalValueAsString(bool fancyEmptyValue = false, bool ignoreEmpty = true)		const;
 			std::string			str() const;
 			
 			void				setIntsId(			int value);
@@ -71,6 +71,7 @@ public:
 	const	DatabaseInterface	& db() const;
 
 private:
+			void				_setOriginalValue(	const Json::Value & originalValue);
 
 	Column		*	_column;
 

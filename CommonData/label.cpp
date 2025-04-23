@@ -28,10 +28,9 @@ Label::Label(Column * column, const std::string &label, int value, bool filterAl
 	_intsId			= value;
 	_filterAllows	= filterAllows;
 	_description	= description;//description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
-	_originalValue	= originalValue;
 	_order			= order;
 
-	ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+	_setOriginalValue(originalValue);
 	
 	if(id == -1)	dbCreate();
 	else			_dbId = id;
@@ -73,9 +72,9 @@ void Label::dbLoad(int labelId)
 	std::string origValJsonStr;
 	db().labelLoad(labelId, columnId, _intsId, _label, _filterAllows, _description, origValJsonStr, _order);
 
-	_originalValue = Json::nullValue;
-
-	Json::Reader().parse(origValJsonStr, _originalValue);
+	Json::Value originalValue = Json::nullValue;
+	Json::Reader().parse(origValJsonStr, originalValue);
+	_setOriginalValue(originalValue);
 }
 
 void Label::dbUpdate()
@@ -103,9 +102,8 @@ void Label::setInformation(Column * column, int id, int order, const std::string
 	_intsId			= value;	
 	_filterAllows	= filterAllows;
 	_description	= description;
-	_originalValue	= originalValue;
 	
-	ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+	_setOriginalValue(originalValue);
 }
 
 void Label::updateDoubleLabelsPostLocaleChange()
@@ -167,14 +165,21 @@ bool Label::setLabel(const std::string & label)
 	return false;
 }
 
+void Label::_setOriginalValue(const Json::Value & originalValue)
+{
+	_originalValue			= originalValue;
+		
+	ColumnUtils::getDoubleValue(originalValueAsString(false, true), _dblValue);
+}
+
+
 bool Label::setOriginalValue(const Json::Value & originalValue)
 {
 	if(_originalValue != originalValue)
 	{
 		Json::Value previous	= _originalValue;
-		_originalValue			= originalValue;
 		
-		ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
+		_setOriginalValue(originalValue);
 		
 		dbUpdate();
 		
@@ -198,11 +203,7 @@ bool Label::setOrigValLabel(const Json::Value &originalValue)
 		_label = newLabel;
 	
 	if(valChange)
-	{
-		_originalValue			= originalValue;
-		ColumnUtils::getDoubleValue(originalValueAsString(), _dblValue);
-	}
-	
+		_setOriginalValue(originalValue);
 	
 	if(aChange)
 	{
@@ -278,12 +279,12 @@ bool Label::isEmptyValue() const
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
 
-std::string Label::originalValueAsString(bool fancyEmptyValue) const
+std::string Label::originalValueAsString(bool fancyEmptyValue, bool ignoreEmpty) const
 {
-	return originalValueAsString(_column, _originalValue, fancyEmptyValue);
+	return originalValueAsString(_column, _originalValue, fancyEmptyValue, ignoreEmpty);
 }
 
-std::string Label::originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue)
+std::string Label::originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue, bool ignoreEmpty)
 {
 	switch(originalValue.type())
 	{
@@ -294,7 +295,7 @@ std::string Label::originalValueAsString(const Column * column, const Json::Valu
 		return std::to_string(originalValue.asInt());
 
 	case Json::realValue:
-		return column->doubleToDisplayString(originalValue.asDouble(), fancyEmptyValue);
+		return column->doubleToDisplayString(originalValue.asDouble(), fancyEmptyValue, ignoreEmpty);
 
 	case Json::stringValue:
 		return originalValue.asString();

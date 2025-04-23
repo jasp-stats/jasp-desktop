@@ -864,7 +864,7 @@ int Column::_labelMapIt(Label * label)
 	_labelsByValue		[ label->originalValueAsString()].insert(	label);
 
 	_highestIntsId = std::max(_highestIntsId, label->intsId());
-	_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(label->originalValueAsString())));
+	_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(label->originalValueAsString(true, false))));
 	_maxWidthLabel = std::max(_maxWidthLabel, int(stringUtils::approximateVisualLength(label->labelDisplay())));
 
 	_dbUpdateLabelOrder(true);
@@ -879,6 +879,9 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 	if(_labelByValDis.count(valDisplay))
 		return _labelByValDis.at(valDisplay)->intsId();
+	
+	if(Label::originalValueAsString(this, originalValue) == "" || display == "")
+		Log::log() << "!";
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
@@ -1147,7 +1150,7 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 			Label * label = labelByIntsId(_ints[row]);
 
 			if(label)
-				return label->originalValueAsString(fancyEmptyValue);
+				return label->originalValueAsString(fancyEmptyValue, ignoreEmptyValue);
 		}
 	}
 	
@@ -1339,7 +1342,7 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 		_labelsByValue[label->originalValueAsString()]	.insert(label);
 		
 		size_t prevL = stringUtils::approximateVisualLength(previousOriginal),
-				newL = stringUtils::approximateVisualLength(label->originalValueAsString());
+				newL = stringUtils::approximateVisualLength(label->originalValueAsString(true, false));
 		if(newL > _maxWidthValue)
 			_maxWidthValue = newL;
 		else if(prevL < newL && prevL == _maxWidthValue) 
@@ -2213,7 +2216,7 @@ size_t Column::getMaximumWidthInCharacters(bool fancyEmptyValue, bool valuesPlea
 		for(Label * label : labels())
 			if(!label->isEmptyValue())
 			{
-				takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue);
+				takeWidth	= !valuesPlease ? label->label() : label->originalValueAsString(fancyEmptyValue, false);
 				_maxWidth	= std::max(_maxWidth, int(stringUtils::approximateVisualLength(takeWidth)));
 			}
 	
@@ -2250,7 +2253,7 @@ stringvec Column::previewTransform(columnType transformType)
 			int count = 0;
 			
 			for(Label * label : _labels)
-				if(!label->isEmptyValue() && !ColumnUtils::isDoubleValue(label->originalValueAsString()))
+				if(!label->isEmptyValue() && std::isnan(label->originalValueAsDouble()))
 				{
 					if(count < showThisMany)
 						someImplicitEmptyValues << (count > 0 ? ", " : "") << '"' << label->originalValueAsString() << '"';
