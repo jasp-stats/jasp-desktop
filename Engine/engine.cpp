@@ -335,7 +335,10 @@ void Engine::runFilter(const std::string & filter, const std::string & generated
 	catch(filterException & e)
 	{
 		std::string error = std::string(e.what()).length() > 0 ? e.what() : "Something went wrong with the filter but it is unclear what.";
-
+		
+		while(_dataSet->db().transactionReadDepth() > 0)
+			_dataSet->db().transactionReadEnd();
+		
 		_dataSet->db().transactionWriteBegin();
 		_dataSet->filter()->setErrorMsg(error);
 		_dataSet->filter()->incRevision();

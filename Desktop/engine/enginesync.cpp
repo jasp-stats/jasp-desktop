@@ -431,6 +431,9 @@ void EngineSync::process()
 
 	processSettingsChanged();
 	
+	if(!DataSetPackage::pkg()->isLoaded())
+		return;
+	
 	if(!anEngineIsLoadingData)
 		processFilterScript();
 		

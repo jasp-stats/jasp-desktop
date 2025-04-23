@@ -161,7 +161,7 @@ public:
 				bool				currentFileIsExample()				const;
 				long				dataFileTimestamp()					const	{ return _dataSet ? _dataSet->dataFileTimestamp() : 0;	}
 				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
-				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit;					}
+				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit && isLoaded();					}
 
 
 				void				setFilterShouldRunInit(bool shouldIt)				{ _filterShouldRunInit			= shouldIt;			}

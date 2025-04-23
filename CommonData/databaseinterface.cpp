@@ -2049,7 +2049,7 @@ void DatabaseInterface::create()
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
-		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
+		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'.  This is for thread " << std::this_thread::get_id() << std::endl;
 	
 	//runStatements("pragma journal_mode=wal;");
 	//runStatements("pragma synchronous=full;");
@@ -2116,7 +2116,7 @@ void DatabaseInterface::load()
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
-		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
+		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'. This is for thread " << std::this_thread::get_id() << std::endl;
 	
 	_dbs[std::this_thread::get_id()] = db;
 	
@@ -2206,7 +2206,11 @@ void DatabaseInterface::transactionWriteBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteBegin);
 	
-	assert(_transactionReadDepth == 0);	
+	if(_transactionReadDepth > 0)
+	{
+		Log::log() << "A read transaction seems to be still going during DatabaseInterface::transactionWriteBegin, however, instead of crashing directly we will just try to unwind it." << std::endl;
+		while(_transactionReadDepth > 0) transactionReadEnd();
+	}
 	
 	if(_transactionWriteDepth++ == 0)
 		runStatements("BEGIN EXCLUSIVE", true); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
@@ -2216,7 +2220,11 @@ void DatabaseInterface::transactionReadBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadBegin);
 	
-	assert(_transactionWriteDepth == 0);
+	if(_transactionWriteDepth > 0)
+	{
+		Log::log() << "A write transaction seems to be still going during DatabaseInterface::transactionReadBegin, however, instead of crashing directly we will just try to unwind it." << std::endl;
+		while(_transactionWriteDepth > 0) transactionWriteEnd();
+	}
 	
 	if(_transactionReadDepth++ == 0)
 		runStatements("BEGIN DEFERRED", true);

@@ -182,6 +182,8 @@ public:
 	void		truncateAllTables();
 	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
 	bool		tableExists(const std::string & name);
+	int			transactionWriteDepth() { return _transactionWriteDepth; }
+	int			transactionReadDepth()	{ return _transactionReadDepth;  }
 	
 private:
 	sqlite3	*	_db();
