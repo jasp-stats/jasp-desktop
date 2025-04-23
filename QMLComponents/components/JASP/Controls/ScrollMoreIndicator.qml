@@ -12,7 +12,7 @@ Rectangle
 	property bool horizontal:	false
 	property color shadowCol:	jaspTheme.shadow
 
-	visible: 	(horizontal ? width : height) > 0
+	visible: 	extraSpace > 0
 
 	gradient: Gradient 
 	{

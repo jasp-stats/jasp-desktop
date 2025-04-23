@@ -225,9 +225,9 @@ ComboBoxBase
 				{
 					anchors
 					{
-						top:	parent.top
-						left:	parent.left
-						right:	parent.right
+						top:	popupView.top
+						left:	popupView.left
+						right:	popupView.right
 					}
 					
 					upsideDown:	true
@@ -238,11 +238,11 @@ ComboBoxBase
 				{
 					anchors
 					{
-						left:	parent.left
-						right:	parent.right
-						bottom:	parent.bottom
+						left:	popupView.left
+						right:	popupView.right
+						bottom:	popupView.bottom
 					}
-					extraSpace:	popupView.contentHeight - popupView.contentY + popupView.height 
+					extraSpace:	popupView.contentHeight - (popupView.contentY + popupView.height)
 				}
 			}
 			
