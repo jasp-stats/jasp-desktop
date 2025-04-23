@@ -240,7 +240,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	jaspRCPP_parseEvalQNT("library(methods)");
 	
 	jaspRCPP_logString("Loading friendly R functions for computed columns and filters.");
-	jaspRCPP_parseEvalQNT(initFriendlyFunctionsRCode);
+	jaspRCPP_parseEvalQNT(initFriendlyFunctionsRCode, false, false);
 
 	_R_HOME = jaspRCPP_parseEvalStringReturn("R.home('')");
 	jaspRCPP_logString("jaspRCPP_init is done, R_HOME is: " + _R_HOME + "\n");

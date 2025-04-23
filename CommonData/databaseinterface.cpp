@@ -2151,11 +2151,34 @@ isItReallyAnotherLabel:
 void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
-		
+	
+	std::set<sqlite3*> waitingFor;
+	
 	for(auto & idDb : _dbs)
-		sqlite3_close(idDb.second);
+		waitingFor.insert(idDb.second);
+					
+	do
+	{
+		for(auto & idDb : _dbs)
+			if(waitingFor.count(idDb.second))
+			{
+				int ret = sqlite3_close(idDb.second);
+				
+				if(ret == SQLITE_OK)
+					waitingFor.erase(idDb.second);
+			}
+		
+		if(waitingFor.size() > 0)
+			std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
+	}
+	while(waitingFor.size() > 0);
+		
 	_dbs.clear();
-	sqlite3_close(_dbCreated);
+	
+	while(sqlite3_close(_dbCreated) != SQLITE_OK)
+	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
+	}
 	_dbCreated = nullptr;
 }
 
