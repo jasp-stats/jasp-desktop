@@ -30,14 +30,13 @@ public:
 	
 	ListModelFactorLevels(JASPListControl* listView);
 	
-	int rowCount(const QModelIndex &parent = QModelIndex())						const override;
-	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole)			const override;
+	int					rowCount(const QModelIndex &parent = QModelIndex())												const override;
+	QVariant			data(const QModelIndex &index, int role = Qt::DisplayRole)										const override;
 	
-	void initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
-	std::vector<std::pair<std::string, std::vector<std::string> > > getFactors() const;
-	const Terms& getLevels() const;
+	void				initFactors(const std::vector<std::pair<std::string, std::vector<std::string> > > &factors);
+	QStringList			getLevels(const QString& factor)																const;
+	QList<QStringList>	getCombinedLevels()																				const;
 
-	
 public slots:
 	void itemChanged(int row, QVariant value);
 	void itemRemoved(int row);
@@ -71,7 +70,6 @@ protected:
 	};
 
 	QList<FactorLevelItem>	_items;
-	Terms					_allLevelsCombinations;
 
 	QStringList			_getAllFactors()													const;
 	QString				_giveUniqueValue(const FactorLevelItem& item, const QString value)	const;

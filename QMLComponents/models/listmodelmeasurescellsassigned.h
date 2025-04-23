@@ -38,7 +38,7 @@ public:
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)											override;
 	void			removeTerms(const QList<int>& indexes) override;
 
-	void			initLevels(const Terms& levels, const Terms &variables = Terms(), bool initVariables = false);
+	void			initLevels(const QList<QStringList>& levels, const Terms &variables = Terms(), bool initVariables = false);
 
 public slots:	
 	void			sourceTermsReset()																					override;

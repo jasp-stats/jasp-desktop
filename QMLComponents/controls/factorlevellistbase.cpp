@@ -38,6 +38,32 @@ void FactorLevelListBase::setUp()
 
 	connect(this, &FactorLevelListBase::itemChanged, _factorLevelsModel, &ListModelFactorLevels::itemChanged);
 	connect(this, &FactorLevelListBase::itemRemoved, _factorLevelsModel, &ListModelFactorLevels::itemRemoved);
+	connect(_factorLevelsModel, &ListModelFactorLevels::termsChanged, this, &FactorLevelListBase::factorsChanged);
+	connect(_factorLevelsModel, &ListModelFactorLevels::termsChanged, this, &FactorLevelListBase::factorLevelMapChanged);
+	connect(_factorLevelsModel, &ListModelFactorLevels::termsChanged, this, &FactorLevelListBase::nbFactorsChanged);
+}
+
+QStringList FactorLevelListBase::factors() const
+{
+	return _factorLevelsModel ? _factorLevelsModel->terms().labels() : QStringList();
+}
+
+int FactorLevelListBase::nbFactors() const
+{
+	return _factorLevelsModel ? _factorLevelsModel->terms().size() : 0;
+}
+
+QVariantMap FactorLevelListBase::factorLevelMap() const
+{
+	QVariantMap map;
+
+	if (_factorLevelsModel)
+	{
+		for (const Term& term : _factorLevelsModel->terms())
+			map[term.label()] = _factorLevelsModel->getLevels(term.value());
+	}
+
+	return map;
 }
 
 void FactorLevelListBase::bindTo(const Json::Value& value)
@@ -81,19 +107,14 @@ Json::Value FactorLevelListBase::createJson() const
 Json::Value FactorLevelListBase::createMeta() const
 {
 	Json::Value meta(BoundControlBase::createMeta()); //Work from parent to get everything it defines
-	
-	auto factors = _factorLevelsModel->getFactors();
-	
-	if(factors.size() == 0)
-		return meta;
-	
-	meta["encodeThis"] = Json::arrayValue;
-	for (const auto & factor : factors)
-	{
-		meta["encodeThis"].append(factor.first);
 		
-		for(const auto & level : factor.second)
-			meta["encodeThis"].append(level);
+	meta["encodeThis"] = Json::arrayValue;
+	for (const QString & factor : factors())
+	{
+		meta["encodeThis"].append(fq(factor));
+		
+		for(const QString & level : _factorLevelsModel->getLevels(factor))
+			meta["encodeThis"].append(fq(level));
 	}
 	
 	return meta;
@@ -120,21 +141,19 @@ void FactorLevelListBase::termsChangedHandler()
 	JASPListControl::termsChangedHandler();
 
 	Json::Value boundValue(Json::arrayValue);
-	const vector<pair<string, vector<string> > > &factors = _factorLevelsModel->getFactors();
 	
-	for (const auto &factor : factors)
+	for (const QString &factor : factors())
 	{
 		Json::Value row(Json::objectValue);
-		row["name"] = factor.first;
+		row["name"] = fq(factor);
 
 		Json::Value levels(Json::arrayValue);
-		for (const string &level : factor.second)
-			levels.append(level);
+		for (const QString &level : _factorLevelsModel->getLevels(factor))
+			levels.append(fq(level));
 
 		row["levels"] = levels;
 		boundValue.append(row);
 	}
 	
-	setNbFactors(factors.size());
 	setBoundValue(boundValue);
 }

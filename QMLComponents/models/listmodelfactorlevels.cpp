@@ -62,6 +62,23 @@ QVariant ListModelFactorLevels::data(const QModelIndex &index, int role) const
 	return ListModel::data(index, role);
 }
 
+QStringList ListModelFactorLevels::getLevels(const QString &factor) const
+{
+	QStringList levels;
+
+	for (auto item = _items.begin(); item != _items.end(); item++)
+	{
+		if (!item->isLevel && !item->isVirtual && item->value == factor)
+		{
+			item++;
+			for (; item->isLevel && !item->isVirtual && item != _items.end(); item++)
+				levels.push_back(item->value);
+			break;
+		}
+	}
+	return levels;
+}
+
 void ListModelFactorLevels::initFactors(const vector<pair<string, vector<string> > > &factors)
 {
 	beginResetModel();
@@ -85,86 +102,46 @@ void ListModelFactorLevels::initFactors(const vector<pair<string, vector<string>
 	// Append a virtual factor
 	_items.append(FactorLevelItem(_factorLevelList->factorPlaceHolder(), true, false));
 
-	_setAllLevelsCombinations();
+	_setTerms(_getAllFactors()); // _terms get only the factors
 
 	endResetModel();
 	
 }
 
-vector<pair<string, vector<string> > > ListModelFactorLevels::getFactors() const
+QList<QStringList> ListModelFactorLevels::getCombinedLevels() const
 {
-	vector<pair<string, vector<string> > > result;
-	string currentFactorName;
-	vector<string> currentLevels;
-	for (const FactorLevelItem& factor: _items)
-	{
-		if (!factor.isVirtual && !factor.isLevel)
-		{
-			currentFactorName = factor.value.toStdString();
-			currentLevels.clear();
-		} 
-		else if (!factor.isVirtual && factor.isLevel)
-		{
-			currentLevels.push_back(factor.value.toStdString());
-		}	
-		else if (factor.isVirtual && factor.isLevel)
-		{
-			result.push_back(make_pair(currentFactorName, currentLevels));
-			currentLevels.clear();
-		}
-	}
-	
-	return result;
-}
+	QList<QStringList> list;
 
-const Terms &ListModelFactorLevels::getLevels() const
-{
-	return _allLevelsCombinations;
-}
-
-void ListModelFactorLevels::_setAllLevelsCombinations()
-{
-	vector<vector<string> > allLevelsCombinations;
-	_setTerms(_getAllFactors()); // _terms get only the factors
-	
-	vector<vector<string> > allLevels;	
-	vector<string> currentLevels;
-	for (const FactorLevelItem& factor: _items)
+	for (const Term& term : terms())
 	{
-		if (factor.isLevel && !factor.isVirtual)
-			currentLevels.push_back(factor.value.toStdString());
-		else if (!currentLevels.empty())
+		if (list.empty())
 		{
-			allLevels.push_back(currentLevels);
-			currentLevels.clear();
-		}
-	}
-	
-	for (const string& level : allLevels[0])
-	{
-		vector<string> levelVector {level};
-		allLevelsCombinations.push_back(levelVector);
-	}
-	
-	for (uint i = 1; i < allLevels.size(); i++)
-	{
-		const vector<string>& levels = allLevels[i];
-		vector<vector<string> > previousLevelCombinations = allLevelsCombinations; // Copy it
-		allLevelsCombinations.clear();
-		
-		for (uint j = 0; j < previousLevelCombinations.size(); j++)
-		{
-			for (uint k = 0; k < levels.size(); k++)
+			for (const QString& level : getLevels(term.value()))
 			{
-				vector<string> previousLevels = previousLevelCombinations[j];
-				previousLevels.push_back(levels[k]);
-				allLevelsCombinations.push_back(previousLevels);
+				QStringList elt = {level};
+				list.append(elt);
 			}
-		}		
+		}
+		else
+		{
+			QList<QStringList> newList;
+			for (const QStringList& elt : list)
+			{
+				for (const QString& level : getLevels(term.value()))
+				{
+					QStringList newElt = elt;
+					newElt.append(level);
+					newList.append(newElt);
+				}
+			}
+
+			list = newList;
+		}
 	}
-	
-	_allLevelsCombinations.set(allLevelsCombinations, false);
+
+	return list;
 }
+
 
 QStringList ListModelFactorLevels::_getAllFactors() const
 {
@@ -208,6 +185,7 @@ void ListModelFactorLevels::itemChanged(int row, QVariant value)
 				// It the changed item was a virtual level, add after this one a virtual level.
 				beginInsertRows(QModelIndex(), row+1, row+1);
 				_items.insert(row + 1, FactorLevelItem(_factorLevelList->levelPlaceHolder(), true, true));
+				_setTerms(_getAllFactors());
 				endInsertRows();
 			}
 			else
@@ -220,14 +198,17 @@ void ListModelFactorLevels::itemChanged(int row, QVariant value)
 
 				_items.push_back(FactorLevelItem(_factorLevelList->levelPlaceHolder(), true, true)); // Virtual level
 				_items.push_back(FactorLevelItem(_factorLevelList->factorPlaceHolder(), true, false)); // Virtual factor
+				_setTerms(_getAllFactors());
 
 				endInsertRows();
 			}
 		}
 		else
+		{
+			_setTerms(_getAllFactors());
 			emit variableNamesChanged({ {oldVal, item.value} });
+		}
 
-		_setAllLevelsCombinations();
 	}
 
 	if (updateRow)
@@ -258,7 +239,8 @@ bool ListModelFactorLevels::_removeItem(int row)
 	beginRemoveRows(QModelIndex(), row, row + nbRowsToRemove - 1);
 	for (int i = 0; i < nbRowsToRemove; i++)
 		_items.removeAt(row);
-	_setAllLevelsCombinations();
+
+	_setTerms(_getAllFactors());
 	endRemoveRows();
 
 	return true;

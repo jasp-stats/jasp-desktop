@@ -30,21 +30,13 @@ ListModelMeasuresCellsAssigned::ListModelMeasuresCellsAssigned(JASPListControl* 
 {
 }
 
-void ListModelMeasuresCellsAssigned::initLevels(const Terms &levels, const Terms &variables, bool initVariables)
+void ListModelMeasuresCellsAssigned::initLevels(const QList<QStringList> &combinedLevels, const Terms &variables, bool initVariables)
 {
 	beginResetModel();
 	_levels.clear();
-	vector<vector<string> > allLevels = levels.asVectorOfVectors();
 
-	for (const vector<string>& levels : allLevels)
-	{
-		string concatLevels;
-		if (levels.size() > 0)
-			concatLevels = levels[0];
-		for (uint i = 1; i < levels.size(); i++)
-			concatLevels += "," + levels[i];
-		_levels.push_back(QString::fromStdString(concatLevels));
-	}
+	for (const QStringList& levels : combinedLevels)
+		_levels.push_back(levels.join(","));
 	
 	if (initVariables)
 		_setTerms(variables);

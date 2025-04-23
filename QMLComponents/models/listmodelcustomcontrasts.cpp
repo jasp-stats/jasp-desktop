@@ -327,13 +327,12 @@ void ListModelCustomContrasts::_setFactors()
 
 	if (_factorsSourceModel)
 	{
-		std::vector<std::pair<std::string, std::vector<std::string> > > factors = _factorsSourceModel->getFactors();
-		for (const auto& factor : factors)
+		for (const Term& factor : _factorsSourceModel->terms())
 		{
 			QList<QString> levels;
-			for (const std::string& level : factor.second)
-				levels.push_back(QString::fromStdString(level));
-			_factors[QString::fromStdString(factor.first)] = levels;
+			for (const QString& level : _factorsSourceModel->getLevels(factor.value()))
+				levels.push_back(level);
+			_factors[factor.value()] = levels;
 		}
 	}
 

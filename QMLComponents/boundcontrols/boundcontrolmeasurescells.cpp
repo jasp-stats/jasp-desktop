@@ -20,7 +20,6 @@
 #include "models/listmodelmeasurescellsassigned.h"
 #include "models/listmodelfactorlevels.h"
 #include "controls/jasplistcontrol.h"
-#include "analysisform.h"
 #include "utilities/qutils.h"
 
 #include <QTimer>
@@ -44,11 +43,11 @@ void BoundControlMeasuresCells::bindTo(const Json::Value &value)
 	_measuresCellsModel->initLevels(getLevels(), variables, true);
 }
 
-Terms BoundControlMeasuresCells::getLevels() const
+QList<QStringList> BoundControlMeasuresCells::getLevels() const
 {
-	Terms levels;
+	QList<QStringList> levels;
 	for (ListModelFactorLevels* factorsModel : _sourceFactorsModels)
-		levels.add(factorsModel->getLevels());
+		levels.append(factorsModel->getCombinedLevels());
 	
 	return levels;
 }
