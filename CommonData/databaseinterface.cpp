@@ -612,20 +612,16 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 
 	const float rowsInverse		= 1.0 / float(data->rowCount());
 	const int	updateInterval	= std::max(1, data->rowCount() / 100);
+	int			prevUpdate		= 0;
 
 	_runStatementsRepeatedly(
 		statement.str(),
 		[&](bindParametersType ** bindParameters, size_t row)
 		{
 			if(row >= data->rowCount())
-			{
-				progressCallback(1);
 				return false;
-			}
 
 			rowOutside = row;
-
-			static int prevUpdate = 0;
 
 			if(prevUpdate + updateInterval <= rowOutside)
 			{
@@ -1532,7 +1528,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 	transactionWriteEnd();
 }
 
-void DatabaseInterface::labelsWrite(const Columns & columns)
+void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(float)> progressCallback)
 {
 	 JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Columns);
 	 transactionWriteBegin();
@@ -1566,6 +1562,9 @@ void DatabaseInterface::labelsWrite(const Columns & columns)
 	
 	if(labelIter != allLabels.end())
 	{
+		const size_t	totalRows	= allLabels.size();
+		size_t			curRow		= 0,
+						lastRow		= 0;
  
 		 bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
 		 {
@@ -1593,6 +1592,13 @@ void DatabaseInterface::labelsWrite(const Columns & columns)
 			 label->setDbId(sqlite3_column_int(stmt, 0));
 	 
 			 labelIter++;
+			 curRow++;
+			 
+			 if(curRow-lastRow > 100 || curRow-lastRow > totalRows / 100 || curRow >= totalRows-1)
+			 {
+				 progressCallback(float(curRow) / float(totalRows));
+				 lastRow = curRow;
+			}
 		 };
 		 
 		 _runStatementsRepeatedly("INSERT OR REPLACE INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)

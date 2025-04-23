@@ -160,7 +160,7 @@ public:
 	void		labelSetOrder(	int id, int order);
 	void		labelsLoad(		Column * column);
 	void		labelsWrite(	Column * column);
-	void		labelsWrite(const Columns & columns);
+	void		labelsWrite(const Columns & columns, std::function<void(float)> progressCallback);
 	void		labelsSetOrder(	const intintmap & orderPerDbId);
 
 	//Transactions

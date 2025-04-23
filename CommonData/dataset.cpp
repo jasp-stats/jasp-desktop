@@ -87,7 +87,8 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 	if(_writeBatchedToDBDepth > 0)
 	{
 		//lets also write the labels now if they werent yet:
-		db().labelsWrite(columns);
+		db().labelsWrite(columns, [&progressCallback](float f){ progressCallback(f * 0.75);});
+		
 		for(Column * col : columns)
 			if(col->batchedLabelDepth())
 				col->endBatchedLabelsDB(false);
@@ -97,7 +98,7 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 	
 	if(_writeBatchedToDBDepth == 0)
 	{
-		db().dataSetBatchedValuesUpdate(this, columns, progressCallback);
+		db().dataSetBatchedValuesUpdate(this, columns, [&progressCallback](float f){ progressCallback(0.75 + (f * 0.25));});
 		incRevision(); //Should trigger reload at engine end
 	}
 }
