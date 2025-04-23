@@ -174,7 +174,7 @@ void DataSetPackage::generateEmptyData()
 	createDataSet();
 	
 	setDataSetSize(1, 1);
-	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), true);
+	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), false);
 
 	endLoadingData();
 	
@@ -1373,6 +1373,7 @@ void DataSetPackage::beginLoadingData(bool informEngines)
 	JASPTIMER_SCOPE(DataSetPackage::beginLoadingData);
 
 	enginesPrepareForData();
+	doWalCheckPoint();
 	beginResetModel();
 }
 
@@ -1383,7 +1384,6 @@ void DataSetPackage::endLoadingData(bool informEngines)
 	Log::log() << "DataSetPackage::endLoadingData" << std::endl;
 	
 	doWalCheckPoint();
-
 	endResetModel();
 	enginesReceiveNewData();
 

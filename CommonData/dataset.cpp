@@ -50,13 +50,8 @@ void DataSet::dbDelete()
 	//We know there is only a single dataset, so we can truncate every table superquickly instead of doing it carefully
 
 	db().transactionWriteBegin();
-
-	_columns.clear();
-
 	db().dataSetDelete(_dataSetID);
-
 	_dataSetID = -1;
-	
 	db().truncateAllTables();	
 	db().transactionWriteEnd();
 }
@@ -270,6 +265,9 @@ void DataSet::dbCreate()
 
 	//The variables are probably empty though:
 	_dataSetID	= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description, _databaseJson, _emptyValues->toJson().toStyledString(), _dataFileSynch);
+	
+	assert(_dataSetID == 1);
+	
 	_filter = new Filter(this);
 	_filter->dbCreate();
 	_columns.clear();
@@ -304,6 +302,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, boo
 		_dataSetID	= index;
 
 	assert(_dataSetID > 0);
+	assert(_dataSetID == 1);
 
 	std::string emptyVals;
 

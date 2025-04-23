@@ -73,6 +73,7 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	_progressCallback=progressCallback;
 	
 	DataSetPackage::pkg()->beginLoadingData();
+	DataSetPackage::pkg()->createDataSet();
 	
 	_synching = false;
 

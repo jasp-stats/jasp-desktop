@@ -102,7 +102,7 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 	};
 
 	transactionWriteBegin();
-	int id = runStatementsId("INSERT INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch) VALUES (?, ?, ?, ?, ?, ?) RETURNING id;", prepare);
+	int id = runStatementsId("INSERT OR REPLACE INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch, id) VALUES (?, ?, ?, ?, ?, ?, 1) RETURNING id;", prepare);
 	runStatements("CREATE TABLE " + dataSetName(id) + " (rowNumber INTEGER PRIMARY KEY);"); // Can be overwritten through dataSetCreateTable
 	transactionWriteEnd();
 
@@ -1004,13 +1004,12 @@ void DatabaseInterface::columnGetValues(int columnId, intvec & ints, doublevec &
 
 std::string DatabaseInterface::columnBaseName(int columnId) const
 {
-	JASPTIMER_SCOPE(DatabaseInterface::columnBaseName);
 	return "Column_"  + std::to_string(columnId);
 }
 
 std::string DatabaseInterface::dataSetName(int dataSetId) const
 {
-	JASPTIMER_SCOPE(DatabaseInterface::dataSetName);
+	assert(dataSetId == 1); //yeah I know...
 	return "DataSet_"  + std::to_string(dataSetId);
 }
 
@@ -1749,7 +1748,8 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				{
 					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
-					throw std::runtime_error(errorMsg);
+					if(ignoreFails)
+						throw std::runtime_error(errorMsg);
 				}
 				 
 			   case SQLITE_ROW:
@@ -1764,10 +1764,11 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					
 				case SQLITE_DONE:
 					break;
-					
+				
+				case SQLITE_NOTADB:
 				case SQLITE_CORRUPT:
 				{
-					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because the database was corrupt!";
+					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
 					throw std::runtime_error(errorMsg);
 				}
@@ -1802,8 +1803,9 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	
 	if(ret == SQLITE_ERROR)
 	{
-		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
-		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db()));
+		Log::log() <<					"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
+		if(ignoreFails)
+			throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db()));
 	}
 
 	if(ret == SQLITE_READONLY)
@@ -1874,10 +1876,11 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 					case SQLITE_DONE:
 						row++;
 						break;
-						
+					
+					case SQLITE_NOTADB:
 					case SQLITE_CORRUPT:
 					{
-						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because the database was corrupt!";
+						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
 						Log::log() << errorMsg << std::endl;
 						throw std::runtime_error(errorMsg);
 					}

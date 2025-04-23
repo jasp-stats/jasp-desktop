@@ -130,22 +130,26 @@ bool ExpandDataProxyModel::isColumnVirtual(int col) const
 void ExpandDataProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
 	_sourceModel = sourceModel;
-	connect(_sourceModel,				&QAbstractItemModel::modelReset,				this, &ExpandDataProxyModel::modelReset					);
-	connect(_sourceModel,				&QAbstractItemModel::dataChanged,				this, &ExpandDataProxyModel::dataChanged				);
-	connect(_sourceModel,				&QAbstractItemModel::headerDataChanged,			this, &ExpandDataProxyModel::headerDataChanged			);
-	connect(_sourceModel,				&QAbstractItemModel::modelAboutToBeReset,		this, &ExpandDataProxyModel::modelAboutToBeReset		);
-	connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeInserted,	this, &ExpandDataProxyModel::columnsAboutToBeInserted	);
-	connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeRemoved,	this, &ExpandDataProxyModel::columnsAboutToBeRemoved	);
-	connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeMoved,		this, &ExpandDataProxyModel::columnsAboutToBeMoved		);
-	connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeInserted,		this, &ExpandDataProxyModel::rowsAboutToBeInserted		);
-	connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeRemoved,		this, &ExpandDataProxyModel::rowsAboutToBeRemoved		);
-	connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeMoved,		this, &ExpandDataProxyModel::rowsAboutToBeMoved			);
-	connect(_sourceModel,				&QAbstractItemModel::columnsInserted,			this, &ExpandDataProxyModel::columnsInserted			);
-	connect(_sourceModel,				&QAbstractItemModel::columnsRemoved,			this, &ExpandDataProxyModel::columnsRemoved				);
-	connect(_sourceModel,				&QAbstractItemModel::columnsMoved,				this, &ExpandDataProxyModel::columnsMoved				);
-	connect(_sourceModel,				&QAbstractItemModel::rowsInserted,				this, &ExpandDataProxyModel::rowsInserted				);
-	connect(_sourceModel,				&QAbstractItemModel::rowsRemoved,				this, &ExpandDataProxyModel::rowsRemoved				);
-	connect(_sourceModel,				&QAbstractItemModel::rowsMoved,					this, &ExpandDataProxyModel::rowsMoved					);
+	
+	if(_sourceModel)
+	{
+		connect(_sourceModel,				&QAbstractItemModel::modelReset,				this, &ExpandDataProxyModel::modelReset					);
+		connect(_sourceModel,				&QAbstractItemModel::dataChanged,				this, &ExpandDataProxyModel::dataChanged				);
+		connect(_sourceModel,				&QAbstractItemModel::headerDataChanged,			this, &ExpandDataProxyModel::headerDataChanged			);
+		connect(_sourceModel,				&QAbstractItemModel::modelAboutToBeReset,		this, &ExpandDataProxyModel::modelAboutToBeReset		);
+		connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeInserted,	this, &ExpandDataProxyModel::columnsAboutToBeInserted	);
+		connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeRemoved,	this, &ExpandDataProxyModel::columnsAboutToBeRemoved	);
+		connect(_sourceModel,				&QAbstractItemModel::columnsAboutToBeMoved,		this, &ExpandDataProxyModel::columnsAboutToBeMoved		);
+		connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeInserted,		this, &ExpandDataProxyModel::rowsAboutToBeInserted		);
+		connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeRemoved,		this, &ExpandDataProxyModel::rowsAboutToBeRemoved		);
+		connect(_sourceModel,				&QAbstractItemModel::rowsAboutToBeMoved,		this, &ExpandDataProxyModel::rowsAboutToBeMoved			);
+		connect(_sourceModel,				&QAbstractItemModel::columnsInserted,			this, &ExpandDataProxyModel::columnsInserted			);
+		connect(_sourceModel,				&QAbstractItemModel::columnsRemoved,			this, &ExpandDataProxyModel::columnsRemoved				);
+		connect(_sourceModel,				&QAbstractItemModel::columnsMoved,				this, &ExpandDataProxyModel::columnsMoved				);
+		connect(_sourceModel,				&QAbstractItemModel::rowsInserted,				this, &ExpandDataProxyModel::rowsInserted				);
+		connect(_sourceModel,				&QAbstractItemModel::rowsRemoved,				this, &ExpandDataProxyModel::rowsRemoved				);
+		connect(_sourceModel,				&QAbstractItemModel::rowsMoved,					this, &ExpandDataProxyModel::rowsMoved					);
+	}
 }
 
 void ExpandDataProxyModel::removeRows(int start, int count)

@@ -82,9 +82,9 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 	JASPTIMER_SCOPE(JASPImporter::loadDataArchive_1_00);
 
     //Store sqlite into tempfiles:
-    ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(31.333 * p); });
-	ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-shm").writeEntryToTempFiles([&](float p){ progressCallback(32.333 * p); });
-	ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-wal").writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
+	ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-wal").writeEntryToTempFiles([&](float p){ progressCallback(1.333 * p); });
+	ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-shm").writeEntryToTempFiles([&](float p){ progressCallback(2.333 * p); });
+    ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
 	
 	DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
 

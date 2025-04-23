@@ -69,7 +69,6 @@ public:
 		void				setEngineSync(EngineSync * engineSync);
 		void				reset(bool newDataSet = true);
 		void				setDataSetSize(size_t columnCount, size_t rowCount);
-		void				setDataSetColumnCount(size_t columnCount)			{ setDataSetSize(columnCount,			dataRowCount()); }
 		void				setDataSetRowCount(size_t rowCount)					{ setDataSetSize(dataColumnCount(),		rowCount); }
 		void				increaseDataSetColCount(size_t rowCount)			{ setDataSetSize(dataColumnCount() + 1,	rowCount); }
 
