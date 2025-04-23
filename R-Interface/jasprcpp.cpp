@@ -366,11 +366,16 @@ void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int 
 {
 	auto rEnvironment = Rcpp::Environment::global_env();
 
-	rEnvironment[".resultFont"]			= resultFont;
+	rEnvironment[".resultFont"]				= resultFont;
 	rEnvironment[".imageBackground"]		= imageBackground;
 	rEnvironment[".ppi"]					= ppi;
-    // sometimes jaspBase is not available
-    jaspRCPP_parseEvalQNT("try(jaspBase:::registerFonts())");
+
+	// sometimes jaspBase is not available, check this using https://stackoverflow.com/a/38082613
+	std::string result = jaspRCPP_parseEvalStringReturn("if (nzchar(system.file(package = \"jaspBase\"))) \"ok\" else \"not ok\"");
+	if (result == "ok")
+		jaspRCPP_parseEvalQNT("jaspBase:::registerFonts()");
+	else
+		jaspRCPP_logString("jaspBase unavailable, did not call jaspBase:::registerFonts()\n");
 }
 
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options,
