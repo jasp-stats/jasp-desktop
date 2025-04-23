@@ -1644,19 +1644,19 @@ void DatabaseInterface::runQuery(const std::string & query, std::function<void(s
 	runStatements(query, bindParameters, processRow);
 }
 
-void DatabaseInterface::runStatements(	const std::string & statements)
+void DatabaseInterface::runStatements(	const std::string & statements, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatements);
-	_runStatements(statements);
+	_runStatements(statements, nullptr, nullptr, ignoreFails);
 }
 
-void DatabaseInterface::runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters)
+void DatabaseInterface::runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatements);
-	_runStatements(statements, &bindParameters);
+	_runStatements(statements, &bindParameters, nullptr, ignoreFails);
 }
 
-int DatabaseInterface::runStatementsId(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters)
+int DatabaseInterface::runStatementsId(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatementsId);
 	int id = -1;
@@ -1669,7 +1669,7 @@ int DatabaseInterface::runStatementsId(	const std::string & statements, std::fun
 
 	};
 
-	_runStatements(statements, &bindParameters, &processId);
+	_runStatements(statements, &bindParameters, &processId, ignoreFails);
 
 #ifdef SIR_LOG_A_LOT
 	Log::log() << "Output for '" << statements << "' returns id:" << id << std::endl;
@@ -1677,15 +1677,15 @@ int DatabaseInterface::runStatementsId(	const std::string & statements, std::fun
 	return id;
 }
 
-int DatabaseInterface::runStatementsId(const std::string & statements) 
+int DatabaseInterface::runStatementsId(const std::string & statements, bool ignoreFails) 
 {
-	return runStatementsId(statements, [](sqlite3_stmt *stmt){});
+	return runStatementsId(statements, [](sqlite3_stmt *stmt){}, ignoreFails);
 }
 
-void DatabaseInterface::runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters,	std::function<void(size_t row, sqlite3_stmt *stmt)>	processRow)
+void DatabaseInterface::runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters,	std::function<void(size_t row, sqlite3_stmt *stmt)>	processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatements);
-	_runStatements(statements, &bindParameters, &processRow);
+	_runStatements(statements, &bindParameters, &processRow, ignoreFails);
 }
 
 int DatabaseInterface::dataSetGetId()
@@ -1709,7 +1709,7 @@ void DatabaseInterface::dataSetDelete(int dataSetId)
 	transactionWriteEnd();
 }
 
-void DatabaseInterface::_runStatements(const std::string & statements, bindParametersType * bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> * processRow)
+void DatabaseInterface::_runStatements(const std::string & statements, bindParametersType * bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_runStatements);
 #ifdef SIR_LOG_A_LOT
@@ -1813,7 +1813,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	}
 }
 
-void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements, std::function<bool(bindParametersType ** bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow)
+void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements, std::function<bool(bindParametersType ** bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_runStatementsRepeatedly);
 #ifdef SIR_LOG_A_LOT
@@ -1856,17 +1856,41 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 					{
 						std::string errorMsg = "Running `\n"+statements.substr(current - start)+"\n` repeatedly failed because of: `" + sqlite3_errmsg(_db());
 						Log::log() << errorMsg << std::endl;
-						throw std::runtime_error(errorMsg);
+						
+						if(!ignoreFails)
+							throw std::runtime_error(errorMsg);
 					}
 
 					case SQLITE_ROW:
 						if(processRow)
 							(*processRow)(row, repetition, dbStmt);
-
+						row++;
 						break;
+						
+					case SQLITE_BUSY:
+						std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+						break;
+						
+					case SQLITE_DONE:
+						row++;
+						break;
+						
+					case SQLITE_CORRUPT:
+					{
+						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because the database was corrupt!";
+						Log::log() << errorMsg << std::endl;
+						throw std::runtime_error(errorMsg);
+					}
+						break;
+						
+					default:
+					{
+						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` had unchecked status "+std::to_string(ret)+" because of: `" + sqlite3_errmsg(_db());
+						Log::log() << errorMsg << std::endl;
+					}
 					}
 				
-					row++;
+					
 				}
 				while((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
 			}
@@ -1897,7 +1921,8 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because of: `" + sqlite3_errmsg(_db());
 		Log::log() << errorMsg << std::endl;
 
-		throw std::runtime_error(errorMsg);
+		if(!ignoreFails)
+			throw std::runtime_error(errorMsg);
 	}
 
 	if(ret == SQLITE_READONLY)
@@ -2068,7 +2093,7 @@ void DatabaseInterface::transactionReadEnd()
 	assert(_transactionReadDepth > 0);
 	
 	if(--_transactionReadDepth == 0)
-		runStatements("COMMIT");
+		runStatements("COMMIT", true); //ignore fails cause it fails sometimes, probably because no statements was done and so nothing to commit. this is ok
 }
 
 void DatabaseInterface::truncateAllTables()
