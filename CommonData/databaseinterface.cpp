@@ -1761,6 +1761,23 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				case SQLITE_BUSY:
 					std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
 					break;
+					
+				case SQLITE_DONE:
+					break;
+					
+				case SQLITE_CORRUPT:
+				{
+					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because the database was corrupt!";
+					Log::log() << errorMsg << std::endl;
+					throw std::runtime_error(errorMsg);
+				}
+					break;
+					
+				default:
+				{
+					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` had unchecked status "+std::to_string(ret)+" because of: `" + sqlite3_errmsg(_db());
+					Log::log() << errorMsg << std::endl;
+				}
 			   }
 				
 				

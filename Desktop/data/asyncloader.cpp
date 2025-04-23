@@ -118,6 +118,8 @@ void AsyncLoader::saveTask(FileEvent *event)
 			Utils::sleep(sleepTime);
 			delay += sleepTime;
 		}
+		
+		DataSetPackage::pkg()->doWalCheckPoint();
 
 		Exporter *exporter = event->exporter();
 		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));

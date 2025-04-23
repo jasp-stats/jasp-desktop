@@ -164,4 +164,6 @@ void JASPExporter::saveAnalyses(archive *a)
 void JASPExporter::saveDatabase(archive * a)
 {
 	saveTempFile(a, DatabaseInterface::singleton()->dbFile(true));
+	saveTempFile(a, DatabaseInterface::singleton()->dbFile(true)+"-shm");
+	saveTempFile(a, DatabaseInterface::singleton()->dbFile(true)+"-wal");
 }
