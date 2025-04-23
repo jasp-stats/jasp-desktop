@@ -11,7 +11,6 @@
 #include "log.h"
 
 DatabaseInterface * DatabaseInterface::_singleton	= nullptr;
-bool				DatabaseInterface::_inMemory	= false;
 
 //#define SIR_LOG_A_LOT
 
@@ -1724,7 +1723,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	do
 	{
 		JASPTIMER_RESUME(DatabaseInterface::_runStatements prepare);
-		ret	= sqlite3_prepare_v2(_db, current, total - (current - start), &dbStmt, &tail);
+		ret	= sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
 		JASPTIMER_STOP(DatabaseInterface::_runStatements prepare);
 		row = 0;
 
@@ -1742,7 +1741,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				{
 				case SQLITE_ERROR:
 				{
-					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because of: `" + sqlite3_errmsg(_db);
+					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
 					throw std::runtime_error(errorMsg);
 				}
@@ -1780,8 +1779,8 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	
 	if(ret == SQLITE_ERROR)
 	{
-		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db) << std::endl;
-		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db));
+		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
+		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db()));
 	}
 
 	if(ret == SQLITE_READONLY)
@@ -1813,7 +1812,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 
 	do
 	{
-		ret	= sqlite3_prepare_v2(_db, current, total - (current - start), &dbStmt, &tail);
+		ret	= sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
 
 		row = 0;
 
@@ -1832,7 +1831,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 					{
 					case SQLITE_ERROR:
 					{
-						std::string errorMsg = "Running `\n"+statements.substr(current - start)+"\n` repeatedly failed because of: `" + sqlite3_errmsg(_db);
+						std::string errorMsg = "Running `\n"+statements.substr(current - start)+"\n` repeatedly failed because of: `" + sqlite3_errmsg(_db());
 						Log::log() << errorMsg << std::endl;
 						throw std::runtime_error(errorMsg);
 					}
@@ -1855,7 +1854,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 		
 		if(ret == SQLITE_ERROR)
 		{
-			std::string errorMsg = "A problem occured trying to prepare statement `" + statements + "` and the error was: : `" + sqlite3_errmsg(_db);
+			std::string errorMsg = "A problem occured trying to prepare statement `" + statements + "` and the error was: : `" + sqlite3_errmsg(_db());
 			Log::log() << errorMsg << std::endl;
 			throw std::runtime_error(errorMsg);
 		}
@@ -1872,7 +1871,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 
 	if(ret == SQLITE_ERROR)
 	{
-		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because of: `" + sqlite3_errmsg(_db);
+		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because of: `" + sqlite3_errmsg(_db());
 		Log::log() << errorMsg << std::endl;
 
 		throw std::runtime_error(errorMsg);
@@ -1886,10 +1885,25 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 	}
 }
 
+sqlite3 * DatabaseInterface::_db()
+{
+	const auto id = std::this_thread::get_id();
+
+	if(_dbCreated && _dbCreator == id)
+		return _dbCreated;
+	
+	if(_dbs.count(id))
+		return _dbs.at(id);
+	
+	load();
+	
+	return _dbs.at(id);
+}
+
 void DatabaseInterface::create()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::create);
-	assert(!_db);
+	assert(!_dbCreated);
 
 	if(!_inMemory && std::filesystem::exists(dbFile()))
 	{
@@ -1897,11 +1911,11 @@ void DatabaseInterface::create()
 		std::filesystem::remove(dbFile());
 	}
 	
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 
 	if(ret != SQLITE_OK)
 	{
-		Log::log() << "Couldnt open sqlite internal db (" << dbFile() << "), because of: " << (_db ? sqlite3_errmsg(_db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		Log::log() << "Couldnt open sqlite internal db (" << dbFile() << "), because of: " << (_dbCreated ? sqlite3_errmsg(_dbCreated) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
@@ -1913,16 +1927,15 @@ void DatabaseInterface::create()
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
 	transactionWriteEnd();
+	
+	_dbCreator = std::this_thread::get_id();
 }
 
 void DatabaseInterface::doWalCheckPoint()
 {
-	if(!_db)
-		return;
-	
 	int sizeWalLogInFrames, totalNumberOfFramesCheckpointed;
 	
-	sqlite3_wal_checkpoint_v2(_db, NULL, SQLITE_CHECKPOINT_RESTART, &sizeWalLogInFrames, &totalNumberOfFramesCheckpointed);
+	sqlite3_wal_checkpoint_v2(_db(), NULL, SQLITE_CHECKPOINT_RESTART, &sizeWalLogInFrames, &totalNumberOfFramesCheckpointed);
 	
 	if(sizeWalLogInFrames || totalNumberOfFramesCheckpointed)
 	{
@@ -1933,37 +1946,50 @@ void DatabaseInterface::doWalCheckPoint()
 void DatabaseInterface::load()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::load);
-	assert(!_db);
-
+	
+	assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
+	
 	if(!std::filesystem::exists(dbFile()))
 		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
+	
+	sqlite3 * db;
 
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_db, SQLITE_OPEN_READWRITE, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE, NULL);
 
 	if(ret != SQLITE_OK)
 	{
-		Log::log() << "Couldnt open sqlite internal db, because of: " << (_db ? sqlite3_errmsg(_db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
 	
+	_dbs[std::this_thread::get_id()] = db;
 }
 
 void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
-	if(_db)
+	const auto id = std::this_thread::get_id();
+	if(_dbCreator == id)
 	{
-		sqlite3_close(_db);
-		_db = nullptr;
+		for(auto & idDb : _dbs)
+			sqlite3_close(idDb.second);
+		_dbs.clear();
+		sqlite3_close(_dbCreated);
+		_dbCreated = nullptr;
+	}
+	else if(_dbs.count(id))
+	{
+		sqlite3_close(_dbs.at(id));
+		_dbs.erase(id);
 	}
 }
 
 bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::string &columnName)
 {
 	return SQLITE_OK == sqlite3_table_column_metadata(
-	  _db,
+	  _db(),
 	  NULL,     
 	  tableName.c_str(), 
 	  columnName.c_str(),
@@ -1979,59 +2005,47 @@ void DatabaseInterface::transactionWriteBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteBegin);
 	
-	_transactionMutex.lock();
 	assert(_transactionReadDepth == 0);	
 	
 	if(_transactionWriteDepth++ == 0)
 		runStatements("BEGIN EXCLUSIVE"); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
-	
-	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionReadBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadBegin);
 	
-	_transactionMutex.lock();
 	assert(_transactionWriteDepth == 0);
 	
 	if(_transactionReadDepth++ == 0)
 		runStatements("BEGIN DEFERRED");
-	
-	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionWriteEnd(bool rollback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteEnd);
 	
-	_transactionMutex.lock();
 	assert(_transactionWriteDepth > 0);
 	
 	if(rollback)	
 	{
 		runStatements("ROLLBACK");
 		_transactionWriteDepth = 0;
-		_transactionMutex.unlock();
 		throw std::runtime_error("Rollback!"); //Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
 	}	
 	else if(--_transactionWriteDepth == 0)
 		runStatements("COMMIT");
 	
-	_transactionMutex.unlock();
 }
 
 void DatabaseInterface::transactionReadEnd()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadEnd);
 	
-	_transactionMutex.lock();
 	assert(_transactionReadDepth > 0);
 	
 	if(--_transactionReadDepth == 0)
 		runStatements("COMMIT");
-	
-	_transactionMutex.unlock();
 }
 
 

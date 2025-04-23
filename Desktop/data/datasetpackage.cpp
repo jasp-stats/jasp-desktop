@@ -194,11 +194,11 @@ void DataSetPackage::onDataModeChanged(bool dataMode)
 	beginResetModel();
 	endResetModel();
 	
-	if(dataSet())
+	/*if(dataSet())
 	{
 		if(_dataMode)	dataSet()->beginBatchedToDB();
 		else			dataSet()->endBatchedToDB();
-	}
+	}*/
 }
 
 DataSetBaseNode * DataSetPackage::indexPointerToNode(const QModelIndex & index) const

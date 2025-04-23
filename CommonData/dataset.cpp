@@ -80,7 +80,7 @@ void DataSet::beginBatchedToDB()
 void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Columns columns)
 {
 	if(columns.size() == 0)
-		columns = _changedDuringBatch.size() ? Columns(_changedDuringBatch.begin(), _changedDuringBatch.end()) : _columns;
+		columns = _columns;//_changedDuringBatch.size() ? Columns(_changedDuringBatch.begin(), _changedDuringBatch.end()) : _columns;
 	
 	assert(columns.size() != _columns.size() || _writeBatchedToDBDepth);
 	
