@@ -49,11 +49,10 @@ void DataSet::dbDelete()
 	
 	//We know there is only a single dataset, so we can truncate every table superquickly instead of doing it carefully
 
-	db().transactionWriteBegin();
 	db().dataSetDelete(_dataSetID);
-	_dataSetID = -1;
 	db().truncateAllTables();	
-	db().transactionWriteEnd();
+	
+	_dataSetID = -1;
 }
 
 void DataSet::beginBatchedToDB()

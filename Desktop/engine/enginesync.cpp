@@ -1157,7 +1157,7 @@ void EngineSync::dataModeChanged(bool dataMode)
 
 void EngineSync::enginesPrepareForData()
 {
-	JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
+	/*JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
 
 	
 	//make sure we process any received messages first.
@@ -1181,7 +1181,7 @@ void EngineSync::enginesPrepareForData()
 
 	for (auto * engine : pauseOrKillThese)
 		if(!engine->paused())
-			engine->killEngine();
+			engine->killEngine();*/
 }
 
 void EngineSync::enginesReceiveNewData()

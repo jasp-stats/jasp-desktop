@@ -1972,8 +1972,8 @@ void DatabaseInterface::create()
 	else
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'." << std::endl;
 	
-	runStatements("pragma journal_mode=wal;");
-	runStatements("pragma synchronous=full;");
+	//runStatements("pragma journal_mode=wal;");
+	//runStatements("pragma synchronous=full;");
 	
 	transactionWriteBegin();
 	runStatements(_dbConstructionSql);
@@ -1984,14 +1984,14 @@ void DatabaseInterface::create()
 
 void DatabaseInterface::doWalCheckPoint()
 {
-	int sizeWalLogInFrames, totalNumberOfFramesCheckpointed;
+	/*int sizeWalLogInFrames, totalNumberOfFramesCheckpointed;
 	
 	sqlite3_wal_checkpoint_v2(_db(), NULL, SQLITE_CHECKPOINT_RESTART, &sizeWalLogInFrames, &totalNumberOfFramesCheckpointed);
 	
 	if(sizeWalLogInFrames || totalNumberOfFramesCheckpointed)
 	{
 		Log::log() << "DatabaseInterface::doWalCheckPoint: sizeWalLogInFrames=" << sizeWalLogInFrames << " and totalNumberOfFramesCheckpointed=" << totalNumberOfFramesCheckpointed << std::endl;
-	}
+	}*/
 }
 
 void DatabaseInterface::load()
@@ -2022,19 +2022,12 @@ void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
 	const auto id = std::this_thread::get_id();
-	if(_dbCreator == id)
-	{
-		for(auto & idDb : _dbs)
-			sqlite3_close(idDb.second);
-		_dbs.clear();
-		sqlite3_close(_dbCreated);
-		_dbCreated = nullptr;
-	}
-	else if(_dbs.count(id))
-	{
-		sqlite3_close(_dbs.at(id));
-		_dbs.erase(id);
-	}
+		
+	for(auto & idDb : _dbs)
+		sqlite3_close(idDb.second);
+	_dbs.clear();
+	sqlite3_close(_dbCreated);
+	_dbCreated = nullptr;
 }
 
 bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::string &columnName)
@@ -2059,7 +2052,7 @@ void DatabaseInterface::transactionWriteBegin()
 	assert(_transactionReadDepth == 0);	
 	
 	if(_transactionWriteDepth++ == 0)
-		runStatements("BEGIN EXCLUSIVE"); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
+		runStatements("BEGIN EXCLUSIVE", true); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
 }
 
 void DatabaseInterface::transactionReadBegin()
@@ -2069,7 +2062,7 @@ void DatabaseInterface::transactionReadBegin()
 	assert(_transactionWriteDepth == 0);
 	
 	if(_transactionReadDepth++ == 0)
-		runStatements("BEGIN DEFERRED");
+		runStatements("BEGIN DEFERRED", true);
 }
 
 void DatabaseInterface::transactionWriteEnd(bool rollback)
@@ -2085,7 +2078,7 @@ void DatabaseInterface::transactionWriteEnd(bool rollback)
 		throw std::runtime_error("Rollback!"); //Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
 	}	
 	else if(--_transactionWriteDepth == 0)
-		runStatements("COMMIT");
+		runStatements("COMMIT", true);
 	
 }
 
