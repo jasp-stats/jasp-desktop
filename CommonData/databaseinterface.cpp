@@ -684,10 +684,10 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 	
 		std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt) {};
 	
-		const int	rowCount	= dataSetRowCount(data->id());
+		const int	rowCount	= std::max(0, dataSetRowCount(data->id()));
 	
 		for(Column * col : group)
-			col->setRowCount(rowCount > -1 ? rowCount : 0);
+			col->setRowCount(rowCount);
 	
 		if(groupNum == 0)
 			data->filter()->setRowCount(rowCount);

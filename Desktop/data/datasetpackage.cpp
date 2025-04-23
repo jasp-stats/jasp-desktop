@@ -171,13 +171,15 @@ void DataSetPackage::generateEmptyData()
 
 	beginLoadingData();
 
-	if(!_dataSet)
-		createDataSet();
+	createDataSet();
 	
 	setDataSetSize(1, 1);
 	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), true);
 
 	endLoadingData();
+	
+	setModified(false);
+	
 	emit newDataLoaded();
 	resetAllFilters();
 	setSynchingExternally(false);
