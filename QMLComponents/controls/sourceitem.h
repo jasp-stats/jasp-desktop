@@ -65,16 +65,17 @@ public:
 
 	SourceItem(JASPListControl* _listControl = nullptr);
 
-	ListModel*				sourceListModel()					{ return _sourceListModel;			}
-	const QString&			rowControlName()			const	{ return _rowControlName;			}
-	const QStringList&		sourceFilter()				const	{ return _sourceFilter;					}
-	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;	}
+	ListModel*				sourceListModel()					{ return _sourceListModel;					}
+	const QString&			rowControlName()			const	{ return _rowControlName;					}
+	const QStringList&		sourceFilter()				const	{ return _sourceFilter;						}
+	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;			}
 	bool					generateInteractions()		const	{ return _combineWithOtherModels || (_combineTerms != JASPControl::CombinationType::NoCombination); }
-	bool					isAnalysisDataSet()			const	{ return _isDataSetVariables;		}
-	bool					isNativeModel()				const	{ return _sourceNativeModel != nullptr;	}
+	bool					isAnalysisDataSet()			const	{ return _isDataSetVariables;				}
+	bool					isNativeModel()				const	{ return _sourceNativeModel != nullptr;		}
 	QAbstractItemModel*		nativeModel()						{ return _sourceNativeModel;				}
 	Terms					getTerms();
 	QSet<QString>			usedControls()				const;
+	bool					connected()					const	{ return _connected;						}
 
 
 	void										connectModels();
@@ -83,6 +84,9 @@ public:
 	static QList<QVariant>						getListVariant(QVariant var);
 	static Terms								filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables = {}, const QMap<QString, Terms> &termsMap = {});
 
+
+signals:
+	void sourceConnected();
 
 private:
 	static QString							_readSourceName(const QString& sourceNameExt, QString& sourceControl, QString& sourceUse);

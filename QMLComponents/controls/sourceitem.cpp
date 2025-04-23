@@ -232,6 +232,7 @@ void SourceItem::connectModels()
 	}
 
 	_connected = true;
+	emit sourceConnected();
 }
 
 void SourceItem::disconnectModels()

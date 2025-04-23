@@ -191,7 +191,8 @@ protected:
 
 private:
 	void					_setupSources();
-	Terms					_getCombinedTerms(SourceItem* sourceToCombine);			
+	Terms					_getCombinedTerms(SourceItem* sourceToCombine);
+	void					_checkAllSourcesAreConnected(bool addConnect = true);
 			
 protected:
 	QVector<SourceItem*>	_sourceItems;

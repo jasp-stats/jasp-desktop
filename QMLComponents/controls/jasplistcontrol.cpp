@@ -49,6 +49,27 @@ void JASPListControl::setUpModel()
 	emit modelChanged();
 }
 
+void JASPListControl::_checkAllSourcesAreConnected(bool addConnect)
+{
+	bool allConnected = true;
+	for (SourceItem* sourceItem : _sourceItems)
+	{
+		if (!sourceItem->connected())
+		{
+			allConnected = false;
+			if (addConnect)
+				connect(sourceItem, &SourceItem::sourceConnected, this, [this]() { _checkAllSourcesAreConnected(false); });
+		}
+	}
+
+	// Update the containsVariables and containsInteractions property only once all the sources are connected
+	if (allConnected)
+	{
+		emit containsVariablesChanged();
+		emit containsInteractionsChanged();
+	}
+}
+
 void JASPListControl::_setupSources()
 {
 	for (SourceItem* sourceItem : _sourceItems)
@@ -56,10 +77,7 @@ void JASPListControl::_setupSources()
 
 	_sourceItems = SourceItem::readAllSources(this);
 
-	// Update the containsVariables and containsInteractions property once the sources are set
-	emit containsVariablesChanged();
-	emit containsInteractionsChanged();
-
+	_checkAllSourcesAreConnected();
 }
 
 bool JASPListControl::containsVariables() const
