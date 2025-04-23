@@ -227,10 +227,11 @@ Window
 
 						MouseArea
 						{
-							z:					-1
+							z:					1
 							acceptedButtons:	Qt.NoButton
 							anchors.fill:		parent
 							onWheel:			(wheel)=> { codeEntryScrollbar.scrollWheel(wheel); }
+							cursorShape:		Qt.IBeamCursor
 						}
 					}
 
