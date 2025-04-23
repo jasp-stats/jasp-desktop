@@ -17,6 +17,13 @@ class DatabaseInterface;
 struct sqlite3_stmt;
 struct sqlite3;
 
+class dbMalformedException : public std::runtime_error
+{
+public:
+	dbMalformedException() : std::runtime_error("Database file is malformed!") {}
+	~dbMalformedException() {}
+};
+
 ///Single point of interaction with sqlite, can later be turned into an interface for supporting other sql
 ///
 /// This class represents the abstraction layer between DataSetPackage and the SQLite backend
@@ -172,6 +179,8 @@ public:
 	//Miscellaneous
 	void		doWalCheckPoint();
 	void		truncateAllTables();
+	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
+	bool		tableExists(const std::string & name);
 	
 private:
 	sqlite3	*	_db();
@@ -183,7 +192,7 @@ private:
 	void		create();					///< Creates a new sqlite database in sessiondir and loads it
 	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 	void		close();										///< Closes the loaded database and disconnects
-	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
+	
 
 	int			_transactionWriteDepth	= 0,
 				_transactionReadDepth	= 0;

@@ -1877,7 +1877,7 @@ bool Column::checkForUpdates()
 {
 	assert(_id != -1);
 
-	if(_revision == db().columnGetRevision(_id))
+	if(_revision >= db().columnGetRevision(_id))
 		return false;
 
 	dbLoad();

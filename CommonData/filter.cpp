@@ -164,7 +164,7 @@ bool Filter::checkForUpdates()
 		if(_id == -1)
 			return false;
 	}
-	else if(_revision == db().filterGetRevision(_id))
+	else if(_revision >= db().filterGetRevision(_id))
 		return false;
 
 	if(_data->id() != -1 && _id != -1)

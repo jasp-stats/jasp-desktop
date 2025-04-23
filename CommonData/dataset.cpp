@@ -488,7 +488,7 @@ bool DataSet::checkForUpdates(stringvec * colsChanged, stringvec * colsRemoved, 
 	size_t rowCountPrev = rowCount();
 	
 		
-	if(_revision != db().dataSetGetRevision(_dataSetID))
+	if(_revision < db().dataSetGetRevision(_dataSetID))
 	{
 		dbLoad();
 		

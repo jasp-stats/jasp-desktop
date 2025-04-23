@@ -1748,7 +1748,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				{
 					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
-					if(ignoreFails)
+					if(!ignoreFails)
 						throw std::runtime_error(errorMsg);
 				}
 				 
@@ -1766,6 +1766,12 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					break;
 				
 				case SQLITE_NOTADB:
+				{
+					Log::log() << "Database is malformed..." << std::endl;
+					throw dbMalformedException();
+				}
+
+					
 				case SQLITE_CORRUPT:
 				{
 					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
@@ -1804,7 +1810,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	if(ret == SQLITE_ERROR)
 	{
 		Log::log() <<					"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
-		if(ignoreFails)
+		if(!ignoreFails)
 			throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db()));
 	}
 
@@ -1878,6 +1884,11 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 						break;
 					
 					case SQLITE_NOTADB:
+					{
+						Log::log() << "Database is malformed..." << std::endl;
+						throw dbMalformedException();
+					}
+						
 					case SQLITE_CORRUPT:
 					{
 						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
@@ -1962,7 +1973,7 @@ void DatabaseInterface::create()
 		std::filesystem::remove(dbFile());
 	}
 	
-	int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -1975,9 +1986,33 @@ void DatabaseInterface::create()
 	//runStatements("pragma journal_mode=wal;");
 	//runStatements("pragma synchronous=full;");
 	
-	transactionWriteBegin();
-	runStatements(_dbConstructionSql);
-	transactionWriteEnd();
+	bool	constructionWorked	= false;
+	size_t	constructionAttempt = 0; 
+isItReallyALabel:
+	
+	try
+	{
+		transactionWriteBegin();
+		runStatements(_dbConstructionSql);
+		transactionWriteEnd();
+		
+		constructionWorked = true;
+	}
+	catch(dbMalformedException & e)
+	{
+		//Unfortunate, but perhaps we were too quick?	
+		constructionWorked = false;
+		constructionAttempt++;
+	}
+	
+	if(!constructionWorked)
+	{
+		if(constructionAttempt > 10)
+			throw dbMalformedException();
+		
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
+		goto isItReallyALabel;
+	}
 	
 	_dbCreator = std::this_thread::get_id();
 }
@@ -2005,7 +2040,7 @@ void DatabaseInterface::load()
 	
 	sqlite3 * db;
 
-	int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE, NULL);
+	int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -2016,12 +2051,38 @@ void DatabaseInterface::load()
 		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'." << std::endl;
 	
 	_dbs[std::this_thread::get_id()] = db;
+	
+	
+	bool	loadingWorked	= false;
+	size_t	loadingAttempt	= 0; 
+	
+isItReallyAnotherLabel:
+	try
+	{
+		int tableCount = runStatementsId("SELECT COUNT(*) FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
+		Log::log() << "Loaded a database with #" << tableCount << " tables." << std::endl;
+		loadingWorked = true;
+	}
+	catch(dbMalformedException & e)
+	{
+		//Unfortunate, but perhaps we were too quick?	
+		loadingWorked = false;
+		loadingAttempt++;
+	}
+	
+	if(!loadingWorked)
+	{
+		if(loadingAttempt > 10)
+			throw dbMalformedException();
+		
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
+		goto isItReallyAnotherLabel;
+	}
 }
 
 void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
-	const auto id = std::this_thread::get_id();
 		
 	for(auto & idDb : _dbs)
 		sqlite3_close(idDb.second);
@@ -2042,7 +2103,12 @@ bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::
 	  NULL,
 	  NULL,
 	  NULL
-	);
+				);
+}
+
+bool DatabaseInterface::tableExists(const std::string &name)
+{
+	return runStatementsId("SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='" + name + "';") > 0;
 }
 
 void DatabaseInterface::transactionWriteBegin()

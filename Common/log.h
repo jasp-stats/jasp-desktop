@@ -38,11 +38,12 @@ public:
 	static std::string	whereStr() { return logTypeToString(_where); }
 
 	static bool			toCout() { return _where == logType::cout; }
+	static const char * getTimestamp();
 
 private:
 						Log() { }
 	static void			redirectStdOut();
-	static const char * getTimestamp();
+	
 
 	static logType			_default;
 	static logType			_where;

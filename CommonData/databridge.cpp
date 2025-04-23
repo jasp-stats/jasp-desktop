@@ -87,7 +87,7 @@ DataSet * DataBridge::provideAndUpdateDataSet()
 
 	bool setColumnNames = !_dataSet;
 
-	if(!_dataSet && _db->dataSetGetId() != -1)
+	if(!_dataSet && _db->dataSetGetId() == 1 && _db->tableExists(_db->dataSetName(1)))
 		_dataSet = new DataSet(_db->dataSetGetId());
 
 	if(_dataSet)
