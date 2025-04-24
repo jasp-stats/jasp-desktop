@@ -22,8 +22,7 @@ Column::Column(DataSet * data, int id)
 :	DataSetBaseNode(dataSetBaseNodeType::column, data->dataNode()),
 	_data(				data),
 	_id(				id),
-	_emptyValues(		new EmptyValues(data->emptyValues())),
-	_doubleDummy(		new Label(this)),
+	_emptyValues(		new EmptyValues(data->emptyValues())),	
 	_autoSortByValue(	_autoSortByValuesByDefault)
 {
 	if(_id != -1)
@@ -33,7 +32,6 @@ Column::Column(DataSet * data, int id)
 Column::~Column()
 {
 	delete _emptyValues;
-	delete _doubleDummy;
 }
 
 void Column::dbCreate(int index)
@@ -42,6 +40,7 @@ void Column::dbCreate(int index)
 
 	assert(_id == -1);
 	db().columnInsert(_id, index);
+	assert(_id != -1);
 }
 
 void Column::dbLoad(int id, bool getValues)

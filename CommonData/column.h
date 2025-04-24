@@ -249,7 +249,6 @@ private:
 			DataSet			* const	_data;
 			EmptyValues		* const	_emptyValues;
 			Labels					_labels;
-			Label			* const	_doubleDummy;		///< Only used to work around node problems in DataSetPackage. Should probably be replaced with something less hacky later on. (when rewriting DataSetPackage models)
 			columnType				_type						= columnType::unknown;
 			int						_id							= -1,
 									_analysisId					= -1,	// Actually initialized in DatabaseInterface::columnInsert

@@ -24,8 +24,6 @@ class Label : public DataSetBaseNode
 public:	
 	static const int NO_LABEL;
 
-								Label(Column * column);
-								Label(Column * column, int value);
 								Label(Column * column, const std::string & label, int value, bool filterAllows = true, const std::string & description = "", const Json::Value & originalValue = Json::nullValue, int order = -1, int id = -1);
 
 			void				dbDelete();

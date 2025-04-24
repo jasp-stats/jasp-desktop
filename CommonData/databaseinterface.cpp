@@ -1524,6 +1524,8 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 		
 		Json::Value originalValueJson;
 		
+		assert(id != -1);
+		
 		reader.parse(originalValueJsonStr, originalValueJson);
 
 		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
@@ -1580,7 +1582,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 			assert(sqlite3_column_count(stmt) == 1);
 	
 			Label * label = *labelIter;
-			
+
 			label->setDbId(sqlite3_column_int(stmt, 0));
 	
 			labelIter++;
@@ -1615,6 +1617,9 @@ void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(
 			 if(count > 0)
 				 statement << ", ";
 			 statement << column->id();
+			 
+			 for(Label * label : column->labels())
+				 allLabels.push_back(label);
 			 
 			 count++;
 		 }
@@ -1653,7 +1658,7 @@ void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(
 			 assert(sqlite3_column_count(stmt) == 1);
 	 
 			 Label * label = *labelIter;
-			 
+
 			 label->setDbId(sqlite3_column_int(stmt, 0));
 	 
 			 labelIter++;

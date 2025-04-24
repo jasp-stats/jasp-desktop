@@ -7,20 +7,6 @@
 
 const int Label::NO_LABEL			= -1; 
 
-Label::Label(Column * column)
-: DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
-{
-	_intsId = EmptyValues::missingValueInteger;
-}
-
-Label::Label(Column * column, int value)
-: DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
-{
-	setIntsId(value);
-	setOriginalValue(value);
-	setLabel(originalValueAsString());
-}
-
 Label::Label(Column * column, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
