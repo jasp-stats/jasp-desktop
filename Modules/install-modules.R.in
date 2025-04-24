@@ -25,9 +25,12 @@ mkdir(c(MODULES_DIR, LOCAL_MODULES_DIR, BUNDLE_DOWNLOAD_DIR))
 
 .libPaths("@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@")
 library("jaspModuleBundleManager")
+library("tools")
 
 #check which bundles need downloading
-remoteBundleURLS <- rjson::fromJSON(file="@MODULES_SOURCE_PATH@/remote-bundles.json")[[getPlatform()]]
+remoteBundles <- rjson::fromJSON(file="@MODULES_SOURCE_PATH@/remote-bundles.json")[[getPlatform()]]
+remoteBundleURLS <- unlist(sapply(remoteBundles, function(x){x$url}))
+
 remoteBundleDownloaded <- c()
 if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
     tryCatch({
@@ -35,22 +38,30 @@ if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
         remoteBundleDownloaded <- remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleDownloaded)))]
     }, error = function(e) { remoteBundleDownloaded <- c() })
 }
-toDownload <- remoteBundleURLS[!remoteBundleURLS %in% remoteBundleDownloaded]
+toDownload <- remoteBundles[!remoteBundleURLS %in% remoteBundleDownloaded]
 
 #download and write a file with all our successes
 downloaded <- c()
 if(length(toDownload)) {
     cat("We will download: ", paste(toDownload, sep=' '), '\n')
-    download <- function(url) {
+    download <- function(bundle) {
         req <- tryCatch({
-            curl::curl_fetch_disk(url, file.path(BUNDLE_DOWNLOAD_DIR, basename(url)))
+            path <- file.path(BUNDLE_DOWNLOAD_DIR, basename(bundle$url))
+            res <- curl::curl_fetch_disk(bundle$url, path)
+            if(sha256sum(files=path) != bundle$checksum) {
+                file.remove(path)
+                warning(paste0("Checksum of: ", bundle$url, "Does not match. Skipping"))
+                res <- list(status_code=404)
+            }
+            res 
         }, error = function(e) { print(e); list(status_code=404) })
         if(req$status_code != 200)
             return(FALSE)
         TRUE
     }
     res <- sapply(toDownload, download)
-    downloaded <- unique(c(remoteBundleDownloaded[remoteBundleDownloaded %in% remoteBundleURLS], toDownload[res]))
+    success <- unlist(sapply(toDownload[res], function(x){x$url}))
+    downloaded <- unique(c(remoteBundleDownloaded[remoteBundleDownloaded %in% remoteBundleURLS], success))
     write(downloaded, "@MODULES_BINARY_PATH@/bundles-downloaded.txt")
 
     if(!all(res)) {
@@ -83,7 +94,7 @@ if(length(toInstallRemote) > 0) {
         TRUE
     }
     res <- sapply(toInstallRemote, installRemote)
-    write(remoteBundleURLS, "@MODULES_BINARY_PATH@/remote-bundles-installed.txt", ncolumns=1)
+    write(toInstallRemoteTotal, "@MODULES_BINARY_PATH@/remote-bundles-installed.txt", ncolumns=1)
 }
 
 localBundles <- file.path(LOCAL_MODULES_DIR, list.files(LOCAL_MODULES_DIR, pattern='*.JASPModule'))
