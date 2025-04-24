@@ -1,20 +1,20 @@
 {
 "Windows-x86_64" : [
-    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspDescriptives.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspAnova.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspTTests.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspJags.JASPModule"
+    {"url" : "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspDescriptives.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspAnova.JASPModule", "checksum" : "01351ee63d64660e8e069450930d261d000cda96c2953d1c28650c5570e3acf1"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspTTests.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/Windows-x86_64/jaspJags.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"}
 ],
 "MacOS-arm64" : [
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspDescriptives.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspAnova.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspTTests.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspJags.JASPModule"
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspDescriptives.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspAnova.JASPModule", "checksum" : "01351ee63d64660e8e069450930d261d000cda96c2953d1c28650c5570e3acf1"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspTTests.JASPModule", "checksum" : "9f0f84d70ce48eb54285cf1feecbd5f9689d82d8019c7347596d6aa4b24c713a"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-arm64/jaspJags.JASPModule", "checksum" : "b3614ae7b3e0ae67a740ac1a0268c0406d0b9c80e3166b5939f5c8e6bcfd7ff5"}
 ],
 "MacOS-x86_64" : [
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspDescriptives.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspAnova.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspTTests.JASPModule",
-    "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspJags.JASPModule"
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspDescriptives.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspAnova.JASPModule", "checksum" : "01351ee63d64660e8e069450930d261d000cda96c2953d1c28650c5570e3acf1"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspTTests.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"},
+	{"url" : "https://static.jasp-stats.org/JASP-Modules/MacOS-x86_64/jaspJags.JASPModule", "checksum" : "5af06b92c8e0f0d86ffaafc3a2dfbc1c4e98e0d5fc452992bdeac048c9c1ab12"}
 ]
 }
