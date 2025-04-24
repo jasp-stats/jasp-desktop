@@ -1753,6 +1753,11 @@ void MainWindow::clearModulesFoldersUser()
 	if(renvroot.exists())	renvroot.removeRecursively();
 	if(usermods.exists())	usermods.removeRecursively();
 
+#ifdef __APPLE__
+	QDir devModPatchDir(AppDirs::devModulePatchDir());
+	if(devModPatchDir.exists())	devModPatchDir.removeRecursively();
+#endif
+
 }
 
 /* the following does not seem to work: the new process crashes immediately... 

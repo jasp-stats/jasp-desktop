@@ -950,9 +950,9 @@ QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
 
 
 	//remove pkgs no longer present in libpath from our patched libpath
-	auto patchedPath = std::filesystem::temp_directory_path() / devMod;
+	auto patchedPath = std::filesystem::path(AppDirs::devModulePatchDir().toStdString()) / devMod;
 	if(!std::filesystem::exists(patchedPath))
-		std::filesystem::create_directory(patchedPath);
+		std::filesystem::create_directories(patchedPath);
 
 	std::filesystem::path stdLibpath{libpath.toStdString()};
 	for (auto const& pkg : std::filesystem::directory_iterator{patchedPath}) {

@@ -241,3 +241,13 @@ QString AppDirs::renvCacheLocations()
     return dynamicCache + separator + staticCache;
 	
 }
+
+#ifdef __APPLE__
+QString AppDirs::devModulePatchDir()
+{
+	QString path = appData();
+	path += "/_DevModulePatchDir/";
+
+	return path;
+}
+#endif

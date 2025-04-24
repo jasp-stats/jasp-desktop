@@ -49,6 +49,11 @@ public:
 	static QDir    programDir();
 	static QString renvRootLocation();
 	static QString renvCacheLocations();
+
+#ifdef __APPLE__
+	static QString devModulePatchDir();
+
+#endif
 	
 private:
 	static QString processPath(const QString & path);

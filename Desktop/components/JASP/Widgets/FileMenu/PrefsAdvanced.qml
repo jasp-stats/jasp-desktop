@@ -164,7 +164,7 @@ ScrollView
 			{	
 				id:					cleanModulesFolder
 				text:				qsTr("Clear installed modules and packages")
-				toolTip:			qsTr("This will erase the 'renv' and 'Modules' folders in the appdata.")
+                toolTip:			qsTr("This will erase the 'renv', 'Modules' and development Module folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
 				KeyNavigation.tab:		useRemoteConf
