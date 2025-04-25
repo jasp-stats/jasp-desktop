@@ -26,7 +26,6 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( QString								info					READ info					WRITE setInfo					NOTIFY infoChanged					)
 	Q_PROPERTY( QString								infoLabel				READ infoLabel				WRITE setInfoLabel				NOTIFY infoLabelChanged				)
 	Q_PROPERTY( QString								toolTip					READ toolTip				WRITE setToolTip				NOTIFY toolTipChanged				)
-	Q_PROPERTY( QString								helpMD					READ helpMD													NOTIFY helpMDChanged				)
 	Q_PROPERTY( bool								isBound					READ isBound				WRITE setIsBound				NOTIFY isBoundChanged				)
 	Q_PROPERTY( bool								indent					READ indent					WRITE setIndent					NOTIFY indentChanged				)
 	Q_PROPERTY( bool								isDependency			READ isDependency			WRITE setIsDependency			NOTIFY isDependencyChanged			)
@@ -119,7 +118,8 @@ public:
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
-	virtual QString		helpMD(int depth = 0)		const;
+	virtual QString		generateMDHelp(int depth = 0)	const;
+	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfo()					const;
 	bool				isBound()					const	{ return _isBound;					}
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}

@@ -25,6 +25,13 @@
 
 class AnalysisForm;
 
+struct AnalysisInfo
+{
+	QString analysisName, qmlFileName, analysisTitle;
+	AnalysisInfo(const QString& _analysisName, const QString& _qmlFileName, const QString& _analysisTitle)
+		: analysisName{_analysisName}, qmlFileName{_qmlFileName}, analysisTitle{_analysisTitle} {}
+};
+
 void				blockSignalsRecursive(	QObject* item);
 void				deleteQuickItem(		QQuickItem* item);
 void				addContextObjects(		QQmlApplicationEngine* engine);
@@ -32,7 +39,7 @@ void				sendMessage(			const char * msg);
 bool				init(					bool dbInMemory = true);
 void				sendRScriptHandler(		AnalysisForm* form, QString script, QString controlName, bool whiteListedVersion);
 AnalysisForm*		getQmlForm(				const QString& qmlFileStr);
-bool				generateWrapper(		const QString& modulePath, const QString& analysisName, const QString& qmlFileName, bool preloadData);
+bool				generateWrapper(		const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
 
 
 #endif // SYNTAXBRIDGE_H

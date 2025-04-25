@@ -175,7 +175,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 		return result.c_str();
 	}
 
-	QVector<std::pair<QString, QString> > analyses;
+	QVector<AnalysisInfo> analyses;
 	QFile qmlDescriptionFile(modulePathQ + "/inst/Description.qml");
 	if (!qmlDescriptionFile.exists())
 	{
@@ -195,7 +195,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 		for (int i = 1; i < analysesPart.length(); i++)
 		{
 			QStringList lines = analysesPart[i].split("\n");
-			QString analysisName, qmlFileName;
+			QString analysisName, qmlFileName, analysisTitle;
 
 			for (QString line : lines)
 			{
@@ -204,23 +204,25 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 					analysisName = line.split(":")[1].trimmed().replace('"', "");
 				else if (line.startsWith("qml"))
 					qmlFileName = line.split(":")[1].trimmed().replace('"', "");
+				else if (line.startsWith("title"))
+					analysisTitle = line.split(":")[1].trimmed().remove(0, std::string("qsTr(\"").length()).chopped(2);
 			}
 
 			if (!analysisName.isEmpty())
 			{
 				if (qmlFileName.isEmpty())
 					qmlFileName = analysisName + ".qml";
-				analyses.append(std::make_pair(analysisName, qmlFileName));
+				analyses.append(AnalysisInfo(analysisName, qmlFileName, analysisTitle));
 			}
 		}
 	}
 
 	for (auto analysis : analyses)
 	{
-		Log::log() << "Analysis " << fq(analysis.first) << " with qml file " << fq(analysis.second) << std::endl;
-		if (!generateWrapper(modulePathQ, analysis.first, analysis.second, preloadData))
+		Log::log() << "Analysis " << fq(analysis.analysisName) << " with qml file " << fq(analysis.qmlFileName) << std::endl;
+		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, preloadData))
 		{
-			result = "Error when generating wrapper of " + fq(analysis.first);
+			result = "Error when generating wrapper of " + fq(analysis.analysisName);
 			return result.c_str();
 		}
 	}
@@ -229,7 +231,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 }
 
 
-const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* qmlFileName, const char* analysisName, bool preloadData)
+const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* qmlFileName, const char* analysisName, const char* analysisTitle, bool preloadData)
 {
 	if (!init())
 		return "Error during initialization";
@@ -241,7 +243,8 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 	QString qmlFileNameQ	= tq(qmlFileName),
 			modulePathQ		= tq(modulePath),
 			moduleNameQ,
-			analysisNameQ	= tq(analysisName);
+			analysisNameQ	= tq(analysisName),
+			analysisTitleQ	= tq(analysisTitle);
 
 	QDir moduleDir(modulePathQ);
 
@@ -253,7 +256,7 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 
 	// If JASP.Module is set as a a Qt module/plugin (as JASP.Controls), then we could load it and uses the Description object directly, and know directly
 	// what is the name of the qml file and if it uses preloadData
-	if (!generateWrapper(modulePathQ, analysisNameQ, qmlFileNameQ, preloadData))
+	if (!generateWrapper(modulePathQ, analysisNameQ, qmlFileNameQ, analysisTitleQ, preloadData))
 	{
 		result = "Error when generating wrapper of " + fq(analysisNameQ);
 		return result.c_str();
@@ -450,7 +453,7 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 }
 
 
-bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, bool preloadData)
+bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
 {
 	QString qmlFilePath = modulePath + "/inst/qml/" + qmlFileName;
 
@@ -461,7 +464,7 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 		return false;
 	}
 
-	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, preloadData);
+	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, preloadData);
 
 	QFile file(modulePath + "/R/" + analysisName + "Wrapper.R");
 	file.resize(0); // Empty the file

@@ -147,7 +147,7 @@ public:
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue) const;
 	Q_INVOKABLE QVariant    getConstant(QString key, QVariant defaultValue, QString module, QString analysis) const;
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
-	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData);
+	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
 	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
 	void					setAnalysis(AnalysisBase *	analysis);
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);

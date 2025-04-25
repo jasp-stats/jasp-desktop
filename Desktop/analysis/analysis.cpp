@@ -623,6 +623,7 @@ QString Analysis::generateWrapper()
 					tq(_moduleData->dynamicModule()->name()),
 					tq(_name),
 					tq(_qml),
+					tq(_title),
 					_moduleData->preloadData()
 	);
 }

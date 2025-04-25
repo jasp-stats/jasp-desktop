@@ -47,7 +47,8 @@ public:
 	void				setUp()												override;
 	ListModel*			model()										const	override	{ return _model;				}
 	void				setUpModel()										override;
-	QString				helpMD(int depth = 0)						const	override;
+	QString				generateMDHelp(int depth = 0)				const	override;
+	QString				generateDoxygenHelp()						const	override;
 	bool				hasInfo()									const	override;
 	void				setBoundValue(const Json::Value &value, bool emitChanges = true)	override;
 

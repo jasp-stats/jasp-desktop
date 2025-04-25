@@ -81,9 +81,9 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData)
+QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
 {
-	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, preloadData);
+	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, analysisTitle, preloadData);
 }
 
 QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const
@@ -961,14 +961,14 @@ QString AnalysisForm::helpMD() const
 
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
-	orderedControls.removeIf([](JASPControl* c) { return c->helpMD().isEmpty(); });
+	orderedControls.removeIf([](JASPControl* c) { return c->generateMDHelp().isEmpty(); });
 
 	if (orderedControls.length() > 0 && orderedControls[0]->controlType() != JASPControl::ControlType::Expander)
 		// If the first control is an Section, then it adds already a line
 		markdown << "\n---\n";
 
 	for(JASPControl * control : orderedControls)
-		markdown << control->helpMD() << "\n";
+		markdown << control->generateMDHelp() << "\n";
 
 	markdown << metaHelpMD();
 

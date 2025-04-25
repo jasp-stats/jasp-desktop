@@ -596,7 +596,7 @@ bool JASPControl::printLabelMD(QStringList& md, int depth) const
 	return true;
 }
 
-QString JASPControl::helpMD(int depth) const
+QString JASPControl::generateMDHelp(int depth) const
 {
 	if (!hasInfo()) return "";
 		
@@ -604,7 +604,7 @@ QString JASPControl::helpMD(int depth) const
 
 	for (JASPControl* childControl : getChildJASPControls(_childControlsArea ? _childControlsArea : this, true))
 	{
-		QString childMD = childControl->helpMD(depth + 1);
+		QString childMD = childControl->generateMDHelp(depth + 1);
 		if (!childMD.isEmpty())
 			childMDs.push_back(childMD);
 	}
@@ -631,6 +631,15 @@ QString JASPControl::helpMD(int depth) const
 	}
 
 	return markdown.join("");;
+}
+
+QString JASPControl::generateDoxygenHelp() const
+{
+	QString result;
+	if (isBound() && !info().isEmpty())
+		result += "#' @param " + name() + ", " + info() + "\n";
+
+	return result;
 }
 
 void JASPControl::setChildControlsArea(QQuickItem * childControlsArea)

@@ -42,6 +42,7 @@ public:
 	Json::Value createJson()								const	override;
 	void		bindTo(const Json::Value& value)					override;
 	void		setUp()												override;
+	QString		generateDoxygenHelp()						const	override;
 
 	void registerRadioButton(RadioButtonBase* button);
 	void unregisterRadioButton(RadioButtonBase* button);

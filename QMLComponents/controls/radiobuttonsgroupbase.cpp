@@ -45,6 +45,33 @@ void RadioButtonsGroupBase::setUp()
 	connect(this, &RadioButtonsGroupBase::initializedChanged, this, &RadioButtonsGroupBase::_setCheckedButtonHandler);
 }
 
+QString RadioButtonsGroupBase::generateDoxygenHelp() const
+{
+	QString result = JASPControl::generateDoxygenHelp();
+	if (result.isEmpty())
+		return result;
+
+	result += "#' \\itemize{\n";
+
+	for (const RadioButtonBase* button : _buttons)
+	{
+		QString value = button->property("value").toString();
+		if (value.isEmpty())
+			continue;
+		result += "#'   \\item \\code{\"" + value + "\"}";
+		if (_defaultValue == value)
+			result += " (default) ";
+		QString info = button->info();
+		if (!info.isEmpty())
+			result += ": " + info;
+		result += "\n";
+	}
+
+	result += "#' }\n";
+
+	return result;
+}
+
 void RadioButtonsGroupBase::_setCheckedButtonHandler()
 {
 	if (checkedButton()) return;

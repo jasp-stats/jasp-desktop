@@ -48,6 +48,16 @@ void CheckBoxBase::setUp()
 	connect(this,	&CheckBoxBase::clicked, this,	&CheckBoxBase::clickedSlot);
 }
 
+QString CheckBoxBase::generateDoxygenHelp() const
+{
+	QString result = JASPControl::generateDoxygenHelp();
+	if (result.isEmpty())
+		return result;
+
+	result += QString::fromStdString("#'    Defaults to \\code{") + (checked() ? "TRUE" : "FALSE") + "}.\n";
+	return result;
+}
+
 void CheckBoxBase::setChecked(bool checked)
 {
 	setProperty("checked", checked);

@@ -32,7 +32,7 @@ public:
 	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
 
 	void	setUp()							override;
-	QString helpMD(int depth)		const	override;
+	QString generateMDHelp(int depth)		const	override;
 
 	bool infoLabelIsHeader()		const	override	{ return true; }
 };

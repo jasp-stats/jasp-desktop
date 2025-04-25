@@ -303,7 +303,7 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-QString	ComboBoxBase::helpMD(int depth) const
+QString	ComboBoxBase::generateMDHelp(int depth) const
 {
 	QStringList markdown;
 
@@ -317,6 +317,9 @@ QString	ComboBoxBase::helpMD(int depth) const
 		{
 			QString label = term.label(),
 					info = term.info();
+			if (label.isEmpty())
+				continue;
+
 			markdown << "\n" << QString{depth * 2, ' '} << "- *" << label << "*";
 			if (!info.isEmpty())
 				markdown << (": " + info);
@@ -331,6 +334,33 @@ QString	ComboBoxBase::helpMD(int depth) const
 
 
 	return markdown.join("") + "\n";
+}
+
+QString ComboBoxBase::generateDoxygenHelp() const
+{
+	QString result = JASPListControl::generateDoxygenHelp();
+	if (result.isEmpty())
+		return result;
+
+	result += "#' \\itemize{\n";
+
+	for (const Term& term : _model->terms())
+	{
+		QString value = term.value();
+		if (value.isEmpty())
+			continue;
+		result += "#'   \\item \\code{\"" + value + "\"}";
+		if (currentValue() == value)
+			result += " (default) ";
+		QString info = term.info();
+		if (!info.isEmpty())
+			result += ": " + info;
+		result += "\n";
+	}
+
+	result += "#' }\n";
+
+	return result;
 }
 
 bool ComboBoxBase::_hasOptionInfo() const

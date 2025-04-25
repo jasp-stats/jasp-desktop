@@ -17,13 +17,13 @@
 //
 
 #include "rsyntax.h"
-#include "appinfo.h"
 #include "analysisform.h"
 #include "log.h"
 #include <QQmlContext>
 #include "formulasource.h"
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
+#include "controls/comboboxbase.h"
 
 QString RSyntax::FunctionOptionIndent	= "          ";
 QString RSyntax::FunctionLineIndent		= "   ";
@@ -141,8 +141,10 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	return result;
 }
 
-QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, bool preloadData) const
+QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData) const
 {
+	const Json::Value& boundValues = _form->boundValues();
+
 	QString result = "\
 #\n\
 # Copyright (C) 2013-2025 University of Amsterdam\n\
@@ -164,6 +166,20 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 # This is a generated file. Don't change it!\n\
 \n\
 ";
+	result += "#' " + analysisTitle + "\n";
+	result += "#'\n";
+	if (!form()->info().isEmpty())
+	{
+		result += "#' " + form()->info() + "\n";
+		result += "#'\n";
+	}
+	for (const std::string& member : boundValues.getMemberNames())
+	{
+		JASPControl* control = _form->getControl(tq(member));
+		if (control)
+			result += control->generateDoxygenHelp();
+	}
+
 	result += analysisName + " <- function(\n";
 	result += FunctionOptionIndent + "data = NULL,\n";
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
@@ -177,7 +193,6 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 			result += ",\n" + FunctionOptionIndent + extraOption + " = NULL";
 	}
 
-	const Json::Value& boundValues = _form->boundValues();
 	QStringList optionsWithFormula;
 	for (FormulaBase* formula : _formulas)
 		optionsWithFormula += formula->extraOptions(true, true);
