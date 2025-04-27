@@ -174,78 +174,46 @@ Window
 					color:				jaspTheme.white
 					clip:				true
 
-					Flickable
+					JC.TextArea
 					{
-						id:				codeEntryFlickable
-						anchors.fill:	parent
-						contentHeight:	codeEntry.height
-						contentWidth:	width - codeEntryScrollbar.width
-						clip:			true
-
-						JC.TextArea
+						JC.RSyntaxHighlighterQuick
 						{
-							JC.RSyntaxHighlighterQuick
-							{
-								textDocument:	codeEntry.textDocument
-							}
-
-							id:						codeEntry
-							width:					codeEntryFlickable.width
-							height:					codeEntryFlickable.height
-							radius:					0
-							font:					jaspTheme.fontRCode
-							wrapMode:				TextEdit.Wrap
-							showLineNumber:			true
-							focus:					true
-
-							Text
-							{
-								id:					customPlaceholder
-								anchors.top:		parent.top
-								anchors.left:		parent.left
-								anchors.margins:	8 * preferencesModel.uiScale
-								anchors.leftMargin:	3 * jaspTheme.itemPadding
-								text:				mainWindow.dataAvailable ?
-														qsTr("Enter your R code here.\nThe data is available unfiltered as 'data'\nand filtered as 'filteredData'.\nYou can also paste syntax-mode JASP analyses here.") :
-														qsTr("Enter your R code here.\n\nYou can also paste syntax-mode JASP analyses here.")
-								font:				jaspTheme.font
-								color:				jaspTheme.grayDarker
-								wrapMode:			Text.Wrap
-								width:				parent.width - 16 * preferencesModel.uiScale
-								visible:			codeEntry.text === ""
-							}
-
-							Shortcut { onActivated:	runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
-							Shortcut { onActivated:	codeEntry.undo();		sequences: ["Ctrl+Z"];}
-							Shortcut { onActivated:	codeEntry.selectAll();	sequences: ["Ctrl+A"];}
-
-							onTextChanged:
-							{	rCmd.checkRCode(text)
-								customPlaceholder.visible = text === ""
-							}
+							textDocument:	codeEntry.textDocument
 						}
 
-						MouseArea
+						id:						codeEntry
+						width:					parent.width
+						height:					parent.height
+						radius:					0
+						font:					jaspTheme.fontRCode
+						wrapMode:				TextEdit.Wrap
+						showLineNumber:			true
+						focus:					true
+
+						Text
 						{
-							z:					1
-							acceptedButtons:	Qt.NoButton
-							anchors.fill:		parent
-							onWheel:			(wheel)=> { codeEntryScrollbar.scrollWheel(wheel); }
-							cursorShape:		Qt.IBeamCursor
+							id:					customPlaceholder
+							anchors.top:		parent.top
+							anchors.left:		parent.left
+							anchors.margins:	8 * preferencesModel.uiScale
+							anchors.leftMargin:	3 * jaspTheme.itemPadding
+							text:				mainWindow.dataAvailable ?
+													qsTr("Enter your R code here.\nThe data is available unfiltered as 'data'\nand filtered as 'filteredData'.\nYou can also paste syntax-mode JASP analyses here.") :
+													qsTr("Enter your R code here.\n\nYou can also paste syntax-mode JASP analyses here.")
+							font:				jaspTheme.font
+							color:				jaspTheme.grayDarker
+							wrapMode:			Text.Wrap
+							width:				parent.width - 16 * preferencesModel.uiScale
+							visible:			codeEntry.text === ""
 						}
-					}
 
-					JC.JASPScrollBar
-					{
-						id:					codeEntryScrollbar
-						flickable:			codeEntryFlickable
-						manualAnchor:		true
+						Shortcut { onActivated:	runButton.runCode();	sequences: ["Ctrl+Enter", "Ctrl+Return", Qt.Key_F5];}
+						Shortcut { onActivated:	codeEntry.undo();		sequences: ["Ctrl+Z"];}
+						Shortcut { onActivated:	codeEntry.selectAll();	sequences: ["Ctrl+A"];}
 
-						anchors
-						{
-							top:		parent.top
-							right:		parent.right
-							bottom:		parent.bottom
+						onTextChanged:
+						{	rCmd.checkRCode(text)
+							customPlaceholder.visible = text === ""
 						}
 					}
 				}
