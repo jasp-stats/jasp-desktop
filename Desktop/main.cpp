@@ -403,19 +403,18 @@ void recursiveFileOpener(QFileInfo file, int & failures, int & total, int & time
 
 void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-	QByteArray localMsg = msg.toLocal8Bit();
 	const char *file	= context.file ? context.file : "";
 	const char *function = context.function ? context.function : "";
 
 	switch (type) {
 	case QtWarningMsg:
-		Log::log() << "Msg from Qt Warning: " << localMsg.constData() << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
+		Log::log() << "Msg from Qt Warning: " << msg << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
 		break;
 	case QtCriticalMsg:
-		Log::log() << "Msg from Qt Critical: " << localMsg.constData() << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
+		Log::log() << "Msg from Qt Critical: " << msg << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
 		break;
 	case QtFatalMsg:
-		Log::log() << "Msg from Qt Fatal: " << localMsg.constData() << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
+		Log::log() << "Msg from Qt Fatal: " << msg << " [" << file << ":" << context.line << ", " << function << "]" << std::endl;
 		break;
 	case QtDebugMsg:
 	case QtInfoMsg:
