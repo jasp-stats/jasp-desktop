@@ -38,6 +38,10 @@ Item
 			var shiftPressed	= Boolean(event.modifiers & Qt.ShiftModifier  );
 			var arrowPressed	= false;
 			var arrowIndex;
+							
+			if(!itemEditable && (event.key == Qt.Key_Up || event.key == Qt.Key_Left || event.key == Qt.Key_Right || event.key == Qt.Key_Down))
+				return;
+					
 	
 			switch(event.key)
 			{

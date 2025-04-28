@@ -222,7 +222,40 @@ FocusScope
 						event.accepted = true;
 						mainWindowRoot.changeFocusToFileMenu();
 						break;
-
+									
+				
+				case Qt.Key_PageUp:
+					event.accepted = true;
+					if(shiftPressed)	contentX = Math.max(0, contentX - width)
+					else				contentY = Math.max(0, contentY - height)
+					break;
+								
+				case Qt.Key_PageDown:
+					event.accepted = true; 
+					if(shiftPressed)	contentX = Math.min(contentWidth  - width,  contentX + width)
+					else				contentY = Math.min(contentHeight - height, contentY + height)
+					break;
+				
+				case Qt.Key_Down:
+					event.accepted = true;
+					budgeDown();
+					break;
+				
+				case Qt.Key_Up:
+					event.accepted = true;
+					budgeUp();
+					break;
+				
+				case Qt.Key_Left:
+					event.accepted = true;
+					budgeLeft();
+					break;
+				
+				case Qt.Key_Right:
+					event.accepted = true;
+					budgeRight();
+					break;
+									
 				default:
 					event.accepted = false;
 					break;

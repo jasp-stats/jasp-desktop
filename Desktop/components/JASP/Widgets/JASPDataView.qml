@@ -32,8 +32,8 @@ FocusScope
 	readonly	property alias rowNumberWidth:			theView.rowNumberWidth
 	readonly	property alias headerHeight:			theView.headerHeight
 
-	readonly	property alias contentX:				myFlickable.contentX
-	readonly	property alias contentY:				myFlickable.contentY
+				property alias contentX:				myFlickable.contentX
+				property alias contentY:				myFlickable.contentY
 	readonly	property alias contentWidth:			myFlickable.contentWidth
 	readonly	property alias contentHeight:			myFlickable.contentHeight
 	readonly	property alias contentX0:				myFlickable.contentX
@@ -60,11 +60,16 @@ FocusScope
 	Keys.onDownPressed: 	(event) => { budgeDown();	event.accepted = true; }
 	Keys.onRightPressed:	(event) => { budgeRight();	event.accepted = true; }
 	
+	
+	
 	function budgeUp()		{ if(myFlickable.contentY0 > 0)							myFlickable.contentY = Math.max(0,												myFlickable.contentY - contentFlickSize) }
 	function budgeDown()	{ if(myFlickable.contentY1 < myFlickable.contentHeight)	myFlickable.contentY = Math.min(myFlickable.contentHeight - myFlickable.height,	myFlickable.contentY + contentFlickSize) }
 	function budgeLeft()	{ if(myFlickable.contentX0 > 0)							myFlickable.contentX = Math.max(0,												myFlickable.contentX - contentFlickSize) }
 	function budgeRight()	{ if(myFlickable.contentX1 < myFlickable.contentWidth)	myFlickable.contentX = Math.min(myFlickable.contentWidth  - myFlickable.width,	myFlickable.contentX + contentFlickSize) }
 	
+	
+	function budgePageUp()		{ if(myFlickable.contentY0 > 0)							myFlickable.contentY = Math.max(0,												myFlickable.contentY0 - myFlickable.height) }
+	function budgePageDown()	{ if(myFlickable.contentY1 < myFlickable.contentHeight)	myFlickable.contentY = Math.min(myFlickable.contentHeight - myFlickable.height,	myFlickable.contentY0 + myFlickable.height) }
 
 	function moveItemIntoView(item)
 	{
@@ -120,8 +125,11 @@ FocusScope
 		anchors.right:		vertiScroller.left
 		anchors.bottom:		horiScroller.top
 		
-		contentHeight:	theView.height
-		contentWidth:	theView.width
+		contentHeight:		theView.height
+		contentWidth:		theView.width
+		
+		onFlickStarted:		if(!__JASPDataViewRoot.activeFocus) 
+								__JASPDataViewRoot.forceActiveFocus()
 
 
 		DataSetView
@@ -159,6 +167,12 @@ FocusScope
 		cursorShape:		Qt.PointingHandCursor
         z:					-1000
         onDoubleClicked:    __JASPDataViewRoot.doubleClicked()
+		onPressed:			(event) => {
+			if(!__JASPDataViewRoot.activeFocus) 
+				__JASPDataViewRoot.forceActiveFocus()
+			
+			event.accepted = false;
+		} 
 	}
 
 	JASPScrollBar
