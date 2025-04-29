@@ -102,6 +102,16 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 				if(printStuff)
 					std::cout << "OTOOL: " << line << std::endl;
 
+
+				const std::string rPrefix = "/Library/Frameworks/R.framework/Versions/";
+				if(line.find(rPrefix) != std::string::npos) {
+					size_t startPos = rPrefix.length();
+					size_t endPos = line.find("/", startPos);
+					std::string rVersionLinked = line.substr(startPos, endPos - startPos);
+					if(rVersionLinked != AppInfo::getRDirName())
+						throw(std::runtime_error("The R Version used in: " + libPath + " is different from the one used by JASP! Please install and use the matching R Version: R-"  + AppInfo::getRVersion()));
+				}
+
 				// Know prefixes to be replaced
 				const std::map<std::string, std::string> prefixes_map = {
 					{"/Library/Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/lib",	framework_resources + "lib"},
