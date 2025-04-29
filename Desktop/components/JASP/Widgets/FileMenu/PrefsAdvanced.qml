@@ -164,14 +164,171 @@ PrefsScrollView
                 toolTip:			qsTr("This will erase the 'renv', 'Modules' and development Module folders in the appdata.")
 				onClicked:			mainWindow.clearModulesFoldersUser();
 
-				KeyNavigation.tab:		useRemoteConf
+				KeyNavigation.tab:		directLibpathDevModEnabled
 				activeFocusOnTab:		true
 			}
 		}
 
+		
 		PrefsGroupRect
 		{
-			title:				qsTr("Configuration File Options")
+			id:					editDeveloperFolder
+			title:				qsTr("Development module")
+			visible:			preferencesModel.developerMode
+			enabled:			preferencesModel.developerMode
+
+			CheckBox
+			{
+				id:					directLibpathDevModEnabled
+				label:				qsTr("Enable direct libpath mode")
+				checked:			preferencesModel.directLibpathEnabled
+				onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
+				toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")
+				visible:			preferencesModel.developerMode
+
+				KeyNavigation.tab:	browseDeveloperFolderButton
+			}
+
+
+			Item
+			{
+				width:				parent.width
+				height:				browseDeveloperFolderButton.height
+				enabled:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
+
+
+				RectangularButton
+				{
+					id:						browseDeveloperFolderButton
+					text:					qsTr("Source folder:")
+					onClicked:				preferencesModel.browseDeveloperFolder()
+					anchors.left:			parent.left
+					anchors.leftMargin:		jaspTheme.subOptionOffset
+					toolTip:				qsTr("Browse to your JASP Module folder.")
+
+					KeyNavigation.tab:		developerFolderText.textInput
+					activeFocusOnTab:		true
+
+				}
+
+				PrefsTextInput
+				{
+					id:					developerFolderText
+
+					text:				preferencesModel.developerFolder
+					onEditingFinished:	preferencesModel.developerFolder = text
+					nextEl:				directLibPathLabel
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			browseDeveloperFolderButton.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
+			}
+
+			Item
+			{
+				id:					directLibpath
+				enabled:			preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+				width:				parent.width
+				height:				cranRepoUrl.height
+
+				RectangularButton
+				{
+					id:						directLibPathLabel
+					text:					qsTr("Project library:")
+					width:					Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
+					onClicked:				preferencesModel.browseDeveloperLibPathFolder()
+					activeFocusOnTab:		true
+					KeyNavigation.tab:		directLibpathFolder.textInput
+					KeyNavigation.backtab:	directLibpathDevModEnabled
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+
+
+				}
+
+				PrefsTextInput
+				{
+					id:					directLibpathFolder
+
+					text:				preferencesModel.directLibpathFolder
+					onEditingFinished:	preferencesModel.directLibpathFolder = text
+
+					nextEl:				moduleName
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			directLibPathLabel.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	moduleName
+
+					toolTip:			qsTr("Choose the R library where you installed the development module")
+				}
+			}
+
+			Item {
+
+				id:					directDevMod
+				enabled:			preferencesModel.developerMode &&preferencesModel.directLibpathEnabled
+				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
+				width:				parent.width
+				height:				cranRepoUrl.height
+
+				Label
+				{
+					id:					directDevModName
+					text:				qsTr("Module name:")
+					width:				Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter:	parent.verticalCenter
+						leftMargin:		jaspTheme.subOptionOffset
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					moduleName
+
+					text:				preferencesModel.directDevModName
+					onEditingFinished:	preferencesModel.directDevModName = text
+
+					nextEl:				useConf
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:			directDevModName.right
+						right:			parent.right
+						margins:		jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	useConf
+					toolTip:			qsTr("Enter the (package)name of the development module you want to load")
+				}
+			}
+		}
+		
+		PrefsGroupRect
+		{
+			title:				qsTr("Configuration file options")
 
 			CheckBox
 			{
@@ -276,162 +433,7 @@ PrefsScrollView
 			}
 		}
 
-		PrefsGroupRect
-		{
-			id:					editDeveloperFolder
-			title:				qsTr("Development module")
-			visible:			preferencesModel.developerMode
-			enabled:			preferencesModel.developerMode
 
-			CheckBox
-			{
-				id:					directLibpathDevModEnabled
-				label:				qsTr("Enable direct libpath mode")
-				checked:			preferencesModel.directLibpathEnabled
-				onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
-				toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")
-				visible:			preferencesModel.developerMode
-
-				KeyNavigation.tab:	editDeveloperFolder
-			}
-
-
-			Item
-			{
-				width:				parent.width
-				height:				browseDeveloperFolderButton.height
-				enabled:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-				visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
-
-
-				RectangularButton
-				{
-					id:						browseDeveloperFolderButton
-					text:					qsTr("Source folder:")
-					onClicked:				preferencesModel.browseDeveloperFolder()
-					anchors.left:			parent.left
-					anchors.leftMargin:		jaspTheme.subOptionOffset
-					toolTip:				qsTr("Browse to your JASP Module folder.")
-
-					KeyNavigation.tab:		developerFolderText.textInput
-					activeFocusOnTab:		true
-
-				}
-
-				PrefsTextInput
-				{
-					id:					developerFolderText
-
-					text:				preferencesModel.developerFolder
-					onEditingFinished:	preferencesModel.developerFolder = text
-					nextEl:				directLibPathLabel
-
-					height:				browseDeveloperFolderButton.height
-					anchors
-					{
-						left:			browseDeveloperFolderButton.right
-						right:			parent.right
-						margins:		jaspTheme.generalAnchorMargin
-					}
-				}
-			}
-
-			Item
-			{
-				id:					directLibpath
-				enabled:			preferencesModel.directLibpathEnabled
-				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
-				width:				parent.width
-				height:				cranRepoUrl.height
-
-				RectangularButton
-				{
-					id:						directLibPathLabel
-					text:					qsTr("Libpath:")
-					width:					Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
-					onClicked:				preferencesModel.browseDeveloperLibPathFolder()
-					activeFocusOnTab:		true
-					KeyNavigation.tab:		directLibpathFolder.textInput
-					KeyNavigation.backtab:	directLibpathDevModEnabled
-
-					anchors
-					{
-						left:			parent.left
-						verticalCenter:	parent.verticalCenter
-						leftMargin:		jaspTheme.subOptionOffset
-					}
-
-
-				}
-
-				PrefsTextInput
-				{
-					id:					directLibpathFolder
-
-					text:				preferencesModel.directLibpathFolder
-					onEditingFinished:	preferencesModel.directLibpathFolder = text
-
-					nextEl:				moduleName
-
-					height:				browseDeveloperFolderButton.height
-					anchors
-					{
-						left:			directLibPathLabel.right
-						right:			parent.right
-						margins:		jaspTheme.generalAnchorMargin
-					}
-
-					KeyNavigation.tab:	moduleName
-
-					toolTip:			qsTr("Choose the R library where you installed the development module")
-				}
-			}
-
-			Item {
-
-				id:					directDevMod
-				enabled:			preferencesModel.developerMode &&preferencesModel.directLibpathEnabled
-				visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
-				width:				parent.width
-				height:				cranRepoUrl.height
-
-				Label
-				{
-					id:					directDevModName
-					text:				qsTr("Module name:")
-					width:				Math.max(directDevModName.implicitWidth, directLibPathLabel.implicitWidth)
-
-					anchors
-					{
-						left:			parent.left
-						verticalCenter:	parent.verticalCenter
-						leftMargin:		jaspTheme.subOptionOffset
-					}
-				}
-
-				PrefsTextInput
-				{
-					id:					moduleName
-
-					text:				preferencesModel.directDevModName
-					onEditingFinished:	preferencesModel.directDevModName = text
-
-					nextEl:				logToFile
-
-					height:				browseDeveloperFolderButton.height
-					anchors
-					{
-						left:			directDevModName.right
-						right:			parent.right
-						margins:		jaspTheme.generalAnchorMargin
-					}
-
-					KeyNavigation.tab:	logToFile
-					toolTip:			qsTr("Enter the (package)name of the development module you want to load")
-				}
-			}
-		}
-		
 		PrefsGroupRect
 		{
 			id:		loggingGroup
