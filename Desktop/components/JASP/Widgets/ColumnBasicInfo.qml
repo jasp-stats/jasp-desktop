@@ -75,7 +75,8 @@ Item
 				id:					columnNameVariablesWindow
 				placeholderText:	qsTr("<First fill in the column name>")
 				value:				columnModel.columnName
-				onValueChanged:		if(columnModel.columnName !== value) columnModel.columnName = value
+				onEditingFinished:	if(columnModel.columnName !== displayValue) 
+										columnModel.columnName = displayValue
 				undoModel:			columnModel
 				editable:           columnModel.nameEditable
 				label:				qsTr("Name: ")
@@ -160,7 +161,7 @@ Item
 				placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
 				fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
 				value:				columnModel.columnTitle
-				onValueChanged:		if(columnModel.columnTitle !== value) columnModel.columnTitle = value
+				onEditingFinished:	if(columnModel.columnTitle !== displayValue) columnModel.columnTitle = displayValue
 				undoModel:			columnModel
 				controlLabel.width:	rightColumn.labelWidth
 				enabled:			!columnModel.isVirtual
