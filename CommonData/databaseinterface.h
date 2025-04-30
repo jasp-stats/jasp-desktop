@@ -161,9 +161,9 @@ public:
 	//Labels
 	void		labelsClear(			int columnId);
 	int			labelAdd(				int columnId,	int value, const std::string & label, bool filterAllows, const	std::string & description = "", const	std::string & originalValueJson = "");
-	void		labelSet(		int id,	int columnId,	int value, const std::string & label, bool filterAllows, const	std::string & description = "", const	std::string & originalValueJson = "");
+	void		labelSet(		int id,	int columnId,	int value, const std::string & label, bool filterAllows, const	std::string & description = "", const	std::string & originalValueJson = "", bool userAdded = false);
 	void		labelDelete(	int id);
-	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order);
+	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order, bool & userAdded);
 	void		labelSetOrder(	int id, int order);
 	void		labelsLoad(			Column  * column);
 	void		labelsLoad(	const	Columns & columns);//, std::function<void(float)> progressCallback);

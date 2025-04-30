@@ -34,6 +34,7 @@ public:
 			Label			&	operator=(const Label &label);
 			
 			int					dbId()						const	{ return _dbId;				}
+			bool				userAdded()					const	{ return _userAdded;		}
 	const	std::string		&	description()				const	{ return _description;		}
 			std::string			label()						const	{ return _label;			}
 			std::string			labelDisplay()				const;
@@ -59,6 +60,7 @@ public:
 			bool				setOrigValLabel(	const Json::Value & originalValue);
 			bool				setDescription(		const std::string & description);
 			bool				setFilterAllows(	bool allowFilter);
+			void				setUserAdded(		bool userAddedIt);
 			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
 			
 			void				updateDoubleLabelsPostLocaleChange();
@@ -80,7 +82,8 @@ private:
 					_intsId			= -1;	///< value of label, should always map to Column::_ints
 	std::string		_label,					///< What to display in the dataview
 					_description;			///< Extended information for tooltip in dataview and of course in the variableswindow
-	bool			_filterAllows	= true;	///< Used in generating filters for when users disable and enable certain labels/levels
+	bool			_filterAllows	= true,	///< Used in generating filters for when users disable and enable certain labels/levels
+					_userAdded		= false;
 	double			_dblValue;
 };
 

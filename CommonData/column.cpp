@@ -1690,7 +1690,8 @@ bool Column::labelsRemoveOrphans()
 	intset idsNotUsed;
 	
 	for(size_t labelIndex=0; labelIndex < _labels.size(); labelIndex++)
-		idsNotUsed.insert(_labels[labelIndex]->intsId());
+		if(!_labels[labelIndex]->userAdded())
+			idsNotUsed.insert(_labels[labelIndex]->intsId());
 	
 	for(int anInt : _ints)
 		idsNotUsed.erase(anInt);

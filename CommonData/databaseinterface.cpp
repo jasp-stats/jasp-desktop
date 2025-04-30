@@ -65,6 +65,9 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 
 		if(!tableHasColumn("Columns", "computeFilter"))
 			runStatements("ALTER TABLE Columns  ADD COLUMN computeFilter		TEXT DEFAULT \"\";");
+		
+		if(!tableHasColumn("Labels", "userAdded"))
+			runStatements("ALTER TABLE Labels  ADD COLUMN userAdded	INT DEFAULT 0;");
 	}
 
 	transactionWriteEnd();
@@ -1329,10 +1332,10 @@ int DatabaseInterface::labelAdd(int columnId, int value, const std::string & lab
 	});
 }
 
-void DatabaseInterface::labelSet(int id, int columnId, int value, const std::string & label, bool filterAllows, const	std::string & description, const std::string & originalValueJson)
+void DatabaseInterface::labelSet(int id, int columnId, int value, const std::string & label, bool filterAllows, const	std::string & description, const std::string & originalValueJson, bool userAdded)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelSet);
-	runStatements("UPDATE Labels SET columnId=?, value=?, label=?, filterAllows=?, description=?, originalValueJson=? "
+	runStatements("UPDATE Labels SET columnId=?, value=?, label=?, filterAllows=?, description=?, originalValueJson=?, userAdded=? "
 						   "WHERE id = ?;", [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int( stmt,	1, columnId);
@@ -1341,7 +1344,8 @@ void DatabaseInterface::labelSet(int id, int columnId, int value, const std::str
 		sqlite3_bind_int( stmt,	4, filterAllows);
 		sqlite3_bind_text(stmt, 5, description.c_str(),			description.length(),			SQLITE_TRANSIENT);
 		sqlite3_bind_text(stmt, 6, originalValueJson.c_str(),	originalValueJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_int( stmt,	7, id);
+		sqlite3_bind_int( stmt,	7, userAdded);
+		sqlite3_bind_int( stmt,	8, id);
 	});
 }
 
@@ -1354,7 +1358,7 @@ void DatabaseInterface::labelDelete(int id)
 	});
 }
 
-void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::string & label, bool & filterAllows, std::string & description, std::string & originalValueJson, int & order)
+void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::string & label, bool & filterAllows, std::string & description, std::string & originalValueJson, int & order, bool & userAdded)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelLoad);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -1366,7 +1370,7 @@ void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::stri
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 7);
+		assert(colCount == 8);
 
 					columnId			= sqlite3_column_int(stmt,			0);
 					value				= sqlite3_column_int(stmt,			1);
@@ -1375,10 +1379,11 @@ void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::stri
 					filterAllows		= sqlite3_column_int(stmt,			4);
 					description			= _wrap_sqlite3_column_text(stmt,	5);
 					originalValueJson	= _wrap_sqlite3_column_text(stmt,	6);
+					userAdded			= sqlite3_column_int(stmt,			7);
 
 	};
 
-	runStatements("SELECT columnId, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT columnId, value, label, ordering, filterAllows, description, originalValueJson, userAdded FROM Labels WHERE id = ?;", prepare, processRow);
 }
 
 void DatabaseInterface::labelsSetOrder(const intintmap & orderPerDbId)

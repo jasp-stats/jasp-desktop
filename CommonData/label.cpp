@@ -56,7 +56,7 @@ void Label::dbLoad(int labelId)
 	int columnId;
 
 	std::string origValJsonStr;
-	db().labelLoad(labelId, columnId, _intsId, _label, _filterAllows, _description, origValJsonStr, _order);
+	db().labelLoad(labelId, columnId, _intsId, _label, _filterAllows, _description, origValJsonStr, _order, _userAdded);
 
 	Json::Value originalValue = Json::nullValue;
 	Json::Reader().parse(origValJsonStr, originalValue);
@@ -74,7 +74,7 @@ void Label::dbUpdate()
 		dbCreate();
 	else
 	{
-		db().labelSet(_dbId, _column->id(), _intsId, _label, _filterAllows, _description, _originalValue.toStyledString());
+		db().labelSet(_dbId, _column->id(), _intsId, _label, _filterAllows, _description, _originalValue.toStyledString(), _userAdded);
 		_column->incRevision();
 	}
 }
@@ -223,6 +223,15 @@ bool Label::setFilterAllows(bool allowFilter)
 		return true;
 	}
 	return false;
+}
+
+void Label::setUserAdded(bool userAddedIt) 
+{ 	
+	if(_userAdded != userAddedIt)
+	{
+		_userAdded = userAddedIt;
+		dbUpdate();
+	}
 }
 
 DatabaseInterface & Label::db()
