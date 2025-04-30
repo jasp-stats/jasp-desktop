@@ -962,6 +962,12 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 					if(_labelByValDis.count(valDis) && _labelByValDis.at(valDis) == label)
 						_labelByValDis.erase(valDis);
 						
+					if(_labelsByValue.count(valDis.first))
+						_labelsByValue.at(valDis.first).erase(label);
+					
+					if(_labelsByDisplay.count(valDis.second))
+						_labelsByDisplay.at(valDis.second).erase(label);
+						
 					label->dbDelete();
 					delete label;
 					return true;
