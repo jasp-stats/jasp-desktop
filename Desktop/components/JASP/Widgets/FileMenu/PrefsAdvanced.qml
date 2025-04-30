@@ -180,7 +180,7 @@ PrefsScrollView
 			CheckBox
 			{
 				id:					directLibpathDevModEnabled
-				label:				qsTr("Enable direct libpath mode")
+				label:				qsTr("Enable renv mode") //We should really remove the old way and this checkbox
 				checked:			preferencesModel.directLibpathEnabled
 				onCheckedChanged:	preferencesModel.directLibpathEnabled = checked
 				toolTip:			qsTr("Load modules from a binary in an R-library instead of installing it from sources.")

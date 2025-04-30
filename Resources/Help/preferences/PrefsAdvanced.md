@@ -28,9 +28,10 @@ R
 If you don't have `renv` installed already you can get it by running `install.packages('renv')`.
 Thus we are in the `jaspAnova` folder we just created and then in R:
 ```R
-renv::consent(provided = TRUE)  # Let renv do things without asking
+
 renv::restore(clean = TRUE)     # Project library is filled with renv.lock dependencies
 renv::install('.')              # Install local pkg to project library
+
 message("R Project library for developer mode:\n", .libPaths()[1])
 ```
 
@@ -38,6 +39,16 @@ This will print the project library you need for running your module.
 You make sure to copy that to the required preference field and do the same for the module name.
 
 As a sidenote: running the first `renv` command for a project library might actually trigger `renv::init`, which will ask the user to agree to managing some files for the user. Just answer `Y` there.
+
+#### Temporary project library
+Often the default library is also the user's normal R library, for instance something like "C:/Users/A_User/AppData/Local/R/win-library/4.5". Restoring with `renv` there can mess up the entire normal library then, as it removes and adds packages based on the development module being installed. While this is very fast and often avoids reinstalling stuff it might be undesirable.
+A simple way to avoid this is to tell `renv` to install to a temporary folder, keeping your usual library as-is.
+```R
+.libPaths(tempdir())
+# restore, install and print project library
+```
+On Windows you would then get something like: `C:/Users/A_User/AppData/Local/Temp/RtmpYN3aqC`
+You could of course also decide to make a dedicated project library somewhere and use that instead of `tempdir()`, or if the temporary directory it creates isn't accessible for JASP. 
 
 #### Installing extra packages
 Until we finish syntaxmode for JASP, which is now in beta, you might want to use `jaspTools` to run analyses in R. You can just run `renv::install('jaspTools') and it will be installed to your project library. The same goes for any other package(s) you might need.
@@ -115,3 +126,24 @@ Logging is especially useful when you are developing your own module, or run int
 The logs might help us give insight in the nature of your problem. Note that you might need to restart JASP for the logging process to start.
 The number in the input field "Max logfiles to keep" defines how many logfiles will be kept at maximum to conserve diskspace. Any extra, older, logfiles will be removed.
 The files can be viewed by pressing "Show logs".
+
+
+## Engine options
+JASP uses R in the background to run all the analyses. Here you can change how many JASP is allowed to start at the most. When deciding how many maximum engines you might want it is helpful to keep in mind that right now each module is ran by only a single engine at the moment. So having 10 analyses from the ANOVA module will not go any faster by allowing maximally 10 engines. While running 10 analyses from 10 modules will go *way* faster.
+
+### Sandbox
+On Windows you will also see the "Sandbox engine" checkbox. When enabled this will isolate the engine process in such a way that none of the code we run in R is able to do anything with the rest of your system. No networking nor access to files on the system.
+This is good, because we rely on a lot of opensource third party R packages from CRAN and Github. And while we have not heard of any supplychain attacks via the R package ecosystem we think it is better to avoid such problems as much as possible.
+
+When developing R modules (and thus enabling "Developer mode") this will be disabled by default because otherwise the engine won't be able to load your development module.
+
+On macOs the operating system already implements at least a file access sandbox for applications and will ask for permission before accessing files outside it's "JASP.app". 
+
+The same goes for the flatpak distribution of JASP on Linux, which in essence is a sandbox, which mediates access through file dialogs and the like. Here however we ask for home-directory read-access so that we can get normal user readable paths to recent files.
+This is entirely disableable by changing JASP's configuration per `flatpak override org.jaspstats.JASP --nofilesystem=~`.
+
+
+### Show engines
+This opens a window the developers use to keep an eye on what each engine is up top.
+It could be interesting to see what engines are busy and with what, although the level isn't very detailed. It does however give you the option to manually kill and engine by right-clicking it. 
+This can be helpful if it stopped responding during some particularly heavy yet unnecessary calculation.

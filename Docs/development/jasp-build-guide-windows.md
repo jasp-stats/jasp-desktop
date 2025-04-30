@@ -114,7 +114,7 @@ You should see something like below, you can edit the `default` file in `path\to
 arch=x86_64
 build_type=Release
 compiler=msvc
-compiler.cppstd=14
+compiler.cppstd=20
 compiler.runtime=dynamic
 compiler.runtime_type=Release
 compiler.version=194
@@ -124,7 +124,7 @@ tools.cmake.cmaketoolchain:generator=Ninja
 
 ```
 
-> 💡 Although CMake and Qt Creator will run Conan process for you, if it's your very first time configuring JASP, and you ran into any problem, you can run the Conan command manually. If things go wrong, CMake configuration will stop and tells you what you should do to resolve the Conan issue. 
+> 💡 Although CMake and Qt Creator will run Conan process for you, if it's your very first time configuring JASP, and you ran into any problem, you can run the Conan command manually. If things go wrong, CMake configuration will stop and tells you what you should do to resolve the Conan issue. Sometimes it might even solve the problem, especially if you run it in the "Developer command prompt" of Visual Studio.
 
 ### Configuring JASP Desktop
 
