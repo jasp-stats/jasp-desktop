@@ -772,8 +772,9 @@ void Column::labelsClear(bool doIncRevision)
 	_labelByValDis.clear();
 	_labels.clear();
 	
-	_maxWidthLabel = -1;
-	_maxWidthValue = -1;
+	_maxWidthLabel	= -1;
+	_maxWidthValue	= -1;
+	_hasShadows		= false;
 	
 	_highestIntsId = 0;
 	
@@ -866,6 +867,9 @@ int Column::_labelMapIt(Label * label)
 	_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(label->originalValueAsString(true, false))));
 	_maxWidthLabel = std::max(_maxWidthLabel, int(stringUtils::approximateVisualLength(label->labelDisplay())));
 
+	if(label->originalValueAsString() != label->labelDisplay())
+		_hasShadows = true;
+	
 	_dbUpdateLabelOrder(true);
 	return label->intsId();
 }
@@ -1329,8 +1333,10 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 	_labelByValDis.erase(oldValDis);
 	_labelByValDis[label->origValDisplay()] = label;
 
-	bool	valueChanged	= previousOriginal != label->originalValueAsString(),
-			displayChanged	= previousDisplay  != label->labelDisplay();
+	bool	valueChanged	= previousOriginal		!= label->originalValueAsString(),
+			displayChanged	= previousDisplay		!= label->labelDisplay(),
+			previousSame	= previousOriginal		== previousDisplay,
+			newSame			= label->labelDisplay()	== label->originalValueAsString();
 
 	if(valueChanged)
 	{
@@ -1396,6 +1402,21 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 			if(!sameMax)
 				_maxWidthLabel = newMax;
 		}
+	}
+	
+	if(!newSame)
+		_hasShadows = true;
+	
+	if(!previousSame && newSame && _hasShadows)
+	{
+		//Do we still have shadows now?
+		_hasShadows = false;
+		for(const Label * label : _labels)
+			if(label->labelDisplay() != label->originalValueAsString())
+			{
+				_hasShadows = true;
+				break;
+			}
 	}
 }
 
@@ -1510,8 +1531,7 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(value == "" && label == "")
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
-	double	newDoubleToSet	= EmptyValues::missingValueDouble,
-			oldDouble		= _dbls[row];
+	double	newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
 	bool	labelIsValue	= value == label,
 			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
@@ -1519,15 +1539,15 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(itsADouble)
 		value = ColumnUtils::doubleToString(newDoubleToSet);
 
-	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label),
-			* oldLabel		= labelByIntsId(_ints[row]);
+	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
 	
-	if(justAValue && !newLabel)
-		newLabel = labelByValueAndDisplay(value, value);
-
-
-	if(!newLabel && (!justAValue && !labelIsValue)) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
-		newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
+	if(!newLabel)
+	{
+		if(justAValue)
+			newLabel = labelByValueAndDisplay(value, value);
+		else if(!labelIsValue) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
+			newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
+	}
 	
 	if(!newLabel && itsADouble) //no labels and it is a double, easy peasy
 		newLabel = labelByIntsId(labelsAdd(!justAValue ? label : ColumnUtils::doubleToString(newDoubleToSet), "", Json::Value(newDoubleToSet)));

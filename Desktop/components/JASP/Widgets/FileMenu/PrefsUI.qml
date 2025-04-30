@@ -398,7 +398,7 @@ PrefsScrollView
 			CheckBox
 			{
 				id:					startMaximized
-				label:				qsTr("Start Maximized")
+				label:				qsTr("Start maximized")
 				checked:			preferencesModel.startMaximized
 				onCheckedChanged:	preferencesModel.startMaximized = checked
 				toolTip:			qsTr("Should JASP open its window maximized on startup?")

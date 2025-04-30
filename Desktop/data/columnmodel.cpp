@@ -341,7 +341,7 @@ void ColumnModel::setColumnDescription(const QString & newColumnDescription)
 
 void ColumnModel::setComputedType(QString type)
 {
-	if (_beingRefreshed || type.isEmpty() || type == computedType())
+	if (_beingRefreshed || type.isEmpty() || type == computedType() || !computedColumnTypeValidName(fq(type)))
 		return;
 
 	computedColumnType cType = computedColumnTypeFromString(type.toStdString());
@@ -372,7 +372,8 @@ void ColumnModel::setComputeFilter(const QString &newComputeFilter)
 
 void ColumnModel::setColumnType(QString type)
 {
-	if (_beingRefreshed || type.isEmpty() || type == currentColumnType()) return;
+	if (_beingRefreshed || type.isEmpty() || type == currentColumnType() || !columnTypeValidName(fq(type))) 
+		return;
 
 	columnType cType = columnTypeFromString(type.toStdString());
 
