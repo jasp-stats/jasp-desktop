@@ -852,6 +852,7 @@ void ColumnModel::_addLabel(QString value, QString label)
 	if(column()->dropLevels() == dropLevelsType::noChoice) //No choice was made yet, but the user added a label, so I guess they want all labels
 		column()->setDropLevels(dropLevelsType::keep);
 	
+	column()->labelsHandleAutoSort();
 	column()->incRevision();
 	refresh();
 	DataSetPackage::pkg()->emitColumnChanged(columnNameQ());

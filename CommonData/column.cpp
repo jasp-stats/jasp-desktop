@@ -724,9 +724,7 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 			incRevision();
 		return;
 	}
-	
-	labelsHandleAutoSort(false);
-	
+		
 	_labelNonEmptyIndexByLabel.clear();
 	_labelByNonEmptyIndex.clear();
 
@@ -869,8 +867,7 @@ int Column::_labelMapIt(Label * label)
 
 	if(label->originalValueAsString() != label->labelDisplay())
 		_hasShadows = true;
-	
-	_dbUpdateLabelOrder(true);
+		
 	return label->intsId();
 }
 
@@ -1431,7 +1428,9 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 void Column::labelsHandleAutoSort(bool doDbUpdateEtc)
 {
 	if(_autoSortByValue)
-		labelsOrderByValue(doDbUpdateEtc);	
+		labelsOrderByValue(doDbUpdateEtc);
+	else if(!batchedLabelDepth() && doDbUpdateEtc)
+		_dbUpdateLabelOrder();
 }
 
 void Column::labelDisplayChanged(Label *label, const std::string & previousDisplay)
@@ -1777,7 +1776,7 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 	_sortLabelsByOrder();
 	
 	if(doDbUpdateEtc)
-		_dbUpdateLabelOrder();
+		_dbUpdateLabelOrder(false);
 }
 
 doublevec Column::valuesNumericOrdered()

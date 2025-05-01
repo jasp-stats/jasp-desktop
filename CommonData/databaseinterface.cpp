@@ -1472,6 +1472,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 
 	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ?;", prepare, processRow);
 
+	column->_sortLabelsByOrder();
 	column->labelsRemoveBeyond(labelsSize);
 	 
 	column->endBatchedLabelsDB(false);
@@ -1547,6 +1548,7 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 
 	for(Column * column : columns)
 	{
+		column->_sortLabelsByOrder();
 		column->labelsRemoveBeyond(labelsPerCol[column->id()]);
 		column->endBatchedLabelsDB(false);
 	}

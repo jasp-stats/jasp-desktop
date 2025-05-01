@@ -40,6 +40,7 @@ class Analysis;
 /// It also handles storing the information of computed columns (those used to be split off)
 class Column : public DataSetBaseNode
 {
+	friend DatabaseInterface;
 public:
 	typedef std::map<std::pair<std::string, std::string>, Label*>	LabelByStrStr;
 	typedef std::map<std::string, Labelset>							LabelsByStr;
