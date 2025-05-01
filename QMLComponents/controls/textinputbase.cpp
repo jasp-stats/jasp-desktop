@@ -125,8 +125,12 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 		
 	default:
-		if (value.isString())	
+		if (value.isString())
 			_value = tq(value.asString());
+		else if (value.isInt())
+			_value = value.asInt();
+		else if (value.isDouble())
+			_value = value.asDouble();
 		break;
 	}
 
