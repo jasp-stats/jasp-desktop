@@ -102,7 +102,7 @@ typedef std::string		(*enDecodeFuncDef)			(std::string);
 void					freeRBridgeColumnType(	RBridgeColumnType* columnsRequested, size_t colMax);
 
 RBridgeColumnType*		jaspRCPP_marshallSEXPs(			SEXP columns, SEXP columnsAsNumeric, SEXP columnsAsOrdinal, SEXP columnsAsNominal, SEXP allColumns, size_t * colMax);
-Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false, bool dropLevels = true);
+Rcpp::IntegerVector		jaspRCPP_makeFactor(			Rcpp::IntegerVector v, char** levels, int nbLevels, bool ordinal = false);
 std::string				_jaspRCPP_System (				std::string cmd);
 columnType				jaspRCPP_getColumnType(			std::string columnName);
 bool					jaspRCPP_getColumnExists(		std::string columnName);

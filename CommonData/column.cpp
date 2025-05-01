@@ -1262,11 +1262,13 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	intintmap idToLevel;
 
 	for(Label * label : _labels)
-		if(usedIds.count(label->intsId()))
+		if(usedIds.count(label->intsId()) || !shouldDropLevels())
 		{
 			levels.push_back(useLabels ? label->labelDisplay() : label->originalValueAsString(false));
 			idToLevel[label->intsId()] = levels.size();
 		}
+		
+			
 
 	values.resize(valuesSize);
 
