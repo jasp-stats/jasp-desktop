@@ -305,6 +305,8 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 
 QString	ComboBoxBase::generateMDHelp(int depth) const
 {
+	if(!isVisible())
+		return "";
 	QStringList markdown;
 
 	printLabelMD(markdown, depth);
@@ -317,15 +319,13 @@ QString	ComboBoxBase::generateMDHelp(int depth) const
 		{
 			QString label = term.label(),
 					info = term.info();
-			if (label.isEmpty())
+			if (label.isEmpty() || info.isEmpty())
 				continue;
 
-			markdown << "\n" << QString{depth * 2, ' '} << "- *" << label << "*";
-			if (!info.isEmpty())
-				markdown << (": " + info);
+			markdown << "\n" << QString{depth * 2, ' '} << "- *" << label << "*" << (": " + info);
 		}
 	}
-	else
+	else if(!hasInfo())
 	{
 		markdown << "\n" << QString{depth * 2, ' '};
 		// Display the options in one line separated by a comma.
