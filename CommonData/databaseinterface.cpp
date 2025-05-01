@@ -1786,12 +1786,16 @@ void DatabaseInterface::dataSetDelete(int dataSetId)
 	transactionWriteEnd();
 }
 
+#define BUSY_MAX_SECS 60
+
 void DatabaseInterface::_runStatements(const std::string & statements, bindParametersType * bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_runStatements);
 #ifdef SIR_LOG_A_LOT
 	Log::log() << "Running statements: '" << statements << "'" << std::endl;
 #endif
+	
+	long epochIdle = Utils::currentSeconds();
 
 	sqlite3_stmt * dbStmt = nullptr;
 
@@ -1831,12 +1835,15 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				}
 				 
 			   case SQLITE_ROW:
+					epochIdle = Utils::currentSeconds();
 					if(processRow)
 						(*processRow)(row, dbStmt);
 					row++;
 					break;
 					
 				case SQLITE_BUSY:
+					if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
+						throw std::runtime_error("Sqlite was busy for too long!");
 					std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
 					break;
 					
@@ -1907,6 +1914,8 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 	Log::log() << "Running statements repeatedly: '" << statements << "'" << std::endl;
 #endif
 
+	long epochIdle = Utils::currentSeconds();
+	
 	sqlite3_stmt * dbStmt = nullptr;
 
 	const char	*	start		= statements.c_str(),
@@ -1952,9 +1961,12 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 						if(processRow)
 							(*processRow)(row, repetition, dbStmt);
 						row++;
+						epochIdle = Utils::currentSeconds();
 						break;
 						
 					case SQLITE_BUSY:
+						if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
+							throw std::runtime_error("Sqlite was busy for too long!");
 						std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
 						break;
 						
