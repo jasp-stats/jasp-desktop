@@ -89,10 +89,19 @@ void TextInputBase::bindTo(const Json::Value& value)
 	case TextInputType::FormulaType:
 	{
 		_value = value.isString() ? tq(value.asString()) : value.isNumeric() ? value.asDouble() : QVariant();
-		setIsRCode();
 
-		if (!_value.isNull())
-			runRScript("as.character(" + _value.toString() + ")", true);
+		// If it is already numeric, no need to parse it.
+		// This also avoid parsing infinite value: a QVariant with an infinite value gives "inf" as string value,
+		// which gives an error when parsed by R.
+		if (value.isNumeric())
+			setProperty("realValue", _value);
+		else
+		{
+			setIsRCode();
+
+			if (!_value.isNull())
+				runRScript("as.character(" + _value.toString() + ")", true);
+		}
 
 		break;
 	}
@@ -437,19 +446,24 @@ void TextInputBase::_setBoundValue()
 {
 	if (_inputType == TextInputType::FormulaType)
 	{
-		QString strValue = _value.toString();
-
-		// _formula might be empty (in TableView the FormulaType is not directly bound, and has its own model).
-		if (boundValue().asString() != fq(strValue))
+		if (_value.metaType().id() == QMetaType::Double)
+			setProperty("realValue", _value);
+		else
 		{
-			if (!_parseDefaultValue && _defaultValue == _value)
+			QString strValue = _value.toString();
+
+			// _formula might be empty (in TableView the FormulaType is not directly bound, and has its own model).
+			if (boundValue().asString() != fq(strValue))
 			{
-				// The value is the same as the default value and this default value should not be parsed (this might be just a string like '...')
-				// So just set this value and emit that the formula is succesfully checked without running the R script.
-				setBoundValue(fq(strValue));
-				emit formulaCheckSucceeded();
+				if (!_parseDefaultValue && _defaultValue == _value)
+				{
+					// The value is the same as the default value and this default value should not be parsed (this might be just a string like '...')
+					// So just set this value and emit that the formula is succesfully checked without running the R script.
+					setBoundValue(fq(strValue));
+					emit formulaCheckSucceeded();
+				}
+				runRScript("as.character(" + strValue + ")", true);
 			}
-			runRScript("as.character(" + strValue + ")", true);
 		}
 	}
 	else setBoundValue(_getJsonValue(_value));
