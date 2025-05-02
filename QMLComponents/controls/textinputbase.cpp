@@ -447,7 +447,10 @@ void TextInputBase::_setBoundValue()
 	if (_inputType == TextInputType::FormulaType)
 	{
 		if (_value.metaType().id() == QMetaType::Double)
+		{
 			setProperty("realValue", _value);
+			setBoundValue(_getJsonValue(_value));
+		}
 		else
 		{
 			QString strValue = _value.toString();
