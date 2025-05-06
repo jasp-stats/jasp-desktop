@@ -891,7 +891,7 @@ size_t EngineSync::enginesStartableCount() const
 
 	//But perhaps they have to cool down for a bit.
 
-	for(long engineStopTime : _engineStopTimes)
+	for(int64_t engineStopTime : _engineStopTimes)
 		if(engineStopTime != -1 && ( engineStopTime + ENGINE_COOLDOWN > Utils::currentMillis() ) && enginesPossible > 0)
 			enginesPossible--;
 
@@ -1295,7 +1295,7 @@ void EngineSync::stopOrKillEngine(int channelNumber)
 			if(!engine->stopped())
 				engine->stopEngine();
 			
-			long theTimeIsNow = Utils::currentSeconds();
+			int64_t theTimeIsNow = Utils::currentSeconds();
 			
 			while(Utils::currentSeconds() - theTimeIsNow < 10 && !engine->stopped())
 			{

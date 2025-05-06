@@ -1795,7 +1795,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 	Log::log() << "Running statements: '" << statements << "'" << std::endl;
 #endif
 	
-	long epochIdle = Utils::currentSeconds();
+	int64_t epochIdle = Utils::currentSeconds();
 
 	sqlite3_stmt * dbStmt = nullptr;
 
@@ -1914,7 +1914,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 	Log::log() << "Running statements repeatedly: '" << statements << "'" << std::endl;
 #endif
 
-	long epochIdle = Utils::currentSeconds();
+	int64_t epochIdle = Utils::currentSeconds();
 	
 	sqlite3_stmt * dbStmt = nullptr;
 

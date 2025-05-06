@@ -141,7 +141,7 @@ void Engine::run()
 
 void Engine::beIdle(bool newlyIdle)
 {
-	static int idleStartTime = -1;
+	static int64_t idleStartTime = -1;
 
 	if(newlyIdle)
 		idleStartTime = Utils::currentSeconds();

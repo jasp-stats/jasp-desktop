@@ -749,7 +749,7 @@ void EngineRepresentation::shutEngineDown()
 	}
 	else
 	{
-		size_t stopTime = Utils::currentMillis();
+		int64_t stopTime = Utils::currentMillis();
 		stopEngine();
 		
 		while(!stopped() && stopTime + ENGINE_KILLTIME > Utils::currentMillis())

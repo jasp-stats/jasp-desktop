@@ -1151,7 +1151,7 @@ bool DataSetViewBase::isSelected(int row, int col)
 bool DataSetViewBase::relaxForSelectScroll()
 {
 	JASPTIMER_SCOPE(DataSetViewBase::relaxForSelectScroll);
-	long curMs = Utils::currentMillis();
+	int64_t curMs = Utils::currentMillis();
 
 	//Log::log() << "_selectScrollMs = " << _selectScrollMs << ", curMs = " << curMs << std::endl;
 

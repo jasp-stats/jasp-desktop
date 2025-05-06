@@ -335,7 +335,7 @@ protected:
 															_prevEditCol			= -1,
 															_maxColWidth			= -1;
 	size_t													_linesActualSize		= 0;
-	long													_selectScrollMs			= 0;
+	int64_t													_selectScrollMs			= 0;
 	std::vector<Json::Value>								_copiedColumns;
 	QString													_lastJaspCopyIntoClipboard;
 	std::vector<qstringvec>									_lastJaspCopyValues,

@@ -283,9 +283,9 @@ bool IPCChannel::jaspAlive()
 
 void IPCChannel::catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis)
 {
-	const long	now		= Utils::currentMillis(),
-				wait	= 2000,
-				sleep	= 200;
+	const int64_t	now		= Utils::currentMillis(),
+					wait	= 2000,
+					sleep	= 200;
 
 	bool worked = false;
 

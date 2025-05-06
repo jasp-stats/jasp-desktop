@@ -33,7 +33,7 @@ ImportDataSet * DatabaseImporter::loadFile(const std::string &locator, std::func
 	for(int i=0; i<record.count(); i++)
 		data->addColumn(new DatabaseImportColumn(data, fq(record.fieldName(i)), record.field(i).metaType()));
 												
-	long lastProgress = Utils::currentMillis();	
+	int64_t lastProgress = Utils::currentMillis();	
 		
 	do
 	{
