@@ -655,7 +655,7 @@ void AnalysisForm::setAnalysisUp()
 	bindTo(defaultOptions);
 	lockOptions();
 
-	blockValueChangeSignal(false, false);
+	blockValueChangeSignal(false, true);
 
 	_initialized = true;
 
