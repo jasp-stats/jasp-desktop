@@ -305,8 +305,6 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 
 QString	ComboBoxBase::generateMDHelp(int depth) const
 {
-	if(!isVisible())
-		return "";
 	QStringList markdown;
 
 	printLabelMD(markdown, depth);
