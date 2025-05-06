@@ -94,7 +94,7 @@ DataSet * DataBridge::provideAndUpdateDataSet()
 		setColumnNames |= _dataSet->checkForUpdates();
 
 	if(_dataSet && setColumnNames)
-		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnNames(), true);
+		ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
 
 	JASPTIMER_STOP(DataBridge::provideAndUpdateDataSet());
 
@@ -145,8 +145,7 @@ bool DataBridge::setColumnDataAndType(const std::string &columnName, const std::
 
 void DataBridge::reloadColumnNames()
 {
-	ColumnEncoder::columnEncoder()->setCurrentColumnNames(		provideAndUpdateDataSet() == nullptr ? std::vector<std::string>({})			: provideAndUpdateDataSet()->getColumnNames());
-	ColumnEncoder::columnEncoder()->setCurrentColTypePerName(	provideAndUpdateDataSet() == nullptr ? std::map<std::string,columnType>()	: provideAndUpdateDataSet()->getColumnTypesMap());
+	ColumnEncoder::columnEncoder()->setCurrentColumnNames(		provideAndUpdateDataSet() == nullptr ? std::map<std::string, columnType>({})			: provideAndUpdateDataSet()->getColumnTypesMap());
 }
 
 void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)

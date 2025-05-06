@@ -111,7 +111,7 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 
 	dataset->endBatchedToDB([](float f) {});
 
-	ColumnEncoder::columnEncoder()->setCurrentNames(dataset->getColumnNames(), true);
+	ColumnEncoder::columnEncoder()->setCurrentNames(dataset->getColumnTypesMap());
 }
 
 const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
