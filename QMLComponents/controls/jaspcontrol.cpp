@@ -598,7 +598,7 @@ bool JASPControl::printLabelMD(QStringList& md, int depth) const
 
 QString JASPControl::generateMDHelp(int depth) const
 {
-	if (!hasInfo()) return "";
+	if (!hasInfo() || !isVisible()) return "";
 		
 	QStringList childMDs, markdown;
 

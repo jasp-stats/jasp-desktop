@@ -25,6 +25,7 @@ MainPage                    1.0 MainPage.qml
 FileMenu                    1.0 FileMenu/FileMenu.qml
 MessageBox                  1.0 MessageBox.qml
 AnalysisForms               1.0 AnalysisForms.qml
+AnalysesPanel               1.0 AnalysesPanel.qml
 AnalysisFormExpander        1.0 AnalysisFormExpander.qml
 CustomMenu                  1.0 CustomMenu.qml
 JASPSplitHandle             1.0 JASPSplitHandle.qml
@@ -37,7 +38,8 @@ LoadingIndicator            1.0 LoadingIndicator.qml
 ImageInverter               1.0 ImageInverter.qml
 PlotEditor                  1.0 PlotEditor/PlotEditor.qml
 ErrorMessage				1.0 ErrorMessage.qml
-EnginesWindow				1.0 EnginesWindow.qml
+EnginesPanel				1.0 EnginesPanel.qml
+ResultsPanel				1.0 ResultsPanel.qml
 ResizeDataDialog			1.0	ResizeDataDialog.qml
 RenameColumnDialog			1.0	RenameColumnDialog.qml
 WavyWindow                  1.0 WavyWindow.qml

@@ -43,6 +43,8 @@ class EngineSync : public QAbstractListModel
 {
 	Q_OBJECT
 	
+	Q_PROPERTY(bool		showEngines			READ showEngines		WRITE setShowEngines		NOTIFY showEnginesChanged)
+	
 public:
 
 	EngineSync(QObject *parent);
@@ -62,6 +64,9 @@ public:
 
 	std::string	currentStateForDebug() const;
 
+	bool showEngines() const;
+	void setShowEngines(bool newShowEngines);
+	
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
@@ -114,6 +119,8 @@ signals:
 	void		reloadData();
 	void		checkDataSetForUpdates();
 
+	void showEnginesChanged();
+	
 private:
 	//These process functions can request a new engine to be started:
 	stringset	processRCodeQueue();
@@ -177,7 +184,8 @@ private:
 	RFilterStore					*	_waitingFilter					= nullptr;
 	bool								_stopProcessing					= false,
 										_dataMode						= false,
-										_filterRunning					= false;
+										_filterRunning					= false,
+										_showEngines					= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
@@ -192,7 +200,6 @@ private:
 	EngineRepresentation			*	_rCmder				= nullptr;	///< For those special occassions where you just want to shout at R in a more personal manner
 	IPCChannel						*	_rCmderChannel		= nullptr;	///< The channel for shouting at R in a more personal manner
 	std::vector<long>					_engineStopTimes;				///< Here we keep track of how long ago it is an engine shut down, this way we can give it a slight time between closing and starting an engine. To avoid shared memory problems on windows.
-
 };
 
 #endif // ENGINESYNC_H

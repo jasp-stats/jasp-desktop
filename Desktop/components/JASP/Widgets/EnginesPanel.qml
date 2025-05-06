@@ -3,29 +3,22 @@ import QtQuick.Window
 import QtWebEngine
 import JASP.Widgets
 import JASP.Controls
+import QtQuick.Layouts
 
-Window
+FocusScope
 {
 	id:					enginesWindow
 	width:				400 * jaspTheme.uiScale
 	height:				Screen.height
-	minimumWidth:		200 * preferencesModel.uiScale
-	minimumHeight:		minimumWidth
-	title:				qsTr("Engines Overview")
-	color:				jaspTheme.uiBackground
-	visible:			true
+	Layout.minimumWidth:		200 * preferencesModel.uiScale
+	Layout.maximumWidth:		600 * preferencesModel.uiScale
+	Layout.minimumHeight:		minimumWidth
+	//title:				qsTr("Engines Overview")
+	//color:				jaspTheme.uiBackground
 	x:					0
 	y:					0
 
-	Shortcut { onActivated: enginesWindow.close();				sequences: ["Ctrl+W", Qt.Key_Close];							}
-
-
-	Connections
-	{
-		target:			mainWindow
-		function		onCloseWindows() { enginesWindow.close(); }
-	}
-
+	Shortcut { onActivated: engineSync.showEngines = false;			sequences: ["Ctrl+W", Qt.Key_Close];							}
 
 	ListView
 	{

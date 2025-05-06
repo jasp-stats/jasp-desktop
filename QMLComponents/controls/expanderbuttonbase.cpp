@@ -35,7 +35,8 @@ void ExpanderButtonBase::setUp()
 
 QString ExpanderButtonBase::generateMDHelp(int depth) const
 {
-	if (!hasInfo()) return "";
+	if (!hasInfo() || !isVisible()) 
+		return "";
 
 	// For Section, draw first a line, and reset the depth to 0.
 	return "\n---\n\n" + JASPControl::generateMDHelp(0);

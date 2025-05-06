@@ -5,7 +5,6 @@
 #include <QDir>
 #include "stringutils.h"
 #include "gui/preferencesmodel.h"
-#include "log.h"
 
 HelpModel::HelpModel(QObject * parent) : QObject(parent)
 {
@@ -18,15 +17,11 @@ HelpModel::HelpModel(QObject * parent) : QObject(parent)
 
 void HelpModel::runJavaScript(QString renderFunc, QString content)
 {
-#ifdef JASP_DEBUG
-	Log::log() << "Help is sending content: '" << content << "'" << std::endl;
-#endif
-
-	content.replace("\\", "\\\\");  //The order here is important, replace the escaped escape characters first. Helps with latex, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2530
-	content.replace("\"", "\\\"");
-	content.replace("\r\n", "\\n");
-	content.replace("\r", "\\n");
-	content.replace("\n", "\\n");
+	content.replace("\\",	"\\\\"	);  //The order here is important, replace the escaped escape characters first. Helps with latex, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2530
+	content.replace("\"",	"\\\""	);
+	content.replace("\r\n", "\\n"	);
+	content.replace("\r",	"\\n"	);
+	content.replace("\n",	"\\n"	);
 
 
 

@@ -75,6 +75,8 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		windowTitle			READ windowTitle											NOTIFY windowTitleChanged			)
 	Q_PROPERTY(int			screenPPI			READ screenPPI				WRITE setScreenPPI				NOTIFY screenPPIChanged				)
 	Q_PROPERTY(bool			dataAvailable		READ dataAvailable											NOTIFY dataAvailableChanged			)
+	Q_PROPERTY(bool			showData			READ showData				WRITE setShowData				NOTIFY showDataChanged				)
+	Q_PROPERTY(bool			showResults			READ showResults			WRITE setShowResults			NOTIFY showResultsChanged			)
 	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
@@ -129,6 +131,13 @@ public:
 	const QString 		contactText()			const;
 	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
 
+	bool showData() const;
+	
+	bool showResults() const;
+	void setShowResults(bool newShowResults);
+	
+	void setShowData(bool newShowData);
+	
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void plotPPIChangedHandler(int ppi, bool wasUserAction);
@@ -242,7 +251,6 @@ signals:
 	void welcomePageVisibleChanged(	bool		welcomePageVisible);
 	void downloadNewJASPUrlChanged	(QString	downloadNewJASPUrl);
 	void closeWindows();
-	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
 	void contactVisibleChanged();
 	void communityVisibleChanged();
@@ -250,6 +258,10 @@ signals:
 	void resizeData(int row, int col);
 	void qmlLoadedChanged();
 
+	void showDataChanged();
+	
+	void showResultsChanged();
+	
 private slots:
 	void resultsPageLoaded();
 	void analysisResultsChangedHandler(Analysis* analysis);
@@ -354,9 +366,11 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
-									_communityVisible		= false;
+									_communityVisible		= false,
+									_showData				= false;
 									
 	QFont							_defaultFont;
+	bool _showResults;
 };
 
 #endif // MAINWIDGET_H

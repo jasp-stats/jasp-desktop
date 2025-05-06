@@ -1425,3 +1425,17 @@ void EngineSync::stopAndDestroyEngine(EngineRepresentation * engine)
 	engine->shutEngineDown();
 	destroyEngine(engine);
 }
+
+bool EngineSync::showEngines() const
+{
+	return _showEngines;
+}
+
+void EngineSync::setShowEngines(bool newShowEngines)
+{
+	if (_showEngines == newShowEngines)
+		return;
+	
+	_showEngines = newShowEngines;
+	emit showEnginesChanged();
+}

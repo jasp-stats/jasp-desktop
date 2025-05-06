@@ -338,7 +338,7 @@ const QString MainWindow::contactText() const
 void MainWindow::showAnalysis()
 {
 	_ribbonModel->showStatistics();
-	emit hideDataPanel();
+	setShowData(false);
 	_analyses->setVisible(true);
 }
 
@@ -654,7 +654,6 @@ void MainWindow::loadQML()
 
 	_fileMenu->refresh(); //Now that the theme is loaded we can determine the proper width for the buttons in the filemenu
 
-	Log::log() << "Loading HelpWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading ContactWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading CommunityWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
@@ -703,7 +702,7 @@ void MainWindow::loadQML()
 void MainWindow::showEnginesWindow()
 {
 	Log::log() << "Showing EnginesWindow"  << std::endl;
-	_qml->load(QUrl("qrc:///components/JASP/Widgets/EnginesWindow.qml"));
+	_engineSync->setShowEngines(true);
 }
 
 void MainWindow::setQmlImportPaths()
@@ -1369,6 +1368,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			_resultsJsInterface->resetResults();
 			_analyses->setVisible(false);
+			setShowResults(false);
 			_analyses->clear();
 			_package->dbDelete();
 			_package->reset(false);
@@ -1407,11 +1407,14 @@ void MainWindow::populateUIfromDataSet()
 
 	bool hasAnalyses = _analyses->count() > 0;
 
-	setDataAvailable(_package->dataSet() && (_package->dataSet()->rowCount() > 0 && _package->dataSet()->columnCount() > 0));
-
 	hideProgress();
+	setDataAvailable(_package->dataSet() && (_package->dataSet()->rowCount() > 0 && _package->dataSet()->columnCount() > 0));
+	
+	if(!hasAnalyses && dataAvailable())
+		setShowData(true);
 
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
+	setShowResults(hasAnalyses);
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
 	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
@@ -2034,6 +2037,9 @@ void MainWindow::setDataAvailable(bool dataAvailable)
 
 	_dataAvailable = dataAvailable;
 	emit dataAvailableChanged(_dataAvailable);
+	
+	if(_dataAvailable)
+		setShowData(false);
 }
 
 void MainWindow::setAnalysesAvailable(bool analysesAvailable)
@@ -2174,3 +2180,29 @@ void MainWindow::loadModulesFromUserConfiguration(configState state)
 	}
 }
 
+
+bool MainWindow::showData() const
+{
+	return _showData;
+}
+
+bool MainWindow::showResults() const
+{
+	return _showResults;
+}
+
+void MainWindow::setShowResults(bool newShowResults)
+{
+	if (_showResults == newShowResults)
+		return;
+	_showResults = newShowResults;
+	emit showResultsChanged();
+}
+
+void MainWindow::setShowData(bool newShowData)
+{
+	if (_showData == newShowData)
+		return;
+	_showData = newShowData;
+	emit showDataChanged();
+}
