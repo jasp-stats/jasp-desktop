@@ -2310,23 +2310,6 @@ stringvec Column::previewTransform(columnType transformType)
 	return out;
 }
 
-
-bool Column::initFromStrings(const std::string & newName, const stringvec &values, const stringvec & labels, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished)
-{
-	return initFromLookups(
-				newName,
-				values.size(),
-				[&values](size_t r){ return values[r]; },
-				[&labels](size_t r){ return r < labels.size() ? labels[r] : ""; },
-				title,
-				desiredType,
-				emptyValues,
-				threshold,
-				orderLabelsByValue,
-				leaveBatchedUnfinished
-				);
-}
-
 bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished)
 
 {

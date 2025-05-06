@@ -102,10 +102,12 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 
 	for (int colNr = 0; colNr < syntaxBridgeDataSet->columnCount; colNr++)
 	{
-		stringvec values;
-		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
-			values.push_back(syntaxBridgeDataSet->columns[colNr].values[rowNr]);
-		dataset->initColumnWithStrings(colNr, syntaxBridgeDataSet->columns[colNr].name, values, {}, syntaxBridgeDataSet->columns[colNr].name, columnType::unknown, {}, threshold, orderLabelsByValue);
+		auto lookup = [&](size_t r)
+		{
+			return syntaxBridgeDataSet->columns[colNr].values[r];
+		};
+		
+		dataset->column(colNr)->initFromLookups(syntaxBridgeDataSet->columns[colNr].name, syntaxBridgeDataSet->rowCount, lookup, lookup, syntaxBridgeDataSet->columns[colNr].name, columnType::unknown, {}, threshold, orderLabelsByValue);
 	}
 
 	dataset->endBatchedToDB([](float f) {});

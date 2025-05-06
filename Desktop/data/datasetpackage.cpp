@@ -174,7 +174,7 @@ void DataSetPackage::generateEmptyData()
 	createDataSet();
 	
 	setDataSetSize(1, 1);
-	_dataSet->column(0)->initFromStrings(freeNewColumnName(0), {""}, {}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), false);
+	_dataSet->column(0)->initFromLookups(freeNewColumnName(0), 1, [](size_t){return "";}, [](size_t){return "";}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), false);
 
 	endLoadingData();
 	
