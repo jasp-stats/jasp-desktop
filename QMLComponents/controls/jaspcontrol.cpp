@@ -609,7 +609,7 @@ QString JASPControl::generateMDHelp(int depth) const
 			childMDs.push_back(childMD);
 	}
 
-	bool hasLabel = (depth == 0 && _controlType == ControlType::Expander) || printLabelMD(markdown, depth);
+	bool hasLabel = printLabelMD(markdown, depth);
 	markdown << info() << "\n";
 
 	if (infoLabelIsHeader() && !info().isEmpty())

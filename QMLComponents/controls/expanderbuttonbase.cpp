@@ -46,3 +46,8 @@ QString ExpanderButtonBase::generateMDHelp(int depth) const
 	// Use collapsible section
 	return "<details>\n<summary><b>" + label + "</b></summary>\n" + JASPControl::generateMDHelp(0) + "\n</details>";
 }
+
+bool ExpanderButtonBase::printLabelMD(QStringList &md, int depth) const
+{
+	return depth == 0 || JASPControl::printLabelMD(md, depth);
+}
