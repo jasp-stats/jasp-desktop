@@ -25,7 +25,7 @@ public:
 	virtual bool importerDeliversLabels() const { return true; } //They all do except csv, so for synchronization to work we want labels to be ignored for csv when synching, this to allow people to enter better labels and not lose them on every sync
 	
 private slots:
-	void						importColumnFinished(ImportColumn *column);
+	void						importColumnFinished(ImportColumn *column, bool doCallback);
 	
 protected:
     virtual ImportDataSet*		loadFile(const std::string &locator, std::function<void(int)> progressCallback) = 0;

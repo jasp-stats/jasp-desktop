@@ -8,7 +8,7 @@
 
 Importer::Importer() 
 {
-	//Turns out that jasp importer and jaspiporter old are not Importers... Great...
+	//Turns out that jasp importer and jaspimporter old are not Importers... Great...
 	DataSetPackage::pkg()->setIsJaspFile(false);
 }
 
@@ -17,17 +17,29 @@ Importer::~Importer() {}
 class InitColumnTask : public QRunnable
 {
 public:
-	InitColumnTask(ImportColumn * importColumn, Column * datasetColumn)
-		: _importColumn(importColumn), _column(datasetColumn)
+	InitColumnTask(ImportColumn * importColumn, Column * datasetColumn, std::function<void(int)> progressCells = nullptr)
+		: _importColumn(importColumn), _column(datasetColumn), _progressCells(progressCells)
 	{}
 	
 	void run() override
 	{
+		int prevRowSent = 0,
+			stepSize	= std::max(int(_importColumn->size())/100, 100);
+		
+		auto handleRow = [&](int curRow)
+		{
+			if(_progressCells && curRow - prevRowSent > stepSize || curRow >= _importColumn->size() - 1)
+			{
+				_progressCells(curRow - prevRowSent);
+				prevRowSent = curRow;
+			}
+		};
+		
 		_column->initFromLookups(
 					_importColumn->name(),
 					_importColumn->size(),
-					[this](size_t row) { return _importColumn->valueLookup(row); },
-					[this](size_t row) { return _importColumn->labelLookup(row); },
+					[this, &handleRow](size_t row) { handleRow(row); return _importColumn->valueLookup(row); },
+					[this, &handleRow](size_t row) { handleRow(row); return _importColumn->labelLookup(row); },
 					_importColumn->title(),
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
@@ -35,23 +47,24 @@ public:
 					DataSetPackage::orderByValueByDefault(),
 					true); //Leave batched unfinished by neglecting to call endBatchedLabelsDB() for now, this we can just do all at the end in the dataset for all columns that are still in label batch mode
 		
-		_importColumn->finish();
+		_importColumn->finish(!_progressCells);
 	}
 		
 private:
-	ImportColumn	*	_importColumn;
-	Column			*	_column;
+	ImportColumn			*	_importColumn;
+	Column					*	_column;
+	std::function<void(int)>	_progressCells;
 };
 
-void Importer::importColumnFinished(ImportColumn * column)
+void Importer::importColumnFinished(ImportColumn * column, bool doCallback)
 {
-	
 	_serialFinishing.lock();
 	
 	try
 	{
 		_waitingFor.erase(column);
-		_progressCallback(50 + 25 * (_importDataSet->columnCount() - _waitingFor.size()) / _importDataSet->columnCount());
+		if(doCallback)
+			_progressCallback(50 + 25 * (_importDataSet->columnCount() - _waitingFor.size()) / _importDataSet->columnCount());
 		delete column;
 		
 	}
@@ -86,8 +99,25 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 
 	if (columnCount > 0)
 	{
-		int	rowCount		= _importDataSet->rowCount();
-			_waitingFor		= std::set<ImportColumn*>(_importDataSet->begin(), _importDataSet->end());
+		int		rowCount		= _importDataSet->rowCount(),
+				totalCells		= rowCount * _importDataSet->columnCount(),
+				processed		= 0,
+				stepSize		= std::max(totalCells/100, 100);
+				_waitingFor		= std::set<ImportColumn*>(_importDataSet->begin(), _importDataSet->end());
+		QMutex	callMutex;
+		
+		auto totalCellsCallback = [&,this](int cells)
+		{
+			
+			if((processed % stepSize) + cells > stepSize || processed + cells >= totalCells)
+			{
+				callMutex.lock();
+				_progressCallback(50 + 25 * float(processed + cells) / float(totalCells));
+				callMutex.unlock();
+			}
+			
+			processed += cells;
+		};
 		
 
 		DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
@@ -98,7 +128,7 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 		{
 			ImportColumn	* importColumn	= _importDataSet->getColumn(colNo);
 			Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(colNo);
-			InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn);
+			InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
 			
 			connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
 			

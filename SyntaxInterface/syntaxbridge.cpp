@@ -218,7 +218,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 		}
 	}
 
-	for (auto analysis : analyses)
+	for (auto & analysis : analyses)
 	{
 		Log::log() << "Analysis " << fq(analysis.analysisName) << " with qml file " << fq(analysis.qmlFileName) << std::endl;
 		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, preloadData))

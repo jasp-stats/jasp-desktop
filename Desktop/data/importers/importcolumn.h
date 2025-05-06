@@ -32,10 +32,10 @@ public:
 			void						setName(const std::string & name);
 			void						setTitle(const std::string & title);
 			bool						containsAnythingAtAll();
-			void						finish();
+			void						finish(bool doCallback = true);
 
 signals:
-			void						finished(ImportColumn *);
+			void						finished(ImportColumn *, bool doCallback);
 					
 protected:
 	ImportDataSet * _importDataSet;

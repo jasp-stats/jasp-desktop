@@ -53,7 +53,7 @@ bool ImportColumn::containsAnythingAtAll()
 	return false;
 }
 
-void ImportColumn::finish()
+void ImportColumn::finish(bool doCallback)
 {
-	emit finished(this);
+	emit finished(this, doCallback);
 }
