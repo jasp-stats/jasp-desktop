@@ -252,7 +252,7 @@ bool IPCChannel::jaspAlive()
 	if(!_isSlave)
 		return true; //if jasp asks its obviously alive
 
-	uint64_t stamp = getFileModificationTime(_jaspHeartBeatPath);
+	uint64_t stamp = Utils::getFileModificationTime(_jaspHeartBeatPath);
 	
 	if(stamp != _lastHeartBeatTimestamp) {
 		_lastHeartBeatTimestamp = stamp;
