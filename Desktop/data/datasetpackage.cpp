@@ -94,9 +94,6 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	connect(this,	&DataSetPackage::enginesPrepareForDataSignal,	_engineSync,	&EngineSync::enginesPrepareForData,	Qt::QueuedConnection);
 	connect(this,	&DataSetPackage::enginesReceiveNewDataSignal,	_engineSync,	&EngineSync::enginesReceiveNewData,	Qt::QueuedConnection);
 
-	
-	
-
 	reset();
 }
 
