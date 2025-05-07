@@ -40,6 +40,7 @@ public:
 	static QString userRLibrary();
 	static QString userModulesDir();
 	static QString bundledModulesDir();
+	static QString bundledModulesLibDir();
 	static QString documents();
  	static QString sandboxedDocuments();
 	static QString logDir();

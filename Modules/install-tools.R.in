@@ -1,0 +1,45 @@
+# Generated from install-tools.R.in
+#
+
+JASP_MODULE_BUNDLE_MANAGER_LIBRARY 	<- "@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@"
+RENV_LIBRARY                		    <- "@RENV_LIBRARY@"
+JUNCTION_HANDLING_LIBRARY  			    <- "@JUNCTION_HANDLING_LIBRARY@"
+R_CPP_INCLUDES_LIBRARY              <- "@R_CPP_INCLUDES_LIBRARY@"
+
+ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
+MODULES                <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
+
+mkdir <- function(paths) {
+  for (path in paths)
+    if (!dir.exists(path))
+      dir.create(path, recursive = TRUE)
+}
+mkdir(c(R_CPP_INCLUDES_LIBRARY, JUNCTION_HANDLING_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
+
+.libPaths(RENV_LIBRARY)
+
+options(INSTALL_opts = "--no-test-load")
+cat("Restoring Rcpp & RInside\n")
+renv::restore(
+  library  = R_CPP_INCLUDES_LIBRARY,
+  lockfile = file.path(MODULES, "Rcpp_RInside.lock"),
+  clean    = TRUE
+)
+
+if (.Platform$OS.type == "windows") {
+  cat("Restoring junction handling library\n")
+  options(renv.config.cache.symlinks = FALSE)
+  renv::restore(
+	library  = JUNCTION_HANDLING_LIBRARY,
+	lockfile = file.path(MODULES, "junctionBootstrap.lock"),
+	clean    = TRUE
+  )
+}
+
+cat("installing jaspModuleBundleManager\n")
+renv::install(
+  file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
+	library  = JASP_MODULE_BUNDLE_MANAGER_LIBRARY,
+	clean    = TRUE,
+ 	repos    =  "http://cloud.r-project.org"
+)

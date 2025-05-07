@@ -227,11 +227,6 @@ convertAbsoluteSymlinksToRelative <- function(modulesRoot, renvCache)
   }
 }
 
-junctionFilename <- function(modulesRoot)
-{
-  return(pastePath(c(modulesRoot, "..", "junctions.rds")))   
-}
-
 require_fs <- function() {
   if (!require(fs))
     stop("We require the package fs to do this. Make sure jaspBase has it as a dependency", domain = NA)
@@ -245,13 +240,13 @@ isJunction2 <- function(path) {
 collectAndStoreJunctions <- function(buildfolder)
 {
   require_fs()
-  modulesRoot <- pastePath(c(buildfolder, "Modules")) 
-  renvCache   <- pastePath(c(buildfolder, "Modules/renv-cache"))
+  modulesRoot <- pastePath(c(buildfolder, "Modules", "module_libs")) 
+  target   <- pastePath(c(buildfolder, "Modules", "binary_pkgs"))
   #symlinks    <- collectLinks(modulesRoot, renvCache, is.junction, normalizePath)
-  symlinks    <- collectLinks(modulesRoot, renvCache, isJunction2, normalizePath)
+  symlinks    <- collectLinks(modulesRoot, target, isJunction2, normalizePath)
   overlap     <- determineOverlap(modulesRoot, modulesRoot)
   relLink     <- lapply(symlinks$linkLocation, overlap$sourceToTarget)
-  modules     <- lapply(relLink, function(p) { x <- splitPath(p); pastePath(head(x, n=-1)) })
+  modules     <- lapply(relLink, function(p) { x <- splitPath(p); pastePath(tail(head(x, n=-1), n=1)) })
   links       <- lapply(relLink, function(p) { x <- splitPath(p); tail(x, n=1) })
 
   if(nrow(symlinks) == 0)
@@ -259,7 +254,7 @@ collectAndStoreJunctions <- function(buildfolder)
   else
   {
     juncDF <- data.frame(renv=as.character(symlinks$linkTarget), module=as.character(modules), link=as.character(links))
-    saveRDS(juncDF, junctionFilename(modulesRoot))
+    saveRDS(juncDF, file.path(buildfolder, 'junctions.rds'))
   }
 }
 

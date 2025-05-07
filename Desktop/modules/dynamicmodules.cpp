@@ -873,7 +873,7 @@ bool DynamicModules::bundledModuleInFilesystem(const std::string & moduleName)
 
 std::string DynamicModules::bundledModuleLibraryPath(const std::string & moduleName)
 {
-	return fq(AppDirs::bundledModulesDir()) + moduleName + "/";
+	return fq(AppDirs::bundledModulesLibDir()) + moduleName + "/";
 }
 
 QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)
