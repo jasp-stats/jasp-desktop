@@ -94,6 +94,9 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 	connect(this,	&DataSetPackage::enginesPrepareForDataSignal,	_engineSync,	&EngineSync::enginesPrepareForData,	Qt::QueuedConnection);
 	connect(this,	&DataSetPackage::enginesReceiveNewDataSignal,	_engineSync,	&EngineSync::enginesReceiveNewData,	Qt::QueuedConnection);
 
+	
+	
+
 	reset();
 }
 
@@ -2623,4 +2626,11 @@ void DataSetPackage::setManualEdits(bool newManualEdits)
 		setSynchingExternally(false);
 
 	emit manualEditsChanged();
+}
+
+void DataSetPackage::setHasAnalysesWithoutData()							
+{ 
+	_hasAnalysesWithoutData		= true;
+	setLoaded();
+	
 }

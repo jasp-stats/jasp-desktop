@@ -77,8 +77,6 @@ public:
 		void				deleteDataSet();	///< Deletes dataset from memory but not from database
 		bool				hasDataSet() { return _dataSet; }
 
-		void				pauseEngines();
-		void				resumeEngines();
 		void				enginesPrepareForData();
 		void				enginesReceiveNewData();
 		bool				enginesInitializing()	{ return emit enginesInitializingSignal();	}
@@ -176,7 +174,7 @@ public:
 				void				setDataFileReadOnly(bool readOnly)					{ _dataFileReadOnly				= readOnly;			}
 				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
 				void				setIsJaspFile(bool isJaspFile)						{ _isJaspFile					= isJaspFile;		}
-				void				setHasAnalysesWithoutData()							{ _hasAnalysesWithoutData		= true;				}
+				void				setHasAnalysesWithoutData();
 				void				setModified(bool value);
 				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)								{ _id							= id;				}
