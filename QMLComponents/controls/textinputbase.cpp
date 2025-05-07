@@ -88,20 +88,31 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 	case TextInputType::FormulaType:
 	{
-		_value = value.isString() ? tq(value.asString()) : value.isNumeric() ? value.asDouble() : QVariant();
-
 		// If it is already numeric, no need to parse it.
 		// This also avoid parsing infinite value: a QVariant with an infinite value gives "inf" as string value,
 		// which gives an error when parsed by R.
-		if (value.isNumeric())
-			setProperty("realValue", _value);
-		else
-		{
-			setIsRCode();
+		bool setRealValue = true;
 
-			if (!_value.isNull())
+		if (value.isNumeric())
+			_value = value.asDouble();
+		else if (value.isString())
+		{
+			double dblVal = 0;
+			QString strValue = tq(value.asString());
+			if (!strValue.isEmpty() && !QColumnUtils::getDoubleValue(strValue, dblVal))
+			{
+				setIsRCode();
 				runRScript("as.character(" + _value.toString() + ")", true);
+				setRealValue = false;
+			}
+			else
+				_value = dblVal;
 		}
+		else
+			_value = QVariant();
+
+		if (setRealValue)
+			setProperty("realValue", _value);
 
 		break;
 	}
@@ -446,7 +457,10 @@ void TextInputBase::_setBoundValue()
 {
 	if (_inputType == TextInputType::FormulaType)
 	{
-		if (_value.metaType().id() == QMetaType::Double)
+		double valueDbl = 0;
+		bool isDbl = QColumnUtils::getDoubleValue(_value.toString(), valueDbl);
+
+		if (isDbl)
 		{
 			setProperty("realValue", _value);
 			setBoundValue(_getJsonValue(_value));
