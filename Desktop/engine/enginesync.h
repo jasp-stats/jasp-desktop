@@ -20,18 +20,8 @@
 #define ENGINESYNC_H
 
 #include <QAbstractListModel>
-/*
-#ifdef __APPLE__
-#include <semaphore.h>
-#else
-#include <boost/interprocess/sync/named_semaphore.hpp>
-#endif
-
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
-*/
-
-
 #include "enginerepresentation.h"
+#include <queue>
 
 /// EngineSync is responsible for launching the background
 /// processes, scheduling analyses, and for sending and

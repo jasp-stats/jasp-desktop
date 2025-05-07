@@ -4,16 +4,10 @@
 #include <QObject>
 #include <QProcess>
 #include <QTimer>
-#include <vector>
-
 #include "analysis/analysis.h"
-#include "analysis/analyses.h"
 #include "ipcchannel.h"
-#include "data/datasetpackage.h"
-#include <queue>
 #include "enginedefinitions.h"
 #include "rscriptstore.h"
-#include "modules/dynamicmodules.h"
 
 ///
 /// Keeps track of the state of a single Engine process (JASPEngine)
@@ -98,7 +92,7 @@ public:
 	bool			moduleLoaded()			const { return _moduleLoaded; }
 
 	///How many seconds has this engine been idle?
-	int				idleFor() const;
+	int64_t			idleFor() const;
 
 	bool			jaspEngineStillRunning() { return  _slaveProcess != nullptr && !killed() && !stopped(); }
 

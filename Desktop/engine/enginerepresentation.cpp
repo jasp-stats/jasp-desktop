@@ -225,7 +225,7 @@ void EngineRepresentation::processReplies()
 		if		(_stopRequested)	sendStopEngine();
 		else if	(_pauseRequested)	sendPauseEngine();
 
-		if(_idleStartSecs == -1)
+		if(_idleStartSecs < 0)
 			_idleStartSecs = Utils::currentSeconds();
 
 		return;
@@ -310,7 +310,7 @@ void EngineRepresentation::processReplies()
 		resumeEngine();
 
 
-	if(!_stopRequested && _analysisAborted && _analysisInProgress && _abortTime + ENGINE_KILLTIME < Utils::currentMillis()) //We wait a second or two before we kill the engine if it does not want to abort.
+	if(!_stopRequested && _analysisAborted && _analysisInProgress && _abortTime >= 0 && _abortTime + ENGINE_KILLTIME < Utils::currentMillis()) //We wait a second or two before we kill the engine if it does not want to abort.
 	{
 		if(jaspEngineStillRunning())
 			killEngine();
@@ -797,7 +797,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 	setState(engineState::initializing);
 }
 
-int EngineRepresentation::idleFor() const
+int64_t EngineRepresentation::idleFor() const
 {
 	return _idleStartSecs >= 0 ? Utils::currentSeconds() - _idleStartSecs : 0;
 }
@@ -805,7 +805,7 @@ int EngineRepresentation::idleFor() const
 bool EngineRepresentation::isBored() const 
 { 
 	
-	return _idleStartSecs != -1 && (_idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds());
+	return _idleStartSecs >= 0 && (_idleStartSecs + ENGINE_BORED_SHUTDOWN < Utils::currentSeconds());
 }
 
 bool EngineRepresentation::busyWithData() const

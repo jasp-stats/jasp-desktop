@@ -17,29 +17,22 @@
 //
 
 #include "enginesync.h"
-
 #include <QApplication>
-#include <QFile>
 #include <QFileInfo>
+#include <QFile>
 #include <QDir>
-
-
-//#include <boost/interprocess/shared_memory_object.hpp>
-//#include <boost/interprocess/mapped_region.hpp>
-
+#include "log.h"
+#include "dirs.h"
+#include "utils.h"
+#include "timers.h"
+#include "tempfiles.h"
 #include <json/json.h>
 #include "processinfo.h"
-#include "common.h"
-#include "appinfo.h"
 #include "utilities/qutils.h"
-#include "utils.h"
-#include "tempfiles.h"
-#include "timers.h"
-#include "gui/preferencesmodel.h"
 #include "utilities/appdirs.h"
-#include "log.h"
+#include "analysis/analyses.h"
+#include "gui/preferencesmodel.h"
 #include "utilities/processhelper.h"
-#include "dirs.h"
 #include "utilities/wincontainermanager.h"
 
 using namespace boost::interprocess;
@@ -890,9 +883,8 @@ size_t EngineSync::enginesStartableCount() const
 	size_t enginesPossible = maxEngineCount() - _engines.size();
 
 	//But perhaps they have to cool down for a bit.
-
 	for(int64_t engineStopTime : _engineStopTimes)
-		if(engineStopTime != -1 && ( engineStopTime + ENGINE_COOLDOWN > Utils::currentMillis() ) && enginesPossible > 0)
+		if(engineStopTime >= 0 && ( engineStopTime + ENGINE_COOLDOWN > Utils::currentMillis() ) && enginesPossible > 0)
 			enginesPossible--;
 
 	return enginesPossible;
@@ -900,7 +892,7 @@ size_t EngineSync::enginesStartableCount() const
 
 bool EngineSync::channelCooledDown(size_t channel) const
 {
-	return _engineStopTimes[channel] == -1 || _engineStopTimes[channel] + ENGINE_COOLDOWN < Utils::currentMillis();
+	return _engineStopTimes[channel] < 0 || _engineStopTimes[channel] + ENGINE_COOLDOWN < Utils::currentMillis();
 }
 
 bool EngineSync::channelFree(size_t channel) const
@@ -1033,7 +1025,7 @@ void EngineSync::heartbeatTempFiles()
 
 void EngineSync::stopEngines()
 {	
-	auto timeout = QDateTime::currentSecsSinceEpoch() + 10;
+	int64_t timeout = Utils::currentMillis() + ENGINE_KILLTIME;
 	
 	_stopProcessing = true;
 
@@ -1041,7 +1033,7 @@ void EngineSync::stopEngines()
 		e->stopEngine();
 
 	while(!allEnginesStopped())
-		if(timeout < QDateTime::currentSecsSinceEpoch())
+		if(timeout < Utils::currentMillis())
 		{
 			Log::log() << "Waiting for engine to reply stopRequest took longer than timeout, killing it/them.." << std::endl;
 			for(EngineRepresentation * e : _engines)
@@ -1072,7 +1064,7 @@ void EngineSync::pauseEngines(bool unloadData)
 	for(EngineRepresentation * e : _engines)
 		e->pauseEngine(unloadData);
 
-	long tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
+	int64_t tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
 
 	while(!allEnginesPaused() && tryTill >= Utils::currentMillis())
 		for (auto * engine : _engines)
@@ -1176,7 +1168,7 @@ void EngineSync::enginesPrepareForData()
 			e->pauseEngine(true);
 		}
 
-	long tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
+	int64_t tryTill = Utils::currentMillis() + ENGINE_KILLTIME;
 
 	while(!allEnginesPaused(pauseOrKillThese) && tryTill >= Utils::currentMillis())
 		for (auto * engine : pauseOrKillThese)
