@@ -972,6 +972,12 @@ void EngineSync::fixPATHForWindows(QProcessEnvironment & env)
 QProcess * EngineSync::startSlaveProcess(int channel)
 {
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
+	
+	Log::log(false) << "\n\n###########################################################################################\n" 
+					<< "#######         Engine #" << channel << " (re)started at " << Log::getLocalTime() 
+					<< "\n\n###########################################################################################\n" 
+					<< std::endl;
+	
 	QDir programDir			= AppDirs::programDir();
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
