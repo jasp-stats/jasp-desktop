@@ -185,10 +185,14 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 
 #ifdef _WIN32
 	_jaspHeartBeatPath = (std::filesystem::path(Dirs::tempDir()) /  (name + "_heartbeat")).string();
-	const auto p1 = std::chrono::system_clock::now();
-	_lastHeartBeatTimestamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
-
+	
 	if(!_isSlave && heartbeatThread.get_id() == std::thread::id()) {  //doki doki
+		//Create the file
+		std::fstream f;
+		f.open(_jaspHeartBeatPath.c_str(), ios_base::out);
+		f.close();
+		
+		//start the thread		
 		heartbeatThread = std::thread(IPCChannel::heartbeat, _jaspHeartBeatPath, _heatbeatDelayS);
 		heartbeatThread.detach();
 	}
@@ -234,12 +238,7 @@ void IPCChannel::findConstructAllAgain()
 bool IPCChannel::heartbeat(string path, unsigned int delayS)
 {
 	while(true) {
-		ofstream out;
-		out.open(path);
-		const auto p1 = std::chrono::system_clock::now();
-		uint64_t stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
-		out << stamp << std::endl;
-		out.close();
+		Utils::touch(path);
 		std::this_thread::sleep_for(std::chrono::seconds(delayS));
 	}
 
@@ -251,27 +250,21 @@ bool IPCChannel::jaspAlive()
 {
 	if(!_isSlave)
 		return true; //if jasp asks its obviously alive
-
-	ifstream in;
-	in.open(_jaspHeartBeatPath);
-	if(!in.is_open()) {
-		Log::log() << "Could not find heartbeat file" << std::endl;
-		return false;
-	}
-
-	uint64_t stamp;
-	in >> stamp;
-	in.close();
-
+	
+	int64_t newTimestamp = Utils::getFileModificationTime(_jaspHeartBeatPath);
+	
 	if(stamp != _lastHeartBeatTimestamp) {
 		_lastHeartBeatTimestamp = stamp;
 		return true;
 	}
 
-	const auto p1 = std::chrono::system_clock::now();
-	stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
-
-	if(stamp - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
+	if(_lastHeartBeatTimestamp == 0)
+	{
+		Log::log() << "No heartbeat found at " << _jaspHeartBeatPath << std::endl;
+		return false;
+	}
+	
+	if(Utils::currentSeconds() - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
 	{
 		Log::log() << "heartbeat time limit exceeded" << std::endl;
 		return false;

@@ -83,7 +83,7 @@ private:
 
 #ifdef _WIN32
 	static bool heartbeat(std::string path, unsigned int delayMs);
-	uint64_t										_lastHeartBeatTimestamp = 0;
+	int64_t											_lastHeartBeatTimestamp = 0;
 	std::string										_jaspHeartBeatPath;
 	unsigned int									_heatbeatDelayS = 5;
 	unsigned int									_maxHeartbeatDiffS = 100;
