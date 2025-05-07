@@ -252,14 +252,26 @@ bool IPCChannel::jaspAlive()
 	if(!_isSlave)
 		return true; //if jasp asks its obviously alive
 
-	uint64_t stamp = Utils::getFileModificationTime(_jaspHeartBeatPath);
-	
+	ifstream in;
+	in.open(_jaspHeartBeatPath);
+	if(!in.is_open()) {
+		Log::log() << "Could not find heartbeat file" << std::endl;
+		return false;
+	}
+
+	uint64_t stamp;
+	in >> stamp;
+	in.close();
+
 	if(stamp != _lastHeartBeatTimestamp) {
 		_lastHeartBeatTimestamp = stamp;
 		return true;
 	}
 
-	if(Utils::currentSeconds() - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
+	const auto p1 = std::chrono::system_clock::now();
+	stamp = std::chrono::duration_cast<std::chrono::seconds>(p1.time_since_epoch()).count();
+
+	if(stamp - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
 	{
 		Log::log() << "heartbeat time limit exceeded" << std::endl;
 		return false;
