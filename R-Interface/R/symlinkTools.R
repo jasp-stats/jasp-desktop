@@ -262,7 +262,7 @@ restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
 {
   #copy all the non junction dependencies into the Tools
   require(utils)
-  file.copy(utils::shortPathName(pastePath(c(modulesFolder, "Tools"))), shortPathName(junctionsFolder), recursive = TRUE, overwrite = FALSE)
+  Sys.junction(utils::shortPathName(pastePath(c(modulesFolder, "Tools"))), utils::shortPathName(pastePath(c(junctionsFolder, "Tools"))))
 
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
