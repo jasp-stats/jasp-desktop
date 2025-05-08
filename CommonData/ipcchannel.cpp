@@ -253,8 +253,8 @@ bool IPCChannel::jaspAlive()
 	
 	int64_t newTimestamp = Utils::getFileModificationTime(_jaspHeartBeatPath);
 	
-	if(stamp != _lastHeartBeatTimestamp) {
-		_lastHeartBeatTimestamp = stamp;
+	if(newTimestamp  != _lastHeartBeatTimestamp) {
+		_lastHeartBeatTimestamp = newTimestamp ;
 		return true;
 	}
 
