@@ -968,7 +968,8 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 {
 	JASPTIMER_SCOPE(DataSetPackage::setAllowFilterOnLabel);
 	
-	Column * column = nullptr;
+	Label			*	label		= dynamic_cast<Label*>(indexPointerToNode(index));
+	Column			*	column		= dynamic_cast<Column*>(label->parent());
 
 	if(!column)
 		return false;
