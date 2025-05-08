@@ -263,7 +263,7 @@ restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
   #copy all the non junction dependencies into the Tools
   require(utils)
   Sys.junction(utils::shortPathName(pastePath(c(modulesFolder, "Tools"))), utils::shortPathName(pastePath(c(junctionsFolder, "Tools"))))
-  Sys.junction(utils::shortPathName(pastePath(c(modulesFolder, "modules-settings.json"))), utils::shortPathName(pastePath(c(junctionsFolder, "modules-settings.json"))))
+  file.copy(utils::shortPathName(pastePath(c(modulesFolder, "modules-settings.json"))), utils::shortPathName(pastePath(c(junctionsFolder, "modules-settings.json"))))
   # Should contain a data.frame with columns: renv, module and link. 
   # As created in collectAndStoreJunctions  
   junctions <- readRDS(junctionRDSPath)
