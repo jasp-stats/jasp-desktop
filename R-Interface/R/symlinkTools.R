@@ -281,7 +281,7 @@ restoreJunctions <- function(modulesFolder, junctionsFolder, junctionRDSPath)
       renv    <- junctions[row, "renv"  ]
       module  <- junctions[row, "module"]
       link    <- junctions[row, "link"  ]
-      modDir  <- pastePath(c(junctionsFolder, module))
+      modDir  <- pastePath(c(junctionsFolder, "module_libs", module))
 
       if(!file.exists(modDir))
         dir.create(modDir, recursive = TRUE)
