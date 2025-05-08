@@ -902,6 +902,7 @@ void DynamicModules::registerQMLTypes()
 	qmlRegisterType<Modules::AnalysisItem>						("JASP.Module", 1, 0, "Analysis"						);
 	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
 	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
+	qmlRegisterType<Modules::GroupTitleSmall>					("JASP.Module", 1, 0, "GroupTitleSmall"					);
 	qmlRegisterType<Modules::Upgrades>							("JASP.Module", 1, 0, "Upgrades"						);
 	qmlRegisterType<Modules::Upgrade>							("JASP.Module", 1, 0, "Upgrade"							);
 	qmlRegisterType<Modules::ChangeJS>							("JASP.Module", 1, 0, "ChangeJS"						);

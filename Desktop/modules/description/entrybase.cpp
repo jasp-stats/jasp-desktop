@@ -39,8 +39,9 @@ QString EntryBase::toString() const
 {
 	switch(_entryType)
 	{
-	case EntryType::separator:	return "-- separator --";
-	case EntryType::groupTitle:	return	"-- groupTitle '" + title() + "' icon: '" + icon() + "' --";
+	case EntryType::separator:			return "-- separator --";
+	case EntryType::groupTitle:			return	"-- groupTitle '"		+ title() + "' icon: '" + icon() + "' --";
+	case EntryType::groupTitleSmall:	return	"-- groupTitleSmall '"	+ title() + "' icon: '" + icon() + "' --";
 	case EntryType::analysis:
 		return	"-- analysis '"		+ title()
 				+ ( menu() != title() ? " menu: '" + menu() + "'" : "" )
@@ -174,7 +175,8 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 	entry->_isEnabled		= _enabled;
 	entry->_isAnalysis		= _entryType == EntryType::analysis;
 	entry->_isSeparator		= _entryType == EntryType::separator;
-	entry->_isGroupTitle	= _entryType == EntryType::groupTitle;
+	entry->_isGroupTitle	= _entryType == EntryType::groupTitle || _entryType == EntryType::groupTitleSmall;
+	entry->_smallIcon		= _entryType == EntryType::groupTitleSmall;
 	entry->_hasWrapper		= _description->hasWrappers() || _hasWrapper;
 	entry->_dynamicModule	= _description->dynMod();
 	

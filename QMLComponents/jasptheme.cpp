@@ -1331,3 +1331,16 @@ void JaspTheme::setColumnTypeScaleHovered(float newColumnTypeScaleHovered)
 	_columnTypeScaleHovered = newColumnTypeScaleHovered;
 	emit columnTypeScaleHoveredChanged();
 }
+
+QFont JaspTheme::fontGroupTitleSmall() const
+{
+	return _fontGroupTitleSmall;
+}
+
+void JaspTheme::setFontGroupTitleSmall(const QFont &newFontGroupTitleSmall)
+{
+	if (_fontGroupTitleSmall == newFontGroupTitleSmall)
+		return;
+	_fontGroupTitleSmall = newFontGroupTitleSmall;
+	emit fontGroupTitleSmallChanged();
+}

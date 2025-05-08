@@ -36,7 +36,7 @@ class EntryBase : public DescriptionChildBase
 	Q_PROPERTY(bool			hasWrapper		READ hasWrapper			WRITE setHasWrapper			NOTIFY hasWrapperChanged		)
 
 public:
-	enum class EntryType {unknown, separator, groupTitle, analysis};
+	enum class EntryType {unknown, separator, groupTitle, groupTitleSmall, analysis};
 	Q_ENUM(EntryType);
 
 	EntryBase(EntryType entryType);
@@ -108,8 +108,9 @@ public: \
 		{}\
 }
 
-MAKE_ENTRY_CLASS(Separator,		separator);
-MAKE_ENTRY_CLASS(AnalysisItem,	analysis);
-MAKE_ENTRY_CLASS(GroupTitle,	groupTitle);
+MAKE_ENTRY_CLASS(Separator,			separator);
+MAKE_ENTRY_CLASS(AnalysisItem,		analysis);
+MAKE_ENTRY_CLASS(GroupTitle,		groupTitle);
+MAKE_ENTRY_CLASS(GroupTitleSmall,	groupTitleSmall);
 }
 #endif // ENTRYBASE_H

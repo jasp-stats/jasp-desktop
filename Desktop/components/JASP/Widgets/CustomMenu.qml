@@ -381,7 +381,7 @@ FocusScope
 							{
 								id		: menuItem
 								width	: initWidth
-								height	: (isSmall ? 0.5 : 1) * jaspTheme.menuGroupTitleHeight
+								height	: (isSmall ? 0.666 : 1) * jaspTheme.menuGroupTitleHeight
 
 								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
 
@@ -410,8 +410,9 @@ FocusScope
 								{
 									id					: menuItemText
 									text				: model.modelData !== undefined ? model.modelData.substring(3) : displayText
-									font				: jaspTheme.fontGroupTitle
+									font				: isSmall ? jaspTheme.fontGroupTitleSmall : jaspTheme.fontGroupTitle
 									color				: jaspTheme.textEnabled
+									verticalAlignment	: Text.AlignVCenter
 									anchors
 									{
 										left			: menuItemImage.right

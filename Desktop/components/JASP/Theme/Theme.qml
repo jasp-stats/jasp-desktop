@@ -49,6 +49,11 @@ JaspTheme
 	fontGroupTitle.pixelSize:							Math.round(14 * uiScale)
 	fontGroupTitle.family:								preferencesModel.interfaceFont
 	fontGroupTitle.weight:								Font.Medium
+	
+	fontGroupTitleSmall.bold:							true
+	fontGroupTitleSmall.pixelSize:						Math.round(12 * uiScale)
+	fontGroupTitleSmall.family:							preferencesModel.interfaceFont
+	fontGroupTitleSmall.weight:							Font.Medium
 
 	fontALTNavTag.bold:									true
 	fontALTNavTag.pixelSize:							Math.round(15 * uiScale)

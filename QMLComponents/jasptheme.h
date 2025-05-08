@@ -167,6 +167,7 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(QFont              fontLabel                       READ fontLabel                       WRITE setFontLabel                       NOTIFY fontLabelChanged                       )
 	Q_PROPERTY(QFont              fontRibbon                      READ fontRibbon                      WRITE setFontRibbon                      NOTIFY fontRibbonChanged                      )
 	Q_PROPERTY(QFont              fontGroupTitle                  READ fontGroupTitle                  WRITE setFontGroupTitle                  NOTIFY fontGroupTitleChanged                  )
+	Q_PROPERTY(QFont              fontGroupTitleSmall             READ fontGroupTitleSmall             WRITE setFontGroupTitleSmall             NOTIFY fontGroupTitleSmallChanged             )
 	Q_PROPERTY(QFont              fontPrefOptionsGroupTitle       READ fontPrefOptionsGroupTitle       WRITE setFontPrefOptionsGroupTitle       NOTIFY fontPrefOptionsGroupTitleChanged       )
 	Q_PROPERTY(QFont              fontALTNavTag                   READ fontALTNavTag                   WRITE setFontALTNavTag                   NOTIFY fontALTNavTagChanged                   )
 
@@ -327,6 +328,9 @@ public:
 	float columnTypeScaleHovered() const;
 	void setColumnTypeScaleHovered(float newColumnTypeScaleHovered);
 	
+	QFont fontGroupTitleSmall() const;
+	void setFontGroupTitleSmall(const QFont &newFontGroupTitleSmall);
+	
 signals:
 	void currentThemeReady(JaspTheme * newTheme);
 	void uiScaleChanged(float uiScale);
@@ -463,6 +467,8 @@ signals:
 	void isDarkChanged(bool isDark);
 	
 	void columnTypeScaleHoveredChanged();
+	
+	void fontGroupTitleSmallChanged();
 	
 public slots:
 	void setRibbonScaleHovered(float ribbonScaleHovered);
@@ -738,6 +744,7 @@ private:
 						_fontRCode,
 						_fontCode,
 						_fontGroupTitle,
+						_fontGroupTitleSmall,
 						_fontPrefOptionsGroupTitle,
 						_fontALTNavTag;
 
