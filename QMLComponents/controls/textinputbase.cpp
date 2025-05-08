@@ -253,6 +253,12 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 			setHasScriptError(true);
 			break;
 		}
+		else
+		{
+			clearControlError();
+			setHasScriptError(false);
+		}
+
 
 		if (!_formulaResultInBounds(val))
 		{
@@ -464,6 +470,9 @@ void TextInputBase::_setBoundValue()
 		{
 			setProperty("realValue", _value);
 			setBoundValue(_getJsonValue(_value));
+			clearControlError();
+			setHasScriptError(false);
+			emit formulaCheckSucceeded();
 		}
 		else
 		{
