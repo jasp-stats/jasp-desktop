@@ -5,6 +5,11 @@ MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
 LOCAL_MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules", "local")
 BUNDLE_DOWNLOAD_DIR <- file.path("@PROJECT_BINARY_DIR@", "Modules", "downloads")
 
+if(@FLATPAK_USED@) {
+    print("Flatpak. Only using local bundles")
+    LOCAL_MODULES_DIR <- "/app/ModuleBundles/"
+}
+
 getPlatform <- function() {
     info <- Sys.info()
     os <- ""
