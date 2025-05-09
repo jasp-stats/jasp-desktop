@@ -564,7 +564,7 @@ FocusScope
 					{
 						id:					selectionRectangle
 						color:				itemSelected ? jaspTheme.itemHighlight : "transparent"
-						width:				levelsTableView.width
+						width:				columnModel.rowWidth
 						anchors
 						{
 							top:			parent.top
