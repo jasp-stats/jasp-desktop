@@ -65,8 +65,8 @@ std::string AnalysisEntry::qmlFilePath() const
 std::string AnalysisEntry::icon() const
 {
 	if(_icon == "")
-		return _isGroupTitle ? fq(JaspTheme::currentIconPath()) + "large-arrow-right.png" : "";
-
+		return "";
+	
 	return _dynamicModule  ? "file:" + _dynamicModule->iconFilePath(_icon) : fq(JaspTheme::currentIconPath()) + _icon;
 }
 

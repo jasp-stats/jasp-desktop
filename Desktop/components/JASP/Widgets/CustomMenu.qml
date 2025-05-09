@@ -176,7 +176,7 @@ FocusScope
 		z		: menuShadow.z + 1
 		color	: jaspTheme.fileMenuColorBackground
 		focus	: true
-		width	: column.maxWidth + (itemScrollbar.visible ? itemScrollbar.width : 0)
+		width	: column.maxWidth + jaspTheme.menuPadding + itemScrollbar.width
 		height	: menuOffset.y + column.maxHeight > menuMaxPos.y ? menuMaxPos.y - menuOffset.y : column.maxHeight
 
 		MouseArea
@@ -238,7 +238,7 @@ FocusScope
 			anchors.fill			: parent
 			anchors.topMargin		: jaspTheme.menuPadding / 2
 			anchors.leftMargin		: jaspTheme.menuPadding / 2
-			anchors.rightMargin		: itemScrollbar.width + anchors.margins
+			anchors.rightMargin		: itemScrollbar.width + jaspTheme.menuPadding / 2
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds
 			contentWidth			: column.width
@@ -315,9 +315,9 @@ FocusScope
 														? jaspTheme.buttonColorHovered
 														: "transparent"
 
-								property bool itemEnabled: menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
-								property int padding: 4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
-								property double initWidth: (menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
+								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+								property int	padding:		4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
+								property double initWidth:		(menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
 
 								Image
 								{
@@ -415,8 +415,10 @@ FocusScope
 									verticalAlignment	: Text.AlignVCenter
 									anchors
 									{
-										left			: menuItemImage.right
+										left			: menuItemImage.visible ? menuItemImage.right : parent.left
+										right			: parent.right
 										leftMargin		: menu._iconPad
+										rightMargin		: menu._iconPad
 										verticalCenter	: parent.verticalCenter
 									}
 								}
