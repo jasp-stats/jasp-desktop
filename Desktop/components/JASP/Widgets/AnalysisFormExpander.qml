@@ -468,8 +468,9 @@ DropArea
 										{
 											if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
 											{
+												helpModel.visible  = true;
 												helpModel.analysis	= formParent.myAnalysis;
-												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm.helpMD; });
+												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm ? formParent.myForm.helpMD : ""; });
 											}
 											else
 											{

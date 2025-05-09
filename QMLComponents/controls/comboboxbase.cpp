@@ -303,11 +303,11 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-QString	ComboBoxBase::generateMDHelp(int depth) const
+JASPControl::MDItem	ComboBoxBase::generateMDItems(int depth) const
 {
 	QStringList markdown;
 
-	printLabelMD(markdown, depth);
+	markdown << printLabelMD(depth);
 	markdown << info();
 
 	// If one of the option has an info property, then display the options as an unordered list
@@ -330,8 +330,9 @@ QString	ComboBoxBase::generateMDHelp(int depth) const
 		markdown << model()->terms().labels().join(", ");
 	}
 
+	markdown << "\n";
 
-	return markdown.join("") + "\n";
+	return markdown.join("");;
 }
 
 QString ComboBoxBase::generateDoxygenHelp() const

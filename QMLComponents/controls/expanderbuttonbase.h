@@ -31,9 +31,9 @@ class ExpanderButtonBase : public JASPControl
 public:
 	explicit ExpanderButtonBase(QQuickItem *parent = nullptr);
 
-	void	setUp()												override;
-	QString generateMDHelp(int depth)					const	override;
-	bool	printLabelMD(QStringList& md, int depth)	const	override;
+	void		setUp()															override;
+	MDItem		generateMDItems(int depth = 0)							const	override;
+	QString		printLabelMD(int depth)									const	override;
 	
 
 	bool infoLabelIsHeader()		const	override	{ return true; }

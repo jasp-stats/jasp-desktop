@@ -63,6 +63,24 @@ public:
 			: name(_name), key(_key), value(_value) {}
 	};
 
+	typedef struct MDItem
+	{
+		bool						isSection = false;
+		QString						label,
+									info;
+		std::vector<struct MDItem>	children;
+
+		MDItem() {}
+		MDItem(const QString& _label) : label{_label} {}
+
+		bool	isEmpty()	{ return label.isEmpty() && info.isEmpty() && children.size() == 0; }
+		bool	hasHeader()	{ return !label.isEmpty() || !info.isEmpty(); }
+
+		QString print(int depth = 0) const;
+
+
+	} MDItem;
+
 	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
 	enum class ControlType {
 		  DefaultControl
@@ -118,7 +136,7 @@ public:
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
-	virtual QString		generateMDHelp(int depth = 0)	const;
+	virtual MDItem		generateMDItems(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfo()					const;
 	bool				isBound()					const	{ return _isBound;					}
@@ -271,7 +289,7 @@ protected:
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
 	virtual void		_setInitialized(const Json::Value &value);
-	virtual bool		printLabelMD(QStringList& md, int depth)			const;
+	virtual QString		printLabelMD(int depth)								const;
 
 protected:
 	Set						_depends;

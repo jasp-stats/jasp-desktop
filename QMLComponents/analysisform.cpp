@@ -961,14 +961,17 @@ QString AnalysisForm::helpMD() const
 
 
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
-	orderedControls.removeIf([](JASPControl* c) { return c->generateMDHelp().isEmpty(); });
 
 	if (orderedControls.length() > 0 && orderedControls[0]->controlType() != JASPControl::ControlType::Expander)
 		// If the first control is an Section, then it adds already a line
 		markdown << "\n---\n";
 
 	for(JASPControl * control : orderedControls)
-		markdown << control->generateMDHelp() << "\n";
+	{
+		JASPControl::MDItem mdItem = control->generateMDItems();
+		if (!mdItem.isEmpty())
+			markdown << mdItem.print() << "\n";
+	}
 
 	markdown << metaHelpMD();
 

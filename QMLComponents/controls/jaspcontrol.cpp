@@ -44,8 +44,8 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 
 	connect(this, &JASPControl::titleChanged,			this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::infoChanged,			this, &JASPControl::helpMDChanged);
-	connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
-	connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
+	//connect(this, &JASPControl::visibleChanged,			this, &JASPControl::helpMDChanged);
+	//connect(this, &JASPControl::visibleChildrenChanged,	this, &JASPControl::helpMDChanged);
 	connect(this, &JASPControl::backgroundChanged,		[this] () { if (!_focusIndicator)		setFocusIndicator(_background); });
 	connect(this, &JASPControl::infoChanged,			[this] () { if (_toolTip.isEmpty())	setToolTip(info());					});
 	connect(this, &JASPControl::toolTipChanged,			[this] () { setShouldStealHover(!_toolTip.isEmpty());					});
@@ -322,9 +322,9 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 		if (childControl)
 		{
 			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && childControl->title().isEmpty() && childControl->infoLabel().isEmpty() && childControl->info().isEmpty())
-				// If a Group has no label, title or info, then it is used probably for layout purpose, but to structure the controls is sub elements.
+				// If a Group has no label, title or info, then it is used probably for layout purpose.
 				// Just skip it: this is necessary for generating properly the markdown help
-				result.append(getChildJASPControls(childControl));
+				result.append(getChildJASPControls(childControl, removeUnecessaryGroups));
 			else
 				result.push_back(childControl);
 		}
@@ -336,7 +336,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 			result.push_back(expanderButton);
 		}
 		else
-			result.append(getChildJASPControls(childItem));
+			result.append(getChildJASPControls(childItem, removeUnecessaryGroups));
 	}
 
 	return result;
@@ -569,12 +569,13 @@ bool JASPControl::hasInfo() const
 	return false;
 }
 
-bool JASPControl::printLabelMD(QStringList& md, int depth) const
+QString JASPControl::printLabelMD(int depth) const
 {
 	QString label = (infoLabel().isEmpty() ? title() : infoLabel()).trimmed();
 	if(label.isEmpty() && !infoAddControlType())
-		return false;
+		return QString();
 
+	QStringList md;
 	// Print the label as a header, in italic or in bold
 	if (infoLabelIsHeader())			md << "<h" << QString::number(depth + 3) << ">";
 	else if	(infoLabelItalic())			md << "*";
@@ -593,44 +594,56 @@ bool JASPControl::printLabelMD(QStringList& md, int depth) const
 		md << " ";
 	}
 
-	return true;
+	return md.join("");
 }
 
-QString JASPControl::generateMDHelp(int depth) const
+JASPControl::MDItem JASPControl::generateMDItems(int depth) const
 {
-	if (!hasInfo()) return "";
-		
-	QStringList childMDs, markdown;
+	MDItem mdItem;
+
+	if (!hasInfo()) return mdItem;
+
+	mdItem.label = printLabelMD(depth);
+	mdItem.info = info();
 
 	for (JASPControl* childControl : getChildJASPControls(_childControlsArea ? _childControlsArea : this, true))
 	{
-		QString childMD = childControl->generateMDHelp(depth + 1);
-		if (!childMD.isEmpty())
-			childMDs.push_back(childMD);
+		MDItem childMD = childControl->generateMDItems(depth + 1);
+		if (!childMD.hasHeader())
+			// The child does not have label nor info: just add its own children to the parent
+			mdItem.children.insert(mdItem.children.end(), childMD.children.begin(), childMD.children.end());
+		else if (!childMD.isEmpty())
+			mdItem.children.push_back(childMD);
 	}
 
-	bool hasLabel = printLabelMD(markdown, depth);
-	markdown << info() << "\n";
+	return mdItem;
+}
 
-	if (infoLabelIsHeader() && !info().isEmpty())
-		markdown << "\n"; // Special case when a header has no info (a Section without info eg).
-
-	if (childMDs.length() == 1)
-		markdown << QString{depth * 2, ' '} << childMDs[0];
+QString JASPControl::MDItem::print(int depth) const
+{
+	QStringList markdown;
+	if (depth == 0 && isSection)
+		// Use collapsible section
+		markdown << "<details>\n<summary><b>" << label << "</b></summary>\n";
 	else
+		markdown << label;
+
+	markdown << info << "\n";
+
+	if (children.size() == 1)
+		markdown << "\n" << QString{depth * 2, ' '} << children[0].print(depth + 1);
+	else if (children.size() > 1)
 	{
-		for (const QString& childMD : childMDs)
-		{
-			markdown << QString{depth * 2, ' '};
-			if (hasLabel)
-				markdown << "- "; // Add bullet list
-			markdown << childMD;
-			if (!hasLabel)
-				markdown << "\n"; // If no bullet list is used, markdown needs an extra '\n' to display a new line
-		}
+		markdown << "\n"; // Before adding bullets, a new line is needed
+		for (const auto& childMD : children)
+			markdown << QString{depth * 2, ' '} << "- " << childMD.print(depth + 1);
 	}
 
-	return markdown.join("");;
+	if (depth == 0 && isSection)
+		markdown << "\n</details>";
+
+
+	return markdown.join("");
 }
 
 QString JASPControl::generateDoxygenHelp() const
@@ -858,4 +871,4 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	_initialized = true;
 	_initializedWithValue = (value != Json::nullValue);
 	emit initializedChanged();
-}		
+}
