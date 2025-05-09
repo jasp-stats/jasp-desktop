@@ -1,5 +1,10 @@
-
 list(APPEND CMAKE_MESSAGE_CONTEXT Modules)
+
+if(FLATPAK_USED)
+
+
+else()
+
 
 configure_file(${PROJECT_SOURCE_DIR}/Modules/modules-settings.json
                ${MODULES_BINARY_PATH}/modules-settings.json)
@@ -22,4 +27,5 @@ add_custom_target(
   COMMENT "------ Installing Modules"
 )
 
+endif()
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

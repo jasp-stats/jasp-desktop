@@ -846,6 +846,13 @@ message(STATUS "RENV_LIBRARY           = ${RENV_LIBRARY}")
 message(STATUS "R_CPP_INCLUDES_LIBRARY = ${R_CPP_INCLUDES_LIBRARY}")
 
 
+if(FLATPAK_USED)
+execute_process(
+  WORKING_DIRECTORY ${MODULES_BINARY_PATH}/../
+  COMMAND bash -c "rm -r ${MODULES_BINARY_PATH}  && ln -s /app/Modules/ ${MODULES_BINARY_PATH}"
+)
+
+else()
 ##################
 # renv bootstrap  
 configure_file(${PROJECT_SOURCE_DIR}/Modules/install-renv.R.in
@@ -907,6 +914,8 @@ if(APPLE)
   )
 endif()
 
+endif()
+
 execute_process(
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
@@ -914,7 +923,9 @@ execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
           ${MODULES_BINARY_PATH}/Tools/)
 
- 
+
+
+          
 include(FindRPackagePath)
 
 find_package_path(RCPP_PATH       ${R_CPP_INCLUDES_LIBRARY} "Rcpp")
