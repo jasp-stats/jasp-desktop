@@ -1554,13 +1554,10 @@ void MainWindow::openGitHubBugReport() const
 
 		if(openBrowseFolder)
 			showLogFolder();
-
-		emit exitSignal(1);
 	}
 	catch(...)
 	{
 		MessageForwarder::showWarning(tr("GitHub couldn't be openend for you"), tr("Something went wrong with leading you to GitHub..\nYou can still report the bug by going to https://github.com/jasp-stats/jasp-issues/issues"));
-		emit exitSignal(1);
 	}
 }
 
@@ -1572,10 +1569,8 @@ void MainWindow::fatalError()
 	{
 		exiting = true;
 		if(MessageForwarder::showYesNo(tr("Error"), tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
-			tr("JASP cannot continue and will close.\n\nWe would be grateful if you could report this error to the JASP team."), tr("Report"), tr("Exit")))
+			tr("JASP had a serious error and cannot calculate anymore.\n\nWe would be grateful if you could report this error to the JASP team."), tr("Report"), tr("Exit")))
 			openGitHubBugReport();
-		else
-			emit exitSignal(2);
 	}
 }
 
