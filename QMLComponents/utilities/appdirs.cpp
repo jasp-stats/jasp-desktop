@@ -101,11 +101,7 @@ QString AppDirs::bundledModulesLibDir()
 
 QString AppDirs::processPath(const QString & path)
 {
-#ifdef _WIN32
-	return QString::fromStdWString(Utils::getShortPathWin(path.toStdWString()));
-#else
 	return path;
-#endif
 }
 
 

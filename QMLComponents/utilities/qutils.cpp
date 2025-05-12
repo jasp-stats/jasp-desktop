@@ -229,11 +229,7 @@ QString QJSErrorToString(QJSValue::ErrorType errorType)
 
 QString shortenWinPaths(QString in)
 {
-#ifdef _WIN32
-	return QString::fromStdWString(Utils::getShortPathWin(in.toStdWString()));
-#else
 	return in;
-#endif
 }
 
 void copyQDirRecursively(QDir copyThis, QDir toHere)
