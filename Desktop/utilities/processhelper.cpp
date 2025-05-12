@@ -106,9 +106,11 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 	env.insert("R_LIBS_USER", (AppDirs::programDir().absolutePath().toStdString() + "/../R/library").c_str());
 #endif
 
-	Log::log() <<	"R_LIBS:"			<< env.value("R_LIBS")			<< "\n" <<
-					"R_LIBS_USER:"		<< env.value("R_LIBS_USER")		<< "\n" <<
-					"LD_LIBRARY_PATH:"	<< env.value("LD_LIBRARY_PATH") << "\n" <<
+	Log::log() <<	"PATH:            "	<< env.value("PATH")			<< "\n" <<
+					"R_HOME:          "	<< env.value("R_HOME")			<< "\n" <<
+					"R_LIBS:          "	<< env.value("R_LIBS")			<< "\n" <<
+					"R_LIBS_USER:     "	<< env.value("R_LIBS_USER")		<< "\n" <<
+					"LD_LIBRARY_PATH: "	<< env.value("LD_LIBRARY_PATH") << "\n" <<
 					std::endl;
 
 	return(env);	
