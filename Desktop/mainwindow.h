@@ -91,6 +91,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
+	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 
 	friend class FileMenu;
 public:
@@ -129,6 +130,8 @@ public:
 	const QString 		contactText()			const;
 	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
 
+	bool hadFatalError() const;
+	
 public slots:
 	void setImageBackgroundHandler(QString value);
 	void plotPPIChangedHandler(int ppi, bool wasUserAction);
@@ -249,6 +252,8 @@ signals:
 	void resizeData(int row, int col);
 	void qmlLoadedChanged();
 
+	void hadFatalErrorChanged();
+	
 private slots:
 	void resultsPageLoaded();
 	void analysisResultsChangedHandler(Analysis* analysis);
@@ -353,7 +358,8 @@ private:
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
-									_communityVisible		= false;
+									_communityVisible		= false,
+									_hadFatalError			= false;
 									
 	QFont							_defaultFont;
 };

@@ -29,7 +29,7 @@ Window
 	width:				1280
 	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
-	color:				jaspTheme.white
+	color:				mainwWindow.hadFatalError ? jaspTheme.red : jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
 	minimumHeight:		400 * jaspTheme.uiScale
 	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
@@ -90,6 +90,15 @@ Window
 	Item
 	{
 		anchors.fill:	parent
+		
+		Rectangle
+		{
+			z:				1
+			visible:		mainWindow.hadFatalError
+			color:			jaspTheme.red
+			opacity:		0.75
+			anchors.fill:	parent
+		}
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindow.saveKeyPressed();					sequences: ["Ctrl+S", Qt.Key_Save];								context: Qt.ApplicationShortcut; }

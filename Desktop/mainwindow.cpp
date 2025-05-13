@@ -1559,6 +1559,8 @@ void MainWindow::openGitHubBugReport() const
 	{
 		MessageForwarder::showWarning(tr("GitHub couldn't be openend for you"), tr("Something went wrong with leading you to GitHub..\nYou can still report the bug by going to https://github.com/jasp-stats/jasp-issues/issues"));
 	}
+	
+	emit exitSignal(1);
 }
 
 void MainWindow::fatalError()
@@ -1568,9 +1570,29 @@ void MainWindow::fatalError()
 	if (exiting == false)
 	{
 		exiting = true;
-		if(MessageForwarder::showYesNo(tr("Error"), tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
-			tr("JASP had a serious error and cannot calculate anymore.\n\nWe would be grateful if you could report this error to the JASP team."), tr("Report"), tr("Exit")))
+		MessageForwarder::DialogResponse response = MessageForwarder::showYesNoCancel(
+					tr("Error"), 
+					tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
+					tr("JASP had a serious error and cannot calculate anymore.\n\nWe would be grateful if you could report this error to the JASP team."), 
+					tr("Report"), tr("Salvage"), tr("Exit"));
+		
+		switch(response)
+		{
+		case MessageForwarder::DialogResponse::Yes:
 			openGitHubBugReport();
+			break;
+			
+		case MessageForwarder::DialogResponse::Cancel:
+			exit(2);
+			break;
+			
+		default:
+			break;
+		}
+		
+		
+		_hadFatalError = true;
+		emit hadFatalErrorChanged();
 	}
 }
 
@@ -2164,3 +2186,8 @@ void MainWindow::loadModulesFromUserConfiguration(configState state)
 	}
 }
 
+
+bool MainWindow::hadFatalError() const
+{
+	return _hadFatalError;
+}
