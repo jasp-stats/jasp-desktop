@@ -121,19 +121,21 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 #endif
 
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & newData, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, Json::Value & dbJson, QString & reportingDir)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & newData, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & containerSettingForced, bool & container, Json::Value & dbJson, QString & reportingDir)
 {
-	filePath		= "";
-	unitTest		= false;
-	dirTest			= false;
-	save			= false;
-	logToFile		= false;
-	hideJASP		= false;
-	safeGraphics	= false;
-	newData			= false;
-	reportingDir	= "";
-	timeOut			= 10;
-	dbJson			= Json::nullValue;
+	filePath				= "";
+	unitTest				= false;
+	dirTest					= false;
+	save					= false;
+	logToFile				= false;
+	hideJASP				= false;
+	safeGraphics			= false;
+	newData					= false;
+	containerSettingForced	= false;
+	container				= false;
+	reportingDir			= "";
+	timeOut					= 10;
+	dbJson					= Json::nullValue;
 
 	bool letsExplainSomeThings = false;
 
@@ -148,6 +150,8 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 		else if(args[arg] == "--safeGraphics")					safeGraphics			= true;
 		else if(args[arg] == "--newData")						newData					= true;
 #ifdef _WIN32
+		else if(args[arg] == "--sandbox")			{			containerSettingForced	= true;		container = true; }
+		else if(args[arg] == "--noSandbox")			{			containerSettingForced	= true;		container = false; }
 		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv, false); //Run the junctionfixer, it will exit the application btw!
 		else if(args[arg] == removeJunctionsArg)				runJaspEngineJunctionFixer(argc, argv, true);  //Remove the junctions
 #endif
@@ -319,6 +323,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
 			   #ifdef _WIN32
 					<< "If --junctions is specified JASP will recreate the junctions in Modules/ to renv-cache/, this needs to be done at least once after install, but is usually triggered automatically."
+					<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."
 			   #endif
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
 					<< std::flush;
@@ -432,6 +437,8 @@ int main(int argc, char *argv[])
 				logToFile,
 				hideJASP,
 				safeGraphics,
+				containForce,
+				contain,
 				newData;
 	int			timeOut;
 	Json::Value	dbJson;
@@ -442,10 +449,13 @@ int main(int argc, char *argv[])
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
 	QCoreApplication::setApplicationName("JASP");
 
-	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, dbJson, reportingDir);
+	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, containForce, contain, dbJson, reportingDir);
 
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+	
+	if(containForce)		Settings::setValue(Settings::ENGINE_SANDBOX,	contain);
+	else					contain = Settings::value(Settings::ENGINE_SANDBOX).toBool();
 
 	if(reportingDir!="")	Settings::setValue(Settings::REPORT_SHOW, true);
 
