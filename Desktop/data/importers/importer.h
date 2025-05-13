@@ -38,7 +38,9 @@ private:
 			const stringset									&	missingColumns,
 			const strstrmap									&	changeNameColumns,
 			const stringvec									&	newOrder,	///<can be empty
-			bool											rowCountChanged);
+			bool												rowCountChanged,
+			size_t												newColCount, 
+			std::function<void(int)> progress);
 	
 protected:
 	bool						_synching = false;

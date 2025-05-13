@@ -116,7 +116,7 @@ void DataSet::columnsReorder(stringvec order)
 	{
 		Column * col = _columns[i];
 		
-		if(col->codeType() != computedColumnType::notComputed)
+		if(col->isComputed())
 		{
 			if(!orderSet.count(col->name()))
 			{
@@ -135,6 +135,7 @@ void DataSet::columnsReorder(stringvec order)
 	
 	for(Column * col : _columns)
 	{
+		assert(col->name() != "");
 		nameColMap[col->name()] = col;
 		colSet.insert(col->name());
 	}

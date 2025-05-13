@@ -1786,7 +1786,8 @@ void DatabaseInterface::dataSetDelete(int dataSetId)
 	transactionWriteEnd();
 }
 
-#define BUSY_MAX_SECS 60
+#define BUSY_MAX_SECS 90
+#define BUSY_INTERVAL std::chrono::nanoseconds(1000000)
 
 void DatabaseInterface::_runStatements(const std::string & statements, bindParametersType * bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
 {
@@ -1844,7 +1845,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				case SQLITE_BUSY:
 					if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
 						throw std::runtime_error("Sqlite was busy for too long!");
-					std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+					std::this_thread::sleep_for(BUSY_INTERVAL);
 					break;
 					
 				case SQLITE_DONE:
@@ -1967,7 +1968,7 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 					case SQLITE_BUSY:
 						if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
 							throw std::runtime_error("Sqlite was busy for too long!");
-						std::this_thread::sleep_for(std::chrono::nanoseconds(100000));
+						std::this_thread::sleep_for(BUSY_INTERVAL);
 						break;
 						
 					case SQLITE_DONE:
@@ -2041,15 +2042,20 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 
 sqlite3 * DatabaseInterface::_db()
 {
+	static std::mutex loadMutex;
+	
 	const auto id = std::this_thread::get_id();
 
 	if(_dbCreated && _dbCreator == id)
 		return _dbCreated;
 	
-	if(_dbs.count(id))
-		return _dbs.at(id);
-	
-	load();
+	if(!_dbs.count(id))
+	{
+		loadMutex.lock();
+		if(!_dbs.count(id))
+			load();
+		loadMutex.unlock();
+	}
 	
 	return _dbs.at(id);
 }
@@ -2153,6 +2159,9 @@ isItReallyAnotherLabel:
 	{
 		int tableCount = runStatementsId("SELECT COUNT(*) FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
 		Log::log() << "Loaded a database with #" << tableCount << " tables." << std::endl;
+		if(tableCount < 0)
+			throw dbMalformedException();
+		
 		loadingWorked = true;
 	}
 	catch(dbMalformedException & e)
