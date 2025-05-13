@@ -115,3 +115,20 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 
 	return(env);	
 }
+
+#ifdef _WIN32 
+///Overwrites the PATH with a simple clean one
+void ProcessHelper::fixPATHForWindows(QProcessEnvironment & env)
+{
+	const QString R_ARCH =
+#ifdef _WIN64
+		"x64";
+#else
+		"i386";
+#endif
+	
+	env.insert("PATH", AppDirs::programDir().absolutePath() + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin") + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin/" + R_ARCH)); // + rtoolsInPath); 
+
+	Log::log() << "Windows PATH was changed to: '" << env.value("PATH", "???") << "'" << std::endl;
+}
+#endif 
