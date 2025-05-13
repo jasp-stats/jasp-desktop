@@ -60,7 +60,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 	if(bootStrap)
 		env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/junction_bootstrap_library") + ";" + _R_HOME + "/library");
 	else
-		env.insert("R_LIBS",			AppDirs::bundledModulesDir() + "Tools/R_cpp_includes_library" + ";" + _R_HOME + "/library");
+		env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/R_cpp_includes_library") + ";" + _R_HOME + "/library");
 
 	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");

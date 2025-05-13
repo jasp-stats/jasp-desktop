@@ -831,29 +831,41 @@ elseif(LINUX)
 
 endif()
 
-set(RENV_LIBRARY                "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
-set(R_CPP_INCLUDES_LIBRARY      "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
-set(JASPMODULEINSTALLER_LIBRARY "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleInstaller_library")
-set(PKGDEPENDS_LIBRARY          "${CMAKE_BINARY_DIR}/Modules/Tools/pkgdepends_library")
-set(JUNCTION_HANDLING_LIBRARY   "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
+set(RENV_LIBRARY                        "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
+set(R_CPP_INCLUDES_LIBRARY              "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
+set(JASP_MODULE_BUNDLE_MANAGER_LIBRARY  "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleBundleManager_library")
+set(JUNCTION_HANDLING_LIBRARY           "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})
 # TODO: it could be nice to ship the sandbox so it can be used to install dynamic modules
 # also, the sandbox paths may need to be adjusted on windows (they are symlinks)
 
-message(STATUS "Setting up renv, Rcpp, RInside, and jaspModuleInstaller")
+message(STATUS "Setting up renv, Rcpp, RInside, and jaspModuleBundleManager, etc")
 message(STATUS "RENV_LIBRARY           = ${RENV_LIBRARY}")
 message(STATUS "R_CPP_INCLUDES_LIBRARY = ${R_CPP_INCLUDES_LIBRARY}")
 
-configure_file(${PROJECT_SOURCE_DIR}/Modules/setup_renv.R.in
-                ${SCRIPT_DIRECTORY}/setup_renv.R @ONLY)
 
+if(FLATPAK_USED)
+execute_process(
+  WORKING_DIRECTORY ${MODULES_BINARY_PATH}/../
+  COMMAND bash -c "rm -r ${MODULES_BINARY_PATH}  && ln -s /app/Modules/ ${MODULES_BINARY_PATH}"
+)
+
+else()
+##################
+# renv bootstrap  
+configure_file(${PROJECT_SOURCE_DIR}/Modules/install-renv.R.in
+                ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
+
+              
 execute_process(
   COMMAND_ECHO STDOUT
   #ERROR_QUIET OUTPUT_QUIET
   WORKING_DIRECTORY ${R_HOME_PATH}
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/setup_renv.R)
+  COMMAND 
+    ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-renv.R
+)
 
 if(APPLE)
   # Patch renv
@@ -871,19 +883,23 @@ if(APPLE)
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   )
 endif()
-  
-configure_file(${PROJECT_SOURCE_DIR}/Modules/setup_rcpp_rinside.R.in
-                ${SCRIPT_DIRECTORY}/setup_rcpp_rinside.R @ONLY)
+
+##################
+# install rest of the tools  
+configure_file(${PROJECT_SOURCE_DIR}/Modules/install-tools.R.in
+                ${SCRIPT_DIRECTORY}/install-tools.R @ONLY)
 
 execute_process(
   COMMAND_ECHO STDOUT
   #ERROR_QUIET OUTPUT_QUIET
   WORKING_DIRECTORY ${R_HOME_PATH}
-  COMMAND ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/setup_rcpp_rinside.R)
+  COMMAND 
+    ${R_EXECUTABLE} --slave --no-restore --no-save --file=${SCRIPT_DIRECTORY}/install-tools.R
+    
+)
 
 if(APPLE)
-  # Patch RInside and RCpp
-  message(CHECK_START "Patching ${R_CPP_INCLUDES_LIBRARY}")
+  message(CHECK_START "Patching ${CMAKE_BINARY_DIR}/Modules/Tools/")
   execute_process(
     COMMAND_ECHO STDOUT
     #ERROR_QUIET OUTPUT_QUIET
@@ -891,13 +907,25 @@ if(APPLE)
     COMMAND
       ${CMAKE_COMMAND} -D
       NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
-      -D PATH=${R_CPP_INCLUDES_LIBRARY} -D R_HOME_PATH=${R_HOME_PATH} -D
+      -D PATH=${CMAKE_BINARY_DIR}/Modules/Tools/ -D R_HOME_PATH=${R_HOME_PATH} -D
       R_DIR_NAME=${R_DIR_NAME} -D SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY}
       -D SIGNING=1 -D CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
       ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
   )
 endif()
 
+endif()
+
+execute_process(
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
+          ${MODULES_BINARY_PATH}/Tools/
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
+          ${MODULES_BINARY_PATH}/Tools/)
+
+
+
+          
 include(FindRPackagePath)
 
 find_package_path(RCPP_PATH       ${R_CPP_INCLUDES_LIBRARY} "Rcpp")
@@ -935,4 +963,132 @@ if(APPLE OR LINUX)
   endif()
 endif()
 
+# ----- jags -----
+#
+# - JAGS needs GNU Bison v3, https://www.gnu.org/software/bison.
+# - With this, we can build JAGS, and link it, or even place it inside the the `R.framework`
+#   - `--prefix=${R_OPT_PATH}/jags`, with this, we inherit the R
+# - You can run `make jags-build` or `make jags-install` to just play with JAGS target
+#
+
+set(jags_HOME ${R_OPT_PATH}/jags)
+if(WIN32)
+  set(jags_VERSION_H_PATH ${jags_HOME}/include/version.h)
+else()
+  set(jags_VERSION_H_PATH ${jags_HOME}/include/JAGS/version.h)
+endif()
+
+if((NOT EXISTS ${jags_HOME}) AND (NOT LINUX))
+  message(STATUS "Creating ${jags_HOME}")
+  make_directory("${jags_HOME}")
+endif()
+
+if(WIN32)
+
+  message(STATUS "Downloading `jags`")
+  fetchcontent_declare(
+    jags_win
+    URL "https://static.jasp-stats.org/development/JAGS-4.3.1-Windows.zip"
+    URL_HASH
+      SHA256=4b168ddcc29a22c02e5c8dd61e3240ec8f940fee239b1563f63fc5b0bea60796
+  )
+
+  fetchcontent_makeavailable(jags_win)
+
+  if(jags_win_POPULATED)
+
+    message(CHECK_PASS "successful")
+
+    add_custom_command(
+      OUTPUT ${jags_VERSION_H_PATH}
+      # bin
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              ${jags_win_SOURCE_DIR}/x64/ ${jags_HOME}/x64
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              ${jags_win_SOURCE_DIR}/include/ ${jags_HOME}/include)
+
+    add_custom_target(
+      jags
+      JOB_POOL sequential
+      DEPENDS ${jags_VERSION_H_PATH})
+
+  else()
+    message(CHECK_FAIL "failed")
+  endif()
+
+elseif(APPLE)
+
+  # ----- Downloading and Building jags
+  if(NOT TARGET jags)
+
+    fetchcontent_declare(
+      jags
+      URL "http://static.jasp-stats.org/JAGS-4.3.1.tar.gz"
+      URL_HASH
+        SHA256=f9258355b5e9eb13bd33c5fa720f0cbebacea7d0a4a42b71b0fb14501ee14229
+    )
+
+    message(CHECK_START "Downloading 'jags'")
+
+    fetchcontent_makeavailable(jags)
+
+    if(jags_POPULATED)
+
+      message(CHECK_PASS "successful.")
+
+      set(JAGS_F77_FLAG "F77=${FORTRAN_EXECUTABLE}")
+      set(JAGS_CFLAGS
+          "-g -O2 -arch ${CMAKE_OSX_ARCHITECTURES} -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+      )
+      set(JAGS_EXTRA_FLAGS_1 "--with-sysroot=${CMAKE_OSX_SYSROOT}")
+      set(JAGS_EXTRA_FLAGS_2 "--target=${CONFIGURE_HOST_FLAG}")
+      set(JAGS_CXXFLAGS "${JAGS_CFLAGS}")
+
+      add_custom_command(
+        JOB_POOL sequential
+        WORKING_DIRECTORY ${jags_SOURCE_DIR}
+        OUTPUT ${jags_VERSION_H_PATH}
+        COMMAND
+          export CFLAGS=${READSTAT_CFLAGS} && export
+          CXXFLAGS=${READSTAT_CXXFLAGS} && ${JAGS_F77_FLAG} ./configure
+          --disable-dependency-tracking --prefix=${jags_HOME}
+          ${JAGS_EXTRA_FLAGS_1} ${JAGS_EXTRA_FLAGS_2}
+        COMMAND ${MAKE}
+        COMMAND ${MAKE} install
+        COMMAND
+          ${CMAKE_COMMAND} -D
+          NAME_TOOL_PREFIX_PATCHER=${PROJECT_SOURCE_DIR}/Tools/macOS/install_name_prefix_tool.sh
+          -D PATH=${jags_HOME} -D R_HOME_PATH=${R_HOME_PATH} -D
+          R_DIR_NAME=${R_DIR_NAME} -D
+          SIGNING_IDENTITY=${APPLE_CODESIGN_IDENTITY} -D
+          SIGNING=${IS_SIGNING} -D
+          CODESIGN_TIMESTAMP_FLAG=${CODESIGN_TIMESTAMP_FLAG} -P
+          ${PROJECT_SOURCE_DIR}/Tools/CMake/Patch.cmake
+        COMMENT "----- Preparing 'jags'")
+
+      add_custom_target(
+        jags
+        JOB_POOL sequential
+        DEPENDS ${jags_VERSION_H_PATH})
+
+    else()
+
+      message(CHECK_FAIL "failed.")
+
+    endif()
+
+  endif()
+
+elseif(LINUX)
+
+  # On Linux,
+  #   we only set the jags_HOME to the /usr/local/ or /app in case of FLATPAK
+
+endif()
+
+set(jags_INCLUDE_DIRS ${jags_HOME}/include)
+set(jags_LIBRARY_DIRS ${jags_HOME}/lib)
+set(jags_PKG_CONFIG_PATH ${jags_HOME}/lib/pkgconfig/)
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

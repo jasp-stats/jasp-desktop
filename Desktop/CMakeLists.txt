@@ -80,8 +80,11 @@ if(WINDOWS)
   add_dependencies(JASP ContainerFilePermissionChecker)
 endif()
 
-if(INSTALL_R_MODULES)
+if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
   add_dependencies(JASP Modules)
+  if(NOT LINUX)
+    add_dependencies(JASP jags)
+  endif()
 endif()
 
 if(APPLE)

@@ -547,7 +547,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
 	std::string		moduleLibPaths  = jsonRequest["moduleLibPaths"].asString();
-	
+
 	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl;
 
 	if(moduleStatusFromString((moduleRequest)) == moduleStatus::loading) {
@@ -559,6 +559,9 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
 
+	if(moduleStatusFromString((moduleRequest)) == moduleStatus::installNeeded)
+		succes = (result.find("null") == std::string::npos);
+
 	Log::log() << "Was " << (succes ? "succesful" : "a failure") << ", now crafting answer." << std::endl;
 
 	Json::Value		jsonAnswer		= Json::objectValue;
@@ -568,6 +571,9 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	jsonAnswer["succes"]			= succes;
 	jsonAnswer["error"]				= jaspRCPP_getLastErrorMsg();
 	jsonAnswer["typeRequest"]		= engineStateToString(_engineState);
+
+	if(moduleStatusFromString((moduleRequest)) == moduleStatus::installNeeded)
+		jsonAnswer["result"] = result;
 
 	if(!succes)
 		Log::log() << "Error was:\n" << jsonAnswer["error"].asString() << std::endl;

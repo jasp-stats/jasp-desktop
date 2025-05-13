@@ -176,10 +176,15 @@ if(APPLE)
   #install(FILES ${_LIB_BROTLICOMMON} DESTINATION ${JASP_INSTALL_FRAMEWORKDIR})
 
   install(
-    DIRECTORY ${MODULES_BINARY_PATH}/
+    DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/module_libs ${MODULES_BINARY_PATH}/Tools
     DESTINATION ${JASP_INSTALL_MODULEDIR}
     REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+  
+  install(
+    FILES ${MODULES_BINARY_PATH}/modules-settings.json
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+  )
 
   install(FILES ${CMAKE_BINARY_DIR}/Info.plist
           DESTINATION ${JASP_INSTALL_PREFIX}/Contents)
@@ -224,9 +229,16 @@ if(LINUX)
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/
           DESTINATION ${JASP_INSTALL_RESOURCEDIR})
 
-  install(DIRECTORY ${MODULES_BINARY_PATH}/
-          DESTINATION ${JASP_INSTALL_MODULEDIR})
+  install(
+    DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/module_libs ${MODULES_BINARY_PATH}/Tools
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
+  install(
+    FILES ${MODULES_BINARY_PATH}/modules-settings.json
+    DESTINATION ${JASP_INSTALL_MODULEDIR}
+  )
   # we do not need renv-root in an install
   #install(DIRECTORY ${MODULES_RENV_ROOT_PATH}/
   #        DESTINATION ${JASP_INSTALL_PREFIX}/lib64/renv-root)
@@ -364,9 +376,6 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecreateJunctions.cmd.in
                  ${CMAKE_BINARY_DIR}/RecreateJunctions.cmd @ONLY)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/RecursiveJunctionRemover.cmd.in
-  ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd @ONLY)
-
   #msix stuff
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-store.xml @ONLY)
@@ -416,19 +425,19 @@ if(WIN32)
           ${_LIB_R_INTERFACE_DLL}
     DESTINATION .)
 
-  install(
-  DIRECTORY ${CMAKE_BINARY_DIR}/Modules/renv-cache
-  DESTINATION Modules/
-  REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-  REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+	
+	#modules
+	install(
+		DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/Tools
+		DESTINATION ${JASP_INSTALL_MODULEDIR}
+		REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
+		REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
+	
+	install(
+		FILES ${MODULES_BINARY_PATH}/modules-settings.json
+		DESTINATION ${JASP_INSTALL_MODULEDIR}
+	)
 
-  install(
-    DIRECTORY ${CMAKE_BINARY_DIR}/Modules/Tools/
-    DESTINATION Modules/Tools
-    REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
-    REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
-
-  install(CODE "execute_process(COMMAND cmd.exe /C ${CMAKE_BINARY_DIR}/RecursiveJunctionRemover.cmd)")
-endif()
+  endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
