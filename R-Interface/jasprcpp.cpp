@@ -77,9 +77,9 @@ extern char * R_TempDir;
 // Code from RInside.cpp
 int __parseEval(const std::string & line, SEXP & ans)
 {
-#ifdef PRINT_ENGINE_MESSAGES
-	jaspRCPP_logString("parseEval: " + line + "\n");
-#endif
+//#ifdef PRINT_ENGINE_MESSAGES
+	//jaspRCPP_logString("parseEval: " + line + "\n");
+//#endif
 	ParseStatus status;
 	SEXP cmdSexp, cmdexpr = R_NilValue;
 	int i, errorOccurred;
