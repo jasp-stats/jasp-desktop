@@ -418,7 +418,7 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleNames)
 	for(QString& moduleLib : modulesLibs) {
 		auto dynMod = initializeModuleFromDir(moduleLib.toStdString(), false, true);
 #ifdef __APPLE__
-		_moduleLibraryFixer(moduleLib, true, true, false);
+		_moduleLibraryFixer(moduleLib.toStdString(), true, true, false);
 #endif
 	}
 	_moduleBundlesNeedingInstall.clear();
