@@ -609,7 +609,7 @@ const char*	STDCALL jaspRCPP_evalRCode(const char *rCode, bool setWd) {
 	const std::string rCodeTryCatch(""
 		"returnVal = 'null';	"
 		"tryCatch("
-		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode))     }),	"
+		"    suppressWarnings({	returnVal <- eval(parse(text=.rCode)); }),	"
 		"    error	= function(e) { .setRError(  paste0(toString(e$message), '\n', paste0(sys.calls()[sys.nframe():2], collapse='\n'))) } 	"
 		")"
 		"; returnVal	");

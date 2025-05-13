@@ -935,6 +935,7 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 	moduleStatus moduleRequest	= moduleStatusFromString(json["moduleRequest"].asString());
 	bool succes					= json["succes"].asBool();
 	QString moduleName			= QString::fromStdString(json["moduleName"].asString());
+	QString result				= QString::fromStdString(json["result"].asString());
 	auto getError				= [&](){ return QString::fromStdString(json.get("error", "Unknown error").asString()); };
 
 	if(_requestModName != fq(moduleName))
@@ -944,7 +945,7 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 	switch(moduleRequest)
 	{
 	case moduleStatus::installNeeded:
-		if(succes)	emit moduleInstallationSucceeded(moduleName);
+		if(succes)	emit moduleInstallationSucceeded(result);
 		else		emit moduleInstallationFailed(moduleName, getError());
 		break;
 

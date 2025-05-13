@@ -5,7 +5,7 @@ MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
 LOCAL_MODULES_DIR <- file.path("@PROJECT_SOURCE_DIR@", "Modules", "local")
 BUNDLE_DOWNLOAD_DIR <- file.path("@PROJECT_BINARY_DIR@", "Modules", "downloads")
 
-if(@FLATPAK_USED@) {
+if(@IS_FLATPAK_USED@) {
     print("Linking to pre-build modules dir")
     unlink("@MODULES_BINARY_PATH@", recursive=TRUE)
     file.symlink("/app/Modules/", "@MODULES_BINARY_PATH@")

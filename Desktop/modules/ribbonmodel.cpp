@@ -44,10 +44,8 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 
 void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
 {
-	DynamicModules::dynMods()->initializeInstalledModules();	
-	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
-
 	addSpecialRibbonButtonsEarly();
+	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
 
 	auto loadModulesFromBundledOrUserData = [&](bool common)
 	{
@@ -91,6 +89,7 @@ void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std:
 	
 	loadModulesFromBundledOrUserData(true);
 	loadModulesFromBundledOrUserData(false);
+	DynamicModules::dynMods()->initializeInstalledModules();
 	
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
 		if(!isModuleName(modName)) //Was it already added from commonModulesToLoad or extraModulesToLoad?
