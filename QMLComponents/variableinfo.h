@@ -24,6 +24,7 @@
 #include <QAbstractItemModel>
 #include <QQmlContext>
 #include "columntype.h"
+#include "models/term.h"
 
 class VariableInfoProvider;
 class DataSet;
@@ -66,7 +67,7 @@ signals:
 	void dataSetChanged();
 	void rowCountChanged();
 	void labelsReordered(	QString columnName);
-	void variableTypeChanged(	QString colName);
+	void variableTypeChanged(Term variable);
 	void dataAvailableChanged();
 
 private:	

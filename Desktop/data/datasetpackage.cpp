@@ -51,12 +51,13 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	_dataSet	= new DataSet(); //We create one here to make sure filter() etc can actually work
 	setDefaultWorkspaceEmptyValues();
 	
-	connect(this, &DataSetPackage::isModifiedChanged,	this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::loadedChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::folderChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentFileChanged,	this, &DataSetPackage::nameChanged);
-	connect(this, &DataSetPackage::dataModeChanged,		this, &DataSetPackage::onDataModeChanged);
+	connect(this, &DataSetPackage::isModifiedChanged,		this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::loadedChanged,			this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentFileChanged,		this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::folderChanged,			this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentFileChanged,		this, &DataSetPackage::nameChanged);
+	connect(this, &DataSetPackage::dataModeChanged,			this, &DataSetPackage::onDataModeChanged);
+	connect(this, &DataSetPackage::columnDataTypeChanged,	this, [this]() {ColumnEncoder::setCurrentColumnNames(getColumnTypesMap());}	);
 
 	_dataSubModel	= new SubNodeModel("data",		_dataSet->dataNode());
 	_filterSubModel = new SubNodeModel("filters",	_dataSet->filtersNode());
@@ -1405,20 +1406,6 @@ void DataSetPackage::dbDelete()
 	JASPTIMER_SCOPE(DataSetPackage::dbDelete);
 	if(_dataSet && _dataSet->id() != -1)
 		_dataSet->dbDelete();
-}
-
-void DataSetPackage::resetVariableTypes()
-{
-	for (Column * col : _dataSet->columns())
-	{
-		columnType guessedType = col->resetValues(PreferencesModel::prefs()->thresholdScale());
-		
-		if(guessedType != col->type() && col->changeType(guessedType) == columnTypeChangeResult::changed)
-		{
-			emit columnDataTypeChanged(tq(col->name()));
-			refreshWithDelay();
-		}
-	}
 }
 
 void DataSetPackage::createDataSet()

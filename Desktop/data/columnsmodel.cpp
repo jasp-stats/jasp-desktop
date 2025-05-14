@@ -23,7 +23,12 @@ ColumnsModel::ColumnsModel(DataSetTableModel *tableModel)
 
 	connect(this, &ColumnsModel::columnNamesChanged,					info, &VariableInfo::variableNamesChanged	);
 	connect(this, &ColumnsModel::columnsChanged,						info, &VariableInfo::variablesChanged		);
-	connect(this, &ColumnsModel::columnTypeChanged,						info, &VariableInfo::variableTypeChanged	);
+	connect(this, &ColumnsModel::columnTypeChanged,						this, [this] (QString colName)
+		{
+			Term term(colName, columnType(data(index(getColumnIndex(fq(colName)), 0), ColumnsModel::ColumnTypeRole).toInt()));
+			emit VariableInfo::info()->variableTypeChanged(term);
+		} );
+
 	connect(this, &ColumnsModel::labelsChanged,							info, &VariableInfo::labelsChanged			);
 	connect(this, &ColumnsModel::labelsReordered,						info, &VariableInfo::labelsReordered		);
 	connect(this, &ColumnsModel::filterChanged,							info, &VariableInfo::filterChanged			);
@@ -152,12 +157,11 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		QModelIndex qColIndex = index(colIndex, 0),
 					qValIndex = index(colIndex, row);
 
-		int			colTypeInt	= data(qColIndex, ColumnsModel::ColumnTypeRole).toInt();
 		//columnType	colTypeHere	= static_cast<columnType>(colTypeInt);
 
 		switch(info)
 		{
-		case VariableInfo::VariableType:				return	colTypeInt;
+		case VariableInfo::VariableType:				return	data(qColIndex, ColumnsModel::ColumnTypeRole).toInt();
 		case VariableInfo::DoubleValues:				return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::TotalNumericValues:			return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::nonFilteredNumericValuesCount));
 		case VariableInfo::TotalLevels:					return	QTransposeProxyModel::data(qColIndex,						int(DataSetPackage::specialRoles::nonFilteredLevels)).toStringList().length();

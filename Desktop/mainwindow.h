@@ -142,7 +142,6 @@ public slots:
 	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
 	void setDefaultWorkspaceEmptyValues();
-	void resetVariableTypes();
 
 	void showRCommander();
 

@@ -2157,11 +2157,6 @@ void MainWindow::setDefaultWorkspaceEmptyValues()
 	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
 }
 
-void MainWindow::resetVariableTypes()
-{
-	DataSetPackage::pkg()->resetVariableTypes();
-}
-
 void MainWindow::loadModulesFromUserConfiguration(configState state)
 {
 	if(state == configState::FAIL)

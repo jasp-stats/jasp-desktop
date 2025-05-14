@@ -43,6 +43,14 @@ void TextAreaBase::setUpModel()
 		_model = new ListModelTermsAvailable(this);
 		_model->setNeedsSource(_textType == TextType::TextTypeCSem || _textType == JASPControl::TextType::TextTypeMetaSem);
 
+		if (_textType == TextType::TextTypeLavaan)
+		{
+			// Lavaan TextArea does not have a source, but the script contains variables: so it the variables types or names change, the model must be updated.
+			VariableInfo* variableInfo = VariableInfo::info();
+			connect(variableInfo,	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged	);
+			connect(variableInfo,	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged	);
+		}
+
 		JASPListControl::setUpModel();
 	}
 }

@@ -203,11 +203,7 @@ void SourceItem::connectModels()
 	{
 		VariableInfo* variableInfo = VariableInfo::info();
 		connect(variableInfo,	&VariableInfo::variableNamesChanged,	controlModel, &ListModel::sourceVariableNamesChanged );
-		connect(variableInfo,	&VariableInfo::variableTypeChanged,		controlModel, [this, controlModel] (QString colName)
-		{
-			Term term(colName, (columnType)requestInfo(VariableInfo::VariableType, colName).toInt());
-			controlModel->sourceVariableTypeChanged(term);
-		} );
+		connect(variableInfo,	&VariableInfo::variableTypeChanged,		controlModel, &ListModel::sourceVariableTypeChanged );
 		connect(variableInfo,	&VariableInfo::labelsChanged,		controlModel, &ListModel::sourceLabelsChanged );
 		connect(variableInfo,	&VariableInfo::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(variableInfo,	&VariableInfo::filterChanged,		controlModel, &ListModel::filterChanged );
