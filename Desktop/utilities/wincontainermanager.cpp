@@ -8,6 +8,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
 #include "gui/preferencesmodel.h"
+#include "processhelper.h"
 
 std::wstring toWString(const std::string& in) {
 	return std::wstring(in.begin(), in.end());
@@ -41,7 +42,7 @@ bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE typ
 	} while (false);
 
 	if (newAcl)
-		::LocalFree(newAcl);
+		::LocaslFree(newAcl);
 
 	return status == ERROR_SUCCESS;
 }
