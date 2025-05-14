@@ -137,8 +137,8 @@ if(WIN32)
 
   # look for Rtools from most newest to oldest
     message(CHECK_START "Looking for Rtools $ENV{RTOOLS45_HOME}")
-    if(DEFINED ENV{RTOOLS44_HOME})
-		set(RTOOLS_PATH "$ENV{RTOOLS45_HOME}/ucrt64" CACHE PATH "Path to Rtools44 x64 folder, e.g., C:/rtools45/ucrt64")
+  if(DEFINED ENV{RTOOLS45_HOME})
+		set(RTOOLS_PATH "$ENV{RTOOLS45_HOME}/ucrt64" CACHE PATH "Path to Rtools45 x64 folder, e.g., C:/rtools45/ucrt64")
 	else()
 		set(RTOOLS_PATH "C:/rtools45/ucrt64" CACHE PATH "Path to Rtools45 x64 folder, e.g., C:/rtools45/ucrt64")
 	endif()
@@ -164,7 +164,7 @@ if(WIN32)
   else()
     message(
       FATAL_ERROR
-        "Rtools not found. Rtools is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools44/ucrt64"
+        "Rtools not found. Rtools is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools45/ucrt64"
     )
   endif()
 
