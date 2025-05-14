@@ -94,6 +94,11 @@ QString AppDirs::bundledModulesDir()
 	return folder;
 }
 
+QString AppDirs::bundledModulesLibDir()
+{
+	return AppDirs::bundledModulesDir() + "/module_libs/";
+}
+
 QString AppDirs::processPath(const QString & path)
 {
 #ifdef _WIN32

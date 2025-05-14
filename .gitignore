@@ -3,6 +3,9 @@
 *.lo
 *.o
 
+# Module Bundles
+*.JASPModule
+
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -78,7 +81,6 @@ R.framework/
 .cache/
 Modules/renv-root/
 Desktop/utilities/simplecryptkey.h
-Desktop/modules/activemodules.h
 Common/appinfo.cpp
 QMLComponents/utilities/appdirs.h
 CommonData/jaspBase_distributionSamplers.h

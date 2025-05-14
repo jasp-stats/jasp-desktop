@@ -72,29 +72,6 @@ set(MSIX_SIGN_CERT_PASSWORD
   "0000"
   CACHE STRING "Password selfsign cert for Nightlies")
 
-set(R_PKG_CELLAR_PATH
-  "${CMAKE_BINARY_DIR}/_cache/cellar/"
-  CACHE STRING "Set the path for an renv package cellar to be used during build phase. Changing this disables the use of a remote cellar")
-
-set(R_PKG_CELLAR_REMOTE
-  ""
-  CACHE STRING "URL to downloand a remote package cellar from (Make it https). If not set a platform default will be set by cmake")
-
-set(R_PKG_CELLAR_DOWNLOAD_REMOTE
-  ON
-  CACHE BOOL "Disable Downloading off a remote renv package cellar to use")
-
-set(RPKG_DOWNLOAD_ONLY
-  OFF
-  CACHE BOOL "If enabled renv will not install JASP module deps but just download them. Usefull to make a cellar for Flatpak")
-
-set(REGENERATE_LOCKFILE
-  OFF
-  CACHE BOOL "If enabled jaspModuleInstaller will generate a fresh lockfile")
-
-set(MODULE_INSTALL_MODE
-  "localizeAll"
-  CACHE STRING "identicalToLockfile or localizeModuleOnly or localizeAll. Sets how much is pulled remote or from source folder")
 
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
@@ -113,39 +90,6 @@ if(FLATPAK_USED AND LINUX)
 endif()
 
 message(STATUS "CRAN mirror: ${R_REPOSITORY}")
-
-#this handles the cellar download.
-if(R_PKG_CELLAR_DOWNLOAD_REMOTE AND R_PKG_CELLAR_PATH STREQUAL "${CMAKE_BINARY_DIR}/_cache/cellar/" AND NOT EXISTS "${CMAKE_BINARY_DIR}/_cache/cellar/")
-  SET(DEFAULT_REMOTE_CELLAR OFF)
-  #set appropriate default remote if needed
-  if(R_PKG_CELLAR_REMOTE STREQUAL "")
-    SET(DEFAULT_REMOTE_CELLAR ON)
-    SET(CELLAR_HASH "0")
-    if(APPLE)
-      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_x86_64_latest.tar.gz")
-      SET(CELLAR_HASH "ceca2b36e4186ea0d114f60a9c2e9d0b4cd0ec32366bdc5e95929773f789f9ba")
-      if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-        SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_macOS_arm64_latest.tar.gz")
-        SET(CELLAR_HASH "4579070baf2df190c816e68fa0fa93e66675d9295a41c23789b4dfbc45216c6e")
-      endif()
-    elseif(WIN32)
-      SET(R_PKG_CELLAR_REMOTE "https://static.jasp-stats.org/development/cellars/cellar_Windows_x86_64_latest.tar.gz")
-      SET(CELLAR_HASH "697703474fda077300e402195e03e3783d84ec7c0bc73418bff713c9c66d9dee")
-    endif()
-  endif()
-
-  #download and extract the cellar
-  if(NOT R_PKG_CELLAR_REMOTE STREQUAL "")
-    message(STATUS "Remote cellar: ${R_PKG_CELLAR_REMOTE}")
-    file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/cellar/") 
-    if(DEFAULT_REMOTE_CELLAR)
-      file(DOWNLOAD "${R_PKG_CELLAR_REMOTE}" "${CMAKE_BINARY_DIR}/_cache/cellar.tar.gz" TLS_VERIFY ON EXPECTED_HASH SHA256=${CELLAR_HASH})
-    else()
-      file(DOWNLOAD "${R_PKG_CELLAR_REMOTE}" "${CMAKE_BINARY_DIR}/_cache/cellar.tar.gz" TLS_VERIFY ON)
-    endif()
-      file(ARCHIVE_EXTRACT INPUT "${CMAKE_BINARY_DIR}/_cache/cellar.tar.gz" DESTINATION "${CMAKE_BINARY_DIR}/_cache/")
-  endif()
-endif()
 
 # This one is GLOBAL
 # should be off for flatpak though because it is always build in debug mode (but the symbols are split off)

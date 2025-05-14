@@ -139,11 +139,9 @@ public:
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
 	std::string			generateModuleUnloadingR();
-	std::string			generateModuleInstallingR(bool onlyModPkg);
 	std::string			generateModuleUninstallingR();
 
 	Json::Value			requestJsonForPackageLoadingRequest();
-	Json::Value			requestJsonForPackageInstallationRequest(bool onlyModPkg);
 	Json::Value			requestJsonForPackageUninstallingRequest();
 
 	void				setInstalled(bool installed);
@@ -222,8 +220,7 @@ signals:
 	void		installingChanged(	bool installing);
 	void		initializedChanged(	bool initialized);
 	void		bundledChanged(		bool isBundled);
-	void		registerForInstalling(			const std::string & moduleName);
-	void		registerForInstallingModPkg(	const std::string & moduleName);
+	void		registerForInstalling(const std::string & moduleName);
 	void		descriptionReloaded(Modules::DynamicModule * dynMod);
 	void		importsRChanged();
 	void		errorChanged(bool error);

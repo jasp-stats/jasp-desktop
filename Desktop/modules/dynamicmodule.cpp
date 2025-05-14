@@ -390,25 +390,6 @@ void DynamicModule::setReadyForUse()
 		setStatus(moduleStatus::readyForUse);
 }
 
-
-Json::Value	DynamicModule::requestJsonForPackageInstallationRequest(bool onlyModPkg)
-{
-	if(!installNeeded())
-	{
-		Log::log() << "DynamicModule::requestJsonForPackageInstallationRequest(): Module (" << _name << ") thinks an install isn't needed, but requesting it anyway!" << std::endl;
-	}
-
-	Json::Value requestJson(Json::objectValue);
-
-	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::installNeeded);
-	requestJson["moduleName"]		= _name;
-	requestJson["moduleCode"]		= generateModuleInstallingR(onlyModPkg);
-
-	setInstalling(true);
-
-	return requestJson;
-}
-
 Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 {
 	Json::Value requestJson(Json::objectValue);
@@ -426,50 +407,6 @@ std::string DynamicModule::getLibPathsToUse() const
 	return "c('" + shortenWinPaths(moduleRLibrary()).toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
 }
 
-///It would probably be better to move all of this code to jasp-r-pkg or something, but for now this works fine.
-std::string DynamicModule::generateModuleInstallingR(bool onlyModPkg)
-{
-	std::stringstream R;
-
-	if(_modulePackage == "")
-	{
-		Log::log() << "generateModuleInstallingR has some trouble because package was not unpacked anywhere..." << std::endl;
-
-		setInstallLog("Installing module " + _name + " failed because package filepath was not specified");
-		setStatus(moduleStatus::error);
-		return "stop('No package specified!')";
-	}
-
-	try
-	{
-		loadDescriptionFromFolder(_modulePackage);
-	}
-	catch(ModuleException & e)
-	{
-		setInstallLog(e.what());
-		setStatus(moduleStatus::error);
-		return "stop('Something went wrong during intialization of the Description!\nMake sure it follows the standard set in https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/jasp-adding-module.md#descriptionqml\n')";
-	}
-	setInstallLog("Installing module " + _name + ".\n");
-	return QString(
-	R"readableR(
-	tmp <- .libPaths();
-	.libPaths("%1");
-	Sys.setenv(MODULE_INSTALL_MODE="localizeModuleOnly");
-	options("renv.config.install.verbose" = TRUE, "PKGDEPENDS_LIBRARY"="%2");
-	result <- jaspModuleInstaller::installJaspModule(modulePkg='%3', moduleLibrary='%4', repos='%5', onlyModPkg=%6, force=TRUE, frameworkLibrary='%7');
-	.libPaths(tmp);
-	return(result);
-	)readableR")
-	.arg(AppDirs::bundledModulesDir() + "Tools/jaspModuleInstaller_library/")
-	.arg(AppDirs::bundledModulesDir() + "Tools/pkgdepends_library/")
-	.arg(tq(_modulePackage))
-	.arg(moduleRLibrary())
-	.arg(Settings::value(Settings::CRAN_REPO_URL).toString())
-	.arg(onlyModPkg ? "TRUE" : "FALSE")
-	.arg(AppDirs::rHome()+"/library")
-	.toStdString();
-}
 
 std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 {
@@ -660,8 +597,7 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	if(_status != newStatus && (_status == moduleStatus::error || newStatus == moduleStatus::error))
 		errorChanged(error());
 
-	// if we already need an install then we should only install the modpkg
-	if(_status == moduleStatus::installNeeded && newStatus == moduleStatus::installModPkgNeeded)
+	if(_status == moduleStatus::installNeeded)
 		return;
 
 	bool readyForUseInvolved = ( newStatus == moduleStatus::readyForUse ) || ( _status == moduleStatus::readyForUse );
@@ -671,7 +607,6 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 	switch(_status)
 	{
 	case moduleStatus::installNeeded:			emit registerForInstalling(_name);			setInstalled(false);					break;
-	case moduleStatus::installModPkgNeeded:		emit registerForInstallingModPkg(_name);	setInstalled(false);					break;
 	case moduleStatus::error:					Log::log() << "Just set an error on the status of module "<< _name << std::endl;	break;
 	default:																				break;
 	}

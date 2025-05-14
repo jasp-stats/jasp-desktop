@@ -47,7 +47,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 
 	std::string jaspModuleBinaryPath;
 	std::string jaspModuleName;
-	if (modLibpath.string().find("/Modules/jasp") != std::string::npos) 
+	if (modLibpath.string().find("/Modules/module_libs/jasp") != std::string::npos) 
 	{
 		auto modulePlace = modLibpath.string().find("/Modules/") + 9;
 		auto moduleNameLength = modLibpath.string().find('/', modulePlace);

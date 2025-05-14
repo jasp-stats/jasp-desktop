@@ -145,7 +145,8 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 		Dirs::tempDir(),
 		AppDirs::appData(false).toStdString(), //entire appdata dir, might want to give more fine grained access when R pkgs are installed here
 		AppDirs::appData().toStdString(), //logdir
-		AppDirs::sandboxedDocuments().toStdString()
+		AppDirs::sandboxedDocuments().toStdString(),
+		AppDirs::userModulesDir().toStdString()
 	};
 
 	if(!checkIfAccessible(si, _fullAccessList)) {

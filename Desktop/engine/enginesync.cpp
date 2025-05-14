@@ -742,33 +742,18 @@ stringset EngineSync::processDynamicModules()
 
 	try
 	{
-		stringset	wantToRunInstall	= DynMods::dynMods()->modulesNeedingPackagesInstalled(),
-					stillWantTo			= {};
-		
-		for(const std::string & mod : wantToRunInstall)
+		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
+		if(wantToRunInstall.size() > 0)
 		{
-			if(moduleHasEngine(mod))
-			{
-				auto * engine = _moduleEngines[mod];
-
-				if(engine->analysisInProgress())
-					engine->killEngine();
-
-				if(engine->idle())
-					engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForPackageInstallationRequest(mod));
-			}
-			else
-				for(auto & engine : _engines)
-					if(engine->idle() && engine->runsUtility()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
-					{
-						registerEngineForModule(engine, mod);
-						engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForPackageInstallationRequest(mod));
-					}
-					else
-						stillWantTo.insert(mod);
+			for(auto & engine : _engines)
+				if(engine->idle() && engine->runsUtility()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
+				{
+					engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
+					return {};
+				}
 		}
 		
-		return stillWantTo;
+		return wantToRunInstall;
 	}
 	catch(Modules::ModuleException & e)	{ Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;	}
 	catch(std::exception & e)			{ Log::log() << "Exception thrown in processDynamicModules: " << e.what() << std::endl;		}

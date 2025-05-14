@@ -38,6 +38,11 @@
 #include "modules/description/entrybase.h"
 #include "engine/enginesync.h"
 
+#ifdef __APPLE__
+#include "otoolstuff.h"
+#include <filesystem>
+#endif
+
 namespace Modules
 {
 
@@ -48,7 +53,7 @@ DynamicModules::DynamicModules(QObject *parent) : QObject(parent)
 	if(_singleton) throw std::runtime_error("Can only instantiate DynamicModules once!");
 	_singleton = this;
 
-	_modulesInstallDirectory = AppDirs::userModulesDir().toStdWString();
+	_modulesInstallDirectory = AppDirs::userModulesDir().toStdWString() + L"/module_libs/";
 
 	if(!std::filesystem::exists(_modulesInstallDirectory))
 		std::filesystem::create_directories(_modulesInstallDirectory);
@@ -78,7 +83,7 @@ void DynamicModules::initializeInstalledModules()
 		else if(name.size() > 0 && name[0] != '.' && QFileInfo(tq(path)).isDir())	
 			try
 			{
-				if(!initializeModuleFromDir(path))
+				if(!initializeModuleFromDir(path, false, true))
 					askForCleanup = true;
 			}
 			catch(ModuleException & modException)
@@ -139,14 +144,12 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 		{
 			connect(module, &DynamicModule::readyForUseChanged,				this,	&DynamicModules::loadedModulesChanged			);
 			connect(module, &DynamicModule::titleChanged,					this,	&DynamicModules::loadedModulesChanged			);
-			connect(module, &DynamicModule::registerForInstalling,			this,	&DynamicModules::registerForInstalling			);
-			connect(module, &DynamicModule::registerForInstallingModPkg,	this,	&DynamicModules::registerForInstallingModPkg	);
 			connect(module, &DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
 			connect(module, &DynamicModule::statusChanged,					module,	[this, module, moduleName]()
 			{
 				if(module->status() == moduleStatus::error)
 				{
-						_modulesInstallPackagesNeeded.erase(moduleName);
+						_moduleBundlesNeedingInstall.erase(moduleName);
 						QTimer::singleShot(0, module, [this, moduleName](){ uninstallModule(moduleName); });
 				}
 			});
@@ -211,7 +214,7 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 {
 	Log::log() << "Module '" << moduleName << "' being registered for unloading!" << std::endl;
 
-	_modulesInstallPackagesNeeded   .erase(moduleName);
+	_moduleBundlesNeedingInstall.erase(moduleName);
 
 	if(_modules.count(moduleName) > 0)
 	{
@@ -225,12 +228,11 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 
 void DynamicModules::registerForInstalling(const std::string & moduleName)
 {
-	registerForInstallingSubFunc(moduleName, false);
-}
-
-void DynamicModules::registerForInstallingModPkg(const std::string & moduleName)
-{
-	registerForInstallingSubFunc(moduleName, true);
+	if(_moduleBundlesNeedingInstall.find(moduleName) == _moduleBundlesNeedingInstall.end())
+	{
+		Log::log() << "Bundle '" << moduleName << "' being registered for installing" << std::endl;
+		_moduleBundlesNeedingInstall.insert(moduleName);
+	}
 }
 
 QStringList DynamicModules::importPaths() const
@@ -248,17 +250,6 @@ QStringList DynamicModules::importPaths() const
 	return allImportPaths;
 }
 
-void DynamicModules::registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg)
-{
-	if(!_modulesInstallPackagesNeeded.count(moduleName) || _modulesInstallPackagesNeeded[moduleName] != onlyModPkg)
-	{ 
-		Log::log() << "Module '" << moduleName << "' being registered for installing (onlyModPkg? " << (onlyModPkg ? "true" : "false") << ")!" << std::endl;
-
-		_modulesInstallPackagesNeeded[moduleName] = onlyModPkg;
-	}
-
-	//Installing modules always restarts all the (relevant) engines anyway
-}
 
 void DynamicModules::replaceModule(DynamicModule * module)
 {
@@ -347,55 +338,42 @@ DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std
 	return _modules[installMe];
 }
 
-bool DynamicModules::aModuleNeedsPackagesInstalled() const
+
+stringset DynamicModules::moduleBundlesNeedingInstall() const
 {
-	return numModulesNeedingPackagesInstalled() > 0;
+	return _moduleBundlesNeedingInstall;
 }
 
-
-size_t DynamicModules::numModulesNeedingPackagesInstalled() const
+Json::Value	DynamicModules::getJsonForBundleInstallRequest()
 {
-	size_t thisMany = 0;
+	if(_moduleBundlesNeedingInstall.size() == 0)
+		throw std::runtime_error("Tried to get json for ModuleBundle install request but there are none, getJsonForBundleInstallRequest should never have been called.");
+
+	QString list = "";
+	for(auto& bundle : _moduleBundlesNeedingInstall) list += "'" + QString(bundle.c_str()).remove("file:///") + "'" + ",";
+	list.removeLast();
+
+	QString code = QString(
+	R"readableR(
+	tmp <- .libPaths();
+	.libPaths("%1");
+	library("jaspModuleBundleManager")
+	bundles <- c(%2)
+	f <- function(bundle) {jaspModuleBundleManager::installJaspModuleBundle(installPath="%3", bundlePath=bundle, repoNames=c())}
+	paste(sapply(bundles, f), collapse = ';')
+	)readableR")
+	.arg(AppDirs::bundledModulesDir() + "Tools/jaspModuleBundleManager_library/")
+	.arg(list)
+	.arg(AppDirs::userModulesDir());
 
 
-	for(auto & nameModPkg : _modulesInstallPackagesNeeded)
-		if(!isModuleInstallRequestActive(tq(nameModPkg.first)))
-			thisMany++;
+	Json::Value requestJson(Json::objectValue);
+	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::installNeeded);
+	requestJson["moduleCode"]		= code.toStdString();
+	requestJson["moduleName"]		= list.toStdString();
 
-	return thisMany;
-}
+	return requestJson;
 
-stringset DynamicModules::modulesNeedingPackagesInstalled() const
-{
-	stringset keys;
-
-	for(auto & nameMod : _modulesInstallPackagesNeeded)
-		keys.insert(nameMod.first);
-
-	return keys;
-}
-
-Json::Value	DynamicModules::getJsonForPackageInstallationRequest(const std::string & module)
-{
-	if(_modulesInstallPackagesNeeded.size() == 0)
-		throw std::runtime_error("Tried to get json for open module install request but there are none, getJsonForPackageInstallationRequest should never have been called. Is aModuleNeedsPackagesInstalled perhaps broken?");
-
-
-	std::string installMe	= module;
-	bool		onlyModPkg	= installMe == "???" || _modulesInstallPackagesNeeded[module];
-
-	if(installMe == "???")
-		for(auto & nameModPkg : _modulesInstallPackagesNeeded)
-			if(!isModuleInstallRequestActive(tq(nameModPkg.first)))
-			{
-				installMe	= nameModPkg.first;
-				onlyModPkg	= nameModPkg.second;
-			}
-
-	if(installMe == "???")
-		throw std::runtime_error("Tried to get json for module install request but there were none.");
-
-	return _modules[installMe]->requestJsonForPackageInstallationRequest(onlyModPkg);
 }
 
 DynamicModule *DynamicModules::dynamicModuleLowerCased(QString moduleName) const
@@ -419,7 +397,7 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 
 	uninstallModule(moduleName.toStdString());
 
-	_modulesInstallPackagesNeeded.erase(moduleName.toStdString());
+	_moduleBundlesNeedingInstall.erase(moduleName.toStdString());
 
 	if(moduleName.toStdString() == developmentModuleName())
 		setDevelopersModuleInstallButtonEnabled(true);
@@ -430,31 +408,21 @@ void DynamicModules::installationPackagesFailed(const QString & moduleName, cons
 				tr("The installation of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));	
 }
 
-void DynamicModules::installationPackagesSucceeded(const QString & moduleName)
+void DynamicModules::installationPackagesSucceeded(const QString & moduleNames)
 {
-	Log::log() << "Installing packages for module (" << moduleName.toStdString() << ") succeeded!" << std::endl;
-	_modules[moduleName.toStdString()]->setInstallingSucces(true);
-	_modulesInstallPackagesNeeded.erase(moduleName.toStdString());
+	Log::log() << "Installing Bundles for modules (" << moduleNames.toStdString() << ") succeeded!" << std::endl;
 
-	auto *dynMod = _modules[moduleName.toStdString()];
+	QString listStr = QString(moduleNames);
+	QStringList modulesLibs =  listStr.split(';', Qt::SkipEmptyParts);
 
-	bool wasInitialized = dynMod->initialized();
-
-	if(!wasInitialized)
-		initializeModule(dynMod);
-
-	if(dynMod->isDevMod())
-	{
-		if(wasInitialized)
-			emit dynamicModuleChanged(dynMod);
-
-		startWatchingDevelopersModule();
-		setDevelopersModuleInstallButtonEnabled(true);
+	for(QString& moduleLib : modulesLibs) {
+		auto dynMod = initializeModuleFromDir(moduleLib.toStdString(), false, true);
+#ifdef __APPLE__
+		_moduleLibraryFixer(moduleLib.toStdString(), true, true, false);
+#endif
 	}
-	else
-		emit dynamicModuleChanged(dynMod);
-
-	emit reloadQmlImportPaths();
+	_moduleBundlesNeedingInstall.clear();
+	MessageForwarder::showWarning(tr("Install complete"), tr("Completed installation of Bundles: ") + listStr);
 }
 
 
@@ -482,43 +450,9 @@ void DynamicModules::uninstallJASPModule(const QString & moduleName)
 	uninstallModule(moduleName.toStdString());
 }
 
-void DynamicModules::installJASPModule(const QString & moduleZipFilename)
+void DynamicModules::installJASPModule(const QString & moduleBundlePath)
 {	
-	if(!QFile(moduleZipFilename).exists())
-	{
-		MessageForwarder::showWarning(tr("Cannot install module because %1 does not exist.").arg(moduleZipFilename));
-		return;
-	}
-
-	//Do not unpack yet! replaceModule might restart the engine which might clean up the tmp folder
-	DynamicModule * dynMod = new DynamicModule(moduleZipFilename.toStdString(), this, false);
-
-	std::string moduleName = dynMod->name();
-
-	if(moduleName == defaultDevelopmentModuleName())
-	{
-		MessageForwarder::showWarning(tr(
-			"Cannot install module because it is named '%1' and that name is reserved for installing the development module.\n"
-			"Change the name (in DESCRIPTION and description.json) and try it again. "
-			"If you are not the author of this module and do not know how to do this, contact: %2").arg(tq(defaultDevelopmentModuleName())).arg(tq(dynMod->author()))
-		);
-		delete dynMod;
-		return;
-	}
-
-	if(moduleIsInstalledByUser(moduleName))
-		uninstallModule(moduleName);
-
-	auto modNameQ = QString::fromStdString(moduleName);
-	if(!QDir(AppDirs::userModulesDir() + "/" + modNameQ).exists())
-		QDir(AppDirs::userModulesDir()).mkdir(modNameQ);
-
-	if(_modules.count(moduleName) > 0 && _modules[moduleName]->isBundled())
-		replaceModule(dynMod);
-	else
-		_modules[moduleName] = dynMod;
-
-	registerForInstalling(moduleName);
+	registerForInstalling(moduleBundlePath.toStdString());
 
 }
 
@@ -579,10 +513,6 @@ void DynamicModules::installJASPDeveloperModule()
 		_modules[name] = devMod;
 		if(directLibpathEnabled) {
 			initializeModule(devMod);
-		}
-		else {
-			DynamicModule::developmentModuleFolderCreate();
-			registerForInstalling(name);
 		}
 	}
 	catch(ModuleException & e)
@@ -780,8 +710,6 @@ void DynamicModules::regenerateDeveloperModuleRPackage()
 	auto * devMod = _modules[developmentModuleName()];
 	if(devMod->isLibpathDevMod())
 		emit dynamicModuleChanged(devMod);
-	else
-		devMod->setStatus(moduleStatus::installModPkgNeeded);
 }
 
 QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const
@@ -873,7 +801,7 @@ bool DynamicModules::bundledModuleInFilesystem(const std::string & moduleName)
 
 std::string DynamicModules::bundledModuleLibraryPath(const std::string & moduleName)
 {
-	return fq(AppDirs::bundledModulesDir()) + moduleName + "/";
+	return fq(AppDirs::bundledModulesLibDir()) + moduleName + "/";
 }
 
 QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)

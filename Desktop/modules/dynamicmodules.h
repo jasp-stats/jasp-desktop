@@ -71,11 +71,9 @@ public:
 	bool					moduleHasUpgradesToApply(	const	 std::string & module,		const std::string & function, const Version & version);
 	void					applyUpgrade(				const	 std::string & module,		const std::string & function, const Version	& version, Json::Value & analysesJson, Modules::UpgradeMsgs & msgs, Modules::StepsTaken & stepsTaken);
 
-	bool					aModuleNeedsPackagesInstalled()			const;
-	size_t					numModulesNeedingPackagesInstalled()	const;
-	stringset				modulesNeedingPackagesInstalled()		const;
+	stringset				moduleBundlesNeedingInstall()		const;
 
-	Json::Value				getJsonForPackageInstallationRequest(const std::string & module = "???");
+	Json::Value				getJsonForBundleInstallRequest();
 
 	Modules::DynamicModule*	dynamicModuleLowerCased(	  QString		moduleName)	const;
 	Modules::DynamicModule*	dynamicModule(			const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
@@ -113,10 +111,9 @@ public:
 	const QStringList loadedModulesTitles() const;
 
 public slots:
-	void installationPackagesSucceeded(	const QString		& moduleName);
+	void installationPackagesSucceeded(	const QString		& moduleNames);
 	void installationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string	& moduleName);
-	void registerForInstallingModPkg(	const std::string	& moduleName);
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 	void setDataLoaded(bool dataLoaded);
 	void uninstallJASPDeveloperModule();
@@ -150,14 +147,14 @@ private:
 	void						devModCopyDescription(QString filename);
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
 	void						regenerateDeveloperModuleRPackage();
-	void						registerForInstallingSubFunc(const std::string & moduleName, bool onlyModPkg);
+	void						registerForInstallingSubFunc(const std::string & moduleName);
 
 private:
 	static DynamicModules								*	_singleton;
 	std::set<std::string>									_commonModuleNames;
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
-	std::map<std::string, bool>								_modulesInstallPackagesNeeded; //bool true ==> only modPkg
+	std::set<std::string>									_moduleBundlesNeedingInstall;
 	std::filesystem::path									_modulesInstallDirectory;
 	QString													_currentInstallMsg			= "",
 															_currentInstallName			= "";
