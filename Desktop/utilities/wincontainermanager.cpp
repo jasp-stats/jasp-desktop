@@ -7,6 +7,7 @@
 #include "log.h"
 #include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
+#include "gui/preferencesmodel.h"
 
 std::wstring toWString(const std::string& in) {
 	return std::wstring(in.begin(), in.end());
@@ -114,6 +115,9 @@ bool checkIfAccessible(STARTUPINFOEX si, const std::vector<std::string>& paths)
 
 bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const QString& EngineExe, const QStringList& args)
 {
+	if(!PreferencesModel::prefs()->engineSandbox())
+		return false;
+
 	std::wstring containerName = toWString(_containerName);
 	PSID appContainerSid;
 	auto hr = ::CreateAppContainerProfile(containerName.c_str(), containerName.c_str(), containerName.c_str(), nullptr, 0, &appContainerSid);
@@ -160,6 +164,20 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 		box->show();
 		grantAccessToExeDir();
 		box->close();
+	}
+
+	//Show popup and disable the sandbox if it is really not working somehow
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()})) {
+		bool disable = MessageForwarder::showYesNo("Security Sandbox Failure", "Failed to activate Security Sandbox. Your system does not allow security sandboxing. Do you wish to continue with out is? (probably fine)", "Continue", "Exit");
+		if(disable) {
+			Log::log() << "Disabling Sandbox" << std::endl;
+			PreferencesModel::prefs()->setEngineSandbox(false);
+			return false;
+		}
+		else {
+			Log::log() << "Sandbox Failure, User selected exit" << std::endl;
+			exit(13);
+		}
 	}
 
 	//set the startup info for the engine
