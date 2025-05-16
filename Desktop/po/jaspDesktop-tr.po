@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-05-16 23:05+0000\n"
+"Last-Translator: Ertuğrul Uyar <ertugruluyar.academic@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"tr/>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.12-dev\n"
 "X-Language: tr\n"
 "X-Qt-Contexts: true\n"
 
@@ -104,7 +110,7 @@ msgstr "Sürüm:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr "log-lojistik"
+msgstr "Üzerine inşa edildi:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
@@ -478,7 +484,7 @@ msgstr "Sıralı"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "Sınıflama Ölçeği"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -1377,7 +1383,7 @@ msgstr "At"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr "İptal et"
+msgstr "İptal Et"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
@@ -1839,7 +1845,7 @@ msgstr "Hayır"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr "İptal et"
+msgstr "İptal Et"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
@@ -3042,7 +3048,7 @@ msgstr "Veri Dosyasını CSV Olarak Oluştur"
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr "İptal et"
+msgstr "İptal Et"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -3149,7 +3155,7 @@ msgstr "Etiket"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr "Tick #"
+msgstr "Tik #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
@@ -3195,7 +3201,7 @@ msgstr "TAMAM"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr "İptal et"
+msgstr "İptal Et"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
@@ -3380,7 +3386,7 @@ msgid ""
 "Ctrl/Cmd+Y"
 msgstr ""
 "0, otomatik eşitleme olmadığı anlamına gelir, ancak yine de Ctrl/Cmd+Y "
-"tuşlarına basarak manuel olarak eşitleyebilirsiniz."
+"tuşlarına basarak manuel olarak eşitleyebilirsiniz"
 
 msgctxt "QObject|"
 msgid ""
@@ -3651,7 +3657,7 @@ msgstr "Formüldeki Kaynak %1 Değişkenler Listesi Değildir"
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr "\"Formül açıklamasında verilen öğe bulunamıyor%1\"."
+msgstr "Formül açıklamasında verilen %1 öğesi bulunamıyor"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
@@ -3765,7 +3771,7 @@ msgstr "Değişkenler Listesi"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr "DropDown"
+msgstr "Açılır Menü"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
@@ -3830,7 +3836,7 @@ msgstr "R Sözdizimini Gizle"
 #, fuzzy
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr "Kapağı Oluştur"
+msgstr "Kılıfı Oluştur"
 
 msgctxt "Computer|"
 msgid "Save"
@@ -3922,10 +3928,9 @@ msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
 msgstr "Değişikliklerinizi %1 dosyasına kaydetmek ister misiniz?"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr "Değişikliklerinizi kaydetmezseniz kaybolacaktır."
+msgstr "Kaydetmezseniz değişiklikleriniz kaybolacaktır."
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
@@ -4601,7 +4606,7 @@ msgstr "Sıralı"
 
 msgctxt "QObject|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "Sınıflama Ölçeği"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
@@ -4713,20 +4718,21 @@ msgid ""
 msgstr ""
 "<h3>İletişim</h3>\n"
 "<a href=\"%1\">Özellik istekleri</a> ve <a href=\"%2\">hata raporları</a> "
-"için: lütfen GitHub sayfamızda bir sorun yayınlayın, <a href=\"%3\">burada "
+"için: Lütfen GitHub sayfamızda bir sorun yayınlayın, <a href=\"%3\">burada "
 "açıklandığı gibi.</a>\n"
 "Bu sizi JASP yazılım geliştiricileriyle doğrudan iletişime geçirecektir.\n"
 "\n"
-"İstatistiksel sorular için: lütfen JASP Forumunda bir sorun yayınlayın.</a>\n"
+"İstatistiksel sorular için: Lütfen <a href=\"%4\">JASP Forumunda</a> bir "
+"sorun yayınlayın.\n"
 "\n"
-"JASP Topluluğu hakkında bilgi için: lütfen <a href=\"%5\">JASP web "
+"JASP Topluluğu hakkında bilgi için: Lütfen <a href=\"%5\">JASP web "
 "sitesindeki bilgileri</a> okuyun\n"
 "\n"
 "Kurumunuzun <a href=\"%6\">JASP Dünya Haritasına</a> eklenmesini önermek "
 "için lütfen <a href=\"%7\">communications@jasp-stats.org</a> adresine bir e-"
 "posta gönderin.\n"
 "\n"
-"Bireysel bağışlar için: lütfen <a href=\"%8\">JASP web sitesini</a> ziyaret "
+"Bireysel bağışlar için: Lütfen <a href=\"%8\">JASP web sitesini</a> ziyaret "
 "edin.\n"
 
 msgctxt "ActionButtons|"
@@ -5271,7 +5277,7 @@ msgstr "Sıralı"
 
 msgctxt "VariableInfo|"
 msgid "Nominal"
-msgstr "Nominal"
+msgstr "Sınıflama Ölçeği"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
@@ -5759,108 +5765,133 @@ msgstr ""
 "Jasp motoru güvenlik deneme modunda çalışıyor ve yalnızca şunlara "
 "erişebiliyor: "
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Satırlar boyunca ortalama"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Satırlar boyunca toplam"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Satırlar boyunca standart sapma"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Satırlar boyunca varyans"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Satırlar boyunca medyan"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Satırlar boyunca en küçük değer"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Satırlar boyunca en büyük değer"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr ""
+msgstr "Bir yapılandırma (ayar) dosyası kullanın."
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr ""
+msgstr "Uzak yapılandırma (ayar) dosyasını kullanın."
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
 msgstr ""
+"URL tarafından işaret edilen uzak yapılandırma (ayar) dosyasını kullanın"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr ""
+msgstr "Yapılandırma (Ayar) URL'si: "
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr ""
+msgstr "Yapılandırma (Ayar) dosyasını seçin"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
+msgstr "Yapılandırma (Ayar) dosyasını seçin."
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Satırlar boyunca ortalama"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Satırlar boyunca toplam"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Satırlar boyunca standart sapma"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Satırlar boyunca varyans"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Satırlar boyunca medyan"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Satırlar boyunca en küçük değer"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Satırlar boyunca en büyük değer"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "JASP başlangıçta penceresini tam ekran olarak açsın mı?"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
 "appdata."
 msgstr ""
+"Bu, appdata'daki 'renv', 'Modules' ve geliştirme Modülü klasörlerini "
+"silecektir."
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
-msgstr ""
+msgstr "Renv modunu etkinleştir"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "Proje kütüphanesi:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "Yapılandırma (Ayar) dosyası seçenekleri"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "Tam ekran olarak başla"
