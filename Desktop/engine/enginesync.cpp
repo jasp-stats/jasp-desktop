@@ -982,9 +982,8 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	slave->setWorkingDirectory(QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath());
 
 #ifdef _WIN32
-	if(PreferencesModel::prefs()->engineSandbox())
-		WinContainerManager::launchSandboxedEngine(slave, engineExe, args);
-	else
+
+	if(!WinContainerManager::launchSandboxedEngine(slave, engineExe, args))
 		slave->start(engineExe, args);
 #else
 	slave->start(engineExe, args);
