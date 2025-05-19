@@ -959,7 +959,6 @@ QString AnalysisForm::helpMD() const
 		_info, "\n"
 	};
 
-
 	QList<JASPControl*> orderedControls = JASPControl::getChildJASPControls(this);
 
 	if (orderedControls.length() > 0 && orderedControls[0]->controlType() != JASPControl::ControlType::Expander)
@@ -968,9 +967,11 @@ QString AnalysisForm::helpMD() const
 
 	for(JASPControl * control : orderedControls)
 	{
-		JASPControl::MDItem mdItem = control->generateMDItems();
-		if (!mdItem.isEmpty())
-			markdown << mdItem.print() << "\n";
+		if (control->hasInfoSomewhere())
+		{
+			control->setMDSubItems();
+			markdown << control->generateMDHelp() << "\n";
+		}
 	}
 
 	markdown << metaHelpMD();

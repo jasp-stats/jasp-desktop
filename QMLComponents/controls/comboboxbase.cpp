@@ -303,7 +303,7 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 }
 
 
-JASPControl::MDItem	ComboBoxBase::generateMDItems(int depth) const
+QString	ComboBoxBase::generateMDHelp(int depth) const
 {
 	QStringList markdown;
 
@@ -327,12 +327,12 @@ JASPControl::MDItem	ComboBoxBase::generateMDItems(int depth) const
 	{
 		markdown << "\n" << QString{depth * 2, ' '};
 		// Display the options in one line separated by a comma.
-		markdown << model()->terms().labels().join(", ");
+		markdown << tr("Possible values are: %1").arg(model()->terms().labels().join(", "));
 	}
 
 	markdown << "\n";
 
-	return markdown.join("");;
+	return markdown.join("");
 }
 
 QString ComboBoxBase::generateDoxygenHelp() const
@@ -373,9 +373,9 @@ bool ComboBoxBase::_hasOptionInfo() const
 	return false;
 }
 
-bool ComboBoxBase::hasInfo() const
+bool ComboBoxBase::hasInfoSomewhere() const
 {
-	return JASPControl::hasInfo() || _hasOptionInfo();
+	return JASPControl::hasInfoSomewhere() || _hasOptionInfo();
 }
 
 std::string ComboBoxBase::_findType(std::string value) const

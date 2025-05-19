@@ -321,7 +321,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 		if (childControl)
 		{
-			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && childControl->title().isEmpty() && childControl->infoLabel().isEmpty() && childControl->info().isEmpty())
+			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && !childControl->hasLabelOrInfo())
 				// If a Group has no label, title or info, then it is used probably for layout purpose.
 				// Just skip it: this is necessary for generating properly the markdown help
 				result.append(getChildJASPControls(childControl, removeUnecessaryGroups));
@@ -559,19 +559,19 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	}
 }
 
-bool JASPControl::hasInfo() const
+bool JASPControl::hasInfoSomewhere() const
 {
 	if(!info().isEmpty()) return true;
 
 	for (JASPControl* control : getChildJASPControls(_childControlsArea ? _childControlsArea : this))
-		if (control->hasInfo()) return true;
+		if (control->hasInfoSomewhere()) return true;
 
 	return false;
 }
 
 QString JASPControl::printLabelMD(int depth) const
 {
-	QString label = (infoLabel().isEmpty() ? title() : infoLabel()).trimmed();
+	QString label = fullLabel();
 	if(label.isEmpty() && !infoAddControlType())
 		return QString();
 
@@ -597,51 +597,44 @@ QString JASPControl::printLabelMD(int depth) const
 	return md.join("");
 }
 
-JASPControl::MDItem JASPControl::generateMDItems(int depth) const
+bool JASPControl::hasLabelOrInfo() const
 {
-	MDItem mdItem;
+	return !fullLabel().isEmpty() || !info().isEmpty();
+}
 
-	if (!hasInfo()) return mdItem;
-
-	mdItem.label = printLabelMD(depth);
-	mdItem.info = info();
+void JASPControl::setMDSubItems()
+{
+	_MDSubItems.clear();
 
 	for (JASPControl* childControl : getChildJASPControls(_childControlsArea ? _childControlsArea : this, true))
 	{
-		MDItem childMD = childControl->generateMDItems(depth + 1);
-		if (!childMD.hasHeader())
-			// The child does not have label nor info: just add its own children to the parent
-			mdItem.children.insert(mdItem.children.end(), childMD.children.begin(), childMD.children.end());
-		else if (!childMD.isEmpty())
-			mdItem.children.push_back(childMD);
-	}
+		// In case of RadioButtonGroup, if at least one of the RadioButton has info, then all RadioButtons should be listed even if they don't have any info
+		if (childControl->hasInfoSomewhere() || (controlType() == ControlType::RadioButtonGroup && childControl->controlType() == ControlType::RadioButton))
+		{
+			childControl->setMDSubItems();
 
-	return mdItem;
+			if (!childControl->hasLabelOrInfo())
+				// The child does not have label nor info: just add its own children to the parent
+				_MDSubItems.insert(_MDSubItems.end(), childControl->MDSubItems().begin(), childControl->MDSubItems().end());
+			else
+				_MDSubItems.push_back(childControl);
+		}
+	}
 }
 
-QString JASPControl::MDItem::print(int depth) const
+QString JASPControl::generateMDHelp(int depth) const
 {
 	QStringList markdown;
-	if (depth == 0 && isSection)
-		// Use collapsible section
-		markdown << "<details>\n<summary><b>" << label << "</b></summary>\n";
-	else
-		markdown << label;
+	markdown << printLabelMD(depth) << info() << "\n";
 
-	markdown << info << "\n";
-
-	if (children.size() == 1)
-		markdown << "\n" << QString{depth * 2, ' '} << children[0].print(depth + 1);
-	else if (children.size() > 1)
+	if (_MDSubItems.size() == 1)
+		markdown << "\n" << QString{depth * 2, ' '} << _MDSubItems[0]->generateMDHelp(depth + 1);
+	else if (_MDSubItems.size() > 1)
 	{
 		markdown << "\n"; // Before adding bullets, a new line is needed
-		for (const auto& childMD : children)
-			markdown << QString{depth * 2, ' '} << "- " << childMD.print(depth + 1);
+		for (const auto& childMD : _MDSubItems)
+			markdown << QString{depth * 2, ' '} << "- " << childMD->generateMDHelp(depth + 1);
 	}
-
-	if (depth == 0 && isSection)
-		markdown << "\n</details>";
-
 
 	return markdown.join("");
 }

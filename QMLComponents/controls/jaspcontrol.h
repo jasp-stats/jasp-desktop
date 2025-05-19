@@ -63,24 +63,6 @@ public:
 			: name(_name), key(_key), value(_value) {}
 	};
 
-	typedef struct MDItem
-	{
-		bool						isSection = false;
-		QString						label,
-									info;
-		std::vector<struct MDItem>	children;
-
-		MDItem() {}
-		MDItem(const QString& _label) : label{_label} {}
-
-		bool	isEmpty()	{ return label.isEmpty() && info.isEmpty() && children.size() == 0; }
-		bool	hasHeader()	{ return !label.isEmpty() || !info.isEmpty(); }
-
-		QString print(int depth = 0) const;
-
-
-	} MDItem;
-
 	// Any addition here should also be added manually to ControlTypeToFriendlyString... I couldnt get this to work with DECLARE_ENUM...
 	enum class ControlType {
 		  DefaultControl
@@ -131,14 +113,16 @@ public:
 	QString				title()						const	{ return _title;					}
 	QString				info()						const	{ return _info;						}
 	QString				infoLabel()					const	{ return _infoLabel;				}
+	QString				fullLabel()					const	{ return (infoLabel().isEmpty() ? title() : infoLabel()).trimmed(); }
 	virtual bool		infoAddControlType()		const	{ return  false;					}
 	virtual bool		infoLabelIsHeader()			const	{ return  false;					}
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
-	virtual MDItem		generateMDItems(int depth = 0) const;
+	void				setMDSubItems();
+	virtual QString		generateMDHelp(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
-	virtual bool		hasInfo()					const;
+	virtual bool		hasInfoSomewhere()					const;
 	bool				isBound()					const	{ return _isBound;					}
 	bool				nameIsOptionValue()			const	{ return _nameIsOptionValue;		}
 	bool				indent()					const	{ return _indent;					}
@@ -196,6 +180,8 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
+	const std::vector<JASPControl*>& MDSubItems() const { return _MDSubItems; }
+	bool							hasLabelOrInfo() const;
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }
@@ -335,6 +321,7 @@ protected:
 	QVariant				_explicitDepends;
 	QString					_info,
 							_infoLabel;
+	std::vector<JASPControl*>	_MDSubItems;
 
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
