@@ -168,7 +168,7 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 	//Show popup and disable the sandbox if it is really not working somehow
 	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()})) {
-		bool disable = MessageForwarder::showYesNo("Security Sandbox Failure", "Failed to activate Security Sandbox. Your system does not allow security sandboxing. Do you wish to continue with out is? (probably fine)", "Continue", "Exit");
+		bool disable = MessageForwarder::showYesNo(tr("Security Sandbox Failure"), tr("Failed to activate Security Sandbox. Your system does not allow security sandboxing. Do you wish to continue with out is? (probably fine)"), tr("Continue"), tr("Exit"));
 		if(disable) {
 			Log::log() << "Disabling Sandbox" << std::endl;
 			PreferencesModel::prefs()->setEngineSandbox(false);
