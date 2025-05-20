@@ -2182,7 +2182,7 @@ isItReallyAnotherLabel:
         }
 
         Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
-        std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
+        std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
 		goto isItReallyAnotherLabel;
 	}
 
