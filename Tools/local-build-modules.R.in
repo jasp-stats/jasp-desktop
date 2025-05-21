@@ -1,0 +1,40 @@
+options(repos='https://cran.r-project.org')
+options(jaspRemoteCellarRedownload=FALSE)
+Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
+
+
+MODULES_DIR <- file.path("@PROJECT_BINARY_DIR@", "Modules")
+MODULES_SOURCE_ROOT <- file.path("@LOCAL_MODULES_ROOT@")
+MODULES <- "@LOCAL_MODULES_TO_BUILD@"
+
+modules <- sapply(strsplit(MODULES, ';'), trimws)
+modules <- file.path(MODULES_SOURCE_ROOT, modules)
+
+workdir <- file.path(MODULES_DIR, 'jaspLocalBuildWorkdir')
+toolLibpath <- file.path(workdir, 'toolLibpath')
+dir.create(toolLibpath, recursive=TRUE)
+.libPaths(toolLibpath)
+
+
+install.packages("remotes")
+library('remotes')
+remotes::install_github("jasp-stats/jaspModuleTools")
+
+f <- function(mod) {
+    jaspModuleTools::compile(mod, workdir=workdir, createBundle=FALSE)
+    modlib <- file.path(workdir, basename(mod))
+    module_libs <- file.path(MODULES_DIR, 'module_libs')
+    target <- file.path(module_libs, basename(mod))
+
+    if(dir.exists(target)) unlink(target, recursive=TRUE)
+    dir.create(target, recursive = TRUE)
+    file.copy(modlib, module_libs, recursive=TRUE)
+
+    if (Sys.info()[['sysname']] == 'Darwin') {  
+        print("Patching and Signing all Module binaries")
+        jaspEngineLocation <- file.path("@CMAKE_BINARY_DIR@", "Desktop" , "JASPEngine")
+        jaspEngineCall     <- paste0(jaspEngineLocation, ' "', target ,'"')
+        system(jaspEngineCall)
+    }
+}
+sapply(modules, f)
