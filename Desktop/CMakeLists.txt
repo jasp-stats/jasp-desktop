@@ -87,6 +87,10 @@ if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
   endif()
 endif()
 
+if(LOCAL_MODULES_BUILD)
+  add_dependencies(JASP ModulesBuild)
+endif()
+
 if(APPLE)
   add_dependencies(JASP readstat)
 endif()

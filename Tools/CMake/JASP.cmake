@@ -73,6 +73,19 @@ set(MSIX_SIGN_CERT_PASSWORD
   CACHE STRING "Password selfsign cert for Nightlies")
 
 
+
+#power Dev stuff 
+option(LOCAL_MODULES_BUILD "Should local modules be bundled while building?" OFF)
+
+set(LOCAL_MODULES_ROOT
+    ""
+    CACHE PATH "Path to your local clones of jasp modules")
+
+set(LOCAL_MODULES_TO_BUILD
+    ""
+    CACHE STRING "Semi-colon (;) separated list of local modules to bundle")
+
+
 # TODO:
 # - [ ] Rename all JASP related variables to `JASP_*`. This way,
 #       Qt Creator can categorize them nicely in its CMake configurator
