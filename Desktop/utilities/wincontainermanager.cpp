@@ -42,7 +42,7 @@ bool AllowNamedObjectAccess(PSID appContainerSid, PWSTR name, SE_OBJECT_TYPE typ
 	} while (false);
 
 	if (newAcl)
-		::LocaslFree(newAcl);
+		::LocalFree(newAcl);
 
 	return status == ERROR_SUCCESS;
 }
