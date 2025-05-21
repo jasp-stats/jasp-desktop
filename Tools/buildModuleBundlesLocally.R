@@ -4,7 +4,7 @@ options(repos='https://cran.r-project.org')
 modules = commandArgs(trailingOnly=TRUE)
 
 if(length(modules) == 0) {
-    stop("Usage: ./buildModuleBundlesLocally.sh /path/to/your/module/source/folder(s)")
+    stop("Usage: ./buildModuleBundlesLocally.R /path/to/your/module/source/folder(s)")
 }
 
 print("Creating user library and bundles build directory")

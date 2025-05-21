@@ -60,8 +60,8 @@ print('modulePaths:')
 print(modulePaths)
 
 print("Building all modules")
-system2(command="./buildModuleBundlesLocally.sh", args=modulePaths)
+system2(command="./buildModuleBundlesLocally.R", args=modulePaths)
 
-print(paste0("Should you ever want to rebuild the modules from source, you can run: './buildModuleBundlesLocally.sh ",workdir,"*' and each module there will be rebuild and placed in '../Modules/local'."))
+print(paste0("Should you ever want to rebuild the modules from source, you can run: './buildModuleBundlesLocally.R ",workdir,"*' and each module there will be rebuild and placed in '../Modules/local'."))
 print("The modules build like this live in your source folder, which means you do not need to rebuild them each time you clean your buildfolder, only when you update R too far or you want to test changes to a module.")
-print(paste0("If you just want to rebuild a single module you could just check out the commit you want and then run something like './buildModuleBundlesLocally.sh ",workdir,"jaspDescriptives'."))
+print(paste0("If you just want to rebuild a single module you could just check out the commit you want and then run something like './buildModuleBundlesLocally.R ",workdir,"jaspDescriptives'."))
