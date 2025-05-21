@@ -105,3 +105,25 @@ After installing all the libraries and the Qt library, open the Qt Creator, and 
 On Linux, you can configure the `jasp-desktop` to use a custom R installation on your system, to do so, you can set the `CUSTOM_R_PATH` variable to the home of your R installation, e.g., `/usr/lib64/R`.
 
 In addition, if you do not wish to pollute your custom library directory, you can construct CMake to install all its libraries into the build folder. You can do this by setting the `LINUX_LOCAL_BUILD` to `ON`. In this case, JASP creates a new directory at `<build-folder>/R/library` and installs everything there.
+
+
+## Module Bundles
+Each module is now delivered through our own R binary package repo. For Windows and MacOS we have some assurances on easily available binary packages from CRAN so we can prepackage these bundles and make them available via our own servers.
+However these are not available for linux, so you will have to roll your own.
+To make this a bit easier we have placed some scripts in `jasp-desktop/Tools`, which can be just to build one or more bundles easily.
+
+### Building All Modules
+Often when building JASP you want to have all modules available to you. The following commands and a good deal of patience will get you there:
+```
+cd jasp-desktop/Tools
+./buildAllDefaultJaspModules.sh
+```
+
+This will create a folder `jasp-desktop/Tools/ModuleBundleBuildDir/Modules/` where it will clone all the modules JASP offers.
+After cloning all of these modules it will build and install them all to `jasp-desktop/Modules/local` making them available for each build of JASP, even if you cleaned the buildfolder completely.
+
+### Building Some Modules
+The previously mentioned script achieves the build of each module by calling `./buildModuleBundlesLocally.sh ModuleBundleBuildDir/Modules/*` in `Tools`.
+If you want to reinstall those modules (possibly after checking out different commits in there) you can of course run that line yourself.
+And suppose you have a module installed anywhere and you would like to simply build and install only that module you can run `./buildModuleBundlesLocally.sh /path/to/your/module`.
+

@@ -103,28 +103,3 @@ The advantage of installing the module with the non-libpaths install is that all
 If you add a checkbox in your .qml file, this checkbox will also appear on the analysis input panel of your module. 
 Similarly, if you change the title of your module in the .json file this will immediately change on the ribbon. 
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 
-It might take a little while to see changes in R though, because JASP needs to rebuild the package and install it internally. So try to be patient with it ;)
-
-## Step 3. Distribute your module
-In case you made a fork of an existing module all you need to do is open a PR to the original repository.
-Once your code is merged it will show up in the next nightly of JASP (or in your `jasp-desktop` folder if you build from source and run `git submodule update --remote`).
-
-### R source package
-If you made a new module then the easiest way to distribute it now (2020-10) is to package it as an R-source-package.
-This can be done the easy way if you developed your module in a GitHub repository or the hard way if not.
-
-#### Easy way through GitHub
-Commit and push your changes and make an annotated tag. Suppose you are releasing v1.0 of your jasp module, the following steps will make sure GitHub generates the module.tar.gz for you and will make it available online immediately:
-```bash
-cd /to/your/module/repository/directory
-git tag -a v1.0 #It will open an editor where you can add some information on your release
-git push -u origin v1.0
-```
-If you now go to your GitHub repository you can select `Releases` within the right hand side panel. There you can download the tar.gz.
-
-##### "Hard" way
-On linux and MacOS this is not so bad: simply open up a terminal and go to the directory containing your module and enter the following: "`tar -czf <ModuleName>.tar.gz <ModuleName>`". 
-
-On Windows this is a bit more complicated but can be done through [7zip](https://www.7-zip.org/), first your select you folder `<ModuleName>` and compress it to a `.tar` file and then you select that file and compress it to a `.gz` or "gzip" file leaving you with `<ModuleName>.tar.gz`. 
-
-This implies that the folder containing your module-files has the same name as your module (aka what is specified in the field `name` in [Description.qml](#Description.qml) or in the `Package` field of [DESCRIPTION](#package-metadata).
