@@ -2175,7 +2175,7 @@ isItReallyAnotherLabel:
 	
 	if(!loadingWorked)
 	{
-		if(loadingAttempt > 10)
+		if(loadingAttempt > 255)
         {
             loadMutex.unlock(); //Were gonna crash but lets at least unlock the mutex
 			throw dbMalformedException();
