@@ -968,10 +968,7 @@ QString AnalysisForm::helpMD() const
 	for(JASPControl * control : orderedControls)
 	{
 		if (control->hasInfoSomewhere())
-		{
-			control->setMDSubItems();
 			markdown << control->generateMDHelp() << "\n";
-		}
 	}
 
 	markdown << metaHelpMD();

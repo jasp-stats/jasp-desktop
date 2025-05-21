@@ -119,7 +119,7 @@ public:
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
-	void				setMDSubItems();
+	std::vector<JASPControl*> getMDSubItems()		const;
 	virtual QString		generateMDHelp(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfoSomewhere()					const;
@@ -180,7 +180,6 @@ public:
 
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
-	const std::vector<JASPControl*>& MDSubItems() const { return _MDSubItems; }
 	bool							hasLabelOrInfo() const;
 
 public slots:
@@ -321,8 +320,6 @@ protected:
 	QVariant				_explicitDepends;
 	QString					_info,
 							_infoLabel;
-	std::vector<JASPControl*>	_MDSubItems;
-
 
 	static QMap<QQmlEngine*, QQmlComponent*>		_mouseAreaComponentMap;
 	static QByteArray								_mouseAreaDef;
