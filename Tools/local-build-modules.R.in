@@ -16,8 +16,8 @@ dir.create(toolLibpath, recursive=TRUE)
 .libPaths(toolLibpath)
 
 
-install.packages("remotes")
-library('remotes')
+if (!require("remotes", quietly=TRUE))
+  install.packages("remotes")
 remotes::install_github("jasp-stats/jaspModuleTools")
 
 f <- function(mod) {
