@@ -184,7 +184,9 @@ public:
 	bool		tableExists(const std::string & name);
 	int			transactionWriteDepth() { return _transactionWriteDepth; }
 	int			transactionReadDepth()	{ return _transactionReadDepth;  }
-	
+
+    void        preloadInterfaceForThread();
+
 private:
 	sqlite3	*	_db();
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility
@@ -204,6 +206,7 @@ private:
 	std::thread::id							_dbCreator;
 	sqlite3*								_dbCreated = nullptr;
 	bool									_inMemory;
+    std::mutex                              _loadMutex;
 
 	static			std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
 	static const	std::string _dbConstructionSql;

@@ -749,8 +749,9 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 			cols.push_back(data->column(curCol));
 		
 		
-		threads.push_back(std::thread([cols, group, &loadBatchOfColumns]()
+        threads.push_back(std::thread([cols, group, &loadBatchOfColumns,this]()
 		{
+			preloadInterfaceForThread();
 			loadBatchOfColumns(cols, group);
 		}));
 		
@@ -2041,22 +2042,15 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 }
 
 sqlite3 * DatabaseInterface::_db()
-{
-	static std::mutex loadMutex;
-	
+{	
 	const auto id = std::this_thread::get_id();
 
 	if(_dbCreated && _dbCreator == id)
 		return _dbCreated;
 	
 	if(!_dbs.count(id))
-	{
-		loadMutex.lock();
-		if(!_dbs.count(id))
-			load();
-		loadMutex.unlock();
-	}
-	
+		load();
+
 	return _dbs.at(id);
 }
 
@@ -2127,66 +2121,76 @@ void DatabaseInterface::doWalCheckPoint()
 	}*/
 }
 
+void DatabaseInterface::preloadInterfaceForThread()
+{
+    //Load the interface by asking for it
+    _db();
+}
+
 void DatabaseInterface::load()
 {
     JASPTIMER_SCOPE(DatabaseInterface::load);
 	assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
+
+    _loadMutex.lock();
+    if(_dbs.count(std::this_thread::get_id()))
+    {
+        _loadMutex.unlock();
+        return;
+    }
+
 	
 	if(!std::filesystem::exists(dbFile()))
 		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
-
-    static std::mutex loadMutex;
-
-    loadMutex.lock();
 
     bool        loadingWorked	= false;
     size_t      loadingAttempt	= 0;
     sqlite3 *   db              = nullptr;
 
-isItReallyAnotherLabel:
+    for(bool loadingWorked = false; !loadingWorked; )
+    {
+        int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE, NULL);
 
-    int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE, NULL);
-
-	if(ret != SQLITE_OK)
-	{
-		Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
-		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
-	}
-	else
-		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'. This is for thread " << std::this_thread::get_id() << std::endl;
-
-	_dbs[std::this_thread::get_id()] = db;
-	
-	try
-	{
-		int tableCount = runStatementsId("SELECT COUNT(*) FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
-		if(tableCount < 0)
-			throw dbMalformedException();
-
-        Log::log() << "Loaded a database with #" << tableCount << " tables." << std::endl;
-		loadingWorked = true;
-	}
-	catch(dbMalformedException & e)
-	{
-		//Unfortunate, but perhaps we were too quick?	
-		loadingWorked = false;
-		loadingAttempt++;
-	}
-	
-	if(!loadingWorked)
-	{
-		if(loadingAttempt > 255)
+        if(ret != SQLITE_OK)
         {
-            loadMutex.unlock(); //Were gonna crash but lets at least unlock the mutex
-			throw dbMalformedException();
+            Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+            throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
+        }
+        else
+            Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'. This is for thread " << std::this_thread::get_id() << std::endl;
+
+        _dbs[std::this_thread::get_id()] = db;
+
+        try
+        {
+            int tableCount = runStatementsId("SELECT COUNT(*) FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
+            if(tableCount < 0)
+                throw dbMalformedException();
+
+            Log::log() << "Loaded a database with #" << tableCount << " tables." << std::endl;
+            loadingWorked = true;
+        }
+        catch(dbMalformedException & e)
+        {
+            //Unfortunate, but perhaps we were too quick?
+            loadingWorked = false;
+            loadingAttempt++;
         }
 
-        Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
-        std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
-		goto isItReallyAnotherLabel;
-	}
+        if(!loadingWorked)
+        {
+            if(loadingAttempt > 255)
+            {
+                _loadMutex.unlock();
+                throw dbMalformedException();
+            }
 
-    loadMutex.unlock();
+            Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
+            std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
+        }
+    }
+
+    _loadMutex.unlock();
 }
 
 void DatabaseInterface::close()

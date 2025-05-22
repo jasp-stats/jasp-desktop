@@ -36,6 +36,8 @@ public:
 				prevRowSent = curRow;
 			}
 		};
+
+        _column->db().preloadInterfaceForThread();
 		
 		_column->initFromLookups(
 					_importColumn->name(),
