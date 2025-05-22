@@ -39,6 +39,7 @@ remoteBundleURLS <- unlist(sapply(remoteBundles, function(x){x$url}))
 
 toInstallRemote <- c()
 toInstallLocal <- c()
+installed <- c()
 
 if(length(remoteBundleURLS) > 0) {
     remoteBundleDownloaded <- c()
@@ -101,9 +102,9 @@ if(length(remoteBundleURLS) > 0) {
             bundlePath <- file.path(BUNDLE_DOWNLOAD_DIR, basename(remote))
             cat("Installing: ", bundlePath, "\n")
             jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
-            TRUE
         }
         res <- sapply(toInstallRemote, installRemote)
+        installed <- c(installed, res)
         write(toInstallRemoteTotal, "@MODULES_BINARY_PATH@/remote-bundles-installed.txt", ncolumns=1)
     }
 }
@@ -130,20 +131,24 @@ if(length(localBundles) > 0) {
         installLocal <- function(bundle) {
             cat("Installing: ", bundle, "\n")
             jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundle)
-            TRUE
         }
         res <- sapply(toInstallLocal, installLocal)
+        installed <- c(installed, res)
         mtimes = sapply(file.mtime(localBundles), toString)
         write(c(rbind(localBundles, mtimes)), "@MODULES_BINARY_PATH@/local-bundles-installed.txt", sep='\t', ncolumns=2)
     }
 }
 
 #fix otool stuff and sign
-if(length(toInstallRemote) > 0 || length(toInstallLocal) > 0) {
-    if (Sys.info()[['sysname']] == 'Darwin') {  
-        print("Patching and Signing all Module binaries")
-        jaspEngineLocation <- file.path("@CMAKE_BINARY_DIR@", "Desktop" , "JASPEngine")
-        jaspEngineCall     <- paste0(jaspEngineLocation, ' "', "@MODULES_BINARY_PATH@/binary_pkgs" ,'"')
-        system(jaspEngineCall)
+if (Sys.info()[['sysname']] == 'Darwin') {  
+    libs <- unique(installed)
+    if(length(installed) > 0) {
+        patch <- function(lib) {
+            cat("Patching and Signing Module library: ", lib, "\n")
+            jaspEngineLocation <- file.path("@CMAKE_BINARY_DIR@", "Desktop" , "JASPEngine")
+            jaspEngineCall     <- paste0(jaspEngineLocation, ' "', lib ,'"')
+            system(jaspEngineCall)
+        }
+        sapply(libs, patch)
     }
 }
