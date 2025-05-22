@@ -46,6 +46,9 @@
       <uap:SplashScreen Image="Assets\SplashScreen.png" />
     </uap:VisualElements>
 
+    <windowsSettings xmlns:ws2="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
+        <ws2:longPathAware>true</ws2:longPathAware>
+    </windowsSettings>
 
     <Extensions>
       <uap:Extension Category="windows.fileTypeAssociation">
