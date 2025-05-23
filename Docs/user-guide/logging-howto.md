@@ -52,10 +52,10 @@ After that it depends on where JASP is installed but, unless you installed to a 
 Let's assume it is the first, then in the opened command prompt enter:
 ```bat
 cd "C:\Program Files\JASP"
-JASP --logToFile 1> "%USERPROFILE%\AppData\Roaming\JASP\JASP\Logs\startup.log" 2>&1
+JASPDesktop --logToFile 1> "%USERPROFILE%\AppData\Roaming\JASP\JASP\Logs\startup.log" 2>&1
 ```
 
-In fact, just entering `JASP --logToFile` instead of the last command would be enough to enable logging, but sometimes when JASP won't start properly it does not even reach a stage where it can start logging to file. So we humbly request Windows to save those few lines of output somewhere by adding ` 1> ...\startup.log 2>&1` and it should make sure you can find that file (`startup.log`) in the logsfolder. When you are collecting the logfiles as described under [finding the logfiles](#finding-the-logfiles) you shouldn't forget to add that of course.
+In fact, just entering `JASPDesktop --logToFile` instead of the last command would be enough to enable logging, but sometimes when JASP won't start properly it does not even reach a stage where it can start logging to file. So we humbly request Windows to save those few lines of output somewhere by adding ` 1> ...\startup.log 2>&1` and it should make sure you can find that file (`startup.log`) in the logsfolder. When you are collecting the logfiles as described under [finding the logfiles](#finding-the-logfiles) you shouldn't forget to add that of course.
 
 Presumably you still do not see a JASP window opening now, so you'll have to [navigate manually to the logfiles](#logs-location).
 
