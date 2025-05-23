@@ -32,7 +32,7 @@
 
 <Applications>
   <Application Id="JASP" 
-    Executable="JASP.exe"
+    Executable="JASPDesktop.exe"
     uap10:RuntimeBehavior="packagedClassicApp"
     uap10:TrustLevel="mediumIL">
 

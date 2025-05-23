@@ -62,6 +62,7 @@ if(IWYU_EXECUTABLE AND RUN_IWYU)
                                         ${IWYU_EXECUTABLE})
 endif()
 
+
 add_custom_command(
   TARGET JASP
   POST_BUILD
@@ -78,6 +79,8 @@ if(WINDOWS)
   message(STATUS "We will build the windows app container permission checker")
   add_executable(ContainerFilePermissionChecker "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
   add_dependencies(JASP ContainerFilePermissionChecker)
+
+  set_target_properties(JASP PROPERTIES OUTPUT_NAME "JASPDesktop") # https://github.com/jasp-stats/jasp-issues/issues/1030
 endif()
 
 if(INSTALL_R_MODULES AND NOT FLATPAK_USED)

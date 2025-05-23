@@ -2,7 +2,7 @@
     "applications": [
         {
             "id": "JASP",
-            "executable": "JASP.exe"
+            "executable": "JASPDesktop.exe"
         }
     ],
     "processes": [
