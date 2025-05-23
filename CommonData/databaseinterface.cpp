@@ -1716,6 +1716,11 @@ DatabaseInterface *DatabaseInterface::singleton()
 	return _singleton; 
 }
 
+void DatabaseInterface::closeInterfaces()
+{
+	delete _singleton;
+}
+
 void DatabaseInterface::runQuery(const std::string & query, std::function<void(sqlite3_stmt *stmt)> bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> processRow)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runQuery);
