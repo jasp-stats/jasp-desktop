@@ -229,13 +229,13 @@ if(APPLE)
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
   find_package(Brotli 1.0.9 REQUIRED)
-  find_package(freexl 2.0.0 REQUIRED)
+  find_package(freexl 2.0.99 REQUIRED)
 
 endif()
 
 if(WIN32)
 
-  find_package(freexl 2.0.0 REQUIRED)
+  find_package(freexl 2.0.99 REQUIRED)
 
   # ReadStat
 

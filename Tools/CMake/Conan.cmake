@@ -39,11 +39,11 @@ if(USE_CONAN)
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
       
     message(STATUS "Cloning private freexl dependency")
-    set(FREEXL_VERSION "2.1.0-dev")
+    set(FREEXL_VERSION "2.0.99.cci.20250526")
     FetchContent_Declare(
       freexl
       GIT_REPOSITORY   https://github.com/jasp-stats/conan-recipes.git
-      GIT_TAG          f014849188bddd01b9ca3ddf63dde8d2e3a45314
+      GIT_TAG          49bb11614f8a7a2d6cbd4f59941d06fb69c2ccff
     )
     FetchContent_MakeAvailable(freexl)
 
