@@ -23,9 +23,9 @@ if(USE_CONAN)
 
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
   set(CONAN_COMPILER_RUNTIME "dynamic")
-  set(CONAN_RESULT_FILE "conanbuild.bat") #for windows
 
   if(WIN32)
+    set(CONAN_RESULT_FILE "conanbuild.bat") #for windows
 
     message(STATUS "  ${CONAN_COMPILER_RUNTIME}")
     
