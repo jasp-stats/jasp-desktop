@@ -28,15 +28,53 @@ if(USE_CONAN)
   if(WIN32)
 
     message(STATUS "  ${CONAN_COMPILER_RUNTIME}")
-
+    
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
-      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/conan_build
+      conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/_conan_build
       -s build_type=${CMAKE_BUILD_TYPE}
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
+      
+    message(STATUS "Cloning private freexl dependency")
+    set(FREEXL_VERSION "2.1.0-dev")
+    FetchContent_Declare(
+      freexl
+      GIT_REPOSITORY   https://github.com/jasp-stats/conan-recipes.git
+      GIT_TAG          f014849188bddd01b9ca3ddf63dde8d2e3a45314
+    )
+    FetchContent_MakeAvailable(freexl)
+
+    if(NOT freexl_FOUND)
+        if(freexl_POPULATED)
+
+            message(STATUS "Compiling freexl dependency")
+            execute_process(
+                COMMAND_ECHO STDOUT
+                WORKING_DIRECTORY ${freexl_SOURCE_DIR}/freexl
+                COMMAND
+                conan create . --version=${FREEXL_VERSION}
+                -s build_type=${CMAKE_BUILD_TYPE}
+                -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
+                -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
+                --test-missing
+            )
+        else()
+          message(CHECK_FAIL "build freexl failed")
+        endif()
+    endif()
+
+    # find conan_toolchain.cmake generated in local
+    file(GLOB_RECURSE CONAN_TOOLCHAIN_PATH ${freexl_SOURCE_DIR}/freexl/test_package/build/*/generators/conan_toolchain.cmake)
+    list(GET CONAN_TOOLCHAIN_PATH 0 CONAN_TOOLCHAIN_PATH)
+    if (EXISTS ${CONAN_TOOLCHAIN_PATH})
+        get_filename_component(CONAN_TOOLCHAIN_PATH_DIR ${CONAN_TOOLCHAIN_PATH} DIRECTORY)
+        message(STATUS "freexl conan toolchain directory: ${CONAN_TOOLCHAIN_PATH_DIR}")
+    else ()
+        message(FATAL_ERROR "freexl conan toolchain not found!")
+    endif ()
 
   elseif(APPLE)
 
@@ -61,7 +99,7 @@ if(USE_CONAN)
 
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conan_build/${CONAN_RESULT_FILE})
+  if(EXISTS ${CMAKE_BINARY_DIR}/_conan_build/${CONAN_RESULT_FILE})
     message(CHECK_PASS "successful")
   else()
     message(CHECK_FAIL "unsuccessful")
@@ -71,7 +109,8 @@ if(USE_CONAN)
     )
   endif()
 
-  include(${CMAKE_BINARY_DIR}/conan_build/conan_toolchain.cmake)
+  include(${CMAKE_BINARY_DIR}/_conan_build/conan_toolchain.cmake)
+  include(${CONAN_TOOLCHAIN_PATH})
 
 endif()
 
