@@ -13,7 +13,7 @@ class JaspConanConfig(ConanFile):
     default_options = {"brotli*:shared": True, "sqlite3*:max_column": 32767}
 
     def requirements(self):
-        self.requires("libiconv/[>=1.18]", override=True, force=True)
+        self.requires("libiconv/1.18", force=True)
         self.requires("boost/[>=1.82.0 <2.0.0]")
         self.requires("zlib/1.3.1")
         self.requires("libarchive/3.7.9")

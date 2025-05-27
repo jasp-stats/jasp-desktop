@@ -31,7 +31,7 @@ if(USE_CONAN)
   FetchContent_Declare(
     freexl
     GIT_REPOSITORY   https://github.com/jasp-stats/conan-recipes.git
-    GIT_TAG          a6b1679a0b291ac40dadaedda3c83fbd0edc984f
+    GIT_TAG          e02cefc5a37684749a20d31500fc54468383e30a
   )
   FetchContent_MakeAvailable(freexl)
 
@@ -77,12 +77,12 @@ if(USE_CONAN)
     execute_process(
         COMMAND_ECHO STDOUT
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMAND zsh -l -c "conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing -of ${CMAKE_BINARY_DIR}/_conan_build")
+        COMMAND zsh -c -l "export CC=\"\"; export CCX=\"\"; conan install ${CONAN_FILE_PATH} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing -of ${CMAKE_BINARY_DIR}/_conan_build")
     
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      COMMAND zsh -l -c "conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing")        
+      COMMAND zsh -c -l "export CC=\"\"; export CCX=\"\"; conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing")        
   endif()
 
   # find conan_toolchain.cmake generated in local
