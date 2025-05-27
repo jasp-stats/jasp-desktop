@@ -1932,8 +1932,27 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 void Column::upgradeSetDoubleLabelsInInts()
 {
 	_ints = intvec(_dbls.size(), Label::NO_LABEL);
+}
+
+void Column::upgradeDoublesToLabels()
+{
+	doubleset dbls(_dbls.begin(), _dbls.end());
 	
-	dbUpdateValues();
+	std::map<double, int> dblToIntsId;
+	
+	beginBatchedLabelsDB();
+	
+	for(double dbl : dbls)
+		if(!dblToIntsId.count(dbl))
+		{
+			std::string		dblStr	= Column::doubleToDisplayString(dbl);
+			Label		*	label	= labelByValue(dblStr);
+			dblToIntsId		[dbl]	= label ? label->intsId() : labelsAdd(dblStr);
+		}
+	
+	for(size_t row=0; row<_dbls.size(); row++)
+		if(_ints[row] == Label::NO_LABEL && dblToIntsId.count(_dbls[row]))
+			_ints[row] = dblToIntsId[_dbls[row]];
 }
 
 void Column::upgradeExtractDoublesIntsFromLabels()
@@ -1946,8 +1965,6 @@ void Column::upgradeExtractDoublesIntsFromLabels()
 		
 		_dbls [r] = ! label || !label->originalValue().isDouble() ? EmptyValues::missingValueDouble : label->originalValue().asDouble();
 	}
-	
-	dbUpdateValues();
 }
 
 void Column::checkForLoopInDependencies(std::string code)

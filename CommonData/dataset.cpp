@@ -284,7 +284,7 @@ void DataSet::dbUpdate()
 	incRevision();
 }
 
-void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, bool do019Fix)
+void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Version doUpgradeFrom)
 {
 	//Log::log() << "loadDataSet(index=" << index << "), _dataSetID="<< _dataSetID <<";" << std::endl;
 
@@ -341,8 +341,22 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, boo
 	Json::Value emptyValsJson;
 	Json::Reader().parse(emptyVals, emptyValsJson);
 	
+	bool	do019Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.19",
+			do095Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.95";
+	
+	if(do095Fix)
+		beginBatchedToDB();
+	
 	if(do019Fix)	upgradeTo019(emptyValsJson);
 	else			_emptyValues->fromJson(emptyValsJson);
+	
+	if(do095Fix)
+	{
+		upgrade019To095();
+		endBatchedToDB();
+	}
+	
+	
 }
 
 void DataSet::upgradeTo019(const Json::Value & emptyVals)
@@ -409,6 +423,15 @@ void DataSet::upgradeTo019(const Json::Value & emptyVals)
 	
 	_emptyValues->setEmptyValues(workspaceEmpty);
 	incRevision();
+}
+
+void DataSet::upgrade019To095()
+{
+	// 0.19.* versions attempted to speedup scalar columns by not making labels for double-only columns. This in the end required so many caches that it slowed it down and made it complicated.
+	// Now we just make labels for everything, however, they are missing for 0.19.* files. 
+	
+	for(Column * col : _columns)
+		col->upgradeDoublesToLabels();
 }
 
 int DataSet::columnCount() const

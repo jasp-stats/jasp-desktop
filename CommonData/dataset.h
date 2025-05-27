@@ -5,6 +5,7 @@
 #include "column.h"
 #include "filter.h"
 #include "emptyvalues.h"
+#include "version.h"
 
 class DataSet : public DataSetBaseNode
 {
@@ -37,7 +38,7 @@ public:
 
 			void			dbCreate();
 			void			dbUpdate();
-			void			dbLoad(int index = -1, std::function<void(float)> progressCallback = [](float){}, bool do019Fix = false);
+			void			dbLoad(int index = -1, std::function<void(float)> progressCallback = [](float){}, Version doUpgradeFrom = Version());
 			void			dbDelete();
 
 			void			beginBatchedToDB();
@@ -90,6 +91,7 @@ public:
 			
 private:			
 			void					upgradeTo019(const Json::Value & emptyVals);
+			void					upgrade019To095();
 			void					setEmptyValuesJsonOldStuff(	const Json::Value & emptyValues);
 			
 			

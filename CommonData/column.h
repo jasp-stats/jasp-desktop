@@ -116,6 +116,7 @@ public:
 			
 			void					upgradeSetDoubleLabelsInInts();			///< Used by upgrade 0.18.* -> 0.19
 			void					upgradeExtractDoublesIntsFromLabels();	///< Used by upgrade 0.18.* -> 0.19
+			void					upgradeDoublesToLabels();				///< 0.19.* -> 0.95
 
 			void					labelsClear(bool doIncRevision=true);
 			int						labelsAdd(			int display);
