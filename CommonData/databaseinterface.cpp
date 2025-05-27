@@ -2070,7 +2070,7 @@ void DatabaseInterface::create()
 		std::filesystem::remove(dbFile());
 	}
 	
-    int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE, NULL);
+    int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, NULL);
 
 	if(ret != SQLITE_OK)
 	{
@@ -2154,7 +2154,7 @@ void DatabaseInterface::load()
 
     for(bool loadingWorked = false; !loadingWorked; )
     {
-        int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_PRIVATECACHE, NULL);
+        int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, NULL);
 
         if(ret != SQLITE_OK)
         {
@@ -2184,7 +2184,7 @@ void DatabaseInterface::load()
 
         if(!loadingWorked)
         {
-            if(loadingAttempt > 255)
+            if(loadingAttempt > 100 * 60) //Timeout is 0.01 sec, so this lets the db try for 1 minute to connect...
             {
                 _loadMutex.unlock();
                 throw dbMalformedException();
