@@ -39,6 +39,7 @@ public:
 	static QString analysisDefaultsDir();
 	static QString userRLibrary();
 	static QString userModulesDir();
+	static QString userModulesLibDir();
 	static QString bundledModulesDir();
 	static QString bundledModulesLibDir();
 	static QString documents();

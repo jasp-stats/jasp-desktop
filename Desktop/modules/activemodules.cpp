@@ -5,6 +5,7 @@
 #include <QDir>
 #include <json/json.h>
 #include <fstream>
+#include "gui/preferencesmodel.h"
 
 
 const std::string ActiveModules::settingsPath = "modules-settings.json";
@@ -33,8 +34,13 @@ std::vector<std::string> ActiveModules::getModules(bool extra) {
 
 
 	//collect all available modules
-	QStringList availableModules = getModulesFromDir(AppDirs::bundledModulesLibDir().toStdString());
-	//add dynamic installs
+    QStringList availableModules = getModulesFromDir(AppDirs::bundledModulesLibDir().toStdString());
+    QStringList installedModules = getModulesFromDir(AppDirs::userModulesLibDir().toStdString());
+    availableModules.append(installedModules);
+    availableModules.removeDuplicates();
+
+    if(!PreferencesModel::prefs()->developerMode())
+        availableModules.removeAll("jaspTestModule");
 
 	//separate into groups ordered by listing in settings
 	//ugly nˆ2 ish but n < 100 so fine

@@ -74,6 +74,11 @@ QString AppDirs::userModulesDir()
 	return path;
 }
 
+QString AppDirs::userModulesLibDir()
+{
+    return AppDirs::userModulesDir() + "/module_libs/";
+}
+
 QString AppDirs::bundledModulesDir()
 {
 	static QString folder;
