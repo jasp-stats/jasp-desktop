@@ -74,6 +74,9 @@ if(USE_CONAN)
 
     set(CONAN_RESULT_FILE "conanbuild.sh")
     
+    # We set CC and CCX to nothing because that was the only difference between running conan in a terminal (where it worked) and in qt creator (where it did not)
+    # They were set to bona fide looking xtools stuff but apparently this was too much for conan.
+    
     execute_process(
         COMMAND_ECHO STDOUT
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -82,7 +85,7 @@ if(USE_CONAN)
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      COMMAND zsh -c -l "export CC=\"\"; export CCX=\"\"; conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing")        
+      COMMAND zsh -c -l "export CC=\"\"; export CCX=\"\"; conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing --test-missing")        
   endif()
 
   # find conan_toolchain.cmake generated in local
