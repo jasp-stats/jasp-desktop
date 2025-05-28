@@ -1471,9 +1471,8 @@ void DatabaseInterface::labelsLoad(Column * column)
 		column->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id);
 	};
 
-	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ?;", prepare, processRow);
+	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
 
-	column->_sortLabelsByOrder();
 	column->labelsRemoveBeyond(labelsSize);
 	 
 	column->endBatchedLabelsDB(false);
@@ -1505,7 +1504,7 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 		labelsPerCol[column->id()] = 0;
 	}
 	
-	statement << ");";
+	statement << ") ORDER BY columnId, ordering;";
 	
 
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -1549,7 +1548,6 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 
 	for(Column * column : columns)
 	{
-		column->_sortLabelsByOrder();
 		column->labelsRemoveBeyond(labelsPerCol[column->id()]);
 		column->endBatchedLabelsDB(false);
 	}
