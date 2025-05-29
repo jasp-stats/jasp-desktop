@@ -1,10 +1,16 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-05-30 01:02+0000\n"
+"Last-Translator: Tomasz Misiuro <tomaszmisiuro@gmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"pl/>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
+"X-Generator: Weblate 5.12-dev\n"
 "X-Language: pl\n"
 "X-Qt-Contexts: true\n"
 
@@ -5319,15 +5325,15 @@ msgstr "Rozmiar strony"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Filtr został wyczyszczony\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Filtr został zastosowany\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "Proszę podać wszystkie wartości - patrz pola zaznaczone na czerwono.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
@@ -5337,29 +5343,29 @@ msgstr ""
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "Witamy w kreatorze filtrów!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Kliknij na ikonkę, aby zmienić typ kolumny"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Pole nazwy kolumny jest puste"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "Kolumna '%1' już istnienie."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "Filtr zgłasza błąd '%1'"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Automatycznie porządkuj etykiet według ich wartości"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5407,7 +5413,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Tryb programisty"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
@@ -5429,7 +5435,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Nazwa modułu:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
@@ -5457,11 +5463,11 @@ msgstr ""
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "Kliknij dwukrotnie, aby edytować tę nazwę"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "Wybierz język"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
@@ -5481,7 +5487,7 @@ msgstr ""
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "Opis kolumny: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
@@ -5489,7 +5495,7 @@ msgstr ""
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "Opis kolumny: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5500,7 +5506,7 @@ msgstr ""
 
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "Usuń tę notatkę"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5517,14 +5523,13 @@ msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr ""
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "Usuń"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "Dodaj nowy poziom:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
@@ -5556,11 +5561,11 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Bez filtra"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Użyj filtra"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5600,15 +5605,15 @@ msgstr ""
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "Wybierz plik..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "Wybierz folder..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a R-library..."
-msgstr ""
+msgstr "Wybierz bibliotekę R..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
@@ -5663,87 +5668,87 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Średnia wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Suma wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Odchylenie standardowe wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Wariancja wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Mediana wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Minimum wierszami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Maksimum wierszami"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr ""
+msgstr "Użyj pliku konfiguracyjnego."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr ""
+msgstr "Użyj zdalnego pliku konfiguracyjnego."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
-msgstr ""
+msgstr "Użyj zdalnego pliku konfiguracyjnego z wykorzystaniem URL"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr ""
+msgstr "URL pliku konfiguracyjnego: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr ""
+msgstr "Wybierz plik konfiguracyjny"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
+msgstr "Wybierz plik konfiguracyjny."
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Średnia wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Suma wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Odchylenie standardowe wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Wariancja wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Mediana wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Minimum wierszami"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Maksimum wierszami"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "Czy okno JASP ma się uruchamiać w postaci zmaksymalizowanej?"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -5757,15 +5762,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "Biblioteka projektu:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "Ustawienia pliku konfiguracyjnego"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "Uruchom zmaksymalizowane"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5780,7 +5785,7 @@ msgstr ""
 
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
-msgstr ""
+msgstr "Zainstaluj w całości"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Completed installation of Bundles: "
@@ -5798,9 +5803,8 @@ msgstr ""
 
 msgctxt "QObject|"
 msgid "Continue"
-msgstr ""
+msgstr "Kontynuuj"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Exit"
 msgstr "Wyjście"
