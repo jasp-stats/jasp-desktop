@@ -32,7 +32,7 @@ public:
 	static const Version dataArchiveVersion;
 
 	JASPExporter();
-	void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) override;
+    void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) override;
 
 private:
     static void saveManifest(       archive * a);

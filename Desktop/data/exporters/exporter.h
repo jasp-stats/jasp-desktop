@@ -28,6 +28,7 @@
 #include "timers.h"
 #include "common.h"
 #include "utils.h"
+#include "data/fileevent.h"
 
 ///
 /// Base class for all exporters
@@ -42,7 +43,7 @@ protected:
 
 public:
 	virtual ~Exporter();
-	virtual void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) = 0;
+    virtual void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) = 0;
 
 	Utils::FileType			getDefaultFileType();
 	Utils::FileTypeVector	getAllowedFileTypes();

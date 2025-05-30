@@ -24,6 +24,7 @@
 #include <archive_entry.h>
 #include <json/json.h>
 #include <fstream>
+#include "data/jaspencryptiondata.h"
 #include "version.h"
 #include "tempfiles.h"
 #include "log.h"
@@ -51,6 +52,10 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
+    if(JaspEncryptionData::getInstance()->encryptionActive()) {
+        archive_write_set_options(a, "encryption=aes256");
+        archive_write_set_passphrase(a, JaspEncryptionData::getInstance()->getPasswordPtr());
+    }
 
 #ifdef _WIN32
 	if (archive_write_open_filename_w(a, tq(path).toStdWString().c_str()) != ARCHIVE_OK)
