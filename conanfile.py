@@ -14,7 +14,7 @@ class JaspConanConfig(ConanFile):
 
     def requirements(self):
         self.requires("libiconv/1.18", force=True)
-        self.requires("boost/[>=1.82.0 <2.0.0]")
+        self.requires("boost/1.86.0")
         self.requires("zlib/1.3.1")
         self.requires("libarchive/3.7.9")
         self.requires("zstd/1.5.7")
