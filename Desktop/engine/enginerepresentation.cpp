@@ -143,7 +143,8 @@ void EngineRepresentation::handleEngineCrash()
 		return; //It will be resumed by EngineSync::restartKilledEngines()
 
 	default: //If not one of the above then let the engine crash and burn (https://www.youtube.com/watch?v=UtUpXPiSJEg)
-		emit  engineTerminated();
+		Log::log() << "emit  engineTerminated();" << std::endl;
+		emit engineTerminated();
 		return;
 	}
 
