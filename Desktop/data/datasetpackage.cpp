@@ -197,6 +197,9 @@ void DataSetPackage::onDataModeChanged(bool dataMode)
 	beginResetModel();
 	endResetModel();
 	
+	if(false)
+		enginesReceiveNewData();
+	
 	/*if(dataSet())
 	{
 		if(_dataMode)	dataSet()->beginBatchedToDB();

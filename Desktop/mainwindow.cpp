@@ -1378,8 +1378,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 			if(!_applicationExiting)
 				_engineSync->cleanRestart();
-
-			if (_applicationExiting)	
+			else
 				emit exitSignal();
 		}
 		else
@@ -1572,6 +1571,9 @@ void MainWindow::fatalError()
 	if (exiting == false)
 	{
 		exiting = true;
+		
+		_engineSync->killProcessTimer();
+		
 		MessageForwarder::DialogResponse response = MessageForwarder::showYesNoCancel(
 					tr("Error"), 
 					tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +

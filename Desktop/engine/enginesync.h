@@ -39,6 +39,7 @@ public:
 	~EngineSync();
 
 	void start(int ppi);
+	void killProcessTimer();
 	bool allEnginesInitializing(std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
 
 	static EngineSync * singleton() { return _singleton; }
@@ -164,7 +165,9 @@ private:
 
 private:
 	static EngineSync				*	_singleton;
-	QTimer							*	_filterRunningResetTimer		= nullptr;
+	QTimer							*	_filterRunningResetTimer		= nullptr,
+									*	_timerProcess					= nullptr,
+									*	_timerBeat						= nullptr;
 	RFilterStore					*	_waitingFilter					= nullptr;
 	bool								_stopProcessing					= false,
 										_dataMode						= false,

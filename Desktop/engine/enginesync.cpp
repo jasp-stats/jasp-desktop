@@ -309,14 +309,19 @@ void EngineSync::start(int )
 	//Once it is assigned to a module it won't be possible to use it for another module until it is restarted.
 	createNewEngine();
 
-	QTimer	*timerProcess	= new QTimer(this),
-			*timerBeat		= new QTimer(this);
+	_timerProcess	= new QTimer(this);
+	_timerBeat		= new QTimer(this);
 
-	connect(timerProcess,	&QTimer::timeout, this, &EngineSync::process,				Qt::QueuedConnection);
-	connect(timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles,	Qt::QueuedConnection);
+	connect(_timerProcess,	&QTimer::timeout, this, &EngineSync::process,				Qt::QueuedConnection);
+	connect(_timerBeat,		&QTimer::timeout, this, &EngineSync::heartbeatTempFiles,	Qt::QueuedConnection);
 
-	timerProcess->start(50);
-	timerBeat->start(50);
+	_timerProcess->start(100);
+	_timerBeat->start(50);
+}
+
+void EngineSync::killProcessTimer()
+{
+	_timerProcess->stop();
 }
 
 void EngineSync::restartEngines()
