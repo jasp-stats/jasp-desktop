@@ -212,8 +212,8 @@ private:
 
 	static			std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
 	static const	std::string _dbConstructionSql;
-
-
+	static const	std::string _dbIndexesSql;
+	
 	static DatabaseInterface * _singleton;
 
 	friend class DataSetPackage;

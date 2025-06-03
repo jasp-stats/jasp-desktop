@@ -63,3 +63,5 @@ CREATE TABLE Labels
 	
 	FOREIGN KEY(columnId) REFERENCES Columns(id)
 );
+
+

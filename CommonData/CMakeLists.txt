@@ -8,7 +8,8 @@
 #
 list(APPEND CMAKE_MESSAGE_CONTEXT CommonData)
 
-make_includable(internalDbDefinition.sql internalDbDefinition.h)
+make_includable(internalDbDefinition.sql  internalDbDefinition.h)
+make_includable(createIndexes.sql		  createIndexes.h)
 
 make_includable(../Engine/jaspBase/R/distributionSamplers.R				jaspBase_distributionSamplers.h)
 make_includable(../Engine/jaspBase/R/friendlyConstructorFunctions.R		jaspBase_friendlyConstructorFunctions.h)

@@ -19,6 +19,10 @@ const std::string DatabaseInterface::_dbConstructionSql =
 #include "internalDbDefinition.h"
 ;
 
+const std::string DatabaseInterface::_dbIndexesSql =
+#include "createIndexes.h"
+;
+
 void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 {
 	transactionWriteBegin();
