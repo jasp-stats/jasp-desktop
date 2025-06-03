@@ -1,1 +1,5 @@
 internalDbDefinition.h
+createIndexes.h
+jaspBase_distributionSamplers.h
+jaspBase_friendlyConstructorFunctions.h
+jaspBase_transformFunctions.h

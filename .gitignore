@@ -83,9 +83,6 @@ Modules/renv-root/
 Desktop/utilities/simplecryptkey.h
 Common/appinfo.cpp
 QMLComponents/utilities/appdirs.h
-CommonData/jaspBase_distributionSamplers.h
-CommonData/jaspBase_friendlyConstructorFunctions.h
-CommonData/jaspBase_transformFunctions.h
 
 # Bundle related
 Tools/ModuleBundleBuildDir

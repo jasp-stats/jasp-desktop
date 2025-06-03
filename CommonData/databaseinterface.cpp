@@ -72,6 +72,9 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 		
 		if(!tableHasColumn("Labels", "userAdded"))
 			runStatements("ALTER TABLE Labels  ADD COLUMN userAdded	INT DEFAULT 0;");
+		
+		//Create indexes cause they dont exist yet
+		runStatements(_dbIndexesSql);
 	}
 
 	transactionWriteEnd();
@@ -2093,6 +2096,7 @@ isItReallyALabel:
 	{
 		transactionWriteBegin();
 		runStatements(_dbConstructionSql);
+		runStatements(_dbIndexesSql);
 		transactionWriteEnd();
 		
 		constructionWorked = true;
