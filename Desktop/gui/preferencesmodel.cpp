@@ -248,6 +248,17 @@ QString PreferencesModel::languageCode() const
 	return LanguageModel::lang()->currentLanguageCode();
 }
 
+bool PreferencesModel::useThousandSeparators() const
+{
+	return LanguageModel::lang()->useThousandSeps();
+}
+
+
+const QLocale & PreferencesModel::localeQt() const
+{
+	return LanguageModel::lang()->currentLocale();
+}
+
 QString PreferencesModel::githubPatResolved() const
 {
 	if(githubPatUseDefault())

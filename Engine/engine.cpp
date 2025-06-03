@@ -23,6 +23,7 @@
 #include "tempfiles.h"
 #include "columnutils.h"
 #include "processinfo.h"
+#include "utilities/qutils.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
 
@@ -1008,11 +1009,13 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	_developerMode		= jsonRequest.get("developerMode",		_developerMode		).asBool();
 	_imageBackground	= jsonRequest.get("imageBackground",	_imageBackground	).asString();
 	_langR				= jsonRequest.get("languageCode",		_langR				).asString();
+	_qLocaleName		= jsonRequest.get("localeQt",			_qLocaleName		).asString();
+	_useThousandSeps	= jsonRequest.get("use1000Seps",		_useThousandSeps	).asBool();
 	_numDecimals		= jsonRequest.get("numDecimals",		_numDecimals		).asInt();
 	_fixedDecimals		= jsonRequest.get("fixedDecimals",		_fixedDecimals		).asBool();
 	_exactPValues		= jsonRequest.get("exactPValues",		_exactPValues		).asBool();
 	_normalizedNotation	= jsonRequest.get("normalizedNotation",	_normalizedNotation	).asBool();
-	_resultFont			= jsonRequest.get("resultFont",			_resultFont		).asString();
+	_resultFont			= jsonRequest.get("resultFont",			_resultFont			).asString();
 
 	const char	* PAT	= std::getenv("GITHUB_PAT");
 	
@@ -1024,6 +1027,8 @@ void Engine::absorbSettings(const Json::Value & jsonRequest)
 	rbridge_setLANG(_langR);
 	jaspRCPP_setDecimalSettings(_numDecimals, _fixedDecimals, _normalizedNotation, _exactPValues);
 	jaspRCPP_setFontAndPlotSettings(_resultFont.c_str(), _ppi, _imageBackground.c_str());
+	
+	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(tq(_qLocaleName)), _useThousandSeps);
 }
 
 

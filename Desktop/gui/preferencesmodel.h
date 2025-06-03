@@ -124,6 +124,8 @@ public:
 	QString			resultFont(bool forWebEngine = false)	const;
 	QString			currentThemeName()						const;
 	QString			languageCode()							const;
+	bool			useThousandSeparators()					const;
+	const QLocale & localeQt()								const;
 	bool			disableAnimations()						const;
 	bool			animationsOn()							const override { return !disableAnimations() && !safeGraphics(); }
 	bool			generateMarkdown()						const;

@@ -117,6 +117,7 @@ public:
 	
 	
     static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
+	static void					setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps);
 	
 
 private:

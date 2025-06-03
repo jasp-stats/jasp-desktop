@@ -26,7 +26,7 @@
 #include "appinfo.h"
 #include "simplecrypt.h"
 #include "log.h"
-
+#include "emptyvalues.h"
 #include "columnutils.h"
 
 
@@ -387,4 +387,57 @@ QString QColumnUtils::currencyString(double money, const QString &symbol)
 QString QColumnUtils::decimalPoint()
 {
 	return tq(ColumnUtils::decimalPoint());
+}
+
+
+void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps)
+{
+	QLocale::setDefault(locale);
+	ColumnUtils::setCurrentQLocaleId(			fq(locale.bcp47Name())		);
+	ColumnUtils::setDecimalPoint(				fq(locale.decimalPoint())	);
+	
+	static ColumnUtils::doubleF altFuncToString = [locale, useThousandSeps](double dbl, int precision, bool sepas)
+	{
+		QLocale loc(locale);
+		
+		if(!sepas || !useThousandSeps)
+			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
+		
+		return fq(loc.toString(dbl, 'g', precision));
+	};
+	
+	static ColumnUtils::currencyF altFuncCurToString = [locale, useThousandSeps](double dbl, const std::string & symbol, bool sepas)
+	{
+		QLocale loc(locale);
+		
+		if(!sepas || !useThousandSeps)
+			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
+		
+		return fq(loc.toCurrencyString(dbl, tq(symbol)));
+	};
+
+	static ColumnUtils::toDoubleF altFuncToDouble = [locale, useThousandSeps](const std::string & str, double & dbl)
+	{
+		bool	isDouble	= false;
+				dbl			= locale.toDouble(tq(str), &isDouble);
+		
+		if(!isDouble)
+			dbl = EmptyValues::missingValueDouble;
+
+		return isDouble;
+	};
+
+	static ColumnUtils::toIntF altFuncToInt = [locale, useThousandSeps](const std::string & str, int & intVal)
+	{
+		bool isInt = false;
+		intVal = locale.toInt(tq(str), &isInt);
+
+		if(!isInt)
+			intVal = EmptyValues::missingValueInteger;
+
+		return isInt;
+	};
+	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
+	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
+	ColumnUtils::setExtraStringToNumber(		altFuncToDouble, altFuncToInt		);	
 }

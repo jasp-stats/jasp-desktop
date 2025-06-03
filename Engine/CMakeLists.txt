@@ -22,6 +22,7 @@ add_executable(
 target_include_directories(
 	JASPEngine
 	PUBLIC
+    ${PROJECT_SOURCE_DIR}/QMLComponents
 	${PROJECT_SOURCE_DIR}/CommonData
 	${PROJECT_SOURCE_DIR}/Common
 	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
@@ -30,7 +31,8 @@ target_include_directories(
 target_link_libraries(
 	JASPEngine
 	PUBLIC
-        CommonData
+    QMLComponents
+    CommonData
 	Common
 	Boost::system
 	Boost::date_time

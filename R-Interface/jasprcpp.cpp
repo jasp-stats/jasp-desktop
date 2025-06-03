@@ -21,8 +21,8 @@
 #include "RInside.h"
 #endif
 
-static const	std::string NullString			= "null";
-static			std::string lastErrorMessage	= "";
+static const	std::string		NullString			= "null";
+static			std::string		lastErrorMessage	= "";
 
 ReadDataSetCB					readDataSetCB;
 ReadADataSetFilterCB			readDataSetRequestedCB;

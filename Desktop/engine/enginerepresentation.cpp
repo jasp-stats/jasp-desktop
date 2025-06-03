@@ -1104,6 +1104,8 @@ void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 	msg["developerMode"]		=	 PreferencesModel::prefs()->developerMode();
 	msg["imageBackground"]		= fq(PreferencesModel::prefs()->plotBackground());
 	msg["languageCode"]			= fq(PreferencesModel::prefs()->languageCode());
+	msg["localeQt"]				= fq(PreferencesModel::prefs()->localeQt().bcp47Name());
+	msg["use1000Seps"]			=	 PreferencesModel::prefs()->useThousandSeparators();
 	msg["GITHUB_PAT"]			= fq(PreferencesModel::prefs()->githubPatResolved());
 	msg["numDecimals"]			=	 PreferencesModel::prefs()->numDecimals();
 	msg["fixedDecimals"]		=	 PreferencesModel::prefs()->fixedDecimals();

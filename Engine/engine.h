@@ -109,6 +109,7 @@ private: // Data:
 									_fixedDecimals			= false,
 									_exactPValues			= false,
 									_normalizedNotation		= true,
+									_useThousandSeps		= false,
 									_analysisPreloadData;
 	std::string						_analysisName,
 									_analysisTitle,
@@ -120,7 +121,8 @@ private: // Data:
 									_imageBackground		= "white",
 									_analysisRFile			= "",
 									_dynamicModuleCall		= "",
-									_langR					= "en";
+									_langR					= "en",
+									_qLocaleName			= "C";
 	Json::Value						_imageOptions,
 									_analysisOptions		= Json::nullValue,
 									_analysisResults;

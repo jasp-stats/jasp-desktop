@@ -244,54 +244,7 @@ void LanguageModel::setDefaultLocaleFromCurrent()
 {
 	setAlternativeLocaleStatic();
 	
-	QLocale::setDefault(currentLocale());
-	
-	static ColumnUtils::doubleF altFuncToString = [&](double dbl, int precision, bool sepas)
-	{
-		QLocale loc(currentLocale());
-		
-		if(!sepas || !useThousandSeps())
-			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
-		
-		return fq(loc.toString(dbl, 'g', precision));
-	};
-	
-	static ColumnUtils::currencyF altFuncCurToString = [&](double dbl, const std::string & symbol, bool sepas)
-	{
-		QLocale loc(currentLocale());
-		
-		if(!sepas || !useThousandSeps())
-			QColumnUtils::setOmitGroupSeparatorOnQLocale(loc);
-		
-		return fq(loc.toCurrencyString(dbl, tq(symbol)));
-	};
-
-	static ColumnUtils::toDoubleF altFuncToDouble = [&](const std::string & str, double & dbl)
-	{
-		bool	isDouble	= false;
-				dbl			= currentLocale().toDouble(tq(str), &isDouble);
-		
-		if(!isDouble)
-			dbl = EmptyValues::missingValueDouble;
-
-		return isDouble;
-	};
-
-	static ColumnUtils::toIntF altFuncToInt = [&](const std::string & str, int & intVal)
-	{
-		bool isInt = false;
-		intVal = currentLocale().toInt(tq(str), &isInt);
-
-		if(!isInt)
-			intVal = EmptyValues::missingValueInteger;
-
-		return isInt;
-	};
-	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
-	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
-	ColumnUtils::setExtraStringToNumber(		altFuncToDouble, altFuncToInt		);
-	ColumnUtils::setCurrentQLocaleId(			fq(currentLocale().bcp47Name())		);
-	ColumnUtils::setDecimalPoint(				fq(currentLocale().decimalPoint())	);
+	QColumnUtils::setCallbacksAndDefaultLocale(currentLocale(), useThousandSeps());
 	
 	emit currentLocaleChanged(currentLocale().bcp47Name(), useThousandSeps());
 	emit exampleFormattingChanged();
