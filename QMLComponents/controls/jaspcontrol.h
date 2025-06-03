@@ -161,7 +161,7 @@ public:
 	QVector<JASPControl::ParentKey>	getParentKeys();
 
 	static QString					ControlTypeToFriendlyString(ControlType controlType);
-	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool removeUnecessaryGroups = false);
+	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool collapseStructuralControls = false);
 
 	virtual void					setUp()										{}
 	void							setInitialized(const Json::Value& value = Json::nullValue);

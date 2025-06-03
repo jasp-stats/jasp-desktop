@@ -306,7 +306,7 @@ void JASPControl::clearControlError()
 		_form->clearControlError(this);
 }
 
-QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, bool removeUnecessaryGroups)
+QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, bool collapseStructuralControls)
 {
 	QList<JASPControl*> result;
 
@@ -321,10 +321,10 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 		if (childControl)
 		{
-			if (removeUnecessaryGroups && childControl->controlType() == ControlType::GroupBox && !childControl->hasLabelOrInfo())
+			if (collapseStructuralControls && childControl->controlType() == ControlType::GroupBox && !childControl->hasLabelOrInfo())
 				// If a Group has no label, title or info, then it is used probably for layout purpose.
 				// Just skip it: this is necessary for generating properly the markdown help
-				result.append(getChildJASPControls(childControl, removeUnecessaryGroups));
+				result.append(getChildJASPControls(childControl, collapseStructuralControls));
 			else
 				result.push_back(childControl);
 		}
@@ -336,7 +336,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 			result.push_back(expanderButton);
 		}
 		else
-			result.append(getChildJASPControls(childItem, removeUnecessaryGroups));
+			result.append(getChildJASPControls(childItem, collapseStructuralControls));
 	}
 
 	return result;
