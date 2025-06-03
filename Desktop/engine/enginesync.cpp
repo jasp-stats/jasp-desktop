@@ -1069,9 +1069,8 @@ void EngineSync::resumeEngines()
 
 	_stopProcessing = false;
 	
-	while(!allEnginesResumed())
-		for (auto * engine : _engines)
-			engine->processReplies();
+	for(EngineRepresentation * engine : _engines)
+		engine->processReplies(); //Try it once but dont block everything for it
 }
 
 bool EngineSync::allEnginesStopped(std::set<EngineRepresentation *> these)

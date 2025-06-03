@@ -102,7 +102,7 @@ bool Engine::parentAlive()
 #ifdef _WIN32
 	return _channel->jaspAlive();
 #else 
-	return ProcessInfo::parentPID() == _parentPID;
+	return ProcessInfo::isParentRunning(); //ProcessInfo::parentPID() == _parentPID;
 #endif
 }
 

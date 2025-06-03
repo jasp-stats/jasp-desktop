@@ -2290,15 +2290,13 @@ void DatabaseInterface::transactionWriteEnd(bool rollback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteEnd);
 	
-	assert(_transactionWriteDepth > 0);
-	
 	if(rollback)	
 	{
 		runStatements("ROLLBACK");
 		_transactionWriteDepth = 0;
 		throw std::runtime_error("Rollback!"); //Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
 	}	
-	else if(--_transactionWriteDepth == 0)
+	else if(_transactionWriteDepth == 0 || --_transactionWriteDepth == 0)
 		runStatements("COMMIT", true);
 	
 }
@@ -2307,9 +2305,7 @@ void DatabaseInterface::transactionReadEnd()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadEnd);
 	
-	assert(_transactionReadDepth > 0);
-	
-	if(--_transactionReadDepth == 0)
+	if(_transactionReadDepth == 0 || --_transactionReadDepth == 0)
 		runStatements("COMMIT", true); //ignore fails cause it fails sometimes, probably because no statements was done and so nothing to commit. this is ok
 }
 
