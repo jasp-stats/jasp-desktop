@@ -1489,10 +1489,18 @@ QQmlContext * DataSetViewBase::setStyleDataItem(QQmlContext * previousContext, b
 	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
 		_storedDisplayText[row][col] = _model->data(modelIndex, Qt::DisplayRole).toString();
 
-	QString text = _storedDisplayText[row][col];
+	QString text		= _storedDisplayText[row][col],
+			textEdit	= _model->data(modelIndex, getRole("noSepaDisplay")).toString();
 
-	if(isEditable && text == tq(EmptyValues::displayString()) && !emptyValLabel)
-		text = "";
+	if(isEditable && !emptyValLabel)
+	{
+		if(text == tq(EmptyValues::displayString()))
+			text = "";
+
+		if(textEdit == tq(EmptyValues::displayString()))
+			textEdit = "";
+	}
+		
 
 	if(previousContext == nullptr)
 		previousContext = new QQmlContext(qmlContext(this), this);
@@ -1501,7 +1509,7 @@ QQmlContext * DataSetViewBase::setStyleDataItem(QQmlContext * previousContext, b
 	//The first four also get updated in DataSetViewBase::modelDataChanged!
 	//If adding or changes behaviour also do that there
 	previousContext->setContextProperty("itemText",			text);
-	previousContext->setContextProperty("itemTextEdit",		_model->data(modelIndex, getRole("noSepaDisplay")));
+	previousContext->setContextProperty("itemTextEdit",		textEdit);
 	previousContext->setContextProperty("itemShadowText",	_model->data(modelIndex, getRole("shadowDisplay")));
 	previousContext->setContextProperty("itemLabel",		_model->data(modelIndex, getRole("label")));
 	previousContext->setContextProperty("itemValue",		_model->data(modelIndex, getRole("value")));
