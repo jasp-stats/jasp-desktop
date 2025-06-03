@@ -165,6 +165,8 @@ void TempFiles::deleteOrphans()
 
 					if (now - modTime > outOfDateDelta)
 					{
+						Log::log() << "Removing folder because status indicates it is out of date: " << statusFile.string() << std::endl;
+						
 						std::filesystem::remove_all(p, error);
 						if (error)
 							Log::log() << "Error when deleting directory: " << error.message() << std::endl;

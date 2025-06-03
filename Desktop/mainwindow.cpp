@@ -205,10 +205,20 @@ This setting can always be changed in the Interface Preferences.)MultiLine"),
 MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
+	
+	_engineSync->killProcessTimer();
 
-	DatabaseInterface::closeInterfaces();
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(...) {}
 
-	_analyses->destroyAllForms();
+	try
+	{
+		_analyses->destroyAllForms();
+	}
+	catch(...) {}
 
 	_singleton = nullptr;
 
@@ -229,11 +239,6 @@ MainWindow::~MainWindow()
 		_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
 
 		delete _resultsJsInterface;
-
-		if (_package->hasDataSet())
-			_package->reset(false);
-
-		//delete _engineSync; it will be deleted by Qt!
 	}
 	catch(...)	{}
 }
