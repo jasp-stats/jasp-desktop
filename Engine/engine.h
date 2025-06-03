@@ -42,7 +42,7 @@ public:
 	int						engineNum() const { return _engineNum; }
 	void					sendString(std::string message);
 
-	
+	bool					parentAlive();
 
 	Status					getAnalysisStatus() { return _analysisStatus; }
 	analysisResultStatus	getStatusToAnalysisStatus();

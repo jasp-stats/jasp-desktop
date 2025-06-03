@@ -32,13 +32,13 @@ public:
 	static void showWarning(std::string message)						{ showWarning(QString::fromStdString(message));								}
 	static void showWarning(const char * message)						{ showWarning(QString(message));											}
 
-	static bool showYesNo(QString title,		QString message,		QString YesButtonText		= "",	QString NoButtonText = "");
-	static bool showYesNo(std::string title,	std::string message,	std::string YesButtonText	= "",	std::string NoButtonText = "")	{ return showYesNo(QString::fromStdString(title), QString::fromStdString(message), QString::fromStdString(YesButtonText), QString::fromStdString(NoButtonText)); }
-	static bool showYesNo(const char * title,	const char * message,	const char * YesButtonText	= "",	const char * NoButtonText = "")	{ return showYesNo(QString(title), QString(message), QString(YesButtonText), QString(NoButtonText)); }
+	static bool showYesNo(QString title,		QString message,		QString YesButtonText		= "",	QString NoButtonText = "",			QMessageBox::Icon icon = QMessageBox::Question);
+	static bool showYesNo(std::string title,	std::string message,	std::string YesButtonText	= "",	std::string NoButtonText = "",		QMessageBox::Icon icon = QMessageBox::Question)	{ return showYesNo(QString::fromStdString(title), QString::fromStdString(message), QString::fromStdString(YesButtonText), QString::fromStdString(NoButtonText), icon); }
+	static bool showYesNo(const char * title,	const char * message,	const char * YesButtonText	= "",	const char * NoButtonText = "",		QMessageBox::Icon icon = QMessageBox::Question)	{ return showYesNo(QString(title), QString(message), QString(YesButtonText), QString(NoButtonText), icon); }
 
 
 	static DialogResponse showSaveDiscardCancel(QString title, QString message, QString saveTxt = "",		QString discardText = "",	QString cancelText = "");
-	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "");
+	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "",	QMessageBox::Icon icon = QMessageBox::Question);
 
 	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter, bool multiple = false);
 	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);

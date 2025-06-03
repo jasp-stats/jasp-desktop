@@ -103,7 +103,7 @@ void MessageForwarder::showWarning(QString title, QString message)
 	box.exec();
 }
 
-bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText)
+bool MessageForwarder::showYesNo(QString title, QString message, QString YesButtonText, QString NoButtonText, QMessageBox::Icon icon)
 {
 	if(YesButtonText == "")		YesButtonText	= tr("Yes");
 	if(NoButtonText == "")		NoButtonText	= tr("No");
@@ -123,7 +123,7 @@ bool MessageForwarder::showYesNo(QString title, QString message, QString YesButt
 	return box.clickedButton() == yesButton;
 }
 
-MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText)
+MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title, QString message, QString YesButtonText, QString NoButtonText, QString CancelButtonText, QMessageBox::Icon icon)
 {
 	if(YesButtonText == "")		YesButtonText		= tr("Yes");
 	if(NoButtonText == "")		NoButtonText		= tr("No");
@@ -133,7 +133,7 @@ MessageForwarder::DialogResponse MessageForwarder::showYesNoCancel(QString title
 
 	box.setText(title);
 	box.setInformativeText(message);
-	box.setIcon(QMessageBox::Question);
+	box.setIcon(icon);
 
 	QPushButton* yesButton =	box.addButton(YesButtonText,		QMessageBox::ButtonRole::YesRole);
 	QPushButton* noButton =		box.addButton(NoButtonText,			QMessageBox::ButtonRole::NoRole);

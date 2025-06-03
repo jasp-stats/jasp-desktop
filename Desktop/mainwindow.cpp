@@ -1576,7 +1576,7 @@ void MainWindow::fatalError()
 					tr("Error"), 
 					tr("JASP has experienced an unexpected internal error:\n%1").arg(_fatalError) + "\n\n" +
 					tr("JASP had a serious error and cannot calculate anymore.\n\nWe would be grateful if you could report this error to the JASP team."), 
-					tr("Report"), tr("Salvage"), tr("Exit"));
+					tr("Report"), tr("Salvage"), tr("Exit"), QMessageBox::Icon::Critical);
 		
 		switch(response)
 		{

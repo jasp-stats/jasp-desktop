@@ -97,14 +97,18 @@ Engine::~Engine()
 	_channel = nullptr;
 }
 
-void Engine::run()
+bool Engine::parentAlive()
 {
 #ifdef _WIN32
-	bool jaspAlive = true;
-	while(_engineState != engineState::stopped && jaspAlive)
+	return _channel->jaspAlive();
 #else 
-	while(_engineState != engineState::stopped && ProcessInfo::isParentRunning())
+	return ProcessInfo::parentPID() == _parentPID;
 #endif
+}
+
+void Engine::run()
+{
+	do
 	{
 		static bool initDone = false;
 		if(!initDone && _engineState == engineState::initializing) //Do this first, otherwise receiveMessages possibly triggers some other functions
@@ -127,11 +131,8 @@ void Engine::run()
 		default:
 			Log::log() << "Engine got stuck in engineState " << engineStateToString(_engineState) << " which is not supposed to happen..." << std::endl;
 		}
-
-#ifdef _WIN32
-		jaspAlive = _channel->jaspAlive();
-#endif
 	}
+	while(_engineState != engineState::stopped && parentAlive());
 
 	if(_engineState == engineState::stopped)
 		Log::log() << "Engine leaving mainloop after having been asked to stop." << std::endl;
