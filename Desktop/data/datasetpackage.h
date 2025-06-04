@@ -139,6 +139,7 @@ public:
 				bool				isLoaded()							const	{ return _isLoaded;						 }
 				bool				isJaspFile()						const	{ return _isJaspFile;					  } ///< for readability
 				bool				isModified()						const	{ return _isModified;					   }
+				bool				hasAnalysesWithoutData()			const	{ return _hasAnalysesWithoutData;			}
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
 				bool				manualEdits()						const;
 				QString				windowTitle()						const;

@@ -1013,7 +1013,11 @@ void MainWindow::refreshPlotsHandler(bool askUserForRefresh)
 void MainWindow::checkEmptyWorkspace()
 {
 	if (!analysesAvailable() && !dataAvailable())
-		_fileMenu->close();
+	{
+		if(DataSetPackage::pkg()->hasAnalysesWithoutData())
+			_fileMenu->close();
+
+	}
 }
 
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
