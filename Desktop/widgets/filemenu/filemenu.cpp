@@ -128,23 +128,15 @@ FileEvent *FileMenu::newData()
 
 FileEvent *FileMenu::save()
 {
-	FileEvent *event = nullptr;
-
 	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentFileIsExample())
+		return saveAs();
+
+	FileEvent *event = new FileEvent(this, FileEvent::FileSave);
+	if (!event->setPath(_currentFilePath))
 	{
-		event = saveAs();
-		if (event->isCompleted())
-			return event;
-	}
-	else
-	{
-		event = new FileEvent(this, FileEvent::FileSave);
-		if (!event->setPath(_currentFilePath))
-		{
-			MessageForwarder::showWarning(tr("File Types"), event->getLastError());
-			event->setComplete(false, tr("Failed to open file from OSF"));
-			return event;
-		}
+		MessageForwarder::showWarning(tr("File Types"), event->getLastError());
+		event->setComplete(false, tr("Failed to open file from OSF"));
+		return event;
 	}
 
 	dataSetIORequestHandler(event);
