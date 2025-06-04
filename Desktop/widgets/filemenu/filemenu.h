@@ -119,6 +119,7 @@ signals:
 
 public slots:
 	void analysisAdded(Analysis *analysis);
+	void workspaceModified();
 	void setSyncFile(FileEvent *event);
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
 	void dataSetIOCompleted(FileEvent *event);
@@ -135,7 +136,7 @@ public slots:
 	void refresh();
 	void close();
 	void enableButtonsForOpenedWorkspace(bool enableSaveButton = false);
-
+	void buttonsForEmptyWorkspace();
 
 
 private slots:

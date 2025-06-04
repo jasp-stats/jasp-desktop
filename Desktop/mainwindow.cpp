@@ -391,6 +391,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::checkForDependentColumnsToBeSent,	_computedColumnsModel,	&ComputedColumnModel::checkForDependentColumnsToBeSentSlot	);
 	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged								);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
+	connect(_package,				&DataSetPackage::isModifiedChanged,					_fileMenu,				&FileMenu::workspaceModified								);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::columnDataTypeChanged,				_computedColumnsModel,	&ComputedColumnModel::recomputeColumn						);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
@@ -1404,6 +1405,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->dbDelete();
 			_package->reset(false);
 			_ribbonModel->showStatistics();
+			_fileMenu->buttonsForEmptyWorkspace();
 
 			if(!_applicationExiting)
 				_engineSync->cleanRestart();
