@@ -1148,6 +1148,10 @@ bool MainWindow::startDetached(const QString & applicationPath, const QStringLis
 #ifdef __unix__
 	detachMe.setUnixProcessParameters(QProcess::UnixProcessFlag::IgnoreSigPipe | QProcess::UnixProcessFlag::CreateNewSession | QProcess::UnixProcessFlag::ResetSignalHandlers | QProcess::UnixProcessFlag::DisconnectControllingTerminal);
 #endif
+	detachMe.setStandardErrorFile(QProcess::nullDevice());
+	detachMe.setStandardInputFile(QProcess::nullDevice());
+	detachMe.setStandardOutputFile(QProcess::nullDevice());
+
 	qint64 pidResult;
 	bool worked = detachMe.startDetached(&pidResult);
 
