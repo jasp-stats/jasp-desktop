@@ -489,6 +489,7 @@ void Analysis::setStatus(Analysis::Status status)
 
 void Analysis::boundValueChangedHandler()
 {
+	emit userModifiedSomething();
 	incrementRevision(); // To make sure we always process all changed options we increment the revision whenever anything changes
 
 	Log::log() << "Option changed for analysis '" << name() << "' and id " << id() << ", revision incremented to: " << _revision << std::endl;

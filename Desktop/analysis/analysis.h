@@ -172,7 +172,6 @@ signals:
 	void					userDataChangedSignal(	Analysis * analysis);
 	void					imageChanged();
 	void					rSourceChanged(QString optionName);
-	void					optionsChanged();
 
 	Column				*	requestComputedColumnCreation(		const std::string & columnName, Analysis * analysis);
 	bool					requestColumnCreation(				const std::string & columnName, Analysis * source, columnType type);
@@ -184,7 +183,7 @@ signals:
 
 	void					createFormWhenYouHaveAMoment(QQuickItem* parent = nullptr);
 	void					analysisInitialized();
-	
+	void					userModifiedSomething();
 
 public slots:
 	void					setDynamicModule(	Modules::DynamicModule * module);

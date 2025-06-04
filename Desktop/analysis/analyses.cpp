@@ -163,6 +163,7 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 
 void Analyses::bindAnalysisHandler(Analysis* analysis)
 {
+	connect(analysis,	&Analysis::userModifiedSomething,				this, [](){ DataSetPackage::pkg()->setModified(true); });
 	connect(analysis,	&Analysis::statusChanged,						this, &Analyses::analysisStatusChanged				);
 	connect(analysis,	&Analysis::sendRScriptSignal,					this, &Analyses::sendRScriptHandler					);
 	connect(analysis,	&Analysis::sendFilterSignal,					this, &Analyses::sendFilterHandler					);
