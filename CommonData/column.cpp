@@ -1547,25 +1547,11 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 		value = ColumnUtils::doubleToString(newDoubleToSet);
 
 	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
-	
+
 	if(!newLabel)
-	{
-		if(justAValue)
-			newLabel = labelByValueAndDisplay(value, value);
-		else if(!labelIsValue) //no new label found but value and label are different. Given that this exact combination does not occur we add a new label
-			newLabel = labelByIntsId( labelsAdd(label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
-		else if(labelIsValue)
-			newLabel = labelByIntsId( labelsAdd(itsADouble ? ColumnUtils::doubleToString(newDoubleToSet) : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
-	}
-	
-	if(!newLabel && itsADouble) //no labels and it is a double, easy peasy
-		newLabel = labelByIntsId(labelsAdd(!justAValue ? label : ColumnUtils::doubleToString(newDoubleToSet), "", Json::Value(newDoubleToSet)));
+		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 
-	if(newLabel)
-		return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
-
-	return setValue(row, labelsAdd(justAValue ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value), writeToDB);
-
+	return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
 }
 
 bool Column::setValue(size_t row, int value, bool writeToDB)
