@@ -1139,12 +1139,30 @@ void MainWindow::connectFileEventCompleted(FileEvent * event)
 	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
 }
 
+bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
+{
+	QProcess detachMe;
+
+	detachMe.setProgram(applicationPath);
+	detachMe.setArguments(args);
+#ifdef __unix__
+	detachMe.setUnixProcessParameters(QProcess::UnixProcessFlag::IgnoreSigPipe | QProcess::UnixProcessFlag::CreateNewSession | QProcess::UnixProcessFlag::ResetSignalHandlers | QProcess::UnixProcessFlag::DisconnectControllingTerminal);
+#endif
+	qint64 pidResult;
+	bool worked = detachMe.startDetached(&pidResult);
+
+
+	Log::log() << (worked ? "Started" : "Failed to start" ) << " application " << applicationPath << " with args: (" << args.join(", ") << ") and got pid: " << pidResult << std::endl;
+
+	return worked;
+}
+
 void MainWindow::dataSetIORequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileNew)
 	{
 		if (_package->isLoaded())
-			QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList("--newData"));
+			MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList("--newData"));
 		else
 			showNewData();
 	}
@@ -1157,8 +1175,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 
 			// begin new instance
 			
-			if(event->isDatabase())		QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(tq(event->databaseStr())));
-			else						QProcess::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
+			if(event->isDatabase())		MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList(tq(event->databaseStr())));
+			else						MainWindow::startDetached(QCoreApplication::applicationFilePath(), QStringList(event->path()));
 		}
 		else
 		{
@@ -1789,7 +1807,7 @@ void MainWindow::clearModulesFoldersUser()
 /* the following does not seem to work: the new process crashes immediately... 
 void MainWindow::restartJASP()
 {
-	QProcess::startDetached(QCoreApplication::applicationFilePath());
+	MainWindow::startDetached(QCoreApplication::applicationFilePath());
 	QApplication::quit();
 }*/
 
@@ -1845,7 +1863,7 @@ void MainWindow::startDataEditor(QString path)
 #else
 		args = {path};
 #endif
-		if (!QProcess::startDetached(appname, args))
+		if (!MainWindow::startDetached(appname, args))
 			MessageForwarder::showWarning(tr("Start Editor"), tr("Unable to start the editor : %1. Please check your editor settings in the preference menu.").arg(appname));
 	}
 	else

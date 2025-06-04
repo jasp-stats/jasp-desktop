@@ -129,8 +129,8 @@ public:
 	const QString 		contactUrlBugs()		const;
 	const QString 		contactText()			const;
 	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
-
-	bool hadFatalError() const;
+	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
+	bool				hadFatalError() const;
 	
 public slots:
 	void setImageBackgroundHandler(QString value);
