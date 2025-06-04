@@ -70,10 +70,11 @@ Copy and paste the following line into the `ucrt64` command line and press Enter
 pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
 ```
 
-#### Downloading and Building ReadStat (on Rtools45)
+#### Downloading and Building ReadStat and librdata (on Rtools45)
 
-In addition to these libraries, you need to manually download and install the ReadStat library. You can do that by typing the following commands into the `ucrt64` command line.
+In addition to these libraries, you need to manually download and install the ReadStat and librdata library. You can do that by typing the following commands into the `ucrt64` command line.
 
+To build ReadStat:
 ```
 git clone https://github.com/WizardMac/ReadStat.git
 cd ReadStat
@@ -81,6 +82,16 @@ export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 no
 autoreconf -i -f
 ./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
 make -j
+make install
+```
+
+To build librdata
+```
+https://github.com/WizardMac/librdata.git
+cd librdata
+./autogen.sh
+./configure
+make
 make install
 ```
 
