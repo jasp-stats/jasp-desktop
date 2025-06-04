@@ -1225,6 +1225,8 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
+		connectFileEventCompleted(event);
+
 		if (_package->isModified() && (dataAvailable() || analysesAvailable()))
 		{
 			QString title = windowTitle();
@@ -1235,24 +1237,20 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 			default:
 			case MessageForwarder::DialogResponse::Cancel:
 				event->setComplete(false);
-				dataSetIOCompleted(event);
 				return;
 
 			case MessageForwarder::DialogResponse::Save:
 				event->chain(_fileMenu->save());
-				connectFileEventCompleted(event);
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
 				event->setComplete(true);
-				dataSetIOCompleted(event);
 				break;
 			}
 		}
 		else
 		{
 			event->setComplete();
-			dataSetIOCompleted(event);
 		}
 	}
 }
