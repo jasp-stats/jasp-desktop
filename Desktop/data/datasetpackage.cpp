@@ -1432,7 +1432,7 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	if(_dataSet)
 		deleteDataSet(); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 	
-	//_db->close();
+	_db->close();
 	_db->load();		
 	_db->upgradeDBFromVersion(_jaspVersion);
 	
