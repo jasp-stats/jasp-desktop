@@ -44,9 +44,7 @@ using namespace std;
 using namespace boost;
 using namespace boost::posix_time;
 
-#ifdef _WIN32
-std::thread IPCChannel::heartbeatThread;
-#endif
+std::thread IPCChannel::_heartbeatThread;
 
 IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 	:
@@ -60,7 +58,7 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 
 	Log::log() << "IPCChannel(" << name << ", " << channelNumber << ", " << (isSlave ? "slave" : "master") << ");" << std::endl;
 
-	Log::log() << (!_isSlave ? "Creating control memory" : "Opening control memory") << std::endl;
+	//Log::log() << (!_isSlave ? "Creating control memory" : "Opening control memory") << std::endl;
 
 	_memoryControl			= !isSlave ? new interprocess::managed_shared_memory(interprocess::open_or_create,	_baseName.c_str(), 4096)
 									   : new interprocess::managed_shared_memory(interprocess::open_only,		_baseName.c_str());
@@ -88,20 +86,15 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 
 	if(!_isSlave)
 	{
-		Log::log() << "Creating communication memory" << std::endl;
 		_memoryMasterToSlave	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameMtS.c_str(), *_sizeMtoS);
 		_memorySlaveToMaster	= new interprocess::managed_shared_memory(interprocess::open_or_create, _nameStM.c_str(), *_sizeStoM);
 	}
 	else
 		catchAndRepeat("Opening communications memory", [&]()
 		{
-
-			Log::log() << "Opening M->S" << std::endl;
 			_memoryMasterToSlave	= new interprocess::managed_shared_memory(interprocess::open_only, _nameMtS.c_str());
-			Log::log() << "Opening S->M" << std::endl;
 			_memorySlaveToMaster	= new interprocess::managed_shared_memory(interprocess::open_only, _nameStM.c_str());
 		});
-
 
 	generateNames();
 
@@ -151,52 +144,18 @@ IPCChannel::IPCChannel(std::string name, size_t channelNumber, bool isSlave)
 				Log::log() << "More than 1 (in: " << foundDataIn.second << " out: " << foundDataOut.second << ") data String found in IPCChannel startup on engine." << std::endl;
 		});
 
-#ifdef __APPLE__
-	_semaphoreIn  = sem_open(_mutexInName.c_str(),  O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-	_semaphoreOut = sem_open(_mutexOutName.c_str(), O_CREAT, S_IWUSR | S_IRGRP | S_IROTH, 0);
-
-	if (isSlave == false)
-	{
-		// cleanse the semaphores; they don't seem to reliably initalise to zero.
-
-		while (sem_trywait(_semaphoreIn) == 0) ; // do nothing
-		while (sem_trywait(_semaphoreOut) == 0); // do nothing
-
-	}
-
-#elif !defined(_WIN32)
-
-	if (_isSlave == false)
-	{
-		interprocess::named_semaphore::remove(_mutexInName.c_str());
-		interprocess::named_semaphore::remove(_mutexOutName.c_str());
-
-		_semaphoreIn  = new interprocess::named_semaphore(interprocess::create_only, _mutexInName.c_str(), 0);
-		_semaphoreOut = new interprocess::named_semaphore(interprocess::create_only, _mutexOutName.c_str(), 0);
-	}
-	else
-	{
-		_semaphoreIn  = new interprocess::named_semaphore(interprocess::open_only, _mutexInName.c_str());
-		_semaphoreOut = new interprocess::named_semaphore(interprocess::open_only, _mutexOutName.c_str());
-	}
-
-
-#endif
-
-#ifdef _WIN32
 	_jaspHeartBeatPath = (std::filesystem::path(Dirs::tempDir()) /  (name + "_heartbeat")).string();
 	
-	if(!_isSlave && heartbeatThread.get_id() == std::thread::id()) {  //doki doki
+	if(!_isSlave && _heartbeatThread.get_id() == std::thread::id()) {  //doki doki
 		//Create the file
 		std::fstream f;
 		f.open(_jaspHeartBeatPath.c_str(), ios_base::out);
 		f.close();
 		
 		//start the thread		
-		heartbeatThread = std::thread(IPCChannel::heartbeat, _jaspHeartBeatPath, _heatbeatDelayS);
-		heartbeatThread.detach();
+		_heartbeatThread = std::thread(IPCChannel::heartbeat, _jaspHeartBeatPath, _heatbeatDelayS);
+		_heartbeatThread.detach();
 	}
-#endif
 
 	//Log::log() << "IPCChannel init done" << std::endl;
 }
@@ -233,18 +192,17 @@ void IPCChannel::findConstructAllAgain()
 	findConstructDataStrings();
 }
 
-#ifdef _WIN32
 
 bool IPCChannel::heartbeat(string path, unsigned int delayS)
 {
-	while(true) {
+	while(true)
+	{
 		Utils::touch(path);
 		std::this_thread::sleep_for(std::chrono::seconds(delayS));
 	}
 
 	return false;
 }
-
 
 bool IPCChannel::jaspAlive()
 {
@@ -272,7 +230,6 @@ bool IPCChannel::jaspAlive()
 
 	return true;
 }
-#endif
 
 void IPCChannel::catchAndRepeat(const std::string & taskDescription, std::function<void()> doThis)
 {
@@ -283,7 +240,6 @@ void IPCChannel::catchAndRepeat(const std::string & taskDescription, std::functi
 	bool worked = false;
 
 	Log::log() << taskDescription << " for at least " << wait << "ms" << std::endl;
-
 
 	while(!worked && Utils::currentMillis() < now + wait)
 		try
@@ -404,13 +360,11 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 	{
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
-#ifdef _WIN32
-			_dataOut->assign(std::to_string(_msgIDSend % 10).c_str()); // prefix a one character msg ID
-			_msgIDSend++;
-			_dataOut->append(data.c_str(), data.length());
-#else
-			_dataOut->assign(data.begin(), data.end());
-#endif
+
+		_dataOut->assign(std::to_string(_msgIDSend % 10).c_str()); // prefix a one character msg ID
+		_msgIDSend++;
+		_dataOut->append(data.c_str(), data.length());
+
 	}
 	catch (boost::interprocess::bad_alloc &e)	{ goto retryAfterDoublingMemory; }
 	catch (std::length_error &e)				{ goto retryAfterDoublingMemory; }
@@ -425,13 +379,6 @@ void IPCChannel::send(string &data, bool alreadyLockedMutex)
 		Log::log() << "IPCChannel::send encountered an exception: " << e.what() << std::endl;
 		throw e; //no need to unlock because this will crash stuff
 	}
-
-#ifdef __APPLE__
-	sem_post(_semaphoreOut);
-#elif !defined (_WIN32 )
-	_semaphoreOut->post();
-#endif
-
 
 	_mutexOut->unlock();
 	return; // return here to avoid going to retryAfterDoublingMemory
@@ -450,18 +397,13 @@ bool IPCChannel::receive(string &data, int timeout)
 	{
 		_mutexIn->lock();
 
-#ifndef _WIN32
+
 		while (tryWait()); // clear it completely
-#endif
+
 		try
 		{
 			rebindMemoryInIfSizeChanged();
-			#ifdef _WIN32
 			data.assign(_dataIn->c_str() + 1, _dataIn->size() - 1); // remove message id prefix
-			#else
-			data.assign(_dataIn->c_str(), _dataIn->size());
-			#endif
-
 		}
 		catch(std::exception & e)
 		{
@@ -482,18 +424,7 @@ bool IPCChannel::tryWait(int timeout)
 {
 	bool messageWaiting = false;
 
-#ifdef __APPLE__
 
-	messageWaiting = sem_trywait(_semaphoreIn) == 0;
-
-	while (timeout > 0 && messageWaiting == false)
-	{
-		usleep(100000);
-		timeout -= 10;
-		messageWaiting = sem_trywait(_semaphoreIn) == 0;
-	}
-
-#elif defined _WIN32
 	std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
 	if(_dataIn->length()) {
 		try{
@@ -504,20 +435,6 @@ bool IPCChannel::tryWait(int timeout)
 			}
 		} catch(std::exception& e) {Log::log()<< "Failure getting msgID: " << e.what() << std::endl;}
 	}
-#else
-
-	if (timeout > 0)
-	{
-		ptime now(microsec_clock::universal_time());
-		ptime then = now + microseconds(1000 * timeout);
-
-		messageWaiting = _semaphoreIn->timed_wait(then);
-	}
-	else
-	{
-		messageWaiting = _semaphoreIn->try_wait();
-	}
-#endif
 
 	return messageWaiting;
 

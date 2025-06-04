@@ -22,16 +22,10 @@
  * and sometimes under windows too. hence, there are platform specific
  * implementations below */
 
-#ifdef __APPLE__
-#include <semaphore.h>
-#elif defined _WIN32
-
+#ifdef  _WIN32
 #undef Realloc
 #undef Free
-
 #include <windows.h>
-#else
-#include <boost/interprocess/sync/named_semaphore.hpp>
 #endif
 
 #include <boost/interprocess/managed_shared_memory.hpp>
@@ -65,9 +59,7 @@ public:
 
 	void findConstructAllAgain();
 
-#ifdef _WIN32
 	bool jaspAlive();
-#endif
 
 private:
 	bool tryWait(int timeout = 0);
@@ -81,14 +73,13 @@ private:
 	void findConstructDataStrings();
 	void findConstructMutexes();
 
-#ifdef _WIN32
-	static bool heartbeat(std::string path, unsigned int delayMs);
+	static bool										heartbeat(std::string path, unsigned int delayMs);
+	static std::thread								_heartbeatThread;
+
 	int64_t											_lastHeartBeatTimestamp = 0;
 	std::string										_jaspHeartBeatPath;
 	unsigned int									_heatbeatDelayS = 5;
 	unsigned int									_maxHeartbeatDiffS = 100;
-	static std::thread heartbeatThread;
-#endif
 
 	std::string										_baseName,
 													_nameControl,
@@ -117,16 +108,8 @@ private:
 													_dataOutName,
 													_semaphoreInName,
 													_semaphoreOutName;
-#ifdef __APPLE__
-	sem_t										*	_semaphoreOut			= nullptr,
-												*	_semaphoreIn			= nullptr;
-#elif defined _WIN32
-	uint64_t										_msgIDSend				= 0;
-	uint64_t										_msgIDRecv				= 1;
-#else
-	boost::interprocess::named_semaphore		*	_semaphoreOut			= nullptr,
-												*	_semaphoreIn			= nullptr;
-#endif
+	uint64_t										_msgIDSend				= 0,
+													_msgIDRecv				= 1;
 };
 
 #endif // IPCCHANNEL_H

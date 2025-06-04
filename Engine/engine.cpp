@@ -99,11 +99,7 @@ Engine::~Engine()
 
 bool Engine::parentAlive()
 {
-#ifdef _WIN32
 	return _channel->jaspAlive();
-#else 
-	return ProcessInfo::isParentRunning(); //ProcessInfo::parentPID() == _parentPID;
-#endif
 }
 
 void Engine::run()
@@ -202,7 +198,7 @@ bool Engine::receiveMessages(int timeout)
 			printData["GITHUB_PAT"] = "********";
 		}
 		
-		Log::log() << "Received: '" << printData.toStyledString() << "' so now clearing my send buffer" << std::endl;
+		//Log::log() << "Received: '" << printData.toStyledString() << "' so now clearing my send buffer" << std::endl;
 
 		sendString("");
 
