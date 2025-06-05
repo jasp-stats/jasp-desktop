@@ -80,8 +80,6 @@ QString QJSErrorToString(QJSValue::ErrorType errorType);
 
 void	copyQDirRecursively(QDir copyThis, QDir toHere);
 
-QString shortenWinPaths(QString);
-
 bool pathIsSafeForR(const QString & checkThis);
 
 const char * QProcessErrorToString(QProcess::ProcessError error);

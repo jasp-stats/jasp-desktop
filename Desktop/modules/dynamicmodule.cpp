@@ -404,7 +404,7 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 std::string DynamicModule::getLibPathsToUse() const
 {
-	return "c('" + shortenWinPaths(moduleRLibrary()).toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
+	return "c('" + moduleRLibrary().toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
 }
 
 

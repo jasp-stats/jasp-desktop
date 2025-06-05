@@ -23,7 +23,7 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 
 	QString TZDIR		= AppDirs::rHome() + "/share/zoneinfo";
 	QString rHomePath	= AppDirs::rHome();
-	QDir	rHome		( rHomePath );
+	QDir	rHome		= rHomePath ;
 
 	QString custom_R_library = "";
 #ifdef JASP_DEBUG
@@ -41,19 +41,16 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 #else
 #define ARCH_SUBPATH "x64"
 #endif
-	
-			TZDIR		= shortenWinPaths(TZDIR);
-	QString PATH		= shortenWinPaths(programDir.absolutePath()) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/library/RInside/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/library/Rcpp/libs/" ARCH_SUBPATH)) + ";" + shortenWinPaths(programDir.absoluteFilePath("R/bin/" ARCH_SUBPATH)) + ";" + shortenWinPaths(env.value("PATH")),
-			_R_HOME		= shortenWinPaths(rHome.absolutePath()),
-			JAGS_HOME	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/"));
-			// JAGS_LIBDIR	= shortenWinPaths(programDir.absoluteFilePath("R/opt/jags/lib/"));
+
+	ProcessHelper::fixPATHForWindows(env);
+
+	QString _R_HOME		= rHome.absolutePath(),
+			JAGS_HOME	= programDir.absoluteFilePath("R/opt/jags/");
 
 	Log::log() << "R_HOME set to " << _R_HOME << std::endl;
 
-	env.insert("PATH",				PATH);
 	env.insert("R_HOME",			_R_HOME);
 	env.insert("JAGS_HOME",			JAGS_HOME);
-	// env.insert("JAGS_LIBDIR",		JAGS_LIBDIR);
 	
 #undef ARCH_SUBPATH
 
@@ -126,8 +123,17 @@ void ProcessHelper::fixPATHForWindows(QProcessEnvironment & env)
 #else
 		"i386";
 #endif
-	
-	env.insert("PATH", AppDirs::programDir().absolutePath() + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin") + ";" + QDir(AppDirs::rHome()).absoluteFilePath("bin/" + R_ARCH)); // + rtoolsInPath); 
+
+	QStringList pathEntries = {
+		AppDirs::programDir().absolutePath(),
+		QDir(AppDirs::rHome()).absoluteFilePath("bin"),
+		QDir(AppDirs::rHome()).absoluteFilePath("bin/" + R_ARCH),
+		QDir(AppDirs::rHome()).absoluteFilePath("R/library/Rcpp/libs/"  + R_ARCH),
+		QDir(AppDirs::rHome()).absoluteFilePath("R/library/RInside/libs/"  + R_ARCH),
+		env.value("PATH")
+	};
+
+	env.insert("PATH", pathEntries.join((";")));
 
 	Log::log() << "Windows PATH was changed to: '" << env.value("PATH", "???") << "'" << std::endl;
 }

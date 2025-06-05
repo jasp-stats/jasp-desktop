@@ -956,10 +956,6 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	QString engineExe		= programDir.absoluteFilePath("JASPEngine");
 	QProcessEnvironment env = ProcessHelper::getProcessEnvironmentForJaspEngine();
 
-#ifdef _WIN32
-	ProcessHelper::fixPATHForWindows(env);
-#endif
-	
 	env.insert("GITHUB_PAT", PreferencesModel::prefs()->githubPatResolved());
 
 	QStringList args;

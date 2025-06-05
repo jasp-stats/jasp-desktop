@@ -227,11 +227,6 @@ QString QJSErrorToString(QJSValue::ErrorType errorType)
 	return "Could not determine error from type.";
 }
 
-QString shortenWinPaths(QString in)
-{
-	return in;
-}
-
 void copyQDirRecursively(QDir copyThis, QDir toHere)
 {
 	toHere.mkpath(".");

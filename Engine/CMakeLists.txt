@@ -31,8 +31,8 @@ target_include_directories(
 target_link_libraries(
 	JASPEngine
 	PUBLIC
-    QMLComponents
-    CommonData
+        QMLComponents
+        CommonData
 	Common
 	Boost::system
 	Boost::date_time
