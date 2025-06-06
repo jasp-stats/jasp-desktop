@@ -167,7 +167,7 @@ target_link_libraries(
     $<$<NOT:$<BOOL:${LINUX}>>:freexl::freexl>
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
-    # MinGW's ReadStat
+    # Rtools's ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
     # librdata -----------------------------------
     ${LIBRDATA_LIBRARIES}
