@@ -37,6 +37,10 @@ size_t RDataImportColumn::size() const
 	return _data.size();
 }
 
+std::string RDataImportColumn::valueLookup(size_t row) const {
+	return _data[row];
+}
+
 void RDataImportColumn::addValue(const std::string &value)
 {
 	_data.push_back(value);
