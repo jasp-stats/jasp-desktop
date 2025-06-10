@@ -482,6 +482,7 @@ $(document).ready(function () {
 			jaspWidget.on("optionschanged",				function (id, options)	{ jasp.analysisChangedDownstream(id, JSON.stringify(options))	});
 			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
 			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
+			// TODO plotly: here we need to call interactiveImage?
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});
