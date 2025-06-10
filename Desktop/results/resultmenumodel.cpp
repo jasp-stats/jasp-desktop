@@ -26,7 +26,7 @@
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
 	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg", "hasExportResults",
-				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowRSyntax", "hasShowDeps"})
+				"hasEditImg", "hasInteractiveImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowRSyntax", "hasShowDeps"})
 {
 	_generateCorrectlyTranslatedResultEntries();
 
@@ -44,6 +44,7 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 		{	"hasCite",					ResultMenuEntry(tr("Copy Citations"),		"hasCite",					"cite.png",					"window.citeMenuClicked();")		},
 		{	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),		"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
 		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImg",				"editImage.png",			"window.editImageClicked();")		},
+		{	"hasInteractiveImg",		ResultMenuEntry(tr("Interactive Image"),	"hasInteractiveImg",		"",							"window.interactiveImageClicked();")		},
 		{	"hasNotes",					ResultMenuEntry(tr("Add Note"),				"hasNotes",					"",							"")									},
 		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.svg",			"window.duplicateMenuClicked();")	},
 		{	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
