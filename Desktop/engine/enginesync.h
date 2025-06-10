@@ -130,10 +130,6 @@ private:
 	bool		aChannelFree()						const;
 	bool		channelCooledDown(size_t channel)	const;
 
-#ifdef _WIN32 
-	void		fixPATHForWindows(QProcessEnvironment & env);
-#endif
-	
 	size_t		maxEngineCount() const;
 	size_t		enginesIdleSoon() const;
 
