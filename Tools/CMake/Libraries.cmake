@@ -250,7 +250,7 @@ if(APPLE)
 
   find_package(Brotli 1.0.9 REQUIRED)
   find_package(freexl 2.0.99 REQUIRED)
-  find_package(librdata 0.0.0.cci.20231003 REQUIRED)
+  find_package(librdata REQUIRED)
 
 endif()
 
