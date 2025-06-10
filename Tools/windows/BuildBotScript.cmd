@@ -16,6 +16,7 @@ if "%MSVCDIR%"=="" (
 )
 
 set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
+set QTDIR=C:/Qt/6.8.3/msvc2022_64
 
 call %VCVARS_DIR%\vcvars64.bat
 
@@ -27,7 +28,7 @@ cmake -E remove_directory build
 cmake -E make_directory build
 
 echo start build
-cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt/6.8.3/msvc2022_64
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%QTDIR%
 
 cmake --build build --target all
 
