@@ -18,9 +18,9 @@ class DynamicRuntimeInfo
 public:
 	bool						bundledModulesInitialized();
 
+	MicroArch					getMicroArch();
 	RuntimeEnvironment			getRuntimeEnvironment();
 	std::string					getRuntimeEnvironmentAsString();
-	RuntimeEnvironment			getMicroArch();
 	uint64_t					bundledModulesInitializedOnTimestamp();
 	std::string					bundledModulesInitializedByCommit();
 	std::string					bundledModulesInitializedByBuildDate();
@@ -31,8 +31,8 @@ public:
 
     //singleton stuff
 	static DynamicRuntimeInfo * getInstance();
-								DynamicRuntimeInfo(DynamicRuntimeInfo& other) = delete;
-	void						operator=(const DynamicRuntimeInfo&) = delete;
+								DynamicRuntimeInfo(DynamicRuntimeInfo& other)	= delete;
+	void						operator=(const DynamicRuntimeInfo&)			= delete;
 
 protected:
 								DynamicRuntimeInfo();
@@ -44,8 +44,8 @@ private:
 	std::string					staticRuntimeInfoFilePath();
 	std::string					dynamicRuntimeInfoFilePath();
 
-	RuntimeEnvironment			_environment;
-	MicroArch					_arch;
+	RuntimeEnvironment			_environment					= RuntimeEnvironment::UNKNOWN;
+	MicroArch					_arch							= MicroArch::UNSUPPORTED;
 
 	bool						_bundledModulesInitializedSet	= true;
 	std::string					_initializedByCommit			= "build";

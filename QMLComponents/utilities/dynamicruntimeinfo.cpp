@@ -25,12 +25,17 @@ bool DynamicRuntimeInfo::bundledModulesInitialized()
 
 	if(_environment == RuntimeEnvironment::MSI || _environment == RuntimeEnvironment::MSIX || _environment == RuntimeEnvironment::ZIP)
 		res = _bundledModulesInitializedSet
-			  && _initializedByCommit == AppInfo::gitCommit
-			  && _initializedByBuildDate == AppInfo::builddate
-			  && _initializedForRVersion == AppInfo::getRVersion()
+			  && _initializedByCommit		== AppInfo::gitCommit
+			  && _initializedByBuildDate	== AppInfo::builddate
+			  && _initializedForRVersion	== AppInfo::getRVersion()
 			  && _initializedForJaspVersion == AppInfo::version.asString(4);
 
 	return res;
+}
+
+MicroArch DynamicRuntimeInfo::getMicroArch()
+{
+	return _arch;
 }
 
 DynamicRuntimeInfo::DynamicRuntimeInfo()

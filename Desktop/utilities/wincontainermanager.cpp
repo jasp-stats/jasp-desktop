@@ -3,12 +3,13 @@
 
 #include "wincontainermanager.h"
 #include "userenv.h"
-#include <atlsecurity.h>
 #include "log.h"
-#include "utilities/appdirs.h"
-#include "utilities/messageforwarder.h"
-#include "gui/preferencesmodel.h"
+#include <atlsecurity.h>
 #include "processhelper.h"
+#include "utilities/appdirs.h"
+#include "gui/preferencesmodel.h"
+#include "utilities/messageforwarder.h"
+#include "utilities/dynamicruntimeinfo.h"
 
 std::wstring toWString(const std::string& in) {
 	return std::wstring(in.begin(), in.end());
@@ -149,13 +150,21 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 
 	//handle the file permissions of the container
-	const std::vector<std::string> _fullAccessList = {
+	std::vector<std::string> _fullAccessList = {
 		Dirs::tempDir(),
 		AppDirs::appData(false).toStdString(), //entire appdata dir, might want to give more fine grained access when R pkgs are installed here
 		AppDirs::appData().toStdString(), //logdir
 		AppDirs::sandboxedDocuments().toStdString(),
 		AppDirs::userModulesDir().toStdString()
 	};
+
+	//Are we running from a buildfolder? Because then we have no access to qt dlls yet, cause theyre not in the buildfolder yet.
+	if(DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() == RuntimeEnvironment::UNKNOWN)
+	{
+		static auto env = QProcessEnvironment::systemEnvironment();
+		if(env.value("QTDIR") != "")
+			_fullAccessList.push_back(env.value("QTDIR").toStdString() + "/bin");
+	}
 
 	if(!checkIfAccessible(si, _fullAccessList)) {
 		for(auto& file : _fullAccessList)
