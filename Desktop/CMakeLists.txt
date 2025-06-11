@@ -118,7 +118,8 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
     ${LIBREADSTAT_INCLUDE_DIRS}
-	$<$<PLATFORM_ID:Darwin>:librdata::librdata>
+    ${LIBRDATA_INCLUDE_DIRS}
+	#$<$<PLATFORM_ID:Darwin>:librdata::librdata>
 	$<$<PLATFORM_ID:Windows>:${LIBRDATA_INCLUDE_DIRS}>
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
