@@ -60,7 +60,7 @@ int RDataReader::_tableHandler(const char *name, void *ctx)
 	else
 		context->table_name = name;
 
-	Log::log() << "Table Name: " << name << std::endl;
+	Log::log() << "Table Name: " << ( !name ? "nullptr" : name) << std::endl;
 
 	return 0;
 }
