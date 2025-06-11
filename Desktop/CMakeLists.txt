@@ -117,10 +117,9 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
-    # ReadStat
     ${LIBREADSTAT_INCLUDE_DIRS}
-    # librdata
-    librdata::librdata
+	$<$<PLATFORM_ID:Darwin>:librdata::librdata>
+	$<$<PLATFORM_ID:Windows>:${LIBRDATA_INCLUDE_DIRS}>
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
@@ -174,7 +173,7 @@ target_link_libraries(
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
     # librdata -----------------------------------
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBRDATA_DLL_A}>
-    $<$<NOT:$<PLATFORM_ID:Windows>>:librdata::librdata>
+	$<$<PLATFORM_ID:Darwin>:librdata::librdata>
     # JSONCPP
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>

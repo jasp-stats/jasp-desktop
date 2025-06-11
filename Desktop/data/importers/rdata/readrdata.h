@@ -19,8 +19,13 @@
 #define RDATA_H
 
 #include <string>
-#include <rdata.h>
 #include "utils.h"
+
+#ifdef __unix__
+#include <rdata.h>
+#else
+#include "rdata.h"
+#endif
 
 class RDataReader
 {
