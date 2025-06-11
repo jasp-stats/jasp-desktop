@@ -70,7 +70,7 @@ bool BoundControlMeasuresCells::isJsonValid(const Json::Value &optionValue) cons
 
 void BoundControlMeasuresCells::addFactorModel(ListModelFactorLevels *factorModel)
 {
-	_sourceFactorsModels.push_back(factorModel);
+	_sourceFactorsModels.insert(factorModel);
 }
 
 void BoundControlMeasuresCells::resetBoundValue()

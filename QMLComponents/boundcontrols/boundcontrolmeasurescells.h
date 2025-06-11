@@ -39,8 +39,8 @@ public:
 	QList<QStringList>	getLevels()									const;
 	
 private:
-	ListModelMeasuresCellsAssigned*	_measuresCellsModel;
-	QList<ListModelFactorLevels*>	_sourceFactorsModels;
+	ListModelMeasuresCellsAssigned*		_measuresCellsModel;
+	std::set<ListModelFactorLevels*>	_sourceFactorsModels;
 	
 	void _initLevels();
 };
