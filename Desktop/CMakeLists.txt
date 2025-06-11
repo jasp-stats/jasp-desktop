@@ -119,8 +119,6 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/QMLComponents
     ${LIBREADSTAT_INCLUDE_DIRS}
     ${LIBRDATA_INCLUDE_DIRS}
-	#$<$<PLATFORM_ID:Darwin>:librdata::librdata>
-	$<$<PLATFORM_ID:Windows>:${LIBRDATA_INCLUDE_DIRS}>
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
@@ -173,8 +171,9 @@ target_link_libraries(
     # Rtools's ReadStat
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBREADSTAT_DLL_A}>
     # librdata -----------------------------------
+    ${LIBRDATA_LIBRARIES}
     $<$<PLATFORM_ID:Windows>:${RTOOLS_LIBRDATA_DLL_A}>
-	$<$<PLATFORM_ID:Darwin>:librdata::librdata>
+    $<$<PLATFORM_ID:Darwin>:librdata::librdata>
     # JSONCPP
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LIBRARIES}>
          #$<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_LINK_LIBRARIES}>
