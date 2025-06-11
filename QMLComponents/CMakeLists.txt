@@ -17,7 +17,6 @@ qt_add_qml_module(
 	SOURCES					${SOURCE_FILES} ${HEADER_FILES}
 	QML_FILES				${QML_FILES}
 	RESOURCES				${ICONS_RESOURCE_FILES}
-	SOURCES utilities/dynamicruntimeenums.h utilities/dynamicruntimeenums.cpp
 )
 
 # This define is needed for the linking
