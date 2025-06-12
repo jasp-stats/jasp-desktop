@@ -16,8 +16,7 @@
 //
 
 #include "rdataimporter.h"
-#include "data/importers/rdata/readrdata.h"
-#include "data/importers/rdata/rdataimportcolumn.h"
+#include "rdata/rdataimportdataset.h"
 #include "utilities/qutils.h"
 #include <columnutils.h>
 #include <string>
@@ -30,50 +29,13 @@ ImportDataSet *RDataImporter::loadFile(const std::string &locator, std::function
 {
 	JASPTIMER_RESUME(RDataImporter::loadFile);
 
-	ImportDataSet *data = new ImportDataSet(this);
-
-	std::vector<RDataImportColumn *> importColumns;
-
+	//To do: better progress callback :p
 	progressCallback(5);
+	RDataImportDataSet *data = new RDataImportDataSet(this, locator);
+	progressCallback(75);
 
-	RDataReader reader(locator);
-	reader.open();
-
-	size_t		rowCount, colCount;
-	stringvec	colNames;
-
-	rowCount = reader.getRowCount();
-	colCount = reader.getColCount();
-	colNames = reader.getColumnNames();
-	const auto &columns = reader.getColData();
-
-	progressCallback(25);
-
-	if (colCount == 0)
+	if (data->columnCount() == 0)
 		throw std::runtime_error(fq(tr("0 valid columns were read from the file, please check your data file.")));
-
-	importColumns.reserve(colCount);
-
-	for (size_t colIndex = 0; colIndex < colCount; ++colIndex)
-	{
-		if (colIndex >= colCount || colIndex >= columns.size())
-			throw std::runtime_error("Column names or data mismatch.");
-
-		RDataImportColumn *importColumn = new RDataImportColumn(data, colNames[colIndex], rowCount);
-
-		for (size_t rowIndex = 0; rowIndex < rowCount; ++rowIndex)
-		{
-			if (static_cast<size_t>(rowIndex) >= columns[colIndex].size())
-				throw std::runtime_error("Row data is out of bounds for column.");
-
-			importColumn->addValue(columns[colIndex][rowIndex]);
-		}
-
-		importColumns.push_back(importColumn);
-	}
-
-	for (RDataImportColumn *col : importColumns)
-		data->addColumn(col);
 
 	progressCallback(100);
 

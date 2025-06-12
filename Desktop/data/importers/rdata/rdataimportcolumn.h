@@ -20,21 +20,26 @@
 
 #include "data/importers/importcolumn.h"
 
+class RDataImportDataSet;
 class RDataImportColumn : public ImportColumn
 {
 public:
-	RDataImportColumn(ImportDataSet *importDataSet, std::string name);
-	RDataImportColumn(ImportDataSet *importDataSet, std::string name, long reserve);
-	~RDataImportColumn() override;
+						RDataImportColumn(RDataImportDataSet *importDataSet, const std::string & name, const stringvec & levels, columnType type);
+						~RDataImportColumn()			override;
 
-	size_t 			size() 					const override;
-	const stringvec allValuesAsStrings() 	const override { return _data; }
-	std::string 	valueLookup(size_t row) const override;
-	void			addValue(const std::string &value);
-	const stringvec &getValues() const;
+	size_t				size() 					const override;
+	const stringvec		allValuesAsStrings() 	const override { return _data; }
+	std::string			valueLookup(size_t row) const override;
+	std::string			labelLookup(size_t row) const override;
+	columnType			getColumnType()			const override { return _type; }
+
+	void				addValue(const std::string &value, int index = -1);
+
 
 private:
-	stringvec _data;
+	stringvec	_data,
+				_levels;
+	columnType	_type;
 };
 
 #endif // RDATAIMPORTCOLUMN_H

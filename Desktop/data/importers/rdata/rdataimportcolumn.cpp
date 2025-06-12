@@ -15,16 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "rdataimportdataset.h"
 #include "rdataimportcolumn.h"
+#include "columnutils.h"
 #include "timers.h"
 
-RDataImportColumn::RDataImportColumn(ImportDataSet* importDataSet, std::string name) : ImportColumn(importDataSet, name)
+RDataImportColumn::RDataImportColumn(RDataImportDataSet* importDataSet, const std::string & name, const stringvec & levels, columnType type)
+: ImportColumn(static_cast<ImportDataSet*>(importDataSet), name), _levels(levels), _type(type)
 {
-}
-
-RDataImportColumn::RDataImportColumn(ImportDataSet *importDataSet, std::string name, long reserve) : ImportColumn(importDataSet, name)
-{
-	_data.reserve(reserve);
 }
 
 RDataImportColumn::~RDataImportColumn()
@@ -37,16 +35,33 @@ size_t RDataImportColumn::size() const
 	return _data.size();
 }
 
-std::string RDataImportColumn::valueLookup(size_t row) const {
+std::string RDataImportColumn::valueLookup(size_t row) const
+{
 	return _data[row];
 }
 
-void RDataImportColumn::addValue(const std::string &value)
+std::string RDataImportColumn::labelLookup(size_t row) const
 {
-	_data.push_back(value);
+	if(_levels.size() == 0)
+		return "";
+
+	int level;
+
+	if(ColumnUtils::getIntValue(_data[row], level) && _levels.size() >= level && level > 0)
+		return 	_levels[level-1];
+
+	return "";
 }
 
-const std::vector<std::string> &RDataImportColumn::getValues() const
+void RDataImportColumn::addValue(const std::string &value, int index)
 {
-	return _data;
+	if(index == -1 || index == _data.size())
+		_data.push_back(value);
+	else
+	{
+		if(_data.size() <= index)
+			_data.resize(index+1);
+
+		_data[index] = value;	
+	}
 }
