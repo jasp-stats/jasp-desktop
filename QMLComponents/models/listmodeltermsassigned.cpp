@@ -31,7 +31,7 @@ ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView)
 {
 }
 
-void ListModelTermsAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool reInit)
+void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool reInit)
 {
 	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
 
@@ -67,7 +67,7 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 	return ListModelDraggable::canAddTerms(terms);
 }
 
-Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues& rowValues)
+Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const Terms::RelatedValuesPerTerm& rowValues)
 {
 	Terms termsToSendBack;
 	int maxRows = listView()->maxRows(); // maxRows == -1 means no maximum

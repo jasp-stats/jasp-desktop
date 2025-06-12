@@ -51,7 +51,7 @@ void InputListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
-	ListModel::RowControlsValues allControlValues;
+	Terms::RelatedValuesPerTerm allControlValues;
 	Terms terms = _readArrayOption(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
 
 	_inputModel->initTerms(terms, allControlValues);

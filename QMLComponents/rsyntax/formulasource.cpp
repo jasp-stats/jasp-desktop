@@ -367,9 +367,9 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 	return std::make_pair(onlyTrueTerms, onlyTrueTypes);
 }
 
-ListModel::RowControlsValues  FormulaSource::_getTermsFromExtraOptions(const Json::Value& options) const
+Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json::Value& options) const
 {
-	QMap<QString, QMap<QString, Json::Value> > extraTermsMap;
+	Terms::RelatedValuesPerTerm extraTermsMap;
 	for (const QString& extraControlName : _extraOptions.keys())
 	{
 		const Json::Value& extraOptionJson = options[fq(_extraOptions[extraControlName].optionName)];
@@ -439,7 +439,7 @@ void FormulaSource::_addTermsToOptions(ListModelAssignedInterface *model, Json::
 	}
 
 	std::string optionName = fq(model->name());
-	ListModel::RowControlsValues extraTermsMap;
+	Terms::RelatedValuesPerTerm extraTermsMap;
 
 	if (model == _model && _extraOptions.size() > 0) extraTermsMap = _getTermsFromExtraOptions(options);
 
@@ -612,7 +612,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 	}
 
 	std::map<ListModelAssignedInterface*, Terms> sourceMainTermsMap;
-	ListModel::RowControlsValues randomTermsMap;
+	Terms::RelatedValuesPerTerm randomTermsMap;
 	Terms mainTerms;
 
 	for (auto i = parsedTerms.randomTerms.begin(); i != parsedTerms.randomTerms.end(); ++i)
@@ -640,7 +640,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		Terms variables;
 		variables.add(interceptTerm);
 
-		ListModel::RowControlsValues controlValues;
+		Terms::RelatedValuesPerTerm controlValues;
 		QMap<QString, Json::Value> interceptCheck;
 		interceptCheck[_randomEffects.checkControl] =  randomTerm.intercept;
 		controlValues[interceptTerm] = interceptCheck;

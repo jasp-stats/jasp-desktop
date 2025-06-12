@@ -42,10 +42,13 @@ class VariableInfoConsumer;
 class Terms
 {
 public:
+	typedef QMap<QString, QMap<QString, Json::Value> >		RelatedValuesPerTerm;
+
 	Terms(const QList<QString>								& terms,	Terms *parent = nullptr);
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
+	Terms(const Json::Value& value, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues);
 
 	void set(const QList<QString>							& terms, bool isUnique = true);
 	void set(const std::vector<Term>						& terms, bool isUnique = true);

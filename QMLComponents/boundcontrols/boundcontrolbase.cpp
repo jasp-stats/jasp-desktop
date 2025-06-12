@@ -117,7 +117,7 @@ std::string BoundControlBase::getName() const
 	return fq(_control->name());
 }
 
-Terms BoundControlBase::_readArrayOption(const Json::Value &value, const std::string& keyValue, const std::string& keyLabel, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
+Terms BoundControlBase::_readArrayOption(const Json::Value &value, const std::string& keyValue, const std::string& keyLabel, Terms::RelatedValuesPerTerm& allControlValues, const Terms& sourceTerms)
 {
 	Terms terms;
 	for (const Json::Value& row : value)
@@ -150,7 +150,7 @@ Terms BoundControlBase::_readArrayOption(const Json::Value &value, const std::st
 	return terms;
 }
 
-Json::Value BoundControlBase::_createArrayOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
+Json::Value BoundControlBase::_createArrayOption(const Terms& terms, const Terms::RelatedValuesPerTerm& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
 	Json::Value result(Json::arrayValue);
 
@@ -176,7 +176,7 @@ Json::Value BoundControlBase::_createArrayOption(const Terms& terms, const ListM
 	return result;
 }
 
-void BoundControlBase::_setArrayOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
+void BoundControlBase::_setArrayOption(const Terms& terms, const Terms::RelatedValuesPerTerm& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
 	setBoundValue(_createArrayOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
 }

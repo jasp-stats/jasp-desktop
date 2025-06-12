@@ -89,7 +89,7 @@ protected:
 	void							_addTermsToOptions(ListModelAssignedInterface* model, Json::Value& options, const Terms& terms)	const;
 	FormulaParser::ParsedTerms		_fillOptionsWithFixedTerms(ListModel* model, const FormulaParser::ParsedTerms &parsedTerms, Json::Value &options, QMap<QString, Terms>* termsMap = nullptr)	const;
 	FormulaParser::ParsedTerms		_fillOptionsWithRandomTerms(const FormulaParser::ParsedTerms& parsedTerms, Json::Value& options)														const;
-	ListModel::RowControlsValues	_getTermsFromExtraOptions(const Json::Value& options)											const;
+	Terms::RelatedValuesPerTerm		_getTermsFromExtraOptions(const Json::Value& options)											const;
 	bool							_checkIntercept(Terms& terms) const;
 
 	FormulaBase*					_formula			= nullptr;

@@ -96,13 +96,13 @@ QList<int> ListModelMeasuresCellsAssigned::indexesFromTerms(const Terms &terms) 
 	return indexes;
 }
 
-void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const ListModel::RowControlsValues &allValuesMap, bool reInit)
+void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm &allValuesMap, bool reInit)
 {
 	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
 	_fitTermsWithLevels();
 }
 
-Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const RowControlsValues&)
+Terms ListModelMeasuresCellsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const Terms::RelatedValuesPerTerm&)
 {
 	if(!termsToAdd.size())
 		return Terms();

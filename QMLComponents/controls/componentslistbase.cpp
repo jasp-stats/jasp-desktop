@@ -43,7 +43,7 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
-	ListModel::RowControlsValues allControlValues;
+	Terms::RelatedValuesPerTerm allControlValues;
 	Terms terms = _readArrayOption(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues, _termsModel->getSourceTerms());
 
 	_termsModel->initTerms(terms, allControlValues);
@@ -308,7 +308,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 	return result;
 }
 
-Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues &termsWithComponentValues)
+Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues)
 {
 	return _createArrayOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 }
@@ -319,7 +319,7 @@ void ComponentsListBase::addItemHandler()
 	QString newItemValue = _makeUnique(_newItemValue, _termsModel->terms().values());
 	QString newItemLabel = _makeUnique(_newItemLabel, _termsModel->terms().labels());
 	newTerms.add(Term(newItemValue, newItemLabel));
-	ListModel::RowControlsValues rowValues;
+	Terms::RelatedValuesPerTerm rowValues;
 
 	if (_duplicateWhenAdding)
 	{

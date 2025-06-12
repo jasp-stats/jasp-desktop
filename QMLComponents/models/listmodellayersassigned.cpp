@@ -95,7 +95,7 @@ void ListModelLayersAssigned::_setTerms()
 	ListModel::_setTerms(newTerms);
 }
 
-Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const RowControlsValues&)
+Terms ListModelLayersAssigned::addTerms(const Terms& terms, int dropItemIndex, const Terms::RelatedValuesPerTerm&)
 {
 	Terms result;
 	

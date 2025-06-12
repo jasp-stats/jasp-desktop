@@ -29,7 +29,7 @@ ListModelTermsAvailable::ListModelTermsAvailable(JASPListControl *listView, cons
 	_setTerms(terms);
 }
 
-void ListModelTermsAvailable::initTerms(const Terms &terms, const RowControlsValues&, bool)
+void ListModelTermsAvailable::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm&, bool)
 {
 	beginResetModel();
 	
@@ -95,7 +95,7 @@ void ListModelTermsAvailable::sortItems(SortType sortType)
 	endResetModel();
 }
 
-Terms ListModelTermsAvailable::addTerms(const Terms &terms, int dropItemIndex, const RowControlsValues &rowValues)
+Terms ListModelTermsAvailable::addTerms(const Terms &terms, int dropItemIndex, const Terms::RelatedValuesPerTerm &rowValues)
 {
 	if (listView()->sourceItems().length() > 0 && listView()->sourceItems()[0]->isAnalysisDataSet())
 	{
@@ -223,7 +223,7 @@ void ListModelTermsAvailable::removeTermsInAssignedList()
 	{
 		Terms assignedTerms = modelAssign->terms();
 		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-			modelAssign->initTerms(assignedTerms, RowControlsValues(), true); // initTerms call removeTermsInAssignedList
+			modelAssign->initTerms(assignedTerms, {}, true); // initTerms call removeTermsInAssignedList
 		newTerms.remove(assignedTerms);
 	}
 

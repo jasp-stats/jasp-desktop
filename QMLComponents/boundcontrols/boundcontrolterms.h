@@ -34,16 +34,16 @@ public:
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
 
-	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap = {}) const;
+	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const Terms::RelatedValuesPerTerm &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
 
-	static Json::Value makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow);
+	static Json::Value makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow);
 
 private:
 	Terms		_getTermsFromOptions(const Json::Value& option)								const;
 	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
 	Json::Value	_adjustBindingType(const Json::Value &value)								const;
-	Json::Value _makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues) const;
+	Json::Value _makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues) const;
 
 	ListModelAssignedInterface*		_termsModel				= nullptr;
 	JASPListControl*				_listView				= nullptr;

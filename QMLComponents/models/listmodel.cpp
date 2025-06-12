@@ -76,12 +76,12 @@ void ListModel::addControlError(const QString &error) const
 	_listView->addControlError(error);
 }
 
-void ListModel::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool)
+void ListModel::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool)
 {
 	_initTerms(terms, allValuesMap, true);
 }
 
-void ListModel::_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool initRowControls)
+void ListModel::_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls)
 {
 	beginResetModel();
 	if (initRowControls)
@@ -230,9 +230,9 @@ void ListModel::setUpRowControls()
 		_rowControlsMap.remove(key);
 }
 
-ListModel::RowControlsValues ListModel::getTermsWithComponentValues() const
+Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 {
-	RowControlsValues result;
+	Terms::RelatedValuesPerTerm result;
 
 	for (const Term& term : _terms)
 	{
@@ -454,7 +454,7 @@ void ListModel::selectAllItems()
 
 void ListModel::sourceTermsReset()
 {
-	_initTerms(getSourceTerms(), RowControlsValues(), false);
+	_initTerms(getSourceTerms(), Terms::RelatedValuesPerTerm(), false);
 }
 
 int ListModel::rowCount(const QModelIndex &) const

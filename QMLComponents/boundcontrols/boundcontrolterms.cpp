@@ -107,7 +107,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	Json::Value typesPart = _adjustBindingType(value);
 
 	Terms terms;
-	ListModel::RowControlsValues allControlValues;
+	Terms::RelatedValuesPerTerm allControlValues;
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
 		terms = _readArrayOption(valuePart, _optionKeyValue, _optionKeyLabel, allControlValues);
@@ -199,7 +199,7 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 			(typesPart.isArray() || typesPart.isString());
 }
 
-Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow)
+Json::Value BoundControlTerms::makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow)
 {
 	Json::Value result(Json::objectValue);
 
@@ -225,7 +225,7 @@ Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::R
 	return result;
 }
 
-Json::Value BoundControlTerms::_makeOption(const Terms& terms, const ListModel::RowControlsValues& controlValues) const
+Json::Value BoundControlTerms::_makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues) const
 {
 	return makeOption(terms, controlValues, _optionKeyValue, _optionKeyLabel, _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
 }
@@ -264,13 +264,13 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
 }
 
-Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RowControlsValues &extraTermsMap) const
+Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RelatedValuesPerTerm &extraTermsMap) const
 {
 	Json::Value result = option;
 	Terms newTerms = _getTermsFromOptions(option);
 	newTerms.add(terms);
 
-	ListModel::RowControlsValues newRowControlsValues = _termsModel->getTermsWithComponentValues();
+	Terms::RelatedValuesPerTerm newRowControlsValues = _termsModel->getTermsWithComponentValues();
 	newRowControlsValues.insert(extraTermsMap);
 
 	return _makeOption(newTerms, newRowControlsValues);

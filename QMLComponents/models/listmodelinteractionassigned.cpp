@@ -32,7 +32,7 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 	_addInteractionsByDefault	= addInteractionsByDefault;
 }
 
-void ListModelInteractionAssigned::initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool reInit)
+void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool reInit)
 {
 	// Initialization of the terms can be a re-initialization: in this case the interaction terms can be lost
 	// So the interaction terms must be kept, and if their components are in the new terms, then add this interaction.
@@ -158,7 +158,7 @@ QString ListModelInteractionAssigned::getItemType(const Term &term) const
 	return type;
 }
 
-Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const RowControlsValues&)
+Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const Terms::RelatedValuesPerTerm&)
 {
 	if (terms.size() == 0)
 		return Terms();

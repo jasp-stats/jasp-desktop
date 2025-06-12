@@ -55,8 +55,6 @@ public:
 		DeletableRole
     };
 	typedef QMap<QString, RowControls*>							RowControlMap;
-	typedef QMap<QString, QMap<QString, Json::Value> >			RowControlsValues;
-	typedef QMapIterator<QString, QMap<QString, Json::Value> >	RowControlsValuesIterator;
 
 	ListModel(JASPListControl* listView);
 	
@@ -76,14 +74,14 @@ public:
 			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-	virtual void					initTerms(const Terms &terms, const RowControlsValues& allValuesMap = RowControlsValues(), bool reInit = false);
+			virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false);
 			Terms					getSourceTerms();
 			ListModel*				getSourceModelOfTerm(const Term& term);
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
-	RowControlsValues				getTermsWithComponentValues()									const;
+	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
 	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
 	virtual bool					addRowControl(const QString& key, JASPControl* control);
@@ -150,13 +148,13 @@ protected:
 			bool							_needsSource			= true;
 			QMap<QString, RowControls* >	_rowControlsMap;
 			QQmlComponent *					_rowComponent			= nullptr;
-			RowControlsValues				_rowControlsValues;
+			Terms::RelatedValuesPerTerm		_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;
 			QList<int>						_selectedItems;
 			QStringList						_columnsUsedForLabels;
 
 private:
-			void	_initTerms(const Terms &terms, const RowControlsValues& allValuesMap, bool initRowControls = true);
+			void	_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls = true);
 			void	_connectSourceControls(SourceItem* sourceItem);
 
 			JASPListControl*				_listView = nullptr;

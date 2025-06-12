@@ -38,7 +38,7 @@ public:
 	void					setDropMode(JASPControl::DropMode dropMode)			{ _dropMode = dropMode; }
 	
 	virtual Terms			canAddTerms(		const Terms		& terms)		const;
-	virtual Terms			addTerms(			const Terms		& terms,	int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues());
+	virtual Terms			addTerms(			const Terms		& terms,	int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {});
 	virtual void			moveTerms(			const QList<int>& indexes,	int dropItemIndex = -1);
 	virtual void			removeTerms(		const QList<int>& indexes);
 	

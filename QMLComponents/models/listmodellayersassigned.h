@@ -29,7 +29,7 @@ public:
 	ListModelLayersAssigned(JASPListControl* listView);
 
 	QVariant	data(const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
-	Terms		addTerms(const Terms& terms, int dropItemIndex = -1, const RowControlsValues& rowValues = RowControlsValues())	override;
+	Terms		addTerms(const Terms& terms, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {})	override;
 	void		moveTerms(const QList<int>& indexes, int dropItemIndex = -1)						override;
 	void		removeTerms(const QList<int>& indexes)												override;
 	int			rowCount(const QModelIndex &parent = QModelIndex())							const	override;
