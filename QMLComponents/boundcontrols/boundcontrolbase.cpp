@@ -117,11 +117,12 @@ std::string BoundControlBase::getName() const
 	return fq(_control->name());
 }
 
-void BoundControlBase::_readTableValue(const Json::Value &value, const std::string& keyValue, const std::string& keyLabel, bool hasMultipleTerms, Terms& terms, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
+Terms BoundControlBase::_readArrayOption(const Json::Value &value, const std::string& keyValue, const std::string& keyLabel, ListModel::RowControlsValues& allControlValues, const Terms& sourceTerms)
 {
+	Terms terms;
 	for (const Json::Value& row : value)
-	{
-		Term term(row, keyValue, keyLabel);
+	{		
+		Term term = row.isString() ? Term(row.asString()) : Term(row, keyValue, keyLabel);
 		if (term.size() > 0)
 		{
 			int termInd = sourceTerms.indexOfValue(term);
@@ -132,20 +133,24 @@ void BoundControlBase::_readTableValue(const Json::Value &value, const std::stri
 			}
 			terms.add(term);
 
-			QMap<QString, Json::Value> controlMap;
-			for (auto itr = row.begin(); itr != row.end(); ++itr)
+			if (row.isObject())
 			{
-				const std::string& name = itr.key().asString();
-				if (name != keyValue)
-					controlMap[tq(name)] = *itr;
+				QMap<QString, Json::Value> controlMap;
+				for (auto itr = row.begin(); itr != row.end(); ++itr)
+				{
+					const std::string& name = itr.key().asString();
+					if (name != keyValue)
+						controlMap[tq(name)] = *itr;
+				}
+				allControlValues[term.value()] = controlMap;
 			}
-
-			allControlValues[term.value()] = controlMap;
 		}
 	}
+
+	return terms;
 }
 
-Json::Value BoundControlBase::_createTableOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
+Json::Value BoundControlBase::_createArrayOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
 	Json::Value result(Json::arrayValue);
 
@@ -171,9 +176,9 @@ Json::Value BoundControlBase::_createTableOption(const Terms& terms, const ListM
 	return result;
 }
 
-void BoundControlBase::_setTableValue(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
+void BoundControlBase::_setArrayOption(const Terms& terms, const ListModel::RowControlsValues& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables)
 {
-	setBoundValue(_createTableOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
+	setBoundValue(_createArrayOption(terms, componentValuesMap, keyValue, keyLabel, hasInteraction, keyHasVariables));
 }
 
 bool BoundControlBase::_isValueWithTypes(const Json::Value &value) const

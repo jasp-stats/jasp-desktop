@@ -110,7 +110,7 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	ListModel::RowControlsValues allControlValues;
 
 	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		_readTableValue(valuePart, _optionKeyValue, _optionKeyLabel, _listView->containsInteractions(), terms, allControlValues);
+		terms = _readArrayOption(valuePart, _optionKeyValue, _optionKeyLabel, allControlValues);
 	else
 	{
 		if (valuePart.isArray())
@@ -206,7 +206,7 @@ Json::Value BoundControlTerms::makeOption(const Terms& terms, const ListModel::R
 	Json::Value optionValue;
 
 	if (hasRowComponent || containsInteractions)
-		optionValue = _createTableOption(terms, controlValues, optionKeyName, optionKeyValue, containsInteractions, false);
+		optionValue = _createArrayOption(terms, controlValues, optionKeyName, optionKeyValue, containsInteractions, false);
 	else if (isSingleRow)
 		optionValue = terms.size() > 0 ? fq(terms[0].value()) : "";
 	else

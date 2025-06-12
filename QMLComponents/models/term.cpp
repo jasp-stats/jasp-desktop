@@ -34,17 +34,21 @@ Term::Term(const QString					& value,		const QString		&	label,	const QString	& i
 
 Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel)
 {
-	if (!json.isMember(keyValue)) initFrom("", "", columnType::unknown);
+	if (!json.isMember(keyValue))
+	{
+		initFrom("", "", columnType::unknown);
+		return;
+	}
 
 	Json::Value jsonValue = json[keyValue];
 	QString label = (!keyLabel.empty() && json.isMember(keyLabel) && json[keyValue].isString()) ? tq(json[keyValue].asString()) : "";
 	QStringList components;
 	columnTypeVec types;
 
-	if (json.isObject() && json.isMember("value") && json.isMember("types"))
+	if (jsonValue.isObject() && jsonValue.isMember("value") && jsonValue.isMember("types"))
 	{
-		jsonValue = json["value"];
-		Json::Value jsonType = json["types"];
+		Json::Value jsonType = jsonValue["types"];
+		jsonValue = jsonValue["value"];
 
 		if (jsonType.isArray())
 		{

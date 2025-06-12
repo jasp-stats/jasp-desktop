@@ -43,10 +43,8 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 {
 	BoundControlBase::bindTo(value);
 
-	Terms terms;
 	ListModel::RowControlsValues allControlValues;
-
-	_readTableValue(value, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), terms, allControlValues, _termsModel->getSourceTerms());
+	Terms terms = _readArrayOption(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues, _termsModel->getSourceTerms());
 
 	_termsModel->initTerms(terms, allControlValues);
 }
@@ -214,7 +212,7 @@ void ComponentsListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	_setTableValue(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	_setArrayOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();
 }
@@ -312,7 +310,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const ListModel::RowControlsValues &termsWithComponentValues)
 {
-	return _createTableOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	return _createArrayOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 }
 
 void ComponentsListBase::addItemHandler()
