@@ -19,6 +19,11 @@
 #include "log.h"
 #include "columnutils.h"
 
+// According to https://teuder.github.io/rcpp4everyone_en/240_na_nan_inf.html#points-to-note-when-handling-na-with-rcpp:
+#ifndef NA_INTEGER
+#define NA_INTEGER (-2147483647 - 1)
+#endif
+
 RDataImportDataSet::RDataImportDataSet(RDataImporter *importer, const std::string &locator)
 : ImportDataSet(static_cast<Importer*>(importer))
 {
@@ -108,7 +113,7 @@ int RDataImportDataSet::columnHandler(const std::string & name, rdata_type_t typ
 	{
 		int32_t *values = static_cast<int32_t *>(data);
 		for (size_t i = 0; i < count; i++)
-			_curCol->addValue(std::to_string(values[i]));
+			_curCol->addValue(values[i] == NA_INTEGER ? "" : std::to_string(values[i]));
 		break;
 	}
 	case RDATA_TYPE_REAL:
