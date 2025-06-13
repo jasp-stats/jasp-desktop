@@ -48,7 +48,7 @@ public:
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
-	Terms(const Json::Value& value, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues);
+	Terms(const Json::Value& values, const Json::Value& types, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues);
 
 	void set(const QList<QString>							& terms, bool isUnique = true);
 	void set(const std::vector<Term>						& terms, bool isUnique = true);
@@ -118,6 +118,10 @@ public:
 
 	Json::Value types(bool onlyChanged = false, const VariableInfoConsumer* info = nullptr) const;
 
+	Json::Value getOptionsWithRelatedValues(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool useArray, bool useValueAndType) const;
+	Json::Value getValuesOptions() const;
+	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const;
+
 private:
 
 	int		rankOf(const QString &component)						const;
@@ -126,9 +130,9 @@ private:
 	bool	componentLessThan(const QString &c1, const QString &c2)	const;
 	void	resetValueMap();
 
-	const Terms			*	_parent;
+	const Terms			*	_parent			= nullptr;
 	std::vector<Term>		_terms;
-	bool					_hasDuplicate = false;
+	bool					_hasDuplicate	= false;
 	std::map<QString, int>	_valueMap;
 
 };

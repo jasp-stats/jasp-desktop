@@ -44,7 +44,21 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms terms = _readArrayOption(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues, _termsModel->getSourceTerms());
+	Terms	terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues),
+			sourceTerms = _termsModel->getSourceTerms();
+
+	if (sourceTerms.size() > 0)
+	{
+		for (Term& term : terms)
+		{
+			int termInd = sourceTerms.indexOfValue(term);
+			if (termInd >= 0)
+			{
+				term.setTypes(sourceTerms[termInd].types());
+				term.setLabel(sourceTerms[termInd].label());
+			}
+		}
+	}
 
 	_termsModel->initTerms(terms, allControlValues);
 }
@@ -212,7 +226,8 @@ void ComponentsListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	_setArrayOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	setBoundValue(_termsModel->terms().getOptionsWithRelatedValues(_termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables()));
+
 	bindOffsets();
 	emit controlNameXOffsetMapChanged();
 }
@@ -310,7 +325,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues)
 {
-	return _createArrayOption(terms, termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	return terms.getOptionsWithRelatedValues(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
 }
 
 void ComponentsListBase::addItemHandler()

@@ -27,36 +27,38 @@ const char * Term::separator =
 #endif
 
 Term::Term(const std::vector<std::string>	& components,	const columnTypeVec	&	types)	{ initFrom(tq(components),	"", types);		}
-Term::Term(const std::string				& value,		const columnType		type)	{ initFrom(tq(value),		"", type);		}
+Term::Term(const std::string				& value,		const columnType		type)	{ initFrom(tq(value),		"", {type});	}
+Term::Term(const std::string				& value,		const columnTypeVec	&	type)	{ initFrom(tq(value),		"", type);		}
 Term::Term(const QStringList				& components,	const columnTypeVec	&	types)	{ initFrom(components,		"", types);		}
-Term::Term(const QString					& value,		const columnType		type)	{ initFrom(value,			"", type);		}
-Term::Term(const QString					& value,		const QString		&	label,	const QString	& info) { initFrom(value, label, columnType::unknown, info); }
+Term::Term(const QString					& value,		const columnType		type)	{ initFrom(value,			"", {type});	}
+Term::Term(const QString					& value,		const QString		&	label,	const QString	& info) { initFrom(value, label, {columnType::unknown}, info); }
 
-Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel)
+Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel, const columnTypeVec& types)
 {
 	if (!json.isMember(keyValue))
 	{
-		initFrom("", "", columnType::unknown);
+		initFrom("", "", {columnType::unknown});
 		return;
 	}
 
 	Json::Value jsonValue = json[keyValue];
 	QString label = (!keyLabel.empty() && json.isMember(keyLabel) && json[keyValue].isString()) ? tq(json[keyValue].asString()) : "";
 	QStringList components;
-	columnTypeVec types;
+	columnTypeVec realTypes = types;
 
 	if (jsonValue.isObject() && jsonValue.isMember("value") && jsonValue.isMember("types"))
 	{
 		Json::Value jsonType = jsonValue["types"];
 		jsonValue = jsonValue["value"];
+		realTypes = {};
 
 		if (jsonType.isArray())
 		{
 			for (const Json::Value& type : jsonType)
-				types.push_back(columnTypeFromString(type.asString(), columnType::unknown));
+				realTypes.push_back(columnTypeFromString(type.asString(), columnType::unknown));
 		}
 		else if (jsonType.isString())
-			types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
+			realTypes.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
 
 	}
 
@@ -68,10 +70,10 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 	else if (jsonValue.isString())
 		components.push_back(tq(jsonValue.asString()));
 
-	while (types.size() < components.size())
-		types.push_back(columnType::unknown);
+	while (realTypes.size() < components.size())
+		realTypes.push_back(columnType::unknown);
 
-	initFrom(components, label, types);
+	initFrom(components, label, realTypes);
 }
 
 void Term::initFrom(const QStringList	& components,	const QString	& label, const columnTypeVec& types, const QString	& info)
@@ -83,12 +85,12 @@ void Term::initFrom(const QStringList	& components,	const QString	& label, const
 	_info		= info;
 }
 
-void Term::initFrom(const QString& value, const QString& label, columnType type, const QString& info)
+void Term::initFrom(const QString& value, const QString& label, const columnTypeVec& types, const QString& info)
 {
 	_components.append(value);
 	_value		= value;
 	_label		= label.isEmpty() ? _value : label;
-	_types		= {type};
+	_types		= types.size() > 0 ? types : columnTypeVec{columnType::unknown};
 	_info		= info;
 }
 

@@ -47,6 +47,61 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
+Terms::Terms(const Json::Value &valuesPart, const Json::Value &typesPart, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues)
+{
+	if (valuesPart.isString())
+	{
+		std::string str = valuesPart.asString();
+		columnType type = columnType::unknown;
+
+		if (typesPart.isString())
+			type = columnTypeFromString(typesPart.asString(), columnType::unknown);
+		else if (typesPart.isArray() && typesPart.size() > 0 && typesPart[0].isString())
+			type = columnTypeFromString(typesPart[0].asString(), columnType::unknown);
+
+		if (!str.empty())
+			add(Term(str, type));
+	}
+	else
+	{
+		int termId = 0;
+
+		for (const Json::Value& row : valuesPart)
+		{
+			columnTypeVec types;
+			if (typesPart.size() > termId)
+			{
+				if (typesPart[termId].isArray())
+					for (const Json::Value& jsonType : typesPart[termId])
+						types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
+				else
+					types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
+			}
+
+			Term term = row.isString() ? Term(row.asString(), types)
+									   : Term(row, keyValue, keyLabel, types);
+			if (term.size() > 0)
+			{
+				add(term);
+
+				if (row.isObject())
+				{
+					QMap<QString, Json::Value> controlMap;
+					for (auto itr = row.begin(); itr != row.end(); ++itr)
+					{
+						const std::string& name = itr.key().asString();
+						if (name != keyValue)
+							controlMap[tq(name)] = *itr;
+					}
+					allControlValues[term.value()] = controlMap;
+				}
+			}
+
+			termId++;
+		}
+	}
+}
+
 void Terms::set(const std::vector<Term> &terms, bool isUnique)
 {
 	_terms.clear();
@@ -492,6 +547,66 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 
 	return types;
 }
+
+Json::Value Terms::getOptionsWithRelatedValues(const RelatedValuesPerTerm &relatedValuesPerTerm, const std::string &keyValue, const std::string &keyLabel, bool useArray, bool useValueAndType) const
+{
+	Json::Value options(Json::arrayValue);
+
+	for (const Term& term : _terms)
+	{
+		QMap<QString, Json::Value> relatedValues;
+		if (relatedValuesPerTerm.contains(term.value()))
+			relatedValues = relatedValuesPerTerm[term.value()];
+
+		Json::Value rowValues(Json::objectValue);
+
+		rowValues[keyValue] = term.toJson(useArray, useValueAndType);
+		if (!keyLabel.empty())
+			rowValues[keyLabel] = fq(term.label());
+
+		QMapIterator<QString, Json::Value> it2(relatedValues);
+		while (it2.hasNext())
+		{
+			it2.next();
+			rowValues[fq(it2.key())] = it2.value();
+		}
+		options.append(rowValues);
+	}
+
+	return options;
+}
+
+Json::Value Terms::getValuesOptions() const
+{
+	Json::Value options(Json::arrayValue);
+	for (const Term& term : _terms)
+		options.append(fq(term.value()));
+
+	return options;
+}
+
+Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const
+{
+	Json::Value result(Json::objectValue);
+
+	Json::Value optionValue;
+
+	if (hasRowComponent || containsInteractions)
+		optionValue = getOptionsWithRelatedValues(relatedValuesPerTerm, keyValue, keyLabel, containsInteractions, false);
+	else if (isSingleRow)
+		optionValue = _terms.size() > 0 ? fq(_terms[0].value()) : "";
+	else
+		optionValue = getValuesOptions();
+
+	result["value"] = optionValue;
+	result["types"] = types();
+
+	if (hasRowComponent || containsInteractions)
+		result["optionKey"] = keyValue;
+
+	return result;
+}
+
 
 int Terms::rankOf(const QString &component) const
 {

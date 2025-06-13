@@ -653,7 +653,7 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 			controlValues[fixedTerm.value()] = checkValue;
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
-		componentValues[_randomEffects.variablesControl] = BoundControlTerms::makeOption(variables, controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
+		componentValues[_randomEffects.variablesControl] = variables.getOptions(controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
 		randomTermsMap[mainTerm.value()] = componentValues;
 	}
 

@@ -48,8 +48,6 @@ protected:
 	std::string					getName()													const;
 	void						handleComputedColumn(const Json::Value& value);
 
-	static Json::Value			_createArrayOption(const Terms& terms, const Terms::RelatedValuesPerTerm& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables);
-	void						_setArrayOption(const Terms& terms, const Terms::RelatedValuesPerTerm& componentValuesMap, const std::string& keyValue, const std::string& keyLabel, bool hasInteraction, bool keyHasVariables = false);
 	bool						_isValueWithTypes(const Json::Value &value)					const;
 
 	JASPControl*				_control			= nullptr;

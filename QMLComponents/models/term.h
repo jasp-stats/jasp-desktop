@@ -36,10 +36,11 @@ class Term
 public:
 	Term(const std::vector<std::string> &	components, const columnTypeVec	&	types	= { columnType::unknown }	);
 	Term(const std::string				&	component,	const columnType		type	= columnType::unknown		);
+	Term(const std::string				&	component,	const columnTypeVec	&	type);
 	Term(const QStringList				&	components, const columnTypeVec	&	types	= { columnType::unknown }	);
 	Term(const QString					&	component,	const columnType		type	= columnType::unknown		);
 	Term(const QString					&	value,		const QString		&	label,		const QString		& info = QString());
-	Term(const Json::Value				&	json,		const std::string	&	keyValue,	const std::string	& keyLabel);
+	Term(const Json::Value				&	json,		const std::string	&	keyValue,	const std::string	& keyLabel, const columnTypeVec& types);
 
 	const QStringList		&	components()			const;
 	const QString			&	label()					const { return _label;	}
@@ -85,7 +86,7 @@ public:
 
 private:
 	void initFrom(const QStringList	& components,	const QString	& label, const columnTypeVec& type, const QString	& info = "");
-	void initFrom(const QString		& value,		const QString	& label, columnType type,			const QString	& info = "");
+	void initFrom(const QString		& value,		const QString	& label, const columnTypeVec& type,	const QString	& info = "");
 
 	QStringList		_components;
 	QString			_label,

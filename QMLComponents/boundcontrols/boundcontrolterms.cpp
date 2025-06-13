@@ -25,8 +25,6 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 	_termsModel = listModel;
 	_listView = qobject_cast<JASPListControl*>(_control);
 	_isSingleRow = isSingleRow;
-	_optionKeyValue = _listView->optionKeyValue().toStdString();
-	_optionKeyLabel = _listView->optionKeyLabel().toStdString();
 }
 
 
@@ -79,7 +77,7 @@ Json::Value BoundControlTerms::_adjustBindingValue(const Json::Value &value) con
 				else
 					Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
 
-				row[_optionKeyValue] = keyValue;
+				row[_optionKeyValue()] = keyValue;
 				adjustedValue.append(row);
 			}
 		}
@@ -106,43 +104,9 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 	Json::Value valuePart = _adjustBindingValue(value);
 	Json::Value typesPart = _adjustBindingType(value);
 
-	Terms terms;
 	Terms::RelatedValuesPerTerm allControlValues;
 
-	if (_listView->hasRowComponent() || _listView->containsInteractions())
-		terms = _readArrayOption(valuePart, _optionKeyValue, _optionKeyLabel, allControlValues);
-	else
-	{
-		if (valuePart.isArray())
-		{
-			for (const Json::Value& variable : valuePart)
-				terms.add(Term(variable.asString()));
-		}
-		else if (valuePart.isString())
-		{
-			std::string str = valuePart.asString();
-			if (!str.empty())
-				terms.add(Term(str));
-		}
-		else
-			Log::log() << "Control " << _control->name() << " is bound with a value that is neither an array, an object bor a string :" << valuePart.toStyledString() << std::endl;
-	}
-
-	int termId = 0;
-	for (Term& term : terms)
-	{
-		if (typesPart.size() > termId) // If the type is given, use it
-		{
-			columnTypeVec types;
-			if (typesPart[termId].isArray())
-				for (const Json::Value& jsonType : typesPart[termId])
-					types.push_back(columnTypeFromString(jsonType.asString(), columnType::unknown));
-			else
-				types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
-			term.setTypes(types);
-		}
-		termId++;
-	}
+	Terms terms(valuePart, typesPart, _optionKeyValue(), _optionKeyLabel(), allControlValues);
 
 	// For backward compatibility, the types of the terms must be checked.
 	// Before 0.19.0, the types were not given: in this case the real type of the variable (if it is a variable) is retrieved from the dataset.
@@ -199,35 +163,19 @@ bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 			(typesPart.isArray() || typesPart.isString());
 }
 
-Json::Value BoundControlTerms::makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues, const std::string& optionKeyName, const std::string& optionKeyValue, bool containsInteractions, bool hasRowComponent, bool isSingleRow)
-{
-	Json::Value result(Json::objectValue);
-
-	Json::Value optionValue;
-
-	if (hasRowComponent || containsInteractions)
-		optionValue = _createArrayOption(terms, controlValues, optionKeyName, optionKeyValue, containsInteractions, false);
-	else if (isSingleRow)
-		optionValue = terms.size() > 0 ? fq(terms[0].value()) : "";
-	else
-	{
-		optionValue = Json::arrayValue;
-		for (const Term& term : terms)
-			optionValue.append(fq(term.value()));
-	}
-
-	result["value"] = optionValue;
-	result["types"] = terms.types();
-
-	if (hasRowComponent || containsInteractions)
-		result["optionKey"] = optionKeyName;
-
-	return result;
-}
-
 Json::Value BoundControlTerms::_makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues) const
 {
-	return makeOption(terms, controlValues, _optionKeyValue, _optionKeyLabel, _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
+	return terms.getOptions(controlValues, _optionKeyValue(), _optionKeyLabel(), _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
+}
+
+std::string BoundControlTerms::_optionKeyValue() const
+{
+	return _listView->optionKeyValue().toStdString();
+}
+
+std::string BoundControlTerms::_optionKeyLabel() const
+{
+	return _listView->optionKeyLabel().toStdString();
 }
 
 void BoundControlTerms::resetBoundValue()
@@ -258,13 +206,13 @@ void BoundControlTerms::setBoundValue(const Json::Value &value, bool emitChanges
 			}
 		}
 		if (_listView->hasRowComponent() || _listView->containsInteractions())
-			newValue["optionKey"] = _optionKeyValue;
+			newValue["optionKey"] = _optionKeyValue();
 	}
 
 	BoundControlBase::setBoundValue(newValue.isNull() ? value : newValue, emitChanges);
 }
 
-Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const ListModel::RelatedValuesPerTerm &extraTermsMap) const
+Json::Value BoundControlTerms::addTermsToOption(const Json::Value &option, const Terms &terms, const Terms::RelatedValuesPerTerm &extraTermsMap) const
 {
 	Json::Value result = option;
 	Terms newTerms = _getTermsFromOptions(option);
@@ -291,8 +239,8 @@ Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 	Json::Value valueOption = _isValueWithTypes(option) ? option["value"] : option;
 	Json::Value typesOption = _isValueWithTypes(option) ? option["types"] : Json::nullValue;
 
-	if (valueOption.isObject() && valueOption.isMember(_optionKeyValue))
-		valueOption = valueOption[_optionKeyValue];
+	if (valueOption.isObject() && valueOption.isMember(_optionKeyValue()))
+		valueOption = valueOption[_optionKeyValue()];
 
 	auto parseType = [](const Json::Value& jsonType, int i = 0) -> columnType
 	{
@@ -305,8 +253,8 @@ Terms BoundControlTerms::_getTermsFromOptions(const Json::Value& option) const
 		int i = 0;
 		for (Json::Value jsonValue : valueOption)
 		{
-			if (jsonValue.isObject() && jsonValue.isMember(_optionKeyValue))
-				jsonValue = jsonValue[_optionKeyValue];
+			if (jsonValue.isObject() && jsonValue.isMember(_optionKeyValue()))
+				jsonValue = jsonValue[_optionKeyValue()];
 
 			const Json::Value& jsonType = typesOption.size() > i ? typesOption[i] : Json::nullValue;
 			if (jsonValue.isArray())

@@ -52,7 +52,7 @@ void InputListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms terms = _readArrayOption(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
+	Terms terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
 
 	_inputModel->initTerms(terms, allControlValues);
 }
@@ -104,14 +104,9 @@ void InputListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	if (hasRowComponent())
-		_setArrayOption(_inputModel->terms(), _inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions());
-	else
-	{
-		const Terms& terms = _inputModel->terms();
-		Json::Value boundValue(Json::arrayValue);
-		for (const Term& term : terms)
-			boundValue.append(fq(term.value()));
-		setBoundValue(boundValue);
-	}
+	const Terms terms = _inputModel->terms();
+
+	Json::Value options = hasRowComponent() ? terms.getOptionsWithRelatedValues(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), false)
+											: terms.getValuesOptions();
+	setBoundValue(options);
 }
