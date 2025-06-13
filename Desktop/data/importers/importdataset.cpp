@@ -107,7 +107,7 @@ void ImportDataSet::buildDictionary()
 		{
 			std::string newName;
 			do
-				newName = "V" + std::to_string(curCol);
+				newName = "V" + std::to_string(curCol + 1);
 			while(_nameToColMap.count(newName) > 0);
 				
 			col->setName(newName);
