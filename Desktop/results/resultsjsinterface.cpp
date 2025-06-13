@@ -132,9 +132,9 @@ void ResultsJsInterface::setGlobalJsValues()
 			tempFolder					= "file://" + tq(TempFiles::sessionDirName());
 
 	QString js =	"  window.globSet.pExact = "				+ exactPValueString;
-					"; window.globSet.normalizedNotation = "	+ normalizedNotationString;
-					"; window.globSet.decimals = "				+ PreferencesModel::prefs()->fixedDecimalsForJS();
-					"; window.globSet.tempFolder = '"			+ tempFolder + "/'";
+	js +=			"; window.globSet.normalizedNotation = "	+ normalizedNotationString;
+	js +=			"; window.globSet.decimals = "				+ PreferencesModel::prefs()->fixedDecimalsForJS();
+	js +=			"; window.globSet.tempFolder = '"			+ tempFolder + "/'";
 	runJavaScript(js);
 }
 
