@@ -84,3 +84,9 @@ body code::after
   letter-spacing: -0.2em;
   content: "\00a0";
 }
+
+body code.hljs 
+{
+	background-color: rgb(255 255 255 / 5%);
+	filter: invert(100%) hue-rotate(180deg); /* revert font color to suitable lightTheme */
+}
