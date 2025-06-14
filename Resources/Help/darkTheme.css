@@ -75,7 +75,7 @@ body code
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;
-  background-color: rgb(125 135 150 / 50%);
+  background-color: rgb(34, 39, 46);
   border-radius: 5px;
 }
 
@@ -84,6 +84,11 @@ body code::after
 {
   letter-spacing: -0.2em;
   content: "\00a0";
+}
+
+body code.hljs 
+{
+	background-color: rgb(34, 39, 46);
 }
 
 a
