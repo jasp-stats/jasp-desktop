@@ -30,10 +30,10 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "zh_Hant" ,	true	},
 	{ "fr"		,	true    },
 	{ "pl"		,	true	},
+	{ "sr"		,	true	},
 	{ "id"		,	false	},
 	{ "ru"		,	false	},
-	{ "it"		,	false	},
-	{ "sr"		,	false	}
+	{ "it"		,	false	}
 };
 
 QString LanguageModel::LanguageInfo::_incompleteFlag = "(incomplete)";
