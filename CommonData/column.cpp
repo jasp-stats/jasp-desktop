@@ -214,6 +214,8 @@ bool Column::setCustomEmptyValues(const stringset& customEmptyValues)
 
 	_emptyValues->setEmptyValues(customEmptyValues, _emptyValues->hasEmptyValues());
 	db().columnSetEmptyVals(_id, _emptyValues->toJson().toStyledString());
+
+	nonFilteredCountersReset();
 	
 	incRevision();
 	
