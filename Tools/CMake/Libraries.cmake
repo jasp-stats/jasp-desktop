@@ -256,28 +256,11 @@ endif()
 
 if(WIN32)
 
+  include(FindRToolsDLLPath.cmake)
+  
   find_package(freexl 2.0.99 REQUIRED)
 
   # ReadStat
-
-  message(CHECK_START "Looking for libreadstat.dll.a")
-  find_file(
-    RTOOLS_LIBREADSTAT_DLL_A
-    NAMES libreadstat.dll.a
-    PATHS ${RTOOLS_PATH}/lib
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBREADSTAT_DLL_A})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBREADSTAT_DLL_A}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
   message(CHECK_START "Looking for readstat.h")
   find_file(
     RTOOLS_LIBREADSTAT_H
@@ -296,190 +279,39 @@ if(WIN32)
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
+
   
-  message(CHECK_START "Looking for libreadstat-1.dll")
+  message(CHECK_START "Looking for rdata.h")
   find_file(
-    RTOOLS_LIBREADSTAT_DLL
-    NAMES libreadstat-1.dll
-    PATHS ${RTOOLS_PATH}/bin
+    RTOOLS_LIBRDATA_H
+    NAMES rdata.h
+    PATHS ${RTOOLS_PATH}/include
     NO_DEFAULT_PATH)
- 
-  if(EXISTS ${RTOOLS_LIBREADSTAT_DLL})
+
+  if(EXISTS ${RTOOLS_LIBRDATA_H})
     message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBREADSTAT_DLL}")
+    message(STATUS "Now copy ${RTOOLS_LIBRDATA_H} to source directory")
+    configure_file("${RTOOLS_LIBRDATA_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h" COPYONLY)
   else()
     message(CHECK_FAIL "not found")
     message(
       FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-    # librdata
-    message(CHECK_START "Looking for librdata.dll.a")
-    find_file(
-      RTOOLS_LIBRDATA_DLL_A
-      NAMES librdata.dll.a
-      PATHS ${RTOOLS_PATH}/lib
-      NO_DEFAULT_PATH)
-  
-    if(EXISTS ${RTOOLS_LIBRDATA_DLL_A})
-      message(CHECK_PASS "found")
-      message(STATUS "  ${RTOOLS_LIBRDATA_DLL_A}")
-    else()
-      message(CHECK_FAIL "not found")
-      message(
-        FATAL_ERROR
-          "librdata is required for building on Windows, please follow the build instruction before you continue."
-      )
-    endif()
-  
-    message(CHECK_START "Looking for rdata.h")
-    find_file(
-      RTOOLS_LIBRDATA_H
-      NAMES rdata.h
-      PATHS ${RTOOLS_PATH}/include
-      NO_DEFAULT_PATH)
-  
-    if(EXISTS ${RTOOLS_LIBRDATA_H})
-      message(CHECK_PASS "found")
-      message(STATUS "Now copy ${RTOOLS_LIBRDATA_H} to source directory")
-      configure_file("${RTOOLS_LIBRDATA_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h" COPYONLY)
-    else()
-      message(CHECK_FAIL "not found")
-      message(
-        FATAL_ERROR
-          "rdata is required for building on Windows, please follow the build instruction before you continue."
-      )
-    endif()
-  
-    message(CHECK_START "Looking for librdata-0.dll")
-    find_file(
-      RTOOLS_LIBRDATA_DLL
-      NAMES librdata-0.dll
-      PATHS ${RTOOLS_PATH}/bin
-      NO_DEFAULT_PATH)
-  
-    if(EXISTS ${RTOOLS_LIBRDATA_DLL})
-      message(CHECK_PASS "found")
-      message(STATUS "  ${RTOOLS_LIBRDATA_DLL}")
-    else()
-      message(CHECK_FAIL "not found")
-      message(
-        FATAL_ERROR
-          "librdata is required for building on Windows, please follow the build instruction before you continue."
-      )
-    endif()
-  
-  message(CHECK_START "Looking for zlib1.dll")
-  find_file(
-    RTOOLS_ZLIB_DLL
-    NAMES zlib1.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_ZLIB_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_ZLIB_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "Zlib is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libiconv-2.dll")
-  find_file(
-    RTOOLS_LIBICONV_DLL
-    NAMES libiconv-2.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBICONV_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBICONV_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  # MinGW Libraries
-
-  message(CHECK_START "Looking for libgcc_s_seh-1.dll")
-  find_file(
-    RTOOLS_LIBGCC_S_SEH_DLL
-    NAMES libgcc_s_seh-1.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBGCC_S_SEH_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBGCC_S_SEH_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libstdc++-6.dll")
-  find_file(
-    RTOOLS_LIBSTDCPP_DLL
-    NAMES libstdc++-6.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBSTDCPP_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBSTDCPP_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
+        "rdata is required for building on Windows, please follow the build instruction before you continue."
     )
   endif()
   
-  message(CHECK_START "Looking for msys-2.0.dll")
-  find_file(
-    RTOOLS_MSYS_DLL
-    NAMES msys-2.0.dll
-    PATHS ${RTOOLS_PATH}/../usr/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_MSYS_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_MSYS_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  message(CHECK_START "Looking for libwinpthread-1.dll")
-  find_file(
-    RTOOLS_LIBWINPTHREAD_DLL
-    NAMES libwinpthread-1.dll
-    PATHS ${RTOOLS_PATH}/bin
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBWINPTHREAD_DLL})
-    message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_LIBWINPTHREAD_DLL}")
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "MSYS2 and some of its libraries are required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
+  find_rtools_dll_path(RTOOLS_LIBREADSTAT_DLL_A   "libreadstat.dll.a")
+  find_rtools_dll_path(RTOOLS_LIBREADSTAT_DLL     "libreadstat-1.dll")
+  find_rtools_dll_path(RTOOLS_LIBRDATA_DLL_A      "librdata.dll.a")
+  find_rtools_dll_path(RTOOLS_LIBRDATA_DLL        "librdata-0.dll")
+  find_rtools_dll_path(RTOOLS_ZLIB_DLL            "zlib1.dll")
+  find_rtools_dll_path(RTOOLS_LIBICONV_DLL        "libiconv-2.dll")
+  find_rtools_dll_path(RTOOLS_LIBGCC_S_SEH_DLL    "libgcc_s_seh-1.dll")
+  find_rtools_dll_path(RTOOLS_LIBSTDCPP_DLL       "libstdc++-6.dll")
+  find_rtools_dll_path(RTOOLS_MSYS_DLL            "msys-2.0.dll")
+  find_rtools_dll_path(RTOOLS_LIBWINPTHREAD_DLL   "libwinpthread-1.dll")
+  find_rtools_dll_path(RTOOLS_LIBBZ2_DLL          "libbz2-1.dll")
+  find_rtools_dll_path(RTOOLS_LIBLZMA_DLL         "liblzma-5.dll")
 
 endif()
 

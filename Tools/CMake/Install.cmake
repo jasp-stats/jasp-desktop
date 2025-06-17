@@ -422,6 +422,8 @@ if(WIN32)
           ${RTOOLS_LIBREADSTAT_DLL}
           ${RTOOLS_LIBRDATA_DLL}
           ${RTOOLS_ZLIB_DLL}
+          ${RTOOLS_LIBBZ2_DLL}
+          ${RTOOLS_LIBLZMA_DLL}
           ${RTOOLS_LIBICONV_DLL}
           ${_LIB_R_INTERFACE_DLL}
     DESTINATION .)
