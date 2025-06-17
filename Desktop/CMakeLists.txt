@@ -106,9 +106,6 @@ if(WINDOWS)
     COMMAND ${CMAKE_COMMAND} -E touch "junctions-recreated-successfully.log")
 endif()
 
-message(STATUS "LIBRDATA_INCLUDE_DIRS:    ${LIBRDATA_INCLUDE_DIRS}")
-message(STATUS "LIBREADSTAT_INCLUDE_DIRS: ${LIBREADSTAT_INCLUDE_DIRS}")
-
 target_include_directories(
     JASP
     PUBLIC

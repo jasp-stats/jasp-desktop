@@ -260,46 +260,9 @@ if(WIN32)
   
   find_package(freexl 2.0.99 REQUIRED)
 
-  # ReadStat
-  message(CHECK_START "Looking for readstat.h")
-  find_file(
-    RTOOLS_LIBREADSTAT_H
-    NAMES readstat.h
-    PATHS ${RTOOLS_PATH}/include
-    NO_DEFAULT_PATH)
+  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
+  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)
 
-  if(EXISTS ${RTOOLS_LIBREADSTAT_H})
-    message(CHECK_PASS "found")
-    message(STATUS "Now copy ${RTOOLS_LIBREADSTAT_H} to source directory.")
-    configure_file("${RTOOLS_LIBREADSTAT_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h" COPYONLY)
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "ReadStat is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-
-  
-  message(CHECK_START "Looking for rdata.h")
-  find_file(
-    RTOOLS_LIBRDATA_H
-    NAMES rdata.h
-    PATHS ${RTOOLS_PATH}/include
-    NO_DEFAULT_PATH)
-
-  if(EXISTS ${RTOOLS_LIBRDATA_H})
-    message(CHECK_PASS "found")
-    message(STATUS "Now copy ${RTOOLS_LIBRDATA_H} to source directory")
-    configure_file("${RTOOLS_LIBRDATA_H}" "${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h" COPYONLY)
-  else()
-    message(CHECK_FAIL "not found")
-    message(
-      FATAL_ERROR
-        "rdata is required for building on Windows, please follow the build instruction before you continue."
-    )
-  endif()
-  
   find_rtools_dll_path(RTOOLS_ZLIB_DLL            "zlib1.dll")
   find_rtools_dll_path(RTOOLS_MSYS_DLL            "msys-2.0.dll")
   find_rtools_dll_path(RTOOLS_LIBBZ2_DLL          "libbz2-1.dll")
