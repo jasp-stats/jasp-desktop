@@ -5,7 +5,7 @@ macro(find_rtools_dll_path dllPath dllFilename)
     find_file(
 		${dllPath}
 		NAMES ${dllFilename}
-		PATHS ${RTOOLS_PATH}/bin ${RTOOLS_PATH}/lib ${RTOOLS_PATH}/include
+		PATHS ${RTOOLS_PATH}/bin ${RTOOLS_PATH}/lib ${RTOOLS_PATH}/../usr/bin
 		NO_DEFAULT_PATH)
   
 	if(EXISTS ${${dllPath}})
