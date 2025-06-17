@@ -256,7 +256,7 @@ endif()
 
 if(WIN32)
 
-  include(FindRToolsDLLPath.cmake)
+  include(FindRToolsDLLPath)
   
   find_package(freexl 2.0.99 REQUIRED)
 
