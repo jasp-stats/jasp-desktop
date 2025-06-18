@@ -23,6 +23,7 @@ public:
 
 	static bool					isIntValue(		const std::string	& value);
 	static bool					isDoubleValue(	const std::string	& value);
+	static std::string			doubleToLocale(	const std::string	& value);
 
 	static void					convertEscapedUnicodeToUTF8(			std::string & inputStr);
 	static std::string			deEuropeaniseForImport(					std::string   value);		//Convert a string to a double with a dot for a separator

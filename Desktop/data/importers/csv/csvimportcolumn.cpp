@@ -21,6 +21,11 @@ size_t CSVImportColumn::size() const
 	return _data.size();
 }
 
+std::string CSVImportColumn::valueLookup(size_t row) const
+{
+	return _data[row];
+}
+
 void CSVImportColumn::addValue(const std::string &value)
 {
 	_data.push_back(value);

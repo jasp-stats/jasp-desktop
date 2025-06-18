@@ -133,6 +133,14 @@ bool ColumnUtils::isDoubleValue(const string &value)
 	return getDoubleValue(value, last);
 }
 
+string ColumnUtils::doubleToLocale(const std::string &value)
+{
+	double dbl;
+	if(getDoubleValue(value, dbl))
+		return doubleToString(dbl);
+	return value;
+}
+
 
 bool ColumnUtils::convertVecToInt(const stringvec &values, intvec & intValues, intset & uniqueValues)
 {
