@@ -6,8 +6,8 @@
 
 class Importer;
 
-typedef std::vector<ImportColumn *> ImportColumns;
-typedef std::set<ImportColumn *>	ImportColumnSet;
+typedef std::vector	<ImportColumn *> ImportColumns;
+typedef std::set	<ImportColumn *> ImportColumnSet;
 
 ///
 /// Base class for all data during import

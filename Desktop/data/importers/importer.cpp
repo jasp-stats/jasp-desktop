@@ -5,6 +5,7 @@
 #include "../datasetpackage.h"
 #include "timers.h"
 #include <QThreadPool>
+#include <queue>
 
 Importer::Importer() 
 {
@@ -180,11 +181,17 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	
 	if(! emit DataSetPackage::pkg()->checkDoSync())
 		return;
+	
+	stringvec       changedColumns,
+					newOrder,
+					missingColumns,
+					newColumnOrder;
+	strstrmap		changeNameColumns; //origname -> newname
+	
+	
 
 	DataSetPackage::pkg()->beginSynchingData();
-	
-	DataSetPackage::pkg()->dataSet()->setRowCount(_importDataSet->rowCount());
-	
+		
 	int		rowCount		= _importDataSet->rowCount(),
 			totalCells		= rowCount * _importDataSet->columnCount(),
 			processed		= 0,
@@ -209,38 +216,69 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 
 	_waitingFor.clear();
 	InitColumnTasks tasks;
-	ImportColumnSet newColumns;
+	ImportColumns newColumns;
 	
 	//First we simply make sure that every column in the import dataset that has the same name as one in the data is linked to it.
 	for (ImportColumn * importColumn : _importDataSet->columns())
 	{
+		newColumnOrder.push_back(importColumn->name());
+		
 		Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(importColumn->name());
 		
 		if(dataSetColumn)
 		{
-			InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
-			
-			connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
-			
-			tasks		.push_back(task);
-			_waitingFor	.insert(importColumn);
 			oldColumns	.erase(dataSetColumn);
+			
+			//Is there a difference?
+			if(dataSetColumn->isColumnDifferentFromStringLookUps(
+				importColumn->title(),
+				importColumn->size(),
+				[&importColumn](size_t r){ return importColumn->valueLookup(r); }, 
+				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
+				importColumn->allEmptyValuesAsStrings()
+				))
+			{
+				dataSetColumn->setRowCount(importColumn->size());
+				
+				InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
+				
+				connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
+				
+				tasks		.push_back(task);
+				_waitingFor	.insert(importColumn);
+				
+				changedColumns.push_back(dataSetColumn->name());
+			}
 		}
 		else
-			newColumns	.insert(importColumn);
+			newColumns	.push_back(importColumn);
 	}
+	
+	DataSetPackage::pkg()->dataSet()->setRowCount(_importDataSet->rowCount());
+	
+	//lets make sure to replace any changed columns by going through the columns in a predictable order:
+	std::queue<Column*> oldColQ;
+	for(Column * col : DataSetPackage::pkg()->dataSet()->columns())
+		if(oldColumns.count(col))
+			oldColQ.push(col);
 	
 	for(ImportColumn * newColumn : newColumns)
 	{
 		Log::log() << "New column " << newColumn->name() << std::endl;
-		Column			* dataSetColumn	= oldColumns.size() > 0 ? *oldColumns.begin() : DataSetPackage::pkg()->dataSet()->newColumn(newColumn->name());
+		Column			* dataSetColumn	= oldColQ.size() > 0 ? oldColQ.front() : DataSetPackage::pkg()->dataSet()->newColumn(newColumn->name());
 		InitColumnTask	* task			= new InitColumnTask(newColumn, dataSetColumn, totalCellsCallback);
 		
 		connect(newColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
 		
+		if(oldColQ.size() > 0 && oldColQ.front() == dataSetColumn)
+		{
+			changeNameColumns[dataSetColumn->name()] = newColumn->name();
+			oldColQ.pop();
+		}
+		
 		tasks		.push_back(task);
 		_waitingFor	.insert(newColumn);
-		oldColumns	.erase(dataSetColumn);
+		oldColumns	.erase(dataSetColumn); //cause were replacing it with whatever the new column is
 	}
 	
 	for(InitColumnTask * task : tasks)
@@ -260,12 +298,12 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	DataSetPackage::pkg()->dataSet()->endBatchedToDB([&](float f){ progress(75 + f * 25); });
 
 	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
-			{
-				Log::log() << "Column deleted " << oldCol->name() << std::endl;
+	{
+		Log::log() << "Column deleted " << oldCol->name() << std::endl;
 
-				missingColumns.push_back(oldCol->name());
-				DataSetPackage::pkg()->removeColumn(oldCol->name());
-			}
+		missingColumns.push_back(oldCol->name());
+		DataSetPackage::pkg()->removeColumn(oldCol->name());
+	}
 	
 	DataSetPackage::pkg()->endSynchingData(changedColumns, missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
 	
