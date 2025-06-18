@@ -292,9 +292,8 @@ void Importer::_syncPackage(
 		DataSetPackage::pkg()->renameColumn(oldColName, newColName);
 	}
 
-	
 	DataSetPackage::pkg()->setDataSetSize(newColCount, rowCount);
-	
+
 	std::set<Column*> unusedColumns(DataSetPackage::pkg()->dataSet()->columns().begin(), DataSetPackage::pkg()->dataSet()->columns().end());
 	//remove computed columns from unused list
 	size_t compCols=0;
@@ -309,8 +308,7 @@ void Importer::_syncPackage(
 				unusedColumns.erase(c);
 				break;
 			}
-	
-	
+
 	_waitingFor.clear();
 	std::vector<InitColumnTask*> tasks;
 	
@@ -356,13 +354,13 @@ void Importer::_syncPackage(
 		stringset	newOrderNames(newColumnOrder.begin(), newColumnOrder.end());
 		QStringList qNames;
 		for(auto * uc : unusedColumns)
-			if(!newOrderNames.count(uc->name()))
+			if(!uc->name().empty() && !newOrderNames.count(uc->name()) && !missingColumns.count(uc->name()))
 				qNames.push_back(tq(uc->name()));
 
 		if(qNames.size())
-			throw std::runtime_error("Somehow columns ("+fq(qNames.join(", "))+") exist that are not being used?");
+			throw std::runtime_error("Somehow columns ("+fq(qNames.join(", "))+") exist in the dataset that have not being used in the synching algorithm.");
 	}
-	
+
 	for(InitColumnTask * task : tasks)
 		QThreadPool::globalInstance()->start(task);
 	
