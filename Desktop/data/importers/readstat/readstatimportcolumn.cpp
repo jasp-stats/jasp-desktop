@@ -25,12 +25,12 @@ const stringvec  ReadStatImportColumn::allValuesAsStrings() const
 
 string ReadStatImportColumn::valueLookup(size_t row) const
 {
-	return _values[row];
+	return _values.size() <= row ? "" : _values[row];
 }
 
 string ReadStatImportColumn::labelLookup(size_t row) const
 {
-	return _strLabelsMap.count(_values[row]) ? _strLabelsMap.at(_values[row]) : _values[row];
+	return _values.size() <= row ? "" : _strLabelsMap.count(_values[row]) ? _strLabelsMap.at(_values[row]) : _values[row];
 }
 
 void ReadStatImportColumn::addLabel(const std::string & val, const std::string & label)

@@ -75,12 +75,12 @@ const stringvec  ODSImportColumn::allLabelsAsStrings() const
 
 string ODSImportColumn::valueLookup(size_t row) const
 {
-	return _rows[row].valueAsString();
+	return _rows.size() <= row ? "" : _rows[row].valueAsString();
 }
 
 string ODSImportColumn::labelLookup(size_t row) const
 {
-	return _rows[row].labelAsString();
+	return _rows.size() <= row ? "" : _rows[row].labelAsString();
 }
 
 void insert(int row, const std::string& data);

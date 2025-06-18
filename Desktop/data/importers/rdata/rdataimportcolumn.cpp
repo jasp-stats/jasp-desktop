@@ -37,7 +37,7 @@ size_t RDataImportColumn::size() const
 
 std::string RDataImportColumn::valueLookup(size_t row) const
 {
-	return _data[row];
+	return _data.size() <= row ? "" : _data[row];
 }
 
 std::string RDataImportColumn::labelLookup(size_t row) const

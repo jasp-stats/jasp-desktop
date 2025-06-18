@@ -24,7 +24,7 @@ size_t CSVImportColumn::size() const
 
 std::string CSVImportColumn::valueLookup(size_t row) const
 {
-	return ColumnUtils::doubleToLocale(_data[row]);
+	return _data.size() <= row ? "" : ColumnUtils::doubleToLocale(_data[row]);
 }
 
 void CSVImportColumn::addValue(const std::string &value)

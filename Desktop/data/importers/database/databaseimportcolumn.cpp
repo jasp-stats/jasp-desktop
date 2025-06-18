@@ -29,7 +29,7 @@ const stringvec  DatabaseImportColumn::allValuesAsStrings() const
 
 std::string DatabaseImportColumn::valueLookup(size_t row) const
 {
-	return fq(_data[row].toString());
+	return _data.size() <= row ? "" : fq(_data[row].toString());
 }
 
 void DatabaseImportColumn::addValue(const QVariant & value)

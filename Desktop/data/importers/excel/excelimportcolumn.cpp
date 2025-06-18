@@ -22,7 +22,7 @@ size_t ExcelImportColumn::size() const
 
 std::string ExcelImportColumn::valueLookup(size_t row) const
 {
-	return _data[row];
+	return _data.size() <= row ? "" : _data[row];
 }
 
 void ExcelImportColumn::addValue(const std::string &value)
