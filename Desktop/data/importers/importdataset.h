@@ -46,6 +46,7 @@ protected:
 	Importer							*	_importer;
 	ImportColumns							_columns;
 	std::map<std::string, ImportColumn*>	_nameToColMap;
+	int										_rowsCountedByBuildDictionary = -1;
 };
 
 #endif // IMPORTDATASET_H

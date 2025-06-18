@@ -293,7 +293,7 @@ void Importer::_syncPackage(
 	}
 
 	
-	DataSetPackage::pkg()->setDataSetSize(newColCount, _importDataSet->rowCount());
+	DataSetPackage::pkg()->setDataSetSize(newColCount, rowCount);
 	
 	std::set<Column*> unusedColumns(DataSetPackage::pkg()->dataSet()->columns().begin(), DataSetPackage::pkg()->dataSet()->columns().end());
 	//remove computed columns from unused list

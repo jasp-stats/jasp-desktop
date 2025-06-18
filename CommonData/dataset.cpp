@@ -486,6 +486,13 @@ void DataSet::setRowCount(size_t rowCount)
 		db().dataSetSetRowCount(_dataSetID, rowCount);
 		dbLoad(); //Make sure columns have the right data in them
 	}
+	else
+	{
+		//We are doing things batched, so its possible that a function like DatabaseInterface::dataSetBatchedValuesUpdate tries to fill up the columns.
+		//It also might use the size of the vectors to know what to delete. So lets just resize those vectors a bit
+		for(Column * col : _columns)
+			col->setRowCount(_rowCount);
+	}
 
 	_filter->reset();
 }

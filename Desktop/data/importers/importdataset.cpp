@@ -35,6 +35,9 @@ const string & ImportDataSet::description() const
 
 size_t ImportDataSet::rowCount() const
 {
+	if(_rowsCountedByBuildDictionary != -1)
+		return _rowsCountedByBuildDictionary;
+
 	if (columnCount() == 0)
 		return 0;
 	else
@@ -90,8 +93,9 @@ void ImportDataSet::buildDictionary()
 		if(col->name() != "")
 			_nameToColMap[col->name()] = col;
 
+
 	//Lets name the unnamed columns the same way csv does
-	
+	_rowsCountedByBuildDictionary = -1;
 
 	for(size_t curCol = 0; curCol < _columns.size(); curCol++)
 	{
@@ -113,6 +117,8 @@ void ImportDataSet::buildDictionary()
 			col->setName(newName);
 
 			_nameToColMap[col->name()] = col;
+
+			_rowsCountedByBuildDictionary = std::max(int(col->size()), _rowsCountedByBuildDictionary);
 		}
 	}
 }
