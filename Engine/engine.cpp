@@ -22,7 +22,6 @@
 #include "rbridge.h"
 #include "tempfiles.h"
 #include "columnutils.h"
-#include "processinfo.h"
 #include "utilities/qutils.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"

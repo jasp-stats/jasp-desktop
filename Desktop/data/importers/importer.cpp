@@ -61,6 +61,8 @@ private:
 	std::function<void(int)>	_progressCells	= nullptr;
 };
 
+typedef std::vector<InitColumnTask*> InitColumnTasks;
+
 void Importer::importColumnFinished(ImportColumn * column, bool doCallback)
 {
 	_serialFinishing.lock();
@@ -170,98 +172,24 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	int64_t			timeBeginS		= Utils::currentSeconds();
 					_importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= _importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
-	int				syncColNo		= 0;
-	size_t			newColCount		= 0;
-
-	std::vector<std::pair<std::string, int> >	newColumns;
-	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
-	strstrmap									changeNameColumns; //origname -> newname
-	stringvec									orgColumnNames(DataSetPackage::pkg()->getColumnNames()),
-												newOrder;
-	stringset									missingColumns(orgColumnNames.begin(), orgColumnNames.end());
-
-	//If the following gives errors trhen it probably should be somewhere else:
-	for (const std::string & colName : orgColumnNames)
-		if (DataSetPackage::pkg()->isColumnComputed(colName)) // make sure "missing" columns aren't actually computed columns
-		{
-			missingColumns.erase(colName);
-			newColCount++;
-		}
-
-
-	for (ImportColumn *syncColumn : *_importDataSet)
-	{
-		std::string syncColumnName = syncColumn->name();
-		
-		newOrder.push_back(syncColumnName);
-
-		if (missingColumns.count(syncColumnName) == 0)
-			newColumns.push_back(std::pair<std::string, int>(syncColumnName, syncColNo));
-		else
-		{
-			missingColumns.erase(syncColumnName);
-
-			if(DataSetPackage::pkg()->isColumnDifferentFromStringLookUps(syncColumnName, syncColumn->title(), syncColumn->size() ,[&syncColumn](size_t r){ return syncColumn->valueLookup(r); }, [&syncColumn](size_t r){ return syncColumn->labelLookup(r); }, syncColumn->allEmptyValuesAsStrings()))
-			{
-				//Log::log() << "Something changed in column: " << syncColumnName << std::endl;
-				changedColumns.push_back(std::pair<int, std::string>(syncColNo, syncColumnName));
-			}
-		}
-
-		syncColNo++;
-	}
-
-	if (missingColumns.size() > 0 && newColumns.size() > 0)
-		for (const std::string & nameMissing : missingColumns)
-			for (auto newColIt = newColumns.begin(); newColIt != newColumns.end(); ++newColIt)
-			{
-				const std::string	& newColName	= newColIt->first;
-				ImportColumn		* newColumn		= _importDataSet->getColumn(newColName);
-
-				if(!DataSetPackage::pkg()->isColumnDifferentFromStringLookUps(nameMissing, newColumn->title(), newColumn->size(), [&newColumn](size_t r){ return newColumn->valueLookup(r); }, [&newColumn](size_t r){ return newColumn->labelLookup(r); }, newColumn->allEmptyValuesAsStrings()))
-				{
-					changeNameColumns[nameMissing] = newColName;
-					newColumns.erase(newColIt);
-					break;
-				}
-			}
-
-	for (auto & changeNameColumnIt : changeNameColumns)
-		missingColumns.erase(changeNameColumnIt.first);
+	ColumnSet		oldColumns;
 	
-	newColCount += newOrder.size();
-
-	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
-			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged, newColCount, progress);
-
-	DataSetPackage::pkg()->setManualEdits(false);
-	delete _importDataSet;
+	for(Column * c : DataSetPackage::pkg()->dataSet()->columns())
+		if(!c->isComputed())
+			oldColumns.insert(c);
 	
-	int64_t totalS = (Utils::currentSeconds() - timeBeginS);
-	Log::log() << "Synching '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
-}
-
-void Importer::_syncPackage(
-		const std::vector<std::pair<std::string, int>>	&	newColumns,
-		const std::vector<std::pair<int, std::string>>	&	changedColumns, // import col index and original (old) col name
-		const stringset									&	missingColumns,
-		const strstrmap									&	changeNameColumns, //origname -> newname
-		const stringvec									&	newColumnOrder,
-		bool											rowCountChanged,
-		size_t											newColCount,
-		std::function<void(int)> progress)
-
-{
 	if(! emit DataSetPackage::pkg()->checkDoSync())
 		return;
 
 	DataSetPackage::pkg()->beginSynchingData();
 	
+	DataSetPackage::pkg()->dataSet()->setRowCount(_importDataSet->rowCount());
+	
 	int		rowCount		= _importDataSet->rowCount(),
 			totalCells		= rowCount * _importDataSet->columnCount(),
 			processed		= 0,
 			stepSize		= std::max(totalCells/100, 100);
-			_waitingFor		= std::set<ImportColumn*>(_importDataSet->begin(), _importDataSet->end());
+			_waitingFor		= {};
 	QMutex	callMutex;
 	
 	auto totalCellsCallback = [&,this](int cells)
@@ -279,88 +207,42 @@ void Importer::_syncPackage(
 	
 	DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
 
-	stringvec		_changedColumns,
-					_missingColumns;
-
-	for (const auto & changeNameColumnIt : changeNameColumns)
-	{
-		const std::string	& oldColName = changeNameColumnIt.first,
-							& newColName = changeNameColumnIt.second;
-
-		Log::log() << "Column name changed, from: " << oldColName << " to " << newColName << std::endl;
-
-		DataSetPackage::pkg()->renameColumn(oldColName, newColName);
-	}
-
-	DataSetPackage::pkg()->setDataSetSize(newColCount, rowCount);
-
-	std::set<Column*> unusedColumns(DataSetPackage::pkg()->dataSet()->columns().begin(), DataSetPackage::pkg()->dataSet()->columns().end());
-	//remove computed columns from unused list
-	size_t compCols=0;
-	for(Column * c : unusedColumns)
-		if(c->isComputed())
-			compCols++;
-	
-	for(size_t comp = 0; comp < compCols; comp++)
-		for(Column * c : unusedColumns)
-			if(c->isComputed())
-			{
-				unusedColumns.erase(c);
-				break;
-			}
-
 	_waitingFor.clear();
-	std::vector<InitColumnTask*> tasks;
+	InitColumnTasks tasks;
+	ImportColumnSet newColumns;
 	
-	for (const auto & indexColChanged : changedColumns)
+	//First we simply make sure that every column in the import dataset that has the same name as one in the data is linked to it.
+	for (ImportColumn * importColumn : _importDataSet->columns())
 	{
-		//Log::log() << "Column changed " << indexColChanged.second << std::endl;
-
-		std::string colName	= indexColChanged.second;
-		_changedColumns.push_back(colName);
+		Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(importColumn->name());
 		
-		ImportColumn	* importColumn	= _importDataSet->getColumn(indexColChanged.first);
-		Column			* dataSetColumn	= DataSetPackage::pkg()->dataSet()->column(colName);
-		InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
-		
-		connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
-		
-		tasks.push_back(task);
-		_waitingFor.insert(importColumn);
-		unusedColumns.erase(dataSetColumn);
-	}
-	
-	if (newColumns.size() > 0)
-	{
-		for (auto it = newColumns.begin(); it != newColumns.end(); ++it)
+		if(dataSetColumn)
 		{
-			Log::log() << "New column " << it->first << std::endl;
-			
-			ImportColumn	* importColumn	= _importDataSet->getColumn(it->first);
-			Column			* dataSetColumn	= *unusedColumns.begin();
 			InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
 			
 			connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
 			
-			tasks.push_back(task);
-			_waitingFor.insert(importColumn);
-			unusedColumns.erase(dataSetColumn);
+			tasks		.push_back(task);
+			_waitingFor	.insert(importColumn);
+			oldColumns	.erase(dataSetColumn);
 		}
+		else
+			newColumns	.insert(importColumn);
 	}
 	
-	if(unusedColumns.size() > 0)
+	for(ImportColumn * newColumn : newColumns)
 	{
-		//Unused columns are not necessarily a problem, because maybe they just didnt change at all. Then they should be in the new order though, so lets check that
-		stringset	newOrderNames(newColumnOrder.begin(), newColumnOrder.end());
-		QStringList qNames;
-		for(auto * uc : unusedColumns)
-			if(!uc->name().empty() && !newOrderNames.count(uc->name()) && !missingColumns.count(uc->name()))
-				qNames.push_back(tq(uc->name()));
-
-		if(qNames.size())
-			throw std::runtime_error("Somehow columns ("+fq(qNames.join(", "))+") exist in the dataset that have not being used in the synching algorithm.");
+		Log::log() << "New column " << newColumn->name() << std::endl;
+		Column			* dataSetColumn	= oldColumns.size() > 0 ? *oldColumns.begin() : DataSetPackage::pkg()->dataSet()->newColumn(newColumn->name());
+		InitColumnTask	* task			= new InitColumnTask(newColumn, dataSetColumn, totalCellsCallback);
+		
+		connect(newColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
+		
+		tasks		.push_back(task);
+		_waitingFor	.insert(newColumn);
+		oldColumns	.erase(dataSetColumn);
 	}
-
+	
 	for(InitColumnTask * task : tasks)
 		QThreadPool::globalInstance()->start(task);
 	
@@ -377,17 +259,22 @@ void Importer::_syncPackage(
 	
 	DataSetPackage::pkg()->dataSet()->endBatchedToDB([&](float f){ progress(75 + f * 25); });
 
-	if (missingColumns.size() > 0)
-		for (const std::string & columnName : missingColumns) //already checked for not being computed column at creation list
+	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
 			{
-				Log::log() << "Column deleted " << columnName << std::endl;
+				Log::log() << "Column deleted " << oldCol->name() << std::endl;
 
-				_missingColumns.push_back(columnName);
-				DataSetPackage::pkg()->removeColumn(columnName);
+				missingColumns.push_back(oldCol->name());
+				DataSetPackage::pkg()->removeColumn(oldCol->name());
 			}
 	
-	DataSetPackage::pkg()->endSynchingData(_changedColumns, _missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
+	DataSetPackage::pkg()->endSynchingData(changedColumns, missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
 	
 	if(newColumnOrder.size() > 0)
 		DataSetPackage::pkg()->columnsReorder(newColumnOrder);
+	
+	DataSetPackage::pkg()->setManualEdits(false);
+	delete _importDataSet;
+	
+	int64_t totalS = (Utils::currentSeconds() - timeBeginS);
+	Log::log() << "Synching '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
 }

@@ -7,6 +7,7 @@
 class Importer;
 
 typedef std::vector<ImportColumn *> ImportColumns;
+typedef std::set<ImportColumn *>	ImportColumnSet;
 
 ///
 /// Base class for all data during import
@@ -39,6 +40,8 @@ public:
 	void									clear();
 	void									erase(ImportColumns::iterator it);
 	void									buildDictionary();
+	
+	ImportColumns						&	columns() { return _columns; }
 
 
 protected:
