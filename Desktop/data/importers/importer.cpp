@@ -171,7 +171,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 					_importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= _importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
 	int				syncColNo		= 0;
-	//size_t			newColCount		= 0;
+	size_t			newColCount		= 0;
 
 	std::vector<std::pair<std::string, int> >	newColumns;
 	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
@@ -183,7 +183,10 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	//If the following gives errors trhen it probably should be somewhere else:
 	for (const std::string & colName : orgColumnNames)
 		if (DataSetPackage::pkg()->isColumnComputed(colName)) // make sure "missing" columns aren't actually computed columns
+		{
 			missingColumns.erase(colName);
+			newColCount++;
+		}
 
 
 	for (ImportColumn *syncColumn : *_importDataSet)
@@ -226,10 +229,10 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 	
-	//newColCount += newColumns.size() + changedColumns.size() + changeNameColumns.size();
+	newColCount += newOrder.size();
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
-			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged, newOrder.size(), progress);
+			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged, newColCount, progress);
 
 	DataSetPackage::pkg()->setManualEdits(false);
 	delete _importDataSet;
