@@ -22,7 +22,7 @@
 #include "odssheetcell.h"
 
 #include "QDate"
-
+#include "columnutils.h"
 #include "../importcolumn.h"
 
 using namespace std;
@@ -106,19 +106,19 @@ void ODSSheetCell::setComment(const std::string &comment)
 	_comment = comment; 
 }
 
-const string &ODSSheetCell::valueAsString()
+string ODSSheetCell::valueAsString()
 const
 {
-	return _string;
+	return ColumnUtils::doubleToLocale(_string);
 }
 
-const string &ODSSheetCell::commentAsString()
+string ODSSheetCell::commentAsString()
 const
 {
 	return _comment;
 }
 
-const string &ODSSheetCell::labelAsString() const
+string ODSSheetCell::labelAsString() const
 {
-	return _comment.empty() ? _string : _comment;
+	return ColumnUtils::doubleToLocale(_comment.empty() ? _string : _comment);
 }

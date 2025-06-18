@@ -1,4 +1,5 @@
 #include "csvimportcolumn.h"
+#include "columnutils.h"
 #include "timers.h"
 
 CSVImportColumn::CSVImportColumn(ImportDataSet* importDataSet, std::string name) : ImportColumn(importDataSet, name)
@@ -23,7 +24,7 @@ size_t CSVImportColumn::size() const
 
 std::string CSVImportColumn::valueLookup(size_t row) const
 {
-	return _data[row];
+	return ColumnUtils::doubleToLocale(_data[row]);
 }
 
 void CSVImportColumn::addValue(const std::string &value)

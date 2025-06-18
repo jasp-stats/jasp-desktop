@@ -1911,10 +1911,10 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 	{
 		thread_local std::string impoVal, dataVal, impoLab, dataLab;
 
-		impoVal	= ColumnUtils::doubleToLocale(valueLookup(r));
-		dataVal	= getValue(r);
-		impoLab	= ColumnUtils::doubleToLocale(labelLookup(r));
-		dataLab = getLabel(r);
+		impoVal	= valueLookup(r);
+		dataVal	= getValue(r, false, true);
+		impoLab	= labelLookup(r);
+		dataLab = getLabel(r, false, true);
 
 		if(impoVal != dataVal || (impoLab != "" && impoLab != dataLab))
 			return true;

@@ -41,9 +41,9 @@ public:
 	const XmlDatatype& xmlType() const { return _xmlType; }
 
 	void setTypeAndValue(XmlDatatype type, const QString &data);
-	const std::string &	valueAsString() const;
-	const std::string &	labelAsString() const;
-	const std::string &	commentAsString() const;
+	std::string valueAsString() const;
+	std::string labelAsString() const;
+	std::string commentAsString() const;
 
 
 private:

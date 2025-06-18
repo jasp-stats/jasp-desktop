@@ -2190,14 +2190,14 @@ void DatabaseInterface::load()
 
         if(!loadingWorked)
         {
-            if(loadingAttempt > 100 * 60) //Timeout is 0.01 sec, so this lets the db try for 1 minute to connect...
+			if(loadingAttempt > 10 * 60) //Timeout is 0.1 sec, so this lets the db try for 1 minute to connect...
             {
                 _loadMutex.unlock();
                 throw dbMalformedException();
             }
 
             Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
-            std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
+			std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
         }
     }
 

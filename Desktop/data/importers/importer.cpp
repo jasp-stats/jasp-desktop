@@ -20,6 +20,7 @@ public:
 	InitColumnTask(ImportColumn * importColumn, Column * datasetColumn, std::function<void(int)> progressCells = [](int){})
 		: _importColumn(importColumn), _column(datasetColumn), _progressCells(progressCells)
 	{
+		assert(_column);
 		setAutoDelete(true);
 	}
 	
@@ -170,7 +171,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 					_importDataSet	= loadFile(locator, progress);
 	bool			rowCountChanged	= _importDataSet->rowCount() != DataSetPackage::pkg()->dataRowCount();
 	int				syncColNo		= 0;
-	size_t			newColCount		= 0;
+	//size_t			newColCount		= 0;
 
 	std::vector<std::pair<std::string, int> >	newColumns;
 	std::vector<std::pair<int, std::string> >	changedColumns; //import col index and original column name
@@ -182,10 +183,8 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	//If the following gives errors trhen it probably should be somewhere else:
 	for (const std::string & colName : orgColumnNames)
 		if (DataSetPackage::pkg()->isColumnComputed(colName)) // make sure "missing" columns aren't actually computed columns
-		{
 			missingColumns.erase(colName);
-			newColCount++; //Count the computed columns first
-		}
+
 
 	for (ImportColumn *syncColumn : *_importDataSet)
 	{
@@ -227,10 +226,10 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	for (auto & changeNameColumnIt : changeNameColumns)
 		missingColumns.erase(changeNameColumnIt.first);
 	
-	newColCount += newColumns.size() + changedColumns.size() + changeNameColumns.size();
+	//newColCount += newColumns.size() + changedColumns.size() + changeNameColumns.size();
 
 	if (newColumns.size() > 0 || changedColumns.size() > 0 || missingColumns.size() > 0 || changeNameColumns.size() > 0 || orgColumnNames != newOrder || rowCountChanged)
-			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged, newColCount, progress);
+			_syncPackage(newColumns, changedColumns, missingColumns, changeNameColumns, newOrder, rowCountChanged, newOrder.size(), progress);
 
 	DataSetPackage::pkg()->setManualEdits(false);
 	delete _importDataSet;
@@ -349,7 +348,17 @@ void Importer::_syncPackage(
 	}
 	
 	if(unusedColumns.size() > 0)
-		throw std::runtime_error("Somehow columns exist that are not being used?");
+	{
+		//Unused columns are not necessarily a problem, because maybe they just didnt change at all. Then they should be in the new order though, so lets check that
+		stringset	newOrderNames(newColumnOrder.begin(), newColumnOrder.end());
+		QStringList qNames;
+		for(auto * uc : unusedColumns)
+			if(!newOrderNames.count(uc->name()))
+				qNames.push_back(tq(uc->name()));
+
+		if(qNames.size())
+			throw std::runtime_error("Somehow columns ("+fq(qNames.join(", "))+") exist that are not being used?");
+	}
 	
 	for(InitColumnTask * task : tasks)
 		QThreadPool::globalInstance()->start(task);
