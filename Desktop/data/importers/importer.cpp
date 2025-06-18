@@ -214,6 +214,9 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	
 	DataSetPackage::pkg()->dataSet()->beginBatchedToDB();
 
+	
+	DataSetPackage::pkg()->dataSet()->setRowCount(_importDataSet->rowCount());
+	
 	_waitingFor.clear();
 	InitColumnTasks tasks;
 	ImportColumns newColumns;
@@ -237,9 +240,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
 				importColumn->allEmptyValuesAsStrings()
 				))
-			{
-				dataSetColumn->setRowCount(importColumn->size());
-				
+			{				
 				InitColumnTask	* task			= new InitColumnTask(importColumn, dataSetColumn, totalCellsCallback);
 				
 				connect(importColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
@@ -249,12 +250,12 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 				
 				changedColumns.push_back(dataSetColumn->name());
 			}
+			else if(rowCountChanged)
+				changedColumns.push_back(dataSetColumn->name());
 		}
 		else
 			newColumns	.push_back(importColumn);
 	}
-	
-	DataSetPackage::pkg()->dataSet()->setRowCount(_importDataSet->rowCount());
 	
 	//lets make sure to replace any changed columns by going through the columns in a predictable order:
 	std::queue<Column*> oldColQ;
@@ -302,7 +303,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		Log::log() << "Column deleted " << oldCol->name() << std::endl;
 
 		missingColumns.push_back(oldCol->name());
-		DataSetPackage::pkg()->removeColumn(oldCol->name());
+		DataSetPackage::pkg()->dataSet()->removeColumn(oldCol->name());
 	}
 	
 	DataSetPackage::pkg()->endSynchingData(changedColumns, missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
