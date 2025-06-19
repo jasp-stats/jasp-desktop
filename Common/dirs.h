@@ -34,6 +34,8 @@ public:
 	static void					setReportingDir(const std::string & dir) { _reportingDir = dir; }
 	static const std::string &	reportingDir() { return _reportingDir; }
 
+	static void					setLocalAppdataDir(const std::string & dir) { _localAppDataDir = dir; }
+	static const std::string &	localAppDataDir() { return _localAppDataDir; }
 
 	class Exception : public std::runtime_error
 	{
@@ -47,6 +49,7 @@ public:
 
 private:
 	static std::string _reportingDir;
+	static std::string _localAppDataDir;
 };
 
 #endif // DIRS_H

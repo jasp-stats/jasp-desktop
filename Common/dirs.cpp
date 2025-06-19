@@ -47,6 +47,7 @@
 using namespace std;
 
 string Dirs::_reportingDir = "";
+string Dirs::_localAppDataDir = "";
 
 string Dirs::tempDir()
 {
@@ -55,10 +56,7 @@ string Dirs::tempDir()
 	if (p != "")
 		return p;
 
-#ifdef _WIN32
-	//lets just read it from the environment if the anwser is found there
-	if(ProcessInfo::inWinContainer()) {
-		Log::log() << "In sandbox win container!" << std::endl;
+	if(localAppDataDir() == "") { //we are an engine
 		char* buf = nullptr;
 		size_t sz = 0;
 		if(_dupenv_s(&buf, &sz, "JASP_TMP_DIR") == 0 && buf != nullptr) {
@@ -67,7 +65,6 @@ string Dirs::tempDir()
 			return p;
 		}
 	}
-#endif
 
 	string dir;
 	std::filesystem::path pa;
@@ -81,24 +78,10 @@ string Dirs::tempDir()
 		dir = reportingDir() + "/jaspTemp/";
 		pa  = dir;
 	}
+	else if(localAppDataDir() != "")
+		pa = localAppDataDir() + "/temp/";
 	else
-	{
-
-#ifdef _WIN32
-		char buffer[MAX_PATH];
-		if ( ! SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, buffer)))
-			throw Exception("App Data directory could not be retrieved");
-
-		dir = std::string(buffer);
-		dir += "/JASP/temp";
-#else
-
-		dir = string(getpwuid(getuid())->pw_dir);
-		dir += "/.JASP/temp";
-#endif
-
-		pa = dir;
-	}
+		throw std::runtime_error("Local Appdate Dir not defined!");
 
 	if (!std::filesystem::exists(pa))
 	{
@@ -113,7 +96,7 @@ string Dirs::tempDir()
 		}
 	}
 
-	p = std::filesystem::path(dir).generic_string();
+	p = pa.generic_string();
 
 	return p;
 }
