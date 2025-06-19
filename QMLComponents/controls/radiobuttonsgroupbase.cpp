@@ -116,10 +116,12 @@ void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 
 void RadioButtonsGroupBase::unregisterRadioButton(RadioButtonBase* button)
 {
-	_buttons.remove(button);
-	if (button == _selectedButton && _buttons.size() > 0)
-		_setCheckedButton(*_buttons.begin());
-	emit buttonsChanged();
+	if (_buttons.remove(button))
+	{
+		if (button == _selectedButton && _buttons.size() > 0)
+			_setCheckedButton(*_buttons.begin());
+		emit buttonsChanged();
+	}
 }
 
 void RadioButtonsGroupBase::radioButtonValueChanged(RadioButtonBase *button)
