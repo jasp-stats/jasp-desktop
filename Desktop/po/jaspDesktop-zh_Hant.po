@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-06-22 22:01+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.13-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -5359,11 +5365,11 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
-msgstr ""
+msgstr "啟用沙盒式引擎"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
-msgstr ""
+msgstr "這將透過隔離執行 R 程式碼的引擎，在 Windows 上強化安全性"
 
 msgctxt "PrefsUI|"
 msgid "Use thousands separators"
@@ -5536,7 +5542,7 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "設定檔選項"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
