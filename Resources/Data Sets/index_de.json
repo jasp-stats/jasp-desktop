@@ -726,49 +726,49 @@
           {
             "name": "Iris Flowers",
             "path": "iris.jasp",
-            "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
+            "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> The example JASP file demonstrates the use of a K-means clustering analysis. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "iris.csv"
           },
           {
             "name": "Telco Customer Churn",
             "path": "telcoCustomerChurn.jasp",
-            "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> The example JASP file demonstrates the use of a K-nearest neighbors classification analysis. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
             "kind": "file",
             "associated_datafile": "telcoCustomerChurn.csv"
           },
           {
             "name": "Student Grades",
             "path": "studentGrades.jasp",
-            "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> The example JASP file demonstrates the use of a boosting regression analysis. <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
             "kind": "file",
             "associated_datafile": "studentGrades.csv"
           },
           {
             "name": "Wine Types",
             "path": "wine.jasp",
-            "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
+            "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> The example JASP file demonstrates the use of a random forest clustering analysis. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
           },
           {
             "name": "Spirale",
             "path": "spiral.jasp",
-            "description": "Die Daten enthalten eine Spiralfigur auf einer zweidimensionalen Ebene. In den 200 Beobachtungen sind zwei Klassen vertreten. <br><br> <i>Dataset in R.<\/i>",
+            "description": "Die Daten enthalten eine Spiralfigur auf einer zweidimensionalen Ebene. In den 200 Beobachtungen sind zwei Klassen vertreten. <br><br> Die Beispiel-JASP-Datei demonstriert die Anwendung einer Support-Vector-Machine-Klassifikationsanalyse. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
           },
           {
             "name": "Penguins",
             "path": "penguins.jasp",
-            "description": "Die Daten enthalten Messungen für Pinguinarten, Inseln im Palmer-Archipel, Größe (Flossenlänge, Körpermasse, Schnabelabmessungen) und Geschlecht. <br><br> <i>Datensatz im R-Paket palmerpenguins enthalten.<\/i>",
+            "description": "Die Daten enthalten Messungen für Pinguinarten, Inseln im Palmer-Archipel, Größe (Flossenlänge, Körpermasse, Schnabelabmessungen) und Geschlecht. <br><br> Die Beispiel-JASP-Datei demonstriert die Anwendung einer Entscheidungsbaum-Klassifikationsanalyse. <br><br> <i>Datensatz im R-Paket palmerpenguins enthalten.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
           },
           {
             "name": "Police Cadet Evaluation",
             "path": "policeCadetEvaluation.jasp",
-            "description": "In den späten 1990er Jahren in den Niederlanden erhobene Felddaten über die Beurteilung von Polizeianwärtern, die zur Untersuchung der Auswirkungen einer Senkung der Zulassungsstandards und zur Vorhersage, ob die Anwärter die standardmäßige Fünfjahresbeurteilung bestehen würden, auf der Grundlage verschiedener Merkmale verwendet wurden. <br><br> <i>Datensatz, der von der Nationalen Agentur für Polizeidienste und dem Justizministerium in den Niederlanden zur Verfügung gestellt wurde.<\/i>",
+            "description": "In den späten 1990er Jahren in den Niederlanden erhobene Felddaten über die Beurteilung von Polizeianwärtern, die zur Untersuchung der Auswirkungen einer Senkung der Zulassungsstandards und zur Vorhersage, ob die Anwärter die standardmäßige Fünfjahresbeurteilung bestehen würden, auf der Grundlage verschiedener Merkmale verwendet wurden. <br><br> Die Beispiel-JASP-Datei demonstriert die Anwendung einer Entscheidungsbaum-Klassifikationsanalyse. <br><br> <i>Datensatz, der von der Nationalen Agentur für Polizeidienste und dem Justizministerium in den Niederlanden zur Verfügung gestellt wurde.<\/i>",
             "kind": "file",
             "associated_datafile": "policeCadetEvaluation.csv"
           }

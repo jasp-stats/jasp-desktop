@@ -726,49 +726,49 @@
           {
             "name": "Iris Bloemen",
             "path": "iris.jasp",
-            "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> <i>Dataset in R.<\/i>",
+            "description": "Dit beroemde iris gegevensbestand (door Fisher of Anderson) geeft de maten (in centimeters) van de variabelen kelkbladlengte en breedte, en bloembladlengte en breedte respectievelijk, voor 50 bloemen van alle 3 soorten irissen. Deze soorten zijn Iris setosa, Iris versicolor, en Iris virginica. <br><br> Het voorbeeldbestand in JASP laat zien hoe een K-means clustering analyse kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "iris.csv"
           },
           {
             "name": "Telco's Overstappende Klanten",
             "path": "telcoCustomerChurn.jasp",
-            "description": "Telecomdata van 7043 klanten van een telefoonprovider. Variabelen varieren van persoonlijke beschrijvingen tot subscriptiekosten en geven zo informatie over overstapgedrag van klanten. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "description": "Telecomdata van 7043 klanten van een telefoonprovider. Variabelen varieren van persoonlijke beschrijvingen tot subscriptiekosten en geven zo informatie over overstapgedrag van klanten. <br><br> Het voorbeeldbestand in JASP laat zien hoe een K-dichtste buren classificatie analyse kan worden toegepast. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
             "kind": "file",
             "associated_datafile": "telcoCustomerChurn.csv"
           },
           {
             "name": "Studentcijfers",
             "path": "studentGrades.jasp",
-            "description": "De data bevat informatie van 357 middelbare scholieren in Portugal (Cortez & Silva, 2008). <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "description": "De data bevat informatie van 357 middelbare scholieren in Portugal (Cortez & Silva, 2008). <br><br> Het voorbeeldbestand in JASP laat zien hoe een boosting regressie analyse kan worden toegepast. <br><br> <i>Publiek beschikbaar via https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
             "kind": "file",
             "associated_datafile": "studentGrades.csv"
           },
           {
             "name": "Wijnsoorten",
             "path": "wine.jasp",
-            "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> <i>Dataset in R.<\/i>",
+            "description": "De resultaten van chemische analyse van wijnen die worden ontwikkeld in een specifieke regio in Italië. Drie soorten wijn zijn gebruikt in de 178 monsters, en de resultaten van 13 chemische analyses zijn gerapporteerd voor iedere monster. <br><br> Het voorbeeldbestand in JASP laat zien hoe een random forest clustering analyse kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
           },
           {
             "name": "Spiraal",
             "path": "spiral.jasp",
-            "description": "De data bevat een spiraalvormig figuur op een twee-dimensionaal vlak. Twee klassen zijn vertegenwoordigd in de 200 observaties. <br><br> <i>Dataset in R.<\/i>",
+            "description": "De data bevat een spiraalvormig figuur op een twee-dimensionaal vlak. Twee klassen zijn vertegenwoordigd in de 200 observaties. <br><br> Het voorbeeldbestand in JASP laat zien hoe een support vector machine classificatie analyse kan worden toegepast. <br><br> <i>Dataset in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
           },
           {
             "name": "Penguins",
             "path": "penguins.jasp",
-            "description": "De data bevat metingen voor pinguïnsoorten, eiland in de Palmer-archipel, grootte (lengte van de vinnen, lichaamsgewicht, snavelafmetingen) en geslacht. <br><br> <i>Dataset opgenomen in R package palmerpenguins.<\/i>",
+            "description": "De data bevat metingen voor pinguïnsoorten, eiland in de Palmer-archipel, grootte (lengte van de vinnen, lichaamsgewicht, snavelafmetingen) en geslacht. <br><br> Het voorbeeldbestand in JASP laat zien hoe een beslisboom classificatie analyse kan worden toegepast. <br><br> <i>Dataset opgenomen in R package palmerpenguins.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
           },
           {
             "name": "Police Cadet Evaluation",
             "path": "policeCadetEvaluation.jasp",
-            "description": "Gegevens uit de praktijk over de evaluatie van politiecadetten, eind jaren negentig verzameld in Nederland, die werden gebruikt om de effecten te bestuderen van het verlagen van de toelatingsnormen en om te voorspellen of cadetten zouden slagen voor de standaard vijfjaarlijkse evaluatie op basis van verschillende kenmerken. <br><br> <i>Data set beschikbaar gemaakt door het Korps landelijke politiediensten en het Ministerie van Justitie in Nederland.<\/i>",
+            "description": "Gegevens uit de praktijk over de evaluatie van politiecadetten, eind jaren negentig verzameld in Nederland, die werden gebruikt om de effecten te bestuderen van het verlagen van de toelatingsnormen en om te voorspellen of cadetten zouden slagen voor de standaard vijfjaarlijkse evaluatie op basis van verschillende kenmerken. <br><br> Het voorbeeldbestand in JASP laat zien hoe een beslisboom classificatie analyse kan worden toegepast. <br><br> <i>Data set beschikbaar gemaakt door het Korps landelijke politiediensten en het Ministerie van Justitie in Nederland.<\/i>",
             "kind": "file",
             "associated_datafile": "policeCadetEvaluation.csv"
           }

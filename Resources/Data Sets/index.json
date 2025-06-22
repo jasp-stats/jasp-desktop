@@ -726,49 +726,49 @@
           {
             "name": "Iris Flowers",
             "path": "iris.jasp",
-            "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> <i>Data set included in R.<\/i>",
+            "description": "This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. <br><br> The example JASP file demonstrates the use of a K-means clustering analysis. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "iris.csv"
           },
           {
             "name": "Telco Customer Churn",
             "path": "telcoCustomerChurn.jasp",
-            "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+            "description": "Telecom data from 7043 customers of a phone provider. Variables range from personal descriptives to subscription fees and provide information on customer churning behaviour. <br><br> The example JASP file demonstrates the use of a K-nearest neighbors classification analysis. <br><br> <i>Publicly available at https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
             "kind": "file",
             "associated_datafile": "telcoCustomerChurn.csv"
           },
           {
             "name": "Student Grades",
             "path": "studentGrades.jasp",
-            "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+            "description": "Data contains information of 357 high school students in Portugal (Cortez & Silva, 2008). <br><br> The example JASP file demonstrates the use of a boosting regression analysis. <br><br> <i>Publicly available at https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
             "kind": "file",
             "associated_datafile": "studentGrades.csv"
           },
           {
             "name": "Wine Types",
             "path": "wine.jasp",
-            "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> <i>Data set included in R.<\/i>",
+            "description": "The results of a chemical analysis of wines grown in a specific area of Italy. Three types of wine are represented in the 178 samples, with the results of 13 chemical analyses recorded for each sample. <br><br> The example JASP file demonstrates the use of a random forest clustering analysis. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "wine.csv"
           },
           {
             "name": "Spiral",
             "path": "spiral.jasp",
-            "description": "Data contains a spiral figure on a two-dimensional plane. Two classes are represented in the 200 samples. <br><br> <i>Data set included in R.<\/i>",
+            "description": "Data contains a spiral figure on a two-dimensional plane. Two classes are represented in the 200 samples. <br><br> The example JASP file demonstrates the use of a support vector machine classification analysis. <br><br> <i>Data set included in R.<\/i>",
             "kind": "file",
             "associated_datafile": "spiral.csv"
           },
           {
             "name": "Penguins",
             "path": "penguins.jasp",
-            "description": "Data contains measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. <br><br> <i>Data set included in R package palmerpenguins.<\/i>",
+            "description": "Data contains measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex. <br><br> The example JASP file demonstrates the use of a decision tree classification analysis. <br><br> <i>Data set included in R package palmerpenguins.<\/i>",
             "kind": "file",
             "associated_datafile": "penguins.csv"
           },
           {
             "name": "Police Cadet Evaluation",
             "path": "policeCadetEvaluation.jasp",
-            "description": "Real-world data on police cadet evaluation, collected in the late 1990s in the Netherlands, which was used to study the effects of lowering admission standards and to predict whether cadets would pass the standard five-year evaluation based on various attributes. <br><br> <i>Data set made available by the National Police Corps and the Ministry of Justice of the Netherlands.<\/i>",
+            "description": "Real-world data on police cadet evaluation, collected in the late 1990s in the Netherlands, which was used to study the effects of lowering admission standards and to predict whether cadets would pass the standard five-year evaluation based on various attributes. <br><br> The example JASP file demonstrates the use of a decision tree classification analysis. <br><br> <i>Data set made available by the National Police Corps and the Ministry of Justice of the Netherlands.<\/i>",
             "kind": "file",
             "associated_datafile": "policeCadetEvaluation.csv"
           }

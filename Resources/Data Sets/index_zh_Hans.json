@@ -726,49 +726,49 @@
             {
               "name": "Iris Flowers",
               "path": "iris.jasp",
-              "description": "这个著名的（Fisher 或 Anderson）鸢尾花数据集分别给出了 3 种鸢尾花各 50 朵花的变量萼片长度和宽度以及花瓣长度和宽度（以厘米为单位）的测量值。 该物种包括山鸢尾、云芝和维吉尼亚鸢尾。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "description": "这个著名的（Fisher 或 Anderson）鸢尾花数据集分别给出了 3 种鸢尾花各 50 朵花的变量萼片长度和宽度以及花瓣长度和宽度（以厘米为单位）的测量值。 该物种包括山鸢尾、云芝和维吉尼亚鸢尾。 <br><br> 示例 JASP 文件演示了 K 均值聚类分析的使用 <br><br> <i>数据来源于 R 软件<\/i>",
               "kind": "file",
               "associated_datafile": "iris.csv"
             },
             {
               "name": "Telco Customer Churn",
               "path": "telcoCustomerChurn.jasp",
-              "description": "来自电话提供商 7043 名客户的电信数据。 变量范围从个人描述到订阅费，并提供有关客户流失行为的信息。 <br><br> <i>数据公开在 https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
+              "description": "来自电话提供商 7043 名客户的电信数据。 变量范围从个人描述到订阅费，并提供有关客户流失行为的信息。 <br><br> 示例 JASP 文件演示了 K 最近邻分类分析的使用。 <br><br> <i>数据公开在 https://www.kaggle.com/blastchar/telco-customer-churn.<\/i>",
               "kind": "file",
               "associated_datafile": "telcoCustomerChurn.csv"
             },
             {
               "name": "Student Grades",
               "path": "studentGrades.jasp",
-              "description": "数据包含葡萄牙357名高中生的信息 (Cortez & Silva, 2008). <br><br> <i>数据公开在 https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
+              "description": "数据包含葡萄牙357名高中生的信息 (Cortez & Silva, 2008). <br><br> 示例 JASP 文件演示了提升回归分析的使用。 <br><br> <i>数据公开在 https://www.kaggle.com/dipam7/student-grade-prediction<\/i>",
               "kind": "file",
               "associated_datafile": "studentGrades.csv"
             },
             {
               "name": "Wine Types",
               "path": "wine.jasp",
-              "description": "对意大利特定地区种植的葡萄酒进行化学分析的结果。 178 个样品代表了三种类型的葡萄酒，每个样品记录了 13 项化学分析结果。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "description": "对意大利特定地区种植的葡萄酒进行化学分析的结果。 178 个样品代表了三种类型的葡萄酒，每个样品记录了 13 项化学分析结果。 <br><br> 示例 JASP 文件演示了随机森林聚类分析的使用。 <br><br> <i>数据来源于 R 软件<\/i>",
               "kind": "file",
               "associated_datafile": "wine.csv"
             },
             {
               "name": "Spiral",
               "path": "spiral.jasp",
-              "description": "数据包含二维平面上的螺旋图形。 200 个样本中由两个类别分隔。 <br><br> <i>数据来源于 R 软件<\/i>",
+              "description": "数据包含二维平面上的螺旋图形。 200 个样本中由两个类别分隔。 <br><br>  示例 JASP 文件演示了支持向量机分类分析的使用。 <br><br> <i>数据来源于 R 软件<\/i>",
               "kind": "file",
               "associated_datafile": "spiral.csv"
             },
             {
               "name": "Penguins",
               "path": "penguins.jasp",
-              "description": "数据包含企鹅种类、帕尔默群岛岛屿、尺寸（鳍状肢长度、体重、喙尺寸）和性别的测量数据。 <br><br> <i>R 包 palmerpenguins 中包含的数据集。<\/i>",
+              "description": "数据包含企鹅种类、帕尔默群岛岛屿、尺寸（鳍状肢长度、体重、喙尺寸）和性别的测量数据。 <br><br> 示例 JASP 文件演示了决策树分类分析的使用。 <br><br> <i>R 包 palmerpenguins 中包含的数据集。<\/i>",
               "kind": "file",
               "associated_datafile": "penguins.csv"
             },
             {
               "name": "Police Cadet Evaluation",
               "path": "policeCadetEvaluation.jasp",
-              "description": "荷兰 20 世纪 90 年代末收集的警校学员评估的真实数据，用于研究降低入学标准的影响，并根据各种属性预测学员是否会通过标准的五年评估。 <br><br> <i>数据集由荷兰国家警察总队和司法部提供。<\/i>",
+              "description": "荷兰 20 世纪 90 年代末收集的警校学员评估的真实数据，用于研究降低入学标准的影响，并根据各种属性预测学员是否会通过标准的五年评估。 <br><br> 示例 JASP 文件演示了决策树分类分析的使用。 <br><br> <i>数据集由荷兰国家警察总队和司法部提供。<\/i>",
               "kind": "file",
               "associated_datafile": "policeCadetEvaluation.csv"
             }
