@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-06-21 19:26+0000\n"
+"PO-Revision-Date: 2025-06-22 22:01+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -2631,11 +2631,11 @@ msgstr "Límite superior"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr "eje x"
+msgstr "Eje X"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr "eje y"
+msgstr "Eje Y"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
