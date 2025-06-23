@@ -224,7 +224,7 @@ void TextInputBase::setDisplayValue()
 	if(isInt)
 		showThis = QString::number(valueInt); //QColumnUtils::currentQLocale().toString(valueInt);
 
-	else if(isDbl)
+	else if(isDbl) // Can be also a formula
 		showThis = QColumnUtils::doubleToString(valueDbl);
 
 	if(property("displayValue") != showThis)
@@ -468,11 +468,14 @@ void TextInputBase::_setBoundValue()
 
 		if (isDbl)
 		{
-			setProperty("realValue", _value);
-			setBoundValue(_getJsonValue(_value));
-			clearControlError();
-			setHasScriptError(false);
-			emit formulaCheckSucceeded();
+			if (_formulaResultInBounds(valueDbl))
+			{
+				setProperty("realValue", _value);
+				setBoundValue(_getJsonValue(_value));
+				clearControlError();
+				setHasScriptError(false);
+				emit formulaCheckSucceeded();
+			}
 		}
 		else
 		{
