@@ -787,6 +787,26 @@ void Column::labelsClear(bool doIncRevision)
 		incRevision();
 }
 
+
+void Column::_resetLabelValueMap()
+{
+
+	_labelByIntsIdMap.clear();
+	_labelByValDis.clear();
+	_labelsByValue.clear();
+	_labelsByDisplay.clear();
+	
+	_maxWidthLabel	= -1;
+	_maxWidthValue	= -1;
+	_hasShadows		= false;
+	
+	_highestIntsId = 0;
+	
+	for(Label * label : _labels)
+		_labelMapIt(label);
+}
+
+
 void Column::beginBatchedLabelsDB()
 {
 	_batchedLabelDepth++;
@@ -984,37 +1004,6 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 		_dbUpdateLabelOrder();
 }
 
-strintmap Column::labelsResetValues(int & maxValue)
-{
-	JASPTIMER_SCOPE(Column::labelsResetValues);
-
-	beginBatchedLabelsDB();
-
-	strintmap result;
-	int labelValue = 0;
-	_labelByIntsIdMap.clear();
-
-	for (Label * label : _labels)
-	{
-		if (label->intsId() != labelValue)
-			label->setIntsId(labelValue);
-
-		result[label->label()] = labelValue;
-
-		_labelByIntsIdMap[labelValue] = label;
-
-		labelValue++;
-	}
-
-	maxValue = labelValue;
-
-	_highestIntsId = maxValue;
-
-	endBatchedLabelsDB();
-
-	return result;
-}
-
 void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 {
 	for(size_t i=desiredLabelsSize; i<_labels.size(); i++)
@@ -1101,23 +1090,6 @@ Label * Column::labelByIndexNotEmpty(int index) const
 size_t Column::labelsNonEmptyCount() const
 {
 	return _labelNonEmptyIndexByLabel.size();
-}
-
-
-void Column::_resetLabelValueMap()
-{
-	_labelByIntsIdMap.clear();
-	_labelByValDis.clear();
-	_labelsByValue.clear();
-	_labelsByDisplay.clear();
-
-	for(Label * label : _labels)
-	{
-		_labelByIntsIdMap[				label->intsId()											] = label;
-		_labelByValDis[std::make_pair(	label->originalValueAsString(),	label->labelDisplay())	] = label;
-		_labelsByValue[					label->originalValueAsString()							] . insert(label);
-		_labelsByDisplay[												label->labelDisplay()	] . insert(label);
-	}
 }
 
 std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue) const

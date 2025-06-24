@@ -127,7 +127,6 @@ public:
 			void					labelsRemove(		int labelIndex);
 			int						labelsSet(int lbId,	int value, const std::string & display, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order=-1, int id=-1);
 			void					labelsRemoveByIntsId(	intset valuesToRemove, bool updateOrder = true);
-			strintmap				labelsResetValues(	int & maxValue);
 			void					labelsRemoveBeyond( size_t indexToStartRemoving);
 			
 			int						nonFilteredNumericsCount();
