@@ -246,7 +246,7 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 	for (JASPControl* control : controls)
 	{
 		control->addExplicitDependency();
-		std::vector<JASPControl*> depends(control->depends().begin(), control->depends().end());
+		JASPControls depends(control->depends().begin(), control->depends().end());
 
 		// By adding at the end of the vector new dependencies, this makes sure that these dependencies of these new dependencies are
 		// added and so on recursively, so that the 'depends' set of each control gets all (direct or indirect) controls it depends on.

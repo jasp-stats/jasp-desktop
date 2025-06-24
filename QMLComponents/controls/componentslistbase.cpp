@@ -417,7 +417,7 @@ QString ComponentsListBase::_changeLastNumber(const QString &val) const
 		return result.append(QString::number(2));
 }
 
-std::vector<JASPControl *> ComponentsListBase::getMDSubItems(const QQuickItem*) const
+JASPControls ComponentsListBase::getMDSubItems(const QQuickItem*) const
 {
 	const Terms& terms = model()->terms();
 
