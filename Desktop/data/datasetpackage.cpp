@@ -1373,7 +1373,7 @@ void DataSetPackage::emitColumnChanged(const QString & colName)
 }
 
 
-void DataSetPackage::beginLoadingData(bool informEngines)
+void DataSetPackage::beginLoadingData(bool)
 {
 	JASPTIMER_SCOPE(DataSetPackage::beginLoadingData);
 
@@ -1382,7 +1382,7 @@ void DataSetPackage::beginLoadingData(bool informEngines)
 	beginResetModel();
 }
 
-void DataSetPackage::endLoadingData(bool informEngines)
+void DataSetPackage::endLoadingData(bool)
 {
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
 
@@ -2049,7 +2049,10 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 
 	if(setManualEditsPar)
 		setManualEdits(true); //Don't synch with external file after editing
-
+	
+	//So, we are inserting a column here, but maybe there are engines running, doing whatever (maybe loading a really big datafile)
+	//Instead of waiting for this, and then inserting the column, and then waiting for it again, we can also simply stop those engines.
+	enginesPrepareForData();
 	beginResetModel();
 
 	_dataSet->insertColumn(columnIndex);
@@ -2071,6 +2074,8 @@ QString DataSetPackage::insertColumnSpecial(int columnIndex, const QMap<QString,
 	
 	if(column->codeType() == computedColumnType::constructorCode || column->codeType() == computedColumnType::rCode)
 		emit columnAddedManually(tq(column->name())); //Will trigger setChosenColumn and setVisible(true) on ColumnModel, showing it to the user
+	
+	enginesReceiveNewData();
 
 	return QString::fromStdString(column->name());
 }

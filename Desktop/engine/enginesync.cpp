@@ -1139,8 +1139,9 @@ void EngineSync::dataModeChanged(bool dataMode)
 
 void EngineSync::enginesPrepareForData()
 {
-	/*JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
+	JASPTIMER_SCOPE(EngineSync::enginesPrepareForData);
 
+	Log::log() << "EngineSync::enginesPrepareForData!" << std::endl;
 	
 	//make sure we process any received messages first.
 	for(auto * engine : _engines)
@@ -1149,7 +1150,7 @@ void EngineSync::enginesPrepareForData()
 	std::set<EngineRepresentation *> pauseOrKillThese;
 
 	for(EngineRepresentation * e : _engines)
-		if(e->busyWithData())
+		if(!e->idle())
 		{
 			pauseOrKillThese.insert(e);
 			e->pauseEngine(true);
@@ -1163,11 +1164,13 @@ void EngineSync::enginesPrepareForData()
 
 	for (auto * engine : pauseOrKillThese)
 		if(!engine->paused())
-			engine->killEngine();*/
+			engine->killEngine();
 }
 
 void EngineSync::enginesReceiveNewData()
 {
+	Log::log() << "EngineSync::enginesReceiveNewData!" << std::endl;
+	
 	emit reloadData();
 }
 
