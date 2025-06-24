@@ -36,8 +36,6 @@ public:
 	QString		printLabelMD(int depth)									const	override;
 	bool		infoLabelIsHeader()										const	override	{ return true; }
 
-private:
-	bool useCollapsibleSection(int depth)								const;
 };
 
 #endif // EXPANDERBUTTONBASE_H

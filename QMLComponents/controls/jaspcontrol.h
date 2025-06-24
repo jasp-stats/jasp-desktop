@@ -119,7 +119,6 @@ public:
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
-	std::vector<JASPControl*> getMDSubItems()		const;
 	virtual QString		generateMDHelp(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfoSomewhere()					const;
@@ -274,7 +273,8 @@ protected:
 	void				_addExplicitDependency(const QVariant& depends);
 	bool				dependingControlsAreInitialized();
 	virtual void		_setInitialized(const Json::Value &value);
-	virtual QString		printLabelMD(int depth)								const;
+	virtual QString		printLabelMD(int depth)												const;
+	virtual std::vector<JASPControl*> getMDSubItems(const QQuickItem* parentItem = nullptr)	const;
 
 protected:
 	Set						_depends;

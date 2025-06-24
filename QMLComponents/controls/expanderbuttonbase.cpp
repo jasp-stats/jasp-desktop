@@ -35,33 +35,10 @@ void ExpanderButtonBase::setUp()
 
 QString ExpanderButtonBase::generateMDHelp(int depth) const
 {
-	if (!hasInfoSomewhere())
-		return QString();
-
-	QStringList markdown;
-
-	if (!useCollapsibleSection(depth))
-		// For sub-section, draw first a line, and reset the depth to 0.
-		markdown <<  "\n---\n\n";
-
-	markdown << JASPControl::generateMDHelp(0);
-
-	if (useCollapsibleSection(depth))
-		markdown << "\n</details>";
-
-	return markdown.join("");
+	return JASPControl::generateMDHelp(depth) + "\n" + (QString{depth * 2, ' '}) + "</details>\n";
 }
 
 QString ExpanderButtonBase::printLabelMD(int depth) const
 {
-	if (useCollapsibleSection(depth))
-		// Use collapsible section
-		return "<details>\n<summary><b>" + fullLabel() + "</b></summary>\n";
-	else
-		return JASPControl::printLabelMD(depth);
-}
-
-bool ExpanderButtonBase::useCollapsibleSection(int depth) const
-{
-	return depth == 0 && !fullLabel().isEmpty();
+	return "<details><summary><b>" + fullLabel() + "</b></summary>";
 }
