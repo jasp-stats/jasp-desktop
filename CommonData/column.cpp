@@ -761,9 +761,13 @@ void Column::_sortLabelsByOrder()
 
 void Column::labelsClear(bool doIncRevision)
 {
+	bool hadLabels = _labels.size() > 0;
 	for (Label* label : _labels)
 		delete label;
-	db().labelsClear(_id);
+	
+	if(hadLabels)
+		db().labelsClear(_id);
+	
 	_labelNonEmptyIndexByLabel.clear();
 	_labelByNonEmptyIndex.clear();
 	_labelByIntsIdMap.clear();

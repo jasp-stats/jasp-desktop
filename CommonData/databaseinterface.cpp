@@ -1882,6 +1882,7 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 				{
 					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` had unchecked status "+std::to_string(ret)+" because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
+					break;
 				}
 			   }
 				
