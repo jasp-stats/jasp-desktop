@@ -1,0 +1,95 @@
+﻿V1,original Effect,replication Effect,orgSig,repSig,repPow
+1,0.594605285,0.148340453,Significant,Not Significant,0.99
+2,0.611120054,0.229604631,Significant,Not Significant,0.95
+3,0.424979665,-0.215243835,Significant,Not Significant,0.95
+4,0.228739615,-0.006108358,Significant,Not Significant,0.96
+5,0.461300742,0.134811802,Significant,Not Significant,0.93
+6,0.594960462,0.395843475,Significant,Significant,0.98
+7,0.715143728,0.131411981,Significant,Not Significant,0.95
+8,0.561422534,-0.110614348,Significant,Not Significant,0.95
+9,0.698586719,0.780725807,Significant,Significant,0.95
+10,0.672084167,0.466443576,Significant,Significant,0.99
+11,0.178477629,0.08323764,Significant,Not Significant,0.95
+12,0.52450217,0.524539034,Significant,Significant,0.99
+13,0.195136354,0.24687812,Significant,Significant,0.99
+14,0.304772411,0.434510306,Significant,Significant,0.97
+15,0.560499145,0.401939168,Significant,Not Significant,0.8
+16,0.224092029,0.019422053,Significant,Not Significant,0.92
+17,0.219359299,0.064661345,Significant,Not Significant,0.97
+18,0.363732358,0.284274426,Significant,Significant,0.76
+20,0.160955695,0.14406846,Not Significant,Not Significant,0.95
+21,0.378068955,0.379573968,Significant,Significant,0.92
+22,0.341773488,0.103261105,Significant,Not Significant,0.94
+23,0.73782079,0.703904904,Significant,Significant,0.95
+24,0.623367433,0.480717115,Significant,Significant,0.99
+25,0.516812354,0.315999964,Significant,Significant,0.95
+26,0.713921386,0.681560537,Significant,Significant,0.99
+27,0.551178255,0.349791589,Significant,Not Significant,0.69
+28,0.366615713,0.101709161,Significant,Not Significant,0.87
+29,0.347251138,0.161063754,Significant,Not Significant,0.99
+30,0.352175067,0.150236955,Significant,Significant,0.99
+31,0.022542373,0.023841537,Significant,Significant,0.99
+32,0.225490086,-0.052290282,Significant,Not Significant,0.99
+33,0.378345294,-0.030485538,Significant,Not Significant,0.96
+34,0.208058463,0.155043132,Significant,Not Significant,0.82
+35,0.20573686,0.094021673,Significant,Not Significant,0.95
+36,0.377126878,0.076700677,Significant,Not Significant,0.99
+37,0.229852265,0.066130007,Significant,Not Significant,0.7
+38,0.379139495,-0.042140104,Significant,Not Significant,0.95
+39,0.167288593,0.03675175,Significant,Not Significant,0.86
+40,0.219666896,-0.004719346,Significant,Not Significant,0.99
+41,0.274010238,0.073797292,Significant,Not Significant,0.86
+42,0.425496777,0.11385379,Significant,Not Significant,0.99
+43,0.431865646,0.011721165,Significant,Not Significant,0.99
+44,0.185849827,0.003001488,Significant,Not Significant,0.8
+46,0.222131584,0.073353737,Significant,Not Significant,0.9
+47,0.207643072,0.04449582,Significant,Not Significant,0.92
+48,0.322574106,0.2,Significant,Significant,0.9
+50,0.259958534,0.15539539,Significant,Not Significant,0.84
+51,0.268278965,-0.101637251,Significant,Not Significant,0.89
+52,0.3,0.27,Significant,Not Significant,0.56
+53,0.503449638,0.217562252,Significant,Significant,0.99
+54,0.212014281,0.118808574,Significant,Not Significant,0.9
+55,0.395559206,0.013045451,Significant,Not Significant,0.86
+56,0.139816632,0.0294047,Not Significant,Not Significant,0.8
+57,0.317462994,-0.1351,Significant,Not Significant,0.81
+58,0.344312999,0.28970838,Significant,Significant,0.88
+59,0.378274916,-0.036935346,Significant,Not Significant,0.99
+60,0.127392361,0.018376516,Significant,Not Significant,0.99
+61,0.381744212,-0.222920955,Significant,Not Significant,0.8
+62,0.222330235,0.104941786,Significant,Not Significant,0.8
+63,0.554427187,0.091162691,Significant,Not Significant,0.99
+64,0.333441051,0.225764222,Significant,Significant,0.99
+66,0.681152182,0.763508789,Significant,Significant,0.99
+67,0.570693584,0.652730428,Significant,Significant,0.95
+68,0.501799075,-0.450187899,Significant,Not Significant,0.9
+69,0.28771881,0.322727228,Significant,Significant,0.99
+70,0.130782132,0.120519146,Significant,Significant,0.99
+71,0.21368683,-0.048918238,Significant,Not Significant,0.79
+72,0.38,0.25,Significant,Not Significant,0.82
+73,0.851679354,0.828997685,Significant,Significant,0.99
+74,0.721890032,0.922934494,Significant,Significant,0.97
+75,0.384260399,-0.034279559,Significant,Not Significant,0.93
+76,0.685347348,0.527307869,Significant,Significant,0.99
+77,0.371775163,0.017674908,Significant,Not Significant,0.91
+78,0.246947019,0.179397898,Significant,Not Significant,0.82
+79,0.445652636,0.423363806,Significant,Significant,0.99
+80,0.20996855,0.500179963,Significant,Significant,0.9
+81,0.00464002,0.105891025,Not Significant,Significant,0.99
+82,0.498149178,0.102355162,Significant,Not Significant,0.91
+83,0.496363588,0.505151268,Significant,Significant,0.95
+84,0.233776428,0.044266281,Significant,Not Significant,0.95
+85,0.593405778,0.609913782,Significant,Significant,0.99
+86,0.172960188,0.061707156,Significant,Not Significant,0.95
+87,0.768651993,0.652982567,Significant,Significant,0.99
+88,0.649955571,0.497082522,Significant,Not Significant,0.8
+89,0.188662549,-0.030172295,Significant,Not Significant,0.99
+90,0.188662549,0.018283411,Significant,Not Significant,0.99
+91,0.722536382,0.207514339,Significant,Not Significant,0.98
+92,0.400010244,0.002839798,Significant,Not Significant,0.99
+93,0.859552403,0.120073568,Significant,Not Significant,0.96
+95,0.31,-0.034,Significant,Not Significant,0.76
+96,0.374787884,0.411336583,Significant,Significant,0.9
+97,0.483442318,0.177837588,Significant,Not Significant,0.9
+98,0.28378815,-0.175454592,Significant,Not Significant,0.68
+99,0.595271914,0.25414164,Significant,Not Significant,0.99
