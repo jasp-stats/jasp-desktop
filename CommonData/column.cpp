@@ -713,6 +713,7 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 	nonFilteredCountersReset();
 	labelsHandleAutoSort();
 	
+	
 	return changes;
 }
 
@@ -1107,11 +1108,15 @@ void Column::_resetLabelValueMap()
 {
 	_labelByIntsIdMap.clear();
 	_labelByValDis.clear();
+	_labelsByValue.clear();
+	_labelsByDisplay.clear();
 
 	for(Label * label : _labels)
 	{
-		_labelByIntsIdMap[label->intsId()]														= label;
-		_labelByValDis[std::make_pair(label->originalValueAsString(), label->labelDisplay())]	= label;
+		_labelByIntsIdMap[				label->intsId()											] = label;
+		_labelByValDis[std::make_pair(	label->originalValueAsString(),	label->labelDisplay())	] = label;
+		_labelsByValue[					label->originalValueAsString()							] . insert(label);
+		_labelsByDisplay[												label->labelDisplay()	] . insert(label);
 	}
 }
 
