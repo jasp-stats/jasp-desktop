@@ -235,6 +235,7 @@ public:
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
 			void					_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease = false);		///< Sets the order of the _labels to label.order and in DB
+			intintmap				_updateNonEmptyIndexesAndLabelOrder();
 			void					_sortLabelsByOrder();		///< Sorts the labels by label.order
 			std::string				_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue = false) const;
 			columnTypeChangeResult	_changeColumnToNominalOrOrdinal(enum columnType newColumnType);

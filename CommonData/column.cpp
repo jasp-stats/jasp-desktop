@@ -727,30 +727,8 @@ void Column::_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease)
 			incRevision();
 		return;
 	}
-		
-	_labelNonEmptyIndexByLabel.clear();
-	_labelByNonEmptyIndex.clear();
-
-	intintmap orderPerDbIds;
-
-	_highestIntsId = 0;
-	size_t nonEmptyIndex = 0;
-	for(size_t i=0; i<_labels.size(); i++)
-	{
-		_labels[i]->setOrder(i);
-		orderPerDbIds[_labels[i]->dbId()] = i;
-
-		_highestIntsId = std::max(_highestIntsId, _labels[i]->intsId());
-		
-		if(!_labels[i]->isEmptyValue())
-		{
-			_labelNonEmptyIndexByLabel[_labels[i]]	= nonEmptyIndex;
-			_labelByNonEmptyIndex[nonEmptyIndex]	= _labels[i];
-			nonEmptyIndex++;
-		}
-	}
-
-	db().labelsSetOrder(orderPerDbIds);
+	
+	db().labelsSetOrder(_updateNonEmptyIndexesAndLabelOrder());
 	
 	incRevision();
 }
@@ -819,21 +797,7 @@ void Column::endBatchedLabelsDB(bool wasWritingBatch)
 	assert(_batchedLabelDepth > 0);
 	_batchedLabelDepth--;
 	
-	_labelNonEmptyIndexByLabel.clear();
-	_labelByNonEmptyIndex.clear();
-	size_t nonEmptyIndex = 0;
-	
-	for(size_t i=0; i<_labels.size(); i++)
-	{
-		_labels[i]->setOrder(i);
-		
-		if(!_labels[i]->isEmptyValue())
-		{
-			_labelNonEmptyIndexByLabel[_labels[i]]	= nonEmptyIndex;
-			_labelByNonEmptyIndex[nonEmptyIndex]	= _labels[i];
-			nonEmptyIndex++;
-		}
-	}
+	_updateNonEmptyIndexesAndLabelOrder();
 	
 	if(_batchedLabelDepth == 0)
 	{
@@ -843,6 +807,35 @@ void Column::endBatchedLabelsDB(bool wasWritingBatch)
 			incRevision(); //Should trigger reload at engine end
 		}
 	}	
+}
+
+intintmap Column::_updateNonEmptyIndexesAndLabelOrder()
+{
+	//Set label non empty stuff based the inherent order in _labels
+	_labelNonEmptyIndexByLabel	.clear();
+	_labelByNonEmptyIndex		.clear();
+
+	intintmap	orderPerDbIds;
+	size_t		nonEmptyIndex	= 0;
+				_highestIntsId	= 0;
+				
+	for(size_t i=0; i<_labels.size(); i++)
+	{
+		_labels[i]->setOrder(i);
+		
+		orderPerDbIds[_labels[i]->dbId()] = i;
+
+		_highestIntsId = std::max(_highestIntsId, _labels[i]->intsId());
+		
+		if(!_labels[i]->isEmptyValue())
+		{
+			_labelNonEmptyIndexByLabel[_labels[i]]	= nonEmptyIndex;
+			_labelByNonEmptyIndex[nonEmptyIndex]	= _labels[i];
+			nonEmptyIndex++;
+		}
+	}
+	
+	return orderPerDbIds;
 }
 
 int Column::labelsAdd(int display)
