@@ -41,11 +41,12 @@ Item
 
 	property bool hasData:		mainWindow.dataAvailable
 	property bool hasAnalysis:	mainWindow.analysesAvailable && !ribbonModel.dataMode
+	property bool keepDataPanelMaximised: false
 
 	function minimizeDataPanel()
 	{
 		handleDataAnalyses.x = 0
-
+		keepDataPanelMaximised = false
 	}
 
 	function maximizeDataPanel()
@@ -78,7 +79,7 @@ Item
 
 	onWidthChanged:
 	{
-		if (handleDataAnalyses.visible && handleDataAnalyses.x > (width - handleDataAnalyses.width)) maximizeDataPanel()
+		if (keepDataPanelMaximised || (handleDataAnalyses.visible && handleDataAnalyses.x > (width - handleDataAnalyses.width))) maximizeDataPanel()
 	}
 
 	DataPanel
@@ -97,13 +98,17 @@ Item
 		onArrowClicked:
 		{
 			if (pointingLeft) minimizeDataPanel()
-			else maximizeDataPanel()
+			else
+			{
+				maximizeDataPanel()
+				keepDataPanelMaximised = true
+			}
 		}
 		pointingLeft:		x > 0
 		toolTipArrow:		pointingLeft ? qsTr("Hide data")  : qsTr("Show data")
 		toolTipDrag:		pointingLeft ? qsTr("Resize data/results") : qsTr("Drag to show data")
 		onXChanged:			checkPosition(false)
-		onDraggingChanged:	checkPosition(true)
+		onDraggingChanged:	{ checkPosition(true); keepDataPanelMaximised = false }
 
 		JC.ALTNavigation.enabled:				true
 		JC.ALTNavigation.onTagMatch:			{ arrowClicked(); }
