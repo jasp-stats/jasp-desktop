@@ -100,7 +100,7 @@ void ListModelMultiTermsAssigned::initTerms(const Terms &terms, const Terms::Rel
 void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 {
 	if (indexes.length() == 0) return;
-	
+
 	beginResetModel();
 
 	QList<int> orderedIndexed = indexes;
@@ -110,7 +110,7 @@ void ListModelMultiTermsAssigned::removeTerms(const QList<int> &indexes)
 	{
 		int row = orderedIndexed / _columns;
 		int col = orderedIndexed % _columns;
-		
+
 		if (row < _tuples.length())
 		{
 			const Terms& terms = _tuples.at(row);
@@ -161,14 +161,22 @@ void ListModelMultiTermsAssigned::_setTerms()
 	ListModel::_setTerms(newTerms);
 }
 
+Terms ListModelMultiTermsAssigned::canAddTerms(const Terms& terms) const
+{
+	if (listView()->maxRows() >= 0 && int(terms.size()) > (listView()->maxRows() * 2))
+		return Terms();
+
+	return ListModelDraggable::canAddTerms(terms);
+}
+
 
 Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const Terms::RelatedValuesPerTerm&)
 {
 	Terms termsToReturn;
-	
+
 	if (termsToAdd.size() == 0)
 		return termsToReturn;
-	
+
 	beginResetModel();
 	bool done = false;
 	if (termsToAdd.size() == 1 && dropItemIndex >= 0)
@@ -197,7 +205,7 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			done = true;
 		}
 	}
-	
+
 	if (!done)
 	{
 		// First try to set the terms to the empty places
@@ -212,10 +220,10 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 				{
 					const Term& termToAdd = termsToAdd.at(index);
 					if (tuple.containsValue(termToAdd) && !_allowDuplicatesInMultipleColumns)
-						termsToReturn.add(termsToAdd);
+						termsToReturn.add(termToAdd);
 					else
 					{
-						tuple.replace(col, termsToAdd.at(index));
+						tuple.replace(col, termToAdd);
 						changed = true;
 					}
 					index++;
@@ -224,9 +232,9 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			if (changed)
 				_tuples[row] = tuple;
 		}
-		
+
 		// If there still some terms to add, add them at the end of the list
-		while (index < termsToAdd.size())
+		while (index < termsToAdd.size() && (listView()->maxRows() < 0 || _tuples.size() < listView()->maxRows()))
 		{
 			Terms newTuple;
 			for (int i = 0; i < _columns; i++)
@@ -241,8 +249,11 @@ Terms ListModelMultiTermsAssigned::addTerms(const Terms& termsToAdd, int dropIte
 			}
 			_tuples.push_back(newTuple);
 		}
+
+		for (; index < termsToAdd.size(); index++)
+			termsToReturn.add(termsToAdd.at(index));
 	}
-	
+
 	_setTerms();
 	endResetModel();
 
@@ -253,11 +264,11 @@ void ListModelMultiTermsAssigned::moveTerms(const QList<int> &indexes, int dropI
 {
 	if (indexes.length() != 1)
 		return;
-	
+
 	int fromIndex = indexes[0];
 	if (fromIndex == dropItemIndex)
 		return;
-	
+
 	int fromRow = fromIndex / _columns;
 	int fromCol = fromIndex % _columns;
 
