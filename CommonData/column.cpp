@@ -551,6 +551,7 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 	{
 		const std::string	value = valueLookup(i),
 							label = labelLookup(i);
+
 		if(setValue(i, value, label, false) && aChange)
 			(*aChange) = true;
 				
@@ -877,15 +878,15 @@ int Column::labelsAdd(const std::string & display, const std::string & descripti
 int Column::_labelMapIt(Label * label)
 {
 	_labelByIntsIdMap	[ label->intsId()				] =			label;
-	_labelsByDisplay	[ label->labelDisplay()			].insert(	label);
+	_labelsByDisplay	[ label->label()				].insert(	label);
 	_labelByValDis		[ label->origValDisplay()		] =			label;
 	_labelsByValue		[ label->originalValueAsString()].insert(	label);
 
 	_highestIntsId = std::max(_highestIntsId, label->intsId());
 	_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(label->originalValueAsString(true, false))));
-	_maxWidthLabel = std::max(_maxWidthLabel, int(stringUtils::approximateVisualLength(label->labelDisplay())));
+	_maxWidthLabel = std::max(_maxWidthLabel, int(stringUtils::approximateVisualLength(label->label())));
 
-	if(label->originalValueAsString() != label->labelDisplay())
+	if(label->originalValueAsString() != label->label() && !label->isEmptyValue())
 		_hasShadows = true;
 		
 	return label->intsId();
@@ -899,6 +900,9 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 	if(_labelByValDis.count(valDisplay))
 		return _labelByValDis.at(valDisplay)->intsId();
+
+	if(display == ".i")
+		"???";
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
@@ -943,14 +947,12 @@ int Column::labelsSet(int labelIndex, int value, const std::string &display, boo
 	}
 	else
 	{
-		if(_labels.size() != labelIndex)
-			Log::log() << "Labels are not being set in a sensible order it seems." << std::endl;
-
 		if(id == -1)
 			Log::log() << "This functions expects a label to be set from the DB, so why is dbId -1?" << std::endl;
 
 		if(_labels.size() < labelIndex+1)
 			_labels			. resize(labelIndex+1);
+
 		_labels[labelIndex]	= new Label(this, display, value, filterAllows, description, originalValue, order, id);
 		label				= _labels[labelIndex];
 	}
@@ -975,7 +977,7 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 				{
 					_labelByIntsIdMap.erase(label->intsId());
 					
-					auto valDis = std::make_pair(label->originalValueAsString(), label->labelDisplay());
+					auto valDis = std::make_pair(label->originalValueAsString(), label->label());
 					if(_labelByValDis.count(valDis) && _labelByValDis.at(valDis) == label)
 						_labelByValDis.erase(valDis);
 						
@@ -999,10 +1001,10 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 
 void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
 {
-	for(size_t i=desiredLabelsSize; i<_labels.size(); i++)
+	for(size_t i=desiredLabelsSize+1; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	if(desiredLabelsSize < _labels.size())
+	if(desiredLabelsSize+1 < _labels.size())
 		_labels.resize(desiredLabelsSize);
 
 	_resetLabelValueMap();
@@ -1093,7 +1095,7 @@ std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue
 	if(_labelByIntsIdMap.count(key))
 	{
 		return	ignoreEmptyValue 
-			?	_labelByIntsIdMap.at(key)->labelIgnoreEmpty()
+			?	_labelByIntsIdMap.at(key)->label()
 			:	_labelByIntsIdMap.at(key)->labelDisplay();
 	}
 
@@ -1237,12 +1239,10 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter, bool us
 	for(Label * label : _labels)
 		if(usedIds.count(label->intsId()) || !shouldDropLevels())
 		{
-			levels.push_back(useLabels ? label->labelDisplay() : label->originalValueAsString(false));
+			levels.push_back(useLabels ? label->label() : label->originalValueAsString(false));
 			idToLevel[label->intsId()] = levels.size();
 		}
 		
-			
-
 	values.resize(valuesSize);
 
 	for(size_t row=0, valueRow=0; row<rowCount() && valueRow < valuesSize; row++)
@@ -1282,7 +1282,7 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
 	auto prevOrigV	= Label::originalValueAsString(this, previousOriginal);
-	auto oldValDis	= std::make_pair(prevOrigV, label->labelDisplay());
+	auto oldValDis	= std::make_pair(prevOrigV, label->label());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
 	
 	if(merged)
@@ -1299,7 +1299,7 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 		if(_ints[r] == label->intsId())
 			_dbls[r] = theDouble;
 
-	_labelMapUpdates(label, label->labelDisplay(), prevOrigV);
+	_labelMapUpdates(label, label->label(), prevOrigV);
 
 	if(merged)
 		_dbUpdateLabelOrder();
@@ -1315,9 +1315,9 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 	_labelByValDis[label->origValDisplay()] = label;
 
 	bool	valueChanged	= previousOriginal		!= label->originalValueAsString(),
-			displayChanged	= previousDisplay		!= label->labelDisplay(),
+			displayChanged	= previousDisplay		!= label->label(),
 			previousSame	= previousOriginal		== previousDisplay,
-			newSame			= label->labelDisplay()	== label->originalValueAsString();
+			newSame			= label->label()	== label->originalValueAsString();
 
 	if(valueChanged)
 	{
@@ -1354,11 +1354,12 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 
 	if(displayChanged)
 	{
-		_labelsByDisplay[previousDisplay]				.erase(label);
-		_labelsByDisplay[label->labelDisplay()]			.insert(label);
+		_labelsByDisplay[previousDisplay]	.erase(label);
+		_labelsByDisplay[label->label()]	.insert(label);
 		
 		size_t prevL = stringUtils::approximateVisualLength(previousDisplay),
-				newL = stringUtils::approximateVisualLength(label->labelDisplay());
+				newL = stringUtils::approximateVisualLength(label->label());
+
 		if(newL > _maxWidthLabel)
 			_maxWidthLabel = newL;
 		else if(prevL < newL && prevL == _maxWidthLabel) 
@@ -1393,7 +1394,7 @@ void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay
 		//Do we still have shadows now?
 		_hasShadows = false;
 		for(const Label * label : _labels)
-			if(label->labelDisplay() != label->originalValueAsString())
+			if(label->label() != label->originalValueAsString())
 			{
 				_hasShadows = true;
 				break;
@@ -1435,7 +1436,7 @@ void Column::labelValDisplayChanged(Label *label, const std::string &previousDis
 {
 	auto	oldOrigValS	= Label::originalValueAsString(this, previousOriginal);
 	auto	oldValDis	= std::make_pair(oldOrigValS, previousDisplay),
-			newValDis	= std::make_pair(label->originalValueAsString(), label->labelDisplay());
+			newValDis	= std::make_pair(label->originalValueAsString(), label->label());
 	bool	merged		= _labelByValDis.count(label->origValDisplay()) != 0;
 	
 	if(merged)
@@ -1522,7 +1523,13 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(itsADouble)
 		value = ColumnUtils::doubleToString(newDoubleToSet);
 
+	if(label == ".i")
+		"???";
+
 	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
+
+	if(label == ".i")
+		"???";
 
 	if(!newLabel)
 		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
@@ -1718,12 +1725,12 @@ void Column::labelsOrderByValue(bool doDbUpdateEtc)
 
 	doublevec				asc			= valuesNumericOrdered();
 	auto					alpha		= valuesAlphabeticalOffsets();
-	size_t					ascMax		= asc.size()+1;
+	size_t					ascMax		= asc.size();
 	std::map<double, int>	orderMap;
 	
 	for(size_t i=0; i<asc.size(); i++)
 		orderMap[asc[i]] = i;
-	
+
 	//and now to write them back into the data
 	for(Label * label : _labels)
 	{

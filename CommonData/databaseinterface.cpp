@@ -930,30 +930,6 @@ double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI)
 	return sqlite3_column_double(stmt, colI);
 }
 
-intvec DatabaseInterface::columnGetLabelIds(int columnId)
-{
-	JASPTIMER_SCOPE(DatabaseInterface::columnGetLabelIds);
-	intvec out;
-
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int(stmt, 1, columnId);
-	};
-
-	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
-	{
-		int colCount = sqlite3_column_count(stmt);
-
-		assert(colCount == 1);
-		out.push_back(sqlite3_column_int(stmt, 0));
-
-	};
-
-	runStatements("SELECT id FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
-
-	return out;
-}
-
 size_t DatabaseInterface::columnGetLabelCount(int columnId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetLabelCount);
@@ -1445,7 +1421,9 @@ void DatabaseInterface::labelsLoad(Column * column)
 	
 	column->beginBatchedLabelsDB();
 	
-	size_t labelsSize = columnGetLabelCount(column->id());
+	int labelsSize = 0;
+
+	column->_resetLabelValueMap();
 	
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
@@ -1454,7 +1432,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 	
 	Json::Reader reader;
 
-	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
+	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t, sqlite3_stmt *stmt)
 	{
 		int colCount = sqlite3_column_count(stmt);
 
@@ -1475,10 +1453,12 @@ void DatabaseInterface::labelsLoad(Column * column)
 		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
 			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
 
-		column->labelsSet(row,	value, label, filterAllows, description, originalValueJson, order, id);
+		column->labelsSet(order,	value, label, filterAllows, description, originalValueJson, order, id);
+
+		labelsSize = std::max(labelsSize, order);
 	};
 
-	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
+	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ?;", prepare, processRow);
 
 	column->labelsRemoveBeyond(labelsSize);
 	 
@@ -1509,10 +1489,11 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 		
 		localColMap [column->id()] = column;
 		labelsPerCol[column->id()] = 0;
+
+		column->_resetLabelValueMap();
 	}
 	
-	statement << ") ORDER BY columnId, ordering;";
-	
+	statement << ");";
 
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
@@ -1546,8 +1527,21 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 
 		if(localColMap.count(columnId))
 		{
-			localColMap.at(columnId)->labelsSet(labelsPerCol[columnId],	value, label, filterAllows, description, originalValueJson, order, id);
-			labelsPerCol[columnId]++;
+			//std::stringstream str;
+			//str << "labelsLoad for column " << localColMap.at(columnId)->name() << " in thread " << std::this_thread::get_id() << " got "
+			//	<< "labelsSet(row='"		<< order
+			//	<< "', value='"				<< value
+			//	<< "', label='"				<< label
+			//	<< "', filterAllows='"		<< filterAllows
+			//	<< "', description='"		<< description
+			//	<< "', originalValueJson='"	<< originalValueJson
+			//	<< "', order='"				<< order
+			//	<< "', id='"				<< id
+			//	<< "')\n";
+			//Log::log() << str.str() << std::flush;
+
+			localColMap.at(columnId)->labelsSet(order,	value, label, filterAllows, description, originalValueJson, order, id);
+			labelsPerCol[columnId] = std::max(order, labelsPerCol[columnId]);
 		}
 	};
 
@@ -1601,7 +1595,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 			labelIter++;
 		};
 		
-		_runStatementsRepeatedly("INSERT OR REPLACE INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+		_runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
 			{
 				(*bindParams) = &_bindParams;
 				
@@ -1656,7 +1650,7 @@ void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(
 										origValJson		= label->originalValue().toStyledString();
 			 
 			 Column					*	column			= static_cast<Column*>(label->parent());
-			 
+
 			 sqlite3_bind_int( stmt,	1, column->id());
 			 sqlite3_bind_int( stmt,	2, label->intsId());
 			 sqlite3_bind_text(stmt,	3, labelDisplay.c_str(),			labelDisplay.length(),				SQLITE_TRANSIENT);
@@ -1684,7 +1678,7 @@ void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(
 			}
 		 };
 		 
-		 _runStatementsRepeatedly("INSERT OR REPLACE INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+		 _runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
 			 {
 				 (*bindParams) = &_bindParams;
 				 

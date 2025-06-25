@@ -38,7 +38,6 @@ public:
 	const	std::string		&	description()				const	{ return _description;		}
 			std::string			label()						const	{ return _label;			}
 			std::string			labelDisplay()				const;
-			std::string			labelIgnoreEmpty()			const;
 			int					intsId()					const	{ return _intsId;			}
 			bool				isEmptyValue()				const;
 			int					order()						const	{ return _order;			}
@@ -46,7 +45,7 @@ public:
 	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
 			double				originalValueAsDouble()		const	{ return _dblValue;			}
 	std::pair<std::string
-		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), labelDisplay()); }
+		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), label()); }
 
 	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);
 			std::string			originalValueAsString(bool fancyEmptyValue = false, bool ignoreEmpty = true)		const;

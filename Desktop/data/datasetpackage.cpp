@@ -946,7 +946,7 @@ bool DataSetPackage::setLabelValue(const QModelIndex &index, const QString &newL
 		// which means that if this column is a computed column of scale type we are only allowed to change the label and only the value for the other types.
 		// so in this case this means that if it is a computed column, and of type !scale we do *not* also update the label when updating the value. Because otherwise it would override the data from the computed column...
 		
-		bool dontSetLabel = label->originalValueAsString(false) != label->labelDisplay() || (originalValue.isDouble() && !label->originalValue().isDouble());
+		bool dontSetLabel = label->originalValueAsString(false) != label->label() || (originalValue.isDouble() && !label->originalValue().isDouble());
 		
 		if(!dontSetLabel && column->isComputed() && column->type() != columnType::scale)
 			dontSetLabel = true;
@@ -2219,9 +2219,6 @@ bool DataSetPackage::removeRows(int row, int count, const QModelIndex & aparent)
 	for(Column * column : dataSet()->columns())
 	{
 		changed.push_back(column->name());
-		
-		//if(row+count > column->rowCount())
-		//	Log::log() << "???" << std::endl;
 	
 		for(int r=row+count; r>row; r--)
 			column->rowDelete(r-1);

@@ -264,11 +264,6 @@ std::string Label::labelDisplay() const
 	return isEmptyValue() ? EmptyValues::displayString() : label();
 }
 
-std::string Label::labelIgnoreEmpty() const
-{
-	return label();
-}
-
 bool Label::isEmptyValue() const
 {
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());

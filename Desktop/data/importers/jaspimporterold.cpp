@@ -226,7 +226,7 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 				if(label)
 				{
 					values.push_back(label->originalValueAsString());
-					labels.push_back(label->labelIgnoreEmpty());
+					labels.push_back(label->label());
 				}
 				else if (value == EmptyValues::missingValueInteger)
 				{

@@ -152,7 +152,6 @@ public:
 	void		columnGetComputedInfo(		int columnId, int &analysisId, bool & invalidated, computedColumnType & codeType,		std::string & rCode,		std::string & error,		Json::Value & constructorJson, std::string & computeFilter);
 	void		columnSetValues(			int columnId, const intvec	  & ints, const doublevec & dbls);
 	void		columnSetValue(				int columnId, size_t row, int valueInt, double valueDbl);
-	intvec		columnGetLabelIds(			int columnId);
 	size_t		columnGetLabelCount(		int columnId);
 	void		columnGetValues(			int columnId,	intvec		& ints, doublevec & dbls);
 	std::string columnBaseName(				int columnId) const;
