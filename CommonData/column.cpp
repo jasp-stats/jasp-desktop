@@ -901,8 +901,6 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 	if(_labelByValDis.count(valDisplay))
 		return _labelByValDis.at(valDisplay)->intsId();
 
-	if(display == ".i")
-		"???";
 
 	Label * label = new Label(this, display, value, filterAllows, description, originalValue, order, id);
 	_labels.push_back(label);
@@ -1523,13 +1521,9 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	if(itsADouble)
 		value = ColumnUtils::doubleToString(newDoubleToSet);
 
-	if(label == ".i")
-		"???";
 
 	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
 
-	if(label == ".i")
-		"???";
 
 	if(!newLabel)
 		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
