@@ -1458,7 +1458,7 @@ void DatabaseInterface::labelsLoad(Column * column)
 		labelsSize = std::max(labelsSize, order);
 	};
 
-	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ?;", prepare, processRow);
+	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
 
 	column->labelsRemoveBeyond(labelsSize);
 	 
@@ -1493,7 +1493,7 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 		column->_resetLabelValueMap();
 	}
 	
-	statement << ");";
+	statement << ")  ORDER BY columnId, ordering;";
 
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
 	{
