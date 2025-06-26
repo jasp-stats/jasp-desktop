@@ -997,13 +997,13 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 		_dbUpdateLabelOrder();
 }
 
-void Column::labelsRemoveBeyond(size_t desiredLabelsSize)
+void Column::labelsRemoveBeyond(size_t indexToStartRemoving)
 {
-	for(size_t i=desiredLabelsSize+1; i<_labels.size(); i++)
+	for(size_t i=indexToStartRemoving+1; i<_labels.size(); i++)
 		delete _labels[i];
 	
-	if(desiredLabelsSize+1 < _labels.size())
-		_labels.resize(desiredLabelsSize);
+	if(indexToStartRemoving+1 < _labels.size())
+		_labels.resize(indexToStartRemoving);
 
 	_resetLabelValueMap();
 }
