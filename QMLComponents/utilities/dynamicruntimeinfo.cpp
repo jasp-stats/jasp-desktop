@@ -5,6 +5,7 @@
 #include "utilities/qutils.h"
 #include <fstream>
 #include <chrono>
+#include "dirs.h"
 
 
 DynamicRuntimeInfo* DynamicRuntimeInfo::_instance			= nullptr;
@@ -23,7 +24,8 @@ bool DynamicRuntimeInfo::bundledModulesInitialized()
 {
 	bool res = true;
 
-	if(_environment == RuntimeEnvironment::MSI || _environment == RuntimeEnvironment::MSIX || _environment == RuntimeEnvironment::ZIP)
+	RuntimeEnvironment environment = getRuntimeEnvironment();
+	if(environment == RuntimeEnvironment::MSI || environment == RuntimeEnvironment::MSIX || environment == RuntimeEnvironment::ZIP)
 		res = _bundledModulesInitializedSet
 			  && _initializedByCommit		== AppInfo::gitCommit
 			  && _initializedByBuildDate	== AppInfo::builddate
@@ -35,52 +37,20 @@ bool DynamicRuntimeInfo::bundledModulesInitialized()
 
 MicroArch DynamicRuntimeInfo::getMicroArch()
 {
-	return _arch;
+#if defined(__aarch64__)
+	return MicroArch::AARCH64;
+#elif defined(__x86_64__) || defined(_M_X64)
+	return MicroArch::X86_64;
+#else
+	return MicroArch::UNSUPPORTED;
+#endif
 }
 
 DynamicRuntimeInfo::DynamicRuntimeInfo()
 {
-#ifdef FLATPAK_USED
-	_environment = RuntimeEnvironment::FLATPAK;
-#elif __APPLE__
-	_environment = RuntimeEnvironment::MAC;
-#elif linux
-	_environment = RuntimeEnvironment::LINUX_LOCAL;
-#elif _WIN32
-	parseStaticRuntimeInfoFile(staticRuntimeInfoFilePath()); //will set runtime env info
+#ifdef _WIN32
 	parseDynamicRuntimeInfoFile(dynamicRuntimeInfoFilePath());
-#else
-    _environment = RuntimeEnvironment::UNKNOWN;
 #endif
-
-
-#if defined(__aarch64__)
-    _arch = MicroArch::AARCH64;
-#elif defined(__x86_64__) || defined(_M_X64)
-    _arch = MicroArch::X86_64;
-#else
-    _arch = MicroArch::UNSUPPORTED;
-#endif
-}
-
-bool DynamicRuntimeInfo::parseStaticRuntimeInfoFile(const std::string &path)
-{
-	Log::log() << "Attempting to read static runtime information from: " + path << std::endl;
-	std::ifstream in(path, std::ifstream::in);
-    if(!in)
-    {
-        _environment = RuntimeEnvironment::UNKNOWN;
-        Log::log() << "Failed to open specified static runtime file" << std::endl;
-        return false;
-    }
-
-    Json::Value root;
-    in >> root;
-
-	std::string runtimeEnvironmentString = root.get("runtimeEnvironment", "").asString();
-	_environment = RuntimeEnvironmentFromString(runtimeEnvironmentString, RuntimeEnvironment::UNKNOWN);
-
-    return true;
 }
 
 bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
@@ -110,7 +80,7 @@ bool DynamicRuntimeInfo::parseDynamicRuntimeInfoFile(const std::string &path)
 
 std::string DynamicRuntimeInfo::staticRuntimeInfoFilePath()
 {
-	return fq(AppDirs::programDir().absoluteFilePath(tq(staticInfoFileName)));
+	return Dirs::exeDir() + "/" + staticInfoFileName;
 }
 
 std::string DynamicRuntimeInfo::dynamicRuntimeInfoFilePath()
@@ -150,12 +120,36 @@ bool DynamicRuntimeInfo::writeDynamicRuntimeInfoFile()
 
 RuntimeEnvironment DynamicRuntimeInfo::getRuntimeEnvironment()
 {
-	return _environment;
+#ifdef FLATPAK_USED
+	return RuntimeEnvironment::FLATPAK;
+#elif __APPLE__
+	return RuntimeEnvironment::MAC;
+#elif linux
+	return RuntimeEnvironment::LINUX_LOCAL;
+#elif _WIN32
+	std::string path = staticRuntimeInfoFilePath();
+	Log::log() << "Attempting to read static runtime information from: " + path << std::endl;
+	std::ifstream in(path, std::ifstream::in);
+	if(!in)
+	{
+		Log::log() << "Failed to open specified static runtime file" << std::endl;
+		return RuntimeEnvironment::UNKNOWN;;
+	}
+
+	Json::Value root;
+	in >> root;
+
+	std::string runtimeEnvironmentString = root.get("runtimeEnvironment", "").asString();
+	return RuntimeEnvironmentFromString(runtimeEnvironmentString, RuntimeEnvironment::UNKNOWN);
+#else
+	_environment = RuntimeEnvironment::UNKNOWN;
+#endif
+
 }
 
 std::string DynamicRuntimeInfo::getRuntimeEnvironmentAsString()
 {
-	return RuntimeEnvironmentToString(_environment);
+	return RuntimeEnvironmentToString(getRuntimeEnvironment());
 }
 
 uint64_t DynamicRuntimeInfo::bundledModulesInitializedOnTimestamp()
