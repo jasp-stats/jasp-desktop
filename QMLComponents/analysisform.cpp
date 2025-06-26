@@ -955,7 +955,7 @@ QString AnalysisForm::helpMD() const
 
 	QStringList markdown =
 	{
-		"# ", title(), "\n",
+		"# ", titleDefault(), "\n",
 		_info, "\n"
 	};
 

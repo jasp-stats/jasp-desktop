@@ -81,12 +81,13 @@ public:
 	bool					runOnChange()	{ return _runOnChange; }
 	void					setRunOnChange(bool change);
 	void					blockValueChangeSignal(bool block, bool notifyOnceUnblocked = true);
-	QString					title()							const	{ return _analysis ? tq(_analysis->title())		: "";		}
-	QString					name()							const	{ return _analysis ? tq(_analysis->name())		: "";		}
-	QString					module()						const	{ return _analysis ? tq(_analysis->module())	: "";		}
-	QString					version()						const	{ return _analysis ? tq(_analysis->moduleVersion().asString()) : "";	}
-	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;									}
-	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;		}
+	QString					title()							const	{ return _analysis ? tq(_analysis->title())						: "";		}
+	QString					titleDefault()					const	{ return _analysis ? tq(_analysis->titleDefault())				: "";		}
+	QString					name()							const	{ return _analysis ? tq(_analysis->name())						: "";		}
+	QString					module()						const	{ return _analysis ? tq(_analysis->module())					: "";		}
+	QString					version()						const	{ return _analysis ? tq(_analysis->moduleVersion().asString())	: "";		}
+	bool					hasVolatileNotes()				const	{ return _hasVolatileNotes;													}
+	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;						}
 	bool					formCompleted()					const	{ return _formCompleted;	}
 	bool					showRButton()					const	{ return _showRButton;		}
 	bool					developerMode()					const	{ return _developerMode;	}

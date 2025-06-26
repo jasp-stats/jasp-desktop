@@ -100,6 +100,7 @@ public:
 	const	std::string		&	name()				const	override	{ return _name;								}
 	const	std::string		&	qml()				const				{ return _qml;								}
 	const	std::string		&	title()				const	override	{ return _title;							}
+	const	std::string		&	titleDefault()		const	override	{ return _titleDefault;						}
 	const	std::string		&	rfile()				const				{ return _rfile;							}
 	const	std::string		&	module()			const	override	{ return _moduleData->dynamicModule()->name();	}
 			size_t				id()				const				{ return _id;								}

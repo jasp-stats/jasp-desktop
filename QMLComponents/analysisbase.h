@@ -31,6 +31,7 @@ public:
 	virtual				const std::string & module()													const	{ return emptyString;		}
 	virtual				const std::string & name()														const	{ return emptyString;		}
 	virtual				const std::string & title()														const	{ return emptyString;		}
+	virtual				const std::string & titleDefault()												const	{ return emptyString;		}
 	virtual				void				setTitle(const std::string& titel)									{}
 	virtual				void				preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual				QString				helpFile()															{ return "";				}
