@@ -62,7 +62,7 @@ bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = f
 	engine.setWorkingDirectory(workDir);
 	engine.setProgram("JASPEngine.exe");
 
-	//remove any leftover ModuleDir 
+	//remove any leftover ModuleDir
 	QDir modulesDir(AppDirs::bundledModulesDir());
 	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != RuntimeEnvironment::ZIP)
 	{
@@ -444,9 +444,9 @@ int main(int argc, char *argv[])
 	Json::Value	dbJson;
 
 	qInstallMessageHandler(qtMessageHandler);
-	
+
 #ifdef _WIN32
-	if(DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() == RuntimeEnvironment::MSIX) {
+	if(DynamicRuntimeInfo::getRuntimeEnvironment() == RuntimeEnvironment::MSIX) {
 		QCoreApplication::setOrganizationName("JASP-Stats-MSIX");
 		QCoreApplication::setOrganizationDomain("jasp-stats.org");
 		QCoreApplication::setApplicationName("JASPDesktop");
@@ -467,7 +467,7 @@ int main(int argc, char *argv[])
 
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
-	
+
 	if(containForce)		Settings::setValue(Settings::ENGINE_SANDBOX,	contain);
 	else					contain = Settings::value(Settings::ENGINE_SANDBOX).toBool();
 
