@@ -57,14 +57,21 @@ string Dirs::tempDir()
 		return p;
 
 	if(localAppDataDir() == "") { //we are an engine
-		char* buf = nullptr;
+#ifdef _WIN32
+        char* buf = nullptr;
 		size_t sz = 0;
 		if(_dupenv_s(&buf, &sz, "JASP_TMP_DIR") == 0 && buf != nullptr) {
-			p = std::string(buf);
+            p = std::string(buf);
 			free(buf);
 			return p;
 		}
-	}
+#else 
+        char* buf =  getenv("JASP_TMP_DIR");//safe in unix
+        if(buf) {
+            return std::string(buf);
+        }
+#endif
+    }
 
 	string dir;
 	std::filesystem::path pa;
