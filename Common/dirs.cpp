@@ -87,8 +87,10 @@ string Dirs::tempDir()
 	}
 	else if(localAppDataDir() != "")
 		pa = localAppDataDir() + "/temp/";
-	else
-		throw std::runtime_error("Local Appdate Dir not defined!");
+	else {
+		pa = "./";
+		Log::log() <<"Local Appdata Dir not defined!" << std::endl;
+	}
 
 	if (!std::filesystem::exists(pa))
 	{
