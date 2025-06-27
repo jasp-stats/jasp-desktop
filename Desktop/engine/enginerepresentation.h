@@ -195,6 +195,7 @@ private:
 	void			handleEngineCrash();
 	void			abortAnalysisInProgress(bool restartAfterwards);
 	void			addSettingsToJson(Json::Value & msg);
+	void			killProcess();
 
 	IPCChannel	*	channel() { return emit channelSignal(_channelNumber); }
 

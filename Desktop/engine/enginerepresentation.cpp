@@ -23,23 +23,27 @@ void EngineRepresentation::setSlaveProcess(QProcess * slaveProcess)
 	_slaveFinishedConnection = connect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
 }
 
-EngineRepresentation::~EngineRepresentation()
+void EngineRepresentation::killProcess()
 {
-	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
-
-
 	if(_slaveProcess && _slaveProcess->state() == QProcess::ProcessState::Running)
 	{
-		_slaveProcess->terminate();
-		_slaveProcess->kill();
+		try { _slaveProcess->terminate(); } catch (...) {}
+		try { _slaveProcess->kill(); } catch (...) {}
 	}
-	
+
 	if(_slaveProcess)
 	{
 		_slaveProcess->setParent(nullptr);
 		_slaveProcess->deleteLater();
 		_slaveProcess = nullptr;
 	}
+}
+
+EngineRepresentation::~EngineRepresentation()
+{
+	Log::log() << "~EngineRepresentation() Engine #" << _channelNumber << std::endl;
+
+	killProcess();
 }
 
 void EngineRepresentation::cleanUpAfterClose(bool forgetAnalyses)
@@ -720,9 +724,7 @@ void EngineRepresentation::killEngine(bool beCareful)
 			//I want pause and resume all engines to be done in a single function call without returning to the eventloop, so we just disconnect "finished" if we want to kill the engine.
 		disconnect(_slaveProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),	this, &EngineRepresentation::processFinished);
 
-		_slaveProcess->kill();
-		_slaveProcess->deleteLater();
-		_slaveProcess = nullptr;
+		killProcess();
 	}
 
 	EngineRepresentation::processFinished();
@@ -793,9 +795,7 @@ void EngineRepresentation::restartEngine(QProcess * jaspEngineProcess)
 		if(jaspEngineStillRunning())
 			shutEngineDown();
 
-		_slaveProcess->kill();
-		_slaveProcess->deleteLater();
-		_slaveProcess = nullptr;
+		killProcess();
 
 		if(_engineState != engineState::killed && _engineState != engineState::stopped)
 			Log::log() << "EngineRepresentation::restartEngine says: Engine already had jaspEngine process that is now replaced!" << std::endl;
