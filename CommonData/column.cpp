@@ -1301,6 +1301,8 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 
 	if(merged)
 		_dbUpdateLabelOrder();
+
+	nonFilteredCountersReset();
 	
 	dbUpdateValues();
 }
@@ -1457,6 +1459,8 @@ void Column::labelValDisplayChanged(Label *label, const std::string &previousDis
 
 	if(merged)
 		_dbUpdateLabelOrder();
+
+	nonFilteredCountersReset();
 	
 	dbUpdateValues();
 }
