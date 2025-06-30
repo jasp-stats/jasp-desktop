@@ -5580,7 +5580,7 @@ msgstr "Wyłącz automatyczne sortowanie, aby przesuwać etykiety w górę ręcz
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr "Wyłącz automatyczne sortowanie, aby ręcznie przesuwać etykiety w dół."
+msgstr "Wyłącz automatyczne sortowanie, aby przesuwać etykiety w dół ręcznie"
 
 msgctxt "QObject|"
 msgid "No filter"
@@ -5598,7 +5598,7 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień ustawienie usuwania poziomów kolumny '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5608,7 +5608,7 @@ msgstr ""
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "Dodanie wartości + etykiety '%1' + '%2' do kolumny '%3'"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
@@ -5617,14 +5617,16 @@ msgstr ""
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
 msgstr ""
+"Wzmocnij bezpieczeństwo w systemie Windows poprzez izolację silników "
+"wykonujących kod R"
 
 msgctxt "PrefsUI|"
 msgid "Use thousands separators"
-msgstr ""
+msgstr "Użyj separatorów tysięcy"
 
 msgctxt "PrefsUI|"
 msgid "Disable to remove thousands separators from all numbers."
-msgstr ""
+msgstr "Wyłączenie spowoduje usunięcie separatorów tysięcy ze wszystkich liczb."
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
@@ -5640,13 +5642,15 @@ msgstr "Wybierz bibliotekę R..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "Zmieniono ustawienia graficznego trybu bezpiecznego"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
+"Ustawienia graficznego tryb bezpiecznego w JASP zostały zmienione. Aby "
+"zmiana weszła w życie, należy ponownie uruchomić JASP"
 
 msgctxt "PreferencesModel|"
 msgid "Text rendering setting changed"
