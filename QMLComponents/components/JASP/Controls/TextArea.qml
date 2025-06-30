@@ -198,6 +198,15 @@ TextAreaBase
 		}
 	}
 
+	Rectangle
+	{
+		anchors.bottom:			parent.bottom
+		anchors.right:			parent.right
+		anchors.margins:		4 * preferencesModel.uiScale
+		width:					infoText.width
+		height:					infoText.height
+		opacity:				.8
+	}
 	Text
 	{
 		id:						infoText
@@ -219,7 +228,6 @@ TextAreaBase
 
 		Rectangle
 		{
-			z:				-1
 			anchors.fill:	infoText
 			color:			textArea.hasScriptError ? jaspTheme.errorMessagesBackgroundColor : "transparent"
 		}
