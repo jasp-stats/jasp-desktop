@@ -5439,16 +5439,15 @@ msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
-"Załaduj moduły z pliku binarnego biblioteki R zamiast instalować je ze "
-"źródeł."
+"Ładuj moduły z pliku binarnego biblioteki R zamiast instalować je ze źródeł."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Folder źródłowy:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Wybierz bibliotekę R, w której zainstalowano moduł dla programistów"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
@@ -5457,14 +5456,15 @@ msgstr "Nazwa modułu:"
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
 msgstr ""
+"Wprowadź nazwę (pakietu) modułu dla programistów, który chcesz załadować"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "Wybierz moduł dla programistów, wypełniając odpowiednie ustawienia"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "Odśwież moduł dla programistów "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
@@ -5599,7 +5599,7 @@ msgstr "Użyj filtra"
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Zmień filtr kolumny '%1' z '%2' na '%3'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5609,7 +5609,7 @@ msgstr "Zmień ustawienie usuwania poziomów kolumny '%1' z '%2' na '%3'"
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Usuń etykietę %1 z kolumny '%2'"
 
 #, qt-format
 msgctxt "QObject|"
@@ -5618,7 +5618,7 @@ msgstr "Dodanie wartości + etykiety '%1' + '%2' do kolumny '%3'"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
-msgstr ""
+msgstr "Silniki testowe"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
@@ -5679,6 +5679,8 @@ msgid ""
 "The Engine Sandbox setting has been changed, this will only take full effect "
 "after JASP is restarted."
 msgstr ""
+"Ustawienia silników testowych zostało zmienione, pełne działanie nastąpi po "
+"ponownym uruchomieniu JASP."
 
 msgctxt "MessageForwarder|"
 msgid "Sandbox warning"
@@ -5838,7 +5840,7 @@ msgstr "Zakończono instalację pakietów: "
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
-msgstr ""
+msgstr "Błąd bezpiecznego trybu testowego"
 
 msgctxt "QObject|"
 msgid ""
