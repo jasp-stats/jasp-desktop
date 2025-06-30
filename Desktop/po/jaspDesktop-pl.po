@@ -5576,11 +5576,11 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr "Wyłącz automatyczne sortowanie, aby przesuwać etykiety w górę ręcznie."
+msgstr "Wyłącz automatyczne sortowanie, aby przesuwać etykiety w górę ręcznie"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "Wyłącz automatyczne sortowanie, aby ręcznie przesuwać etykiety w dół."
 
 msgctxt "QObject|"
 msgid "No filter"
