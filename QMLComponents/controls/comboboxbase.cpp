@@ -258,6 +258,9 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 {
 	QString currentColumnType, currentColumnRealType, currentValue, currentLabel, currentColumnTypeIcon;
 
+	if (_model->rowCount() == 0)
+		index = -1;
+
 	if (index >= _model->rowCount())	
 		index = 0;
 
