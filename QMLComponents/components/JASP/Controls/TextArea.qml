@@ -200,11 +200,8 @@ TextAreaBase
 
 	Rectangle
 	{
-		anchors.bottom:			parent.bottom
-		anchors.right:			parent.right
+		anchors.fill:			infoText
 		anchors.margins:		4 * preferencesModel.uiScale
-		width:					infoText.width
-		height:					infoText.height
 		opacity:				.8
 	}
 	Text
