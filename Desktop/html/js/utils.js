@@ -27,18 +27,27 @@ function formatMoney(_currency='EUR', amount) {
 	return amount == "." ? amount : formatter.format(amount)
 }
 
-function formatFixed(number, digitsFrac) {
+function formatFixed(number, digitsFrac, noZeroLead=false) {
 	if(isNaN(digitsFrac))
 		digitsFrac = 0
 	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumFractionDigits: digitsFrac, maximumFractionDigits: digitsFrac, useGrouping: useThousandsSeparators});
 	
-	return formatter.format(number)
+	var result = formatter.format(number)
+	
+	if(number >= 0 && number < 1 && noZeroLead)
+		return result.substring(1);
+	
+	return result;
 }
 
-function formatPrecision(number, precision) {
+function formatPrecision(number, precision, noZeroLead=false) {
 	const formatter = new Intl.NumberFormat(currentLocaleId, { minimumSignificantDigits: precision, maximumSignificantDigits: precision, useGrouping: useThousandsSeparators });
 	
-	return formatter.format(number)
+	var result = formatter.format(number)
+	
+	if(number >= 0 && number < 1 && noZeroLead)
+		return result.substring(1);
+	return result;
 }
 
 function formatNumber(number) {
@@ -136,7 +145,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	let approx		= false;
 	let fixDecimals = typeof dp === 'number' && dp >= 0;
 	let currency	= ""
-	let moneyFmt	= "monetary" 
+	let moneyFmt	= "monetary"
+	let noZeroLead	= false;
 	
 	for (let i = 0; i < formats.length; i++) 
 	{
@@ -147,6 +157,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				sf = 4;
 			} else {
 				p = Number(f.substring(2));
+				noZeroLead = true;
 			}
 		}
 		
@@ -294,13 +305,13 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content < p) 
 					{
-						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + p
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + formatPrecision(p, sf, noZeroLead)
 						formatted["class"]		= "p-value"
 						isNumber = false
 					}
 					else if (content == 0)
 					{
-						formatted["content"] = isFinite(dp) ? formatFixed(content, dp) : formatPrecision(content, sf)
+						formatted["content"] = isFinite(dp) ? formatFixed(content, dp, noZeroLead) : formatPrecision(content, sf, noZeroLead)
 					}
 					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp))
 					{
@@ -310,7 +321,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else 
 					{
-						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf)
+						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf, noZeroLead)
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
 					}
@@ -327,7 +338,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content < p) 
 					{
-						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + p
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + formatFixed(p, dp, noZeroLead)
 						formatted["class"]		= "p-value"
 						isNumber = false
 					}
@@ -339,7 +350,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 							strContent = toExponential(content, dp, 0, html)
 						else 
 						{
-							strContent = formatFixed(content, dp)
+							strContent = formatFixed(content, dp, noZeroLead)
 							if(html)
 								strContent = strContent.replace(/-/g, "&minus;")
 						}
