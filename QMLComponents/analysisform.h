@@ -102,9 +102,8 @@ public slots:
 	void					setTitle(					QString					title);
 	void					setShowRButton(				bool					showRButton);
 	void					setDeveloperMode(			bool					developerMode);
-	void					setRSyntaxText();
-	void					setShowAllROptions(			bool				showAllROptions);
-	void					sendRSyntax(				QString				text);
+	void					setShowAllROptions(			bool					showAllROptions);
+	void					sendRSyntax(				QString					text);
 	void					toggleRSyntax();
 
 signals:
@@ -245,7 +244,6 @@ private:
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRButton					= false,
 													_developerMode					= false;
-	QString											_rSyntaxText;
 	JASPControl*									_activeJASPControl				= nullptr;
 };
 

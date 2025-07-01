@@ -239,7 +239,7 @@ AnalysisForm
 				anchors.topMargin:	jaspTheme.generalAnchorMargin
 				width:				parent.width
 				height:				visible ? 100 * preferencesModel.uiScale : 0
-				text:				form.rSyntaxText
+				text:				visible ? form.rSyntaxText : ""
 				textType:           JASPControl.TextTypeRcode
 				isBound:			false
 				onApplyRequest:		form.sendRSyntax(text)

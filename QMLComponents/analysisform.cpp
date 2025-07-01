@@ -47,10 +47,10 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
 	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
-	connect(this,									&AnalysisForm::showAllROptionsChanged,		this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
-	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showRSyntaxChanged,	this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::showAllROptionsChanged,		this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showRSyntaxChanged,	this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this, &AnalysisForm::showAllROptionsChanged, Qt::QueuedConnection	);
-	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::setRSyntaxText,		Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
@@ -660,7 +660,7 @@ void AnalysisForm::setAnalysisUp()
 	_initialized = true;
 
 	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
-	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::setRSyntaxText,				Qt::QueuedConnection	);
+	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
 
 	emit analysisChanged();
 }
@@ -786,7 +786,7 @@ void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 
 QString AnalysisForm::rSyntaxText() const
 {
-	return _rSyntaxText;
+	return generateRSyntax();
 }
 
 bool AnalysisForm::needsRefresh() const
@@ -1039,18 +1039,10 @@ void AnalysisForm::setDeveloperMode(bool developerMode)
 	emit developerModeChanged();
 }
 
-void AnalysisForm::setRSyntaxText()
+void AnalysisForm::sendRSyntax(QString text)
 {
-	if (!initialized() || !PreferencesModelBase::preferences()->showRSyntax())
-		return;
-
-	QString text = generateRSyntax();
-
-	if (text != _rSyntaxText)
-	{
-		_rSyntaxText = text;
-		emit rSyntaxTextChanged();
-	}
+	PreferencesModelBase::preferences()->setShowRSyntax(true);
+	_analysis->sendRScript(text, rSyntaxControlName, false);
 }
 
 bool AnalysisForm::showAllROptions() const
@@ -1061,12 +1053,6 @@ bool AnalysisForm::showAllROptions() const
 void AnalysisForm::setShowAllROptions(bool showAllROptions)
 {
 	PreferencesModelBase::preferences()->setShowAllROptions(showAllROptions);
-}
-
-void AnalysisForm::sendRSyntax(QString text)
-{
-	PreferencesModelBase::preferences()->setShowRSyntax(true);
-	_analysis->sendRScript(text, rSyntaxControlName, false);
 }
 
 void AnalysisForm::toggleRSyntax()

@@ -356,6 +356,7 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::refreshTableViewModels,	_analysisForm,	&AnalysisForm::refreshTableViewModels		);
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
+		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::rSyntaxTextChanged			);
 		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
 
 		setRSyntaxTextInResult();
