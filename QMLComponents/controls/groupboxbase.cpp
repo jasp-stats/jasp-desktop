@@ -5,8 +5,3 @@ GroupBoxBase::GroupBoxBase(QQuickItem* parent)
 { 
 	_controlType = JASPControl::ControlType::GroupBox; 
 }
-
-bool GroupBoxBase::infoLabelIsHeader() const
-{ 
-	return true; 
-}

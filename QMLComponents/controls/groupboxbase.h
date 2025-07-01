@@ -29,8 +29,6 @@ class GroupBoxBase : public JASPControl
 public:
 	GroupBoxBase(QQuickItem* parent = nullptr);
 
-	bool infoLabelIsHeader()	const	override;
-
 };
 
 #endif // GROUPBOXBASE_H

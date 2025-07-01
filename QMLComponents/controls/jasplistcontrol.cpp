@@ -276,6 +276,26 @@ std::vector<std::string> JASPListControl::usedVariables() const
 	else												return {};
 }
 
+JASPControls JASPListControl::getMDSubItems(const QQuickItem*) const
+{
+	const Terms& terms = model()->terms();
+
+	// If row components are used, use only the items of the first row (if exists) to generate the help.
+	const ListModel::RowControlMap & map = model()->getAllRowControls();
+	if (map.size() > 0)
+	{
+		QQuickItem* rowItem = map.first()->getRowObject();
+		JASPControl* rowControl = qobject_cast<JASPControl*>(rowItem);
+		if (rowControl)
+			return {rowControl};
+		else
+			return JASPControl::getMDSubItems(map.first()->getRowObject());
+	}
+
+	return {};
+}
+
+
 void JASPListControl::sourceChangedHandler()
 {
 	if (!model())	return;

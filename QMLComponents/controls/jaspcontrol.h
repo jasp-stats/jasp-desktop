@@ -116,7 +116,6 @@ public:
 	QString				infoLabel()					const	{ return _infoLabel;				}
 	QString				fullLabel()					const	{ return (infoLabel().isEmpty() ? title() : infoLabel()).trimmed(); }
 	virtual bool		infoAddControlType()		const	{ return  false;					}
-	virtual bool		infoLabelIsHeader()			const	{ return  false;					}
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}

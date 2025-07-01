@@ -417,18 +417,6 @@ QString ComponentsListBase::_changeLastNumber(const QString &val) const
 		return result.append(QString::number(2));
 }
 
-JASPControls ComponentsListBase::getMDSubItems(const QQuickItem*) const
-{
-	const Terms& terms = model()->terms();
-
-	// In case of a ComponentsList (or TabView), use only the items of the first row (if exists) to generate the help.
-	const ListModel::RowControlMap & map = model()->getAllRowControls();
-	if (map.size() > 0)
-		return JASPControl::getMDSubItems(map.first()->getRowObject());
-
-	return {};
-}
-
 QString ComponentsListBase::_makeUnique(const QString &val, int index) const
 {
 	return _makeUnique(val, _termsModel->terms().values(), index);

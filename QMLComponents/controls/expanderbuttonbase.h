@@ -34,7 +34,6 @@ public:
 	void		setUp()															override;
 	QString		generateMDHelp(int depth = 0)							const	override;
 	QString		printLabelMD(int depth)									const	override;
-	bool		infoLabelIsHeader()										const	override	{ return true; }
 
 };
 

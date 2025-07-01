@@ -70,13 +70,13 @@ class JASPListControl : public JASPControl
 
 
 public:
-    JASPListControl(QQuickItem* parent = nullptr);
+	JASPListControl(QQuickItem* parent = nullptr);
 
 	virtual ListModel			*	model()						const	{ return nullptr; } // Cannot be a pure virtual function: JASPListControl would not be a default constructible object, and could not be a QML Type
 	virtual void					setUpModel();
 			void					setUp()						override;
 			void					cleanUp()					override;
-	
+
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
@@ -165,10 +165,11 @@ protected slots:
 			bool					checkLevelsConstraints();
 
 protected:
-	void							_setInitialized(const Json::Value& value = Json::nullValue)	override;
+	void							_setInitialized(const Json::Value& value = Json::nullValue)				override;
 	void							_setAllowedVariables();
 	virtual bool					_checkLevelsConstraints();
 	bool							_checkLevelsConstraintsForVariable(const QString& variable);
+	JASPControls					getMDSubItems(const QQuickItem* parentItem = nullptr)			const	override;
 
 	GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
 	GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)
@@ -193,7 +194,7 @@ private:
 	void					_setupSources();
 	Terms					_getCombinedTerms(SourceItem* sourceToCombine);
 	void					_checkAllSourcesAreConnected(bool addConnect = true);
-			
+
 protected:
 	QVector<SourceItem*>	_sourceItems;
 	QString					_optionKeyValue						= "value",

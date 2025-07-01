@@ -96,7 +96,6 @@ protected:
 	QString				_makeUnique(const QString& val, int index = -1)	const;
 	QString				_makeUnique(const QString& val, const QList<QString>& values, int index = -1)	const;
 	QString				_changeLastNumber(const QString& val) const;
-	JASPControls		getMDSubItems(const QQuickItem* parentItem = nullptr)						const override;
 
 private:
 	ListModelTermsAssigned*		_termsModel				= nullptr;

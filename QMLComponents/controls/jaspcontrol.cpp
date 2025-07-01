@@ -321,6 +321,10 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 		if (childControl)
 		{
+#ifndef JASP_DEBUG
+			if (childControl->debug())
+				continue;
+#endif
 			if (collapseStructuralControls && childControl->controlType() == ControlType::GroupBox && !childControl->hasLabelOrInfo())
 				// If a Group has no label, title or info, then it is used probably for layout purpose.
 				// Just skip it: this is necessary for generating properly the markdown help
@@ -577,22 +581,15 @@ QString JASPControl::printLabelMD(int depth) const
 
 	QStringList md;
 	// Print the label as a header, in italic or in bold
-	if (infoLabelIsHeader())			md << "<h" << QString::number(depth + 3) << ">";
-	else if	(infoLabelItalic())			md << "*";
+	if	(infoLabelItalic())				md << "*";
 	else								md << "**";
 
 	if (infoAddControlType())			md << (friendlyName() + (!label.isEmpty() ? " - " : ""));
 
-	md << label;
-
-	if (infoLabelIsHeader())			md << "</h" << QString::number(depth + 3) << ">";
-	else
-	{
-		md << (infoLabelItalic() ? "*" : "**");
-		if (!info().isEmpty() && !label.endsWith(":")) // Add ':' when necessary
-			md << ":";
-		md << " ";
-	}
+	md << label << (infoLabelItalic() ? "*" : "**");
+	if (!info().isEmpty() && !label.endsWith(":")) // Add ':' when necessary
+		md << ":";
+	md << " ";
 
 	return md.join("");
 }
@@ -633,13 +630,12 @@ QString JASPControl::generateMDHelp(int depth) const
 	QStringList markdown;
 	markdown << printLabelMD(depth) << info() << "\n";
 
-	if (MDSubItems.size() == 1)
-		markdown << "\n" << QString{depth * 2, ' '} << MDSubItems[0]->generateMDHelp(depth + 1);
-	else if (MDSubItems.size() > 1)
+	if (MDSubItems.size() > 0)
 	{
-		markdown << "\n"; // Before adding bullets, a new line is needed
+		bool addBullet = MDSubItems.size() > 1 || (depth == 0 && MDSubItems[0]->hasLabelOrInfo());
+		markdown << "\n";
 		for (const auto& childMD : MDSubItems)
-			markdown << QString{depth * 2, ' '} << "- " << childMD->generateMDHelp(depth + 1);
+			markdown << QString{depth * 2, ' '} << (addBullet ? "- " : "") << childMD->generateMDHelp(depth + 1);
 	}
 
 	return markdown.join("");
