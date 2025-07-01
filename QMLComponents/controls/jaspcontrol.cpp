@@ -3,6 +3,7 @@
 #include "log.h"
 #include "analysisform.h"
 #include "jasptheme.h"
+#include "preferencesmodelbase.h"
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QTimer>
@@ -133,11 +134,10 @@ void JASPControl::_setBackgroundColor()
 
 void JASPControl::_setVisible()
 {
-	bool isDebug = false;
-#ifdef JASP_DEBUG
-	isDebug = true;
-#endif
-	if (!isDebug && (debug() || parentDebug()))
+	PreferencesModelBase* pref = PreferencesModelBase::preferences();
+	bool isDeveloperMode = pref ? pref->developerMode() : false;
+
+	if (!isDeveloperMode && (debug() || parentDebug()))
 		setVisible(false);
 }
 
@@ -313,6 +313,7 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 	if (!item)
 		return result;
 
+	PreferencesModelBase* pref = PreferencesModelBase::preferences();
 	QList<QQuickItem*> childItems = item->childItems();
 
 	for (QQuickItem* childItem : childItems)
@@ -321,10 +322,9 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 		if (childControl)
 		{
-#ifndef JASP_DEBUG
-			if (childControl->debug())
+			if (!pref->developerMode() && childControl->debug())
 				continue;
-#endif
+
 			if (collapseStructuralControls && childControl->controlType() == ControlType::GroupBox && !childControl->hasLabelOrInfo())
 				// If a Group has no label, title or info, then it is used probably for layout purpose.
 				// Just skip it: this is necessary for generating properly the markdown help
