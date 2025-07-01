@@ -159,7 +159,7 @@ public:
 	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
-	bool			engineSandbox()							const;
+	
 	QString			localConfigurationPATH()				const;
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
@@ -176,7 +176,8 @@ public:
 	void setStartMaximized(bool newStartMaximized);
 	
 public slots:
-	bool useNativeFileDialog()					const;
+	bool engineSandbox()							const;
+	bool useNativeFileDialog()						const;
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
 	void setDefaultPPI(					int			defaultPPI);
