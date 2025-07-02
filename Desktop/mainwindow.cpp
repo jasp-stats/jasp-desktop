@@ -869,7 +869,7 @@ void MainWindow::openURLFile(QString fileURLPath)
 		return;
 	}
 
-	if (!FileTypeBaseValidName(fileInfo.suffix().toStdString()))
+	if (!FileTypeBaseValidName(fileInfo.suffix().toLower().toStdString()))
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("JASP does not support this file type %1.").arg(filePath));
 		return;
