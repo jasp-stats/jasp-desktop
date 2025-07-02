@@ -62,6 +62,11 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_notifyFormOfActiveFocus);
+								 
+	PreferencesModelBase* pref = PreferencesModelBase::preferences();
+								 
+	if(pref)
+		connect(pref, &PreferencesModelBase::developerModeChanged, this, [this](){ _setVisible(); });
 }
 
 JASPControl::~JASPControl()
@@ -139,6 +144,9 @@ void JASPControl::_setVisible()
 
 	if (!isDeveloperMode && (debug() || parentDebug()))
 		setVisible(false);
+								 
+	if(isDeveloperMode && (debug() || parentDebug()))
+		setVisible(true);
 }
 
 void JASPControl::_resetBindingValue()

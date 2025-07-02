@@ -41,16 +41,19 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	setObjectName("AnalysisForm");
 
 	_rSyntax = new RSyntax(this);
+
 	// _startRSyntaxTimer is used to call setRSyntaxText only once in a event loop.
-	connect(this,									&AnalysisForm::infoChanged,					this, &AnalysisForm::helpMDChanged			);
-	connect(this,									&AnalysisForm::infoBottomChanged,			this, &AnalysisForm::helpMDChanged			);
-	connect(this,									&AnalysisForm::formCompletedSignal,			this, &AnalysisForm::formCompletedHandler,	Qt::QueuedConnection);
-	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
-	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,			this, &AnalysisForm::knownIssuesUpdated,	Qt::QueuedConnection);
-	connect(this,									&AnalysisForm::showAllROptionsChanged,		this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
-	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showRSyntaxChanged,	this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
-	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this, &AnalysisForm::showAllROptionsChanged, Qt::QueuedConnection	);
-	connect(this,									&AnalysisForm::analysisChanged,				this, &AnalysisForm::rSyntaxTextChanged,	Qt::QueuedConnection);
+
+	connect(this,									&AnalysisForm::infoChanged,						this, &AnalysisForm::helpMDChanged									);
+	connect(this,									&AnalysisForm::infoBottomChanged,				this, &AnalysisForm::helpMDChanged									);
+	connect(this,									&AnalysisForm::formCompletedSignal,				this, &AnalysisForm::formCompletedHandler,		Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::analysisChanged,					this, &AnalysisForm::knownIssuesUpdated,		Qt::QueuedConnection);
+	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,				this, &AnalysisForm::knownIssuesUpdated,		Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::showAllROptionsChanged,			this, &AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showRSyntaxChanged,		this, &AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this, &AnalysisForm::showAllROptionsChanged,	Qt::QueuedConnection);
+	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::developerModeChanged,	this, &AnalysisForm::helpMDChanged,				Qt::QueuedConnection);
+	connect(this,									&AnalysisForm::analysisChanged,					this, &AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
