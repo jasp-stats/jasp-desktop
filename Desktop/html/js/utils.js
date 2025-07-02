@@ -250,7 +250,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 		minLSD = Math.max(-20, minLSD)
 	}
 	
-	format = currency != "" ? "monetary" : pc ? "percentage" : isFinite(dp) ? "decimalPoints" : isFinite(sf) ? "significance" : "other"
+	format = currency != "" ? "monetary" : pc ? "percentage" : isFinite(sf) ? "significance" : isFinite(dp) ? "decimalPoints" : "other"
 	
 	//Now that thats been determined we can format our cells
 	for (var rowNo = 0; rowNo < column.length; rowNo++) 
