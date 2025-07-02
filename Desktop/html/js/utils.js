@@ -50,6 +50,21 @@ function formatPrecision(number, precision, noZeroLead=false) {
 	return result;
 }
 
+function formatPrecisionWithRespectForFixedDecimals(number, sf, dp, noZeroLead=false) {
+	const formatter = new Intl.NumberFormat(currentLocaleId, { 
+		minimumSignificantDigits:	sf, maximumSignificantDigits:	sf, 
+		minimumFractionDigits:		dp, maximumFractionDigits:		dp, 
+		roundingPriority:			"lessPrecision", 
+		useGrouping:				useThousandsSeparators 
+	});
+	
+	var result = formatter.format(number)
+	
+	if(number >= 0 && number < 1 && noZeroLead)
+		return result.substring(1);
+	return result;
+}
+
 function formatNumber(number) {
 	const formatter = new Intl.NumberFormat(currentLocaleId, { useGrouping: useThousandsSeparators });
 	
@@ -314,7 +329,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content == 0)
 					{
-						formatted["content"] = isFinite(dp) ? formatFixed(content, dp, noZeroLead) : formatPrecision(content, sf, noZeroLead)
+						formatted["content"] = isFinite(dp) ? formatFixed(content, dp, noZeroLead) : formatPrecisionWithRespectForFixedDecimals(content, sf, 0, noZeroLead)
 					}
 					else if (Math.abs(content) >= upperLimit || Math.abs(content) < Math.pow(10, -dp))
 					{
@@ -324,8 +339,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else 
 					{
-						if(isP)						formatted["content"] = fixDecimals && window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html) : formatPrecision(content, sf, noZeroLead)
-						else						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf, noZeroLead)
+						if(isP)						formatted["content"] = fixDecimals && window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html) : formatPrecision(content, sf, dp, noZeroLead)
+						else						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead)
 						
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
