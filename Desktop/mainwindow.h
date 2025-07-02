@@ -167,6 +167,7 @@ public slots:
 	void zoomResetKeyPressed();	
 	void undo();
 	void redo();
+	void openURLFile(QString fileURLPath);
 
 	QObject * loadQmlData(QString data, QUrl url);
 

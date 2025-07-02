@@ -851,6 +851,32 @@ void MainWindow::showLogFolder() const
 	openFolderExternally(AppDirs::logDir());
 }
 
+void MainWindow::openURLFile(QString fileURLPath)
+{
+	QUrl fileUrl(fileURLPath);
+	if (!fileUrl.isLocalFile())
+	{
+		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
+		return;
+	}
+
+	QString filePath = fileUrl.toLocalFile();
+	QFileInfo fileInfo(filePath);
+
+	if (!fileInfo.exists())
+	{
+		MessageForwarder::showWarning(tr("Open file"), tr("File %1 is not found.").arg(filePath));
+		return;
+	}
+
+	if (!FileTypeBaseValidName(fileInfo.suffix().toStdString()))
+	{
+		MessageForwarder::showWarning(tr("Open file"), tr("JASP does not support this file type %1.").arg(filePath));
+		return;
+	}
+
+	open(filePath);
+}
 
 void MainWindow::open(QString filepath)
 {

@@ -87,6 +87,14 @@ Window
 		return (a + n) % n;
 	}
 
+	DropArea
+	{
+		id: drop
+		enabled: true
+		anchors.fill: parent
+		onDropped: (drop) => mainWindow.openURLFile(drop.text)
+	}
+
 	Item
 	{
 		anchors.fill:	parent
