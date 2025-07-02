@@ -789,7 +789,7 @@ function formatCellforLaTeX (toFormat) {
 function camelize (str) {
 	return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
 		if (+match === 0) return "";
-		return index == 0 ? match.toLowerCase() : match.toUpperCase();
+		return index === 0 ? match.toLowerCase() : match.toUpperCase();
 	});
 }
 
@@ -800,7 +800,7 @@ function getDecimalSeparator()
 {
     const numberWithDecimalSeparator = 1.1;
 	
-    return Intl.NumberFormat(currentLocaleId)        
+    return (new Intl.NumberFormat(currentLocaleId))
 		.formatToParts(numberWithDecimalSeparator)
         .find(part => part.type === 'decimal')
         .value;
