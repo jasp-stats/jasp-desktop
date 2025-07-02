@@ -51,6 +51,9 @@ function formatPrecision(number, precision, noZeroLead=false) {
 }
 
 function formatPrecisionWithRespectForFixedDecimals(number, sf, dp, noZeroLead=false) {
+	if(isNan(dp))
+		return formatPrecision(number, sf, noZeroLead);
+	
 	const formatter = new Intl.NumberFormat(currentLocaleId, { 
 		minimumSignificantDigits:	sf, maximumSignificantDigits:	sf, 
 		minimumFractionDigits:		dp, maximumFractionDigits:		dp, 
@@ -323,7 +326,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else if (content < p) 
 					{
-						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + formatPrecision(p, sf, noZeroLead)
+						formatted["content"] 	= (html ? "<&nbsp;" : "< ") + formatPrecisionWithRespectForFixedDecimals(p, sf, noZeroLead)
 						formatted["class"]		= "p-value"
 						isNumber = false
 					}
@@ -339,8 +342,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else 
 					{
-						if(isP)						formatted["content"] = fixDecimals && window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html) : formatPrecision(content, sf, dp, noZeroLead)
-						else						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead)
+						if(isP)						formatted["content"] = fixDecimals || window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html)	: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead)
+						else						formatted["content"] = alignNumbers || fixDecimals			? formatFixed(content, -minLSD)									: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead)
 						
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
