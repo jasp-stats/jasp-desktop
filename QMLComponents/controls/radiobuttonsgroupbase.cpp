@@ -150,6 +150,14 @@ void RadioButtonsGroupBase::setDefaultValue(const QString &defaultValue)
 	emit defaultValueChanged();
 }
 
+void RadioButtonsGroupBase::unregisterAll()
+{
+	auto buttonsTmp = _buttons;
+	for(auto* button : buttonsTmp) {
+		button->unregisterRadioButton();
+	}
+}
+
 void RadioButtonsGroupBase::bindTo(const Json::Value &jsonValue)
 {
 	BoundControlBase::bindTo(jsonValue);

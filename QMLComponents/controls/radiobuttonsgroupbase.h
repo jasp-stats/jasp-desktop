@@ -55,6 +55,9 @@ public:
 	QString	defaultValue()	const	{ return _defaultValue; }
 	void	setDefaultValue(const QString& defaultValue);
 
+public slots:
+	Q_INVOKABLE void unregisterAll();
+
 signals:
 	void valueChanged();
 	void clicked();

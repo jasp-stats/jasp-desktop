@@ -60,8 +60,6 @@ void RadioButtonBase::registerWithParent()
 		}
 		ancestor = ancestor->parentItem();
 	}
-
-	unregisterRadioButton();
 }
 
 void RadioButtonBase::unregisterRadioButton()

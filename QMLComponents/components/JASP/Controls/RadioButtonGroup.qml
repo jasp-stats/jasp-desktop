@@ -86,4 +86,9 @@ RadioButtonsGroupBase
 		z:					-1
 		visible:			preferencesModel.developerMode
 	}
+
+	Component.onDestruction:
+	{
+		unregisterAll();
+	}
 }
