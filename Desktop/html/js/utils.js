@@ -156,7 +156,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 			if (window.globSet.pExact) {
 				sf = 4;
 			} else {
-				p = Number(f.substring(2));
+				p = fixDecimals ? 1/Math.pow(10,dp) : Number(f.substring(2));
 				noZeroLead = true;
 			}
 		}
