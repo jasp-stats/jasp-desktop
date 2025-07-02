@@ -139,6 +139,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 	
 	let formats		= format.split(";");
 	let p			= NaN;
+	let isP			= false;
 	let dp			= parseInt(window.globSet.decimals);
 	let sf			= NaN;
 	let pc			= false;
@@ -159,6 +160,8 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 				p = fixDecimals ? 1/Math.pow(10,dp) : Number(f.substring(2));
 				noZeroLead = true;
 			}
+			
+			isP = true;
 		}
 		
 		if(f.startsWith(moneyFmt))
@@ -321,7 +324,9 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					}
 					else 
 					{
-						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf, noZeroLead)
+						if(isP)						formatted["content"] = fixDecimals && window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html) : formatPrecision(content, sf, noZeroLead)
+						else						formatted["content"] = alignNumbers || fixDecimals ? formatFixed(content, -minLSD) : formatPrecision(content, sf, noZeroLead)
+						
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
 					}
