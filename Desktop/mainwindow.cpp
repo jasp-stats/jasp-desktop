@@ -853,7 +853,7 @@ void MainWindow::showLogFolder() const
 
 void MainWindow::openURLFile(QString fileURLPath)
 {
-	QUrl fileUrl = QUrl::fromLocalFile(fileURLPath);
+	QUrl fileUrl = fileURLPath.startsWith("file:") ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
 	if (!fileUrl.isLocalFile())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
