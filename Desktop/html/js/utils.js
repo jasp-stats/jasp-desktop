@@ -51,7 +51,7 @@ function formatPrecision(number, precision, noZeroLead=false) {
 }
 
 function formatPrecisionWithRespectForFixedDecimals(number, sf, dp, noZeroLead=false) {
-	if(isNan(dp))
+	if(isNaN(dp))
 		return formatPrecision(number, sf, noZeroLead);
 	
 	const formatter = new Intl.NumberFormat(currentLocaleId, { 
