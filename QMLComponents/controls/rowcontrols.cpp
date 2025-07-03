@@ -68,6 +68,9 @@ void RowControls::_initializeControls(bool useInitialValue)
 	JASPListControl* parentControl = _parentModel->listView();
 	AnalysisForm* form = parentControl->form();
 
+	for (JASPControl* control : controls)
+		control->setUp();
+
 	if (form)
 		form->sortControls(controls);
 

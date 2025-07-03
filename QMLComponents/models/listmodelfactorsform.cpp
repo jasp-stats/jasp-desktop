@@ -204,7 +204,7 @@ void ListModelFactorsForm::factorAdded(int index, VariablesListBase* listView)
 
 void ListModelFactorsForm::ensureNesting()
 {
-	if (_ensuringNesting || !_factorsForm->nested()) return;
+	if (_ensuringNesting || !_factorsForm->nested() || !_factorsForm->initialized()) return;
 
 	ListModelDraggable	*currentModel	= qobject_cast<ListModelDraggable*>(sender()),
 						*onderModel		= nullptr,
@@ -216,7 +216,7 @@ void ListModelFactorsForm::ensureNesting()
 		{
 			if (currentModel == _factors[i].listView->model())
 			{
-				if (i > 0)
+				if (i > 0 )
 					upperModel = qobject_cast<ListModelDraggable*>(_factors[i-1].listView->model());
 				if (i + 1 < _factors.size())
 					onderModel = qobject_cast<ListModelDraggable*>(_factors[i+1].listView->model());

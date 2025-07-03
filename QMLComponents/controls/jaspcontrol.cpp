@@ -251,8 +251,6 @@ void JASPControl::componentComplete()
 		if (parentlistView)
 			parentlistView->addRowControl(_parentListViewKey, this);
 
-		// Setup must be done after _parentListView & _parentListViewKey are set (if they exist), so that if the control has a source, the right source is found.
-		setUp();
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)
