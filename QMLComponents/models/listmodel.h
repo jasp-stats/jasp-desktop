@@ -70,13 +70,10 @@ public:
 	virtual Terms					filterTerms(const Terms& terms, const QStringList& filters);
 			bool					needsSource()												const		{ return _needsSource;			}
 			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
-	virtual QString					getItemType(const Term& term)								const		{ return _itemType; }
-			void					setItemType(QString type)												{ _itemType = type; }
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
 			virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false);
 			Terms					getSourceTerms();
-			ListModel*				getSourceModelOfTerm(const Term& term);
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
 	virtual void					setUpRowControls();
@@ -144,7 +141,6 @@ protected:
 			Term	_checkTermType(const Term& terms)					const;
 			void	_setAllowedType(Term& term)							const;
 
-			QString							_itemType;
 			bool							_needsSource			= true;
 			QMap<QString, RowControls* >	_rowControlsMap;
 			QQmlComponent *					_rowComponent			= nullptr;

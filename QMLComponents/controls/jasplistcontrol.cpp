@@ -243,11 +243,6 @@ JASPControl *JASPListControl::getRowControl(const QString &key, const QString &n
 	return model() ? model()->getRowControl(key, name) : nullptr;
 }
 
-QString JASPListControl::getSourceType(QString name)
-{
-	return model() ? model()->getItemType(name) : "";
-}
-
 columnType JASPListControl::getVariableType(const QString &name)
 {
 	return model()->getVariableType(name);

@@ -20,31 +20,29 @@
 #define LISTMODELINTERACTIONASSIGNED_H
 
 #include "listmodelassignedinterface.h"
-#include "interactionmodel.h"
 
-class ListModelInteractionAssigned : public ListModelAssignedInterface, public InteractionModel
+class VariablesListBase;
+
+class ListModelInteractionAssigned : public ListModelAssignedInterface
 {
 	Q_OBJECT
 	
 public:
-	ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault);
+	ListModelInteractionAssigned(JASPListControl* listView);
 
 	void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& = {}, bool reInit = false)	override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {})	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;
-	QString			getItemType(const Term &term)											const	override;
 		
 public slots:
-	void availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
-	void sourceVariableNamesChanged(QMap<QString, QString> map)												override;
+	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)				override;
 	
 protected:
-	void _addTerms(const Terms& terms, bool combineWithExistingTerms);
-	
-	void setTerms();
+	void			_removeTerms(const Terms & termsToRemove);
 
-	bool _addInteractionsByDefault;
+	VariablesListBase* _variablesList = nullptr;
+
 };
 
 

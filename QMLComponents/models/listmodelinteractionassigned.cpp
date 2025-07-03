@@ -22,14 +22,15 @@
 #include "listmodeltermsassigned.h"
 #include "controls/jasplistcontrol.h"
 #include "analysisform.h"
+#include "variableslistbase.h"
+#include "sourceitem.h"
 
 using namespace std;
 
-ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView, bool mustContainLowerTerms, bool addInteractionsByDefault)
-	: ListModelAssignedInterface(listView), InteractionModel ()
+ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* listView)
+	: ListModelAssignedInterface(listView)
 {
-	_mustContainLowerTerms		= mustContainLowerTerms;
-	_addInteractionsByDefault	= addInteractionsByDefault;
+	_variablesList = qobject_cast<VariablesListBase*>(listView);
 }
 
 void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool reInit)
@@ -40,7 +41,7 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::Re
 
 	if (reInit)
 	{
-		Terms oldInteractions = interactionTerms();
+		Terms oldInteractions = this->terms();
 		for (const Term& oldInteraction : oldInteractions)
 		{
 			if (oldInteraction.size() > 1)
@@ -56,9 +57,8 @@ void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::Re
 			}
 		}
 	}
-	clearInteractions();
-	_addTerms(newTerms, false);
-	ListModelAssignedInterface::initTerms(interactionTerms(), allValuesMap, reInit);
+	_addTerms(newTerms);
+	ListModelAssignedInterface::initTerms(this->terms(), allValuesMap, reInit);
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
@@ -75,87 +75,95 @@ void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)
 			toRemove.add(terms().at(size_t(index)));
 	}
 
-	removeInteractionTerms(toRemove);
-
-	setTerms();
+	_removeTerms(toRemove);
 }
 
-void ListModelInteractionAssigned::_addTerms(const Terms& terms, bool combineWithExistingTerms)
+void ListModelInteractionAssigned::_removeTerms(const Terms & termsToRemove)
 {
-	Terms fixedFactors;
-	Terms randomFactors;
-	Terms covariates;
-	Terms others;
-	for (const Term& term : terms)
+	if (termsToRemove.size() == 0)
+		return;
+
+	beginResetModel();
+
+	Terms existingTerms = terms();
+	if (_variablesList->interactionContainLowerTerms())
+		existingTerms.discardWhatDoesContainTheseTerms(termsToRemove);
+	else
 	{
-		QString itemType = getItemType(term);
-		if (itemType == "fixedFactors")
-		{
-			if (!_fixedFactors.containsValue(term))
-				fixedFactors.add(term);
-		}
-		else if (itemType == "randomFactors")
-		{
-			if (!_randomFactors.containsValue(term))
-				randomFactors.add(term);
-		}
-		else if (itemType == "covariates")
-		{
-			if (!_covariates.containsValue(term))
-				covariates.add(term);
-		}
-		else
-				others.add(term);
+		existingTerms.remove(termsToRemove);
+		if (availableModel())
+			existingTerms.discardWhatDoesNotContainTheseComponents(availableModel()->allTerms());
 	}
-			
-	if (fixedFactors.size() > 0)
-		addFixedFactors(fixedFactors, combineWithExistingTerms);
-	
-	if (randomFactors.size() > 0)
-		addRandomFactors(randomFactors);
-	
-	if (covariates.size() > 0)
-		addCovariates(covariates);
-	
-	if (others.size() > 0)
-		addInteractionTerms(others);
-	
+
+	_setTerms(existingTerms);
+
+	endResetModel();
 }
+
 
 void ListModelInteractionAssigned::availableTermsResetHandler(Terms termsAdded, Terms termsRemoved)
 {
 	if (listView()->form() && !listView()->form()->initialized())
 		return;
 
+	auto getControls = [this](QVariant source) -> JASPListControls
+	{
+		JASPListControls listControls;
+		QList<QVariant> rawSources = SourceItem::getListVariant(source);
+
+		for (const QVariant& rawSource : rawSources)
+		{
+			JASPListControl* listControl = rawSource.value<JASPListControl*>();
+			if (!listControl && rawSource.typeId() == QMetaType::QString)
+			{
+				JASPControl* control = listView()->form()->getControl(rawSource.toString());
+				listControl = qobject_cast<JASPListControl*>(control);
+			}
+			if (listControl)
+				listControls.push_back(listControl);
+		}
+
+		return listControls;
+	};
+
 	if (termsAdded.size() > 0 && listView()->addAvailableVariablesToAssigned())
 	{
-		_addTerms(termsAdded, _addInteractionsByDefault);
-		setTerms();
-	}
-	
-	if (termsRemoved.size() > 0)
-	{
-		removeInteractionTerms(termsRemoved);
-		setTerms();
-	}
-}
+		beginResetModel();
 
-QString ListModelInteractionAssigned::getItemType(const Term &term) const
-{
-	QString type;
-	ListModelTermsAvailable* _source = dynamic_cast<ListModelTermsAvailable*>(availableModel());
-	if (_source)
-	{
-		ListModel* model = _source->getSourceModelOfTerm(term);
-		if (model)
+		// When new terms are added in the Available VariablesList (via a source), these terms must be also added in this Assigned VariablesList
+		// if addInteractionsByDefault is true, also the interactions between this terms must be added.
+		// But if the new terms come from certain sources (sourceWithoutDefaultInteraction, this is per default the randomFactors and covariates sources), then these terms
+		// should just be added without interaction with the other terms.
+		if (_variablesList->addInteractionsByDefault())
 		{
-			type = model->getItemType(term);
-			if (type.isEmpty() || type == "variables")
-				type = model->name();
+			Terms termsWithoutDefaultInteraction;
+			JASPListControls sourcesWithoutDefaultInteraction = getControls(_variablesList->sourceWithoutDefaultInteraction());
+			for (JASPListControl* source : sourcesWithoutDefaultInteraction)
+				termsWithoutDefaultInteraction.add(source->model()->terms());
+
+			Terms	existingTermsWithoutDefaultInteraction = terms(),
+					existingTermsWithDefaultInteraction = terms(),
+					newTermsWithoutDefaultInteraction = termsAdded,
+					newTermsWithDefaultInteraction = termsAdded;
+			newTermsWithDefaultInteraction.discardWhatDoesContainTheseTerms(termsWithoutDefaultInteraction);
+			newTermsWithoutDefaultInteraction.discardWhatIsntTheseTerms(termsWithoutDefaultInteraction);
+			existingTermsWithDefaultInteraction.discardWhatDoesContainTheseTerms(termsWithoutDefaultInteraction);
+			existingTermsWithoutDefaultInteraction.discardWhatIsntTheseTerms(termsWithoutDefaultInteraction);
+
+			Terms newTerms = existingTermsWithDefaultInteraction.ffCombinations(newTermsWithDefaultInteraction);
+			newTerms.add(existingTermsWithoutDefaultInteraction);
+			newTerms.add(newTermsWithoutDefaultInteraction);
+
+			_setTerms(newTerms);
 		}
+		else
+			_addTerms(termsAdded);
+
+		endResetModel();
+
 	}
 	
-	return type;
+	_removeTerms(termsRemoved);
 }
 
 Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const Terms::RelatedValuesPerTerm&)
@@ -170,8 +178,9 @@ Terms ListModelInteractionAssigned::addTerms(const Terms& terms, int , const Ter
 
 	Terms newTerms = dropped.combineTerms(JASPControl::CombinationType::CombinationCross);
 
-	_addTerms(newTerms, false);
-	setTerms();
+	beginResetModel();
+	_addTerms(newTerms);
+	endResetModel();
 
 	return Terms();
 }
@@ -183,6 +192,7 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 		return;
 
 	beginResetModel();
+
 	Terms termsToMove = termsFromIndexes(indexes);
 	if (dropItemIndex == -1)
 		dropItemIndex = int(terms().size());
@@ -192,51 +202,12 @@ void ListModelInteractionAssigned::moveTerms(const QList<int> &indexes, int drop
 			dropItemIndex--;
 	}
 
-	Terms newTerms = _interactionTerms;
+	Terms newTerms = this->terms();
 	newTerms.remove(termsToMove);
 	newTerms.insert(dropItemIndex, termsToMove);
-	_interactionTerms = newTerms;
+
 	_setTerms(newTerms);
 
 	endResetModel();
-}
 
-void ListModelInteractionAssigned::setTerms()
-{	
-	beginResetModel();
-	
-	_setTerms(interactionTerms());
-	
-	endResetModel();
-}
-
-void ListModelInteractionAssigned::sourceVariableNamesChanged(QMap<QString, QString> map)
-{
-	// In an interaction model, if a name is changed, maybe a part of the interaction term has to be changed.
-	QSet<int>				allChangedTermsIndex;
-	Terms					oldInteractionTerms = interactionTerms();
-	QMapIterator<QString, QString> it(map);
-
-	while (it.hasNext())
-	{
-		it.next();
-		const QString& oldName = it.key(), newName = it.value();
-
-		// changeComponentName changes all interaction terms that have at least one of its components that much be changed.
-		QSet<int> indexes = changeComponentName(oldName.toStdString(), newName.toStdString());
-		allChangedTermsIndex += indexes;
-	}
-
-	// If this model is a source of another model, the namesChanged signal must be also emitted, but with all interaction terms that have been changed.
-	QMap<QString, QString>	allTermsChangedMap;
-	const Terms& newInteractionTerms = interactionTerms();
-	for (int index : allChangedTermsIndex)
-		allTermsChangedMap[oldInteractionTerms.at(size_t(index)).value()] = newInteractionTerms.at(size_t(index)).value();
-
-	if (allTermsChangedMap.size() > 0)
-		emit variableNamesChanged(allTermsChangedMap);
-
-	// setTerms will re-initialize the terms of this model, and will also provoke the re-initialization of the models that depend on this model.
-	// So setTerms must be called after the namesChanged is emitted, so that the other models which depend on this model can change first the names of their terms.
-	setTerms();
 }

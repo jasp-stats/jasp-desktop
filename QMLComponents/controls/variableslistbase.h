@@ -31,11 +31,14 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY( ListViewType		listViewType					READ listViewType					WRITE setListViewType					NOTIFY listViewTypeChanged					)
-	Q_PROPERTY( int					columns							READ columns						WRITE setColumns						NOTIFY columnsChanged						)
-	Q_PROPERTY( QStringList			dropKeys						READ dropKeys						WRITE setDropKeys						NOTIFY dropKeysChanged						)
-	Q_PROPERTY( QString				interactionHighOrderCheckBox	READ interactionHighOrderCheckBox	WRITE setInteractionHighOrderCheckBox	NOTIFY interactionHighOrderCheckBoxChanged	)
-	Q_PROPERTY( bool				keepVariablesWhenMoved			READ keepVariablesWhenMoved			WRITE setKeepVariablesWhenMoved			NOTIFY keepVariablesWhenMovedChanged		)
+	Q_PROPERTY( ListViewType		listViewType						READ listViewType						WRITE setListViewType						NOTIFY listViewTypeChanged						)
+	Q_PROPERTY( int					columns								READ columns							WRITE setColumns							NOTIFY columnsChanged							)
+	Q_PROPERTY( QStringList			dropKeys							READ dropKeys							WRITE setDropKeys							NOTIFY dropKeysChanged							)
+	Q_PROPERTY( QString				interactionHighOrderCheckBox		READ interactionHighOrderCheckBox		WRITE setInteractionHighOrderCheckBox		NOTIFY interactionHighOrderCheckBoxChanged		)
+	Q_PROPERTY( bool				keepVariablesWhenMoved				READ keepVariablesWhenMoved				WRITE setKeepVariablesWhenMoved				NOTIFY keepVariablesWhenMovedChanged			)
+	Q_PROPERTY( bool				addInteractionsByDefault			READ addInteractionsByDefault			WRITE setAddInteractionsByDefault			NOTIFY addInteractionsByDefaultChanged			)
+	Q_PROPERTY( bool				interactionContainLowerTerms		READ addInteractionsByDefault			WRITE setInteractionContainLowerTerms		NOTIFY interactionContainLowerTermsChanged		)
+	Q_PROPERTY( QVariant			sourceWithoutDefaultInteraction		READ sourceWithoutDefaultInteraction	WRITE setSourceWithoutDefaultInteraction	NOTIFY sourceWithoutDefaultInteractionChanged	)
 
 public:
 	VariablesListBase(QQuickItem* parent = nullptr);
@@ -64,6 +67,9 @@ public:
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
 	bool						containsInteractions()																	const	override;
+	bool						addInteractionsByDefault()																const				{ return _addInteractionsByDefault;					}
+	bool						interactionContainLowerTerms()															const				{ return _interactionContainLowerTerms;				}
+	QVariant					sourceWithoutDefaultInteraction()														const				{ return _sourceWithoutDefaultInteraction;			}
 
 signals:
 	void listViewTypeChanged();
@@ -71,6 +77,9 @@ signals:
 	void dropKeysChanged();
 	void interactionHighOrderCheckBoxChanged();
 	void keepVariablesWhenMovedChanged();
+	void addInteractionsByDefaultChanged();
+	void interactionContainLowerTermsChanged();
+	void sourceWithoutDefaultInteractionChanged();
 
 public slots:
 	void setVariableType(int index, int type);
@@ -83,10 +92,13 @@ protected slots:
 	void interactionHighOrderHandler(JASPControl* checkBoxControl);
 
 protected:
-	GENERIC_SET_FUNCTION(ListViewType,					_listViewType,					listViewTypeChanged,					ListViewType	)
-	GENERIC_SET_FUNCTION(Columns,						_columns,						columnsChanged,							int				)
-	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,	_interactionHighOrderCheckBox,	interactionHighOrderCheckBoxChanged,	QString			)
-	GENERIC_SET_FUNCTION(KeepVariablesWhenMoved,		_keepVariablesWhenMoved,		keepVariablesWhenMovedChanged,			bool			)
+	GENERIC_SET_FUNCTION(ListViewType,						_listViewType,						listViewTypeChanged,					ListViewType	)
+	GENERIC_SET_FUNCTION(Columns,							_columns,							columnsChanged,							int				)
+	GENERIC_SET_FUNCTION(InteractionHighOrderCheckBox,		_interactionHighOrderCheckBox,		interactionHighOrderCheckBoxChanged,	QString			)
+	GENERIC_SET_FUNCTION(KeepVariablesWhenMoved,			_keepVariablesWhenMoved,			keepVariablesWhenMovedChanged,			bool			)
+	GENERIC_SET_FUNCTION(AddInteractionsByDefault,			_addInteractionsByDefault,			addInteractionsByDefaultChanged,		bool			)
+	GENERIC_SET_FUNCTION(InteractionContainLowerTerms,		_interactionContainLowerTerms,		interactionContainLowerTermsChanged,	bool			)
+	GENERIC_SET_FUNCTION(SourceWithoutDefaultInteraction,	_sourceWithoutDefaultInteraction,	sourceWithoutDefaultInteractionChanged,	QVariant		)
 
 	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
 	void						setDropKeys(const QStringList& dropKeys);
@@ -96,12 +108,13 @@ private:
 	void						_setRelations();
 	
 protected:
-	ListModelDraggable*			_draggableModel	= nullptr;
-	ListViewType				_listViewType	= ListViewType::AssignedVariables;
-	BoundControl*				_boundControl	= nullptr;
-	bool						_keepVariablesWhenMoved = false;
-	
-private:
+	ListModelDraggable*			_draggableModel					= nullptr;
+	ListViewType				_listViewType					= ListViewType::AssignedVariables;
+	BoundControl*				_boundControl					= nullptr;
+	bool						_keepVariablesWhenMoved			= false,
+								_addInteractionsByDefault		= true,
+								_interactionContainLowerTerms	= true;
+
 	int							_columns				= 1;
 
 	ListModelDraggable	*		_tempDropModel = nullptr;
@@ -109,6 +122,7 @@ private:
 	int							_tempDropItemIndex;
 
 	QStringList					_dropKeys;
+	QVariant					_sourceWithoutDefaultInteraction;
 	QString						_interactionHighOrderCheckBox;
 
 	

@@ -31,13 +31,16 @@ VariablesList
 
 	rowComponentTitle		: qsTr("Add to null model")
 	interactionHighOrderCheckBox : "isNuisance"
+
+	property var randomFactorsList
+
 	rowComponent			: CheckBox
 	{
 		name: "isNuisance"
 		Component.onCompleted:
 		{
-			if ((typeof(isNew) !== 'undefined') && isNew)
-				checked = (listView.getSourceType(rowValue) === "randomFactors")
+			if ((typeof(isNew) !== 'undefined') && isNew && randomFactorsList)
+				checked = randomFactorsList.columnsNames.includes(rowValue)
 		}
 	}
 }

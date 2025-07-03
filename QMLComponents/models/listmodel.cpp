@@ -178,19 +178,6 @@ Terms ListModel::getSourceTerms()
 	return termsAvailable;
 }
 
-ListModel *ListModel::getSourceModelOfTerm(const Term &term)
-{
-	ListModel* result = nullptr;
-
-	listView()->applyToAllSources([&](SourceItem *sourceItem, const Terms& terms)
-	{
-		if (terms.containsValue(term))
-			result = sourceItem->sourceListModel();
-	});
-
-	return result;
-}
-
 void ListModel::setRowComponent(QQmlComponent* rowComponent)
 {
 	_rowComponent = rowComponent;

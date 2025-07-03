@@ -56,7 +56,6 @@ void VariablesListBase::setUp()
 		setProperty("sortMenuModel", QVariant::fromValue(sortedMenuModel));
 	}
 
-	_draggableModel->setItemType(property("itemType").toString());
 	JASPControl::DropMode dropMode = JASPControl::DropMode(property("dropMode").toInt());
 	_draggableModel->setDropMode(dropMode);
 
@@ -151,10 +150,7 @@ void VariablesListBase::setUpModel()
 		
 	case ListViewType::Interaction:
 	{
-		bool	interactionContainLowerTerms	= property("interactionContainLowerTerms").toBool(),
-				addInteractionsByDefault		= property("addInteractionsByDefault").toBool();
-
-		auto *	termsModel		= new ListModelInteractionAssigned(this, interactionContainLowerTerms, addInteractionsByDefault);
+		auto *	termsModel		= new ListModelInteractionAssigned(this);
 				_boundControl	= new BoundControlTerms(termsModel);
 				_draggableModel = termsModel;
 		break;

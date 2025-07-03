@@ -91,7 +91,6 @@ public:
 			const QString		&	optionKeyLabel()			const		{ return _optionKeyLabel; }
 			JASPControl			*	getChildControl(const QString & key, const QString & name) override;
 
-	Q_INVOKABLE QString				getSourceType(QString name);
 	Q_INVOKABLE columnType			getVariableType(const QString& name);
 
 			const QVariant		&	source()					const			{ return _source;				}
@@ -224,5 +223,7 @@ protected:
 	ColumnTypesModel	*	_allowedTypesModel					= nullptr;
 
 };
+typedef std::vector<JASPListControl*> JASPListControls;
+
 
 #endif // JASPLISTCONTROL_H

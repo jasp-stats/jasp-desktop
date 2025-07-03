@@ -30,7 +30,6 @@ ListModelFactorLevels::ListModelFactorLevels(JASPListControl* listView)
 {
 	_factorLevelList = qobject_cast<FactorLevelListBase*>(listView);
 	_needsSource = false;
-	_itemType = "fixedFactors";
 }
 
 int ListModelFactorLevels::rowCount(const QModelIndex &) const

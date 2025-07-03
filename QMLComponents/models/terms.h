@@ -81,6 +81,7 @@ public:
 	void remove(size_t pos, size_t n = 1);
 	void replace(int pos, const Term& term);
 	bool discardWhatDoesContainTheseComponents(		const Terms &terms);
+	bool discardWhatDoesNotContainTheseComponents(	const Terms &terms);
 	bool discardWhatDoesContainTheseTerms(			const Terms &terms);
 	bool discardWhatIsntTheseTerms(					const Terms &terms, Terms *discarded = nullptr);
 

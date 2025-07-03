@@ -732,6 +732,35 @@ bool Terms::discardWhatDoesContainTheseComponents(const Terms &terms)
 	return changed;
 }
 
+bool Terms::discardWhatDoesNotContainTheseComponents(const Terms &terms)
+{
+	bool changed = false;
+
+	_terms.erase(
+		std::remove_if(
+			_terms.begin(),
+			_terms.end(),
+			[&](Term& existingTerm)
+			{
+				for (const QString &component : existingTerm.components())
+					if (!terms.containsValue(component))
+					{
+						changed	= true;
+						return true;
+					}
+
+				return false;
+			}),
+		_terms.end()
+		);
+
+	if (changed)
+		resetValueMap();
+
+	return changed;
+}
+
+
 bool Terms::discardWhatDoesContainTheseTerms(const Terms &terms)
 {
 	bool changed = false;

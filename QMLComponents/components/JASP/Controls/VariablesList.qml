@@ -36,6 +36,7 @@ VariablesListBase
 	addAvailableVariablesToAssigned	: listViewType === JASP.Interaction
 	allowAnalysisOwnComputedColumns	: true
 	minNumericLevels				: allowedColumns.length === 1 && allowedColumns[0] === 'scale' ? 1 : -1
+	sourceWithoutDefaultInteraction	: ["randomFactors", "covariates"]
 
 	property alias	label							: variablesList.title
 	property alias	itemGridView					: itemGridView
@@ -56,8 +57,6 @@ VariablesListBase
 	property bool	dropModeReplace					: dropMode === JASP.DropReplace
 	property bool	showElementBorder				: false
 	property bool	showVariableTypeIcon			: containsVariables
-	property bool	addInteractionsByDefault		: true
-	property bool	interactionContainLowerTerms	: true
 	property bool	allowDuplicatesInMultipleColumns: false // This property is used in the constructor and is not updatable afterwards.
 
 	property int	indexInDroppedListViewOfDraggedItem:	-1
