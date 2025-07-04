@@ -299,9 +299,10 @@ FocusScope
 				JaspControls.RectangularButton
 				{
 					id:				addColumnButton
-					x:				2.5
+					x:				1 * preferencesModel.uiScale
 					y:				-1
-					width:			visible ? height + 2 : 0
+					height:			dataTableView.headerHeight + 1.8
+					width:			visible ? height : 0
 					toolTip:		qsTr("Add computed column")
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
