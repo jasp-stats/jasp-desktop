@@ -203,21 +203,27 @@ void TextInputBase::setUp()
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
 
 	if (_value.isNull()) // If the value is not directly set, use the default value.
-		setValue(_defaultValue);
+		setValue(_defaultValue, false);
 
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
 }
 
 void TextInputBase::setDisplayValue()
 {
-
 	int		valueInt;
 	double	valueDbl;
-	bool	isInt,
-			isDbl;
-	
-	isInt = QColumnUtils::getIntValue(		_value.toString(), valueInt);
-	isDbl = QColumnUtils::getDoubleValue(	_value.toString(), valueDbl);
+	bool	isInt = (_value.typeId() == QMetaType::Int),
+			isDbl = (_value.typeId() == QMetaType::Double);
+
+	if (isInt)
+		valueInt = _value.toInt();
+	else if (isDbl)
+		valueDbl = _value.toDouble();
+	else
+	{
+		isInt = QColumnUtils::getIntValue(	_value.toString(), valueInt);
+		isDbl = QColumnUtils::getDoubleValue(	_value.toString(), valueDbl);
+	}
 	
 	QString showThis = _value.toString();
 	
@@ -418,10 +424,10 @@ void TextInputBase::valueChangedSlot()
 	setValue(prop);
 }
 
-void TextInputBase::setValue(QVariant value)
+void TextInputBase::setValue(QVariant value, bool useLocale)
 {
 	double valueDbl;
-	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl))
+	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, useLocale))
 		value = valueDbl;	
 	
 	bool hasChanged = _value != value;
@@ -444,7 +450,7 @@ void TextInputBase::setValue(QVariant value)
 void TextInputBase::setDefaultValue(QVariant value)
 {
 	double valueDbl;
-	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl))
+	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, false)) // Don't use locale with default value: they are set by the analysis, not by the user.
 		value = valueDbl;
 		
 	bool	hasChanged	= _defaultValue !=  value,
@@ -456,7 +462,7 @@ void TextInputBase::setDefaultValue(QVariant value)
 		emit defaultValueChanged();
 	
 	if(curValIsDef)
-		setValue(_defaultValue);
+		setValue(_defaultValue, false);
 }
 
 void TextInputBase::_setBoundValue()

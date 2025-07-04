@@ -18,7 +18,7 @@ public:
 
 	static bool					getIntValue(	const std::string	& value, int	& intValue);
 	static bool					getIntValue(	const double		& value, int	& intValue);
-	static bool					getDoubleValue(	const std::string	& value, double	& doubleValue);
+	static bool					getDoubleValue(	const std::string	& value, double	& doubleValue,	bool useLocale = true);
 	static doubleset			getDoubleValues(const stringset		& values, bool stripNAN = true);
 
 	static bool					isIntValue(		const std::string	& value);

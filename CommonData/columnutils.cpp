@@ -79,7 +79,7 @@ bool ColumnUtils::getIntValue(const double &value, int &intValue)
 	return false;
 }
 
-bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
+bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue, bool useLocale)
 {
 	JASPTIMER_SCOPE(ColumnUtils::getDoubleValue);
 
@@ -91,7 +91,7 @@ bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue)
 		return true;
 	}
 
-	if(_extraStringToDouble && _extraStringToDouble(value, doubleValue))
+	if(useLocale && _extraStringToDouble && _extraStringToDouble(value, doubleValue))
 		return true;
 	
 	try

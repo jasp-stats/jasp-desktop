@@ -325,9 +325,9 @@ bool QColumnUtils::getIntValue(const QString &value, int &intValue)
 	return ColumnUtils::getIntValue(fq(value), intValue);
 }
 
-bool QColumnUtils::getDoubleValue(const QString &value, double &doubleValue)
+bool QColumnUtils::getDoubleValue(const QString &value, double &doubleValue, bool useLocale)
 {
-	return ColumnUtils::getDoubleValue(fq(value), doubleValue);
+	return ColumnUtils::getDoubleValue(fq(value), doubleValue, useLocale);
 }
 
 doubleset QColumnUtils::getDoubleValues(const QStringList &values, bool stripNAN)

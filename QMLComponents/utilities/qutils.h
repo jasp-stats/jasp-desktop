@@ -100,7 +100,7 @@ class QColumnUtils
 {
 public:	
 	static bool					getIntValue(	const QString		& value, int	& intValue);
-	static bool					getDoubleValue(	const QString		& value, double	& doubleValue);
+	static bool					getDoubleValue(	const QString		& value, double	& doubleValue, bool useLocale = true);
 	static doubleset			getDoubleValues(const QStringList	& values, bool stripNAN = true);
 
 	static bool					isIntValue(		const QString		& value);

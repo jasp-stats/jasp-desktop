@@ -70,7 +70,7 @@ public slots:
 	
 	GENERIC_SET_FUNCTION(Label,				_label,				labelChanged,			QString		)
 	GENERIC_SET_FUNCTION(AfterLabel,		_afterLabel,		afterLabelChanged,		QString		)
-	void setValue(			QVariant value);
+	void setValue(			QVariant value, bool useLocale = true);
 	void setDefaultValue(	QVariant value);
 
 private slots:
