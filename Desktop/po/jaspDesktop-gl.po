@@ -5954,4 +5954,4 @@ msgstr "Non se atopa o ficheiro %1."
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr "JASP no admite este tipo de ficheiro %1."
+msgstr "JASP non admite este tipo de ficheiro %1."
