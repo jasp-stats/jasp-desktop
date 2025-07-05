@@ -5673,11 +5673,11 @@ msgstr "R 数据文件 %1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms!!"
-msgstr ""
+msgstr "模型项!!"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null mode????"
-msgstr ""
+msgstr "添加空模型 ????"
 
 msgctxt "MainWindow|"
 msgid "Open file"
@@ -5691,9 +5691,9 @@ msgstr "无法访问文件 %1"
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr "没有找到文件 %1"
+msgstr "没有找到文件 %1 ."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASP 不支持此文件类型 %1 ."
