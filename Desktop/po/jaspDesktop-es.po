@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-07-06 03:42+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.13-dev\n"
 "X-Language: es\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5953,27 +5959,27 @@ msgstr "Archivos %1 de datos de R"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms!!"
-msgstr ""
+msgstr "Elementos del modelo!!"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null mode????"
-msgstr ""
+msgstr "Añadir al modelo nulo????"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "Abrir archivo"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "No puede accederse al archivo %1"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "No se encuentra el archivo %1."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASP no admite este tipo de archivo %1."
