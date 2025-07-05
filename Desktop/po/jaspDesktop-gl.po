@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-07-06 03:42+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.13-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -5925,25 +5931,25 @@ msgstr "Ficheiros %1 de datos de R"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms!!"
-msgstr ""
+msgstr "Elementos do modelo!!"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null mode????"
-msgstr ""
+msgstr "Engadir ao modelo nulo????"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "Abrir ficheiro"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "Non pode accederse ao ficheiro %1"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "Non se atopa o ficheiro %1"
 
 #, qt-format
 msgctxt "MainWindow|"
