@@ -5673,7 +5673,7 @@ msgstr "R 数据文件 %1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms!!"
-msgstr "模型项!!"
+msgstr ""
 
 msgctxt "ModelTermsList|"
 msgid "Add to null mode????"
@@ -5681,17 +5681,17 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "打开文件"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "无法访问文件 %1"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "没有找到文件 %1"
 
 #, qt-format
 msgctxt "MainWindow|"
