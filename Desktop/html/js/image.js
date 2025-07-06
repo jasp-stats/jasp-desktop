@@ -146,6 +146,13 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		var width	= this.model.get("width");
 		var height	= this.model.get("height");
 
+		// if rendering as plotly we need to do
+		// this.$el.find(".jasp-image-image").remove();
+		// then call render like in htmlNode.js
+		// first check if this part works though!
+		var interactive = this.model.get("interactive");
+		console.log("Rendering name: " + this.model.get("name") + " | Interactive: " + interactive);
+
 		if (error)
 			this.$el.addClass("error-state");
 
