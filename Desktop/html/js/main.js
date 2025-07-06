@@ -146,6 +146,7 @@ $(document).ready(function () {
 	//Ok we .bind() the menuObject to the function because otherwise javascript decides that "this" is window and not a plot/analysis/table/whatever...
 	window.saveImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.saveImageClicked			.bind(window.menuObject) ); }
 	window.editImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.editImageClicked			.bind(window.menuObject) ); }
+	window.interactiveImageClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.interactiveImageClicked	.bind(window.menuObject) ); }
 	window.editTitleMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.editTitleClicked			.bind(window.menuObject) ); }
 	window.collapseMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.collapseMenuClicked		.bind(window.menuObject) ); }
 	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
@@ -482,6 +483,7 @@ $(document).ready(function () {
 			jaspWidget.on("optionschanged",				function (id, options)	{ jasp.analysisChangedDownstream(id, JSON.stringify(options))	});
 			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
 			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
+			jaspWidget.on("interactiveImage",			function (id, options)	{ console.log("interactiveImage clicked!")						});
 			// TODO plotly: here we need to call interactiveImage?
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
