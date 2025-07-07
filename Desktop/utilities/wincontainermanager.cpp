@@ -89,7 +89,7 @@ bool grantAccessToExeDir() {
 	return res;
 }
 
-bool checkIfAccessible(STARTUPINFOEX si, const std::vector<std::string>& paths)
+bool checkIfAccessible(STARTUPINFOEX si, const std::vector<QDir>& paths)
 {
 	QDir programDir					= AppDirs::programDir();
 	QString checkerExecutable		= programDir.absoluteFilePath("ContainerFilePermissionChecker");
@@ -99,8 +99,8 @@ bool checkIfAccessible(STARTUPINFOEX si, const std::vector<std::string>& paths)
 	checkProc->setProcessEnvironment(env);
 
 	QStringList args;
-	for(const std::string& path : paths)
-		args << QString(path.c_str());
+	for(const QDir & path : paths)
+		args << path.absolutePath();
 
 	checkProc->setCreateProcessArgumentsModifier([si] (QProcess::CreateProcessArguments *args)
 	{
@@ -150,12 +150,12 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 
 
 	//handle the file permissions of the container
-	std::vector<std::string> _fullAccessList = {
-		Dirs::tempDir(),
-		AppDirs::appData(false).toStdString(), //entire appdata dir, might want to give more fine grained access when R pkgs are installed here
-		AppDirs::appData().toStdString(), //logdir
-		AppDirs::sandboxedDocuments().toStdString(),
-		AppDirs::userModulesDir().toStdString()
+	std::vector<QDir> _fullAccessList = {
+		QString(Dirs::tempDir().c_str()),
+		AppDirs::appData(false), //entire appdata dir, might want to give more fine grained access when R pkgs are installed here
+		AppDirs::appData(), //logdir
+		AppDirs::sandboxedDocuments(),
+		AppDirs::userModulesDir()
 	};
 
 	//Are we running from a buildfolder? Because then we have no access to qt dlls yet, cause theyre not in the buildfolder yet.
@@ -163,16 +163,18 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 	{
 		static auto env = QProcessEnvironment::systemEnvironment();
 		if(env.value("QTDIR") != "")
-			_fullAccessList.push_back(env.value("QTDIR").toStdString() + "/bin");
+			_fullAccessList.push_back(env.value("QTDIR") + "/bin");
 	}
 
 	if(!checkIfAccessible(si, _fullAccessList)) {
-		for(auto& file : _fullAccessList)
-			AllowNamedObjectAccess(appContainerSid, toWString(file).data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+		for(auto& dir : _fullAccessList) {
+			Log::log() << "Attempting to grant access to: " << dir.absolutePath().toStdString() << std::endl;
+			AllowNamedObjectAccess(appContainerSid, dir.absolutePath().toStdWString().data(), SE_FILE_OBJECT, FILE_ALL_ACCESS);
+		}
 	}
 
 	//give access to exedir if needed
-	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()})) {
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()})) {
 		QMessageBox* box = MessageForwarder::getInfoBox(QString("Intializing JASP security sandbox"), QString("Intializing JASP security sandbox"));
 		box->show();
 		grantAccessToExeDir();
@@ -180,7 +182,7 @@ bool WinContainerManager::launchSandboxedEngine(QProcess* engineProcess, const Q
 	}
 
 	//Show popup and disable the sandbox if it is really not working somehow
-	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath().toStdString()}) || !checkIfAccessible(si, {AppDirs::appData(false).toStdString()})) {
+	if(!checkIfAccessible(si, {AppDirs::programDir().absolutePath()}) || !checkIfAccessible(si, {AppDirs::appData(false)})) {
         bool disable = MessageForwarder::showYesNo(QObject::tr("Security Sandbox Failure"), QObject::tr("Failed to activate Security Sandbox. Your system does not allow security sandboxing. Do you wish to continue with out is? (probably fine)"), QObject::tr("Continue"), QObject::tr("Exit"));
 		if(disable) {
 			Log::log() << "Disabling Sandbox" << std::endl;
