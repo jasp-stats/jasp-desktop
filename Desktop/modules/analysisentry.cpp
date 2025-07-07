@@ -83,7 +83,7 @@ Json::Value AnalysisEntry::getDefaultResults() const
 	res["title"]			= title();
 	res[".meta"]			= Json::arrayValue;
 	res["notice"]			= Json::objectValue;
-	res["notice"]["title"]	= fq(QObject::tr("Waiting for data to load, or a free engine for module %1").arg(tq(dynamicModule()->title())));
+	res["notice"]["title"]	= fq(QObject::tr("Waiting for initialization (of the engine) of module: %1").arg(tq(dynamicModule()->title())));
 	res["notice"]["height"] = 0;
 	res["notice"]["width"]	= 0;
 
