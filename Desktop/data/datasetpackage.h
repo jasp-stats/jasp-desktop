@@ -94,6 +94,8 @@ public:
 		void				waitForExportResultsReady();
 
 		void				beginLoadingData(	bool informEngines = true);
+		void				stopEngines();
+		void				restartEngines();
 		void				endLoadingData(		bool informEngines = true);
 		void				beginSynchingData(	bool informEngines = true);
 		void				endSynchingDataChangedColumns(stringvec	&	changedColumns,		bool hasNewColumns = false, bool informEngines = true);

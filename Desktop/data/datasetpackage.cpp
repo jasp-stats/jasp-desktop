@@ -1382,6 +1382,18 @@ void DataSetPackage::beginLoadingData(bool)
 	beginResetModel();
 }
 
+void DataSetPackage::stopEngines()
+{
+	EngineSync::singleton()->stopEngines();
+}
+
+void DataSetPackage::restartEngines()
+{
+	EngineSync::singleton()->restartEngines();
+}
+
+
+
 void DataSetPackage::endLoadingData(bool)
 {
 	JASPTIMER_SCOPE(DataSetPackage::endLoadingData);
@@ -1433,6 +1445,7 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 		deleteDataSet(); //no dbDelete necessary cause we just copied an old sqlite file here from the JASP file
 	
 	_db->close();
+	stopEngines();
 	_db->load();		
 	_db->upgradeDBFromVersion(_jaspVersion);
 	
@@ -1458,6 +1471,7 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	DataSetPackage::pkg()->initializeComputedColumns();
 
 	emit synchingExternallyChanged(synchingExternally());
+	restartEngines();
 }
 
 void DataSetPackage::deleteDataSet()

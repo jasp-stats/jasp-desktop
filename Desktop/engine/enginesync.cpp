@@ -305,10 +305,6 @@ void EngineSync::start(int )
 	for(size_t s=0;s < _engineStopTimes.size(); s++)
 		_engineStopTimes[s] = -1;
 
-	//We start with a single engine. Later we can start more if necessary and allowed by the user. This one engine can run filters etc and it can be assigned to a particular module.
-	//Once it is assigned to a module it won't be possible to use it for another module until it is restarted.
-	createNewEngine();
-
 	_timerProcess	= new QTimer(this);
 	_timerBeat		= new QTimer(this);
 
