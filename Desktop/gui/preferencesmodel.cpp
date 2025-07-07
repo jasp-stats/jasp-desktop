@@ -186,13 +186,20 @@ GET_PREF_FUNC_INT(	pdfPageSize,				Settings::PDF_PAGESIZE								)
 GET_PREF_FUNC_BOOL( directLibpathEnabled,		Settings::DIRECT_LIBPATH_ENABLED					)
 GET_PREF_FUNC_STR(	directLibpathFolder,		Settings::DIRECT_LIBPATH_FOLDER						)
 GET_PREF_FUNC_STR(	directDevModName,			Settings::DIRECT_DEVMOD_NAME						)
-GET_PREF_FUNC_BOOL(	engineSandbox,				Settings::ENGINE_SANDBOX							)
 GET_PREF_FUNC_STR(	localConfigurationPATH,		Settings::LOCAL_CONFIGURATION_PATH              	)
 GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION                     	)
 GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
 GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					)
 GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
 
+bool PreferencesModel::engineSandbox() const
+{
+#ifdef _WIN32
+	return Settings::value(Settings::ENGINE_SANDBOX).toBool();
+#else
+	return false;
+#endif
+}
 
 
 
