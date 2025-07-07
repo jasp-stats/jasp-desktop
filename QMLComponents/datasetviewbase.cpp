@@ -1030,12 +1030,12 @@ QQuickItem * DataSetViewBase::createleftTopCorner()
 void DataSetViewBase::updateExtraColumnItem()
 {
 	//Log::log() << "createleftTopCorner() called!\n" << std::flush;
-	if(!_extraColumnItem || expandDataSet())
+	if(!_extraColumnItem)
 		return;
 
 	_extraColumnItem->setHeight(_dataRowsMaxHeight - 1);
 	_extraColumnItem->setX(_viewportX + _viewportW - extraColumnWidth());
-	_extraColumnItem->setY(0.5 + _viewportY);
+	_extraColumnItem->setY(1 + _viewportY);
 
 	connect(_extraColumnItem, &QQuickItem::widthChanged, this, &DataSetViewBase::setExtraColumnX, Qt::UniqueConnection);
 }

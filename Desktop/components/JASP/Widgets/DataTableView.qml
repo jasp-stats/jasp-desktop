@@ -280,7 +280,7 @@ FocusScope
 						toolTip:		filterWindow.opened ? qsTr("Hide filter") : qsTr("Show filter")
 						iconSource:		jaspTheme.iconPath + "filter.png"
 						onClicked:		filterWindow.toggle()
-						border.color:	"gray"
+						border.width:	1
 						
 						anchors
 						{
@@ -291,11 +291,6 @@ FocusScope
 				}
 
 			extraColumnItem:
-			Item
-			{
-				width:				addColumnButton.width
-				height:				addColumnButton.height
-				
 				JaspControls.RectangularButton
 				{
 					id:				addColumnButton
@@ -306,10 +301,8 @@ FocusScope
 					iconSource:		jaspTheme.iconPath + "/addition-sign.svg"
 					onClicked:		createComputeDialog.open()
 					border.width:	1
-					border.color:	"gray"
 					visible:		!dataTableView.expandDataSet
 				}
-			}
 
 
 		}

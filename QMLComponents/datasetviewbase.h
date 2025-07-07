@@ -249,7 +249,7 @@ protected:
 #ifdef ADD_LINES_PLEASE
 	QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data) override;
 #endif
-	float extraColumnWidth() { return !_extraColumnItem || expandDataSet() ? 0 : 2 + _extraColumnItem->width(); }
+	float extraColumnWidth() { return !_extraColumnItem || expandDataSet() ? 0 : _extraColumnItem->width(); }
 
 	QQuickItem *	createTextItem(int row, int col);
 	void			storeTextItem(int row, int col, bool cleanUp = true);
