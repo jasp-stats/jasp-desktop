@@ -47,6 +47,8 @@ protected:
 	std::map<std::string, stringset>		_prefixedUsedColumnNames;
 	QString									_textEncoded;
 	const stringset							_allowedVarPrefixes = {"data."};
+	
+	QString									_previouslyUsedTextEncoded;
 
 
 };

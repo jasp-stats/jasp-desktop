@@ -40,6 +40,8 @@ BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLa
 
 void BoundControlRlangTextArea::bindTo(const Json::Value &value)
 {
+	_previouslyUsedTextEncoded	= "";
+	
 	if (value.type() != Json::objectValue)	return;
 	BoundControlBase::bindTo(value);
 
@@ -140,8 +142,11 @@ void BoundControlRlangTextArea::checkSyntax()
 			.arg(tq(_checkSyntaxRFunctionName()))
 			.arg(_textEncoded)
 			.arg(encodedColNames);
-
-		_textArea->runRScript(checkCode, false);
+		
+		if(_previouslyUsedTextEncoded != checkCode)
+			_textArea->runRScript(checkCode, false);
+		
+		_previouslyUsedTextEncoded = checkCode;
 	}
 
 }
