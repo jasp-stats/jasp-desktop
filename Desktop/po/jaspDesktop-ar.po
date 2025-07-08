@@ -4333,7 +4333,7 @@ msgid "JASP is supported by the following institutions:"
 msgstr ""
 
 msgctxt "Supporters|"
-msgid "Suggest your institution joins the JASP Community"
+msgid "Suggest your institution join the JASP Community"
 msgstr ""
 
 msgctxt "WavyWindow|"

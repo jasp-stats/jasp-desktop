@@ -209,8 +209,8 @@ FocusScope
 			{
 				id:						openADataFile
 				text:					qsTr("So open a data file and take JASP for a spin!").replace(/, /g, ",&nbsp;")
-				color:					jaspTheme.black
-				font.underline:			openDataFileMouse.containsMouse
+				color:					jaspTheme.blue
+				font.underline:			true
 				font.family:			jaspTheme.font.family
 				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
 				renderType:				Text.QtRendering

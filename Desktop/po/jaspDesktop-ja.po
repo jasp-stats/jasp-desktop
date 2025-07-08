@@ -4579,7 +4579,7 @@ msgid "JASP Community"
 msgstr "JASPコミュニティ"
 
 msgctxt "Supporters|"
-msgid "Suggest your institution joins the JASP Community"
+msgid "Suggest your institution join the JASP Community"
 msgstr "あなたの機関がJASPコミュニティに参加することをお勧めします"
 
 #, qt-format

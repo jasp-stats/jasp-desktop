@@ -4602,7 +4602,7 @@ msgid "JASP Community"
 msgstr "JASP Topluluğu"
 
 msgctxt "Supporters|"
-msgid "Suggest your institution joins the JASP Community"
+msgid "Suggest your institution join the JASP Community"
 msgstr "Kurumunuzun JASP Topluluğuna katılmasını önerin"
 
 #, qt-format
