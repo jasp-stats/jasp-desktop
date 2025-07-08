@@ -1081,7 +1081,11 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 
 	if (analysis->needsRefresh())
 	{
-		if(MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?")))
+		if(		analysis->storedWithoutState() 
+			?	MessageForwarder::showYesNo(tr("Stored without state"), tr("This analysis was saved without state, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
+			:	MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to save the image it must be refreshed first.\n\nRefresh the analysis?"))
+				
+		)
 			analysis->refresh();
 	}
 	else
@@ -1147,7 +1151,10 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 
 	if (analysis->needsRefresh())
 	{
-		if (MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?")))
+		if (	analysis->storedWithoutState() 
+			?	MessageForwarder::showYesNo(tr("Stored without state"), tr("This analysis was stored without state, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
+			:	MessageForwarder::showYesNo(tr("Version incompatibility"), tr("This analysis was created in an older version of JASP, to resize the image it must be refreshed first.\n\nRefresh the analysis?"))
+		)
 			analysis->refresh();
 		else
 			emit editImageCancelled(id);

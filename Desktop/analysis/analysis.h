@@ -68,6 +68,7 @@ public:
 
 	bool				needsRefresh()				const	override;
 	bool				wasUpgraded()				const	override	{ return _wasUpgraded; }
+	bool				storedWithoutState()		const				{ return _storedWithoutState; }
 	bool				isWaitingForModule();
 	void				setResults(			const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
 	void				setResults(			const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
@@ -245,6 +246,7 @@ private:
 								_lastQmlFormPath				= "";
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
+								_storedWithoutState				= false,
 								_tryToFixNotes					= false,
 								_hasReport						= false,
 								_beingTranslated				= false;

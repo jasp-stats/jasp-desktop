@@ -247,6 +247,14 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 	relativePath += "/" + name;
 }
 
+bool TempFiles::stateFileExists(int id)
+{
+	std::filesystem::path stateFilePath = Utils::osPath(_sessionDirName + "/resources" + (id >= 0 ? "/" + std::to_string(id) : "") + "/state");
+	
+	std::error_code error;
+	return std::filesystem::exists(stateFilePath, error) && !error;
+}
+
 void TempFiles::create(const string &extension, int id, string &root, string &relativePath)
 {
 	std::error_code error;

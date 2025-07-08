@@ -17,7 +17,9 @@
 //
 
 #include "analyses.h"
+#include "tempfiles.h"
 #include "utilities/settings.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "modules/ribbonmodel.h"
 #include "analysisform.h"
 #include "knownissues.h"
@@ -25,7 +27,6 @@
 #include <QTimer>
 #include <QFile>
 #include "log.h"
-#include "gui/jaspConfiguration/jaspconfiguration.h"
 
 using namespace std;
 using Modules::Upgrader;
@@ -110,6 +111,9 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(wasUpgraded)
 		analysis->setUpgradeMsgs(msgs);
+	
+	if(!TempFiles::stateFileExists(id))
+		analysis->_storedWithoutState = true; //This will trigger the "you need a refresh" on resize
 
 	return analysis;
 }

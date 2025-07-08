@@ -223,7 +223,8 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	if(_status == Analysis::Complete)
 		checkForRSources();
 
-	_wasUpgraded = false;
+	_wasUpgraded		= false;
+	_storedWithoutState = false;
 }
 
 void Analysis::exportResults()
@@ -473,9 +474,10 @@ void Analysis::setStatus(Analysis::Status status)
 		bool neededRefresh = needsRefresh();
 
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
-		_wasUpgraded = false;
-
-		_moduleVersion = _dynamicModule ?  _dynamicModule->version() : AppInfo::version;
+		
+		_wasUpgraded		= false;
+		_storedWithoutState	= false;
+		_moduleVersion		= _dynamicModule ?  _dynamicModule->version() : AppInfo::version;
 
 		if(neededRefresh != needsRefresh())
 			emit needsRefreshChanged();
@@ -987,7 +989,7 @@ void Analysis::setUpgradeMsgs(const Modules::UpgradeMsgs &msgs)
 bool Analysis::needsRefresh() const
 {
 	bool differentVersion = _moduleVersion != (_dynamicModule ? _dynamicModule->version() : AppInfo::version);
-	return _wasUpgraded || differentVersion;
+	return _wasUpgraded || _storedWithoutState || differentVersion;
 }
 
 bool Analysis::isWaitingForModule()
