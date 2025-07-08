@@ -430,9 +430,10 @@ void Engine::runRCode(const std::string & rCode, int rCodeRequestId, bool whiteL
 	
 
 	std::string rCodeResult = whiteListed ? rbridge_evalRCodeWhiteListed(rCode.c_str(), true) : jaspRCPP_evalRCode(rCode.c_str(), true);
+	bool		hadError	= rCodeResult == "null" || rCodeResult == "";
 
-	if (rCodeResult == "null")	sendRCodeError(rCodeRequestId);
-	else						sendRCodeResult(rCodeRequestId, rCodeResult);
+	if (hadError)	sendRCodeError(rCodeRequestId);
+	else			sendRCodeResult(rCodeRequestId, rCodeResult);
 
 	_engineState = engineState::idle;
 }
