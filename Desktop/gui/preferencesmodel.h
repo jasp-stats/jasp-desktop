@@ -82,11 +82,10 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
 	Q_PROPERTY(bool			useConfigurationFile	READ useConfigurationFile		WRITE setUseConfigurationFile		NOTIFY useConfigurationFileChanged		)
 	Q_PROPERTY(bool			startMaximized			READ startMaximized				WRITE setStartMaximized				NOTIFY startMaximizedChanged			)
-
+	Q_PROPERTY(bool			storeStateEtc			READ storeStateEtc				WRITE setStoreStateEtc				NOTIFY storeStateEtcChanged				)
+	
 
 public:
-
-
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
@@ -174,6 +173,9 @@ public:
 	
 	bool startMaximized() const;
 	void setStartMaximized(bool newStartMaximized);
+	
+	bool storeStateEtc() const;
+	void setStoreStateEtc(bool newStoreStateEtc);
 	
 public slots:
 	bool engineSandbox()							const;
@@ -309,6 +311,7 @@ signals:
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
 	void useConfigurationFileChanged(	bool		enabled);
 	void startMaximizedChanged(			bool		startMaximized);
+	void storeStateEtcChanged(			bool		state);
 	
 private slots:
 	void dataLabelNAChangedSlot(QString label);

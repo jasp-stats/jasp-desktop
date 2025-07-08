@@ -114,6 +114,7 @@ const Settings::Setting Settings::Values[] = {
 	{"localConfigurationPath",		""		},
 	{"useConfigurationFile",		true	},
 	{"startMaximized",				false	},
+	{"storeStateEtc",				false	},
 };	
 
 QVariant Settings::value(Settings::Type key)

@@ -191,6 +191,7 @@ GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION        
 GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
 GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					)
 GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
+GET_PREF_FUNC_BOOL(	storeStateEtc,				Settings::STORE_STATE_ETC							)
 
 bool PreferencesModel::engineSandbox() const
 {
@@ -397,7 +398,7 @@ SET_PREF_FUNCTION(				bool,   	setRemoteConfiguration, 	remoteConfiguration,		re
 SET_PREF_FUNCTION(				QString,	setRemoteConfigurationURL,	remoteConfigurationURL,		remoteConfigurationURLChanged,	Settings::REMOTE_CONFIGURATION_URL					)
 SET_PREF_FUNCTION(				bool,   	setUseConfigurationFile, 	useConfigurationFile,		useConfigurationFileChanged,    Settings::USE_CONFIGURATION_FILE  					)
 SET_PREF_FUNCTION(				bool,   	setStartMaximized,			startMaximized,				startMaximizedChanged,			Settings::START_MAXIMIZED		  					)
-
+SET_PREF_FUNCTION(				bool,   	setStoreStateEtc,			storeStateEtc,				storeStateEtcChanged,			Settings::STORE_STATE_ETC		  					)
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

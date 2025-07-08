@@ -93,7 +93,7 @@ PrefsScrollView
 				onCheckedChanged:	preferencesModel.useDefaultPPI = checked
 				height:				implicitHeight * preferencesModel.uiScale
 				toolTip:			qsTr("Use the Pixels Per Inch of your screen to render your plots.")
-				focus:				true
+				
 
 				KeyNavigation.tab:		customPPISpinBox
 			}
@@ -198,7 +198,20 @@ PrefsScrollView
 				onCheckedChanged:	preferencesModel.showRSyntaxInResults = checked
 				height:				implicitHeight * preferencesModel.uiScale
 				toolTip:			qsTr("Add R syntax for each analysis")
-				focus:				true
+				
+
+				KeyNavigation.tab:		displayExactPVals
+			}
+			
+			CheckBox
+			{
+				id:					storeStateEtc
+				label:				qsTr("Store analysis state and plot in jasp-files")
+				checked:			preferencesModel.storeStateEtc
+				onCheckedChanged:	preferencesModel.storeStateEtc = checked
+				height:				implicitHeight * preferencesModel.uiScale
+				toolTip:			qsTr("Enabling this can cause filesize of jaspfiles to increase, sometimes by a lot.")
+				
 
 				KeyNavigation.tab:		displayExactPVals
 			}
