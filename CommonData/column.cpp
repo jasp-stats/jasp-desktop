@@ -1926,11 +1926,7 @@ void Column::upgradeSetDoubleLabelsInInts()
 }
 
 void Column::upgradeDoublesToLabels()
-{
-	doubleset dbls(_dbls.begin(), _dbls.end());
-	
-	std::map<double, int> dblToIntsId;
-	
+{	
 	beginBatchedLabelsDB();
 	
 	for(size_t row=0; row<_dbls.size(); row++)
