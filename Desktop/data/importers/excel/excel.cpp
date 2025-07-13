@@ -89,7 +89,7 @@ void Excel::getCellValue(uint32_t &row, uint16_t &col, std::string &cellValue)
 	case FREEXL_CELL_DATETIME:
 	case FREEXL_CELL_TIME:
 		cellValue = cell.value.text_value;
-		cellValue = stringUtils::replaceBy(cellValue, "\n", "_");
+		cellValue = stringUtils::trimAndRemoveEscapes(cellValue);
 		break;
 	case FREEXL_CELL_INT:
 		cellValue = std::to_string(cell.value.int_value);
