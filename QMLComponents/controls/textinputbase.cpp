@@ -442,7 +442,7 @@ void TextInputBase::setValue(QVariant value, bool useLocale)
 	{
 		emit valueChanged();
 
-		if (_initialized)
+		if (initialized())
 			_setBoundValue();
 	}
 }

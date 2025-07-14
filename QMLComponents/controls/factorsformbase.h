@@ -55,7 +55,7 @@ public:
 	Q_INVOKABLE void	factorAdded(int index, QVariant item);
 
 	int					initNumberFactors()						const				{ return _initNumberFactors;						}
-	int					countVariables()						const				{ return _initialized ? _factorsModel->countVariables() : 0; }
+	int					countVariables()						const				{ return initialized() ? _factorsModel->countVariables() : 0; }
 	JASPListControl*	availableVariablesList()				const				{ return _availableVariablesListItem;				}
 	QString				baseName()								const				{ return _baseName;			}
 	QString				baseTitle()								const				{ return _baseTitle;		}

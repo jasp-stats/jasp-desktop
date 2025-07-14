@@ -118,7 +118,7 @@ void RadioButtonsGroupBase::unregisterRadioButton(RadioButtonBase* button)
 {
 	if (_buttons.remove(button))
 	{
-		if (button == _selectedButton && _buttons.size() > 0)
+		if (button == _selectedButton && _buttons.size() > 0 && initialized())
 			_setCheckedButton(*_buttons.begin());
 		emit buttonsChanged();
 	}
@@ -152,6 +152,7 @@ void RadioButtonsGroupBase::setDefaultValue(const QString &defaultValue)
 
 void RadioButtonsGroupBase::unregisterAll()
 {
+	setUnitialized();
 	auto buttonsTmp = _buttons;
 	for(auto* button : buttonsTmp) {
 		button->unregisterRadioButton();

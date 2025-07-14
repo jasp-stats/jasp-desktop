@@ -164,6 +164,7 @@ public:
 
 	virtual void					setUp()										{}
 	void							setInitialized(const Json::Value& value = Json::nullValue);
+	void							setUnitialized();
 	virtual void					cleanUp()									{ disconnect(); }
 	virtual BoundControl		*	boundControl();
 	virtual bool					encodeValue()						const	{ return false; }

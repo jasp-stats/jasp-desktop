@@ -859,6 +859,12 @@ void JASPControl::setInitialized(const Json::Value &value)
 	}
 }
 
+void JASPControl::setUnitialized()
+{
+	_initialized = false;
+	_initializedWithValue = Json::nullValue;
+}
+
 void JASPControl::_setInitialized(const Json::Value &value)
 {
 	BoundControl* bControl = boundControl();

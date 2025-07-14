@@ -209,7 +209,7 @@ void ListModel::setUpRowControls()
 		{
 			// If some row controls are not used anymore, if they use some sources, they must be disconnected from these sources
 			// If a source changes and emits a signal, these controls should not be activated (cf. https://github.com/jasp-stats/jasp-test-release/issues/1786)
-			_rowControlsMap[key]->disconnectControls();
+			_rowControlsMap[key]->disconnectAndDeleteControls();
 			removedKeys.append(key);
 		}
 

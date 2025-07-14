@@ -34,7 +34,7 @@ Button
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
 	
 	text:			""
-	visible:		sourceM.visible && targetM.visible
+	visible:		sourceM && targetM && sourceM.visible && targetM.visible
 
 	iconSource:		leftToRight ? iconToRight : iconToLeft
 

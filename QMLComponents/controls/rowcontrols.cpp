@@ -131,7 +131,7 @@ bool RowControls::addJASPControl(JASPControl *control)
 	return success;
 }
 
-void RowControls::disconnectControls()
+void RowControls::disconnectAndDeleteControls()
 {
 	// If a control depends on a source, disconnect this source with this control.
 	JASPListControl* parentControl = _parentModel->listView();
@@ -142,6 +142,7 @@ void RowControls::disconnectControls()
 			for (SourceItem* source : listControl->sourceItems())
 				source->disconnectModels();
 		control->setParent(nullptr);
+		control->setUnitialized();
 		control->blockSignals(true);
 		control->deleteLater();
 	}
