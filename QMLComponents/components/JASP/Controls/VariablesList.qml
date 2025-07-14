@@ -559,6 +559,11 @@ VariablesListBase
 					hoverEnabled:	true
 					cursorShape:	itemRectangle.typeChangeable && mouseX < icon.width ? Qt.PointingHandCursor : Qt.OpenHandCursor
 
+					onEntered:
+					{
+						itemRectangle.formatToolTip()
+					}
+
 					onDoubleClicked: (mouse)=>
 					{
 						if (itemRectangle.draggable)
