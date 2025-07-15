@@ -1069,9 +1069,6 @@ void EngineSync::startStoppedEngine(EngineRepresentation * engine)
 
 void EngineSync::resumeEngines()
 {
-	if(_dataMode)
-		return;
-	
 	JASPTIMER_SCOPE(EngineSync::resumeEngines);
 
 	Log::log() << "EngineSync::resumeEngines()" << std::endl;
