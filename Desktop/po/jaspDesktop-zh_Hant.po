@@ -5613,12 +5613,12 @@ msgid "R Data files %1"
 msgstr ""
 
 msgctxt "ModelTermsList|"
-msgid "Model Terms!!"
-msgstr ""
+msgid "Model Terms"
+msgstr "模型項目"
 
 msgctxt "ModelTermsList|"
-msgid "Add to null mode????"
-msgstr ""
+msgid "Add to null model"
+msgstr "增加至虛無模型"
 
 msgctxt "MainWindow|"
 msgid "Open file"

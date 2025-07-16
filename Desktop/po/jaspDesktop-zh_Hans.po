@@ -5666,12 +5666,12 @@ msgid "R Data files %1"
 msgstr "R 数据文件 %1"
 
 msgctxt "ModelTermsList|"
-msgid "Model Terms!!"
-msgstr "模型项!!"
+msgid "Model Terms"
+msgstr "模型的项"
 
 msgctxt "ModelTermsList|"
-msgid "Add to null mode????"
-msgstr "添加空模型 ????"
+msgid "Add to null model"
+msgstr "添加至空模型"
 
 msgctxt "MainWindow|"
 msgid "Open file"

@@ -5952,12 +5952,12 @@ msgid "R Data files %1"
 msgstr "Archivos %1 de datos de R"
 
 msgctxt "ModelTermsList|"
-msgid "Model Terms!!"
-msgstr "Elementos del modelo!!"
+msgid "Model Terms"
+msgstr "Elementos del Modelo"
 
 msgctxt "ModelTermsList|"
-msgid "Add to null mode????"
-msgstr "Añadir al modelo nulo????"
+msgid "Add to null model"
+msgstr "Agregar al modelo nulo"
 
 msgctxt "MainWindow|"
 msgid "Open file"
