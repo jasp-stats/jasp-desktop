@@ -199,7 +199,7 @@
 		  {
 			"name": "Boxplot",
 			"path": "Boxplot.jasp",
-			"description": "该数据集包含三种鸢尾花类型的 150 个观测值：Setosa、Versicolor 和 Virginica。数据中每朵花测量了四个特征：萼片和花瓣的长度和宽度（以厘米为单位）。<br><br>该示例展示了如何使用绘图生成器模块创建带有 p 值的箱线图",
+			"description": "该数据集包含三种鸢尾花的 150 条观测值：Setosa、Versicolor 和 Virginica。数据中每朵花测量了四个特征：萼片和花瓣的长度和宽度（以厘米为单位）。<br><br>该示例演示了如何使用绘图生成器模块创建带有 p 值的箱线图",
 			"kind": "file",
 			"associated_datafile": "Boxplot.csv"
 		  },
