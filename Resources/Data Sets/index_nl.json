@@ -195,7 +195,35 @@
           "description": "Het extra aantal uren dat tien patienten sliepen na inname van twee 'soporific drugs' (dat wil zeggen, slaaptabletten). <br><br> Het voorbeeldsbestand in JASP laat zien hoe beschrijvende statistieken worden gebruikt. <br><br> <i>Dataset bijgesloten in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Sleep.csv"
-        }
+		},
+		{
+		  "name": "Boxplot",
+		  "path": "Boxplot.jasp",
+		  "description": "De dataset bevat 150 observaties van drie irissoorten: Setosa, Versicolor en Virginica. Van elke bloem in de data zijn vier kenmerken gemeten: de lengte en breedte van de kelk- en kroonbladen, in centimeters.<br><br>Het voorbeeld laat zien hoe u de Plot Builder-module gebruikt om boxplots met p-waarden te maken.",
+		  "kind": "file",
+		  "associated_datafile": "Boxplot.csv"
+		},
+		{
+		  "name": "Plot layout",
+		  "path": "Plot layout.jasp",
+		  "description": "Dit voorbeeld laat zien hoe u met behulp van de Plot Builder een duidelijke en goed gestructureerde plotlay-out kunt maken. Deze is gebaseerd op gegevens over pinguïns die tussen 2007 en 2009 door wetenschappers zijn verzameld op drie eilanden in de Palmerarchipel in Antarctica.",
+		  "kind": "file",
+		  "associated_datafile": "Plot layout.csv"
+		},
+		{
+		  "name": "Repeated measures plot",
+		  "path": "Repeated measures.jasp",
+		  "description": "Deze dataset, \"Gewichtstoename\", bevat de gewichten van 16 deelnemers vóór en na een periode van acht weken met overmatige calorie-inname.<br><br>Het voorbeeld laat zien hoe u de Plot builder-module gebruikt om grafieken met herhaalde metingen te maken.",
+		  "kind": "file",
+		  "associated_datafile": "Repeated measures.csv"
+		},
+		{
+		  "name": "Scatter plot",
+		  "path": "Scatter plot.jasp",
+		  "description": "Deze dataset, \"Big Five Personality Traits\", bevat de scores van 500 deelnemers op een Big Five-persoonlijkheidsvragenlijst.<br><br>Het voorbeeld laat zien hoe u de Plot builder-module gebruikt om een spreidingsdiagram met p-waarde te maken.",
+		  "kind": "file",
+		  "associated_datafile": "Scatter plot.csv"
+		}
       ],
       "debug": false
     },

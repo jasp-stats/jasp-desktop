@@ -195,7 +195,35 @@
             "description": "十名患者在服用两种“催眠药物”（即安眠药）后每人额外睡眠的小时数。 <br><br> 示例 JASP 文件演示了描述性统计的使用。<br><br> <i>数据来源于 R 软件<\/i>",
             "kind": "file",
             "associated_datafile": "Sleep.csv"
-          }
+		  },
+		  {
+			"name": "Boxplot",
+			"path": "Boxplot.jasp",
+			"description": "该数据集包含三种鸢尾花类型的 150 个观测值：Setosa、Versicolor 和 Virginica。数据中每朵花测量了四个特征：萼片和花瓣的长度和宽度（以厘米为单位）。<br><br>该示例展示了如何使用绘图生成器模块创建带有 p 值的箱线图",
+			"kind": "file",
+			"associated_datafile": "Boxplot.csv"
+		  },
+		  {
+			"name": "Plot layout",
+			"path": "Plot layout.jasp",
+			"description": "此示例演示了如何使用 Plot Builder 创建清晰且结构良好的绘图布局，该布局基于科学家在 2007 年至 2009 年间从南极洲帕尔默群岛的三个岛屿收集的企鹅数据。",
+			"kind": "file",
+			"associated_datafile": "Plot layout.csv"
+		  },
+		  {
+			"name": "Repeated measures plot",
+			"path": "Repeated measures.jasp",
+			"description": "该数据集\"体重增加\"提供了 16 名参与者在八周过量卡路里摄入之前和之后的体重。<br><br>该示例展示了如何使用绘图生成器模块创建重复测量图。",
+			"kind": "file",
+			"associated_datafile": "Repeated measures.csv"
+		  },
+		  {
+			"name": "Scatter plot",
+			"path": "Scatter plot.jasp",
+			"description": "该数据集\"大五人格特质\"提供了 500 名参与者在大五人格问卷上的得分。<br><br>该示例展示了如何使用绘图生成器模块创建具有 p 值的散点图。",
+			"kind": "file",
+			"associated_datafile": "Scatter plot.csv"
+		  }
         ],
         "debug": false
       },

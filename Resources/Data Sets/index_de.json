@@ -195,7 +195,35 @@
           "description": "The number of additional hours that each of ten patients slept after having been administered two 'soporific drugs' (i.e., sleeping pills). <br><br> The example JASP file demonstrates the use of descriptive statistics.<br><br> <i>Data set included in R.<\/i>",
           "kind": "file",
           "associated_datafile": "Sleep.csv"
-        }
+		},
+		{
+		  "name": "Boxplot",
+		  "path": "Boxplot.jasp",
+		  "description": "The data set contains 150 observations of three iris flower types: Setosa, Versicolor, and Virginica. Four features were measured from each flower in the data: the length and the width of the sepals and petals, in centimeters.<br><br>The example shows how to use the Plot builder module to create boxplots with p values.",
+		  "kind": "file",
+		  "associated_datafile": "Boxplot.csv"
+		},
+		{
+		  "name": "Plot layout",
+		  "path": "Plot layout.jasp",
+		  "description": "This example demonstrates how to create a clear and well-structured plot layout using the Plot Builder, based on penguin data collected by scientists between 2007 and 2009 from three islands in the Palmer Archipelago in Antarctica.",
+		  "kind": "file",
+		  "associated_datafile": "Plot layout.csv"
+		},
+		{
+		  "name": "Repeated measures plot",
+		  "path": "Repeated measures.jasp",
+		  "description": "This data set, \"Weight Gain\", provides weights of 16 participants before and after an eight-week period of excessive calorie intake.<br><br>The example shows how to use the Plot builder module to create repeated measurements plots.",
+		  "kind": "file",
+		  "associated_datafile": "Repeated measures.csv"
+		},
+		{
+		  "name": "Scatter plot",
+		  "path": "Scatter plot.jasp",
+		  "description": "This data set, \"Big Five Personality Traits\", provides scores of 500 participants on a Big Five personality questionnaire.<br><br>The example shows how to use the Plot builder module to create a scatter plot with p value.",
+		  "kind": "file",
+		  "associated_datafile": "Scatter plot.csv"
+		}
       ],
       "debug": false
     },
