@@ -206,7 +206,7 @@
 		  {
 			"name": "Plot layout",
 			"path": "Plot layout.jasp",
-			"description": "此示例演示了如何使用 Plot Builder 创建清晰且结构良好的绘图布局，该布局基于科学家在 2007 年至 2009 年间从南极洲帕尔默群岛的三个岛屿收集的企鹅数据。",
+			"description": "此示例演示了如何使用 Plot Builder 创建清晰且结构良好的绘图排版，该排版基于科学家在 2007 年至 2009 年间从南极洲帕尔默群岛的三个岛屿收集的企鹅数据。",
 			"kind": "file",
 			"associated_datafile": "Plot layout.csv"
 		  },
