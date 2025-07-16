@@ -213,7 +213,7 @@
 		  {
 			"name": "Repeated measures plot",
 			"path": "Repeated measures.jasp",
-			"description": "该数据集\"体重增加\"提供了 16 名参与者在八周过量卡路里摄入之前和之后的体重。<br><br>该示例展示了如何使用绘图生成器模块创建重复测量图。",
+			"description": "该数据集\"体重增长\"提供了 16 名参与者在八周过量卡路里摄入之前和之后的体重。<br><br>该示例展示了如何使用绘图生成器模块创建重复测量图。",
 			"kind": "file",
 			"associated_datafile": "Repeated measures.csv"
 		  },
