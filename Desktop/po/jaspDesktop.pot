@@ -5414,11 +5414,11 @@ msgid "R Data files %1"
 msgstr ""
 
 msgctxt "ModelTermsList|"
-msgid "Model Terms!!"
+msgid "Model Terms"
 msgstr ""
 
 msgctxt "ModelTermsList|"
-msgid "Add to null mode????"
+msgid "Add to null model"
 msgstr ""
 
 msgctxt "MainWindow|"
