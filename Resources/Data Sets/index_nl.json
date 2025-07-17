@@ -831,6 +831,13 @@
           "associated_datafile": "Temporal Trends in Fish Community Structures in French Rivers.csv"
         },
         {
+          "name": "Recidivism and Mental Health in Delinquent Juveniles",
+          "path": "Recidivism and Mental Health in Delinquent Juveniles.jasp",
+          "description": "Resultaten van onderzoeken naar het vergelijken van recidivecijfers onder delinquente jongeren met vs. zonder een psychische stoornis. <br><br> Het voorbeeld JASP-bestand toont een multilevel multivariate meta-analyse met complexe afhankelijkheden tussen effectgrootteschattingen. <br><br> <i>Dataset verkregen uit het R-pakket metadat.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Recidivism and Mental Health in Delinquent Juveniles.csv"
+        },
+        {
           "name": "EuroSCORE II",
           "path": "EuroSCORE II.jasp",
           "description": "Resultaten van onderzoeken naar de discriminatie- en kalibratieprestaties van EuroSCORE II bij patiënten die een coronaire bypass-operatie ondergaan. <br><br> Het voorbeeld JASP-bestand demonstreert het gebruik van een meta-analyse van voorspellingsmodel prestaties met concordantie (C-) statistieken. <br><br> <i> Gegevensset opgehaald uit het R-pakket metamisc. <\/i>",
