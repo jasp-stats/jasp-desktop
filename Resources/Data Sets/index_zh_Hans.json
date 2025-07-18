@@ -809,13 +809,34 @@
         "description": "",
         "kind": "folder",
         "children": [
-          {
-            "name": "BCG Vaccine",
-            "path": "BCG Vaccine.jasp",
-            "description": "检查 BCG 疫苗有效性的研究的测试统计数据。 <br><br> 示例 JASP 文件演示了固定效应和随机效应Meta分析的使用。<br><br> <i>Data courtesy of Raoul Grasman.<\/i>",
-            "kind": "file",
-            "associated_datafile": "BCG Vaccine.csv"
-          },
+        {
+          "name": "Effectiveness of the BCG Vaccine Against Tuberculosis",
+          "path": "Effectiveness of the BCG Vaccine Against Tuberculosis.jasp",
+          "description": "来自 13 项研究的结果检验了卡介苗 (BCG) 疫苗对抗结核病的有效性。<br><br>示例 JASP 文件演示了如何根据汇总统计数据计算效应量、通过漏斗图分析对结果进行可视化探索，以及如何通过森林图和气泡图可视化进行元回归分析。<br><br> <i>数据集取自 R 包 metadat。<\/i>",
+          "kind": "file",
+          "associated_datafile": "Effectiveness of the BCG Vaccine Against Tuberculosis.csv"
+        },
+        {
+          "name": "Effects of Modified School Calendars on Student Achievement",
+          "path": "Effects of Modified School Calendars on Student Achievement.jasp",
+          "description": "来自 56 项关于修改校历对学生成绩影响的研究结果。<br><br> 示例 JASP 文件演示了多级元分析。<br><br> <i> 数据集取自 R 包 metadat。<\/i>",
+          "kind": "file",
+          "associated_datafile": "Effects of Modified School Calendars on Student Achievement.csv"
+        },
+        {
+          "name": "Temporal Trends in Fish Community Structures in French Rivers",
+          "path": "Temporal Trends in Fish Community Structures in French Rivers.jasp",
+          "description": "研究法国河流鱼类物种丰富度变化的结果。<br><br> 示例 JASP 文件演示了多层次和空间的元分析。<br><br> <i> 数据集取自 R 包 metadat。<\/i>",
+          "kind": "file",
+          "associated_datafile": "Temporal Trends in Fish Community Structures in French Rivers.csv"
+        },
+        {
+          "name": "Recidivism and Mental Health in Delinquent Juveniles",
+          "path": "Recidivism and Mental Health in Delinquent Juveniles.jasp",
+          "description": "研究结果来自对患有和未患有精神健康障碍的青少年罪犯的累犯率进行比较。<br><br>示例 JASP 文件演示了一个多层次多变量元分析，其效应大小估计之间存在复杂的依赖关系。<br><br> <i>数据集来自 R 包 metadat。<\/i>",
+          "kind": "file",
+          "associated_datafile": "Recidivism and Mental Health in Delinquent Juveniles.csv"
+        },
           {
             "name": "EuroSCORE II",
             "path": "EuroSCORE II.jasp",
