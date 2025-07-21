@@ -23,7 +23,7 @@
 			JASP is also statistically inclusive, as it offers both frequentist and Bayesian analysis methods. 
 			Indeed, the primary motivation for JASP is to make it easier for statistical practitioners to conduct Bayesian analyses.
 		</p>
-	</description>
+	<description>
 	<screenshots>
 		<screenshot type="default">
 			<caption xml:lang="en-GB">Shows JASP Descriptives</caption>
@@ -39,19 +39,19 @@
   </branding>
 	<releases>
 	<release version="0.19.2" date="2024-10-21">
-                <description>
+                <description><p>
 Beta
-                </description>
+                </p><description>
         </release>
         <release version="0.19.1" date="2024-09-10">
-          <description>
+          <description><p>
 0.19.1 (September 10th 2024)
     Bug Fixes:
         Filter being ignored in Levels constraint checks (https://github.com/jasp-stats/jasp-issues/issues/2853)
-          </description>
+          </p><description>
         </release>
             <release version="0.19.0" date="2024-07-15">
-                <description>
+                <description><p>
 0.19.0 (July 15th 2024)
 
     New analyses:
@@ -163,10 +163,10 @@ Beta
             Error in tableRListCombined[['test3']]: subscript out of bounds (2674)
 
 
-                </description>
+                </p><description>
         </release>
           <release version="0.18.3" date="2024-01-10">
-                <description>
+                <description><p>
 Bug fixes:
 	• Some older JASP files did not open correctly in 0.18.2 (https://github.com/jasp-stats/jasp-issues/issues/2517)
   • Filter errors and improve clarity (https://github.com/jasp-stats/jasp-issues/issues/2515)
@@ -174,10 +174,10 @@ Bug fixes:
   • Audit Sampling workflow getting stuck (https://github.com/jasp-stats/jasp-issues/issues/2503)
   • Problem with Windows Zip version (https://github.com/jasp-stats/jasp-issues/issues/2502)
   • Update flexplot (https://github.com/jasp-stats/jasp-issues/issues/2494)
-                </description>
+                </p><description>
         </release>
 		<release version="0.18.2" date="2024-01-02">
-            <description>
+            <description><p>
 **New Features and Improvements**
 
 - New module:
@@ -244,10 +244,10 @@ Implements some explainable modelling ('XAI') features from the DALEX package
   - CI for Krippendorff's alpha (https://github.com/jasp-stats/jasp-issues/issues/2318)
 - SEM
   - Chi-square change with addtion of second model (https://github.com/jasp-stats/jasp-issues/issues/2302)
-            </description>
+            </p><description>
         </release>
 	    <release version="0.18.1" date="2023-09-26">
-                <description>
+                <description><p>
 **New Features and Improvements**
 
 *   New module: Learn Stats
@@ -275,10 +275,10 @@ Implements some explainable modelling ('XAI') features from the DALEX package
     *   plot prior distributions under custom models
     *   incorrectly disabled prior scale menu on custom
 *   Predictive Analytics: [#11](https://github.com/jasp-stats/jaspPredictiveAnalytics/pull/11)
-                </description>
+                </p><description>
         </release>
         <release version="0.18.0" date="2023-08-31">
-                <description>
+                <description><p>
 Main New Feature:
 	• Data Editing
 New Features and Improvements:
@@ -295,7 +295,7 @@ Bug fixes:
 	• Application stops responding when filtering data: https://github.com/jasp-stats/jasp-issues/issues/1644
 	• JASP files can be send via E-Mails, there are not blocked by E-Mail servers.
 	• Learn Bayes: Buffons Needle problems when tosses = 0: https://github.com/jasp-stats/jaspLearnBayes/pull/169
-                </description>
+                </p><description>
         </release>
 	</releases>
 ​</component>
