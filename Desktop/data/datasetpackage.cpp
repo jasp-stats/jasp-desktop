@@ -1468,7 +1468,8 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	_dataSubModel->selectNode(_dataSet->dataNode());
 	_filterSubModel->selectNode(_dataSet->filtersNode());
 
-	//DataSetPackage::pkg()->initializeComputedColumns();
+	// Do not compute computed columns when loading a JASP file!
+	// DataSetPackage::pkg()->initializeComputedColumns();
 
 	emit synchingExternallyChanged(synchingExternally());
 	restartEngines();

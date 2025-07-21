@@ -449,7 +449,7 @@ void EngineSync::process()
 	
 	int			wantThisManyEngines			=	notEnoughIdlesSet.size();
 
-	if (notEnoughIdlesForCompCol)
+	if (notEnoughIdlesForCompCol) // Need an angine for a computed column: create one!
 		wantThisManyEngines++;
 
 	if(notEnoughIdles)
