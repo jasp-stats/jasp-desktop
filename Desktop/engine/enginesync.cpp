@@ -432,16 +432,6 @@ void EngineSync::process()
 		
 	processLogCfgRequests();
 
-	if(_stopProcessing || _dataMode || _filterRunning)
-	{
-		bool needEngine = processComputedColumnQueue();
-		
-		if(needEngine)
-			createNewEngine();
-		
-		return;
-	}
-
 	//if(_engines.size() == 0)
 	//	startExtraEngines();
 	
@@ -458,6 +448,9 @@ void EngineSync::process()
 	notEnoughIdlesSet.merge(notEnoughIdlesForScript);
 	
 	int			wantThisManyEngines			=	notEnoughIdlesSet.size();
+
+	if (notEnoughIdlesForCompCol)
+		wantThisManyEngines++;
 
 	if(notEnoughIdles)
 		Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForModule.size() ? std::to_string(notEnoughIdlesForModule.size()) + " for installing modules" : "") <<  (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
