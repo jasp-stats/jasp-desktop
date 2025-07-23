@@ -377,7 +377,7 @@ void FileMenu::analysisAdded(Analysis *analysis)
 
 void FileMenu::workspaceModified()
 {
-	if(DataSetPackage::pkg()->isLoaded() && !DataSetPackage::pkg()->dataFileReadOnly())
+	if(DataSetPackage::pkg()->isLoaded() && !DataSetPackage::pkg()->dataFileReadOnly() && getCurrentFileType() == Utils::FileType::jasp)
 		_actionButtons->setEnabled(ActionButtons::Save, DataSetPackage::pkg()->isModified());
 }
 
