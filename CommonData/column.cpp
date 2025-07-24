@@ -504,7 +504,7 @@ void Column::updateLabelsPostLocaleChange()
 	endBatchedLabelsDB(true);	
 }
 
-columnType Column::setValues(const stringvec & values, const stringvec & labels, int thresholdScale, bool * aChange)
+columnType Column::setValues(const stringvec & values, const stringvec & labels, int thresholdScale, bool * aChange, bool useLocale)
 {
 	assert(values.size() == labels.size() || labels.size() == 0);
 	
@@ -513,11 +513,12 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 				[&values](size_t r){return values[r];},
 				[&labels](size_t r){return r < labels.size() ? labels[r] : "";},
 				thresholdScale,
-				aChange
+				aChange,
+				useLocale
 				);
 }
 
-columnType Column::setValues(size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * aChange)
+columnType Column::setValues(size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * aChange, bool useLocale)
 {
 	JASPTIMER_SCOPE(Column::setValues);
 
@@ -555,7 +556,7 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		const std::string	value = valueLookup(i),
 							label = labelLookup(i);
 
-		if(setValue(i, value, label, false) && aChange)
+		if(setValue(i, value, label, false, useLocale) && aChange)
 			(*aChange) = true;
 				
 		if(value != "" || label != "")
@@ -565,7 +566,7 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 			else if(!isEmptyValue(value))
 				onlyInts = false;
 			
-			if(!ColumnUtils::getDoubleValue(value, tmpDbl) && !isEmptyValue(value))
+			if(!ColumnUtils::getDoubleValue(value, tmpDbl, useLocale) && !isEmptyValue(value))
 				onlyDoubles = false;
 		}
 	}
@@ -712,7 +713,9 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 	for(size_t i=0; i<colData.size(); i++)
 		otherData[i] = getOther(colData[i]);
 	
-	setValues(values, labels, 0, &changes);
+	// overwriteDataAndType is called only by the Engine, when R computes some values for a column (computed columns)
+	// In this case, the locale used is just UTF-8/C, so the locale chosen by the user should not be used to convert the values.
+	setValues(values, labels, 0, &changes, false);
 	setType(colType);
 	nonFilteredCountersReset();
 	labelsHandleAutoSort();
@@ -1524,7 +1527,7 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	return setValue(row, userEntered, labelButOnlyFromSpreadsheetPaste, writeToDB);
 }
 
-bool Column::setValue(size_t row, std::string value, const std::string & label, bool writeToDB)
+bool Column::setValue(size_t row, std::string value, const std::string & label, bool writeToDB, bool useLocale)
 {
 	JASPTIMER_SCOPE(Column::setValue(stringstring));
     
@@ -1535,7 +1538,7 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble;
-	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet);
+	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet, useLocale);
 	bool	labelIsValue	= value == label,
 			justAValue		= label == "";			///< To help us handle updates from synchronisation from csv (users might have added different label-texts
 
