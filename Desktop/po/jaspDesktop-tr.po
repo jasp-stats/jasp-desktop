@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-07-24 09:07+0000\n"
+"Last-Translator: Ertuğrul Uyar <ertugruluyar.academic@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"tr/>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.13-dev\n"
 "X-Language: tr\n"
 "X-Qt-Contexts: true\n"
 
@@ -5703,43 +5709,38 @@ msgstr "Satırlar boyunca medyan"
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr "Satırlar boyunca en küçük değer"
+msgstr "Satırlar boyunca minimum"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr "Satırlar boyunca en büyük değer"
+msgstr "Satırlar boyunca maksimum"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr "Bir yapılandırma (ayar) dosyası kullanın."
+msgstr "Bir yapılandırma (ayar/kurulum) dosyası kullanın."
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr "Uzak yapılandırma (ayar) dosyasını kullanın."
+msgstr "Uzak yapılandırma (ayar/kurulum) dosyasını kullanın."
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
 msgstr ""
-"URL tarafından işaret edilen uzak yapılandırma (ayar) dosyasını kullanın"
+"URL tarafından işaret edilen uzak yapılandırma (ayar/kurulum) dosyasını "
+"kullanın"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr "Yapılandırma (Ayar) URL'si: "
+msgstr "Yapılandırma (Ayar/Kurulum) URL'si: "
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr "Yapılandırma (Ayar) dosyasını seçin"
+msgstr "Yapılandırma (Ayar/Kurulum) dosyası seçin"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr "Yapılandırma (Ayar) dosyasını seçin."
+msgstr "Yapılandırma (Ayar/Kurulum) dosyasını seçin."
 
 #, fuzzy
 msgctxt "FilterWindow|"
@@ -5769,7 +5770,7 @@ msgstr "Satırlar boyunca medyan"
 #, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr "Satırlar boyunca en küçük değer"
+msgstr "Satırlar boyunca minimum"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
@@ -5779,7 +5780,6 @@ msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
 msgstr "JASP başlangıçta penceresini tam ekran olarak açsın mı?"
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
@@ -5788,7 +5788,6 @@ msgstr ""
 "Bu, appdata'daki 'renv', 'Modules' ve geliştirme Modülü klasörlerini "
 "silecektir."
 
-#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
 msgstr "Renv modunu etkinleştir"
@@ -5801,7 +5800,6 @@ msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
 msgstr "Yapılandırma (Ayar) dosyası seçenekleri"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Start maximized"
 msgstr "Tam ekran olarak başla"
@@ -5812,18 +5810,22 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP'ta ciddi bir hata meydana geldi ve artık hesaplama yapamıyor.\n"
+"\n"
+"Bu hatayı JASP ekibine bildirirseniz çok minnettar oluruz."
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Salvage"
-msgstr ""
+msgstr "Kurtarma"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
-msgstr ""
+msgstr "Kurulum tamamlandı"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Completed installation of Bundles: "
-msgstr ""
+msgstr "Paketlerin kurulumu tamamlandı: "
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
