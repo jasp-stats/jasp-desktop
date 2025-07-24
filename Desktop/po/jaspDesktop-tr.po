@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-07-24 09:07+0000\n"
+"PO-Revision-Date: 2025-07-24 13:57+0000\n"
 "Last-Translator: Ertuğrul Uyar <ertugruluyar.academic@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "tr/>\n"
@@ -5829,45 +5829,45 @@ msgstr "Paketlerin kurulumu tamamlandı: "
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
-msgstr ""
+msgstr "Güvenlik Sandbox'ı Arızası"
 
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
 "sandboxing. Do you wish to continue with out is? (probably fine)"
 msgstr ""
+"Güvenlik Sandbox'u etkinleştirilemedi. Sisteminiz güvenlik sandbox'u yapmaya "
+"izin vermiyor. Bu şekilde devam etmek istiyor musunuz? (muhtemelen iyi)"
 
 msgctxt "QObject|"
 msgid "Continue"
-msgstr ""
+msgstr "Devam et"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Exit"
-msgstr "Çıkış"
+msgstr "Çıkış yap"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
-msgstr ""
+msgstr "Olası değerler şunlardır: %1"
 
 #, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
-msgstr ""
+msgstr "Başlangıçta %2 tarihinde %1'e aktarıldı"
 
 msgctxt "FileEvent|"
 msgid "Loading R Data File"
-msgstr ""
+msgstr "R Veri Dosyası Yükleniyor"
 
-#, fuzzy
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr "Dosyadan 0 geçerli sütun okundu, lütfen veri dosyanızı kontrol edin."
 
 msgctxt "MainWindow|"
 msgid "Salvaging"
-msgstr ""
+msgstr "Kurtarılıyor"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5881,11 +5881,20 @@ msgid ""
 "Analyses or computed columns and the like will not function anymore until "
 "you restart JASP."
 msgstr ""
+"JASP'ta ölümcül bir hata meydana geldiği için çok üzgünüz.\n"
+"Bu karışıklıktan bir şeyler kurtarabilmeniz veya geri alabilmeniz için JASP "
+"kısmen çalışır durumda kalacaktır.\n"
+"\n"
+"Örneğin, mevcut çalışma alanınızı kaydedebilir veya bir ayarı değiştirerek "
+"bir dahaki sefere bu sorunun tekrar yaşanmasını önleyebilirsiniz.\n"
+"\n"
+"JASP'ı yeniden başlatana kadar analizler, hesaplanan sütunlar ve benzeri "
+"özellikler çalışmayacaktır."
 
 #, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
-msgstr ""
+msgstr "R Veri dosyaları %1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
@@ -5897,19 +5906,19 @@ msgstr "Boş modele ekle"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "Dosyayı aç"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "%1 dosyasına erişilemiyor"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "%1 dosyası bulunamadı."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASP bu %1 dosya türünü desteklemiyor."
