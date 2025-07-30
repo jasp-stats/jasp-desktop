@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-07-26 07:51+0000\n"
+"PO-Revision-Date: 2025-07-31 09:09+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "es/>\n"
@@ -680,11 +680,11 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Máximo de archivos de inicio a conservar: "
+msgstr "Máx. archivos inicio a mantener: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr "Mostrar registros de inicio"
+msgstr "Mostrar registros inicio"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
@@ -704,7 +704,7 @@ msgstr "Seleccionar editor personalizado"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "Lista para Valores Ausentes"
+msgstr "Lista para valores ausentes"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
@@ -720,7 +720,7 @@ msgstr "Preferencias de Resultados"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Opciones de Tablas"
+msgstr "Opciones de tablas"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -4473,7 +4473,7 @@ msgstr "Añadir un valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr "Fijar el área de trabajo vigente con estos valores"
+msgstr "Fijar área de trabajo vigente con valores"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
@@ -4636,15 +4636,15 @@ msgstr "Establecer valores vacíos para la columna '%1"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr "Establecer los valores vacíos del espacio de trabajo"
+msgstr "Fijar valores vacíos del área de trabajo"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr "Mostrar los valores omitidos del área de trabajo"
+msgstr "Mostrar valores ausentes del área de trabajo"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr "Abre la configuración de los valores omitidos del área de trabajo"
+msgstr "Abre la configuración de valores ausentes del área de trabajo"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
@@ -4777,7 +4777,7 @@ msgstr "Los datos tienen %1 filas, %2 (%3%4%) pasadas por el filtro"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr "Editor externo de hojas de cálculo (para sincronización de datos)"
+msgstr "Editor externo de hojas de cálculo (para sincronizar datos)"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5267,8 +5267,7 @@ msgstr "<Primero completa el nombre de la columna>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
-"Niveles de escala máximos permitidos cuando se usa como nominal/ordinal"
+msgstr "Niveles de escala máximos permitidos al usar como nominal/ordinal"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5527,8 +5526,7 @@ msgstr "Escoger idioma"
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
-"Usar un idioma alternativo y una visualización dependiente del territorio "
-"para los números"
+"Usar idioma alternativo y visualización según el territorio para los números"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
