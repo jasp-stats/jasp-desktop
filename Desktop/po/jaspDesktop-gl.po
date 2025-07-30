@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-07-26 07:51+0000\n"
+"PO-Revision-Date: 2025-07-31 09:09+0000\n"
 "Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
 "Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/gl/>\n"
@@ -624,11 +624,11 @@ msgstr "Trocar o repositorio CRAN: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr "Máximo de ficheiros de inicio a conservar: "
+msgstr "Máx. ficheiros inicio a manter: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr "Amosar rexistros de inicio"
+msgstr "Amosar rexistros inicio"
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
@@ -1500,7 +1500,7 @@ msgstr "Eliminar o valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "Lista para Valores Ausentes"
+msgstr "Lista para valores ausentes"
 
 msgctxt "TableView|"
 msgid "Row #"
@@ -1548,7 +1548,7 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "Opcións de gráfica"
+msgstr "Opcións de gráficas"
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
@@ -1582,7 +1582,7 @@ msgstr "PPI personalizado : "
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr "Opcións de Táboas"
+msgstr "Opcións de táboas"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
@@ -3508,7 +3508,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr "Amosar o valores ausentes como: "
+msgstr "Amosar os valores ausentes como: "
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
@@ -4452,7 +4452,7 @@ msgstr "Engadir un valor ausente"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr "Fixar a área de traballo vixente con estes valores"
+msgstr "Fixar área de traballo vixente cos valores"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
@@ -4614,15 +4614,15 @@ msgstr "Fixar os valores baleiros para a columna '%1'"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr "Fixar os valores baleiros da área de traballo"
+msgstr "Fixar valores baleiros da área de traballo"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr "Amosar os valores ausentes da área de traballo"
+msgstr "Amosar valores ausentes da área de traballo"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr "Abre a configuración para os valores ausentes da área de traballo"
+msgstr "Abre a configuración dos valores ausentes da área de traballo"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
@@ -4753,7 +4753,7 @@ msgstr "Os datos teñen %1 filas, %2 (%3%4%) pasadas polo filtro"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr "Editor externo de follas de cálculo (para a sincronización de datos)"
+msgstr "Editor externo de follas de cálculo (para sincronizar datos)"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5242,7 +5242,7 @@ msgstr "<Primeiro completa o nome da columna>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr "Niveis de escala máximos permitidos cando se usa como nominal/ordinal"
+msgstr "Niveis de escala máximos permitidos ao usar como nominal/ordinal"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5500,8 +5500,7 @@ msgstr "Elixir idioma"
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
-"Usar un idioma alternativo e unha visualización dependente do territorio "
-"para os números"
+"Usar idioma alternativo e visualización segundo o territorio para os números"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
