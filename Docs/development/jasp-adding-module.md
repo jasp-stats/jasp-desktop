@@ -18,7 +18,7 @@ A module folder looks like a standard R package + some [qml](https://doc.qt.io/q
 ```sh
 .
 ├── <module_name>.Rproj
-├── DESCRIPTION
+├── DESCRIPTION             # Describes the package and lists its dependencies
 ├── LICENSE
 ├── NAMESPACE               # Controls function importing
 ├── R                       # Where the package functions live
@@ -26,22 +26,22 @@ A module folder looks like a standard R package + some [qml](https://doc.qt.io/q
 │   └── more-functions.R
 │   └── ...
 ├── README.md
-├── renv.lock               # Optional
-├── _processedLockFile.lock # Optional
-├── tests/                  # Optional
+├── renv.lock               # (Optional) Environment management...
+├── _processedLockFile.lock # ...files, controlled by package renv
+├── tests/                  # (Optional) Unit tests
 │
 │  # === So far, this is just a standard R package ===
 │  # === Interaction with JASP starts below === 
 │ 
 └──inst
-    ├── Description.qml
+    ├── Description.qml     # Builds the ribbon menu
     ├── Upgrades.qml        # Optional
-    ├──  qml
-    │   └── analysis_1.qml
+    ├──  qml                # Folder containing one or more...
+    │   └── analysis_1.qml  # ... module's menus
     │   └── ...
-    ├── help
+    ├── help                # (Optional) Module's help files
     │   └── ...
-    └── icons
+    └── icons               # (Optional) Module's icons
         ├── <module_name>.svg
         └── ...
 ```
