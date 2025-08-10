@@ -185,7 +185,7 @@ if(LINUX)
   endif()
 
   message(CHECK_START "Looking for libreadstat.so")
-  find_file(LIBREADSTAT_LIBRARIES libreadstat.so
+  find_library(LIBREADSTAT_LIBRARIES libreadstat.so
             HINTS ${LIBREADSTAT_LIBRARY_DIRS} REQUIRED)
 
   if(EXISTS ${LIBREADSTAT_LIBRARIES})
