@@ -25,31 +25,31 @@
          float: none !important;
     }
      .jasp-toolbar {
-         page-break-after: avoid;
+         break-after: avoid;
     }
-     .jasp-analysis {
-         page-break-after: auto;
+    .jasp-analysis + .jasp-analysis {
+         break-before: page;  /* always break before analysis(not last one) see: #jasp-issues#3371 and #2919 */
     }
      .jasp-collection {
-         page-break-inside: avoid;
+         break-inside: avoid;
     }
      .hidden-collection {
-         page-break-inside: auto;
+         break-inside: auto;
     }
      .object-body {
-         page-break-inside: auto;
+         break-inside: auto;
     }
      .object-body .hidden-collection {
-         page-break-inside: auto;
+         break-inside: auto;
     }
      .jasp-image {
-         page-break-inside: avoid;
+         break-inside: avoid;
     }
      .jasp-notes {
-         page-break-inside: avoid;
+         break-inside: avoid;
     }
      .jasp-table-primitive {
-         page-break-inside: avoid;
+         break-inside: avoid;
     }
     /* .jasp-table table {
          table-layout:fixed !important;
