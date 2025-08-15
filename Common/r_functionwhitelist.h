@@ -39,6 +39,9 @@ public:
 
 	///returns the whitelisted functions in a string, each function on its own line.
 	static std::string returnOrderedWhiteList();
+
+	///function whiteList getter when we can do syntax highlight or something with it.
+	static const std::set<std::string>& getWhiteList() {return functionWhiteList;}
 };
 
 #endif // R_FUNCTIONWHITELIST_H
