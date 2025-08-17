@@ -101,18 +101,9 @@ th[colspan="2"] {
 	padding-right: 1em ;
 }
 
-td.value {
-	padding-left : 1em ;
-	padding-right: 0 ;
-}
-
-td.symbol {
-	text-align: left ;
-	padding-right: 1em ;
-	padding-left: 0 ;
-}
-
 td {
+	padding-left: 2em;
+	padding-right: 1em;
 	text-align: right ;
 	vertical-align: top ;
 }
@@ -215,7 +206,7 @@ td.text {
 }
 
 tfoot td {
-
+	padding-left: 0em ;
 	text-align: left;
 }
 
