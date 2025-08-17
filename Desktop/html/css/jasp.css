@@ -102,10 +102,12 @@ th[colspan="2"] {
 }
 
 td {
-	padding-left: 2em;
+	text-align: right;
+	vertical-align: bottom;
+	padding-left: 1em;
 	padding-right: 1em;
-	text-align: right ;
-	vertical-align: top ;
+	/* padding-top: .25em;   because algin to buttom then seems visual balanced */
+	padding-bottom: .25em;
 }
 
 thead tr:nth-child(2) th:not(.separator) {
@@ -129,6 +131,8 @@ thead th {
 	white-space: nowrap;
 	padding-top: .25em ;
 	padding-bottom: .25em ;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 
 tbody th {
@@ -189,7 +193,7 @@ tbody tr td.new-sub-group-row {
 
 tbody tr td.new-group-row,
 tbody tr:first-child td {
-
+	vertical-align: top;  /* align to top for first group rows */
 	padding-top: .9em ;
 }
 

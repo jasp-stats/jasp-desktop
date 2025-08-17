@@ -250,7 +250,7 @@ JASPWidgets.Exporter = {
 	},
 
 	getTableContentStyles: function (element, exportParams) {
-			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font", "color"]);
+			return JASPWidgets.Exporter.getStyles(element, ["border-collapse", "border-top-width", "border-bottom-width", "border-left-width", "border-right-width", "border-color", "border-style", "padding", "text-align", "margin", "display", "float", "font-size", "font-weight", "font", "color", "background", "background-color"]);
 	},
 
 	getErrorStyles: function (element, component) {

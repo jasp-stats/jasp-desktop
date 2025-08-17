@@ -556,7 +556,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		chunks.push('<thead>')
 		chunks.push('<tr>')
-		chunks.push('<th colspan="' + columnCount + '"><div class="toolbar"></div></div>')
+		chunks.push('<th colspan="' + columnCount + '"><div class="toolbar"></div>')
 
 		if (optError && optError.errorMessage) {
 
@@ -705,8 +705,8 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 					cellHtml += '>'
 					cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
 
-					if (typeof cell.footnotes != "undefined" && cell.footnotes.length > 0)
-						cellHtml += '<sup>' + cell.footnotes.join('') + '</sup>' 
+					if (typeof cell.footnotes != "undefined")
+						cellHtml += cell.footnotes.join(' ')
 
 					cellHtml += (cell.header ? '</th>' : '</td>')
 
