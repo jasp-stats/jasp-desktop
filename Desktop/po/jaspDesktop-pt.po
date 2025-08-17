@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-08-17 17:02+0000\n"
+"PO-Revision-Date: 2025-08-18 21:02+0000\n"
 "Last-Translator: Wendel Paulo Silvestre <wpsilvestre@ucs.br>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/pt/>\n"
@@ -3953,7 +3953,7 @@ msgstr "Remover recuo"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr "Tamanho de fonte"
+msgstr "Tamanho de Fonte"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
