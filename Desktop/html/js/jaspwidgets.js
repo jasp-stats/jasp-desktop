@@ -29,7 +29,7 @@ class SvgToPng {
 	 * Convert all SVG inside the specified element to PNG format and replace the original SVG elements with PNG
 	 * @method convert
 	 * @param {HTMLElement} element
-	 * @returns {HTMLElement} 
+	 * @returns {HTMLElement}
 	 */
 	convert(element) {
 		const svgs = element.querySelectorAll("svg");
@@ -526,6 +526,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.options.hasCollapse)
 			this.options['collapseOptions'] = this.parent.collapseOptions();
 
+		// TODO: check if this is needed
+		if (this.options.hasInteractiveImg)
+			this.options['interactiveOptions'] = this.parent.interactiveOptions();
+
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
 		return true;
@@ -550,7 +554,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasNotes:				(parent.hasNotes		=== undefined || parent.hasNotes())			&& parent.notesMenuClicked			!== undefined,
 			hasSaveImg:				(parent.isConvertible	=== undefined || parent.isConvertible())	&& parent.saveImageClicked			!== undefined,
 			hasEditImg:				(parent.isEditable		=== undefined || parent.isEditable())		&& parent.editImageClicked			!== undefined,
-			hasInteractiveImg:		(parent.isConvertible	=== undefined || parent.isConvertible())	&& parent.interactiveImageClicked	!== undefined,
+			hasInteractiveImg:		(parent.hasInteractive	=== undefined || parent.hasInteractive())	&& parent.interactiveImageClicked	!== undefined,
 			hasEditTitle:			(parent.hasEditTitle	=== undefined || parent.hasEditTitle())	&& parent.editTitleClicked			!== undefined,
 			hasRemove:				(parent.hasRemove		=== undefined || parent.hasRemove())		&& parent.removeMenuClicked			!== undefined,
 			hasDuplicate:			(parent.hasDuplicate	=== undefined || parent.hasDuplicate())	&& parent.duplicateMenuClicked		!== undefined,
