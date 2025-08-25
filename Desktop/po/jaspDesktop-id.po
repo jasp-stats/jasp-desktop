@@ -5463,7 +5463,7 @@ msgstr ""
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
-"sandboxing. Do you wish to continue with out is? (probably fine)"
+"sandboxing. Do you wish to continue without it? (probably fine)"
 msgstr ""
 
 msgctxt "QObject|"
