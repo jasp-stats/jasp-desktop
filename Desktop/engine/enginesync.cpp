@@ -59,6 +59,10 @@ EngineSync::EngineSync(QObject *parent)
 	connect(this,						&EngineSync::moduleInstallationFailed,				DynamicModules::dynMods(),	&DynamicModules::installationPackagesFailed,	Qt::DirectConnection);
 	connect(this,						&EngineSync::moduleInstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::installationPackagesSucceeded,	Qt::DirectConnection);
 
+	connect(this,						&EngineSync::moduleUninstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::unInstallationPackagesSucceeded,	Qt::DirectConnection);
+	connect(this,						&EngineSync::moduleUninstallationFailed,			DynamicModules::dynMods(),	&DynamicModules::unInstallationPackagesFailed,		Qt::DirectConnection);
+	connect(this,						&EngineSync::moduleUninstallationFailed,			this,						&EngineSync::moduleInstallationFailedHandler	);
+
 
 	connect(PreferencesModel::prefs(),	&PreferencesModel::plotPPIChanged,					this,						&EngineSync::settingsChanged					);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::plotBackgroundChanged,			this,						&EngineSync::settingsChanged					);
@@ -255,7 +259,8 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
-		connect(engine,						&EngineRepresentation::moduleUninstallingFinished,		this,					&EngineSync::moduleUninstallingFinished									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationSucceeded,	this,					&EngineSync::moduleUninstallationSucceeded									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationFailed,		this,					&EngineSync::moduleUninstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceeded										);
 		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed										);
 		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
@@ -758,16 +763,27 @@ stringset EngineSync::processDynamicModules()
 	try
 	{
 		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
-		if(wantToRunInstall.size() > 0)
+		stringset	wantToRunUnistall	= DynMods::dynMods()->modulesNeedingUninstall();
+
+		if(wantToRunInstall.size() > 0 || wantToRunUnistall.size() > 0)
 		{
 			for(auto & engine : _engines)
 				if(engine->idle() && engine->runsUtility()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
 				{
-					engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
-					return {};
+					if(wantToRunInstall.size() > 0) {
+						engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
+						wantToRunInstall = {};
+						continue;
+					}
+					if(wantToRunUnistall.size() > 0) {
+						engine->runModuleUnInstallRequestOnProcess(DynMods::dynMods()->getJsonForModuleUninstallRequest());
+						wantToRunUnistall = {};
+					}
 				}
 		}
-		
+
+		wantToRunInstall.insert(wantToRunUnistall.begin(), wantToRunUnistall.end());
+		int tmp = wantToRunInstall.size();
 		return wantToRunInstall;
 	}
 	catch(Modules::ModuleException & e)	{ Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;	}

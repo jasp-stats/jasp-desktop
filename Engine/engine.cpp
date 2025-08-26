@@ -259,6 +259,7 @@ bool Engine::receiveMessages(int timeout)
 			case engineState::computeColumn:		receiveComputeColumnMessage(jsonRequest);	break;
 			case engineState::pauseRequested:		pauseEngine(jsonRequest);					break;
 			case engineState::resuming:				resumeEngine(jsonRequest);					break;
+			case engineState::moduleUninstallRequest:
 			case engineState::moduleInstallRequest:
 			case engineState::moduleLoadRequest:	receiveModuleRequestMessage(jsonRequest);	break;
 			case engineState::stopRequested:		stopEngine();								break;
@@ -585,7 +586,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		result			= jaspRCPP_evalRCode(moduleCode.c_str(), false);
 	bool			succes			= result == "succes!"; //Defined in DynamicModule::succesResultString()
 
-	if(moduleStatusFromString((moduleRequest)) == moduleStatus::installNeeded)
+	if(moduleStatusFromString((moduleRequest)) == moduleStatus::installNeeded || moduleStatusFromString((moduleRequest)) == moduleStatus::uninstallNeeded)
 		succes = (result.find("null") == std::string::npos);
 
 	Log::log() << "Was " << (succes ? "succesful" : "a failure") << ", now crafting answer." << std::endl;

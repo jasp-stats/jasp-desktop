@@ -44,7 +44,7 @@
 #include "ALTNavigation/altnavcontrol.h"
 #include "utilities/messageforwarder.h"
 
-#include "modules/activemodules.h"
+#include "modules/installedmodules.h"
 #include "modules/dynamicmodules.h"
 #include "modules/menumodel.h"
 
@@ -699,9 +699,9 @@ void MainWindow::loadQML()
 	disconnect(exitOnFailConnection);
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
-	_ribbonModel->loadModules(	
-		ActiveModules::getActiveCommonModules(),
-		ActiveModules::getActiveExtraModules());
+	_ribbonModel->loadModules(
+		InstalledModules::getActiveCommonModules(),
+		InstalledModules::getActiveExtraModules());
 	
 	qmlLoaded();	
 }

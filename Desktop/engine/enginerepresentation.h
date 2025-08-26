@@ -44,6 +44,7 @@ public:
 	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
 
 	void			runModuleInstallRequestOnProcess(	Json::Value request);
+	void			runModuleUnInstallRequestOnProcess(	Json::Value request);
 	void			runModuleLoadRequestOnProcess(		Json::Value request);
 
 	void			sendLogCfg();
@@ -79,6 +80,7 @@ public:
 	bool			killed()				const { return _engineState == engineState::killed;										}
 	bool			idle()					const { return _engineState == engineState::idle;										}
 	bool			installingModule()		const { return _engineState == engineState::moduleInstallRequest;						}
+	bool			unInstallingModule()	const { return _engineState == engineState::moduleUninstallRequest;						}
 	bool			reloadingData()			const { return _engineState == engineState::reloadData;						}
 	bool			moduleLoading()			const { return _engineState == engineState::moduleLoadRequest;							}
 	bool			idleSoon()				const;
@@ -164,7 +166,8 @@ signals:
 	void			moduleLoadingSucceeded(			const QString & moduleName, int channelID);
 	void			moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage, int channelID);
 	void			moduleUnloadingFinished(		const QString & moduleName, int channelID);
-	void			moduleUninstallingFinished(		const QString & moduleName);
+	void			moduleUninstallationSucceeded(	const QString & moduleName);
+	void			moduleUninstallationFailed(		const QString & moduleName, const QString & errorMessage);
 
 	void			logCfgReplyReceived(			EngineRepresentation * engine);
 	void			requestEngineRestartAfterCrash(	EngineRepresentation * engine);
