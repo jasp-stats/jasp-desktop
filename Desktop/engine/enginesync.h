@@ -98,7 +98,8 @@ signals:
 	void		moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
 	void		moduleLoadingSucceeded(			const QString & moduleName);
 	void		moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
-	void		moduleUninstallingFinished(		const QString & moduleName);
+	void		moduleUninstallationSucceeded(	const QString & moduleName);
+	void		moduleUninstallationFailed(		const QString & moduleName, const QString & errorMessage);
 
 	void		refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 	void		plotEditorRefresh();

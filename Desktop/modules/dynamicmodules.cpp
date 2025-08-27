@@ -20,8 +20,11 @@
 
 #include "log.h"
 #include "dynamicmodules.h"
+#include "dynamicmodules.h"
 #include "utilities/qutils.h"
 #include <QRegularExpression>
+#include <QUrl>
+#include <QUrlQuery>
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "utilities/extractarchive.h"
@@ -37,6 +40,9 @@
 #include "modules/description/description.h"
 #include "modules/description/entrybase.h"
 #include "engine/enginesync.h"
+#include "installedmodules.h"
+#include "utilities/dynamicruntimeinfo.h"
+
 
 #ifdef __APPLE__
 #include "otoolstuff.h"
@@ -235,6 +241,15 @@ void DynamicModules::registerForInstalling(const std::string & moduleName)
 	}
 }
 
+void DynamicModules::registerForUninstall(const std::string &moduleName)
+{
+	if(_modulesNeedingRemoval.find(moduleName) == _modulesNeedingRemoval.end())
+	{
+		Log::log() << "Bundle '" << moduleName << "' being registered for removal" << std::endl;
+		_modulesNeedingRemoval.insert(moduleName);
+	}
+}
+
 QStringList DynamicModules::importPaths() const
 {
 	QStringList allImportPaths;
@@ -280,7 +295,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		_devModRWatcher				= nullptr;
 	}
 
-	bool	removeFolder		= true,
+	bool	registerForDynamicUninstall		= true,
 			replacedWithBundled = bundledModuleInFilesystem(moduleName);
 
 	if(replacedWithBundled)
@@ -291,7 +306,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		_modules[moduleName]->setInstalled(false);
 
 		if(_modules[moduleName]->isBundled() || _modules[moduleName]->isLibpathDevMod())
-			removeFolder = false;
+			registerForDynamicUninstall = false;
 
 		for(int i=int(_moduleNames.size()) - 1; i>=0; i--)
 			if(_moduleNames[size_t(i)] == moduleName)
@@ -301,30 +316,11 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 		_modules.erase(moduleName);
 	}
 
-	if(removeFolder)
-		removeUninstalledModuleFolder(moduleName);
+	if(registerForDynamicUninstall)
+		registerForUninstall(moduleName);
 
 	if(!replacedWithBundled)	emit dynamicModuleUninstalled(QString::fromStdString(moduleName));
 
-}
-
-void DynamicModules::removeUninstalledModuleFolder(const std::string & moduleName)
-{
-	Log::log() << "DynamicModules::removeUninstalledModuleFolder("<< moduleName << ")" << std::endl;
-
-	std::wstring modulePath	= moduleDirectoryW(moduleName);
-
-	try
-	{
-		if(std::filesystem::exists(modulePath))
-			std::filesystem::remove_all(modulePath); //Can fail because R might have a library from this folder still loaded. On Windows (and perhaps other OSs) these opened files can't be removed.
-
-	}
-	catch (std::filesystem::filesystem_error & e)
-	{
-		MessageForwarder::showWarning(tr("Something went wrong removing files for module %1 at path '%2' and the error was: %3").arg(tq(moduleName)).arg(tq(moduleDirectory(moduleName))).arg(e.what()));
-		return;
-	}
 }
 
 DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
@@ -344,6 +340,11 @@ stringset DynamicModules::moduleBundlesNeedingInstall() const
 	return _moduleBundlesNeedingInstall;
 }
 
+stringset DynamicModules::modulesNeedingUninstall() const
+{
+	return _modulesNeedingRemoval;
+}
+
 Json::Value	DynamicModules::getJsonForBundleInstallRequest()
 {
 	if(_moduleBundlesNeedingInstall.size() == 0)
@@ -359,7 +360,7 @@ Json::Value	DynamicModules::getJsonForBundleInstallRequest()
 	.libPaths("%1");
 	library("jaspModuleBundleManager")
 	bundles <- c(%2)
-	f <- function(bundle) {jaspModuleBundleManager::installJaspModuleBundle(installPath="%3", bundlePath=bundle, repoNames=c())}
+	f <- function(bundle) {jaspModuleBundleManager::installJaspModuleBundle(installPath="%3", bundlePath=bundle)}
 	paste(sapply(bundles, f), collapse = ';')
 	)readableR")
 	.arg(AppDirs::bundledModulesDir() + "Tools/jaspModuleBundleManager_library/")
@@ -374,6 +375,37 @@ Json::Value	DynamicModules::getJsonForBundleInstallRequest()
 
 	return requestJson;
 
+}
+
+Json::Value DynamicModules::getJsonForModuleUninstallRequest()
+{
+	if(_modulesNeedingRemoval.size() == 0)
+		throw std::runtime_error("Tried to get json for Module uninstall request but there are none,  getJsonForModuleUninstallRequest should never have been called.");
+
+	QString list = "";
+	for(auto& module : _modulesNeedingRemoval) list += "'" + QString(module.c_str()) + "'" + ",";
+	list.removeLast();
+
+	QString code = QString(
+	R"readableR(
+	tmp <- .libPaths();
+	.libPaths("%1");
+	library("jaspModuleBundleManager")
+	bundles <- c(%2)
+	f <- function(module) {jaspModuleBundleManager::uninstallJaspModuleBundle(installPath="%3", name=module)}
+	paste(sapply(bundles, f), collapse = ';')
+	)readableR")
+					   .arg(AppDirs::bundledModulesDir() + "Tools/jaspModuleBundleManager_library/")
+					   .arg(list)
+					   .arg(AppDirs::userModulesDir());
+
+
+	Json::Value requestJson(Json::objectValue);
+	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::uninstallNeeded);
+	requestJson["moduleCode"]		= code.toStdString();
+	requestJson["moduleName"]		= list.toStdString();
+
+	return requestJson;
 }
 
 DynamicModule *DynamicModules::dynamicModuleLowerCased(QString moduleName) const
@@ -422,7 +454,24 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleNames)
 #endif
 	}
 	_moduleBundlesNeedingInstall.clear();
-	MessageForwarder::showWarning(tr("Install complete"), tr("Completed installation of Bundles: ") + listStr);
+    emit moduleStoreUrlChanged();
+    // MessageForwarder::showWarning(tr("Install complete"), tr("Completed installation of Bundles: ") + listStr);
+}
+
+
+void DynamicModules::unInstallationPackagesSucceeded(const QString &moduleNames)
+{
+	Log::log() << "Modules succesfully uninstalled" << std::endl;
+	_modulesNeedingRemoval.clear();
+    emit moduleStoreUrlChanged();
+}
+
+void DynamicModules::unInstallationPackagesFailed(const QString &moduleName, const QString &errorMessage)
+{
+	_modulesNeedingRemoval.clear();
+	MessageForwarder::showWarning(
+		tq("Uninstall of Module %1 failed").arg(moduleName),
+		tr("The removal of Module %1 failed with the following errormessage:\n%2").arg(moduleName).arg(errorMessage));
 }
 
 
@@ -865,5 +914,36 @@ const QStringList DynamicModules::loadedModulesTitles() const
 
 	return mods;
 }
+
+const QString DynamicModules::moduleStoreUrl() const
+{
+	auto installed = InstalledModules::getInstalledModuleVersions();
+	Json::Value root;
+	for(auto moduleVersion : installed) {
+		root[moduleVersion.first] = moduleVersion.second;
+	}
+
+	Json::StreamWriterBuilder writer;
+	writer["indentation"] = "";
+	QString installList(Json::writeString(writer, root).c_str());
+
+	auto platform = DynamicRuntimeInfo::getRuntimeEnvironment();
+	auto arch = DynamicRuntimeInfo::getMicroArch();
+	std::string platformString;
+
+	// if(platform == RuntimeEnvironment::MAC)
+	// 	platformString = arch == MicroArch::AARCH64 ? "MacOS_arm64" : "MacOS_x86_64";
+	// else if(platform == RuntimeEnvironment::FLATPAK)
+	// 	platformString = arch == MicroArch::AARCH64 ? "MacOS_aarch64" : "MacOS_arm64";
+	// else if(platform == RuntimeEnvironment::LINUX_LOCAL)
+	// 	platformString = arch == MicroArch::AARCH64 ? "Linux_aarch64" : "Linux_x86_64";
+	// else
+		platformString = "Windows_x86-64";
+
+	QUrlQuery query({{"a", QString(platformString.c_str())}, {"v", QString(AppInfo::version.asString(3).c_str())} , {"i", installList}});
+	QString tmp = "https://jasp-stats-modules.github.io/modules-app/?" + query.toString(QUrl::FullyEncoded);
+	return "https://jasp-stats-modules.github.io/modules-app/?" + query.toString(QUrl::FullyEncoded);
+}
+
 
 }

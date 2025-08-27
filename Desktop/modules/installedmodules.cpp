@@ -1,14 +1,14 @@
-#include "activemodules.h"
+#include "installedmodules.h"
 #include "utilities/appdirs.h"
-#include <set>
 #include <QString>
 #include <QDir>
 #include <json/json.h>
 #include <fstream>
 #include "gui/preferencesmodel.h"
+#include "log.h"
 
 
-const std::string ActiveModules::settingsPath = "modules-settings.json";
+const std::string InstalledModules::settingsPath = "modules-settings.json";
 
 
 QStringList getModulesFromDir(const std::string& path)
@@ -20,7 +20,7 @@ QStringList getModulesFromDir(const std::string& path)
 	return dir.entryList({"jasp*"}, QDir::Dirs);
 }
 
-std::vector<std::string> ActiveModules::getModules(bool extra) {
+std::vector<std::string> InstalledModules::getModules(bool extra) {
 	//get the module orders and groupings form the modules settings file
 	//This will probably be replaced with org specific settings from toml file in future
 	std::string settings = AppDirs::bundledModulesDir().toStdString() + settingsPath;
@@ -62,14 +62,48 @@ std::vector<std::string> ActiveModules::getModules(bool extra) {
 	return commonModules;
 }
 
-std::vector<std::string> ActiveModules::getActiveCommonModules()
+std::vector<std::string> InstalledModules::getActiveCommonModules()
 {
 	return getModules();
 }
 
-std::vector<std::string> ActiveModules::getActiveExtraModules()
+std::vector<std::string> InstalledModules::getActiveExtraModules()
 {
 	return getModules(true);
+}
+
+
+std::map<std::string, std::string> InstalledModules::getInstalledModuleVersions()
+{
+	std::map<std::string, std::string> moduleVersionMap;
+
+	auto parseManifests = [&](const std::string& path) {
+		auto dir = QDir(path.c_str());
+		dir.cdUp(); dir.cd("manifests");
+		if(!dir.exists())
+			return;
+
+		auto manifests = dir.entryList({"jasp*.json"}, QDir::Files);
+		for(auto& manifest : manifests) {
+			std::ifstream in(dir.absoluteFilePath(manifest).toStdString());
+			Json::Value root;
+			Json::Reader().parse(in, root);
+			Json::Value version = root["version"][0];
+			std::string strVersion = "";
+			for(int i = 0; i < version.size(); i++) {
+				auto x = version[i];
+				strVersion =  strVersion + version[i].asString() + ".";
+			}
+			strVersion.pop_back();
+			moduleVersionMap[root["name"].asString()] = strVersion;
+		}
+
+	};
+
+	parseManifests(AppDirs::bundledModulesLibDir().toStdString());
+	parseManifests(AppDirs::userModulesLibDir().toStdString());
+
+	return moduleVersionMap;
 }
 
 

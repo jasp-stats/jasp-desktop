@@ -43,6 +43,8 @@ class DynamicModules : public QObject
 	Q_PROPERTY(bool			dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
 	Q_PROPERTY(QStringList	loadedModules							READ loadedModules																			NOTIFY loadedModulesChanged							)
 	Q_PROPERTY(QStringList	loadedModulesTitles						READ loadedModulesTitles																	NOTIFY loadedModulesChanged							)
+	Q_PROPERTY(QString		moduleStoreUrl							READ moduleStoreUrl																			NOTIFY moduleStoreUrlChanged						)
+
 
 public:
 	explicit				DynamicModules(QObject *parent) ;
@@ -72,8 +74,11 @@ public:
 	void					applyUpgrade(				const	 std::string & module,		const std::string & function, const Version	& version, Json::Value & analysesJson, Modules::UpgradeMsgs & msgs, Modules::StepsTaken & stepsTaken);
 
 	stringset				moduleBundlesNeedingInstall()		const;
+	stringset				modulesNeedingUninstall()			const;
 
 	Json::Value				getJsonForBundleInstallRequest();
+	Json::Value				getJsonForModuleUninstallRequest();
+
 
 	Modules::DynamicModule*	dynamicModuleLowerCased(	  QString		moduleName)	const;
 	Modules::DynamicModule*	dynamicModule(			const std::string & moduleName)	const { return _modules.count(moduleName) == 0 ? nullptr : _modules.at(moduleName); }
@@ -109,11 +114,15 @@ public:
 
 	const QStringList loadedModules() const;
 	const QStringList loadedModulesTitles() const;
+	const QString	  moduleStoreUrl() const;
 
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleNames);
 	void installationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
+	void unInstallationPackagesSucceeded(	const QString		& moduleNames);
+	void unInstallationPackagesFailed(	const QString		& moduleName, const QString & errorMessage);
 	void registerForInstalling(			const std::string	& moduleName);
+	void registerForUninstall(			const std::string	& moduleName);
 	void setDevelopersModuleInstallButtonEnabled(bool developersModuleInstallButtonEnabled);
 	void setDataLoaded(bool dataLoaded);
 	void uninstallJASPDeveloperModule();
@@ -140,9 +149,9 @@ signals:
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
 	void loadedModulesChanged();
+	void moduleStoreUrlChanged();
 
 private:
-	void						removeUninstalledModuleFolder(const std::string & moduleName);
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
 	void						devModCopyDescription(QString filename);
 	void						devModWatchFolder(QString folder, QFileSystemWatcher * & watcher);
@@ -155,6 +164,7 @@ private:
 	std::vector<std::string>								_moduleNames;
 	std::map<std::string, Modules::DynamicModule*>			_modules;
 	std::set<std::string>									_moduleBundlesNeedingInstall;
+	std::set<std::string>									_modulesNeedingRemoval;
 	std::filesystem::path									_modulesInstallDirectory;
 	QString													_currentInstallMsg			= "",
 															_currentInstallName			= "";
@@ -167,6 +177,7 @@ private:
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
+	QString													_moduleStoreUrl				= "";
 };
 
 }

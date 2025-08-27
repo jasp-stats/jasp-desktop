@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
+import QtWebEngine
 import "./FileMenu"
 
 FocusScope
@@ -71,7 +72,7 @@ FocusScope
 	{
 		id:				slidePart
 		x:				modulesMenu.opened ? 0 : width
-		width:			340 * preferencesModel.uiScale
+        width:			modules.width + vertScroller.width + moduleStore.width + jaspTheme.contentMargin
 		height:			modulesMenu.height
 		color:			jaspTheme.fileMenuColorBackground
 		border.width:	1
@@ -203,8 +204,9 @@ FocusScope
 			{
 				id:			modules
 				spacing:	4  * preferencesModel.uiScale
-				width:		slidePart.width - vertScroller.width
+                width:		(340 * preferencesModel.uiScale) - vertScroller.width
 				visible:	!ribbonModel.dataMode
+                anchors.right: vertScroller.visible ? vertScroller.left : parent.right
 
 				property int buttonMargin:	3  * preferencesModel.uiScale
 				property int buttonWidth:	width - (buttonMargin * 2)
@@ -213,7 +215,7 @@ FocusScope
 				MenuButton
 				{
 					id:					addModuleButton
-					text:				qsTr("Install Module")
+                    text:				qsTr("Install Local Module")
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
@@ -222,7 +224,7 @@ FocusScope
 					iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 					showIconAndText:	true
 					iconLeft:			false
-					toolTip:			qsTr("Install a module")
+                    toolTip:			qsTr("Install a local module")
 					visible:			preferencesModel.developerMode
 					focus:				currentIndex === -2
 					activeFocusOnTab:	false
@@ -354,7 +356,52 @@ FocusScope
 					}
 				}
 			}
-		}
+
+
+            WebEngineProfile {
+                id: moduleStoreProfile
+
+                onDownloadRequested: function(request) {
+                    console.log("Download requested:", request.url)
+                    let name = request.downloadFileName
+                    let index = name.lastIndexOf('.');
+                    let extension = index !== -1 ? name.substring(index + 1) : '';
+                    if(extension === 'JASPModule') {
+						moduleStore.downloadInProgress = true
+						moduleStore.downloadTotal = request.totalBytes
+						moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
+						request.accept()
+                    }
+                    else
+                        request.cancel()
+                }
+
+                onDownloadFinished: function(request) {
+                    console.log("Download finished:", request.downloadFileName)
+                    let path = request.downloadDirectory + '/' + request.downloadFileName
+                    dynamicModules.installJASPModule(path)
+					moduleStore.downloadInProgress = false
+                }
+            }
+
+            WebEngineView
+            {
+				id:						moduleStore
+                visible:                !ribbonModel.dataMode
+                clip:                   true
+                width:                  visible ? 500 * preferencesModel.uiScale : 0
+                anchors.right:          modules.left
+                height:                 modulesFlick.height - jaspTheme.contentMargin
+				url:					   (downloadInProgress || installInProgress)? 'https://static.jasp-stats.org/downloadProgressTest.html?' + 't=' + downloadTotal + '&p=' +  downloadProgress + '&i=' + installInProgress : dynamicModules.moduleStoreUrl
+                profile:                moduleStoreProfile
+
+				property bool	downloadInProgress: false;
+				property bool	installInProgress: false;
+				property int		downloadProgress;
+				property int		downloadTotal;
+
+            }
+        }
 
 		JASPScrollBar
 		{
