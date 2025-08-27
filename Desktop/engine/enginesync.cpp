@@ -763,9 +763,13 @@ stringset EngineSync::processDynamicModules()
 	try
 	{
 		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
-		stringset	wantToRunUnistall	= DynMods::dynMods()->modulesNeedingUninstall();
+        stringset	wantToRunUninstall	= DynMods::dynMods()->modulesNeedingUninstall();
 
-		if(wantToRunInstall.size() > 0 || wantToRunUnistall.size() > 0)
+        for(auto & engine : _engines) //lets only process one dynamic module install/remove at a time for the sake of sanity.
+            if(engine->installingModule() || engine->unInstallingModule())
+                return {};
+
+        if(wantToRunInstall.size() > 0 || wantToRunUninstall.size() > 0)
 		{
 			for(auto & engine : _engines)
 				if(engine->idle() && engine->runsUtility()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
@@ -775,15 +779,14 @@ stringset EngineSync::processDynamicModules()
 						wantToRunInstall = {};
 						continue;
 					}
-					if(wantToRunUnistall.size() > 0) {
+                    if(wantToRunUninstall.size() > 0) {
 						engine->runModuleUnInstallRequestOnProcess(DynMods::dynMods()->getJsonForModuleUninstallRequest());
-						wantToRunUnistall = {};
+                        wantToRunUninstall = {};
 					}
 				}
 		}
 
-		wantToRunInstall.insert(wantToRunUnistall.begin(), wantToRunUnistall.end());
-		int tmp = wantToRunInstall.size();
+        wantToRunInstall.insert(wantToRunUninstall.begin(), wantToRunUninstall.end());
 		return wantToRunInstall;
 	}
 	catch(Modules::ModuleException & e)	{ Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;	}
