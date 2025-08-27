@@ -360,6 +360,7 @@ FocusScope
 
             WebEngineProfile {
                 id: moduleStoreProfile
+				downloadPath: jaspTmpDir
 
                 onDownloadRequested: function(request) {
                     console.log("Download requested:", request.url)
