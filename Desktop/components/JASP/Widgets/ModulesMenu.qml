@@ -367,8 +367,10 @@ FocusScope
                     let index = name.lastIndexOf('.');
                     let extension = index !== -1 ? name.substring(index + 1) : '';
                     if(extension === 'JASPModule') {
-                        request.accept()
-                        downloadInProgress = true
+						moduleStore.downloadInProgress = true
+						moduleStore.downloadTotal = request.totalBytes
+						moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
+						request.accept()
                     }
                     else
                         request.cancel()
@@ -378,23 +380,26 @@ FocusScope
                     console.log("Download finished:", request.downloadFileName)
                     let path = request.downloadDirectory + '/' + request.downloadFileName
                     dynamicModules.installJASPModule(path)
-                    downloadInProgress = false
+					moduleStore.downloadInProgress = false
                 }
             }
 
             WebEngineView
             {
-                id:						moduleStore
+				id:						moduleStore
                 visible:                !ribbonModel.dataMode
                 clip:                   true
                 width:                  visible ? 500 * preferencesModel.uiScale : 0
                 anchors.right:          modules.left
                 height:                 modulesFlick.height - jaspTheme.contentMargin
-                url:					(moduleStore.downloadInProgress || moduleStore.installInProgress) ? 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif' : dynamicModules.moduleStoreUrl
+				url:					   (downloadInProgress || installInProgress)? 'https://static.jasp-stats.org/downloadProgressTest.html?' + 't=' + downloadTotal + '&p=' +  downloadProgress + '&i=' + installInProgress : dynamicModules.moduleStoreUrl
                 profile:                moduleStoreProfile
 
-                property bool downloadInProgress: false;
-                property bool installInProgress: false;
+				property bool	downloadInProgress: false;
+				property bool	installInProgress: false;
+				property int		downloadProgress;
+				property int		downloadTotal;
+
             }
         }
 
