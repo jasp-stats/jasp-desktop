@@ -605,6 +605,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("baseBlockDim",								20												); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",								16												);
 	_qml->rootContext()->setContextProperty("languageModel",							_languageModel									);
+	_qml->rootContext()->setContextProperty("jaspTmpDir",                               tq(Dirs::tempDir())      						);
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",							int(columnType::scale)							);
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",						int(columnType::ordinal)						);
