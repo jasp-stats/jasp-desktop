@@ -1,8 +1,11 @@
 {
 "Windows-x86_64" : [
+{"url" : "https://repo.jasp-stats.org/bundles-20-08/Windows-x86_64/jaspTTests.JASPModule",               "checksum" : "e7120507ab730f5374cf19ec368a304c95fed6faf07e5ea90f38d20a030bde16"}
 ],
 "MacOS-arm64" : [
+{"url" : "https://repo.jasp-stats.org/bundles-20-08/MacOS-arm64/jaspTTests.JASPModule",                  "checksum" : "03febae1eaf59cd3d582b6635c0457314bd97535c9ee7625209a51f82bb44530"}
 ],
 "MacOS-x86_64" : [
+{"url" : "https://repo.jasp-stats.org/bundles-20-08/MacOS-x86_64/jaspTTests.JASPModule",                 "checksum" : "5bc5a93da874bd891056ed27a397500ed86d245eaa8cccf5a04f9fe594a4386e"}
 ]
 }
