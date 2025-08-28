@@ -183,7 +183,7 @@ div.over-title-space:empty {
 tbody tr:last-child th,
 tbody tr:last-child td {
 
-	border-bottom: 2px solid ;
+	border-bottom: thin solid ;
 }
 
 tbody tr td.new-sub-group-row {
