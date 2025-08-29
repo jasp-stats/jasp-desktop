@@ -36,6 +36,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"attr",
 	"attributes",
 	"BoxCox",
+    "BoxCoxAuto",
 	"binom.test",
 	"by",
 	"c",
@@ -137,6 +138,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"pmin",
 	"poly",
 	"powerTransform",
+    "powerTransformAuto",
 	"power.t.test",
 	"predict",
 	"print",
@@ -220,6 +222,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"which.min",
 	"xtabs",
 	"YeoJohnson",
+    "YeoJohnsonAuto",
 	".setColumnDataAsScale", ".setColumnDataAsOrdinal", ".setColumnDataAsNominal", ".setColumnDataAsNominalText",
 	
 	"function", "stop",
