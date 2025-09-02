@@ -1,0 +1,9 @@
+{
+  "name": "JASP Desktop Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": [
+    "--shm-size=2g"
+  ]
+}
