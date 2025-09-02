@@ -6,7 +6,12 @@ on:
    workflow_dispatch:
 
 jobs:
-      
+   # to run locally install https://github.com/nektos/act and run `act --reuse -j build-jasp --env DISPLAY=$DISPLAY `
+   # docker commit 484f3a622a13 my-jasp-image:latest
+   # run desktop with
+   # xhost +local:docker
+   # docker exec -it -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix --entrypoint bash my-jasp-image:latest
+   # ./jasp-build/Desktop/JASP
    build-jasp:
    
     runs-on: ubuntu-latest
@@ -33,22 +38,31 @@ jobs:
             cache: 'true'
             modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
+            # act can not use ../ (the default) as dir, so be explicit
+            dir: '${{ github.workspace }}/qtinstall'
             
       - name: Install dependencies of build system
-        run: |     
-            sudo apt install libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev
-            sudo apt install libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake
-            sudo apt install gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev
-            sudo apt install libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev #required by some r packgaes
-            sudo apt install libglpk-dev libcurl4-openssl-dev libmpfr-dev libfontconfig1-dev libcairo2-dev netcdf-bin #required by some r packages
-            sudo apt install jags
-            sudo apt install libminizip-dev # required by freexl
-            sudo apt install librdata-dev
+        run: |
+            # act -j build-jasp was stuck on typing y to continue
+            sudo apt install -y libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev
+            sudo apt install -y libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake
+            sudo apt install -y gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev
+            sudo apt install -y libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev #required by some r packgaes
+            sudo apt install -y libglpk-dev libcurl4-openssl-dev libmpfr-dev libfontconfig1-dev libcairo2-dev netcdf-bin #required by some r packages
+            sudo apt install -y jags
+            sudo apt install -y libminizip-dev # required by freexl
+            sudo apt install -y librdata-dev
+            # to solve qt missing so files.
+            sudo apt install -y libnss3-dev libnspr4-dev
+            sudo apt install -y libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxi-dev
+            sudo apt install -y libasound2-dev libxkbfile-dev
             git clone https://github.com/jasp-stats/freexl.git
             cd freexl && ./configure && make && sudo make install
+        env:
+          DEBIAN_FRONTEND: noninteractive
             
       - name: Install boost
-        uses: MarkusJx/install-boost@v2.4.4
+        uses: MarkusJx/install-boost@v2
         id: install-boost
         with:
             # REQUIRED: Specify the required boost version
@@ -62,7 +76,8 @@ jobs:
             wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
             tar -xzf readstat-*.tar.gz && cd readstat-*/
             ./configure
-            make CFLAGS='-Wno-error=use-after-free' CXXFLAGS='-Wno-error=use-after-free'
+            # in 1.1.8 use-after-free was fixed
+            make
             sudo make install
         
       - name: Configure JASP desktop
@@ -77,4 +92,5 @@ jobs:
 
       - name: Build JASP desktop
         run: |
-            cmake --build jasp-build --target all
+            # speed up build with -j
+            cmake --build jasp-build --target all -j6
