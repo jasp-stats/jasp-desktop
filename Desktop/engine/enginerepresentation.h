@@ -92,6 +92,10 @@ public:
 	bool			busyWithData()			const;
 	bool			needsReloadData()		const { return idle() && _reloadData; }
 	bool			moduleLoaded()			const { return _moduleLoaded; }
+    bool        isPriviliged()           const { return _isPriviliged; }
+
+
+    void        setIsPrivileged(bool value) { _isPriviliged = value;}
 
 	///How many seconds has this engine been idle?
 	int64_t			idleFor() const;
@@ -140,6 +144,7 @@ public slots:
 	void			setRunsAnalysis(	bool runsAnalysis);
 	void			setRunsUtility(	bool runsUtility);
 	void			setRunsRCmd(		bool runsRCmd);
+
 
 	void			setDynamicModule(const std::string & dynamicModule);
 	void			reloadData() { _reloadData = true; }
@@ -226,7 +231,8 @@ private:
 					_removeEngine		= false,
 					_pauseUnloadData	= false,
 					_reloadData			= false,	///<when the idle is engine and this true, it should reload the data
-					_moduleLoaded		= false;	///<If _dynModName is set but this is false the engine should still load the module.
+                    _moduleLoaded		= false,	///<If _dynModName is set but this is false the engine should still load the module.
+                    _isPriviliged        = false;
 	std::string		_lastCompColName	= "???",
 					_dynModName			= "",		///<If filled: refers to the particular dynamic module this engine was meant for.
 					_requestModName		= "";		///<To keep track of which engine is handling a request for a module
