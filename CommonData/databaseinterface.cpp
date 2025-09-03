@@ -27,54 +27,54 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 {
 	transactionWriteBegin();
 
-	if(originalVersion < "0.18.2")
-		runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;", true);
+	if((originalVersion < "0.18.2") && !tableHasColumn("DataSets", "description"))
+		runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;");
 
-	if(originalVersion < "0.19.0")
-		runStatements("ALTER TABLE Columns  DROP 	COLUMN isComputed;", true);		// was removed in 0.18.3
+	if((originalVersion < "0.19.0") && tableHasColumn("Columns", "isComputed"))
+		runStatements("ALTER TABLE Columns  DROP 	COLUMN isComputed;");		// was removed in 0.18.3
 	
 	if(originalVersion <= "0.19.0")
 	{
 		if (!tableHasColumn("Columns", "emptyValuesJson"))
-			runStatements("ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;", true);
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;");
 
 		if (!tableHasColumn("Columns", "forceSourceColType"))
-			runStatements("ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;", true);
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN forceSourceColType	INT NULL;");
 
 		if (!tableHasColumn("Columns", "autoSortByValue"))
-			runStatements("ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;", true);
+			runStatements("ALTER TABLE Columns  ADD 	COLUMN autoSortByValue		INT;");
 
 		if (!tableHasColumn("DataSets", "dataFileTimestamp"))
-			runStatements("ALTER TABLE DataSets  ADD 	COLUMN dataFileTimestamp	INT;", true);
+			runStatements("ALTER TABLE DataSets  ADD 	COLUMN dataFileTimestamp	INT;");
 	}
 	
 	if(originalVersion <= "0.19.2")
 	{
 		if (tableHasColumn("Columns", "forceSourceColType"))
-			runStatements("ALTER TABLE Columns  DROP 	COLUMN forceSourceColType;", true);
+			runStatements("ALTER TABLE Columns  DROP 	COLUMN forceSourceColType;");
 	}
 
 	if(originalVersion < "0.19.2" && !tableHasColumn("Filters", "name"))	
-		runStatements("ALTER TABLE Filters  ADD COLUMN name		TEXT;", true);
+		runStatements("ALTER TABLE Filters  ADD COLUMN name		TEXT;");
 	
 	if(originalVersion <= "0.19.3")
 	{
 		if(!tableHasColumn("Columns", "dropLevels"))
 		{
-			runStatements("ALTER TABLE Columns  ADD COLUMN dropLevels		INT;", true);
-			runStatements("UPDATE Columns SET dropLevels = 1;", true); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
+			runStatements("ALTER TABLE Columns  ADD COLUMN dropLevels		INT;");
+			runStatements("UPDATE Columns SET dropLevels = 1;"); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
 		}
 		
-		runStatements(std::string("UPDATE Filters SET name = '") + DEFAULT_FILTER_NAME + "' WHERE trim(name) = '' OR name IS NULL;", true); //Previously the "default filter" didnt have a name, but this is actually not very practical for computeFilter, so lets set it to something on load. Filters will always have a name now.
+		runStatements(std::string("UPDATE Filters SET name = '") + DEFAULT_FILTER_NAME + "' WHERE trim(name) = '' OR name IS NULL;"); //Previously the "default filter" didnt have a name, but this is actually not very practical for computeFilter, so lets set it to something on load. Filters will always have a name now.
 
 		if(!tableHasColumn("Columns", "computeFilter"))
-			runStatements("ALTER TABLE Columns  ADD COLUMN computeFilter		TEXT DEFAULT \"\";", true);
+			runStatements("ALTER TABLE Columns  ADD COLUMN computeFilter		TEXT DEFAULT \"\";");
 		
 		if(!tableHasColumn("Labels", "userAdded"))
-			runStatements("ALTER TABLE Labels  ADD COLUMN userAdded	INT DEFAULT 0;", true);
+			runStatements("ALTER TABLE Labels  ADD COLUMN userAdded	INT DEFAULT 0;");
 		
 		//Create indexes cause they dont exist yet
-		runStatements(_dbIndexesSql, true);
+		runStatements(_dbIndexesSql);
 	}
 
 	transactionWriteEnd();
