@@ -30,10 +30,6 @@ RCommander::RCommander()
 
 RCommander::~RCommander()
 {
-	if(_engine && EngineSync::singleton())
-		try {	EngineSync::singleton()->destroyEngine(_engine); }
-		catch(...) {}
-
 	_engine = nullptr;
 
 	if(_lastCommander == this)
