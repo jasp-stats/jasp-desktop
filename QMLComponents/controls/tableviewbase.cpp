@@ -49,6 +49,10 @@ void TableViewBase::setUpModel()
 	case ModelType::Simple					: _tableModel = new ListModelTableViewBase(			this );	break;
 	}
 
+	if (modelType() == ModelType::Simple &&_initialRowCount > 0)
+		// Per default the rows are set by the source, and if no source is specified, it sets automatically the dataset as source.
+		// But if initialRowCount is used, it means that this table sets its own rows, so no source is needed.
+		_tableModel->setNeedsSource(false);
 	JASPListControl::setUpModel();
 
 	connect(_tableModel, &ListModelTableViewBase::columnCountChanged,	this, &TableViewBase::columnCountChanged);
