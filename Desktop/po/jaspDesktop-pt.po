@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-09-07 09:02+0000\n"
+"Last-Translator: Wendel Paulo Silvestre <wpsilvestre@ucs.br>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/pt/>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-Language: pt\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -5980,23 +5986,23 @@ msgstr ""
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
-msgstr ""
+msgstr "Recuperação"
 
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
-msgstr ""
+msgstr "Não foram encontrados arquivos de recuperação"
 
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
-msgstr ""
+msgstr "Os arquivos de recuperação são deletados após um mês"
 
 msgctxt "PrefsData|"
 msgid "Save settings"
-msgstr ""
+msgstr "Configurações de salvamento"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "Salva automaticamente um backup do seu espaço de trabalho"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -6004,52 +6010,55 @@ msgid ""
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
 msgstr ""
+"Quando habilitado, isso salvará uma cópia do seu espaço de trabalho em uma "
+"pasta ao lado dos logs. Se o JASP travar com alterações não salvas, este "
+"backup garantirá que você não perca todo o seu trabalho."
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "Intervalo de autosalvamento em minutos"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "Intervalo, em minutos, entre autosalvamentos."
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "%1 autosalvo"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "Caminho completo: %1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "Espaço de trabalho não salvo"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "Espaço de trabalho não salvo do arquivo de dados %1"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "Autosalvamento"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "Salvando arquivo JASP de autosalvamento"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "Salvo em %1"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
-msgstr ""
+msgstr "Salvo a %1 segundos atrás, pode ainda estar carregado em outro JASP."
 
 msgctxt "ResourceButtons|"
 msgid "Recovery"
-msgstr ""
+msgstr "Recuperação"
