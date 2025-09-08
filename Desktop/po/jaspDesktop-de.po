@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-07 09:02+0000\n"
+"PO-Revision-Date: 2025-09-08 20:01+0000\n"
 "Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "de/>\n"
@@ -6001,6 +6001,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Diese Analyse wurde ohne Zustand gespeichert; um die Abbildung zu speichern, "
+"muss sie zuerst aktualisiert werden.\n"
+"\n"
+"Die Analyse aktualisieren?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -6009,26 +6013,30 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Diese Analyse wurde ohne Zustand gespeichert; für eine Größenänderung der "
+"Abbildung muss sie zuerst aktualisiert werden.\n"
+"\n"
+"Die Analyse aktualisieren?"
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
-msgstr ""
+msgstr "Wiederherstellung"
 
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
-msgstr ""
+msgstr "Keine Wiederherstellungs-Dateien gefunden"
 
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
-msgstr ""
+msgstr "Wiederherstellungs-Dateien werden nach einem Monat gelöscht"
 
 msgctxt "PrefsData|"
 msgid "Save settings"
-msgstr ""
+msgstr "Einstellungen speichern"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "Automatisches Speichern eines Backups von Ihrem Arbeitsbereich"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -6036,52 +6044,58 @@ msgid ""
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
 msgstr ""
+"Wenn aktiviert, wird eine Kopie des Arbeitsbereichs in einem Ordner zu den "
+"Log-Dateien gespeichert. Wenn JASP mit ansonsten ungespeicherten Änderungen "
+"abstürzt, wird dieses Backup sicherstellen, dass Sie nicht all Ihre Arbeit "
+"verlieren."
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "Intervall für automatisches Speichern in Minuten"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "Intervall in Minuten zwischen automatischem Abspeichern."
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "%1 automatisch gespeichert"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "Gesamter Pfad: %1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "Ungespeicherter Arbeitsbereich"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "Ungespeicherter Arbeitsbereich von Datendatei %1"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "Automatisches Speichern"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "Automatisches JASP-Datei-Abspeichern"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "Gespeichert unter %1"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
 msgstr ""
+"Gespeichert vor %1 Sekunden, könnte noch in einem anderen JASP geladen "
+"werden."
 
 msgctxt "ResourceButtons|"
 msgid "Recovery"
-msgstr ""
+msgstr "Wiederherstellung"
