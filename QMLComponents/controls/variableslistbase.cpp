@@ -69,12 +69,13 @@ void VariablesListBase::setUp()
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
 {
-	if (value == Json::nullValue && addAvailableVariablesToAssigned())
+	if (value == Json::nullValue && isBound() && addAvailableVariablesToAssigned())
 	{
-		// If addAvailableVariablesToAssigned is true and this is initialized without value,
-		// maybe the availableAssignedList has some default values that must be assigned to this VariablesList
+		// A bound control should have a value when it is initialized from a JASP file. So here is the case when a new analysis is created.
+		// If it is an Assigned VariablesList with addAvailableVariablesToAssigned set to true, if there is some terms in the correspondig Available VariablesList,
+		// these terms must be used to initialize this VariablesList
 		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
-		if (assignedModel && assignedModel->availableModel() && isBound())
+		if (assignedModel && assignedModel->availableModel())
 			assignedModel->initTerms(assignedModel->availableModel()->terms());
 	}
 
