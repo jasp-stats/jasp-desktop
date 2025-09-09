@@ -163,3 +163,5 @@ If X11 says no then allow local X clients:
 xhost +local:
 # and try again
 ```
+
+IF you see the JASP window is fully black then resize the window to force a redraw.
