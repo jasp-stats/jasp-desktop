@@ -321,6 +321,8 @@ if(WIN32)
   endif()
   configure_file(${CMAKE_SOURCE_DIR}/Tools/CMake/Deploy.win.cmake.in
                  ${CMAKE_BINARY_DIR}/Deploy.win.cmake @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/deploy.cmd.in
+                ${CMAKE_BINARY_DIR}/deploy.cmd @ONLY)
 
   cmake_path(
     NATIVE_PATH
