@@ -22,7 +22,7 @@ One of the best ways that you can support the JASP project is by citing it (give
 
     @MISC{JASP2025,
       AUTHOR = {{JASP Team}},
-	  TITLE  = {{JASP (Version 0.95.1)[Computer software]}},
+	  TITLE  = {{JASP (Version 0.95.2)[Computer software]}},
       YEAR   = {2025},
       URL    = {https://jasp-stats.org/}
     }
