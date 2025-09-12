@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport"           content="width=device-width, initial-scale=1"/>
+
+    <title>JASP modules store</title>
+
+    <script type="text/javascript" src="js/qwebchannel.js">    </script>
+</head>
+<body>
+    <button id="mybutton">Get info from JASP2</button>
+    <pre id="info"></pre>
+    <pre id="error"></pre>
+<script type="text/javascript">
+//if (typeof qt === "undefined") {
+    //document.getElementById("error").innerText = "qt object is undefined. Are you running inside Qt?";
+//}
+    console.log("Module store example");
+    console.log(mybutton);
+    
+    mybutton.addEventListener("click", function(e) {
+        console.log(e);
+        console.log("Getting info from JASP...");
+        try {
+            new QWebChannel(qt.webChannelTransport, function(channel) {
+                const moduleStore = channel.objects.moduleStore;
+            console.log(moduleStore);
+            moduleStore.info(function(info) {
+                console.log(info);
+                document.getElementById("info").innerText = JSON.stringify(info, null, 4);
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        document.getElementById("error").innerText = error;
+    }
+});
+
+</script>
+    </body>
+</html>

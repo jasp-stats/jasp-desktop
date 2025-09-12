@@ -3,6 +3,7 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
 import QtWebEngine
+import QtWebChannel
 import "./FileMenu"
 
 FocusScope
@@ -393,13 +394,64 @@ FocusScope
                 width:                  visible ? 500 * preferencesModel.uiScale : 0
                 anchors.right:          modules.left
                 height:                 modulesFlick.height - jaspTheme.contentMargin
-				url:					   (downloadInProgress || installInProgress)? 'https://static.jasp-stats.org/downloadProgressTest.html?' + 't=' + downloadTotal + '&p=' +  downloadProgress + '&i=' + installInProgress : dynamicModules.moduleStoreUrl
+				url:                    "file:///workspaces/jasp-desktop/Desktop/html/module-store.html"
+				// url:                    "qrc:///html/module-store.html"
+				// TODO switch to actual app
+				// url:					   (downloadInProgress || installInProgress)? 'https://static.jasp-stats.org/downloadProgressTest.html?' + 't=' + downloadTotal + '&p=' +  downloadProgress + '&i=' + installInProgress : dynamicModules.moduleStoreUrl
                 profile:                moduleStoreProfile
 
 				property bool	downloadInProgress: false;
 				property bool	installInProgress: false;
 				property int		downloadProgress;
 				property int		downloadTotal;
+
+				QtObject {
+					id: moduleStoreWebChannel
+					WebChannel.id: "moduleStore"
+
+					function info() {
+						var modules = []
+						for (var name of dynamicModules.moduleNames()) {
+							var dmodule = dynamicModules.dynamicModule(name)
+							var mversion = dmodule.version()
+							var maintainer = dmodule.maintainer()
+							var website = dmodule.website()
+							var description = dmodule.description()
+							var wmodule = {
+								"name": name,
+								"version": mversion,
+								"maintainer": maintainer,
+								"website": website,
+								"description": description
+								// TODO return enabled bool
+							}
+							modules.push(wmodule)
+						}
+						var version = AppInfo.version.asString()
+						var arch = AppInfo.getArchLabel()
+						var theme = preferencesModel.currentThemeName()
+						var developerMode = preferencesModel.developerMode()
+						var rVersion = AppInfo.getRVersion()
+
+						// in jasp-build/Desktop/.qt/rcc/html.qrc
+						// make sure there is
+						//  <file alias="module-store.html">/workspaces/jasp-desktop/Desktop/html/module-store.html</file>
+
+						return {
+							"version": version,
+							"arch": arch,
+							"theme": theme,
+							"developerMode": developerMode,
+							"rVersion": rVersion,
+							"installedModules": modules
+						}
+					}
+
+					function uninstall(moduleName) {
+						console.log("uninstalling " + moduleName)
+						// dynamicModules.uninstallJASPModule(moduleName)
+					}
+				}
 
             }
         }
