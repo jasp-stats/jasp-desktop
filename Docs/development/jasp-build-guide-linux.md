@@ -157,6 +157,11 @@ cmake --build jasp-build --target all -j6
 ./jasp-build/Desktop/JASP --safeGraphics
 ```
 
+```shell
+QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics 
+# In Chrome or Edge, open http://localhost:8123 to inspect the webengine process
+```
+
 If X11 says no then allow local X clients:
 
 ```bash
