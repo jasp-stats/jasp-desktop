@@ -6,6 +6,6 @@
 {"url" : "https://github.com/jasp-stats-modules/jaspDescriptives/releases/download/9bcd8f57_R-4-5-1/jaspDescriptives_0.95.0_MacOS_arm64_R-4-5-1.JASPModule",            "checksum" : "4b9d71a723d1f9aeeaf9f3b33d374d878dc6e20ac7b7d11f970624f873b66896"}
 ],
 "MacOS-x86_64" : [
-{"url" : "https://github.com/jasp-stats-modules/jaspDescriptives/releases/download/9bcd8f57_R-4-5-1/jaspDescriptives_0.95.0_MacOS_x86_64_R-4-5-1.JASPModule",            "checksum" : "0bf9c751893bb252ca727cf2afe0e9cb950169a4d1e6bf1b6c7c26f21d34a942"},
+{"url" : "https://github.com/jasp-stats-modules/jaspDescriptives/releases/download/9bcd8f57_R-4-5-1/jaspDescriptives_0.95.0_MacOS_x86_64_R-4-5-1.JASPModule",            "checksum" : "0bf9c751893bb252ca727cf2afe0e9cb950169a4d1e6bf1b6c7c26f21d34a942"}
 ]
 }
