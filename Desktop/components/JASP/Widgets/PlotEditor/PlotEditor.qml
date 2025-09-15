@@ -163,10 +163,10 @@ Popup
 
 				Item
 				{
-					id:						axes
+					id:							axes
 					SplitView.preferredWidth:	parent.width * .3
-					SplitView.minimumWidth:	parent.width * .3
-					SplitView.maximumWidth:	parent.width * .9
+					SplitView.minimumWidth:		parent.width * .3
+					SplitView.maximumWidth:		parent.width * .9
 
 					property real	tabBarHeight:		28 * preferencesModel.uiScale
 					property real	tabButtonRadius:	5 * preferencesModel.uiScale
@@ -185,165 +185,100 @@ Popup
 						border.width:	1
 						border.color:	jaspTheme.uiBorder
 						color:			"transparent"
+						z:				-1
+					}
+					
+					
+					TabBar
+					{
+						id:				tabbar
+						contentHeight:	axes.tabBarHeight
+						width:			axes.axeTitles.length * axes.tabButtonWidth
+						background: Rectangle { color: jaspTheme.uiBackground } // Per default the background is white
+
+						Repeater
+						{
+							model:			axes.axeTitles
+							PlotEditTabHead
+							{
+								buttonText:		modelData
+							}
+						}
+						
+						PlotEditTabHead
+						{
+							buttonText:				qsTr("References")
+						}
+						
+						Component.onCompleted:		setCurrentIndex(0);
+					}
+					
+					JASPC.MenuButton
+					{
+						id:				helpButton
+						iconSource:		jaspTheme.iconPath + "info-button.png"
+						width:			height
+						radius:			height
+						onClicked:		helpModel.showOrTogglePage("other/plotediting");
+						toolTip:		qsTr("Open Documentation")
+						anchors
+						{
+							top:			tabbar.top
+							left:			tabbar.right
+							bottom:			tabbar.bottom
+							leftMargin:		4 * preferencesModel.uiScale
+						}
+					}	
+					
+					MouseArea
+					{
+						id:				focusCatcher	//Because then people can click away from the axistableview or something
+						onPressed:		{ forceActiveFocus(); mouse.accepted = false; }
+						anchors.fill:	axesFlickable
+						z:				-100
+					}
+					
+					JASPC.JASPScrollBar
+					{
+						id:				axesScrollbar
+						flickable:		axesFlickable
+						vertical:		true
 					}
 
 					Flickable
 					{
 						id:						axesFlickable
-						anchors.fill:			parent
+						anchors
+						{
+							top:				tabbar.bottom
+							left:				parent.left
+							right:				parent.right
+							bottom:				parent.bottom
+						}
 						clip:					true
 
-						contentHeight:			flickChild.height
-						contentWidth:			flickChild.width
 						flickableDirection:		Flickable.VerticalFlick
 
 						onFlickStarted:			forceActiveFocus();
 
-						Item
+						StackLayout
 						{
-							id:					flickChild
-							width:				axesFlickable.width
-							height:				stack.y + stack.height + jaspTheme.generalAnchorMargin
-
-							MouseArea
+							id:				stack
+							currentIndex:	tabbar.currentIndex
+							width:			axesFlickable.width	- (2*jaspTheme.generalAnchorMargin + axesScrollbar.width)
+							y:				jaspTheme.generalAnchorMargin
+							x:				jaspTheme.generalAnchorMargin
+							
+							Repeater
 							{
-								id:				focusCatcher	//Because then people can click away from the axistableview or something
-								onPressed:		{ forceActiveFocus(); mouse.accepted = false; }
-								anchors
+								model:				axes.axeModels
+								PlotEditingAxis
 								{
-									top:		parent.top
-									left:		parent.left
-									right:		parent.right
-								}
-								height:			Math.max(flickChild.height, axesFlickable.height)
-								z:				-100
-							}
-
-							TabBar
-							{
-								id:				tabbar
-								contentHeight:	axes.tabBarHeight + axes.tabButtonRadius
-								width:			axes.axeTitles.length * axes.tabButtonWidth
-
-								background: Rectangle { color: jaspTheme.uiBackground } // Per default the background is white
-
-								Repeater
-								{
-									model: axes.axeTitles
-									TabButton
-									{
-										height:		tabbar.height
-										background: Rectangle
-										{
-											color:			checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
-											radius:			axes.tabButtonRadius
-											border.width:	1
-											border.color:	checked ? jaspTheme.uiBorder : jaspTheme.borderColor
-										}
-
-										contentItem: Text
-										{
-											// The bottom of buttons are hidden to remove their bottom line with the radius
-											// So the text has to be moved higher from the horizontal middle line.
-											topPadding:			-axes.tabButtonRadius * 3/4
-											text:				modelData
-											font:				jaspTheme.font
-											color:				jaspTheme.black
-											horizontalAlignment: Text.AlignHCenter
-											verticalAlignment:	Text.AlignVCenter
-											opacity:			checked ? 1 : .6
-										}
-
-										MouseArea
-										{
-											anchors.fill	: parent
-											cursorShape		: checked ? Qt.ArrowCursor : Qt.PointingHandCursor
-											acceptedButtons	: Qt.NoButton
-										}
-									}
+									axisModel:		modelData
 								}
 							}
-
-							Rectangle
-							{
-								// This hides the bottom border of the buttons (with their radius)
-								id		: roundingHider
-								width	: parent.width
-								height	: axes.tabButtonRadius + 1
-								anchors
-								{
-									left:		parent.left
-									right:		tabbar.right
-									top:		parent.top
-									topMargin:	axes.tabBarHeight
-								}
-								color: jaspTheme.uiBackground
-
-								Rectangle
-								{
-									// The Tabbar removes the left border. Redraw it.
-									anchors.left:	parent.left
-									anchors.top:	parent.top
-									anchors.bottom: parent.bottom
-									width:			1
-									color:			jaspTheme.uiBorder
-								}
-							}
-
-							Rectangle
-							{
-								// Redraw a line below the unchecked tab
-								anchors
-								{
-									top:			roundingHider.top
-									left:			parent.left
-									leftMargin:		tabbar.currentIndex === 0 ? axes.tabButtonWidth - 1 : 0
-									right:			tabbar.right
-									rightMargin:	tabbar.currentIndex === 0 ? 0 : axes.tabButtonWidth  - 1
-								}
-								height:	1
-								color:	jaspTheme.uiBorder
-							}
-
-							StackLayout
-							{
-								id: stack
-								anchors
-								{
-									top			: tabbar.bottom
-									left		: parent.left
-									right		: parent.right
-									margins		: jaspTheme.generalAnchorMargin
-								}
-								currentIndex: tabbar.currentIndex
-
-								Repeater
-								{
-									model: axes.axeModels
-									PlotEditingAxis
-									{
-										axisModel:		modelData
-										width:			flickChild.width
-									}
-								}
-							}
-
-							JASPC.MenuButton
-							{
-								id:				helpButton
-								iconSource:		jaspTheme.iconPath + "info-button.png"
-								width:			height
-								radius:			height
-								onClicked:		helpModel.showOrTogglePage("other/plotediting");
-								toolTip:		qsTr("Open Documentation")
-								anchors
-								{
-									top:			tabbar.top
-									left:			tabbar.right
-									bottom:			roundingHider.top
-									leftMargin:		4 * preferencesModel.uiScale
-								}
-							}
+							
+							PlotEditingReferenceLines	{}
 						}
 					}
 
@@ -388,12 +323,7 @@ Popup
 						onClicked:			plotEditorModel.undoSomething()
 					} */
 
-					JASPC.JASPScrollBar
-					{
-						id:				axesScrollbar
-						flickable:		axesFlickable
-						vertical:		true
-					}
+					
 				}
 
 				Item

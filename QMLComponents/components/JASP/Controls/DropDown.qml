@@ -6,6 +6,8 @@ import JASP.Controls
 ComboBoxBase
 {
 	id:					comboBox
+	height:				implicitHeight
+	width:				implicitWidth
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		controlLabel.visible
 							? (setLabelAbove ? Math.max(control.width, rectangleLabel.width) : (rectangleLabel.width + jaspTheme.labelSpacing + control.width))

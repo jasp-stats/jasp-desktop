@@ -434,6 +434,7 @@ void MainWindow::makeConnections()
 	qRegisterMetaType<columnType>();
 	qRegisterMetaType<ListModel*>();
 	qRegisterMetaType<DbType>();
+	qRegisterMetaType<PlotEditor::References::ReferenceType>();
 
 	connect(_computedColumnsModel,	&ComputedColumnModel::sendComputeCode,				_engineSync,			&EngineSync::computeColumn,									Qt::QueuedConnection);
 	connect(_computedColumnsModel,	&ComputedColumnModel::dataColumnAdded,				_fileMenu,				&FileMenu::dataColumnAdded									);

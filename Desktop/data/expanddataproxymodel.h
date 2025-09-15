@@ -48,6 +48,7 @@ public:
 	QString						undoText()			{ return _undoStack->undoText(); }
 	QString						redoText()			{ return _undoStack->redoText(); }
 	void						resize(int row, int col, bool onlyExpand = true, const QString& undoText = QString());
+	bool						useUndoStack() const;
 
 signals:
 	void						undoChanged();
