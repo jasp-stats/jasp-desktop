@@ -73,11 +73,9 @@ R CMD INSTALL . --preclean --no-multiarch --with-keep.source <module name>
 3. Navigate to 'Preferences'
 4. Navigate to 'Advanced'
 5. Place a checkmark before 'Developer mode'
-6. Tick 'Enable direct libpath mode'
-7. Choose the libpath where you precompiled your module (not sure?, execute `.libPaths()` in R)
-8. Fill in the module name.
+6. Choose the libpath where you precompiled your module (not sure?, execute `.libPaths()` in R)
 
-![](./img/dev-install.png)
+<img width="872" height="297" alt="image" src="https://github.com/user-attachments/assets/390f891c-8617-4750-b145-7e168111180c" /> 
 
 9. Go back to JASP's main menu.
 10. Click on the plus symbol in the top right corner
