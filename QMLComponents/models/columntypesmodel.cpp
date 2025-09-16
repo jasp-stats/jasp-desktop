@@ -46,6 +46,8 @@ void ColumnTypesModel::setTypes(columnTypeVec types)
 	_defaultType = _types.size() > 0 ? _types[0] : columnType::unknown;
 	std::sort(_types.begin(), _types.end());
 	endResetModel();
+
+	emit typesChanged();
 }
 
 QVariant ColumnTypesModel::data(const QModelIndex &index, int role) const

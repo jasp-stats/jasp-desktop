@@ -132,6 +132,12 @@ Terms ListModel::checkTermsTypes(const std::vector<Term>& terms) const
 	return checkedTerms;
 }
 
+void ListModel::checkTermsTypes()
+{
+	_terms.set(checkTermsTypes(_terms));
+	setUpRowControls();
+}
+
 
 Terms ListModel::checkTermsTypes(const Terms& terms) const
 {

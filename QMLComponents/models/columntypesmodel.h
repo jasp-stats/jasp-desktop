@@ -54,6 +54,9 @@ public:
 	columnType								defaultType()												const			{ return _defaultType;	}
 	QStringList								iconList()													const;
 
+signals:
+	void									typesChanged();
+
 private:
 	static columnTypeVec					_allTypes;
 

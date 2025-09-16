@@ -94,6 +94,7 @@ public:
 
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
+			void					checkTermsTypes();
 	virtual Terms					termsFromIndexes(	const QList<int>& indexes)					const;
 	virtual QList<int>				indexesFromTerms(	const Terms		& terms)					const;
 

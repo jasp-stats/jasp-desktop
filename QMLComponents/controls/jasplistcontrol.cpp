@@ -169,6 +169,7 @@ void JASPListControl::setUp()
 	connect(listModel,							&ListModelDraggable::termsChanged,				this,	&JASPListControl::levelsChanged				);
 	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::levelsChanged				);
 	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::checkLevelsConstraints, Qt::QueuedConnection	);
+	connect(_allowedTypesModel,					&ColumnTypesModel::typesChanged,				this,	&JASPListControl::checkTermsTypes				);
 }
 
 void JASPListControl::cleanUp()
@@ -408,6 +409,15 @@ bool JASPListControl::checkLevelsConstraints()
 		clearControlError();
 
 	return checked;
+}
+
+void JASPListControl::checkTermsTypes()
+{
+	if (model())
+	{
+		model()->checkTermsTypes();
+		checkLevelsConstraints();
+	}
 }
 
 QStringList JASPListControl::levels() const
