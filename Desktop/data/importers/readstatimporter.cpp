@@ -72,7 +72,7 @@ int handle_note(int note_index, const char *note, void *ctx)
 
 bool ReadStatImporter::extSupported(const std::string & ext)
 {
-	return extsSupported().count(stringUtils::toLower(ext.starts_with(".") ? ext.substr(1) : ext)) > 0;
+	return extsSupported().count(stringUtils::toLower(ext.length() > 0 && ext.substr(0, 1) == "." ? ext.substr(1) : ext)) > 0;
 }
 
 stringset ReadStatImporter::extsSupported()
