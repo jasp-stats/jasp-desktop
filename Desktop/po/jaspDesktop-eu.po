@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-20 06:49+0000\n"
+"PO-Revision-Date: 2025-09-20 06:50+0000\n"
 "Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "eu/>\n"
@@ -5638,11 +5638,11 @@ msgstr "Ezabatu '%2' zutabearen %1 etiketa"
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr "'%1' balioa + '%2' etiketa + '%2' '%3' zutabera gehitzen"
+msgstr "balioa + '%1' etiketa + '%2' etiketa '%3' zutabera gehitzen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
-msgstr ""
+msgstr "Sandbox motorrak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
