@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-19 22:02+0000\n"
+"PO-Revision-Date: 2025-09-20 06:49+0000\n"
 "Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "eu/>\n"
@@ -5083,65 +5083,68 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "Etiketak balioaren arabera ordenatu lehenespenez"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Datuen Tamaina Aldatu"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "Zutabeak"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "Errenkadak"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "Tamaina aldatu"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "Datuen tamaina aldatu balioak ezartzeko"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "Itxi datuen tamaina aldatu gabe"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "Galdera bat egin"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "Bisitatu webgunea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr ""
+"'%1' zutabe(etarako) etiketak balioen arabera automatikoki ordenatzea "
+"aktibatu/desaktibatu"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Datuen Tamaina Aldatu"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "Zure datu-multzoaren tamaina aldatu"
 
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
-msgstr ""
+msgstr "Datuen tamaina %1 errenkadara eta %2 zutabera aldatu"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Eguneraketak bilatu"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
-msgstr ""
+msgstr "Eguneroko egiaztapen automatikoa eguneratzeen eta arazo ezagunen bila"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -5156,6 +5159,16 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP-ek ez du zure daturik partekatzen eguneratzeak jasotzen dituenean, ezta "
+"zein JASP bertsio erabiltzen ari zaren ere.\n"
+"Zure IP helbidea zerbitzariarekin partekatzen du, baina hori beharrezkoa da "
+"internetek funtziona dezan.\n"
+"\n"
+"Deskargatzen dituen arazo ezagunen zerrenda gutxitan erabiltzen da, gehienak "
+"[jasp-issues](https://github.com/jasp-stats/jasp-issues/issues) helbidean "
+"daude. Hala ere, errore larri bat analisi batean sartu dela konturatzen "
+"bagara, honek *analisian* kontuan hartu beharreko zerbait dagoela erakutsiko "
+"dizu. Zorionez, ia inoiz ez dugu erabili behar."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5164,11 +5177,15 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"%1 maila daude guztira, eta horietatik %2k balio numerikoa dute.\n"
+"'%3' gisa honelakoa da: %4\n"
+"\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Balio inplizitu falta: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5176,10 +5193,12 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"%1 maila daude guztira.\n"
+"'%2' gisa honelako itxura du: %3"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Egiaztatu eguneraketak"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5193,43 +5212,53 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"JASP-ek gure zerbitzarian eguneraketak egiaztatu eta bertsio berririk dagoen "
+"jakinarazi beharko lizuke?\n"
+"\n"
+"JASP-ek ez du zure daturik partekatzen eguneraketak jasotzen dituenean, ezta "
+"zein JASP bertsio erabiltzen ari zaren ere.\n"
+"Zure IP helbidea gure zerbitzariarekin partekatzen du, baina hori "
+"beharrezkoa da internetek funtziona dezan.\n"
+"\n"
+"Ezarpen hau beti alda daiteke Interfazearen Hobespenetan."
 
 msgctxt "MainWindow|"
 msgid "Yes"
-msgstr ""
+msgstr "Bai"
 
 msgctxt "MainWindow|"
 msgid "No"
-msgstr ""
+msgstr "Ez"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "%1 aldagai bakarrik onartzen dira"
 
 msgctxt "VariableInfo|"
 msgid "Scale"
-msgstr ""
+msgstr "Eskala"
 
 msgctxt "VariableInfo|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ordinala"
 
+#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
-msgstr ""
+msgstr "Nominala"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Ezezaguna"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<Lehenik eta behin, bete zutabearen izena>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "Eskalarako gehienezko mailak nominal/ordinal gisa erabiltzen denean"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5237,103 +5266,108 @@ msgid ""
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
 msgstr ""
+"Aldagai batzuentzat nominalak edo ordinalak bakarrik onartzen dituen analisi "
+"baterako, eskala-aldagai bat erabiltzen bada, JASP-ek aldagai honen mailen "
+"kopuruak gehienezko hori gainditzen duen egiaztatzen du."
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "Datu-multzo Berria kargatzen"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "Berria"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Excel fitxategia inportatzen"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Datu-multzo guztiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "CSV testu-fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "Kalkulu-orri fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Stata fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS Fitxategiak %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF Ezarpenak"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "Orientazioa"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "Bertikala"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Horizontala"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Orriaren tamaina"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Iragazkia garbituta\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Iragazkia aplikatuta\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "Sartu argumentu guztiak - ikusi gorriz markatutako eremuak.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
 msgstr ""
+"Formulak ez du balio logiko multzo bat itzultzen, eta beraz, ezin da "
+"iragazkian erabili.\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "Ongi etorri arrastatu eta jaregin iragazkira!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Egin klik ikonoan zutabe mota aldatzeko"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5345,34 +5379,42 @@ msgid ""
 "& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
+"Goian JASP-ek balioen iragazketarako eta arrastatu eta jaregin iragazkirako "
+"sortzen duen kodea ikusten duzu.\n"
+"Emaitza lehenetsi hau 'generatedFilter'-en gordetzen da eta ordezkatu edo "
+"iragazki pertsonalizatu batekin konbinatu daiteke.\n"
+"Konbinatzeko, klausulak erantsi ditzakezu '&' erabiliz: 'generatedFilter & "
+"customFilter & perhapsAnotherFilter'\n"
+"Egin klik beheko eskuineko izkinan dagoen (i) ikonoan laguntza gehiago "
+"lortzeko.\n"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Zutabe-izena-libre-da eremua"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "'%1' zutabea dagoeneko existitzen da eta ez du analisi honek sortu."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "Iragazkiak '%1' errorea zuen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Etiketak automatikoki ordenatu beren balioaren arabera"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "Maila kopuru minimoa %1 da. %2 aldagaiak %3 maila baino ez ditu"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "Maila kopuru maximoa %1 da. %2 aldagaiak %3 maila ditu."
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5382,6 +5424,10 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"%1 eskala aldagaia %2 aldagai bihurtzen saiatu da, baina bere %3 mailen "
+"kopurua %4 maximoa gainditzen du. Aldagai hau erabili nahi baduzu oraindik, "
+"aldatu mota edo aldatu 'Eskalarako baimendutako maila maximoak' Hobespenak / "
+"Datuak menuan"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5389,6 +5435,8 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
+"Balio numerikoen gutxieneko kopurua %1 da. %2 aldagaiak %3 balio numeriko "
+"desberdin baino ez ditu"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5396,92 +5444,101 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
+"Balio numerikoen gehieneko kopurua %1 da. %2 aldagaiak %3 balio numeriko "
+"desberdin ditu"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Garatzaile modua"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Garapen modulua"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"Kargatu moduluak R-liburutegi bateko fitxategi bitar batetik, iturburuetatik "
+"instalatu beharrean."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Iturburu karpeta:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Aukeratu garapen modulua instalatu duzun R liburutegia"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Moduluaren izena:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr ""
+msgstr "Sartu kargatu nahi duzun garapen-moduluaren (paketearen) izena"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "Hautatu garatzaile-modulu bat dagokion lehentasuna betez"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "Freskatu garatzaile-modulua "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"0 zutabe baliozko irakurri dira fitxategitik, mesedez egiaztatu zure datu-"
+"fitxategia."
 
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
-msgstr ""
+msgstr "Zintaren eskala (%): "
 
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
-msgstr ""
+msgstr "Ezarri zintaren altueraren eskala."
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "Egin klik bikoitza izen hau editatzeko"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "Aukeratu hizkuntza"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
+"Erabili zenbakien bistaratzeko beste hizkuntza eta lurraldearen araberako "
+"bistaratzea"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "Erabili behean zehaztutako eskualdea zenbakiak eta moneta bistaratzeko."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "Alt. hizkuntza  ¿alternatiboa?"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "Alt. lurraldea"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "Zutabearen deskribapena: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Egin klik ikonoan zutabe mota aldatzeko"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "Zutabearen deskribapena: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5489,10 +5546,12 @@ msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr ""
+"Garapen modulu bat instalatzeko, karpeta bat hautatu behar duzu. '%1' "
+"hautatu duzu, baina ez da existitzen."
 
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "Kendu ohar hau"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5500,78 +5559,86 @@ msgid ""
 "For this: open the file menu (the blue hamburger button left top), navigate "
 "to Advanced Preferences and check the 'Log to file' checkbox."
 msgstr ""
+"Ez dago erregistro fitxategirik eskuragarri. Informazio gehiago lortzeko, "
+"aktibatu saioa hasteko aukera. Horretarako: ireki fitxategi menua (goiko "
+"ezkerreko hanburgesa botoia), joan Hobespen Aurreratuetara eta markatu "
+"'Fitxategian erregistratu' kontrol-laukia."
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr ""
+msgstr "Arrastatu eta jaregin erregistro fitxategi hauek arazo honetara: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "Hautatu kalkulatutako zutabe honetarako erabiltzeko iragazki bat"
 
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "Maila berria gehitu:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "Datuetan falta den maila bat gehitu"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
 msgstr ""
+"Mailak mantenduz, maila guztiak analisira pasatzeko, bai iragazitakoak bai "
+"geroago eskuz gehitutakoak."
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
 msgstr ""
+"Mailak kenduz, datuetan (agian iragazita dauden) mailak bakarrik analisira "
+"bidaltzeko."
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketa guztien alderantzizko ordenarako"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketak eskuz gora mugitzeko"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketak eskuz behera mugitzeko"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Iragazkirik gabe"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Erabili iragazkia"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1'-ren zutabe-kalkulu iragazkia '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1' zutabe-kentzeko mailak '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Ezabatu '%2' zutabearen %1 etiketa"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "'%1' balioa + '%2' etiketa + '%2' '%3' zutabera gehitzen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
