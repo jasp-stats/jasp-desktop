@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-09-23 04:01+0000\n"
+"Last-Translator: hakan dokumuş <dokumushakan@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"tr/>\n"
+"Language: tr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-Language: tr\n"
 "X-Qt-Contexts: true\n"
 
@@ -3743,10 +3749,9 @@ msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
 msgstr "R Sözdizimini Gizle"
 
-#, fuzzy
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr "Kılıfı Oluştur"
+msgstr "Sarmalayıcı Oluştur"
 
 msgctxt "Computer|"
 msgid "Save"
@@ -5675,40 +5680,33 @@ msgstr ""
 "Jasp motoru güvenlik deneme modunda çalışıyor ve yalnızca şunlara "
 "erişebiliyor: "
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr "Satırlar boyunca ortalama"
+msgstr "Satır bazında ortalama"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr "Satırlar boyunca toplam"
+msgstr "Satır bazında toplam"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr "Satırlar boyunca standart sapma"
+msgstr "Satır bazında standart sapma"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr "Satırlar boyunca varyans"
+msgstr "Satır bazında varyans"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr "Satırlar boyunca medyan"
+msgstr "Satır bazında medyan"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr "Satırlar boyunca minimum"
+msgstr "Satır bazında minimum"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr "Satırlar boyunca maksimum"
+msgstr "Satır bazında maksimum"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
@@ -5736,35 +5734,29 @@ msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "Yapılandırma (Ayar/Kurulum) dosyasını seçin."
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr "Satırlar boyunca ortalama"
+msgstr "Satır bazında ortalama"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr "Satırlar boyunca toplam"
+msgstr "Satır bazında toplam"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr "Satırlar boyunca standart sapma"
+msgstr "Satır bazında standart sapma"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr "Satırlar boyunca varyans"
+msgstr "Satır bazında varyans"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr "Satırlar boyunca medyan"
+msgstr "Satır bazında medyan"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr "Satırlar boyunca minimum"
+msgstr "Satır bazında minimum"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
@@ -5808,7 +5800,6 @@ msgstr ""
 "\n"
 "Bu hatayı JASP ekibine bildirirseniz çok minnettar oluruz."
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Salvage"
 msgstr "Kurtarma"
@@ -5919,17 +5910,19 @@ msgstr "JASP bu %1 dosya türünü desteklemiyor."
 
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
-msgstr ""
+msgstr "Analiz durumunu ve grafiği jasp dosyalarında sakla"
 
 msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
 "lot."
 msgstr ""
+"Bunu etkinleştirmek jasp dosyalarının boyutunu artırabilir, bazen oldukça "
+"fazla."
 
 msgctxt "MainWindow|"
 msgid "Stored without state"
-msgstr ""
+msgstr "Durum olmadan saklandı"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5938,6 +5931,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Bu analiz durum olmadan kaydedildi, görüntüyü kaydetmek için önce "
+"yenilenmesi gerekir.\n"
+"\n"
+"Analizi yenilemek ister misiniz?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5946,6 +5943,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Bu analiz durum olmadan saklandı, görüntüyü yeniden boyutlandırmak için önce "
+"yenilenmesi gerekir.\n"
+"\n"
+"Analizi yenilemek ister misiniz?"
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
@@ -5965,7 +5966,7 @@ msgstr "Kaydetme ayarları"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "Çalışma alanınızın yedeğini otomatik olarak kaydedin"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5973,61 +5974,64 @@ msgid ""
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
 msgstr ""
+"Etkinleştirildiğinde, çalışma alanınızın bir kopyası log dosyalarının "
+"bulunduğu klasöre kaydedilir. JASP kaydedilmemiş değişikliklerle birlikte "
+"çökerse, bu yedek tüm çalışmalarınızı kaybetmenizi önleyecektir."
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "Otomatik kaydetme aralığı (dakika cinsinden)"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "Otomatik kaydetmeler arasındaki süre (dakika cinsinden)."
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "%1 otomatik kaydedildi"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "Tam yol: %1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "Kaydedilmemiş çalışma alanı"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "%1 veri dosyasının kaydedilmemiş çalışma alanı"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "Otomatik Kaydetme"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "Otomatik kaydetme JASP dosyası kaydediliyor"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "%1 konumunda kaydedildi"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
 msgstr ""
+"%1 saniye önce kaydedildi, hâlâ başka bir JASP oturumunda açık olabilir."
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recovery"
 msgstr "Kurtarma"
 
 msgctxt "RibbonModel|"
 msgid "Test"
-msgstr ""
+msgstr "Test"
 
 msgctxt "RibbonModel|"
 msgid "Run tests"
-msgstr ""
+msgstr "Testleri çalıştır"
