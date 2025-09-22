@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-21 06:54+0000\n"
+"PO-Revision-Date: 2025-09-23 04:02+0000\n"
 "Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "eu/>\n"
@@ -125,7 +125,6 @@ msgctxt "AboutWindow|"
 msgid "Download:"
 msgstr "Deskargatu:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Citation:"
 msgstr "Aipamena:"
@@ -617,7 +616,6 @@ msgctxt "OSFLogin|"
 msgid "Sign in"
 msgstr "Hasi saioa"
 
-#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Remember me"
 msgstr "Gogoratu nazazu"
@@ -860,7 +858,7 @@ msgstr ""
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
-"Animazioak desgaituta daude \"Grafiko Modu Segurua\" aktibatuta dagoelako."
+"Animazioak desgaituta daude \"Grafiko Modu Segurua\" aktibatuta dagoelako"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -1000,10 +998,9 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
 msgstr "Zatiketa"
 
-#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr "Bertsioa???? (2^3-k 8 itzultzen du)"
+msgstr "Berreketa (2^3-k 8 itzultzen du)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
@@ -1368,7 +1365,7 @@ msgstr "kokapena:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "eskala"
+msgstr "eskala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -1548,10 +1545,9 @@ msgctxt "JASPControl|"
 msgid "CheckBox"
 msgstr "Kontrol-Laukia??"
 
-#, fuzzy
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr "Aldagailua???"
+msgstr "Aldatu"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
@@ -1620,7 +1616,7 @@ msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
 msgstr "&#8804; %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
 msgstr "&lt; %1"
@@ -1741,7 +1737,6 @@ msgstr ""
 "Zoritxarrez, grafikoa ezin izan da gorde.\n"
 "\n"
 "Errore mezua:\n"
-"\n"
 "%1\n"
 "\n"
 "Arazoak jarraitzen badu, mesedez, eman goiko mezua hemen: https://jasp-"
@@ -2069,7 +2064,6 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
 msgstr "Fitxategi berria sortzen abiarazten "
 
-#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
 msgstr "-ren deskarga abiarazten "
@@ -2759,7 +2753,7 @@ msgstr ""
 "Badirudi inoiz ez duzula %1 bat izan zure garapen moduluaren direktorioan. "
 "Hori gabe zure moduluak ezin du funtzionatu, ziurtatu bat sortzen duzula. "
 "Nola instalatu duzun misterio bat da eta, beraz, garapen modulua orain "
-"desinstalatu beharko da."
+"desinstalatu beharko da"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2996,7 +2990,7 @@ msgid ""
 msgstr ""
 "JASP-ek arazo bat izan du bertsio honetako arazo ezagunak deskargatzean, "
 "ziurrenik ezin izan da zerbitzarira konektatu. Ez kezkatu, JASP ondo "
-"funtzionatuko du, baina baliteke arazo ezagun txiki batzuen berri ez ematea"
+"funtzionatuko du, baina baliteke arazo ezagun txiki batzuen berri ez ematea."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -4057,7 +4051,7 @@ msgstr "Ezabatu"
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr "Ezabatu"
+msgstr "Ezabatu: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
@@ -4319,7 +4313,6 @@ msgctxt "DataTableView|"
 msgid "Insert row below"
 msgstr "Errenkada txertatu behean"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Color palette"
 msgstr "Kolore paleta"
@@ -4997,7 +4990,6 @@ msgctxt "TableViewBase|"
 msgid "Table"
 msgstr "Taula"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Double Field"
 msgstr "Eremu bikoitza"
@@ -5017,10 +5009,9 @@ msgstr ""
 "mugikorreko zenbakietan.\n"
 "Fitxategi horren kargatzea motela dela ikusten baduzu, aukera hau desgaitu."
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr "Eskalarako Atalasea?"
+msgstr "Eskalarako Atalasea"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
@@ -5057,7 +5048,6 @@ msgid ""
 "<a href=\"%6\">Click here for the current list of educators</a>\n"
 msgstr ""
 "<h3>Komunitatea</h3>\n"
-"\n"
 "JASP komunitatean parte hartzen duten goi-mailako ikaskuntzako erakundeek "
 "JASPen mantentze-lanak eta garapen gehiago elkarrekin laguntzen dituzte, "
 "eta, beraz, hezkuntza-zerbitzu baliotsua eskaintzen diete beren ikasleei eta "
@@ -5065,18 +5055,15 @@ msgstr ""
 "\n"
 "Zure erakundea oraindik JASP komunitateko kide ez bada, <a href=\"%1\""
 ">sartzea iradoki diezaiekezu</a>.\n"
-"\n"
 "Jarraian, argitalpen hau posible egiten lagundu duten hezitzaileak:\n"
 "\n"
 "<i><b>Urrezko Irakasleak:</b></i>\n"
-"%2\n"
-"\n"
+"%2  \n"
+"                                       \n"
 "<i><b>Zilarrezko Irakasleak:</b></i>\n"
-"\n"
 "%3\n"
 "\n"
 "<i><b>Brontzezko Irakasleak:</b></i>\n"
-"\n"
 "%4\n"
 "\n"
 "<a href=\"%6\">Egin klik hemen hezitzaileen uneko zerrenda ikusteko</a>\n"
@@ -5093,7 +5080,6 @@ msgctxt "ResizeDataDialog|"
 msgid "Columns"
 msgstr "Zutabeak"
 
-#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
 msgstr "Errenkadak"
@@ -5179,7 +5165,6 @@ msgid ""
 msgstr ""
 "%1 maila daude guztira, eta horietatik %2k balio numerikoa dute.\n"
 "'%3' gisa honelakoa da: %4\n"
-"\n"
 "%5"
 
 #, qt-format
@@ -5243,7 +5228,6 @@ msgctxt "VariableInfo|"
 msgid "Ordinal"
 msgstr "Ordinala"
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "Nominala"
@@ -5521,12 +5505,11 @@ msgstr "Erabili behean zehaztutako eskualdea zenbakiak eta moneta bistaratzeko."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr "Alt. hizkuntza  ¿alternatiboa?"
+msgstr "Hizkuntza alternatiboa"
 
-#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr "Alt. lurraldea"
+msgstr "Lurralde alternatiboa"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
