@@ -60,7 +60,7 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 			throw std::runtime_error("Decryption failed. Please confirm the password was right. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
 		}
 	}
-	readManifest(tmpPath);
+	readManifest(tmpPath.generic_string());
 
 	switch(isCompatible())
 	{
@@ -78,8 +78,8 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
 	packageData->beginLoadingData();
-	loadDataArchive(tmpPath, progressCallback);
-	loadJASPArchive(tmpPath, progressCallback);
+	loadDataArchive(tmpPath.generic_string(), progressCallback);
+	loadJASPArchive(tmpPath.generic_string(), progressCallback);
 	packageData->endLoadingData();
 
 	if(encrypted) //delete the decrypted tmp file we made

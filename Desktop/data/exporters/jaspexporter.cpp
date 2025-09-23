@@ -65,7 +65,7 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	}
 
 #ifdef _WIN32
-	if (archive_write_open_filename_w(a, tq(tmpPath).toStdWString().c_str()) != ARCHIVE_OK)
+	if (archive_write_open_filename_w(a, QString(tmpPath.c_str()).toStdWString().c_str()) != ARCHIVE_OK)
 #else
 	if (archive_write_open_filename(a, tmpPath.c_str()) != ARCHIVE_OK)
 #endif
