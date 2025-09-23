@@ -30,18 +30,12 @@
 #include "archivereader.h"
 #include "tempfiles.h"
 #include "../exporters/jaspexporter.h"
+#include "log.h"
 
 #include "resultstesting/compareresults.h"
 #include "data/jaspencryptiondata.h"
-
-const char* passwdCallback(struct archive* archive, void* info) {
-    auto* encryptionData = JaspEncryptionData::getInstance();
-    encryptionData->queryUserForPassword();
-    if(encryptionData->encryptionActive())
-        return encryptionData->getPasswordPtr();
-    else
-        return "";
-}
+#include "data/jaspencrypt.h"
+#include "utilities/desktopcommunicator.h"
 
 void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {	
@@ -51,7 +45,22 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 
 	packageData->setIsJaspFile(true);
 
-	readManifest(path);
+	//do some decrybting if necessary
+	bool encrypted = JASPEncrypt::detectEncryptedJASPFile(path);
+	std::filesystem::path tmpPath = path;
+	if(encrypted) {
+		try {
+			JaspEncryptionData::getInstance()->setEncryptionActive(true);
+			tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
+			Json::Value root;
+			DesktopCommunicator::singleton()->queryEncryptionSettings();
+			JASPEncrypt::decrypt(tmpPath, path, JaspEncryptionData::getInstance()->getPassword(), root, false);
+		} catch (std::exception& e) {
+			Log::log() << "Decrypt failed: " << e.what() << std::endl;
+			throw std::runtime_error("Decryption failed. Please confirm the password was right. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
+		}
+	}
+	readManifest(tmpPath);
 
 	switch(isCompatible())
 	{
@@ -69,9 +78,12 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
 	packageData->beginLoadingData();
-	loadDataArchive(path, progressCallback);
-	loadJASPArchive(path, progressCallback);
+	loadDataArchive(tmpPath, progressCallback);
+	loadJASPArchive(tmpPath, progressCallback);
 	packageData->endLoadingData();
+
+	if(encrypted) //delete the decrypted tmp file we made
+		std::filesystem::remove(tmpPath);
 }
 
 JASPImporter::Compatibility JASPImporter::isCompatible(const std::string &path)
@@ -94,7 +106,7 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
     //Store sqlite into tempfiles:
 	//ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-wal").writeEntryToTempFiles([&](float p){ progressCallback(1.333 * p); });
 	//ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)+"-shm").writeEntryToTempFiles([&](float p){ progressCallback(2.333 * p); });
-    ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true), passwdCallback).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
+	ArchiveReader(path, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([&](float p){ progressCallback(33.333 * p); });
 	
 	DataSetPackage::pkg()->loadDataSet([&](float p){ progressCallback(33.333 + 33.333 * p); });
 
@@ -102,7 +114,7 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 	{
 		//Read the results from when the JASP file was saved and store them in compareResults field
 
-        ArchiveReader	resultsEntry	= ArchiveReader(path, "index.html", passwdCallback);
+		ArchiveReader	resultsEntry	= ArchiveReader(path, "index.html");
 		int				errorCode		= 0;
 		std::string		html			= resultsEntry.readAllData(sizeof(char), errorCode);
 
@@ -125,7 +137,7 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 		double resourceCounter = 0;
 		for (const std::string & resource : resources)
 		{
-            ArchiveReader   resourceEntry = ArchiveReader(path, resource, passwdCallback);
+			ArchiveReader   resourceEntry = ArchiveReader(path, resource);
 			std::string     filename 	  = resourceEntry.fileName(),
 							dir			  = resource.substr(0, resource.length() - filename.length() - 1),
 							destination   = TempFiles::createSpecific(dir, resourceEntry.fileName());
@@ -148,12 +160,11 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 	progressCallback(100); //"Initializing Analyses & Results",
 }
 
-
 void JASPImporter::readManifest(const std::string &path)
 {
 	bool            foundVersion		= false;
 	std::string     manifestName		= "manifest.json";
-    ArchiveReader	manifestReader(passwdCallback);
+	ArchiveReader	manifestReader;
 	manifestReader.openEntry(path, manifestName); //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
 	int             size				= manifestReader.bytesAvailable(),
 					errorCode;
@@ -190,7 +201,7 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  c
 	ArchiveReader * dataEntry = NULL;
 	try
 	{
-        dataEntry = new ArchiveReader(path, entry, passwdCallback);
+		dataEntry = new ArchiveReader(path, entry);
 	}
 	catch(...)
 	{

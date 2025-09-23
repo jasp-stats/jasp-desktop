@@ -1,5 +1,4 @@
 #include "jaspencryptiondata.h"
-#include "utilities/messageforwarder.h"
 
 // Initialize static members
 JaspEncryptionData* JaspEncryptionData::instancePtr = nullptr;
@@ -15,9 +14,19 @@ JaspEncryptionData* JaspEncryptionData::getInstance() {
     return instancePtr;
 }
 
-bool JaspEncryptionData::queryUserForPassword(bool hideInput)
+std::string JaspEncryptionData::getPublicKey()
 {
-    if(!encryptionActive())
-        _password = MessageForwarder::queryTextInput(MessageForwarder::tr("Enter A Password"), MessageForwarder::tr("Password"), "", _encryptionActive, hideInput).toStdString();
-    return encryptionActive();
+	if(_jaspTeamSubmission) {
+		return JASPTeamPublicKey;
+	}
+	return _publickeyToUse;
+}
+
+void JaspEncryptionData::reset()
+{
+	_parametersSet = false;
+	_encryptionActive = false;
+	_jaspTeamSubmission = false;
+	_password.clear();
+	_publickeyToUse.clear();
 }

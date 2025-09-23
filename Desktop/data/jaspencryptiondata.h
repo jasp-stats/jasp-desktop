@@ -10,12 +10,21 @@ public:
     static JaspEncryptionData* getInstance();
 
     bool encryptionActive() {return _encryptionActive;};
-    std::string getPassword() {return encryptionActive() ? _password : ""; };
-    const char* getPasswordPtr() { return _password.c_str();}
+	void setEncryptionActive(bool value) {_encryptionActive = value;}
 
-    bool queryUserForPassword(bool hideInput = false);
+	bool paramsSet() {return _parametersSet;};
+	void setParamsSet(bool value) {_parametersSet = value;}
 
-    void reset() { _encryptionActive = false; _password.clear(); };
+	bool jaspTeamSubmission() {return _jaspTeamSubmission;};
+	void setJaspTeamSubmission(bool value) {_jaspTeamSubmission = value;}
+
+	std::string getPassword() {return encryptionActive() ? _password : ""; };
+	void setPassword(std::string newPassword) { _password = newPassword; }
+
+	std::string getPublicKey(); //base64 encoded public key
+	void setPublicKey(const std::string& key) {_publickeyToUse = key;}
+
+	void reset();
 
 private:
     static JaspEncryptionData* instancePtr;
@@ -23,8 +32,12 @@ private:
     JaspEncryptionData() {}
 
     std::string _password = "";
+	std::string _publickeyToUse = "";
     bool _encryptionActive = false;
+	bool _jaspTeamSubmission = false;
+	bool _parametersSet = false;
 
+	const std::string JASPTeamPublicKey = "sRIvR8JdS9XUTPDpo74Z8MAebG/at315MXTnRybHH2o="; //base64
 };
 
 

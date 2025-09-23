@@ -124,6 +124,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
 	_aboutModel				= new AboutModel(this);
+	_encryptionModel		= new EncryptionSettingsModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
@@ -522,6 +523,8 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::currentJaspThemeChanged,			dCSingleton,			&DesktopCommunicator::currentJaspThemeChanged	);
 	connect(dCSingleton,			&DesktopCommunicator::useNativeFileDialogSignal,	_preferences,			&PreferencesModel::useNativeFileDialog			);
 	connect(dCSingleton,			&DesktopCommunicator::engineSandboxSignal,			_preferences,			&PreferencesModel::engineSandbox				);
+	connect(dCSingleton,			&DesktopCommunicator::queryEncryptionSettingsSignal, _encryptionModel,		&EncryptionSettingsModel::queryEncryptionSettings);
+	connect(_encryptionModel,		&EncryptionSettingsModel::queryComplete,			dCSingleton,			&DesktopCommunicator::encryptionSettingsQueryComplete);
 
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
@@ -582,6 +585,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("mainWindow",								this											);
 	_qml->rootContext()->setContextProperty("columnModel",								_columnModel									);
 	_qml->rootContext()->setContextProperty("aboutModel",								_aboutModel										);
+	_qml->rootContext()->setContextProperty("encryptionModel",							_encryptionModel								);
 	_qml->rootContext()->setContextProperty("dataSetModel",								_datasetTableModel								);
 	_qml->rootContext()->setContextProperty("columnsModel",								_columnsModel									);
 	_qml->rootContext()->setContextProperty("workspaceModel",							_workspaceModel									);
@@ -663,11 +667,12 @@ void MainWindow::loadQML()
 
 	_fileMenu->refresh(); //Now that the theme is loaded we can determine the proper width for the buttons in the filemenu
 
-	Log::log() << "Loading HelpWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
-	Log::log() << "Loading AboutWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	Log::log() << "Loading ContactWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
-	Log::log() << "Loading CommunityWindow"		<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
-	Log::log() << "Loading MainWindow"			<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
+	Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+	Log::log() << "Loading AboutWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
+	Log::log() << "Loading ContactWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
+	Log::log() << "Loading CommunityWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
+	Log::log() << "Loading EncryptionSettingsWindow"	<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/EncryptionSettingsWindow.qml"));
+	Log::log() << "Loading MainWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	if(!DataSetView::mainDataViewer())
 		throw std::runtime_error("The main data viewer did not load, without which JASP cannot run.");

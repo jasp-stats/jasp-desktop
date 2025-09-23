@@ -19,6 +19,7 @@
 #include "computer.h"
 #include <QDir>
 #include "utilities/messageforwarder.h"
+#include "utilities/desktopcommunicator.h"
 #include "log.h"
 #include "data/jaspencryptiondata.h"
 
@@ -127,15 +128,13 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 															 !finalPath.endsWith(".pdf",  Qt::CaseInsensitive))	)	finalPath.append(QString(".html"));
 		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv",  Qt::CaseInsensitive) &&
 															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive) &&
-															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));			
+															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
 
-        if(selectedFilter.contains("encrypt", Qt::CaseInsensitive)) {
-            JaspEncryptionData::getInstance()->reset(); //seems like sensible behaviour
-            if(!JaspEncryptionData::getInstance()->queryUserForPassword()) {
-                event->setComplete(true);
-                return event;
-            }
-        }
+		JaspEncryptionData::getInstance()->reset();
+		if(selectedFilter.contains("encrypt", Qt::CaseInsensitive))
+			JaspEncryptionData::getInstance()->setEncryptionActive(true);
+		else
+			JaspEncryptionData::getInstance()->setEncryptionActive(false);
 
         event->setPath(finalPath);
 		emit dataSetIORequest(event);

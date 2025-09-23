@@ -175,6 +175,7 @@ target_link_libraries(
     OpenSSL::Crypto
     # FreeXL
     ${LIBFREEXL_LIBRARIES}
+    ${LIBSODIUM_LIBRARIES}
     $<$<NOT:$<BOOL:${LINUX}>>:freexl::freexl>
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}

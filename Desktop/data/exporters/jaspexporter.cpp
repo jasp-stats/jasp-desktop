@@ -25,6 +25,7 @@
 #include <json/json.h>
 #include <fstream>
 #include "data/jaspencryptiondata.h"
+#include "data/jaspencrypt.h"
 #include "version.h"
 #include "tempfiles.h"
 #include "log.h"
@@ -33,6 +34,8 @@
 #include <fstream>
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
+
+#include <utilities/desktopcommunicator.h>
 
 
 const Version JASPExporter::jaspArchiveVersion = Version("5.0.0");
@@ -52,15 +55,19 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 
 	a = archive_write_new();
 	archive_write_set_format_zip(a);
-    if(JaspEncryptionData::getInstance()->encryptionActive()) {
-        archive_write_set_options(a, "encryption=aes256");
-        archive_write_set_passphrase(a, JaspEncryptionData::getInstance()->getPasswordPtr());
-    }
+
+	std::filesystem::path tmpPath = path;
+	bool encrypt = JaspEncryptionData::getInstance()->encryptionActive();
+	if(encrypt) {
+		if(!JaspEncryptionData::getInstance()->paramsSet())
+			DesktopCommunicator::singleton()->queryEncryptionSettings();
+		tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
+	}
 
 #ifdef _WIN32
-	if (archive_write_open_filename_w(a, tq(path).toStdWString().c_str()) != ARCHIVE_OK)
+	if (archive_write_open_filename_w(a, tq(tmpPath).toStdWString().c_str()) != ARCHIVE_OK)
 #else
-	if (archive_write_open_filename(a, path.c_str()) != ARCHIVE_OK)
+	if (archive_write_open_filename(a, tmpPath.c_str()) != ARCHIVE_OK)
 #endif
 		throw std::runtime_error(std::string("File could not be opened because of ") + archive_error_string(a));
 
@@ -73,6 +80,16 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 		throw std::runtime_error("File could not be closed.");
 
 	archive_write_free(a);
+	if(encrypt) {
+		Json::Value root;
+		try {
+			JASPEncrypt::encrypt(tmpPath, path, JaspEncryptionData::getInstance()->getPassword(), root, JaspEncryptionData::getInstance()->getPublicKey());
+		} catch (std::exception& e) {
+			Log::log() << "Encryption failed: " << e.what() << std::endl;
+			throw std::runtime_error("Encryption failed. Click 'Save As' and save as normal Jasp File. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
+		}
+		std::filesystem::remove(tmpPath);
+	}
 
 	//Make sure it is now always considered "loading" in DataSetPackage
 	DataSetPackage::pkg()->setLoaded(true);
