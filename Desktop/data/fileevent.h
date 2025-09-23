@@ -21,9 +21,10 @@
 
 #include <QObject>
 #include <QMetaType>
-
-#include "exporters/exporter.h"
+#include "json/json.h"
 #include "utilenums.h"
+
+class Exporter;
 
 ///
 /// This class is used to handle the communication to and from the asynchronous loading/synching/saving file processes.

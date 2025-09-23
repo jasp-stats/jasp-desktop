@@ -186,6 +186,26 @@ if(LINUX)
     )
   endif()
 
+  # ---- libsodium ----
+  message(CHECK_START "Looking for `libsodium`")
+    set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
+    set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+
+  message(CHECK_START "Looking for libsodium.so")
+  find_library(libsodium_LIBRARIES libsodium.so
+            HINTS ${LIBSODIUM_LIBRARY_DIRS} REQUIRED)
+
+  if(EXISTS ${libsodium_LIBRARIES})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${LIBSODIUM_LIBRARIES}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "libsodium is required for building on Linux, please follow the build instruction before you continue."
+    )
+  endif()
+
   # ---- FreeXL ----
   message(CHECK_START "Looking for `libfreexl`")
     set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
@@ -238,6 +258,8 @@ if(APPLE)
   find_package(Brotli 1.0.9 REQUIRED)
   find_package(freexl 2.0.99 REQUIRED)
   find_package(librdata REQUIRED)
+  find_package(libsodium 1.0.20 REQUIRED)
+
 
 endif()
 
@@ -246,6 +268,8 @@ if(WIN32)
   include(FindRToolsDLLPath)
   
   find_package(freexl 2.0.99 REQUIRED)
+  find_package(libsodium 1.0.20 REQUIRED)
+
 
   copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
   copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)

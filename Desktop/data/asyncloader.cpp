@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "osf/onlinedatamanager.h"
 #include "log.h"
+#include "exporters/exporter.h"
 
 using namespace std;
 
@@ -122,7 +123,7 @@ void AsyncLoader::saveTask(FileEvent *event)
 		DataSetPackage::pkg()->doWalCheckPoint();
 
 		Exporter *exporter = event->exporter();
-		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
+        if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
 		else			throw runtime_error("No Exporter found!");
 
 		int attempts = 1;

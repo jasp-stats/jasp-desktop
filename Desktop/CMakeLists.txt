@@ -127,6 +127,7 @@ target_include_directories(
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     ${LIBFREEXL_INCLUDE_DIRS}
+    ${libsodium_INCLUDE_DIR}
 )
 
 target_include_directories(
@@ -171,6 +172,7 @@ target_link_libraries(
     OpenSSL::Crypto
     # FreeXL
     ${LIBFREEXL_LIBRARIES}
+    ${libsodium_LIBRARIES}
     $<$<NOT:$<BOOL:${LINUX}>>:freexl::freexl>
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}

@@ -35,8 +35,8 @@
 class ArchiveReader
 {
 public:
-	ArchiveReader(){}
-	ArchiveReader(const std::string &archivePath, const std::string &entryPath);
+    ArchiveReader(){};
+    ArchiveReader(const std::string &archivePath, const std::string &entryPath);
 	ArchiveReader(ArchiveReader && other) = default;
 
 	~ArchiveReader();
@@ -127,7 +127,7 @@ public:
 	 */
 	std::string extension() const;
 
-	static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
+    static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
 
 private:
 
@@ -140,7 +140,6 @@ private:
 								_currentRead	= 0;
 	std::string					_archivePath,
 								_entryPath;
-
 
 };
 

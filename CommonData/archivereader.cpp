@@ -54,7 +54,7 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 
 	if (_archiveExists)
 	{
-		_archive = archive_read_new();
+        _archive = archive_read_new();
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
@@ -66,8 +66,8 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 
 		if (r == ARCHIVE_OK)
 		{
-					_isOpen = true;
-			bool	success = false;
+            _isOpen = true;
+            bool success = false;
 
             archive_entry * entry;
 			while (archive_read_next_header(_archive, &entry) == ARCHIVE_OK)
