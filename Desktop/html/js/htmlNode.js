@@ -7,8 +7,7 @@ JASPWidgets.htmlNode = Backbone.Model.extend({
 		text: "",
 		class: "",
 		maxWidth: "15cm",
-		elementType: "p",
-		isPlotly: false // TODO: is this better than a custom function? not sure about the order of things
+		elementType: "p"
 	}
 });
 
@@ -32,25 +31,6 @@ convertModelToHtml = function(model)
 	var html = '<span style="max-width:'+optMaxWidth+'; display:block;">';
 	if(optElementType === "errorMsg")	html = '<div class="fatalError analysis-error-message error-message-box ui-state-error"><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>' + optText + '</div>'
 	else if(optElementType === "")		html +=														optText + "</span>";
-	else if(optElementType === "__plotly__")
-	{
-		this.isPlotly = true;
-		console.log("Got a plotly plot!");
-
-		html += optText + "</span>"
-
-		// // all of this is still 'ok'
-		// const parser = new DOMParser();
-		// const htmlDoc = parser.parseFromString(optText, 'text/html');
-		// const src = htmlDoc.getElementsByTagName("script")[0];
-		// const payload = JSON.parse(src.text)
-
-		// const id_str = src.getAttribute("data-for");
-		// // this part can only work after html is rendered/ the class exists?
-		// const id = document.getElementById(id_str);
-		// Plotly.newPlot(id, payload.x.data, payload.x.layout)
-
-	}
 	else if(optClass === "")			html += '<'+ optElementType +' >' +							optText + '</'+ optElementType +'></span>';
 	else								html += '<'+ optElementType +' class="'+ optClass +'">' +	optText + '</'+ optElementType +'></span>';
 
@@ -123,71 +103,8 @@ JASPWidgets.htmlNodeView = JASPWidgets.objectView.extend({
 JASPWidgets.htmlNodePrimitive = JASPWidgets.View.extend({
 
 	render: function () {
-		console.log('before the call to convertModelToHtml')
 		this.$el.append(convertModelToHtml(this.model));
-
-		if (this._isPlotly()) {
-			console.log("this is where the post step to run the json happens!");
-
-			jQuery(document).ready(() => this.renderPlotlyIfDivExists());
-
-		} else {
-			console.log("jaspHtml but not plotly!")
-		}
 	},
-
-	_isPlotly: function() {
-		return this.model.get("elementType") === "__plotly__"
-	},
-
-	renderPlotlyIfDivExists: function () {
-		const optText = this.model.get("text");
-
-		const parser = new DOMParser();
-		const htmlDoc = parser.parseFromString(optText, 'text/html');
-		const src = htmlDoc.getElementsByTagName("script")[0];
-
-		if (!src) {
-			console.warn("No <script> tag found in the parsed HTML.");
-			return;
-		}
-
-		const id_str = src.getAttribute("data-for");
-		const targetEl = document.getElementById(id_str);
-
-		if (targetEl && $(targetEl).is(':visible')) {
-			const payload = JSON.parse(src.text);
-			Plotly.newPlot(targetEl, payload.x.data, payload.x.layout);
-		} else {
-			// Retry after 50ms
-			setTimeout(this.checkContainerAndRender.bind(this), 50);
-		}
-	},
-
-
-	// checkContainer: function () {
-	//   if ($('#divIDer').is(':visible')) { //if the div is visible on the page
-	// 	renderPlotly();
-	//   } else {
-	// 	setTimeout(checkContainer, 50); //wait 50 ms, then try again
-	//   }
-	// },
-
-	// renderPlotly: function() {
-
-	// 	const optText = this.model.get("text")
-
-	// 	const parser = new DOMParser();
-	// 	const htmlDoc = parser.parseFromString(optText, 'text/html');
-	// 	const src = htmlDoc.getElementsByTagName("script")[0];
-	// 	const payload = JSON.parse(src.text)
-
-	// 	const id_str = src.getAttribute("data-for");
-	// 	// this part can only work after html is rendered/ the class exists?
-	// 	const id = document.getElementById(id_str);
-	// 	Plotly.newPlot(id, payload.x.data, payload.x.layout);
-	// },
-
 
 	getExportAttributes: function (element, exportParams) {
 		var attrs = ""
