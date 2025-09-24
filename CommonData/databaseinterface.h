@@ -183,8 +183,8 @@ public:
 	void		truncateAllTables();
 	bool		tableHasColumn(const std::string & tableName, const std::string & columnName);
 	bool		tableExists(const std::string & name);
-	int			transactionWriteDepth() { return _transactionWriteDepth; }
-	int			transactionReadDepth()	{ return _transactionReadDepth;  }
+	int			transactionWriteDepth();
+	int			transactionReadDepth();
 
     void        preloadInterfaceForThread();
 	void		close();					///< Closes the loaded database and disconnects
@@ -197,12 +197,9 @@ private:
 	void		_runStatementsRepeatedly(	const std::string & statements, std::function<bool(	std::function<void(sqlite3_stmt *stmt)> **	bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow = nullptr, bool ignoreFails = false);
 
 	void		create();					///< Creates a new sqlite database in sessiondir and loads it
-	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
+	sqlite3*	load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
 	
-
-	int			_transactionWriteDepth	= 0,
-				_transactionReadDepth	= 0;
 
 	std::map<std::thread::id, sqlite3*>		_dbs;
 	std::thread::id							_dbCreator;

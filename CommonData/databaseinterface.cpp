@@ -12,6 +12,10 @@
 
 DatabaseInterface * DatabaseInterface::_singleton	= nullptr;
 
+thread_local 	int			_transactionWriteDepth	= 0,
+							_transactionReadDepth	= 0;
+
+
 //#define SIR_LOG_A_LOT
 
 const std::string DatabaseInterface::_dbConstructionSql =
@@ -2050,10 +2054,7 @@ sqlite3 * DatabaseInterface::_db()
 	if(_dbCreated && _dbCreator == id)
 		return _dbCreated;
 
-	if(!_dbs.count(id))
-		load();
-
-	return _dbs.at(id);
+	return load();
 }
 
 void DatabaseInterface::create()
@@ -2132,40 +2133,41 @@ void DatabaseInterface::preloadInterfaceForThread()
     _db();
 }
 
-void DatabaseInterface::load()
+sqlite3* DatabaseInterface::load()
 {
     JASPTIMER_SCOPE(DatabaseInterface::load);
-	assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
+    assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
 
     _loadMutex.lock();
     if(_dbs.count(std::this_thread::get_id()))
     {
+        sqlite3* connection = _dbs.at(std::this_thread::get_id());
         _loadMutex.unlock();
-        return;
+        return connection;
     }
 
-	
-	if(!std::filesystem::exists(dbFile()))
-		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
+    if(!std::filesystem::exists(dbFile()))
+        throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
 
     bool        loadingWorked	= false;
     size_t      loadingAttempt	= 0;
     sqlite3 *   db              = nullptr;
 
+	int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, NULL);
+
+	if(ret != SQLITE_OK)
+	{
+		Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
+	}
+	else
+		Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'. This is for thread " << std::this_thread::get_id() << std::endl;
+
+	_dbs[std::this_thread::get_id()] = db;
+	_loadMutex.unlock();
+
     for(bool loadingWorked = false; !loadingWorked; )
     {
-        int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, NULL);
-
-        if(ret != SQLITE_OK)
-        {
-            Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
-            throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
-        }
-        else
-            Log::log() << "Opened internal sqlite database for loading at '" << dbFile() << "'. This is for thread " << std::this_thread::get_id() << std::endl;
-
-        _dbs[std::this_thread::get_id()] = db;
-		
 		sqlite3_busy_timeout(db, 100);
 
         try
@@ -2187,17 +2189,14 @@ void DatabaseInterface::load()
         if(!loadingWorked)
         {
 			if(loadingAttempt > 10 * 60) //Timeout is 0.1 sec, so this lets the db try for 1 minute to connect...
-            {
-                _loadMutex.unlock();
                 throw dbMalformedException();
-            }
 
             Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
 			std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
         }
     }
 
-    _loadMutex.unlock();
+	return db;
 }
 
 void DatabaseInterface::close()
@@ -2254,6 +2253,16 @@ bool DatabaseInterface::tableExists(const std::string &name)
 	return runStatementsId("SELECT COUNT(name) FROM sqlite_master WHERE type='table' AND name='" + name + "';") > 0;
 }
 
+int DatabaseInterface::transactionWriteDepth()
+{
+	return _transactionWriteDepth;
+}
+
+int DatabaseInterface::transactionReadDepth()
+{
+	return _transactionReadDepth;
+}
+
 void DatabaseInterface::transactionWriteBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteBegin);
@@ -2294,7 +2303,7 @@ void DatabaseInterface::transactionWriteEnd(bool rollback)
 	}	
 	else if(_transactionWriteDepth == 0 || --_transactionWriteDepth == 0)
 		runStatements("COMMIT", true);
-	
+
 }
 
 void DatabaseInterface::transactionReadEnd()

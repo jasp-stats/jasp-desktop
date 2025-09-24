@@ -89,8 +89,6 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
-	Utils::sleep(100); // :'(
-
 	Importer* importer = getImporter(locator, extension);
 
 	if (importer)
