@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-23 04:02+0000\n"
+"PO-Revision-Date: 2025-09-25 16:01+0000\n"
 "Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "eu/>\n"
@@ -49,7 +49,7 @@ msgstr ""
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ", freskatzeak emaitza apur bat desberdina eman dezake."
+msgstr ", analisiak freskatzeak emaitza apur bat desberdina eman dezake."
 
 msgctxt "Form|"
 msgid ""
@@ -75,18 +75,17 @@ msgctxt "TableView|"
 msgid "Row #"
 msgstr "Errenkada #"
 
-#, fuzzy
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr "Gehitu fitxa????? bat"
+msgstr "Gehitu tabuladore bat"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr "Kendu fitxa???? hau"
+msgstr "Kendu tabuladore hau"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr "Fitxa berria???"
+msgstr "Tabuladore berria"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
@@ -199,7 +198,7 @@ msgstr "BF10-ren logaritmo naturala."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr "Zutabea gehitu"
+msgstr "Zutabe bat gehitu"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
@@ -231,11 +230,11 @@ msgstr "balioen biderkadura"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "balioen gutxienekoa itzultzen du"
+msgstr "balioen minimoa itzultzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "balioen gehienekoa itzultzen du"
+msgstr "balioen maximoa itzultzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
@@ -278,15 +277,15 @@ msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
-"Fisherren Z-transformazioa (hau da, alderantzizko ukitzaile hiperbolikoa) "
-"korrelazioak, -1 eta 1 arteko zenbakiak, lerro errealera eraldatzeko"
+"Fisherren Z-transformazioa (hau da, alderantzizko tanjente hiperbolikoa) "
+"korrelazioak eraldatzeko, -1 eta 1 arteko zenbakiak, lerro errealera"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
-"Alderantzizko Fisherren Z-transformazioa (hau da, ukitzaile hiperbolikoa) "
+"Alderantzizko Fisherren Z-transformazioa (hau da, tanjente hiperbolikoa) "
 "zenbaki errealak -1 eta 1 arteko zenbakietara eraldatzeko"
 
 msgctxt "ComputeColumnWindow|"
@@ -300,7 +299,7 @@ msgstr "zutabean falta diren balioak (FB) ordezkatu replaceWith-eko balioarekin"
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "if-else adierazpena???"
+msgstr "if-else adierazpena?"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -315,17 +314,19 @@ msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
 msgstr ""
-"t banaketatik datuak sortzen ditu askatasun-gradu df eta zentraltasun eza "
-"parametro ncp-rekin"
+"t banaketatik datuak sortzen ditu ag askatasun-graduekin eta zentraltasun "
+"eza parametro ncp-rekin"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
-"khi-karratu banaketa batetik datuak sortzen ditu askatasun-gradu df eta "
+"khi-karratu banaketa batetik datuak sortzen ditu ag askatasun-gradu eta "
 "zentraltasun eza parametro ncp-rekin"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
@@ -367,10 +368,9 @@ msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr "beta forma zehaztuekin beta banaketa batetik datuak sortzen ditu"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr "min eta max ???? arteko banaketa uniforme batetik datuak sortzen ditu"
+msgstr "min eta max arteko banaketa uniforme batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
@@ -386,8 +386,8 @@ msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
 msgstr ""
-"batez besteko logaritmiko zehaztua duen banaketa log-normal batetik datuak "
-"sortzen ditu, meanLog eta desbideratze estandarra sdLog-rekin"
+"banaketa log-normal batetik datuak sortzen ditu, zehaztua duen batez besteko "
+"logaritmikoa, meanLog eta desbideratze estandarra sdLog"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -490,7 +490,7 @@ msgstr "Testua"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr "Ireki dokumentazioa"
+msgstr "Ireki Dokumentazioa"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
@@ -542,10 +542,9 @@ msgctxt "BreadCrumbs|"
 msgid "You are here"
 msgstr "Hemen zaude"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr "Azken??? karpetak"
+msgstr "Azken Karpetak"
 
 msgctxt "Computer|"
 msgid "Browse"
@@ -561,7 +560,7 @@ msgstr "Datu-Liburutegia"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr "Datu-fitxategi honekin sinkronizatu"
+msgstr "Datu-Fitxategi honekin sinkronizatu"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
@@ -575,10 +574,9 @@ msgctxt "ListItem|"
 msgid "Open data file"
 msgstr "Datu-fitxategia ireki"
 
-#, fuzzy
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr "Hobespen??? hauei buruzko informazioa erakutsi"
+msgstr "Hobespen hauei buruzko informazioa erakutsi"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
@@ -590,7 +588,7 @@ msgstr "Saioa itxi"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr "Karpeta sortu"
+msgstr "Karpeta Sortu"
 
 msgctxt "OSF|"
 msgid "Foldername"
@@ -650,7 +648,7 @@ msgstr "JASP moduluak erabiltzeko, gaitu aukera hau."
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr "Arakatu zure JASP moduluen karpetara."
+msgstr "Arakatu zure JASP Moduluen karpetara."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
@@ -695,7 +693,7 @@ msgstr "Motorraren aukerak"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr "Datuen Hobespenak"
+msgstr "Datu Hobespenak"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
@@ -735,7 +733,7 @@ msgstr "Hamartar kopurua aukeratu"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr "Grafikoen aukerak"
+msgstr "Grafiko aukerak"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
