@@ -10,7 +10,7 @@ JASPWidgets.image = JASPWidgets.Resizeable.extend({
 		name:			"",
 		editOptions:	{},
 		revision:		0,
-		plotlyData:     "",
+		plotlyData:		"",
 	}
 });
 
@@ -321,6 +321,11 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 					console.error("Plotly rendering failed:", err);
 					targetEl._plotlyInitialized = false;
 				});
+
+			if (payload.hasRangeFrame)
+				this.addPlotlyRangeRameHooks(targetEl);
+
+
 		} else {
 			// Limit retries to prevent infinite loops
 			this.plotlyRetryCount = (this.plotlyRetryCount || 0) + 1;
@@ -440,5 +445,175 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		html += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 
 		return html;
+	},
+
+	// ideally these hooks are set inside jaspGraphs...
+	addPlotlyRangeRameHooks: function (gd) {
+
+		var isUpdating = false;
+		var lastUpdateTime = 0;
+		var updateThrottle = 16;
+
+		function updateRangeFrame(eventdata, eventType) {
+
+			var xaxis = gd.layout.xaxis;
+			var yaxis = gd.layout.yaxis;
+			var xaxis2 = gd._fullLayout.xaxis;
+			var yaxis2 = gd._fullLayout.yaxis;
+
+			// Check if this is a box select/zoom event and ignore it
+			if (false && eventdata) {
+
+			   // test if the event lies within the current axes ranges
+			   var hasXUpdate = eventdata['xaxis.range[0]'] !== undefined ||
+								 (eventdata['xaxis.range'] !== undefined) ||
+								 (eventdata.xaxis && eventdata.xaxis.range);
+
+			   var hasYUpdate = eventdata['yaxis.range[0]'] !== undefined ||
+								(eventdata['yaxis.range'] !== undefined) ||
+								(eventdata.yaxis && eventdata.yaxis.range);
+
+			 if (hasXUpdate || hasYUpdate) {
+				 return;
+			 }
+			}
+
+			// Prevent recursive calls and throttle updates
+			var now = Date.now();
+			if (isUpdating || (now - lastUpdateTime < updateThrottle)) {
+			 return;
+			}
+
+
+			// Get tick ranges - these should ALWAYS be the actual tick positions, never the visible range
+			var x0 = xaxis2._tmin;
+			var x1 = xaxis2._tmax;
+			var y0 = yaxis2._tmin;
+			var y1 = yaxis2._tmax;
+			var xmin = xaxis2._r[0];
+			var ymin = yaxis2._r[0];
+
+			var xmin2 = gd.layout.xaxis.range[0];
+			var ymin2 = gd.layout.yaxis.range[0];
+
+			// Get the current range - handle different event data structures
+			var x0a, x1a, y0a, y1a;
+
+			// Check for different possible eventdata structures
+			if (eventdata) {
+			 if (eventdata['xaxis.range[0]'] !== undefined && eventdata['yaxis.range[0]'] !== undefined) {
+			   // Standard relayouting events
+			   x0a = eventdata['xaxis.range[0]'];
+			   x1a = eventdata['xaxis.range[1]'];
+			   y0a = eventdata['yaxis.range[0]'];
+			   y1a = eventdata['yaxis.range[1]'];
+			   xmin = Math.min(x0a, xmin);
+			   ymin = Math.min(y0a, ymin);
+			 } else if (eventdata['xaxis.range[0]'] !== undefined) {
+			   // Alternative eventdata structure
+			   x0a = eventdata['xaxis.range[0]'];
+			   x1a = eventdata['xaxis.range[1]'];
+			   xmin = Math.min(x0a, xmin);
+			   y0a = y0;
+			   y1a = y1;
+			 } else if (eventdata['yaxis.range[0]'] !== undefined) {
+			   // Check for axis-specific updates
+			   x0a = x0;
+			   x1a = x1;
+			   y0a = eventdata['yaxis.range[0]'];
+			   y1a = eventdata['yaxis.range[1]'];
+			   ymin = Math.min(y0a, ymin);
+			   //ymin = y0a;
+			 } else {
+			   // Fallback to _r ranges when eventdata is not available or doesn't contain range info
+			   console.log('Falling back to _r ranges');
+			   x0a = xaxis2._r[0];
+			   x1a = xaxis2._r[1];
+			   y0a = yaxis2._r[0];
+			   y1a = yaxis2._r[1];
+			 }
+			}
+
+			// Get current shapes from the layout
+			var currentShapes = gd.layout.shapes || [];
+
+			// TODO: the color should use currentShapes[0].line.color, but somehow that doesn't work?
+			// could also perhaps clone the currentShapes and only update the coordinates?
+			var newShapes = [
+			 {
+			   type: 'line', xref: 'x', yref: 'paper',
+			   x0: x0, x1: x1, y0: 0, y1: 0,  // Horizontal line from min to max x-break, at bottom of visible y-range
+			   line: { color: 'black', width: 1.2},
+			   name: 'rangeframe_b'
+			 },
+			 {
+			   type: 'line', xref: 'paper', yref: 'y',
+			   x0: 0, x1: 0, y0: y0, y1: y1,  // Vertical line from min to max y-break, at left of visible x-range
+			   line: { color: 'black', width: 1.2},
+			   name: 'rangeframe_l'
+			 }
+			];
+
+
+			// Filter out non-rangeframe shapes and compare
+			var currentRangeframeShapes = currentShapes.filter(shape =>
+			 shape.name && (shape.name === 'rangeframe_b' || shape.name === 'rangeframe_l')
+			);
+
+			// Check if the new shapes are the same as the current ones
+			var shapesEqual = true;
+			if (currentRangeframeShapes.length === newShapes.length) {
+			 for (var i = 0; i < newShapes.length; i++) {
+			   var newShape = newShapes[i];
+			   var currentShape = currentRangeframeShapes.find(shape => shape.name === newShape.name);
+
+			   if (!currentShape ||
+				   Math.abs(currentShape.x0 - newShape.x0) > 1e-10 ||
+				   Math.abs(currentShape.x1 - newShape.x1) > 1e-10 ||
+				   Math.abs(currentShape.y0 - newShape.y0) > 1e-10 ||
+				   Math.abs(currentShape.y1 - newShape.y1) > 1e-10// ||
+				  ) {
+				 shapesEqual = false;
+				 break;
+			   }
+			 }
+			} else {
+			 shapesEqual = false;
+			}
+
+			// Only update if shapes are different
+			if (!shapesEqual) {
+			 //console.log('Updating shapes...');
+			 isUpdating = true;
+			 lastUpdateTime = now;
+
+			 // Merge existing non-rangeframe shapes with new rangeframe shapes
+			 var otherShapes = currentShapes.filter(shape =>
+			   !shape.name || (shape.name !== 'rangeframe_b' && shape.name !== 'rangeframe_l')
+			 );
+			 var allShapes = otherShapes.concat(newShapes);
+
+			 Plotly.relayout(gd, { shapes: allShapes })
+			   .then(function() {
+				 isUpdating = false;
+			   })
+			   .catch(function(error) {
+				 console.error('Error updating range frame:', error);
+				 isUpdating = false;
+			   });
+			}
+		}
+		// Attach event listeners for all relevant events
+		gd.on('plotly_relayouting',   function(eventdata) {updateRangeFrame(eventdata,  'plotly_relayouting');});
+		gd.on('plotly_relayout',      function(eventdata) { updateRangeFrame(eventdata, 'plotly_relayout'); });     // Fires after panning/zooming ends
+		gd.on('plotly_framework',   function(eventdata) {
+		updateRangeFrame(eventdata, 'plotly_framework');
+		});
+
+		// Add a periodic check as fallback for any missed events (like axis dragging)
+		var lastKnownRange = null;
+
+		// Initial update
+		setTimeout(function() { updateRangeFrame(null, 'initial_update'); }, 500);
 	}
 });
