@@ -2054,7 +2054,10 @@ sqlite3 * DatabaseInterface::_db()
 	if(_dbCreated && _dbCreator == id)
 		return _dbCreated;
 
-	return load();
+	if(!_dbs.count(id))
+		load();
+
+	return _dbs.at(id);
 }
 
 void DatabaseInterface::create()
@@ -2133,7 +2136,7 @@ void DatabaseInterface::preloadInterfaceForThread()
     _db();
 }
 
-sqlite3* DatabaseInterface::load()
+void DatabaseInterface::load()
 {
     JASPTIMER_SCOPE(DatabaseInterface::load);
     assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
@@ -2143,7 +2146,7 @@ sqlite3* DatabaseInterface::load()
     {
         sqlite3* connection = _dbs.at(std::this_thread::get_id());
         _loadMutex.unlock();
-        return connection;
+		return;
     }
 
     if(!std::filesystem::exists(dbFile()))
@@ -2196,7 +2199,7 @@ sqlite3* DatabaseInterface::load()
         }
     }
 
-	return db;
+	return;
 }
 
 void DatabaseInterface::close()

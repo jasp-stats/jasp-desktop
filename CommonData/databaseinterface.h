@@ -197,9 +197,7 @@ private:
 	void		_runStatementsRepeatedly(	const std::string & statements, std::function<bool(	std::function<void(sqlite3_stmt *stmt)> **	bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow = nullptr, bool ignoreFails = false);
 
 	void		create();					///< Creates a new sqlite database in sessiondir and loads it
-	sqlite3*	load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
-
-	
+	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
 	std::map<std::thread::id, sqlite3*>		_dbs;
 	std::thread::id							_dbCreator;
