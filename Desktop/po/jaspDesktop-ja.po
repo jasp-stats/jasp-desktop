@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-09-27 03:04+0000\n"
+"Last-Translator: Akira Harada <momoldo@gmail.com>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/ja/>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-Language: ja\n"
 "X-Qt-Contexts: true\n"
 
@@ -5594,87 +5600,87 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "行の平均"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "行の合計"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "行の標準偏差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "行の分散"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "行の中央値"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "行の最小値"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "行の最大値"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr ""
+msgstr "設定ファイルを使用する。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr ""
+msgstr "リモート設定ファイルを利用する。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
-msgstr ""
+msgstr "URLで指定したリモート設定ファイルを使用する"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr ""
+msgstr "設定ファイルのURL: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr ""
+msgstr "設定ファイルを選択する"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
+msgstr "設定ファイルを選択する。"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "行の平均"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "行の合計"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "行の標準偏差"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "行の分散"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "行の中央値"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "行の最小値"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "行の最大値"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "起動するとき、JASPのウィンドウを最大化すべきか？"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
@@ -5688,15 +5694,15 @@ msgstr ""
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "プロジェクトライブラリ:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "設定ファイルのオプション"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "最大化して起動する"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5704,10 +5710,13 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASPに深刻なエラーが発生しこれ以上計算することができません。\n"
+"\n"
+"このエラーをJASPチームに報告してくれるとありがたく思います。"
 
 msgctxt "MainWindow|"
 msgid "Salvage"
-msgstr ""
+msgstr "回収"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
@@ -5742,11 +5751,12 @@ msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Loading R Data File"
-msgstr ""
+msgstr "Rデータファイルをロードしています"
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "このファイルから1列も読み込むことができませんでした。データファイルを確認して"
+"ください。"
 
 msgctxt "MainWindow|"
 msgid "Salvaging"
@@ -5764,11 +5774,19 @@ msgid ""
 "Analyses or computed columns and the like will not function anymore until "
 "you restart JASP."
 msgstr ""
+"残念ながら、JASPに致命的なエラーが発生しました。\n"
+"この状況から何らか内容を回収したり復元したりすることができるよう、JASPの一部"
+"機能を使うことができます。\n"
+"\n"
+"例えば、現在のワークスペースを保存したり、この問題を次回避けるためにおそらく"
+"必要な設定を変更したりすることができます。\n"
+"\n"
+"分析や列の計算といったようなことはJASPを再起動するまで使えません。"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
-msgstr ""
+msgstr "Rデータファイル %1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
@@ -5780,32 +5798,33 @@ msgstr "NULL モデルに追加"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "ファイルを開く"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "ファイル %1 にアクセスできません"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "ファイル %1 が見つかりません。"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASPはファイルタイプ %1 をサポートしていません。"
 
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
-msgstr ""
+msgstr ".jaspファイルに分析の状態やプロットの図を保存する"
 
 msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
 "lot."
-msgstr ""
+msgstr "これは.jaspファイルのファイルサイズを(時にはとても大きく)増やす可能性がありま"
+"す。"
 
 msgctxt "MainWindow|"
 msgid "Stored without state"
@@ -5832,26 +5851,29 @@ msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
 "sandboxing. Do you wish to continue without it? (probably fine)"
 msgstr ""
+"セキュリティサンドボックスの有効化に失敗しました。あなたのシステムではセキュ"
+"リティサンドボックスが許可されていません。このまま続けますか？(おそらく大丈夫"
+"です)"
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
-msgstr ""
+msgstr "復元"
 
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
-msgstr ""
+msgstr "復元ファイルが見つかりません"
 
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
-msgstr ""
+msgstr "復元ファイルは1ヶ月後に削除されます"
 
 msgctxt "PrefsData|"
 msgid "Save settings"
-msgstr ""
+msgstr "設定の保存"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "ワークスペースのバックアップを自動保存する"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5862,43 +5884,43 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "自動保存の間隔(分)"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "分間隔で自動保存する。"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "%1 は自動保存されました"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "絶対パス: %1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "ワークスペースは保存されていません"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "データファイル %1 のワークスペースは保存されていません"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "自動保存"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "自動保存のJASPファイルを保存しています"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "%1 に保存しました"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
@@ -5907,7 +5929,7 @@ msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Recovery"
-msgstr ""
+msgstr "復元"
 
 msgctxt "RibbonModel|"
 msgid "Test"
