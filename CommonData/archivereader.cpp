@@ -113,8 +113,8 @@ void ArchiveReader::writeEntryToTempFiles(std::function<void(float)> progressCal
     file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
 
     static char copyBuff[8192 * 4];
-    int			bytes		= 0,
-                errorCode	= 0;
+    long		bytes		= 0;
+    int         errorCode	= 0;
     float       tallyBytes  = 0;
     do
     {
@@ -159,18 +159,18 @@ string ArchiveReader::extension() const
 }
 
 
-int ArchiveReader::readData(char *data, int maxSize, int &errorCode)
+long ArchiveReader::readData(char *data, long maxSize, int &errorCode)
 {
 	if (!_exists)
 		return 0;
 
-	int bytesAvailable	= _size - _currentRead,
-		toRead			= std::min(maxSize, bytesAvailable);
+    long    bytesAvailable	= _size - _currentRead,
+            toRead			= std::min(maxSize, bytesAvailable);
 
 	if (toRead <= 0)
 		return 0;
 
-	int count = archive_read_data(_archive, data, toRead);
+    long count = archive_read_data(_archive, data, toRead);
 
 	if (count > 0)
 	{
@@ -188,7 +188,7 @@ int ArchiveReader::readData(char *data, int maxSize, int &errorCode)
 
 std::string ArchiveReader::readAllData(int blockSize, int &errorCode)
 {
-	int size = bytesAvailable();
+    long size = bytesAvailable();
 	if (size == 0)
 		return NULL;
 
@@ -197,7 +197,7 @@ std::string ArchiveReader::readAllData(int blockSize, int &errorCode)
 	char *data = new char[size];
 	data[size - 1] = '\0';
 
-	int startOffset = _currentRead;
+    long startOffset = _currentRead;
 
 	errorCode = 0;
 	while (readData(&data[_currentRead - startOffset], blockSize, errorCode) > 0 && errorCode == 0);
