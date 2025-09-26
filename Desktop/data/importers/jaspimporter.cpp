@@ -145,7 +145,7 @@ void JASPImporter::readManifest(const std::string &path)
 	std::string     manifestName		= "manifest.json";
 	ArchiveReader	manifestReader;
 	manifestReader.openEntry(path, manifestName); //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
-    long            size				= manifestReader.bytesAvailable();
+    int64_t         size				= manifestReader.bytesAvailable();
     int             errorCode;
 
 	if (size > 0)
@@ -203,11 +203,11 @@ bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  c
 		return false;
 	}
 
-    long size = dataEntry->bytesAvailable();
+    int64_t size = dataEntry->bytesAvailable();
 	if (size > 0)
 	{
 		char *data = new char[size];
-        long startOffset = dataEntry->pos();
+        int64_t startOffset = dataEntry->pos();
 		int errorCode = 0;
 		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 
