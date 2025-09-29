@@ -1701,8 +1701,20 @@ std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 	int mod = up ? -1 : 1;
 
 	std::sort(rows.begin(), rows.end(), [&](const auto & l, const auto & r) { return up ? l < r : r < l; });
-	
-	std::vector<Label*> new_labels(_labels.begin(), _labels.end());
+
+    std::vector<Label*> new_labels;
+
+    // Put the empty labels at the end of the vector
+    for (Label* label : _labels)
+    {
+        if (!label->isEmptyValue())
+            new_labels.push_back(label);
+    }
+    for (Label* label : _labels)
+    {
+        if (label->isEmptyValue())
+            new_labels.push_back(label);
+    }
 
 	for (size_t row : rows)
 		if(int(row) + mod < 0 || int(row) + mod >= int(labelsNonEmptyCount()))
@@ -1718,6 +1730,7 @@ std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
 	}
 
 	_labels = new_labels;
+
 	_dbUpdateLabelOrder();
 
 	return rowsChanged;
