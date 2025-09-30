@@ -128,6 +128,7 @@ MainWindow::MainWindow(QApplication * application) : QObject(application), _appl
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
 	_jaspConfiguration		= JASPConfiguration::getInstance(this);
+	_moduleLibrary			= new ModuleLibrary();
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -618,6 +619,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
+	_qml->rootContext()->setContextProperty("moduleLibrary",							_moduleLibrary									);
 
 	_qml->setOutputWarningsToStandardError(true);
 
