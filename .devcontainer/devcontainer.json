@@ -5,5 +5,12 @@
   },
   "runArgs": [
     "--shm-size=2g"
-  ]
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "TheQtCompany.qt-cpp-pack"
+      ]
+    }
+  }
 }
