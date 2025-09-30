@@ -13,6 +13,8 @@
     <pre id="info"></pre>
     <pre id="error"></pre>
 <script type="text/javascript">
+    // TODO remove once modules-app can run
+    // console.log(qt);
 //if (typeof qt === "undefined") {
     //document.getElementById("error").innerText = "qt object is undefined. Are you running inside Qt?";
 //}
@@ -26,9 +28,9 @@
             new QWebChannel(qt.webChannelTransport, function(channel) {
                 const moduleStore = channel.objects.moduleStore;
             console.log(moduleStore);
-            moduleStore.info(function(info) {
-                console.log(info);
-                document.getElementById("info").innerText = JSON.stringify(info, null, 4);
+            moduleStore.info(function(infor) {
+                console.log(infor);
+                document.getElementById("info").innerText = JSON.stringify(infor, null, 4);
             });
         });
     } catch (error) {
