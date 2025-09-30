@@ -150,6 +150,7 @@ You can build either with terminal, by opening a new terminal and:
 ```shell
 mkdir ~/.config
 export GITHUB_PAT=<your GitHub token>
+export Qt6_DIR=/opt/Qt/6.8.3/gcc_64/lib/cmake
 CMAKE_PREFIX_PATH=/opt/Qt/6.8.3/gcc_64/lib/cmake/ cmake -S . -B jasp-build
 cmake --build jasp-build --target all -j6
 
@@ -169,4 +170,10 @@ xhost +local:
 # and try again
 ```
 
-IF you see the JASP window is fully black then resize the window to force a redraw.
+If you see the JASP window is fully black then resize the window to force a redraw.
+
+You can also use QT creator with
+
+```shell
+/opt/Qt/Tools/QtCreator/bin/qtcreator
+```
