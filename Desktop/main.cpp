@@ -558,6 +558,7 @@ int main(int argc, char *argv[])
 				QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating Junctions, one moment please", "Creating Junctions, one moment please");
 				msgBox->show();
 
+				PreferencesModel::prefs()->setStoreStateEtc(true);
 				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
 				{
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
