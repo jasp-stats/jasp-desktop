@@ -31,9 +31,9 @@ ListModelTermsAssigned::ListModelTermsAssigned(JASPListControl* listView)
 {
 }
 
-void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool reInit)
+void ListModelTermsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap)
 {
-	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
+    ListModelAssignedInterface::initTerms(terms, allValuesMap);
 
 	if (availableModel())
 		availableModel()->removeTermsInAssignedList();

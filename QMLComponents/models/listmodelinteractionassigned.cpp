@@ -33,32 +33,29 @@ ListModelInteractionAssigned::ListModelInteractionAssigned(JASPListControl* list
 	_variablesList = qobject_cast<VariablesListBase*>(listView);
 }
 
-void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool reInit)
+void ListModelInteractionAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap)
 {
 	// Initialization of the terms can be a re-initialization: in this case the interaction terms can be lost
 	// So the interaction terms must be kept, and if their components are in the new terms, then add this interaction.
 	Terms newTerms = terms;
 
-	if (reInit)
-	{
-		Terms oldInteractions = this->terms();
-		for (const Term& oldInteraction : oldInteractions)
-		{
-			if (oldInteraction.size() > 1)
-			{
-				bool add = true;
-				for (const QString& comp : oldInteraction.components())
-				{
-					if (!terms.containsValue(comp))
-						add = false;
-				}
-				if (add)
-					newTerms.add(oldInteraction);
-			}
-		}
-	}
+    Terms oldInteractions = this->terms();
+    for (const Term& oldInteraction : oldInteractions)
+    {
+        if (oldInteraction.size() > 1)
+        {
+            bool add = true;
+            for (const QString& comp : oldInteraction.components())
+            {
+                if (!terms.containsValue(comp))
+                    add = false;
+            }
+            if (add)
+                newTerms.add(oldInteraction);
+        }
+    }
 	_setTerms(newTerms);
-	ListModelAssignedInterface::initTerms(this->terms(), allValuesMap, reInit);
+    ListModelAssignedInterface::initTerms(this->terms(), allValuesMap);
 }
 
 void ListModelInteractionAssigned::removeTerms(const QList<int> &indices)

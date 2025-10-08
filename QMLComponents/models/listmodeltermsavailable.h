@@ -33,7 +33,7 @@ public:
 	ListModelTermsAvailable(JASPListControl* listView, const Terms& terms = Terms());
 
 	virtual const Terms& allTerms()																											const { return _allSortedTerms; }
-	void initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& _rowControlsValues = {}, bool reInit = false)	override;
+    void initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& _rowControlsValues = {})                          override;
 	virtual void removeTermsInAssignedList();
 	
 			void sortItems(SortType sortType)											override;

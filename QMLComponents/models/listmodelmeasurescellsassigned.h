@@ -33,7 +33,7 @@ public:
 	QVariant		data(const QModelIndex &index, int role = Qt::DisplayRole)										const	override;
 	Terms			termsFromIndexes(const QList<int> &indexes)														const	override;
 	QList<int>		indexesFromTerms(const Terms &terms)															const	override;
-	void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false)		override;
+    void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {})                     override;
 	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {}) override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)											override;
 	void			removeTerms(const QList<int>& indexes) override;

@@ -234,7 +234,7 @@ void ListModelFactorsForm::ensureNesting()
 		{
 			// By changing the current model, avoid calling again the ensureNesting slot
 			_ensuringNesting = true;
-			currentModel->initTerms(newTerms, {}, true);
+            currentModel->initTerms(newTerms);
 			_ensuringNesting = false;
 		}
 	}
@@ -244,7 +244,7 @@ void ListModelFactorsForm::ensureNesting()
 		Terms newTerms = onderModel->terms();
 		newTerms.setUndraggableTerms(currentModel->terms());
 		if (!newTerms.strictlyEquals(onderModel->terms()))
-			onderModel->initTerms(newTerms, {}, true);
+            onderModel->initTerms(newTerms);
 	}
 
 }
@@ -265,7 +265,7 @@ void ListModelFactorsForm::nestedChangedHandler()
 			Terms newTerms = onderModel->terms();
 			newTerms.setUndraggableTerms(currentModel->terms());
 			if (!newTerms.strictlyEquals(onderModel->terms()))
-				onderModel->initTerms(newTerms, {}, true);
+                onderModel->initTerms(newTerms);
 		}
 	}
 	else
@@ -277,7 +277,7 @@ void ListModelFactorsForm::nestedChangedHandler()
 			Terms draggableTerms = currentModel->terms();
 			draggableTerms.setDraggable(true);
 			if (!draggableTerms.strictlyEquals(currentModel->terms()))
-				currentModel->initTerms(draggableTerms, {}, true);
+                currentModel->initTerms(draggableTerms, {});
 		}
 	}
 }

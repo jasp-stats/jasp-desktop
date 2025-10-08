@@ -29,9 +29,9 @@ class ListModelTermsAssigned : public ListModelAssignedInterface
 public:
 	ListModelTermsAssigned(JASPListControl* listView);
 	
-	void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false)		override;
+    void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {})                                 override;
 	Terms			canAddTerms(const Terms& terms)																				const	override;
-	Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {})	override;
+    Terms			addTerms(const Terms& termsToAdd, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {})        override;
 	void			removeTerm(int index);
 
 	virtual void	changeTerm(int index, const Term& term);

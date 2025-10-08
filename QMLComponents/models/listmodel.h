@@ -72,7 +72,7 @@ public:
 			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-			virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false);
+            virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {});
 			Terms					getSourceTerms();
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
