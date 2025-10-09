@@ -24,7 +24,7 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     QString platformString = "Windows_x86-64";
     envInfo["arch"] = platformString;
     envInfo["developerMode"] = PreferencesModel::prefs()->developerMode();
-    envInfo["theme"] = PreferencesModel::prefs()->currentThemeName();
+    envInfo["theme"] = PreferencesModel::prefs()->currentThemeName().replace("Theme", "");
     envInfo["font"] = PreferencesModel::prefs()->interfaceFont();
     envInfo["language"] = PreferencesModel::prefs()->languageCode();
 

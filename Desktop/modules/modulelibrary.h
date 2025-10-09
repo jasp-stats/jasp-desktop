@@ -33,6 +33,7 @@ public:
     static ModuleLibrary * singleton() { return _singleton; }
 
     Q_INVOKABLE QVariantMap getEnvironmentInfo() const;
+    // Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
 private:
     static ModuleLibrary *_singleton;
 };

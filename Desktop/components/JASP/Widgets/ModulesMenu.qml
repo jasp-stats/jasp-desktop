@@ -395,11 +395,12 @@ FocusScope
                 anchors.right:          modules.left
                 height:                 modulesFlick.height - jaspTheme.contentMargin
 				// url:                    "file:///workspaces/jasp-desktop/Desktop/html/module-store.html"
-				url:                    "qrc:///html/module-store.html"
+				// url:                    "qrc:///html/module-store.html"
 				// TODO switch to actual app
 				// url:					   (downloadInProgress || installInProgress)? 'https://static.jasp-stats.org/downloadProgressTest.html?' + 't=' + downloadTotal + '&p=' +  downloadProgress + '&i=' + installInProgress : dynamicModules.moduleStoreUrl
 				// In app do `BASE_URL=/html/catalog pnpm build && rsync -a  dist/ ../jasp-desktop/Desktop/html/catalog/`;
-				// url: "qrc:///html/catalog/index.html"
+				// To get changes in html into build do `rm -r jasp-build/Desktop/.qt/rcc/html.qrc` before build
+				url: "qrc:///html/catalog/index.html"
                 profile:                moduleStoreProfile
 
 				property bool	downloadInProgress: false;
