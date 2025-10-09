@@ -119,6 +119,7 @@ public:
 	virtual bool		infoLabelItalic()			const	{ return  false;					}
 
 	QString				toolTip()					const	{ return _toolTip;					}
+	QString				markdownAnchor(bool includeHtml=true) const; ///<Generates either the name of or the html-anchor including the name for this jaspControl, can be used to index in the help
 	virtual QString		generateMDHelp(int depth = 0) const;
 	virtual QString		generateDoxygenHelp()		const;
 	virtual bool		hasInfoSomewhere()					const;
@@ -228,6 +229,7 @@ private slots:
 	void	_setFocus();
 	void	_notifyFormOfActiveFocus();
 	void	_checkControlName();
+	void	_handleActiveFocusChanged();
 
 signals:
 	void	setOptionBlockSignal(	bool blockSignal);
@@ -259,6 +261,7 @@ signals:
 	void	boundValueChanged(JASPControl* control);
 	void	usedVariablesChanged();
 	void	explicitDependsChanged();
+	void	helpJumpToAnchor(const QString & anchor);
 
 	void					requestColumnCreation(std::string columnName, columnType columnType);
 	void					requestComputedColumnCreation(std::string columnName);

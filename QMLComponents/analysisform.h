@@ -118,6 +118,7 @@ signals:
 	void					infoChanged();
 	void					infoBottomChanged();
 	void					helpMDChanged();
+	void					helpJumpToAnchor(const QString & anchor);
 	void					errorsChanged();
 	void					warningsChanged();
 	void					analysisChanged();

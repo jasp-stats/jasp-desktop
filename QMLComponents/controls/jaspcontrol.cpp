@@ -62,6 +62,7 @@ JASPControl::JASPControl(QQuickItem *parent) : QQuickItem(parent)
 	connect(this, &JASPControl::debugChanged,			[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::parentDebugChanged,		[this] () { _setBackgroundColor(); _setVisible(); } );
 	connect(this, &JASPControl::boundValueChanged,		this, &JASPControl::_resetBindingValue);
+	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_handleActiveFocusChanged);							 
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_setFocus);
 	connect(this, &JASPControl::activeFocusChanged,		this, &JASPControl::_notifyFormOfActiveFocus);
 								 
@@ -499,6 +500,12 @@ void JASPControl::_checkControlName()
 {
 	checkOptionName(_name);
 }
+								 
+void JASPControl::_handleActiveFocusChanged() 
+{ 
+	if(hasActiveFocus() && name() != "")
+		emit helpJumpToAnchor(markdownAnchor(false)); 
+ }
 
 bool JASPControl::checkOptionName(const QString &name)
 {
@@ -634,12 +641,28 @@ JASPControls JASPControl::getMDSubItems(const QQuickItem* parentItem) const
 
 	return MDSubItems;
 }
+								 
+QString JASPControl::markdownAnchor(bool includeHtml) const
+{
+	if(_name == "")
+		return "";
+								 
+	const QString anchorName = "qml_" + name();
+	if(!includeHtml)
+		return anchorName;
+
+	return QString("<a id=\"%1\"></a>").arg(anchorName);
+}
 
 QString JASPControl::generateMDHelp(int depth) const
 {
-	JASPControls MDSubItems = getMDSubItems();
-	QStringList markdown;
-	markdown << printLabelMD(depth) << info() << "\n";
+	JASPControls	MDSubItems = getMDSubItems();
+	QStringList		markdown;
+								 
+	markdown	<< markdownAnchor() 
+				<< printLabelMD(depth) 
+				<< info() 
+				<< "\n";
 
 	if (MDSubItems.size() > 0)
 	{
@@ -701,6 +724,7 @@ void JASPControl::setName(const QString &name)
 	{
 		_name = name;
 		emit nameChanged();
+		emit helpMDChanged();
 	}
 }
 

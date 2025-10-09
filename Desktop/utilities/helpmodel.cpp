@@ -7,8 +7,13 @@
 #include "gui/preferencesmodel.h"
 #include "log.h"
 
+HelpModel * HelpModel::_singleton = nullptr;
+
 HelpModel::HelpModel(QObject * parent) : QObject(parent)
 {
+	assert(!_singleton);
+	_singleton = this;
+	
 	setPagePath("index");
 	connect(this,						&HelpModel::pagePathChanged,				this, &HelpModel::generateJavascript);
 	connect(PreferencesModel::prefs(),	&PreferencesModel::currentThemeNameChanged, this, &HelpModel::setThemeCss,			Qt::QueuedConnection);
@@ -32,6 +37,8 @@ void HelpModel::runJavaScript(QString renderFunc, QString content)
 
 	runJavaScriptSignal(renderFunc + "(\"" + content + "\");");
 }
+
+
 
 void HelpModel::setVisible(bool visible)
 {
@@ -58,7 +65,7 @@ void HelpModel::loadingSucceeded()
 	generateJavascript();
 }
 
-void HelpModel::setMarkdown(QString markdown)
+void HelpModel::setMarkdown(const QString & markdown)
 {
 	if (_markdown == markdown)
 		return;
@@ -76,8 +83,12 @@ void HelpModel::setMarkdown(QString markdown)
 
 void HelpModel::setPagePath(QString pagePath)
 {	
-    _pagePath = pagePath;
-	emit pagePathChanged(_pagePath);
+    if(_pagePath != pagePath)
+		_anchorName = "";
+	
+	_pagePath = pagePath;
+	
+	emit pagePathChanged(HelpModel::pagePath());
 }
 
 QString	HelpModel::indexURL()
@@ -157,6 +168,8 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 	if(analysis == _analysis && pagePath == _pagePath && _visible)
 	{
 		setVisible(false);
+		_anchorName = "";
+		
 		return;
 	}
 	else 
@@ -208,13 +221,33 @@ void HelpModel::setFont()
 }
 
 ///Temporary function for https://github.com/jasp-stats/INTERNAL-jasp/issues/1215 
-bool HelpModel::pageExists(QString pagePath)
+bool HelpModel::pageExists(const QString & pagePath)
 {
 	 QString renderFunc, content;
 	 
 	 //We will simply have to use loadHelpContent to make sure we follow the same logic.
 	 
 	 return loadHelpContent(pagePath, false, renderFunc, content) || loadHelpContent(pagePath, true, renderFunc, content);
+}
+
+void HelpModel::jumpToAnchor(const QString &anchorName)
+{
+	_anchorName = anchorName;
+
+	emit pagePathChanged(pagePath());
+	
+	jumpToSelectedAnchor();
+}
+
+void HelpModel::jumpToSelectedAnchor()
+{
+	if(!_anchorName.isEmpty())
+		emit runJavaScriptSignal(QString("document.getElementById('%1').scrollIntoView()").arg(_anchorName));
+}
+
+QString HelpModel::pagePath() const 
+{ 
+	return _anchorName.isEmpty() ? _pagePath : _pagePath + "#" + _anchorName; 
 }
 
 bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, QString &renderFunc, QString &content)
@@ -265,12 +298,14 @@ bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, Q
 	return found;
 }
 
-void HelpModel::loadMarkdown(QString md)
+void HelpModel::loadMarkdown(const QString & md)
 {
 	//Log::log() << "loadMarkdown got:\n" << md << std::endl;
 
 	setVisible(true);
 	runJavaScript("window.render", md);
+	
+	jumpToSelectedAnchor();
 }
 
 void HelpModel::setAnalysis(Analysis *newAnalysis)

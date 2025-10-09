@@ -27,6 +27,7 @@
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
 #include "utilities/reporter.h"
+#include "utilities/helpmodel.h"
 #include "gui/preferencesmodel.h"
 #include "results/resultsjsinterface.h"
 #include "utilities/messageforwarder.h"
@@ -358,7 +359,8 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::rSyntaxTextChanged			);
-		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
+		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,			Qt::QueuedConnection	);
+		connect(_analysisForm,			&AnalysisForm::helpJumpToAnchor,	this,			&Analysis::helpJumpToAnchor,				Qt::QueuedConnection	);
 
 		setRSyntaxTextInResult();
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
@@ -1086,6 +1088,11 @@ void Analysis::setRSyntaxTextInResult()
 void Analysis::onUsedVariablesChanged()
 {
 	DataSetPackage::pkg()->checkComputedColumnDependenciesForAnalysis(this);
+}
+
+void Analysis::helpJumpToAnchor(const QString &anchor)
+{
+	HelpModel::singleton()->jumpToAnchor(anchor);
 }
 
 void Analysis::checkForRSources()

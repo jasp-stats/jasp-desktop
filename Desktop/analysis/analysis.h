@@ -199,6 +199,7 @@ public slots:
 	void					setRSyntaxTextInResult();
 	void					filterByNameDone(const QString &name, const QString &error);
 	void					onUsedVariablesChanged()																	override;
+	void					helpJumpToAnchor(const QString & anchor);
 
 protected:
 	void					abort();

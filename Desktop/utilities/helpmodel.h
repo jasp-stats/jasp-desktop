@@ -24,9 +24,11 @@ public:
 	void			runJavaScript(QString renderFunc, QString content);
 
 	bool			visible()	const { return _visible;  }
-	QString			pagePath()	const { return _pagePath; }
+	QString			pagePath()	const;
 	QString			markdown()	const { return _markdown; }
 	Analysis	*	analysis()	const { return _analysis; }
+	
+	static HelpModel * singleton() { return _singleton; }
 
 public slots:
 	void	setVisible(bool visible);
@@ -42,9 +44,11 @@ public slots:
 	void	setThemeCss(QString themeName);
 	void	setFont();
 	void	loadingSucceeded();
-	void	setMarkdown(QString markdown);
-	void	loadMarkdown(QString md);
-	bool	pageExists(QString pagePath);
+	void	setMarkdown(	const QString & markdown);
+	void	loadMarkdown(	const QString & md);
+	bool	pageExists(		const QString & pagePath);
+	void	jumpToAnchor(	const QString & anchorName);
+	void	jumpToSelectedAnchor();
 
 signals:
 	void	renderCode(QString javascript);
@@ -61,8 +65,11 @@ private:
 private:
 	bool		_visible	= false;
 	QString		_pagePath	= "",
-				_markdown	= "";
+				_markdown	= "",
+				_anchorName = "";
 	Analysis *	_analysis	= nullptr;
+	
+	static HelpModel * _singleton;
 };
 
 #endif // HELPMODEL_H

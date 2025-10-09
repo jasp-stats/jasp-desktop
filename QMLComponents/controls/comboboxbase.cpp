@@ -310,8 +310,9 @@ QString	ComboBoxBase::generateMDHelp(int depth) const
 {
 	QStringList markdown;
 
-	markdown << printLabelMD(depth);
-	markdown << info();
+	markdown	<< markdownAnchor()
+				<< printLabelMD(depth)
+				<< info();
 
 	// If one of the option has an info property, then display the options as an unordered list
 	if (_hasOptionInfo())

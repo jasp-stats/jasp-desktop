@@ -334,7 +334,9 @@ void AnalysisForm::_setUp()
 	for (JASPControl* control : controls)
 	{
 		_dependsOrderedCtrls.push_back(control);
-		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
+		connect(control, &JASPControl::helpMDChanged,		this, &AnalysisForm::helpMDChanged);
+		connect(control, &JASPControl::helpJumpToAnchor,	this, &AnalysisForm::helpJumpToAnchor);
+		
 	}
 
 	_rSyntax->setUp();
