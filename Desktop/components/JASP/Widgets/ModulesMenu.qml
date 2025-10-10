@@ -403,7 +403,7 @@ FocusScope
 				// 2. Start ngrok proxy with `ngrok http 3000 --url https://<your_ngrok_subdomain>.ngrok-free.dev --basic-auth "<user>:<password>"`
 				// 3. Set the url to the ngrok url with credentials below
 				// Be carefull not to git commit a url with your credentials!.
-				// For example "https://<user>:<password>@<your_ngrok_subdomain>.ngrok-free.dev"
+				// For example "https://<user>:<password>@<your_ngrok_subdomain>.ngrok-free.dev?c=https://module-library.jasp-stats.org/index.json"
                 profile:                moduleStoreProfile
 
 				property bool	downloadInProgress: false;
