@@ -394,16 +394,10 @@ FocusScope
                 width:                  visible ? 500 * preferencesModel.uiScale : 0
                 anchors.right:          modules.left
                 height:                 modulesFlick.height - jaspTheme.contentMargin
-				// In app do `BASE_URL=/html/catalog pnpm build && rsync -a  dist/ ../jasp-desktop/Desktop/html/catalog/`;
-				// To get changes in html into build do `rm -r jasp-build/Desktop/.qt/rcc/html.qrc` before build
 				// For production
-				url: "https://module-library.jasp-stats.org"
-				// For development of app you can use ngrok to expose your local server
-				// 1. Start development server with `pnpm dev`
-				// 2. Start ngrok proxy with `ngrok http 3000 --url https://<your_ngrok_subdomain>.ngrok-free.dev --basic-auth "<user>:<password>"`
-				// 3. Set the url to the ngrok url with credentials below
-				// Be carefull not to git commit a url with your credentials!.
-				// For example "https://<user>:<password>@<your_ngrok_subdomain>.ngrok-free.dev?c=https://module-library.jasp-stats.org/index.json"
+				//url: "https://module-library.jasp-stats.org"
+				// For development of app you can use your local server (Only one url can be active at a time)
+				url: "http://172.17.0.1:3000"
                 profile:                moduleStoreProfile
 
 				property bool	downloadInProgress: false;
