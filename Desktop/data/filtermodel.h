@@ -20,7 +20,9 @@ class FilterModel : public QObject
 	Q_PROPERTY( bool			hasFilter			READ hasFilter										NOTIFY hasFilterChanged				)
 	Q_PROPERTY( QString			defaultRFilter		READ defaultRFilter									NOTIFY defaultRFilterChanged		)
 	Q_PROPERTY( QVariantList	filterDropDownList	READ filterDropDownList								NOTIFY filterDropDownListChanged	)
-
+	Q_PROPERTY( bool			filterVisible		READ filterVisible		WRITE setFilterVisible		NOTIFY filterVisibleChanged			)
+	Q_PROPERTY( bool			showEasyFilter		READ showEasyFilter		WRITE setShowEasyFilter		NOTIFY showEasyFilterChanged		)
+	
 public:
 	explicit					FilterModel(labelFilterGenerator * labelfilterGenerator);
 	
@@ -44,6 +46,12 @@ public:
 				void			reset();
 				void			modelInit();
 				
+				
+				bool filterVisible() const;
+				void setFilterVisible(bool newFilterVisible);
+				
+				bool showEasyFilter() const;
+				void setShowEasyFilter(bool newShowEasyFilter);
 				
 public slots:
 	GENERIC_SET_FUNCTION(StatusBarText,			_statusBarText,			statusBarTextChanged,		QString)
@@ -90,6 +98,10 @@ signals:
 
 	void defaultRFilterChanged(); //Will never be called
 
+	void filterVisibleChanged();
+	
+	void showEasyFilterChanged();
+	
 private:
 	bool _setGeneratedFilter(const QString& newGeneratedFilter);
 	bool _setRFilter(const QString& newRFilter);
@@ -104,6 +116,8 @@ private:
 	int							_lastSentRequestId		= 0;
 
 	UndoStack*					_undoStack				= nullptr;
+	bool						_filterVisible,
+								_showEasyFilter			= true;
 };
 
 #endif // FILTERMODEL_H

@@ -1080,15 +1080,15 @@ msgstr "Fai clic para aplicar un filtro"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr "polinómico"
+msgstr "Polinómico"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr "personalizado"
+msgstr "Personalizado"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr "simple"
+msgstr "Simple"
 
 #, qt-format
 msgctxt "ContrastsList|"
@@ -1097,15 +1097,15 @@ msgstr "Personalizado para %1"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr "repetido"
+msgstr "Repetido"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr "diferenza"
+msgstr "Diferenza"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr "desvío"
+msgstr "Desvío"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
@@ -5946,3 +5946,157 @@ msgstr "Non se atopa o ficheiro %1."
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
 msgstr "JASP non admite este tipo de ficheiro %1."
+
+msgctxt "PrefsResults|"
+msgid "Store analysis state and plot in jasp-files"
+msgstr "Gardar estado da análise e gráfica en ficheiros de JASP"
+
+msgctxt "PrefsResults|"
+msgid ""
+"Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
+"lot."
+msgstr ""
+"Permitir isto pode provocar que aumente o tamaño dos ficheiros, ás veces "
+"moito."
+
+msgctxt "MainWindow|"
+msgid "Stored without state"
+msgstr "Gardado sen estado"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was saved without state, to save the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Esta análise foi gardada sen estado; para gardar a imaxe, debe ser primeiro "
+"actualizada.\n"
+"\n"
+"Actualizar a análise?"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was stored without state, to resize the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Esta análise foi gardada sen estado; para redimensionar a imaxe, debe ser "
+"primeiro actualizada.\n"
+"\n"
+"Actualizar a análise?"
+
+msgctxt "AutoSaves|"
+msgid "Recovery"
+msgstr "Recuperación"
+
+msgctxt "AutoSaves|"
+msgid "No recovery files found"
+msgstr "Non se atoparon ficheiros de recuperación"
+
+msgctxt "AutoSaves|"
+msgid "Recovery files are deleted after a month"
+msgstr "Os ficheiros de recuperación se eliminan despois de un mes"
+
+msgctxt "PrefsData|"
+msgid "Save settings"
+msgstr "Configuración do gardado"
+
+msgctxt "PrefsData|"
+msgid "Automatically save a backup of your workspace"
+msgstr "Gardar automaticamente unha copia do teu espazo de traballo"
+
+msgctxt "PrefsData|"
+msgid ""
+"When enabled this will save a copy of your workspace in a folder next to the "
+"logs. If JASP crashes with otherwise unsaved changes this backup will make "
+"sure you don't lose all your work."
+msgstr ""
+"Cando se habilita, isto vai gardar unha copia do teu espazo de traballo nun "
+"cartafol próximo aos rexistros. Se JASP se quebra con cambios doutro xeito "
+"non gardados, esta copia vaite asegurar de que non perdas todo o teu "
+"traballo."
+
+msgctxt "PrefsData|"
+msgid "Autosave interval in minutes"
+msgstr "Intervalo de gardado automático, en minutos"
+
+msgctxt "PrefsData|"
+msgid "Interval in minutes between autosaves."
+msgstr "Intervalo, en minutos, entre gardados automáticos."
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "%1 autosaved"
+msgstr "Gardado automático %1"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Full path: %1"
+msgstr "Ruta completa: %1"
+
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace"
+msgstr "Espazo de traballo non gardado"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace of datafile %1"
+msgstr "Espazo de traballo non gardado do ficheiro de datos %1"
+
+msgctxt "DataSetPackage|"
+msgid "Autosave"
+msgstr "Autogardado"
+
+msgctxt "FileEvent|"
+msgid "Saving autosave JASP File"
+msgstr "Gardar o ficheiro JASP de autogardado"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved at %1"
+msgstr "Gardado en %1"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved %1 seconds ago, might still be loaded in another JASP."
+msgstr "Gardado hai %1 segundos, aínda podería cargarse en outro JASP."
+
+msgctxt "ResourceButtons|"
+msgid "Recovery"
+msgstr "Recuperación"
+
+msgctxt "RibbonModel|"
+msgid "Test"
+msgstr "Proba"
+
+msgctxt "RibbonModel|"
+msgid "Run tests"
+msgstr "Executar probas"
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Stored without state"
+msgstr "Gardado sen estado"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was stored without state, to edit the plot it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Version incompatibility"
+msgstr "Incompatibilidade de versión"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was created in an older version of JASP, to edit the plot it "
+"must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""

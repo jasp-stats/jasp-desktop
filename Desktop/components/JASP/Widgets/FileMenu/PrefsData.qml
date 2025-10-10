@@ -104,7 +104,7 @@ PrefsScrollView
 							onTextChanged:		preferencesModel.customEditor = text
 							color:				jaspTheme.textEnabled
 
-							KeyNavigation.tab:      thresholdScale
+							KeyNavigation.tab:      autoSave
 
 							anchors
 							{
@@ -123,6 +123,37 @@ PrefsScrollView
 					}
 				}
 			}
+		}
+		
+		PrefsGroupRect
+		{
+			id:				savingRect
+			title:			qsTr("Save settings")
+
+			CheckBox
+			{
+				id:					autoSave
+				label:				qsTr("Automatically save a backup of your workspace")
+				checked:			preferencesModel.autoSaveAtAll
+				onCheckedChanged:	preferencesModel.autoSaveAtAll = checked
+				toolTip:			qsTr("When enabled this will save a copy of your workspace in a folder next to the logs. If JASP crashes with otherwise unsaved changes this backup will make sure you don't lose all your work.")
+	
+				KeyNavigation.tab:	autoSaveInterval
+			}
+			
+			SpinBox
+			{
+				id:					autoSaveInterval
+				text:				qsTr("Autosave interval in minutes")
+				value:				preferencesModel.autoSaveIntervalSec / 60
+				onValueChanged:		preferencesModel.autoSaveIntervalSec = (value  * 60)
+				from:				1
+
+				KeyNavigation.tab:	orderByDefault
+
+				toolTip:	qsTr("Interval in minutes between autosaves.")
+			}
+			
 		}
 
 		

@@ -42,7 +42,7 @@ const Settings::Setting Settings::Values[] = {
 	{"useAlternativeLocale",		true},
 	{"alternativeLocLanguage",		QLocale(QLocale::English, QLocale::UnitedStates).nativeLanguageName() },
 	{"alternativeLocRegion",		QLocale(QLocale::English, QLocale::UnitedStates).nativeTerritoryName() },
-	{"useThousandSeparators",		true },
+	{"useThousandSeparators",		false },
 	{"themeName",					"lightTheme"},
 	{"useNativeFileDialog",			true},
 	{"disableAnimations",			false},
@@ -114,13 +114,19 @@ const Settings::Setting Settings::Values[] = {
 	{"localConfigurationPath",		""		},
 	{"useConfigurationFile",		true	},
 	{"startMaximized",				false	},
-	{"storeStateEtc",				false	},
+	{"storeStateEtc",				true	},
+	{"autoSaveOn",					true	},
+	{"autoSaveInterval",			5*60	},
 };	
 
 QVariant Settings::value(Settings::Type key)
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode())
-		return defaultValue(key);
+		switch(key)
+		{
+		default:						return defaultValue(key);
+		case Type::STORE_STATE_ETC:		return false; //Dont store state in the data library
+		}
 	
 	return getSettings()->value(Settings::Values[key].type, defaultValue(key));
 }

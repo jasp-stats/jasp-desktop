@@ -40,7 +40,7 @@ ListModelCustomContrasts::ListModelCustomContrasts(TableViewBase *parent) : List
 	connect(listView(), SIGNAL(scaleFactorChanged()),					this,		SLOT(scaleFactorChanged()));
 	connect(VariableInfo::info(),	&VariableInfo::labelsChanged,		this,		&ListModelCustomContrasts::sourceLabelsChanged);
 	connect(VariableInfo::info(),	&VariableInfo::labelsReordered,		this,		&ListModelCustomContrasts::sourceLabelsReordered);
-	connect(VariableInfo::info(),	&VariableInfo::variablesChanged,		this,		&ListModelCustomContrasts::sourceVariablesChanged);
+	connect(VariableInfo::info(),	&VariableInfo::variablesChanged,	this,		&ListModelCustomContrasts::sourceVariablesChanged);
 	connect(infoProviderModel(),	&QAbstractItemModel::modelReset	,	this,		&ListModelCustomContrasts::sourceTermsReset);
 }
 

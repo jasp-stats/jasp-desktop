@@ -62,6 +62,9 @@ using namespace std;
 using PlotEditor::PlotEditorModel;
 using Modules::Upgrader;
 
+
+class Application;
+
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -96,7 +99,7 @@ class MainWindow : public QObject
 
 	friend class FileMenu;
 public:
-	explicit MainWindow(QApplication *application);
+	explicit MainWindow(Application *application);
 			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
@@ -278,6 +281,7 @@ private slots:
 	bool checkDoSync();
 	void unitTestTimeOut();
 	void saveJaspFileHandler();
+	void saveTmpFileHandler();
 	void logToFileChanged(bool logToFile);
 	void logRemoveSuperfluousFiles(int maxFilesToKeep);
 
@@ -317,7 +321,7 @@ private:
 	RibbonModel					*	_ribbonModel			= nullptr;
 	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
 	RibbonModelUncommon			*	_ribbonModelUncommon	= nullptr;
-	QApplication				*	_application 			= nullptr;
+	Application					*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
 	AboutModel					*	_aboutModel				= nullptr;

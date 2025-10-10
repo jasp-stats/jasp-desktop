@@ -440,7 +440,7 @@ bool JASPImporterOld::parseJsonEntry(Json::Value &root, const std::string &path,
 	if (size > 0)
 	{
 		char *data = new char[size];
-		int startOffset = dataEntry->pos();
+        int64_t startOffset = dataEntry->pos();
 		int errorCode = 0;
 		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
 

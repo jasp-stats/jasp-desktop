@@ -209,7 +209,7 @@ ComponentsListBase
 		{
 			id		: itemWrapper
 			height	: rowComponentItem ? rowComponentItem.height : 0
-			width	: rowComponentItem.width
+			width	: rowComponentItem ? rowComponentItem.width  : 0
 
 			property var rowComponentItem	: model.rowComponent
 

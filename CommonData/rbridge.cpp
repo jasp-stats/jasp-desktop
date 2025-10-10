@@ -459,7 +459,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 			if(obeyFilter)
 				filterToUse = rbridge_dataSet->filter()->filtered();
 			
-			stringvec levels = column->dataAsRLevels(vals, filterToUse, true);
+			stringvec levels = column->dataAsRLevels(vals, filterToUse);
 			
 			memcpy(resultCol.ints, vals.data(), vals.size() * sizeof(int));
 			

@@ -71,6 +71,7 @@ Item
 
 		orientation:	Qt.Horizontal
 		visible:		toolseparator
+		padding:		0
 	}
 	
 	property real separatorHalve:	firstSeparator.height / 2

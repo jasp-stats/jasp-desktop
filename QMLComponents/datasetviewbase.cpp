@@ -197,7 +197,7 @@ void DataSetViewBase::modelDataChanged(const QModelIndex &topLeft, const QModelI
 					
 					context->setContextProperty("itemFiltered",		_model->data(modelIndex, getRole("filter")));
 					
-					if (roles.contains(Qt::DisplayRole) || getRole("value") || getRole("label") || getRole("shadowDisplay"))
+					if (roles.contains(Qt::DisplayRole) || roles.contains(getRole("value")) || roles.contains(getRole("label")) || roles.contains(getRole("shadowDisplay"))|| roles.contains(getRole("noSepaDisplay")))
 					{
 						//Changes here should be considered also for DataSetViewBase::setStyleDataItem:
 						context->setContextProperty("itemText",			_model->data(modelIndex));
@@ -343,13 +343,10 @@ void DataSetViewBase::viewportChanged()
 	determineCurrentViewPortIndices();
     storeOutOfViewItems();
 	
-	if(_viewportW > 0 && _viewportH > 0)
+	if(_viewportW >= 0 && _viewportH >= 0)
 	{
 		buildNewLinesAndCreateNewItems();
-	
-		JASPTIMER_RESUME(DataSetViewBase::updateCalledForRender);
 		update();
-		JASPTIMER_STOP(DataSetViewBase::updateCalledForRender);
 	}
 
 	_previousViewportColMin = _currentViewportColMin;

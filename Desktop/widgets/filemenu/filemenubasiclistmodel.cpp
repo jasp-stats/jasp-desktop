@@ -49,8 +49,15 @@ QVariant FileMenuBasicListModel::data(const QModelIndex &index, int role) const
 		else
 		{
 			QString location = QDir::toNativeSeparators(QFileInfo (item.path).path()) ;
-			if (role == DisplayedPathRole && location.startsWith(AppDirs::examples()))
-				location = location.mid(AppDirs::examples().length() + 1);
+			if (role == DisplayedPathRole)
+			{
+				if(location.startsWith(AppDirs::examples()))
+					location = location.mid(AppDirs::examples().length() + 1);
+				else if(QFileInfo (item.path).dir() == QDir(AppDirs::autoSaveDir()))
+					return "";
+			}
+
+
 			while (location.endsWith(QDir::separator())) location.chop(1);
 			return location + QDir::separator();
 		}
@@ -102,22 +109,22 @@ Qt::ItemFlags FileMenuBasicListModel::flags(const QModelIndex &index) const
 
 void FileMenuBasicListModel::changePath(const QString& name, const QString& path)
 {
-	Log::log() << "Override basicListModel::changePath!" << std::endl;
+	assert(false);
 }
 
 void FileMenuBasicListModel::changePathCrumbIndex(const int& index)
 {
-	Log::log() << "Override basicListModel::changePathCrumbIndex!" << std::endl;
+	assert(false);
 }
 
 void FileMenuBasicListModel::openFile(const QString& path)
 {
-	Log::log() << "Override basicListModel::openFile!" << std::endl;
+	assert(false);
 }
 
 void FileMenuBasicListModel::saveFile(const QString& path)
 {
-	Log::log() << "Override basicListModel::saveFile!" << std::endl;
+	assert(false);
 }
 
 QMutex FileMenuBasicListModel::_opening;

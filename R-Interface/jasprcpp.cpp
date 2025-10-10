@@ -143,7 +143,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 
 	auto rEnvironment = Rcpp::Environment::global_env();
 	R_TempDir = (char*)tempDir;
-	
+
 
 	requestJaspResultsFileSourceCB				= callbacks->requestJaspResultsFileSourceCB;
 	dataSetGetColumnOriginalIndex				= callbacks->dataSetGetColumnOriginalIndex;
@@ -211,7 +211,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".requestStateFileNameNative"]		= Rcpp::InternalFunction(&jaspRCPP_requestStateFileNameSEXP);
 	rEnvironment[".readFullFilteredDatasetToEnd"]	= Rcpp::InternalFunction(&jaspRCPP_readFullFilteredDataSet);
 	rEnvironment[".requestSpecificFileNameNative"]	= Rcpp::InternalFunction(&jaspRCPP_requestSpecificFileNameSEXP);
-	
+
 	jaspRCPP_logString("Creating Output sink.\n");
 	rEnvironment[".outputSink"]						= jaspRCPP_CreateCaptureConnection();
 
@@ -238,7 +238,7 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".ppi"]							= 300;
 
 	jaspRCPP_parseEvalQNT("library(methods)");
-	
+
 	jaspRCPP_logString("Loading friendly R functions for computed columns and filters.");
 	jaspRCPP_parseEvalQNT(initFriendlyFunctionsRCode, false, false);
 
@@ -264,7 +264,7 @@ void STDCALL jaspRCPP_init_jaspBase()
 	static setColumnDataFuncDef		_setColumnDataAsNominal		= jaspRCPP_setColumnDataAsNominal;
 	static shouldEnDecodeFuncDef	_shouldEncodeColumnName		= jaspRCPP_shouldEncodeColumnName;
 	static shouldEnDecodeFuncDef	_shouldDecodeColumnName		= jaspRCPP_shouldDecodeColumnName;
-	
+
 	static enDecodeFuncDef			_encodeColumnName			= jaspRCPP_encodeColumnName;
 	static enDecodeFuncDef			_decodeColumnName			= jaspRCPP_decodeColumnName;
 
@@ -300,7 +300,7 @@ void STDCALL jaspRCPP_init_jaspBase()
 	//Load it
 	jaspRCPP_logString("Initializing jaspBase.\n");
 	jaspRCPP_parseEvalQNT("library(jaspBase)");
-	
+
 	jaspRCPP_logString("initializeDoNotRemoveList().\n");
 	jaspRCPP_parseEvalQNT("jaspBase:::.initializeDoNotRemoveList()");
 
@@ -313,15 +313,15 @@ void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * module
 	new RInside();
 #endif
 	auto rEnvironment = Rcpp::Environment::global_env();
-	
+
 	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
-	
+
 	_parseEvalQNT("source('Modules/Tools/symlinkTools.R')");
 	rEnvironment["modulesFolder"] = modulesFolder;
 	rEnvironment["symFolder"] = linkFolder;
 	rEnvironment["junctionsFilePath"] = junctionsFilePath;
 	_parseEvalQNT(".libPaths( c( paste0( modulesFolder, 'Tools/junction_bootstrap_library' )  , .libPaths() ) )");
-	
+
 	if(collectNotRestore)	_parseEvalQNT("collectAndStoreJunctions(modulesFolder)");
 	else					_parseEvalQNT("restoreModulesIfNeeded( modulesFolder, symFolder, junctionsFilePath)");
 }
@@ -392,7 +392,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rEnvironment["preloadData"]			= preloadData;
 	rEnvironment["resultsMeta"]			= "null";
 	rEnvironment["requiresInit"]		= false;
-	
+
 	_setJaspResultsInfo(analysisID, analysisRevision, developerMode);
 
 	static std::string str;
@@ -547,7 +547,7 @@ void STDCALL jaspRCPP_rewriteImages(const char * name, int analysisID)
 
 
 
-const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * setColumnCode) 
+const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * setColumnCode)
 {
 	// Function to evaluate computed column R code from C++
 	// Returns string if R result is a string, else returns "null"
@@ -577,15 +577,15 @@ const char*	STDCALL jaspRCPP_evalComputedColumn(const char *rCode, const char * 
 		}
 		catch(std::runtime_error e)
 		{
-			jaspRCPP_setErrorMsg(e.what());	
+			jaspRCPP_setErrorMsg(e.what());
 			staticResult						=	NullString;
 			rEnvironment[".calcedVals"]	=	NULL;
 		}
-		
+
 		staticResult = jaspRCPP_parseEvalStringReturn(setColumnCode,	false, false);
-		
+
 		rEnvironment[".calcedVals"]	=	NULL;
-		
+
 	}
 	catch(...)
 	{
@@ -729,12 +729,12 @@ SEXP jaspRCPP_allColumnNamesDataset()
 {
 	size_t			cols;
 	const char **	names = getAllColumnNames(cols, true);
-	
+
 	Rcpp::StringVector colNames;
-	
+
 	for(size_t i=0; i<cols; i++)
 		colNames.push_back(names[i]);
-	
+
 	return colNames;
 }
 
@@ -873,20 +873,20 @@ bool jaspRCPP_deleteColumn(std::string columnName)
 
 bool jaspRCPP_getColumnExists(std::string columnName)
 {
-	
+
 	size_t			cols;
 	const char	**	decoded	= getAllColumnNames(cols, false);
-	
+
 	for(size_t i=0; i<cols; i++)
 		if(decoded[i] == columnName)
 			return true;
-	
+
 	//Maybe the R author already encoded the name?
 	const char	**	encoded = getAllColumnNames(cols, true); // This also changes `decoded` above, and in fact, `decoded == encoded` probably
 	for(size_t i=0; i<cols; i++)
 		if(encoded[i] == columnName)
 			return true;
-	
+
 	return false;
 }
 
@@ -915,10 +915,10 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 {
 	static Rcpp::Function asNumeric("as.numeric");
 	static Rcpp::Function asCharacter("as.character");
-	
+
 	Rcpp::Vector<STRSXP>	strData = Rf_isNull(data) ? Rcpp::CharacterVector()	: Rcpp::CharacterVector(asCharacter(Rcpp::_["x"] = data));
 	Rcpp::Vector<REALSXP>	dblData = Rf_isNull(data) ? Rcpp::NumericVector()	: Rcpp::NumericVector(	asNumeric(	Rcpp::_["x"] = data));
-	
+
 	stringvec convertedStrings(strData.begin(), strData.end());
 
 	const char ** nominals = new const char*[convertedStrings.size()]();
@@ -927,9 +927,9 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 	{
 		bool	isNA  = convertedStrings[i] == "NA",
 				isLgl = convertedStrings[i] == "TRUE" || convertedStrings[i] == "FALSE";
-		
+
 		nominals[i] = std::isnan(dblData[i])	// If the string could not be converted to a number its not TRUE or FALSE, but it might be NA. We do not want that as a result!
-					? (!isNA	? convertedStrings[i].c_str() : "") 
+					? (!isNA	? convertedStrings[i].c_str() : "")
 					: (!isLgl	? convertedStrings[i].c_str() : convertedStrings[i] == "TRUE" ? "1" : "0"); //Also getting TRUE or FALSE is not ideal
 	}
 
@@ -1061,7 +1061,7 @@ Rcpp::DataFrame jaspRCPP_readFullDataSet()
 {
 	size_t			colMax		= 0;
 	RBridgeColumn * colResults	= readFullDataSetCB(&colMax);
-	
+
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
@@ -1070,7 +1070,7 @@ Rcpp::DataFrame jaspRCPP_readFullFilteredDataSet()
 {
 	size_t			colMax		= 0;
 	RBridgeColumn * colResults	= readFullFilteredDataSetCB(&colMax);
-	
+
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
@@ -1101,7 +1101,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetSEXP(SEXP columns, SEXP columnsAsNumeric, SE
 	size_t				colMax				= 0;
 	RBridgeColumnType * columnsRequested	= jaspRCPP_marshallSEXPs(columns, columnsAsNumeric, columnsAsOrdinal, columnsAsNominal, allColumns, &colMax);
 	RBridgeColumn	  * colResults			= readDataSetCB(columnsRequested, colMax, true);
-	
+
 	freeRBridgeColumnType(columnsRequested, colMax);
 
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
@@ -1111,7 +1111,7 @@ Rcpp::DataFrame jaspRCPP_readDataSetRequested()
 {
 	size_t				colMax				= 0;
 	RBridgeColumn	  * colResults			= readDataSetRequestedCB(&colMax, true);
-	
+
 	return jaspRCPP_convertRBridgeColumns_to_DataFrame(colResults, colMax);
 }
 
@@ -1272,9 +1272,9 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
 	if(setWd)
 		jaspRCPP_setWorkingDirectory();
 
-	if(preface)	
+	if(preface)
 		jaspRCPP_parseEvalPreface(code);
-	
+
 	_parseEvalQNT(__sinkMe());
 	_parseEvalQNT(code);
 	jaspRCPP_logString("\n");
@@ -1284,7 +1284,7 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
 std::string jaspRCPP_parseEvalStringReturn(const std::string & code, bool setWd, bool preface)
 {
 	SEXP res = jaspRCPP_parseEval(code, setWd, preface);
-	
+
 	return Rf_isString(res) ? Rcpp::as<std::string>(res) : NullString;
 }
 
@@ -1294,9 +1294,9 @@ SEXP jaspRCPP_parseEval(const std::string & code, bool setWd, bool preface)
 	if (setWd)
 		jaspRCPP_setWorkingDirectory();
 
-	if(preface)	
+	if(preface)
 		jaspRCPP_parseEvalPreface(code);
-	
+
 	_parseEvalQNT(__sinkMe());
 	SEXP returnthis = _parseEval(code); //Not throwing is nice actually! Well, unless you want to hear about missing modules etc...
 	jaspRCPP_logString("\n");

@@ -27,7 +27,7 @@ class ComputerFileSystem : public FileSystem
 public:
 	explicit ComputerFileSystem(QObject *parent = NULL);
 
-	void refresh() OVERRIDE;
+	void refresh() override;
 
 	QString mostRecent() const;
 

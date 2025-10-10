@@ -17,6 +17,7 @@
 //
 
 #include "rsyntaxhighlighter.h"
+#include "r_functionwhitelist.h"
 
 RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	: QSyntaxHighlighter(parent), VariableInfoConsumer(), _textDocument(parent)
@@ -31,7 +32,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	// most of these R regExp are copied from: https://github.com/PrismJS/prism/blob/master/components/prism-r.js
 
 	// operators
-	_operatorFormat.setForeground(Qt::red);
+	_operatorFormat.setForeground(QColor(200, 50, 50));
 	rule.pattern = QRegularExpression(R"(->?>?|<(?:=|<?-)?|[>=!]=?|::?|&&?|\|\|?|[+*\/^$@~]|%[^%\s]*%)");
 	rule.format = _operatorFormat;
 	_highlightingRules.append(rule);
@@ -49,13 +50,23 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	_highlightingRules.append(rule);
 
 	// keyword
-	_keywordFormat.setForeground(Qt::darkCyan);
-	rule.pattern = QRegularExpression(R"(\b(?:NA|NA_character_|NA_complex_|NA_integer_|NA_real_|NULL|break|else|for|function|if|in|next|repeat|while)\b)");
+	_keywordFormat.setForeground(QColor(0, 150, 200));
+	QStringList keywordList;
+	keywordList << "NA" << "NA_character_" << "NA_complex_" << "NA_integer_" << "NA_real_" << "NULL" << "break" 
+						<< "else" << "for" << "function" << "if" << "in" << "next" << "repeat" << "while";
+	
+	std::set<std::string> whitelist = R_FunctionWhiteList::getWhiteList();
+	for (const auto& func : whitelist) {
+			keywordList << QString::fromStdString(func);
+	}
+	QString keywordPattern = R"(\b(?:)" + keywordList.join('|') + R"()\b)";
+	
+	rule.pattern = QRegularExpression(keywordPattern);
 	rule.format = _keywordFormat;
 	_highlightingRules.append(rule);
 
 	// boolean and special number
-	_booleanFormat.setForeground(Qt::magenta);
+	_booleanFormat.setForeground(Qt::darkMagenta);
 	rule.pattern = QRegularExpression(R"(\b(?:FALSE|TRUE|Inf|NaN)\b)");
 	rule.format = _booleanFormat;
 	_highlightingRules.append(rule);
@@ -67,7 +78,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	_highlightingRules.append(rule);
 
 	// punctuation
-	_punctuationFormat.setForeground(Qt::blue);
+	_punctuationFormat.setForeground(Qt::darkYellow);
 	rule.pattern = QRegularExpression(R"([(){}\[\],;])");
 	rule.format = _punctuationFormat;
 	_highlightingRules.append(rule);
@@ -79,7 +90,7 @@ RSyntaxHighlighter::RSyntaxHighlighter(QTextDocument *parent)
 	_commentRule.format = _commentFormat;
 	
 	// columns
-	_columnFormat.setForeground(Qt::blue);
+	_columnFormat.setForeground(QColor(0, 92, 197));
 	_columnFormat.setFontItalic(true);
 }
 

@@ -38,11 +38,23 @@ void PlotEditorModel::showPlotEditor(int id, QString options)
 	//maybe the following checks are a bit extreme but whatever
 	if(!_analysis || !_imgOptions.isMember("type") || _imgOptions["type"].type() != Json::stringValue || _imgOptions["type"] != "interactive")
 		return;
+	
+	if (_analysis->needsRefresh())
+	{
+		if (	_analysis->storedWithoutState() 
+			?	MessageForwarder::showYesNo(tr("Stored without state"),		tr("This analysis was stored without state, to edit the plot it must be refreshed first.\n\nRefresh the analysis?"))
+			:	MessageForwarder::showYesNo(tr("Version incompatibility"),	tr("This analysis was created in an older version of JASP, to edit the plot it must be refreshed first.\n\nRefresh the analysis?"))
+			)
+			_analysis->refresh();
+	}
+	else
+	{
 
-	setup();
-
-	if (_validOptions)
-		setVisible(true);
+		setup();
+	
+		if (_validOptions)
+			setVisible(true);
+	}
 	setLoading(false);
 }
 

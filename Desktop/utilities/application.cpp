@@ -39,7 +39,7 @@ void Application::init(QString filePath, bool newData, bool unitTest, int timeOu
 
 	_mainWindow = new MainWindow(this);
 
-	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=]() {
+	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=,this]() {
 		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
 		// But to correctly work, the following calls need the QML files to be loaded.
 		if (newData)
@@ -80,7 +80,7 @@ bool Application::notify(QObject *receiver, QEvent *event)
 		{
 			static int	eventEnumIndex	= QEvent::staticMetaObject.indexOfEnumerator("Type");
 			QString		name			= QEvent::staticMetaObject.enumerator(eventEnumIndex).valueToKey(event->type()),
-						logThis			= "Application::notify event type: " + (name != "" ? name : QString(event->type())) + " for receiver: '" + receiver->objectName() + "'";
+						logThis			= "Application::notify event type: " + (name != "" ? name : QString::number(event->type())) + " for receiver: '" + receiver->objectName() + "'";
 
 			Log::log()  << logThis << std::endl;
 		}*/

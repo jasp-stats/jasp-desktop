@@ -24,6 +24,7 @@
 #include <QCoreApplication>
 #include "version.h"
 #include <json/json.h>
+#include "importer.h"
 
 ///
 /// Loads a jasp file

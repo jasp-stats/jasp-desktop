@@ -10,14 +10,8 @@ const int Label::NO_LABEL			= -1;
 Label::Label(Column * column, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue, int order, int id)
 : DataSetBaseNode(dataSetBaseNodeType::label, column), _column(column)
 {
-	_label			= label;
-	_intsId			= value;
-	_filterAllows	= filterAllows;
-	_description	= description;//description != "" || label.size() < MAX_LABEL_DISPLAY_LENGTH ? description : label; //Use description given if filled otherwise use label if the label won't be displayed entirely
-	_order			= order;
+	setInformation(column, id, order, label, value, filterAllows, description, originalValue);
 
-	_setOriginalValue(originalValue);
-	
 	if(id == -1)	dbCreate();
 	else			_dbId = id;
 }
@@ -82,41 +76,46 @@ void Label::dbUpdate()
 void Label::setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue)
 {
 	assert(_column == column);
-	_dbId			= id;
-	_order			= order;
-	_label			= label;
-	_intsId			= value;	
+
+	_setOriginalValue(originalValue);
+
+	_intsId			= value;
 	_filterAllows	= filterAllows;
 	_description	= description;
-	
-	_setOriginalValue(originalValue);
+	_order			= order;
+
+	std::string oriStr = originalValueAsString();
+	_label			= std::isnan(originalValueAsDouble()) || label != oriStr ? label : ""; // dont store a label if its simply the double
 }
 
-void Label::updateDoubleLabelsPostLocaleChange()
+std::string Label::processLabel(const std::string & label, const std::string & value)
 {
-	if(_originalValue.isDouble() && originalValueAsString() != _label)
-	{
-		//Maybe they really arent the same, but its also possible a languagechange just changed the way the decimal separator is written...
-		double labelDouble;
-		if(ColumnUtils::getDoubleValue(_label, labelDouble) && ColumnUtils::doubleToString(labelDouble) == originalValueAsString())
-		{
-			_label = originalValueAsString();
-			dbUpdate();
-		}
-	}
+	double dbl;
+	
+	ColumnUtils::getDoubleValue(value, dbl);
+			
+	return std::isnan(dbl) || label != value ? label : "";
 }
 
-Json::Value Label::serialize() const
+void Label::rememberCurrentOrigValDisplay()
+{
+	_lastValDisMapping = origValDisplay();
+}
+
+Json::Value Label::serialize(bool forCompare) const
 {
 	Json::Value json(Json::objectValue);
 	
-	json["id"]				= _dbId;
+	if(!forCompare)
+	{
+		json["id"]			= _dbId;
+		json["intsId"]		= _intsId;
+	}
 	json["order"]			= _order;
 	json["label"]			= _label;
-	json["intsId"]			= _intsId;
 	json["filterAllows"]	= _filterAllows;
 	json["description"]		= _description;
-	json["originalValue"]	= _originalValue;
+	json["originalValue"]	= !forCompare ? _originalValue : originalValueAsString();
 
 	return json;
 }
@@ -139,8 +138,8 @@ bool Label::setLabel(const std::string & label)
 {
 	if(_label != label)
 	{
-		std::string oldLabel = _label;
-		_label = label.empty() ? originalValueAsString() : label;
+		std::string oldLabel = Label::label();
+		_label = label;
 		
 		_column->labelDisplayChanged(this, oldLabel);
 
@@ -178,10 +177,10 @@ bool Label::setOriginalValue(const Json::Value & originalValue)
 
 bool Label::setOrigValLabel(const Json::Value &originalValue)
 {
-	std::string oldLabel	= _label,
-				newLabel	= !originalValue.isDouble() ? originalValue.asString() : _column->doubleToDisplayString(originalValue.asDouble(), false, false);
+	std::string oldLabel	= label(),
+				newLabel	= !originalValue.isDouble() ? originalValue.asString() : "";
 	Json::Value previous	= _originalValue;
-	bool		labelChange = _label			!= newLabel,
+	bool		labelChange = _label			!= newLabel || previous != originalValue, //If they are both "" it could still be a change because the originalValue apparently changed and that is what is shown
 				valChange	= _originalValue	!= originalValue,
 				aChange		= labelChange		|| valChange;
 	
@@ -257,6 +256,13 @@ Label &Label::operator=(const Label &label)
 	this->_column			= label._column;
 	
 	return *this;
+}
+
+std::string Label::label(bool showOriDblInstead) const
+{
+	if(!showOriDblInstead || _label != "" || std::isnan(originalValueAsDouble()))
+		return _label;
+	return ColumnUtils::doubleToString(originalValueAsDouble());
 }
 
 std::string Label::labelDisplay() const

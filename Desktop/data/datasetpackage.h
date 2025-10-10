@@ -45,15 +45,16 @@ class DataSetPackageSubNodeModel;
 class DataSetPackage : public QAbstractItemModel //Not QAbstractTableModel because of: https://stackoverflow.com/a/38999940 (And this being a tree model)
 {
 	Q_OBJECT
-	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount								NOTIFY columnsFilteredCountChanged	)
-	Q_PROPERTY(QString		folder					READ folder					WRITE setFolder				NOTIFY folderChanged				)
-	Q_PROPERTY(QString		windowTitle				READ windowTitle										NOTIFY windowTitleChanged			)
-	Q_PROPERTY(bool			modified				READ isModified				WRITE setModified			NOTIFY isModifiedChanged			)
-	Q_PROPERTY(bool			loaded					READ isLoaded				WRITE setLoaded				NOTIFY loadedChanged				)
-	Q_PROPERTY(QString		currentFile				READ currentFile			WRITE setCurrentFile		NOTIFY currentFileChanged			)
-	Q_PROPERTY(bool			dataMode				READ dataMode											NOTIFY dataModeChanged				)
-	Q_PROPERTY(bool			synchingExternally		READ synchingExternally		WRITE setSynchingExternally NOTIFY synchingExternallyChanged	) //might have to be moved to dataset when we have multiple datasets, alse CurrentDataFile in FileMenu will need to be looked at...
-	Q_PROPERTY(bool			manualEdits				READ manualEdits			WRITE setManualEdits		NOTIFY manualEditsChanged			) ///< Did the user change something in the data in such a way that external synching should be disabled if enabled?
+	Q_PROPERTY(int			columnsFilteredCount	READ columnsFilteredCount										NOTIFY columnsFilteredCountChanged	)
+	Q_PROPERTY(QString		folder					READ folder						WRITE setFolder					NOTIFY folderChanged				)
+	Q_PROPERTY(QString		windowTitle				READ windowTitle												NOTIFY windowTitleChanged			)
+	Q_PROPERTY(bool			modified				READ isModified					WRITE setModified				NOTIFY isModifiedChanged			)
+	Q_PROPERTY(bool			modifiedAfterAutoSave	READ isModifiedAfterAutoSave	WRITE setModifiedAfterAutoSave	NOTIFY isModifiedAfterAutoSaveChanged			)
+	Q_PROPERTY(bool			loaded					READ isLoaded					WRITE setLoaded					NOTIFY loadedChanged				)
+	Q_PROPERTY(QString		currentFile				READ currentFile				WRITE setCurrentFile			NOTIFY currentFileChanged			)
+	Q_PROPERTY(bool			dataMode				READ dataMode													NOTIFY dataModeChanged				)
+	Q_PROPERTY(bool			synchingExternally		READ synchingExternally			WRITE setSynchingExternally		NOTIFY synchingExternallyChanged	) //might have to be moved to dataset when we have multiple datasets, alse CurrentDataFile in FileMenu will need to be looked at...
+	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change something in the data in such a way that external synching should be disabled if enabled?
 
 	typedef DataSetPackageSubNodeModel							SubNodeModel;
 
@@ -141,12 +142,14 @@ public:
 				bool				isLoaded()							const	{ return _isLoaded;						 }
 				bool				isJaspFile()						const	{ return _isJaspFile;					  } ///< for readability
 				bool				isModified()						const	{ return _isModified;					   }
-				bool				hasAnalysesWithoutData()			const	{ return _hasAnalysesWithoutData;			}
+				bool				isModifiedAfterAutoSave()			const	{ return _isModifiedAfterAutoSave;	 	    }
+				bool				hasAnalysesWithoutData()			const	{ return _hasAnalysesWithoutData;			 }
 				std::string			initialMD5()						const	{ return _initialMD5;						 }
 				bool				manualEdits()						const;
 				QString				windowTitle()						const;
 				QString				description()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
+				QString				autoSavedFileName()					const;
 				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
 				bool				synchingData()						const	{ return _synchingData;								}
 				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
@@ -161,14 +164,15 @@ public:
 
 				// The data file might be read-only if it comes from the examples or read from an external database
 				bool				dataFileReadOnly()					const	{ return _dataFileReadOnly;						}
-				bool				currentFileIsExample()				const;
+				bool				currentJaspFileIsNonSaveable()		const;
+				bool				filePathIsNonSaveable(const QString &path) const;
 				long				dataFileTimestamp()					const	{ return _dataSet ? _dataSet->dataFileTimestamp() : 0;	}
 				bool				isDatabaseSynching()				const	{ return _databaseIntervalSyncher.isActive();	}
 				bool				filterShouldRunInit()				const	{ return _filterShouldRunInit && isLoaded();					}
 
 
 				void				setFilterShouldRunInit(bool shouldIt)				{ _filterShouldRunInit			= shouldIt;			}
-				void				setAnalysesData(const Json::Value & analysesData)	{ _analysesData					= analysesData;		}
+				void				setAnalysesData(const Json::Value & analysesData);
 				void				setArchiveVersion(Version archiveVersion)			{ _archiveVersion				= archiveVersion;	}
 				void				setJaspVersion(Version jaspVersion)					{ _jaspVersion					= jaspVersion;		}
 				void				updateDbToCurrentVersion();							///< Should be ran immediately after loading the jasp file
@@ -180,6 +184,7 @@ public:
 				void				setAnalysesHTML(const QString & html)				{ _analysesHTML					= html;				}
 				void				setIsJaspFile(bool isJaspFile)						{ _isJaspFile					= isJaspFile;		}
 				void				setHasAnalysesWithoutData()							{ _hasAnalysesWithoutData		= true;				}
+				void				setModifiedAfterAutoSave(bool value);
 				void				setModified(bool value);
 				void				setAnalysesHTMLReady()								{ _analysesHTMLReady			= true;				}
 				void				setId(std::string id)								{ _id							= id;				}
@@ -279,6 +284,8 @@ public:
 				void						emitColumnChanged(const QString &colName); //temporary until ColumnQ exists
 				
 				
+
+				
 				
 				
 signals:
@@ -298,6 +305,7 @@ signals:
 				void				columnAddedManually(	QString columnName);
 				void				chooseColumn(			int		colId);
 				void				isModifiedChanged();
+				void				isModifiedAfterAutoSaveChanged();
 				void				enginesPrepareForDataSignal();
 				void				enginesReceiveNewDataSignal();
 				bool				enginesInitializingSignal();
@@ -323,6 +331,7 @@ signals:
 				void				refreshAllAnalyses();
 				void				refreshAllCompCols();
 				void				setDataMode(bool mode);
+				void				makeAnAutoSave();
 
 public slots:
 				void				refresh()							{ beginResetModel(); endResetModel(); }
@@ -343,9 +352,11 @@ public slots:
 				void				checkDataSetForUpdates();
 				void				delayedRefresh();
 				void				doWalCheckPoint();
+				void				handleAutoSave();
 				void				resetFilterCounters();
 				void				prepareForLanguageChange();
 				void				languageChangeDone();
+				void				handleAutoSavePrefChange();
 				
 private:
 				bool				isThisTheSameThreadAsEngineSync();
@@ -374,6 +385,7 @@ private:
 	bool						_isJaspFile					= false,
 								_dataFileReadOnly,
 								_isModified					= false,
+								_isModifiedAfterAutoSave	= false,
 								_isLoaded					= false,
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
@@ -396,7 +408,8 @@ private:
 	
 	QTimer						_databaseIntervalSyncher,
 								_delayedRefreshTimer,
-								_doWalCheckPointTimer;
+								_doWalCheckPointTimer,
+								_autoSaveTimer;
 	UndoStack				*	_undoStack					= nullptr;
 	
 };

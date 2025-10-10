@@ -193,6 +193,9 @@ GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					
 GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
 GET_PREF_FUNC_BOOL(	storeStateEtc,				Settings::STORE_STATE_ETC							)
 
+GET_PREF_FUNC_BOOL(	autoSaveAtAll,				Settings::AUTOSAVE_ON								)
+GET_PREF_FUNC_INT(	autoSaveIntervalSec,		Settings::AUTOSAVE_INTERVAL_SEC						)
+
 bool PreferencesModel::engineSandbox() const
 {
 #ifdef _WIN32
@@ -399,6 +402,9 @@ SET_PREF_FUNCTION(				QString,	setRemoteConfigurationURL,	remoteConfigurationURL
 SET_PREF_FUNCTION(				bool,   	setUseConfigurationFile, 	useConfigurationFile,		useConfigurationFileChanged,    Settings::USE_CONFIGURATION_FILE  					)
 SET_PREF_FUNCTION(				bool,   	setStartMaximized,			startMaximized,				startMaximizedChanged,			Settings::START_MAXIMIZED		  					)
 SET_PREF_FUNCTION(				bool,   	setStoreStateEtc,			storeStateEtc,				storeStateEtcChanged,			Settings::STORE_STATE_ETC		  					)
+SET_PREF_FUNCTION(				bool,   	setAutoSaveAtAll,			autoSaveAtAll,				autoSaveAtAllChanged,			Settings::AUTOSAVE_ON			  					)
+SET_PREF_FUNCTION(				int,		setAutoSaveIntervalSec,		autoSaveIntervalSec,		autoSaveIntervalSecChanged,		Settings::AUTOSAVE_INTERVAL_SEC	  					)
+
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {

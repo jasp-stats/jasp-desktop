@@ -109,8 +109,8 @@ public:
 	static QLocale				currentQLocale();
 	
 	static QString				decimalPoint();
-	static QString				doubleToString(			double dbl, int precision = 10);
-	static QString				doubleToStringMaxPrec(	double dbl);
+	static QString				doubleToString(			double dbl, bool sepas = true, int precision = 10);
+	static QString				doubleToStringMaxPrec(	double dbl, bool sepas = true);
 	static QString				currencyString(			double money, const QString &symbol = QString());
 	
 	

@@ -31,9 +31,10 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_mainWindow				= qobject_cast<MainWindow*>(parent);
 	_recentFiles			= new RecentFiles			(this);
 	_currentDataFile		= new CurrentDataFile		(this);
+	_autoSaves				= new AutoSaves				(this);
 	_computer				= new Computer				(this);
 	_OSF					= new OSF					(this);
-	_database				= new DatabaseFileMenu				(this);
+	_database				= new DatabaseFileMenu		(this);
 	_dataLibrary			= new DataLibrary			(this);
 	_actionButtons			= new ActionButtons			(this);
 	_resourceButtons		= new ResourceButtons		(this);
@@ -128,7 +129,7 @@ FileEvent *FileMenu::newData()
 
 FileEvent *FileMenu::save()
 {
-	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentFileIsExample())
+	if (_currentFileType != Utils::FileType::jasp || DataSetPackage::pkg()->currentJaspFileIsNonSaveable())
 		return saveAs();
 
 	FileEvent *event = new FileEvent(this, FileEvent::FileSave);
@@ -146,7 +147,6 @@ FileEvent *FileMenu::save()
 
 void FileMenu::sync()
 {
-	
 	if(DataSetPackage::pkg()->databaseJson() != Json::nullValue)
 	{
 		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
@@ -266,7 +266,7 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
-		if (event->isSuccessful())
+		if (event->isSuccessful() && !event->isTmp())
 		{
 			//  don't add database to the recent list
 			if (!event->isDatabase())
@@ -285,19 +285,21 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 				if	(	event->operation() == FileEvent::FileOpen
 					&& !event->isReadOnly()
-					&& event->type() == FileTypeBase::jasp
+					&&	event->type() == FileTypeBase::jasp
 					&& !DataSetPackage::pkg()->dataFileReadOnly()
-					&& DataSetPackage::pkg()->dataSet()->dataFileSynch()
+					&&	DataSetPackage::pkg()->dataSet()->dataFileSynch()
 				)
 					DataSetPackage::pkg()->setSynchingExternally(true);
 			}
 
 			// all this stuff is a hack
 			QFileInfo info(event->path());
-			_computer->setFileName(info.completeBaseName());
+
+			_computer->setFileName(info.dir() != QDir(AppDirs::autoSaveDir()) ? info.completeBaseName() : DataSetPackage::pkg()->autoSavedFileName());
 
 			_currentFilePath		= event->path();
 			_currentFileType		= event->type();
+
 			_OSF->setProcessing(false);
 		}
 	}
@@ -317,13 +319,16 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 
 	_resourceButtons->setButtonEnabled(ResourceButtons::CurrentFile, !_currentDataFile->getCurrentFilePath().isEmpty());
 
-	if (event->isSuccessful())
+	if (event->isSuccessful() && !event->isTmp())
 	{
 		switch(event->operation())
 		{
 		case FileEvent::FileOpen:
 		case FileEvent::FileSave:
-			enableButtonsForOpenedWorkspace((!event->isReadOnly() && event->type() == Utils::FileType::jasp) && (event->operation() == FileEvent::FileOpen && DataSetPackage::pkg()->currentFileIsExample() ));
+			enableButtonsForOpenedWorkspace(
+						(!event->isReadOnly() && event->type() == Utils::FileType::jasp)
+						&&
+						(event->operation() == FileEvent::FileOpen && !DataSetPackage::pkg()->filePathIsNonSaveable(event->path()) ));
 			break;
 
 		case FileEvent::FileClose:
@@ -377,7 +382,7 @@ void FileMenu::analysisAdded(Analysis *analysis)
 
 void FileMenu::workspaceModified()
 {
-	if(DataSetPackage::pkg()->isLoaded() && !DataSetPackage::pkg()->dataFileReadOnly() && getCurrentFileType() == Utils::FileType::jasp)
+	if(DataSetPackage::pkg()->isLoaded() && !DataSetPackage::pkg()->dataFileReadOnly() && getCurrentFileType() == Utils::FileType::jasp && !DataSetPackage::pkg()->currentJaspFileIsNonSaveable())
 		_actionButtons->setEnabled(ActionButtons::Save, DataSetPackage::pkg()->isModified());
 }
 
@@ -418,7 +423,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
-		if (getCurrentFileType() == Utils::FileType::jasp && ! DataSetPackage::pkg()->currentFileIsExample())
+		if (getCurrentFileType() == Utils::FileType::jasp && !DataSetPackage::pkg()->currentJaspFileIsNonSaveable())
 			save();
 		else
 			setMode(FileEvent::FileSave);			
@@ -450,8 +455,17 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 
 void FileMenu::resourceButtonClicked(const int buttonType)
 {
-	if (buttonType == ResourceButtons::OSF)
+	switch(buttonType)
+	{
+	case ResourceButtons::OSF:
 		_OSF->attemptToConnect();
+		break;
+
+	case ResourceButtons::AutoSaves:
+		_autoSaves->listModel()->refresh();
+		break;
+	}
+
 }
 
 void FileMenu::showAboutRequest()

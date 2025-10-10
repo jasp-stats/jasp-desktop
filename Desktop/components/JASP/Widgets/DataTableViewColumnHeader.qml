@@ -183,8 +183,8 @@ Rectangle
 
 				if(dataSetModel.columnUsedInEasyFilter(columnIndex))
 				{
-					filterWindow.showEasyFilter = true
-					filterWindow.open()
+					filterModel.showEasyFilter = true
+					filterModel.filterVisible = true
 				}
 				
 				//A button in VariablesWindow will do this? in any case, it is kind of annoying to have the analysis always pop up instead of variableswindow...

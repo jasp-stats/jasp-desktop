@@ -162,6 +162,7 @@ protected slots:
 			void					setOptionKeyValue(const QString& optionKeyValue)		{ _optionKeyValue = optionKeyValue; }
 			void					setOptionKeyLabel(const QString& optionKeyLabel)		{ _optionKeyLabel = optionKeyLabel; }
 			bool					checkLevelsConstraints();
+			void					checkTermsTypes();
 
 protected:
 	void							_setInitialized(const Json::Value& value = Json::nullValue)				override;

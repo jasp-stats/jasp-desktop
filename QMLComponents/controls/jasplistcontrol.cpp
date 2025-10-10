@@ -73,7 +73,10 @@ void JASPListControl::_checkAllSourcesAreConnected(bool addConnect)
 void JASPListControl::_setupSources()
 {
 	for (SourceItem* sourceItem : _sourceItems)
-		delete sourceItem;
+	{
+		sourceItem->deleteLater();
+		sourceItem->disconnect();
+	}
 
 	_sourceItems = SourceItem::readAllSources(this);
 
@@ -123,7 +126,7 @@ bool JASPListControl::containsInteractions() const
 
 void JASPListControl::termsChangedHandler()
 {
-	if (checkLevelsConstraints())
+	if (model() && checkLevelsConstraints())
 	{
 		setColumnsTypes(model()->getUsedTypes());
 		setColumnsNames(model()->terms().values());
@@ -166,6 +169,7 @@ void JASPListControl::setUp()
 	connect(listModel,							&ListModelDraggable::termsChanged,				this,	&JASPListControl::levelsChanged				);
 	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::levelsChanged				);
 	connect(listModel,							&ListModelDraggable::filterChanged,				this,	&JASPListControl::checkLevelsConstraints, Qt::QueuedConnection	);
+	connect(_allowedTypesModel,					&ColumnTypesModel::typesChanged,				this,	&JASPListControl::checkTermsTypes				);
 }
 
 void JASPListControl::cleanUp()
@@ -176,7 +180,7 @@ void JASPListControl::cleanUp()
 
 		if (_model)
 		{
-			_model->disconnect();
+			_model->cleanUp();
 			for (RowControls* rowControls : _model->getAllRowControls().values())
 				for (JASPControl* control : rowControls->getJASPControlsMap().values())
 					control->cleanUp();
@@ -245,7 +249,7 @@ JASPControl *JASPListControl::getRowControl(const QString &key, const QString &n
 
 columnType JASPListControl::getVariableType(const QString &name)
 {
-	return model()->getVariableType(name);
+	return model() ? model()->getVariableType(name) : columnType::unknown;
 }
 
 int JASPListControl::count()
@@ -273,7 +277,8 @@ std::vector<std::string> JASPListControl::usedVariables() const
 
 JASPControls JASPListControl::getMDSubItems(const QQuickItem*) const
 {
-	const Terms& terms = model()->terms();
+	if (!model())
+		return {};
 
 	// If row components are used, use only the items of the first row (if exists) to generate the help.
 	const ListModel::RowControlMap & map = model()->getAllRowControls();
@@ -329,7 +334,7 @@ bool JASPListControl::hasMandatoryType() const
 
 bool JASPListControl::_checkLevelsConstraintsForVariable(const QString& variable)
 {
-	if (variable.isEmpty())
+	if (variable.isEmpty() || !model())
 		return true;
 
 	columnType	type	= (columnType)model()->requestInfo(VariableInfo::VariableType, variable).toInt();
@@ -377,6 +382,9 @@ bool JASPListControl::_checkLevelsConstraints()
 {
 	bool checked = true;
 
+	if (!model())
+		return checked;
+
 	for (const Term& term : model()->terms())
 	{
 		if (!_checkLevelsConstraintsForVariable(term.value()))
@@ -401,6 +409,15 @@ bool JASPListControl::checkLevelsConstraints()
 		clearControlError();
 
 	return checked;
+}
+
+void JASPListControl::checkTermsTypes()
+{
+	if (model())
+	{
+		model()->checkTermsTypes();
+		checkLevelsConstraints();
+	}
 }
 
 QStringList JASPListControl::levels() const
@@ -429,7 +446,7 @@ void JASPListControl::_setAllowedVariables()
 
 	emit allowedColumnsIconsChanged();
 
-	if (form() && form()->initialized())
+	if (model() && form() && form()->initialized())
 		// If the allowed columns have changed, then refresh the model so that columns that are not allowed anymore are removed.
 		model()->refresh();
 }

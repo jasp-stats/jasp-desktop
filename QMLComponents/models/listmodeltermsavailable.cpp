@@ -29,7 +29,7 @@ ListModelTermsAvailable::ListModelTermsAvailable(JASPListControl *listView, cons
 	_setTerms(terms);
 }
 
-void ListModelTermsAvailable::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm&, bool)
+void ListModelTermsAvailable::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm&)
 {
 	beginResetModel();
 	
@@ -39,8 +39,9 @@ void ListModelTermsAvailable::initTerms(const Terms &terms, const Terms::Related
 	if (currentSortType() != SortType::None)
 		Sortable::sortItems();
 
-	removeTermsInAssignedList();
 	endResetModel();
+	
+	removeTermsInAssignedList();
 }
 
 void ListModelTermsAvailable::sortItems(SortType sortType)
@@ -223,7 +224,7 @@ void ListModelTermsAvailable::removeTermsInAssignedList()
 	{
 		Terms assignedTerms = modelAssign->terms();
 		if (assignedTerms.discardWhatIsntTheseTerms(_allSortedTerms))
-			modelAssign->initTerms(assignedTerms, {}, true); // initTerms call removeTermsInAssignedList
+            modelAssign->initTerms(assignedTerms); // initTerms call removeTermsInAssignedList
 		newTerms.remove(assignedTerms);
 	}
 

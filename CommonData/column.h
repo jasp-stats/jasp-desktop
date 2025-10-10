@@ -131,7 +131,7 @@ public:
 			
 			int						nonFilteredNumericsCount();
             stringvec				nonFilteredLevels();
-			void					nonFilteredCountersReset();
+			void					nonFilteredCountersReset(bool updateLabelIndexes = true);
 
 			std::set<size_t>		labelsMoveRows(std::vector<size_t> rows, bool up);
 			void					labelsReverse();
@@ -147,7 +147,7 @@ public:
 			stringvec				labelsAsStrings()																						const;
 			stringvec				nonEmptyLevelsStrings()																					const;
 			stringvec				displaysAsStrings()																						const;
-			stringvec				dataAsRLevels(intvec & values, const boolvec & filter, bool useLabels = true)			; ///< values is output! If filter is of different length than the data an error is thrown, if length is zero it is ignored. useLabels indicates whether the levels will be based on the label or on the value as specified in the label editor.
+			stringvec				dataAsRLevels(intvec & values, const boolvec & filter)			; ///< values is output! If filter is of different length than the data an error is thrown, if length is zero it is ignored. useLabels indicates whether the levels will be based on the label or on the value as specified in the label editor.
 			doublevec				dataAsRDoubles(const boolvec & filter)													const; ///< If filter is of different length than the data an error is thrown, if length is zero it is ignored
 
 			void					labelValueChanged(		Label * label,	const Json::Value & previousOriginal); ///< Pass NaN for non-convertible values
@@ -209,7 +209,8 @@ public:
 			void					checkForLoopInDependencies(std::string code);
 			const	stringset	 &	dependsOnColumns(bool refresh = true);
 			Json::Value				serialize()																const;
-			Json::Value				serializeLabels()														const;
+			Json::Value				serializeLabels(bool forCompare = false)								const;
+			Json::Value				jsonForCompare()														const;
 			void					deserialize(				const Json::Value & info);
 			void					deserializeLabelsForCopy(	const Json::Value & info);
 			void					deserializeLabelsForRevert(	const Json::Value & info);
@@ -228,8 +229,7 @@ public:
 			size_t					getMaximumWidthInCharacters(bool shortenAndFancyEmptyValue, bool valuesPlease, size_t	extraPad	= 4); ///< Tries to take into consideration that utf-8 can have more characters than codepoints and compensates for it
 			columnType				resetValues(int thresholdScale); ///< "Reimport" the values it already has with a possibly different threshold of values 
 			stringset				mergeOldMissingDataMap(const Json::Value & missingData); ///< <0.19 JASP collected the removed empty values values in a map in a json object... We need to be able to read at least 0.18.3 so here this function that absorbs such a map and adds any required labels. It does not add the empty values itself though!
-			void					updateLabelsPostLocaleChange();
-			
+
 	static	void					setAutoSortByValuesByDefault(bool autoSort);
 	static	bool					autoSortByValuesByDefault();
 	

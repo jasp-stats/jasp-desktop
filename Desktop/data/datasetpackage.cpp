@@ -33,6 +33,7 @@
 #include "filtermodel.h"
 #include <ranges>
 #include "variableinfo.h"
+#include "fileevent.h"
 
 //Im having problems getting the proxy models to play nicely with beginRemoveRows etc
 //So just reset the whole thing as that is what happens in datasetview
@@ -51,13 +52,17 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	_dataSet	= new DataSet(); //We create one here to make sure filter() etc can actually work
 	setDefaultWorkspaceEmptyValues();
 	
-	connect(this, &DataSetPackage::isModifiedChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::loadedChanged,			this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentFileChanged,		this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::folderChanged,			this, &DataSetPackage::windowTitleChanged);
-	connect(this, &DataSetPackage::currentFileChanged,		this, &DataSetPackage::nameChanged);
-	connect(this, &DataSetPackage::dataModeChanged,			this, &DataSetPackage::onDataModeChanged);
-	connect(this, &DataSetPackage::columnDataTypeChanged,	this, [this]() {ColumnEncoder::setCurrentColumnNames(getColumnTypesMap());}	);
+	connect(this, &DataSetPackage::isModifiedChanged,					this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::loadedChanged,						this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::folderChanged,						this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::isModifiedAfterAutoSaveChanged,		this, &DataSetPackage::windowTitleChanged);
+	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::nameChanged);
+	connect(this, &DataSetPackage::dataModeChanged,						this, &DataSetPackage::onDataModeChanged);
+	connect(this, &DataSetPackage::columnDataTypeChanged,				this, [this]() {ColumnEncoder::setCurrentColumnNames(getColumnTypesMap());}	);
+	
+	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveAtAllChanged,			this, &DataSetPackage::handleAutoSavePrefChange);
+	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveIntervalSecChanged,	this, &DataSetPackage::handleAutoSavePrefChange);
 
 	_dataSubModel	= new SubNodeModel("data",		_dataSet->dataNode());
 	_filterSubModel = new SubNodeModel("filters",	_dataSet->filtersNode());
@@ -66,12 +71,17 @@ DataSetPackage::DataSetPackage(QObject * parent) : QAbstractItemModel(parent)
 	connect(&_databaseIntervalSyncher,	&QTimer::timeout, this, &DataSetPackage::synchingIntervalPassed);
 	connect(&_delayedRefreshTimer,		&QTimer::timeout, this, &DataSetPackage::delayedRefresh);
 	connect(&_doWalCheckPointTimer,		&QTimer::timeout, this, &DataSetPackage::doWalCheckPoint);
+	connect(&_autoSaveTimer,			&QTimer::timeout, this, &DataSetPackage::handleAutoSave);
 	
 	_undoStack = new UndoStack(this);
 	
-	_doWalCheckPointTimer.setInterval(5*60*1000);
-	_doWalCheckPointTimer.setSingleShot(false);
-	_doWalCheckPointTimer.start();
+	_doWalCheckPointTimer	.setInterval(5*60*1000);
+	_doWalCheckPointTimer	.setSingleShot(false);
+	_doWalCheckPointTimer	.start();
+	
+	
+	_autoSaveTimer			.setSingleShot(false);
+	handleAutoSavePrefChange();
 }
 
 DataSetPackage::~DataSetPackage() 
@@ -100,7 +110,7 @@ void DataSetPackage::setEngineSync(EngineSync * engineSync)
 
 bool DataSetPackage::isThisTheSameThreadAsEngineSync()
 {
-	return	QThread::currentThread() == _engineSync->thread();
+	return	_engineSync && QThread::currentThread() == _engineSync->thread();
 }
 
 void DataSetPackage::enginesPrepareForData()
@@ -1081,7 +1091,29 @@ void DataSetPackage::setModified(bool value)
 		_isModified = value;
 		emit isModifiedChanged();
 	}
+	
+	setModifiedAfterAutoSave(_isModified);
 }
+
+void DataSetPackage::setModifiedAfterAutoSave(bool value)
+{
+	if (value != _isModifiedAfterAutoSave)
+	{
+		_isModifiedAfterAutoSave = value;
+		emit isModifiedAfterAutoSaveChanged();
+	}
+}
+
+
+void DataSetPackage::handleAutoSave()
+{
+	if(_isModifiedAfterAutoSave)				
+		emit makeAnAutoSave();
+	
+	else if(FileEvent::autoSaveExists() && _isModified)
+			Utils::touch(fq(FileEvent::pathTmp()));
+}
+
 
 void DataSetPackage::setLoaded(bool loaded)
 {
@@ -1234,11 +1266,21 @@ void DataSetPackage::prepareForLanguageChange()
 void DataSetPackage::languageChangeDone()
 {
 	_waitingForLanguageChange = false; //Dont accept changes while the interface changes
-	
-	if(_dataSet)
-		_dataSet->updateLabelsPostLocaleChange();
-	
+
 	refresh();
+}
+
+void DataSetPackage::handleAutoSavePrefChange()
+{
+	_autoSaveTimer.setInterval(1000 * PreferencesModel::prefs()->autoSaveIntervalSec());
+	
+	if(_autoSaveTimer.isActive() != PreferencesModel::prefs()->autoSaveAtAll())
+	{
+		if(!PreferencesModel::prefs()->autoSaveAtAll())		
+			_autoSaveTimer.stop();
+		else
+			_autoSaveTimer.start();
+	}
 }
 
 
@@ -1308,7 +1350,6 @@ void DataSetPackage::doWalCheckPoint()
 	if(DatabaseInterface::singleton())
 		DatabaseInterface::singleton()->doWalCheckPoint();
 }
-
 
 
 void DataSetPackage::refreshColumn(QString columnName)
@@ -1449,7 +1490,7 @@ void DataSetPackage::loadDataSet(std::function<void(float)> progressCallback)
 	_db->load();		
 	_db->upgradeDBFromVersion(_jaspVersion);
 	
-	bool do019Upgrade = _jaspVersion < "0.19";
+	bool 	do019Upgrade  = _jaspVersion < "0.19";
 	
 	_dataSet = new DataSet(0);
 	_dataSet->dbLoad(1, progressCallback, _jaspVersion); //Right now there can only be a dataSet with ID==1 so lets keep it simple
@@ -2469,12 +2510,40 @@ QString DataSetPackage::windowTitle() const
 
 	folder = folder == "" ? "" : "      (" + folder + ")";
 
-	return name + (isModified() ? "*" : "") + folder;
+	return name + (isModified() ? isModifiedAfterAutoSave() ? "*" : "* (autosaved)"  : "") + folder;
 }
 
-bool DataSetPackage::currentFileIsExample() const
+
+bool DataSetPackage::currentJaspFileIsNonSaveable() const
 {
-	return currentFile().startsWith(AppDirs::examples());
+	return filePathIsNonSaveable(currentFile());
+}
+
+bool DataSetPackage::filePathIsNonSaveable(const QString & path) const
+{
+	QFileInfo fileDir(path);
+
+	return fileDir.dir() == QDir(AppDirs::examples()) || fileDir.dir() == QDir(AppDirs::autoSaveDir());
+}
+
+void DataSetPackage::setAnalysesData(const Json::Value &analysesData)
+{
+	QString		previousASF					= analysesData.type() != Json::objectValue ? "" : tq(analysesData.get("autoSaveFileName", "").asString());
+				_analysesData				= analysesData;
+	QFileInfo	dataFile					( tq(_dataSet->dataFilePath()) ),
+				curFileI					( currentFile() );
+	QString		dataFileName				= dataFile.fileName(),
+				curFile						= currentFile(),
+				autoSaveString				= curFile != "JASP" ? tr("%1 autosaved").arg(curFileI.fileName()) + "<br>" + tr("Full path: %1").arg("<code>"+curFileI.absoluteFilePath()+"</code>") : dataFileName == "" ? tr("Unsaved workspace") : tr("Unsaved workspace of datafile %1").arg(dataFileName);
+
+	_analysesData["autoSaveDescription"]	= fq(autoSaveString);
+	_analysesData["autoSaveFileName"]		= fq(curFileI.exists() ? curFileI.fileName() : previousASF != "" ? previousASF : curFile != "" ? curFile : tr("Autosave"));
+}
+
+
+QString DataSetPackage::autoSavedFileName() const
+{
+	return tq(_analysesData.get("autoSaveFileName", fq(currentFile())).asString());
 }
 
 void DataSetPackage::setDataFilePath(std::string filePath, long timestamp)

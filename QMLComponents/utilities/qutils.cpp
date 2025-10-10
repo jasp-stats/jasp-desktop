@@ -364,14 +364,14 @@ QLocale QColumnUtils::currentQLocale()
 	return _lastQLocale;
 }
 
-QString QColumnUtils::doubleToString(double dbl, int precision)
+QString QColumnUtils::doubleToString(double dbl, bool sepas, int precision)
 {
-	return tq(ColumnUtils::doubleToString(dbl, precision));
+	return tq(ColumnUtils::doubleToString(dbl, sepas, precision));
 }
 
-QString QColumnUtils::doubleToStringMaxPrec(double dbl)
+QString QColumnUtils::doubleToStringMaxPrec(double dbl, bool sepas)
 {
-	return tq(ColumnUtils::doubleToStringMaxPrec(dbl));
+	return tq(ColumnUtils::doubleToStringMaxPrec(dbl, sepas));
 }
 
 QString QColumnUtils::currencyString(double money, const QString &symbol)

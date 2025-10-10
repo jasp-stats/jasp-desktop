@@ -17,14 +17,27 @@ Rectangle
 		anchors.leftMargin: rootDataset.leftHandSpace
 		orientation:		Qt.Vertical
 		
-		FilterWindow
+		Loader
 		{
-			id:							filterWindow
-			objectName:					"filterWindow"
-			SplitView.minimumHeight:	desiredMinimumHeight
-			SplitView.preferredHeight:	desiredHeight
+			SplitView.minimumHeight:	preferencesModel.uiScale * 200
+			SplitView.preferredHeight:	Screen.desktopAvailableHeight / 3
 			SplitView.maximumHeight:	splitViewData.height
-
+			
+			sourceComponent:			filterComponent
+			active:						filterModel.filterVisible
+			visible:					filterModel.filterVisible
+		}
+		
+		Component
+		{
+			id:	filterComponent
+			
+			FilterWindow
+			{
+				id:							filterWindow
+				objectName:					"filterWindow"
+	
+			}
 		}
 
 		VariablesWindow

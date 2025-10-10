@@ -26,6 +26,7 @@
 
 #include "widgets/filemenu/recentfiles.h"
 #include "widgets/filemenu/currentdatafile.h"
+#include "widgets/filemenu/autosaves.h"
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
 #include "widgets/filemenu/databasefilemenu.h"
@@ -47,20 +48,21 @@ class FileMenu : public QObject
 	Q_OBJECT
 
 	Q_PROPERTY(FileOperation				fileoperation			READ fileoperation				WRITE setFileoperation				NOTIFY fileoperationChanged		)
-	Q_PROPERTY(DataLibrary				*	datalibrary				READ datalibrary													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(CurrentDataFile			*	currentFile				READ currentFile													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(RecentFiles				*	recentFiles				READ recentFiles													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(Computer					*	computer				READ computer														NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(OSF						*	osf						READ osf															NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(DatabaseFileMenu			*	database				READ database														NOTIFY dummyChangedNotifier		)
+	Q_PROPERTY(DataLibrary				*	datalibrary				READ datalibrary													CONSTANT						)
+	Q_PROPERTY(CurrentDataFile			*	currentFile				READ currentFile													CONSTANT						)
+	Q_PROPERTY(RecentFiles				*	recentFiles				READ recentFiles													CONSTANT						)
+	Q_PROPERTY(AutoSaves				*	autoSaves				READ autoSaves														CONSTANT						)
+	Q_PROPERTY(Computer					*	computer				READ computer														CONSTANT						)
+	Q_PROPERTY(OSF						*	osf						READ osf															CONSTANT						)
+	Q_PROPERTY(DatabaseFileMenu			*	database				READ database														CONSTANT						)
+	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													CONSTANT						)
+	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												CONSTANT						)
+	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											CONSTANT						)
 	Q_PROPERTY(bool							visible					READ visible					WRITE setVisible					NOTIFY visibleChanged			)
-	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												NOTIFY dummyChangedNotifier		)
-	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											NOTIFY dummyChangedNotifier		) 
 
 public:
 
-	enum FileLocation { Recent = 0, Current, ThisComputer, Osf, Examples, CountLocations };
+	enum FileLocation { Recent = 0, Current, ThisComputer, Osf, Examples, AutoSavesLoc, CountLocations };
 
 	Q_ENUM(FileMenuListItemType)
 
@@ -95,6 +97,7 @@ public:
 	DataLibrary						*	datalibrary()				const	{ return _dataLibrary;				}
 	CurrentDataFile					*	currentFile()				const	{ return _currentDataFile;			}
 	RecentFiles						*	recentFiles()				const	{ return _recentFiles;				}
+	AutoSaves						*	autoSaves()					const	{ return _autoSaves;				}
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
 	DatabaseFileMenu				*	database()					const	{ return _database;					}
@@ -153,6 +156,7 @@ private:
 	OnlineDataManager			*	_odm						= nullptr;
 	CurrentDataFile				*	_currentDataFile			= nullptr;
 	RecentFiles					*	_recentFiles				= nullptr;
+	AutoSaves					*	_autoSaves					= nullptr;
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
 	DatabaseFileMenu			*	_database					= nullptr;
@@ -167,7 +171,7 @@ private:
 	Utils::FileType					_currentFileType			= Utils::FileType::unknown;
 	bool							_visible					= false;
 	FileOperation					_fileoperation				= ActionButtons::None;
-	MainWindow*						_mainWindow					= nullptr;
+	MainWindow					*	_mainWindow					= nullptr;
 };
 
 #endif // FILEMENU_H

@@ -37,7 +37,7 @@ QString TextInputBase::_getDoubleArrayValue(const std::vector<double>& doubleVal
 		if (!first)
 			value += ";";
 		first = false;
-		value += QColumnUtils::doubleToString(doubleValue);
+		value += QColumnUtils::doubleToString(doubleValue, false);
 	}
 
 	return value;
@@ -163,7 +163,8 @@ void TextInputBase::bindTo(const Json::Value& value)
 Json::Value TextInputBase::createJson() const
 {
 	QVariant value = property("displayValue");
-	if (value.toString() == "" && !_defaultValue.isNull())	value = _defaultValue;
+	if (value.toString() == "" && !_defaultValue.isNull())	
+		value = _defaultValue;
 
 	return _getJsonValue(value);
 }
@@ -231,10 +232,9 @@ void TextInputBase::setDisplayValue()
 		showThis = QString::number(valueInt); //QColumnUtils::currentQLocale().toString(valueInt);
 
 	else if(isDbl) // Can be also a formula
-		showThis = QColumnUtils::doubleToString(valueDbl);
+		showThis = QColumnUtils::doubleToString(valueDbl, false);
 
-	if(property("displayValue") != showThis)
-		setProperty("displayValue", showThis);
+	setProperty("displayValue", showThis);
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)
@@ -378,35 +378,22 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 	switch (_inputType)
 	{
 	case TextInputBase::FormulaType:			return isDbl ? Json::Value(valueDbl) : fq(value.toString()); // Keep it as string and do not try to make it an integer or a double
-	case TextInputType::IntegerInputType:		return isInt ? valueInt : 0;
-	case TextInputType::NumberInputType:		return isDbl ? valueDbl : 0;
-	case TextInputType::PercentIntputType:		return std::min(std::max(isDbl ? valueDbl : 0, 0.0), 100.0) / 100;
+	case TextInputType::IntegerInputType:		return isInt ? valueInt : isDbl ? int(valueDbl) : 0;
+	case TextInputType::NumberInputType:		return isDbl ? valueDbl : isInt ? valueInt		: 0;
+	case TextInputType::PercentIntputType:		return std::min(std::max(isDbl ? valueDbl : isInt ? valueInt : 0, 0.0), 100.0) / 100;
 	case TextInputType::DoubleArrayInputType:
 	{
-		QString str = value.toString();
-		str.replace(QString(" "), QString(";"));
-		Json::Value values(Json::arrayValue);
-		QStringList chunks = str.split(QChar(';'), Qt::SkipEmptyParts);
+		QString		str		= value.toString().replace(QString(" "), QString(";"));
+		Json::Value values	= Json::arrayValue;
+		QStringList chunks	= str.split(QChar(';'), Qt::SkipEmptyParts);
 
 		for (QString &chunk: chunks)
 		{
-			bool ok;
-			if (_inputType == TextInputType::IntegerInputType)
-			{
-				int value;
-				ok = QColumnUtils::getIntValue(chunk, value);
-				
-				if (ok)	
-					values.append(value);
-			}
-			else
-			{
-				double valueDbl;
-				ok		= QColumnUtils::getDoubleValue(chunk, valueDbl);
-				
-				if (ok)	
-					values.append(valueDbl);
-			}
+			isInt = QColumnUtils::getIntValue(		chunk, valueInt);
+			isDbl = QColumnUtils::getDoubleValue(	chunk, valueDbl);
+			
+			if (isInt || isDbl)
+				values.append(isDbl ? valueDbl : double(valueInt));
 		}
 		return values;
 	}

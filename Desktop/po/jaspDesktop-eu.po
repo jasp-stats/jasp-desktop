@@ -1,783 +1,837 @@
 msgid ""
 msgstr ""
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-09-25 16:01+0000\n"
+"Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
+"Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"eu/>\n"
 "Language: eu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.14-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "Gehitu errenkada bat"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "Kendu errenkada bat"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "Gorde fitxategia hemen:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "Kargatu fitxategia hemendik:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr ""
+msgstr "Hautatu gordetzeko fitxategia"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr ""
+msgstr "Hautatu kargatzeko fitxategia"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr ""
+msgstr "Arakatu"
 
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
+"Analisi hau JASP-en bertsio zaharrago batekin sortu da (edo modulu dinamiko "
+"batekin)"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr ", analisiak freskatzeak emaitza apur bat desberdina eman dezake."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
+", zure oharrak dauden lekuan mantentzeko, oso gomendagarria da lehenik zure "
+"analisiak freskatzea!"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr ""
+msgstr "Balio Berria"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr ""
+msgstr "Ereduaren Terminoak"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr ""
+msgstr "Gehitu eredu nuluari"
 
 msgctxt "TableView|"
 msgid "Row #"
-msgstr ""
+msgstr "Errenkada #"
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr ""
+msgstr "Gehitu tabuladore bat"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr ""
+msgstr "Kendu tabuladore hau"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr ""
+msgstr "Tabuladore berria"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr ""
+msgstr "⌘ + Sartu aplikatzeko"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr ""
+msgstr "Ktrl + Sartu aplikatzeko"
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "Azken balio zuzena leheneratzen: %1"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "JASP-i buruz"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "Bertsioa:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr ""
+msgstr "Eraikia:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "Iturria:"
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr ""
+msgstr "Sartu iturrietara hemen"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "Deskargatu:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "Aipamena:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "Hautatu Denak"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "Kopiatu Hautaketa"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "Arrastatu analisiak berrantolatzeko"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "Editatu analisi honen izenburua"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "Bikoiztu analisi hau"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "Erakutsi analisi honen informazioa"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "Kendu analisi hau"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "Gehitu"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "Ezabatu"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "Bayes Faktorea"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"Bayes faktorea hipotesi alternatiboaren ebidentzia kuantifikatzeko hipotesi "
+"nuluarekiko."
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"Bayes faktorea hipotesi nuluaren ebidentzia kuantifikatzeko hipotesi "
+"alternatiboari dagokionez."
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "BF10-ren logaritmo naturala."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Zutabe bat gehitu"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Zutabea ezabatu"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "balio absolutua"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "desbideratze estandarra"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "bariantza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "batuketa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "balioen biderkadura"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "balioen minimoa itzultzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "balioen maximoa itzultzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "batez bestekoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y n hamartarretara biribiltzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "y-ko elementu kopurua itzultzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "mediana"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "logaritmo naturala"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "2 oinarriko logaritmoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "10 oinarriko logaritmoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "'base'-ko y-ren logaritmoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "esponentziala"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
+"Fisherren Z-transformazioa (hau da, alderantzizko tanjente hiperbolikoa) "
+"korrelazioak eraldatzeko, -1 eta 1 arteko zenbakiak, lerro errealera"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
+"Alderantzizko Fisherren Z-transformazioa (hau da, tanjente hiperbolikoa) "
+"zenbaki errealak -1 eta 1 arteko zenbakietara eraldatzeko"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "zure datuak numBreaks mailetan banatu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "zutabean falta diren balioak (FB) ordezkatu replaceWith-eko balioarekin"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else adierazpena?"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
 msgstr ""
+"datuak sortzen ditu banaketa gaussiar batetik, zehaztutako batez "
+"bestekoarekin eta desbideratze estandarrarekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
 msgstr ""
+"t banaketatik datuak sortzen ditu ag askatasun-graduekin eta zentraltasun "
+"eza parametro ncp-rekin"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
+"khi-karratu banaketa batetik datuak sortzen ditu ag askatasun-gradu eta "
+"zentraltasun eza parametro ncp-rekin"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
 msgstr ""
+"F banaketa batetik datuak sortzen ditu askatasun-gradu df1, df2 eta "
+"zentraltasun eza parametro ncp-rekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
 msgstr ""
+"banaketa binomial batetik datuak sortzen ditu saiakuntza eta probabilitate "
+"prob zehaztuekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
 msgstr ""
+"banaketa binomial negatibo batetik datuak sortzen ditu saiakuntza eta "
+"probabilitate prob zehaztuekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
 msgstr ""
+"banaketa geometriko batetik datuak sortzen ditu probabilitate prob zehaztu "
+"batekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
 msgstr ""
+"Poisson banaketa batetik datuak sortzen ditu lambda tasa zehaztu batekin"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
+msgstr "beta forma zehaztuekin beta banaketa batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
+msgstr "min eta max arteko banaketa uniforme batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr ""
+"forma eta eskala zehatzak dituen gamma banaketa batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
+msgstr "tasa zehatza duen banaketa esponentzial batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
 msgstr ""
+"banaketa log-normal batetik datuak sortzen ditu, zehaztua duen batez besteko "
+"logaritmikoa, meanLog eta desbideratze estandarra sdLog"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
 msgstr ""
+"forma eta eskala zehatzak dituen Weibull banaketa batetik datuak sortzen ditu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "Erakutsi sortutako R kodea"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "Kalkulatu zutabea"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "Egin klik zutabea kalkulatzeko"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Ireki Dokumentazioa"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "bat ere ez"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "desbideratzea"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "sinplea"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "aldea"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "Helmert"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "errepikatua"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "polinomiala"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "pertsonalizatua"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "Faktoreak"
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr ""
+msgstr "Pertsonalizatua %1-rentzat"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "Sortu Kalkulatutako Zutabea"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "Izena:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "Zutabearen izena dagoeneko erabilita dago, mesedez, aukeratu beste bat."
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "Definitu zutabea R kodearen bidez"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "Definitu zutabea arrastatu eta jaregin formulen bidez"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "Eskala"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ordinala"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr ""
+msgstr "Nominala"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "Testua"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Ireki Dokumentazioa"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "Sortu zutabea"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
-msgstr ""
+msgstr "Egin klik hemen '%1' kalkulatutako zutabe berria sortzeko"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "Sartu baliozko (erabili gabeko) izen bat kalkulatutako zutabearentzat"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "Itxi kalkulatutako zutabea sortu gabe"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "Gehitu Kontrastea"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "Ezabatu Kontrastea"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Ezkutatu iragazkia"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "Erakutsi iragazkia"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "Gehitu kalkulatutako zutabea"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "%1-ra itzuli"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "Hemen zaude"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "Azken Karpetak"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Arakatu"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "Sinkronizaziorako uneko datu-fitxategia"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "Datu-Liburutegia"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "Datu-Fitxategi honekin sinkronizatu"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "Karpetara joan"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "JASP fitxategia ireki"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "Datu-fitxategia ireki"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "Hobespen hauei buruzko informazioa erakutsi"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "Zientzia Irekiaren Esparrua Open Science Framework (OSF)"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "Saioa itxi"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "Karpeta Sortu"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "Karpeta-izena"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "Fitxategi-izena"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "Jarraitzeko, hasi saioa zure OSF kontuarekin"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "Hasi saioa"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "Gogoratu nazazu"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "OSFri buruz"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "Erregistratu"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr ""
+msgstr "Hobespen Aurreratuak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "Moduluen aukerak"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"Jarraitu utzi zenuen tokitik hurrengoan JASP abiarazten denean.\n"
+"Aukera hau gaitzeak JASP-ek zein modulu gaitu dituzun gogorarazten dio."
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "JASP moduluak erabiltzeko, gaitu aukera hau."
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr ""
+msgstr "Arakatu zure JASP Moduluen karpetara."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr ""
+msgstr "Aldatu CRAN biltegia: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr ""
+msgstr "Sortu markdown fitxategiak laguntzarako"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr ""
+"Hau gaitzeak markdown laguntza fitxategia sortuko du qml aukeretako "
+"informaziotik."
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "Erregistro aukerak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr ""
+msgstr "Erregistratu fitxategian"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
 msgstr ""
+"JASP-ren arazketa-erregistroak fitxategi batean gordetzeko, markatu laukitxo "
+"hau."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr ""
+msgstr "Gordetzeko gehienezko erregistro fitxategi kopurua: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "Erakutsi erregistroak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "Motorraren aukerak"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr ""
+msgstr "Datu Hobespenak"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "Erabili kalkulu-orrien editore lehenetsia"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "Hautatu editore pertsonalizatua"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "Falta diren Balioen Zerrenda"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr ""
+msgstr "Kendu falta diren balioak"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr ""
+msgstr "Emaitzen Hobespenak"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr ""
+msgstr "Taularen aukerak"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr ""
+msgstr "Erakutsi p-balio zehatzak"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr ""
+msgstr "Hamartar kopurua aukeratu"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr ""
+msgstr "Grafiko aukerak"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr ""
+msgstr "Pantailaren PPI grafikoetan erabili: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr ""
+msgstr "Pantailaren Hazbeteko Pixelak erabili grafikoak errendatzeko."
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr ""
+msgstr "PPI pertsonalizatua: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr ""
+msgstr "Irudiaren atzeko planoaren kolorea"
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "Zuria"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
+"Honek grafiko guztien atzeko planoa zuri bihurtzen du, oso erabilgarria "
+"LaTeX-en erabili edo aldizkari batera bidali nahi baduzu."
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr ""
+msgstr "Gardena"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
+"Honek grafiko guztien atzeko planoa garden bihurtzen du, oso erabilgarria "
+"zuria ez den edozein atzeko planotan modu jarraituan erabili nahi baduzu."
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "Letra-tipoak"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "Interfazea:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "lehenetsia: %1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "Gaiak"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr ""
+"Gai argi batera aldatzen du, hau da JASP-en lehenetsitako eta jatorrizko "
+"zaporea."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
+"Gai ilun batera aldatzen du, JASP askoz errazagoa egiten du gaueko "
+"hontzentzat begietarako."
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "Aukera desberdinak"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "Zooma (%): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
+"Interfazearen elementuen tamaina handitu edo txikitu (testua, botoiak, "
+"etab.)."
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "Korritze-abiadura (pix/s): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
+"Ezarri aukeretan, datu-ikuslean eta beste leku batzuetan mugitzeko abiadura."
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -786,15 +840,23 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"Grafikoetarako, hau da, softwarearen errendatzerako \"modu seguruago\" "
+"batera aldatzen du.\n"
+"Zure interfazea motelagoa izango da, baina arazoren bat baduzu (akats "
+"arraroak, emaitzak ezin ikustea edo beste ezer), konpondu ditzake.\n"
+"Hala ere, analisiak berdin azkarrak izango dira."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
+"Animazio guztiak desaktibatzen ditu, hau inplizituki adierazten da "
+"\"Grafiko Modu Segurua\" aktibatuta dagoenean."
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
+"Animazioak desgaituta daude \"Grafiko Modu Segurua\" aktibatuta dagoelako"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -802,584 +864,595 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Desgaituta badago, ez ditu zure sistema eragilearen fitxategien "
+"elkarrizketak erabiliko, Qt-ek egindakoak baizik. Horrek Windows-en JASP "
+"\"Arakatu\" sakatzean huts egiten duen arazo batzuk konpondu ditzake."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Azken Fitxategiak"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Kalkulatutako zutabeen kodea garbitu da"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Kalkulatutako zutabeen kodea aplikatu da"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "Sartu argumentu guztiak - ikusi gorriz markatutako eremuak."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "Formula bakarra onartzen da kalkulatutako zutabe bakoitzeko."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
 msgstr ""
+"Ongi etorri arrastatu eta jaregin kalkulatutako zutabeen eraikitzailera!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"Bota nahi ez diren zatiak hemen; egin klik bikoitza zerrenda osoa ezabatzeko"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "Batuketa"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Kenketa"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Biderketa"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "Zatiketa"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Berretura (2^3-k 8 itzultzen du)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "Erro karratua"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Moduloa: zatiketa baten hondarra itzultzen du. 3%2-k 1 itzultzen du"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "logikoak itzultzen ditu eta iragazki-formula baten erroa izan daiteke"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Berdintasuna: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Desberdintasuna: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Txikiagoa baino: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Txikiagoa edo berdina baino: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Handiagoa baino: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Handiagoa edo berdina baino: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "Eta: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Edo: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Zatitu: iragazkia bereizita aplikatzen dio azpitalde bakoitzari"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "ez: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "Batuketa"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Kenketa"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Biderketa"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "Zatiketa"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Berreketa (2^3-k 8 itzultzen du)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "Erro karratua"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Moduloa: zatiketa baten hondarra itzultzen du. 3%2-k 1 itzultzen du"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "logikoak itzultzen ditu"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Berdintasuna: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Desberdintasuna: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "%1 baino txikiagoa"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "%1 baino txikiagoa edo berdina"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "%1 baino handiagoa"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "%1 baino handiagoa edo berdina"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "Eta: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Edo: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Zatitu: iragazkia azpitalde bakoitzari bereizita aplikatzen dio"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "Ez: %1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "balio absolutua"
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "desbideratze estandarra"
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "bariantza"
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "batuketa"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "balioen biderkadura"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "balioen gutxienekoa itzultzen du"
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "balio maximoak itzultzen ditu"
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "batez bestekoa"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "y n hamartarretara biribiltzen du"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "y-ko elementu kopurua itzultzen du"
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "mediana"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "if-else adierazpena"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "Iragazkia Aldatu da"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
+msgstr "Aplikatu gabeko aldaketak daude zure iragazkian; zer egin nahi duzu?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "Aldatu R iragazkira"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr ""
+msgstr "Ezkutatu iragazitako errenkadak."
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr ""
+msgstr "Erakutsi iragazitako errenkadak."
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "Aplikatu pasatzeko iragazkia"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr ""
+msgstr "Iragazkia aplikatuta"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr ""
+msgstr "Egin klik iragazkia aplikatzeko"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr ""
+msgstr "Iragazkia dagoeneko aplikatuta dago"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Ireki Dokumentazioa"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Ezkutatu iragazkia"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr ""
+msgstr "Berrezarri etiketa guztietako kontrol-marka guztiak"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr ""
+msgstr "Aldatu arrastatu eta jaregin iragazkira"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr ""
+msgstr "Berrezarri lehenetsitako iragazkira"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "JASP Laguntza"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr ""
+msgstr "Bilatu:"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "Datuak Gehitu"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "Datuak Ezabatu"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "Datuak ezkutatu"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr ""
+msgstr "Datuak erakutsi"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "Datuen/emaitzen tamaina aldatu"
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "Arrastatu datuak erakusteko"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr ""
+msgstr "Emaitzak"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr ""
+msgstr "Modulua instalatu"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr ""
+msgstr "Modulu bat instalatu"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr ""
+msgstr "Garatzaile Modulua instalatu"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr ""
+msgstr "Garatzaile Modulua instalatzen"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr ""
+msgstr "Garatzaile Modulua hautatu"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr ""
+msgstr "Hautatutako garatzaile modulua instalatu"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
+msgstr "Garatzaile modulua instalatzen orain"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "Prest"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "Instalatzen: %1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "Kargatzen: %1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr ""
+msgstr "Kargatuta eta erabiltzeko prest!"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr ""
+msgstr "Errorea gertatu da!"
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr ""
+msgstr "Ez dago erabiltzeko prest?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr ""
+msgstr "Desinstalatu modulua "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "R JASP-en"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "Ongi etorri R-ra JASP-en!"
 
 msgctxt "RCommanderWindow|"
 msgid "Run code"
-msgstr ""
+msgstr "Kodea exekutatu"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "Ctrl+Enter edo F5 sakatzean kodea ere exekutatuko da"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear output"
-msgstr ""
+msgstr "Emaitza garbitu"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "Garbituta..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr ""
+msgstr "Aldaketak egin dira"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr ""
+msgstr "Aplikatu gabeko aldaketak daude; zer egin nahi duzu?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "Aplikatu"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr ""
+msgstr "Baztertu"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr ""
+msgstr "Utzi"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr ""
+msgstr "Errepikagarritasuna"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "Hazia ezarri:"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "Zutabe bat Gehitu"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "Zutabe bat Ezabatu"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Berrezarri"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr ""
+msgstr "Elementuak ordenatu"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "Aurrekaria"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr ""
+msgstr "Efektu-tamaina estandarizatua"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr ""
+msgstr "Lehenetsia"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr ""
+msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "eskala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr ""
+msgstr "Informatuta"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr ""
+msgstr "kokapena:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "eskala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr ""
+msgstr "Normala"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr ""
+msgstr "batez bestekoa:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr ""
+msgstr "estandarra:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
-msgstr ""
+msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr ""
+msgstr "ag:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "Efektu gordinaren tamaina (Dienoak)"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr ""
+msgstr "Uniformea"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr ""
+msgstr "beheko muga:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr ""
+msgstr "goiko muga:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "Erdi-normala"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "Ongi etorri JASP-era"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
-msgstr ""
+msgstr "Estatistika Egiteko Modu Berri Bat: Doakoa, Atsegina eta Malgua"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr ""
+msgstr "Doakoa:"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr ""
+msgstr "Atsegina:"
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr ""
+msgstr "Malgua:"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
 msgstr ""
+"JASP-ek erabiltzailea kontuan hartuta diseinatutako interfaze intuitiboa du."
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
 msgstr ""
+"JASP-ek analisi prozedura estandarrak eskaintzen ditu bai adierazpen "
+"klasikoan bai Bayesiarrean."
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr ""
+msgstr "Ireki datu-fitxategi bat eta probatu JASP!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
+msgstr "Egin klik azken bertsioa lortzeko"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
 msgstr ""
+"Ezin izan dira %1 grafikoaren edizio-aukerak aurkitu, beraz, grafikoaren "
+"edizioak ez du funtzionatuko..."
 
 #, qt-format
 msgctxt "Analysis|"
@@ -1387,11 +1460,13 @@ msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
+"Ezin izan dira %1 grafikoaren edizio-aukera ezarriak aurkitu, beraz, "
+"grafikoaren edizioak ez du ezer gogoratuko (funtzionatzen badu ere)..."
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 kontrolek izen bera dute: %1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1399,6 +1474,8 @@ msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
+"%1 osagaia balio mota okerrarekin kargatu da eta bere balio lehenetsira "
+"berrezarri da."
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1406,235 +1483,243 @@ msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
+"Osagai hauek balio mota okerrarekin kargatu dira eta beren balio lehenetsira "
+"berrezarri dira: %1"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
+"Osagai asko balio mota okerrarekin kargatu dira eta beren balio lehenetsira "
+"berrezarri dira."
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr ""
+msgstr "Fitxategia ziurrenik JASP bertsio zaharrago batetik dator."
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
 msgstr ""
+"Horrek esan nahi du une honetan bistaratzen diren emaitzak ez datozela bat "
+"hautatutako aukerekin."
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr ""
+msgstr "Analisia freskatzeak emaitzak alda ditzake."
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "Taula"
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "Grafikoa"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "Bilduma"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "Emaitza"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "Emaitza"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "Aukera"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "Atala"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "Kontrol-Laukia??"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "Aldatu"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "Sarrera Eremua"
 
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "Irrati Botoia"
 
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "Irrati Botoiak"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "Sarrera Zerrenda Ikuspegia"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "Taula Ikuspegia"
 
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "Graduatzailea"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "Testu Eremua"
 
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "Botoia"
 
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "Faktoreen Forma"
 
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "Osagaien Zerrenda"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "Talde Kutxa"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr ""
+msgstr "Balioa hau izan behar da: "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr ""
+msgstr "&#8805; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr ""
+msgstr "&gt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr ""
+msgstr " eta "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr ""
+msgstr "&#8804; %1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr ""
+msgstr "&lt; %1"
 
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr ""
+msgstr "Balidazio errorerik ez"
 
+#, fuzzy
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "Arazo??? ezagunak kargatzean arazoa"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "Datu Multzoa Kargatzen"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "Datu Multzoa Gordetzen"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "Emaitza Multzoa Esportatzen"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "Datu Multzoa Esportatzen"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "Datu Multzoa Sinkronizatzen"
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr ""
+msgstr "'"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "'-zutabea "
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "%1-etik Datuak Inportatzen"
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "SPSS Fitxategia Inportatzen"
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "SAS Fitxategia Inportatzen"
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "STATA Fitxategia Inportatzen"
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "JASP Fitxategia Kargatzen"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "Fitxategia Kargatzen"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "JASP Fitxategia Gordetzen"
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "Emaitzak Esportatzen"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "Datuak Esportatzen"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "Datuak Sinkronizatzen"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "Fitxategia Prozesatzen"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr ""
+msgstr "Motorra matxuratu egin da analisi hau exekutatzen saiatzean..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr ""
+msgstr "Motorra matxuratu egin da iragazkia exekutatzen saiatzean..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr ""
+msgstr "Motorra matxuratu egin da zutabe hau kalkulatzen saiatzean..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr ""
+msgstr "Motorra matxuratu egin da rscript exekutatzen saiatzean..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr ""
+msgstr "Errore bat gertatu da grafikoa gordetzean"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -1647,44 +1732,53 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Zoritxarrez, grafikoa ezin izan da gorde.\n"
+"\n"
+"Errore mezua:\n"
+"%1\n"
+"\n"
+"Arazoak jarraitzen badu, mesedez, eman goiko mezua hemen: https://jasp-"
+"stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
+msgstr "Errore bat gertatu da grafikoaren tamaina aldatzean"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr ""
+msgstr "Bai"
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr ""
+msgstr "Ez"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr ""
+msgstr "Utzi"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr ""
+msgstr "Ez Gorde"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "Datu-fitxategia aldatuta"
 
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
 msgstr ""
+"JASP fitxategi honek erabiltzen zuen datu-fitxategia aldatu da. Analisiak "
+"datu berri hauekin berriro kargatu nahi dituzu?"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "Bertsioen bateraezintasuna"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1693,6 +1787,10 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
+"Zure analisiak JASP bertsio zaharrago batean sortu ziren, irudien PPI "
+"aldatzeko lehenik freskatu behar dira.\n"
+"\n"
+"Analisi guztiak freskatu?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1701,10 +1799,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Analisi hau JASP bertsio zaharrago batean sortu zen, irudia gordetzeko "
+"lehenik freskatu behar da.\n"
+"\n"
+"Analisia freskatu?"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr ""
+msgstr "Jasp Irudia Gorde"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1712,6 +1814,10 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"Sareko grafiko eramangarriak (*.png);;Dokumentu eramangarriaren formatua "
+"(*.pdf);;PostScript enkapsulatua (*.eps);;300 dpi etiketatutako irudi "
+"fitxategia (*.tiff);;PowerPoint (*.pptx);;Bektore grafiko eskalagarriak "
+"(*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1720,6 +1826,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"Analisi hau JASP bertsio zaharrago batean sortu zen, irudiaren tamaina "
+"aldatzeko lehenik freskatu behar da.\n"
+"\n"
+"Analisia freskatu?"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1727,10 +1837,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"Ezin da fitxategia ireki honako arrazoi hauengatik:\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "Gordetzeak huts egin du"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1739,20 +1851,25 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"Ezin da fitxategia gorde.\n"
+"\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "GitHub konturik ba al duzu?"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
 msgstr ""
+"Akatsa salatzeko GitHub kontu bat izan behar duzu. Ba al duzu horrelako "
+"konturik?"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "Batu zaitez GitHub-era"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1764,10 +1881,18 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"Bi orrialde irekiko dizkizugu zure web arakatzailean.\n"
+"Bigarrena 'Batu zaitez GitHub-era' orria izango da, non GitHub-en kontu bat "
+"erregistratu ahal izango duzun.\n"
+"Lehenengoa saioa hasteko orri bat izango da, eta zure GitHub kontu "
+"berriarekin saioa hasi ondoren akatsen txosten partzialki bete batera "
+"eramango zaitu.\n"
+"\n"
+"Mesedez, bete falta den informazio guztia bertan."
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "Ezin izan da GitHub ireki zuretzat"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1775,10 +1900,13 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"Zerbait gaizki joan da GitHub-era eramaten zaituenean..\n"
+"Akatsa salatu dezakezu oraindik https://github.com/jasp-stats/jasp-issues/"
+"issues helbidera joanez"
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr ""
+msgstr "Errorea"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1786,14 +1914,16 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"JASP-ek ustekabeko barne errore bat izan du:\n"
+"%1"
 
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "Txostena"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "Irten"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1802,6 +1932,11 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"JASP datu-fitxategirik gabe abiarazi da (csv, sav edo ods fitxategia). Baina "
+"datuak editatzeko, JASP-ek fitxategi honetan oinarritutako kalkulu-orrien "
+"editore bat abiarazten du eta datuak sinkronizatzen ditu fitxategia "
+"gordetzean. Datu-fitxategi hau existitzen al da dagoeneko, edo sortu nahi "
+"duzu?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1809,6 +1944,10 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP lineako datu-fitxategi batekin abiarazi da (csv, sav edo ods fitxategia)"
+". Baina datuak editatzeko, JASP-ek fitxategi hau behar du zure "
+"ordenagailuan. Datu-fitxategi hau ere existitzen al da zure ordenagailuan, "
+"edo sortu nahi duzu?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1816,22 +1955,26 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP irakurtzeko soilik den datu-fitxategi batekin abiarazi da (ziurrenik "
+"adibideetatik). Baina datuak editatzeko, JASP-ek datu-fitxategian idatzi "
+"behar du. Fitxategi bera ere existitzen al da zure ordenagailuan, edo sortu "
+"nahi duzu?"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "Kalkulu-orrien Editorea Abiarazi"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "Datu-Fitxategia Sortu"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "Datu-Fitxategia Bilatu"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "Editorea Abiarazi"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1839,6 +1982,8 @@ msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
+"Ezin da editorea abiarazi: %1. Mesedez, egiaztatu editorearen ezarpenak "
+"hobespenen menuan."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1846,19 +1991,21 @@ msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
+"Ez dago kalkulu-orrien editore lehenetsirik %1 fitxategirako. Erabili "
+"Hobespenak editore egokia ezartzeko."
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "Kendu Analisi Guztiak"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "Benetan analisi guztiak kendu nahi dituzu?"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "%1 modulua kargatzean huts egin du"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -1867,19 +2014,22 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"%1 modulua kargatzean huts egin du errore honekin:\n"
+"\n"
+"%2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "Errorea Bertsio-berritzeak Kargatzean"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "%1-ren bertsio-berritzeak kargatzean errore bat gertatu da: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "Ezin izan dira bertsio-berritzeak irakurri"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -1888,10 +2038,15 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"JASP fitxategi zaharrak irakurtzeko beharrezko bertsio-berritzeak ezin izan "
+"dira irakurri...\n"
+"JASP erabil dezakezu oraindik eta fitxategi zaharrago batzuk irakurri ere, "
+"baina baliteke aukera batzuk behar bezala ez ulertzea eta analisi batzuk "
+"guztiz kargatzea huts egitea."
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr ""
+msgstr "Fitxategia Aldatuta"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -1899,115 +2054,118 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
+"Fitxategi honen lineako?????kopia aldatu da ireki zenetik.\n"
+"\n"
+"Lineako?? fitxategia gainidatzi nahi al duzu?"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "Fitxategi berria sortzen abiarazten "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "-ren deskarga abiarazten "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "Fitxategi berria sortzen abiarazten "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "Karpeta berria sortzen abiarazten "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr ""
+msgstr "Osf ekintza abiarazten "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr ""
+msgstr "-ren igoera "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr ""
+msgstr "Deskargatzea "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "Fitxategi berria sortzen "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "Karpeta berria sortzen "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "Osf ekintza "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "%1 %2-k huts egin du %3-k eragin duelako"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " martxan"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "Tolestu"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "Editatu Izenburua"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr ""
+msgstr "Kopiatu"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr ""
+msgstr "Kopiatu LaTeX"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr ""
+msgstr "Kopiatu Aipamenak"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr ""
+msgstr "Gorde Irudia Honela"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr ""
+msgstr "Editatu Irudia"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr ""
+msgstr "Gehitu oharra"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr ""
+msgstr "Bikoiztu"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr ""
+msgstr "Kendu dena"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr ""
+msgstr "Freskatu dena"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr ""
+msgstr "Erakutsi Mendekotasunak"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "Esportatu Emaitzak"
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr ""
+msgstr "Emaitzen Abisua"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -2018,67 +2176,74 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
+"Laster!\n"
+"\n"
+"========\n"
+"Une honetan ez dago laguntzarik analisi honetarako.\n"
+"\n"
+"Dokumentazio gehigarria egongo da eskuragarri JASP-en etorkizuneko "
+"bertsioetan."
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "R kode baliozkoa"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
+msgstr "%1 aukera ezezaguna %2 DropDown-en"
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr ""
+msgstr "Ireki"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr ""
+msgstr "Gorde Honela"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr ""
+msgstr "Esportatu Emaitzak"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr ""
+msgstr "Esportatu Datuak"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr ""
+msgstr "Sinkronizatu Datuak"
 
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "Itxi"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr ""
+msgstr "Hobespenak"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr ""
+msgstr "Honi buruz"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr ""
+msgstr "Kategoriak"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr ""
+msgstr "Fitxategi Motak"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "Huts egin da fitxategia OSFtik irekitzean"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr ""
+msgstr "Ez dago lotutako datu fitxategirik"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2086,34 +2251,38 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
+"JASP-ek ez du lotutako datu fitxategirik sinkronizatzeko.\n"
+"Datu fitxategi hori zure ordenagailuan bilatu nahi duzu?\n"
+"OHARRA: Datu fitxategi hau Fitxategia/Sinkronizatu Datuak menuaren bidez ere "
+"ezar dezakezu."
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr ""
+msgstr "Bilatu Datu Fitxategia"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr ""
+msgstr "Datu Fitxategia"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "Erabiltzaile-izena eta/edo pasahitza ez dira zuzenak. Saiatu berriro."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSF zerbitzua ez dago eskuragarri. Egiaztatu zure Interneteko konexioa."
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "Konexioaren denbora-muga errorea. Egiaztatu zure Interneteko konexioa."
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF Errorea"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "Proiektuak"
 
 msgctxt "OSF|"
 msgid ""
@@ -2121,10 +2290,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"Ezin dira fitxategiak proiektuen zerrendara gehitu.\n"
+"\n"
+"Proiektu berri bat gehitzeko, erabili lineako OSF zerbitzuak."
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "Datu Hornitzaileak"
 
 msgctxt "OSF|"
 msgid ""
@@ -2133,107 +2305,117 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
+"Ezin dira fitxategiak proiektuen datu hornitzaileen zerrendara gehitu.\n"
+"\n"
+"Datu hornitzaile berri bat gehitzeko (adibidez, Google Drive), erabili "
+"lineako OSF zerbitzuak."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "Ezin dira fitxategiak '%1'-ra gehitu arrazoi ezezagun batengatik."
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "Fitxategi Motak"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "Ezin izan da fitxategia OSF-tik ireki"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "Errore bat gertatu da eta karpeta ezin izan da sortu."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"Ezin da karpeta berri bat proiektuen zerrendara gehitu.<br>Proiektu berri "
+"bat gehitzeko, erabili lineako OSF zerbitzuak."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"Ezin da karpeta berri bat proiektuen datu hornitzaileen zerrendara "
+"gehitu.<br>Datu hornitzaile berri bat gehitzeko (adibidez, Google Drive), "
+"erabili lineako OSF zerbitzuak."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
 msgstr ""
+"Arrazoi ezezagun batengatik ezin da karpeta berri bat gehitu '%1' karpetara."
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "Karpeta"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "Saioa hasi"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr ""
+msgstr "Erabiltzailea edo pasahitza ezin dira hutsik egon."
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr ""
+msgstr "Sarreraren izena ezin da hutsik egon."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
-msgstr ""
+msgstr "%1 izenak karaktere hauek bakarrik izan ditzake A-Z a-z 0-9 _ %2"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Azken Fitxategiak"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr ""
+msgstr "Uneko fitxategia"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr ""
+msgstr "Ordenagailua"
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "Datu Liburutegia"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr ""
+msgstr "Datuak"
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr ""
+msgstr "Emaitzak"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr ""
+msgstr "Interfazea"
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr ""
+msgstr "Aurreratua"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
+msgstr "%1 kontrastea"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
+msgstr "%1 geruza"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
@@ -2241,193 +2423,195 @@ msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
+"RadioButtonGroup elementuaren barruko RadioButton batek (izena: %1) ez du "
+"izenik"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
+msgstr "Ez dago %1 izenari dagokion irrati-botoirik"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr ""
+msgstr "%1-eko errenkada-osagai batek ez du izenik"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr ""
+msgstr "%1-eko 2 errenkada-osagaik izen bera dute"
 
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr ""
+msgstr "Bat ere ez"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr ""
+msgstr "Izenaren arabera ordenatu"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr ""
+msgstr "Izenaren arabera ordenatu A-tik Z-ra"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr ""
+msgstr "Izenaren arabera ordenatu Z-tik A-ra"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr ""
+msgstr "Motaren arabera ordenatu"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr ""
+msgstr "Dataren arabera ordenatu"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr ""
+msgstr "Tamainaren arabera ordenatu"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "SortMenuModel ez da guraso ordenagarri batekin deitu"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr ""
+msgstr "Eredua aplikatuta"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "Adierazpenak ez du zenbakirik itzuli."
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "Zenbaki Oso Eremua"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "Ehuneko Eremua"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "Bikoizketa Eremua"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "Zutabe Eremua Gehitu"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "Kalkulatutako Zutabe Eremua Gehitu"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "Formula Eremua"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "Testu Eremua"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "Balioa (%1) %2 izan behar da"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "%1-ren iturburu-eredua Faktore Zerrenda batetik izan behar da"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "Iturburu mota okerra VariableList %1-rentzat"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "Ez da erlazionatutako zerrendarik aurkitu VariablesList %1-rentzat"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr ""
+msgstr "(%1) erlazionatutako zerrenda okerra aurkitu VariablesList %2-rentzat"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "Ez da izenik eman %1-ren iturburuarentzat"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "Ez da iturririk eman %1-erako"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "Ezin da %1 osagaia aurkitu %2-ren iturbururako"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Aldagaia estandarizatzen du"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "egia itzultzen du kateak azpikatea gutxienez behin badu"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "Aldagaia estandarizatzen du"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "egia itzultzen du kateak azpikatea gutxienez behin badu"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "Izenburua"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "Sekuentzia zehaztu"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "-tik"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "-ra"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "urratsak"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "Datuetan oinarrituta"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "Markatzetan oinarrituta"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "Eskuz ezarri"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "Beheko muga"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "Goiko muga"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x ardatza"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y ardatza"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2440,22 +2624,33 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Zoritxarrez, grafikoa ezin izan da editatu.\n"
+"\n"
+"Errore mezua:\n"
+"%1\n"
+"\n"
+"Arazoak jarraitzen badu, mesedez, eman goiko mezuaren berri hemen: https"
+"://jasp-stats.org/bug-reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "%1 modulurako eguneraketak kargatzeak huts egin du"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
+"Errore bat gertatu da %1 direktorioatik modulua hasieratzen saiatzean, "
+"errorea hau izan zen: %2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr ""
+"Errore bat gertatu da %1 modulua kargatzen saiatzean, errorea hau izan zen: "
+"'%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2463,6 +2658,8 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
+"Zerbait gaizki joan da %1 modulurako fitxategiak '%2' bidean kentzean eta "
+"errorea hau izan zen: %3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2470,58 +2667,67 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"%1 moduluaren instalazioak huts egin du errore-mezu honekin:\n"
+"%2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "Hautatu karpeta bat"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"Garapen-modulu bat instalatzeko, ikusi eta kargatu nahi duzun karpeta "
+"hautatu behar duzu, fitxategi-menuan egin dezakezu hau, "
+"Hobespenak->Aurreratua."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "Arazoa modulua hasieratzean"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"Arazo bat egon da garatzaile modulua kargatzean:\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "Fitxategiak edo karpetak falta dira"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
+"Hautatutako karpeta ezin da garatzaile modulu gisa instalatu, beharrezko "
+"fitxategi eta karpeta guztiak ez dituelako."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "Sortu inst/Description.qml fitxategi bat."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "Sortu zure analisi kodea duen R direktorio bat."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "Sortu zure aukeren formularioak dituen inst/qml direktorio bat."
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr ""
+msgstr "Sortu zure zinta botoien ikonoak dituen inst/icons direktorio bat."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "%1 falta da"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2530,6 +2736,9 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"Badirudi %1 kendu duzula zure garapen moduluaren direktoriotik. Hori gabe "
+"zure moduluak ezin du funtzionatu, ziurtatu berriro jartzen duzula. Oraingoz "
+"zure %2 fitxategi zaharra gordeko da."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2539,11 +2748,15 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Badirudi inoiz ez duzula %1 bat izan zure garapen moduluaren direktorioan. "
+"Hori gabe zure moduluak ezin du funtzionatu, ziurtatu bat sortzen duzula. "
+"Nola instalatu duzun misterio bat da eta, beraz, garapen modulua orain "
+"desinstalatu beharko da"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "%1 kendu da!"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2551,11 +2764,13 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
+"Badirudi %1 kendu duzula, baina fitxategi hau beharrezkoa da zure moduluak "
+"funtziona dezan. Garapen modulua orain desinstalatuko da."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "%1 karpeta falta da"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2564,6 +2779,9 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
+"Badirudi %1 karpeta zure garapen moduluaren direktorioatik kendu duzula. "
+"Hori gabe zure moduluak ezin du funtzionatu, ziurtatu berriro jartzen "
+"duzula. Oraingoz zure karpeta zaharra gordeko da."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2573,15 +2791,19 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"Badirudi inoiz ez duzula %1 karpeta izan zure garapen moduluaren "
+"direktorioan. Hori gabe zure moduluak ezin du funtzionatu, ziurtatu bat "
+"sortzen duzula. Nola instalatu duzun misterio bat da eta, beraz, garapen "
+"modulua orain desinstalatu beharko da"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "Moduluaren deskribapena kargatzean arazo bat aurkitu da"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>Ezin izan da moduluaren deskribapena kargatu artxiboan: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2590,11 +2812,14 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a "
 "href=\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>%2 bertsioa</i><br><p>%3</p><br><br><i>%4-k sortua eta %5-k "
+"mantendua.</i><br><i>Ikusi webgunea xehetasun gehiago lortzeko: <a href="
+"\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
-msgstr ""
+msgstr "Iturburuko zutabe zenbakia %1-en zutabe kopurua baino handiagoa da"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2602,6 +2827,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
 msgstr ""
+"Bertsio-Berritzea okerra aplikatzen ari da, '%1' funtzioa bilatzen ari "
+"nintzen baina bertsio-berritze hau '%2' funtziorako da"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2609,6 +2836,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
 msgstr ""
+"Berritze okerra aplikatzen ari da, '%1' bertsioa bilatzen ari nintzen, baina "
+"berritze hau '%2' edo zaharragoarentzat da"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2620,128 +2849,136 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"Berritzea bertan behera uzten ari da begizta bat detektatu delako!\n"
+"\n"
+"%1 hartzen bada, azkenean berriro iristen da.\n"
+"\n"
+"Honek ez luke gertatu behar, agian '%2' moduluaren egileak lagun dezake"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "Faktore Maila Zerrenda"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr ""
+"Aldagai Eskuragarrien zerrenda bakarra ezar daiteke VariablesForm batean"
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "Ez dago Aldagaien Inprimakian Eskuragarrien Zerrendarik"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "Faktorea"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "Maila"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "Faktore Berria"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "Maila berria"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "Gogoratu gaitutako moduluak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Erabili Github-erako PAT lehenetsia"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
 msgstr ""
+"Erabili GITHUB_PAT multzokatua edo, eskuragarri badago, ingurune-aldagaietan "
+"ezarritakoa."
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "GITHUB_PAT pribatua:"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R, JAGS edo lavaan kodea:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "Emaitza eta laguntza:"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "Gai argia"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "Gai iluna"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "Hizkuntza hobetsia"
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "Grafiko modu segurua"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "Desgaitu animazioak"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "Erabili jatorrizko fitxategien elkarrizketa-koadroak"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
-msgstr ""
+msgstr "Hautatu garatzaile modulu bat hemen klik eginez"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "Erakutsi menu nagusia"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "Erakutsi moduluen menua"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "Elementu multzo polita"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "Zenbaki oso bat sar dezakezu hemen: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "Oso erabilgarria den tresna-aholkua da hau, ezta?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "Lehenengo kontrol-laukia"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "Bigarren kontrol-laukia"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "Azken kontrol-laukia"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "Aldagaiak"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "Banatu"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2749,6 +2986,9 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"JASP-ek arazo bat izan du bertsio honetako arazo ezagunak deskargatzean, "
+"ziurrenik ezin izan da zerbitzarira konektatu. Ez kezkatu, JASP ondo "
+"funtzionatuko du, baina baliteke arazo ezagun txiki batzuen berri ez ematea."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2756,6 +2996,9 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"JASP-ek arazo bat izan du bertsio honetako arazo ezagunak kargatzean, hau ez "
+"da nahitaez arazo bat, baina gertatzen jarraitzen badu, JASP taldearekin "
+"harremanetan jar zaitezke laguntza eskatzeko."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -2764,6 +3007,9 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP-ek arazo bat izan du ('%1') bertsio honetako arazo ezagunak kargatzean, "
+"hau ez da nahitaez arazo bat, baina gertatzen jarraitzen badu, JASP "
+"taldearekin harremanetan jar zaitezke laguntza eskatzeko."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2771,19 +3017,24 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
+"Ez dago kalkulu-orrien editore lehenetsirik %1 fitxategirako. Datuak CSV "
+"fitxategi batera esportatu eta CSV fitxategi honetarako kalkulu-orrien "
+"editore lehenetsia abiarazi nahi al duzu?"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "Sortu datu-fitxategia CSV gisa"
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "Utzi"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr ""
+"JASP abiaraztean modulua hasieratzeak huts egin du, kendu beharko litzateke "
+"modulua?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2793,81 +3044,87 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"JASP abiaraztean modulua hasieratzeak huts egin du, mezu hau agertuz:\n"
+"%1\n"
+"\n"
+"Modulua kendu beharko litzateke?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "%1 modulua hasieratzeak huts egin du"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "R kodea kontsola batean exekutatu"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "Ezkerretara gehitu"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "Eskuinera gehitu"
 
 msgctxt "TableView|"
 msgid "Delete"
-msgstr ""
+msgstr "Ezabatu"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "balioen zeinua itzultzen du"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup>OSF kontuko saioa hasteko aukera soilik, ORCID edo erakundeko "
+"saioa hasteko aukera ez dira onartzen."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "Instalatutako moduluak eta paketeak garbitu"
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "Windows-en konponbidea"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "Informazio gehiago lortzeko, ikusi dokumentazioa "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "Erabiltzaile Interfazearen Aukerak"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "balioen zeinua itzultzen du"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr ""
+msgstr "Etiketa"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "Markatu #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "Txertatu marka ezkerrera"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "Txertatu marka eskuinera"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "Ezabatu marka"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "Garbitu erabiltzaileak instalatutako moduluak eta paketeak"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2876,58 +3133,62 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"Zure moduluak eta paketeak garbitzeak JASP-ekin batera datozenak bakarrik "
+"erabiltzen dituzula ziurtatuko du.\n"
+"\n"
+"Ziurtatu JASP berrabiarazten duzula ondoren!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "Garbitu"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr ""
+msgstr "<i>Linuxen kalkulu-orrien editore lehenetsia beti erabiltzen da.</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "Ados"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "Utzi"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "Berrezarri lehenetsiak"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "Erakutsi izenburua"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "Erakutsi ardatza"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "Markak:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "Posizioa"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr ""
+msgstr "Aurreratua"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "Analizatu izenburua R adierazpen gisa"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "Mugak:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "Gorde irudia honela"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2940,30 +3201,37 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"Zoritxarrez, ezin izan da grafikoaren tamaina aldatu.\n"
+"\n"
+"Errore mezua:\n"
+"%1\n"
+"\n"
+"Arazoak jarraitzen badu, mesedez, eman goiko mezuaren berri hemen: https"
+"://jasp-stats.org/bug-reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr ""
+msgstr "Errore bat gertatu da grafikoa editatzean"
 
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "Ireki Dokumentazioa"
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
-msgstr ""
+msgstr "Kode Irekiko Osagaiak"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
-msgstr ""
+msgstr "Lagundu iezaguzu JASP zure hizkuntzan itzultzen edo hobetzen"
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "Ez erakutsi berriro"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "Datu-basea"
 
 msgctxt "Database|"
 msgid ""
@@ -2983,100 +3251,123 @@ msgid ""
 "For a local or toy database this is probably overkill, but use your own "
 "judgement."
 msgstr ""
+"<i>Kontuz!</i>\n"
+"<br><br>\n"
+"JASP-ek zure datu-baseko pasahitza jasp fitxategietan gordetzen du, zuzenean "
+"irakurgarria ez den arren, erraz ateratzen da.\n"
+"Fitxategi hau <b>partekatzen</b> baduzu, horrek esan nahi du hartzaileek eta "
+"fitxategia partekatzen dutenek pasahitza ahalegin pixka batekin atera "
+"dezaketela.\n"
+"<br><br>\n"
+"Produkzio-datu-base batera edo sarean eskuragarri dagoen datu-base batera "
+"konektatzen saiatzen ari bazara:\n"
+"<br>\n"
+"Zure datu-basean JASP-erako erabiltzaile berezi bat sortzea <b>gomendatzen "
+"dizugu</b> behar adina <i>baimen</i> gutxienekin.\n"
+"<br><br>\n"
+"Tokiko edo jostailuzko datu-base baterako, hau gehiegizkoa da ziurrenik, "
+"baina erabili zure irizpidea."
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Hostname"
-msgstr ""
+msgstr "Ostalari-izena???"
 
 msgctxt "Database|"
 msgid "Port"
-msgstr ""
+msgstr "Portua"
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "Izena"
 
 msgctxt "Database|"
 msgid "Browse"
-msgstr ""
+msgstr "Arakatu"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "Erabiltzaile-izena"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "Pasahitza"
 
 msgctxt "Database|"
 msgid "Remember me"
-msgstr ""
+msgstr "Gogoratu nazazu"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "Konektatu datu-basera"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "Kontsulta"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "Exekutatu"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "Aurreikusi datuak"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "Kargatu JASP-en"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr ""
+msgstr "Sinkronizazio-tartea minututan: "
 
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
 msgstr ""
+"0-k esan nahi du ez dagoela sinkronizazio automatikorik, baina eskuz "
+"sinkroniza dezakezu Ctrl/Cmd+Y sakatuz"
 
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
 msgstr ""
+"JASP-ek uste du datu-basera konektatuta dagoela, baina QSqlDatabase ez dago "
+"irekita..."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "Kontsultak huts egin du honekin: '%1'"
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
-msgstr ""
+msgstr "Kontsulta ez zen SELECT antzeko adierazpena eta ez zuen ezer itzuli."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
 msgstr ""
+"Ez da emaitza aktiborik aurkitu, agian zerbait gaizki dago zure "
+"kontsultarekin?"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "Datu-basearen pasahitza"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
-msgstr ""
+msgstr "Datu-basearen konexioak '%1' erabiltzailearentzako pasahitza behar du"
 
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password"
-msgstr ""
+msgstr "Datu-baserako konexioak pasahitz bat behar du"
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "Konexioa huts egin du"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3084,60 +3375,67 @@ msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
 msgstr ""
+"Ezin izan da datu-basera konektatu '%1' dela eta, beste pasahitz bat probatu "
+"nahi duzu?"
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
 msgstr ""
+"Ezin izan da datu-basera konektatu, beraz, sinkronizazioa desgaituta egongo "
+"da."
 
 #, qt-format
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
 msgstr ""
+"Ezin izan da %1 datu-basera konektatu %2-n %3 erabiltzailearekin, azken "
+"errorea hau izan zen: '%4'"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
-msgstr ""
+msgstr "Aukeratu datu-basearen kontrolatzaile bat..."
 
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
-msgstr ""
+msgstr "IBM DB2"
 
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
-msgstr ""
+msgstr "MySQL Kontrolatzailea"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
-msgstr ""
+msgstr "Oracle Call Interface kontrolatzailea"
 
 msgctxt "DatabaseFileMenu|"
 msgid "ODBC Driver (includes Microsoft SQL Server)"
-msgstr ""
+msgstr "ODBC kontrolatzailea (Microsoft SQL Server barne)"
 
 msgctxt "DatabaseFileMenu|"
 msgid "PostgreSQL Driver"
-msgstr ""
+msgstr "PostgreSQL kontrolatzailea"
 
 msgctxt "DatabaseFileMenu|"
 msgid "SQLite version 3 or above"
-msgstr ""
+msgstr "SQLite 3 bertsioa edo berriagoa"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "Ez dago datu-basera konektatuta!"
 
 msgctxt "ResourceButtons|"
 msgid "Database"
-msgstr ""
+msgstr "Datubasea"
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
-msgstr ""
+msgstr "Erabili berretzaile notazioa"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
 msgstr ""
+"zenbakizko konparazioetan eta eragiketa matematikoetan erabil daitekeena."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3145,6 +3443,9 @@ msgid ""
 "comparisons. Not in mathematical operations as subtraction etc, to do so: "
 "try converting to scalar first."
 msgstr ""
+"(baliokidetasunik eza, handiagoa/txikiagoa baino konparazioetan bakarrik "
+"erabil daitekeena. Ez eragiketa matematikoetan kenketa eta abar, horretarako:"
+" saiatu lehenik eskalar bihurtzen."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3152,18 +3453,26 @@ msgid ""
 "than comparisons or mathematical operations, to do so: try converting to "
 "ordinal or scalar first."
 msgstr ""
+"(baliokidetasunik eza konparazioetan bakarrik erabil daitekeena. Ez "
+"handiagoa/txikiagoa baino konparazioetan edo eragiketa matematikoetan, "
+"horretarako: saiatu lehenik ordinal edo eskalar bihurtzen."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
 "odds transform) converts numbers between 0 and 1 to the real line."
 msgstr ""
+"Logit transformazioak (hau da, logit funtzio estandarraren alderantzizkoa, "
+"edo log-probabilitate transformazioak) 0 eta 1 arteko zenbakiak lerro "
+"errealera bihurtzen ditu."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse logit transform (i.e., the standard logit function) converts numbers "
 "on the real line to numbers between 0 and 1."
 msgstr ""
+"Alderantzizko logit transformatuak (hau da, logit funtzio estandarrak) lerro "
+"errealeko zenbakiak 0 eta 1 arteko zenbaki bihurtzen ditu."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3171,10 +3480,13 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
+"Bi parametroko Box-Cox transformazioa (-shift baino handiagoak diren balioak "
+"transformatzen ditu) bariantza egonkortzeko eta datuak banaketa normalaren "
+"antzekoagoak izan daitezen saiatzeko."
 
 msgctxt "ComputeColumnWindow|"
 msgid "Inverse two-parameter Box-Cox transform."
-msgstr ""
+msgstr "Alderantzizko bi parametroko Box-Cox transformazioa."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3182,60 +3494,66 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
+"Bi parametroko potentzia transformazioa (-shift baino handiagoak diren "
+"balioak transformatzen ditu) bariantza egonkortzeko eta datuak banaketa "
+"normalaren antzekoagoak izan daitezen saiatzeko."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) to stabilize variance and "
 "attempt to make the data more normal distribution-like."
 msgstr ""
+"Yeo-Johnson transformazioa (edozein balio erreal transformatzen ditu) "
+"bariantza egonkortzeko eta datuak banaketa normalaren antzekoagoak izan "
+"daitezen saiatzeko."
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr ""
+msgstr "Erakutsi falta diren balioak honela: "
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr ""
+msgstr "Desgaituta badago, testuaren errendatzea natibora aldatuko da."
 
 msgctxt "Database|"
 msgid "Select database"
-msgstr ""
+msgstr "Hautatu datu-basea"
 
 msgctxt "Database|"
 msgid "DB driver"
-msgstr ""
+msgstr "DB kontrolatzailea"
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
-msgstr ""
+msgstr "Motorren Ikuspegi Orokorra"
 
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr ""
+msgstr "Saguaren eskuineko eta erdiko botoia motor bat itzaltzeko."
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "Motor kopuru maximoa: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "Motorrak erakutsi"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "Dagoeneko dagoen karpeta bat hautatu"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "R sintaxia erakutsi"
 
 msgctxt "MainPage|"
 msgid "Hide input options"
-msgstr ""
+msgstr "Sarrera aukerak ezkutatu"
 
 msgctxt "MainPage|"
 msgid "Show input options"
-msgstr ""
+msgstr "Sarrera aukerak erakutsi"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3244,6 +3562,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Sartu zure R kodea hemen.\n"
+"Datuak iragazkirik gabe daude eskuragarri 'data' gisa\n"
+"eta 'filteredData' gisa iragazita.\n"
+"Sintaxi moduko JASP analisiak ere itsatsi ditzakezu hemen."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3251,59 +3573,64 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"Sartu zure R kodea hemen.\n"
+"\n"
+"Sintaxi moduko JASP analisiak ere itsatsi ditzakezu hemen."
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "Analisia gehitu"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "Bertsio berritzeak kargatzean errore hau(k) eman dira: %1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "Ezin izan da %1 terminoa aurkitu formulan"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "Formulako %1 iturria ez da aurkitu"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "Formulako %1 iturria ez da Aldagaien Zerrenda bat"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
-msgstr ""
+msgstr "Ezin izan da formula deskribapenean emandako %1 elementua aurkitu"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "Ez da iturririk aurkitu randomEffects Formulan"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"Formulako randomEffects ComponentsList elementu batekin bakarrik erabil "
+"daiteke"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "Ez da iturririk aurkitu Formulan"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "Txostenak egiteko modua"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "JASP txostenak egiteko moduan exekutatu behar den ala ez."
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "Datu-fitxategirik ez"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3313,998 +3640,1014 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP txostenak egiteko moduan abiarazi da, baina jasp fitxategia ez dago "
+"datu-fitxategi bati lotuta.\n"
+"Horrek esan nahi du ezin dela eguneratzerik egon...\n"
+"\n"
+"Hala ere jarraitu nahi duzu?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "Errore ezezaguna"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "Formularen deskribapenean ez da izenik eman"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "'%1' etiketa duen kontrolak ez du izenik"
 
 msgctxt "JASPControl|"
 msgid "A control has no name"
-msgstr ""
+msgstr "Kontrol batek ez du izenik"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "'%1' aukeraren izena hitz erreserbatua da"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 kontrolek izen bera dute: %1"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Kontrol batek eta formula batek '%1' izen bera dute"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "'%1' izena duen formula bi aldiz definituta dago"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "Kontrol batek eta formula batek '%1' izen bera dute"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "Ez da analisirik aurkitu"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "Ez da analisi funtzio bat: <moduluaren izena>::<analisiaren izena>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R (ber)hasten ari da"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R %1 modulua instalatzen edo kargatzen ari da"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "R geldituta"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "R komandoen zain dago"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "Aldagaien Zerrenda"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "GoitiBeherako"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "Fitxa???? Ikuspegia"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "Aldagaien Formularioa"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "Erakutsi aukera guztiak"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "R kontsola"
 
 msgctxt "RCommander|"
 msgid " and "
-msgstr ""
+msgstr " eta "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "modulua hautatu gabe dauka"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "modulua hautatuta dauka "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Egin klik beheko fitxategian sinkronizatzeko edo erabiltzeko "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "Aldagai hau kendu da, ez baitago baimenduta: %1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "Aldagai hauek kendu dira, ez baitaude baimenduta: %1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "Demagun CSV dela hautatutako kode-orria, BOM zehaztu gabe dagoenean."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "Aukeratu kode-orria hemen"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "%1-ren kopia"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "Ezkutatu R sintaxia"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "Sortu Bilgarria"
 
 msgctxt "Computer|"
 msgid "Save"
-msgstr ""
+msgstr "Gorde"
 
 msgctxt "Computer|"
 msgid "JASP Files"
-msgstr ""
+msgstr "JASP fitxategiak"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "Esportatu emaitza HTML edo PDF gisa"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "HTML fitxategiak"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
-msgstr ""
+msgstr "Dokumentu Eramangarriaren Formatua"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "Esportatu Datuak CSV gisa"
 
 msgctxt "Computer|"
 msgid "CSV Files"
-msgstr ""
+msgstr "CSV fitxategiak"
 
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr ""
+msgstr "Sinkronizatu datuak"
 
 msgctxt "Computer|"
 msgid "Data Files"
-msgstr ""
+msgstr "Datu fitxategiak"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<aukerarik ez>"
 
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr ""
+msgstr "Balio Berria"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "%1 errenkada"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "Aukera desberdinak"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "Erakutsi R sintaxia"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "Gehitu R sintaxia analisi bakoitzerako"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "Erakutsi R Sintaxia"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "Ezkutatu R Sintaxia"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
-msgstr ""
+msgstr "Kalkulatutako Zutabean egindako aldaketak gorde nahi dituzu?"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Zure aldaketak galduko dira gordetzen ez badituzu."
 
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
-msgstr ""
+msgstr "Zure aldaketak Iragazkian gorde nahi dituzu?"
 
 msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Zure aldaketak galduko dira gordetzen ez badituzu."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
-msgstr ""
+msgstr "Zure aldaketak %1 fitxategian gorde nahi dituzu?"
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Zure aldaketak galduko dira gordetzen ez badituzu."
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
-msgstr ""
+msgstr "Erabili Qt-ren testu-errendatzea"
 
 msgctxt "PrefsUI|"
 msgid "Accessibility options"
-msgstr ""
+msgstr "Irisgarritasun aukerak"
 
 msgctxt "PrefsUI|"
 msgid "ALT-Navigation mode"
-msgstr ""
+msgstr "ALT-Nabigazio modua"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr ""
+msgstr "ALT-Nabigazio modua aktibo dagoen ala ez."
 
 msgctxt "MainPage|"
 msgid "Bold"
-msgstr ""
+msgstr "Lodia"
 
 msgctxt "MainPage|"
 msgid "Italic"
-msgstr ""
+msgstr "Etzana"
 
 msgctxt "MainPage|"
 msgid "Underline"
-msgstr ""
+msgstr "Azpimarra"
 
 msgctxt "MainPage|"
 msgid "Link"
-msgstr ""
+msgstr "Esteka"
 
 msgctxt "MainPage|"
 msgid "Formula"
-msgstr ""
+msgstr "Formula"
 
 msgctxt "MainPage|"
 msgid "Code Block"
-msgstr ""
+msgstr "Kode Blokea"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "Goiburua"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "Zerrenda Ordenatua"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "Zerrenda Ordenatu Gabea"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "Atzeko Planoaren Kolorea"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "Azpiindizea"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "Goiindizea"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "Aipamena"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr ""
+msgstr "Koska gehitu"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
-msgstr ""
+msgstr "Koska kendu"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "Letra-tamaina"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "Formatua Garbitu"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "Egin klik hemen testua gehitzeko"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Arbelean??? kopiatu da"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr ""
+msgstr "Aipamenak arbelean??? kopiatu dira"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "LaTeX kodea arbelean?? kopiatu da"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "Sarrera:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "Ondorioa:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "Datuak editatzeko modura aldatu"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "Cmd"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "Kontrol"
 
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr ""
+msgstr "Guztiak hautatu"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "Moztu"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
 msgctxt "DataTableView|"
 msgid "Copy"
-msgstr ""
+msgstr "Kopiatu"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "Itsatsi"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Garbitu gelaxkak"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "Ezabatu"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "Ezabatu: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "Berregin: %1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "Hautatu zutabea"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Txertatu zutabea aurretik"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Txertatu zutabea ondoren"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "Ezabatu zutabea"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "Hautatu errenkada"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "Ezabatu errenkada"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "Itxi iragazki leihoa"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "Berrizendatu zutabea"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "Berrizendatu"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "Berrizendatu %1 zutabea %2ra"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "Itxi zutabea berrizendatu gabe"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Itxi aldagaien leihoa"
 
 msgctxt "ColumnModel|"
 msgid "Value"
-msgstr ""
+msgstr "Balioa"
 
 msgctxt "ColumnModel|"
 msgid "Label"
-msgstr ""
+msgstr "Etiketa"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "%1 zutabea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "Ezarri balioa '%1' %2 errenkadan '%3' zutabean"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "Txertatu kalkulatutako '%1' zutabea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "Txertatu '%1' zutabea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "Kendu '%1' zutabea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "Kendu %1 errenkada"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr ""
+msgstr "Ezarri '%2' zutabearen '%1' balioaren etiketa '%3'-tik '%4'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Iragazi '%1' etiketa duten errenkadak '%2' zutabean"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "Kendu iragazkia '%2' zutabean '%1' etiketa duten errenkadentzat"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "Mugitu '%2' zutabeko '%1' etiketa gora"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "Mugitu '%2' zutabeko '%1' etiketa behera"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "Mugitu '%1' zutabearen etiketak gora"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "Mugitu '%1' zutabearen etiketak behera"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "Aldatu arrastatu eta jaregin iragazkia"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "Aldatu R iragazkia"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr ""
+msgstr "Sortu '%1' izena duen kalkulatutako zutabe bat"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr ""
+msgstr "'%1' izeneko kalkulatutako zutabean kodea ezarri"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP-ek datu-fitxategi bat du lotuta, baina editatu duzu. Datu lotuetatik "
+"berriro kargatu edo fitxategi berri bat sortu nahi duzu?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "Datu-fitxategia Berriro Kargatu"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "%1 moduluaren (motorraren) hasieraren zain"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "Txertatu zutabea aurretik"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "Txertatu zutabea ondoren"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "Ezabatu zutabea"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "Ezabatu errenkada"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "Garbitu gelaxkak"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "Desegin"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "Berregin"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "Analisiak"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "Aldatu JASP analisi modura"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "Editatu Datuak"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "Aldatu JASP datuak editatzeko modura"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "Datu Berriak"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "Ireki daturik gabeko lan-eremu bat"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "Txertatu"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "Txertatu zutabe edo errenkada hutsak"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "Zutabeak edo errenkadak kendu"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "Sinkronizazioa"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "Kanpoko datuen sinkronizazioa aktibatu"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "Kanpoko datuen sinkronizazioa desaktibatu"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Errenkada txertatu goian"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Errenkada txertatu behean"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "Kolore paleta"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "Daltonikoa"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "Daltonikoa #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "Daltonikoa #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "Viridis"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "Grisa"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "Urdina"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "Kirol taldeak: NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "Grand Budapest"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "Errenkada txertatu goian"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "Errenkada txertatu behean"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "Aldaketak desegin, %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "Aldaketak berregin, %1+shift+Z edo %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "Desegin %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "Berregin %2 (%1+shift+Z edo %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "Ireki datu-fitxategia kalkulu-orrien editore lehenetsiarekin"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "Kendu %1 zutabe '%2'-tik"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "Kendu %1etik %2ra errenkadak"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "Kopiatu '%1' zutabeak '%2'-ra"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "Jarri harremanetan JASP-ekin"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "Erakunde hauek laguntzen dute JASP:"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution join the JASP Community"
-msgstr ""
+msgstr "Iradoki zure erakundeari JASP Komunitatean sartzea"
 
 msgctxt "WavyWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "JASP-i buruz"
 
 msgctxt "WavyWindow|"
 msgid "Close"
-msgstr ""
+msgstr "Itxi"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "Kopiatu '%1' zutabea '%2' zutabean"
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "Kontaktua"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"Programa hau DAGOEN BEZALA eskaintzen da, INOLAKO BERMERIK GABE, "
+"DISEINUAREN, MERKATURAGARRITASUNAREN ETA HELBURU JAKIN BATERAKO "
+"EGOKITASUNAREN BERMEA BARNE."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "eta %1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "Berrezarri balio estandarrekin"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "Berrezarri falta diren balioak JASP estandarraren falta diren balioekin"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "Gehitu falta den balio bat"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "Ezarri uneko lan-eremua balio hauekin"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "Ezarri uneko lan-eremuaren falta diren balioak balio hauekin"
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "Editatu etiketak hemen edo aukeratu zein balio iragazi behar diren."
 
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
-msgstr ""
+msgstr "Iragazkia"
 
 msgctxt "LabelEditorWindow|"
 msgid "Value"
-msgstr ""
+msgstr "Balioa"
 
 msgctxt "LabelEditorWindow|"
 msgid "Label"
-msgstr ""
+msgstr "Etiketa"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "Mugitu hautatutako etiketak gora"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "Mugitu hautatutako etiketak behera"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr ""
+msgstr "Etiketa guztien alderantzizko ordena"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
-msgstr ""
+msgstr "Berrezarri zutabe honetako iragazki-marka guztiak"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr ""
+msgstr "Berrezarri zutabe guztietako iragazki-marka guztiak"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "Irudia"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "Lan-eremuaren ezarpenak"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "Izena: %1"
 
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr ""
+msgstr "Deskribapena: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr ""
+msgstr "Berrezarri falta diren balioak Datuen Hobespenetan ezarritakoekin"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "Erakutsi lan-eremuaren ezarpenak"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "Balio pertsonalizatuak erabili"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr ""
+msgstr "Falta diren balioak zure lan-eremuan ezarritakoekin berrezarri"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "Ez da kalkulatu"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "R kodearekin kalkulatua"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "Arrastatu eta jaregin bidez kalkulatua"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "Analisiak sortutako zutabea"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "Analisiak gehitutako zutabea"
 
 msgctxt "QObject|"
 msgid "Scale"
-msgstr ""
+msgstr "Eskala"
 
 msgctxt "QObject|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ordinala"
 
 msgctxt "QObject|"
 msgid "Nominal"
-msgstr ""
+msgstr "Nominala"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "Kalkulatutako zutabearen definizioa"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "Etiketa editorea"
 
 msgctxt "ColumnModel|"
 msgid "Missing values"
-msgstr ""
+msgstr "Balio faltak"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1' zutabearen izenburua '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1' zutabearen izenburua '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1' zutabearen deskribapena '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Ezarri '%1' kalkulatutako mota '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "Aldatu lan-eremuaren deskribapena '%1'-tik '%2'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "Erabili balio huts pertsonalizatuak '%1' zutaberako"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "Erabili balio huts lehenetsiak '%1' zutaberako"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "Ezarri balio hutsak '%1' zutaberako"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "Ezarri lan-eremuaren balio hutsak"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "Erakutsi lan-eremuaren falta diren balioak"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "Lan-eremuaren falta diren balioen ezarpenak irekitzen ditu"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "Txertatu web bideoa"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "Bideo-zerbitzu bateraezinak"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP-ek bideo-zerbitzu hauek bakarrik onartzen ditu:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"Jarri harremanetan JASP taldearekin zerrendara beste bideo-zerbitzu bat "
+"gehitzeko eskatzeko."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP Komunitatea"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4327,303 +4670,331 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>Kontaktua</h3>\n"
+"<a href=\"%1\">funtzio-eskaerak</a> eta <a href=\"%2\">akatsen txostenak</a> "
+"egiteko: argitaratu arazo bat gure GitHub orrian, <a href=\"%3\">hemen "
+"azaltzen den bezala.</a>\n"
+"Horrek JASP software-garatzaileekin zuzenean harremanetan jarriko zaitu.\n"
+"\n"
+"Estatistika-galderetarako: argitaratu arazo bat <a href=\"%4\">JASP "
+"Foroan.</a>\n"
+"\n"
+"JASP Komunitateari buruzko informazioa lortzeko: irakurri <a href=\"%5\""
+">JASP webguneko informazioa</a>\n"
+"\n"
+"Zure erakundea <a href=\"%6\">JASP Munduko Mapara</a> gehitzeko iradokizuna "
+"egiteko, bidali mezu elektroniko bat <a href=\"%7\">communications@jasp-"
+"stats.org</a> helbidera.\n"
+"\n"
+"Dohaintza indibidualetarako: bisitatu <a href=\"%8\">JASP webgunea</a>.\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "Komunitatea"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
-msgstr ""
+msgstr "Izena: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "Zutabe mota: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "Kalkulatutako mota: "
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "Erakutsi gurasoen? analisia"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
-msgstr ""
+msgstr "Izen luzea: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<Idatzi zutabearen izen deskribatzaileagoa>"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr ""
+msgstr "Itxi aldagaien leihoa"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
-msgstr ""
+msgstr "Deskribapena: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "Zutabearen definizioa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr ""
+"y-n falta den balio bakoitzeko TRUE duen bektore boolear bat itzultzen du"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"Konbinatu ez-operadorearekin zutabe bateko balio falta duten (NA) errenkadak "
+"iragazteko."
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "Ez da daturik kargatu!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
-msgstr ""
+msgstr "Datuak %1 errenkada ditu, %2 (%3%4%) iragazkitik igaro dira"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "Kanpoko kalkulu-orrien editorea (datuen sinkronizaziorako)"
 
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
+"Aldagai batek balio oso desberdin gehiago baditu, eskala gisa interpretatuko "
+"da."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "Kargatutako aldagaien motak berrezarri"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "Falta diren balioen ezarpena"
 
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "Arbelean kopiatu"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "Arazketa-informazioa kopiatu"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "Emaitzetan bilatu:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "Bilaketa-barra itxi"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "Letra-tipoaren Kolorea"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "LaTeX idatzi hemen:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "Sakatu `Cmd/Ctrl + Sartu` aplikatzeko;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "Egin klik formula aplikatzeko"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "Egin klik formula hau editatzeko"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "Gehitu %1 bat"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Kendu azken %1"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
-msgstr ""
+msgstr "Factorea"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Txertatu eraikitzailearen zutabea aurretik"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Txertatu eraikitzaile zutabea ondoren"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Txertatu R zutabea aurretik"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Txertatu R zutabea ondoren"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "Egin klik hemen zutabe mota aldatzeko"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "Gehitu zutabea"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "Analisi baten bidez kalkulatua"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "Egin klik bikoitza hemen aldagaien ezarpenak aldatzeko"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "Egin klik bikoitza hemen aldagaien leihoa ixteko"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Egin klik hemen hautatutako aldagaia aldatzeko"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
+"Egin klik hemen errenkada hautatzeko, eutsi shift tekla bat baino gehiago "
+"hautatzeko."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"Ezarri jatorrizko balioa '%3'-tik '%4'-ra '%2' zutabeko '%1' etiketarentzat"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "Txertatu eraikitzailearen zutabea aurretik"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "Txertatu eraikitzailearen zutabea ondoren"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Txertatu R zutabea aurretik"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Txertatu R zutabea ondoren"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "Alderantzikatu balioak"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "Kalkulatutako zutabeak errorea du:<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "Zenbakizko balio guztien alderantzizko ordena"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "Zutabe mota aldatzeak huts egin du"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "'%1' zutabea analisi batek sortu du eta bere mota finkoa da."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "Ezarri mota '%1' '%2' zutabe(ar)entzat"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr ""
+msgstr "Alderantzikatu '%1' zutabe(ar)en balioak"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr ""
+msgstr "Alderantzikatu '%1' zutabe(ar)en etiketak"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "Ordenatu etiketak balioen arabera"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
+"JASP <a href=\"dummyLink\">Amsterdamgo Unibertsitatearen eta beste batzuen</"
+"a> egitura-laguntza duen kode irekiko proiektu bat da."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "Akatsen berri eman"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "Ezaugarriak eskatu"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "Txertatu %2 zutabe %1ean"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "Txertatu %2 errenkada %1ean"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr ""
+msgstr "Itsatsi balioak '%1' errenkadan '%2' zutabean"
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
-msgstr ""
+msgstr "Datu guztiak mozten"
 
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
-msgstr ""
+msgstr "Mutinomial Chi2 taula"
 
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
-msgstr ""
+msgstr "JAGS taula"
 
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
-msgstr ""
+msgstr "Kontraste pertsonalizatuen taula"
 
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
-msgstr ""
+msgstr "Iragazitako datu-sarrera taula"
 
 msgctxt "TableViewBase|"
 msgid "Grid Table"
-msgstr ""
+msgstr "Sareta taula"
 
 msgctxt "TableViewBase|"
 msgid "Table"
-msgstr ""
+msgstr "Taula"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "Eremu bikoitza"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "Inportazio ezarpenak"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4631,20 +5002,24 @@ msgid ""
 "scalars. Think 1 million+ rows of random floating point numbers.\n"
 "If you find that loading of such a file is slow you can disable this option."
 msgstr ""
+"Honek moteltzea eragin dezake datu-multzo oso handiak eskalar askorekin "
+"kargatzean. Pentsa ezazu milioi bat errenkada baino gehiago ausazko koma "
+"mugikorreko zenbakietan.\n"
+"Fitxategi horren kargatzea motela dela ikusten baduzu, aukera hau desgaitu."
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "Eskalarako Atalasea"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
-msgstr ""
+msgstr "Kendu %1 errenkada"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
-msgstr ""
+msgstr "Kendu %1 zutabe"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -4670,68 +5045,90 @@ msgid ""
 "\n"
 "<a href=\"%6\">Click here for the current list of educators</a>\n"
 msgstr ""
+"<h3>Komunitatea</h3>\n"
+"JASP komunitatean parte hartzen duten goi-mailako ikaskuntzako erakundeek "
+"JASPen mantentze-lanak eta garapen gehiago elkarrekin laguntzen dituzte, "
+"eta, beraz, hezkuntza-zerbitzu baliotsua eskaintzen diete beren ikasleei eta "
+"mundu osoko beste erakunde batzuei.\n"
+"\n"
+"Zure erakundea oraindik JASP komunitateko kide ez bada, <a href=\"%1\""
+">sartzea iradoki diezaiekezu</a>.\n"
+"Jarraian, argitalpen hau posible egiten lagundu duten hezitzaileak:\n"
+"\n"
+"<i><b>Urrezko Irakasleak:</b></i>\n"
+"%2  \n"
+"                                       \n"
+"<i><b>Zilarrezko Irakasleak:</b></i>\n"
+"%3\n"
+"\n"
+"<i><b>Brontzezko Irakasleak:</b></i>\n"
+"%4\n"
+"\n"
+"<a href=\"%6\">Egin klik hemen hezitzaileen uneko zerrenda ikusteko</a>\n"
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "Etiketak balioaren arabera ordenatu lehenespenez"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Datuen Tamaina Aldatu"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "Zutabeak"
 
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "Errenkadak"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "Tamaina aldatu"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "Datuen tamaina aldatu balioak ezartzeko"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "Itxi datuen tamaina aldatu gabe"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "Galdera bat egin"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "Bisitatu webgunea"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr ""
+"'%1' zutabe(etarako) etiketak balioen arabera automatikoki ordenatzea "
+"aktibatu/desaktibatu"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "Datuen Tamaina Aldatu"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "Zure datu-multzoaren tamaina aldatu"
 
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
-msgstr ""
+msgstr "Datuen tamaina %1 errenkadara eta %2 zutabera aldatu"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Eguneraketak bilatu"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
-msgstr ""
+msgstr "Eguneroko egiaztapen automatikoa eguneratzeen eta arazo ezagunen bila"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -4746,6 +5143,16 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP-ek ez du zure daturik partekatzen eguneratzeak jasotzen dituenean, ezta "
+"zein JASP bertsio erabiltzen ari zaren ere.\n"
+"Zure IP helbidea zerbitzariarekin partekatzen du, baina hori beharrezkoa da "
+"internetek funtziona dezan.\n"
+"\n"
+"Deskargatzen dituen arazo ezagunen zerrenda gutxitan erabiltzen da, gehienak "
+"[jasp-issues](https://github.com/jasp-stats/jasp-issues/issues) helbidean "
+"daude. Hala ere, errore larri bat analisi batean sartu dela konturatzen "
+"bagara, honek *analisian* kontuan hartu beharreko zerbait dagoela erakutsiko "
+"dizu. Zorionez, ia inoiz ez dugu erabili behar."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4754,11 +5161,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"%1 maila daude guztira, eta horietatik %2k balio numerikoa dute.\n"
+"'%3' gisa honelakoa da: %4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "Balio inplizitu falta: %1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4766,10 +5176,12 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"%1 maila daude guztira.\n"
+"'%2' gisa honelako itxura du: %3"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "Egiaztatu eguneraketak"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -4783,43 +5195,52 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"JASP-ek gure zerbitzarian eguneraketak egiaztatu eta bertsio berririk dagoen "
+"jakinarazi beharko lizuke?\n"
+"\n"
+"JASP-ek ez du zure daturik partekatzen eguneraketak jasotzen dituenean, ezta "
+"zein JASP bertsio erabiltzen ari zaren ere.\n"
+"Zure IP helbidea gure zerbitzariarekin partekatzen du, baina hori "
+"beharrezkoa da internetek funtziona dezan.\n"
+"\n"
+"Ezarpen hau beti alda daiteke Interfazearen Hobespenetan."
 
 msgctxt "MainWindow|"
 msgid "Yes"
-msgstr ""
+msgstr "Bai"
 
 msgctxt "MainWindow|"
 msgid "No"
-msgstr ""
+msgstr "Ez"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "%1 aldagai bakarrik onartzen dira"
 
 msgctxt "VariableInfo|"
 msgid "Scale"
-msgstr ""
+msgstr "Eskala"
 
 msgctxt "VariableInfo|"
 msgid "Ordinal"
-msgstr ""
+msgstr "Ordinala"
 
 msgctxt "VariableInfo|"
 msgid "Nominal"
-msgstr ""
+msgstr "Nominala"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "Ezezaguna"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<Lehenik eta behin, bete zutabearen izena>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "Eskalarako gehienezko mailak nominal/ordinal gisa erabiltzen denean"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4827,103 +5248,108 @@ msgid ""
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
 msgstr ""
+"Aldagai batzuentzat nominalak edo ordinalak bakarrik onartzen dituen analisi "
+"baterako, eskala-aldagai bat erabiltzen bada, JASP-ek aldagai honen mailen "
+"kopuruak gehienezko hori gainditzen duen egiaztatzen du."
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "Datu-multzo Berria kargatzen"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "Berria"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Excel fitxategia inportatzen"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "Datu-multzo guztiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "CSV testu-fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "Kalkulu-orri fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Stata fitxategiak %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS Fitxategiak %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF Ezarpenak"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "Orientazioa"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "Bertikala"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "Horizontala"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "Orriaren tamaina"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "Iragazkia garbituta\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "Iragazkia aplikatuta\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "Sartu argumentu guztiak - ikusi gorriz markatutako eremuak.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
 msgstr ""
+"Formulak ez du balio logiko multzo bat itzultzen, eta beraz, ezin da "
+"iragazkian erabili.\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "Ongi etorri arrastatu eta jaregin iragazkira!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Egin klik ikonoan zutabe mota aldatzeko"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -4935,34 +5361,42 @@ msgid ""
 "& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
+"Goian JASP-ek balioen iragazketarako eta arrastatu eta jaregin iragazkirako "
+"sortzen duen kodea ikusten duzu.\n"
+"Emaitza lehenetsi hau 'generatedFilter'-en gordetzen da eta ordezkatu edo "
+"iragazki pertsonalizatu batekin konbinatu daiteke.\n"
+"Konbinatzeko, klausulak erantsi ditzakezu '&' erabiliz: 'generatedFilter & "
+"customFilter & perhapsAnotherFilter'\n"
+"Egin klik beheko eskuineko izkinan dagoen (i) ikonoan laguntza gehiago "
+"lortzeko.\n"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "Zutabe-izena-libre-da eremua"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "'%1' zutabea dagoeneko existitzen da eta ez du analisi honek sortu."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "Iragazkiak '%1' errorea zuen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Etiketak automatikoki ordenatu beren balioaren arabera"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "Maila kopuru minimoa %1 da. %2 aldagaiak %3 maila baino ez ditu"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "Maila kopuru maximoa %1 da. %2 aldagaiak %3 maila ditu."
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4972,6 +5406,10 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"%1 eskala aldagaia %2 aldagai bihurtzen saiatu da, baina bere %3 mailen "
+"kopurua %4 maximoa gainditzen du. Aldagai hau erabili nahi baduzu oraindik, "
+"aldatu mota edo aldatu 'Eskalarako baimendutako maila maximoak' Hobespenak / "
+"Datuak menuan"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4979,6 +5417,8 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
+"Balio numerikoen gutxieneko kopurua %1 da. %2 aldagaiak %3 balio numeriko "
+"desberdin baino ez ditu"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4986,92 +5426,100 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
+"Balio numerikoen gehieneko kopurua %1 da. %2 aldagaiak %3 balio numeriko "
+"desberdin ditu"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "Garatzaile modua"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "Garapen modulua"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"Kargatu moduluak R-liburutegi bateko fitxategi bitar batetik, iturburuetatik "
+"instalatu beharrean."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "Iturburu karpeta:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Aukeratu garapen modulua instalatu duzun R liburutegia"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "Moduluaren izena:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr ""
+msgstr "Sartu kargatu nahi duzun garapen-moduluaren (paketearen) izena"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "Hautatu garatzaile-modulu bat dagokion lehentasuna betez"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "Freskatu garatzaile-modulua "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"0 zutabe baliozko irakurri dira fitxategitik, mesedez egiaztatu zure datu-"
+"fitxategia."
 
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
-msgstr ""
+msgstr "Zintaren eskala (%): "
 
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
-msgstr ""
+msgstr "Ezarri zintaren altueraren eskala."
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "Egin klik bikoitza izen hau editatzeko"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "Aukeratu hizkuntza"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
+"Erabili zenbakien bistaratzeko beste hizkuntza eta lurraldearen araberako "
+"bistaratzea"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "Erabili behean zehaztutako eskualdea zenbakiak eta moneta bistaratzeko."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "Hizkuntza alternatiboa"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "Lurralde alternatiboa"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "Zutabearen deskribapena: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "Egin klik ikonoan zutabe mota aldatzeko"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "Zutabearen deskribapena: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5079,10 +5527,12 @@ msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr ""
+"Garapen modulu bat instalatzeko, karpeta bat hautatu behar duzu. '%1' "
+"hautatu duzu, baina ez da existitzen."
 
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "Kendu ohar hau"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5090,263 +5540,286 @@ msgid ""
 "For this: open the file menu (the blue hamburger button left top), navigate "
 "to Advanced Preferences and check the 'Log to file' checkbox."
 msgstr ""
+"Ez dago erregistro fitxategirik eskuragarri. Informazio gehiago lortzeko, "
+"aktibatu saioa hasteko aukera. Horretarako: ireki fitxategi menua (goiko "
+"ezkerreko hanburgesa botoia), joan Hobespen Aurreratuetara eta markatu "
+"'Fitxategian erregistratu' kontrol-laukia."
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr ""
+msgstr "Arrastatu eta jaregin erregistro fitxategi hauek arazo honetara: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "Hautatu kalkulatutako zutabe honetarako erabiltzeko iragazki bat"
 
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "Maila berria gehitu:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "Datuetan falta den maila bat gehitu"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
 msgstr ""
+"Mailak mantenduz, maila guztiak analisira pasatzeko, bai iragazitakoak bai "
+"geroago eskuz gehitutakoak."
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
 msgstr ""
+"Mailak kenduz, datuetan (agian iragazita dauden) mailak bakarrik analisira "
+"bidaltzeko."
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketa guztien alderantzizko ordenarako"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketak eskuz gora mugitzeko"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "Desaktibatu ordena automatikoa etiketak eskuz behera mugitzeko"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "Iragazkirik gabe"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "Erabili iragazkia"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1'-ren zutabe-kalkulu iragazkia '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "Aldatu '%1' zutabe-kentzeko mailak '%2'-tik '%3'-ra"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "Ezabatu '%2' zutabearen %1 etiketa"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "balioa + '%1' etiketa + '%2' etiketa '%3' zutabera gehitzen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
-msgstr ""
+msgstr "Sandbox motorrak"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
 msgstr ""
+"Windows-en segurtasuna indartu R-kodea exekutatzen duten motorrak isolatuz"
 
 msgctxt "PrefsUI|"
 msgid "Use thousands separators"
-msgstr ""
+msgstr "Erabili milakoen bereizgailuak"
 
 msgctxt "PrefsUI|"
 msgid "Disable to remove thousands separators from all numbers."
-msgstr ""
+msgstr "Desgaitu zenbaki guztietatik milakoen bereizgailuak kentzeko."
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "Hautatu fitxategi bat..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "Hautatu karpeta bat..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a R-library..."
-msgstr ""
+msgstr "Hautatu R-liburutegi bat..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "Grafiko seguruen modua aldatu da"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
+"JASP-en Grafiko Seguruen modua aldatu duzu, aukera honek eragina izan dezan "
+"JASP berrabiarazi behar duzu"
 
 msgctxt "PreferencesModel|"
 msgid "Text rendering setting changed"
-msgstr ""
+msgstr "Testuaren errendatze ezarpena aldatu da"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The textrendering setting has been changed, this will only take full effect "
 "after JASP is restarted."
 msgstr ""
+"Testuaren errendatze ezarpena aldatu da, honek JASP berrabiarazi ondoren "
+"bakarrik izango du eragin osoa."
 
 msgctxt "PreferencesModel|"
 msgid "Engine Sandbox setting changed"
-msgstr ""
+msgstr "Motorraren Sandbox ezarpena aldatu da"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The Engine Sandbox setting has been changed, this will only take full effect "
 "after JASP is restarted."
 msgstr ""
+"Motorraren Sandbox ezarpena aldatu da, honek JASP berrabiarazi ondoren "
+"bakarrik izango du eragin osoa."
 
 msgctxt "MessageForwarder|"
 msgid "Sandbox warning"
-msgstr ""
+msgstr "Sandbox abisua"
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to save a file outside of the sandbox directory! We will correct "
 "the path to: "
 msgstr ""
+"Sandbox direktoriotik kanpo fitxategi bat gorde nahi duzu! Bidea zuzenduko "
+"dugu honetara: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to load a file outside of the sandbox directory! This will fail "
 "please move the file to: "
 msgstr ""
+"Sandbox direktoriotik kanpo fitxategi bat kargatu nahi duzu! Honek huts "
+"egingo du, mesedez, mugitu fitxategia honetara: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr ""
+"Jasp motorra segurtasun sandbox moduan exekutatzen ari da eta honetarako "
+"sarbidea bakarrik du: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Lerroka batez bestekoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Lerroka batura"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Lerroka desbideratze estandarra"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Lerroka bariantza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Lerroka mediana"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Lerroka minimoa"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Lerroka maximoa"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr ""
+msgstr "Erabili konfigurazio fitxategi bat."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr ""
+msgstr "Erabili urruneko konfigurazio fitxategia."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
-msgstr ""
+msgstr "Erabili URLak seinalatzen duen urruneko konfigurazio fitxategia"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr ""
+msgstr "Konfigurazio URLa: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr ""
+msgstr "Hautatu konfigurazio fitxategia"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
+msgstr "Hautatu konfigurazio fitxategia."
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "Lerroka batez bestekoa"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "Lerroka batura"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "Lerroka desbideratze estandarra"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "Lerroka bariantza"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "Lerroka mediana"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "Lerroka minimoa"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "Lerroka maximoa"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "JASP-ek bere leihoa maximizatuta ireki behar al du abiaraztean?"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
 "appdata."
 msgstr ""
+"Honek 'renv', 'Modules' eta garapen moduluko karpetak ezabatuko ditu "
+"appdatan."
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
-msgstr ""
+msgstr "Gaitu renv modua"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "Proiektu liburutegia:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "Konfigurazio fitxategiaren aukerak"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "Hasi maximizatuta"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5354,38 +5827,43 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP-ek errore larri bat izan du eta ezin du gehiago kalkulatu.\n"
+"\n"
+"Eskertuko genizuke errore hau JASP taldeari jakinaraztea."
 
 msgctxt "MainWindow|"
 msgid "Salvage"
-msgstr ""
+msgstr "Berreskuratu"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
-msgstr ""
+msgstr "Instalazioa osatuta"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Completed installation of Bundles: "
-msgstr ""
+msgstr "Bundles instalazioa osatuta: "
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
-msgstr ""
+msgstr "Segurtasun Sandbox-aren hutsegitea"
 
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
 "sandboxing. Do you wish to continue with out is? (probably fine)"
 msgstr ""
+"Segurtasun Sandbox aktibatzean huts egin du. Zure sistemak ez du segurtasun-"
+"sandboxing-a onartzen. Jarraitu nahi duzu honekin gabe? (ziurrenik ondo)"
 
 msgctxt "QObject|"
 msgid "Continue"
-msgstr ""
+msgstr "Jarraitu"
 
 msgctxt "QObject|"
 msgid "Exit"
-msgstr ""
+msgstr "Irten"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
-msgstr ""
+msgstr "Balizko balioak hauek dira: %1"

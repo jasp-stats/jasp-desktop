@@ -60,20 +60,23 @@ To start developing your own module you should first understand the [structure o
 Initially you do not need to add any of the .qml, .R or icon files, but you should minimally have the `Description.qml`, `DESCRIPTION` and `NAMESPACE`.
 Forking the aforementioned module template will make all of this for you.
 
-### Precompile your module
+In order to test your module while developing, you'll need to install it on JASP as a development module.
+Below we show two alternative ways to do this.
+
+### Precompile your module with renv (recommended)
 The module installs as a regular R package, _i.e.:_,
 ```sh
 R CMD INSTALL . --preclean --no-multiarch --with-keep.source <module name>
 # If you use RStudio, this is equivalent to pressing `Build > Install` in the GUI.
 ```
 
-### Steps to add the module folder as a development module in JASP
+#### Steps to add the module folder as a development module in JASP
 1. Open JASP
 2. Click on the menu in the top left corner
 3. Navigate to 'Preferences'
 4. Navigate to 'Advanced'
 5. Place a checkmark before 'Developer mode'
-6. Tick 'Enable direct libpath mode'
+6. Tick 'Enable renv mode'
 7. Choose the libpath where you precompiled your module (not sure?, execute `.libPaths()` in R)
 8. Fill in the module name.
 
@@ -85,7 +88,26 @@ R CMD INSTALL . --preclean --no-multiarch --with-keep.source <module name>
 
 ![](./img/dev-jasp.png)
 
-### Problems?
+### Using JASP to install the development module (deprecated)
+An alternative way is to use R inside JASP to install your module, so basically letting JASP handle the install for you.
+This is however error-prone and ignores any lockfile (which describes your dependencies) and so can fail at any time when a package does an update on CRAN.
+This installation method is deprecated and not recommended.
+
+1. Open JASP
+2. Click on the menu in the top left corner
+3. Navigate to 'Preferences'
+4. Navigate to 'Advanced'
+5. Place a checkmark before 'Developer mode'
+6. Untick 'Enable renv mode'
+7. Choose the path where the sources of your module are.
+
+![](./img/dev-install-oldschool.png)
+
+8. Go back to JASP's main menu.
+9. Click on the plus symbol in the top right corner
+10. Click on Install Developer Module
+
+#### Problems?
 If you are experiencing an error similar to the one below:
 
 ![](./img/installation-fail.png)
@@ -99,7 +121,7 @@ When you have it, go to `Preferences/Advanced`, untick `Use default PAT for Gith
 ### Developing the module
 At this point you can start adding the various files the module requires. It is advisable to start with the .qml interface file before adding the analysis in R.
 
-The advantage of installing the module with the non-libpaths install is that all changes you make from this point onwards are (almost) instantly reflected in JASP, this however requires JASP to handle the install, which can be brittle. The development module with libpath support doesnt load changes automatically, so to see changes rebuild your module in Rstudio and click on the refresh symbol in the Modules list.
+The advantage of installing the module with the non-renv install is that all changes you make from this point onwards are (almost) instantly reflected in JASP, this however requires JASP to handle the install, which can be brittle. The development module with renv support doesnt load changes automatically, so to see changes rebuild your module in Rstudio and click on the refresh symbol in the Modules list.
 If you add a checkbox in your .qml file, this checkbox will also appear on the analysis input panel of your module. 
 Similarly, if you change the title of your module in the .json file this will immediately change on the ribbon. 
 As such JASP becomes a development tool, making it much easier to check your changes are correct as you make them. 

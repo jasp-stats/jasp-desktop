@@ -288,7 +288,7 @@ void deleteQuickItem(QQuickItem* item)
 	blockSignalsRecursive(item);
 	item->setParent(nullptr);
 	item->setParentItem(nullptr);
-	delete item;
+	item->deleteLater();
 }
 
 

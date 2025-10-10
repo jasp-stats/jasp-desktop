@@ -22,6 +22,7 @@ class DatabaseInterface;
 class Label : public DataSetBaseNode
 {
 public:	
+	friend Column;
 	static const int NO_LABEL;
 
 								Label(Column * column, const std::string & label, int value, bool filterAllows = true, const std::string & description = "", const Json::Value & originalValue = Json::nullValue, int order = -1, int id = -1);
@@ -36,7 +37,7 @@ public:
 			int					dbId()						const	{ return _dbId;				}
 			bool				userAdded()					const	{ return _userAdded;		}
 	const	std::string		&	description()				const	{ return _description;		}
-			std::string			label()						const	{ return _label;			}
+			std::string			label(bool lie=true)		const;
 			std::string			labelDisplay()				const;
 			int					intsId()					const	{ return _intsId;			}
 			bool				isEmptyValue()				const;
@@ -46,10 +47,16 @@ public:
 			double				originalValueAsDouble()		const	{ return _dblValue;			}
 	std::pair<std::string
 		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), label()); }
-
+	std::pair<std::string
+		,std::string>			lastOrigValDisplay()		const	{ return _lastValDisMapping; }
+	
 	static	std::string			originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);
 			std::string			originalValueAsString(bool fancyEmptyValue = false, bool ignoreEmpty = true)		const;
 			std::string			str() const;
+			
+	static	std::string			processLabel(const std::string & label, const std::string & value);
+			void				rememberCurrentOrigValDisplay();
+			
 			
 			void				setIntsId(			int value);
 			void				setOrder(			int order);
@@ -61,10 +68,8 @@ public:
 			bool				setFilterAllows(	bool allowFilter);
 			void				setUserAdded(		bool userAddedIt);
 			void				setInformation(Column * column, int id, int order, const std::string &label, int value, bool filterAllows, const std::string & description, const Json::Value & originalValue);
-			
-			void				updateDoubleLabelsPostLocaleChange();
 
-			Json::Value			serialize()	const;
+			Json::Value			serialize(bool forCompare = false)	const;
 
 			DatabaseInterface	& db();
 	const	DatabaseInterface	& db() const;
@@ -84,6 +89,8 @@ private:
 	bool			_filterAllows	= true,	///< Used in generating filters for when users disable and enable certain labels/levels
 					_userAdded		= false;
 	double			_dblValue;
+	
+	std::pair<std::string,std::string>	_lastValDisMapping;
 };
 
 typedef std::vector<Label*>				Labels;

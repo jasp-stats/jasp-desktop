@@ -136,6 +136,19 @@ QString AppDirs::logDir()
 	return path;
 }
 
+QString AppDirs::autoSaveDir()
+{
+	QString path = appData();
+	path += "/AutoSaves/";
+
+	QDir autoSave(path);
+
+	if(!autoSave.exists())
+		autoSave.mkpath(".");
+
+	return path;
+}
+
 QString AppDirs::appData(bool roaming)
 {
 	if(roaming)

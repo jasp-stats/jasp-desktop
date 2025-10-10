@@ -5722,12 +5722,6 @@ msgid "Security Sandbox Failure"
 msgstr ""
 
 msgctxt "QObject|"
-msgid ""
-"Failed to activate Security Sandbox. Your system does not allow security "
-"sandboxing. Do you wish to continue with out is? (probably fine)"
-msgstr ""
-
-msgctxt "QObject|"
 msgid "Continue"
 msgstr ""
 
@@ -5801,4 +5795,149 @@ msgstr ""
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Store analysis state and plot in jasp-files"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid ""
+"Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
+"lot."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Stored without state"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was saved without state, to save the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was stored without state, to resize the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+msgctxt "QObject|"
+msgid ""
+"Failed to activate Security Sandbox. Your system does not allow security "
+"sandboxing. Do you wish to continue without it? (probably fine)"
+msgstr ""
+
+msgctxt "AutoSaves|"
+msgid "Recovery"
+msgstr ""
+
+msgctxt "AutoSaves|"
+msgid "No recovery files found"
+msgstr ""
+
+msgctxt "AutoSaves|"
+msgid "Recovery files are deleted after a month"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Save settings"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Automatically save a backup of your workspace"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid ""
+"When enabled this will save a copy of your workspace in a folder next to the "
+"logs. If JASP crashes with otherwise unsaved changes this backup will make "
+"sure you don't lose all your work."
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Autosave interval in minutes"
+msgstr ""
+
+msgctxt "PrefsData|"
+msgid "Interval in minutes between autosaves."
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "%1 autosaved"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Full path: %1"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace"
+msgstr ""
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace of datafile %1"
+msgstr ""
+
+msgctxt "DataSetPackage|"
+msgid "Autosave"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Saving autosave JASP File"
+msgstr ""
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved at %1"
+msgstr ""
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved %1 seconds ago, might still be loaded in another JASP."
+msgstr ""
+
+msgctxt "ResourceButtons|"
+msgid "Recovery"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Test"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Run tests"
+msgstr ""
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Stored without state"
+msgstr ""
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was stored without state, to edit the plot it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Version incompatibility"
+msgstr "Несовместимость версий"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was created in an older version of JASP, to edit the plot it "
+"must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
 msgstr ""

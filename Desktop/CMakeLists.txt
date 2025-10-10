@@ -32,15 +32,22 @@ message(STATUS "githubpat.h is successfully generated...")
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
+list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
+
+qt_add_library(
+  JASPDesktopLib
+  STATIC
+  ${SOURCE_FILES}
+  ${HEADER_FILES}
+)
 
 qt_add_executable(
   JASP
   ${SYSTEM_TYPE}
-  ${SOURCE_FILES}
-  ${HEADER_FILES}
   ${BUNDLE_RESOURCES}
+  ${CMAKE_SOURCE_DIR}/Desktop/main.cpp
   $<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_LIST_DIR}/icon.rc>
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
@@ -72,7 +79,7 @@ add_custom_command(
   BYPRODUCTS ${CMAKE_BINARY_DIR}/Resources
   COMMENT "------ Updating the Resources")
 
-add_dependencies(JASP JASPEngine)
+add_dependencies(JASP JASPEngine JASPDesktopLib)
 
 if(WINDOWS)
   # this little program checks for file permissions
@@ -86,7 +93,7 @@ endif()
 if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
   add_dependencies(JASP Modules)
   if(NOT LINUX)
-    add_dependencies(JASP jags)
+    add_dependencies(JASPDesktopLib jags)
   endif()
 endif()
 
@@ -95,7 +102,7 @@ if(LOCAL_MODULES_BUILD)
 endif()
 
 if(APPLE)
-  add_dependencies(JASP readstat)
+  add_dependencies(JASPDesktopLib readstat)
 endif()
 
 if(WINDOWS)
@@ -107,7 +114,7 @@ if(WINDOWS)
 endif()
 
 target_include_directories(
-    JASP
+    JASPDesktopLib
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${PROJECT_SOURCE_DIR}/Common
@@ -124,10 +131,16 @@ target_include_directories(
     ${LIBFREEXL_INCLUDE_DIRS}
 )
 
-target_link_libraries(
+target_include_directories(
     JASP
+    PUBLIC
+    JASPDesktopLib
+)
+
+target_link_libraries(
+    JASPDesktopLib
 	PUBLIC
-	QMLComponentsplugin
+  	QMLComponentsplugin
     CommonData
     Common
     $<$<PLATFORM_ID:Darwin>:compression>
@@ -178,31 +191,39 @@ target_link_libraries(
     $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
 )
 
-target_compile_definitions(JASP PUBLIC JASP_USES_QT_HERE)
+target_link_libraries(
+    JASP
+	PUBLIC
+    JASPDesktopLib
+  )
+
+target_compile_definitions(JASPDesktopLib PUBLIC JASP_USES_QT_HERE)
+target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)
 
 if(NOT WINDOWS)
-  target_compile_options(JASP PUBLIC -Wno-deprecated-declarations)
+  target_compile_options(JASPDesktopLib PUBLIC -Wno-deprecated-declarations)
+  target_compile_options(JASP           PUBLIC -Wno-deprecated-declarations)
 
   target_link_libraries(
-    JASP
-	PRIVATE
+    JASPDesktopLib
+	PUBLIC
     # When using Conan, we need to provide the static libraries directly, for some reason!
     ${Iconv_LIBRARY_LIST})
 endif()
 
 if(LINUX)
   if(LINUX_LOCAL_BUILD)
-    target_compile_definitions(JASP PUBLIC LINUX_LOCAL_BUILD)
+    target_compile_definitions(JASPDesktopLib PUBLIC LINUX_LOCAL_BUILD)
   endif()
 
   if(FLATPAK_USED)
-    target_compile_definitions(JASP PUBLIC FLATPAK_USED)
+    target_compile_definitions(JASPDesktopLib PUBLIC FLATPAK_USED)
   endif()
 endif()
 
 file(GLOB_RECURSE HTML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/html/*")
 qt_add_resources(
-  JASP
+  JASPDesktopLib
   "html"
   PREFIX
   "/html"
@@ -214,7 +235,7 @@ qt_add_resources(
 file(GLOB_RECURSE TRANSLATION_RESOURCE_FILES
      "${CMAKE_CURRENT_LIST_DIR}/translations/*.png")
 qt_add_resources(
-  JASP
+  JASPDesktopLib
   "translations"
   PREFIX
   "/translations"
@@ -225,7 +246,7 @@ qt_add_resources(
 
 file(GLOB_RECURSE QML_RESOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/components/*")
 qt_add_resources(
-  JASP
+  JASPDesktopLib
   "widgetsandtheme"
   PREFIX
   "/"
@@ -240,7 +261,7 @@ set(RESOURCES_RESOURCE_FILES
     "resources/fonts/FiraCode-Retina.ttf" "resources/fonts/FreeSans.ttf")
 
 qt_add_resources(
-  JASP
+  JASPDesktopLib
   "resources"
   PREFIX
   "/"

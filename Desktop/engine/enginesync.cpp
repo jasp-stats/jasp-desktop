@@ -1346,6 +1346,8 @@ void EngineSync::cleanRestart()
 
 	delete _waitingFilter;
 	_waitingFilter = nullptr;
+	_filterRunning = false;
+	
 
 	TempFiles::clearSessionDir();
 
@@ -1357,6 +1359,7 @@ void EngineSync::cleanRestart()
 	catch(unexpectedEngineReply e) {}
 
 	resetListModel();
+	_stopProcessing = false;
 }
 
 std::string	EngineSync::currentStateForDebug() const

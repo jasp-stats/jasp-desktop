@@ -16,13 +16,14 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#include "fileevent.h"
-#include "exporters/dataexporter.h"
-#include "exporters/resultexporter.h"
-#include "exporters/jaspexporter.h"
-
 #include <QTimer>
+#include "fileevent.h"
+#include "processinfo.h"
 #include "utilities/appdirs.h"
+#include "exporters/dataexporter.h"
+#include "exporters/jaspexporter.h"
+#include "exporters/resultexporter.h"
+
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	: QObject(parent), _operation(fileMode)
@@ -112,6 +113,51 @@ bool FileEvent::isExample() const
 	return path().startsWith(AppDirs::examples());
 }
 
+bool FileEvent::autoSaveExists()
+{
+	return QFileInfo::exists(pathTmp());
+}
+
+void FileEvent::removeAutoSaveIfItExists()
+{
+	if(!autoSaveExists())
+		return;
+	
+	QFile autoSaveFile(pathTmp());
+	
+	autoSaveFile.remove();
+}
+
+QString FileEvent::pathTmp()
+{
+	static QString tmpFile = []()
+	{
+		QDir autoSaveFolder(AppDirs::autoSaveDir());
+		
+		QFileInfoList files = autoSaveFolder.entryInfoList(QDir::Filter::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+		
+		std::set<QString> usedNames;
+		
+		for(QFileInfo & fi : files)
+			usedNames.insert(fi.fileName());
+		
+		auto aNamePlease = [](){
+			static int num = 0;
+			return "autosave-" + QString::number(ProcessInfo::currentPID()) + "-" + QString::number(num++) + ".jasp";
+		};
+		
+		QString newFileName;
+		
+		do		{ newFileName = aNamePlease();	}
+		while	( usedNames.count(newFileName)	);
+		
+		return autoSaveFolder.absoluteFilePath(newFileName);
+		
+	}();
+	
+	return tmpFile;
+}
+
 const std::string FileEvent::databaseStr() const 
 { 
 	return _database.toStyledString();
@@ -145,7 +191,7 @@ QString FileEvent::getProgressMsg() const
 		}
 		break;
 
-	case FileEvent::FileSave:			return tr("Saving JASP File");
+	case FileEvent::FileSave:			return !_tmp ? tr("Saving JASP File") : tr("Saving autosave JASP File");
 	case FileEvent::FileExportResults:	return tr("Exporting Results");
 	case FileEvent::FileExportData:
 	case FileEvent::FileGenerateData:	return tr("Exporting Data");

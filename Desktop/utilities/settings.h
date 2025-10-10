@@ -95,6 +95,8 @@ public:
 		USE_CONFIGURATION_FILE,
 		START_MAXIMIZED,
 		STORE_STATE_ETC,
+		AUTOSAVE_ON,
+		AUTOSAVE_INTERVAL_SEC
 	};
 
 	static QVariant value(Settings::Type key);

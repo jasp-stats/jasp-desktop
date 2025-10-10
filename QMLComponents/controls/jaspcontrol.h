@@ -165,7 +165,7 @@ public:
 	virtual void					setUp()										{}
 	void							setInitialized(const Json::Value& value = Json::nullValue);
 	void							setUnitialized();
-	virtual void					cleanUp()									{ disconnect(); }
+	virtual void					cleanUp();
 	virtual BoundControl		*	boundControl();
 	virtual bool					encodeValue()						const	{ return false; }
 
@@ -326,6 +326,7 @@ protected:
 	static QByteArray								_mouseAreaDef;
 	static QQmlComponent*							getMouseAreaComponent(QQmlEngine* engine);
 	static const QStringList						_optionReservedNames;
+	
 };
 
 typedef std::vector<JASPControl*> JASPControls;

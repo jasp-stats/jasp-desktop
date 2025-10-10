@@ -69,10 +69,11 @@ void VariablesListBase::setUp()
 
 void VariablesListBase::_setInitialized(const Json::Value &value)
 {
-	if (value == Json::nullValue && addAvailableVariablesToAssigned())
+	if (value == Json::nullValue && isBound() && addAvailableVariablesToAssigned())
 	{
-		// If addAvailableVariablesToAssigned is true and this is initialized without value,
-		// maybe the availableAssignedList has some default values that must be assigned to this VariablesList
+		// A bound control should have a value when it is initialized from a JASP file. So here is the case when a new analysis is created.
+		// If it is an Assigned VariablesList with addAvailableVariablesToAssigned set to true, if there is some terms in the correspondig Available VariablesList,
+		// these terms must be used to initialize this VariablesList
 		ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
 		if (assignedModel && assignedModel->availableModel())
 			assignedModel->initTerms(assignedModel->availableModel()->terms());
@@ -115,17 +116,20 @@ void VariablesListBase::setUpModel()
 	case ListViewType::Layers:
 	{
 		auto *	layersModel		= new ListModelLayersAssigned(this);
-				_boundControl	= new BoundControlLayers(layersModel);
-				_draggableModel = layersModel;
-				_useTermsInRSyntax = false;
+		if (isBound())
+			_boundControl		= new BoundControlLayers(layersModel);
+		_draggableModel			= layersModel;
+		_useTermsInRSyntax		= false;
+
 		break;
 	}
 		
 	case ListViewType::RepeatedMeasures:
 	{
 		 auto * measuresCellsModel	= new ListModelMeasuresCellsAssigned(this);
-				_boundControl		= new BoundControlMeasuresCells(measuresCellsModel);
-				_draggableModel		= measuresCellsModel;
+		if (isBound())
+			_boundControl			= new BoundControlMeasuresCells(measuresCellsModel);
+		_draggableModel				= measuresCellsModel;
 		break;
 	}
 		
@@ -136,14 +140,16 @@ void VariablesListBase::setUpModel()
 		if (columns() > 1)
 		{
 			auto *	multiTermsModel = new ListModelMultiTermsAssigned(this, columns());
-					_boundControl	= new BoundControlMultiTerms(multiTermsModel);
-					_draggableModel = multiTermsModel;
+			if (isBound())
+				_boundControl		= new BoundControlMultiTerms(multiTermsModel);
+			_draggableModel			= multiTermsModel;
 		}
 		else
 		{
-			termsModel		= new ListModelTermsAssigned(this);
-			_boundControl	= new BoundControlTerms(termsModel, _maxRows == 1);
-			_draggableModel = termsModel;
+			termsModel			= new ListModelTermsAssigned(this);
+			if (isBound())
+				_boundControl	= new BoundControlTerms(termsModel, _maxRows == 1);
+			_draggableModel		= termsModel;
 		}
 		break;
 	}
@@ -151,8 +157,9 @@ void VariablesListBase::setUpModel()
 	case ListViewType::Interaction:
 	{
 		auto *	termsModel		= new ListModelInteractionAssigned(this);
-				_boundControl	= new BoundControlTerms(termsModel);
-				_draggableModel = termsModel;
+		if (isBound())
+			_boundControl		= new BoundControlTerms(termsModel);
+		_draggableModel			= termsModel;
 		break;
 	}
 		

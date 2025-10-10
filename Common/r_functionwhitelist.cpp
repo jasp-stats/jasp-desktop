@@ -191,6 +191,8 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"sqrt",
 	"stack",
 	"str",
+	"strftime",
+	"strptime",
 	"strsplit",
 	"sub",
 	"subset",
@@ -343,7 +345,7 @@ std::set<std::string> R_FunctionWhiteList::findIllegalFunctionsAliases(std::stri
 
 void R_FunctionWhiteList::scriptIsSafe(const std::string &script)
 {
-    std::string commentFree = stringUtils::stripRComments(script);
+    std::string commentFree = stringUtils::stripRComments(script, true);
 
 	static std::string errorMsg;
 

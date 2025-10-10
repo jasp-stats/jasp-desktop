@@ -36,7 +36,7 @@ void ComponentsListBase::setUpModel()
 	connect(this, &ComponentsListBase::addItem,				this, &ComponentsListBase::addItemHandler);
 	connect(this, &ComponentsListBase::removeItem,			this, &ComponentsListBase::removeItemHandler);
 	connect(this, &ComponentsListBase::initializedChanged,	this, &ComponentsListBase::resetDefaultValue);
-	connect(this, &ComponentsListBase::headerLabelsChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged);
+	connect(this, &ComponentsListBase::headerLabelsChanged,	this, &ComponentsListBase::controlNameXOffsetMapChanged);
 }
 
 void ComponentsListBase::bindTo(const Json::Value& value)
@@ -240,8 +240,8 @@ void ComponentsListBase::bindOffsets()
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
 			{
-				connect(control, &JASPControl::xChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
-				connect(control, &JASPControl::visibleChanged, this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
+				connect(control, &JASPControl::xChanged,			this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
+				connect(control, &JASPControl::visibleChanged,		this, &ComponentsListBase::controlNameXOffsetMapChanged, Qt::UniqueConnection);
 			}
 	}
 }

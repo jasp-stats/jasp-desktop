@@ -72,7 +72,7 @@ public:
 			void					setNeedsSource(bool needs)												{ _needsSource = needs;			}
 			void					addControlError(const QString& error)						const;
 	virtual void					refresh();
-			virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {}, bool reInit = false);
+            virtual void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap = {});
 			Terms					getSourceTerms();
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
@@ -94,6 +94,7 @@ public:
 
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
+			void					checkTermsTypes();
 	virtual Terms					termsFromIndexes(	const QList<int>& indexes)					const;
 	virtual QList<int>				indexesFromTerms(	const Terms		& terms)					const;
 
@@ -105,7 +106,7 @@ public:
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
 
-
+				void				cleanUp();
 signals:
 			void termsChanged();		// Used to signal all kinds of changes in the model. Do not call it directly
 			void variableNamesChanged(QMap<QString, QString> map);
@@ -155,6 +156,7 @@ private:
 
 			JASPListControl*				_listView = nullptr;
 			Terms							_terms;
+			
 
 };
 

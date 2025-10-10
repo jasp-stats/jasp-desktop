@@ -96,9 +96,9 @@ QList<int> ListModelMeasuresCellsAssigned::indexesFromTerms(const Terms &terms) 
 	return indexes;
 }
 
-void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm &allValuesMap, bool reInit)
+void ListModelMeasuresCellsAssigned::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm &allValuesMap)
 {
-	ListModelAssignedInterface::initTerms(terms, allValuesMap, reInit);
+    ListModelAssignedInterface::initTerms(terms, allValuesMap);
 	_fitTermsWithLevels();
 }
 

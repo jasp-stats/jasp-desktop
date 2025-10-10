@@ -277,9 +277,9 @@ FocusScope
 					{
 						id:				filterToggleButton
 						
-						toolTip:		filterWindow.opened ? qsTr("Hide filter") : qsTr("Show filter")
+						toolTip:		filterModel.filterVisible ? qsTr("Hide filter") : qsTr("Show filter")
 						iconSource:		jaspTheme.iconPath + "filter.png"
-						onClicked:		filterWindow.toggle()
+						onClicked:		filterModel.filterVisible = !filterModel.filterVisible
 						border.width:	1
 						
 						anchors

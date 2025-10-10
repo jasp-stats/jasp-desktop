@@ -5937,3 +5937,156 @@ msgstr "Arquivo %1 não encontrado."
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
 msgstr "O JASP não suporta esse tipo de arquivo %1."
+
+msgctxt "PrefsResults|"
+msgid "Store analysis state and plot in jasp-files"
+msgstr "Armazene o estado da análise e o gráfico em arquivos jasp"
+
+msgctxt "PrefsResults|"
+msgid ""
+"Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
+"lot."
+msgstr ""
+"Habilitar isso pode fazer com que o tamanho dos arquivos jasp aumente, às "
+"vezes muito."
+
+msgctxt "MainWindow|"
+msgid "Stored without state"
+msgstr "Armazenado sem estado"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was saved without state, to save the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Esta análise foi salva sem estado. Para salvar a imagem, ela deve ser "
+"atualizada primeiro.\n"
+"\n"
+"Atualizar a análise?"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was stored without state, to resize the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"Esta análise foi armazenada sem estado. Para redimensionar a imagem, ela "
+"deve ser atualizada primeiro.\n"
+"\n"
+"Atualizar a análise?"
+
+msgctxt "AutoSaves|"
+msgid "Recovery"
+msgstr "Recuperação"
+
+msgctxt "AutoSaves|"
+msgid "No recovery files found"
+msgstr "Não foram encontrados arquivos de recuperação"
+
+msgctxt "AutoSaves|"
+msgid "Recovery files are deleted after a month"
+msgstr "Os arquivos de recuperação são deletados após um mês"
+
+msgctxt "PrefsData|"
+msgid "Save settings"
+msgstr "Configurações de salvamento"
+
+msgctxt "PrefsData|"
+msgid "Automatically save a backup of your workspace"
+msgstr "Salva automaticamente um backup do seu espaço de trabalho"
+
+msgctxt "PrefsData|"
+msgid ""
+"When enabled this will save a copy of your workspace in a folder next to the "
+"logs. If JASP crashes with otherwise unsaved changes this backup will make "
+"sure you don't lose all your work."
+msgstr ""
+"Quando habilitado, isso salvará uma cópia do seu espaço de trabalho em uma "
+"pasta ao lado dos logs. Se o JASP travar com alterações não salvas, este "
+"backup garantirá que você não perca todo o seu trabalho."
+
+msgctxt "PrefsData|"
+msgid "Autosave interval in minutes"
+msgstr "Intervalo de autosalvamento em minutos"
+
+msgctxt "PrefsData|"
+msgid "Interval in minutes between autosaves."
+msgstr "Intervalo, em minutos, entre autosalvamentos."
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "%1 autosaved"
+msgstr "%1 autosalvo"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Full path: %1"
+msgstr "Caminho completo: %1"
+
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace"
+msgstr "Espaço de trabalho não salvo"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace of datafile %1"
+msgstr "Espaço de trabalho não salvo do arquivo de dados %1"
+
+msgctxt "DataSetPackage|"
+msgid "Autosave"
+msgstr "Autosalvamento"
+
+msgctxt "FileEvent|"
+msgid "Saving autosave JASP File"
+msgstr "Salvando arquivo JASP de autosalvamento"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved at %1"
+msgstr "Salvo em %1"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved %1 seconds ago, might still be loaded in another JASP."
+msgstr "Salvo a %1 segundos atrás, pode ainda estar carregado em outro JASP."
+
+msgctxt "ResourceButtons|"
+msgid "Recovery"
+msgstr "Recuperação"
+
+msgctxt "RibbonModel|"
+msgid "Test"
+msgstr "Teste"
+
+msgctxt "RibbonModel|"
+msgid "Run tests"
+msgstr "Executar testes"
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Stored without state"
+msgstr "Armazenado sem estado"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was stored without state, to edit the plot it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Version incompatibility"
+msgstr "Incompatibilidade de versão"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was created in an older version of JASP, to edit the plot it "
+"must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""

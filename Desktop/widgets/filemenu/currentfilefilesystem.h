@@ -27,7 +27,7 @@ class CurrentFileFileSystem : public FileSystem
 public:
 	CurrentFileFileSystem(QObject *parent = NULL);
 
-	void refresh() OVERRIDE;
+	void refresh() override;
 
 	void setCurrent(const QString &path);
 	QString getCurrent() const;

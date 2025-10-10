@@ -113,16 +113,17 @@ signals:
 				void dataInsertComputedColumnAfter(int,  bool);
 				void dataInsertColumnBefore(int col, bool computed, bool R);
 				void dataInsertColumnAfter(int col, bool computed, bool R);
+				void setDataSynchronisation(bool);
+				void synchronisationChanged(bool);
 				void dataInsertRowBefore(int);
 				void dataInsertRowAfter(int);
 				void dataRemoveColumn();
 				void dataRemoveRow();
-				void setDataSynchronisation(bool);
-				void synchronisationChanged(bool);
+				void showNewData();
 				void cellsClear();
 				void dataUndo();
 				void dataRedo();
-				void showNewData();
+				void runTests();
 
 public slots:
 	void addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
@@ -158,7 +159,8 @@ private: // fields
 										*	_synchroniseOnButton	= nullptr,
 										*	_synchroniseOffButton	= nullptr,
 										*	_undoButton				= nullptr,
-										*	_redoButton				= nullptr;
+										*	_redoButton				= nullptr,
+										*	_testButton				= nullptr;
 
 	
 	static RibbonModel * _singleton;

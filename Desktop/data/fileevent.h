@@ -43,6 +43,7 @@ public:
 	void				setOsfPath(		const QString & path)			{ _osfPath = path; }
 	void				setDatabase(	const Json::Value & dbInfo);
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
+	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
 	void				setComplete(bool success = true, const QString &message = "");
 	void				chain(FileEvent *event);
@@ -53,12 +54,16 @@ public:
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
 	bool				isCompleted()	const { return _completed;						}
 	bool				isSuccessful()	const { return _success;						}
+	bool				isTmp()			const { return _tmp; }
+	static bool			autoSaveExists();
+	static void			removeAutoSaveIfItExists();
 
 	Exporter *			exporter()		const { return _exporter;		}
 	FileMode			operation()		const { return _operation;		}
 	Utils::FileType		type()			const { return _type;			}
 
-	const QString &		path()			const { return _path;			}
+	QString				path()			const { return !_tmp ? _path : pathTmp();	}
+	static QString		pathTmp();
 	const std::string	databaseStr()	const;
 	const Json::Value &	database()		const { return _database;		}
 	const QString &		osfPath()		const { return _osfPath;		}
@@ -83,7 +88,8 @@ private:
 						_last_error		= "Unknown error",
 						_message;
 	bool				_completed		= false,
-						_success		= false;
+						_success		= false,
+						_tmp			= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;
 	Json::Value			_database		= Json::nullValue;

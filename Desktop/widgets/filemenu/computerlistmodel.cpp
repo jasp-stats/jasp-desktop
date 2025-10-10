@@ -1,5 +1,5 @@
 #include "computerlistmodel.h"
-#include "filesystementry.h"
+#include "utilities/appdirs.h"
 #include <QFileInfo>
 #include <QDir>
 
@@ -18,6 +18,13 @@ QString ComputerListModel::getMostRecent()
 
 void ComputerListModel::addRecentFolder(const QString &newpath)
 {
+	QFileInfo	path		( newpath );
+	QDir		autoSaveDir = AppDirs::autoSaveDir();
+
+
+	if(path.dir() == autoSaveDir)
+		return;
+
 	beginResetModel();
 	
 	_fsbmRecentFolders->addRecent(newpath);

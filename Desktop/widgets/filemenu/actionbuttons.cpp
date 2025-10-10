@@ -23,7 +23,7 @@ void ActionButtons::loadButtonData()
 	_data = 
 	{
 		{FileOperation::New,			tr("New"),				true,	{}																																				},
-		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::RecentFiles,	ResourceButtons::DataLibrary }		},
+		{FileOperation::Open,			tr("Open"),				true,	{ResourceButtons::Computer, ResourceButtons::AutoSaves, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::RecentFiles,	ResourceButtons::DataLibrary }		},
 		{FileOperation::Save,			tr("Save"),				false,	{}																																				},
 		{FileOperation::SaveAs,			tr("Save As"),			false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::ExportResults,	tr("Export Results"),	false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},

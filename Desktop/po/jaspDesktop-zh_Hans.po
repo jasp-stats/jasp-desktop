@@ -5691,3 +5691,151 @@ msgstr "没有找到文件 %1 ."
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
 msgstr "JASP 不支持此文件类型 %1 ."
+
+msgctxt "PrefsResults|"
+msgid "Store analysis state and plot in jasp-files"
+msgstr "将分析状态和绘图结果等保存在 JASP 文件中"
+
+msgctxt "PrefsResults|"
+msgid ""
+"Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
+"lot."
+msgstr "启用此功能可能会导致 .jasp 的文件尺寸增加，有时会增加很多。"
+
+msgctxt "MainWindow|"
+msgid "Stored without state"
+msgstr "不保存分析状态"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was saved without state, to save the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"此分析保存时没有运行后状态，要产生和保存图像，必须先刷新。\n"
+"\n"
+"是否刷新分析？"
+
+msgctxt "MainWindow|"
+msgid ""
+"This analysis was stored without state, to resize the image it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+"此分析存储时没有分析状态，要调整图像大小，必须先刷新分析。\n"
+"\n"
+"是否刷新分析？"
+
+msgctxt "AutoSaves|"
+msgid "Recovery"
+msgstr "恢复"
+
+msgctxt "AutoSaves|"
+msgid "No recovery files found"
+msgstr "没有要恢复的文件"
+
+msgctxt "AutoSaves|"
+msgid "Recovery files are deleted after a month"
+msgstr "备份恢复文件将在一个月后自动删除"
+
+msgctxt "PrefsData|"
+msgid "Save settings"
+msgstr "保存设置"
+
+msgctxt "PrefsData|"
+msgid "Automatically save a backup of your workspace"
+msgstr "自动保存工作空间备份"
+
+msgctxt "PrefsData|"
+msgid ""
+"When enabled this will save a copy of your workspace in a folder next to the "
+"logs. If JASP crashes with otherwise unsaved changes this backup will make "
+"sure you don't lose all your work."
+msgstr ""
+"启用后，这将把您的工作空间副本保存在日志旁边的文件夹中。如果 JASP 崩溃时有未"
+"保存的更改，此备份将确保您不会丢失已有的工作。"
+
+msgctxt "PrefsData|"
+msgid "Autosave interval in minutes"
+msgstr "自动保存间隔（分钟）"
+
+msgctxt "PrefsData|"
+msgid "Interval in minutes between autosaves."
+msgstr "自动保存之间的间隔（分钟）。"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "%1 autosaved"
+msgstr "%1 已自动保存"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Full path: %1"
+msgstr "完整路径: %1"
+
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace"
+msgstr "未保存的工作空间"
+
+#, qt-format
+msgctxt "DataSetPackage|"
+msgid "Unsaved workspace of datafile %1"
+msgstr "数据文件 %1 的工作空间未保存"
+
+msgctxt "DataSetPackage|"
+msgid "Autosave"
+msgstr "自动保存"
+
+msgctxt "FileEvent|"
+msgid "Saving autosave JASP File"
+msgstr "正在自动保存 JASP 文件"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved at %1"
+msgstr "已保存在 %1"
+
+#, qt-format
+msgctxt "AutoSaveFileSystem|"
+msgid "Saved %1 seconds ago, might still be loaded in another JASP."
+msgstr "%1 秒前保存，可被加载到另一个 JASP 中。"
+
+msgctxt "ResourceButtons|"
+msgid "Recovery"
+msgstr "恢复"
+
+msgctxt "RibbonModel|"
+msgid "Test"
+msgstr ""
+
+msgctxt "RibbonModel|"
+msgid "Run tests"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Stored without state"
+msgstr "不保存分析状态"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was stored without state, to edit the plot it must be "
+"refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid "Version incompatibility"
+msgstr "版本不兼容"
+
+msgctxt "PlotEditor::PlotEditorModel|"
+msgid ""
+"This analysis was created in an older version of JASP, to edit the plot it "
+"must be refreshed first.\n"
+"\n"
+"Refresh the analysis?"
+msgstr ""

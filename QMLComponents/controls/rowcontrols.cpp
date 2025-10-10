@@ -39,7 +39,7 @@ void RowControls::init(int row, const Term& key, bool isNew)
 {
 	JASPListControl* listView = _parentModel->listView();
 
-	QQmlContext* context = new QQmlContext(qmlContext(listView), listView);
+	QQmlContext* context = new QQmlContext(qmlContext(listView), this);
 	context->setContextProperty("isDynamic", true);
 	context->setContextProperty("form", listView->form());
 	context->setContextProperty("listView", listView);
@@ -134,13 +134,14 @@ bool RowControls::addJASPControl(JASPControl *control)
 void RowControls::disconnectAndDeleteControls()
 {
 	// If a control depends on a source, disconnect this source with this control.
-	JASPListControl* parentControl = _parentModel->listView();
 	for (JASPControl* control : _rowJASPControlMap.values())
 	{
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 		if (listControl)
 			for (SourceItem* source : listControl->sourceItems())
 				source->disconnectModels();
+		
+		control->cleanUp();
 		control->setParent(nullptr);
 		control->setUnitialized();
 		control->blockSignals(true);

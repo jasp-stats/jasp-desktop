@@ -30,7 +30,7 @@ class ListModelInteractionAssigned : public ListModelAssignedInterface
 public:
 	ListModelInteractionAssigned(JASPListControl* listView);
 
-	void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& = {}, bool reInit = false)	override;
+    void			initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& = {})          override;
 	Terms			addTerms(const Terms& terms, int dropItemIndex = -1, const Terms::RelatedValuesPerTerm& rowValues = {})	override;
 	void			moveTerms(const QList<int>& indexes, int dropItemIndex = -1)					override;
 	void			removeTerms(const QList<int> &indices)											override;

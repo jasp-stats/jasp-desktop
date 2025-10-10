@@ -7,51 +7,11 @@ import JASP
 FocusScope
 {
 	id:							filterContainer
-	visible:					opened
 
-	property bool	opened:					false
-	property int	minimumHeightTextBoxes: 50 * preferencesModel.uiScale
-	property bool	showEasyFilter:			true
-	property int	desiredMinimumHeight:	easyFilterConstructor.desiredMinimumHeight
-	property int	desiredHeight:			easyFilterConstructor.desiredHeight
-	
-	onShowEasyFilterChanged:	if(!showEasyFilter) absorbModelRFilter()
-	onVisibleChanged:			if(!visible) filterWindow.close()
-
-	Connections
-	{
-		target:	 filterModel
-		function onRFilterChanged()			{ absorbModelRFilter();				}
-		function onFilterErrorMsgChanged()	
-		{ 
-			if (filterModel.filterErrorMsg.length > 0 && !visible) 
-			{
-				open();	
-				
-				//Now this might be caused by some labelfilter, or something. However, the filterwindow by default does not show the generatedFilter
-				//Maybe its better to open it on the R display then?
-				if(filterModel.isJustGeneratedFilter())
-					filterContainer.showEasyFilter = false
-			}
-		}
-	}
-
-	function toggle()
-	{
-		opened = !opened
-		absorbModelRFilter()
-	}
-
-	function open()
-	{
-		if(!opened)
-			toggle();
-	}
 
 	function close()
 	{
-		if(opened)
-			toggle();
+		filterModel.filterVisible = false
 	}
 
 
@@ -66,12 +26,6 @@ FocusScope
 		filterModel.resetRFilter()
 		absorbModelRFilter()
 	}
-
-	function absorbModelRFilter()
-	{
-		filterEdit.text = filterModel.rFilter
-	}
-
 	signal rCodeChanged(string rScript)
 
 	Rectangle
@@ -101,7 +55,7 @@ FocusScope
 		{
 			anchors.fill:		parent
 			anchors.margins:	1
-			visible:			filterContainer.showEasyFilter
+			visible:			filterModel.showEasyFilter
 
 
 			FilterConstructor
@@ -198,7 +152,7 @@ FocusScope
 				width:				height
 				radius:				height
 				iconSource:			jaspTheme.iconPath + "close-button.png"
-				onClicked:			easyFilterConstructor.askIfChanged(function() { filterWindow.toggle() } )
+				onClicked:			easyFilterConstructor.askIfChanged(function() { filterWindow.close() } )
 				toolTip:			qsTr("Close filter window")
 				anchors
 				{
@@ -212,7 +166,7 @@ FocusScope
 			{
 				id:			rRectangularButton
 				iconSource: jaspTheme.iconPath + "/R.png"
-				onClicked:	easyFilterConstructor.askIfChanged(function() { filterContainer.showEasyFilter = false } )
+				onClicked:	easyFilterConstructor.askIfChanged(function() { filterModel.showEasyFilter = false } )
 				width:		height
 				toolTip:	qsTr("Switch to the R filter")
 				anchors
@@ -260,7 +214,7 @@ FocusScope
 		Item
 		{
 							id:						rFilterFields
-							visible:				!filterContainer.showEasyFilter
+							visible:				!filterModel.showEasyFilter
 							anchors.fill:			parent
 							anchors.margins:		1
 			property real	desiredMinimumHeight:	filterButtons.height + (filterErrorScroll.visible ? filterErrorScroll.height : 0 ) + filterEditRectangle.desiredMinimumHeight
@@ -331,7 +285,7 @@ FocusScope
 							anchors.top:			filterGeneratedBox.top
 							anchors.left:			resetAllGeneratedFilters.right
 							anchors.right:			filterGeneratedBox.right
-							text:					filterModel.generatedFilter +"\n"
+							text:					filterModel.generatedFilter + "\n"
 							height:					contentHeight
 							readOnly:				true
 							color:					jaspTheme.grayDarker
@@ -385,6 +339,7 @@ FocusScope
 							font.pixelSize:         baseFontSize * preferencesModel.uiScale
 							wrapMode:				TextArea.WrapAtWordBoundaryOrAnywhere
 							color:					jaspTheme.textEnabled
+							text:					filterModel.rFilter
 
 							property bool changedSinceLastApply: text !== filterModel.rFilter
 
@@ -489,7 +444,7 @@ FocusScope
 				{
 					id:				easyRectangularButton
 					iconSource:		jaspTheme.iconPath + "/NotR.png"
-					onClicked:		filterEditRectangle.askIfChanged(function (){ filterContainer.showEasyFilter = true })
+					onClicked:		filterEditRectangle.askIfChanged(function (){ filterModel.showEasyFilter = true })
 					width:			visible ? height : 0
 					toolTip:		qsTr("Switch to the drag and drop filter")
 					anchors
@@ -570,7 +525,7 @@ FocusScope
 					anchors.right:	parent.right
 					anchors.bottom: parent.bottom
 
-					onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.toggle() })
+					onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.close() })
 					toolTip:		qsTr("Hide filter")
 				}
 			}

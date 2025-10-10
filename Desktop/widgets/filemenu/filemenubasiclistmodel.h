@@ -34,7 +34,7 @@ public slots:
 	bool mayOpen();
 
 protected:
-	FileSystem *_model = nullptr;
+	FileSystem	*	_model = nullptr;
 	bool			_openFileWhenClicked = true;
 	static QMutex	_opening;
 	void			resetOpening();

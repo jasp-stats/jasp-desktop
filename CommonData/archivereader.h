@@ -45,20 +45,20 @@ public:
 	 * @brief size Sizeof archive, or entry.
 	 * @return size found.
 	 */
-	int size() const { return _exists ? _size : 0;
+    int64_t size() const { return _exists ? _size : 0;
 	}
 
 	/**
 	 * @brief pos The current position in the file.
 	 * @return Bytes from start of file.
 	 */
-	int pos() const { return _currentRead; }
+    int64_t	 pos() const { return _currentRead; }
 
 	/**
 	 * @brief bytes Available Bytes in the file or entry.
 	 * @return Number bytes still to be read.
 	 */
-	int bytesAvailable() const { return _exists ? _size - _currentRead : 0;	}
+    int64_t bytesAvailable() const { return _exists ? _size - _currentRead : 0;	}
 
 
 	/**
@@ -68,7 +68,7 @@ public:
 	 * @param errorCode On success = 0, On Error < 0
 	 * @return Number bytes read.
 	 */
-	int readData(char * data, int maxSize, int &errorCode);
+    int64_t readData(char * data, int64_t maxSize, int &errorCode);
 
 	/**
 	 * @brief readAllData Read all file data from current postion.
@@ -136,7 +136,7 @@ private:
 	bool						_isOpen			= false,
 								_exists			= false,
 								_archiveExists	= false;
-	int							_size			= 0,
+    int64_t						_size			= 0,
 								_currentRead	= 0;
 	std::string					_archivePath,
 								_entryPath;

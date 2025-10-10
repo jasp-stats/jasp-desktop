@@ -46,6 +46,9 @@ bool FilterModel::isJustGeneratedFilter() const
 
 void FilterModel::reset()
 {
+	setFilterVisible(false);
+	setShowEasyFilter(true);
+	
 	_setGeneratedFilter(DEFAULT_FILTER_GEN	);
 	setConstructorJson(	DEFAULT_FILTER_JSON	);
 	_setRFilter(		defaultRFilter()		);
@@ -110,6 +113,16 @@ void FilterModel::setFilterErrorMsg(	QString newFilterErrorMsg)
 			DataSetPackage::filter()->setErrorMsg(fq(newFilterErrorMsg));
 		
 		emit filterErrorMsgChanged();
+		if(filterErrorMsg() != "")
+		{
+			setFilterVisible(true);
+			
+			//Now this might be caused by some labelfilter, or something. However, the filterwindow by default does not show the generatedFilter
+			//Maybe its better to open it on the R display then?
+			if(isJustGeneratedFilter())
+				setShowEasyFilter(false);
+				
+		}
 	}
 }
 
@@ -330,4 +343,34 @@ QVariantList FilterModel::filterDropDownList() const
 		out.append(localMap{std::make_pair("value", tq(DataSetPackage::filter()->name())), std::make_pair("label", QObject::tr("Use filter"))});
 	
 	return out;
+}
+
+bool FilterModel::filterVisible() const
+{
+	return _filterVisible;
+}
+
+void FilterModel::setFilterVisible(bool newFilterVisible)
+{
+	if (_filterVisible == newFilterVisible)
+		return;
+	_filterVisible = newFilterVisible;
+		
+	emit filterVisibleChanged();
+	
+	if(_filterVisible)
+		setGeneratedFilter(tq(_labelFilterGenerator->generateFilter()));
+}
+
+bool FilterModel::showEasyFilter() const
+{
+	return _showEasyFilter;
+}
+
+void FilterModel::setShowEasyFilter(bool newShowEasyFilter)
+{
+	if (_showEasyFilter == newShowEasyFilter)
+		return;
+	_showEasyFilter = newShowEasyFilter;
+	emit showEasyFilterChanged();
 }

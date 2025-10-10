@@ -114,7 +114,7 @@ GroupBoxBase
 
 		checkFormOverflowAndAlignTimer.start()
 	}
-
+	
 	function _alignFields()
 	{
 		if (!alignFields || _allAlignableFields.length < 1) return;

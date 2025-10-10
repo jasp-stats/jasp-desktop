@@ -104,7 +104,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 	case FileEvent::FileSave:
 		caption = tr("Save");
 		filter  = tr("JASP Files") + " (*.jasp)";
-		browsePath += ".jasp";
+		if(!browsePath.endsWith(".jasp"))
+			browsePath += ".jasp";
 		break;
 
 	default:
@@ -125,7 +126,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 															 !finalPath.endsWith(".pdf",  Qt::CaseInsensitive))	)	finalPath.append(QString(".html"));
 		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv",  Qt::CaseInsensitive) &&
 															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive) &&
-															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
+															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));			
+		
 		event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}

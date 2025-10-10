@@ -141,6 +141,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		new AnalysisEntry([&]() { emit setDataSynchronisation(false);	},					"stop-externaledit",			[](){ return fq(tr("Turn external data synchronisation off"));},		true, "")
 	});
 
+	if(QCoreApplication::applicationName() == "JASPTest")
+		_testButton			= new RibbonButton(this, "Test",					[&](){ return fq(tr("Test"));},						"summarize.svg",			false, [&](){ emit runTests();	},									[&](){return tr("Run tests");},													true);
 	_analysesButton			= new RibbonButton(this, "Analyses",				[&](){ return fq(tr("Analyses"));},					"JASP_logo_green.svg",		false, [&](){ emit finishCurrentEdit(); emit showStatistics(); },	[&](){return tr("Switch JASP to analyses mode");},								true);
 	_dataSwitchButton		= new RibbonButton(this, "Data",					[&](){ return fq(tr("Edit Data"));},				"data-button.svg",			false, [&](){ emit showData(); },									[&](){return tr("Switch JASP to data editing mode");},							false, false, false);
 	_dataNewButton			= new RibbonButton(this, "Data-New",				[&](){ return fq(tr("New Data"));},					"data-button-new.svg",		false, [&](){ emit showNewData();	 },								[&](){return tr("Open a workspace without data");},								true, false, false);
@@ -151,6 +153,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 	_synchroniseOffButton	= new RibbonButton(this, "Data-Synch-Off",			[&](){ return fq(tr("Synchronisation"));},			"data-button-sync-on.svg",	_entriesSynchOn,													[&](){return tr("Turn external data synchronisation off");},					true);
 	_undoButton				= new RibbonButton(this, "Data-Undo",				[&](){ return fq(tr("Undo"));},						"menu-undo.svg",			true,  [&](){ emit dataUndo(); },									[&](){return tr("Undo changes, %1+Z").arg(getShortCutKey());},					true, false, false);
 	_redoButton				= new RibbonButton(this, "Data-Redo",				[&](){ return fq(tr("Redo"));},						"menu-redo.svg",			true,  [&](){ emit dataRedo(); },									[&](){return tr("Redo changes, %1+shift+Z or %1+Y").arg(getShortCutKey());},	true, false, false);
+
 
 	_dataNewButton->setActive(true);
 	connect(this, &RibbonModel::dataLoadedChanged,							_dataSwitchButton,	[=](bool loaded)			{ _dataSwitchButton	->setEnabled(loaded);				});
@@ -181,7 +184,8 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 		connect(this, &RibbonModel::dataLoadedChanged,		setUnAndRedoButtonLambda);
 	}
 
-
+	if(_testButton)
+		addRibbonButtonModel(_testButton,			size_t(RowType::Analyses));
 	addRibbonButtonModel(_dataSwitchButton,			size_t(RowType::Analyses));
 	addRibbonButtonModel(_dataNewButton,			size_t(RowType::Analyses));
 	addRibbonButtonModel(new RibbonButton(this),	size_t(RowType::Analyses));

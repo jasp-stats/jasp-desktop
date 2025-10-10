@@ -233,7 +233,8 @@ void SourceItem::connectModels()
 
 void SourceItem::disconnectModels()
 {
-	if (!_connected) return;
+	if (!_connected) 
+		return;
 
 	ListModel *controlModel = _targetListControl->model();
 	AnalysisForm* form		= _targetListControl->form();

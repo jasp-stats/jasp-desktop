@@ -58,7 +58,7 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 		boost::iequals(ext,".xlsx"))							return new ExcelImporter();
 	if(	ReadStatImporter::extSupported(ext))					return new ReadStatImporter(ext);
 	if( boost::iequals(ext,".rdata") ||
-        boost::iequals(ext,".rds"))                             return new RDataImporter(ext);
+		boost::iequals(ext,".rds"))                             return new RDataImporter();
 
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
@@ -89,8 +89,6 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
-	Utils::sleep(100); // :'(
-
 	Importer* importer = getImporter(locator, extension);
 
 	if (importer)

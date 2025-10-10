@@ -322,7 +322,18 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 	//Log::log() << "colCount: " << colCount << ", " << "rowCount: " << rowCount() << std::endl;
 
 	float colProgressMult = 1.0 / colCount;
-			
+
+	Json::Value emptyValsJson;
+	Json::Reader().parse(emptyVals, emptyValsJson);
+
+	bool	do019Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.19",
+			do095Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.95";
+
+	//Ideally we have the emptyvalues before loading the columns, so we get the right labels in the labeleditor, butr for older than 0.19 stuff is complicated so we do that later.
+
+	if(!do019Fix)
+		_emptyValues->fromJson(emptyValsJson);
+
 	for(size_t i=0; i<colCount; i++)
 	{
 		if(_columns.size() == i)
@@ -340,18 +351,13 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 
 	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.50 + (p * 0.25)); });
 	db().dataSetBatchedLabelsLoad(this, [&](float p){ progressCallback(0.75 + (p * 0.25)); });
-	
-	Json::Value emptyValsJson;
-	Json::Reader().parse(emptyVals, emptyValsJson);
-	
-	bool	do019Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.19",
-			do095Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.95";
+
+
 	
 	if(do095Fix)
 		beginBatchedToDB();
 	
 	if(do019Fix)	upgradeTo019(emptyValsJson);
-	else			_emptyValues->fromJson(emptyValsJson);
 	
 	if(do095Fix)
 	{
@@ -655,12 +661,6 @@ void DataSet::setDescription(const std::string &desc)
 	dbUpdate();
 }
 
-void DataSet::updateLabelsPostLocaleChange()
-{
-	for(Column * column : _columns)
-		column->updateLabelsPostLocaleChange();
-}
-
 DatabaseInterface &DataSet::db()	
 { 
 	return *DatabaseInterface::singleton(); 
@@ -687,3 +687,19 @@ stringset DataSet::findUsedColumnNames(std::string searchThis)
 
 
 
+
+Json::Value DataSet::jsonForCompare() const
+{
+	Json::Value json(Json::objectValue);
+
+	//json["description"]			= _description; //Contains datetime...
+	json["customEmptyValues"]	= _emptyValues->toJson();
+	json["columns"]				= Json::arrayValue;
+
+	for(Column * column : _columns)
+		json["columns"].append(column->jsonForCompare());
+
+	//std::cerr << json.toStyledString() << std::endl;
+
+	return json;
+}

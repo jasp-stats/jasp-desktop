@@ -46,7 +46,7 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 
 	connect(this,									&AnalysisForm::infoChanged,						this, &AnalysisForm::helpMDChanged									);
 	connect(this,									&AnalysisForm::infoBottomChanged,				this, &AnalysisForm::helpMDChanged									);
-	connect(this,									&AnalysisForm::formCompletedSignal,				this, &AnalysisForm::formCompletedHandler,		Qt::QueuedConnection);
+	connect(this, 									&AnalysisForm::formCompletedSignal, 			this, &AnalysisForm::formCompletedHandler, 		Qt::DirectConnection);
 	connect(this,									&AnalysisForm::analysisChanged,					this, &AnalysisForm::knownIssuesUpdated,		Qt::QueuedConnection);
 	connect(KnownIssues::issues(),					&KnownIssues::knownIssuesUpdated,				this, &AnalysisForm::knownIssuesUpdated,		Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::showAllROptionsChanged,			this, &AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);

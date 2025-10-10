@@ -43,6 +43,7 @@ public:
 	static QString bundledModulesDir();
 	static QString bundledModulesLibDir();
 	static QString documents();
+	static QString autoSaveDir();
  	static QString sandboxedDocuments();
 	static QString logDir();
 	static QString appData(bool roaming = true);
