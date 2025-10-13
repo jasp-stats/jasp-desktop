@@ -415,10 +415,10 @@ FocusScope
 						return moduleLibrary.getEnvironmentInfo();
 					}
 
-					signal installedModulesChanged(var installedModules)
+					signal environmentInfoChanged(var environmentInfo)
 
-					Component.onCompleted: moduleLibrary.installedModulesChanged.connect(moduleStoreWebChannel.installedModulesChanged)
-					Component.onDestruction: moduleLibrary.installedModulesChanged.disconnect(moduleStoreWebChannel.installedModulesChanged)
+					Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
+					Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
 
 					function uninstall(moduleName) {
 						moduleLibrary.uninstallJASPModule(moduleName)

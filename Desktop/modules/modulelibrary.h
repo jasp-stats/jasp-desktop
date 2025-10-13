@@ -41,10 +41,11 @@ public:
     Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
 
 signals:
-    void installedModulesChanged(const QVariantMap &installedModules);
+    void environmentInfoChanged(const QVariantMap &environmentInfo);
 
 private:
     QVariantMap installedModulesInfo() const;
+    void emitEnvironmentInfoChanged();
 
 private slots:
     void onDynamicModuleAdded(Modules::DynamicModule *module);
