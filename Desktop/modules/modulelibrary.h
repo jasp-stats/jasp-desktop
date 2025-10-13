@@ -47,12 +47,6 @@ private:
     QVariantMap installedModulesInfo() const;
     void emitEnvironmentInfoChanged();
 
-private slots:
-    void onDynamicModuleAdded(Modules::DynamicModule *module);
-    void onDynamicModuleChanged(Modules::DynamicModule *module);
-    void onDynamicModuleReplaced(Modules::DynamicModule *oldModule, Modules::DynamicModule *module);
-    void onDynamicModuleUninstalled(const QString &moduleName);
-
 private:
     static ModuleLibrary *_singleton;
 };

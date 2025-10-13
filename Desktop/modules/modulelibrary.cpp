@@ -18,12 +18,12 @@ ModuleLibrary::ModuleLibrary(QObject *parent)
 
     if (auto *dynMods = Modules::DynamicModules::dynMods())
     {
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, &ModuleLibrary::onDynamicModuleAdded);
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleChanged,    this, &ModuleLibrary::onDynamicModuleChanged);
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, &ModuleLibrary::onDynamicModuleReplaced);
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
         // TODO there is a timing issue here, the dynamicModuleUninstalled signal is emitted before the module is fully uninstalled,
         // causing UI to update too early and show the module as still installed.
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleUninstalled,this, &ModuleLibrary::onDynamicModuleUninstalled);
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleUninstalled,this, [this](const QString &) { emitEnvironmentInfoChanged(); });
     }
 
     if (auto *prefs = PreferencesModel::prefs())
@@ -51,8 +51,8 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
 		platformArch = arch == MicroArch::AARCH64 ? "Linux_aarch64" : "Linux_x86_64";
 	else
 		platformArch = "Windows_x86-64";
-
     envInfo["arch"] = QString::fromStdString(platformArch);
+    // Preferences needed in webapp
     envInfo["developerMode"] = PreferencesModel::prefs()->developerMode();
     envInfo["theme"] = PreferencesModel::prefs()->currentThemeName().replace("Theme", "");
     envInfo["font"] = PreferencesModel::prefs()->interfaceFont();
@@ -79,29 +79,4 @@ QVariantMap ModuleLibrary::installedModulesInfo() const
 void ModuleLibrary::emitEnvironmentInfoChanged()
 {
     emit environmentInfoChanged(getEnvironmentInfo());
-}
-
-void ModuleLibrary::onDynamicModuleAdded(Modules::DynamicModule *module)
-{
-    Q_UNUSED(module);
-    emitEnvironmentInfoChanged();
-}
-
-void ModuleLibrary::onDynamicModuleChanged(Modules::DynamicModule *module)
-{
-    Q_UNUSED(module);
-    emitEnvironmentInfoChanged();
-}
-
-void ModuleLibrary::onDynamicModuleReplaced(Modules::DynamicModule *oldModule, Modules::DynamicModule *module)
-{
-    Q_UNUSED(oldModule);
-    Q_UNUSED(module);
-    emitEnvironmentInfoChanged();
-}
-
-void ModuleLibrary::onDynamicModuleUninstalled(const QString &moduleName)
-{
-    Q_UNUSED(moduleName);
-    emitEnvironmentInfoChanged();
 }
