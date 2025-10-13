@@ -23,6 +23,11 @@
 #include <QVariant>
 #include <QQmlWebChannel>
 
+namespace Modules
+{
+class DynamicModule;
+}
+
 class ModuleLibrary : public QObject
 {
     Q_OBJECT
@@ -33,7 +38,20 @@ public:
     static ModuleLibrary * singleton() { return _singleton; }
 
     Q_INVOKABLE QVariantMap getEnvironmentInfo() const;
-    // Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
+    Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
+
+signals:
+    void installedModulesChanged(const QVariantMap &installedModules);
+
+private:
+    QVariantMap installedModulesInfo() const;
+
+private slots:
+    void onDynamicModuleAdded(Modules::DynamicModule *module);
+    void onDynamicModuleChanged(Modules::DynamicModule *module);
+    void onDynamicModuleReplaced(Modules::DynamicModule *oldModule, Modules::DynamicModule *module);
+    void onDynamicModuleUninstalled(const QString &moduleName);
+
 private:
     static ModuleLibrary *_singleton;
 };

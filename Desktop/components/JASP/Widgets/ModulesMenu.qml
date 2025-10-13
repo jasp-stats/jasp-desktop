@@ -415,9 +415,13 @@ FocusScope
 						return moduleLibrary.getEnvironmentInfo();
 					}
 
+					signal installedModulesChanged(var installedModules)
+
+					Component.onCompleted: moduleLibrary.installedModulesChanged.connect(moduleStoreWebChannel.installedModulesChanged)
+					Component.onDestruction: moduleLibrary.installedModulesChanged.disconnect(moduleStoreWebChannel.installedModulesChanged)
+
 					function uninstall(moduleName) {
-						console.log("uninstalling " + moduleName)
-						// dynamicModules.uninstallJASPModule(moduleName)
+						moduleLibrary.uninstallJASPModule(moduleName)
 					}
 				}
 
