@@ -38,11 +38,10 @@ public:
 	
 	RowControls(
 			ListModel* parent
-			, QQmlComponent* components
-			, const QMap<QString, Json::Value>& rowValues);
+            , QQmlComponent* components);
 
-	void										init(int row, const Term& key, bool isNew);
-	void										setContext(int row, const Term& key);
+    void										initValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues);
+    void										resetValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues);
 	QQmlComponent*								getComponent()								const	{ return _rowComponent; }
 	QQuickItem*									getRowObject()								const	{ return _rowObject;			}
 	const QMap<QString, JASPControl*>&			getJASPControlsMap()						const	{ return _rowJASPControlMap;	}
@@ -56,14 +55,13 @@ signals:
 
 private:
 
-	void										_initializeControls(bool useInitialValue = true);
+    void                                        _setValues(const QMap<QString, Json::Value>& rowValues);
 
 	ListModel*								_parentModel;
 	QQmlComponent*							_rowComponent	= nullptr;
 	QQuickItem*								_rowObject		= nullptr;
 	QMap<QString, JASPControl*>				_rowJASPControlMap;
 	QQmlContext*							_context;
-	QMap<QString, Json::Value>				_initialValues;
 	bool									_initialized	= false;
 };
 

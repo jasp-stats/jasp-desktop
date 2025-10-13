@@ -27,15 +27,14 @@
 #include <QQmlContext>
 
 RowControls::RowControls(ListModel* parent
-						 , QQmlComponent* component
-						 , const QMap<QString, Json::Value>& rowValues)
- : QObject(parent), _parentModel(parent), _rowComponent(component), _initialValues(rowValues)
+						 , QQmlComponent* component)
+ : QObject(parent), _parentModel(parent), _rowComponent(component)
 {
 }
 
 // Cannot do this code in the constructor: the Component create function (comp->create(context)) will call the addJASPControl method in JASPControl (or ListView),
 // So this RowControls instance needs to exist already.
-void RowControls::init(int row, const Term& key, bool isNew)
+void RowControls::initValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues)
 {
 	JASPListControl* listView = _parentModel->listView();
 
@@ -43,7 +42,7 @@ void RowControls::init(int row, const Term& key, bool isNew)
 	context->setContextProperty("isDynamic", true);
 	context->setContextProperty("form", listView->form());
 	context->setContextProperty("listView", listView);
-	context->setContextProperty("isNew", isNew);
+	context->setContextProperty("isNew", rowValues.empty());
 	context->setContextProperty("rowIndex",	row);
 	context->setContextProperty("rowLabel", key.label());
 	context->setContextProperty("rowValue", key.value());
@@ -51,25 +50,45 @@ void RowControls::init(int row, const Term& key, bool isNew)
 
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
+	assert(_rowObject);
+	if (!_rowObject)
+	{
+		Log::log() << "Could not create control in " << listView->name() << std::endl;
+		return;
+	}
+
 	_rowObject->setParent(_parentModel);
 	_context = context;
+
+	QList<JASPControl*> controls = _rowJASPControlMap.values();
+	for (JASPControl* control : controls)
+		control->setUp();
 
 	_initialized = true;
 	emit initializedChanged();
 
-	if (_rowObject)	_initializeControls();
-	else			Log::log() << "Could not create control in ListView " << listView->name() << std::endl;
+	_setValues(rowValues);
 }
 
-void RowControls::_initializeControls(bool useInitialValue)
+void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json::Value>& rowValues)
+{
+	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
+	_context->setContextProperty("rowIndex", row);
+	_context->setContextProperty("rowLabel", key.label());
+	_context->setContextProperty("rowValue", key.value());
+	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
+	_context->setContextProperty("isNew", false);
+
+	_setValues(rowValues);
+}
+
+void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 {
 	// The controls (when created or reused) need to be initialized
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	JASPListControl* parentControl = _parentModel->listView();
 	AnalysisForm* form = parentControl->form();
 
-	for (JASPControl* control : controls)
-		control->setUp();
 
 	if (form)
 		form->sortControls(controls);
@@ -83,8 +102,8 @@ void RowControls::_initializeControls(bool useInitialValue)
 
 		Json::Value optionValue = Json::nullValue;
 
-		if (useInitialValue && _initialValues.contains(control->name()))
-			optionValue = _initialValues[control->name()];
+		if (rowValues.contains(control->name()))
+			optionValue = rowValues[control->name()];
 		else
 		{
 			// It it exists, reuse the current value.
@@ -99,18 +118,6 @@ void RowControls::_initializeControls(bool useInitialValue)
 	if (form)
 		// setInitialized binds value to the control, but does not signal the change. So we have to manually emit the signal
 		emit parentControl->boundValueChanged(parentControl);
-}
-
-void RowControls::setContext(int row, const Term &key)
-{
-	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
-	_context->setContextProperty("rowIndex", row);
-	_context->setContextProperty("rowLabel", key.label());
-	_context->setContextProperty("rowValue", key.value());
-	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
-	_context->setContextProperty("isNew", false);
-
-	_initializeControls(false);
 }
 
 bool RowControls::addJASPControl(JASPControl *control)
