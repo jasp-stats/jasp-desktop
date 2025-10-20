@@ -2523,7 +2523,7 @@ bool DataSetPackage::filePathIsNonSaveable(const QString & path) const
 {
 	QFileInfo fileDir(path);
 
-	return fileDir.dir() == QDir(AppDirs::examples()) || fileDir.dir() == QDir(AppDirs::autoSaveDir());
+	return fileDir.dir().absolutePath().startsWith(AppDirs::examples()) || fileDir.dir() == QDir(AppDirs::autoSaveDir());
 }
 
 void DataSetPackage::setAnalysesData(const Json::Value &analysesData)
