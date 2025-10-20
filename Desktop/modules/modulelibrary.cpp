@@ -60,7 +60,8 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     envInfo["developerMode"] = PreferencesModel::prefs()->developerMode();
     envInfo["theme"] = PreferencesModel::prefs()->currentThemeName().replace("Theme", "");
     envInfo["font"] = PreferencesModel::prefs()->interfaceFont();
-    envInfo["language"] = PreferencesModel::prefs()->languageCode();
+    // do replace to enforce BCP 47 language tag format
+    envInfo["language"] = PreferencesModel::prefs()->languageCode().replace("_", "-");
 
     envInfo["installedModules"] = installedModulesInfo();
     return envInfo;
