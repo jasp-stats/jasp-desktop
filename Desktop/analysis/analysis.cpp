@@ -1097,7 +1097,8 @@ void Analysis::checkForRSources()
 	}
 
 	//First check meta for qmlSources and collections
-	std::set<std::string> sourceIDs, isCollection;
+	QMap<std::string, std::string> sourceNamesMap; // Map source name to source ID
+	std::set<std::string> isCollection;
 
 	std::function<void(Json::Value & meta)> findNewSource = [&](Json::Value & meta) -> void
 	{
@@ -1109,8 +1110,8 @@ void Analysis::checkForRSources()
 			//Here we collect the meta's names for collections and qmlSources
 			if(meta.isMember("type"))
 			{
-					if(		meta["type"].asString() == "qmlSource")		sourceIDs.insert(	meta["name"].asString());
-					else if(meta["type"].asString() == "collection")	isCollection.insert(meta["name"].asString());
+				if(		meta["type"].asString() == "qmlSource")		sourceNamesMap[meta["name"].asString()] = meta.isMember("sourceID") ? meta["sourceID"].asString() : meta["name"].asString();
+				else if(meta["type"].asString() == "collection")	isCollection.insert(meta["name"].asString());
 			}
 
 			if(meta.isMember("meta")) //means there is an array of more meta below there
@@ -1131,11 +1132,11 @@ void Analysis::checkForRSources()
 
 		else if(results.isObject())
 		{
-			if(results.isMember("name") && sourceIDs.count(results["name"].asString()) > 0)
+			if(results.isMember("name") && sourceNamesMap.count(results["name"].asString()) > 0)
 				newSources[results["sourceID"].asString()] = results["json"]; //We take the json from this qmlSource as that is the value we want
 
 			for(const std::string & memberName : results.getMemberNames())
-				if(sourceIDs.count(memberName) > 0)
+				if(sourceNamesMap.count(memberName) > 0)
 					newSources[results[memberName]["sourceID"].asString()] = results[memberName]["json"];
 
 				else if(isCollection.count(memberName) > 0 && results[memberName].isMember("collection")) //Checking for "collection" is to avoid stupid crashes but shouldnt really be necessary anyhow
@@ -1147,6 +1148,7 @@ void Analysis::checkForRSources()
 	//And then calculate the delta
 	std::set<std::string> removeAfterwards;
 
+	QList<std::string> sourceIDs = sourceNamesMap.values();
 	for(auto & sourceJson : _rSources)
 		// The sourceIDs come from the meta values, newSources from the results
 		// If a result of a source does not change, only its meta value is send, not its result.
