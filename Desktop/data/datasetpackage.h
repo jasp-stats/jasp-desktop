@@ -75,7 +75,7 @@ public:
 
 		void				createDataSet();	///< Creates *OR* recreates a dataset in database
         void                loadDataSet(std::function<void(float)> progressCallback = [](float){});      ///< Assumes internal.sqlite has just been loaded from a JASPFile and will init DataSet etc with it.
-		void				deleteDataSet();	///< Deletes dataset from memory but not from database
+		void				resetDataSet(bool reCreate = true);	///< Deletes dataset from memory but not from database
 		bool				hasDataSet() { return _dataSet; }
 
 		void				pauseEngines();
