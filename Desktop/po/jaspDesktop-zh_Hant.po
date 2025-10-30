@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2025-10-31 02:02+0000\n"
+"Last-Translator: 陳寬裕 <pf.kuan.yu.chen@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.14.1-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -5532,7 +5538,7 @@ msgstr "設定檔選項"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "啟動時視窗最大化"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5635,7 +5641,7 @@ msgstr ""
 
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
-msgstr ""
+msgstr "將分析狀態與繪圖結果存入 JASP 檔案"
 
 msgctxt "PrefsResults|"
 msgid ""
@@ -5671,38 +5677,39 @@ msgstr ""
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
-msgstr ""
+msgstr "復原"
 
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
-msgstr ""
+msgstr "沒有找到可復原的檔案"
 
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
-msgstr ""
+msgstr "復原檔會在存放一個月後自動刪除"
 
 msgctxt "PrefsData|"
 msgid "Save settings"
-msgstr ""
+msgstr "保存設定"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "自動為您的工作區建立備份"
 
 msgctxt "PrefsData|"
 msgid ""
 "When enabled this will save a copy of your workspace in a folder next to the "
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
-msgstr ""
+msgstr "開啟此功能後，系統會在日誌資料夾旁自動存一份工作區備份。如果 JASP 當機且尚有"
+"未保存的變更，這份備份能確保您的工作不會全部遺失。"
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "自動保存的時間間隔(以分鐘計)"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "每次自動保存之間的時間間隔（分鐘）"
 
 #, qt-format
 msgctxt "DataSetPackage|"
