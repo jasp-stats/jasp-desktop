@@ -394,10 +394,7 @@ FocusScope
                 width:                  visible ? 500 * preferencesModel.uiScale : 0
                 anchors.right:          modules.left
                 height:                 modulesFlick.height - jaspTheme.contentMargin
-				// For production
-				//url: "https://module-library.jasp-stats.org"
-				// For development of app you can use your local server (Only one url can be active at a time)
-				url: "http://172.17.0.1:3000"
+				url:                    preferencesModel.moduleLibraryURL
                 profile:                moduleStoreProfile
 
 				property bool	downloadInProgress: false;

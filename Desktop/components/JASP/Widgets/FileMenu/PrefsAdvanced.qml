@@ -73,9 +73,48 @@ PrefsScrollView
 						margins:		jaspTheme.generalAnchorMargin
 					}
 
-					KeyNavigation.tab:	githubPatDefault
+					KeyNavigation.tab:	moduleLibraryUrl
 				}
 			}
+
+				Item
+				{
+					id:		moduleLibraryUrlItem
+					width:	parent.width
+					height:	moduleLibraryUrl.height
+
+					Label
+					{
+						id:			moduleLibraryUrlLabel
+						text:		qsTr("Module library URL: ")
+
+						anchors
+						{
+							left:			parent.left
+							verticalCenter: parent.verticalCenter
+							margins:		jaspTheme.generalAnchorMargin
+						}
+					}
+
+					PrefsTextInput
+					{
+						id:			moduleLibraryUrl
+
+						text:			preferencesModel.moduleLibraryURL
+						onEditingFinished:	preferencesModel.moduleLibraryURL = text
+						nextEl:			githubPatDefault
+
+						height:			browseDeveloperFolderButton.height
+						anchors
+						{
+							left:		moduleLibraryUrlLabel.right
+							right:		parent.right
+							margins:	jaspTheme.generalAnchorMargin
+						}
+
+						KeyNavigation.tab:	githubPatDefault
+					}
+				}
 
 
 			CheckBox
