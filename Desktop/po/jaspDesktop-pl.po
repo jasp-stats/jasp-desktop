@@ -639,6 +639,10 @@ msgid "Change the CRAN repository: "
 msgstr "Zmień repozytorium CRAN: "
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "Adres URL biblioteki modułów: "
+
+msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr "Generuj pliki pomocnicze w formacie markdown"
 

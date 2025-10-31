@@ -608,6 +608,10 @@ msgid "Change the CRAN repository: "
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "URL-ja e bibliotekës së moduleve: "
+
+msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr ""
 

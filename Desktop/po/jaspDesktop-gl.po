@@ -617,6 +617,10 @@ msgid "Change the CRAN repository: "
 msgstr "Trocar o repositorio CRAN: "
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "URL da biblioteca de módulos: "
+
+msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
 msgstr "Máx. ficheiros inicio a manter: "
 

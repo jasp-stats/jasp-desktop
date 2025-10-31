@@ -614,6 +614,10 @@ msgid "Change the CRAN repository: "
 msgstr "更改 CRAN 源： "
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "模块库 URL： "
+
+msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr "生成用于帮助的markdown文件"
 

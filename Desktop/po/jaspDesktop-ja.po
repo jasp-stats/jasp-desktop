@@ -624,6 +624,10 @@ msgid "Change the CRAN repository: "
 msgstr "CRANリポジトリの変更 "
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "モジュールライブラリのURL: "
+
+msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr "ヘルプ用マークダウンファイルの生成"
 

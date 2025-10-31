@@ -752,6 +752,10 @@ msgid "Change the CRAN repository: "
 msgstr ""
 
 msgctxt "PrefsAdvanced|"
+msgid "Module library URL: "
+msgstr "A modulkönyvtár URL-címe: "
+
+msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr "Markdown súgó fájlok generálása"
 
