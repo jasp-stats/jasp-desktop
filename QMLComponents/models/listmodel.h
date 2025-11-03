@@ -76,7 +76,7 @@ public:
 			Terms					getSourceTerms();
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
-	virtual void					setUpRowControls(int startRow = 0);
+	virtual void					setUpRowControls(int startRow = 0, bool onlyRemove = false);
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
 	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
 	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}

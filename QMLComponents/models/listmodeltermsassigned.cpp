@@ -141,7 +141,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 {
 	if (index < 0 || index >= rowCount()) return;
 
-	beginResetModel();
+	beginRemoveRows(QModelIndex(), index, index);
 
 	const Term& term = terms().at(size_t(index));
 
@@ -158,7 +158,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 	}
 	_removeTerm(term);
 
-	endResetModel();
+	endRemoveRows();
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const Term& term)
