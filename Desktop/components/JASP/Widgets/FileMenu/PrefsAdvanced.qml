@@ -237,7 +237,7 @@ PrefsScrollView
 				visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
 
 
-				RectangularButton
+				RoundedButton
 				{
 					id:						browseDeveloperFolderButton
 					text:					qsTr("Source folder:")
@@ -277,7 +277,7 @@ PrefsScrollView
 				width:				parent.width
 				height:				cranRepoUrl.height
 
-				RectangularButton
+				RoundedButton
 				{
 					id:						directLibPathLabel
 					text:					qsTr("Project library:")
@@ -383,6 +383,7 @@ PrefsScrollView
 			Column  {
 				visible:	preferencesModel.useConfigurationFile
 				width:		parent.width
+				spacing:	jaspTheme.rowSpacing
 
 				CheckBox
 				{
@@ -406,12 +407,12 @@ PrefsScrollView
 					{
 						id:		remoteSettingsLabel
 						text:	qsTr("Configuration URL: ")
+						width:	Math.max(remoteSettingsLabel.implicitWidth, browseLocalconfButton.implicitWidth)
 
 						anchors
 						{
 							left:			parent.left
 							verticalCenter:	parent.verticalCenter
-							margins:		jaspTheme.generalAnchorMargin
 						}
 					}
 
@@ -427,6 +428,7 @@ PrefsScrollView
 						{
 							left:			remoteSettingsLabel.right
 							right:			parent.right
+							margins:		jaspTheme.generalAnchorMargin
 						}
 
 						KeyNavigation.tab:	localconf
@@ -440,9 +442,10 @@ PrefsScrollView
 					width:				parent.width
 					height:				browseLocalconfButton.height
 
-					RectangularButton
+					RoundedButton
 					{
 						id:					browseLocalconfButton
+						width:				Math.max(remoteSettingsLabel.implicitWidth, browseLocalconfButton.implicitWidth)
 						text:				qsTr("Select configuration file")
 						onClicked:			preferencesModel.browseConfigurationFile()
 						anchors.left:		parent.left
@@ -465,7 +468,7 @@ PrefsScrollView
 						{
 							left:			browseLocalconfButton.right
 							right:			parent.right
-							top:			parent.top
+							margins:		jaspTheme.generalAnchorMargin
 						}
 					}
 				}

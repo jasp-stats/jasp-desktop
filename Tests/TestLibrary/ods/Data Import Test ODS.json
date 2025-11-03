@@ -24,6 +24,7 @@
             "description": "",
             "labels": [],
             "name": "Without Value",
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -60,6 +61,9 @@
                 }
             ],
             "name": "Scale 1 Int",
+            "nonEmptyLabels": [
+                "1"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -96,6 +100,9 @@
                 }
             ],
             "name": "Scale 1 Dbl",
+            "nonEmptyLabels": [
+                "0.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -132,6 +139,9 @@
                 }
             ],
             "name": "Nominal Text 1 Str",
+            "nonEmptyLabels": [
+                "Hallo Wereld"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -175,6 +185,10 @@
                 }
             ],
             "name": "Scale 2 Dbls",
+            "nonEmptyLabels": [
+                "0.111",
+                "0.666"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -218,6 +232,10 @@
                 }
             ],
             "name": "Nominal 2 Ints",
+            "nonEmptyLabels": [
+                "1",
+                "2"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -261,6 +279,10 @@
                 }
             ],
             "name": "Nominal Text 2 Str",
+            "nonEmptyLabels": [
+                "Hallo",
+                "Wereld"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -367,6 +389,19 @@
                 }
             ],
             "name": "Scale >= 10 Dbls (Treshold)",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9",
+                "1",
+                "1.1"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -459,6 +494,17 @@
                 }
             ],
             "name": "Scale < 10 Dbls (Treshold)",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -565,6 +611,19 @@
                 }
             ],
             "name": "Scale >= 10 Ints (Treshold)",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -657,6 +716,17 @@
                 }
             ],
             "name": "Ordinal < 10 Ints (Treshold)",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -763,6 +833,19 @@
                 }
             ],
             "name": "Nominal Text >= 10 Strs (Treshold)",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -855,6 +938,17 @@
                 }
             ],
             "name": "Nominal Text < 10 Strs (Treshold)",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -957,6 +1051,17 @@
                 }
             ],
             "name": "Scale with Manual Missing Value",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "Missing"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -1059,6 +1164,17 @@
                 }
             ],
             "name": "Ordinal with Manual Missing Value",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "Missing"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -1119,6 +1235,11 @@
                 }
             ],
             "name": "Nominal with Manual Missing Value",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "Missing"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -1179,6 +1300,11 @@
                 }
             ],
             "name": "Nominal Text with Manual Missing Value",
+            "nonEmptyLabels": [
+                "Hallo",
+                "Missing",
+                "Wereld"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"

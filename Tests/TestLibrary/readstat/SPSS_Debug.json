@@ -174,6 +174,27 @@
                 }
             ],
             "name": "NumericScaleNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -352,6 +373,27 @@
                 }
             ],
             "name": "NumericScaleNoLabelsDecimals",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -475,6 +517,11 @@
                 }
             ],
             "name": "NumericScaleWithIntegralLabel",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -598,6 +645,11 @@
                 }
             ],
             "name": "NumericScaleWithDecimalLabels",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -739,6 +791,14 @@
                 }
             ],
             "name": "NumericScaleLabelsIntegralAndDecimal",
+            "nonEmptyLabels": [
+                "One",
+                "OneHalf",
+                "Two",
+                "TwoHalf",
+                "Three",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -880,6 +940,14 @@
                 }
             ],
             "name": "NumericScaleLabelsDecimalAndIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "OneHalf",
+                "Two",
+                "TwoHalf",
+                "Three",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -1051,6 +1119,26 @@
                 }
             ],
             "name": "NumericOrdinalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -1222,6 +1310,26 @@
                 }
             ],
             "name": "NumericOrdinalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -1342,6 +1450,11 @@
                 }
             ],
             "name": "NumericOrdinalWithIntegralLabels",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -1462,6 +1575,11 @@
                 }
             ],
             "name": "NumericOrdinalWithDecimalLabels",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -1640,6 +1758,27 @@
                 }
             ],
             "name": "NumericNominalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -1818,6 +1957,27 @@
                 }
             ],
             "name": "NumericNominalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -1941,6 +2101,11 @@
                 }
             ],
             "name": "NumericNominalWithIntegralLabels",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -2064,6 +2229,11 @@
                 }
             ],
             "name": "NumericNominalWithDecimalLabels",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -2242,6 +2412,27 @@
                 }
             ],
             "name": "CommaScaleNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -2420,6 +2611,27 @@
                 }
             ],
             "name": "CommaScaleNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -2543,6 +2755,11 @@
                 }
             ],
             "name": "CommaScaleLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -2666,6 +2883,11 @@
                 }
             ],
             "name": "CommaScaleLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -2844,6 +3066,27 @@
                 }
             ],
             "name": "CommaOrdinalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -3022,6 +3265,27 @@
                 }
             ],
             "name": "CommaOrdinalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -3145,6 +3409,11 @@
                 }
             ],
             "name": "CommaOrdinalLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -3268,6 +3537,11 @@
                 }
             ],
             "name": "CommaOrdinalLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -3439,6 +3713,26 @@
                 }
             ],
             "name": "CommaNominalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -3610,6 +3904,26 @@
                 }
             ],
             "name": "CommaNominalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -3730,6 +4044,11 @@
                 }
             ],
             "name": "CommaNominalLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -3850,6 +4169,11 @@
                 }
             ],
             "name": "CommaNominalLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -4028,6 +4352,27 @@
                 }
             ],
             "name": "DotScaleNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -4206,6 +4551,27 @@
                 }
             ],
             "name": "DotScaleNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -4329,6 +4695,11 @@
                 }
             ],
             "name": "DotScaleLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -4452,6 +4823,11 @@
                 }
             ],
             "name": "DotScaleLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -4630,6 +5006,27 @@
                 }
             ],
             "name": "DotOrdinalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -4808,6 +5205,27 @@
                 }
             ],
             "name": "DotOrdinalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -4931,6 +5349,11 @@
                 }
             ],
             "name": "DotOrdinalLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -5054,6 +5477,11 @@
                 }
             ],
             "name": "DotOrdinalLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -5232,6 +5660,27 @@
                 }
             ],
             "name": "DotNominalNoLabelsIntegral",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -5410,6 +5859,27 @@
                 }
             ],
             "name": "DotNominalNoLabelsDecimal",
+            "nonEmptyLabels": [
+                "1.5",
+                "2.5",
+                "3.5",
+                "4.5",
+                "5.5",
+                "6.5",
+                "7.5",
+                "8.5",
+                "9.5",
+                "10.5",
+                "11.5",
+                "12.5",
+                "13.5",
+                "14.5",
+                "15.5",
+                "16.5",
+                "17.5",
+                "19.5",
+                "20.5"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -5533,6 +6003,11 @@
                 }
             ],
             "name": "DotNominalLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -5656,6 +6131,11 @@
                 }
             ],
             "name": "DotNominalLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -5827,6 +6307,27 @@
                 }
             ],
             "name": "StringOrdinalNoLabels",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -5998,6 +6499,27 @@
                 }
             ],
             "name": "StringNominalNoLabels",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -6121,6 +6643,11 @@
                 }
             ],
             "name": "StringOrdinalLabelsIntegral",
+            "nonEmptyLabels": [
+                "One",
+                "Two",
+                "Three"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -6244,6 +6771,11 @@
                 }
             ],
             "name": "StringNominalLabelsDecimal",
+            "nonEmptyLabels": [
+                "OneHalf",
+                "TwoHalf",
+                "ThreeHalf"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -6422,6 +6954,27 @@
                 }
             ],
             "name": "DateTimeYYYYMMDDHHMMSSScale",
+            "nonEmptyLabels": [
+                "1.001039406e+10",
+                "1.354483572e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.380002604e+10",
+                "1.38000303e+10",
+                "1.380253164e+10"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -6579,6 +7132,24 @@
                 }
             ],
             "name": "NumericRestrictedOrdinal",
+            "nonEmptyLabels": [
+                "0",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "12",
+                "1337",
+                "123123",
+                "1111111",
+                "1121212",
+                "9999999"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"
@@ -6701,6 +7272,19 @@
                 }
             ],
             "name": "DollarsScale",
+            "nonEmptyLabels": [
+                "0",
+                "2",
+                "3",
+                "10",
+                "12",
+                "66",
+                "956",
+                "1233",
+                "1234",
+                "6676",
+                "456456456"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -6809,6 +7393,17 @@
                 }
             ],
             "name": "EurosNominal",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "33",
+                "75",
+                "775",
+                "777",
+                "345345"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"

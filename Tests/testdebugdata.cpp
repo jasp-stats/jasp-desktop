@@ -6,10 +6,6 @@
 #include "databaseinterface.h"
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
-#include "data/importers/odsimporter.h"
-#include "data/importers/excelimporter.h"
-#include "data/importers/rdataimporter.h"
-#include "data/importers/readstatimporter.h"
 
 void TestDebugData::initTestCase()
 {
@@ -221,15 +217,66 @@ void TestDebugData::testColumnStuff()
 	QVERIFY2(V1, "Column V1 is missing...");
 	
 	V1->setName("Variable 1");
-	QVERIFY2(V1->name() == "Variable 1", "Rename failed");
+	QVERIFY2(V1->name()  == "Variable 1", "Rename failed");
+	QVERIFY2(V1->title() == "Variable 1", "Rename failed to also change the title");
 	
 	Column * Var1 = _data->column("Variable 1");
 	QVERIFY2(Var1, "Rename column didnt update the dataset lookup");
-	
 	QVERIFY2(Var1 == V1, "Renamed column is not the same column");
+	
+	V1->setTitle("Something else entirely");
+	QVERIFY2(V1->title() == "Something else entirely", "Retitle failed");
+	
+	V1->setName("Var1");
+	QVERIFY2(V1->name()  == "Var1", "Rename failed");
+	QVERIFY2(V1->title() == "Something else entirely", "Got retitled even though it shouldnt have been!");
+	
+	V1->setTitle("Var1");
+	QVERIFY2(V1->title() == "Var1", "Retitle failed");
+	
+	V1->setName("Variable 1");
+	QVERIFY2(V1->name()  == "Variable 1", "Rename failed");
+	QVERIFY2(V1->title() == "Variable 1", "Rename failed to also change the title");
+
 	
 	DataSet loadMe(_data->id());
 	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
+	
+	
+	
+}
+
+void TestDebugData::testEmptyValues()
+{
+	QVERIFY2(_data,		"No dataset!");
+	
+	Column * contBinom = _data->column("contBinom");
+	
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 2, "Not right amount of non-empty labels!");
+	
+	contBinom->setHasCustomEmptyValues(true);
+	contBinom->setCustomEmptyValues({"1"});
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 1,	"Not right amount of non-empty labels after adding one!");
+	QVERIFY2(contBinom->nonEmptyLevelsStrings()[0] == "0",		"Not right non-empty label left after adding one empty value!");
+	
+	contBinom->setCustomEmptyValues({"0"});
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 1,	"Not right amount of non-empty labels after changing one empty value into another!");
+	QVERIFY2(contBinom->nonEmptyLevelsStrings()[0] == "1",		"Not right non-empty label left after adding one empty value!");
+
+	
+	contBinom->setCustomEmptyValues({"0", "1"});
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 0,	"There should be no labels anymore!");
+	
+	contBinom->setHasCustomEmptyValues(false);
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 2,	"Not right amount of non-empty labels after disabling custom empty values!");
+	
+	_data->setWorkspaceEmptyValues({"1"});
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 1,	"Not right amount of non-empty labels after adding one empty value to workspace!");
+	QVERIFY2(contBinom->nonEmptyLevelsStrings()[0] == "0",		"Not right non-empty label left after adding one empty value to workspace!");
+	
+	contBinom->setHasCustomEmptyValues(true);
+	contBinom->setCustomEmptyValues({"0"});
+	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 0,	"There should be no labels anymore!");
 }
 
 

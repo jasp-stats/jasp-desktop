@@ -157,7 +157,7 @@ void JASPExporter::makeEntry(archive * a, const std::string & filename, const st
 
 void JASPExporter::saveAnalyses(archive *a)
 {
-	const Json::Value & analysesJson = DataSetPackage::pkg()->analysesData();
+	const Json::Value analysesJson = DataSetPackage::pkg()->analysesData();
 
 	makeEntry(a, "analyses.json", analysesJson.toStyledString());
 

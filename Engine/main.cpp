@@ -100,7 +100,6 @@ int main(int argc, char *argv[])
 
 #endif
 		static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
-
 		Log::logFileNameBase = logFileBase;
 		Log::init(&nullstream);
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");

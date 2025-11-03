@@ -1135,6 +1135,9 @@ void EngineRepresentation::sendReloadData()
 
 void EngineRepresentation::addSettingsToJson(Json::Value & msg)
 {
+	if(!PreferencesModel::prefs()) //During testing only!
+		return;
+	
 	msg["ppi"]					=	 PreferencesModel::prefs()->plotPPI();
 	msg["developerMode"]		=	 PreferencesModel::prefs()->developerMode();
 	msg["imageBackground"]		= fq(PreferencesModel::prefs()->plotBackground());

@@ -36,6 +36,7 @@
 #include "description/description.h"
 #include "utilities/extractarchive.h"
 #include "utilities/qmlutils.h"
+#include "utilities/qutils.h"
 #include "mainwindow.h"
 
 #ifdef __APPLE__
@@ -74,6 +75,7 @@ DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent, boo
 	_moduleFolder	= QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(_name) + "/");
 
 	loadDescriptionFromArchive(_modulePackage);
+	loadDESCRIPTION(tq(getDESCRIPTIONFromArchive(_modulePackage)));
 }
 
 QFileInfo DynamicModule::developmentModuleFolder()
@@ -102,6 +104,7 @@ DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMo
 	_developmentModuleName = _name;
 
 	loadDescriptionFromFolder(_modulePackage);
+	loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(_modulePackage)));
 }
 
 
@@ -120,6 +123,7 @@ DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent
 	_developmentModuleName = _name;
 
 	loadDescriptionFromFolder(_modulePackage);
+	loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(_modulePackage)));
 	setInstalled(true);
 }
 
@@ -218,7 +222,9 @@ void DynamicModule::initialize()
 	
 	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
 	DESCRIPTION.open(QFile::ReadOnly);
-	loadRequiredModulesFromDESCRIPTIONTxt(DESCRIPTION.readAll());
+	QString txt = DESCRIPTION.readAll();
+	loadDESCRIPTION(txt);
+	loadRequiredModulesFromDESCRIPTIONTxt(txt);
 }
 
 void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath, bool onlyIfNotLoadedYet)
@@ -258,17 +264,18 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 	stringset reqModules;
 	
 	
-	QRegularExpression isItImports("Imports:");
+	static QRegularExpression isItImports("Imports:");
 	
 
-	QRegularExpressionMatch m = isItImports.match(DESCRIPTION);
+	QRegularExpressionMatch m;
+	m = isItImports.match(DESCRIPTION);
 	
 	if(!m.hasMatch()) return;
 	
 	size_t importsEnd = m.capturedEnd();
 
 	//Aka check for stuff like "name (...),", "name (...)", "name," or "name" 
-	QRegularExpression pkgEx("[[:space:]]*([[:alnum:].]+)[[:space:]]*(\\([^)]\\))?(,)?");
+	static QRegularExpression pkgEx("[[:space:]]*([[:alnum:].]+)[[:space:]]*(\\([^)]\\))?(,)?");
 	
 	QRegularExpressionMatchIterator pkgMIt = pkgEx.globalMatch(DESCRIPTION, importsEnd);
 
@@ -289,6 +296,33 @@ void DynamicModule::loadRequiredModulesFromDESCRIPTIONTxt(const QString & DESCRI
 	setImportsR(reqModules);
 }
 
+
+void DynamicModule::loadDESCRIPTION(QString descriptionText)
+{
+	assert(_description);
+	
+	std::map<QString, QString> entries;
+
+#ifdef _WIN32
+	descriptionText.replace('\r', "");
+#endif
+	static QRegularExpression entriesRegex("(\\S+):\\s*(.+(\\n\\s.+)*)\\n"); // \\r? is because of windows *sigh*
+	
+
+	for(auto & m : entriesRegex.globalMatch(descriptionText))
+	{
+		QString entryName = m.captured(1),
+				entryText = m.captured(2);
+		
+		entries[entryName] = entryText;
+	}
+	
+	_description->setVersion(		entries["Version"]);
+	_description->setAuthor(		entries["Author"]);
+	_description->setMaintainer(	entries["Maintainer"]);
+	_description->setWebsite(		entries["Website"]);
+	_description->setLicense(		entries["License"]);
+}
 
 
 Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
@@ -621,7 +655,9 @@ void DynamicModule::reloadDescription()
 {
 	try
 	{
-		loadDescriptionFromFolder(fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/"), false);
+		std::string folder = fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/");
+		loadDescriptionFromFolder(folder, false);
+		loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(folder)));
 	}
 	catch(std::runtime_error e) { return; } //If it doesnt work then never mind.
 }
@@ -918,11 +954,12 @@ QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
 	for (const auto& pkg : pkgPatchList) {
 		std::filesystem::remove_all(patchedPath / pkg.filename());
 		copy(pkg, patchedPath / pkg.filename(), std::filesystem::copy_options::recursive);
-		try {
-			_moduleLibraryFixer(patchedPath, true, true, true);
-		} catch (std::exception& e) {
-			MessageForwarder::showWarning(e.what());
-		}
+	}
+	
+	try {
+		_moduleLibraryFixer(patchedPath, true, true, true);
+	} catch (std::exception& e) {
+		MessageForwarder::showWarning(e.what());
 	}
 
 	return tq(patchedPath.generic_string());

@@ -64,7 +64,6 @@ void Column::dbLoad(int id, bool getValues)
 	
 	
 	_emptyValues->fromJson(emptyVals);
-	_resetLabelValueMap();
 	
 	if(getValues)
 	{
@@ -72,6 +71,7 @@ void Column::dbLoad(int id, bool getValues)
 		db().columnGetValues(_id, _ints, _dbls);
 	}
 
+	_resetLabelValueMap();
 
 	db().transactionReadEnd();
 }
@@ -132,7 +132,7 @@ bool Column::setName(const std::string &name)
 	if (orgName == _name) // Special case when the getUniqueName gives back the original name (e.g 2 columns 'test' and 'test 2' and the user rename 'test 2' to 'test')
 		return false;
 
-	if(_title.empty() || _title == orgName)
+	if(!_title.empty() && (_title == orgName || _title == _name)) 
 		setTitle(_name);
 
 	db().columnSetName(_id, _name);
@@ -144,11 +144,11 @@ bool Column::setName(const std::string &name)
 void Column::setTitle(const std::string &title)
 {
 	JASPTIMER_SCOPE(Column::setTitle);
-
-	if(_title == title)
+	
+	if(Column::title() == title)
 		return;
 
-	_title = title;
+	_title = _name != title ? title : "";
 	db().columnSetTitle(_id, _title);
 	incRevision();
 }
@@ -707,10 +707,12 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 	
 	// overwriteDataAndType is called only by the Engine, when R computes some values for a column (computed columns)
 	// In this case, the locale used is just UTF-8/C, so the locale chosen by the user should not be used to convert the values.
+	beginBatchedLabelsDB();
 	setValues(values, labels, 0, &changes, false);
 	setType(colType);
 	nonFilteredCountersReset();
 	labelsHandleAutoSort();
+	endBatchedLabelsDB();
 	
 	
 	return changes;
@@ -2087,17 +2089,17 @@ Json::Value Column::jsonForCompare() const
 {
 	Json::Value json(Json::objectValue);
 
-	json["name"]			= _name;
-	json["title"]			= _title;
-	json["rCode"]			= _rCode;
-	//json["analysisId"]		= _analysisId;
-	//json["invalidated"]		= _invalidated;
-	json["constructorJson"] = _constructorJson;
-	json["autoSortByValue"] = _autoSortByValue;
-	json["description"]		= _description;
-	json["codeType"]		= computedColumnTypeToString(_codeType);
-	//json["error"]			= _error;
-	json["type"]			= columnTypeToString(_type);
+	json["name"]				= _name;
+	json["title"]				= _title;
+	json["rCode"]				= _rCode;
+	//json["analysisId"]			= _analysisId;
+	//json["invalidated"]			= _invalidated;
+	json["constructorJson"]		= _constructorJson;
+	json["autoSortByValue"]		= _autoSortByValue;
+	json["description"]			= _description;
+	json["codeType"]			= computedColumnTypeToString(_codeType);
+	//json["error"]				= _error;
+	json["type"]				= columnTypeToString(_type);
 	json["customEmptyValues"]	= _emptyValues->toJson();
 	json["labels"]				= serializeLabels(true);
 	json["data"]				= Json::arrayValue;
@@ -2115,6 +2117,10 @@ Json::Value Column::jsonForCompare() const
 
 		json["data"].append(row);
 	}
+	
+	json["nonEmptyLabels"]		= Json::arrayValue;
+	for(const std::string & nonEmptyLabel : nonEmptyLevelsStrings())
+		json["nonEmptyLabels"].append(nonEmptyLabel);
 
 	return json;
 }

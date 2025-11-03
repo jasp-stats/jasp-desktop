@@ -63,7 +63,7 @@ void _moduleLibraryFixer(const std::string & moduleLibraryPath, bool engineCall,
 	
 	std::filesystem::path path;
 	std::string framework_resources = "@executable_path/../Frameworks/R.framework/Versions/" + AppInfo::getRDirName() + "/Resources/";
-
+	
 	try
 	{
 		// Follow symlinks so that we may fix pkgs installed by renv 

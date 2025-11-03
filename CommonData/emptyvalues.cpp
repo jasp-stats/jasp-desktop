@@ -16,6 +16,7 @@ void EmptyValues::resetEmptyValues()
 {
 	_emptyStrings.clear();
 	_emptyDoubles.clear();
+	_hasEmptyValues = false;
 }
 
 EmptyValues::~EmptyValues()
@@ -50,7 +51,7 @@ const stringset& EmptyValues::emptyStrings() const
 
 const stringset &EmptyValues::emptyStringsColumnModel() const
 {
-	return !_parent ? _emptyStrings : !_hasEmptyValues ? _parent->_emptyStrings : _emptyStrings;
+	return _parent && !_hasEmptyValues ? _parent->_emptyStrings : _emptyStrings;
 }
 
 const doubleset & EmptyValues::emptyDoubles() const
@@ -78,18 +79,14 @@ bool EmptyValues::hasEmptyValues() const
 void EmptyValues::setHasCustomEmptyValues(bool hasThem)
 {
 	_hasEmptyValues = hasThem;
-	
-	if(_parent)
-		setEmptyValues(!_hasEmptyValues ? stringset() : _parent->_emptyStrings, _hasEmptyValues);
-	
 }
 
 bool EmptyValues::isEmptyValue(const std::string& val) const
 {
-	return hasEmptyValues() ? _emptyStrings.count(val) : ( _parent && _parent->isEmptyValue(val));
+	return (hasEmptyValues() && _emptyStrings.count(val)) || ( _parent && _parent->isEmptyValue(val));
 }
 
 bool EmptyValues::isEmptyValue(const double val) const
 {
-	return hasEmptyValues() ? std::isnan(val) || _emptyDoubles.count(val) : ( _parent && _parent->isEmptyValue(val));
+	return (hasEmptyValues() && (std::isnan(val) || _emptyDoubles.count(val))) || ( _parent && _parent->isEmptyValue(val));
 }

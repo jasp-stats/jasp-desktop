@@ -169,6 +169,23 @@
                 }
             ],
             "name": "ToysOwned",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "20",
+                "N/A"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -272,6 +289,13 @@
                 }
             ],
             "name": "Favorite",
+            "nonEmptyLabels": [
+                "Chew Toy",
+                "Chirpy Bird",
+                "Rope Bone",
+                "Stuffed Monkey",
+                "Tennis Ball"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -368,6 +392,12 @@
                 }
             ],
             "name": "DogBreed",
+            "nonEmptyLabels": [
+                "Chihuahua",
+                "Fuzzy Dog",
+                "Retriever",
+                "chihuahua"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -457,6 +487,11 @@
                 }
             ],
             "name": "DogSize",
+            "nonEmptyLabels": [
+                "Large",
+                "Medium",
+                "Small"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -546,6 +581,11 @@
                 }
             ],
             "name": "Toy Chosen",
+            "nonEmptyLabels": [
+                "Duck",
+                "Hedge Hog",
+                "Lamb Chop"
+            ],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -733,6 +773,25 @@
                 }
             ],
             "name": "DaysToFail",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "16",
+                "17",
+                "19",
+                "20"
+            ],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -822,6 +881,11 @@
                 }
             ],
             "name": "Sex",
+            "nonEmptyLabels": [
+                "0",
+                "1",
+                "11"
+            ],
             "rCode": "",
             "title": "",
             "type": "ordinal"

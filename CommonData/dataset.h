@@ -65,7 +65,7 @@ public:
 			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
-			void			setRowCount(	size_t rowCount);
+			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);
 
 			void			incRevision() override;
 			bool			checkForUpdates(stringvec * colsChanged = nullptr, stringvec * colsRemoved = nullptr, bool * newColumns = nullptr, bool * rowCountChanged = nullptr);

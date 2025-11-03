@@ -5812,13 +5812,12 @@ msgstr "恢复"
 
 msgctxt "RibbonModel|"
 msgid "Test"
-msgstr ""
+msgstr "测试"
 
 msgctxt "RibbonModel|"
 msgid "Run tests"
-msgstr ""
+msgstr "运行测试"
 
-#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Stored without state"
 msgstr "不保存分析状态"
@@ -5830,8 +5829,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析存储时没有分析状态，如需编辑图表，必须先刷新。\n"
+"\n"
+"是否刷新分析？"
 
-#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Version incompatibility"
 msgstr "版本不兼容"

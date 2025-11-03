@@ -85,15 +85,9 @@ void ListModel::_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm
 {
 	beginResetModel();
 	if (initRowControls)
-	{
-		for(auto & k : _rowControlsMap.keys())
-		{
-			_rowControlsMap[k]->disconnectAndDeleteControls();
-			_rowControlsMap[k]->deleteLater();
-		}
-		_rowControlsMap.clear();
+		// If some row controls are not used anymore, they will be removed during setUpRowControls
 		_rowControlsValues = allValuesMap;
-	}
+
 	_setTerms(terms);
 	endResetModel();
 
@@ -206,23 +200,21 @@ void ListModel::setUpRowControls()
 	{
 		if (!_rowControlsMap.contains(term.value()))
 		{
-			
-			bool hasOptions = _rowControlsValues.contains(term.value());
-			RowControls* rowControls = new RowControls(this, _rowComponent, _rowControlsValues[term.value()]);
+			RowControls* rowControls = new RowControls(this, _rowComponent);
 			_rowControlsMap[term.value()] = rowControls;
-			rowControls->init(row, term, !hasOptions);
+			rowControls->initValues(row, term, _rowControlsValues[term.value()]);
 		}
 		else
-			_rowControlsMap[term.value()]->setContext(row, term);
+			_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+
 		row++;
 	}
 	
+	// Disconnect and delete all controls that are not used anymore
 	QStringList removedKeys;
 	for (const QString& key : _rowControlsMap.keys())
 		if (!terms().containsValue(key))
 		{
-			// If some row controls are not used anymore, if they use some sources, they must be disconnected from these sources
-			// If a source changes and emits a signal, these controls should not be activated (cf. https://github.com/jasp-stats/jasp-test-release/issues/1786)
 			_rowControlsMap[key]->disconnectAndDeleteControls();
 			removedKeys.append(key);
 		}

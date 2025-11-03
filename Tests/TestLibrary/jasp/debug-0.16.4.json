@@ -10620,6 +10620,13 @@
                     "label": "",
                     "order": 98,
                     "originalValue": "58.3438749"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 99,
+                    "originalValue": ""
                 }
             ],
             "name": "debMiss1",
@@ -11329,6 +11336,13 @@
                     "label": "",
                     "order": 69,
                     "originalValue": "64.50668921"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 70,
+                    "originalValue": ""
                 }
             ],
             "name": "debMiss30",
@@ -11659,6 +11673,13 @@
                     "label": "",
                     "order": 19,
                     "originalValue": "59.98295451"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 20,
+                    "originalValue": ""
                 }
             ],
             "name": "debMiss80",
@@ -11806,6 +11827,13 @@
                     "label": "",
                     "order": 0,
                     "originalValue": "24.1187081"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 1,
+                    "originalValue": ""
                 }
             ],
             "name": "debMiss99",
@@ -12063,7 +12091,15 @@
                 ""
             ],
             "description": "",
-            "labels": [],
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 0,
+                    "originalValue": ""
+                }
+            ],
             "name": "debNaN",
             "nonEmptyLabels": [],
             "rCode": "",
@@ -12811,6 +12847,13 @@
                     "label": "",
                     "order": 89,
                     "originalValue": "64.30898882"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "nan",
+                    "order": 90,
+                    "originalValue": ""
                 }
             ],
             "name": "debNaN10",
@@ -18691,6 +18734,7 @@
         "custom": true,
         "strings": [
             ".",
+            "Missing",
             "NA",
             "NaN",
             "nan"

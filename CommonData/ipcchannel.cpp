@@ -42,7 +42,7 @@ void get_shared_dir(std::string &shared_dir)
 
 using namespace std;
 using namespace boost;
-using namespace boost::posix_time;
+//using namespace boost::posix_time;
 
 std::thread IPCChannel::_heartbeatThread;
 

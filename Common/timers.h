@@ -8,13 +8,39 @@
 /// To do so PROFILE_JASP can be defined in the build-environment and then rebuilt.
 /// If it isn't used it just compiles into some comments and thus thrown out entirely by the preprocessor.
 
-#include <boost/timer/timer.hpp>
+#include <chrono>
 #include <string>
 #include <map>
 
+struct customtimer
+{
+	
+	
+	void	start()
+	{
+			lastStart = std::chrono::steady_clock::now();
+	}
+	
+	void resume() { start(); }
+	
+	void	stop()
+	{
+		const std::chrono::duration<double> diff = std::chrono::steady_clock::now() - lastStart;
+		totalDuration += diff.count();
+	}
+	
+	std::string format()
+	{
+		return std::to_string(totalDuration) + "s";
+	}
+	
+	std::chrono::time_point<std::chrono::steady_clock> lastStart;
+	double totalDuration = 0;
+};
 
-boost::timer::cpu_timer * _getTimer(std::string timerName);
-boost::timer::cpu_timer * _getTimerC(std::string timerName);
+
+customtimer * _getTimer(std::string timerName);
+customtimer * _getTimerC(std::string timerName);
 void _printAllTimers();
 
 #define JASPTIMER_START(  TIMERNAME ) _getTimer( #TIMERNAME )->start()

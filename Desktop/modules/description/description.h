@@ -24,15 +24,15 @@ class AnalysisEntry;
 class Description : public QQuickItem
 {
 	Q_OBJECT
-	Q_PROPERTY(QString					name			READ name				WRITE setName				NOTIFY nameChanged				)
+	Q_PROPERTY(QString					name			READ name				WRITE setDummy				NOTIFY nameChanged				)
 	Q_PROPERTY(QString					title			READ title				WRITE setTitle				NOTIFY titleChanged				)
 	Q_PROPERTY(QString					icon			READ icon				WRITE setIcon				NOTIFY iconChanged				)
 	Q_PROPERTY(QString					description		READ description		WRITE setDescription		NOTIFY descriptionChanged		)
-	Q_PROPERTY(QString					version			READ version			WRITE setVersion			NOTIFY versionChanged			)
-	Q_PROPERTY(QString					author			READ author				WRITE setAuthor				NOTIFY authorChanged			)
-	Q_PROPERTY(QString					maintainer		READ maintainer			WRITE setMaintainer			NOTIFY maintainerChanged		)
-	Q_PROPERTY(QUrl						website			READ website			WRITE setWebsite			NOTIFY websiteChanged			)
-	Q_PROPERTY(QString					license			READ license			WRITE setLicense			NOTIFY licenseChanged			)
+	Q_PROPERTY(QString					version			READ version			WRITE setDummy				NOTIFY versionChanged			)
+	Q_PROPERTY(QString					author			READ author				WRITE setDummy				NOTIFY authorChanged			)
+	Q_PROPERTY(QString					maintainer		READ maintainer			WRITE setDummy				NOTIFY maintainerChanged		)
+	Q_PROPERTY(QUrl						website			READ website			WRITE setDummyUrl			NOTIFY websiteChanged			)
+	Q_PROPERTY(QString					license			READ license			WRITE setDummy				NOTIFY licenseChanged			)
 	///requiresData should really be called defaultRequiresData or something. Because that is what it does. But it would be a lot of work to change all the qmls...
 	Q_PROPERTY(bool						requiresData	READ requiresDataDef	WRITE setRequiresDataDef	NOTIFY requiresDataDefChanged	)
 	Q_PROPERTY(bool						preloadData		READ preloadData		WRITE setPreloadData		NOTIFY preloadDataChanged		)
@@ -43,6 +43,9 @@ public:
 	Description(QQuickItem *parent = nullptr);
 	~Description();
 
+	void			setDummy(QString ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
+	void			setDummyUrl(QUrl ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
+	
 	QString			name()				const { return _name;						}
 	QString			title()				const { return _title;						}
 	QString			icon()				const { return _icon;						}
@@ -113,7 +116,7 @@ private:
 	Version					_version;
 	bool					_requiresDataDef	= true,
 							_hasWrappers		= false,
-							_preloadData		= false;
+							_preloadData		= true;
 	DynamicModule		*	_dynMod				= nullptr;
 	QList<EntryBase*>		_entries;
 	QTimer					_timer;

@@ -1574,8 +1574,7 @@ void DatabaseInterface::labelsWrite(Column *column)
 			const Label			*	label			= *labelIter;
 			const std::string		labelDisplay	= label->label(),
 									origValJson		= label->originalValue().toStyledString();
-			
-			
+					
 			sqlite3_bind_int( stmt,	1, column->id());
 			sqlite3_bind_int( stmt,	2, label->intsId());
 			sqlite3_bind_text(stmt, 3, labelDisplay.c_str(),			labelDisplay.length(),				SQLITE_TRANSIENT);

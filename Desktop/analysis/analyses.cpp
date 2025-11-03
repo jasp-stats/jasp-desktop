@@ -431,7 +431,7 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 				}
 			}
 
-			JASPTIMER_START(Analyses::loadAnalysesFromDatasetPackage f-o-r analysisData in analysesDataList);
+			JASPTIMER_START(Analyses::loadAnalysesFromDatasetPackage for analysisData : analysesDataList);
 
 			Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
 			

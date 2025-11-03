@@ -68,23 +68,8 @@ if((NOT LibArchive_FOUND) AND (NOT WIN32))
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(
-  Boost 1.78 REQUIRED
-  COMPONENTS filesystem
-             system
-             date_time
-             timer
-             chrono)
+find_package(Boost 1.78 REQUIRED COMPONENTS system)
 
-if(WINDOWS)
-  find_package(
-    Boost 1.78 REQUIRED
-    COMPONENTS filesystem
-               system
-               date_time
-               timer
-               chrono)
-endif()
 
 if(NOT FLATPAK_USED)
   find_package(

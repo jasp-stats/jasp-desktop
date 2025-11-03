@@ -910,6 +910,8 @@ void Engine::stopEngine()
 
 	_engineState = engineState::stopped;
 
+	JASPTIMER_PRINTALL();
+
 	freeRBridgeColumns();
 	sendEngineStopped();
 }

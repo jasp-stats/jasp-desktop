@@ -87,3 +87,6 @@ QMLComponents/utilities/appdirs.h
 # Bundle related
 Tools/ModuleBundleBuildDir
 Modules/local
+
+# User configurations
+.qmlls.ini

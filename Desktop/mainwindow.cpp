@@ -159,7 +159,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 	_languageModel->setApplicationEngine(_qml);
 
-	_engineSync->start(_preferences->plotPPI());
+	_engineSync->start();
 	
 	checkForUpdates();
 
@@ -1468,7 +1468,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_analyses->setVisible(false);
 			_analyses->clear();
 			_package->dbDelete();
-			_package->reset(false);
+			_package->reset(true);
 			_ribbonModel->showStatistics();
 			_fileMenu->buttonsForEmptyWorkspace();
 			_filterModel->reset();

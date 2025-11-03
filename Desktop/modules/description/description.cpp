@@ -33,7 +33,7 @@ void Description::setUpDelayedUpdate()
 	_timer.setInterval(300); //Some interval? Could be shorter too. Lets see how it works out
 	_timer.callOnTimeout([=]()
 	{
-		Log::log() << "Description delay timer done, update!" << std::endl;
+		//Log::log() << "Description delay timer done, update!" << std::endl;
 		try { desc->iShouldBeUpdated(desc); }
 		catch (std::exception e) { Log::log() << "iShouldBeUpdated had exception " << e.what() << std::endl; }
 	});

@@ -13,6 +13,7 @@ endif()
 
 if(WIN32)
   add_compile_options(/utf-8)  #Make sure to compile in utf-8 on the locale code page.
+  add_compile_options(/std:c++20)
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -58,7 +59,7 @@ endif()
 
 project(
   JASP
-  VERSION 0.95.3.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
+  VERSION 0.95.4.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")

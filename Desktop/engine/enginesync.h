@@ -38,7 +38,7 @@ public:
 	EngineSync(QObject *parent);
 	~EngineSync();
 
-	void start(int ppi);
+	void start();
 	void killProcessTimer();
 	bool allEnginesInitializing(std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
 

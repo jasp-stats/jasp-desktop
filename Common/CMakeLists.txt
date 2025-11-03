@@ -32,9 +32,6 @@ target_link_libraries(
 	Common
 	PUBLIC
 	Boost::system
-	Boost::date_time
-	Boost::timer
-	Boost::chrono
 	$<$<BOOL:${WINDOWS}>:ntdll>
   )
 

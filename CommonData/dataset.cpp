@@ -483,11 +483,11 @@ void DataSet::setColumnCount(size_t colCount)
 		db().dataSetCreateTable(this);
 }
 
-void DataSet::setRowCount(size_t rowCount)
+void DataSet::setRowCount(size_t rowCount, bool alsoLoadData)
 {
 	_rowCount = rowCount; //Make sure we do set the rowCount variable here so the batch can easily see how big it ought to be in DatabaseInterface::dataSetBatchedValuesUpdate
 
-	if(!writeBatchedToDB())
+	if(!writeBatchedToDB() && alsoLoadData)
 	{
 		db().dataSetSetRowCount(_dataSetID, rowCount);
 		dbLoad(); //Make sure columns have the right data in them

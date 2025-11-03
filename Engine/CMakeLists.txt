@@ -35,9 +35,6 @@ target_link_libraries(
 	CommonData
 	Common
 	Boost::system
-	Boost::date_time
-	Boost::timer
-	Boost::chrono
 )
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)

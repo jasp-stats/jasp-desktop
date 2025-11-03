@@ -1,1 +1,1322 @@
-{ 	"columns" :  	[ 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"", 				"", 				"", 				"", 				"", 				"", 				"", 				"", 				"", 				"", 				"" 			], 			"description" : "", 			"labels" : [], 			"name" : "Without Value", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"1", 				"1", 				"1", 				"1", 				"1", 				"1", 				"1", 				"1", 				"1", 				"1", 				"1" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				} 			], 			"name" : "Scale 1 Int", 			"rCode" : "", 			"title" : "", 			"type" : "ordinal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5", 				"0.5" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "0.5" 				} 			], 			"name" : "Scale 1 Dbl", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld", 				"Hallo Wereld" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Hallo Wereld", 					"order" : 0, 					"originalValue" : "Hallo Wereld" 				} 			], 			"name" : "Nominal Text 1 Str", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"0.666", 				"0.111", 				"0.666", 				"0.111", 				"0.666", 				"0.111", 				"0.666", 				"0.111", 				"0.666", 				"0.111", 				"0.666" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "0.111" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "0.666" 				} 			], 			"name" : "Scale 2 Dbls", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"1", 				"2", 				"1", 				"2", 				"1", 				"2", 				"1", 				"2", 				"1", 				"2", 				"1" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "2" 				} 			], 			"name" : "Nominal 2 Ints", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Hallo", 					"order" : 0, 					"originalValue" : "Hallo" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Wereld", 					"order" : 1, 					"originalValue" : "Wereld" 				} 			], 			"name" : "Nominal Text 2 Str", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"0.1", 				"0.2", 				"0.3", 				"0.4", 				"0.5", 				"0.6", 				"0.7", 				"0.8", 				"0.9", 				"1", 				"1.1" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "0.1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "0.2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "0.3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "0.4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "0.5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "0.6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "0.7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "0.8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 8, 					"originalValue" : "0.9" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 9, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 10, 					"originalValue" : "1.1" 				} 			], 			"name" : "Scale >= 10 Dbls (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"0.1", 				"0.2", 				"0.3", 				"0.4", 				"0.5", 				"0.6", 				"0.7", 				"0.8", 				"0.9", 				"0.1", 				"0.2" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "0.1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "0.2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "0.3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "0.4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "0.5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "0.6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "0.7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "0.8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 8, 					"originalValue" : "0.9" 				} 			], 			"name" : "Scale < 10 Dbls (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"1", 				"2", 				"3", 				"4", 				"5", 				"6", 				"7", 				"8", 				"9", 				"10", 				"11" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 8, 					"originalValue" : "9" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 9, 					"originalValue" : "10" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 10, 					"originalValue" : "11" 				} 			], 			"name" : "Scale >= 10 Ints (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "scale" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"1", 				"2", 				"3", 				"4", 				"5", 				"6", 				"7", 				"8", 				"9", 				"1", 				"2" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 8, 					"originalValue" : "9" 				} 			], 			"name" : "Ordinal < 10 Ints (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "ordinal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"A", 				"B", 				"C", 				"D", 				"E", 				"F", 				"G", 				"H", 				"I", 				"J", 				"K" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "A", 					"order" : 0, 					"originalValue" : "A" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "B", 					"order" : 1, 					"originalValue" : "B" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "C", 					"order" : 2, 					"originalValue" : "C" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "D", 					"order" : 3, 					"originalValue" : "D" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "E", 					"order" : 4, 					"originalValue" : "E" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "F", 					"order" : 5, 					"originalValue" : "F" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "G", 					"order" : 6, 					"originalValue" : "G" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "H", 					"order" : 7, 					"originalValue" : "H" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "I", 					"order" : 8, 					"originalValue" : "I" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "J", 					"order" : 9, 					"originalValue" : "J" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "K", 					"order" : 10, 					"originalValue" : "K" 				} 			], 			"name" : "Nominal Text >= 10 Strs (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"A", 				"B", 				"C", 				"D", 				"E", 				"F", 				"G", 				"H", 				"I", 				"A", 				"B" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "A", 					"order" : 0, 					"originalValue" : "A" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "B", 					"order" : 1, 					"originalValue" : "B" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "C", 					"order" : 2, 					"originalValue" : "C" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "D", 					"order" : 3, 					"originalValue" : "D" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "E", 					"order" : 4, 					"originalValue" : "E" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "F", 					"order" : 5, 					"originalValue" : "F" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "G", 					"order" : 6, 					"originalValue" : "G" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "H", 					"order" : 7, 					"originalValue" : "H" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "I", 					"order" : 8, 					"originalValue" : "I" 				} 			], 			"name" : "Nominal Text < 10 Strs (Treshold)", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Missing", 				{ 					"l" : "", 					"v" : "." 				}, 				"", 				"0.1", 				"0.2", 				"0.3", 				"0.4", 				"0.5", 				"0.6", 				"0.7", 				"0.8" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "0.1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "0.2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "0.3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "0.4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "0.5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "0.6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "0.7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "0.8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : ".", 					"order" : 8, 					"originalValue" : "." 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Missing", 					"order" : 9, 					"originalValue" : "Missing" 				} 			], 			"name" : "Scale with Manual Missing Value", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Missing", 				{ 					"l" : "", 					"v" : "." 				}, 				"", 				"1", 				"2", 				"3", 				"4", 				"5", 				"6", 				"7", 				"8" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 2, 					"originalValue" : "3" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 3, 					"originalValue" : "4" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 4, 					"originalValue" : "5" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 5, 					"originalValue" : "6" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 6, 					"originalValue" : "7" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 7, 					"originalValue" : "8" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : ".", 					"order" : 8, 					"originalValue" : "." 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Missing", 					"order" : 9, 					"originalValue" : "Missing" 				} 			], 			"name" : "Ordinal with Manual Missing Value", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Missing", 				{ 					"l" : "", 					"v" : "." 				}, 				"", 				"1", 				"2", 				"1", 				"2", 				"1", 				"2", 				"1", 				"2" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 0, 					"originalValue" : "1" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "", 					"order" : 1, 					"originalValue" : "2" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : ".", 					"order" : 2, 					"originalValue" : "." 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Missing", 					"order" : 3, 					"originalValue" : "Missing" 				} 			], 			"name" : "Nominal with Manual Missing Value", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		}, 		{ 			"autoSortByValue" : true, 			"codeType" : "notComputed", 			"constructorJson" : {}, 			"customEmptyValues" :  			{ 				"custom" : false, 				"strings" : [] 			}, 			"data" :  			[ 				"Missing", 				{ 					"l" : "", 					"v" : "." 				}, 				"", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld", 				"Hallo", 				"Wereld" 			], 			"description" : "", 			"labels" :  			[ 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : ".", 					"order" : 0, 					"originalValue" : "." 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Hallo", 					"order" : 1, 					"originalValue" : "Hallo" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Missing", 					"order" : 2, 					"originalValue" : "Missing" 				}, 				{ 					"description" : "", 					"filterAllows" : true, 					"label" : "Wereld", 					"order" : 3, 					"originalValue" : "Wereld" 				} 			], 			"name" : "Nominal Text with Manual Missing Value", 			"rCode" : "", 			"title" : "", 			"type" : "nominal" 		} 	], 	"customEmptyValues" :  	{ 		"custom" : true, 		"strings" :  		[ 			".", 			"NA", 			"NaN", 			"nan" 		] 	} } 
+{
+    "columns": [
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "description": "",
+            "labels": [],
+            "name": "Without Value",
+            "nonEmptyLabels": [],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1",
+                "1"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                }
+            ],
+            "name": "Scale 1 Int",
+            "nonEmptyLabels": [
+                "1"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "ordinal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5",
+                "0.5"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "0.5"
+                }
+            ],
+            "name": "Scale 1 Dbl",
+            "nonEmptyLabels": [
+                "0.5"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld",
+                "Hallo Wereld"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Hallo Wereld",
+                    "order": 0,
+                    "originalValue": "Hallo Wereld"
+                }
+            ],
+            "name": "Nominal Text 1 Str",
+            "nonEmptyLabels": [
+                "Hallo Wereld"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "0.666",
+                "0.111",
+                "0.666",
+                "0.111",
+                "0.666",
+                "0.111",
+                "0.666",
+                "0.111",
+                "0.666",
+                "0.111",
+                "0.666"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "0.111"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "0.666"
+                }
+            ],
+            "name": "Scale 2 Dbls",
+            "nonEmptyLabels": [
+                "0.111",
+                "0.666"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "1",
+                "2",
+                "1",
+                "2",
+                "1",
+                "2",
+                "1",
+                "2",
+                "1",
+                "2",
+                "1"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "2"
+                }
+            ],
+            "name": "Nominal 2 Ints",
+            "nonEmptyLabels": [
+                "1",
+                "2"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Hallo",
+                    "order": 0,
+                    "originalValue": "Hallo"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Wereld",
+                    "order": 1,
+                    "originalValue": "Wereld"
+                }
+            ],
+            "name": "Nominal Text 2 Str",
+            "nonEmptyLabels": [
+                "Hallo",
+                "Wereld"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9",
+                "1",
+                "1.1"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "0.1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "0.2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "0.3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "0.4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "0.5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "0.6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "0.7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "0.8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 8,
+                    "originalValue": "0.9"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 9,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 10,
+                    "originalValue": "1.1"
+                }
+            ],
+            "name": "Scale >= 10 Dbls (Treshold)",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9",
+                "1",
+                "1.1"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9",
+                "0.1",
+                "0.2"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "0.1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "0.2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "0.3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "0.4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "0.5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "0.6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "0.7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "0.8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 8,
+                    "originalValue": "0.9"
+                }
+            ],
+            "name": "Scale < 10 Dbls (Treshold)",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "0.9"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 8,
+                    "originalValue": "9"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 9,
+                    "originalValue": "10"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 10,
+                    "originalValue": "11"
+                }
+            ],
+            "name": "Scale >= 10 Ints (Treshold)",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "scale"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "1",
+                "2"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 8,
+                    "originalValue": "9"
+                }
+            ],
+            "name": "Ordinal < 10 Ints (Treshold)",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "ordinal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "A",
+                    "order": 0,
+                    "originalValue": "A"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "B",
+                    "order": 1,
+                    "originalValue": "B"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "C",
+                    "order": 2,
+                    "originalValue": "C"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "D",
+                    "order": 3,
+                    "originalValue": "D"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "E",
+                    "order": 4,
+                    "originalValue": "E"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "F",
+                    "order": 5,
+                    "originalValue": "F"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "G",
+                    "order": 6,
+                    "originalValue": "G"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "H",
+                    "order": 7,
+                    "originalValue": "H"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "I",
+                    "order": 8,
+                    "originalValue": "I"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "J",
+                    "order": 9,
+                    "originalValue": "J"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "K",
+                    "order": 10,
+                    "originalValue": "K"
+                }
+            ],
+            "name": "Nominal Text >= 10 Strs (Treshold)",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "A",
+                "B"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "A",
+                    "order": 0,
+                    "originalValue": "A"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "B",
+                    "order": 1,
+                    "originalValue": "B"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "C",
+                    "order": 2,
+                    "originalValue": "C"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "D",
+                    "order": 3,
+                    "originalValue": "D"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "E",
+                    "order": 4,
+                    "originalValue": "E"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "F",
+                    "order": 5,
+                    "originalValue": "F"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "G",
+                    "order": 6,
+                    "originalValue": "G"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "H",
+                    "order": 7,
+                    "originalValue": "H"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "I",
+                    "order": 8,
+                    "originalValue": "I"
+                }
+            ],
+            "name": "Nominal Text < 10 Strs (Treshold)",
+            "nonEmptyLabels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Missing",
+                {
+                    "l": "",
+                    "v": "."
+                },
+                "",
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "0.1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "0.2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "0.3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "0.4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "0.5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "0.6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "0.7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "0.8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": ".",
+                    "order": 8,
+                    "originalValue": "."
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Missing",
+                    "order": 9,
+                    "originalValue": "Missing"
+                }
+            ],
+            "name": "Scale with Manual Missing Value",
+            "nonEmptyLabels": [
+                "0.1",
+                "0.2",
+                "0.3",
+                "0.4",
+                "0.5",
+                "0.6",
+                "0.7",
+                "0.8",
+                "Missing"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Missing",
+                {
+                    "l": "",
+                    "v": "."
+                },
+                "",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 2,
+                    "originalValue": "3"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 3,
+                    "originalValue": "4"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 4,
+                    "originalValue": "5"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 5,
+                    "originalValue": "6"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 6,
+                    "originalValue": "7"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 7,
+                    "originalValue": "8"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": ".",
+                    "order": 8,
+                    "originalValue": "."
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Missing",
+                    "order": 9,
+                    "originalValue": "Missing"
+                }
+            ],
+            "name": "Ordinal with Manual Missing Value",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "Missing"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Missing",
+                {
+                    "l": "",
+                    "v": "."
+                },
+                "",
+                "1",
+                "2",
+                "1",
+                "2",
+                "1",
+                "2",
+                "1",
+                "2"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 0,
+                    "originalValue": "1"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "",
+                    "order": 1,
+                    "originalValue": "2"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": ".",
+                    "order": 2,
+                    "originalValue": "."
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Missing",
+                    "order": 3,
+                    "originalValue": "Missing"
+                }
+            ],
+            "name": "Nominal with Manual Missing Value",
+            "nonEmptyLabels": [
+                "1",
+                "2",
+                "Missing"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        },
+        {
+            "autoSortByValue": true,
+            "codeType": "notComputed",
+            "constructorJson": {},
+            "customEmptyValues": {
+                "custom": false,
+                "strings": []
+            },
+            "data": [
+                "Missing",
+                {
+                    "l": "",
+                    "v": "."
+                },
+                "",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld",
+                "Hallo",
+                "Wereld"
+            ],
+            "description": "",
+            "labels": [
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": ".",
+                    "order": 0,
+                    "originalValue": "."
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Hallo",
+                    "order": 1,
+                    "originalValue": "Hallo"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Missing",
+                    "order": 2,
+                    "originalValue": "Missing"
+                },
+                {
+                    "description": "",
+                    "filterAllows": true,
+                    "label": "Wereld",
+                    "order": 3,
+                    "originalValue": "Wereld"
+                }
+            ],
+            "name": "Nominal Text with Manual Missing Value",
+            "nonEmptyLabels": [
+                "Hallo",
+                "Missing",
+                "Wereld"
+            ],
+            "rCode": "",
+            "title": "",
+            "type": "nominal"
+        }
+    ],
+    "customEmptyValues": {
+        "custom": true,
+        "strings": [
+            ".",
+            "NA",
+            "NaN",
+            "nan"
+        ]
+    }
+}

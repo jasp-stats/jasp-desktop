@@ -548,18 +548,15 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		var chunks = []
 
 		if (optError) {
-
 			chunks.push('<table class="error-state jasp-no-select">')
 		}
 		else {
-
 			chunks.push('<table class="jasp-no-select">')
 		}
 
-
 		chunks.push('<thead>')
 		chunks.push('<tr>')
-		chunks.push('<th colspan="' + 2 * columnCount + '"><div class="toolbar"></div></div>')
+		chunks.push('<th colspan="' + columnCount + '"><div class="toolbar"></div>')
 
 		if (optError && optError.errorMessage) {
 
@@ -576,7 +573,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		if (optSubtitle) {
 			chunks.push('<tr>')
-			chunks.push('<th colspan="' + 2 * columnCount + '"></th>')
+			chunks.push('<th colspan="' + columnCount + '"></th>')
 			chunks.push('</tr>')
 		}
 
@@ -606,11 +603,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 			if (hasOvertitles) {
 
-				if (hasAdjacentOvertitles) {
+				if (hasAdjacentOvertitles)
 					chunks.push('<tr class="over-title-space">')
-				} else {
+				else
 					chunks.push('<tr class="over-title">')
-				}
 
 
 				var span = 1;
@@ -627,26 +623,24 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 						newTitle = ""
 
 					if (newTitle == oldTitle) {
-
 						span++
 					}
 					else {
-						if (hasAdjacentOvertitles) {
-							chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + oldTitle + '</div></th>');
-						} else {
-							chunks.push('<th colspan="' + (2 * span) + '">' + oldTitle + '</th>');
-						}
+						if (hasAdjacentOvertitles)
+							chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + oldTitle + '</div></th>');
+						else
+							chunks.push('<th colspan="' + span + '">' + oldTitle + '</th>');
+
 						oldTitle = newTitle
 						span = 1
 					}
 				}
 
 				if (newTitle == oldTitle) {
-					if (hasAdjacentOvertitles) {
-						chunks.push('<th colspan="' + (2 * span) + '"><div class="over-title-space">' + newTitle + '</div></th>')
-					} else {
-						chunks.push('<th colspan="' + (2 * span) + '">' + newTitle + '</th>')
-					}
+					if (hasAdjacentOvertitles)
+						chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + newTitle + '</div></th>')
+					else
+						chunks.push('<th colspan="' + span + '">' + newTitle + '</th>')
 				}
 
 
@@ -669,9 +663,6 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 				span = 1
 
 			if (span) {
-
-				span *= 2  // times 2, because of footnote markers
-
 				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cell.content)
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
@@ -709,18 +700,14 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 					cellClass += (cell.span > 1 ? " row-span" : "")
 
 					cellHtml += (cell.header ? '<th' : '<td')
-					cellHtml += ' class="value ' + cellClass + '"'
+					cellHtml += ' class="' + cellClass + '"' 
 					cellHtml += (cell.span ? ' rowspan="' + cell.span + '"' : '')
 					cellHtml += '>'
 					cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
-					cellHtml += (cell.header ? '</th>' : '</td>')
 
-					cellHtml += (cell.header ? '<th' : '<td')
-					cellHtml += ' class="symbol ' + cellClass + '"'
-					cellHtml += (cell.span ? ' rowspan="' + cell.span + '"' : '')
-					cellHtml += '>'
 					if (typeof cell.footnotes != "undefined")
 						cellHtml += cell.footnotes.join(' ')
+
 					cellHtml += (cell.header ? '</th>' : '</td>')
 
 					tableProgress[colNo].from += 1
@@ -746,7 +733,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			chunks.push('</tr>')
 		}
 
-		chunks.push('<tr><td colspan="' + 2 * columnCount + '"></td></tr>')
+		chunks.push('<tr><td colspan="' + columnCount + '"></td></tr>')
 
 		chunks.push('</tbody>')
 
@@ -758,7 +745,7 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 				if(optFootnotes[i].text !== "")
 				{
 
-					chunks.push('<tr><td colspan="' + 2 * columnCount + '">')
+					chunks.push('<tr><td colspan="' + columnCount + '">')
 
 					var footnote = optFootnotes[i]
 

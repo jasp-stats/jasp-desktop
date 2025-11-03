@@ -15,6 +15,7 @@ private slots:
 	void	cleanup();
 	void    initTestCase();
 	void    testColumnStuff();
+	void	testEmptyValues();
 	void    testReverseLabels();
     void    testReverseNumericals();
 	

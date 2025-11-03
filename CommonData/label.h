@@ -75,7 +75,7 @@ public:
 	const	DatabaseInterface	& db() const;
 
 private:
-			void				_setOriginalValue(	const Json::Value & originalValue);
+	void				_setOriginalValue(	const Json::Value & originalValue);
 
 	Column		*	_column;
 

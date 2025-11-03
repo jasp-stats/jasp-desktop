@@ -146,9 +146,11 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 	if (rowCount < 0 || columnCount < 0)
 		throw std::runtime_error("Data size has been corrupted.");
 
+	packageData->dataSet()->setColumnCount(columnCount);
+	packageData->dataSet()->setRowCount(rowCount, false);
+	
 
-	packageData->setDataSetSize(columnCount, rowCount);
-
+	packageData->dataSet()->beginBatchedToDB();
 	unsigned long long	progress,
 						lastProgress = -1;
 
@@ -189,6 +191,8 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 								labels		. clear();
 								values		. reserve(rowCount);
 								labels		. reserve(rowCount);
+								
+		column->beginBatchedLabelsDB();
 
 		for (size_t r = 0; r < rowCount; r++)
 		{
@@ -209,13 +213,14 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 
 				Label * label = nullptr;
 				
+				
 				if (value != EmptyValues::missingValueInteger)
-					label = column->labelByIntsId(value-1); //-1 to avoid 1-based nonsense!
+					label = column->labelByIntsId(value); 
 				
 				else if(columnNameToMissingData.count(column->name()) && columnNameToMissingData[column->name()].count(r))
 				{
-					const std::string & missingValue = columnNameToMissingData[column->name()][r];
-                                        label = column->labelByDisplay(missingValue);
+					const std::string & missingValue	= columnNameToMissingData[column->name()][r];
+                                        label			= column->labelByDisplay(missingValue);
 					
 					if(!label)
 						label = column->labelByIntsId(column->labelsAdd(missingValue));
@@ -250,8 +255,14 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 		}
 		
 		column->setValues(values, labels, 0);
-
+		column->labelsHandleAutoSort();
+		column->nonFilteredCountersReset();
+		
+		column->endBatchedLabelsDB();
+		
 	}
+	
+	packageData->dataSet()->endBatchedToDB();
 
 	dataEntry.close();
 
@@ -283,6 +294,11 @@ void JASPImporterOld::loadDataArchive_1_00(const std::string &path, std::functio
 			||	metaData.get("filterConstructorJSON",	DEFAULT_FILTER_JSON).asString()				!= DEFAULT_FILTER_JSON	);
 
 	packageData->setFilterShouldRunInit(filterShouldBeRun);
+	
+	packageData->dataSet()->dbUpdate();
+	
+	for(Column * col : packageData->dataSet()->columns())
+		col->dbUpdateValues();
 }
 
 void JASPImporterOld::loadJASPArchive(const std::string &path, std::function<void(int)> progressCallback)
@@ -503,9 +519,11 @@ void JASPImporterOld::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::V
 		int labelValue		= keyValueFilterTrip.get(zero,		Json::nullValue).asInt();		//Is what is in "ints"
 		std::string label	= keyValueFilterTrip.get(1,			Json::nullValue).asString();	//Is label, if it is different from the "orgStringValue" then look there for the value
 		bool filterAllow	= keyValueFilterTrip.get(2,			true).asBool();
-	
+		
+		Json::Value	orgVal	= columnType == columnType::nominalText ? Json::Value(label) : Json::Value(labelValue);
+
 		//Do -1 on labelValue to make sure everything is zero-based from here on out
-		labels[labelValue] = column->labelByIntsId(column->labelsAdd(labelValue-1, label, filterAllow, "", columnType == columnType::nominalText ? Json::Value(label) : Json::Value(labelValue)));
+		labels[labelValue] = column->labelByIntsId(column->labelsAdd(labelValue, label, filterAllow, "", orgVal));
 	}
 
 	for (Json::Value & keyValuePair : orgStringValuesDesc)
@@ -516,6 +534,7 @@ void JASPImporterOld::columnLabelsFromJsonForJASPFile(Json::Value xData, Json::V
 		
 		labels[labelValue]->setOriginalValue(val); 
 	}
+
 }
 
 
