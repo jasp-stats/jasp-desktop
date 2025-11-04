@@ -76,8 +76,7 @@ jobs:
             wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
             tar -xzf readstat-*.tar.gz && cd readstat-*/
             ./configure
-            # in 1.1.8 use-after-free was fixed
-            make
+            make CFLAGS='-Wno-error=use-after-free' CXXFLAGS='-Wno-error=use-after-free'
             sudo make install
         
       - name: Configure JASP desktop
