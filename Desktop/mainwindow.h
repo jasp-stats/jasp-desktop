@@ -147,7 +147,6 @@ public slots:
 	void setScreenPPI(int screenPPI);
 	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
-	void setDefaultWorkspaceEmptyValues();
 
 	void showRCommander();
 

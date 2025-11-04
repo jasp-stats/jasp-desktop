@@ -225,6 +225,8 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	_wasUpgraded		= false;
 	_storedWithoutState = false;
+
+	setRSyntaxTextInResult(DataSetPackage::pkg()->workspaceShowRSyntax()); // At this point, we are sure that the analysis exists in the results
 }
 
 void Analysis::exportResults()
@@ -358,9 +360,7 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::rSyntaxTextChanged			);
-		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
 
-		setRSyntaxTextInResult();
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
 		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
 
@@ -1075,12 +1075,11 @@ void Analysis::analysisQMLFileChanged()
 		Log::log() << "Form (" << form() << ") wasn't complete " << ( form() ? std::to_string(form()->formCompleted()) : " because there was no form...") << " yet, and also did not have a QML error set yet, so ignoring it." << std::endl;
 }
 
-void Analysis::setRSyntaxTextInResult()
+void Analysis::setRSyntaxTextInResult(bool show)
 {
 	if (!form() || !_moduleData->hasWrapper() || !form()->initialized()) return;
 
-	bool generateRSyntax = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
-	ResultsJsInterface::singleton()->setRSyntax(id(), generateRSyntax ? form()->generateRSyntax(true) : "");
+	ResultsJsInterface::singleton()->setRSyntax(id(), show ? form()->generateRSyntax(true) : "");
 }
 
 void Analysis::onUsedVariablesChanged()

@@ -271,8 +271,10 @@ public:
 	static		int							thresholdScale();
 	static		int							orderByValueByDefault();
 				const stringset&			workspaceEmptyValues()										const;
+				bool						workspaceShowRSyntax()										const;
 				void						setWorkspaceEmptyValues(const stringset& emptyValues, bool resetModel = true);
-				void						setDefaultWorkspaceEmptyValues();
+				void						setWorkspaceShowRSyntax(bool show);
+				void						setDefaultWorkspaceValues();
 
 				void						databaseStartSynching(bool syncImmediately);
 				void						databaseStopSynching();

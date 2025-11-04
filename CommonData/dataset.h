@@ -30,6 +30,7 @@ public:
 			int				columnCount()			const ;
 			int				rowCount()				const ;
 			bool			dataFileSynch()			const { return _dataFileSynch;			}
+			bool			showRSyntax()			const { return _showRSyntax;			}
 	const	std::string &	dataFilePath()			const { return _dataFilePath;			}
 			int				dataFileTimestamp()		const { return _dataFileTimestamp;		}
 	const	std::string &	databaseJson()			const { return _databaseJson;			}
@@ -63,6 +64,7 @@ public:
 			void			setDataFile( const std::string & dataFilePath, long timestamp)	{ _dataFilePath	= dataFilePath;	_dataFileTimestamp = timestamp; dbUpdate(); }
 			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }
 			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
+			void			setShowRSyntax(		bool showRSyntax)					{ _showRSyntax		= showRSyntax;			dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);
@@ -109,7 +111,8 @@ private:
 	std::string					_dataFilePath,
 								_databaseJson;
 	
-	bool						_dataFileSynch			= false;
+	bool						_dataFileSynch			= false,
+								_showRSyntax			= false;
 	static stringset			_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
 	std::string					_description;
 };

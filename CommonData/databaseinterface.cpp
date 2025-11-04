@@ -81,6 +81,12 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 		runStatements(_dbIndexesSql);
 	}
 
+	if(originalVersion <= "0.95.4")
+	{
+		if(!tableHasColumn("DataSets", "showRSyntax"))
+			runStatements("ALTER TABLE DataSets  ADD COLUMN showRSyntax	INT;");
+	}
+
 	transactionWriteEnd();
 }
 
@@ -102,7 +108,7 @@ DatabaseInterface::~DatabaseInterface()
 }
 
 
-int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
+int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, bool showRSyntax)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetInsert);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -113,17 +119,18 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 		sqlite3_bind_text(stmt, 4, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
 		sqlite3_bind_text(stmt, 5, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
 		sqlite3_bind_int(stmt,	6, dataSynch);
+		sqlite3_bind_int(stmt,	7, showRSyntax);
 	};
 
 	transactionWriteBegin();
-	int id = runStatementsId("INSERT OR REPLACE INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch, id) VALUES (?, ?, ?, ?, ?, ?, 1) RETURNING id;", prepare);
+	int id = runStatementsId("INSERT OR REPLACE INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch, showRSyntax, id) VALUES (?, ?, ?, ?, ?, ?, ?, 1) RETURNING id;", prepare);
 	runStatements("CREATE TABLE " + dataSetName(id) + " (rowNumber INTEGER PRIMARY KEY);"); // Can be overwritten through dataSetCreateTable
 	transactionWriteEnd();
 
 	return id;
 }
 
-void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch)
+void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, bool showRSyntax)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetUpdate);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -134,15 +141,16 @@ void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & dataFil
 		sqlite3_bind_text(stmt, 4, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
 		sqlite3_bind_text(stmt, 5, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
 		sqlite3_bind_int(stmt,	6, dataSynch);
-		sqlite3_bind_int(stmt,	7, dataSetId);
+		sqlite3_bind_int(stmt,	7, showRSyntax);
+		sqlite3_bind_int(stmt,	8, dataSetId);
 	};
 
 	//Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
 
-	runStatements("UPDATE DataSets SET dataFilePath=?, dataFileTimestamp=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, revision=revision+1 WHERE id = ?;", prepare);
+	runStatements("UPDATE DataSets SET dataFilePath=?, dataFileTimestamp=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, showRSyntax=?, revision=revision+1 WHERE id = ?;", prepare);
 }
 
-void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, long & dataFileTimestamp, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch)
+void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, long & dataFileTimestamp, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch, bool & showRSyntax)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetLoad);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -154,7 +162,7 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, l
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 7);
+		assert(colCount == 8);
 
 		dataFilePath	= _wrap_sqlite3_column_text(stmt, 0);
 		dataFileTimestamp	= sqlite3_column_int(	stmt, 1);
@@ -163,11 +171,12 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & dataFilePath, l
 		emptyValuesJson = _wrap_sqlite3_column_text(stmt, 4);
 		revision		= sqlite3_column_int(		stmt, 5);
 		dataSynch		= sqlite3_column_int(		stmt, 6);
+		showRSyntax		= sqlite3_column_int(		stmt, 7);
 
 		//Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
 	};
 
-	runStatements("SELECT dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataFileSynch FROM DataSets WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataFileSynch, showRSyntax FROM DataSets WHERE id = ?;", prepare, processRow);
 }
 
 int DatabaseInterface::dataSetColCount(int dataSetId)

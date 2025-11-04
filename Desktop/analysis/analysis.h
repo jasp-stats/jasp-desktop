@@ -196,7 +196,7 @@ public slots:
 	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override;
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
-	void					setRSyntaxTextInResult();
+	void					setRSyntaxTextInResult(bool show);
 	void					filterByNameDone(const QString &name, const QString &error);
 	void					onUsedVariablesChanged()																	override;
 
