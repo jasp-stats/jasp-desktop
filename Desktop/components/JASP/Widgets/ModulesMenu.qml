@@ -372,6 +372,7 @@ FocusScope
 						moduleStore.downloadInProgress = true
 						moduleStore.downloadTotal = request.totalBytes
 						moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
+						moduleStore.currentDownloadRequest = request
 						request.accept()
                     }
                     else
@@ -379,10 +380,16 @@ FocusScope
                 }
 
                 onDownloadFinished: function(request) {
+					moduleStore.downloadInProgress = false
+					moduleStore.currentDownloadRequest = null
+					if (request.state !== WebEngineDownloadRequest.DownloadCompleted) {
+						console.log("Download interrupted:", request.interruptReasonString)
+						return
+					}
                     console.log("Download finished:", request.downloadFileName)
                     let path = request.downloadDirectory + '/' + request.downloadFileName
+					moduleLibrary.startInstalling()
                     dynamicModules.installJASPModule(path)
-					moduleStore.downloadInProgress = false
                 }
             }
 
@@ -401,6 +408,7 @@ FocusScope
 				property bool	installInProgress: false;
 				property int		downloadProgress;
 				property int		downloadTotal;
+				property var		currentDownloadRequest: null;
 
 				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
 
@@ -440,6 +448,89 @@ FocusScope
 		}
 
 		focus: true
+
+		// Progress bar overlay for download and installation
+		Rectangle
+		{
+			id:				progressOverlay
+			anchors.fill:	parent
+			color:			jaspTheme.grayDarker
+			visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling
+			z:				10
+
+			Column
+			{
+				anchors.centerIn:	parent
+				spacing:			10 * preferencesModel.uiScale
+				width:				300 * preferencesModel.uiScale
+
+				Text
+				{
+					id:					progressText
+					text:				moduleStore.downloadInProgress ? qsTr("Downloading module...") : qsTr("Installing module...")
+					color:				"white"
+					font.pixelSize:		16 * preferencesModel.uiScale
+					anchors.horizontalCenter: parent.horizontalCenter
+				}
+
+				// TODO show progress of installation
+				Rectangle
+				{
+					id:				progressBarBackground
+					width:			parent.width
+					height:			30 * preferencesModel.uiScale
+					color:			jaspTheme.grayDarker
+					border.color:	jaspTheme.uiBorder
+					border.width:	1
+					radius:			3
+					visible:		moduleStore.downloadInProgress
+
+					Rectangle
+					{
+						id:		progressBarFill
+						width:	moduleStore.downloadTotal > 0 ? (parent.width * moduleStore.downloadProgress / moduleStore.downloadTotal) : 0
+						height:	parent.height
+						color:	jaspTheme.blue
+						radius:	parent.radius
+
+						Behavior on width
+						{
+							enabled: preferencesModel.animationsOn
+							PropertyAnimation { duration: 100 }
+						}
+					}
+
+					Text
+					{
+						anchors.centerIn:	parent
+						text:				moduleStore.downloadTotal > 0 ? Math.round((moduleStore.downloadProgress / moduleStore.downloadTotal) * 100) + "%" : "0%"
+						color:				"white"
+						font.pixelSize:		12 * preferencesModel.uiScale
+					}
+				}
+
+				RoundedButton
+				{
+					id:					cancelButton
+					text:				qsTr("Cancel")
+					width:				120 * preferencesModel.uiScale
+					height:				30 * preferencesModel.uiScale
+					anchors.horizontalCenter: parent.horizontalCenter
+					// TODO also allow to cancel installation
+					visible:			moduleStore.downloadInProgress
+
+					onClicked:
+					{
+						if (moduleStore.currentDownloadRequest !== null) {
+							moduleStore.currentDownloadRequest.cancel()
+						}
+						moduleStore.downloadInProgress = false
+						moduleStore.currentDownloadRequest = null
+					}
+					toolTip:			qsTr("Cancel download")
+				}
+			}
+		}
 
 		Item
 		{

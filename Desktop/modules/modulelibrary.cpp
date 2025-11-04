@@ -7,6 +7,7 @@
 #include "installedmodules.h"
 #include "dynamicmodules.h"
 #include "dynamicmodule.h"
+#include "engine/enginesync.h"
 #include "utilities/dynamicruntimeinfo.h"
 
 ModuleLibrary * ModuleLibrary::_singleton = nullptr;
@@ -18,12 +19,31 @@ ModuleLibrary::ModuleLibrary(QObject *parent)
 
     if (auto *dynMods = Modules::DynamicModules::dynMods())
     {
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) { 
+            emitEnvironmentInfoChanged(); 
+            finishInstalling();
+        });
         connect(dynMods, &Modules::DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
-        // TODO there is a timing issue here, the dynamicModuleUninstalled signal is emitted before the module is fully uninstalled,
-        // causing UI to update too early and show the module as still installed.
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleUninstalled,this, [this](const QString &) { emitEnvironmentInfoChanged(); });
+        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });       
+    }
+    if (auto *engineSync = EngineSync::singleton())
+    {
+        connect(engineSync, &EngineSync::moduleInstallationSucceeded, this, [this]() {
+            emitEnvironmentInfoChanged(); 
+            finishInstalling(); 
+        });
+        connect(engineSync, &EngineSync::moduleInstallationFailed, this, [this](const QString &, const QString &) {
+            emitEnvironmentInfoChanged(); 
+            finishInstalling(); 
+        });
+        connect(engineSync, &EngineSync::moduleUninstallationSucceeded, this, [this]() {
+            emitEnvironmentInfoChanged(); 
+            finishInstalling(); 
+        });
+        connect(engineSync, &EngineSync::moduleUninstallationFailed, this, [this](const QString &, const QString &) {
+            emitEnvironmentInfoChanged(); 
+            finishInstalling(); 
+        });
     }
 
     if (auto *prefs = PreferencesModel::prefs())
@@ -81,4 +101,16 @@ QVariantMap ModuleLibrary::installedModulesInfo() const
 void ModuleLibrary::emitEnvironmentInfoChanged()
 {
     emit environmentInfoChanged(getEnvironmentInfo());
+}
+
+void ModuleLibrary::startInstalling()
+{
+    _isInstalling = true;
+    emit isInstallingChanged();
+}
+
+void ModuleLibrary::finishInstalling()
+{
+    _isInstalling = false;
+    emit isInstallingChanged();
 }

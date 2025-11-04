@@ -31,6 +31,7 @@ class DynamicModule;
 class ModuleLibrary : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool isInstalling READ isInstalling NOTIFY isInstallingChanged)
 
 public:
     explicit ModuleLibrary(QObject *parent = 0);
@@ -39,9 +40,14 @@ public:
 
     Q_INVOKABLE QVariantMap getEnvironmentInfo() const;
     Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
+    Q_INVOKABLE void startInstalling();
+    Q_INVOKABLE void finishInstalling();
+
+    bool isInstalling() const { return _isInstalling; }
 
 signals:
     void environmentInfoChanged(const QVariantMap &environmentInfo);
+    void isInstallingChanged();
 
 private:
     QVariantMap installedModulesInfo() const;
@@ -49,6 +55,7 @@ private:
 
 private:
     static ModuleLibrary *_singleton;
+    bool _isInstalling = false;
 };
 
 #endif // MODULELIBRARY_H
