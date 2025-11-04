@@ -60,6 +60,7 @@ public:
 
 	ListViewType				listViewType()																			const				{ return _listViewType;								}
 	BoundControl			*	boundControl()																					override	{ return _boundControl;								}
+	const BoundControl		*	boundControl()																			const	override	{ return _boundControl;								}
 	int							columns()																				const				{ return _columns;									}
 	const QStringList		&	dropKeys()																				const				{ return _dropKeys;									}
 	const QString			&	interactionHighOrderCheckBox()															const				{ return _interactionHighOrderCheckBox;				}

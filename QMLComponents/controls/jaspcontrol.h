@@ -3,7 +3,6 @@
 
 #include <QQuickItem>
 #include <QPropertyAnimation>
-
 #include "utilities/qutils.h"
 #include "columntype.h"
 
@@ -150,10 +149,10 @@ public:
 	int					preferredWidth()			const	{ return _preferredWidth;			}
 	int					cursorShape()				const	{ return _cursorShape;				}
 	bool				hovered()					const;
-	int					alignment()					const	{ return _alignment;				}
-	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;				}
-	bool				dependsOnDynamicComponents() const	{ return _dependsOnDynamicComponents; }
-	const QVariant&		explicitDepends()			const	{ return _explicitDepends;			}
+	int					alignment()					const	{ return _alignment;					}
+	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;					}
+	bool				dependsOnDynamicComponents() const	{ return _dependsOnDynamicComponents;	}
+	const QVariant&		explicitDepends()			const	{ return _explicitDepends;				}
 
 	QString				humanFriendlyLabel()		const;
 
@@ -167,6 +166,7 @@ public:
 	void							setUnitialized();
 	virtual void					cleanUp();
 	virtual BoundControl		*	boundControl();
+	virtual const BoundControl	*	boundControl() const;
 	virtual bool					encodeValue()						const	{ return false; }
 
 	const Set					&	depends()							const	{ return _depends; }
@@ -181,6 +181,9 @@ public:
 	virtual QString					friendlyName() const;
 	void							addExplicitDependency();
 	bool							hasLabelOrInfo() const;
+
+
+	Q_INVOKABLE	QJSValue			boundJson() const;
 
 public slots:
 	void	setControlType(			ControlType			controlType)		{ _controlType = controlType; }

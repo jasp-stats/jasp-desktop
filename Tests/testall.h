@@ -10,7 +10,7 @@ private slots:
     void    initTestCase();
     void    init();
 	void	cleanup();
-    void    testDataImport();
+	void    testDataImport();
 	void	testDataImport_data();
 	void	testJaspDataImport();
 	void	testJaspDataImport_data();

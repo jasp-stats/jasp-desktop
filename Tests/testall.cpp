@@ -13,10 +13,10 @@
 #include "data/importers/jaspimporterold.h"
 #include "data/importers/readstatimporter.h"
 
+
 void TestAll::initTestCase()
 {
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
-
 }
 
 void TestAll::init()
@@ -58,7 +58,6 @@ void TestAll::testDataImport_data()
 				QTest::newRow(i.fileName().toUtf8()) << folder << i.absoluteFilePath();
 	}
 }
-
 
 void TestAll::testDataImport()
 {
@@ -112,7 +111,6 @@ void TestAll::testDataImport()
 		jsonFile.open(QFile::OpenModeFlag::WriteOnly);
 		jsonFile.write(stringUtils::replaceBy(compareMe.toStyledString(), "\n", " ").c_str());
 		jsonFile.close();
-
 	}
 
 	QVERIFY(jsonFileIn.exists());
@@ -238,6 +236,5 @@ void TestAll::testJaspDataImport()
 	DataSet loadMe(dataSet->id());
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
-
 
 QTEST_MAIN(TestAll)

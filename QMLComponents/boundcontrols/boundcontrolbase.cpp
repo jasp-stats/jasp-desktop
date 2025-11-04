@@ -46,6 +46,7 @@ Json::Value BoundControlBase::createMeta()  const
 	return meta;
 }
 
+
 void BoundControlBase::handleComputedColumn(const Json::Value& value)
 {
 	if (_isColumn && value.isString())

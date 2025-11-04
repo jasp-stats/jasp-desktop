@@ -13,7 +13,7 @@ class PreferencesModelBase : public QObject
 
 public:
 	explicit PreferencesModelBase(QObject *parent = nullptr);
-	~PreferencesModelBase() { _singleton = nullptr; }
+	~PreferencesModelBase();
 
 	virtual double	uiScale()						{ return 1;		}
 	virtual int		maxFlickVelocity()		const	{ return 808;	}

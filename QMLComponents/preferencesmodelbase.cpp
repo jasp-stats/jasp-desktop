@@ -10,6 +10,12 @@ PreferencesModelBase::PreferencesModelBase(QObject *parent)
 	_singleton = this;
 }
 
+PreferencesModelBase::~PreferencesModelBase()
+{
+	assert(_singleton == nullptr || _singleton == this);
+	_singleton = nullptr;
+}
+
 PreferencesModelBase *PreferencesModelBase::preferences()
 {
 	if (_singleton == nullptr)

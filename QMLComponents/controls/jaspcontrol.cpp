@@ -3,6 +3,7 @@
 #include "log.h"
 #include "analysisform.h"
 #include "jasptheme.h"
+#include "utilities/qutils.h"
 #include "preferencesmodelbase.h"
 #include <QQmlProperty>
 #include <QQmlContext>
@@ -285,36 +286,51 @@ void JASPControl::addControlError(QString message)
 {
 	if (_form && message.size())
 		_form->addControlError(this, message, false);
+	else
+		setHasError(true);
 }
 
 void JASPControl::addControlErrorTemporary(QString message)
 {
 	if (_form && message.size())
 		_form->addControlError(this, message, true);
+	else
+		setHasError(true);
 }
 
 void JASPControl::addControlErrorPermanent(QString message)
 {
 	if (_form && message.size())
 		_form->addControlError(this, message, false, false, false);
+	else
+		setHasError(true);
 }
 
 void JASPControl::addControlWarning(QString message)
 {
 	if (_form && message.size())
 		_form->addControlError(this, message, false, true);
+	else
+		setHasWarning(true);
 }
 
 void JASPControl::addControlWarningTemporary(QString message)
 {
 	if (_form && message.size())
 		_form->addControlError(this, message, true, true);
+	else
+		setHasWarning(true);
 }
 
 void JASPControl::clearControlError()
 {
 	if (_form)
 		_form->clearControlError(this);
+	else
+	{
+		setHasError(false);
+		setHasWarning(false);
+	}
 }
 
 QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, bool collapseStructuralControls)
@@ -359,8 +375,12 @@ QList<JASPControl*> JASPControl::getChildJASPControls(const QQuickItem * item, b
 
 BoundControl *JASPControl::boundControl()
 {
-	if (isBound())	return dynamic_cast<BoundControl*>(this);
-	return nullptr;
+	return isBound() ? dynamic_cast<BoundControl*>(this) : nullptr;
+}
+
+const BoundControl *JASPControl::boundControl() const
+{
+	return isBound() ? dynamic_cast<const BoundControl*>(this) : nullptr;
 }
 
 bool JASPControl::addDependency(JASPControl *item)
@@ -608,6 +628,11 @@ QString JASPControl::printLabelMD(int depth) const
 bool JASPControl::hasLabelOrInfo() const
 {
 	return !fullLabel().isEmpty() || !info().isEmpty();
+}
+
+QJSValue JASPControl::boundJson() const
+{
+	return boundControl() ? tqj(boundControl()->createJson(), this) : QJSValue();
 }
 
 JASPControls JASPControl::getMDSubItems(const QQuickItem* parentItem) const

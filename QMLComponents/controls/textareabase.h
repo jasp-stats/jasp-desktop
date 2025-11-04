@@ -65,6 +65,7 @@ public:
 
 	void						rScriptDoneHandler(const QString &result)			override;
 	BoundControl			*	boundControl()										override	{ return isBound() ? _boundControl : nullptr;			}
+	const BoundControl		*	boundControl()								const	override	{ return isBound() ? _boundControl : nullptr;			}
 
 	TextType					textType()									const				{ return _textType;										}
 	bool						hasScriptError()							const				{ return _hasScriptError;								}

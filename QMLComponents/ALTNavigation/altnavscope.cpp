@@ -1,9 +1,9 @@
-﻿#include "altnavscope.h"
-#include "altnavpostfixassignmentstrategy.h"
+﻿#include "altnavpostfixassignmentstrategy.h"
 #include "altnavcontrol.h"
-
+#include "altnavscope.h"
 #include <QQmlProperty>
 #include <QMetaObject>
+#include <iostream>
 
 ALTNavScope::ALTNavScope(QObject* attachee)
 	: QObject{attachee}
@@ -17,13 +17,21 @@ ALTNavScope::ALTNavScope(QObject* attachee)
 			//create a visual tag
 			QQmlComponent component(qmlEngine(_attachee), QUrl("qrc:/jasp-stats.org/imports/JASP/Controls/components/JASP/Controls/ALTNavTag.qml"), _attachee);
 			_attachedTag = qobject_cast<ALTNavTagBase*>(component.create());
-			_attachedTag->setParentItem(_attachee);
-			_attachedTag->setParent(_attachee);
 
-			//Find parent when attachee parent changes or component is completed (this is when registration of any parent is guaranteed)
-			QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(_attachee);
-			connect(attached_component, SIGNAL(completed()), this, SLOT(init()));
-			connect(_attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
+			if(!_attachedTag)
+			{
+				std::cerr << "Could not make ALTNavTag.qml, but if you are testing this is ok." << std::endl;
+			}
+			else
+			{
+				_attachedTag->setParentItem(_attachee);
+				_attachedTag->setParent(_attachee);
+
+				//Find parent when attachee parent changes or component is completed (this is when registration of any parent is guaranteed)
+				QObject* attached_component = qmlAttachedPropertiesObject<QQmlComponent>(_attachee);
+				connect(attached_component, SIGNAL(completed()), this, SLOT(init()));
+				connect(_attachee, &QQuickItem::parentChanged, this, &ALTNavScope::registerWithParent);
+			}
 		}
 	}
 }
@@ -171,6 +179,10 @@ void ALTNavScope::setChildrenPrefix()
 void ALTNavScope::setScopeActive(bool value)
 {
 	_scopeActive = value;
+
+	if(!_attachedTag)
+		return; // Should really only occur during testing
+
 	if (!_scopeOnly)
 		_attachedTag->setActive(value);
 	if (_propagateActivity)

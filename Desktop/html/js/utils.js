@@ -352,7 +352,7 @@ function formatColumn(column, type, format, alignNumbers, combine, modelFootnote
 					else 
 					{
 						if(isP)						formatted["content"] = fixDecimals || window.globSet.pExact ? toExponential(content, (isFinite(dp) ? dp : sf-1), 0, html)	: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead, thousands)
-						else						formatted["content"] = alignNumbers || fixDecimals			? formatFixed(content, -minLSD, false, thousands)				: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead, thousands)
+						else						formatted["content"] = fixDecimals							? formatFixed(content, -minLSD, false, thousands)				: formatPrecisionWithRespectForFixedDecimals(content, sf, dp, noZeroLead, thousands)
 						
 						if(html)
 							formatted["content"] = formatted["content"].replace(/-/g, "&minus;")
