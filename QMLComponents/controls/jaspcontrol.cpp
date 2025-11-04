@@ -284,7 +284,9 @@ void JASPControl::setCursorShape(int shape)
 
 void JASPControl::addControlError(QString message)
 {
-	if (_form && message.size())
+	if (message.isEmpty())	return;
+
+	if (_form)
 		_form->addControlError(this, message, false);
 	else
 		setHasError(true);
@@ -292,7 +294,9 @@ void JASPControl::addControlError(QString message)
 
 void JASPControl::addControlErrorTemporary(QString message)
 {
-	if (_form && message.size())
+	if (message.isEmpty())	return;
+
+	if (_form)
 		_form->addControlError(this, message, true);
 	else
 		setHasError(true);
@@ -300,7 +304,9 @@ void JASPControl::addControlErrorTemporary(QString message)
 
 void JASPControl::addControlErrorPermanent(QString message)
 {
-	if (_form && message.size())
+	if (message.isEmpty())	return;
+
+	if (_form)
 		_form->addControlError(this, message, false, false, false);
 	else
 		setHasError(true);
@@ -308,7 +314,9 @@ void JASPControl::addControlErrorPermanent(QString message)
 
 void JASPControl::addControlWarning(QString message)
 {
-	if (_form && message.size())
+	if (message.isEmpty())	return;
+
+	if (_form)
 		_form->addControlError(this, message, false, true);
 	else
 		setHasWarning(true);
@@ -316,7 +324,9 @@ void JASPControl::addControlWarning(QString message)
 
 void JASPControl::addControlWarningTemporary(QString message)
 {
-	if (_form && message.size())
+	if (message.isEmpty())	return;
+
+	if (_form)
 		_form->addControlError(this, message, true, true);
 	else
 		setHasWarning(true);
