@@ -43,7 +43,6 @@ class DynamicModules : public QObject
 	Q_PROPERTY(bool			dataLoaded								READ dataLoaded								WRITE setDataLoaded								NOTIFY dataLoadedChanged							)
 	Q_PROPERTY(QStringList	loadedModules							READ loadedModules																			NOTIFY loadedModulesChanged							)
 	Q_PROPERTY(QStringList	loadedModulesTitles						READ loadedModulesTitles																	NOTIFY loadedModulesChanged							)
-	Q_PROPERTY(QString		moduleStoreUrl							READ moduleStoreUrl																			NOTIFY moduleStoreUrlChanged						)
 
 
 public:
@@ -114,7 +113,6 @@ public:
 
 	const QStringList loadedModules() const;
 	const QStringList loadedModulesTitles() const;
-	const QString	  moduleStoreUrl() const;
 
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleNames);
@@ -149,7 +147,6 @@ signals:
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
 	void loadedModulesChanged();
-	void moduleStoreUrlChanged();
 
 private:
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);
@@ -177,7 +174,6 @@ private:
 														*	_devModRWatcher				= nullptr,
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
-	QString													_moduleStoreUrl				= "";
 };
 
 }
