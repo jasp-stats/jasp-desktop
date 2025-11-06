@@ -73,7 +73,7 @@ FocusScope
 	{
 		id:				slidePart
 		x:				modulesMenu.opened ? 0 : width
-        width:			modules.width + vertScroller.width + moduleStore.width + jaspTheme.contentMargin
+        width:			modulesFlick.width + vertScroller.width + moduleStore.width + 2 * jaspTheme.contentMargin
 		height:			modulesMenu.height
 		color:			jaspTheme.fileMenuColorBackground
 		border.width:	1
@@ -119,6 +119,83 @@ FocusScope
 			extraSpace: modulesFlick.contentY
 		}
 		
+		WebEngineProfile {
+			id: moduleStoreProfile
+			downloadPath: jaspTmpDir
+
+			onDownloadRequested: function(request) {
+				console.log("Download requested:", request.url)
+				let name = request.downloadFileName
+				let index = name.lastIndexOf('.');
+				let extension = index !== -1 ? name.substring(index + 1) : '';
+				if(extension === 'JASPModule') {
+					moduleStore.downloadInProgress = true
+					moduleStore.downloadTotal = request.totalBytes
+					moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
+					moduleStore.currentDownloadRequest = request
+					request.accept()
+				}
+				else
+					request.cancel()
+			}
+
+			onDownloadFinished: function(request) {
+				moduleStore.downloadInProgress = false
+				moduleStore.currentDownloadRequest = null
+				if (request.state !== WebEngineDownloadRequest.DownloadCompleted) {
+					console.log("Download interrupted:", request.interruptReasonString)
+					return
+				}
+				console.log("Download finished:", request.downloadFileName)
+				let path = request.downloadDirectory + '/' + request.downloadFileName
+				moduleLibrary.startInstalling()
+				dynamicModules.installJASPModule(path)
+			}
+		}
+
+		WebEngineView
+		{
+			id:						moduleStore
+			visible:                !ribbonModel.dataMode
+			clip:                   true
+			width:                  visible ? 500 * preferencesModel.uiScale : 0
+			anchors
+			{
+				top:				modulesFlick.top
+				right:				modulesFlick.left
+				bottom:				modulesFlick.bottom
+				margins:			jaspTheme.contentMargin
+			}
+			url:                    preferencesModel.moduleLibraryURL
+			profile:                moduleStoreProfile
+
+			property bool	downloadInProgress: false;
+			property bool	installInProgress: false;
+			property int		downloadProgress;
+			property int		downloadTotal;
+			property var		currentDownloadRequest: null;
+
+			webChannel.registeredObjects:	[ moduleStoreWebChannel ]
+
+			QtObject {
+				id: moduleStoreWebChannel
+				WebChannel.id: "moduleStore"
+
+				function info() {
+					return moduleLibrary.getEnvironmentInfo();
+				}
+
+				signal environmentInfoChanged(var environmentInfo)
+
+				Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
+				Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+
+				function uninstall(moduleName) {
+					moduleLibrary.uninstallJASPModule(moduleName)
+				}
+			}
+
+		}
 		
 
 		Flickable
@@ -127,12 +204,12 @@ FocusScope
 			flickableDirection:		Flickable.VerticalFlick
 			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
 			contentWidth:			width
+			width:                  visible ? 340 * preferencesModel.uiScale : 0
 
 			anchors
 			{
 				top:				parent.top
-				topMargin:			5 * preferencesModel.uiScale
-				left:				parent.left
+				margins:			jaspTheme.contentMargin
 				right:				vertScroller.left
 				bottom:				parent.bottom
 			}
@@ -141,7 +218,7 @@ FocusScope
 			{
 				id:			workspaceSpecs
 				spacing:	jaspTheme.rowSpacing
-				width:		slidePart.width - vertScroller.width
+				width:		modulesFlick.width
 				visible:	ribbonModel.dataMode
 
 				MenuHeader
@@ -205,7 +282,7 @@ FocusScope
 			{
 				id:			modules
 				spacing:	4  * preferencesModel.uiScale
-                width:		(340 * preferencesModel.uiScale) - vertScroller.width
+                width:		modulesFlick
 				visible:	!ribbonModel.dataMode
                 anchors.right: vertScroller.visible ? vertScroller.left : parent.right
 
@@ -359,78 +436,7 @@ FocusScope
 			}
 
 
-            WebEngineProfile {
-                id: moduleStoreProfile
-				downloadPath: jaspTmpDir
-
-                onDownloadRequested: function(request) {
-                    console.log("Download requested:", request.url)
-                    let name = request.downloadFileName
-                    let index = name.lastIndexOf('.');
-                    let extension = index !== -1 ? name.substring(index + 1) : '';
-                    if(extension === 'JASPModule') {
-						moduleStore.downloadInProgress = true
-						moduleStore.downloadTotal = request.totalBytes
-						moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
-						moduleStore.currentDownloadRequest = request
-						request.accept()
-                    }
-                    else
-                        request.cancel()
-                }
-
-                onDownloadFinished: function(request) {
-					moduleStore.downloadInProgress = false
-					moduleStore.currentDownloadRequest = null
-					if (request.state !== WebEngineDownloadRequest.DownloadCompleted) {
-						console.log("Download interrupted:", request.interruptReasonString)
-						return
-					}
-                    console.log("Download finished:", request.downloadFileName)
-                    let path = request.downloadDirectory + '/' + request.downloadFileName
-					moduleLibrary.startInstalling()
-                    dynamicModules.installJASPModule(path)
-                }
-            }
-
-            WebEngineView
-            {
-				id:						moduleStore
-                visible:                !ribbonModel.dataMode
-                clip:                   true
-                width:                  visible ? 500 * preferencesModel.uiScale : 0
-                anchors.right:          modules.left
-                height:                 modulesFlick.height - jaspTheme.contentMargin
-				url:                    preferencesModel.moduleLibraryURL
-                profile:                moduleStoreProfile
-
-				property bool	downloadInProgress: false;
-				property bool	installInProgress: false;
-				property int		downloadProgress;
-				property int		downloadTotal;
-				property var		currentDownloadRequest: null;
-
-				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
-
-				QtObject {
-					id: moduleStoreWebChannel
-					WebChannel.id: "moduleStore"
-
-					function info() {
-						return moduleLibrary.getEnvironmentInfo();
-					}
-
-					signal environmentInfoChanged(var environmentInfo)
-
-					Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
-					Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
-
-					function uninstall(moduleName) {
-						moduleLibrary.uninstallJASPModule(moduleName)
-					}
-				}
-
-            }
+            
         }
 
 		JASPScrollBar
