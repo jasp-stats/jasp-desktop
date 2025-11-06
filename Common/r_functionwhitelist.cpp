@@ -96,6 +96,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"is.na",
 	"is.null",
 	"is.numeric",
+    "Johnson",
 	"lag",
 	"lapply",
 	"length",
