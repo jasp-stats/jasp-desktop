@@ -56,7 +56,7 @@ In case you want to go the hard way and compile JASP from source, please follow 
 We recommend you to create a new module by forking [this template](https://github.com/jasp-stats/jaspModuleTemplate).
 If you prefer, you can fork one of the existing modules in [jasp-stats](https://github.com/jasp-stats).
 
-To start developing your own module you should first understand the [structure of a module](jasp-adding-module.md).
+To start developing your own module you should first understand the [structure of a module](jasp-module-structure.md).
 Initially you do not need to add any of the .qml, .R or icon files, but you should minimally have the `Description.qml`, `DESCRIPTION` and `NAMESPACE`.
 Forking the aforementioned module template will make all of this for you.
 

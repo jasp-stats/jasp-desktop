@@ -16,6 +16,6 @@
 ### Other helpful documents
 
 - [`License information`](jasp-licensing.md) How JASP is licensed
-- [`How to add a module`](jasp-adding-module.md) adding a new module in JASP (will change soon!)
+- [`Detailed JASP module structure`](Docs/development/jasp-module-structure.md)
 - [`Software for humans`](jasp-human-guide.md) opinion piece on JASP analysis UI
 - [`JASP error list`](jasp-error-list.md) list of errors produced by JASP

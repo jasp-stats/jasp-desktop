@@ -1,7 +1,7 @@
 Guide to setting up an upgrade file for a JASP Module
 =====================================================
 
-After you have [made a module](jasp-adding-module.md) and released it you might want to change some things.
+After you have [made a module](jasp-modules-tutorial.md) and released it you might want to change some things.
 The name of an option in your qml form for instance or the name of an analysis.  
 To make this possible you can add a file to your module, `Upgrades.qml`, which you place under `ModuleName/inst/` next to your `Description.qml`.
 Then whenever a jasp-file is loaded

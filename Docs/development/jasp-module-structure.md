@@ -1,5 +1,5 @@
 
-Adding a module to JASP
+Detailed JASP module structure
 ================================
 
 ## Structure of a JASP module
