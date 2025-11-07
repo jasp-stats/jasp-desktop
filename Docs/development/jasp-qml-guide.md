@@ -1,4 +1,4 @@
-Guide to writing an analysis interface in QML
+QML interfaces guide
 =============================================
 
 QML (Qt Modeling Language) is a user interface markup language that JASP uses to show the analysis input panel. In this panel the user can specify what options should be set to what values and thereby change the tables and plots that the analysis computes. QML is a very flexible language that allows us to easily generate checkboxes, dropdowns and other common interface components.  

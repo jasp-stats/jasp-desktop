@@ -47,7 +47,7 @@ Citations are an important measure of how widely the software is used, and an im
   - [Tutorial: develop a JASP module](Docs/development/jasp-modules-tutorial.md)
   - [Detailed JASP module structure](Docs/development/jasp-module-structure.md)
   - [Module Workflow](Docs/development/jasp-module-workflow.md)
-  - [Making a QML Interface](Docs/development/jasp-qml-guide.md)
+  - [QML interfaces guide](Docs/development/jasp-qml-guide.md)
     
 #### R
   - [Implementing Analyses in R](Docs/development/r-analyses-guide.md)
