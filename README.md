@@ -44,6 +44,7 @@ Citations are an important measure of how widely the software is used, and an im
   - [Nightly versions of JASP here](http://static.jasp-stats.org/Nightlies/) (built fresh every night)
 
 #### Modules
+  - [Tutorial: develop a JASP module](Docs/development/jasp-modules-tutorial.md)
   - [Creating a Module](Docs/development/jasp-adding-module.md)
   - [Module Workflow](Docs/development/jasp-module-workflow.md)
   - [Making a QML Interface](Docs/development/jasp-qml-guide.md)

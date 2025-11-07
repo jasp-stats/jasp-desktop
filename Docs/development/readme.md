@@ -7,6 +7,7 @@
 
 ### Building a JASP Analysis
 
+- [`Tutorial: develop a JASP module`](jasp-modules-tutorial.md) Main entry point for anyone wanting to write their own JASP modules
 - [`How to write an R analysis for JASP`](r-analyses-guide.md) General overview of how to write an analysis
 - [`Analysis skeleton`](analysis-skeleton.R) A base to build your new analysis upon
 - [`JASP R Style guide`](r-style-guide.md) Follow this style for any `R` file you write!
