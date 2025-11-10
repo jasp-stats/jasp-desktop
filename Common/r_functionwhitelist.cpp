@@ -262,7 +262,7 @@ const std::set<std::string> R_FunctionWhiteList::functionWhiteList {
 	"rowMin",			"rowMinNaRm",	
 	"rowMax",			"rowMaxNaRm",
 
-	"row.names", "rownames", "colnames",
+	"row.names", "rownames", "colnames"
 	
 #ifdef JASP_DEBUG
 	,"Sys.sleep", ".crashPlease", "stringi::stri_enc_mark", "stringi::stri_enc_toutf8", "Encoding"
