@@ -35,6 +35,8 @@
 #include "analysisform.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
+#include "dirs.h"
+#include "utilities/appdirs.h"
 
 
 #include <QtPlugin>
@@ -313,7 +315,8 @@ bool init(bool dbInMemory)
 	//const char*	platformArg = "-platform";
 	//const char*	platformOpt = "minimal"; //"cocoa";
 
-	std::vector<const char*> arguments = {}; //{qmlR, platformArg, platformOpt};
+	std::vector<const char*> arguments = {"JASP"}; //{qmlR, platformArg, platformOpt};
+
 
 	int		argc = arguments.size();
 	char** argvs = new char*[argc];
@@ -331,10 +334,11 @@ bool init(bool dbInMemory)
 	gl_application = new QGuiApplication(argc, argvs);
 	gl_qmlEngine = new QQmlApplicationEngine();
 
-	QmlUtils::setupQMLEngine(gl_qmlEngine);
+	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
 	TempFiles::init(ProcessInfo::currentPID());
-
 	DataSetProvider::getProvider(dbInMemory, false, gl_application); // Create the DataSetProvider in case the loadDataSet was not already called
+
+	QmlUtils::setupQMLEngine(gl_qmlEngine);
 
 	gl_dataBridge = new DataBridge(ProcessInfo::currentPID(), dbInMemory);
 	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
@@ -398,9 +402,14 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 			return nullptr;
 		}
 
-		AnalysisBase* analysis = new AnalysisBase(qmlForm); // Make dummy analysis
+		AnalysisBase* analysis = qmlForm->analysisObj();
+		if (!analysis)
+		{
+			analysis = new AnalysisBase(qmlForm); // Make dummy analysis
+			qmlForm->setAnalysis(analysis);
+		}
+
 		QObject::connect(analysis,	&AnalysisBase::sendRScriptSignal,	[qmlForm](QString script, QString controlName, bool whiteListedVersion, QString module) { sendRScriptHandler(qmlForm, script, controlName, whiteListedVersion); });
-		qmlForm->setAnalysis(analysis);
 
 		if (gl_qmlFormMap.contains(qmlFileStr))
 			deleteQuickItem(gl_qmlFormMap[qmlFileStr].second); // delete old version of the form

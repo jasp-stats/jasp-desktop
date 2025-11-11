@@ -168,6 +168,7 @@ public:
 	QString					errors()				const	{ return msgsListToString(_formErrors);		}
 	QString					warnings()				const	{ return msgsListToString(_formWarnings);	}
 	QVariant				analysis()				const	{ return QVariant::fromValue(_analysis);	}
+	AnalysisBase*			analysisObj()			const	{ return _analysis;							}
 	RSyntax*				rSyntax()				const	{ return _rSyntax;							}
 	QString					generateRSyntax(bool useHtml = false) const;
 	QVariantList			optionNameConversion()	const;
