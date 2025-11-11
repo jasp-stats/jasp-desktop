@@ -14,7 +14,16 @@ By pressing the `+` icon at the right-hand side of the screen, many more modules
 
 These menu also allows you to install a local module (via `Install Module`) and to install a module you are working on right now (via `Install Developer Module`).
 
-## 2. How does a JASP module look internally?
+## 2. Who can write a module?
+
+Anyone with basic R programming knowledge can write a JASP module.
+Familiarity with R packaging and QML (for the UI) is helpful but not strictly required.
+
+Basic knowledge of git and GitHub would also be necessary for contributing your module to our codebase.
+
+If you think your expertise doesn't cover enough, please check our list of [curated background materials](jasp-background-materials.md).
+
+## 3. How does a JASP module look internally?
 
 Modules are structured as R packages with additional (QML) files for the graphical interface, help, and configuration.
 
@@ -98,9 +107,9 @@ You can find it [here](https://github.com/jasp-stats/jaspModuleTemplate); take a
 
 
 
-## 3. How to install a developer JASP module
+## 4. How to install a developer JASP module
 
-### 3.1 Precompile your module
+### 4.1 Precompile your module
 In order to install a JASP module, you'll need access to its source code.
 For instance, by cloning or downloading the code from [our GitHub organization](https://github.com/orgs/jasp-stats/repositories), where we host a collection of modules.
 
@@ -117,7 +126,7 @@ Remember the location of your freshly installed module.
 It will be shown as an output after the installation finishes.
 **Tip**: consider setting it up manually to an easy-to-remember location, such as `~/code/jaspmodsdev/`.
 
-### 3.2 Import to JASP
+### 4.2 Import to JASP
 1. Open JASP.
 2. Press the three parallel blue lines in the upper left corner.
 3. Go to `Preferences > Advanced`.
@@ -139,15 +148,6 @@ Every time you change something in the source code, you'll need to do the follow
 As long as you didn't change JASP configuration, and the module is still being installed to the same folder, you won't need to reconfigure anything.
 
 Which is good, because that would be quite a tedious task!
-
-
-
-## 4. Who can write a module?
-
-Anyone with basic R programming knowledge can write a JASP module.
-Familiarity with R packaging and QML (for the UI) is helpful but not strictly required.
-
-Basic knowledge of git and GitHub would also be necessary for contributing your module to our codebase.
 
 ## 5. Shall I write my own module?
 
