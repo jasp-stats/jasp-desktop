@@ -12,12 +12,12 @@ By pressing the `+` icon at the right-hand side of the screen, many more modules
 
 ![](./img/extra-mods.png)
 
-These menu also allows you to install a local module (via `Install Module`) and to install a module you are working on right now (via `Install Developer Module`).
+This menu also allows you how to install a local module (via `Install Module`) and how to install a module you are working on right now (via `Install Developer Module`).
 
 ## 2. Who can write a module?
 
 Anyone with basic R programming knowledge can write a JASP module.
-Familiarity with R packaging and QML (for the UI) is helpful but not strictly required.
+Familiarity with R packaging and QML (for building the user interface) is helpful but not strictly required.
 
 Basic knowledge of git and GitHub would also be necessary for contributing your module to our codebase.
 
@@ -109,18 +109,18 @@ You can find it [here](https://github.com/jasp-stats/jaspModuleTemplate); take a
 
 ## 4. How to install a developer JASP module
 
-### 4.1 Precompile your module
+### 4.1 Compile your module
 In order to install a JASP module, you'll need access to its source code.
 For instance, by cloning or downloading the code from [our GitHub organization](https://github.com/orgs/jasp-stats/repositories), where we host a collection of modules.
 
 After that, you install it as a regular R package.
-The simplest way to do that is by running the code below:
+The simplest way to do that is by running the code below in a shell console:
 
 ```sh
 R CMD INSTALL < module path > --preclean --no-multiarch --with-keep.source < module name >
 ```
 
-but you can also use RStudio, `renv` or the tool of your preference.
+You can also use RStudio, `renv` or the tool of your preference.
 
 Remember the location of your freshly installed module.
 It will be shown as an output after the installation finishes.
@@ -134,20 +134,18 @@ It will be shown as an output after the installation finishes.
 5. At `Development module`, input the path where you installed your module (**Tip**: not sure where that is?, execute `.libPaths()` in R).
 6. Input the module name (as it is listed in `DESCRIPTION`).
 
-### The development cycle
+### 4.3 The development cycle
 
 Developing a module involves a lot of trial and error.
 Every time you change something in the source code, you'll need to do the following in order to see the changes in the JASP window:
 
-1. Recompile the module (from `R`)
-2. Refresh the module (from the JASP menu)
+1. Recompile the module (see step 4.1).
+2. Refresh the module (from the JASP menu).
    - Press the `+` button at the upper right corner.
    - Find your module's name.
    - Press the blue refresh button.
 
-As long as you didn't change JASP configuration, and the module is still being installed to the same folder, you won't need to reconfigure anything.
-
-Which is good, because that would be quite a tedious task!
+As long as you didn't change JASP configuration, and the module is still being installed to the same folder, you won't need to reconfigure anything. Which is good, because that would be quite a tedious task!
 
 ## 5. Shall I write my own module?
 
@@ -178,3 +176,4 @@ If your idea involves a brand new analysis not yet existing in CRAN, consider wr
 
 1. Push your changes to your fork.
 2. Submit a Pull Request to the [jasp-stats](https://github.com/jasp-stats) organization.
+   - Not sure how to do this? Just open an issue [here](https://github.com/jasp-stats/jasp-issues/issues), or drop us an [email](mailto:info@jasp-stats.org).
