@@ -208,10 +208,19 @@ DropArea {
 					createNumber(asNumber)
 				else if(dropKeys.indexOf("string") >= 0 && text !== "")
 					createString(text)
+				else if(dropKeys.indexOf("boolean") >= 0)
+				{
+					var boolVal = false;
+					if((!isNaN(asNumber) && asNumber != 0) || text.toLowerCase() === "true")
+						boolVal = true;
+					
+					createBool(boolVal)
+				}
 			}
 
-			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value } ) ) }
-			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text":  string } ) ) }
+			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(	dragTarget, { "value":	value } ) ) }
+			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(	dragTarget, { "text":	string } ) ) }
+			function createBool(boolVal)	{ setCreatedObjectUp(boolComp.createObject(		dragTarget, { "value":  boolVal } ) ) }
 
 
 			function setCreatedObjectUp(obj)
@@ -230,6 +239,7 @@ DropArea {
 
 	Component { id: numberComp; NumberDrag {}}
 	Component { id: stringComp; StringDrag {}}
+	Component { id: boolComp;	BooleanDrag {}}
 	
 	Rectangle
 	{

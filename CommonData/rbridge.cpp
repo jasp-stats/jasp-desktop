@@ -78,6 +78,23 @@ const std::string jaspBaseTransformFunctionsR =
 		#include "jaspBase_transformFunctions.h"
 		;
 
+
+const std::string jaspBaseTransformBoxCoxR =
+		#include "jaspBase_transformBoxCox.h"
+		;
+
+const std::string jaspBaseTransformJohnsonR =
+		#include "jaspBase_transformJohnson.h"
+		;
+
+const std::string jaspBaseTransformYeoJohnsonR =
+		#include "jaspBase_transformYeoJohnson.h"
+		;
+
+const std::string jaspBaseTransformPowerR =
+		#include "jaspBase_transformPower.h"
+		;
+
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
@@ -124,7 +141,14 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 	JASPTIMER_START(jaspRCPP_init);
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
-	static std::string initRCode	 = jaspBaseDistributionSamplersR + "\n" + jaspBaseFriendlyConstructorFunctionsR + "\n" + jaspBaseTransformFunctionsR;
+	static std::string initRCode					= 
+			jaspBaseDistributionSamplersR			+ "\n" + 
+			jaspBaseFriendlyConstructorFunctionsR	+ "\n" + 
+			jaspBaseTransformFunctionsR				+ "\n" + 
+			jaspBaseTransformBoxCoxR				+ "\n" + 
+			jaspBaseTransformJohnsonR				+ "\n" + 
+			jaspBaseTransformYeoJohnsonR			+ "\n" + 
+			jaspBaseTransformPowerR;
 
 	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),

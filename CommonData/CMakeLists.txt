@@ -14,6 +14,10 @@ make_includable(createIndexes.sql		  createIndexes.h)
 make_includable(../Engine/jaspBase/R/distributionSamplers.R				jaspBase_distributionSamplers.h)
 make_includable(../Engine/jaspBase/R/friendlyConstructorFunctions.R		jaspBase_friendlyConstructorFunctions.h)
 make_includable(../Engine/jaspBase/R/transformFunctions.R				jaspBase_transformFunctions.h)
+make_includable(../Engine/jaspBase/R/transformBoxCox.R					jaspBase_transformBoxCox.h)
+make_includable(../Engine/jaspBase/R/transformJohnson.R					jaspBase_transformJohnson.h)
+make_includable(../Engine/jaspBase/R/transformYeoJohnson.R				jaspBase_transformYeoJohnson.h)
+make_includable(../Engine/jaspBase/R/transformPower.R					jaspBase_transformPower.h)
 
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")

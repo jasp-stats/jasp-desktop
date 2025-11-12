@@ -53,6 +53,8 @@ Item
 		}
 		else if(jsonObj.nodeType === "Number")
 				createNumber(jsonObj.value, toolTip).releaseHere(dropItHere)
+		else if(jsonObj.nodeType === "Boolean")
+				createBoolean(jsonObj.value, toolTip).releaseHere(dropItHere)
 		else if(jsonObj.nodeType === "String")
 				createString(jsonObj.text, toolTip).releaseHere(dropItHere)
 		else if(jsonObj.nodeType === "Column")
@@ -65,6 +67,7 @@ Item
 							parameterDropKeys, toolTip)			{ return functionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"parameterNames": parameterNames, "parameterDropKeys": parameterDropKeys } ) }
 	function createRowFunction(functionName,toolTip)			{ return rowFunctionComp.createObject(scriptColumn,		{ "toolTipText": toolTip, "functionName": functionName,	"droppedItems": ["null"] } ) }
 	function createNumber(number, toolTip)						{ return numberComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": number } ) }
+	function createBoolean(value, toolTip)						{ return boolComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "value": value } ) }
 	function createString(text, toolTip)						{ return stringComp.createObject(scriptColumn,			{ "toolTipText": toolTip, "text": text } ) }
 	function createColumn(columnName, columnTypeUser,
 						  columnTypeDrop, toolTip)				{ return columnComp.createObject(scriptColumn,			{ "columnName": columnName,	"columnTypeUser": columnTypeUser, "columnTypeDrop": columnTypeDrop } ) }
@@ -75,6 +78,7 @@ Item
 	Component { id: functionComp;		FunctionDrag			{ } }
 	Component { id: rowFunctionComp;	RowFunctionDrag			{ } }
 	Component { id: numberComp;			NumberDrag				{ } }
+	Component { id: boolComp;			BooleanDrag				{ } }
 	Component { id: stringComp;			StringDrag				{ } }
 	Component {	id: columnComp;			ColumnDrag				{ } }
 
