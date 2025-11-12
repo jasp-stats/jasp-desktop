@@ -20,12 +20,9 @@ Item
 		anchors.horizontalCenter:	parent.horizontalCenter
 		anchors.verticalCenter:		parent.verticalCenter
 
-		//font.family:				jaspTheme.font.family
-		//font.pixelSize:				filterConstructor.fontPixelSize
-		//color:						jaspTheme.textEnabled
-
-
-		onCheckedChanged:		filterConstructor.somethingChanged = true 
+		onCheckedChanged:			filterConstructor.somethingChanged = true 
+		
+		text:						boolRoot.parent && boolRoot.parent.parent && boolRoot.parent.parent.objectName === "DropSpot" ? boolRoot.parent.parent.parameterName : ""
 	}
 
 	function shouldDrag(mouseX, mouseY)			{ return false }
