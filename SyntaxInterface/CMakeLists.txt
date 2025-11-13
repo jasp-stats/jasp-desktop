@@ -17,7 +17,6 @@ target_include_directories(
 	SyntaxInterface
 	PUBLIC
 		${PROJECT_SOURCE_DIR}/Common
-		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 		${PROJECT_SOURCE_DIR}/CommonData
 		${PROJECT_SOURCE_DIR}/QMLComponents
 		${PROJECT_SOURCE_DIR}/R-Interface

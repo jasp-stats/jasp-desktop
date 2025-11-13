@@ -36,7 +36,6 @@ target_include_directories(
 	PUBLIC # JASP
 	${PROJECT_SOURCE_DIR}/R-Interface
 	${PROJECT_SOURCE_DIR}/Common
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 	# R
 	${R_INCLUDE_PATH}
 	${R_HOME_PATH}/include

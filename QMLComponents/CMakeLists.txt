@@ -44,7 +44,6 @@ target_include_directories(
 	PUBLIC # JASP
 	${PROJECT_SOURCE_DIR}/Common
 	${PROJECT_SOURCE_DIR}/CommonData
-	${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
 	${CMAKE_CURRENT_LIST_DIR}/controls
 	${CMAKE_CURRENT_LIST_DIR}/rsyntax
 	${CMAKE_CURRENT_LIST_DIR}/ALTNavigation

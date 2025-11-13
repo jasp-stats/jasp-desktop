@@ -114,7 +114,6 @@ target_include_directories(
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
     ${PROJECT_SOURCE_DIR}/Common
-    ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
     ${PROJECT_SOURCE_DIR}/CommonData
     ${PROJECT_SOURCE_DIR}/QMLComponents
     ${LIBREADSTAT_INCLUDE_DIRS}

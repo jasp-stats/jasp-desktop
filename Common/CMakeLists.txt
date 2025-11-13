@@ -20,7 +20,6 @@ add_library(Common STATIC ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(
   Common
   PUBLIC
-  ${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
   # R
   ${R_INCLUDE_PATH}
   ${R_HOME_PATH}/include

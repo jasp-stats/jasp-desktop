@@ -38,7 +38,7 @@
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R-Interface)
 
-file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder/json/*.cpp")
+file(GLOB SOURCE_FILES    "${PROJECT_SOURCE_DIR}/Common/json/*.cpp")
 list(APPEND SOURCE_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.cpp")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp.h")
 list(APPEND HEADER_FILES  "${CMAKE_CURRENT_LIST_DIR}/jasprcpp_interface.h")
@@ -148,7 +148,7 @@ if(${R_VERSION} VERSION_GREATER_EQUAL "4.5.0")
 
   set(R_INTERFACE_INCLUDE_DIRS
 		${CMAKE_CURRENT_LIST_DIR}
-		${PROJECT_SOURCE_DIR}/../Common/jaspColumnEncoder
+        ${PROJECT_SOURCE_DIR}/../Common
 		${R_INCLUDE_PATH}
 		${RCPP_PATH}/include
   )
@@ -178,7 +178,7 @@ else()
   add_library(R-InterfaceNoRInside ${SOURCE_FILES} ${HEADER_FILES})
 
   set(R_INTERFACE_INCLUDE_DIRS
-		${PROJECT_SOURCE_DIR}/Common/jaspColumnEncoder
+        ${PROJECT_SOURCE_DIR}/Common
 		${R_INCLUDE_PATH}
 		${RCPP_PATH}/include
 	)
