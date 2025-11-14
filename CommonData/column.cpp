@@ -258,9 +258,10 @@ void Column::setCodeType(computedColumnType codeType)
 		_constructorJson["formulas"] = Json::arrayValue;
 	}
 
-	if(_codeType == computedColumnType::analysisNotComputed)
+	if(_codeType == computedColumnType::analysisNotComputed && codeType != computedColumnType::analysis)
 		_analysisId = -1;
 
+	Log::log() << "Column " << _name << "'s codeType changes from " << computedColumnTypeToString(_codeType) << " to " << computedColumnTypeToString(codeType) << std::endl;
 	_codeType	= codeType;
 	
 	dbUpdateComputedColumnStuff();
@@ -658,7 +659,7 @@ bool Column::setDescriptions(strstrmap labelToDescriptionMap)
 }
 
 
-bool Column::overwriteDataAndType(stringvec colData, columnType colType)
+bool Column::overwriteDataAndType(stringvec colData, columnType colType, bool computed)
 {
 	JASPTIMER_SCOPE(Column::overwriteDataAndType);
 	
@@ -676,6 +677,7 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 		colData = newData;
 	}
 	
+	Log::log() << "Column " << _name << " overwriteDataAndType(" << colData.size() << " rows of data, "<<columnTypeToString(colType)<<", bool computed=" << (computed ? "true" : "false") << ")" << std::endl;
 	
 	//Now to make sure that the colData is neither bigger nor smaller than the dataset:
 	colData.resize(_data->rowCount()); //Either add blanks rows add end or drop superfluous data
@@ -709,6 +711,8 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType)
 	// In this case, the locale used is just UTF-8/C, so the locale chosen by the user should not be used to convert the values.
 	beginBatchedLabelsDB();
 	setValues(values, labels, 0, &changes, false);
+	if(computed)
+		setCodeType(computedColumnType::analysis);
 	setType(colType);
 	nonFilteredCountersReset();
 	labelsHandleAutoSort();
@@ -1517,7 +1521,7 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	double		newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
 				itsMissingVal	= isEmptyValue(userEntered);	
-	bool		nothingThereYet	=	std::none_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); }) 
+	bool		nothingThereYet	=	std::none_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || (!labelByIntsId(i) || labelByIntsId(i)->isEmptyValue())); })
 								&&	std::none_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });	
 	
 	if(nothingThereYet && !itsMissingVal)
@@ -1871,7 +1875,6 @@ void Column::valuesReverse()
 
 }
 
-
 DatabaseInterface & Column::db()
 {
 	return _data->db();
@@ -1894,7 +1897,6 @@ bool Column::hasFilter() const
 {
 	return !allLabelsPassFilter();
 }
-
 
 void Column::resetFilter()
 {

@@ -26,9 +26,9 @@ class DataBridge
 public:
 	DataBridge(unsigned long sessionID, bool useMemory = false);
 
-	std::string				createColumn(				const std::string & columnName); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
+	std::string				createColumn(				const std::string & columnName, bool computed=false); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
 	bool					deleteColumn(				const std::string & columnName);
-	bool					setColumnDataAndType(		const std::string & columnName, const	std::vector<std::string>	& nominalData, columnType colType); ///< return true for any changes
+	bool					setColumnDataAndType(		const std::string & columnName, const	std::vector<std::string>	& nominalData, columnType colType, bool computed); ///< return true for any changes
 	int						getColumnType(				const std::string & columnName);
 	int						getColumnAnalysisId(		const std::string & columnName);
 	int						getColumnOriginalIndex(		const std::string & columnName);

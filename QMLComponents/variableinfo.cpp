@@ -8,8 +8,14 @@ VariableInfo* VariableInfo::_singleton = nullptr;
 VariableInfo::VariableInfo(VariableInfoProvider* providerInfo) :
 	QObject(providerInfo->providerModel()), _provider(providerInfo)
 {
-	if (_singleton == nullptr)
-		_singleton = this;
+	assert(_singleton == nullptr);
+	_singleton = this;
+}
+
+VariableInfo::~VariableInfo()
+{
+	assert(_singleton == this);
+	_singleton = nullptr;
 }
 
 VariableInfo *VariableInfo::info()
@@ -50,6 +56,11 @@ QString VariableInfo::getTypeFriendly(columnType colType)
 int VariableInfo::rowCount()
 {
 	return _provider ? _provider->provideInfo(VariableInfo::DataSetRowCount).toInt() : 0;
+}
+
+int VariableInfo::variableCount()
+{
+	return _provider ? _provider->provideInfo(VariableInfo::VariableNames).toStringList().count() : 0;
 }
 
 bool VariableInfo::dataAvailable()

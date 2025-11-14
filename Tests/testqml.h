@@ -4,6 +4,7 @@
 #include <QtQuickTest>
 
 class PreferencesModelBase;
+class DataSetProvider;
 class QQmlEngine;
 class JaspTheme;
 
@@ -19,10 +20,6 @@ public slots:
 	void qmlEngineAvailable(QQmlEngine *engine);
 
 	void cleanupTestCase();
-
-private:
-	JaspTheme				* _theme = nullptr;
-	PreferencesModelBase	* _prefs = nullptr;
 };
 
 #endif // TESTQML_H

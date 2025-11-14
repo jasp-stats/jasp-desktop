@@ -190,24 +190,30 @@ void ListModel::setRowComponent(QQmlComponent* rowComponent)
 	_rowComponent = rowComponent;
 }
 
-void ListModel::setUpRowControls()
+void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 {
 	if (_rowComponent == nullptr)
 		return;
 
-	int row = 0;
-	for (const Term& term : terms())
+	if (!onlyRemove)
 	{
-		if (!_rowControlsMap.contains(term.value()))
+		int row = 0;
+		for (const Term& term : terms())
 		{
-			RowControls* rowControls = new RowControls(this, _rowComponent);
-			_rowControlsMap[term.value()] = rowControls;
-			rowControls->initValues(row, term, _rowControlsValues[term.value()]);
-		}
-		else
-			_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+			if (startRow <= row)
+			{
+				if (!_rowControlsMap.contains(term.value()))
+				{
+					RowControls* rowControls = new RowControls(this, _rowComponent);
+					_rowControlsMap[term.value()] = rowControls;
+					rowControls->initValues(row, term, _rowControlsValues[term.value()]);
+				}
+				else
+					_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+			}
 
-		row++;
+			row++;
+		}
 	}
 	
 	// Disconnect and delete all controls that are not used anymore
@@ -426,6 +432,21 @@ void ListModel::setSelectedItem(int _index)
 
 	clearSelectedItems(false);
 	selectItem(_index, true);
+}
+
+void ListModel::setSelectedItemWithName(QString name)
+{
+	int i = 0;
+
+	for (const Term& term : terms())
+	{
+		if (term.label() == name)
+		{
+			setSelectedItem(i);
+			break;
+		}
+		i++;
+	}
 }
 
 void ListModel::selectAllItems()
@@ -785,37 +806,40 @@ void ListModel::_setTerms(const Terms &terms)
 void ListModel::_removeTerms(const Terms &terms)
 {
 	_terms.remove(terms);
-	setUpRowControls();
+	setUpRowControls(0, true);
 }
 
 void ListModel::_removeTerm(int index)
 {
 	_terms.remove(size_t(index));
-	setUpRowControls();
+	setUpRowControls(0, true);
 }
 
 void ListModel::_removeTerm(const Term &term)
 {
 	_terms.remove(term);
-	setUpRowControls();
+	setUpRowControls(0, true);
 }
 
 void ListModel::_removeLastTerm()
 {
 	if (_terms.size() > 0)
 		_terms.remove(_terms.size() - 1);
+	setUpRowControls(0, true);
 }
 
 void ListModel::_addTerms(const Terms &terms)
 {
+	int i = _terms.size();
 	_terms.add(checkTermsTypes(terms));
-	setUpRowControls();
+	setUpRowControls(i);
 }
 
 void ListModel::_addTerm(const Term &term, bool isUnique)
 {
+	int i = _terms.size();
 	_terms.add(_checkTermType(term), isUnique);
-	setUpRowControls();
+	setUpRowControls(i);
 }
 
 void ListModel::_replaceTerm(int index, const Term &term)

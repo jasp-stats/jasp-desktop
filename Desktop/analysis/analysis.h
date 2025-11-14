@@ -156,10 +156,9 @@ public:
 
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
 
-	const QList<std::string>	&	computedColumns()							const				{ return _computedColumns; }
 	const Json::Value			&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	Json::Value						rSources()									const;
-	bool							isOwnComputedColumn(const std::string& col)	const	override	{ return _computedColumns.contains(col); }
+	bool							isOwnComputedColumn(const std::string& col)	const	override;
 	void							preprocessMarkdownHelp(QString & md)		const				{ if (_dynamicModule) _dynamicModule->preprocessMarkdownHelp(md);}
 
 signals:
@@ -196,14 +195,12 @@ public slots:
 	void					requestColumnCreationHandler(			const std::string & columnName, columnType colType)	override;
 	void					requestComputedColumnDestructionHandler(const std::string & columnName)						override;
 	void					analysisQMLFileChanged();
-	void					setRSyntaxTextInResult();
+	void					setRSyntaxTextInResult(bool show);
 	void					filterByNameDone(const QString &name, const QString &error);
 	void					onUsedVariablesChanged()																	override;
 
 protected:
 	void					abort();
-	void					addOwnComputedColumn(	const std::string & col)	{ _computedColumns.push_back(col); }
-	void					removeOwnComputedColumn(const std::string & col)	{ _computedColumns.removeAll(col); }
 	void					watchQmlForm();
 
 private:
@@ -254,7 +251,6 @@ private:
 
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;
 	Modules::DynamicModule	*	_dynamicModule					= nullptr;
-	QList<std::string>			_computedColumns;
 	QFileSystemWatcher			_QMLFileWatcher;
 
 	QString						_helpFile;

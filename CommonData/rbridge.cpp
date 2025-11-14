@@ -78,6 +78,23 @@ const std::string jaspBaseTransformFunctionsR =
 		#include "jaspBase_transformFunctions.h"
 		;
 
+
+const std::string jaspBaseTransformBoxCoxR =
+		#include "jaspBase_transformBoxCox.h"
+		;
+
+const std::string jaspBaseTransformJohnsonR =
+		#include "jaspBase_transformJohnson.h"
+		;
+
+const std::string jaspBaseTransformYeoJohnsonR =
+		#include "jaspBase_transformYeoJohnson.h"
+		;
+
+const std::string jaspBaseTransformPowerR =
+		#include "jaspBase_transformPower.h"
+		;
+
 void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
@@ -124,7 +141,14 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 	JASPTIMER_START(jaspRCPP_init);
 
 	static std::string tempDirStatic = TempFiles::createTmpFolder();
-	static std::string initRCode	 = jaspBaseDistributionSamplersR + "\n" + jaspBaseFriendlyConstructorFunctionsR + "\n" + jaspBaseTransformFunctionsR;
+	static std::string initRCode					= 
+			jaspBaseDistributionSamplersR			+ "\n" + 
+			jaspBaseFriendlyConstructorFunctionsR	+ "\n" + 
+			jaspBaseTransformFunctionsR				+ "\n" + 
+			jaspBaseTransformBoxCoxR				+ "\n" + 
+			jaspBaseTransformJohnsonR				+ "\n" + 
+			jaspBaseTransformYeoJohnsonR			+ "\n" + 
+			jaspBaseTransformPowerR;
 
 	Log::log() << "Entering jaspRCPP_init." << std::endl;
 	jaspRCPP_init(	AppInfo::getBuildYear()		.c_str(),
@@ -603,10 +627,10 @@ extern "C" int STDCALL rbridge_getColumnOriginalIndex(const char * columnName)
 	return data_bridge->getColumnOriginalIndex(colName);
 }
 
-extern "C" const char * STDCALL rbridge_createColumn(const char * columnName)
+extern "C" const char * STDCALL rbridge_createColumn(const char * columnName, bool computed)
 {
 	static std::string lastColumnName;
-	lastColumnName = data_bridge->createColumn(columnName);
+	lastColumnName = data_bridge->createColumn(columnName, computed);
 
 	return lastColumnName.c_str();
 }
@@ -616,13 +640,13 @@ extern "C" bool STDCALL rbridge_deleteColumn(const char * columnName)
 	return data_bridge->deleteColumn(columnName);
 }
 
-extern "C" bool STDCALL rbridge_setColumnDataAndType(const char* columnName, const char ** nominalData, size_t length, int _columnType)
+extern "C" bool STDCALL rbridge_setColumnDataAndType(const char* columnName, const char ** nominalData, size_t length, int _columnType, bool computed)
 {
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
 
 	std::vector<std::string> nominals(nominalData, nominalData + length);
 
-	return data_bridge->setColumnDataAndType(colName, nominals, columnType(_columnType));
+	return data_bridge->setColumnDataAndType(colName, nominals, columnType(_columnType), computed);
 }
 
 extern "C" int	STDCALL rbridge_dataSetRowCount()

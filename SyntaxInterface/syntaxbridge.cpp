@@ -24,12 +24,8 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 #include <QDir>
-#include <QQuickStyle>
 #include <QThread>
-#include "preferencesmodelbase.h"
-#include "jasptheme.h"
 #include "controls/jaspcontrol.h"
-#include "knownissues.h"
 #include "datasetprovider.h"
 #include "databridge.h"
 #include "rbridge.h"
@@ -39,6 +35,9 @@
 #include "analysisform.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
+#include "dirs.h"
+#include "utilities/appdirs.h"
+
 
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(JASP_ControlsPlugin)
@@ -93,26 +92,19 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 	}
 
 	DataSetProvider* provider = DataSetProvider::getProvider(dbInMemory);
-	DataSet* dataset = provider->dataSet();
 
-	dataset->beginBatchedToDB();
-
-	dataset->setColumnCount(syntaxBridgeDataSet->columnCount);
-	dataset->setRowCount(syntaxBridgeDataSet->rowCount);
+	std::map<std::string, stringvec > dataSet;
 
 	for (int colNr = 0; colNr < syntaxBridgeDataSet->columnCount; colNr++)
 	{
-		auto lookup = [&](size_t r)
-		{
-			return syntaxBridgeDataSet->columns[colNr].values[r];
-		};
-		
-		dataset->column(colNr)->initFromLookups(syntaxBridgeDataSet->columns[colNr].name, syntaxBridgeDataSet->rowCount, lookup, lookup, syntaxBridgeDataSet->columns[colNr].name, columnType::unknown, {}, threshold, orderLabelsByValue);
+		const SyntaxBridgeColumn& column  = syntaxBridgeDataSet->columns[colNr];
+		stringvec values;
+		for (int rowNr = 0; rowNr < syntaxBridgeDataSet->rowCount; rowNr++)
+			values.push_back(column.values[rowNr]);
+		dataSet[column.name] = values;
 	}
 
-	dataset->endBatchedToDB([](float f) {});
-
-	ColumnEncoder::columnEncoder()->setCurrentNames(dataset->getColumnTypesMap());
+	provider->loadDataSet(dataSet, threshold, orderLabelsByValue);
 }
 
 const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
@@ -291,37 +283,6 @@ void deleteQuickItem(QQuickItem* item)
 	item->deleteLater();
 }
 
-
-void addContextObjects(QQmlApplicationEngine* engine)
-{
-	//QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == .
-
-	QmlUtils::setGlobalPropertiesInQMLContext(engine->rootContext());
-
-	PreferencesModelBase* prefModel = engine->rootContext()->contextProperty("preferencesModel").value<PreferencesModelBase*>();
-	if (prefModel == nullptr)
-	{
-		prefModel = new PreferencesModelBase();
-		engine->rootContext()->setContextProperty("preferencesModel",		prefModel);
-	}
-
-	if (engine->rootContext()->contextProperty("jaspTheme").isNull())
-	{
-		JaspTheme* defaultJaspTheme = new JaspTheme();
-		defaultJaspTheme->setThemeName("lightTheme");
-		engine->rootContext()->setContextProperty("jaspTheme",			defaultJaspTheme);
-	}
-
-	qmlRegisterUncreatableMetaObject(JASPControl::staticMetaObject, // static meta object
-									 "JASP.Controls",        // import statement
-									 0, 1,                   // major and minor version of the import
-									 "JASP",                 // name in QML
-									 "Error: only enums");
-	if (!KnownIssues::issues())
-		new KnownIssues();
-
-}
-
 void sendMessage(const char * msg)
 {
 	if (gl_verbose)
@@ -354,7 +315,8 @@ bool init(bool dbInMemory)
 	//const char*	platformArg = "-platform";
 	//const char*	platformOpt = "minimal"; //"cocoa";
 
-	std::vector<const char*> arguments = {}; //{qmlR, platformArg, platformOpt};
+	std::vector<const char*> arguments = {"JASP"}; //{qmlR, platformArg, platformOpt};
+
 
 	int		argc = arguments.size();
 	char** argvs = new char*[argc];
@@ -372,15 +334,11 @@ bool init(bool dbInMemory)
 	gl_application = new QGuiApplication(argc, argvs);
 	gl_qmlEngine = new QQmlApplicationEngine();
 
-	addContextObjects(gl_qmlEngine);
-
-	gl_qmlEngine->addImportPath(":/jasp-stats.org/imports");
-	gl_qmlEngine->rootContext()->setContextProperty("NO_DESKTOP_MODE",	true);
-	QQuickStyle::setStyle("Basic"); // This removes warnings "The current style does not support customization of this control"
-
+	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
 	TempFiles::init(ProcessInfo::currentPID());
+	DataSetProvider::getProvider(dbInMemory, false, gl_application); // Create the DataSetProvider in case the loadDataSet was not already called
 
-	DataSetProvider::getProvider(dbInMemory, false); // Create the DataSetProvider in case the loadDataSet was not already called
+	QmlUtils::setupQMLEngine(gl_qmlEngine);
 
 	gl_dataBridge = new DataBridge(ProcessInfo::currentPID(), dbInMemory);
 	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
@@ -444,9 +402,14 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 			return nullptr;
 		}
 
-		AnalysisBase* analysis = new AnalysisBase(qmlForm); // Make dummy analysis
+		AnalysisBase* analysis = qmlForm->analysisObj();
+		if (!analysis)
+		{
+			analysis = new AnalysisBase(qmlForm); // Make dummy analysis
+			qmlForm->setAnalysis(analysis);
+		}
+
 		QObject::connect(analysis,	&AnalysisBase::sendRScriptSignal,	[qmlForm](QString script, QString controlName, bool whiteListedVersion, QString module) { sendRScriptHandler(qmlForm, script, controlName, whiteListedVersion); });
-		qmlForm->setAnalysis(analysis);
 
 		if (gl_qmlFormMap.contains(qmlFileStr))
 			deleteQuickItem(gl_qmlFormMap[qmlFileStr].second); // delete old version of the form

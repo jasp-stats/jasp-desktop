@@ -102,11 +102,14 @@ Analysis::~Analysis()
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 	{
-		for(const std::string & col : computedColumns())
-			if(DataSetPackage::pkg()->isColumnAnalysisNotComputed(col))
-				DataSetPackage::pkg()->setColumnComputedType(col, computedColumnType::notComputed);
-			else
-				emit requestComputedColumnDestruction(col, this);
+		for(Column * col : DataSetPackage::pkg()->dataSet()->columns())
+			if(col->analysisId() == id())
+			{
+				if(col->codeType() == computedColumnType::analysisNotComputed)
+					DataSetPackage::pkg()->setColumnComputedType(DataSetPackage::pkg()->dataSet()->columnIndex(col), computedColumnType::notComputed);
+				else
+					emit requestComputedColumnDestruction(col->name(), this);
+			}
 	}
 }
 
@@ -225,6 +228,8 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	_wasUpgraded		= false;
 	_storedWithoutState = false;
+
+	setRSyntaxTextInResult(DataSetPackage::pkg()->workspaceShowRSyntax()); // At this point, we are sure that the analysis exists in the results
 }
 
 void Analysis::exportResults()
@@ -358,9 +363,7 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this, 					&Analysis::titleChanged,			_analysisForm,	&AnalysisForm::titleChanged					);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::rSyntaxTextChanged			);
-		connect(this,					&Analysis::boundValuesChanged,		this,			&Analysis::setRSyntaxTextInResult,		Qt::QueuedConnection	);
 
-		setRSyntaxTextInResult();
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
 		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
 
@@ -508,24 +511,17 @@ void Analysis::boundValueChangedHandler()
 
 void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
-	Column *result = requestComputedColumnCreation(columnName, this);
-
-	if (result)
-		addOwnComputedColumn(columnName);
+	emit requestComputedColumnCreation(columnName, this);
 }
 
 void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
 {
 	emit requestColumnCreation(columnName, this, colType);
-
-	addOwnComputedColumn(columnName);
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
 	emit requestComputedColumnDestruction(columnName, this);
-	//We could check whether it worked or not, but if this column wasnt owned by analysis and it dfailed the next will be noop anyway:
-	removeOwnComputedColumn(columnName);
 }
 
 performType Analysis::desiredPerformTypeFromAnalysisStatus() const
@@ -788,6 +784,13 @@ Json::Value Analysis::rSources() const
 		result[pair.first] = pair.second;
 
 	return result;
+}
+
+bool Analysis::isOwnComputedColumn(const std::string & colName) const
+{
+	Column * col = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->column(colName) : nullptr;
+	
+	return col->analysisId() == id();
 }
 
 void Analysis::storeUserDataEtc()
@@ -1075,12 +1078,11 @@ void Analysis::analysisQMLFileChanged()
 		Log::log() << "Form (" << form() << ") wasn't complete " << ( form() ? std::to_string(form()->formCompleted()) : " because there was no form...") << " yet, and also did not have a QML error set yet, so ignoring it." << std::endl;
 }
 
-void Analysis::setRSyntaxTextInResult()
+void Analysis::setRSyntaxTextInResult(bool show)
 {
 	if (!form() || !_moduleData->hasWrapper() || !form()->initialized()) return;
 
-	bool generateRSyntax = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
-	ResultsJsInterface::singleton()->setRSyntax(id(), generateRSyntax ? form()->generateRSyntax(true) : "");
+	ResultsJsInterface::singleton()->setRSyntax(id(), show ? form()->generateRSyntax(true) : "");
 }
 
 void Analysis::onUsedVariablesChanged()

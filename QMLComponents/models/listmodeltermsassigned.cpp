@@ -102,17 +102,22 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 		// in a TabView, if the user changes the title of a Tab and clicks direclty the '+' button to add another tab, adding a new tab will be done first, and will add a new
 		// term to the model: if the model of the TabView is reset, the TextField controls that handle the titles of the Tabs are destroyed and recreated. As the TextField control
 		// that was used to change the title is destroyed, the signal that changes this title is not received, and the title gets back its old value.
-		newTerms = terms();
-		if (dropItemIndex >= 0 && dropItemIndex < terms().size())
-			newTerms.insert(dropItemIndex, termsToAdd);
-		else
-		{
+		if (dropItemIndex < 0 || dropItemIndex > terms().size())
 			dropItemIndex = terms().size();
-			newTerms.add(termsToAdd);
-		}
 
 		beginInsertRows(QModelIndex(), dropItemIndex, dropItemIndex + termsToAdd.size() - 1);
-		_setTerms(newTerms);
+		newTerms = terms();
+		if (dropItemIndex < terms().size())
+		{
+			newTerms.insert(dropItemIndex, termsToAdd);
+			_setTerms(newTerms);
+		}
+		else
+		{
+			newTerms.add(termsToAdd);
+			_addTerms(termsToAdd);
+		}
+
 		endInsertRows();
 
 		if (maxRows > 0 && newTerms.size() > maxRows)
@@ -136,7 +141,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 {
 	if (index < 0 || index >= rowCount()) return;
 
-	beginResetModel();
+	beginRemoveRows(QModelIndex(), index, index);
 
 	const Term& term = terms().at(size_t(index));
 
@@ -153,7 +158,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 	}
 	_removeTerm(term);
 
-	endResetModel();
+	endRemoveRows();
 }
 
 void ListModelTermsAssigned::changeTerm(int index, const Term& term)

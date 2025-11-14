@@ -1,6 +1,7 @@
 #include <QQmlIncubator>
 #include <QQmlContext>
 #include <QFileInfo>
+#include <QQuickStyle>
 #include "qmlutils.h"
 #include "qutils.h"
 #include "log.h"
@@ -10,6 +11,10 @@
 #include "altnavpostfixassignmentstrategy.h"
 #include "variableinfo.h"
 #include "messageforwarder.h"
+#include "preferencesmodelbase.h"
+#include "jasptheme.h"
+#include "knownissues.h"
+
 
 #ifdef linux
 #include <QtGlobal>
@@ -202,7 +207,57 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 	ctxt->setContextProperty("INTERACTION_SEPARATOR",	Term::separator);
 	ctxt->setContextProperty("dataSetInfo",				VariableInfo::info());
 	ctxt->setContextProperty("messages",				MessageForwarder::msgForwarder());
+	ctxt->setContextProperty("backgroundForms",			nullptr);
+
 
 	qmlRegisterUncreatableType<JASPControl>(					"JASP",		1, 0, "JASP",					"Impossible to create JASP Object");
 	qmlRegisterUncreatableType<ALTNavPostfixAssignmentStrategy>("JASP",		1, 0, "AssignmentStrategy",		"Can't make it"	);
+}
+
+void QmlUtils::setupQMLEngine(QQmlEngine *engine)
+{
+	QmlUtils::setGlobalPropertiesInQMLContext(engine->rootContext());
+
+	PreferencesModelBase* prefModel = engine->rootContext()->contextProperty("preferencesModel").value<PreferencesModelBase*>();
+	if (prefModel == nullptr)
+	{
+		prefModel = PreferencesModelBase::preferences();
+		if (!prefModel)
+			prefModel = new PreferencesModelBase();
+		engine->rootContext()->setContextProperty("preferencesModel",		prefModel);
+	}
+
+	if (engine->rootContext()->contextProperty("jaspTheme").isNull())
+	{
+		JaspTheme* defaultJaspTheme = JaspTheme::currentTheme();
+		if (!defaultJaspTheme)
+		{
+			defaultJaspTheme = new JaspTheme();
+			defaultJaspTheme->setThemeName("lightTheme");
+		}
+		engine->rootContext()->setContextProperty("jaspTheme",			defaultJaspTheme);
+	}
+
+	if (!KnownIssues::issues())
+		new KnownIssues();
+
+	QStringList originalImportPaths = engine->importPathList();
+	if (!originalImportPaths.contains(":/jasp-stats.org/imports"))
+		engine->addImportPath(":/jasp-stats.org/imports");
+
+	engine->rootContext()->setContextProperty("NO_DESKTOP_MODE",	true);
+
+	static bool alreadyDone = false;
+	if (!alreadyDone)
+	{
+		qmlRegisterUncreatableMetaObject(JASPControl::staticMetaObject, // static meta object
+										 "JASP.Controls",        // import statement
+										 0, 1,                   // major and minor version of the import
+										 "JASP",                 // name in QML
+										 "Error: only enums");
+
+		QQuickStyle::setStyle("Basic"); // This removes warnings "The current style does not support customization of this control"
+		alreadyDone = true;
+	}
+
 }

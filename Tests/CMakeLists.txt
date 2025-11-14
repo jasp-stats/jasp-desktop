@@ -37,20 +37,10 @@ qt_add_executable(
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
 
-qt_add_executable(
-  JASPFormTest
-  ${SYSTEM_TYPE}
-  testqmlform.h
-  testqmlform.cpp
-  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
-  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
-)
-
 
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
-add_dependencies(JASPFormTest       JASPDesktopLib)
 add_dependencies(JASPQuickTest      JASPDesktopLib)
 
 target_include_directories(
@@ -80,12 +70,6 @@ target_include_directories(
   JASPDesktopLib
 )
 
-target_include_directories(
-  JASPFormTest
-  PUBLIC
-  JASPDesktopLib
-)
-
 target_link_libraries(
   JASPTest
   PUBLIC
@@ -115,17 +99,7 @@ target_link_libraries(
   PRIVATE
   Qt6::Core
   Qt6::Qml
-)
 
-target_link_libraries(
-  JASPFormTest
-  PUBLIC
-  JASPDesktopLib
-  Qt::QuickTest
-
-  PRIVATE
-  Qt6::Core
-  Qt6::Qml
   Qt::WebEngineQuick
   Qt::WebChannel
   Qt::WebChannelQuick
@@ -165,18 +139,11 @@ target_compile_definitions(
   -DQUICK_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/qmlTests/"
 )
 
-target_compile_definitions(
-  JASPFormTest
-  PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
-  -DQUICK_TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/formTests/"
-)
-
 enable_testing(true)
 
 add_test(NAME testDataImport  COMMAND JASPTest)
 add_test(NAME testDebugData   COMMAND JASPTestDebugData)
 add_test(NAME testEngine      COMMAND JASPTestEngine)
 add_test(NAME testQuick       COMMAND JASPQuickTest)
-add_test(NAME testForms       COMMAND JASPFormTest)
 
 endif()

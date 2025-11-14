@@ -860,9 +860,9 @@ int jaspRCPP_getColumnOriginalIndex(std::string columnName)
 	return dataSetGetColumnOriginalIndex(columnName.c_str()); // columnName decoded in rbridge
 }
 
-std::string jaspRCPP_createColumn(std::string columnName)
+std::string jaspRCPP_createColumn(std::string columnName, bool computed)
 {
-	return dataSetCreateColumn(columnName.c_str());
+	return dataSetCreateColumn(columnName.c_str(), computed);
 }
 
 bool jaspRCPP_deleteColumn(std::string columnName)
@@ -894,24 +894,24 @@ bool jaspRCPP_columnIsScale(		const std::string & columnName) { return jaspRCPP_
 bool jaspRCPP_columnIsOrdinal(		const std::string & columnName) { return jaspRCPP_getColumnType(columnName) == columnType::ordinal;		}
 bool jaspRCPP_columnIsNominal(		const std::string & columnName) { return jaspRCPP_getColumnType(columnName) == columnType::nominal;		}
 
-bool jaspRCPP_setColumnDataAsScale(const std::string & columnName, Rcpp::RObject scalarData)
+bool jaspRCPP_setColumnDataAsScale(const std::string & columnName, Rcpp::RObject scalarData, int computed)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, scalarData, columnType::scale);
+	return _jaspRCPP_setColumnDataAndType(columnName, scalarData, columnType::scale, computed==1);
 }
 
 
-bool jaspRCPP_setColumnDataAsOrdinal(const std::string & columnName, Rcpp::RObject ordinalData)
+bool jaspRCPP_setColumnDataAsOrdinal(const std::string & columnName, Rcpp::RObject ordinalData, int computed)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, ordinalData, columnType::ordinal);
+	return _jaspRCPP_setColumnDataAndType(columnName, ordinalData, columnType::ordinal, computed==1);
 }
 
 
-bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObject nominalData)
+bool jaspRCPP_setColumnDataAsNominal(const std::string & columnName, Rcpp::RObject nominalData, int computed)
 {
-	return _jaspRCPP_setColumnDataAndType(columnName, nominalData, columnType::nominal);
+	return _jaspRCPP_setColumnDataAndType(columnName, nominalData, columnType::nominal, computed==1);
 }
 
-bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType)
+bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObject data, columnType colType, bool computed)
 {
 	static Rcpp::Function asNumeric("as.numeric");
 	static Rcpp::Function asCharacter("as.character");
@@ -933,7 +933,7 @@ bool _jaspRCPP_setColumnDataAndType(const std::string & columnName, Rcpp::RObjec
 					: (!isLgl	? convertedStrings[i].c_str() : convertedStrings[i] == "TRUE" ? "1" : "0"); //Also getting TRUE or FALSE is not ideal
 	}
 
-	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType));
+	return dataSetColumnDataAndType(columnName.c_str(), nominals, static_cast<size_t>(strData.size()), int(colType), computed);
 }
 
 

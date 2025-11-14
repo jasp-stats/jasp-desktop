@@ -2285,11 +2285,6 @@ void MainWindow::setCommunityVisible(bool newCommunityVisible)
 	emit communityVisibleChanged();
 }
 
-void MainWindow::setDefaultWorkspaceEmptyValues()
-{
-	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
-}
-
 void MainWindow::loadModulesFromUserConfiguration(configState state)
 {
 	if(state == configState::FAIL)

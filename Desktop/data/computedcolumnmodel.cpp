@@ -243,6 +243,7 @@ void ComputedColumnModel::computeColumnSucceeded(QString columnNameQ, QString wa
 		return;
 
 	//First check for any updates from engine-side as setError might call incRevision()	
+	
 	column->checkForUpdates();
 	
 	if(column->setError(warning) && shouldNotifyQML)

@@ -61,9 +61,9 @@ extern "C" {
 	int							STDCALL rbridge_getColumnType			(const char * columnName);
 	int							STDCALL rbridge_getColumnAnalysisId		(const char * columnName);
 	int							STDCALL rbridge_getColumnOriginalIndex	(const char * columnName);
-	const char *				STDCALL rbridge_createColumn			(const char * columnName);
+	const char *				STDCALL rbridge_createColumn			(const char * columnName, bool computed);
 	bool						STDCALL rbridge_deleteColumn			(const char * columnName);
-	bool						STDCALL rbridge_setColumnDataAndType	(const char* columnName, const char **	nominalData,	size_t length,	int columnType);
+	bool						STDCALL rbridge_setColumnDataAndType	(const char* columnName, const char **	nominalData,	size_t length,	int columnType, bool computed);
 	int							STDCALL rbridge_dataSetRowCount();
 	const char *				STDCALL rbridge_encodeColumnName(		const char * in);
 	const char *				STDCALL rbridge_decodeColumnName(		const char * in);

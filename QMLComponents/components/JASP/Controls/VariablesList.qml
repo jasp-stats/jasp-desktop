@@ -123,6 +123,11 @@ VariablesListBase
 		variablesList.model.setSelectedItem(itemRank);
 	}
 
+	function setSelectedItemWithName(itemName)
+	{
+		variablesList.model.setSelectedItemWithName(itemName);
+	}
+
 	function selectShiftItems(selected)
 	{
 		var startIndex = variablesList.startShiftSelected;
@@ -394,6 +399,7 @@ VariablesListBase
 				border.color:	containsDragItem && variablesList.dropModeReplace ? jaspTheme.containsDragBorderColor : jaspTheme.grayLighter
 				radius:			jaspTheme.borderRadius
 				
+				property string	varName:				model.name
 				property bool	clearOtherSelectedItemsWhenClicked: false
 				property bool	selected:				model.selected
 				property bool	isDependency:			variablesList.dependencyMustContain.indexOf(colName.text) >= 0

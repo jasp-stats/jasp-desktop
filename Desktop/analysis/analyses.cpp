@@ -747,11 +747,11 @@ void Analyses::moveAnalysesResults(Analysis* fromAnalysis, int index)
 
 void Analyses::showRSyntaxInResults(bool show)
 {
-	Settings::setValue(Settings::SHOW_RSYNTAX_IN_RESULTS, show);
+	DataSetPackage::pkg()->setWorkspaceShowRSyntax(show);
 
 	applyToAll([&](Analysis * a)
 	{
-		a->setRSyntaxTextInResult();
+		a->setRSyntaxTextInResult(show);
 	});
 }
 

@@ -22,6 +22,7 @@ DropArea {
 	property bool	shouldShowX: false
 	property bool	iWasChecked: false
 	property bool	ignoreEmpty: false
+	property string parameterName:	""
 
 	implicitWidth:	Math.max(dropText.contentWidth, acceptsDrops ? filterConstructor.blockDim * 5 : 0)
 	implicitHeight: filterConstructor.blockDim
@@ -134,19 +135,18 @@ DropArea {
 			dropText.text	= Qt.binding(function(){ return dragTarget.defaultText			})
 		}
 		iWasChecked = false
-
 	}
 
 	Item
 	{
 		id: dropText
 
-		property string text: dragTarget.defaultText
+		property string text:		dragTarget.defaultText
 		property real contentWidth: dropTextStatic.visible ? dropTextStatic.contentWidth : dropTextInput.contentWidth
 
-		anchors.top: parent.top
-		anchors.bottom: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top:				parent.top
+		anchors.bottom:				parent.bottom
+		anchors.horizontalCenter:	parent.horizontalCenter
 
 		width: dropTextStatic.visible ? dropTextStatic.width : dropTextInput.width
 		//height: dropTextStatic.visible ? dropTextStatic.height : dropTextInput.height
@@ -208,10 +208,19 @@ DropArea {
 					createNumber(asNumber)
 				else if(dropKeys.indexOf("string") >= 0 && text !== "")
 					createString(text)
+				else if(dropKeys.indexOf("boolean") >= 0)
+				{
+					var boolVal = false;
+					if((!isNaN(asNumber) && asNumber != 0) || text.toLowerCase() === "true")
+						boolVal = true;
+					
+					createBool(boolVal)
+				}
 			}
 
-			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(dragTarget, { "value": value } ) ) }
-			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(dragTarget, { "text":  string } ) ) }
+			function createNumber(value)	{ setCreatedObjectUp(numberComp.createObject(	dragTarget, { "value":	value } ) ) }
+			function createString(string)	{ setCreatedObjectUp(stringComp.createObject(	dragTarget, { "text":	string } ) ) }
+			function createBool(boolVal)	{ setCreatedObjectUp(boolComp.createObject(		dragTarget, { "value":  boolVal } ) ) }
 
 
 			function setCreatedObjectUp(obj)
@@ -230,6 +239,7 @@ DropArea {
 
 	Component { id: numberComp; NumberDrag {}}
 	Component { id: stringComp; StringDrag {}}
+	Component { id: boolComp;	BooleanDrag {}}
 	
 	Rectangle
 	{

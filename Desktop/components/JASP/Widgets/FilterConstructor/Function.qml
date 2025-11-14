@@ -52,7 +52,7 @@ Item
 		var compounded = functionName + "("
 
 		for(var i=0; i<funcRoot.parameterNames.length; i++)
-				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "null" : dropRepeat.itemAt(i).returnR())
+				compounded += (i > 0 ? ", " : "") + (dropRepeat.itemAt(i) === null ? "NULL" : dropRepeat.itemAt(i).returnR())
 
 		compounded += extraParameterCode + ")"
 
@@ -209,7 +209,7 @@ Item
 			{
 				var widthOut = 0
 				for(var i=0; i<funcRoot.parameterNames.length; i++)
-					widthOut += dropRepeat.itemAt(i).width
+					widthOut += dropRepeat.itemAt(i) !== null ? dropRepeat.itemAt(i).width : 0
 				return widthOut
 			}
 
@@ -217,7 +217,7 @@ Item
 			{
 				var heightOut = filterConstructor.blockDim
 				for(var i=0; i<funcRoot.parameterNames.length; i++)
-					heightOut = Math.max(dropRepeat.itemAt(i).height, heightOut)
+					heightOut = Math.max(dropRepeat.itemAt(i) !== null ? dropRepeat.itemAt(i).height : 0, heightOut)
 
 				return heightOut
 			}
@@ -313,7 +313,7 @@ Item
 					if(spot.containsItem != null)
 						return spot.containsItem.returnR();
 					else
-						return "null"
+						return "NULL"
 				}
 
 				function getDropSpot() { return spot }
@@ -325,20 +325,23 @@ Item
 
 
 
-				DropSpot {
-					id: spot
+				DropSpot 
+				{
+					id:						spot
 
-					height: implicitHeight
-					implicitWidth: originalWidth
-					implicitHeight: filterConstructor.blockDim
+					height:					implicitHeight
+					implicitWidth:			originalWidth
+					implicitHeight:			filterConstructor.blockDim
 
-					acceptsDrops: funcRoot.acceptsDrops
+					acceptsDrops:			funcRoot.acceptsDrops
 
-					defaultText: funcRoot.parameterNames[index]
-					dropKeys: funcRoot.parameterDropKeys[index]
+					defaultText:			funcRoot.parameterNames[index]
+					dropKeys:				funcRoot.parameterDropKeys[index]
 
-					droppedShouldBeNested: funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.drawMeanSpecial
-					shouldShowX: funcRoot.parameterNames <= 1
+					droppedShouldBeNested:	funcRoot.parameterNames.length === 1 && !funcRoot.isAbs && !funcRoot.drawMeanSpecial
+					shouldShowX:			funcRoot.parameterNames <= 1
+					ignoreEmpty:			funcRoot.parameterNames[index].startsWith("?")
+					parameterName:			funcRoot.parameterNames[index]
 				}
 
 				Text

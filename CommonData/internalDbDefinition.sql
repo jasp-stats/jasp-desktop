@@ -8,7 +8,8 @@ CREATE TABLE DataSets (
 	databaseJson	TEXT, 
 	emptyValuesJson TEXT, 
 	revision		INT DEFAULT 0, 
-	dataFileSynch	INT
+	dataFileSynch	INT,
+	showRSyntax		INT DEFAULT 0
 );
 
 CREATE TABLE Filters ( 

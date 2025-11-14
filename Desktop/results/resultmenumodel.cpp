@@ -21,6 +21,8 @@
 #include "utilities/settings.h"
 #include "jasptheme.h"
 #include "gui/preferencesmodel.h"
+#include "data/datasetpackage.h"
+
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
 	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg", "hasExportResults",
@@ -137,7 +139,7 @@ void ResultMenuModel::setOptions(QString options, QStringList selected)
 		else if (key == "hasShowRSyntax")
 		{
 			entries.push_back(separator);
-			bool shown = Settings::value(Settings::SHOW_RSYNTAX_IN_RESULTS).toBool();
+			bool shown = DataSetPackage::pkg()->workspaceShowRSyntax();
 
 			QString jsFunction = QString("window.showRSyntaxClicked(%1);").arg(shown ? "false" : "true");
 			entry.setJSFunction(jsFunction);

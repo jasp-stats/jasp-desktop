@@ -76,7 +76,7 @@ public:
 			Terms					getSourceTerms();
 			void					setColumnsUsedForLabels(const QStringList& columns)						{ _columnsUsedForLabels = columns; }
 			void					setRowComponent(QQmlComponent* rowComponents);
-	virtual void					setUpRowControls();
+	virtual void					setUpRowControls(int startRow = 0, bool onlyRemove = false);
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
 	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
 	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}
@@ -103,6 +103,7 @@ public:
 	Q_INVOKABLE void				selectItem(int _index, bool _select);
 	Q_INVOKABLE void				clearSelectedItems(bool emitSelectedChange = true);
 	Q_INVOKABLE void				setSelectedItem(int _index);
+	Q_INVOKABLE void				setSelectedItemWithName(QString name);
 	Q_INVOKABLE void				selectAllItems();
 	Q_INVOKABLE QList<int>			selectedItems()															{ return _selectedItems; }
 

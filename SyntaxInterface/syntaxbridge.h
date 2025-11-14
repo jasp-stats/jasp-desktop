@@ -34,7 +34,6 @@ struct AnalysisInfo
 
 void				blockSignalsRecursive(	QObject* item);
 void				deleteQuickItem(		QQuickItem* item);
-void				addContextObjects(		QQmlApplicationEngine* engine);
 void				sendMessage(			const char * msg);
 bool				init(					bool dbInMemory = true);
 void				sendRScriptHandler(		AnalysisForm* form, QString script, QString controlName, bool whiteListedVersion);

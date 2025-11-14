@@ -644,8 +644,16 @@ void AnalysisForm::formCompletedHandler()
 
 void AnalysisForm::setAnalysisUp()
 {
-	if(!_formCompleted || !_analysis)
+	if(!_formCompleted)
 		return;
+
+	if (!_analysis)
+	{
+		if (qmlEngine(this)->rootContext()->contextProperty("NO_DESKTOP_MODE").toBool())
+			_analysis = new AnalysisBase(this); // Make dummy analysis: needed for Unit TestCases or R Syntax mode
+		else
+			return;
+	}
 
 	Log::log() << "AnalysisForm::setAnalysisUp() for " << this << std::endl;
 

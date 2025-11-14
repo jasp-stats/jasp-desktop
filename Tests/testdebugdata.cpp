@@ -30,7 +30,7 @@ void TestDebugData::cleanup()
 	if(_data)
 		delete _data;
 	_data = nullptr;
-	
+
 	DatabaseInterface::singleton()->close();
 	DatabaseInterface::singleton()->closeInterfaces();
 	

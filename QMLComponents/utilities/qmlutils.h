@@ -5,6 +5,7 @@
 #include <QJSValue>
 #include <QQuickItem>
 #include <QDir>
+#include <QQmlEngine>
 
 struct qmlLoadError  : public std::runtime_error
 {
@@ -20,6 +21,7 @@ public:
 	explicit QmlUtils(QObject *parent = nullptr);
 
 	static void setGlobalPropertiesInQMLContext(QQmlContext * ctxt);
+	static void setupQMLEngine(QQmlEngine* engine);
 
 #ifdef linux
 // Functions for qml cache bug workaround on linux

@@ -78,10 +78,10 @@ bool jaspRCPP_columnIsScale(				const std::string & columnName	);
 bool jaspRCPP_columnIsOrdinal(				const std::string & columnName		  );
 bool jaspRCPP_columnIsNominal(				const std::string & columnName				 );
 
-bool jaspRCPP_setColumnDataAsScale(			const std::string & columnName,	Rcpp::RObject scalarData	);
-bool jaspRCPP_setColumnDataAsOrdinal(		const std::string & columnName,	Rcpp::RObject ordinalData		);
-bool jaspRCPP_setColumnDataAsNominal(		const std::string & columnName,	Rcpp::RObject nominalData			);
-bool _jaspRCPP_setColumnDataAndType(		const std::string & columnName, Rcpp::RObject data, columnType colType);
+bool jaspRCPP_setColumnDataAsScale(			const std::string & columnName,	Rcpp::RObject scalarData,               int computed = 0);
+bool jaspRCPP_setColumnDataAsOrdinal(		const std::string & columnName,	Rcpp::RObject ordinalData,              int computed = 0);
+bool jaspRCPP_setColumnDataAsNominal(		const std::string & columnName,	Rcpp::RObject nominalData,              int computed = 0);
+bool _jaspRCPP_setColumnDataAndType(		const std::string & columnName, Rcpp::RObject data, columnType colType, bool computed = false);
 
 void jaspRCPP_setColumnDataHelper_FactorsLevels(Rcpp::Vector<INTSXP> data, int *& outputData, size_t & numLevels, const char **& labelPointers, std::string *& labels);
 
@@ -91,11 +91,11 @@ typedef void (*sendFuncDef)(const char *);
 //Calls from jaspBase
 typedef void			(*logFuncDef)(const std::string &);
 typedef bool			(*shouldEnDecodeFuncDef)	(std::string);
-typedef bool			(*setColumnDataFuncDef)		(const std::string &, Rcpp::RObject);
+typedef bool			(*setColumnDataFuncDef)		(const std::string &, Rcpp::RObject, int); //The int should be a bool really, but this way we can handle older jaspBase (as it misses this argument in it compiled code it will instead pass -1, so should have default behaviour so false)
 typedef columnType		(*getColumnTypeFuncDef)		(std::string);
 typedef int				(*getColumnAnIdFuncDef)		(std::string);
 typedef bool			(*getColumnExistsFDef)		(std::string);
-typedef std::string		(*createColumnFuncDef)		(std::string);
+typedef std::string		(*createColumnFuncDef)		(std::string, bool);
 typedef bool			(*deleteColumnFuncDef)		(std::string);
 typedef std::string		(*enDecodeFuncDef)			(std::string);
 
@@ -108,7 +108,7 @@ columnType				jaspRCPP_getColumnType(			std::string columnName);
 bool					jaspRCPP_getColumnExists(		std::string columnName);
 int						jaspRCPP_getColumnAnalysisId(	std::string columnName);
 int						jaspRCPP_getColumnOriginalIndex(std::string columnName);
-std::string				jaspRCPP_createColumn(			std::string columnName);
+std::string				jaspRCPP_createColumn(			std::string columnName, bool computed=false);
 bool					jaspRCPP_deleteColumn(			std::string columnName);
 void					jaspRCPP_crashPlease();
 void					jaspRCPP_checkForCrashRequest();
