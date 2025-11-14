@@ -5,7 +5,6 @@ ARG QT_VERSION=6.8.3
 ARG QT_MODULES="qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor"
 
 # 1) Base OS packages per Docs/development/jasp-build-guide-linux.md
-# TODO remove duplicates
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl git gnupg software-properties-common \
     build-essential cmake ninja-build \
@@ -23,7 +22,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libboost-dev libboost-filesystem-dev libboost-system-dev libboost-date-time-dev libboost-timer-dev libboost-chrono-dev \
     librdata-dev jags \
     libnss3-dev libnspr4-dev libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxi-dev libasound2-dev libxkbfile-dev libxcb-icccm4-dev libxcb-shape0-dev libxcb-keysyms1-dev \
-    libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev libxcb-xkb-dev libxcb-xkb1 libxcb-xinerama0 libxcb-cursor0 libxkbcommon-dev libxkbcommon-x11-dev autoconf zlib1g zlib1g-dev cmake gfortran build-essential flex libssl-dev libgl1-mesa-dev libsqlite3-dev r-base libglpk-dev libminizip-dev libfreexl-dev \
+    libjsoncpp25 libjsoncpp-dev libxcb-xkb1 \
+    r-base \
+    libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libwebp-dev \
+    libcairo2-dev libgsl-dev \
     fonts-noto-cjk fonts-arphic-ukai fonts-arphic-uming fonts-wqy-zenhei fonts-wqy-microhei \
     patchelf \
     pkg-config \
