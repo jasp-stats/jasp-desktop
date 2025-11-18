@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QStringList>
 #include <QQmlWebChannel>
 
 namespace Modules
@@ -51,6 +52,7 @@ signals:
 
 private:
     QVariantMap installedModulesInfo() const;
+    QStringList getUninstallableModules() const;
     void emitEnvironmentInfoChanged();
 
 private:

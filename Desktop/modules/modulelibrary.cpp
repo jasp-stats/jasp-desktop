@@ -1,6 +1,7 @@
 #include "modulelibrary.h"
 
 #include <QString>
+#include <QDir>
 
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
@@ -8,6 +9,7 @@
 #include "dynamicmodules.h"
 #include "dynamicmodule.h"
 #include "engine/enginesync.h"
+#include "utilities/appdirs.h"
 #include "utilities/dynamicruntimeinfo.h"
 
 ModuleLibrary * ModuleLibrary::_singleton = nullptr;
@@ -81,6 +83,7 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     envInfo["language"] = PreferencesModel::prefs()->languageCode().replace("_", "-");
 
     envInfo["installedModules"] = installedModulesInfo();
+    envInfo["uninstallableModules"] = getUninstallableModules();
     return envInfo;
 }
 
@@ -96,6 +99,13 @@ QVariantMap ModuleLibrary::installedModulesInfo() const
     for (auto const& [key, val] : InstalledModules::getInstalledModuleVersions())
         installedModules[QString::fromStdString(key)] = QString::fromStdString(val);
     return installedModules;
+}
+
+QStringList ModuleLibrary::getUninstallableModules() const
+{
+    // Only modules installed in user modules dir are uninstallable
+    auto dir = QDir(AppDirs::userModulesLibDir());
+    return dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 }
 
 void ModuleLibrary::emitEnvironmentInfoChanged()
