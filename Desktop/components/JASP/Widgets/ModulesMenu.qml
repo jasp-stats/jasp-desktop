@@ -222,6 +222,7 @@ FocusScope
 					{
 						text:					qsTr("Not allowed to show the module library to install modules")
 						width:					parent.width
+						wrapMode:				Text.WordWrap
 						horizontalAlignment:	Text.AlignHCenter
 						font:					jaspTheme.fontGroupTitle
 						color:					jaspTheme.textEnabled
