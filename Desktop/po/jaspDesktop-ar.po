@@ -1294,6 +1294,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "غير مسموح بإظهار مكتبة الوحدات لتثبيت الوحدات"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"في \"التفضيلات\" > \"الواجهة\"، تم إيقاف تشغيل خيار \"التحقق من التحديثات\". "
+"يرجى تشغيله لرؤية مكتبة الوحدات."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr ""

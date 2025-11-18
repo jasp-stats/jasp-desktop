@@ -1195,6 +1195,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Neleidžiama rodyti modulių bibliotekos modulių įdiegimui"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"\"Nuostatos\" > \"Sąsaja\" dalyje \"Tikrinti atnaujinimus\" parinktis yra "
+"išjungta. Įjunkite ją, kad pamatytumėte modulių biblioteką."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr ""

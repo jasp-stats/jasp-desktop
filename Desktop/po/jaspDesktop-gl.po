@@ -1859,6 +1859,18 @@ msgid "Uninstall module "
 msgstr "Desinstalar o módulo "
 
 msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Non está permitido mostrar a biblioteca de módulos para instalar módulos"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"En \"Preferencias\" > \"Interface\", a opción \"Comprobar actualizacións\" está "
+"desactivada. Por favor, actívea para ver a biblioteca de módulos."
+
+msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
 msgstr "Instalar un Módulo de Desenvolvemento"
 

@@ -1198,6 +1198,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "移除模組 "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "不允許顯示模組庫以安裝模組"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"在「偏好設定」>「介面」中，「檢查更新」選項已關閉。"
+"請將其開啟以查看模組庫。"
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R指令視窗"

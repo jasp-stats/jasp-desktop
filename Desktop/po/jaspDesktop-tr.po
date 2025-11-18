@@ -1266,6 +1266,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "Modülü kaldır "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Modülleri yüklemek için modül kitaplığını göstermesine izin verilmiyor"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"\"Tercihler\" > \"Arayüz\" bölümünde \"Güncellemeleri kontrol et\" seçeneği "
+"kapalı. Modül kitaplığını görmek için lütfen açın."
+
 msgctxt "PlotEditingAxis|"
 msgid "Title"
 msgstr "Başlık"

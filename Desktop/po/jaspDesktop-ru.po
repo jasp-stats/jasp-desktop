@@ -1249,6 +1249,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "Удалить модуль "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Не разрешено показывать библиотеку модулей для установки модулей"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"В разделе «Настройки» > «Интерфейс» параметр «Проверять обновления» "
+"отключён. Пожалуйста, включите его, чтобы увидеть библиотеку модулей."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R в JASP"

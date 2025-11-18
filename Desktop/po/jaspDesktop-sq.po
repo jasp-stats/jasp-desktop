@@ -1193,6 +1193,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Nuk lejohet të shfaqet biblioteka e moduleve për të instaluar module"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"Në \"Preferencat\" > \"Ndërfaqja\", opcioni \"Kontrollo përditësimet\" është "
+"i çaktivizuar. Ju lutem aktivizojeni për të parë bibliotekën e moduleve."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr ""

@@ -1269,6 +1269,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "Desinstalatu modulua "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Ez dago baimenduta modulu-liburutegia erakustea moduluak instalatzeko"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"\"Hobespenak\" > \"Interfazea\" atalean \"Egiaztatu eguneratzeak\" aukera "
+"desaktibatuta dago. Mesedez, aktibatu modulu-liburutegia ikusteko."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R JASP-en"

@@ -1255,6 +1255,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "Deïnstalleer module "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Niet toegestaan om de modulebibliotheek te tonen voor het installeren van modules"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"In \"Voorkeuren\" > \"Interface\" is de optie \"Controleren op updates\" "
+"uitgeschakeld. Schakel deze in om de modulebibliotheek te zien."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "R in JASP"

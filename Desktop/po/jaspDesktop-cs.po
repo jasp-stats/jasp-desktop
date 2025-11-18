@@ -1344,6 +1344,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr ""
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "Není povoleno zobrazit knihovnu modulů pro instalaci modulů"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"V \"Předvolby\" > \"Rozhraní\" je možnost \"Kontrolovat aktualizace\" "
+"vypnuta. Prosím zapněte ji pro zobrazení knihovny modulů."
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr ""

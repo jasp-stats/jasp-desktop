@@ -1208,6 +1208,18 @@ msgctxt "ModulesMenu|"
 msgid "Uninstall module "
 msgstr "卸载模块 "
 
+msgctxt "ModulesMenu|"
+msgid "Not allowed to show the module library to install modules"
+msgstr "不允许显示模块库以安装模块"
+
+msgctxt "ModulesMenu|"
+msgid ""
+"In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
+"turned off. Please turn it on to see the module library."
+msgstr ""
+"在"首选项">"界面"中，"检查更新"选项已关闭。"
+"请将其打开以查看模块库。"
+
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
 msgstr "JASP 中的 R"
