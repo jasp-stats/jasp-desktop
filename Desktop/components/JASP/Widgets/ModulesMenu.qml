@@ -73,7 +73,7 @@ FocusScope
 	{
 		id:				slidePart
 		x:				modulesMenu.opened ? 0 : width
-        width:			modulesFlick.width + vertScroller.width + moduleStore.width + 2 * jaspTheme.contentMargin
+        width:			modulesFlick.width + vertScroller.width + moduleStoreContainer.width + 2 * jaspTheme.contentMargin
 		height:			modulesMenu.height
 		color:			jaspTheme.fileMenuColorBackground
 		border.width:	1
@@ -153,9 +153,9 @@ FocusScope
 			}
 		}
 
-		WebEngineView
+		Item
 		{
-			id:						moduleStore
+			id:						moduleStoreContainer
 			visible:                !ribbonModel.dataMode
 			clip:                   true
 			width:                  visible ? 500 * preferencesModel.uiScale : 0
@@ -166,35 +166,78 @@ FocusScope
 				bottom:				modulesFlick.bottom
 				margins:			jaspTheme.contentMargin
 			}
-			url:                    preferencesModel.moduleLibraryURL
-			profile:                moduleStoreProfile
 
-			property bool	downloadInProgress: false;
-			property bool	installInProgress: false;
-			property int		downloadProgress;
-			property int		downloadTotal;
-			property var		currentDownloadRequest: null;
+			WebEngineView
+			{
+				id:						moduleStore
+				visible:                preferencesModel.checkUpdates
+				anchors.fill:			parent
+				url:                    preferencesModel.checkUpdates ? preferencesModel.moduleLibraryURL : "about:blank"
+				profile:                moduleStoreProfile
 
-			webChannel.registeredObjects:	[ moduleStoreWebChannel ]
+				property bool	downloadInProgress: false;
+				property bool	installInProgress: false;
+				property int		downloadProgress;
+				property int		downloadTotal;
+				property var		currentDownloadRequest: null;
 
-			QtObject {
-				id: moduleStoreWebChannel
-				WebChannel.id: "moduleStore"
+				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
 
-				function info() {
-					return moduleLibrary.getEnvironmentInfo();
-				}
+				QtObject {
+					id: moduleStoreWebChannel
+					WebChannel.id: "moduleStore"
 
-				signal environmentInfoChanged(var environmentInfo)
+					function info() {
+						return moduleLibrary.getEnvironmentInfo();
+					}
 
-				Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
-				Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+					signal environmentInfoChanged(var environmentInfo)
 
-				function uninstall(moduleName) {
-					moduleLibrary.uninstallJASPModule(moduleName)
+					Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
+					Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+
+					function uninstall(moduleName) {
+						moduleLibrary.uninstallJASPModule(moduleName)
+					}
 				}
 			}
 
+			Rectangle
+			{
+				id:					checkUpdatesDisabledMessage
+				visible:			!preferencesModel.checkUpdates
+				anchors.fill:		parent
+				color:				jaspTheme.uiBackground
+				border.width:		1
+				border.color:		jaspTheme.uiBorder
+
+				Column
+				{
+					anchors.centerIn:	parent
+					anchors.margins:	20 * preferencesModel.uiScale
+					width:				parent.width - 40 * preferencesModel.uiScale
+					spacing:			10 * preferencesModel.uiScale
+
+					Text
+					{
+						text:					qsTr("Not allowed to show the module library to install modules")
+						width:					parent.width
+						horizontalAlignment:	Text.AlignHCenter
+						font:					jaspTheme.fontGroupTitle
+						color:					jaspTheme.textEnabled
+					}
+
+					Text
+					{
+						width:					parent.width
+						wrapMode:				Text.WordWrap
+						horizontalAlignment: 	Text.AlignHCenter
+						text:					qsTr("In \"Preferences\" > \"Interface\" the \"Check for updates\" option is turned off. Please turn it on to see the module library.")
+						font:					jaspTheme.font
+						color:					jaspTheme.textEnabled
+					}
+				}
+			}
 		}
 		
 
