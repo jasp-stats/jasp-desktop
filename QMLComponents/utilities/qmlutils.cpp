@@ -219,12 +219,23 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 #endif
 
 	bool isWindows = !isMac && !isLinux;
+	
+	
+	bool buildingPro =
+#ifdef PRO
+			true;
+#else
+			false;
+#endif
+	
+	
 
 	ctxt->setContextProperty("PRO",						false);
 	ctxt->setContextProperty("MACOS",					isMac);
 	ctxt->setContextProperty("LINUX",					isLinux);
 	ctxt->setContextProperty("WINDOWS",					isWindows);
 	ctxt->setContextProperty("DEBUG_MODE",				debug);
+	ctxt->setContextProperty("PRO",						buildingPro);
 	ctxt->setContextProperty("INTERACTION_SEPARATOR",	Term::separator);
 	
 	ctxt->setContextProperty("dataSetInfo",				VariableInfo::info());

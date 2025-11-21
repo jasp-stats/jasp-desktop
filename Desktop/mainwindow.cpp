@@ -315,16 +315,27 @@ const QString MainWindow::commUrlMembers() const
 
 const QString MainWindow::contactUrlFeatures() const
 {
+#ifdef PRO
+	return PRO_FEATURES_URL;	
+#else
 	return "https://jasp-stats.org/request-feature";	
+#endif
 }
 
 const QString MainWindow::contactUrlBugs() const
 {
+#ifdef PRO
+	return PRO_BUGS_URL;	
+#else
 	return "https://jasp-stats.org/report-bug";
+#endif
 }
 
 const QString MainWindow::contactText() const
 {
+#ifdef PRO
+	return "Fill me!";
+#else
 	return tr(
 		"<h3>Contact</h3>\n"
 		"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>\n"
@@ -347,6 +358,7 @@ const QString MainWindow::contactText() const
 	,		"https://jasp-stats.org/world-map/"
 	,		"mailto:communications@jasp-stats.org"
 	,		"https://jasp-stats.org/donate/");
+#endif
 }
 
 
