@@ -212,9 +212,11 @@ QDir QmlUtils::generateQMLCacheDir()
 
 void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 {
-	bool	debug	= false,
-			isMac	= false,
-			isLinux = false;
+	bool	debug		= false,
+			isMac		= false,
+			isLinux		= false,
+			buildingPro	= false,
+			interactive	= false;
 
 #ifdef JASP_DEBUG
 	debug = true;
@@ -229,18 +231,23 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 #endif
 
 	bool isWindows = !isMac && !isLinux;
+	
+		
+#ifdef PRO
+		buildingPro = true;
+#endif
+	
+#ifdef INTERACTIVE_PLOTS
+		interactive = true;
+#endif
+	
 
-	ctxt->setContextProperty("PRO",						false);
+	ctxt->setContextProperty("PRO",						buildingPro);
 	ctxt->setContextProperty("MACOS",					isMac);
 	ctxt->setContextProperty("LINUX",					isLinux);
 	ctxt->setContextProperty("WINDOWS",					isWindows);
 	ctxt->setContextProperty("DEBUG_MODE",				debug);
-	ctxt->setContextProperty("INTERACTIVE_PLOTS",		
-#ifdef INTERACTIVE_PLOTS
-		true);
-#else
-		false);
-#endif
+	ctxt->setContextProperty("INTERACTIVE_PLOTS",		interactive);
 	ctxt->setContextProperty("INTERACTION_SEPARATOR",	Term::separator);
 	
 	ctxt->setContextProperty("dataSetInfo",				VariableInfo::info());

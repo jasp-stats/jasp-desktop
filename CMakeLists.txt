@@ -66,7 +66,16 @@ project(
 
 #needed for R-Interface and QMLComponents for them to build stuff properly when *inside* JASP
 add_definitions(-DBUILDING_JASP)
-set(BUILDING_JASP TRUE)
+set(BUILDING_JASP     TRUE)
+set(PRO               TRUE                                  CACHE BOOL "Are we building the pro-version?")
+set(PRO_FEATURES_URL  "https://support.jasp-services.com/"  CACHE STRING "Where does this pro-version user go for their feature requests?")
+set(PRO_BUGS_URL      "https://support.jasp-services.com/"  CACHE STRING "Where does this pro-version user go for their bug reports?")
+
+if(PRO)
+  add_definitions(-DPRO)
+  add_definitions(-DPRO_FEATURES_URL="${PRO_FEATURES_URL}")
+  add_definitions(-DPRO_BUGS_URL="${PRO_BUGS_URL}")
+endif()
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
 
