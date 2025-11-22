@@ -733,8 +733,6 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			chunks.push('</tr>')
 		}
 
-		chunks.push('<tr><td colspan="' + columnCount + '"></td></tr>')
-
 		chunks.push('</tbody>')
 
 		if (optFootnotes) {

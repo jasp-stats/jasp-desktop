@@ -141,14 +141,12 @@ tbody th {
 
 tbody th,
 tbody td {
-
 	border-bottom : none ;
 	border-top : none;
 	white-space: nowrap;
 }
 
 thead tr th {
-
 	border-bottom: thin solid ;
 }
 
@@ -182,12 +180,10 @@ div.over-title-space:empty {
 
 tbody tr:last-child th,
 tbody tr:last-child td {
-
 	border-bottom: thin solid ;
 }
 
 tbody tr td.new-sub-group-row {
-
 	padding-top: .4em ;
 }
 
@@ -200,7 +196,6 @@ tbody tr:first-child td {
 tbody tr:nth-last-child(2) td.last-group-row,
 tbody tr:nth-last-child(2) td,
 tbody tr:nth-last-child(2) th {
-
 	margin-bottom: .8em ;
 }
 
@@ -245,33 +240,28 @@ svg > text
 
 
 .jasp_top_level {
-
 	margin-left: 1.7em ;
 	margin-right: 1.7em ;
 }
 
 :not(.error-state) > .jasp-analysis {
-
 	margin: 0 .7em .7em .7em ;
 	padding: 0 1em 1em 1em ;
 	position: relative;
 }
 
 #instructions {
-
 	margin: .7em ;
 	padding: 1em ;
 	/*display: inline-block ;*/
 }
 
 div.toolbar {
-
 	display: block ;
 	position: relative;
 }
 
 div.image-status {
-
 	position: absolute ;
 	top : 0 ;
 	left: 0 ;
@@ -284,7 +274,6 @@ div.image-status {
 }
 
 div.status {
-
 	width: 16px ;
 	height: 16px ;
 	background-size : 100% ;
@@ -321,7 +310,6 @@ div.jasp-image-image.no-data {
 }
 
 .error-message-positioner {
-
 	height: 0px ;
 	overflow: visible ;
 	position: relative;
@@ -331,19 +319,16 @@ div.jasp-image-image.no-data {
 }
 
 .jasp-image-image .error-message-positioner {
-
 	position: absolute ;
 	top: 25% ;
 }
 
 .error-message-symbol {
-
 	float: left;
 	margin-right: .3em;
 }
 
 .error-message-box {
-
 	z-index: 100 ;
 	padding: 1em ;
 	border-radius: .4em ;
