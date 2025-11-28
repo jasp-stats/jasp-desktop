@@ -19,9 +19,6 @@ qt_add_qml_module(
 	RESOURCES				${ICONS_RESOURCE_FILES}
 )
 
-# This define is needed for the linking
-target_compile_definitions(QMLComponents PUBLIC QT_STATICPLUGIN)
-
 if(LINUX)
   target_link_libraries(QMLComponents PUBLIC ${_LIB_RT})
   target_link_options(QMLComponents PUBLIC -lrt)
@@ -48,7 +45,6 @@ target_include_directories(
 	${CMAKE_CURRENT_LIST_DIR}/rsyntax
 	${CMAKE_CURRENT_LIST_DIR}/ALTNavigation
 )
-
 
 target_link_libraries(
 	QMLComponents

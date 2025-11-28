@@ -25,6 +25,7 @@
 #include <QQuickItem>
 #include <QDir>
 #include <QThread>
+#include <QQmlIncubator>
 #include "controls/jaspcontrol.h"
 #include "datasetprovider.h"
 #include "databridge.h"
@@ -47,7 +48,7 @@ Q_IMPORT_PLUGIN(JASP_ControlsPlugin)
 
 static bool									gl_initialized					= false;
 static QGuiApplication			*			gl_application					= nullptr;
-static QQmlApplicationEngine	*			gl_qmlEngine					= nullptr;
+static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
 static ColumnEncoder			*			gl_extraEncodings				= nullptr;
 static QMap<QString, std::pair<QDateTime, AnalysisForm* > >	gl_qmlFormMap;
@@ -332,7 +333,7 @@ bool init(bool dbInMemory)
 	qputenv("QT_QPA_PLATFORM", "minimal");
 
 	gl_application = new QGuiApplication(argc, argvs);
-	gl_qmlEngine = new QQmlApplicationEngine();
+	gl_qmlEngine = new QQmlEngine();
 
 	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
 	TempFiles::init(ProcessInfo::currentPID());
@@ -386,21 +387,50 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 	else
 	{
 		QUrl urlFile = QUrl::fromLocalFile(qmlFileInfo.absoluteFilePath());
-		QQmlComponent	qmlComp( gl_qmlEngine, urlFile, QQmlComponent::PreferSynchronous);
 
-		qmlForm = qobject_cast<AnalysisForm*>(qmlComp.create());
+		QQmlIncubator localIncubator(QQmlIncubator::Synchronous);
+		QQmlComponent qmlComp( gl_qmlEngine, urlFile, QQmlComponent::PreferSynchronous);
+		QQmlContext* context = gl_qmlEngine->rootContext();
 
-		if (qmlComp.errors().length() > 0)
+		qmlComp.create(localIncubator, context);
+
+		switch (localIncubator.status())
 		{
-			for(const auto & error : qmlComp.errors())
-				Log::log() << "Error when creating component at " << fq(QString::number(error.line())) << "," << fq(QString::number(error.column())) << ": " << fq(error.description()) << std::endl;
+		case QQmlIncubator::Null:
+		case QQmlIncubator::Loading:
+		{
+			Log::log() << "Could not load QML component!" << std::endl;
+			// Try it with QQmlComponent::create: this gives a better error
+			qmlForm = qobject_cast<AnalysisForm*>(qmlComp.create(context));
+			if (qmlForm)
+				Log::log() << "Form could be loaded via QQmlComponent::create instead of QQmlIncubator::created. Quite weird!" << std::endl;
+			else
+			{
+				for(const auto & error : qmlComp.errors())
+					Log::log() << "Error when creating component at " << fq(QString::number(error.line())) << "," << fq(QString::number(error.column())) << " in file " << error.url().toString() << ": " << fq(error.description()) << std::endl;
+
+				return nullptr;
+			}
 		}
-
-		if (!qmlForm)
-		{
-			Log::log() << "QML Form could not be created" << std::endl;
+		case QQmlIncubator::Error:
+			Log::log() << "Error when creating component!" << std::endl;
+			for(const auto & error : localIncubator.errors())
+				Log::log() << "Error when creating component at " << fq(QString::number(error.line())) << "," << fq(QString::number(error.column())) << " in file " << error.url().toString() << ": " << fq(error.description()) << std::endl;
 			return nullptr;
+		case QQmlIncubator::Ready:
+		{
+			Log::log() << "QML form created" << std::endl;
+			qmlForm = qobject_cast<AnalysisForm*>(localIncubator.object());
+			if (!qmlForm)
+			{
+				Log::log() << "Object created is not an AnalysisForm object!!" << std::endl;
+				return nullptr;
+			}
+
+			break;
 		}
+		}
+
 
 		AnalysisBase* analysis = qmlForm->analysisObj();
 		if (!analysis)
