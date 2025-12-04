@@ -905,9 +905,9 @@ void JASPControl::setUnitialized()
 	_initializedWithValue = Json::nullValue;
 }
 								 
-void JASPControl::cleanUp()									
-{ 
-	disconnect();
+void JASPControl::cleanUp()
+{
+	blockSignals(true);
 }
 
 void JASPControl::_setInitialized(const Json::Value &value)

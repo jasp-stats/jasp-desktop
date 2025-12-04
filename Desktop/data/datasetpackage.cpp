@@ -1737,11 +1737,6 @@ void DataSetPackage::setColumnComputedType(size_t columnIndex, computedColumnTyp
 		return;
 
 	column->setCodeType(type);
-
-	//emit dataChanged(index(0, columnIndex), index(rowCount() - 1, columnIndex));
-	//we need to actually send lots of signals from ColumnModel but because of the undo/redo this is a bit convoluted now...
-
-	refresh();
 }
 
 void DataSetPackage::setColumnDropLevels(size_t columnIndex, dropLevelsType dropLevels)

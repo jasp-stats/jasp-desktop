@@ -75,7 +75,7 @@ void JASPListControl::_setupSources()
 	for (SourceItem* sourceItem : _sourceItems)
 	{
 		sourceItem->deleteLater();
-		sourceItem->disconnect();
+		sourceItem->blockSignals(true);
 	}
 
 	_sourceItems = SourceItem::readAllSources(this);

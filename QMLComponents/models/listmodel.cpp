@@ -468,7 +468,7 @@ void ListModel::selectAllItems()
 
 void ListModel::cleanUp()
 {
-	disconnect();
+	blockSignals(true);
 }
 
 void ListModel::sourceTermsReset()
