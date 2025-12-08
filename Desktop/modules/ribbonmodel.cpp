@@ -304,16 +304,17 @@ void RibbonModel::removeRibbonButtonModel(std::string moduleName)
 	if(!isModuleName(moduleName))
 		return;
 
-	for(size_t row=0; row<size_t(RowType::Data); row++)
+    for(size_t row=0; row <= size_t(RowType::Data); row++)
 	{
 		int indexRemoved = -1;
 
-		for(int i=_buttonNames.size() - 1; i >= 0; i--)
+        for(int i=_buttonNames[row].size() - 1; i >= 0; i--) {
 			if(_buttonNames[row][i] == moduleName)
 			{
 				indexRemoved = i;
 				break;
 			}
+        }
 
 		if(indexRemoved != -1)
 		{

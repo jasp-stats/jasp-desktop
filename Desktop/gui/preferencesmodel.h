@@ -40,6 +40,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QStringList	modulesRemembered		READ modulesRemembered			WRITE setModulesRemembered			NOTIFY modulesRememberedChanged			)
 	Q_PROPERTY(bool			safeGraphics			READ safeGraphics				WRITE setSafeGraphics				NOTIFY safeGraphicsChanged				)
 	Q_PROPERTY(QString		cranRepoURL				READ cranRepoURL				WRITE setCranRepoURL				NOTIFY cranRepoURLChanged				)
+	Q_PROPERTY(QString		moduleLibraryURL		READ moduleLibraryURL			WRITE setModuleLibraryURL			NOTIFY moduleLibraryURLChanged			)
 	Q_PROPERTY(bool			githubPatUseDefault		READ githubPatUseDefault		WRITE setGithubPatUseDefault		NOTIFY githubPatUseDefaultChanged		)
 	Q_PROPERTY(QString		githubPatCustom			READ githubPatCustom			WRITE setGithubPatCustom			NOTIFY githubPatCustomChanged			)
 	Q_PROPERTY(QString		interfaceFont			READ interfaceFont				WRITE setInterfaceFont				NOTIFY interfaceFontChanged				)
@@ -119,6 +120,7 @@ public:
 	QStringList		modulesRemembered()						const;
 	bool			safeGraphics()							const;
 	QString			cranRepoURL()							const;
+	QString			moduleLibraryURL()						const;
 	QString			githubPatResolved()						const;
 	QString			githubPatCustom()						const;
 	bool			githubPatUseDefault()					const;
@@ -215,6 +217,7 @@ public slots:
 	void setModulesRemembered(			QStringList modulesRemembered);
 	void setSafeGraphics(				bool		safeGraphics);
 	void setCranRepoURL(				QString		cranRepoURL);
+	void setModuleLibraryURL(			QString		moduleLibraryURL);
 	void setGithubPatUseDefault(		bool		useDefault);
 	void setGithubPatCustom(			QString		pat);
 	void moduleEnabledChanged(			QString		moduleName, bool enabled);
@@ -280,6 +283,7 @@ signals:
 	void modulesRememberedChanged();
 	void safeGraphicsChanged(			bool		safeGraphics);
 	void cranRepoURLChanged(			QString		cranRepoURL);
+	void moduleLibraryURLChanged(		QString		moduleLibraryURL);
 	void githubPatUseDefaultChanged(	bool		githubPatUseDefault);
 	void githubPatCustomChanged();
 	void codeFontChanged(				QString		codeFont);

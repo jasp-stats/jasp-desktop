@@ -127,7 +127,7 @@ signals:
 
 public slots:
 	void addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module);
-	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());				}
+	void removeDynamicRibbonButtonModel(QString moduleName)				{ removeRibbonButtonModel(moduleName.toStdString());}
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentRow(int currentRow);
