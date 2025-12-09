@@ -115,6 +115,10 @@ set(AVAILABLE_R_VERSIONS
 	  "R-4.5.1-x86_64"
 	  "R-4.5.1-arm64"
 	  "R-4.5.1-win"
+"R-4.5.2"
+	  "R-4.5.2-x86_64"
+	  "R-4.5.2-arm64"
+	  "R-4.5.2-win"
 )
 
 set(R_BINARY_HASHES
