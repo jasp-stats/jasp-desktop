@@ -6,11 +6,11 @@ import json
 import sys
 from github import Github
 from github import Auth
-import urllib.request
+import requests
 import os
+from time import sleep
 
-
-def gatherMod(repo_list, token, include_prerelease=False, flatpak=False):
+def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, download_on=False):
     auth = Auth.Token(token)
 
     g = Github(auth=auth)
@@ -50,9 +50,27 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False):
             "MacOS-x86_64": [{"url": x.browser_download_url, "checksum": x.digest[7:]} for x in mac_intel]
         }
         print(json.dumps(result, indent=4))
-    else:
-        for x in flatpak_intel:
-            urllib.request.urlretrieve(x.browser_download_url, os.path.basename(x.browser_download_url))
+
+
+    def download(download_url, token = ""):
+        headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json"
+        }
+        with requests.get(download_url, stream=True, headers=headers) as response:
+            response.raise_for_status()
+            with open(os.path.basename(download_url), "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192): 
+                    f.write(chunk)
+
+    if flatpak:
+        for x in flatpak:
+            download(x.browser_download_url, token)
+    if not flatpak and download_on:
+        for x in mac_intel + mac_arm + windows:
+            download(x.browser_download_url, token)
+
+        
 
 
 
@@ -62,6 +80,7 @@ def main():
     parser.add_argument('token')
     parser.add_argument('--prerelease', action='store_true')
     parser.add_argument('--flatpak', action='store_true')
+    parser.add_argument('--download', action='store_true')
     args = parser.parse_args()
     path = Path(args.dir) 
     token = args.token
@@ -69,7 +88,7 @@ def main():
     if args.prerelease:
         modules +=  ['jasp-stats-modules/' + y.name for y in path.glob('beta-modules/*') if y.is_dir()]
     print(F"Gathering modules: {modules}")
-    gatherMod(modules, token, args.prerelease, args.flatpak)
+    gatherMod(modules, token, args.prerelease, args.flatpak, args.download)
 
 
 if __name__ == "__main__":
