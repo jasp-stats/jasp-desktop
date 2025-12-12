@@ -32,11 +32,11 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
             for asset in release.assets:
                 if "windows" in asset.name.lower():
                     windows.append(asset)
-                elif "mac" in asset.name.lower() and "x86" in asset.name.lower():
+                if "mac" in asset.name.lower() and "x86" in asset.name.lower():
                     mac_intel.append(asset)
-                elif "mac" in asset.name.lower() and "arm64" in asset.name.lower():
+                if "mac" in asset.name.lower() and "arm64" in asset.name.lower():
                     mac_arm.append(asset)
-                elif "flatpak" in asset.name.lower() and "x86" in asset.name.lower():
+                if "flatpak" in asset.name.lower() and "x86" in asset.name.lower():
                     flatpak_intel.append(asset)
         except:
             print("Could not parse module: " + repo_str, file=sys.stderr)       
@@ -64,6 +64,7 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
                     f.write(chunk)
 
     if flatpak:
+        print(flatpak_intel)
         for x in flatpak_intel:
             download(x.browser_download_url, token)
     if not flatpak and download_on:
