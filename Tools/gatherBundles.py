@@ -64,7 +64,7 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
                     f.write(chunk)
 
     if flatpak:
-        for x in flatpak:
+        for x in flatpak_intel:
             download(x.browser_download_url, token)
     if not flatpak and download_on:
         for x in mac_intel + mac_arm + windows:
