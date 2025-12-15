@@ -1,15 +1,12 @@
-# This will build the RJaspInterface shared library
+# This will build the interface for the jaspSyntax R package
 
 list(APPEND CMAKE_MESSAGE_CONTEXT SyntaxInterface)
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-if(WIN32)
-	add_library(SyntaxInterface SHARED ${SOURCE_FILES} ${HEADER_FILES})
-else()
-	add_library(SyntaxInterface STATIC ${SOURCE_FILES} ${HEADER_FILES})
-endif()
+add_library(SyntaxInterface SHARED ${SOURCE_FILES} ${HEADER_FILES})
+qt_add_resources(SyntaxInterface "Dummy" FILES Dummy.qml)
 
 #add_dependencies(CommonData QMLComponents)
 
@@ -33,6 +30,7 @@ target_link_libraries(
 		Qt::Core
 		Qt::Quick
 		Qt::QuickControls2
+		${CMAKE_PREFIX_PATH}/plugins/platforms/qminimal.lib
 	)
 
 target_compile_definitions(
@@ -42,5 +40,6 @@ target_compile_definitions(
 	JASP_R_INTERFACE_LIBRARY
 	)
 
+qt_import_qml_plugins(SyntaxInterface)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
