@@ -1,9 +1,19 @@
 How to Write R Analyses for JASP
 ================================
 
-R code for JASP should follow JASP's [R style guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/r-style-guide.md).
+This document will guide you through the process of writing an R analysis for JASP.
 
-This document will guide you through the process of writing an R analysis for JASP. Two things should be noted before we get started. First, this guide assumes that you have knowledge about basic R concepts such as functions. Second, writing an R analysis is necessary but **not** sufficient to create a new module for JASP. For this goal, other files (such as [the QML file for the interface](jasp-qml-guide.md)) need to be created.
+## Prerequisites
+
+In order to get the most out of this guide, we recommend you to fulfill two prerequisites:
+
+First, this guide assumes that you have knowledge about basic R concepts, such as functions and packaging.
+
+Second, be aware that a JASP module also requires working with `QML` files for creating the interface. It is possible to learn this language on the go, especially if you use [our template](https://github.com/jasp-stats/jaspModuleTemplate). This being said, this could be a good moment for taking a look at our [QML guide](jasp-qml-guide.md).
+
+If you feel you're not yet there, we invite you to take a look at our [JASP background materials](jasp-background-materials.md).
+
+---
 
 Every JASP R analysis will consist of several types of functions:
 1. a single main analysis function that organizes the analysis and its output,
@@ -11,6 +21,8 @@ Every JASP R analysis will consist of several types of functions:
 3. one or multiple fill up functions that compute results and fill the output elements.
 
 In the remainder of this document, you will learn how to write these types of functions. Explanations will be illustrated using excerpts from a few JASP analyses, mainly the relatively simple Binomial Test. If you're writing a simple analysis it may suffice to work through steps 1 to 5. During these steps you will learn how to write a straightforward analysis that contains a table and a plot. In the two sections at the end of this guide we'll delve into (1) how multiple related tables or plots may be grouped together and (2) how we write analyses whose tables and plots revolve around a single computed model (as opposed to separately calculating results for each table and/or plot).
+
+Please note that R code for JASP should follow JASP's [R style guide](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/development/r-style-guide.md).
 
 Table of Contents:
 - [Step 1 - Creating the Main Analysis Function](#step-1---creating-the-main-analysis-function)
