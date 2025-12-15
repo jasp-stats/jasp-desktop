@@ -30,8 +30,16 @@ target_link_libraries(
 		Qt::Core
 		Qt::Quick
 		Qt::QuickControls2
-		${CMAKE_PREFIX_PATH}/plugins/platforms/qminimal.lib
+)
+
+if(USE_QT_STATIC_LIBS)
+	target_link_libraries(
+		SyntaxInterface
+		PUBLIC
+		$<$<PLATFORM_ID:Windows>:${CMAKE_PREFIX_PATH}/plugins/platforms/qminimal.lib>
+		$<$<NOT:$<PLATFORM_ID:Windows>>:${CMAKE_PREFIX_PATH}/plugins/platforms/libqminimal.a>
 	)
+endif()
 
 target_compile_definitions(
 	SyntaxInterface
@@ -39,6 +47,15 @@ target_compile_definitions(
 	SYNTAX_INTERFACE_LIBRARY
 	JASP_R_INTERFACE_LIBRARY
 	)
+
+if(USE_QT_STATIC_LIBS)
+	target_compile_definitions(
+		SyntaxInterface
+		PUBLIC
+		USE_QT_STATIC_LIBS
+	)
+endif()
+
 
 qt_import_qml_plugins(SyntaxInterface)
 

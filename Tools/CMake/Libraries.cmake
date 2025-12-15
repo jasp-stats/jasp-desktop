@@ -74,7 +74,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 get_target_property(QT_TARGET_TYPE Qt6::Core TYPE)
 set(USE_QT_STATIC_LIBS OFF)
 if(QT_TARGET_TYPE STREQUAL STATIC_LIBRARY)
-  set(USE_QT_STATIC_QT_LIBS ON)
+  set(USE_QT_STATIC_LIBS ON)
 endif()
 
 if(NOT FLATPAK_USED)
@@ -92,7 +92,7 @@ if(NOT FLATPAK_USED)
       QuickWidgets
       Core5Compat
   )
-  if(NOT USE_QT_STATIC_QT_LIBS)
+  if(NOT USE_QT_STATIC_LIBS)
     find_package(
       Qt6 REQUIRED COMPONENTS
                WebEngineQuick
