@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-09-25 16:01+0000\n"
+"PO-Revision-Date: 2025-12-16 18:00+0000\n"
 "Last-Translator: Jose Ramon Rueda <joseramon.rueda@ehu.eus>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "eu/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.15.1-dev\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -296,10 +296,9 @@ msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr "zutabean falta diren balioak (FB) ordezkatu replaceWith-eko balioarekin"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "if-else adierazpena?"
+msgstr "if-else adierazpena"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -317,7 +316,6 @@ msgstr ""
 "t banaketatik datuak sortzen ditu ag askatasun-graduekin eta zentraltasun "
 "eza parametro ncp-rekin"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
@@ -326,7 +324,6 @@ msgstr ""
 "khi-karratu banaketa batetik datuak sortzen ditu ag askatasun-gradu eta "
 "zentraltasun eza parametro ncp-rekin"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
