@@ -72,7 +72,7 @@ Table of Contents:
 - [ADDENDUM Ⅳ - Math](#addendum-Ⅳ---math)
 
 ## Step 1 - Creating the Main Analysis Function
-Each analysis in JASP needs a main analysis function. This function will provide an overview of all output elements and steps that are needed to conduct the full analysis. The name of your analysis must match the (case sensitive) name you specified in your description.json file under `"function":`.
+Each analysis in JASP needs a main analysis function. This function will provide an overview of all output elements and steps that are needed to conduct the full analysis. The name of your analysis must match the (case sensitive) name you specified in your `inst/description.qml` file under `"function":`.
 
 <details>
 	<summary>Code</summary>
@@ -85,7 +85,7 @@ Each analysis in JASP needs a main analysis function. This function will provide
 
 ### Step 1.1 - The Arguments
 The main analysis function has the following arguments:
-- `jaspResults`: the object that will contain all results from this analysis and connects it to the output
+- `jaspResults`: the object that will contain all results from this analysis and connects them to the output
 - `dataset`: an empty placeholder we will start using in the future when analyses can be run interactively from R through the JASP R package
 - `options`: a named list of interface options selected by the user; each name matches the name of a QML component
 
@@ -99,7 +99,15 @@ The main analysis function has the following arguments:
 </details>
 
 ## Step 2 - Checking if Results can be Computed
-Analyses usually require a certain minimum input before it can run, for example, an analysis might need at least a dependent variable and an independent variable. If this minimum input is not given, we should still show tables but filled with dots instead of actual results; plots should also be displayed but with empty axes (fortunately, this is quite easy as we'll show later). Consequently, it makes sense to determine early in the analysis whether we are ready to compute the results. In the Binomial Test, at least one variable is needed in order to compute results:
+Analyses usually require a minimum input before they can run. For example, an analysis might need at least one value, or some data, to be provided by the user. The behavior of the code should be different depending on this value being already provided or not. For instance, it should show tables but filled with dots instead of actual results, plots inlcuding just the axes, ... See an example in the diagram below: 
+
+```mermaid
+flowchart LR
+A(["Start"]) --> Decision{"Is all input provided?"} --yes--> B["Compute results and show them"]
+Decision --"not yet"--> C["Print empty results placeholder"]
+```
+
+We have to determine early in the analysis whether we are ready to compute the results. In the Binomial Test, at least one variable is needed in order to compute results:
 
 <details>
   <summary>Code</summary>
@@ -107,7 +115,7 @@ Analyses usually require a certain minimum input before it can run, for example,
   ```r
   BinomialTest <- function(jaspResults, dataset, options) {
 
-    ready <- (length(options$variables) > 0)
+    ready <- (length(options$variables) > 0) # Only TRUE if 1 or more variables are provided
    ```
 
 </details>
