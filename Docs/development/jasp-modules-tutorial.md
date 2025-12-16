@@ -166,11 +166,17 @@ If your idea involves a brand new analysis not yet existing in CRAN, consider wr
 
 ## 6. How to write your own module?
 
+Quick way:
+
 1. Fork the [jaspModuleTemplate](https://github.com/jasp-stats/jaspModuleTemplate).
 2. Clone it to your computer.
 3. Modify it to your needs.
 
+For a more in-depth approach, check-out these reference materials:
 
+- [Detailed JASP module structure](/Docs/development/jasp-module-structure.md)
+- [JASP QML guide](/Docs/development/jasp-qml-guide.md)
+- [R Analyses guide](/Docs/development/r-analyses-guide.md) (or how to use `jaspResults`)
 
 ## 7. How to contribute a module?
 

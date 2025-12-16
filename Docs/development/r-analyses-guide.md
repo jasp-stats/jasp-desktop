@@ -181,7 +181,7 @@ dataset[, options$variables[1]]
 ```
 
 ## Step 4 - Checking for Errors
-Checking for errors is a strong form of what we did in [Step 2 - Checking if Results can be Computed](#step-2---checking-if-results-can-be-computed). Even when an analysis has the right number and types of inputs, it might still crash. Think for instance of divisions by zero, numerical overloads, ...\
+Checking for errors is a strong form of what we did in [Step 2 - Checking if Results can be Computed](#step-2---checking-if-results-can-be-computed). Even when an analysis has the right number and types of inputs, it might still crash. Think for instance of divisions by zero, numerical overloads, ...
 
 We can expand our logical diagram with an extra verification step:
 
