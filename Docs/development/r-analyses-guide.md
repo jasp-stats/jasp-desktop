@@ -181,11 +181,23 @@ dataset[, options$variables[1]]
 ```
 
 ## Step 4 - Checking for Errors
-If we have the minimum input our analysis requires, it is important to check for errors that could prevent the results from being computed (e.g., a dependent variable that has no variance). The error checks that should be conducted depend on the analysis. Most common error checks are implemented in the convenience function `.hasErrors()`. The arguments you can supply are as follows (\* denotes required arguments):
+Checking for errors is a strong form of what we did in [Step 2 - Checking if Results can be Computed](#step-2---checking-if-results-can-be-computed). Even when an analysis has the right number and types of inputs, it might still crash. Think for instance of divisions by zero, numerical overloads, ...\
+
+We can expand our logical diagram with an extra verification step:
+
+```mermaid
+flowchart LR
+A(["Start"]) --> Decision{"Is all input provided?"} --yes--> Test{"The input has errors?"}
+Test --yes--> Interrupt["Don't compute and warn user"]
+Test --"no"--> B["Compute results and show them"]
+Decision --"not yet"--> C["Print empty results placeholder"]
+```
+
+The error checks that should be conducted depend on the analysis. Most common error checks are implemented in the convenience function `.hasErrors()`. The arguments you can supply are as follows (\* denotes required arguments):
 
 - `dataset`\*: the dataset you obtained in the previous step
 - `type`: vector of strings containing names of the checks -- see below.
-- `message`: `short` or `default` [default: `default`], should only the first failure of a check be reported in footnote style (`short`), or should every check failure be mentioned in multi-line form.
+- `message`: `short` or `default` [default: `default`], should only the first failure of a check be reported in footnote style (`short`), or should every check failure be mentioned in multi-line form?
 - `exitAnalysisIfErrors`: boolean [default: `FALSE`], should the entire analysis be aborted when a failing check is encountered (`TRUE`), or should the analysis continue running (`FALSE`).
 - `custom`: either a function or a named list of functions. If you wish to check for something that is not included you can include your own checks here. If a function returns a character string `.hasErrors` assumes it is an error. If a function returns `NULL` then no error will be reported. E.g., `function() { if (options$exProbVar != "" && options$counts == "") return("Expected counts not supported without observed counts.") }`
 - `...`: arguments passed on to each individual error check -- see below.
