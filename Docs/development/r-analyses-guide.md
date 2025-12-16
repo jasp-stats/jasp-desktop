@@ -116,12 +116,14 @@ We have to determine early in the analysis whether we are ready to compute the r
   BinomialTest <- function(jaspResults, dataset, options) {
 
     ready <- (length(options$variables) > 0) # Only TRUE if 1 or more variables are provided
+
    ```
 
 </details>
 
 ## Step 3 - Reading the Dataset
-If your R function is called from JASP the dataset will not be provided directly to the analysis. Instead, you must ask for the dataset. This allows you to specify how variables must be read (e.g., as factor) and how missing values should be treated -- they can be ignored or excluded listwise. To read the dataset, call `.readDataSetToEnd()` with the following optional arguments
+After selecting a dataset in JASP, you still have to load it into your R analysis. Reading data is always a tricky matter. Computers are devoid of common sense, so very often we have to explicitly specify how variables must be interpreted (are they integers?, characters?, ...). We recommend you to use our auxiliary function `.readDataSetToEnd()`, with the following optional arguments.
+
 - `columns`: columns that must be read without specific coercing to a datatype
 - `columns.as.numeric`: columns that must be read as numeric
 - `columns.as.ordinal`: columns that must be read as ordinal
@@ -129,7 +131,7 @@ If your R function is called from JASP the dataset will not be provided directly
 - `all.columns`: boolean specifying if the entire dataset should be read, as opposed to specific columns
 - `exclude.na.listwise`: columns where missing values should be deleted listwise
 
-We do have to account for the fact that we do not need data if we're not ready to compute anything (as we verified in [Step 2 - Checking if Results can be Computed](#step-2---checking-if-results-can-be-computed)):
+Note that we only read the data if we are ready for computing (as we verified in [Step 2 - Checking if Results can be Computed](#step-2---checking-if-results-can-be-computed)):
 
 <p><details>
 	<summary>Code</summary>
@@ -145,28 +147,29 @@ We do have to account for the fact that we do not need data if we're not ready t
 
 </details></p>
 
-Where `.binomReadData()` looks like
+Where `.binomReadData()` looks like:
 
 <p><details>
 	<summary>Code</summary>
 
   ```r
   .binomReadData <- function(dataset, options) {
-    if (!is.null(dataset))
-      return(dataset)
-    else
+    if (!is.null(dataset)) # If data has been already read...
+      return(dataset)      # ... just return it ...
+    else                   # ... otherwise, read it
       return(.readDataSetToEnd(columns.as.factor = options$variables))
   }
   ```
 
 </details></p>
 
-Take note that the column titles in the data.frame returned by `.readDataSetToEnd()` will look a bit jumbled, e.g., the first column is titled `JaspColumn_.1._Encoded`, the second column is titled `JaspColumn_.2._Encoded`. This is due to the encoding we perform on the column titles, which allows us to handle foreign characters. The values in `options$variables` are NOT encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `decodeColNames()` to decode column names and `encodeColNames` to encode column names. To exemplify this, the following would return `TRUE`:
+### A note on column names
+Notice that the column titles in the `data.frame` returned by `.readDataSetToEnd()` will look a bit jumbled, _e.g._, the first column is titled `JaspColumn_.1._Encoded`, the second column is titled `JaspColumn_.2._Encoded`. This is due to the encoding we perform on the column titles, which allows us to handle foreign characters. The values in `options$variables` are NOT encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `decodeColNames()` to decode column names and `encodeColNames` to encode column names. To exemplify this, the following would return `TRUE`:
 
 - `"firstColumnTitle" == decodeColNames("JaspColumn_.1._Encoded")`
 - `encodeColNames("firstColumnTitle") == "JaspColumn_.1._Encoded"`
 
-Hence, whenever you wish to match an option to a data.frame column you must encode or decode one of the two. It is quite possible that an analysis crashes when it encounters uncommon characters. Such an error can be caused by the code in the analysis itself, but it can also be caused by a dependency that cannot handle these characters. To play it safe, we recommend only decoding column names at the very last moment before presenting output in a table of plot. To subset in a data set we recommend *encoding* the names in `options$variables`. For example,
+Hence, whenever you wish to match an option to a `data.frame` column you must encode or decode one of the two. It is quite possible that an analysis crashes when it encounters uncommon characters. Such an error can be caused by the code in the analysis itself, but it can also be caused by a dependency that cannot handle these characters. To play it safe, we recommend only decoding column names at the very last moment before presenting output in a table of plot. To subset in a data set we recommend *encoding* the names in `options$variables`. For example,
 
 ```r
 dataset[, encodeColNames(options$variables[1])]
