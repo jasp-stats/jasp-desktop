@@ -913,35 +913,5 @@ const QStringList DynamicModules::loadedModulesTitles() const
 	return mods;
 }
 
-const QString DynamicModules::moduleStoreUrl() const
-{
-	auto installed = InstalledModules::getInstalledModuleVersions();
-	Json::Value root;
-	for(auto moduleVersion : installed) {
-		root[moduleVersion.first] = moduleVersion.second;
-	}
-
-	Json::StreamWriterBuilder writer;
-	writer["indentation"] = "";
-	QString installList(Json::writeString(writer, root).c_str());
-
-	auto platform = DynamicRuntimeInfo::getRuntimeEnvironment();
-	auto arch = DynamicRuntimeInfo::getMicroArch();
-	std::string platformString;
-
-	if(platform == RuntimeEnvironment::MAC)
-		platformString = arch == MicroArch::AARCH64 ? "MacOS_arm64" : "MacOS_x86_64";
-	else if(platform == RuntimeEnvironment::FLATPAK)
-		platformString = arch == MicroArch::AARCH64 ? "MacOS_aarch64" : "MacOS_arm64";
-	else if(platform == RuntimeEnvironment::LINUX_LOCAL)
-		platformString = arch == MicroArch::AARCH64 ? "Linux_aarch64" : "Linux_x86_64";
-	else
-		platformString = "Windows_x86-64";
-
-	QUrlQuery query({{"a", QString(platformString.c_str())}, {"v", QString(AppInfo::version.asString(3).c_str())} , {"i", installList}});
-	QString tmp = _storeBaseUrl + "?" + query.toString(QUrl::FullyEncoded);
-	return _storeBaseUrl + "?" + query.toString(QUrl::FullyEncoded);
-}
-
 
 }
