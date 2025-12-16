@@ -332,7 +332,7 @@ Where `.binomCheckErrors()` looks like:
 It is now time to think about our output. What tables and plots do we want to display? In most analyses you will have one main output table that is always shown and then a number of tables and plots that are optional. As a table is almost always shown we will first start explaining how to create it.
 
 ### Step 5.1 - Tables
-At this point we start using `jaspResults` which was passed into our function at the start of the analysis. `jaspResults` is used to store our results and helps us figure out if we can re-use any of our tables and plots between calls to our analysis function. Whereas this may sound complex, there is an easy way to check for it: We can just check whether the table we want to make is defined (i.e. not `NULL`) in `jaspResults`. If it is not defined (i.e. `NULL`), the table needs to be created:
+At this point we start using `jaspResults` which was passed into our function at the start of the analysis. `jaspResults` is used to store all our results. It also helps us figure out if we can re-use any of our tables and plots between calls to our analysis function. Whereas this may sound complex, there is an easy way to check for it: we can just check whether the table we want to make is defined (i.e. not `NULL`) in `jaspResults`. If it is not defined (i.e. `NULL`), the table needs to be created:
 
 <p><details>
 	<summary>Code</summary>
@@ -354,10 +354,10 @@ At this point we start using `jaspResults` which was passed into our function at
 
 </details></p>
 
-Don't worry about the name `"binomialTable"` for now, we'll show where this comes from in [Step 5.1.7 - Adding the Table to the Output](#step-517---adding-the-table-to-the-output).
+Don't worry about the name `"binomialTable"` nor the function `.binomTableMain` for now. We'll show where this comes from in [Step 5.1.7 - Adding the Table to the Output](#step-517---adding-the-table-to-the-output).
 
-#### Step 5.1.1 - Creating a JASP Table
-Unfortunately, we cannot just create a data.frame and call it a day. There is some markup you'll have to add first; the markup will describes properties of the table so JASP knows how to display it correctly. Let's start by creating a JASP table object and giving it a title that will be displayed in the output:
+#### Step 5.1.1 - Title
+A table is a bit more than just a `data.frame`. It contains attributes such as a title, dependencies, etc. Let's start by creating a JASP table object and giving it a title that will be displayed in the output:
 
 <details>
 	<summary>Code</summary>
@@ -436,7 +436,7 @@ We'll also have to specify what columns our table will have. Some columns are al
     binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
     binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
 
-    if (options$VovkSellkeMPR)
+    if (options$VovkSellkeMPR) # This column is only added if the user selects it
       binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR", type = "number", format = "sf:4")
 
     if (options$confidenceInterval) {
@@ -470,7 +470,7 @@ Another setting you may consider tweaking is whether JASP should display all col
     binomialTable$addColumnInfo(name = "proportion", title = "Proportion", type = "number")
     binomialTable$addColumnInfo(name = "p",          title = "p",          type = "pvalue")
 
-    if (options$VovkSellkeMPR)
+    if (options$VovkSellkeMPR) # This column is only added if the user selects it
       binomialTable$addColumnInfo(name = "VovkSellkeMPR", title = "VS-MPR", type = "number", format = "sf:4")
 
     if (options$confidenceInterval) {
@@ -488,7 +488,7 @@ Another setting you may consider tweaking is whether JASP should display all col
 In the example given above, the column description added through `$addColumnInfo()` with `name = "VovkSellkeMPR"` will only be included when the VovkSellkeMPR checkbox in the interface is checked. By setting `$showSpecifiedColumnsOnly` to `TRUE` it does not matter if we include the VovkSellkeMPR statistic in our results anyway, as it won't be added to the table.
 
 #### Step 5.1.5 - Expected Table Size
-Optionally, we can tell JASP how many rows (and columns if you did not specify them with `$addColumnInfo()`) our table will have through `$setExpectedSize()`. In analyses that do not take a lot of time to run (i.e., their computations are quick) this is not really required. In this case, JASP will default to showing an empty table with a single row filled with dots until it receives your actual results. However, if your analysis is slow, it's recommended to create an empty table of the correct size and then fill this table row by row. The binomial test is quick, but we'll add it anyway:
+Optionally, we can tell JASP how many rows (and columns if you did not specify them with `$addColumnInfo()`) our table will have through `$setExpectedSize()`. In analyses that do not take a lot of time to run (_i.e._, their computations are quick) this is not really required. In this case, JASP will default to showing an empty table with a single row filled with dots until it receives your actual results. However, if your analysis is slow, it's recommended to create an empty table of the correct size and then fill this table row by row. The binomial test is quick, but we'll add it anyway:
 
 <details>
 	<summary>Code</summary>
@@ -623,10 +623,10 @@ The markup part of the table is complete and we can now give it to `jaspResults`
     )
     binomialTable$addFootnote(message)
 
-    jaspResults[["binomialTable"]] <- binomialTable
+    jaspResults[["binomialTable"]] <- binomialTable # This is the crucial step to output the table
 
     if (!ready)
-      return()
+      return() # If not ready, do nothing
   ```
 
 </details>
@@ -722,7 +722,7 @@ Note that `$addRows()` also takes a second argument: `rowNames`, you can use thi
 
 
 #### Step 5.1.9 - Reporting Errors
-It's entirely possible that an analysis still crashes even after our error checking in [Step 4 - Checking for Errors](#step-4---checking-for-errors). There are two things we can about this. One, nothing at all. If the analysis crashes it will crash hard and message 'the analysis terminated unexpectedly' will be shown. This would be the situation in step 5.1.8. On the other hand, we could also try to still compute other results if possible (i.e., there might be a different part of the analysis which could still be computed) and then exit the analysis normally. To accomplish the second situation you will have to use R's `try()` and combine it with JASP's `$setError()`.
+It's entirely possible that an analysis still crashes even after our error checking in [Step 4 - Checking for Errors](#step-4---checking-for-errors). There are two things we can about this. One, nothing at all. If the analysis crashes it will crash hard and message 'the analysis terminated unexpectedly' will be shown. This would be the situation in step 5.1.8. On the other hand, we could also try to still compute other results if possible (_i.e._, there might be a different part of the analysis which could still be computed) and then exit the analysis normally. To accomplish the second situation you will have to use R's `try()` and combine it with JASP's `$setError()`.
 
 <details>
 	<summary>Code</summary>
@@ -838,7 +838,7 @@ Many analyses in JASP are based on the work of others and it is important we giv
 </details>
 
 #### Step 5.2.4 - Adding the Plot to the Output
-We can now give it to `jaspResults` (and if we're not ready to compute anything we're done all together). When JASP receives a JASP plot object without an actual plot (i.e., ggplot) it will automatically show an empty plot of the correct size in the output.
+We can now give it to `jaspResults` (and if we're not ready to compute anything we're done all together). When JASP receives a JASP plot object without an actual plot (_i.e._, ggplot) it will automatically show an empty plot of the correct size in the output.
 
 <details>
 	<summary>Code</summary>
