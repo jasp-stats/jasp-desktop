@@ -254,7 +254,7 @@ FocusScope
 			{
 				top:				parent.top
 				margins:			jaspTheme.contentMargin
-				right:				vertScroller.left
+				right:				vertScroller.visible ? vertScroller.left : parent.right
 				bottom:				parent.bottom
 			}
 
@@ -326,9 +326,9 @@ FocusScope
 			{
 				id:			modules
 				spacing:	4  * preferencesModel.uiScale
-                width:		modulesFlick
+				width:		modulesFlick.width
 				visible:	!ribbonModel.dataMode
-                anchors.right: vertScroller.visible ? vertScroller.left : parent.right
+				//anchors.right: parent.right //vertScroller.visible ? vertScroller.left : parent.right
 
 				property int buttonMargin:	3  * preferencesModel.uiScale
 				property int buttonWidth:	width - (buttonMargin * 2)
@@ -341,7 +341,6 @@ FocusScope
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
-					anchors.left:		parent.left
 					onClicked: 			moduleInstallerDialog.open()
 					iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 					showIconAndText:	true
@@ -356,7 +355,6 @@ FocusScope
 				{
 					orientation:				Qt.Horizontal
 					width:						modules.buttonWidth
-					anchors.horizontalCenter:	parent.horizontalCenter
 					visible:					preferencesModel.developerMode
 				}
 
@@ -367,7 +365,6 @@ FocusScope
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
-					anchors.left:		parent.left
 					onClicked: 			folderSelected ? dynamicModules.installJASPDeveloperModule() : preferencesModel.browseDeveloperFolder()
 					toolTip:			folderSelected ? (dynamicModules.developersModuleInstallButtonEnabled ? qsTr("Install selected developer module") : qsTr("Installing developer module now")) : qsTr("Select a developer module by clicking here")
 					visible:			preferencesModel.developerMode && !preferencesModel.directLibpathEnabled
@@ -385,7 +382,6 @@ FocusScope
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
-					anchors.left:		parent.left
 					onClicked: 			moduleSelected ? dynamicModules.installJASPDeveloperModule() : fileMenuModel.showAdvancedPreferences()
 					toolTip:			moduleSelected ? qsTr("Install selected developer module") : qsTr("Select a developer module by filling in the relevant preferences")
 					visible:			preferencesModel.developerMode && preferencesModel.directLibpathEnabled
@@ -399,7 +395,6 @@ FocusScope
 				{
 					orientation:				Qt.Horizontal
 					width:						modules.buttonWidth
-					anchors.horizontalCenter:	parent.horizontalCenter
 					visible:					preferencesModel.developerMode
 				}
 
@@ -413,7 +408,6 @@ FocusScope
 						width:				modules.buttonWidth
 						height:				modules.buttonHeight
 						anchors.leftMargin: modules.buttonMargin
-						anchors.left:		parent.left
 						color:				isSpecial || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
 
 						CheckBox
@@ -447,7 +441,7 @@ FocusScope
                         MenuButton
                         {
                             z:				1
-                            id:				refreshButton
+							id:				refreshButton
                             visible:		!isBundled && !isSpecial
                             iconSource:		jaspTheme.iconPath + "/redo.svg"
                             width:			visible ? height : 0
@@ -476,7 +470,7 @@ FocusScope
 							}
 						}
 					}
-				}				
+				}
 			}
 
 
