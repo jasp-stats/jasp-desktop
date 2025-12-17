@@ -960,7 +960,7 @@ if(APPLE OR LINUX)
   message(CHECK_START "Checking for 'libRInside'")
   find_library(
     _LIB_RINSIDE
-    NAMES RInside
+    NAMES "libRInside.a"
     PATHS ${RINSIDE_PATH}/lib
     NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
