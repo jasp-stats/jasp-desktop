@@ -126,7 +126,9 @@ By default, recent versions of JASP immediately load your dataset into your R an
 
 **Tip**: If you don't want the data to be automatically loaded, you have to set `preloadData: false` in the corresponding `qml` file.
 
-Reading data is always a tricky matter. Computers are devoid of common sense, so very often we have to explicitly specify how variables must be interpreted (are they a scale?, a nominal?, an ordinal?, ...). The `Edit data` panel allows you to specify this kind of things.
+Reading data is always a tricky matter. Computers are devoid of common sense, so very often we have to explicitly specify how variables must be interpreted (are they a scale?, a nominal?, an ordinal?, ...). Each column in the data has a type set on it, which is how it is shown in the dataviewer. However, for an analysis you might well want to get a different type, just for that analysis. Or even get a scale *and* a nominal version of the column.
+The preloading of data in JASP actually takes that into account and adds every column selected in any qml component to a dataset, converted to exactly the type requested by the user.
+Just like you can write `columnName.scale` or `columnName.nominal` in a JASP filter or computed column.
 
 ### A note on column names
 Notice that the column titles in the `dataset` will look a bit jumbled, _e.g._, the first column is titled `JaspColumn_.1._Encoded`, the second column is titled `JaspColumn_.2._Encoded`. This is due to the encoding we perform on the column titles, which allows us to handle foreign characters. The values in `options$variables` are NOT encoded and therefore do not match the column names in the dataset. Obviously this will present difficulties if we try to subset data later during the computation phase. The way we solve this is by using `decodeColNames()` to decode column names and `encodeColNames` to encode column names. To exemplify this, the following would return `TRUE`:
