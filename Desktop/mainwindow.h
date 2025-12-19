@@ -41,6 +41,7 @@
 #include "gui/preferencesmodel.h"
 #include "modules/ribbonmodelfiltered.h"
 #include "modules/ribbonmodel.h"
+#include "modules/modulelibrary.h"
 #include "modules/upgrader/upgrader.h"
 #include "jasptheme.h"
 #include "results/ploteditormodel.h"
@@ -337,6 +338,7 @@ private:
 	CodePagesWindows			*	_windowsWorkaroundCPs	= nullptr;
 	WorkspaceModel				*	_workspaceModel			= nullptr;
 	JASPConfiguration			*   _jaspConfiguration      = nullptr;
+	ModuleLibrary				*	_moduleLibrary			= nullptr;
 
 	QSettings						_settings;
 
