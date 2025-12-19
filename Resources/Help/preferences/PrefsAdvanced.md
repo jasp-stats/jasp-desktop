@@ -12,7 +12,7 @@ If you've enabled this option then JASP will remember which modules are activate
 
 ### Developer mode
 
-If you enable this you see a few extra options appear. One is "Generate markdown files for help", which will ignore any markdown helpfiles for an analysis and instead will only show generated markdown from each `info` field on each qml item and jaspObject.
+If you enable this you see a few extra options appear. One is "Generate markdown files for help", which will ignore any markdown helpfiles for an analysis and instead will only show generated markdown from each `info` field on each qml item and jaspObject. Another option is the "Module library URL" field, which allows you to change the URL of the JASP module library web application from [https://module-library.jasp-stats.org/](https://module-library.jasp-stats.org/) to a locally running instance.
 
 #### Development module
 Besides that it will show "Development module" where you can load an R-package installed/restored with `renv`. For this you need to know the name of your module (for instance: `jaspAnova`) and the R-library or `.libPath` that `renv` created for you. 
