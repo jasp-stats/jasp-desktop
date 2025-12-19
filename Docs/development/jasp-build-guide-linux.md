@@ -127,3 +127,53 @@ The previously mentioned script achieves the build of each module by calling `./
 If you want to reinstall those modules (possibly after checking out different commits in there) you can of course run that line yourself.
 And suppose you have a module installed anywhere and you would like to simply build and install only that module you can run `./buildModuleBundlesLocally.sh /path/to/your/module`.
 
+## Using the VS Code Dev Container
+
+The repository includes a ready-to-use Dev Container that provides all build dependencies (CMake, Ninja, R, JAGS, Qt 6.8.3, …) preconfigured.
+
+### Prerequisites
+- Docker or a compatible container runtime
+- VS Code with the Dev Containers extension
+
+### Open in the Dev Container
+1. Open the `jasp-desktop` folder in VS Code.
+2. When prompted, select “Reopen in Container” (or open the Command Palette and run “Dev Containers: Reopen in Container”).
+3. First start will:
+	 - Initialize submodules
+	 - Detect a Conan profile
+
+
+### Build & run inside the container
+
+You can build either with terminal, by opening a new terminal and:
+
+```shell
+mkdir ~/.config
+export GITHUB_PAT=<your GitHub token>
+export Qt6_DIR=/opt/Qt/6.8.3/gcc_64/lib/cmake
+CMAKE_PREFIX_PATH=/opt/Qt/6.8.3/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
+cmake --build jasp-build --target all -j6
+
+# Start JASP desktop application
+./jasp-build/Desktop/JASP --safeGraphics
+```
+
+```shell
+QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics 
+# In Chrome or Edge, open http://localhost:8123 to inspect the webengine process
+```
+
+If X11 says no then allow local X clients:
+
+```bash
+xhost +local:
+# and try again
+```
+
+If you see the JASP window is fully black then resize the window to force a redraw.
+
+You can also use QT creator with
+
+```shell
+/opt/Qt/Tools/QtCreator/bin/qtcreator
+```

@@ -44,6 +44,7 @@ public:
 	void			runScriptOnProcess(		RComputeColumnStore * computeColumnStore);
 
 	void			runModuleInstallRequestOnProcess(	Json::Value request);
+	void			runModuleUnInstallRequestOnProcess(	Json::Value request);
 	void			runModuleLoadRequestOnProcess(		Json::Value request);
 
 	void			sendLogCfg();
@@ -79,7 +80,8 @@ public:
 	bool			killed()				const { return _engineState == engineState::killed;										}
 	bool			idle()					const { return _engineState == engineState::idle;										}
 	bool			installingModule()		const { return _engineState == engineState::moduleInstallRequest;						}
-	bool			reloadingData()			const { return _engineState == engineState::reloadData;									}
+	bool			unInstallingModule()	const { return _engineState == engineState::moduleUninstallRequest;						}
+	bool			reloadingData()			const { return _engineState == engineState::reloadData;						}
 	bool			moduleLoading()			const { return _engineState == engineState::moduleLoadRequest;							}
 	bool			idleSoon()				const;
 	bool			shouldSendSettings()	const { return idle() && _settingsChanged;												}
@@ -90,6 +92,10 @@ public:
 	bool			busyWithData()			const;
 	bool			needsReloadData()		const { return idle() && _reloadData; }
 	bool			moduleLoaded()			const { return _moduleLoaded; }
+    bool        isPriviliged()           const { return _isPriviliged; }
+
+
+    void        setIsPrivileged(bool value) { _isPriviliged = value;}
 
 	///How many seconds has this engine been idle?
 	int64_t			idleFor() const;
@@ -139,6 +145,7 @@ public slots:
 	void			setRunsUtility(	bool runsUtility);
 	void			setRunsRCmd(		bool runsRCmd);
 
+
 	void			setDynamicModule(const std::string & dynamicModule);
 	void			reloadData() { _reloadData = true; }
 
@@ -164,7 +171,8 @@ signals:
 	void			moduleLoadingSucceeded(			const QString & moduleName, int channelID);
 	void			moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage, int channelID);
 	void			moduleUnloadingFinished(		const QString & moduleName, int channelID);
-	void			moduleUninstallingFinished(		const QString & moduleName);
+	void			moduleUninstallationSucceeded(	const QString & moduleName);
+	void			moduleUninstallationFailed(		const QString & moduleName, const QString & errorMessage);
 
 	void			logCfgReplyReceived(			EngineRepresentation * engine);
 	void			requestEngineRestartAfterCrash(	EngineRepresentation * engine);
@@ -223,7 +231,8 @@ private:
 					_removeEngine		= false,
 					_pauseUnloadData	= false,
 					_reloadData			= false,	///<when the idle is engine and this true, it should reload the data
-					_moduleLoaded		= false;	///<If _dynModName is set but this is false the engine should still load the module.
+                    _moduleLoaded		= false,	///<If _dynModName is set but this is false the engine should still load the module.
+                    _isPriviliged        = false;
 	std::string		_lastCompColName	= "???",
 					_dynModName			= "",		///<If filled: refers to the particular dynamic module this engine was meant for.
 					_requestModName		= "";		///<To keep track of which engine is handling a request for a module

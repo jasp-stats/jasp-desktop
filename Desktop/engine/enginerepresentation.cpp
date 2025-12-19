@@ -313,6 +313,7 @@ void EngineRepresentation::processReplies()
 			case engineState::paused:				processEnginePausedReply();			break;
 			case engineState::resuming:				processEngineResumedReply(json);	break;
 			case engineState::stopped:				processEngineStoppedReply();		break;
+			case engineState::moduleUninstallRequest:
 			case engineState::moduleInstallRequest:
 			case engineState::moduleLoadRequest:	processModuleRequestReply(json);	break;
 			case engineState::logCfg:				processLogCfgReply();				break;
@@ -934,6 +935,16 @@ void EngineRepresentation::runModuleInstallRequestOnProcess(Json::Value request)
 	sendString(request);
 }
 
+void EngineRepresentation::runModuleUnInstallRequestOnProcess(Json::Value request)
+{
+	setState(engineState::moduleUninstallRequest);
+	request["typeRequest"]	= engineStateToString(_engineState);
+
+	_requestModName	= request["moduleName"].asString();
+
+	sendString(request);
+}
+
 void EngineRepresentation::runModuleLoadRequestOnProcess(Json::Value request)
 {
 	_moduleLoaded = false;
@@ -966,6 +977,11 @@ void EngineRepresentation::processModuleRequestReply(Json::Value & json)
 	case moduleStatus::installNeeded:
 		if(succes)	emit moduleInstallationSucceeded(result);
 		else		emit moduleInstallationFailed(moduleName, getError());
+		break;
+
+	case moduleStatus::uninstallNeeded:
+		if(succes)	emit moduleUninstallationSucceeded(result);
+		else		emit moduleUninstallationFailed(moduleName, getError());
 		break;
 
 	case moduleStatus::loading:

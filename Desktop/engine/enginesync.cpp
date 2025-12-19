@@ -65,6 +65,10 @@ EngineSync::EngineSync(QObject *parent)
 	{
 		connect(this,						&EngineSync::moduleInstallationFailed,				DynamicModules::dynMods(),	&DynamicModules::installationPackagesFailed,	Qt::DirectConnection);
 		connect(this,						&EngineSync::moduleInstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::installationPackagesSucceeded,	Qt::DirectConnection);
+
+		connect(this,						&EngineSync::moduleUninstallationSucceeded,			DynamicModules::dynMods(),	&DynamicModules::unInstallationPackagesSucceeded,	Qt::DirectConnection);
+		connect(this,						&EngineSync::moduleUninstallationFailed,			DynamicModules::dynMods(),	&DynamicModules::unInstallationPackagesFailed,		Qt::DirectConnection);
+		connect(this,						&EngineSync::moduleUninstallationFailed,			this,						&EngineSync::moduleInstallationFailedHandler	);
 	}
 	
 	if(PreferencesModel::prefs())
@@ -113,6 +117,7 @@ EngineSync::~EngineSync()
 		delete channel;
 	_channels.clear();
 
+    destroyEngine(_rCmder);
 	delete _rCmderChannel;
 	_rCmderChannel	= nullptr;
 	_rCmder			= nullptr;
@@ -232,7 +237,7 @@ void EngineSync::maxEngineCountChanged()
 	}	
 }
 
-EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overrideChannel)
+EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overrideChannel, bool privileged)
 {
 	try
 	{
@@ -249,7 +254,8 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 			_engineStopTimes[freeChannel] = -1;
 		}
 
-		EngineRepresentation	* engine		= new EngineRepresentation(freeChannel, startSlaveProcess(freeChannel), this);
+        EngineRepresentation	* engine		= new EngineRepresentation(freeChannel, startSlaveProcess(freeChannel, privileged), this);
+        engine->setIsPrivileged(privileged);
 		
 		if(addToEngines)
 			_engines.insert(engine);
@@ -270,7 +276,8 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 		connect(engine,						&EngineRepresentation::computeColumnFailed,				this,					&EngineSync::computeColumnFailed,				Qt::QueuedConnection	);
 		connect(engine,						&EngineRepresentation::moduleInstallationFailed,		this,					&EngineSync::moduleInstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleInstallationSucceeded,		this,					&EngineSync::moduleInstallationSucceeded								);
-		connect(engine,						&EngineRepresentation::moduleUninstallingFinished,		this,					&EngineSync::moduleUninstallingFinished									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationSucceeded,	this,					&EngineSync::moduleUninstallationSucceeded									);
+		connect(engine,						&EngineRepresentation::moduleUninstallationFailed,		this,					&EngineSync::moduleUninstallationFailed									);
 		connect(engine,						&EngineRepresentation::moduleLoadingSucceeded,			this,					&EngineSync::moduleLoadingSucceeded										);
 		connect(engine,						&EngineRepresentation::moduleLoadingFailed,				this,					&EngineSync::moduleLoadingFailed										);
 		connect(engine,						&EngineRepresentation::logCfgReplyReceived,				this,					&EngineSync::logCfgReplyReceived										);
@@ -338,7 +345,7 @@ void EngineSync::restartEngines()
 	for(auto * engine : _engines)
 		if(engine->killed())
 		{
-			engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+            engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
 			Log::log() << "restarted engine " << engine->channelNumber() << std::endl;
 		}
 
@@ -351,7 +358,7 @@ void EngineSync::restartEngineAfterCrash(EngineRepresentation * engine)
 {
 	Log::log() << "restartEngineAfterCrash(" << engine->channelNumber() << ")" << std::endl;
 	
-	engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+    engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
 	logCfgRequest();
 }
 
@@ -365,7 +372,7 @@ void EngineSync::restartAKilledOrStoppedEngine(EngineRepresentation * engine)
 {
 
 	if(engine->killed() || !engine->jaspEngineStillRunning())
-		engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
 
 	else if(engine->stopped())
 		engine->resumeEngine();
@@ -412,15 +419,20 @@ void EngineSync::process()
 	if(_stopProcessing && !_dataMode)
 		return;
 		
-	if(_rCmder)
-	{
-		restartAKilledOrStoppedEngine(_rCmder);
+    if(_rCmder)
+    {
+        restartAKilledOrStoppedEngine(_rCmder);
 
-		_rCmder->processReplies();
+        _rCmder->processReplies();
+        processDynamicModules();
 
-		if(_rCmder->module() != "" && !_rCmder->moduleLoaded() && !_rCmder->moduleLoading())
-			_rCmder->moduleLoad();
-	}
+
+        if(_rCmder->module() != "" && !_rCmder->moduleLoaded() && !_rCmder->moduleLoading())
+            _rCmder->moduleLoad();
+    }
+    else {
+        createRCmdEngine(); //just create this by default to run certain bits of utility like module install/remove
+    }
 	
 	restartKilledAndStoppedEngines();
 	shutdownBoredEngines();
@@ -458,14 +470,12 @@ void EngineSync::process()
 	//So we try to distribute some work to each engine as below:
 	stringset	notEnoughIdlesForScript		=	processRCodeQueue();
 	bool		notEnoughIdlesForCompCol	=	processComputedColumnQueue();
-	stringset	notEnoughIdlesForModule		=	processDynamicModules();
 	auto		notEnoughIdlesForAnalysis	=	processAnalysisRequests();
-	bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForScript.size() || notEnoughIdlesForModule.size() || notEnoughIdlesForAnalysis.size();
+    bool		notEnoughIdles				=	notEnoughIdlesForCompCol || notEnoughIdlesForScript.size() || notEnoughIdlesForAnalysis.size();
 	
 	// So  right now notEnoughIdles tells us we do not have enough idle engines (or free idle engines anyway)
 	// Now we join the set of missing module-engines, or engines registered for a module (and usually with that module loaded unless it is an install request)
-	stringset notEnoughIdlesSet(notEnoughIdlesForModule);
-	notEnoughIdlesSet.merge(notEnoughIdlesForScript);
+    stringset notEnoughIdlesSet(notEnoughIdlesForScript);
 	
 	int			wantThisManyEngines			=	notEnoughIdlesSet.size();
 
@@ -473,7 +483,7 @@ void EngineSync::process()
 		wantThisManyEngines++;
 
 	if(notEnoughIdles)
-		Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForModule.size() ? std::to_string(notEnoughIdlesForModule.size()) + " for installing modules" : "") <<  (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
+        Log::log() << "Not enough idle engines! Need " << (notEnoughIdlesForScript.size() ? " one for script" : "") << (notEnoughIdlesForCompCol ? " one for compcol" : "") << (notEnoughIdlesForAnalysis.size() ? std::to_string(notEnoughIdlesForAnalysis.size()) + " for analysis" : "") << ", one will " << ( !anEngineIdleSoon() ? "NOT " : "")  << "be idle soon..." << std::endl;
 	
 	//First try to find or start some engines specifically for waiting analyses, and we assign them to the module immediately
 	if(notEnoughIdlesForAnalysis.size())
@@ -764,7 +774,7 @@ bool EngineSync::processComputedColumnQueue()
 }
 
 
-stringset EngineSync::processDynamicModules()
+bool EngineSync::processDynamicModules()
 {
 	using DynMods = Modules::DynamicModules;
 	
@@ -774,23 +784,33 @@ stringset EngineSync::processDynamicModules()
 	try
 	{
 		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
-		if(wantToRunInstall.size() > 0)
+        stringset	wantToRunUninstall	= DynMods::dynMods()->modulesNeedingUninstall();
+
+        if(_rCmder->installingModule() || _rCmder->unInstallingModule()) //lets only process one dynamic module install/remove at a time for the sake of sanity.
+            return {};
+
+        if(wantToRunInstall.size() > 0 || wantToRunUninstall.size() > 0)
 		{
-			for(auto & engine : _engines)
-				if(engine->idle() && engine->runsUtility()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
-				{
-					engine->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
-					return {};
-				}
+            if(_rCmder->idle()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
+            {
+                if(wantToRunInstall.size() > 0) {
+                    _rCmder->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
+                    wantToRunInstall = {};
+                }
+                else if(wantToRunUninstall.size() > 0) {
+                    _rCmder->runModuleUnInstallRequestOnProcess(DynMods::dynMods()->getJsonForModuleUninstallRequest());
+                    wantToRunUninstall = {};
+                }
+            }
 		}
-		
-		return wantToRunInstall;
+
+        return !(wantToRunInstall.size() + wantToRunUninstall.size() > 0);
 	}
 	catch(Modules::ModuleException & e)	{ Log::log() << "Exception thrown in processDynamicModules: " <<  e.what() << std::endl;	}
 	catch(std::exception & e)			{ Log::log() << "Exception thrown in processDynamicModules: " << e.what() << std::endl;		}
 	catch(...)							{ Log::log() << "Unknown Exception thrown in processDynamicModules..." << std::endl;		}
 	
-	return {};
+    return false;
 }
 
 std::set<std::string> EngineSync::processAnalysisRequests()
@@ -969,7 +989,7 @@ void EngineSync::startExtraEngines(size_t num)
 
 
 //Should this function go to EngineRepresentation?
-QProcess * EngineSync::startSlaveProcess(int channel)
+QProcess * EngineSync::startSlaveProcess(int channel, bool privileged)
 {
 	JASPTIMER_SCOPE(EngineSync::startSlaveProcess);
 	
@@ -998,7 +1018,7 @@ QProcess * EngineSync::startSlaveProcess(int channel)
 	EngineSync::channel(channel)->touchHeartbeat();
 
 #ifdef _WIN32
-	if(!WinContainerManager::launchSandboxedEngine(slave, engineExe, args))
+    if(privileged || !WinContainerManager::launchSandboxedEngine(slave, engineExe, args))
 		slave->start(engineExe, args);
 #else
 	slave->start(engineExe, args);
@@ -1080,7 +1100,7 @@ void EngineSync::pauseEngines(bool unloadData)
 void EngineSync::startStoppedEngine(EngineRepresentation * engine)
 {
 	if(!engine->jaspEngineStillRunning())
-		engine->restartEngine(startSlaveProcess(engine->channelNumber()));
+        engine->restartEngine(startSlaveProcess(engine->channelNumber(), engine->isPriviliged()));
 	else
 		engine->resumeEngine();
 }
@@ -1387,7 +1407,7 @@ EngineRepresentation *	EngineSync::createRCmdEngine()
 		const size_t rCmdChannelNumber = 12345; //Shouldnt ever crash with _channels
 
 		_rCmderChannel	= new IPCChannel(_memoryName, rCmdChannelNumber);
-		_rCmder			= createNewEngine(false, rCmdChannelNumber);
+        _rCmder			= createNewEngine(false, rCmdChannelNumber, true);
 
 		_rCmder->setRunsAnalysis(	true);
 		_rCmder->setRunsUtility(	false);

@@ -36,6 +36,7 @@ const Settings::Setting Settings::Values[] = {
 	{"modulesRemembered",			""},
 	{"safeGraphicsMode",			false},
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
+	{"moduleLibraryURL",			"https://module-library.jasp-stats.org"},
 	{"userHasGitHubAccount",		false},
 	{"preferredLanguage",			"en"},
 	{"preferredCountry",			QLocale::World},
