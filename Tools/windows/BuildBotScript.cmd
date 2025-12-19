@@ -16,7 +16,7 @@ if "%MSVCDIR%"=="" (
 )
 
 set VCVARS_DIR="%MSVCDIR%\VC\Auxiliary\Build"
-set QTDIR=C:/Qt/6.9.2/msvc2022_64
+set QTDIR=C:/Qt/6.10.1/msvc2022_64
 
 call %VCVARS_DIR%\vcvars64.bat
 
