@@ -68,7 +68,7 @@ if((NOT LibArchive_FOUND) AND (NOT WIN32))
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.78 REQUIRED COMPONENTS system)
+find_package(Boost 1.78 REQUIRED)
 
 
 if(NOT FLATPAK_USED)
