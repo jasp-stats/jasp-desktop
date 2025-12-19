@@ -44,7 +44,7 @@
 #include "ALTNavigation/altnavcontrol.h"
 #include "utilities/messageforwarder.h"
 
-#include "modules/activemodules.h"
+#include "modules/installedmodules.h"
 #include "modules/dynamicmodules.h"
 #include "modules/menumodel.h"
 
@@ -128,6 +128,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_plotEditorModel		= new PlotEditorModel();
 	_columnTypesModel		= new ColumnTypesModel(this);
 	_jaspConfiguration		= JASPConfiguration::getInstance(this);
+	_moduleLibrary			= new ModuleLibrary();
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -613,6 +614,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("baseBlockDim",								20												); //should be taken from Theme
 	_qml->rootContext()->setContextProperty("baseFontSize",								16												);
 	_qml->rootContext()->setContextProperty("languageModel",							_languageModel									);
+	_qml->rootContext()->setContextProperty("jaspTmpDir",                               tq(Dirs::tempDir())      						);
 
 	_qml->rootContext()->setContextProperty("columnTypeScale",							int(columnType::scale)							);
 	_qml->rootContext()->setContextProperty("columnTypeOrdinal",						int(columnType::ordinal)						);
@@ -625,6 +627,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeNotComputed",			int(computedColumnType::notComputed)			);
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
+	_qml->rootContext()->setContextProperty("moduleLibrary",							_moduleLibrary									);
 
 	_qml->setOutputWarningsToStandardError(true);
 
@@ -707,9 +710,9 @@ void MainWindow::loadQML()
 	disconnect(exitOnFailConnection);
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
-	_ribbonModel->loadModules(	
-		ActiveModules::getActiveCommonModules(),
-		ActiveModules::getActiveExtraModules());
+	_ribbonModel->loadModules(
+		InstalledModules::getActiveCommonModules(),
+		InstalledModules::getActiveExtraModules());
 	
 	qmlLoaded();	
 }

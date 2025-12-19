@@ -44,7 +44,7 @@ public:
 
 	static EngineSync * singleton() { return _singleton; }
 
-	EngineRepresentation *	createNewEngine(bool addToEngines = true, int overrideChannel = -1);
+    EngineRepresentation *	createNewEngine(bool addToEngines = true, int overrideChannel = -1, bool privileged = false);
 	EngineRepresentation *	createRCmdEngine();
 
 	int						rowCount(const QModelIndex & = QModelIndex())				const override;
@@ -98,7 +98,8 @@ signals:
 	void		moduleInstallationFailed(		const QString & moduleName, const QString & errorMessage);
 	void		moduleLoadingSucceeded(			const QString & moduleName);
 	void		moduleLoadingFailed(			const QString & moduleName, const QString & errorMessage);
-	void		moduleUninstallingFinished(		const QString & moduleName);
+	void		moduleUninstallationSucceeded(	const QString & moduleName);
+	void		moduleUninstallationFailed(		const QString & moduleName, const QString & errorMessage);
 
 	void		refreshAllPlotsExcept(const std::set<Analysis*> & inProgress);
 	void		plotEditorRefresh();
@@ -110,7 +111,7 @@ private:
 	//These process functions can request a new engine to be started:
 	stringset	processRCodeQueue();
 	bool		processComputedColumnQueue();
-	stringset	processDynamicModules();
+    bool    processDynamicModules();
 	stringset	processAnalysisRequests();	///< Returns modules that still need an engine
 	
 	void		processLogCfgRequests();
@@ -122,7 +123,7 @@ private:
 	bool		allEnginesStopped(	std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
 	bool		allEnginesPaused(	std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
 	bool		allEnginesResumed(	std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
-	QProcess*	startSlaveProcess(int channelNumber);
+    QProcess*	startSlaveProcess(int channelNumber, bool privileged = false);
 
 	bool		moduleInstallRunning()				const;
 	size_t		enginesStartableCount()				const;

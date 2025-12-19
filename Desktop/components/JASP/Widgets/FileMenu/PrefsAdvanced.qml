@@ -77,7 +77,6 @@ PrefsScrollView
 				}
 			}
 
-
 			CheckBox
 			{
 				id:					githubPatDefault
@@ -152,10 +151,50 @@ PrefsScrollView
 				onCheckedChanged:	preferencesModel.generateMarkdown = checked
 				visible:			preferencesModel.developerMode
 				enabled:			preferencesModel.developerMode
-				KeyNavigation.tab:	cleanModulesFolder
+				KeyNavigation.tab:	moduleLibraryUrl
 
 			}
 
+			Item
+			{
+				id:			moduleLibraryUrlItem
+				width:		parent.width
+				height:		moduleLibraryUrl.height
+				visible:	preferencesModel.developerMode
+				enabled:	preferencesModel.developerMode
+
+				Label
+				{
+					id:			moduleLibraryUrlLabel
+					text:		qsTr("Module library URL: ")
+
+					anchors
+					{
+						left:			parent.left
+						verticalCenter: parent.verticalCenter
+						margins:		jaspTheme.generalAnchorMargin
+					}
+				}
+
+				PrefsTextInput
+				{
+					id:					moduleLibraryUrl
+
+					text:				preferencesModel.moduleLibraryURL
+					onEditingFinished:	preferencesModel.moduleLibraryURL = text
+					nextEl:				cleanModulesFolder
+
+					height:				browseDeveloperFolderButton.height
+					anchors
+					{
+						left:		moduleLibraryUrlLabel.right
+						right:		parent.right
+						margins:	jaspTheme.generalAnchorMargin
+					}
+
+					KeyNavigation.tab:	cleanModulesFolder
+				}
+			}
 	
 			RoundedButton
 			{	
