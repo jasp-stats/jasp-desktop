@@ -33,7 +33,6 @@ target_link_libraries(
     QMLComponents
     CommonData
     Common
-    Boost::system
 )
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
