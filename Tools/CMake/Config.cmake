@@ -48,6 +48,8 @@ option(RUN_IWYU "Whether to run Include What You Use" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
+option(GITHUB_WORKFLOW_WIN "Where to set build env for GitHub workflow on Windows" OFF)
+
 
 # ------------
 
@@ -140,28 +142,49 @@ if(WIN32)
   message(STATUS ${MSVC_TOOLSET_VERSION})
   message(STATUS ${MSVC_VERSION})
 
-  if(MSVC_VERSION GREATER "1930")
+  if(MSVC_TOOLSET_VERSION GREATER_EQUAL "143")
     set(VC_MERGE_MODULE_NAME
         "Microsoft_VC143_CRT_x64.msm"
         CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
-    set(VC_TOOLS_REDIST_PATH
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Redist\\MSVC\\v143"
-    )
-    set(VC_VARS_PATH_NATIVE
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
-    )
-  elseif(MSVC_VERSION GREATER "1920")
+
+    # GitHub Actions uses Enterprise edition of Visual Studio
+    if(GITHUB_WORKFLOW_WIN)
+      set(VC_TOOLS_REDIST_PATH
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Redist\\MSVC\\v143"
+      )
+      set(VC_VARS_PATH_NATIVE
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Auxiliary\\Build"
+      )
+    else()
+      set(VC_TOOLS_REDIST_PATH
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Redist\\MSVC\\v143"
+      )
+      set(VC_VARS_PATH_NATIVE
+          "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
+      )
+    endif()
+
+  elseif(MSVC_TOOLSET_VERSION EQUAL "142")
     set(VC_MERGE_MODULE_NAME
         "Microsoft_VC142_CRT_x64.msm"
         CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
-    set(VC_TOOLS_REDIST_PATH
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\v142"
-    )
-    set(VC_VARS_PATH_NATIVE
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
-    )
+    if(GITHUB_WORKFLOW_WIN)
+      set(VC_TOOLS_REDIST_PATH
+          "C:\\Program Files\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Redist\\MSVC\\v142"
+      )
+      set(VC_VARS_PATH_NATIVE
+          "C:\\Program Files\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build"
+      )
+    else()
+      set(VC_TOOLS_REDIST_PATH
+          "C:\\Program Files\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\v142"
+      )
+      set(VC_VARS_PATH_NATIVE
+          "C:\\Program Files\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
+      )
+    endif()
   endif()
 
   set(VC_MERGE_MODULE_PATH_NATIVE
