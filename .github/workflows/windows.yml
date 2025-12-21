@@ -54,6 +54,7 @@ jobs:
       - name: Configure CMake Generator
         shell: pwsh
         run: |
+           #make a global conan config file.
            $conanConfigHome = (conan config home).Trim()
            $globalConfPath = Join-Path $conanConfigHome "global.conf"
            New-Item -ItemType Directory -Force -Path $conanConfigHome | Out-Null
@@ -68,7 +69,6 @@ jobs:
       - name: Configure JASP desktop
         run: |
             git submodule update --init
-            # conan install . --build=missing
             cmake -S . -B jasp-build `
             -DCMAKE_GENERATOR="Ninja" `
             -DCMAKE_BUILD_TYPE="Release" `
