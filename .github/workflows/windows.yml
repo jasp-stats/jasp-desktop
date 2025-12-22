@@ -37,7 +37,7 @@ jobs:
 
       - name: dependencies for rtools
         run: |
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -Sy --noconfirm mingw-w64-ucrt-x86_64-toolchain make autoconf automake wget git cmake mingw-w64-ucrt-x86_64-libiconv libtool zlib-devel mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-readstat"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-toolchain make autoconf automake wget git cmake mingw-w64-ucrt-x86_64-libiconv libtool zlib-devel mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-readstat"
       
       - name: Download and build rdata
         run: |
