@@ -136,7 +136,9 @@ if(WIN32)
 
   set(USE_CONAN ON)
   set(SYSTEM_TYPE WIN32)
-  set(VS_PATH "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC")
+  set(VS_PATH 
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC"
+    CACHE PATH "Visual Studio edition path")
 
   message(STATUS ${MSVC_TOOLSET_VERSION})
   message(STATUS ${MSVC_VERSION})
