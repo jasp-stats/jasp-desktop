@@ -20,7 +20,9 @@ void AxisModel::setAxisData(const Json::Value & axis)
 
 	Json::Value	settings = axis.get(	"settings",		Json::objectValue);
 
-	setTitle(		tq(						settings.get(	"title",		""	).asString()));
+	Json::Value title = settings.get("title", "");
+
+	setTitle(		tq(						title.isString() ? title.asString() : ""));
 	setTitleType(	TitleTypeFromString(	settings.get(	"titleType",	""	).asString())); //Defaults are set in *TypeFromString
 	setType(		tq(						settings.get(	"type",			""	).asString()));
 	setBreaksType(	BreaksTypeFromString(	settings.get(	"breaksType",	""	).asString()));
