@@ -74,7 +74,7 @@ jobs:
             -DCMAKE_BUILD_TYPE="Release" `
             -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" `
             -DJASP_TEST_BUILD=ON `
-            -DGITHUB_WORKFLOW_WIN=ON `
+            -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise" `
             -DRTOOLS_PATH="C:/rtools45/ucrt64"
         env:
             VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC"
