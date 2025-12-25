@@ -1,33 +1,38 @@
 msgid ""
 msgstr ""
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2025-12-25 15:37+0000\n"
+"Last-Translator: Zev Oster <zevelijah@gmail.com>\n"
+"Language-Team: Tibetan <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"bo/>\n"
 "Language: bo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.15.1\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "ཐིག་ཕྲེང་ཁ་སྣོན་བྱེད།"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "ཐིག་ཕྲེང་འདོར་བ།"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "ཡིག་ཆ་ཉར་ཚགས་བྱེད་ས།"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "ཡིག་ཆ་འདོན་ས།"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr ""
+msgstr "ཁ་འབྱེད་རྒྱུའི་ཡིག་ཆ་འདེམས་པ།"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
