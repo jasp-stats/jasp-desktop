@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-27 03:18+0000\n"
+"PO-Revision-Date: 2025-12-27 23:35+0000\n"
 "Last-Translator: Zev Oster <zevelijah@gmail.com>\n"
 "Language-Team: Tibetan <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "bo/>\n"
@@ -240,17 +240,14 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
 msgstr "རིན་ཐང་ཆུང་ཤོས་སྟོན་པ།"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
 msgstr "རིན་ཐང་ཆེ་ཤོས་སྟོན་པ།"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
 msgstr "ཆ་སྙོམས་གྲངས་ཐང་།"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
 msgstr "y དེ་གྲངས་ཆུང་གནས་ n ལ་བསྒྲིལ་བ།"
@@ -260,10 +257,9 @@ msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
 msgstr "y ནང་གི་གྲངས་ཀའི་བོངས་ཚད་སྟོན་པ།"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr "དཀྱིལ་གནས་གྲངས་ཐང་།"
+msgstr "དཀྱིལ་གྲངས།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -273,22 +269,22 @@ msgstr "རང་བྱུང་ལོག་ (natural logarithm)"
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr "རྨང་གྲངས་ 2 ཀྱི་ལོག"
+msgstr "རྨང་གྲངས་ 2 ཀྱི་ལོག་རྩིས།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr "རྨང་གྲངས་ 10 ཡི་ལོག"
+msgstr "རྨང་གྲངས་ 10 ཀྱི་ལོག་རྩིས།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr "'base' རྨང་གྲངས་ཡིན་པའི་ y ཡི་ལོག"
+msgstr "'base' རྨང་གྲངས་ཡིན་པའི་ y ཀྱི་ལོག་རྩིས།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr "སྟོན་གྲངས།"
+msgstr "སྟོབས་འགྱུར།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -296,8 +292,8 @@ msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
-"Fisher's Z-transform (དཔེར་ན་ inverse hyperbolic tangent) ནི་ -1 ནས་ 1 བར་གྱི་ཕན་"
-"ཚུན་འབྲེལ་བ་རྣམས་གྲངས་ཐིག་དངོས་སུ་སྒྱུར་བྱེད་ཡིན།"
+"ཕི་ཤར་གྱི་Z-བསྒྱུར་བཅོས། (དཔེར་ན། ལྡོག་ཕྱོགས་ཀྱི་ཚད་ལས་བརྒལ་བའི་ཐུག་ཐག) ནི་ -1 ནས་ 1 བར་གྱི་ཕན་ཚུན"
+"་འབྲེལ་བ་རྣམས་གྲངས་ཐིག་དངོས་སུ་སྒྱུར་བྱེད་ཡིན།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -305,8 +301,8 @@ msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
-"Inverse Fisher's Z-transform (དཔེར་ན་ hyperbolic tangent) ནི་གྲངས་ཀ་དངོས་རྣམས་-1 "
-"ནས་ 1 བར་གྱི་གྲངས་སུ་སྒྱུར་བྱེད་ཡིན།"
+"ཕི་ཤར་གྱི་ལྡོག་ཕྱོགས་Z-བསྒྱུར་བཅོས། (དཔེར་ན། ཚད་ལས་བརྒལ་བའི་ཐུག་ཐག) ནི་གྲངས་ཐིག་དངོས་རྣམས་ -1 ནས"
+"་ 1 བར་གྱི་ཕན་ཚུན་འབྲེལ་བར་སྒྱུར་བྱེད་ཡིན།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -1240,7 +1236,6 @@ msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "ཆ་སྙོམས་གྲངས་ཐང་།"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
 msgstr "y དེ་གྲངས་ཆུང་གནས་ n ལ་བསྒྲིལ་བ།"
