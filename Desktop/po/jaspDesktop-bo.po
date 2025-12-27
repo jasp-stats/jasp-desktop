@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-12-26 11:35+0000\n"
+"PO-Revision-Date: 2025-12-27 03:18+0000\n"
 "Last-Translator: Zev Oster <zevelijah@gmail.com>\n"
 "Language-Team: Tibetan <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "bo/>\n"
@@ -29,7 +29,6 @@ msgctxt "FileSelector|"
 msgid "Load file from:"
 msgstr "ཡིག་ཆ་འདོན་ས:"
 
-#, fuzzy
 msgctxt "FileSelector|"
 msgid "Select file to save"
 msgstr "ཉར་ཚགས་བྱེད་རྒྱུའི་ཡིག་ཆ་འདེམས་པ།"
@@ -43,7 +42,6 @@ msgctxt "FileSelector|"
 msgid "Browse"
 msgstr "བཤར་ལྟ།"
 
-#, fuzzy
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
@@ -120,12 +118,10 @@ msgctxt "AboutWindow|"
 msgid "Download:"
 msgstr "ཕབ་ལེན:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Citation:"
 msgstr "ལུང་འདྲེན:"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Select All"
 msgstr "ཚང་མ་འདེམས་པ།"
@@ -135,22 +131,18 @@ msgctxt "AboutWindow|"
 msgid "Copy Selection"
 msgstr "བདམས་པ་རྣམས་བཤུ་འབྲི་བྱེད།"
 
-#, fuzzy
 msgctxt "AboutWindow|"
 msgid "BibTeX"
 msgstr "BibTeX"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
 msgstr "དབྱེ་ཞིབ་ཀྱི་གོ་རིམ་སྒྲིག་པར་འདྲུད་འཐེན་བྱེད།"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
 msgstr "དབྱེ་ཞིབ་འདིའི་ཁ་བྱང་བཅོས་སྒྲིག་བྱེད།"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr "དབྱེ་ཞིབ་འདི་ངོ་བཤུས་བྱེད།"
@@ -160,17 +152,14 @@ msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
 msgstr "དབྱེ་ཞིབ་འདིའི་གནས་ཚུལ་སྟོན་པ།"
 
-#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
 msgstr "དབྱེ་ཞིབ་འདི་འདོར་བ།"
 
-#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
 msgstr "ཁ་སྣོན།"
 
-#, fuzzy
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
 msgstr "སུབ་པ།"
@@ -223,15 +212,13 @@ msgctxt "Chi2TestTableView|"
 msgid "Reset"
 msgstr "བསྐྱར་སྒྲིག"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr "ལྟོས་མེད་རིན་ཐང་།"
+msgstr "ཚུགས་ཐུབ་རིན་ཐང།"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr "ཚད་ལྡན་ཁྱད་བྲལ།"
+msgstr "ཚད་ཐུབ་འབྱོལ་ཐང།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -3415,10 +3402,9 @@ msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
 msgstr "འདེམས་སྒྲོམ་མཐའ་མ།"
 
-#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr "འགྱུར་ཚད།"
+msgstr "འགྱུར་གྲངས།"
 
 #, fuzzy
 msgctxt "jasp-qml-style-example|"
