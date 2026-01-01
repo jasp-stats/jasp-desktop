@@ -1,775 +1,823 @@
 msgid ""
 msgstr ""
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-01-02 03:02+0000\n"
+"Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
+"Language-Team: Tamil <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"ta/>\n"
 "Language: ta\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.15.1\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
-msgstr ""
+msgstr "ஒரு வரிசையைச் சேர்க்கவும்"
 
 msgctxt "ComponentsList|"
 msgid "Remove a row"
-msgstr ""
+msgstr "ஒரு வரிசையை அகற்று"
 
 msgctxt "FileSelector|"
 msgid "Save file to:"
-msgstr ""
+msgstr "கோப்பை இதில் சேமி:"
 
 msgctxt "FileSelector|"
 msgid "Load file from:"
-msgstr ""
+msgstr "இதிலிருந்து கோப்பை ஏற்றவும்:"
 
 msgctxt "FileSelector|"
 msgid "Select file to save"
-msgstr ""
+msgstr "சேமிக்க கோப்பைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "FileSelector|"
 msgid "Select file to load"
-msgstr ""
+msgstr "ஏற்றுவதற்கு கோப்பைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "FileSelector|"
 msgid "Browse"
-msgstr ""
+msgstr "உலாவவும்"
 
 msgctxt "Form|"
 msgid ""
 "This analysis was created with an older version of JASP (or a dynamic module)"
 msgstr ""
+"இந்த பகுப்பாய்வு JASP இன் பழைய பதிப்பைக் கொண்டு உருவாக்கப்பட்டது (அல்லது மாறும் தொகுதி)"
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ""
+msgstr ", புத்துணர்ச்சியானது சற்று வித்தியாசமான முடிவைக் கொடுக்கலாம்."
 
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
 "refresh your analyses!"
 msgstr ""
+", உங்கள் குறிப்புகளை அவை இருக்கும் இடத்தில் வைக்க, முதலில் உங்கள் பகுப்பாய்வுகளைப் "
+"புதுப்பிக்க பரிந்துரைக்கப்படுகிறது!"
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr ""
+msgstr "புதிய மதிப்பு"
 
 msgctxt "TableView|"
 msgid "Row #"
-msgstr ""
+msgstr "வரிசை #"
 
 msgctxt "TabView|"
 msgid "Add a tab"
-msgstr ""
+msgstr "ஒரு தாவலைச் சேர்க்கவும்"
 
 msgctxt "TabView|"
 msgid "Remove this tab"
-msgstr ""
+msgstr "இந்த தாவலை அகற்று"
 
 msgctxt "TabView|"
 msgid "New tab"
-msgstr ""
+msgstr "புதிய தாவல்"
 
 msgctxt "TextArea|"
 msgid "⌘ + Enter to apply"
-msgstr ""
+msgstr "⌘ + விண்ணப்பிக்க உள்ளிடவும்"
 
 msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
-msgstr ""
+msgstr "விண்ணப்பிக்க கட்டுப்பாடு + Enter"
 
 #, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr ""
+msgstr "கடைசி சரியான மதிப்பை மீட்டெடுக்கிறது: % 1"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "JASP பற்றி"
 
 msgctxt "AboutWindow|"
 msgid "Version:"
-msgstr ""
+msgstr "பதிப்பு:"
 
 msgctxt "AboutWindow|"
 msgid "Built on:"
-msgstr ""
+msgstr "கட்டப்பட்டது:"
 
 msgctxt "AboutWindow|"
 msgid "Source:"
-msgstr ""
+msgstr "ஆதாரம்:"
 
 msgctxt "AboutWindow|"
 msgid "Access the sources here"
-msgstr ""
+msgstr "ஆதாரங்களை இங்கே அணுகவும்"
 
 msgctxt "AboutWindow|"
 msgid "Download:"
-msgstr ""
+msgstr "பதிவிறக்கம்:"
 
 msgctxt "AboutWindow|"
 msgid "Citation:"
-msgstr ""
+msgstr "மேற்கோள்:"
 
 msgctxt "AboutWindow|"
 msgid "Select All"
-msgstr ""
+msgstr "அனைத்தையும் தெரிவுசெய்"
 
 msgctxt "AboutWindow|"
 msgid "Copy Selection"
-msgstr ""
+msgstr "நகல் தேர்வு"
 
 msgctxt "AboutWindow|"
 msgid "BibTeX"
-msgstr ""
+msgstr "BibTeX"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Drag to reorder the analyses"
-msgstr ""
+msgstr "பகுப்பாய்வுகளை மறுவரிசைப்படுத்த இழுக்கவும்"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Edit the title of this analysis"
-msgstr ""
+msgstr "இந்த பகுப்பாய்வின் தலைப்பைத் திருத்தவும்"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
-msgstr ""
+msgstr "இந்த பகுப்பாய்வை நகலெடுக்கவும்"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
-msgstr ""
+msgstr "இந்த பகுப்பாய்விற்கான தகவலைக் காட்டு"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Remove this analysis"
-msgstr ""
+msgstr "இந்த பகுப்பாய்வை அகற்று"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Add"
-msgstr ""
+msgstr "கூட்டு"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Delete"
-msgstr ""
+msgstr "நீக்கு"
 
 msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
-msgstr ""
+msgstr "பேய்ச் காரணி"
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
 "the null hypothesis."
 msgstr ""
+"சுழிய கருதுகோளுடன் தொடர்புடைய மாற்று கருதுகோளுக்கான ஆதாரங்களை அளவிட பேய்ச் காரணி."
 
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
 "alternative hypothesis."
 msgstr ""
+"மாற்று கருதுகோளுடன் தொடர்புடைய சுழிய கருதுகோளுக்கான ஆதாரங்களை அளவிட பேய்ச் காரணி."
 
 msgctxt "BayesFactorType|"
 msgid "Natural logarithm of BF10."
-msgstr ""
+msgstr "BF10 இன் இயற்கை மடக்கை."
 
 msgctxt "Chi2TestTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "நெடுவரிசையைச் சேர்க்கவும்"
 
 msgctxt "Chi2TestTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "நெடுவரிசையை நீக்கு"
 
 msgctxt "Chi2TestTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "முழுமையான மதிப்பு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "திட்டவிலக்கல், நியம விலகல்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
-msgstr ""
+msgstr "மாறுபாட்டெண்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
-msgstr ""
+msgstr "கூட்டல்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "மதிப்புகளின் தயாரிப்பு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "குறைந்தபட்ச மதிப்புகளை வழங்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "அதிகபட்ச மதிப்புகளை வழங்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
-msgstr ""
+msgstr "இடை, சராசரி"
 
 msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "சுற்றுகள் ஒய் முதல் n வரை தசமங்கள்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "ஒய் இல் உள்ள உறுப்புகளின் எண்ணிக்கையை வழங்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
-msgstr ""
+msgstr "இடைநடு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
-msgstr ""
+msgstr "இயற்கை மடக்கை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "அடிப்படை 2 மடக்கை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "அடிப்படை 10 மடக்கை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "'அடிப்படையில்' ஒய் இன் மடக்கை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
-msgstr ""
+msgstr "அடுக்குக்குறி"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
 "correlations, numbers between -1 and 1 to the real line"
 msgstr ""
+"ஃபிசரின் இசட்-மாற்றம் (அதாவது, தலைகீழ் ஐபர்போலிக் டேன்சென்ட்) தொடர்புகளை, -1 மற்றும் 1 இடையே "
+"உள்ள எண்களை உண்மையான கோட்டிற்கு மாற்றும்"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
 "real numbers to numbers between -1 and 1"
 msgstr ""
+"தலைகீழ் ஃபிசரின் Z-மாற்றம் (அதாவது, ஐபர்போலிக் டேன்சென்ட்) உண்மையான எண்களை -1 மற்றும் 1 "
+"இடையேயான எண்களாக மாற்றும்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr ""
+msgstr "numBreaks நிலைகளில் உங்கள் தரவை உடைக்கவும்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr ""
+"நெடுவரிசையில் ஏதேனும் விடுபட்ட மதிப்புகளை (NA) ReplaceWith இல் உள்ள மதிப்பால் மாற்றவும்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "என்றால்-இல்லை அறிக்கை"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Gaussian distribution with specified mean and standard "
 "deviation sd"
 msgstr ""
+"குறிப்பிட்ட சராசரி மற்றும் நிலையான விலகல் sd உடன் காசியன் விநியோகத்திலிருந்து தரவை "
+"உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
 "centrality parameter ncp"
 msgstr ""
+"விடுதலை df மற்றும் மையமற்ற அளவுரு ncp அளவுகளுடன் t விநியோகத்திலிருந்து தரவை "
+"உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
 "and non-centrality parameter ncp"
 msgstr ""
+"சுதந்திர df மற்றும் மையமற்ற அளவுரு ncp அளவுகளுடன் chi-squared விநியோகத்திலிருந்து "
+"தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
 "df1, df2 and non-centrality parameter ncp"
 msgstr ""
+"df1, df2 மற்றும் மையமற்ற அளவுரு ncp ஆகியவற்றின் குறிப்பிட்ட அளவுகளில் உள்ள F "
+"விநியோகத்திலிருந்து தரவை உருவாக்குகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
 "probability prob"
 msgstr ""
+"குறிப்பிட்ட சோதனைகள் மற்றும் நிகழ்தகவு நிகழ்தகவு கொண்ட ஒரு இருசொல் விநியோகத்திலிருந்து "
+"தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
 "and probability prob"
 msgstr ""
+"குறிப்பிட்ட சோதனைகள் மற்றும் நிகழ்தகவு நிகழ்தகவு ஆகியவற்றுடன் எதிர்மறை இருவகைப் பரவலில் "
+"இருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
 msgstr ""
+"குறிப்பிட்ட நிகழ்தகவு நிகழ்தகவு கொண்ட வடிவியல் விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
 msgstr ""
+"குறிப்பிட்ட விகித லாம்ப்டாவுடன் பாய்சன் விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr ""
+"ஆல்பா மற்றும் பீட்டா வடிவங்களைக் கொண்ட பீட்டா விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
 msgstr ""
+"மணித்துளி மற்றும் அதிகபட்சம் இடையே ஒரு சீரான விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr ""
+"குறிப்பிட்ட வடிவம் மற்றும் அளவோடு காமா விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
+msgstr "குறிப்பிட்ட விகிதத்தில் அதிவேக விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
 "mean meanLog and standard deviation sdLog"
 msgstr ""
+"குறிப்பிடப்பட்ட மடக்கை சராசரி சராசரி பதிவு மற்றும் நிலையான விலகல் sdLog உடன் பதிவு-சாதாரண "
+"விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
 msgstr ""
+"குறிப்பிட்ட வடிவம் மற்றும் அளவோடு வெய்புல் விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
-msgstr ""
+msgstr "உருவாக்கப்பட்ட R குறியீட்டைக் காட்டு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Compute column"
-msgstr ""
+msgstr "நெடுவரிசையைக் கணக்கிடுங்கள்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
-msgstr ""
+msgstr "நெடுவரிசையைக் கணக்கிட சொடுக்கு செய்யவும்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ஆவணத்தைத் திறக்கவும்"
 
 msgctxt "ContrastsList|"
 msgid "none"
-msgstr ""
+msgstr "எதுவுமில்லை"
 
 msgctxt "ContrastsList|"
 msgid "deviation"
-msgstr ""
+msgstr "விலகல்"
 
 msgctxt "ContrastsList|"
 msgid "simple"
-msgstr ""
+msgstr "எளிய"
 
 msgctxt "ContrastsList|"
 msgid "difference"
-msgstr ""
+msgstr "வேறுபாடு"
 
 msgctxt "ContrastsList|"
 msgid "Helmert"
-msgstr ""
+msgstr "தலைக்கவசம்"
 
 msgctxt "ContrastsList|"
 msgid "repeated"
-msgstr ""
+msgstr "மறுநிகழ்வு"
 
 msgctxt "ContrastsList|"
 msgid "polynomial"
-msgstr ""
+msgstr "அடுக்குக்கோவை"
 
 msgctxt "ContrastsList|"
 msgid "custom"
-msgstr ""
+msgstr "தனிப்பயன்"
 
 msgctxt "ContrastsList|"
 msgid "Factors"
-msgstr ""
+msgstr "காரணிகள்"
 
 #, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
-msgstr ""
+msgstr "% 1க்கான தனிப்பயன்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Computed Column"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசையை உருவாக்கவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Name:"
-msgstr ""
+msgstr "பெயர்:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
 msgstr ""
+"நெடுவரிசைப் பெயர் ஏற்கனவே பயன்படுத்தப்பட்டுள்ளது, தயவுசெய்து வேறு ஒன்றைத் தேர்ந்தெடுக்கவும்."
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
-msgstr ""
+msgstr "R குறியீடு மூலம் நெடுவரிசையை வரையறுக்கவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through drag and drop formulas"
-msgstr ""
+msgstr "இழுத்து விடவும் சூத்திரங்கள் மூலம் நெடுவரிசையை வரையறுக்கவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Scale"
-msgstr ""
+msgstr "அளவுகோல்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Ordinal"
-msgstr ""
+msgstr "ஆர்டினல்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr ""
+msgstr "பெயரளவு"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
-msgstr ""
+msgstr "உரை"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ஆவணத்தைத் திறக்கவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Create Column"
-msgstr ""
+msgstr "நெடுவரிசையை உருவாக்கவும்"
 
 #, qt-format
 msgctxt "CreateComputeColumnDialog|"
 msgid "Click here to create your new computed column '%1'"
 msgstr ""
+"உங்கள் புதிய கணக்கிடப்பட்ட நெடுவரிசை '% 1' ஐ உருவாக்க இங்கே சொடுக்கு செய்யவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசைக்கு சரியான (பயன்படுத்தப்படாத) பெயரை உள்ளிடவும்"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசையை உருவாக்காமல் மூடு"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "மாறுபாட்டைச் சேர்க்கவும்"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "மாறுபாட்டை நீக்கு"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "வடிகட்டியை மறை"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "வடிகட்டியைக் காட்டு"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசையைச் சேர்க்கவும்"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "% 1க்குத் திரும்பு"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "நீங்கள் இங்கே இருக்கிறீர்கள்"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "அண்மைக் கால கோப்புறைகள்"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "உலாவவும்"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "ஒத்திசைவுக்கான தற்போதைய தரவுக் கோப்பு"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "தரவு நூலகம்"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "இந்தத் தரவுக் கோப்புடன் ஒத்திசைக்கவும்"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "கோப்புறைக்கு செல்லவும்"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "JASP கோப்பைத் திறக்கவும்"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "தரவுக் கோப்பைத் திறக்கவும்"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "இந்த விருப்பத்தேர்வுகள் பற்றிய தகவலைக் காட்டு"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "அறிவியல் கட்டமைப்பைத் திறக்கவும்"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "வெளியேறு"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "கோப்புறையை உருவாக்கவும்"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "கோப்புறை பெயர்"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "கோப்புப்பெயர்"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "சேமி"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "தொடர உங்கள் OSF கணக்கில் உள்நுழையவும்"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "விடுபதிகை"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
-msgstr ""
+msgstr "என்னை நினைவில் வையுங்கள்"
 
 msgctxt "OSFLogin|"
 msgid "About the OSF"
-msgstr ""
+msgstr "OSF பற்றி"
 
 msgctxt "OSFLogin|"
 msgid "Register"
-msgstr ""
+msgstr "பதிவு செய்யுங்கள்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Advanced Preferences"
-msgstr ""
+msgstr "மேம்பட்ட விருப்பத்தேர்வுகள்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Modules options"
-msgstr ""
+msgstr "தொகுதிகள் விருப்பங்கள்"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"அடுத்த முறை JASP தொடங்கும் போது நீங்கள் விட்ட இடத்திலிருந்து தொடரவும். \n"
+"இந்த விருப்பத்தை இயக்குவது, நீங்கள் இயக்கியுள்ள தொகுதிகளை JASP நினைவில் வைத்திருக்கும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "JASP தொகுதிகளைப் பயன்படுத்த, இந்த விருப்பத்தை இயக்கவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr ""
+msgstr "உங்கள் JASP தொகுதி கோப்புறையில் உலாவவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr ""
+msgstr "CRAN களஞ்சியத்தை மாற்றவும்: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr ""
+msgstr "உதவிக்கு மார்க் பேரூர் கோப்புகளை உருவாக்கவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr ""
+"இதை இயக்குவது qml விருப்பங்களில் உள்ள தகவலிலிருந்து மார்க் பேரூர் எல்ப்ஃபைலை உருவாக்கும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
-msgstr ""
+msgstr "பதிவு விருப்பங்கள்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Log to file"
-msgstr ""
+msgstr "கோப்பில் உள்நுழைக"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
 msgstr ""
+"JASP இன் பிழைத்திருத்தப் பதிவுகளை ஒரு கோப்பில் சேமிக்க, இந்தப் பெட்டியைத் தேர்வு செய்யவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Max logfiles to keep: "
-msgstr ""
+msgstr "வைத்திருக்க வேண்டிய அதிகபட்ச பதிவு கோப்புகள்: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show logs"
-msgstr ""
+msgstr "பதிவுகளைக் காட்டு"
 
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
-msgstr ""
+msgstr "எஞ்சின் விருப்பங்கள்"
 
 msgctxt "PrefsData|"
 msgid "Data Preferences"
-msgstr ""
+msgstr "தரவு விருப்பத்தேர்வுகள்"
 
 msgctxt "PrefsData|"
 msgid "Use default spreadsheet editor"
-msgstr ""
+msgstr "இயல்புநிலை விரிதாள் திருத்தியைப் பயன்படுத்தவும்"
 
 msgctxt "PrefsData|"
 msgid "Select custom editor"
-msgstr ""
+msgstr "தனிப்பயன் எடிட்டரைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr ""
+msgstr "மதிப்பு பட்டியல் விடுபட்டுள்ளது"
 
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr ""
+msgstr "விடுபட்ட மதிப்பை அகற்று"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
-msgstr ""
+msgstr "முடிவுகள் விருப்பத்தேர்வுகள்"
 
 msgctxt "PrefsResults|"
 msgid "Table options"
-msgstr ""
+msgstr "அட்டவணை விருப்பங்கள்"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr ""
+msgstr "துல்லியமான p-மதிப்புகளைக் காண்பி"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
-msgstr ""
+msgstr "தசமங்களின் எண்ணிக்கையை சரிசெய்யவும்"
 
 msgctxt "PrefsResults|"
 msgid "Plot options"
-msgstr ""
+msgstr "சூழ்ச்சி விருப்பங்கள்"
 
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
-msgstr ""
+msgstr "அடுக்குகளில் திரையின் PPI ஐப் பயன்படுத்தவும்: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
 msgstr ""
+"உங்கள் ப்ளாட்களை வழங்க, உங்கள் திரையின் ஒரு அங்குலத்திற்கு பிக்சல்களைப் பயன்படுத்தவும்."
 
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
-msgstr ""
+msgstr "தனிப்பயன் பிபிஐ: "
 
 msgctxt "PrefsResults|"
 msgid "Image background color"
-msgstr ""
+msgstr "படத்தின் பின்னணி நிறம்"
 
 msgctxt "PrefsResults|"
 msgid "White"
-msgstr ""
+msgstr "வெள்ளை"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots white, quite useful if you want to "
 "use it in LaTeX or submit it to a journal."
 msgstr ""
+"இது அனைத்து அடுக்குகளின் பின்னணியையும் வெண்மையாக்குகிறது, நீங்கள் அதை லாடெக்சு இல் "
+"பயன்படுத்த விரும்பினால் அல்லது அதை ஒரு பத்திரிகையில் சமர்ப்பிக்க விரும்பினால் மிகவும் "
+"பயனுள்ளதாக இருக்கும்."
 
 msgctxt "PrefsResults|"
 msgid "Transparent"
-msgstr ""
+msgstr "வெளிப்படையானது"
 
 msgctxt "PrefsResults|"
 msgid ""
 "This makes the background of all plots transparent, quite useful if you want "
 "to use it seamlessly on any background that isn't white."
 msgstr ""
+"இது அனைத்து அடுக்குகளின் பின்னணியையும் வெளிப்படையானதாக ஆக்குகிறது, வெள்ளை நிறத்தில் இல்லாத "
+"எந்தப் பின்னணியிலும் தடையின்றி அதைப் பயன்படுத்த விரும்பினால் மிகவும் பயனுள்ளதாக இருக்கும்."
 
 msgctxt "PrefsUI|"
 msgid "Fonts"
-msgstr ""
+msgstr "எழுத்துருக்கள்"
 
 msgctxt "PrefsUI|"
 msgid "Interface:"
-msgstr ""
+msgstr "இடைமுகம்:"
 
 #, qt-format
 msgctxt "PrefsUI|"
 msgid "default: %1"
-msgstr ""
+msgstr "இயல்புநிலை:% 1"
 
 msgctxt "PrefsUI|"
 msgid "Themes"
-msgstr ""
+msgstr "தீம்கள்"
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
-msgstr ""
+msgstr "ஒளி தீமுக்கு மாறுகிறது, இது JASP இன் இயல்பு மற்றும் அசல் சுவையாகும்."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
 "night owls out there."
 msgstr ""
+"இருண்ட தீமுக்கு மாறுகிறது, அங்குள்ள இரவு ஆந்தைகளுக்கு JASP ஐ மிகவும் எளிதாக்குகிறது."
 
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "இதர விருப்பங்கள்"
 
 msgctxt "PrefsUI|"
 msgid "Zoom (%): "
-msgstr ""
+msgstr "பெரிதாக்கு (%): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Increase or decrease the size of the interface elements (text, buttons, etc)."
 msgstr ""
+"இடைமுக உறுப்புகளின் அளவை அதிகரிக்கவும் அல்லது குறைக்கவும் (உரை, பொத்தான்கள் போன்றவை)."
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "உருள் விரைவு (பிக்ச்/வி): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
+"விருப்பங்கள், டேட்டாவியூவர் மற்றும் பிற இடங்களில் நீங்கள் உருட்டும் வேகத்தை அமைக்கவும்."
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -778,15 +826,22 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"கிராபிக்ச் அல்லது மென்பொருள் ரெண்டரிங்கிற்கான \"பாதுகாப்பான\" பயன்முறைக்கு மாறுகிறது. \n"
+"இது உங்கள் இடைமுகத்தை மெதுவாக்கும், ஆனால் உங்களுக்கு சில சிக்கல்கள் இருந்தால் (விசித்திரமான "
+"குறைபாடுகள், முடிவுகள் அல்லது எதையும் பார்க்க முடியாது) அவற்றை சரிசெய்யலாம். \n"
+"பகுப்பாய்வுகள் இன்னும் வேகமாக இருக்கும்."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
+"அனைத்து அனிமேசன்களையும் முடக்குகிறது, இது \"பாதுகாப்பான கிராபிக்ச் பயன்முறை\" இயக்கத்தில் "
+"இருக்கும் போது குறிக்கப்படுகிறது."
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
+"\"பாதுகாப்பான கிராபிக்ச் பயன்முறை\" இயக்கத்தில் இருப்பதால் ஏற்கனவே அனிமேசன்கள் முடக்கப்பட்டுள்ளன"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -794,584 +849,601 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"முடக்கப்பட்டிருந்தால், அது உங்கள் இயக்க முறைமையின் கோப்பு உரையாடல்களைப் பயன்படுத்தாது, ஆனால் "
+"கியுடி ஆல் உருவாக்கப்பட்டவை. இது சாளரங்களில் சில சிக்கல்களைத் தீர்க்கக்கூடும், அங்கு \"உலாவு\" "
+"என்பதை அழுத்தும்போது JASP செயலிழக்கும்."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "அண்மைக்கால கோப்புகள்"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசைகளின் குறியீடு தெளிவானது(எட்)"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசைகளின் குறியீடு பயன்படுத்தப்பட்டது"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
 msgstr ""
+"அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசைக்கு ஒரு தேற்றம் மட்டுமே அனுமதிக்கப்படுகிறது."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
 msgstr ""
+"டிராக் அண்ட் டிராப் கம்ப்யூட்டட் நெடுவரிசை கட்டமைப்பாளருக்கு வரவேற்கிறோம்!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"தேவையற்ற துணுக்குகளை இங்கே கொட்டவும்; முழு ச்லேட்டையும் அழிக்க இருமுறை சொடுக்கு செய்யவும்"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "கூட்டல்"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "கழித்தல்"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "பெருக்கல்"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "பிரிவு"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "பவர் (2^3 ரிட்டர்ன்ச் 8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "சதுர வேர்"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "மாடுலோ: ஒரு பிரிவின் மீதமுள்ள பகுதியை வழங்குகிறது. 3% 2 வருமானம் 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr ""
+"தருக்கங்களை வழங்குகிறது மற்றும் வடிகட்டி சூத்திரத்தின் மூலமாக இருக்கலாம்"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "சமத்துவம்:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "சமத்துவமின்மை:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "குறைவாக:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "இதை விட குறைவாக அல்லது சமமாக:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "இதைவிட பெரியது:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "இதை விட பெரியது அல்லது சமமானது:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "மற்றும்:% 1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "அல்லது:% 1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
 msgstr ""
+"பிளவு: ஒவ்வொரு துணைக்குழுவிற்கும் தனித்தனியாக வடிப்பானைப் பயன்படுத்துகிறது"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "இல்லை:% 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "கூட்டல்"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "கழித்தல்"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "பெருக்கல்"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "பிரிவு"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "பவர் (2^3 ரிட்டர்ன்ச் 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "சதுர வேர்"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "மாடுலோ: ஒரு பிரிவின் மீதமுள்ள பகுதியை வழங்குகிறது. 3% 2 வருமானம் 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "தருக்கங்களை வழங்குகிறது"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "சமத்துவம்:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "சமத்துவமின்மை:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "குறைவாக:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "இதை விட குறைவாக அல்லது சமமாக:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "இதைவிட பெரியது:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "இதை விட பெரியது அல்லது சமமானது:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "மற்றும்:% 1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "அல்லது:% 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
 msgstr ""
+"பிளவு: ஒவ்வொரு துணைக்குழுவிற்கும் தனித்தனியாக வடிப்பானைப் பயன்படுத்துகிறது"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "இல்லை:% 1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "முழுமையான மதிப்பு"
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "திட்டவிலக்கல், நியம விலகல்"
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "மாறுபாட்டெண்"
 
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "கூட்டல்"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "மதிப்புகளின் தயாரிப்பு"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr ""
+msgstr "குறைந்தபட்ச மதிப்புகளை வழங்குகிறது"
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr ""
+msgstr "அதிகபட்ச மதிப்புகளை வழங்குகிறது"
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "இடை, சராசரி"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "சுற்றுகள் ஒய் முதல் n வரை தசமங்கள்"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "ஒய் இல் உள்ள உறுப்புகளின் எண்ணிக்கையை வழங்குகிறது"
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "இடைநடு"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "என்றால்-இல்லை அறிக்கை"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "வடிகட்டி மாற்றப்பட்டது"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
 msgstr ""
+"உங்கள் வடிகட்டியில் பயன்படுத்தப்படாத மாற்றங்கள் உள்ளன; நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "R வடிகட்டிக்கு மாறவும்"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr ""
+msgstr "வடிகட்டப்பட்ட வரிசைகளை மறை."
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr ""
+msgstr "வடிகட்டப்பட்ட வரிசைகளைக் காட்டு."
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "பாச்-த்ரூ வடிப்பானைப் பயன்படுத்தவும்"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr ""
+msgstr "வடிகட்டி பயன்படுத்தப்பட்டது"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr ""
+msgstr "வடிப்பானைப் பயன்படுத்த சொடுக்கு செய்யவும்"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr ""
+msgstr "வடிகட்டி ஏற்கனவே பயன்படுத்தப்பட்டது"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ஆவணத்தைத் திறக்கவும்"
 
 msgctxt "FilterWindow|"
 msgid "Hide filter"
-msgstr ""
+msgstr "வடிகட்டியை மறை"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr ""
+msgstr "அனைத்து லேபிள்களிலும் உள்ள அனைத்து செக்மார்க்குகளையும் மீட்டமைக்கவும்"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr ""
+msgstr "இழுத்து விடுதல் வடிகட்டிக்கு மாறவும்"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr ""
+msgstr "இயல்புநிலை வடிகட்டிக்கு மீட்டமைக்கவும்"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "JASP உதவி"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr ""
+msgstr "தேட:"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "தரவைச் சேர்க்கவும்"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "தரவை நீக்கு"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "தரவை மறை"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr ""
+msgstr "தரவைக் காட்டு"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
-msgstr ""
+msgstr "தரவு/முடிவுகளின் அளவை மாற்றவும்"
 
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr ""
+msgstr "தரவைக் காட்ட இழுக்கவும்"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr ""
+msgstr "முடிவுகள்"
 
 msgctxt "ModulesMenu|"
 msgid "Install Module"
-msgstr ""
+msgstr "தொகுதியை நிறுவவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Install a module"
-msgstr ""
+msgstr "ஒரு தொகுதியை நிறுவவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr ""
+msgstr "உருவாக்குபவர் தொகுதியை நிறுவவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr ""
+msgstr "உருவாக்குபவர் தொகுதியை நிறுவுகிறது"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr ""
+msgstr "உருவாக்குபவர் தொகுதியைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட உருவாக்குபவர் தொகுதியை நிறுவவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
+msgstr "உருவாக்குபவர் தொகுதியை இப்போது நிறுவுகிறது"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "ஆயத்தம்"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "நிறுவுதல்:% 1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "ஏற்றுகிறது:% 1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr ""
+msgstr "ஏற்றப்பட்டது மற்றும் பயன்படுத்த தயாராக உள்ளது!"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr ""
+msgstr "பிழை ஏற்பட்டது!"
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr ""
+msgstr "பயன்படுத்த தயாராக இல்லையா?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr ""
+msgstr "தொகுதியை நிறுவல் நீக்கவும் "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "JASP இல் ஆர்"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "JASP இல் Rக்கு வரவேற்கிறோம்!"
 
 msgctxt "RCommanderWindow|"
 msgid "Run code"
-msgstr ""
+msgstr "குறியீட்டை இயக்கவும்"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "Ctrl+Enter அல்லது F5ஐ அழுத்தினால் குறியீடும் இயங்கும்"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear output"
-msgstr ""
+msgstr "தெளிவான வெளியீடு"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "அழிக்கப்பட்டது..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr ""
+msgstr "மாற்றங்கள் செய்யப்பட்டன"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
 msgstr ""
+"பயன்படுத்தப்படாத மாற்றங்கள் உள்ளன; நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "இடு"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr ""
+msgstr "நிராகரிக்கவும்"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr ""
+msgstr "ரத்துசெய்"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr ""
+msgstr "மீண்டும் நிகழும் தன்மை"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "விதை அமைக்கவும்:"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr ""
+msgstr "நெடுவரிசையைச் சேர்க்கவும்"
 
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
-msgstr ""
+msgstr "நெடுவரிசையை நீக்கு"
 
 msgctxt "SimpleTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "மீட்டமை"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr ""
+msgstr "பொருட்களை வரிசைப்படுத்தவும்"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "முந்தைய"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr ""
+msgstr "தரப்படுத்தப்பட்ட விளைவு அளவு"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr ""
+msgstr "இயல்புநிலை"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr ""
+msgstr "கௌச்சி"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "அளவுகோல்"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr ""
+msgstr "தெரிவிக்கப்பட்டது"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr ""
+msgstr "இடம்:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "அளவு:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr ""
+msgstr "இயல்பானது"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr ""
+msgstr "அர்த்தம்:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr ""
+msgstr "வகுப்பு:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
-msgstr ""
+msgstr "டி"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr ""
+msgstr "df:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "மூல விளைவு அளவு (டைனெச்)"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr ""
+msgstr "சீரான"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr ""
+msgstr "குறைந்த வரம்பு:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr ""
+msgstr "மேல் எல்லை:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "பாதி இயல்பானது"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "JASP க்கு வரவேற்கிறோம்"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
 msgstr ""
+"புள்ளிவிவரங்களைச் செய்வதற்கான ஒரு புதிய வழி: இலவசம், நட்பு மற்றும் நெகிழ்வானது"
 
 msgctxt "WelcomePage|"
 msgid "Free:"
-msgstr ""
+msgstr "இலவசம்:"
 
 msgctxt "WelcomePage|"
 msgid "Friendly:"
-msgstr ""
+msgstr "நட்பு:"
 
 msgctxt "WelcomePage|"
 msgid "Flexible:"
-msgstr ""
+msgstr "நெகிழ்வான:"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP has an intuitive interface that was designed with the user in mind."
 msgstr ""
+"JASP has an intuitive இடைமுகம் that was designed with the பயனர் in mind."
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP offers standard analysis procedures in both their classical and "
 "Bayesian manifestations."
 msgstr ""
+"JASP அவர்களின் பாரம்பரிய மற்றும் பேய்சியன் வெளிப்பாடுகள் இரண்டிலும் நிலையான பகுப்பாய்வு "
+"நடைமுறைகளை வழங்குகிறது."
 
 msgctxt "WelcomePage|"
 msgid "So open a data file and take JASP for a spin!"
-msgstr ""
+msgstr "எனவே ஒரு தரவுக் கோப்பைத் திறந்து, JASPஐ சுழல எடுக்கவும்!"
 
 msgctxt "WelcomePage|"
 msgid "Click to get latest version"
-msgstr ""
+msgstr "அண்மைக் கால பதிப்பைப் பெற சொடுக்கு செய்யவும்"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
 msgstr ""
+"ப்ளாட் % 1 இன் திருத்து ஆப்சன்களை கண்டுபிடிக்க முடியவில்லை அதனால் ப்ளாட் திருத்துதல் வேலை "
+"செய்யாது..."
 
 #, qt-format
 msgctxt "Analysis|"
@@ -1379,11 +1451,13 @@ msgid ""
 "Could not find set edit options of plot %1 so plot editing will not remember "
 "anything (if it evens works)..."
 msgstr ""
+"ப்ளாட் %1 இன் செட் திருத்து விருப்பங்களைக் கண்டுபிடிக்க முடியவில்லை, அதனால் ப்ளாட் திருத்துதல் "
+"எதையும் நினைவில் கொள்ளாது (அது சமமாக வேலை செய்தால்)..."
 
 #, qt-format
 msgctxt "AnalysisForm|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 கட்டுப்பாடுகள் ஒரே பெயரைக் கொண்டுள்ளன:% 1"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1391,6 +1465,8 @@ msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
+"கூறு % 1 தவறான வகை மதிப்புடன் ஏற்றப்பட்டது மற்றும் அதன் இயல்புநிலை மதிப்பிற்கு "
+"மீட்டமைக்கப்பட்டது."
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1398,235 +1474,240 @@ msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
+"இந்த கூறுகள் தவறான வகை மதிப்புடன் ஏற்றப்பட்டன மற்றும் அவற்றின் இயல்புநிலை மதிப்புகளுக்கு "
+"மீட்டமைக்கப்பட்டுள்ளன:% 1"
 
 msgctxt "AnalysisForm|"
 msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
+"பல கூறுகள் தவறான வகை மதிப்புடன் ஏற்றப்பட்டன மற்றும் அவற்றின் இயல்புநிலை மதிப்புகளுக்கு "
+"மீட்டமைக்கப்பட்டுள்ளன."
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
-msgstr ""
+msgstr "கோப்பு JASP இன் பழைய பதிப்பிலிருந்து வந்திருக்கலாம்."
 
 msgctxt "AnalysisForm|"
 msgid ""
 "That means that the results currently displayed do not correspond to the "
 "options selected."
 msgstr ""
+"அதாவது, தற்போது காட்டப்படும் முடிவுகள் தேர்ந்தெடுக்கப்பட்ட விருப்பங்களுடன் பொருந்தவில்லை."
 
 msgctxt "AnalysisForm|"
 msgid "Refreshing the analysis may change the results."
-msgstr ""
+msgstr "பகுப்பாய்வைப் புதுப்பித்தல் முடிவுகளை மாற்றலாம்."
 
 msgctxt "AnalysisForm|"
 msgid "Table"
-msgstr ""
+msgstr "அட்டவணை"
 
 msgctxt "AnalysisForm|"
 msgid "Plot"
-msgstr ""
+msgstr "சூழ்ச்சி"
 
 msgctxt "AnalysisForm|"
 msgid "Collection"
-msgstr ""
+msgstr "சேகரிப்பு"
 
 msgctxt "AnalysisForm|"
 msgid "Result"
-msgstr ""
+msgstr "முடிவு"
 
 msgctxt "AnalysisForm|"
 msgid "Output"
-msgstr ""
+msgstr "வெளியீடு"
 
 msgctxt "JASPControl|"
 msgid "Option"
-msgstr ""
+msgstr "சூதம்"
 
 msgctxt "JASPControl|"
 msgid "Section"
-msgstr ""
+msgstr "பிரிவு"
 
 msgctxt "JASPControl|"
 msgid "CheckBox"
-msgstr ""
+msgstr "தேர்வுப்பெட்டி"
 
 msgctxt "JASPControl|"
 msgid "Switch"
-msgstr ""
+msgstr "ஆளி, நிலைமாறி"
 
 msgctxt "JASPControl|"
 msgid "Entry Field"
-msgstr ""
+msgstr "நுழைவுக் களம்"
 
 msgctxt "JASPControl|"
 msgid "Radio Button"
-msgstr ""
+msgstr "ரேடியோ பட்டன்"
 
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
-msgstr ""
+msgstr "ரேடியோ பொத்தான்கள்"
 
 msgctxt "JASPControl|"
 msgid "Input ListView"
-msgstr ""
+msgstr "உள்ளீடு பட்டியல் காட்சி"
 
 msgctxt "JASPControl|"
 msgid "TableView"
-msgstr ""
+msgstr "டேபிள் வியூ"
 
 msgctxt "JASPControl|"
 msgid "Slider"
-msgstr ""
+msgstr "ச்லைடர்"
 
 msgctxt "JASPControl|"
 msgid "TextArea"
-msgstr ""
+msgstr "உரை பகுதி"
 
 msgctxt "JASPControl|"
 msgid "Button"
-msgstr ""
+msgstr "பொத்தான்"
 
 msgctxt "JASPControl|"
 msgid "Factors Form"
-msgstr ""
+msgstr "காரணிகள் படிவம்"
 
 msgctxt "JASPControl|"
 msgid "List of Components"
-msgstr ""
+msgstr "கூறுகளின் பட்டியல்"
 
 msgctxt "JASPControl|"
 msgid "Group Box"
-msgstr ""
+msgstr "குழு பெட்டி"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr ""
+msgstr "மதிப்பு இருக்க வேண்டும் "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8805; %1"
-msgstr ""
+msgstr "&#8805; % 1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&gt; %1"
-msgstr ""
+msgstr "&gt; % 1"
 
 msgctxt "JASPDoubleValidator|"
 msgid " and "
-msgstr ""
+msgstr " மற்றும் "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&#8804; %1"
-msgstr ""
+msgstr "&#8804; % 1"
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
-msgstr ""
+msgstr "&lt; % 1"
 
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
-msgstr ""
+msgstr "சரிபார்ப்பு பிழை இல்லை"
 
 msgctxt "KnownIssues|"
 msgid "Problem loading known issues"
-msgstr ""
+msgstr "அறியப்பட்ட சிக்கல்களை ஏற்றுவதில் சிக்கல்"
 
 msgctxt "AsyncLoader|"
 msgid "Loading Data Set"
-msgstr ""
+msgstr "தரவுத் தொகுப்பை ஏற்றுகிறது"
 
 msgctxt "AsyncLoader|"
 msgid "Saving Data Set"
-msgstr ""
+msgstr "தரவுத் தொகுப்பைச் சேமிக்கிறது"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Result Set"
-msgstr ""
+msgstr "ஏற்றுமதி முடிவு தொகுப்பு"
 
 msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
-msgstr ""
+msgstr "தரவுத் தொகுப்பை ஏற்றுமதி செய்கிறது"
 
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr ""
+msgstr "ஒத்திசைவு தரவு தொகுப்பு"
 
 msgctxt "ColumnsModel|"
 msgid "The '"
-msgstr ""
+msgstr "தி '"
 
 msgctxt "ColumnsModel|"
 msgid "'-column "
-msgstr ""
+msgstr "'-நெடுவரிசை "
 
 #, qt-format
 msgctxt "FileEvent|"
 msgid "Importing Data from %1"
-msgstr ""
+msgstr "% 1 இலிருந்து தரவை இறக்குமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Importing SPSS File"
-msgstr ""
+msgstr "SPSS கோப்பை இறக்குமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Importing SAS File"
-msgstr ""
+msgstr "SAS கோப்பை இறக்குமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Importing STATA File"
-msgstr ""
+msgstr "STATA கோப்பை இறக்குமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Loading JASP File"
-msgstr ""
+msgstr "JASP கோப்பை ஏற்றுகிறது"
 
 msgctxt "FileEvent|"
 msgid "Loading File"
-msgstr ""
+msgstr "கோப்பை ஏற்றுகிறது"
 
 msgctxt "FileEvent|"
 msgid "Saving JASP File"
-msgstr ""
+msgstr "JASP கோப்பை சேமிக்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Exporting Results"
-msgstr ""
+msgstr "முடிவுகளை ஏற்றுமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Exporting Data"
-msgstr ""
+msgstr "தரவை ஏற்றுமதி செய்கிறது"
 
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr ""
+msgstr "தரவு ஒத்திசைவு"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
-msgstr ""
+msgstr "கோப்பு செயலாக்கம்"
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run this analysis..."
-msgstr ""
+msgstr "இந்த பகுப்பாய்வை இயக்க முயன்ற போது இயந்திரம் செயலிழந்தது..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run the filter..."
-msgstr ""
+msgstr "வடிகட்டியை இயக்க முயன்ற போது இயந்திரம் செயலிழந்தது..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to compute this column..."
-msgstr ""
+msgstr "இந்த நெடுவரிசையை கணக்கிட முயலும் போது இயந்திரம் செயலிழந்தது..."
 
 msgctxt "EngineRepresentation|"
 msgid "The engine crashed while trying to run rscript..."
-msgstr ""
+msgstr "ஆர்ச்கிரிப்டை இயக்க முயன்ற போது என்சின் விபத்துக்குள்ளானது..."
 
 msgctxt "EngineRepresentation|"
 msgid "Error saving plot"
-msgstr ""
+msgstr "சதித்திட்டத்தை சேமிப்பதில் பிழை"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -1639,44 +1720,53 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"எதிர்பாராதவிதமாக சதியைச் சேமிக்க முடியவில்லை. \n"
+"\n"
+"பிழை செய்தி: \n"
+"% 1 \n"
+"\n"
+"சிக்கல் தொடர்ந்தால், மேலே உள்ள செய்தியைப் புகாரளிக்கவும்: https://jasp-stats.org/bug-"
+"reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error resizing plot"
-msgstr ""
+msgstr "சதித்திட்டத்தின் அளவை மாற்றுவதில் பிழை"
 
 msgctxt "MessageForwarder|"
 msgid "Yes"
-msgstr ""
+msgstr "ஆம்"
 
 msgctxt "MessageForwarder|"
 msgid "No"
-msgstr ""
+msgstr "இல்லை"
 
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr ""
+msgstr "ரத்துசெய்"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
-msgstr ""
+msgstr "சேமி"
 
 msgctxt "MessageForwarder|"
 msgid "Don't Save"
-msgstr ""
+msgstr "சேமிக்க வேண்டாம்"
 
 msgctxt "MainWindow|"
 msgid "Datafile changed"
-msgstr ""
+msgstr "தரவுக் கோப்பு மாற்றப்பட்டது"
 
 msgctxt "MainWindow|"
 msgid ""
 "The datafile that was used by this JASP file was modified. Do you want to "
 "reload the analyses with this new data?"
 msgstr ""
+"இந்த JASP கோப்பால் பயன்படுத்தப்பட்ட தரவுக் கோப்பு மாற்றப்பட்டது. இந்த புதிய தரவு மூலம் "
+"பகுப்பாய்வுகளை மீண்டும் ஏற்ற விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "பதிப்பு இணக்கமின்மை"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1685,6 +1775,10 @@ msgid ""
 "\n"
 "Refresh all analyses?"
 msgstr ""
+"உங்கள் பகுப்பாய்வுகள் JASP இன் பழைய பதிப்பில் உருவாக்கப்பட்டன, படங்களின் PPI ஐ மாற்ற, அவை "
+"முதலில் புதுப்பிக்கப்பட வேண்டும். \n"
+"\n"
+"அனைத்து பகுப்பாய்வுகளையும் புதுப்பிக்கவா?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1693,10 +1787,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு JASP இன் பழைய பதிப்பில் உருவாக்கப்பட்டது, படத்தைச் சேமிக்க, அதை முதலில் "
+"புதுப்பிக்க வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 msgctxt "MainWindow|"
 msgid "Save JASP Image"
-msgstr ""
+msgstr "JASP படத்தை சேமிக்கவும்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1704,6 +1802,9 @@ msgid ""
 "Encapsulated PostScript (*.eps);;300 dpi Tagged Image File (*.tiff);;"
 "PowerPoint (*.pptx);;Scalable Vector Graphics (*.svg)"
 msgstr ""
+"போர்ட்டபிள் பிணையம் கிராபிக்ச் (*.png);; போர்ட்டபிள் ஆவண வடிவம் (*.pdf);; இணைக்கப்பட்ட "
+"போச்ட்ச்கிரிப்ட் (*.eps);; 300 dpi குறியிடப்பட்ட படக் கோப்பு (*.tiff);;PowerPoint "
+"(*.pptx);; அளவிடக்கூடிய வெக்டர் கிராபிக்ச் (*.svg)"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1712,6 +1813,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு JASP இன் பழைய பதிப்பில் உருவாக்கப்பட்டது, படத்தை மறுஅளவாக்க முதலில் அதை "
+"புதுப்பிக்க வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1719,10 +1824,12 @@ msgid ""
 "Unable to open file because:\n"
 "%1"
 msgstr ""
+"கோப்பை திறக்க முடியவில்லை ஏனெனில்: \n"
+"% 1"
 
 msgctxt "MainWindow|"
 msgid "Save failed"
-msgstr ""
+msgstr "சேமிக்க முடியவில்லை"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1731,20 +1838,25 @@ msgid ""
 "\n"
 "%1"
 msgstr ""
+"கோப்பைச் சேமிக்க முடியவில்லை. \n"
+"\n"
+"% 1"
 
 msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
-msgstr ""
+msgstr "உங்களிடம் GitHub கணக்கு உள்ளதா?"
 
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
 "such an account?"
 msgstr ""
+"பிழையைப் புகாரளிக்க, உங்களிடம் GitHub கணக்கு இருக்க வேண்டும், அத்தகைய கணக்கு உங்களிடம் "
+"உள்ளதா?"
 
 msgctxt "MainWindow|"
 msgid "Join GitHub"
-msgstr ""
+msgstr "GitHub இல் சேரவும்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1756,10 +1868,17 @@ msgid ""
 "\n"
 "Please fill in all missing information there."
 msgstr ""
+"உங்கள் இணைய உலாவியில் உங்களுக்காக இரண்டு பக்கங்களைத் திறப்போம். \n"
+"இரண்டாவது 'GitHub இல் சேரவும்' பக்கமாக இருக்கும், அங்கு நீங்கள் GitHub இல் கணக்கு பதிவு "
+"செய்யலாம். \n"
+"முதலாவது உள்நுழைவுப் பக்கமாக இருக்கும், இது உங்கள் புதிய GitHub கணக்கில் உள்நுழைந்த பிறகு "
+"ஓரளவு நிரப்பப்பட்ட பிழை அறிக்கைக்கு வழிவகுக்கும். \n"
+"\n"
+"விடுபட்ட அனைத்து தகவல்களையும் அங்கு நிரப்பவும்."
 
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
-msgstr ""
+msgstr "உங்களுக்காக GitHub ஐ திறக்க முடியவில்லை"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1767,10 +1886,13 @@ msgid ""
 "You can still report the bug by going to https://github.com/jasp-stats/jasp-"
 "issues/issues"
 msgstr ""
+"உங்களை GitHub க்கு அழைத்துச் செல்வதில் ஏதோ தவறு ஏற்பட்டது. \n"
+"https://github.com/jasp-stats/jasp-issues/issues என்பதற்குச் சென்று பிழையைப் "
+"புகாரளிக்கலாம்."
 
 msgctxt "MainWindow|"
 msgid "Error"
-msgstr ""
+msgstr "பிழை"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1778,14 +1900,16 @@ msgid ""
 "JASP has experienced an unexpected internal error:\n"
 "%1"
 msgstr ""
+"JASP எதிர்பாராத உள் பிழையை சந்தித்துள்ளது: \n"
+"% 1"
 
 msgctxt "MainWindow|"
 msgid "Report"
-msgstr ""
+msgstr "அறிக்கை"
 
 msgctxt "MainWindow|"
 msgid "Exit"
-msgstr ""
+msgstr "வெளியேறு"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1794,6 +1918,10 @@ msgid ""
 "synchronize the data when the file is saved. Does this data file exist "
 "already, or do you want to generate it?"
 msgstr ""
+"JASP தொடர்புடைய தரவு கோப்பு இல்லாமல் தொடங்கப்பட்டது (csv, sav அல்லது ods கோப்பு). ஆனால் "
+"தரவைத் திருத்த, JASP இந்தக் கோப்பின் அடிப்படையில் விரிதாள் எடிட்டரைத் தொடங்கி, கோப்பு "
+"சேமிக்கப்படும்போது தரவை ஒத்திசைக்கிறது. இந்தத் தரவுக் கோப்பு ஏற்கனவே உள்ளதா அல்லது அதை "
+"உருவாக்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1801,6 +1929,9 @@ msgid ""
 "edit the data, JASP needs this file on your computer. Does this data file "
 "also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP ஆனது நிகழ்நிலை தரவுக் கோப்புடன் (csv, sav அல்லது ods கோப்பு) தொடங்கப்பட்டது. ஆனால் "
+"தரவைத் திருத்த, JASPக்கு உங்கள் கணினியில் இந்தக் கோப்பு தேவை. இந்தத் தரவுக் கோப்பு உங்கள் "
+"கணினியிலும் உள்ளதா அல்லது அதை உருவாக்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -1808,22 +1939,25 @@ msgid ""
 "But to edit the data, JASP needs to write to the data file. Does the same "
 "file also exist on your computer, or do you want to generate it?"
 msgstr ""
+"JASP ஒரு படிக்க-மட்டும் தரவுக் கோப்புடன் தொடங்கப்பட்டது (அநேகமாக உதாரணங்களிலிருந்து). ஆனால் "
+"தரவைத் திருத்த, JASP தரவுக் கோப்பில் எழுத வேண்டும். அதே கோப்பு உங்கள் கணினியிலும் உள்ளதா "
+"அல்லது அதை உருவாக்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
-msgstr ""
+msgstr "விரிதாள் எடிட்டரைத் தொடங்கவும்"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File"
-msgstr ""
+msgstr "தரவு கோப்பை உருவாக்கவும்"
 
 msgctxt "MainWindow|"
 msgid "Find Data File"
-msgstr ""
+msgstr "தரவு கோப்பைக் கண்டறியவும்"
 
 msgctxt "MainWindow|"
 msgid "Start Editor"
-msgstr ""
+msgstr "தொடக்க ஆசிரியர்"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1831,6 +1965,8 @@ msgid ""
 "Unable to start the editor : %1. Please check your editor settings in the "
 "preference menu."
 msgstr ""
+"எடிட்டரை தொடங்க முடியவில்லை : % 1. முன்னுரிமை பட்டியலில் உங்கள் எடிட்டர் அமைப்புகளைச் "
+"சரிபார்க்கவும்."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -1838,19 +1974,21 @@ msgid ""
 "No default spreadsheet editor for file %1. Use Preferences to set the right "
 "editor."
 msgstr ""
+"கோப்பு% 1க்கு இயல்புநிலை விரிதாள் திருத்தி இல்லை. சரியான எடிட்டரை அமைக்க விருப்பங்களைப் "
+"பயன்படுத்தவும்."
 
 msgctxt "MainWindow|"
 msgid "Remove All Analyses"
-msgstr ""
+msgstr "அனைத்து பகுப்பாய்வுகளையும் அகற்று"
 
 msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
-msgstr ""
+msgstr "நீங்கள் உண்மையில் அனைத்து பகுப்பாய்வுகளையும் அகற்ற விரும்புகிறீர்களா?"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
-msgstr ""
+msgstr "தொகுக்கப்பட்ட தொகுதி% 1ஐ ஏற்றுவது தோல்வியடைந்தது"
 
 #, qt-format
 msgctxt "RibbonModel|"
@@ -1859,19 +1997,22 @@ msgid ""
 "\n"
 "%2"
 msgstr ""
+"தொகுக்கப்பட்ட தொகுதி% 1ஐ ஏற்றுவது பின்வரும் பிழையால் தோல்வியடைந்தது: \n"
+"\n"
+"% 2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
-msgstr ""
+msgstr "மேம்படுத்தல்களை ஏற்றுவதில் பிழை"
 
 #, qt-format
 msgctxt "Modules::Upgrader|"
 msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr ""
+msgstr "%1க்கான மேம்படுத்தல்களை ஏற்றும்போது ஒரு பிழை ஏற்பட்டது: %2"
 
 msgctxt "Modules::Upgrader|"
 msgid "Upgrades couldn't be read"
-msgstr ""
+msgstr "மேம்படுத்தல்களைப் படிக்க முடியவில்லை"
 
 msgctxt "Modules::Upgrader|"
 msgid ""
@@ -1880,10 +2021,14 @@ msgid ""
 "might not be understood properly and some analyses might fail to load "
 "entirely."
 msgstr ""
+"பழைய JASP-கோப்புகளைப் படிக்க தேவையான மேம்படுத்தல்களைப் படிக்க முடியவில்லை... \n"
+"நீங்கள் இன்னும் JASP ஐப் பயன்படுத்தலாம் மற்றும் (சில) பழைய கோப்புகளைப் படிக்கலாம், ஆனால் சில "
+"விருப்பங்கள் சரியாகப் புரிந்து கொள்ளப்படாமல் இருக்கலாம் மற்றும் சில பகுப்பாய்வுகள் முழுமையாக "
+"ஏற்றப்படாமல் போகலாம்."
 
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
-msgstr ""
+msgstr "கோப்பு மாற்றப்பட்டது"
 
 msgctxt "OnlineDataManager|"
 msgid ""
@@ -1891,115 +2036,118 @@ msgid ""
 "\n"
 "Would you like to override the online file?"
 msgstr ""
+"இந்தக் கோப்பு திறக்கப்பட்டதிலிருந்து அதன் நிகழ்நிலை நகல் மாறிவிட்டது. \n"
+"\n"
+"ஆன்லைன் கோப்பை மேலெழுத விரும்புகிறீர்களா?"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating upload of "
-msgstr ""
+msgstr "பதிவேற்றத்தைத் தொடங்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating download of "
-msgstr ""
+msgstr "பதிவிறக்கத்தைத் தொடங்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new file "
-msgstr ""
+msgstr "புதிய கோப்பை உருவாக்கத் தொடங்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
-msgstr ""
+msgstr "புதிய கோப்புறையை உருவாக்கத் தொடங்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
-msgstr ""
+msgstr "OSF நடவடிக்கையைத் தொடங்குதல் "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
-msgstr ""
+msgstr "பதிவேற்றம் "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
-msgstr ""
+msgstr "பதிவிறக்கம் "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
-msgstr ""
+msgstr "புதிய கோப்பை உருவாக்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
-msgstr ""
+msgstr "புதிய கோப்புறையை உருவாக்குகிறது "
 
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
-msgstr ""
+msgstr "Osf நடவடிக்கை "
 
 #, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
-msgstr ""
+msgstr "% 1% 2 தோல்வியடைந்தது ஏனெனில்% 3"
 
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
-msgstr ""
+msgstr " நடந்து கொண்டிருக்கிறது"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr ""
+msgstr "சுருக்கு"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
-msgstr ""
+msgstr "தலைப்பைத் திருத்து"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy"
-msgstr ""
+msgstr "நகலெடு"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
-msgstr ""
+msgstr "லாடெக்சு ஐ நகலெடுக்கவும்"
 
 msgctxt "ResultMenuModel|"
 msgid "Copy Citations"
-msgstr ""
+msgstr "மேற்கோள்களை நகலெடுக்கவும்"
 
 msgctxt "ResultMenuModel|"
 msgid "Save Image As"
-msgstr ""
+msgstr "படத்தை இவ்வாறு சேமி"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Image"
-msgstr ""
+msgstr "படத்தை திருத்து"
 
 msgctxt "ResultMenuModel|"
 msgid "Add Note"
-msgstr ""
+msgstr "குறிப்பைச் சேர்க்கவும்"
 
 msgctxt "ResultMenuModel|"
 msgid "Duplicate"
-msgstr ""
+msgstr "நகல்"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove"
-msgstr ""
+msgstr "அகற்று"
 
 msgctxt "ResultMenuModel|"
 msgid "Remove All"
-msgstr ""
+msgstr "அனைத்தையும் அகற்று"
 
 msgctxt "ResultMenuModel|"
 msgid "Refresh All"
-msgstr ""
+msgstr "அனைத்தையும் புதுப்பிக்கவும்"
 
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
-msgstr ""
+msgstr "சார்புகளைக் காட்டு"
 
 msgctxt "ResultMenuModel|"
 msgid "Export Results"
-msgstr ""
+msgstr "ஏற்றுமதி முடிவுகள்"
 
 msgctxt "ResultsJsInterface|"
 msgid "Results Warning"
-msgstr ""
+msgstr "முடிவுகள் முன்னறிவிப்பு"
 
 msgctxt "HelpModel|"
 msgid ""
@@ -2010,67 +2158,73 @@ msgid ""
 "\n"
 "Additional documentation will be available in future releases of JASP."
 msgstr ""
+"விரைவில்! \n"
+"======== \n"
+"\n"
+"இந்த பகுப்பாய்விற்கு தற்போது எந்த உதவியும் இல்லை. \n"
+"\n"
+"JASP இன் எதிர்கால வெளியீடுகளில் கூடுதல் ஆவணங்கள் கிடைக்கும்."
 
 msgctxt "QObject|"
 msgid "valid R code"
-msgstr ""
+msgstr "செல்லுபடியாகும் R குறியீடு"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
-msgstr ""
+msgstr "டிராப் டவுன்% 2 இல் தெரியாத விருப்பம் % 1"
 
 msgctxt "ActionButtons|"
 msgid "Open"
-msgstr ""
+msgstr "திற"
 
 msgctxt "ActionButtons|"
 msgid "Save"
-msgstr ""
+msgstr "சேமி"
 
 msgctxt "ActionButtons|"
 msgid "Save As"
-msgstr ""
+msgstr "என சேமி"
 
 msgctxt "ActionButtons|"
 msgid "Export Results"
-msgstr ""
+msgstr "ஏற்றுமதி முடிவுகள்"
 
 msgctxt "ActionButtons|"
 msgid "Export Data"
-msgstr ""
+msgstr "தரவு ஏற்றுமதி"
 
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr ""
+msgstr "தரவு ஒத்திசைவு"
 
 msgctxt "ActionButtons|"
 msgid "Close"
-msgstr ""
+msgstr "மூடு"
 
 msgctxt "ActionButtons|"
 msgid "Preferences"
-msgstr ""
+msgstr "விருப்பத்தேர்வுகள்"
 
 msgctxt "ActionButtons|"
 msgid "About"
-msgstr ""
+msgstr "பற்றி"
 
 msgctxt "DataLibraryBreadCrumbsListModel|"
 msgid "Categories"
-msgstr ""
+msgstr "வகைகள்"
 
 msgctxt "FileMenu|"
 msgid "File Types"
-msgstr ""
+msgstr "கோப்பு வகைகள்"
 
 msgctxt "FileMenu|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "OSF இலிருந்து கோப்பைத் திறக்க முடியவில்லை"
 
 msgctxt "FileMenu|"
 msgid "No associated data file"
-msgstr ""
+msgstr "தொடர்புடைய தரவு கோப்பு இல்லை"
 
 msgctxt "FileMenu|"
 msgid ""
@@ -2078,34 +2232,38 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
+"ஒத்திசைக்க JASP இல் தொடர்புடைய தரவுக் கோப்பு எதுவும் இல்லை. \n"
+"உங்கள் கணினியில் அத்தகைய தரவுக் கோப்பைத் தேட விரும்புகிறீர்களா? \n"
+"குறிப்பு: இந்த தரவுக் கோப்பை பட்டியல் கோப்பு/ஒத்திசைவு தரவு வழியாகவும் அமைக்கலாம்."
 
 msgctxt "FileMenu|"
 msgid "Find Data File"
-msgstr ""
+msgstr "தரவு கோப்பைக் கண்டறியவும்"
 
 msgctxt "FileMenu|"
 msgid "Data File"
-msgstr ""
+msgstr "தரவு கோப்பு"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
 msgstr ""
+"பயனர்பெயர் மற்றும்/அல்லது கடவுச்சொல் சரியாக இல்லை. மீண்டும் முயற்சிக்கவும்."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSF பணி not available. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்."
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr ""
+msgstr "இணைப்பு காலாவதி பிழை. உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்."
 
 msgctxt "OSF|"
 msgid "OSF Error"
-msgstr ""
+msgstr "OSF பிழை"
 
 msgctxt "OSF|"
 msgid "Projects"
-msgstr ""
+msgstr "திட்டங்கள்"
 
 msgctxt "OSF|"
 msgid ""
@@ -2113,10 +2271,13 @@ msgid ""
 "\n"
 "To add a new project please use the online OSF services."
 msgstr ""
+"திட்டப் பட்டியலில் கோப்புகளைச் சேர்க்க முடியாது. \n"
+"\n"
+"புதிய திட்டத்தைச் சேர்க்க, நிகழ்நிலை OSF சேவைகளைப் பயன்படுத்தவும்."
 
 msgctxt "OSF|"
 msgid "Data Providers"
-msgstr ""
+msgstr "தரவு வழங்குநர்கள்"
 
 msgctxt "OSF|"
 msgid ""
@@ -2125,107 +2286,117 @@ msgid ""
 "To add a new data provider (eg. google drive) please use the online OSF "
 "services."
 msgstr ""
+"திட்ட தரவு வழங்குநர்கள் பட்டியலில் கோப்புகளைச் சேர்க்க முடியாது. \n"
+"\n"
+"புதிய தரவு வழங்குநரைச் சேர்க்க (எ.கா. Google இயக்ககம்) நிகழ்நிலை OSF சேவைகளைப் "
+"பயன்படுத்தவும்."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "அறியப்படாத காரணத்திற்காக கோப்புகளை '% 1' இல் சேர்க்க முடியாது."
 
 msgctxt "OSF|"
 msgid "File Types"
-msgstr ""
+msgstr "கோப்பு வகைகள்"
 
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
-msgstr ""
+msgstr "OSF இலிருந்து கோப்பைத் திறக்க முடியவில்லை"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "பிழை ஏற்பட்டது மற்றும் கோப்புறையை உருவாக்க முடியவில்லை."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
 "please use the online OSF services."
 msgstr ""
+"திட்டப் பட்டியலில் புதிய கோப்புறையைச் சேர்க்க முடியாது.<br>புதிய திட்டத்தைச் சேர்க்க, "
+"நிகழ்நிலை OSF சேவைகளைப் பயன்படுத்தவும்."
 
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
 "new data provider (eg. google drive) please use the online OSF services."
 msgstr ""
+"திட்ட தரவு வழங்குநர்கள் பட்டியலில் புதிய கோப்புறையைச் சேர்க்க முடியாது.<br>புதிய தரவு "
+"வழங்குநரைச் சேர்க்க (எ.கா. Google இயக்ககம்) நிகழ்நிலை OSF சேவைகளைப் பயன்படுத்தவும்."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
 msgstr ""
+"அறியப்படாத காரணத்திற்காக ஒரு புதிய கோப்புறையை '% 1' இல் சேர்க்க முடியாது."
 
 msgctxt "OSF|"
 msgid "Folder"
-msgstr ""
+msgstr "கோப்புறை"
 
 msgctxt "OSF|"
 msgid "Login"
-msgstr ""
+msgstr "புகுபதிவு"
 
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
-msgstr ""
+msgstr "பயனர் அல்லது கடவுச்சொல் காலியாக இருக்கக்கூடாது."
 
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
-msgstr ""
+msgstr "நுழைவு பெயர் காலியாக இருக்கக்கூடாது."
 
 #, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
+"%1 பெயரில் பின்வரும் எழுத்துகள் A-Z a-z 0-9 _ %2 மட்டுமே இருக்க முடியும்"
 
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "அண்மைக்கால கோப்புகள்"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
-msgstr ""
+msgstr "தற்போதைய கோப்பு"
 
 msgctxt "ResourceButtons|"
 msgid "Computer"
-msgstr ""
+msgstr "கணிப்பொறி, கணிணி"
 
 msgctxt "ResourceButtons|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr ""
+msgstr "தரவு நூலகம்"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
-msgstr ""
+msgstr "தகவல்கள்"
 
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr ""
+msgstr "முடிவுகள்"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
-msgstr ""
+msgstr "இடைமுகம்"
 
 msgctxt "ResourceButtons|"
 msgid "Advanced"
-msgstr ""
+msgstr "மேம்பட்ட"
 
 #, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
-msgstr ""
+msgstr "மாறுபாடு% 1"
 
 #, qt-format
 msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
-msgstr ""
+msgstr "அடுக்கு% 1"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
@@ -2233,193 +2404,198 @@ msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr ""
+"RadioButtonGroup உறுப்புக்குள் உள்ள ஒரு ரேடியோ பட்டனுக்கு (பெயர்: %1) எந்தப் பெயரும் "
+"இல்லை"
 
 #, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
-msgstr ""
+msgstr "பெயர்% 1 உடன் தொடர்புடைய ரேடியோ பொத்தான் இல்லை"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
-msgstr ""
+msgstr "% 1 இல் உள்ள ஒரு வரிசை கூறுக்கு பெயர் இல்லை"
 
 #, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
-msgstr ""
+msgstr "% 1 இல் உள்ள 2 வரிசை கூறுகள் ஒரே பெயரைக் கொண்டுள்ளன"
 
 msgctxt "SortMenuModel|"
 msgid "None"
-msgstr ""
+msgstr "எதுவுமில்லை"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name"
-msgstr ""
+msgstr "பெயரால் வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name A-Z"
-msgstr ""
+msgstr "A-Z என்ற பெயரில் வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by name Z-A"
-msgstr ""
+msgstr "Z-A என்ற பெயரில் வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by type"
-msgstr ""
+msgstr "வகை மூலம் வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by date"
-msgstr ""
+msgstr "தேதி வாரியாக வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "Sort by size"
-msgstr ""
+msgstr "அளவின்படி வரிசைப்படுத்தவும்"
 
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
-msgstr ""
+msgstr "வரிசைப்படுத்தக்கூடிய பெற்றோருடன் SortMenuModel அழைக்கப்படவில்லை"
 
 msgctxt "TextAreaBase|"
 msgid "Model applied"
-msgstr ""
+msgstr "மாதிரி பயன்படுத்தப்பட்டது"
 
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
-msgstr ""
+msgstr "வெளிப்பாடு எண்ணை வழங்கவில்லை."
 
 msgctxt "TextInputBase|"
 msgid "Integer Field"
-msgstr ""
+msgstr "முழு எண் புலம்"
 
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
-msgstr ""
+msgstr "சதவீத புலம்"
 
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
-msgstr ""
+msgstr "இரட்டையர் களம்"
 
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
-msgstr ""
+msgstr "நெடுவரிசை புலத்தைச் சேர்க்கவும்"
 
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசை புலத்தைச் சேர்க்கவும்"
 
 msgctxt "TextInputBase|"
 msgid "Formula Field"
-msgstr ""
+msgstr "ஃபார்முலா புலம்"
 
 msgctxt "TextInputBase|"
 msgid "Text Field"
-msgstr ""
+msgstr "உரை புலம்"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr ""
+msgstr "மதிப்பு (% 1) கண்டிப்பாக% 2 ஆக இருக்க வேண்டும்"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
-msgstr ""
+msgstr "% 1 இன் மூல மாதிரியானது காரணி பட்டியலிலிருந்து இருக்க வேண்டும்"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
-msgstr ""
+msgstr "VariableList% 1க்கான தவறான சான்று"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
-msgstr ""
+msgstr "VariablesList% 1க்கு தொடர்புடைய பட்டியல் எதுவும் இல்லை"
 
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr ""
+"VariablesList% 2 க்கு தவறான வகையான தொடர்புடைய பட்டியல் (%1) கண்டறியப்பட்டது"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
-msgstr ""
+msgstr "% 1 இன் மூலத்திற்கு பெயர் எதுவும் கொடுக்கப்படவில்லை"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
-msgstr ""
+msgstr "% 1க்கு எந்த ஆதாரமும் கொடுக்கப்படவில்லை"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
-msgstr ""
+msgstr "% 2 இன் மூலத்திற்கான கூறு % 1 ஐ கண்டுபிடிக்க முடியவில்லை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "மாறியை தரப்படுத்துகிறது"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"சரத்தில் குறைந்தபட்சம் ஒருமுறையாவது சப்ச்ட்ரிங் இருந்தால் true என வழங்கும்"
 
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
-msgstr ""
+msgstr "மாறியை தரப்படுத்துகிறது"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr ""
+"சரத்தில் குறைந்தபட்சம் ஒருமுறையாவது சப்ச்ட்ரிங் இருந்தால் true என வழங்கும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Title"
-msgstr ""
+msgstr "தலைப்பு"
 
 msgctxt "PlotEditingAxis|"
 msgid "Specify sequence"
-msgstr ""
+msgstr "வரிசையைக் குறிப்பிடவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "from"
-msgstr ""
+msgstr "இருந்து"
 
 msgctxt "PlotEditingAxis|"
 msgid "to"
-msgstr ""
+msgstr "பெறுநர்"
 
 msgctxt "PlotEditingAxis|"
 msgid "steps"
-msgstr ""
+msgstr "படிகள்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on data"
-msgstr ""
+msgstr "தரவுகளின் அடிப்படையில்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
-msgstr ""
+msgstr "உண்ணி அடிப்படையில்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Set manually"
-msgstr ""
+msgstr "கைமுறையாக அமைக்கவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
-msgstr ""
+msgstr "குறைந்த வரம்பு"
 
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
-msgstr ""
+msgstr "மேல் வரம்பு"
 
 msgctxt "PlotEditor|"
 msgid "x-axis"
-msgstr ""
+msgstr "x-அச்சு"
 
 msgctxt "PlotEditor|"
 msgid "y-axis"
-msgstr ""
+msgstr "y-அச்சு"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2432,22 +2608,30 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"எதிர்பாராதவிதமாக சதித்திட்டத்தை திருத்த முடியவில்லை. \n"
+"\n"
+"பிழை செய்தி: \n"
+"% 1 \n"
+"\n"
+"சிக்கல் தொடர்ந்தால், மேலே உள்ள செய்தியைப் புகாரளிக்கவும்: https://jasp-stats.org/bug-"
+"reports"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
-msgstr ""
+msgstr "தொகுதி% 1க்கான மேம்படுத்தல்களை ஏற்றுவது தோல்வியடைந்தது"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
+"dir% 1 இலிருந்து ஒரு தொகுதியை துவக்கும் முயற்சியில் பிழை ஏற்பட்டது, பிழை: %2"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "தொகுதி% 1 ஐ ஏற்றும் முயற்சியில் பிழை ஏற்பட்டது, பிழை: '%2'"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2455,6 +2639,7 @@ msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
 "was: %3"
 msgstr ""
+"'%2' பாதையில் %1 தொகுதிக்கான கோப்புகளை அகற்றுவதில் ஏதோ தவறு ஏற்பட்டது, மேலும் பிழை: %3"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2462,58 +2647,67 @@ msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
 "%2"
 msgstr ""
+"தொகுதி% 1 இன் நிறுவல் பின்வரும் பிழைச் செய்தியுடன் தோல்வியடைந்தது: \n"
+"% 2"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
-msgstr ""
+msgstr "ஒரு கோப்புறையைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
+"டெவலப்மெண்ட் மாட்யூலை நிறுவ, நீங்கள் பார்க்க விரும்பும் கோப்புறையைத் தேர்ந்தெடுத்து ஏற்ற "
+"வேண்டும், இதை கோப்புமெனு, விருப்பத்தேர்வுகள்->மேம்பட்டவற்றின் கீழ் செய்யலாம்."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
-msgstr ""
+msgstr "தொகுதியை துவக்குவதில் சிக்கல்"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
 "\n"
 msgstr ""
+"உருவாக்குபவர் தொகுதியை ஏற்றுவதில் சிக்கல்:\n"
+"\n"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Missing files or folders"
-msgstr ""
+msgstr "கோப்புகள் அல்லது கோப்புறைகள் இல்லை"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
+"தேர்ந்தெடுக்கப்பட்ட கோப்புறையை உருவாக்குபவர் தொகுதியாக நிறுவ முடியாது, ஏனெனில் அதில் "
+"தேவையான அனைத்து கோப்புகள் மற்றும் கோப்புறைகள் இல்லை."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/Description.qml file."
-msgstr ""
+msgstr "inst/Description.qml கோப்பை உருவாக்கவும்."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a R directory containing your analysis code."
-msgstr ""
+msgstr "உங்கள் பகுப்பாய்வுக் குறியீட்டைக் கொண்ட R கோப்பகத்தை உருவாக்கவும்."
 
 msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
+msgstr "உங்கள் விருப்ப படிவங்களைக் கொண்ட inst/qml கோப்பகத்தை உருவாக்கவும்."
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr ""
+"உங்கள் ரிப்பன் பட்டன்களுக்கான ஐகான்களைக் கொண்ட inst/icons கோப்பகத்தை உருவாக்கவும்."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
-msgstr ""
+msgstr "% 1 இல்லை"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2522,6 +2716,9 @@ msgid ""
 "it your module cannot work, make sure to put it back. For now your old %2 "
 "file will be kept."
 msgstr ""
+"உங்கள் டெவலப்மெண்ட் மாட்யூல் கோப்பகத்தில் இருந்து % 1ஐ நீக்கிவிட்டதாக தெரிகிறது. இது இல்லாமல் "
+"உங்கள் தொகுதி வேலை செய்யாது, அதை மீண்டும் வைக்க உறுதி செய்யவும். இப்போதைக்கு உங்கள் பழைய "
+"%2 கோப்பு சேமிக்கப்படும்."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2531,11 +2728,14 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"உங்கள் டெவலப்மெண்ட் மாட்யூல் டைரக்டரியில் நீங்கள் % 1 ஐக் கொண்டிருக்கவில்லை. இது இல்லாமல் உங்கள் "
+"தொகுதி வேலை செய்யாது, ஒன்றை உருவாக்குவதை உறுதிசெய்யவும். நீங்கள் எப்படி நிறுவினீர்கள் "
+"என்பது ஒரு புதிராக உள்ளது, எனவே டெவலப்மெண்ட் மாட்யூல் இப்போது நிறுவல் நீக்கப்படும்"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
-msgstr ""
+msgstr "% 1 அகற்றப்பட்டது!"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2543,11 +2743,13 @@ msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr ""
+"நீங்கள் %1ஐ நீக்கிவிட்டதாகத் தெரிகிறது ஆனால் உங்கள் தொகுதி வேலை செய்ய இந்தக் கோப்பு தேவை. "
+"டெவலப்மெண்ட் மாட்யூல் இப்போது நிறுவல் நீக்கப்படும்."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
-msgstr ""
+msgstr "கோப்புறை % 1 இல்லை"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2556,6 +2758,9 @@ msgid ""
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
+"உங்கள் டெவலப்மெண்ட் மாட்யூல் கோப்பகத்தில் இருந்து % 1 கோப்புறையை நீக்கிவிட்டதாக தெரிகிறது. "
+"இது இல்லாமல் உங்கள் தொகுதி வேலை செய்யாது, அதை மீண்டும் வைக்க உறுதி செய்யவும். இப்போதைக்கு "
+"உங்கள் பழைய கோப்புறை வைக்கப்படும்."
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2565,15 +2770,18 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
+"உங்கள் டெவலப்மெண்ட் மாட்யூல் டைரக்டரியில் % 1 கோப்புறை உங்களிடம் இருந்ததில்லை. இது இல்லாமல் "
+"உங்கள் தொகுதி வேலை செய்யாது, ஒன்றை உருவாக்குவதை உறுதிசெய்யவும். நீங்கள் எப்படி நிறுவினீர்கள் "
+"என்பது ஒரு புதிராக உள்ளது, எனவே டெவலப்மெண்ட் மாட்யூல் இப்போது நிறுவல் நீக்கப்படும்"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr ""
+msgstr "தொகுதி விளக்கத்தை ஏற்றுவதில் சிக்கல் ஏற்பட்டது"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr ""
+msgstr "<i>காப்பகத்தில் தொகுதியின் விளக்கத்தை ஏற்ற முடியவில்லை: '%1'</i>"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2582,11 +2790,15 @@ msgid ""
 "maintained by %5.</i><br><i>See website for further details: <a "
 "href=\"http://%6\">%6</a></i><br>"
 msgstr ""
+"<h3>%1</h3><i>பதிப்பு %2</i><br><p>%3</p><br><br><i>%4 ஆல் உருவாக்கப்பட்டது மற்றும் "
+"%5 ஆல் பராமரிக்கப்பட்டது.</i><br><i>மேலும் விவரங்களுக்கு இணையதளத்தைப் பார்க்கவும்: <a "
+"href=\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
 msgstr ""
+"மூலத்தில் உள்ள நெடுவரிசை எண் % 1 இன் நெடுவரிசைகளின் எண்ணிக்கையை விட பெரியது"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2594,6 +2806,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
 "is for: '%2'"
 msgstr ""
+"தவறான மேம்படுத்தல் பயன்படுத்தப்பட்டது, '% 1' செயல்பாட்டைத் தேடுகிறது, ஆனால் இந்த மேம்படுத்தல்: "
+"'%2'"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2601,6 +2815,8 @@ msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
 "is for: '%2' or lower"
 msgstr ""
+"தவறான மேம்படுத்தல் பயன்படுத்தப்பட்டது, '%1' பதிப்பைத் தேடுகிறது, ஆனால் இந்த மேம்படுத்தல்: "
+"'%2' அல்லது அதற்கும் குறைவானது"
 
 #, qt-format
 msgctxt "Modules::Upgrade|"
@@ -2612,128 +2828,136 @@ msgid ""
 "This should definitely not happen, perhaps the module author of '%2' can be "
 "of assistance"
 msgstr ""
+"லூப் கண்டறியப்பட்டதால் மேம்படுத்தலை நிறுத்துகிறது! \n"
+"\n"
+"% 1 எடுக்கப்பட்டால், இறுதியில் அது மீண்டும் அடையும். \n"
+"\n"
+"இது கண்டிப்பாக நடக்கக்கூடாது, ஒருவேளை '%2' இன் தொகுதி ஆசிரியர் உதவியாக இருக்கலாம்"
 
 msgctxt "JASPControl|"
 msgid "Factor Level List"
-msgstr ""
+msgstr "காரணி நிலை பட்டியல்"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
+msgstr "Only 1 Available மாறிகள் பட்டியல் can be கணம் in a VariablesForm"
 
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
-msgstr ""
+msgstr "மாறிகள் படிவத்தில் கிடைக்கக்கூடிய பட்டியல் எதுவும் இல்லை"
 
 msgctxt "FactorLevelList|"
 msgid "Factor"
-msgstr ""
+msgstr "காரணி"
 
 msgctxt "FactorLevelList|"
 msgid "Level"
-msgstr ""
+msgstr "நிலை"
 
 msgctxt "FactorLevelList|"
 msgid "New Factor"
-msgstr ""
+msgstr "புதிய காரணி"
 
 msgctxt "FactorLevelList|"
 msgid "New Level"
-msgstr ""
+msgstr "புதிய நிலை"
 
 msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
-msgstr ""
+msgstr "இயக்கப்பட்ட தொகுதிகளை நினைவில் கொள்க"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
-msgstr ""
+msgstr "Github க்கு இயல்புநிலை PAT ஐப் பயன்படுத்தவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
 "environment variables."
 msgstr ""
+"தொகுக்கப்பட்ட GITHUB_PAT ஐப் பயன்படுத்தவும் அல்லது இருந்தால், சூழல் மாறிகளில் ஒன்றைப் "
+"பயன்படுத்தவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
-msgstr ""
+msgstr "தனிப்பட்ட GITHUB_PAT:"
 
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
-msgstr ""
+msgstr "R, JAGS அல்லது லாவன் குறியீடு:"
 
 msgctxt "PrefsUI|"
 msgid "Result & help:"
-msgstr ""
+msgstr "முடிவு மற்றும் உதவி:"
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr ""
+msgstr "ஒளி கருப்பொருள்"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
-msgstr ""
+msgstr "இருண்ட கருப்பொருள்"
 
 msgctxt "PrefsUI|"
 msgid "Preferred language"
-msgstr ""
+msgstr "விருப்பமான மொழி"
 
 msgctxt "PrefsUI|"
 msgid "Safe graphics mode"
-msgstr ""
+msgstr "பாதுகாப்பான கிராபிக்ச் பயன்முறை"
 
 msgctxt "PrefsUI|"
 msgid "Disable animations"
-msgstr ""
+msgstr "அனிமேசன்களை முடக்கு"
 
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
-msgstr ""
+msgstr "சொந்த கோப்பு உரையாடல்களைப் பயன்படுத்தவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
 msgstr ""
+"இங்கே சொடுக்கு செய்வதன் மூலம் உருவாக்குபவர் தொகுதியைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "RibbonBar|"
 msgid "Show main menu"
-msgstr ""
+msgstr "முதன்மை மெனுவைக் காட்டு"
 
 msgctxt "RibbonBar|"
 msgid "Show modules menu"
-msgstr ""
+msgstr "தொகுதிகள் மெனுவைக் காட்டு"
 
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
-msgstr ""
+msgstr "கூறுகளின் ஒரு நல்ல குழு"
 
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
-msgstr ""
+msgstr "நீங்கள் இங்கே ஒரு முழு எண்ணை உள்ளிடலாம்: "
 
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
-msgstr ""
+msgstr "இது நம்பமுடியாத பயனுள்ள உதவிக்குறிப்பு இல்லையா?"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
-msgstr ""
+msgstr "முதல் தேர்வுப்பெட்டி"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
-msgstr ""
+msgstr "இரண்டாவது தேர்வுப்பெட்டி"
 
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
-msgstr ""
+msgstr "கடைசி தேர்வுப்பெட்டி"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Variables"
-msgstr ""
+msgstr "மாறிகள்"
 
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
-msgstr ""
+msgstr "பிளவு"
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2741,6 +2965,9 @@ msgid ""
 "probably could not connect to the server. Don't worry, JASP will work fine "
 "it just might not tell you about a few small known issues."
 msgstr ""
+"இந்தப் பதிப்பிற்கான அறியப்பட்ட சிக்கல்களைப் பதிவிறக்குவதில் JASP சிக்கலை எதிர்கொண்டது, இது "
+"சர்வருடன் இணைக்க முடியாமல் போகலாம். கவலைப்பட வேண்டாம், JASP நன்றாக வேலை செய்யும், இது சில "
+"சிறிய அறியப்பட்ட சிக்கல்களைப் பற்றி உங்களுக்குச் சொல்லாமல் இருக்கலாம்."
 
 msgctxt "KnownIssues|"
 msgid ""
@@ -2748,6 +2975,9 @@ msgid ""
 "isn't necessarily a problem but if it keeps occuring you could contact the "
 "JASP team for assistance."
 msgstr ""
+"JASP இந்தப் பதிப்பிற்கான அறியப்பட்ட சிக்கல்களை ஏற்றுவதில் சிக்கலை எதிர்கொண்டது, இது ஒரு "
+"பிரச்சனையாக இருக்க வேண்டிய அவசியமில்லை, ஆனால் இது தொடர்ந்து ஏற்பட்டால், உதவிக்கு JASP "
+"குழுவைத் தொடர்புகொள்ளலாம்."
 
 #, qt-format
 msgctxt "KnownIssues|"
@@ -2756,6 +2986,9 @@ msgid ""
 "this isn't necessarily a problem but if it keeps occuring you could contact "
 "the JASP team for assistance."
 msgstr ""
+"JASP ஆனது இந்தப் பதிப்பிற்கான அறியப்பட்ட சிக்கல்களை ஏற்றுவதில் ('%1') சிக்கலை "
+"எதிர்கொண்டது, இது ஒரு பிரச்சனையாக இருக்க வேண்டிய அவசியமில்லை, ஆனால் இது தொடர்ந்தால், "
+"உதவிக்கு JASP குழுவைத் தொடர்புகொள்ளலாம்."
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -2763,19 +2996,22 @@ msgid ""
 "No default spreadsheet editor for file %1. Do you want to export the data "
 "into a CSV file and start the default spreadsheet editor for this CSV file?"
 msgstr ""
+"கோப்பு% 1க்கு இயல்புநிலை விரிதாள் திருத்தி இல்லை. காபிம கோப்பில் தரவை ஏற்றுமதி செய்து, "
+"இந்த காபிம கோப்பிற்கான இயல்புநிலை விரிதாள் எடிட்டரைத் தொடங்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
-msgstr ""
+msgstr "தரவு கோப்பை காபிம ஆக உருவாக்கவும்"
 
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "ரத்துசெய்"
 
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Initializing module during JASP startup failed, should the module be removed?"
 msgstr ""
+"JASP தொடக்கத்தின் போது தொகுதியை துவக்குவது தோல்வியடைந்தது, தொகுதி அகற்றப்பட வேண்டுமா?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -2785,81 +3021,87 @@ msgid ""
 "\n"
 "Should the module be removed?"
 msgstr ""
+"JASP தொடக்கத்தின் போது தொகுதியைத் தொடங்குவது பின்வரும் செய்தியில் தோல்வியடைந்தது: \n"
+"% 1 \n"
+"\n"
+"தொகுதி அகற்றப்பட வேண்டுமா?"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
-msgstr ""
+msgstr "தொகுதி% 1 ஐ துவக்க முடியவில்லை"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
-msgstr ""
+msgstr "கன்சோலில் R குறியீட்டை இயக்கவும்"
 
 msgctxt "TableView|"
 msgid "Add to the left"
-msgstr ""
+msgstr "இடதுபுறத்தில் சேர்க்கவும்"
 
 msgctxt "TableView|"
 msgid "Add to the right"
-msgstr ""
+msgstr "வலதுபுறம் சேர்க்கவும்"
 
 msgctxt "TableView|"
 msgid "Delete"
-msgstr ""
+msgstr "நீக்கு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "மதிப்புகளின் அடையாளத்தை வழங்குகிறது"
 
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
 "supported."
 msgstr ""
+"<sup>*</sup>OSF கணக்கு உள்நுழைவு மட்டும், ORCID அல்லது நிறுவன உள்நுழைவு "
+"ஆதரிக்கப்படவில்லை."
 
 msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
-msgstr ""
+msgstr "நிறுவப்பட்ட தொகுதிகள் மற்றும் தொகுப்புகளை அழிக்கவும்"
 
 msgctxt "PrefsData|"
 msgid "Windows workaround"
-msgstr ""
+msgstr "சாளரங்கள் தீர்வு"
 
 msgctxt "PrefsData|"
 msgid "See documentation for more information "
-msgstr ""
+msgstr "மேலும் தகவலுக்கு ஆவணங்களைப் பார்க்கவும் "
 
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
-msgstr ""
+msgstr "பயனர் இடைமுக விருப்பங்கள்"
 
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr ""
+msgstr "மதிப்புகளின் அடையாளத்தை வழங்குகிறது"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
-msgstr ""
+msgstr "சிட்டை"
 
 msgctxt "PlotEditingAxis|"
 msgid "Tick #"
-msgstr ""
+msgstr "டிக் #"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick left"
-msgstr ""
+msgstr "இடதுபுறத்தில் டிக் செருகவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Insert tick right"
-msgstr ""
+msgstr "வலதுபுறத்தில் டிக் செருகவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Delete tick"
-msgstr ""
+msgstr "டிக் நீக்கவும்"
 
 msgctxt "MainWindow|"
 msgid "Clean user installed modules and pkgs"
-msgstr ""
+msgstr "பயனர் நிறுவிய தொகுதிகள் மற்றும் தொகுப்புகளை தூய்மை செய்யவும்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2868,58 +3110,63 @@ msgid ""
 "\n"
 "Make sure to restart JASP afterwards!"
 msgstr ""
+"உங்கள் தொகுதிகள் மற்றும் தொகுப்புகளை தூய்மை செய்வது, JASP உடன் தொகுக்கப்பட்டவற்றை மட்டுமே "
+"பயன்படுத்துவதை உறுதி செய்யும். \n"
+"\n"
+"பின்னர் JASP ஐ மறுதொடக்கம் செய்வதை உறுதிசெய்யவும்!"
 
 msgctxt "MainWindow|"
 msgid "Clean"
-msgstr ""
+msgstr "தூய்மையான"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
 msgstr ""
+"<i>Linux இல் இயல்புநிலை விரிதாள் திருத்தி எப்போதும் பயன்படுத்தப்படும்.</i>"
 
 msgctxt "PlotEditor|"
 msgid "OK"
-msgstr ""
+msgstr "சரி"
 
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "ரத்துசெய்"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
-msgstr ""
+msgstr "இயல்புநிலைகளை மீட்டமைக்கவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
-msgstr ""
+msgstr "தலைப்பைக் காட்டு"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show axis"
-msgstr ""
+msgstr "அச்சைக் காட்டு"
 
 msgctxt "PlotEditingAxis|"
 msgid "Ticks:"
-msgstr ""
+msgstr "உண்ணிகள்:"
 
 msgctxt "PlotEditingAxis|"
 msgid "Position"
-msgstr ""
+msgstr "பதவி"
 
 msgctxt "PlotEditingAxis|"
 msgid "Advanced"
-msgstr ""
+msgstr "மேம்பட்ட"
 
 msgctxt "PlotEditingAxis|"
 msgid "Parse title as R expression"
-msgstr ""
+msgstr "தலைப்பை R வெளிப்பாடாக அலசவும்"
 
 msgctxt "PlotEditingAxis|"
 msgid "Limits:"
-msgstr ""
+msgstr "வரம்புகள்:"
 
 msgctxt "PlotEditor|"
 msgid "Save image as"
-msgstr ""
+msgstr "படத்தை இவ்வாறு சேமிக்கவும்"
 
 #, qt-format
 msgctxt "EngineRepresentation|"
@@ -2932,30 +3179,38 @@ msgid ""
 "If the problem persists, please report the message above at: https://jasp-"
 "stats.org/bug-reports"
 msgstr ""
+"துரதிருச்டவசமாக ப்ளாட்டின் அளவை மாற்ற முடியவில்லை. \n"
+"\n"
+"பிழை செய்தி: \n"
+"% 1 \n"
+"\n"
+"சிக்கல் தொடர்ந்தால், மேலே உள்ள செய்தியைப் புகாரளிக்கவும்: https://jasp-stats.org/bug-"
+"reports"
 
 msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
-msgstr ""
+msgstr "சதித்திட்டத்தை திருத்துவதில் பிழை"
 
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
-msgstr ""
+msgstr "ஆவணத்தைத் திறக்கவும்"
 
 msgctxt "AboutWindow|"
 msgid "Open Source Components"
-msgstr ""
+msgstr "திறந்த மூல கூறுகள்"
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
 msgstr ""
+"உங்கள் மொழியில் JASP ஐ மொழிபெயர்க்க அல்லது மேம்படுத்த எங்களுக்கு உதவுங்கள்"
 
 msgctxt "ErrorMessage|"
 msgid "Don't show again"
-msgstr ""
+msgstr "மீண்டும் காட்டாதே"
 
 msgctxt "Database|"
 msgid "Database"
-msgstr ""
+msgstr "தரவுத்தளம்"
 
 msgctxt "Database|"
 msgid ""
@@ -2975,100 +3230,121 @@ msgid ""
 "For a local or toy database this is probably overkill, but use your own "
 "judgement."
 msgstr ""
+"<i>Warning!</i>\n"
+"<br><br>\n"
+"JASP stores the password பெறுநர் your database in jasp-files, while not "
+"directly readable it is easy பெறுநர் extract.\n"
+"If you <b>share this file</b> that means the recipients and whoever they "
+"பங்கு the கோப்பு with could extract the password with some effort.\n"
+"<br><br>\n"
+"In case you அரே trying பெறுநர் இணை பெறுநர் a production or இரட்டை just network-"
+"accessible database:\n"
+"<br>\n"
+"We <b>strongly urge</b> you பெறுநர் make a special பயனர் க்கு JASP in your "
+"database with அச் <i>few permissions</i> அச் needed.\n"
+"<br><br>\n"
+"For a local or toy database this is probably overkill, but use your own "
+"judgement."
 
 msgctxt "Database|"
 msgid "Hostname"
-msgstr ""
+msgstr "புரவலன்பெயர்"
 
 msgctxt "Database|"
 msgid "Port"
-msgstr ""
+msgstr "துறைமுகம்"
 
 msgctxt "Database|"
 msgid "Name"
-msgstr ""
+msgstr "பெயர்"
 
 msgctxt "Database|"
 msgid "Browse"
-msgstr ""
+msgstr "உலாவவும்"
 
 msgctxt "Database|"
 msgid "Username"
-msgstr ""
+msgstr "பயனர் பெயர்"
 
 msgctxt "Database|"
 msgid "Password"
-msgstr ""
+msgstr "கடவுச்சொல்"
 
 msgctxt "Database|"
 msgid "Remember me"
-msgstr ""
+msgstr "என்னை நினைவில் வையுங்கள்"
 
 msgctxt "Database|"
 msgid "Connect to database"
-msgstr ""
+msgstr "தரவுத்தளத்துடன் இணைக்கவும்"
 
 msgctxt "Database|"
 msgid "Query"
-msgstr ""
+msgstr "வினவு"
 
 msgctxt "Database|"
 msgid "Execute"
-msgstr ""
+msgstr "செயல்படுத்து"
 
 msgctxt "Database|"
 msgid "Preview data"
-msgstr ""
+msgstr "தரவு முன்னோட்டம்"
 
 msgctxt "Database|"
 msgid "Load into JASP"
-msgstr ""
+msgstr "JASP இல் ஏற்றவும்"
 
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr ""
+msgstr "நிமிடங்களில் ஒத்திசைவு இடைவெளி: "
 
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
 msgstr ""
+"0 என்றால் தானியங்கி ஒத்திசைவு இல்லை, ஆனால் Ctrl/Cmd+Y ஐ அழுத்துவதன் மூலம் நீங்கள் கைமுறையாக "
+"ஒத்திசைக்கலாம்"
 
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
 msgstr ""
+"இது தரவுத்தளத்துடன் இணைக்கப்பட்டுள்ளதாக JASP நினைக்கிறது ஆனால் QSqlDatabase "
+"திறக்கப்படவில்லை..."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
-msgstr ""
+msgstr "வினவல் தோல்வியடைந்தது: '% 1'"
 
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
 msgstr ""
+"வினவல் ஒரு தேர்ந்தெடு போன்ற அறிக்கை அல்ல, மேலும் எதுவும் வழங்கப்படவில்லை."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
 msgstr ""
+"செயலில் முடிவு எதுவும் கிடைக்கவில்லை, ஒருவேளை உங்கள் வினவலில் ஏதேனும் தவறு உள்ளதா?"
 
 msgctxt "DataSetPackage|"
 msgid "Database Password"
-msgstr ""
+msgstr "தரவுத்தள கடவுச்சொல்"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
-msgstr ""
+msgstr "தரவுத்தள இணைப்பிற்கு '% 1' பயனருக்கான கடவுச்சொல் தேவை"
 
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password"
-msgstr ""
+msgstr "தரவுத்தள இணைப்பிற்கு கடவுச்சொல் தேவை"
 
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
-msgstr ""
+msgstr "இணைப்பு தோல்வியடைந்தது"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -3076,60 +3352,63 @@ msgid ""
 "Could not connect to database because of '%1', want to try a different "
 "password?"
 msgstr ""
+"'% 1' காரணமாக தரவுத்தளத்துடன் இணைக்க முடியவில்லை, வேறு கடவுச்சொல்லை முயற்சிக்க "
+"விரும்புகிறீர்களா?"
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr ""
+msgstr "தரவுத்தளத்துடன் இணைக்க முடியவில்லை, எனவே ஒத்திசைவு முடக்கப்படும்."
 
 #, qt-format
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
 msgstr ""
+"% 3 பயனர் % 2 இல் % 1 தரவுத்தளத்துடன் இணைக்க முடியவில்லை, கடைசி பிழை: '%4'"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
-msgstr ""
+msgstr "தரவுத்தள இயக்கியைத் தேர்வுசெய்க..."
 
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
-msgstr ""
+msgstr "IBM DB2"
 
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
-msgstr ""
+msgstr "MySQL டிரைவர்"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
-msgstr ""
+msgstr "ஆரக்கிள் அழைப்பு இடைமுக இயக்கி"
 
 msgctxt "DatabaseFileMenu|"
 msgid "ODBC Driver (includes Microsoft SQL Server)"
-msgstr ""
+msgstr "ODBC டிரைவர் (மைக்ரோசாஃப்ட் கவிமொ சர்வர் அடங்கும்)"
 
 msgctxt "DatabaseFileMenu|"
 msgid "PostgreSQL Driver"
-msgstr ""
+msgstr "PostgreSQL டிரைவர்"
 
 msgctxt "DatabaseFileMenu|"
 msgid "SQLite version 3 or above"
-msgstr ""
+msgstr "SQLite பதிப்பு 3 அல்லது அதற்கு மேல்"
 
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
-msgstr ""
+msgstr "தரவுத்தளத்துடன் இணைக்கப்படவில்லை!"
 
 msgctxt "ResourceButtons|"
 msgid "Database"
-msgstr ""
+msgstr "தரவுத்தளம்"
 
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
-msgstr ""
+msgstr "அடுக்கு குறியீட்டைப் பயன்படுத்தவும்"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
-msgstr ""
+msgstr "இது எண்ணியல் ஒப்பீடுகள் மற்றும் கணித செயல்பாடுகளில் பயன்படுத்தப்படலாம்."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3137,6 +3416,8 @@ msgid ""
 "comparisons. Not in mathematical operations as subtraction etc, to do so: "
 "try converting to scalar first."
 msgstr ""
+"ஒப்பீடுகளை விட அதிகமாகவும் குறைவாகவும் (இன்)சமத்தில் மட்டுமே பயன்படுத்த முடியும். கழித்தல் "
+"போன்ற கணித செயல்பாடுகளில் இல்லை, அவ்வாறு செய்ய: முதலில் ச்கேலருக்கு மாற்ற முயற்சிக்கவும்."
 
 msgctxt "ColumnsModel|"
 msgid ""
@@ -3144,18 +3425,25 @@ msgid ""
 "than comparisons or mathematical operations, to do so: try converting to "
 "ordinal or scalar first."
 msgstr ""
+"சமமான ஒப்பீடுகளில் மட்டுமே பயன்படுத்த முடியும். ஒப்பீடுகள் அல்லது கணித செயல்பாடுகளை விட "
+"பெரிய/குறைவானவை அல்ல, அவ்வாறு செய்ய: முதலில் ஆர்டினல் அல்லது ச்கேலருக்கு மாற்ற "
+"முயற்சிக்கவும்."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
 "odds transform) converts numbers between 0 and 1 to the real line."
 msgstr ""
+"லாசிட் டிரான்ச்ஃபார்ம் (அதாவது, நிலையான லாசிட் செயல்பாட்டின் தலைகீழ், அல்லது பதிவு-ஒற்றை மாற்றம்) 0 "
+"மற்றும் 1 இடையே உள்ள எண்களை உண்மையான கோட்டிற்கு மாற்றுகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse logit transform (i.e., the standard logit function) converts numbers "
 "on the real line to numbers between 0 and 1."
 msgstr ""
+"தலைகீழ் லாசிட் டிரான்ச்ஃபார்ம் (அதாவது, நிலையான லாசிட் செயல்பாடு) உண்மையான வரியில் உள்ள எண்களை 0 "
+"மற்றும் 1க்கு இடையே உள்ள எண்களாக மாற்றுகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -3163,64 +3451,68 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
+"இரு அளவுரு பாக்ச்-காக்ச் உருமாற்றம் (-சிப்டை விட அதிகமான மதிப்புகளை மாற்றுகிறது) மாறுபாட்டை "
+"உறுதிப்படுத்துகிறது மற்றும் தரவை மிகவும் இயல்பான வழங்கல் போன்றதாக மாற்ற முயற்சிக்கிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid "Inverse two-parameter Box-Cox transform."
-msgstr ""
+msgstr "தலைகீழ் இரண்டு அளவுரு பெட்டி-காக்ச் மாற்றம்."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) to stabilize variance and "
 "attempt to make the data more normal distribution-like."
 msgstr ""
+"Yeo-Johnson மாறுபாட்டை நிலைநிறுத்துவதற்கும் (எந்த உண்மையான மதிப்புகளையும் மாற்றும்) "
+"மாற்றுவது மற்றும் தரவை மிகவும் இயல்பான வழங்கல் போன்றதாக மாற்ற முயற்சிக்கிறது."
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr ""
+msgstr "விடுபட்ட மதிப்புகளை இவ்வாறு காட்டு: "
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr ""
+msgstr "முடக்கப்பட்டிருந்தால், உரையமைப்பை நேட்டிவ்க்கு மாற்றும்."
 
 msgctxt "Database|"
 msgid "Select database"
-msgstr ""
+msgstr "தரவுத்தளத்தைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "Database|"
 msgid "DB driver"
-msgstr ""
+msgstr "டிபி டிரைவர்"
 
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
-msgstr ""
+msgstr "என்சின்கள் கண்ணோட்டம்"
 
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
-msgstr ""
+msgstr "ஒரு இயந்திரத்தைக் கொல்ல வலது மற்றும் நடு சுட்டி பொத்தான்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
-msgstr ""
+msgstr "இயந்திரங்களின் அதிகபட்ச எண்ணிக்கை: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
-msgstr ""
+msgstr "இயந்திரங்களைக் காட்டு"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Select an exisiting folder"
-msgstr ""
+msgstr "ஏற்கனவே உள்ள கோப்புறையைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "R தொடரியல் காட்டு"
 
 msgctxt "MainPage|"
 msgid "Hide input options"
-msgstr ""
+msgstr "உள்ளீட்டு விருப்பங்களை மறை"
 
 msgctxt "MainPage|"
 msgid "Show input options"
-msgstr ""
+msgstr "உள்ளீட்டு விருப்பங்களைக் காட்டு"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3229,6 +3521,10 @@ msgid ""
 "and filtered as 'filteredData'.\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"உங்கள் R குறியீட்டை இங்கே உள்ளிடவும். \n"
+"தரவு வடிகட்டப்படாமல் 'தரவு' ஆகக் கிடைக்கிறது \n"
+"மற்றும் 'filteredData' என வடிகட்டப்பட்டது. \n"
+"நீங்கள் தொடரியல்-முறை JASP பகுப்பாய்வுகளையும் இங்கே ஒட்டலாம்."
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3236,59 +3532,65 @@ msgid ""
 "\n"
 "You can also paste syntax-mode JASP analyses here."
 msgstr ""
+"உங்கள் R குறியீட்டை இங்கே உள்ளிடவும். \n"
+"\n"
+"நீங்கள் தொடரியல்-முறை JASP பகுப்பாய்வுகளையும் இங்கே ஒட்டலாம்."
 
 msgctxt "RCommanderWindow|"
 msgid "Add analysis"
-msgstr ""
+msgstr "பகுப்பாய்வு சேர்க்கவும்"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
-msgstr ""
+msgstr "மேம்படுத்தல்களை ஏற்றுவது பின்வரும் பிழை(கள்):% 1"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Could not find term %1 in Formula"
-msgstr ""
+msgstr "ஃபார்முலாவில் கால% 1ஐக் கண்டுபிடிக்க முடியவில்லை"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula not found"
-msgstr ""
+msgstr "ஃபார்முலாவில் மூல% 1 கிடைக்கவில்லை"
 
 #, qt-format
 msgctxt "FormulaBase|"
 msgid "Source %1 in Formula is not a Variables List"
-msgstr ""
+msgstr "ஃபார்முலாவில் உள்ள % 1 என்பது மாறிகள் பட்டியல் அல்ல"
 
 #, qt-format
 msgctxt "FormulaSource|"
 msgid "Cannot find item %1 given in Formula description"
 msgstr ""
+"ஃபார்முலா விளக்கத்தில் கொடுக்கப்பட்ட உருப்படி % 1 ஐக் கண்டுபிடிக்க முடியவில்லை"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula randomEffects"
-msgstr ""
+msgstr "ஃபார்முலா randomEffects இல் எந்த ஆதாரமும் இல்லை"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
 msgstr ""
+"பார்முலாவில் உள்ள randomEffects ஒரு ComponentsList உருப்படியுடன் மட்டுமே "
+"பயன்படுத்தப்படும்"
 
 msgctxt "FormulaSource|"
 msgid "No source found in Formula"
-msgstr ""
+msgstr "ஃபார்முலாவில் எந்த ஆதாரமும் இல்லை"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
-msgstr ""
+msgstr "அறிக்கை முறை"
 
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
-msgstr ""
+msgstr "JASP அறிக்கையிடல் பயன்முறையில் இயங்க வேண்டுமா இல்லையா."
 
 msgctxt "Reporter|"
 msgid "No datafile"
-msgstr ""
+msgstr "தரவுக் கோப்பு இல்லை"
 
 msgctxt "Reporter|"
 msgid ""
@@ -3298,998 +3600,1018 @@ msgid ""
 "\n"
 "Would you like to continue anyway?"
 msgstr ""
+"JASP அறிக்கையிடல் பயன்முறையில் தொடங்கப்பட்டது, ஆனால் jasp கோப்பு தரவுக் கோப்புடன் "
+"இணைக்கப்படவில்லை. \n"
+"அதாவது புதுப்பிப்புகள் எதுவும் இருக்க முடியாது... \n"
+"\n"
+"எப்படியும் தொடர விரும்புகிறீர்களா?"
 
 msgctxt "OSF|"
 msgid "Unknown error"
-msgstr ""
+msgstr "அறியப்படாத பிழை"
 
 msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
-msgstr ""
+msgstr "ஃபார்முலா விளக்கத்தில் பெயர் இல்லை"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
-msgstr ""
+msgstr "'% 1' லேபிளுடன் கூடிய கட்டுப்பாட்டுக்கு பெயர் இல்லை"
 
 msgctxt "JASPControl|"
 msgid "A control has no name"
-msgstr ""
+msgstr "ஒரு கட்டுப்பாட்டுக்கு பெயர் இல்லை"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
-msgstr ""
+msgstr "விருப்பப் பெயர் '% 1' ஒரு ஒதுக்கப்பட்ட சொல்"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
-msgstr ""
+msgstr "2 கட்டுப்பாடுகள் ஒரே பெயரைக் கொண்டுள்ளன:% 1"
 
 #, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "ஒரு கட்டுப்பாடு மற்றும் தேற்றம் '% 1' என்ற ஒரே பெயரைக் கொண்டுள்ளன"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
-msgstr ""
+msgstr "'% 1' என்ற பெயருடன் கூடிய தேற்றம் இருமுறை வரையறுக்கப்படுகிறது"
 
 #, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
-msgstr ""
+msgstr "ஒரு கட்டுப்பாடு மற்றும் தேற்றம் '% 1' என்ற ஒரே பெயரைக் கொண்டுள்ளன"
 
 msgctxt "RCommander|"
 msgid "Analysis not found"
-msgstr ""
+msgstr "பகுப்பாய்வு கிடைக்கவில்லை"
 
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
-msgstr ""
+msgstr "பகுப்பாய்வு செயல்பாடு அல்ல: <தொகுதி பெயர்>::<பகுப்பாய்வு பெயர்>(...)"
 
 msgctxt "RCommander|"
 msgid "R is (re)starting"
-msgstr ""
+msgstr "R என்பது (மீண்டும்) தொடங்குகிறது"
 
 #, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
-msgstr ""
+msgstr "R ஒரு தொகுதி% 1ஐ நிறுவுகிறது அல்லது ஏற்றுகிறது"
 
 msgctxt "RCommander|"
 msgid "R stopped"
-msgstr ""
+msgstr "ஆர் நிறுத்தினார்"
 
 msgctxt "RCommander|"
 msgid "R awaits commands"
-msgstr ""
+msgstr "ஆர் கட்டளைகளுக்காக காத்திருக்கிறது"
 
 msgctxt "JASPControl|"
 msgid "Variables List"
-msgstr ""
+msgstr "மாறிகள் பட்டியல்"
 
 msgctxt "JASPControl|"
 msgid "DropDown"
-msgstr ""
+msgstr "டிராப் பேரூர்"
 
 msgctxt "JASPControl|"
 msgid "Tab View"
-msgstr ""
+msgstr "தாவல் காட்சி"
 
 msgctxt "JASPControl|"
 msgid "Variables Form"
-msgstr ""
+msgstr "மாறிகள் படிவம்"
 
 msgctxt "Form|"
 msgid "Show all options"
-msgstr ""
+msgstr "அனைத்து விருப்பங்களையும் காட்டு"
 
 msgctxt "RibbonModel|"
 msgid "R console"
-msgstr ""
+msgstr "ஆர் கன்சோல்"
 
 msgctxt "RCommander|"
 msgid " and "
-msgstr ""
+msgstr " மற்றும் "
 
 msgctxt "RCommander|"
 msgid "has unselected module"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்படாத தொகுதி உள்ளது"
 
 msgctxt "RCommander|"
 msgid "has selected module "
-msgstr ""
+msgstr "தொகுதியைத் தேர்ந்தெடுத்துள்ளது "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "ஒத்திசைக்க அல்லது பயன்படுத்த கீழே உள்ள கோப்பை சொடுக்கு செய்யவும் "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "This variable has been removed, because it is not allowed: %1"
-msgstr ""
+msgstr "இந்த மாறி நீக்கப்பட்டது, ஏனெனில் இது அனுமதிக்கப்படவில்லை:% 1"
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
 msgid "These variables have been removed, because they are not allowed: %1"
-msgstr ""
+msgstr "இந்த மாறிகள் அகற்றப்பட்டன, ஏனெனில் அவை அனுமதிக்கப்படவில்லை:% 1"
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
 msgstr ""
+"BOM எதுவும் குறிப்பிடப்படாதபோது, CSV என்பது தேர்ந்தெடுக்கப்பட்ட குறியீட்டுப்பக்கம் என்று "
+"வைத்துக்கொள்வோம்."
 
 msgctxt "PrefsData|"
 msgid "Choose codepage here"
-msgstr ""
+msgstr "குறியீட்டு பக்கத்தை இங்கே தேர்வு செய்யவும்"
 
 #, qt-format
 msgctxt "Analysis|"
 msgid "Copy of %1"
-msgstr ""
+msgstr "% 1 இன் நகல்"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "R தொடரியல் மறை"
 
 msgctxt "Form|"
 msgid "Generate Wrapper"
-msgstr ""
+msgstr "ரேப்பரை உருவாக்கவும்"
 
 msgctxt "Computer|"
 msgid "Save"
-msgstr ""
+msgstr "சேமி"
 
 msgctxt "Computer|"
 msgid "JASP Files"
-msgstr ""
+msgstr "JASP கோப்புகள்"
 
 msgctxt "Computer|"
 msgid "Export Result as HTML or PDF"
-msgstr ""
+msgstr "முடிவை உஉகுமொ அல்லது PDF ஆக ஏற்றுமதி செய்யவும்"
 
 msgctxt "Computer|"
 msgid "HTML Files"
-msgstr ""
+msgstr "உஉகுமொ கோப்புகள்"
 
 msgctxt "Computer|"
 msgid "Portable Document Format"
-msgstr ""
+msgstr "எடுத்துச்செல்லக்கூடிய ஆவண வடிவம்"
 
 msgctxt "Computer|"
 msgid "Export Data as CSV"
-msgstr ""
+msgstr "தரவை காபிம ஆக ஏற்றுமதி செய்யவும்"
 
 msgctxt "Computer|"
 msgid "CSV Files"
-msgstr ""
+msgstr "சிஎச்வி கோப்புகள்"
 
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr ""
+msgstr "தரவு ஒத்திசைவு"
 
 msgctxt "Computer|"
 msgid "Data Files"
-msgstr ""
+msgstr "தரவு கோப்புகள்"
 
 msgctxt "JASPListControl|"
 msgid "<no choice>"
-msgstr ""
+msgstr "<தேர்வு இல்லை>"
 
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr ""
+msgstr "புதிய மதிப்பு"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
-msgstr ""
+msgstr "வரிசை% 1"
 
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr ""
+msgstr "இதர விருப்பங்கள்"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
-msgstr ""
+msgstr "R தொடரியல் காட்டு"
 
 msgctxt "PrefsResults|"
 msgid "Add R syntax for each analysis"
-msgstr ""
+msgstr "ஒவ்வொரு பகுப்பாய்விற்கும் R தொடரியல் சேர்க்கவும்"
 
 msgctxt "ResultMenuModel|"
 msgid "Show R Syntax"
-msgstr ""
+msgstr "ஆர் தொடரியல் காட்டு"
 
 msgctxt "ResultMenuModel|"
 msgid "Hide R Syntax"
-msgstr ""
+msgstr "R தொடரியல் மறை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
 msgstr ""
+"உங்கள் மாற்றங்களை கணக்கிடப்பட்ட நெடுவரிசையில் சேமிக்க விரும்புகிறீர்களா?"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "உங்கள் மாற்றங்களைச் சேமிக்கவில்லை என்றால், அவை இழக்கப்படும்."
 
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
-msgstr ""
+msgstr "உங்கள் மாற்றங்களை வடிகட்டியில் சேமிக்க விரும்புகிறீர்களா?"
 
 msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "உங்கள் மாற்றங்களைச் சேமிக்கவில்லை என்றால், அவை இழக்கப்படும்."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
-msgstr ""
+msgstr "உங்கள் மாற்றங்களை %1 கோப்பில் சேமிக்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "உங்கள் மாற்றங்களைச் சேமிக்கவில்லை என்றால், அவை இழக்கப்படும்."
 
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
-msgstr ""
+msgstr "கியுடி இன் உரை வழங்குதல் பயன்படுத்தவும்"
 
 msgctxt "PrefsUI|"
 msgid "Accessibility options"
-msgstr ""
+msgstr "அணுகல் விருப்பங்கள்"
 
 msgctxt "PrefsUI|"
 msgid "ALT-Navigation mode"
-msgstr ""
+msgstr "ALT-வழிசெலுத்தல் பயன்முறை"
 
 msgctxt "PrefsUI|"
 msgid "Whether ALT-Navigation mode is active or not."
-msgstr ""
+msgstr "ALT-வழிசெலுத்தல் பயன்முறை செயலில் உள்ளதா இல்லையா."
 
 msgctxt "MainPage|"
 msgid "Bold"
-msgstr ""
+msgstr "தடிமான"
 
 msgctxt "MainPage|"
 msgid "Italic"
-msgstr ""
+msgstr "சாய்வு"
 
 msgctxt "MainPage|"
 msgid "Underline"
-msgstr ""
+msgstr "அடிக்கோடிட்டு"
 
 msgctxt "MainPage|"
 msgid "Link"
-msgstr ""
+msgstr "இணைப்பு"
 
 msgctxt "MainPage|"
 msgid "Formula"
-msgstr ""
+msgstr "தேற்றம்"
 
 msgctxt "MainPage|"
 msgid "Code Block"
-msgstr ""
+msgstr "குறியீடு தொகுதி"
 
 msgctxt "MainPage|"
 msgid "Header"
-msgstr ""
+msgstr "தலைப்பி"
 
 msgctxt "MainPage|"
 msgid "Ordered List"
-msgstr ""
+msgstr "வரிசைப்படுத்தப்பட்ட பட்டியல்"
 
 msgctxt "MainPage|"
 msgid "Unordered List"
-msgstr ""
+msgstr "வரிசைப்படுத்தப்படாத பட்டியல்"
 
 msgctxt "MainPage|"
 msgid "Background Color"
-msgstr ""
+msgstr "பின்னணி நிறம்"
 
 msgctxt "MainPage|"
 msgid "Subscript"
-msgstr ""
+msgstr "சந்தா"
 
 msgctxt "MainPage|"
 msgid "Superscript"
-msgstr ""
+msgstr "சூப்பர்ச்கிரிப்ட்"
 
 msgctxt "MainPage|"
 msgid "Blockquote"
-msgstr ""
+msgstr "தொகுதிமேற்கோள்"
 
 msgctxt "MainPage|"
 msgid "Add Indent"
-msgstr ""
+msgstr "உள்தள்ளலைச் சேர்க்கவும்"
 
 msgctxt "MainPage|"
 msgid "Remove Indent"
-msgstr ""
+msgstr "உள்தள்ளலை அகற்று"
 
 msgctxt "MainPage|"
 msgid "Font Size"
-msgstr ""
+msgstr "எழுத்துரு அளவு"
 
 msgctxt "MainPage|"
 msgid "Clear Formatting"
-msgstr ""
+msgstr "வடிவமைப்பை அழிக்கவும்"
 
 msgctxt "MainPage|"
 msgid "Click here to add text"
-msgstr ""
+msgstr "உரையைச் சேர்க்க இங்கே சொடுக்கு செய்யவும்"
 
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "இடைநிலைப்பலகைக்கு நகலெடுக்கப்பட்டது"
 
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr ""
+msgstr "மேற்கோள்கள் இடைநிலைப்பலகைக்கு நகலெடுக்கப்பட்டன"
 
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr ""
+msgstr "லாடெக்சு குறியீடு இடைநிலைப்பலகைக்கு நகலெடுக்கப்பட்டது"
 
 msgctxt "MainPage|"
 msgid "Introduction:"
-msgstr ""
+msgstr "அறிமுகம்:"
 
 msgctxt "MainPage|"
 msgid "Conclusion:"
-msgstr ""
+msgstr "முடிவு:"
 
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
-msgstr ""
+msgstr "தரவு திருத்துதல் பயன்முறைக்கு மாற்றவும்"
 
 msgctxt "DataTableView|"
 msgid "Cmd"
-msgstr ""
+msgstr "சிஎம்டி"
 
 msgctxt "DataTableView|"
 msgid "Ctrl"
-msgstr ""
+msgstr "கட்டுப்பாடு"
 
 msgctxt "DataTableView|"
 msgid "Select All"
-msgstr ""
+msgstr "அனைத்தையும் தெரிவுசெய்"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
-msgstr ""
+msgstr "%1+A"
 
 msgctxt "DataTableView|"
 msgid "Cut"
-msgstr ""
+msgstr "வெட்டு"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
-msgstr ""
+msgstr "%1+X"
 
 msgctxt "DataTableView|"
 msgid "Copy"
-msgstr ""
+msgstr "நகலெடு"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
-msgstr ""
+msgstr "%1+C"
 
 msgctxt "DataTableView|"
 msgid "Paste"
-msgstr ""
+msgstr "ஒட்டு"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
-msgstr ""
+msgstr "%1+V"
 
 msgctxt "DataTableView|"
 msgid "Clear cells"
-msgstr ""
+msgstr "தெளிவான செல்கள்"
 
 msgctxt "DataTableView|"
 msgid "Del"
-msgstr ""
+msgstr "இன்"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
-msgstr ""
+msgstr "செயல்தவிர்:% 1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
-msgstr ""
+msgstr "%1+Z"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
-msgstr ""
+msgstr "மீண்டும் செய்:% 1"
 
 #, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
-msgstr ""
+msgstr "%1+Shift+Z"
 
 msgctxt "DataTableView|"
 msgid "Select column"
-msgstr ""
+msgstr "நெடுவரிசையைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert column before"
-msgstr ""
+msgstr "முன் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert column after"
-msgstr ""
+msgstr "பின் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Delete column"
-msgstr ""
+msgstr "நெடுவரிசையை நீக்கு"
 
 msgctxt "DataTableView|"
 msgid "Select row"
-msgstr ""
+msgstr "வரிசையைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "DataTableView|"
 msgid "Delete row"
-msgstr ""
+msgstr "வரிசையை நீக்கு"
 
 msgctxt "FilterWindow|"
 msgid "Close filter window"
-msgstr ""
+msgstr "வடிகட்டி சாளரத்தை மூடு"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
-msgstr ""
+msgstr "நெடுவரிசையை மறுபெயரிடவும்"
 
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
-msgstr ""
+msgstr "மறுபெயரிடவும்"
 
 #, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr ""
+msgstr "நெடுவரிசை % 1 முதல் % 2 வரை மறுபெயரிடவும்"
 
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
-msgstr ""
+msgstr "நெடுவரிசையை மறுபெயரிடாமல் மூடு"
 
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
-msgstr ""
+msgstr "மாறி சாளரத்தை மூடு"
 
 msgctxt "ColumnModel|"
 msgid "Value"
-msgstr ""
+msgstr "மதிப்பு"
 
 msgctxt "ColumnModel|"
 msgid "Label"
-msgstr ""
+msgstr "சிட்டை"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
-msgstr ""
+msgstr "நெடுவரிசை% 1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr ""
+msgstr "வரிசை % 2 நெடுவரிசை '% 3' இல் மதிப்பை '% 1' ஆக அமைக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசை '% 1' ஐச் செருகவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசையைச் செருகு"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசையை அகற்று"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
-msgstr ""
+msgstr "வரிசை% 1ஐ அகற்று"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
 msgstr ""
+"'% 2' நெடுவரிசையின் '% 1' மதிப்புக்கான லேபிளை '% 3' முதல் '%4' வரை அமைக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "'%2' நெடுவரிசையில் '%1' லேபிளைக் கொண்ட வரிசைகளை வடிகட்டவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
-msgstr ""
+msgstr "'%2' நெடுவரிசையில் '%1' லேபிளைக் கொண்ட வரிசைகளுக்கான வடிப்பானை அகற்று"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
-msgstr ""
+msgstr "'% 2' நெடுவரிசையின் '% 1' லேபிளை மேலே நகர்த்து"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
-msgstr ""
+msgstr "'% 2' நெடுவரிசையின் '% 1' லேபிளை கீழே நகர்த்தவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசையின் லேபிள்களை மேலே நகர்த்தவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
-msgstr ""
+msgstr "நெடுவரிசை '% 1' லேபிள்களை கீழே நகர்த்தவும்"
 
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
-msgstr ""
+msgstr "இழுத்து விடவும் வடிகட்டியை மாற்றவும்"
 
 msgctxt "QObject|"
 msgid "Change R filter"
-msgstr ""
+msgstr "R வடிகட்டியை மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
-msgstr ""
+msgstr "'% 1' என்ற பெயருடன் கணக்கிடப்பட்ட நெடுவரிசையை உருவாக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
-msgstr ""
+msgstr "'% 1' என்ற பெயருடன் கணக்கிடப்பட்ட நெடுவரிசைக்கு குறியீட்டை அமைக்கவும்"
 
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
 "reload from the associated data or generate a new file?"
 msgstr ""
+"JASP இல் தொடர்புடைய தரவுக் கோப்பு உள்ளது, ஆனால் நீங்கள் அதைத் திருத்தியுள்ளீர்கள். தொடர்புடைய "
+"தரவிலிருந்து மீண்டும் ஏற்ற விரும்புகிறீர்களா அல்லது புதிய கோப்பை உருவாக்க விரும்புகிறீர்களா?"
 
 msgctxt "MainWindow|"
 msgid "Reload Data File"
-msgstr ""
+msgstr "தரவு கோப்பை மீண்டும் ஏற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
-msgstr ""
+msgstr "தொகுதியின் துவக்கத்திற்காக (இயந்திரத்தின்) காத்திருக்கிறது:% 1"
 
 msgctxt "RibbonModel|"
 msgid "Insert column before"
-msgstr ""
+msgstr "முன் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert column after"
-msgstr ""
+msgstr "பின் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Delete column"
-msgstr ""
+msgstr "நெடுவரிசையை நீக்கு"
 
 msgctxt "RibbonModel|"
 msgid "Delete row"
-msgstr ""
+msgstr "வரிசையை நீக்கு"
 
 msgctxt "RibbonModel|"
 msgid "Clear cells"
-msgstr ""
+msgstr "தெளிவான செல்கள்"
 
 msgctxt "RibbonModel|"
 msgid "Undo"
-msgstr ""
+msgstr "செயல்தவிர்"
 
 msgctxt "RibbonModel|"
 msgid "Redo"
-msgstr ""
+msgstr "மீண்டும்செய்"
 
 msgctxt "RibbonModel|"
 msgid "Analyses"
-msgstr ""
+msgstr "பகுப்பாய்வு செய்கிறது"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
-msgstr ""
+msgstr "பகுப்பாய்வு பயன்முறைக்கு JASP ஐ மாற்றவும்"
 
 msgctxt "RibbonModel|"
 msgid "Edit Data"
-msgstr ""
+msgstr "தரவைத் திருத்தவும்"
 
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
-msgstr ""
+msgstr "JASP தரவு திருத்துதல் பயன்முறைக்கு மாறவும்"
 
 msgctxt "RibbonModel|"
 msgid "New Data"
-msgstr ""
+msgstr "புதிய தரவு"
 
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr ""
+msgstr "தரவு இல்லாமல் பணியிடத்தைத் திறக்கவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert"
-msgstr ""
+msgstr "செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
-msgstr ""
+msgstr "வெற்று நெடுவரிசைகள் அல்லது வரிசைகளைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Remove"
-msgstr ""
+msgstr "அகற்று"
 
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
-msgstr ""
+msgstr "நெடுவரிசைகள் அல்லது வரிசைகளை அகற்றவும்"
 
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr ""
+msgstr "ஒத்திசைவு"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr ""
+msgstr "வெளிப்புற தரவு ஒத்திசைவை இயக்கவும்"
 
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr ""
+msgstr "வெளிப்புற தரவு ஒத்திசைவை முடக்கு"
 
 msgctxt "DataTableView|"
 msgid "Insert row above"
-msgstr ""
+msgstr "மேலே வரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert row below"
-msgstr ""
+msgstr "கீழே வரிசையைச் செருகவும்"
 
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr ""
+msgstr "வண்ணத் தட்டு"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind"
-msgstr ""
+msgstr "நிறக்குருடு"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
-msgstr ""
+msgstr "வண்ணக்குருடு #2"
 
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
-msgstr ""
+msgstr "வண்ணக்குருடு #3"
 
 msgctxt "ColorPalette|"
 msgid "Viridis"
-msgstr ""
+msgstr "விரிடிச்"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr ""
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
-msgstr ""
+msgstr "சாம்பல்"
 
 msgctxt "ColorPalette|"
 msgid "Blue"
-msgstr ""
+msgstr "நீலம்"
 
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
-msgstr ""
+msgstr "விளையாட்டு அணிகள்: NBA"
 
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
-msgstr ""
+msgstr "கிராண்ட் புடாபெச்ட்"
 
 msgctxt "RibbonModel|"
 msgid "Insert row above"
-msgstr ""
+msgstr "மேலே வரிசையைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert row below"
-msgstr ""
+msgstr "கீழே வரிசையைச் செருகவும்"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
-msgstr ""
+msgstr "மாற்றங்களை செயல்தவிர், %1+Z"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
-msgstr ""
+msgstr "மாற்றங்களை மீண்டும் செய், %1+shift+Z அல்லது %1+Y"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
-msgstr ""
+msgstr "செயல்தவிர் %2 (%1+Z)"
 
 #, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
-msgstr ""
+msgstr "%2 ஐ மீண்டும் வெற்றி (%1+shift+Z அல்லது %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr ""
+msgstr "இயல்புநிலை விரிதாள் எடிட்டருடன் டேட்டாஃபைலைத் திறக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
-msgstr ""
+msgstr "'%2' இலிருந்து %1 நெடுவரிசைகளை அகற்று"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
-msgstr ""
+msgstr "% 1 முதல் % 2 வரையிலான வரிசைகளை அகற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
-msgstr ""
+msgstr "நெடுவரிசைகளை '% 1' முதல் '%2' வரை நகலெடுக்கவும்"
 
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
-msgstr ""
+msgstr "JASP ஐ தொடர்பு கொள்ளவும்"
 
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
-msgstr ""
+msgstr "JASP பின்வரும் நிறுவனங்களால் ஆதரிக்கப்படுகிறது:"
 
 msgctxt "Supporters|"
 msgid "Suggest your institution join the JASP Community"
-msgstr ""
+msgstr "உங்கள் நிறுவனத்தை JASP சமூகத்தில் சேர பரிந்துரைக்கவும்"
 
 msgctxt "WavyWindow|"
 msgid "About JASP"
-msgstr ""
+msgstr "JASP பற்றி"
 
 msgctxt "WavyWindow|"
 msgid "Close"
-msgstr ""
+msgstr "மூடு"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசையை '% 2' நெடுவரிசை எண்ணாக நகலெடுக்கவும்"
 
 msgctxt "ActionButtons|"
 msgid "Contact"
-msgstr ""
+msgstr "தொடர்பு"
 
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
 "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
+"ஒரு குறிப்பிட்ட நோக்கத்திற்காக வடிவமைப்பு, வணிகம் மற்றும் உடற்தகுதி ஆகியவற்றின் பொறுப்பு "
+"உட்பட, எந்த விதமான உத்தரவாதமும் இல்லாமல் இந்தத் திட்டம் வழங்கப்படுகிறது."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
-msgstr ""
+msgstr "மற்றும்% 1"
 
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr ""
+msgstr "நிலையான மதிப்புகளுடன் மீட்டமைக்கவும்"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr ""
+msgstr "நிலையான JASP விடுபட்ட மதிப்புகளுடன் விடுபட்ட மதிப்புகளை மீட்டமைக்கவும்"
 
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr ""
+msgstr "விடுபட்ட மதிப்பைச் சேர்க்கவும்"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr ""
+msgstr "இந்த மதிப்புகளுடன் தற்போதைய பணியிடத்தை அமைக்கவும்"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "தற்போதைய பணியிடத்தில் விடுபட்ட மதிப்புகளை இந்த மதிப்புகளுடன் அமைக்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr ""
+"இங்கே லேபிள்களைத் திருத்தவும் அல்லது எந்த மதிப்புகளை வடிகட்ட வேண்டும் என்பதைத் "
+"தேர்ந்தெடுக்கவும்."
 
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
-msgstr ""
+msgstr "வடிப்பி"
 
 msgctxt "LabelEditorWindow|"
 msgid "Value"
-msgstr ""
+msgstr "மதிப்பு"
 
 msgctxt "LabelEditorWindow|"
 msgid "Label"
-msgstr ""
+msgstr "சிட்டை"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட லேபிள்களை மேலே நகர்த்தவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட லேபிள்களை கீழே நகர்த்தவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
-msgstr ""
+msgstr "அனைத்து லேபிள்களின் தலைகீழ் வரிசை"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr ""
+"இந்த நெடுவரிசைக்கான அனைத்து வடிகட்டி சரிபார்ப்பு அடையாளங்களையும் மீட்டமைக்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr ""
+"அனைத்து நெடுவரிசைகளுக்கும் அனைத்து வடிகட்டி சரிபார்ப்பு அடையாளங்களையும் மீட்டமைக்கவும்"
 
 msgctxt "MainPage|"
 msgid "Image"
-msgstr ""
+msgstr "படம்"
 
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr ""
+msgstr "பணியிட அமைப்புகள்"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
-msgstr ""
+msgstr "பெயர்: % 1"
 
 msgctxt "ModulesMenu|"
 msgid "Description: "
-msgstr ""
+msgstr "விளக்கம்: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
 msgstr ""
+"தரவு விருப்பத்தேர்வுகளில் அமைக்கப்பட்ட மதிப்புகளுடன் விடுபட்ட மதிப்புகளை மீட்டமைக்கவும்"
 
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr ""
+msgstr "பணியிட அமைப்புகளைக் காட்டு"
 
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr ""
+msgstr "தனிப்பயன் மதிப்புகளைப் பயன்படுத்தவும்"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
+"உங்கள் பணியிடத்தில் அமைக்கப்பட்ட மதிப்புகளுடன் விடுபட்ட மதிப்புகளை மீட்டமைக்கவும்"
 
 msgctxt "QObject|"
 msgid "Not computed"
-msgstr ""
+msgstr "கணக்கிடப்படவில்லை"
 
 msgctxt "QObject|"
 msgid "Computed with R code"
-msgstr ""
+msgstr "R குறியீட்டைக் கொண்டு கணக்கிடப்பட்டது"
 
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
-msgstr ""
+msgstr "இழுத்தல் மற்றும் கைவிடுதல் மூலம் கணக்கிடப்பட்டது"
 
 msgctxt "QObject|"
 msgid "Column generated by analysis"
-msgstr ""
+msgstr "பகுப்பாய்வு மூலம் உருவாக்கப்பட்ட நெடுவரிசை"
 
 msgctxt "QObject|"
 msgid "Column added by analysis"
-msgstr ""
+msgstr "பகுப்பாய்வு மூலம் நெடுவரிசை சேர்க்கப்பட்டது"
 
 msgctxt "QObject|"
 msgid "Scale"
-msgstr ""
+msgstr "அளவுகோல்"
 
 msgctxt "QObject|"
 msgid "Ordinal"
-msgstr ""
+msgstr "ஆர்டினல்"
 
 msgctxt "QObject|"
 msgid "Nominal"
-msgstr ""
+msgstr "பெயரளவு"
 
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசை வரையறை"
 
 msgctxt "ColumnModel|"
 msgid "Label editor"
-msgstr ""
+msgstr "சிட்டை எடிட்டர்"
 
 msgctxt "ColumnModel|"
 msgid "Missing values"
-msgstr ""
+msgstr "மதிப்புகள் இல்லை"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "'% 1' இன் நெடுவரிசைப் பெயரை '%2' இலிருந்து '%3' ஆக மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "'% 1' இன் நெடுவரிசைத் தலைப்பை '%2' இலிருந்து '%3' ஆக மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "'% 1' இன் நெடுவரிசை விளக்கத்தை '%2' இலிருந்து '%3' ஆக மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "'% 1' இன் கணக்கிடப்பட்ட வகையை '% 2' இலிருந்து '% 3' ஆக அமைக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr ""
+msgstr "பணியிட விளக்கத்தை '% 1' இலிருந்து '%2' ஆக மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசைக்கு தனிப்பயன் வெற்று மதிப்புகளைப் பயன்படுத்தவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசைக்கு இயல்புநிலை வெற்று மதிப்புகளைப் பயன்படுத்தவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr ""
+msgstr "'% 1' நெடுவரிசைக்கு வெற்று மதிப்புகளை அமைக்கவும்"
 
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr ""
+msgstr "பணியிட வெற்று மதிப்புகளை அமைக்கவும்"
 
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr ""
+msgstr "பணியிடத்தில் விடுபட்ட மதிப்புகளைக் காட்டு"
 
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr ""
+msgstr "பணியிடத்தில் இல்லாத மதிப்புகளுக்கான அமைப்புகளைத் திறக்கும்"
 
 msgctxt "MainPage|"
 msgid "Embed web video"
-msgstr ""
+msgstr "இணைய வீடியோவை உட்பொதிக்கவும்"
 
 msgctxt "MainPage|"
 msgid "Unsupported video services"
-msgstr ""
+msgstr "ஆதரிக்கப்படாத வீடியோ சேவைகள்"
 
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
-msgstr ""
+msgstr "JASP பின்வரும் வீடியோ சேவைகளை மட்டுமே அனுமதிக்கிறது:"
 
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
 msgstr ""
+"பட்டியலில் மற்றொரு வீடியோ சேவையைச் சேர்க்கக் கோர JASP குழுவைத் தொடர்பு கொள்ளவும்."
 
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
-msgstr ""
+msgstr "JASP சமூகம்"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -4312,303 +4634,331 @@ msgid ""
 "\n"
 "For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
 msgstr ""
+"<h3>தொடர்பு</h3> \n"
+"<a href=\"%1\">அம்சக் கோரிக்கைகள்</a> மற்றும் <a href=\"%2\">பிழை அறிக்கைகள்</a>: "
+"எங்கள் GitHub பக்கத்தில் <a href=\"%3\">இங்கே விளக்கப்பட்டுள்ளபடி ஒரு சிக்கலை "
+"இடுகையிடவும்.</a> \n"
+"இது JASP மென்பொருள் உருவாக்குநர்களுடன் உங்களை நேரடியாக தொடர்பு கொள்ள வைக்கும். \n"
+"\n"
+"புள்ளிவிவரக் கேள்விகளுக்கு: JASP மன்றத்தில் <a href=\"%4\">ஒரு சிக்கலை இடுகையிடவும்.</"
+"a> \n"
+"\n"
+"JASP சமூகத்தைப் பற்றிய தகவலுக்கு: <a href=\"%5\">JASP இணையதளத்தில் உள்ள தகவலைப்</a> "
+"படிக்கவும் \n"
+"\n"
+"உங்கள் நிறுவனத்தை <a href=\"%6\">JASP உலக வரைபடத்தில்</a> சேர்க்க பரிந்துரைக்கிறோம், "
+"தயவுசெய்து <a href=\"%7\">communications@jasp-stats.org</a> க்கு மின்னஞ்சல் "
+"அனுப்பவும். \n"
+"\n"
+"தனிப்பட்ட நன்கொடைகளுக்கு: <a href=\"%8\">JASP இணையதளத்தைப்</a> பார்வையிடவும்.\n"
 
 msgctxt "ActionButtons|"
 msgid "Community"
-msgstr ""
+msgstr "சமூகம்"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
-msgstr ""
+msgstr "பெயர்: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
-msgstr ""
+msgstr "நெடுவரிசை வகை: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
-msgstr ""
+msgstr "கணக்கிடப்பட்ட வகை: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
-msgstr ""
+msgstr "பெற்றோர் பகுப்பாய்வைக் காட்டு"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
-msgstr ""
+msgstr "நீண்ட பெயர்: "
 
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
-msgstr ""
+msgstr "<நெடுவரிசையின் விளக்கமான பெயரை நிரப்பவும்>"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
-msgstr ""
+msgstr "மாறி சாளரத்தை மூடு"
 
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
-msgstr ""
+msgstr "விளக்கம்: "
 
 msgctxt "ColumnModel|"
 msgid "Column definition"
-msgstr ""
+msgstr "நெடுவரிசை வரையறை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr ""
+"ஒய் இல் உள்ள ஒவ்வொரு விடுபட்ட மதிப்பிற்கும் TRUE உடன் பூலியன் வெக்டரை வழங்கும்"
 
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
+"ஒரு நெடுவரிசைக்கான விடுபட்ட மதிப்புகள் (NA) உள்ள வரிசைகளை வடிகட்ட, ஆபரேட்டர் "
+"அல்லாதவற்றுடன் இணைக்கவும்."
 
 msgctxt "FilterModel|"
 msgid "No data loaded!"
-msgstr ""
+msgstr "தரவு ஏற்றப்படவில்லை!"
 
 #, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
 msgstr ""
+"தரவு % 1 வரிசைகளைக் கொண்டுள்ளது, %2 (%3%4%) வடிகட்டி வழியாக அனுப்பப்பட்டது"
 
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr ""
+msgstr "வெளிப்புற விரிதாள் திருத்தி (தரவு ஒத்திசைவுக்கு)"
 
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
+"ஒரு மாறிக்கு இதை விட தனித்த முழு எண் மதிப்புகள் இருந்தால் அது அளவுகோலாக விளக்கப்படும்."
 
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
-msgstr ""
+msgstr "ஏற்றப்பட்ட மாறிகளின் வகைகளை மீட்டமைக்கவும்"
 
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr ""
+msgstr "மதிப்புகள் அமைக்கவில்லை"
 
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr ""
+msgstr "இடைநிலைப்பலகைக்கு நகலெடுக்கப்பட்டது"
 
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
-msgstr ""
+msgstr "பிழைத்திருத்தத் தகவலை நகலெடுக்கவும்"
 
 msgctxt "MainPage|"
 msgid "Search in results:"
-msgstr ""
+msgstr "முடிவுகளில் தேடவும்:"
 
 msgctxt "MainPage|"
 msgid "Close search bar"
-msgstr ""
+msgstr "தேடல் பட்டியை மூடு"
 
 msgctxt "MainPage|"
 msgid "Font Color"
-msgstr ""
+msgstr "எழுத்துரு நிறம்"
 
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
-msgstr ""
+msgstr "லாடெக்சு ஐ இங்கே உள்ளிடவும்:"
 
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
-msgstr ""
+msgstr "விண்ணப்பிக்க, `Cmd/Ctrl + Enter` ஐ அழுத்தவும்;"
 
 msgctxt "MainPage|"
 msgid "Click to apply formula"
-msgstr ""
+msgstr "சூத்திரத்தைப் பயன்படுத்த சொடுக்கு செய்யவும்"
 
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
-msgstr ""
+msgstr "இந்த சூத்திரத்தை திருத்த சொடுக்கு செய்யவும்"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
-msgstr ""
+msgstr "% 1ஐச் சேர்க்கவும்"
 
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "கடைசி % 1ஐ அகற்று"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
-msgstr ""
+msgstr "காரணி"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "கன்ச்ட்ரக்டர் நெடுவரிசையை முன் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "பிறகு கன்ச்ட்ரக்டர் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "முன் R நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "பிறகு R நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr ""
+msgstr "நெடுவரிசை வகையை மாற்ற இங்கே சொடுக்கு செய்யவும்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "நெடுவரிசையைச் சேர்க்கவும்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "பகுப்பாய்வு மூலம் கணக்கிடப்படுகிறது"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
-msgstr ""
+msgstr "மாறி அமைப்புகளை மாற்ற இங்கே இருமுறை சொடுக்கு செய்யவும்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
-msgstr ""
+msgstr "மாறி சாளரத்தை மூட இங்கே இருமுறை சொடுக்கு செய்யவும்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "தேர்ந்தெடுக்கப்பட்ட மாறியை மாற்ற இங்கே சொடுக்கு செய்யவும்"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr ""
+"வரிசையைத் தேர்ந்தெடுக்க இங்கே சொடுக்கு செய்யவும், பலவற்றைத் தேர்ந்தெடுக்க சிப்ட் அழுத்திப் "
+"பிடிக்கவும்."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr ""
+"'%2' நெடுவரிசையின் '% 1' லேபிளுக்கு அசல் மதிப்பை '%3' இலிருந்து '%4' ஆக அமைக்கவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr ""
+msgstr "கன்ச்ட்ரக்டர் நெடுவரிசையை முன் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr ""
+msgstr "பிறகு கன்ச்ட்ரக்டர் நெடுவரிசையைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "முன் R நெடுவரிசையைச் செருகவும்"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "பிறகு R நெடுவரிசையைச் செருகவும்"
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "தலைகீழ் மதிப்புகள்"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
-msgstr ""
+msgstr "கணக்கிடப்பட்ட நெடுவரிசையில் பிழை உள்ளது:<br>"
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "அனைத்து எண் மதிப்புகளின் தலைகீழ் வரிசை"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
-msgstr ""
+msgstr "நெடுவரிசை வகையை மாற்ற முடியவில்லை"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
 msgstr ""
+"நெடுவரிசை '% 1' ஒரு பகுப்பாய்வின் மூலம் உருவாக்கப்பட்டு அதன் வகை சரி செய்யப்பட்டது."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "நெடுவரிசை(கள்) '%2'க்கான வகையை '%1' என அமைக்கவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr ""
+msgstr "நெடுவரிசை(கள்) '% 1' இன் தலைகீழ் மதிப்புகள்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
-msgstr ""
+msgstr "நெடுவரிசை '% 1' இன் தலைகீழ் லேபிள்கள்"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "மதிப்புகளின்படி லேபிள்களை ஆர்டர் செய்யவும்"
 
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
 "href=\"dummyLink\">University of Amsterdam &amp; others</a>."
 msgstr ""
+"JASP என்பது <a href=\"dummyLink\">ஆம்ச்டர்டாம் பல்கலைக்கழகத்தின் கட்டமைப்பு ஆதரவுடன் "
+"திறந்த மூல திட்டமாகும். மற்றவர்கள்</a>."
 
 msgctxt "WelcomePage|"
 msgid "Report bugs"
-msgstr ""
+msgstr "பிழைகளைப் புகாரளிக்கவும்"
 
 msgctxt "WelcomePage|"
 msgid "Request features"
-msgstr ""
+msgstr "கோரிக்கை நற்பொருத்தங்கள்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "% 2 நெடுவரிசைகளை % 1 இல் செருகவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "% 1 இல் % 2 வரிசைகளைச் செருகவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr ""
+msgstr "வரிசை '% 1' நெடுவரிசை '% 2' இல் மதிப்புகளை ஒட்டவும்"
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
-msgstr ""
+msgstr "எல்லா தரவையும் வெட்டுகிறது"
 
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
-msgstr ""
+msgstr "மல்டினோமியல் சி2 அட்டவணை"
 
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
-msgstr ""
+msgstr "JAGS அட்டவணை"
 
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
-msgstr ""
+msgstr "தனிப்பயன் முரண்பாடுகள் அட்டவணை"
 
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
-msgstr ""
+msgstr "வடிகட்டப்பட்ட தரவு நுழைவு அட்டவணை"
 
 msgctxt "TableViewBase|"
 msgid "Grid Table"
-msgstr ""
+msgstr "கட்ட அட்டவணை"
 
 msgctxt "TableViewBase|"
 msgid "Table"
-msgstr ""
+msgstr "அட்டவணை"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "இரட்டைக் களம்"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "இறக்குமதி அமைப்புகள்"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4616,20 +4966,24 @@ msgid ""
 "scalars. Think 1 million+ rows of random floating point numbers.\n"
 "If you find that loading of such a file is slow you can disable this option."
 msgstr ""
+"நிறைய ச்கேலர்களைக் கொண்ட மிகப் பெரிய தரவுத்தொகுப்புகளை ஏற்றும்போது இது மந்தநிலையை "
+"ஏற்படுத்தக்கூடும். சீரற்ற மிதக்கும் புள்ளி எண்களின் 1 மில்லியனுக்கும் அதிகமான வரிசைகளை "
+"நினைத்துப் பாருங்கள். \n"
+"அத்தகைய கோப்பை ஏற்றுவது மெதுவாக இருப்பதை நீங்கள் கண்டால், இந்த விருப்பத்தை முடக்கலாம்."
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
-msgstr ""
+msgstr "அளவிற்கான வரம்பு"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
-msgstr ""
+msgstr "% 1 வரிசைகளை அகற்று"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
-msgstr ""
+msgstr "% 1 நெடுவரிசைகளை அகற்று"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -4655,68 +5009,89 @@ msgid ""
 "\n"
 "<a href=\"%6\">Click here for the current list of educators</a>\n"
 msgstr ""
+"<h3>சமூகம்</h3> \n"
+"JASP சமூகத்தில் பங்கேற்கும் உயர்கல்வி நிறுவனங்கள் கூட்டாக JASP இன் பராமரிப்பு மற்றும் "
+"மேம்பாட்டிற்கு ஆதரவளிக்கின்றன, எனவே தங்கள் சொந்த மாணவர்களுக்கும் உலகெங்கிலும் உள்ள பிற "
+"நிறுவனங்களுக்கும் விலைமதிப்பற்ற கல்வி சேவையை வழங்குகிறது. \n"
+"\n"
+"உங்கள் நிறுவனம் இன்னும் JASP சமூகத்தின் ஒரு பகுதியாக இல்லை என்றால், நீங்கள் <a href=\"%1\">"
+"அவர்கள் சேருமாறு பரிந்துரைக்கலாம்</a>. \n"
+"இந்த வெளியீட்டை சாத்தியமாக்க உதவிய கல்வியாளர்கள் கீழே: \n"
+"\n"
+"<i><b>தங்க கல்வியாளர்கள்:</b></i> \n"
+"% 2 \n"
+"\n"
+"<i><b>வெள்ளி கல்வியாளர்கள்:</b></i> \n"
+"% 3 \n"
+"\n"
+"<i><b>வெண்கலக் கல்வியாளர்கள்:</b></i> \n"
+"% 4 \n"
+"\n"
+"<a href=\"%6\">தற்போதைய கல்வியாளர்களின் பட்டியலுக்கு இங்கே சொடுக்கு செய்யவும்</a>\n"
 
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr ""
+msgstr "முன்னிருப்பாக மதிப்பின்படி லேபிள்களை ஆர்டர் செய்யவும்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
-msgstr ""
+msgstr "தரவின் அளவை மாற்றவும்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
-msgstr ""
+msgstr "நெடுவரிசைகள்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
-msgstr ""
+msgstr "வரிசைகள்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
-msgstr ""
+msgstr "அளவை மாற்றவும்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr ""
+msgstr "மதிப்புகளை அமைக்க தரவின் அளவை மாற்றவும்"
 
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
-msgstr ""
+msgstr "தரவை மறுஅளவிடாமல் மூடு"
 
 msgctxt "WelcomePage|"
 msgid "Ask a question"
-msgstr ""
+msgstr "ஒரு கேள்வி கேள்"
 
 msgctxt "WelcomePage|"
 msgid "Visit the website"
-msgstr ""
+msgstr "இணையதளத்தைப் பார்வையிடவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr ""
+"நெடுவரிசை(கள்) '% 1'க்கான மதிப்புகள் மூலம் லேபிள்களைத் தானாக வரிசைப்படுத்து"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
-msgstr ""
+msgstr "தரவின் அளவை மாற்றவும்"
 
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
-msgstr ""
+msgstr "உங்கள் தரவுத்தொகுப்பின் அளவை மாற்றவும்"
 
 #, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
-msgstr ""
+msgstr "தரவை % 1 வரிசைகள் மற்றும் % 2 நெடுவரிசைகளாக மாற்றவும்"
 
 msgctxt "PrefsUI|"
 msgid "Check for updates"
-msgstr ""
+msgstr "புதுப்பிப்புகளை சரிபார்க்கவும்"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
 msgstr ""
+"புதுப்பிப்புகள் மற்றும் அறியப்பட்ட சிக்கல்களுக்கு நாள்தோறும் தானியங்கி சோதனை"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -4731,6 +5106,16 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP புதுப்பிப்புகளைப் பெறும்போது உங்கள் எந்தத் தரவையும் JASP பகிராது, JASP இன் எந்தப் "
+"பதிப்பைப் பயன்படுத்துகிறீர்கள் என்பது கூட இல்லை. \n"
+"இது உங்கள் ஐபி-முகவரியை சர்வருடன் பகிர்ந்து கொள்கிறது ஆனால் இணையம் செயல்பட அது "
+"தேவைப்படுகிறது. \n"
+"\n"
+"இது பதிவிறக்கும் அறியப்பட்ட சிக்கல்களின் பட்டியல் அரிதாகவே பயன்படுத்தப்படுகிறது, "
+"பெரும்பாலும் சிக்கல்கள் [jasp-issues](https://github.com/jasp-stats/jasp-issues/"
+"issues) இல் உள்ளன. எவ்வாறாயினும், ஒரு பகுப்பாய்வில் ஒரு பயங்கரமான பிழை நழுவியுள்ளது என்பதை "
+"நாங்கள் உணர்ந்தால், நீங்கள் கணக்கில் எடுத்துக்கொள்ள வேண்டிய ஒன்று இருப்பதை இது *பகுப்பாய்வில்* "
+"காண்பிக்கும். அதிர்ச்டவசமாக நாம் அதை ஒருபோதும் பயன்படுத்த வேண்டியதில்லை."
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4739,11 +5124,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"% 1 மொத்த நிலைகள் உள்ளன, இதில் % 2 ஒரு எண் மதிப்பைக் கொண்டுள்ளது. \n"
+"ஒரு '% 3' ஆக இது தெரிகிறது:% 4 \n"
+"% 5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "மறைமுகமான விடுபட்ட மதிப்புகள்:% 1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4751,10 +5139,12 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"% 1 மொத்த நிலைகள் உள்ளன. \n"
+"ஒரு '% 2' ஆக இது தெரிகிறது:% 3"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
-msgstr ""
+msgstr "புதுப்பிப்புகளை சரிபார்க்கவும்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -4768,43 +5158,53 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"JASP எங்கள் சர்வரில் புதுப்பிப்புகளைச் சரிபார்த்து, புதிய பதிப்பு இருந்தால் உங்களுக்குத் "
+"தெரிவிக்க வேண்டுமா? \n"
+"\n"
+"JASP புதுப்பிப்புகளைப் பெறும்போது உங்கள் எந்தத் தரவையும் JASP பகிராது, JASP இன் எந்தப் "
+"பதிப்பைப் பயன்படுத்துகிறீர்கள் என்பது கூட இல்லை. \n"
+"இது உங்கள் ஐபி-விலாசத்தை எங்கள் சர்வருடன் பகிர்ந்து கொள்கிறது, ஆனால் இணையம் செயல்பட அது "
+"தேவை. \n"
+"\n"
+"இடைமுக விருப்பத்தேர்வுகளில் இந்த அமைப்பை எப்போதும் மாற்றலாம்."
 
 msgctxt "MainWindow|"
 msgid "Yes"
-msgstr ""
+msgstr "ஆம்"
 
 msgctxt "MainWindow|"
 msgid "No"
-msgstr ""
+msgstr "இல்லை"
 
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "% 1 மாறிகள் மட்டுமே அனுமதிக்கப்படுகின்றன"
 
 msgctxt "VariableInfo|"
 msgid "Scale"
-msgstr ""
+msgstr "அளவுகோல்"
 
 msgctxt "VariableInfo|"
 msgid "Ordinal"
-msgstr ""
+msgstr "ஆர்டினல்"
 
 msgctxt "VariableInfo|"
 msgid "Nominal"
-msgstr ""
+msgstr "பெயரளவு"
 
 msgctxt "VariableInfo|"
 msgid "Unknown"
-msgstr ""
+msgstr "தெரியவில்லை"
 
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
-msgstr ""
+msgstr "<நெடுவரிசையின் பெயரை முதலில் நிரப்பவும்>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
 msgstr ""
+"பெயரளவு/ஆர்டினல் எனப் பயன்படுத்தப்படும் போது, அளவிற்கான அதிகபட்ச அனுமதிக்கப்பட்ட நிலைகள்"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -4812,103 +5212,108 @@ msgid ""
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
 msgstr ""
+"சில மாறிகளுக்கு பெயரளவு அல்லது ஆர்டினல் மட்டுமே ஏற்றுக்கொள்ளும் பகுப்பாய்விற்கு, ஒரு அளவு "
+"மாறி பயன்படுத்தப்பட்டால், இந்த மாறியின் நிலைகளின் எண்ணிக்கை இந்த அதிகபட்சத்தை மீறுகிறதா என்பதை "
+"JASP சரிபார்க்கிறது."
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "புதிய தரவுத் தொகுப்பை ஏற்றுகிறது"
 
 msgctxt "ActionButtons|"
 msgid "New"
-msgstr ""
+msgstr "புதிய"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "எக்செல் கோப்பை இறக்குமதி செய்கிறது"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "அனைத்து தரவு தொகுப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP கோப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "காபிம உரை கோப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "விரிதாள் கோப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS கோப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "ச்டேட்டா கோப்புகள்% 1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS கோப்புகள்% 1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
-msgstr ""
+msgstr "PDF அமைப்புகள்"
 
 msgctxt "PrefsResults|"
 msgid "Orientation"
-msgstr ""
+msgstr "நோக்குநிலை"
 
 msgctxt "PrefsResults|"
 msgid "Portrait"
-msgstr ""
+msgstr "உருவப்படம்"
 
 msgctxt "PrefsResults|"
 msgid "Landscape"
-msgstr ""
+msgstr "நிலப்பரப்பு"
 
 msgctxt "PrefsResults|"
 msgid "Page size"
-msgstr ""
+msgstr "பக்க அளவு"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "வடிகட்டி அழிக்கப்பட்டது\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "வடிகட்டி பயன்படுத்தப்பட்டது\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
 msgstr ""
+"அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்.\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
 msgstr ""
+"ஃபார்முலா தருக்க மதிப்புகளின் தொகுப்பை வழங்காது, எனவே வடிகட்டியில் பயன்படுத்த முடியாது.\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "இழுத்து விடுதல் வடிகட்டிக்கு வரவேற்கிறோம்!\n"
 
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "நெடுவரிசை வகையை மாற்ற ஐகானைக் சொடுக்கு செய்யவும்"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -4920,34 +5325,43 @@ msgid ""
 "& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
+"மதிப்பு வடிகட்டுதல் மற்றும் இழுத்து விடுதல் வடிகட்டி ஆகிய இரண்டிற்கும் JASP உருவாக்கும் "
+"குறியீட்டை மேலே காணலாம். \n"
+"இந்த இயல்புநிலை முடிவு 'generatedFilter' இல் சேமிக்கப்பட்டு, மாற்றியமைக்கப்படலாம் அல்லது "
+"தனிப்பயன் வடிப்பானுடன் இணைக்கப்படலாம். \n"
+"இணைக்க, '&': 'உருவாக்கப்பட்ட வடிகட்டி & தனிப்பயன் வடிகட்டி & ஒருவேளை மற்றொரு வடிகட்டி' "
+"ஐப் பயன்படுத்தி உட்பிரிவுகளைச் சேர்க்கலாம். \n"
+"மேலும் உதவிக்கு கீழ் வலது மூலையில் உள்ள (i) ஐகானைக் சொடுக்கு செய்யவும்.\n"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "நெடுவரிசை-பெயர்-இலவச புலம்"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
 msgstr ""
+"நெடுவரிசை '% 1' ஏற்கனவே உள்ளது மற்றும் இந்த பகுப்பாய்வு மூலம் உருவாக்கப்படவில்லை."
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "வடிகட்டியில் '% 1' பிழை இருந்தது"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "லேபிள்களை அவற்றின் மதிப்பின்படி தானாக ஆர்டர் செய்யவும்"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
 msgstr ""
+"நிலைகளின் குறைந்தபட்ச எண்ணிக்கை% 1. மாறி% 2 ஆனது% 3 நிலைகளை மட்டுமே கொண்டுள்ளது"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "நிலைகளின் அதிகபட்ச எண்ணிக்கை% 1. மாறி% 2 ஆனது% 3 நிலைகளைக் கொண்டுள்ளது."
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4957,6 +5371,9 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"அளவு மாறி % 1 ஐ % 2 மாறியாக மாற்றும் முயற்சி, ஆனால் அதன் நிலைகளின் எண்ணிக்கை % 3 அதிகபட்ச "
+"% 4 ஐ மீறுகிறது. நீங்கள் இன்னும் இந்த மாறியைப் பயன்படுத்த விரும்பினால், அதன் வகையை மாற்றவும் "
+"அல்லது விருப்பத்தேர்வுகள் / தரவு பட்டியலில் 'அதிகபட்ச அனுமதிக்கப்பட்ட அளவுகளை' மாற்றவும்"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4964,6 +5381,8 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
+"எண் மதிப்புகளின் குறைந்தபட்ச எண்ணிக்கை % 1 ஆகும். மாறி% 2 ஆனது % 3 வெவ்வேறு எண் "
+"மதிப்புகளை மட்டுமே கொண்டுள்ளது"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -4971,92 +5390,102 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
+"எண் மதிப்புகளின் அதிகபட்ச எண்ணிக்கை % 1 ஆகும். மாறி% 2 ஆனது % 3 வெவ்வேறு எண் "
+"மதிப்புகளைக் கொண்டுள்ளது"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
-msgstr ""
+msgstr "உருவாக்குபவர் பயன்முறை"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "வளர்ச்சி தொகுதி"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
 msgstr ""
+"மூலங்களிலிருந்து அதை நிறுவுவதற்குப் பதிலாக R- நூலகத்தில் பைனரியிலிருந்து தொகுதிகளை "
+"ஏற்றவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "மூல கோப்புறை:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "நீங்கள் டெவலப்மெண்ட் தொகுதியை நிறுவிய R நூலகத்தைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "தொகுதி பெயர்:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
 msgstr ""
+"நீங்கள் ஏற்ற விரும்பும் டெவலப்மெண்ட் தொகுதியின் (தொகுப்பு)பெயரை உள்ளிடவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
 msgstr ""
+"தொடர்புடைய விருப்பங்களை நிரப்புவதன் மூலம் உருவாக்குபவர் தொகுதியைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "உருவாக்குபவர் தொகுதியைப் புதுப்பிக்கவும் "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"0 செல்லுபடியாகும் நெடுவரிசைகள் கோப்பிலிருந்து படிக்கப்பட்டன, தயவுசெய்து உங்கள் தரவுக் "
+"கோப்பைச் சரிபார்க்கவும்."
 
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
-msgstr ""
+msgstr "ரிப்பன் அளவுகோல் (%): "
 
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
-msgstr ""
+msgstr "ரிப்பனின் உயரத்தின் அளவை அமைக்கவும்."
 
 msgctxt "TabView|"
 msgid "Double click to edit this name"
-msgstr ""
+msgstr "இந்தப் பெயரைத் திருத்த இருமுறை சொடுக்கு செய்யவும்"
 
 msgctxt "PrefsUI|"
 msgid "Choose language"
-msgstr ""
+msgstr "மொழியை தேர்வு செய்யவும்"
 
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
+"எண்களுக்கு மாற்று மொழி மற்றும் பிரதேசம் சார்ந்த காட்சியைப் பயன்படுத்தவும்"
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr ""
+"எண்கள் மற்றும் நாணயத்தைக் காட்ட, கீழே குறிப்பிடப்பட்டுள்ள மொழியைப் பயன்படுத்தவும்."
 
 msgctxt "PrefsUI|"
 msgid "Alt. language"
-msgstr ""
+msgstr "Alt. மொழி"
 
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
-msgstr ""
+msgstr "Alt. பிரதேசம்"
 
 msgctxt "JASPColumn|"
 msgid "Column description: "
-msgstr ""
+msgstr "நெடுவரிசை விளக்கம்: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
-msgstr ""
+msgstr "நெடுவரிசை வகையை மாற்ற ஐகானைக் சொடுக்கு செய்யவும்"
 
 msgctxt "VariablesList|"
 msgid "Column description: "
-msgstr ""
+msgstr "நெடுவரிசை விளக்கம்: "
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
@@ -5064,10 +5493,12 @@ msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr ""
+"டெவலப்மெண்ட் தொகுதியை நிறுவ, நீங்கள் தேர்ந்தெடுக்க வேண்டும் மற்றும் ஏற்கனவே உள்ள கோப்புறை, "
+"நீங்கள் '% 1' ஐ தேர்ந்தெடுத்தீர்கள் ஆனால் அது இல்லை."
 
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "இந்த குறிப்பை அகற்று"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5075,263 +5506,288 @@ msgid ""
 "For this: open the file menu (the blue hamburger button left top), navigate "
 "to Advanced Preferences and check the 'Log to file' checkbox."
 msgstr ""
+"பதிவு கோப்புகள் எதுவும் கிடைக்கவில்லை. மேலும் தகவலைப் பெற, உள்நுழைவை இயக்கவும். இதற்கு: "
+"கோப்பு மெனுவைத் திறக்கவும் (மேலே உள்ள நீல நிற ஆம்பர்கர் பொத்தான்), மேம்பட்ட "
+"விருப்பத்தேர்வுகளுக்குச் சென்று, 'கோப்பில் உள்நுழைக' தேர்வுப்பெட்டியைச் சரிபார்க்கவும்."
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr ""
+msgstr "இந்தப் பதிவுக் கோப்புகளை இந்தச் சிக்கலில் இழுத்து விடுங்கள்: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr ""
+"இந்த கணக்கிடப்பட்ட நெடுவரிசைக்கு பயன்படுத்த ஒரு வடிப்பானைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
-msgstr ""
+msgstr "அகற்று"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
-msgstr ""
+msgstr "புதிய நிலையைச் சேர்க்கவும்:"
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "தரவில் இல்லாத நிலையைச் சேர்க்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
 msgstr ""
+"நிலைகளை வைத்திருத்தல், எனவே அனைத்து நிலைகளும் பகுப்பாய்வுக்கு அனுப்பப்படுகின்றன, "
+"வடிகட்டப்பட்டவை மற்றும் பின்னர் கைமுறையாக சேர்க்கப்படும்."
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
 msgstr ""
+"நிலைகள் குறைகிறது, எனவே (ஒருவேளை வடிகட்டப்பட்ட) தரவில் உள்ள நிலைகள் மட்டுமே "
+"பகுப்பாய்வுக்கு அனுப்பப்படும்."
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "அனைத்து லேபிள்களின் தலைகீழ் வரிசைக்கு ஆர்டர் செய்வதை தானாகவே அணைக்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "லேபிள்களை கைமுறையாக மேலே நகர்த்த, தானாக ஆர்டர் செய்வதை முடக்கவும்"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "லேபிள்களை கைமுறையாக கீழே நகர்த்த, தானாக ஆர்டர் செய்வதை முடக்கவும்"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "வடிகட்டி இல்லை"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "வடிகட்டி பயன்படுத்தவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
 msgstr ""
+"'%1' இன் நெடுவரிசைக் கணக்கீட்டு வடிப்பானை '%2' இலிருந்து '%3'க்கு மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "'% 1' இன் நெடுவரிசை வீழ்ச்சி நிலைகளை '% 2' இலிருந்து '% 3' ஆக மாற்றவும்"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "'% 2' நெடுவரிசையின் % 1 லேபிளை நீக்கு"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "'%3' நெடுவரிசையில் மதிப்பு + சிட்டை '%1' + '%2' சேர்க்கிறது"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
-msgstr ""
+msgstr "சாண்ட்பாக்ச் இயந்திரங்கள்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
 msgstr ""
+"ஆர்-கோட் இயங்கும் என்சின்களை தனிமைப்படுத்துவதன் மூலம் சாளரங்களில் பாதுகாப்பை பலப்படுத்தவும்"
 
 msgctxt "PrefsUI|"
 msgid "Use thousands separators"
-msgstr ""
+msgstr "ஆயிரக்கணக்கான பிரிப்பான்களைப் பயன்படுத்தவும்"
 
 msgctxt "PrefsUI|"
 msgid "Disable to remove thousands separators from all numbers."
-msgstr ""
+msgstr "அனைத்து எண்களிலிருந்தும் ஆயிரக்கணக்கான பிரிப்பான்களை அகற்றுவதை முடக்கு."
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "கோப்பைத் தேர்ந்தெடு..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "ஒரு கோப்புறையைத் தேர்ந்தெடுக்கவும்..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a R-library..."
-msgstr ""
+msgstr "ஆர்-லைப்ரரியைத் தேர்ந்தெடு..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "பாதுகாப்பான கிராபிக்ச் பயன்முறை மாற்றப்பட்டது"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
 msgstr ""
+"நீங்கள் JASP இன் பாதுகாப்பான கிராபிக்ச் பயன்முறையை மாற்றியுள்ளீர்கள், இந்த விருப்பம் நடைமுறைக்கு "
+"வர நீங்கள் JASP ஐ மறுதொடக்கம் செய்ய வேண்டும்."
 
 msgctxt "PreferencesModel|"
 msgid "Text rendering setting changed"
-msgstr ""
+msgstr "உரை வழங்குதல் அமைப்பு மாற்றப்பட்டது"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The textrendering setting has been changed, this will only take full effect "
 "after JASP is restarted."
 msgstr ""
+"டெக்ச்ட்ரெண்டரிங் அமைப்பு மாற்றப்பட்டது, JASP மறுதொடக்கம் செய்யப்பட்ட பிறகு மட்டுமே இது முழு "
+"பலனைப் பெறும்."
 
 msgctxt "PreferencesModel|"
 msgid "Engine Sandbox setting changed"
-msgstr ""
+msgstr "இன்சின் சாண்ட்பாக்ச் அமைப்பு மாற்றப்பட்டது"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The Engine Sandbox setting has been changed, this will only take full effect "
 "after JASP is restarted."
 msgstr ""
+"எஞ்சின் சாண்ட்பாக்ச் அமைப்பு மாற்றப்பட்டது, JASP மறுதொடக்கம் செய்யப்பட்ட பிறகு மட்டுமே இது முழு "
+"விளைவை அடையும்."
 
 msgctxt "MessageForwarder|"
 msgid "Sandbox warning"
-msgstr ""
+msgstr "சாண்ட்பாக்ச் முன்னறிவிப்பு"
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to save a file outside of the sandbox directory! We will correct "
 "the path to: "
 msgstr ""
+"சாண்ட்பாக்ச் கோப்பகத்திற்கு வெளியே ஒரு கோப்பைச் சேமிக்க விரும்புகிறீர்கள்! நாங்கள் பாதையை "
+"சரிசெய்வோம்: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to load a file outside of the sandbox directory! This will fail "
 "please move the file to: "
 msgstr ""
+"சாண்ட்பாக்ச் கோப்பகத்திற்கு வெளியே ஒரு கோப்பை ஏற்ற வேண்டும்! இது தோல்வியடையும், கோப்பை இதற்கு "
+"நகர்த்தவும்: "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr ""
+"சாச்ப் இன்சின் பாதுகாப்பு சாண்ட்பாக்ச் பயன்முறையில் இயங்குகிறது மற்றும் இவற்றை மட்டுமே அணுக "
+"முடியும்: "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "வரிசையாக பொருள்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "வரிசையாகத் தொகை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "வரிசையாக நிலையான விலகல்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "வரிசையாக மாறுபாடு"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "வரிசையாக இடைநிலை"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "வரிசையாக குறைந்தபட்சம்"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "வரிசையாக அதிகபட்சம்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
-msgstr ""
+msgstr "உள்ளமைவு கோப்பைப் பயன்படுத்தவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
-msgstr ""
+msgstr "தொலைநிலை உள்ளமைவு கோப்பைப் பயன்படுத்தவும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
 msgstr ""
+"முகவரி மூலம் சுட்டிக்காட்டப்பட்ட தொலைநிலை உள்ளமைவு கோப்பைப் பயன்படுத்தவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
-msgstr ""
+msgstr "உள்ளமைவு URL: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
-msgstr ""
+msgstr "உள்ளமைவு கோப்பைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr ""
+msgstr "உள்ளமைவு கோப்பைத் தேர்ந்தெடுக்கவும்."
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "வரிசையாக பொருள்"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "வரிசையாகத் தொகை"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "வரிசையாக நிலையான விலகல்"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "வரிசையாக மாறுபாடு"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "வரிசையாக இடைநிலை"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "வரிசையாக குறைந்தபட்சம்"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "வரிசையாக அதிகபட்சம்"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "தொடக்கத்தில் JASP அதன் சாளரத்தை பெரிதாக்க வேண்டுமா?"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
 "appdata."
 msgstr ""
+"இது ஆப்டேட்டாவில் உள்ள 'renv', 'Modules' மற்றும் டெவலப்மெண்ட் தொகுதி கோப்புறைகளை "
+"அழிக்கும்."
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
-msgstr ""
+msgstr "renv பயன்முறையை இயக்கவும்"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "திட்ட நூலகம்:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
-msgstr ""
+msgstr "கட்டமைப்பு கோப்பு விருப்பங்கள்"
 
 msgctxt "PrefsUI|"
 msgid "Start maximized"
-msgstr ""
+msgstr "அதிகபட்சமாக தொடங்கவும்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5339,58 +5795,65 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP க்கு கடுமையான பிழை உள்ளது, மேலும் கணக்கிட முடியாது. \n"
+"\n"
+"இந்த பிழையை JASP குழுவிடம் புகாரளித்தால் நாங்கள் நன்றியுள்ளவர்களாக இருப்போம்."
 
 msgctxt "MainWindow|"
 msgid "Salvage"
-msgstr ""
+msgstr "காப்பு"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
-msgstr ""
+msgstr "நிறுவல் முடிந்தது"
 
 msgctxt "Modules::DynamicModules|"
 msgid "Completed installation of Bundles: "
-msgstr ""
+msgstr "மூட்டைகளின் நிறுவல் முடிந்தது: "
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
-msgstr ""
+msgstr "பாதுகாப்பு சாண்ட்பாக்ச் தோல்வி"
 
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
 "sandboxing. Do you wish to continue without it? (probably fine)"
 msgstr ""
+"பாதுகாப்பு சாண்ட்பாக்சைச் செயல்படுத்துவதில் தோல்வி. உங்கள் கணினி பாதுகாப்பு சாண்ட்பாக்சிங்கை "
+"அனுமதிக்காது. அது இல்லாமல் தொடர விரும்புகிறீர்களா? (ஒருவேளை நன்றாக இருக்கும்)"
 
 msgctxt "QObject|"
 msgid "Continue"
-msgstr ""
+msgstr "தொடரவும்"
 
 msgctxt "QObject|"
 msgid "Exit"
-msgstr ""
+msgstr "வெளியேறு"
 
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
-msgstr ""
+msgstr "சாத்தியமான மதிப்புகள்: % 1"
 
 #, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
-msgstr ""
+msgstr "முதலில்% 2 இல் % 1 இல் இறக்குமதி செய்யப்பட்டது"
 
 msgctxt "FileEvent|"
 msgid "Loading R Data File"
-msgstr ""
+msgstr "ஆர் தரவு கோப்பை ஏற்றுகிறது"
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
 msgstr ""
+"0 செல்லுபடியாகும் நெடுவரிசைகள் கோப்பிலிருந்து படிக்கப்பட்டன, தயவுசெய்து உங்கள் தரவுக் "
+"கோப்பைச் சரிபார்க்கவும்."
 
 msgctxt "MainWindow|"
 msgid "Salvaging"
-msgstr ""
+msgstr "காப்பாற்றுதல்"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5404,52 +5867,62 @@ msgid ""
 "Analyses or computed columns and the like will not function anymore until "
 "you restart JASP."
 msgstr ""
+"JASP க்கு ஒரு அபாயகரமான பிழை ஏற்பட்டதற்கு வருந்துகிறோம். \n"
+"இந்த குழப்பத்தில் இருந்து எதையாவது காப்பாற்ற அல்லது மீட்டெடுக்க உங்களை அனுமதிக்க, JASP ஓரளவு "
+"செயல்படும். \n"
+"\n"
+"உதாரணமாக, உங்கள் தற்போதைய பணியிடத்தைச் சேமிக்கலாம் அல்லது அடுத்த முறை சிக்கலைத் தடுக்க "
+"அமைப்பை மாற்ற முயற்சிக்கவும். \n"
+"\n"
+"நீங்கள் JASP ஐ மறுதொடக்கம் செய்யும் வரை பகுப்பாய்வுகள் அல்லது கணக்கிடப்பட்ட நெடுவரிசைகள் "
+"போன்றவை செயல்படாது."
 
 #, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
-msgstr ""
+msgstr "R தரவு கோப்புகள்% 1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
-msgstr ""
+msgstr "மாதிரி விதிமுறைகள்"
 
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
-msgstr ""
+msgstr "சுழிய மாதிரியில் சேர்க்கவும்"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "கோப்பை திற"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "% 1 கோப்பை அணுக முடியவில்லை"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "கோப்பு % 1 கிடைக்கவில்லை."
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASP இந்த கோப்பு வகை % 1 ஐ ஆதரிக்கவில்லை."
 
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
-msgstr ""
+msgstr "பகுப்பாய்வு நிலை மற்றும் சதியை சாச்ப்-கோப்புகளில் சேமிக்கவும்"
 
 msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
 "lot."
 msgstr ""
+"இதை இயக்குவது சேஎச்பி கோப்புகளின் கோப்பு அளவு அதிகரிக்கலாம், சில நேரங்களில் நிறைய."
 
 msgctxt "MainWindow|"
 msgid "Stored without state"
-msgstr ""
+msgstr "மாநிலம் இல்லாமல் சேமிக்கப்படுகிறது"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5458,6 +5931,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு நிலை இல்லாமல் சேமிக்கப்பட்டது, படத்தைச் சேமிக்க அதை முதலில் புதுப்பிக்க "
+"வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5466,26 +5943,30 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு நிலை இல்லாமல் சேமிக்கப்பட்டது, படத்தை மறுஅளவாக்க முதலில் அதை புதுப்பிக்க "
+"வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
-msgstr ""
+msgstr "மீட்பு"
 
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
-msgstr ""
+msgstr "மீட்பு கோப்புகள் எதுவும் இல்லை"
 
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
-msgstr ""
+msgstr "ஒரு மாதத்திற்குப் பிறகு மீட்பு கோப்புகள் நீக்கப்படும்"
 
 msgctxt "PrefsData|"
 msgid "Save settings"
-msgstr ""
+msgstr "அமைப்புகளைச் சேமிக்கவும்"
 
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr ""
+msgstr "உங்கள் பணியிடத்தின் காப்புப்பிரதியை தானாகவே சேமிக்கவும்"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5493,67 +5974,71 @@ msgid ""
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
 msgstr ""
+"இது இயக்கப்பட்டால், உங்கள் பணியிடத்தின் நகலை பதிவுகளுக்கு அடுத்துள்ள கோப்புறையில் "
+"சேமிக்கும். சேமிக்கப்படாத மாற்றங்களுடன் JASP செயலிழந்தால், இந்த காப்புப்பிரதி உங்கள் எல்லா "
+"வேலைகளையும் இழக்காமல் இருப்பதை உறுதி செய்யும்."
 
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
-msgstr ""
+msgstr "நிமிடங்களில் தானாகச் சேமிக்கும் இடைவெளி"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr ""
+msgstr "ஆட்டோசேவ்களுக்கு இடையே நிமிட இடைவெளி."
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "% 1 தானாக சேமிக்கப்பட்டது"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "முழு பாதை:% 1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "சேமிக்கப்படாத பணியிடம்"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "தரவுக் கோப்பு % 1 இன் சேமிக்கப்படாத பணியிடம்"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "தானிசேமி"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "JASP கோப்பை தானாக சேமிக்கிறது"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "% 1 இல் சேமிக்கப்பட்டது"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
 msgstr ""
+"%1 வினாடிகளுக்கு முன்பு சேமிக்கப்பட்டது, இன்னும் மற்றொரு JASP இல் ஏற்றப்பட்டிருக்கலாம்."
 
 msgctxt "ResourceButtons|"
 msgid "Recovery"
-msgstr ""
+msgstr "மீட்பு"
 
 msgctxt "RibbonModel|"
 msgid "Test"
-msgstr ""
+msgstr "தேர்வு"
 
 msgctxt "RibbonModel|"
 msgid "Run tests"
-msgstr ""
+msgstr "சோதனைகளை இயக்கவும்"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Stored without state"
-msgstr ""
+msgstr "மாநிலம் இல்லாமல் சேமிக்கப்படுகிறது"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid ""
@@ -5562,10 +6047,14 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு நிலை இல்லாமல் சேமிக்கப்பட்டது, சதித்திட்டத்தை திருத்த முதலில் புதுப்பிக்க "
+"வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Version incompatibility"
-msgstr ""
+msgstr "பதிப்பு இணக்கமின்மை"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid ""
@@ -5574,6 +6063,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"இந்த பகுப்பாய்வு JASP இன் பழைய பதிப்பில் உருவாக்கப்பட்டது, சதித்திட்டத்தை திருத்த முதலில் "
+"புதுப்பிக்க வேண்டும். \n"
+"\n"
+"பகுப்பாய்வைப் புதுப்பிக்கவா?"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5582,6 +6075,9 @@ msgid ""
 "or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
 "and 'upper' limits."
 msgstr ""
+"'loglik', 'sd', அல்லது 'movingRange' ஆகிய மூன்று முறைகளில் ஒன்றின் படி, வடிவ "
+"அளவுரு லாம்ப்டாவைத் தானாக நிர்ணயிப்பதன் மூலம் இரண்டு-அளவுரு பாக்ச்-காக்ச் மாற்றம். உகந்த லாம்ப்டாவுக்கான "
+"தேடல் 'குறைந்த' மற்றும் 'மேல்' வரம்புகளுக்குள் கட்டுப்படுத்தப்படுகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5589,6 +6085,9 @@ msgid ""
 "greater than -shift) to stabilize variance and attempt to make the data more "
 "normal distribution-like."
 msgstr ""
+"மாறுபாட்டை நிலைநிறுத்துவதற்கும் தரவை மிகவும் இயல்பான வழங்கல் போன்றதாக மாற்றுவதற்கும் இரண்டு-"
+"அளவுரு ஆற்றல் மாற்றம் (அளவிலான-மாறாத பெட்டி-பெட்டி; -சிப்ட்டை விட அதிகமான மதிப்புகளை "
+"மாற்றுகிறது)."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5596,6 +6095,8 @@ msgid ""
 "parameter lambda. The search for optimal lambda is bounded within 'lower' "
 "and 'upper' limits."
 msgstr ""
+"வடிவ அளவுரு லாம்ப்டாவின் தானியங்கி தீர்மானத்துடன் இரண்டு அளவுரு ஆற்றல் மாற்றம். உகந்த லாம்ப்டாவுக்கான "
+"தேடல் 'குறைந்த' மற்றும் 'மேல்' வரம்புகளுக்குள் கட்டுப்படுத்தப்படுகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5603,13 +6104,18 @@ msgid ""
 "determination of the shape parameter lambda. The search for optimal lambda "
 "is bounded within 'lower' and 'upper' limits."
 msgstr ""
+"Yeo-Johnson உருமாற்றம் (எந்த உண்மையான மதிப்புகளையும் மாற்றும்) வடிவ அளவுரு லாம்ப்டாவின் "
+"தானியங்கி தீர்மானத்துடன். உகந்த லாம்ப்டாவுக்கான தேடல் 'குறைந்த' மற்றும் 'மேல்' வரம்புகளுக்குள் "
+"கட்டுப்படுத்தப்படுகிறது."
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Johnson transform (transforms any real values). The search for optimal "
 "parameter is bounded within 'lower' and 'upper' limits."
 msgstr ""
+"சான்சன் உருமாற்றம் (எந்த உண்மையான மதிப்புகளையும் மாற்றுகிறது). உகந்த அளவுருக்கான தேடல் "
+"'குறைந்த' மற்றும் 'மேல்' வரம்புகளுக்குள் கட்டுப்படுத்தப்படுகிறது."
 
 msgctxt "tst_tabViewManual|"
 msgid "H"
-msgstr ""
+msgstr "எச்"
