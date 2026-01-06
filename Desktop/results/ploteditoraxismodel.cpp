@@ -22,7 +22,7 @@ void AxisModel::setAxisData(const Json::Value & axis)
 
 	Json::Value title = settings.get("title", "");
 
-	setTitle(		tq(						title.isString() ? title.asString() : ""));
+	setTitle(		tq(						title.isString() ? title.asString() : title.isDouble() ? ColumnUtils::doubleToString(title.asDouble(), false) : title.isInt() ? std::to_string(title.asInt()) : ""));
 	setTitleType(	TitleTypeFromString(	settings.get(	"titleType",	""	).asString())); //Defaults are set in *TypeFromString
 	setType(		tq(						settings.get(	"type",			""	).asString()));
 	setBreaksType(	BreaksTypeFromString(	settings.get(	"breaksType",	""	).asString()));
