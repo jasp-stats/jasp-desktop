@@ -216,6 +216,7 @@ private:
 	void					initAnalysis();
 	void					setAnalysisForm(AnalysisForm	* analysisForm);
 	bool					readyToCreateForm() const;
+	Json::Value				loadPlotlyJsonInResults(Json::Value results) const;
 
 protected:
 	Status						_status				= Empty;
@@ -230,6 +231,7 @@ protected:
 								_oldMetaData		= Json::nullValue;
 	std::string					_preUpgraderVersion	= "0";
 
+	
 private:
 	size_t						_id,
 								_counter						= 0;
