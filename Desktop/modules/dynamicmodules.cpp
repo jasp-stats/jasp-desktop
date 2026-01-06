@@ -449,9 +449,6 @@ void DynamicModules::installationPackagesSucceeded(const QString & moduleNames)
 
 	for(QString& moduleLib : modulesLibs) {
 		auto dynMod = initializeModuleFromDir(moduleLib.toStdString(), false, true);
-#ifdef __APPLE__
-		_moduleLibraryFixer(moduleLib.toStdString(), true, true, false);
-#endif
 	}
 	_moduleBundlesNeedingInstall.clear();
     // MessageForwarder::showWarning(tr("Install complete"), tr("Completed installation of Bundles: ") + listStr);
