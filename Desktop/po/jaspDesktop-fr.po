@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-01-07 21:01+0000\n"
+"Last-Translator: Michael Cantinotti <michael.cantinotti@uqtr.ca>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"fr/>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.15.1\n"
 "X-Language: fr\n"
 "X-Qt-Contexts: true\n"
 
@@ -4844,7 +4850,7 @@ msgstr "Ajouter un %1"
 #, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
-msgstr ""
+msgstr "Retirer le dernier %1"
 
 msgctxt "FactorsFormBase|"
 msgid "Factor"
@@ -4860,11 +4866,11 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
-msgstr ""
+msgstr "Insérer une colonne R après"
 
 msgctxt "DataTableView|"
 msgid "Insert R column after"
-msgstr ""
+msgstr "Insérer une colonne R avant"
 
 #, fuzzy
 msgctxt "DataTableViewColumnHeader|"
@@ -4873,11 +4879,11 @@ msgstr "Cliquez ici pour changer de type de colonne"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
-msgstr ""
+msgstr "Ajouter colonne"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
-msgstr ""
+msgstr "Calculé avec une analyse"
 
 #, fuzzy
 msgctxt "DataTableViewColumnHeader|"
@@ -4891,7 +4897,7 @@ msgstr "Double-cliquer ici pour fermer la fenêtre de la variable"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
-msgstr ""
+msgstr "Cliquer ici pour modifier la variable sélectionnée"
 
 #, fuzzy
 msgctxt "DataTableViewRowHeader|"
@@ -4923,7 +4929,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr ""
+msgstr "Inverser les valeurs"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
@@ -4931,7 +4937,7 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr ""
+msgstr "Inverser l'ordre de toutes les valeurs numériques"
 
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
@@ -4959,7 +4965,7 @@ msgstr ""
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "Ordonner les étiquettes par valeurs"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -5025,7 +5031,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Import settings"
-msgstr ""
+msgstr "Importer les paramètres"
 
 msgctxt "PrefsData|"
 msgid ""
@@ -5348,7 +5354,7 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "Ordonner automatiquement les étiquettes selon leur valeur"
 
 msgctxt "FilterModel|"
 msgid ""
