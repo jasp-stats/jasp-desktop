@@ -87,7 +87,7 @@ private:
 									_isAnalysis		= false		,
 									_isEnabled		= true		,
 									_requiresData	= true		,
-									_preloadData	= false		,
+									_preloadData	= true		,
 									_hasWrapper		= false		,
 									_smallIcon		= false		;
 	std::function<void()>			_specialFunc	= nullptr	;
