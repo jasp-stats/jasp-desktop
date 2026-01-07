@@ -433,7 +433,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 	
 	recursiveFixer = [&loadFile, &recursiveFixer](Json::Value & results)
 	{
-		if(results.isObject() && results.isMember("interactiveJsonData") && results.isString() && QFileInfo::exists(tq(results["interactiveJsonData"].asString())))
+		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString() && QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + results["interactiveJsonData"].asString())))
 			results["interactiveJsonData"] = loadFile(results["interactiveJsonData"].asString());
 		
 		if(results.isObject())
