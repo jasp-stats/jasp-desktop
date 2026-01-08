@@ -1873,7 +1873,8 @@ boolvec DataSetPackage::getColumnFilterAllows(size_t columnIndex) const
 	Column * column =_dataSet->columns()[columnIndex];
 	
 	for (const Label * label : column->labels())
-		list.push_back(label->filterAllows());
+		if(!label->isEmptyValue())
+			list.push_back(label->filterAllows());
 	
 	while(list.size() < column->labelsNonEmptyCount())
 		list.push_back(true);
