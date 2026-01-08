@@ -10,74 +10,28 @@
 
 const std::string InstalledModules::settingsPath = "modules-settings.json";
 
+void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules::ModuleInfo& info) {
+	InstalledModules::ModuleInfo module;
 
-QStringList getModulesFromDir(const std::string& path)
-{
-	auto dir = QDir(path.c_str());
-	if(!dir.exists())
-		return {};
-
-	return dir.entryList({"jasp*"}, QDir::Dirs);
-}
-
-std::vector<std::string> InstalledModules::getModules(bool extra) {
-	//get the module orders and groupings form the modules settings file
-	//This will probably be replaced with org specific settings from toml file in future
-	std::string settings = AppDirs::bundledModulesDir().toStdString() + settingsPath;
-	std::ifstream in(settings);
+	std::ifstream in(path);
 	Json::Value root;
 	Json::Reader().parse(in, root);
-	Json::Value commonNames = root.get("common", Json::arrayValue);
-	Json::Value extraNames = root.get("extra", Json::arrayValue);
-	if(!commonNames.isArray()) commonNames = Json::arrayValue;
-	if(!extraNames.isArray()) extraNames = Json::arrayValue;
+	Json::Value version = root["version"][0];
+	std::string strVersion = "";
+	for(int i = 0; i < version.size(); i++) {
+		auto x = version[i];
+		strVersion =  strVersion + version[i].asString() + ".";
+	}
+	strVersion.pop_back();
 
-
-	//collect all available modules
-    QStringList availableModules = getModulesFromDir(AppDirs::bundledModulesLibDir().toStdString());
-    QStringList installedModules = getModulesFromDir(AppDirs::userModulesLibDir().toStdString());
-    availableModules.append(installedModules);
-    availableModules.removeDuplicates();
-
-    if(!PreferencesModel::prefs()->developerMode())
-        availableModules.removeAll("jaspTestModule");
-
-	//separate into groups ordered by listing in settings
-	//ugly nˆ2 ish but n < 100 so fine
-	std::vector<std::string> extraModules;
-	for(auto& name: extraNames)
-		if(availableModules.contains(name.asCString())) {
-			extraModules.push_back(name.asCString());
-			availableModules.removeAll(name.asCString());
-		}
-	if(extra) return extraModules;
-
-	std::vector<std::string> commonModules;
-	for(auto& name: commonNames)
-		if(availableModules.contains(name.asCString())) {
-			commonModules.push_back(name.asCString());
-			availableModules.removeAll(name.asCString());
-		}
-	for(auto& module : availableModules) commonModules.push_back(module.toStdString());
-	return commonModules;
+	info.name = root["name"].asString();
+	info.version = Version(strVersion);
 }
 
-std::vector<std::string> InstalledModules::getActiveCommonModules()
-{
-	return getModules();
-}
+std::vector<InstalledModules::ModuleInfo> InstalledModules::getAllAvailableModules() {
+	std::vector<InstalledModules::ModuleInfo> modules = {};
 
-std::vector<std::string> InstalledModules::getActiveExtraModules()
-{
-	return getModules(true);
-}
-
-
-std::map<std::string, std::string> InstalledModules::getInstalledModuleVersions()
-{
-	std::map<std::string, std::string> moduleVersionMap;
-
-	auto parseManifests = [&](const std::string& path) {
+	auto parseManifests = [&](const std::string& path, bool bundled = false) {
 		auto dir = QDir(path.c_str());
 		dir.cdUp(); dir.cd("manifests");
 		if(!dir.exists())
@@ -85,24 +39,80 @@ std::map<std::string, std::string> InstalledModules::getInstalledModuleVersions(
 
 		auto manifests = dir.entryList({"jasp*.json"}, QDir::Files);
 		for(auto& manifest : manifests) {
-			std::ifstream in(dir.absoluteFilePath(manifest).toStdString());
-			Json::Value root;
-			Json::Reader().parse(in, root);
-			Json::Value version = root["version"][0];
-			std::string strVersion = "";
-			for(int i = 0; i < version.size(); i++) {
-				auto x = version[i];
-				strVersion =  strVersion + version[i].asString() + ".";
+			InstalledModules::ModuleInfo info;
+			try {
+				parseModuleInfo(dir.filePath(manifest).toStdString(), info);
 			}
-			strVersion.pop_back();
-			moduleVersionMap[root["name"].asString()] = strVersion;
+			catch(...) { continue; }
+			info.libpath = QDir(path.c_str()).filePath(info.name.c_str()).toStdString();
+			info.bundled = bundled;
+			modules.push_back(info);
 		}
-
 	};
 
-	parseManifests(AppDirs::bundledModulesLibDir().toStdString());
+	parseManifests(AppDirs::bundledModulesLibDir().toStdString(), true);
 	parseManifests(AppDirs::userModulesLibDir().toStdString());
+	return modules;
+}
 
+
+std::vector<InstalledModules::ModuleInfo> InstalledModules::getModules() {
+
+	auto modulesAll = getAllAvailableModules();
+	std::map<std::string, InstalledModules::ModuleInfo> modules;
+	for(const auto& module : modulesAll) { //remove duplicates take highest version
+		if(modules.find(module.name) == modules.end() || modules[module.name].version >= module.version) {
+			modules[module.name] = module;
+		}
+	}
+
+	if(!PreferencesModel::prefs()->developerMode())
+		modules.erase("jaspTestModule");
+
+
+	//get the module orders and groupings form the modules settings file
+	//This will probably be replaced with org specific settings from toml file in future
+	std::string settings = AppDirs::bundledModulesDir().toStdString() + settingsPath;
+	std::ifstream in(settings);
+	Json::Value root;
+	Json::Reader().parse(in, root);
+	Json::Value commonNamesJson = root.get("common", Json::arrayValue);
+	Json::Value extraNamesJson = root.get("extra", Json::arrayValue);
+	if(!commonNamesJson.isArray()) commonNamesJson = Json::arrayValue;
+	if(!extraNamesJson.isArray()) extraNamesJson = Json::arrayValue;
+
+
+	std::vector<InstalledModules::ModuleInfo> orderedModules = {};
+	for(auto name : commonNamesJson) {
+		if(modules.find(name.asString()) != modules.end()) {
+			modules[name.asString()].common = true;
+			orderedModules.push_back(modules[name.asString()]);
+			modules.erase(name.asString());
+		}
+	}
+	for(auto& name : extraNamesJson) {
+		if(modules.find(name.asString()) != modules.end()) {
+			orderedModules.push_back(modules[name.asString()]);
+			modules.erase(name.asString());
+		}
+	}
+
+	//insert leftover modules
+	for(auto& module : modules)
+		orderedModules.push_back(module.second);
+
+	return orderedModules;
+}
+
+
+
+std::map<std::string, std::string> InstalledModules::getInstalledModuleVersions()
+{
+	std::map<std::string, std::string> moduleVersionMap;
+	auto modules = getModules();
+	for(auto& module : modules) {
+		moduleVersionMap[module.name] = module.version.asString();
+	}
 	return moduleVersionMap;
 }
 

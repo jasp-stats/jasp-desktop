@@ -710,9 +710,7 @@ void MainWindow::loadQML()
 	disconnect(exitOnFailConnection);
 
 	//Load the ribbonmodel modules now because we have an actual qml context to do so in.
-	_ribbonModel->loadModules(
-		InstalledModules::getActiveCommonModules(),
-		InstalledModules::getActiveExtraModules());
+	_ribbonModel->loadModules(InstalledModules::getModules());
 	
 	qmlLoaded();	
 }

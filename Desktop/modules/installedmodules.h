@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "version.h"
 
 /**
  * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
@@ -36,14 +37,23 @@
 class InstalledModules {
 public:
 
-	static std::vector<std::string> getActiveCommonModules();
+	struct ModuleInfo {
+		std::string name = "";
+		std::string libpath = "";
+		bool common = false;
+		bool bundled = false;
+		Version version;
+	};
 
-	static std::vector<std::string> getActiveExtraModules();
+	static std::vector<ModuleInfo> getAllAvailableModules();
+
+	static std::vector<ModuleInfo> getModules();
 
 	static std::map<std::string, std::string> getInstalledModuleVersions();
 
 private:
-	static std::vector<std::string> getModules(bool extra = false);
+
+	static void parseModuleInfo(const std::string& path, ModuleInfo& info);
 
 	static const std::string settingsPath;
 

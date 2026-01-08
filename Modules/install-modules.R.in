@@ -138,17 +138,3 @@ if(length(localBundles) > 0) {
         write(c(rbind(localBundles, mtimes)), "@MODULES_BINARY_PATH@/local-bundles-installed.txt", sep='\t', ncolumns=2)
     }
 }
-
-#fix otool stuff and sign
-if (Sys.info()[['sysname']] == 'Darwin') {  
-    libs <- unique(installed)
-    if(length(installed) > 0) {
-        patch <- function(lib) {
-            cat("Patching and Signing Module library: ", lib, "\n")
-            jaspEngineLocation <- file.path("@CMAKE_BINARY_DIR@", "Desktop" , "JASPEngine")
-            jaspEngineCall     <- paste0(jaspEngineLocation, ' "', lib ,'"')
-            system(jaspEngineCall)
-        }
-        sapply(libs, patch)
-    }
-}

@@ -22,6 +22,7 @@
 #include "log.h"
 #include "qquick/datasetview.h"
 #include "mainwindow.h"
+#include "installedmodules.h"
 
 using namespace Modules;
 
@@ -42,49 +43,27 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 	connect(DataSetPackage::pkg(),	   &DataSetPackage::setDataMode,				this, &RibbonModel::setDataMode								);
 }
 
-void RibbonModel::loadModules(std::vector<std::string> commonModulesToLoad, std::vector<std::string> extraModulesToLoad)
+void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesToLoad)
 {
 	addSpecialRibbonButtonsEarly();
-	DynamicModules::dynMods()->insertCommonModuleNames(std::set<std::string>(commonModulesToLoad.begin(), commonModulesToLoad.end()));
+	std::set<std::string> commonNames = {};
 
-	auto loadModulesFromBundledOrUserData = [&](bool common)
-	{
-		for(const std::string & moduleName : (common ? commonModulesToLoad : extraModulesToLoad))
-		{
-			if (!moduleName.empty())
-			{
-				if(DynamicModules::dynMods()->moduleIsInstalledByUser(moduleName)) //Only load bundled if the user did not install a newer/other version
-					addRibbonButtonModelFromDynamicModule((*DynamicModules::dynMods())[moduleName]);
-				else
-				{
-					try {
-						std::string moduleLibrary = DynamicModules::bundledModuleLibraryPath(moduleName);
-						
-						//Check if the module pkg actually exists in the module library and otherwise show a friendly warning instead of confusing stuff about icons: https://github.com/jasp-stats/INTERNAL-jasp/issues/1287
-						if(!QFileInfo::exists(tq(moduleLibrary + "/" + moduleName)))
-						{
-                            continue; //user installed module
-						}
-						else
-							DynamicModules::dynMods()->initializeModuleFromDir(moduleLibrary, true, common);
-					} 
-					catch (std::runtime_error & e) 
-					{
-						QString titleWarn = tr("Loading bundled module %1 failed").arg(tq(moduleName)),
-								bodyWarn  = tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(moduleName)).arg(tq(e.what()));
-						
-						Log::log() << titleWarn << "\n" << bodyWarn << std::endl;
-						
-						MessageForwarder::showWarning(titleWarn, bodyWarn);
-					}
-				}
-			}
+	for(const auto& module : modulesToLoad) {
+		try {
+			if(module.common) commonNames.insert(module.name);
+			DynamicModules::dynMods()->initializeModuleFromDir(module.libpath, module.bundled, module.common);
 		}
-	};
-	
-	loadModulesFromBundledOrUserData(true);
-	loadModulesFromBundledOrUserData(false);
-	DynamicModules::dynMods()->initializeInstalledModules();
+		catch (std::runtime_error & e)
+		{
+			QString titleWarn = tr("Loading bundled module %1 failed").arg(tq(module.name)),
+				bodyWarn  = tr("Loading of the bundled module %1 failed with the following error:\n\n%2").arg(tq(module.name)).arg(tq(e.what()));
+
+			Log::log() << titleWarn << "\n" << bodyWarn << std::endl;
+
+			MessageForwarder::showWarning(titleWarn, bodyWarn);
+		}
+	}
+	DynamicModules::dynMods()->insertCommonModuleNames(commonNames);
 	
 	for(const std::string & modName : DynamicModules::dynMods()->moduleNames())
 		if(!isModuleName(modName)) //Was it already added from commonModulesToLoad or extraModulesToLoad?
