@@ -30,11 +30,12 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
                 release = releases[0]
 
             for asset in release.assets:
+                asset.complete()
                 if "windows" in asset.name.lower():
-                    windows.append(asset)
-                if "mac" in asset.name.lower() and "x86" in asset.name.lower():
+                    windows.append(asset)          
+                if "macos" in asset.name.lower() and "x86" in asset.name.lower():
                     mac_intel.append(asset)
-                if "mac" in asset.name.lower() and "arm64" in asset.name.lower():
+                if "macos" in asset.name.lower() and "arm64" in asset.name.lower():
                     mac_arm.append(asset)
                 if "flatpak" in asset.name.lower() and "x86" in asset.name.lower():
                     flatpak_intel.append(asset)
