@@ -350,8 +350,14 @@ Json::Value	DynamicModules::getJsonForBundleInstallRequest()
 	if(_moduleBundlesNeedingInstall.size() == 0)
 		throw std::runtime_error("Tried to get json for ModuleBundle install request but there are none, getJsonForBundleInstallRequest should never have been called.");
 
-	QString list = "";
-    for(auto& bundle : _moduleBundlesNeedingInstall) list += "'" + QString(bundle.c_str()).remove("file://") + "'" + ",";
+#ifdef _WIN32
+    const QString prefix = "file:///";
+#else
+    const QString prefix = "file://";
+#endif
+
+    QString list = "";
+    for(auto& bundle : _moduleBundlesNeedingInstall) list += "'" + QString(bundle.c_str()).remove(prefix) + "'" + ",";
 	list.removeLast();
 
 	QString code = QString(
