@@ -73,7 +73,7 @@ jobs:
             -DCMAKE_GENERATOR="Ninja" `
             -DCMAKE_BUILD_TYPE="Release" `
             -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" `
-            -DJASP_TEST_BUILD=ON `
+            -DBUILD_TESTS=ON `
             -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC" `
             -DRTOOLS_PATH="C:/rtools45/ucrt64"
         env:
@@ -87,3 +87,15 @@ jobs:
              & "$env:IQTA_TOOLS\CMake_64\bin\cmake.exe" --build jasp-build --target all
         env: 
             VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/"
+
+      - name: Run Tests
+        shell: pwsh
+        run: |
+            cd jasp-build
+            ls
+            $env:QT_QPA_PLATFORM = "offscreen"
+            & ".\JASPTest.exe"
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Tests failed with exit code $LASTEXITCODE"
+                exit $LASTEXITCODE
+            }
