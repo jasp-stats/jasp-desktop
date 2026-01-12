@@ -37,8 +37,6 @@
 #define STDCALL
 #endif
 
-#include <stdio.h>
-
 extern "C" {
 
 struct SyntaxBridgeColumn {

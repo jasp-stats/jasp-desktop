@@ -68,17 +68,34 @@ if((NOT LibArchive_FOUND) AND (NOT WIN32))
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.78 REQUIRED)
+find_package(Boost 1.78 REQUIRED COMPONENTS system)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
+get_target_property(QT_TARGET_TYPE Qt6::Core TYPE)
+set(USE_QT_STATIC_LIBS OFF)
+message(STATUS "QT_TARGET_TYPE: ${QT_TARGET_TYPE}")
+if(QT_TARGET_TYPE STREQUAL STATIC_LIBRARY)
+  set(USE_QT_STATIC_LIBS ON)
+endif()
 
 if(NOT FLATPAK_USED)
-  find_package(
-    Qt6 REQUIRED
-    COMPONENTS Core
-               Gui
-               OpenGL
-               Widgets
-               Qml
+  find_package(Qt6 REQUIRED COMPONENTS
+      Gui
+      OpenGL
+      Widgets
+      Qml
+      QuickTemplates2
+      Quick
+      QuickLayouts
+      QuickControls2
+      QuickControls2Impl
+      QmlWorkerScript
+      QuickWidgets
+      Core5Compat
+  )
+  if(NOT USE_QT_STATIC_LIBS)
+    find_package(
+      Qt6 REQUIRED COMPONENTS
                WebEngineQuick
                WebChannel
                Svg
@@ -86,19 +103,13 @@ if(NOT FLATPAK_USED)
                Xml
                Sql
                DBus
-               QuickTemplates2
                LabsFolderListModel
-               Quick
-               QuickLayouts
-               QuickControls2
-               QuickControls2Impl
-               QmlWorkerScript
-               QuickWidgets
-               Core5Compat)
+    )
+  endif()
 
 else()
 
-	message(STATUS "flatpak arch is $ENV{FLATPAK_ARCH}")
+  message(STATUS "flatpak arch is $ENV{FLATPAK_ARCH}")
 
   find_package(
     Qt6 REQUIRED

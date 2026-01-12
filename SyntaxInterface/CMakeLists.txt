@@ -1,15 +1,12 @@
-# This will build the RJaspInterface shared library
+# This will build the interface for the jaspSyntax R package
 
 list(APPEND CMAKE_MESSAGE_CONTEXT SyntaxInterface)
 
 file(GLOB_RECURSE HEADER_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES	"${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 
-if(WIN32)
-	add_library(SyntaxInterface SHARED ${SOURCE_FILES} ${HEADER_FILES})
-else()
-	add_library(SyntaxInterface STATIC ${SOURCE_FILES} ${HEADER_FILES})
-endif()
+add_library(SyntaxInterface SHARED ${SOURCE_FILES} ${HEADER_FILES})
+qt_add_resources(SyntaxInterface "Dummy" FILES Dummy.qml)
 
 #add_dependencies(CommonData QMLComponents)
 
@@ -33,7 +30,16 @@ target_link_libraries(
 		Qt::Core
 		Qt::Quick
 		Qt::QuickControls2
+)
+
+if(USE_QT_STATIC_LIBS)
+	target_link_libraries(
+		SyntaxInterface
+		PUBLIC
+		$<$<PLATFORM_ID:Windows>:${CMAKE_PREFIX_PATH}/plugins/platforms/qminimal.lib>
+		$<$<NOT:$<PLATFORM_ID:Windows>>:${CMAKE_PREFIX_PATH}/plugins/platforms/libqminimal.a>
 	)
+endif()
 
 target_compile_definitions(
 	SyntaxInterface
@@ -42,5 +48,15 @@ target_compile_definitions(
 	JASP_R_INTERFACE_LIBRARY
 	)
 
+if(USE_QT_STATIC_LIBS)
+	target_compile_definitions(
+		SyntaxInterface
+		PUBLIC
+		USE_QT_STATIC_LIBS
+	)
+endif()
+
+
+qt_import_qml_plugins(SyntaxInterface)
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

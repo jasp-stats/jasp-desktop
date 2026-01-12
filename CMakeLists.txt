@@ -182,9 +182,9 @@ else()
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
     BYPRODUCTS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
                ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll.a
-			   ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll
-			   ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a
-	COMMAND
+               ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll
+               ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a
+        COMMAND
       ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
       ${CMAKE_BINARY_DIR}/R-Interface "-DRTOOLS_PATH:PATH=${RTOOLS_PATH}"
       "-DCMAKE_C_COMPILER:PATH=${RTOOLS_C_COMPILER}"
@@ -199,8 +199,10 @@ else()
 
 endif()
 
-add_subdirectory(Engine)
-add_subdirectory(Desktop)
+if(NOT USE_QT_STATIC_LIBS)
+  add_subdirectory(Engine)
+  add_subdirectory(Desktop)
+endif()
 
 if(BUILD_TESTS)
   enable_testing()
@@ -211,7 +213,9 @@ endif()
 include(Modules)
 
 # Install logic, usually staging a deploy-able JASP in Build/Install/ folder
-include(Install)
+if(NOT USE_QT_STATIC_LIBS)
+  include(Install)
+endif()
 
 # Packs and creates installer executable for Windows, and macOS
 if(NOT LINUX)

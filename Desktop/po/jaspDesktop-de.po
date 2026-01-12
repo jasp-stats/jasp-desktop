@@ -4887,7 +4887,6 @@ msgctxt "RibbonModel|"
 msgid "Insert R column after"
 msgstr "R-Spalte dahinter einfügen"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Reverse values"
 msgstr "Werte umdrehen"

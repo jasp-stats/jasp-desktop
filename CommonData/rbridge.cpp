@@ -949,7 +949,7 @@ extern "C" const char ** STDCALL rbridge_allColumnNames(size_t & numCols, bool e
 }
 
 
-extern "C" const char *rbridge_computedColumnFilterIs()
+extern "C" const char * STDCALL rbridge_computedColumnFilterIs()
 {
 	return computedColumnFilter.c_str();
 }

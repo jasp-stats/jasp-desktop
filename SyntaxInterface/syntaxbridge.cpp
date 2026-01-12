@@ -41,6 +41,9 @@
 
 
 #include <QtPlugin>
+#ifdef USE_QT_STATIC_LIBS
+Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+#endif
 Q_IMPORT_PLUGIN(JASP_ControlsPlugin)
 
 #define _STRINGIZE(x) #x
