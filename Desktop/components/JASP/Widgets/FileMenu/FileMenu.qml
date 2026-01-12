@@ -360,7 +360,7 @@ FocusScope
 			property real otherColumnsWidth:	actionMenu.width + resourceMenu.width
 			property bool aButtonVisible:		resourceRepeaterId.count > 0 && fileMenuModel.resourceButtons.currentQML !== ''
 
-			property real desiredWidth:			Math.min(mainWindowRoot.width - otherColumnsWidth, 600 * preferencesModel.uiScale)
+			property real desiredWidth:			Math.min(mainWindowRoot.width - otherColumnsWidth, Math.max(showSelectedSubScreen.item ? showSelectedSubScreen.item.implicitWidth : 0, 600 * preferencesModel.uiScale))
 			property real desiredX:				otherColumnsWidth - (aButtonVisible ? 0 : desiredWidth)
 
 			property string previousQML: ""

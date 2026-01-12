@@ -8,309 +8,296 @@ PrefsScrollView
 {
 	id:                     scrollPrefs
 
-	Column
+	MenuHeader
 	{
+		id:			menuHeader
+		headertext:	qsTr("Data Preferences")
+		helpfile:	"preferences/PrefsData"
+		addMargin:	false
+	}
 
-		width:		scrollPrefs.width
-		spacing:	jaspTheme.rowSpacing
+	PrefsGroupRect
+	{
+		id:				spreadSheetEditor
+		title:			qsTr("External spreadsheet editor (for data synchronization)")
 
-		MenuHeader
+		Item
 		{
-			id:			menuHeader
-			headertext:	qsTr("Data Preferences")
-			helpfile:	"preferences/PrefsData"
-			anchorMe:	false
-			width:		scrollPrefs.width - (2 * jaspTheme.generalMenuMargin)
-			x:			jaspTheme.generalMenuMargin
-		}
+			height:		editCustomEditor.y + editCustomEditor.height
+			width:		parent.width
 
-		PrefsGroupRect
-		{
-			id:				spreadSheetEditor
-			title:			qsTr("External spreadsheet editor (for data synchronization)")
+			CheckBox
+			{
+				id:                     useDefaultEditor
+				label:                  qsTr("Use default spreadsheet editor")
+				checked:                LINUX || preferencesModel.useDefaultEditor
+				onCheckedChanged:       preferencesModel.useDefaultEditor = checked
+				enabled:                !LINUX
+				focus:					true
+				KeyNavigation.tab:      editCustomEditor
+			}
+
+			Label
+			{
+				id:					linuxInfo
+				text:				qsTr("<i>On Linux the default spreadsheet editor is always used.</i>")
+				visible:			LINUX
+				textFormat:			Text.StyledText
+
+				anchors
+				{
+					top:			useDefaultEditor.bottom
+					left:			useDefaultEditor.left
+					leftMargin:		jaspTheme.subOptionOffset
+				}
+			}
 
 			Item
 			{
-				height:		editCustomEditor.y + editCustomEditor.height
-				width:		parent.width
+				id:					editCustomEditor
+				enabled:			!LINUX && !preferencesModel.useDefaultEditor
+				width:				parent.width
+				height:				browseEditorButton.height
+				anchors.top:		useDefaultEditor.bottom
 
-				CheckBox
+				RoundedButton
 				{
-					id:                     useDefaultEditor
-					label:                  qsTr("Use default spreadsheet editor")
-					checked:                LINUX || preferencesModel.useDefaultEditor
-					onCheckedChanged:       preferencesModel.useDefaultEditor = checked
-					enabled:                !LINUX
-					focus:					true
-					KeyNavigation.tab:      editCustomEditor
+					id:					browseEditorButton
+					text:				qsTr("Select custom editor")
+					onClicked:			preferencesModel.browseSpreadsheetEditor()
+					anchors.left:		parent.left
+					anchors.leftMargin: jaspTheme.subOptionOffset
+
+					KeyNavigation.tab:      customEditorText
+					activeFocusOnTab:		true
 				}
 
-				Label
+				Rectangle
 				{
-					id:					linuxInfo
-					text:				qsTr("<i>On Linux the default spreadsheet editor is always used.</i>")
-					visible:			LINUX
-					textFormat:			Text.StyledText
-
 					anchors
 					{
-						top:			useDefaultEditor.bottom
-						left:			useDefaultEditor.left
-						leftMargin:		jaspTheme.subOptionOffset
+						left:			browseEditorButton.right
+						right:			parent.right
+						top:			parent.top
+						bottom:			parent.bottom
 					}
-				}
 
-				Item
-				{
-					id:					editCustomEditor
-					enabled:			!LINUX && !preferencesModel.useDefaultEditor
-					width:				parent.width
 					height:				browseEditorButton.height
-					anchors.top:		useDefaultEditor.bottom
+					color:				jaspTheme.white
+					border.color:		jaspTheme.buttonBorderColor
+					border.width:		1
 
-					RoundedButton
+					TextInput
 					{
-						id:					browseEditorButton
-						text:				qsTr("Select custom editor")
-						onClicked:			preferencesModel.browseSpreadsheetEditor()
-						anchors.left:		parent.left
-						anchors.leftMargin: jaspTheme.subOptionOffset
+						id:					customEditorText
+						text:				preferencesModel.customEditor
+						clip:				true
+						font:				jaspTheme.font
+						onTextChanged:		preferencesModel.customEditor = text
+						color:				jaspTheme.textEnabled
 
-						KeyNavigation.tab:      customEditorText
-						activeFocusOnTab:		true
-					}
+						KeyNavigation.tab:      autoSave
 
-					Rectangle
-					{
 						anchors
 						{
-							left:			browseEditorButton.right
+							left:			parent.left
 							right:			parent.right
-							top:			parent.top
-							bottom:			parent.bottom
+							verticalCenter:	parent.verticalCenter
+							margins:		jaspTheme.generalAnchorMargin
 						}
 
-						height:				browseEditorButton.height
-						color:				jaspTheme.white
-						border.color:		jaspTheme.buttonBorderColor
-						border.width:		1
-
-						TextInput
+						Connections
 						{
-							id:					customEditorText
-							text:				preferencesModel.customEditor
-							clip:				true
-							font:				jaspTheme.font
-							onTextChanged:		preferencesModel.customEditor = text
-							color:				jaspTheme.textEnabled
-
-							KeyNavigation.tab:      autoSave
-
-							anchors
-							{
-								left:			parent.left
-								right:			parent.right
-								verticalCenter:	parent.verticalCenter
-								margins:		jaspTheme.generalAnchorMargin
-							}
-
-							Connections
-							{
-								target:					preferencesModel
-								function onCustomEditorChanged(customEditor) { customEditorText.text = customEditor; }
-							}
+							target:					preferencesModel
+							function onCustomEditorChanged(customEditor) { customEditorText.text = customEditor; }
 						}
 					}
 				}
 			}
 		}
-		
-		PrefsGroupRect
+	}
+
+	PrefsGroupRect
+	{
+		id:				savingRect
+		title:			qsTr("Save settings")
+
+		CheckBox
 		{
-			id:				savingRect
-			title:			qsTr("Save settings")
+			id:					autoSave
+			label:				qsTr("Automatically save a backup of your workspace")
+			checked:			preferencesModel.autoSaveAtAll
+			onCheckedChanged:	preferencesModel.autoSaveAtAll = checked
+			toolTip:			qsTr("When enabled this will save a copy of your workspace in a folder next to the logs. If JASP crashes with otherwise unsaved changes this backup will make sure you don't lose all your work.")
 
-			CheckBox
-			{
-				id:					autoSave
-				label:				qsTr("Automatically save a backup of your workspace")
-				checked:			preferencesModel.autoSaveAtAll
-				onCheckedChanged:	preferencesModel.autoSaveAtAll = checked
-				toolTip:			qsTr("When enabled this will save a copy of your workspace in a folder next to the logs. If JASP crashes with otherwise unsaved changes this backup will make sure you don't lose all your work.")
-	
-				KeyNavigation.tab:	autoSaveInterval
-			}
-			
-			SpinBox
-			{
-				id:					autoSaveInterval
-				text:				qsTr("Autosave interval in minutes")
-				value:				preferencesModel.autoSaveIntervalSec / 60
-				onValueChanged:		preferencesModel.autoSaveIntervalSec = (value  * 60)
-				from:				1
-
-				KeyNavigation.tab:	orderByDefault
-
-				toolTip:	qsTr("Interval in minutes between autosaves.")
-			}
-			
+			KeyNavigation.tab:	autoSaveInterval
 		}
 
-		
-		PrefsGroupRect
+		SpinBox
 		{
-			id:				importRect
-			title:			qsTr("Import settings")
-		
-			CheckBox
-			{
-				id:					orderByDefault
-				label:				qsTr("Order labels by value by default")
-				checked:			preferencesModel.orderByValueByDefault
-				onCheckedChanged:	preferencesModel.orderByValueByDefault = checked
-				toolTip:			qsTr("This might incur a slowdown while loading very large datasets with lots of scalars. Think 1 million+ rows of random floating point numbers.\nIf you find that loading of such a file is slow you can disable this option.")
-	
-				KeyNavigation.tab:	thresholdScale
-			}
-		
-		
-			SpinBox
-			{
-				id:					thresholdScale
-				text:				qsTr("Threshold for Scale")
-				value:				preferencesModel.thresholdScale
-				onValueChanged:		preferencesModel.thresholdScale = value
+			id:					autoSaveInterval
+			text:				qsTr("Autosave interval in minutes")
+			value:				preferencesModel.autoSaveIntervalSec / 60
+			onValueChanged:		preferencesModel.autoSaveIntervalSec = (value  * 60)
+			from:				1
 
-				KeyNavigation.tab:	resetDataWithThresholdButton
+			KeyNavigation.tab:	orderByDefault
 
-				toolTip:	qsTr("If a variable has more distinct integer values than this it will be interpreted as scale.")
-
-				Button
-				{
-					id:				resetDataWithThresholdButton
-					label:			qsTr("Reset types of loaded variables")
-					visible:		mainWindow.dataAvailable
-					onClicked:		mainWindow.resetVariableTypes()
-					anchors
-					{
-						top:		thresholdScale.top
-						left:		thresholdScale.right
-						leftMargin: jaspTheme.generalAnchorMargin
-					}
-
-					KeyNavigation.tab:	maxScaleLevels
-				}
-			}
-
-			SpinBox
-			{
-				id:					maxScaleLevels
-				text:				qsTr("Maximum allowed levels for scale when used as nominal/ordinal")
-				value:				preferencesModel.maxScaleLevels
-				onValueChanged:		preferencesModel.maxScaleLevels = value
-
-				KeyNavigation.tab:	missingValueDataLabelInput
-
-				toolTip:	qsTr("For analysis accepting only nominal or ordinal for some variables, if a scale variable is used, JASP checks whether the number of levels of this variable exceeds this maximum.")
-			}
-
+			toolTip:	qsTr("Interval in minutes between autosaves.")
 		}
-		
 
-		PrefsGroupRect
+	}
+
+
+	PrefsGroupRect
+	{
+		id:				importRect
+		title:			qsTr("Import settings")
+
+		CheckBox
 		{
-			id:				missingValuesSettings
-			title:			qsTr("Missing values setting")
+			id:					orderByDefault
+			label:				qsTr("Order labels by value by default")
+			checked:			preferencesModel.orderByValueByDefault
+			onCheckedChanged:	preferencesModel.orderByValueByDefault = checked
+			toolTip:			qsTr("This might incur a slowdown while loading very large datasets with lots of scalars. Think 1 million+ rows of random floating point numbers.\nIf you find that loading of such a file is slow you can disable this option.")
 
-			Item
+			KeyNavigation.tab:	thresholdScale
+		}
+
+
+		SpinBox
+		{
+			id:					thresholdScale
+			text:				qsTr("Threshold for Scale")
+			value:				preferencesModel.thresholdScale
+			onValueChanged:		preferencesModel.thresholdScale = value
+
+			KeyNavigation.tab:	resetDataWithThresholdButton
+
+			toolTip:	qsTr("If a variable has more distinct integer values than this it will be interpreted as scale.")
+
+			Button
 			{
-				id:				missingValueDataLabelItem
-				height:			missingValueDataLabelInput.height
-				width:			parent.width
-
-				Label
+				id:				resetDataWithThresholdButton
+				label:			qsTr("Reset types of loaded variables")
+				visible:		mainWindow.dataAvailable
+				onClicked:		mainWindow.resetVariableTypes()
+				anchors
 				{
-					id:					missingValueDataLabelLabel
-					text:				qsTr("Show missing values as: ")
-
-					anchors
-					{
-						left:			parent.left
-						verticalCenter:	parent.verticalCenter
-					}
+					top:		thresholdScale.top
+					left:		thresholdScale.right
+					leftMargin: jaspTheme.generalAnchorMargin
 				}
 
-				PrefsTextInput
+				KeyNavigation.tab:	maxScaleLevels
+			}
+		}
+
+		SpinBox
+		{
+			id:					maxScaleLevels
+			text:				qsTr("Maximum allowed levels for scale when used as nominal/ordinal")
+			value:				preferencesModel.maxScaleLevels
+			onValueChanged:		preferencesModel.maxScaleLevels = value
+
+			KeyNavigation.tab:	missingValueDataLabelInput
+
+			toolTip:	qsTr("For analysis accepting only nominal or ordinal for some variables, if a scale variable is used, JASP checks whether the number of levels of this variable exceeds this maximum.")
+		}
+
+	}
+
+
+	PrefsGroupRect
+	{
+		id:				missingValuesSettings
+		title:			qsTr("Missing values setting")
+
+		Item
+		{
+			id:				missingValueDataLabelItem
+			height:			missingValueDataLabelInput.height
+			width:			parent.width
+
+			Label
+			{
+				id:					missingValueDataLabelLabel
+				text:				qsTr("Show missing values as: ")
+
+				anchors
 				{
-					id:					missingValueDataLabelInput
-
-					text:				preferencesModel.dataLabelNA
-					onEditingFinished:	preferencesModel.dataLabelNA = text
-					nextEl:				missingValuesList
-
-					anchors
-					{
-						left:		missingValueDataLabelLabel.right
-						right:		parent.right
-					}
+					left:			parent.left
+					verticalCenter:	parent.verticalCenter
 				}
 			}
 
-			Item
+			PrefsTextInput
 			{
-				width:			parent.width
-				height:			missingValuesList.height
+				id:					missingValueDataLabelInput
 
-				PrefsMissingValues
+				text:				preferencesModel.dataLabelNA
+				onEditingFinished:	preferencesModel.dataLabelNA = text
+				nextEl:				missingValuesList
+
+				anchors
 				{
-					id:							missingValuesList
-					model:						preferencesModel
-					showResetWorkspaceButton:	true
-					resetButtonLabel:			qsTr("Reset with standard values")
-					resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
-					KeyNavigation.tab:			WINDOWS ? noBomNative : useDefaultEditor
+					left:		missingValueDataLabelLabel.right
+					right:		parent.right
 				}
 			}
 		}
 
-		PrefsGroupRect
+		Item
 		{
-			visible:	WINDOWS
-			enabled:	WINDOWS
-			title:		qsTr("Windows workaround")
+			width:			parent.width
+			height:			missingValuesList.height
 
-			CheckBox
+			PrefsMissingValues
 			{
-				id:					noBomNative
-				label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
-				checked:			preferencesModel.windowsNoBomNative
-				onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
-				toolTip:			qsTr("See documentation for more information ")
-
-				KeyNavigation.tab:		codePageSelection
+				id:							missingValuesList
+				model:						preferencesModel
+				showResetWorkspaceButton:	true
+				resetButtonLabel:			qsTr("Reset with standard values")
+				resetButtonTooltip:			qsTr("Reset missing values with the standard JASP missing values")
+				KeyNavigation.tab:			WINDOWS ? noBomNative : useDefaultEditor
 			}
+		}
+	}
 
-			/*ErrorMessage
-			{
-				text: WINDOWS && windowsCodePagesHelper.error ? qsTr("Some problem occured loading the available codepages...") : ""
-			}*/
+	PrefsGroupRect
+	{
+		visible:	WINDOWS
+		enabled:	WINDOWS
+		title:		qsTr("Windows workaround")
+
+		CheckBox
+		{
+			id:					noBomNative
+			label:				qsTr("Assume CSV is the selected codepage, when no BOM is specified.")
+			checked:			preferencesModel.windowsNoBomNative
+			onCheckedChanged:	preferencesModel.windowsNoBomNative = checked
+			toolTip:			qsTr("See documentation for more information ")
+
+			KeyNavigation.tab:		codePageSelection
+		}
 
 
-			DropDown
-			{
-				id:			 			codePageSelection
-				enabled:				preferencesModel.windowsNoBomNative && WINDOWS //&& !windowsCodePagesHelper.error
-				toolTip:				qsTr("See documentation for more information ")
-				values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
-				addEmptyValue:			true
-				showEmptyValueAsNormal:	true
-				addLineAfterEmptyValue:	true
-				placeholderText:		qsTr("Choose codepage here")
-				startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
-				onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
 
-				KeyNavigation.tab:		useDefaultEditor
-			}
+		DropDown
+		{
+			id:			 			codePageSelection
+			enabled:				preferencesModel.windowsNoBomNative && WINDOWS //&& !windowsCodePagesHelper.error
+			toolTip:				qsTr("See documentation for more information ")
+			values:			 		WINDOWS ? windowsCodePagesHelper.codePageIDs : []
+			addEmptyValue:			true
+			showEmptyValueAsNormal:	true
+			addLineAfterEmptyValue:	true
+			placeholderText:		qsTr("Choose codepage here")
+			startValue:				WINDOWS ? windowsCodePagesHelper.codePageID : ""
+			onValueChanged: 		if(WINDOWS) windowsCodePagesHelper.codePageID = value
+
+			KeyNavigation.tab:		useDefaultEditor
 		}
 	}
 }

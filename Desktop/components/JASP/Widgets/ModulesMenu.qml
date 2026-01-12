@@ -268,9 +268,6 @@ FocusScope
 				MenuHeader
 				{
 					headertext:	qsTr("Workspace settings")
-					anchorMe:	false
-					width:		parent.width - (2 * jaspTheme.generalMenuMargin)
-					x:			jaspTheme.generalMenuMargin
 				}
 
 

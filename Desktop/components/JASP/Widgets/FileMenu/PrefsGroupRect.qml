@@ -11,13 +11,13 @@ Rectangle
 	border.color:	jaspTheme.fileMenuLightBorder
 	border.width:	1
 
+	width:			parent.width
 	implicitHeight:	contentColumn.y + contentColumn.height + jaspTheme.generalAnchorMargin
 	height:			implicitHeight
-	implicitWidth:	parent.width - (jaspTheme.generalAnchorMargin * 2)
-	width:			implicitWidth
-	x:				jaspTheme.generalAnchorMargin
-	y:				jaspTheme.generalAnchorMargin
-
+	implicitWidth:	Math.max(
+						titleText.anchors.leftMargin + titleText.implicitWidth + jaspTheme.generalAnchorMargin,
+						contentColumn.anchors.leftMargin + contentColumn.implicitWidth + jaspTheme.generalAnchorMargin
+					)
 
 			property alias title:		titleText.text
 			property alias spacing:		contentColumn.spacing
@@ -31,7 +31,6 @@ Rectangle
 		anchors.top:		parent.top
 		anchors.left:		parent.left
 		color:				jaspTheme.textEnabled
-		text:				""
 		height:				text !== "" ? implicitHeight : 0
 	}
 
@@ -39,6 +38,7 @@ Rectangle
 	{
 		id:					contentColumn
 		spacing:			jaspTheme.generalAnchorMargin
+		width:				parent.width - anchors.leftMargin - jaspTheme.generalAnchorMargin
 
 		anchors
 		{
@@ -47,9 +47,6 @@ Rectangle
 
 			left:			parent.left
 			leftMargin:		(titleText.text !== "" ? jaspTheme.subOptionOffset : 0) + jaspTheme.generalAnchorMargin
-
-			right:			parent.right
-			rightMargin:	jaspTheme.generalAnchorMargin
 		}
 	}
 }

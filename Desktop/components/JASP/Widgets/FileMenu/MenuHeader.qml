@@ -10,7 +10,7 @@ Item
 	property bool	toolseparator:	true
 	property string headertext:		""
 	property string helpfile:		""
-	property bool	anchorMe:		true
+	property bool	addMargin:		true
 
 	function showHelp()
 	{
@@ -18,15 +18,9 @@ Item
 			helpModel.showOrTogglePage(helpfile);
 	}
 
+	x:						addMargin ? jaspTheme.generalMenuMargin : 0
+	width:					parent.width - (addMargin ? 2 * jaspTheme.generalMenuMargin : 0)
 	height:					jaspTheme.menuHeaderHeight
-	anchors
-	{
-		top:				!anchorMe ? undefined : parent.top
-		left:				!anchorMe ? undefined : parent.left
-		right:				!anchorMe ? undefined : parent.right
-		leftMargin:			!anchorMe ? undefined : jaspTheme.generalMenuMargin
-		rightMargin:		!anchorMe ? undefined : jaspTheme.generalMenuMargin
-	}
 
 	Label
 	{
