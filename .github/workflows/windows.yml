@@ -2,7 +2,7 @@ name: 'Windows'
 
 on:
    pull_request:
-     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', '**.yml']
+     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', 'windows.yml']
    workflow_dispatch:
    
 jobs:
