@@ -38,7 +38,6 @@ PrefsScrollView
 			checked:				!preferencesModel.normalizedNotation
 			onCheckedChanged:		preferencesModel.normalizedNotation = !checked
 			KeyNavigation.tab:		fixDecs
-
 		}
 
 		Item
@@ -197,7 +196,7 @@ PrefsScrollView
 			toolTip:			qsTr("Add R syntax for each analysis")
 
 
-			KeyNavigation.tab:		displayExactPVals
+			KeyNavigation.tab:		storeStateEtc
 		}
 
 		CheckBox
@@ -209,6 +208,19 @@ PrefsScrollView
 			height:				implicitHeight * preferencesModel.uiScale
 			toolTip:			qsTr("Enabling this can cause filesize of jaspfiles to increase, sometimes by a lot.")
 
+
+			KeyNavigation.tab:		showInteractiveDefault
+		}
+		
+		CheckBox
+		{
+			id:					showInteractiveDefault
+			label:				qsTr("Show interactive plots by default, where possible.")
+			checked:			preferencesModel.showInteractiveDefault
+			onCheckedChanged:	preferencesModel.showInteractiveDefault = checked
+			height:				implicitHeight * preferencesModel.uiScale
+			toolTip:			qsTr("When enabled shows the interactive plots by default, you can always switch them in the plots own dropdown too.")
+			
 
 			KeyNavigation.tab:		displayExactPVals
 		}
