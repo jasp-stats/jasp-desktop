@@ -25,7 +25,8 @@ $(document).ready(function () {
 		"pExact" :				false,
 		"decimals":				"",
 		"tempFolder":			"",
-		"normalizedNotation":	true
+		"normalizedNotation":	true,
+		"showInteractiveDefault":	true
 	}
 
 	var selectedAnalysisId	= -1;

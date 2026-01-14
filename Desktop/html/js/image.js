@@ -7,6 +7,8 @@ JASPWidgets.image = JASPWidgets.Resizeable.extend({
 		data:			null,
 		custom:			null,
 		error:			null,
+		interactive:	false,
+		userInteractive:false,
 		name:			"",
 		editOptions:	{},
 		revision:		0,
@@ -48,8 +50,14 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	interactiveImageClicked:	function() {
 		// Toggle between interactive and static modes
+		var wasUserInteractive     = this.model.get("userInteractive");
 		var isCurrentlyInteractive = this.model.get("interactive");
-		this.model.set("interactive", !isCurrentlyInteractive);
+		
+		if(!wasUserInteractive && this.hasInteractive())
+			isCurrentlyInteractive = window.globSet.showInteractiveDefault
+		
+		this.model.set("interactive",		!isCurrentlyInteractive);
+		this.model.set("userInteractive",	true);
 
 		// Clear the current content and re-render
 		// this.myView.$el.empty();
@@ -205,7 +213,9 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 
 	render: function () {//interactive = false) {
 
-		if (this.model.get("interactive")) {
+		var hasInteractive = this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;
+		
+		if (hasInteractive && ((this.model.get("userInteractive") && this.model.get("interactive")) || (!this.model.get("userInteractive") && window.globSet.showInteractiveDefault))) {
 
 			console.log("image.js: this is where the post step to run the json happens!");
 			this.preRenderPlotly();
@@ -218,7 +228,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 			}
 
 		} else {
-			console.log("image.js: jaspHtml but not plotly!")
+			console.log("image.js: jaspHtml but not plotly or we just want to see the normal plot!")
 			this.renderDefault();
 		}
 	},

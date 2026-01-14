@@ -125,16 +125,23 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 	runJavaScript("window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();");
 }
 
+void ResultsJsInterface::setShowInteractiveDefaultHandler(bool showIt)
+{
+	runJavaScript("window.globSet.showInteractiveDefault = " +  QString(showIt ? "true" : "false")  + "; window.reRenderAnalyses();");
+}
+
 void ResultsJsInterface::setGlobalJsValues()
 {
-	QString exactPValueString			= PreferencesModel::prefs()->exactPValues() ? "true" : "false",
-			normalizedNotationString	= PreferencesModel::prefs()->normalizedNotation() ? "true" : "false",
-			tempFolder					= "file://" + tq(TempFiles::sessionDirName());
+	QString exactPValueString				= PreferencesModel::prefs()->exactPValues()				? "true" : "false",
+			normalizedNotationString		= PreferencesModel::prefs()->normalizedNotation()		? "true" : "false",
+			showInteractiveDefaultString	= PreferencesModel::prefs()->showInteractiveDefault()	? "true" : "false",
+			tempFolder						= "file://" + tq(TempFiles::sessionDirName());
 
-	QString js =	"  window.globSet.pExact = "				+ exactPValueString;
-	js +=			"; window.globSet.normalizedNotation = "	+ normalizedNotationString;
-	js +=			"; window.globSet.decimals = "				+ PreferencesModel::prefs()->fixedDecimalsForJS();
-	js +=			"; window.globSet.tempFolder = '"			+ tempFolder + "/'";
+	QString js =	"  window.globSet.pExact = "					+ exactPValueString;
+	js +=			"; window.globSet.normalizedNotation = "		+ normalizedNotationString;
+	js +=			"; window.globSet.decimals = "					+ PreferencesModel::prefs()->fixedDecimalsForJS();
+	js +=			"; window.globSet.tempFolder = '"				+ tempFolder + "/'";
+	js +=			"; window.globSet.showInteractiveDefault = "	+ showInteractiveDefaultString;
 	runJavaScript(js);
 }
 
