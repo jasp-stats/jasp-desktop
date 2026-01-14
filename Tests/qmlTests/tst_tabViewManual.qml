@@ -33,7 +33,7 @@ TestCase
 				TextField
 				{
 					name: 				"Hypothesis"
-					startValue:			qsTr("H") + (rowIndex + 1)
+					startValue:			"H" + (rowIndex + 1)
 				}
 				IntegerField
 				{
