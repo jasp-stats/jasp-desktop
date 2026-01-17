@@ -33,6 +33,7 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "sr"		,	true	},
 	{ "ta"		,	true	},
 	{ "tr"		,	true	},
+	{ "eu"		,	true	},
 	{ "id"		,	false	},
 	{ "ru"		,	false	},
 	{ "it"		,	false	}
