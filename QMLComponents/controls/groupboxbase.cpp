@@ -2,6 +2,7 @@
 
 GroupBoxBase::GroupBoxBase(QQuickItem* parent) 
 	: JASPControl(parent) 
-{ 
-	_controlType = JASPControl::ControlType::GroupBox; 
+{
+	_controlType = JASPControl::ControlType::GroupBox;
+	_useControlMouseArea	= false;
 }
