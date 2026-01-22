@@ -231,6 +231,7 @@ bool IPCChannel::jaspAlive()
 	
 	if(newTimestamp  != _lastHeartBeatTimestamp) {
 		_lastHeartBeatTimestamp = newTimestamp ;
+		_startHeartAttackTimestamp = 0;
 		return true;
 	}
 
@@ -242,9 +243,17 @@ bool IPCChannel::jaspAlive()
 	
 	if(Utils::currentSeconds() - _lastHeartBeatTimestamp > _maxHeartbeatDiffS)
 	{
-		Log::log() << "heartbeat time limit exceeded, last timestamp was from " << (Utils::currentSeconds() - _lastHeartBeatTimestamp) << " seconds ago. Heartbeat file is at '" << _jaspHeartBeatPath << "'."  << std::endl;
-		return false;
+		if (_startHeartAttackTimestamp == 0)
+			// Maybe the engine is just awaken, and the Desktop not yet. Measure the heart attack only from now.
+			_startHeartAttackTimestamp = Utils::currentSeconds();
+		else if (Utils::currentSeconds() - _startHeartAttackTimestamp > _maxHeartAttackDurationS)
+		{
+			Log::log() << "heartbeat time limit exceeded, last timestamp was from " << (Utils::currentSeconds() - _lastHeartBeatTimestamp) << " seconds ago, heart attack started " << (Utils::currentSeconds() - _startHeartAttackTimestamp) << " seconds ago. Heartbeat file is at '" << _jaspHeartBeatPath << "'."  << std::endl;
+			return false;
+		}
 	}
+	else
+		_startHeartAttackTimestamp = 0;
 
 	return true;
 }

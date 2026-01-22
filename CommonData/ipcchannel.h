@@ -79,10 +79,12 @@ private:
 	static bool										heartbeat(std::string path, unsigned int delayMs);
 	static std::thread								_heartbeatThread;
 
-	int64_t											_lastHeartBeatTimestamp = 0;
+	int64_t											_lastHeartBeatTimestamp = 0,
+													_startHeartAttackTimestamp = 0;
 	std::string										_jaspHeartBeatPath;
 	unsigned int									_heatbeatDelayS = 5;
-	unsigned int									_maxHeartbeatDiffS = 100;
+	unsigned int									_maxHeartbeatDiffS = 60,
+													_maxHeartAttackDurationS = 60;
 
 	std::string										_baseName,
 													_nameControl,
