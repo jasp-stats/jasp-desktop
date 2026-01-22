@@ -235,7 +235,7 @@ void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath, b
 	std::string descriptionQml  = getDescriptionQmlFromFolder(folderPath);
 
 	if(descriptionQml == "")
-		throw std::runtime_error("No description found in folder " + folderPath);
+		throw ModuleException(name(), fq(tr("No %1 file found in folder %2").arg(getQmlDescriptionFilename()).arg(folderPath)));
 	
 	QUrl url = QUrl(".");
 	
