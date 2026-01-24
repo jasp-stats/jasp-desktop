@@ -134,7 +134,6 @@ DropArea
 			timeout:		jaspTheme.toolTipTimeout
 			delay:			jaspTheme.toolTipDelay
 			font:			jaspTheme.font
-			background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 			visible:		mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
 			y:				mouseArea.mouseY
 			x:				mouseArea.mouseX + 5

@@ -290,7 +290,6 @@ Window
 	{
 		//These properties override those for ALL attached ToolTips in the application
 		//ToolTip.toolTip shouldn't be changed anywhere else otherwise we get hard to debug behaviour
-		ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor }
 		ToolTip.toolTip.contentItem:	Text
 		{
 			font:			jaspTheme.font
