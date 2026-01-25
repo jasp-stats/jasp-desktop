@@ -93,6 +93,7 @@ $(document).ready(function () {
 		if (analysis === undefined) 
 			return;
 
+		analysis.model.set("title", title);
 		analysis.toolbar.setTitle(title);
 		analysis.toolbar.render();
 	}
