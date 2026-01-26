@@ -32,6 +32,6 @@ struct unexpectedEngineReply  : public std::runtime_error
 #define ENGINE_BORED_SHUTDOWN (30 * 60)
 
 ///Engines need some time between closing and starting to avoid problems with shared memory
-#define ENGINE_COOLDOWN 1
+#define ENGINE_COOLDOWN 200
 
 #endif // ENGINEDEFINITIONS_H
