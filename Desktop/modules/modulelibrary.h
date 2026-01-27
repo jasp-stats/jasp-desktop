@@ -41,6 +41,7 @@ public:
 
     Q_INVOKABLE QVariantMap getEnvironmentInfo() const;
     Q_INVOKABLE void uninstallJASPModule(const QString &moduleName);
+    Q_INVOKABLE void installManyJASPModules(const QStringList &assetUrls);
     Q_INVOKABLE void startInstalling();
     Q_INVOKABLE void finishInstalling();
 

@@ -201,6 +201,10 @@ FocusScope
 					function uninstall(moduleName) {
 						moduleLibrary.uninstallJASPModule(moduleName)
 					}
+
+					function installMany(asset_urls) {
+						moduleLibrary.installManyJASPModules(asset_urls)
+					}
 				}
 			}
 
