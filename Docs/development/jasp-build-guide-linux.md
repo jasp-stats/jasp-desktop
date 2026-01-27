@@ -155,11 +155,11 @@ CMAKE_PREFIX_PATH=/opt/Qt/6.10.1/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-b
 cmake --build jasp-build --target all -j6
 
 # Start JASP desktop application
-./jasp-build/Desktop/JASP --safeGraphics
+QT_QUICK_BACKEND=software ./jasp-build/Desktop/JASP --safeGraphics
 ```
 
 ```shell
-QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics 
+QT_QUICK_BACKEND=software QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics
 # In Chrome or Edge, open http://localhost:8123 to inspect the webengine process
 ```
 
