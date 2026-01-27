@@ -50,8 +50,6 @@ Item
 	signal clicked
 
 	ToolTip.text:				ribbonButton.toolTip
-	ToolTip.timeout:			jaspTheme.toolTipTimeout
-	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.visible:			ribbonButton.toolTip !== "" && mice.containsMouse && !ribbonButton.showPressed
 	
 	Keys.onPressed: (event) =>

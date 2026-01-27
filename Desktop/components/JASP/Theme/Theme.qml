@@ -151,7 +151,7 @@ JaspTheme
 	controlWarningTextColor:			"#B70"
 
 	buttonBackgroundColor:				blue
-	tooltipBackgroundColor:				yellowLight
+	tooltipBackgroundColor:				white
 	debugBackgroundColor:				rose
 	errorMessagesBackgroundColor:		red
 	sliderPartOn:						blue
@@ -198,6 +198,7 @@ JaspTheme
 	spinBoxHeight:							30
 	comboBoxHeight:							20
 	textFieldWidth:							200
+	tooltipMaxWidth:						400
 	textFieldHeight:						20
 	numericFieldWidth:						40
 	splitHandleWidth:						22

@@ -83,7 +83,8 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	JASPTIMER_START(MainWindowConstructor);
 
 	
-	QQuickStyle::setStyle("Basic");
+	QQuickStyle::setStyle("JASP.Style");
+	QQuickStyle::setFallbackStyle("Basic");
 	QQuickWindow::setTextRenderType(Settings::value(Settings::GUI_USE_QT_TEXTRENDER).toBool() ?
 										QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
 

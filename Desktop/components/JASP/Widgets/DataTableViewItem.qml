@@ -82,9 +82,6 @@ Item
 								? ((itemDelegateText.truncated || itemDelegateLabel.truncated) ? "%1 - %2".arg(itemText).arg(itemShadowText) : "")
 								: (itemDelegateText.truncated ? itemText : "")
 
-		toolTipTimeOut:		10000
-		toolTipDelay:		400
-
         onClicked:	(mouse) =>
 		{
 			if(ribbonModel.dataMode)

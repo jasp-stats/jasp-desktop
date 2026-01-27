@@ -1124,6 +1124,15 @@ void JaspTheme::setMenuHeaderHeight(theme_sizeType menuHeaderHeight)
 	emit menuHeaderHeightChanged();
 }
 
+void JaspTheme::setTooltipMaxWidth(theme_sizeType tooltipMaxWidth)
+{
+	if (_tooltipMaxWidth == tooltipMaxWidth)
+		return;
+
+	_tooltipMaxWidth = tooltipMaxWidth;
+	emit tooltipMaxWidthChanged();
+}
+
 void JaspTheme::setHoverTime(theme_timeType hoverTime)
 {
 	if (_hoverTime == hoverTime)

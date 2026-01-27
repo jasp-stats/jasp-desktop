@@ -41,10 +41,6 @@ Rectangle
 	ToolTip
 	{
 		text:			handleRoot.toolTipDrag
-		timeout:		jaspTheme.toolTipTimeout
-		delay:			jaspTheme.toolTipDelay
-		font:			jaspTheme.font
-		background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 		visible:		handleRoot.dragEnabled && hoverMouse.containsMouse && handleRoot.toolTipDrag !== ""
 		y:				hoverMouse.mouseY + 10
 		x:				parent.width / 2
@@ -109,10 +105,6 @@ Rectangle
 			ToolTip
 			{
 				text:			handleRoot.toolTipArrow
-				timeout:		jaspTheme.toolTipTimeout
-				delay:			jaspTheme.toolTipDelay
-				font:			jaspTheme.font
-				background:		Rectangle { color:	jaspTheme.tooltipBackgroundColor }
 				visible:		handleRoot.toolTipArrow !== "" && arrowMouse.containsMouse
 				y:				arrowMouse.mouseY + 15
 				x:				parent.width / 2

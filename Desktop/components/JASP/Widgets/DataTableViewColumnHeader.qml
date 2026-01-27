@@ -238,8 +238,6 @@ Rectangle
 									  )
 									+ (columnError == "" ? "" : "<br><br>" + qsTr("Computed column has error:<br>") + "<code'>" + columnError.replace("\n","<br>") + "</code>")
 								  )
-		ToolTip.timeout:			jaspTheme.toolTipTimeout
-		ToolTip.delay:				jaspTheme.toolTipDelay
 		cursorShape:		Qt.PointingHandCursor
 	}
 }

@@ -63,8 +63,6 @@ Rectangle
 
 
 	ToolTip.text:						toolTip
-	ToolTip.timeout:					jaspTheme.toolTipTimeout
-	ToolTip.delay:						jaspTheme.toolTipDelay
 	ToolTip.visible:					toolTip !== "" && buttonMouseArea.containsMouse
 
 	Keys.onSpacePressed:				clicked();

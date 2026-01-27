@@ -21,8 +21,6 @@ QByteArray JASPControl::_mouseAreaDef = "\
 	z:					5\n\
 	anchors.fill:		parent\n\
 	acceptedButtons:	Qt.NoButton\n\
-	ToolTip.timeout:	jaspTheme.toolTipTimeout\n\
-	ToolTip.delay:		jaspTheme.toolTipDelay\n\
 	ToolTip.text:		parent ? parent.toolTip : ''\n\
 	ToolTip.visible:	ToolTip.text && containsMouse\n\
 }";

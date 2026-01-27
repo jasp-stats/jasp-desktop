@@ -173,12 +173,7 @@ TextInputBase
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
-		// text property is set by TextInpoutBase
 
-		QTC.ToolTip.text		: control.text
-		QTC.ToolTip.timeout		: jaspTheme.toolTipTimeout
-		QTC.ToolTip.delay		: !hovered ? 0 : jaspTheme.toolTipDelay
-		QTC.ToolTip.visible		: contentWidth > width - leftPadding - rightPadding && (hovered || control.activeFocus)
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
