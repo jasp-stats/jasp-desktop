@@ -23,6 +23,11 @@ QtC.ToolTip {
 		color: jaspTheme.textEnabled
 	}
 
-	timeout:	jaspTheme.toolTipTimeout
 	delay:		jaspTheme.toolTipDelay
+	timeout:	jaspTheme.toolTipTimeout
+
+	// Each time the ToolTip is used, QML resets the delay and timeout to the defualt values (delay: 0 and timeout: -1)
+	onDelayChanged: if (delay === 0) delay = jaspTheme.toolTipDelay
+	onTimeoutChanged: if (timeout === -1) timeout = jaspTheme.toolTipTimeout
+
 }
