@@ -12,7 +12,7 @@ QtC.ToolTip {
 		border
 		{
 			color: jaspTheme.uiBorder
-			width: 1
+			width: 2
 		}
 	}
 	contentItem: Text
