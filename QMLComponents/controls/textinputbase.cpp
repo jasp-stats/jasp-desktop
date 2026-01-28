@@ -64,7 +64,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (value.isNumeric())		
 			dblVal = value.asDouble();
 		
-		else if (value.isString() && !QColumnUtils::getDoubleValue(tq(value.asString()), dblVal))
+		else if (value.isString() && !QColumnUtils::getDoubleValue(tq(value.asString()), dblVal, false)) // value comes from the analyses.json: it's already an english format string
 			dblVal = NAN;
 			
 		_value = dblVal; //Stored as the user enters (so 0-100), but sent in json / 100 through
@@ -99,7 +99,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		{
 			double dblVal = 0;
 			QString strValue = tq(value.asString());
-			if (!strValue.isEmpty() && !QColumnUtils::getDoubleValue(strValue, dblVal))
+			if (!strValue.isEmpty() && !QColumnUtils::getDoubleValue(strValue, dblVal, false)) // value comes from the analyses.json: it's already an english format string
 			{
 				setIsRCode();
 				runRScript("as.character(" + _value.toString() + ")", true);
@@ -236,7 +236,7 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 	for (const QString& valStr : results)
 	{
 		double val;
-		succes = QColumnUtils::getDoubleValue(valStr, val);
+		succes = QColumnUtils::getDoubleValue(valStr, val, false); // R works with English format doubles
 
 		if (!succes)
 		{
@@ -358,7 +358,7 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 			isDbl;
 	
 	isInt = QColumnUtils::getIntValue(		value.toString(), valueInt);
-	isDbl = QColumnUtils::getDoubleValue(	value.toString(), valueDbl);
+	isDbl = QColumnUtils::getDoubleValue(	value.toString(), valueDbl, false); // value is already an english format converted double
 	
 	switch (_inputType)
 	{
@@ -375,7 +375,7 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 		for (QString &chunk: chunks)
 		{
 			isInt = QColumnUtils::getIntValue(		chunk, valueInt);
-			isDbl = QColumnUtils::getDoubleValue(	chunk, valueDbl);
+			isDbl = QColumnUtils::getDoubleValue(	chunk, valueDbl, false);
 			
 			if (isInt || isDbl)
 				values.append(isDbl ? valueDbl : double(valueInt));
@@ -442,7 +442,7 @@ void TextInputBase::_setBoundValue()
 	if (_inputType == TextInputType::FormulaType)
 	{
 		double valueDbl = 0;
-		bool isDbl = QColumnUtils::getDoubleValue(_value.toString(), valueDbl);
+		bool isDbl = QColumnUtils::getDoubleValue(_value.toString(), valueDbl, false); // _value is already an english format converted double
 
 		if (isDbl)
 		{
