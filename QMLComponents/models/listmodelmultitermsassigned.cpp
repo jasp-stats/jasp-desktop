@@ -149,6 +149,19 @@ void ListModelMultiTermsAssigned::availableTermsResetHandler(Terms , Terms terms
 		removeTerms(indexes);
 }
 
+void ListModelMultiTermsAssigned::sourceVariableNamesChanged(QMap<QString, QString> map)
+{
+	// Update first _tuples, then call the parent to handle the variables names changed
+	for (Terms& terms : _tuples)
+	{
+		for (const Term& term : terms)
+			if (map.contains(term.label()))
+				terms.replaceVariableName(fq(term.label()), fq(map[term.label()]));
+	}
+
+	ListModelAssignedInterface::sourceVariableNamesChanged(map);
+}
+
 void ListModelMultiTermsAssigned::_setTerms()
 {
 	Terms newTerms;

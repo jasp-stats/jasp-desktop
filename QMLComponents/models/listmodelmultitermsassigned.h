@@ -37,6 +37,8 @@ public:
 
 public slots:
 	void			availableTermsResetHandler(Terms termsToAdd, Terms termsToRemove)							override;
+	void			sourceVariableNamesChanged(QMap<QString, QString> map)										override;
+
 
 private:
 	void			_setTerms();
