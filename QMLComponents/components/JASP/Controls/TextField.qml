@@ -30,6 +30,7 @@ TextInputBase
 	cursorShape:		Qt.IBeamCursor
 	innerControl:		control
 	title:				text
+	mouseAreaZone:		(control.tooLongText && label !== "") ? beforeLabelRect : textField
 	
 	property alias	control:			control
 	property alias	text:				textField.label
@@ -174,8 +175,10 @@ TextInputBase
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
 
+		property bool tooLongText: contentWidth > (width - leftPadding - rightPadding)
+
 		QTC.ToolTip.text		: control.text
-		QTC.ToolTip.visible		: contentWidth > width - leftPadding - rightPadding && (hovered || control.activeFocus)
+		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus)
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),

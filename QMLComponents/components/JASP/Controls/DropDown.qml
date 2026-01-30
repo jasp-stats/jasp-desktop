@@ -305,6 +305,17 @@ ComboBoxBase
 					height:							1
 					color:							jaspTheme.focusBorderColor
 				}
+
+				MouseArea
+				{
+					anchors.fill:					parent
+					acceptedButtons:				Qt.NoButton
+					QTC.ToolTip.text:				model.info
+					QTC.ToolTip.visible:			model.info !== "" && containsMouse
+					cursorShape:					Qt.PointingHandCursor
+					hoverEnabled:					true
+					z:								10
+				}
 			}
 		}
     }

@@ -35,6 +35,25 @@ JASPControl *RadioButtonBase::group()
 	return _group;
 }
 
+void RadioButtonBase::setGroup(JASPControl *group)
+{
+	RadioButtonsGroupBase* radioButtonsGroup = qobject_cast<RadioButtonsGroupBase*>(group);
+	if (!radioButtonsGroup)
+		return;
+
+	if (_group)
+	{
+		if (_group == radioButtonsGroup) return; // Already registered
+
+		//We are already registered somewhere so lets undo that
+		_group->unregisterRadioButton(this);
+	}
+	_group = radioButtonsGroup;
+	_group->registerRadioButton(this);
+
+	emit groupChanged();
+}
+
 void RadioButtonBase::registerWithParent()
 {
 	// Warning: this slot can be called either by the Component.onCompleted of the RadioButton.qml or by a parentChanged signal
@@ -45,17 +64,7 @@ void RadioButtonBase::registerWithParent()
 		RadioButtonsGroupBase* group = qobject_cast<RadioButtonsGroupBase*>(ancestor);
 		if(group)
 		{
-			if (_group)
-			{
-				if (_group == group) return; // Already registered
-
-				//We are already registered somewhere so lets undo that
-				_group->unregisterRadioButton(this);
-			}
-			_group = group;
-			_group->registerRadioButton(this);
-
-			emit groupChanged();
+			setGroup(group);
 			return;
 		}
 		ancestor = ancestor->parentItem();

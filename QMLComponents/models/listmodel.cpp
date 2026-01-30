@@ -46,6 +46,7 @@ QHash<int, QByteArray> ListModel::roleNames() const
 	if(setMe)
 	{
 		roles[TypeRole]						= "type";
+		roles[InfoRole]						= "info";
 		roles[SelectedRole]					= "selected";
 		roles[SelectableRole]				= "selectable";
 		roles[ColumnTypeRole]				= "columnType";
@@ -522,6 +523,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	{
 	case Qt::DisplayRole:
 	case ListModel::NameRole:			return term.label();
+	case ListModel::InfoRole:			return term.info();
 	case ListModel::SelectableRole:		return !term.value().isEmpty() && term.isDraggable();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);
 	case ListModel::TypeRole:			return listView()->containsVariables() ? "variable" : "";

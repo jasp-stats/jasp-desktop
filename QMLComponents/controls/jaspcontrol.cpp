@@ -19,7 +19,7 @@ QByteArray JASPControl::_mouseAreaDef = "\
 	import QtQuick.Controls\n\
 	MouseArea {\n\
 	z:					5\n\
-	anchors.fill:		parent\n\
+	anchors.fill:		parent.mouseAreaZone\n\
 	acceptedButtons:	Qt.NoButton\n\
 	ToolTip.text:		parent ? parent.toolTip : ''\n\
 	ToolTip.visible:	ToolTip.text && containsMouse\n\
@@ -187,6 +187,8 @@ void JASPControl::componentComplete()
 
 	if (_useControlMouseArea)
 	{
+		if (!_mouseAreaZone)
+			_mouseAreaZone = this;
 		QQmlComponent* comp = getMouseAreaComponent(qmlEngine(this));
 		QVariantMap props = { {"hoverEnabled", shouldStealHover()}, {"cursorShape", cursorShape()} };
 

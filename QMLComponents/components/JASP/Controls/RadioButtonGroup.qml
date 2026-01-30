@@ -28,6 +28,7 @@ RadioButtonsGroupBase
 	childControlsArea:	contentArea
 	focusOnTab:			false
 	shouldStealHover:	false
+	mouseAreaZone:		title !== "" ? label : control
 
 	default property alias	content:				contentArea.children
 			property bool	radioButtonsOnSameRow:	false

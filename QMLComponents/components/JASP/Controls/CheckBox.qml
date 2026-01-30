@@ -33,6 +33,7 @@ CheckBoxBase
 	focusIndicator:		focusIndicator
 	childControlsArea:	childControlsArea
 	innerControl:		control
+	mouseAreaZone:		control
 	title:				text
 
 	default property alias	content:				childControlsArea.content
