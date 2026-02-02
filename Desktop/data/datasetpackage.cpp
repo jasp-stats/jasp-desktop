@@ -2672,6 +2672,8 @@ void DataSetPackage::checkDataSetForUpdates()
 
 	if(_dataSet->checkForUpdates(&changedCols, &missingCols, &newCols, &rowCountChanged))
 	{
+		ColumnEncoder::setCurrentColumnNames(	getColumnTypesMap());
+
 		Log::log()	<< "Updates found for DataSet " << _dataSet->id() 
 					<< "| missing cols: '" << tq(missingCols).join(",")
 					<< "' | changed cols: '" << tq(changedCols).join(",")
