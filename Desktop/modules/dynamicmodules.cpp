@@ -25,6 +25,7 @@
 #include <QRegularExpression>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QDir>
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
 #include "utilities/extractarchive.h"
@@ -528,7 +529,7 @@ void DynamicModules::refreshDeveloperModule(bool R, bool Qml)
 void DynamicModules::installJASPDeveloperModule()
 {
 	bool	directLibpathEnabled	= Settings::value(Settings::DIRECT_LIBPATH_ENABLED).toBool();
-	QString modulePath				= directLibpathEnabled ? Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString() : Settings::value(Settings::DEVELOPER_FOLDER).toString();
+	QString modulePath				= directLibpathEnabled ? QDir::cleanPath(Settings::value(Settings::DIRECT_LIBPATH_FOLDER).toString().trimmed()) : Settings::value(Settings::DEVELOPER_FOLDER).toString();
 
 	if(modulePath == "")
 	{
