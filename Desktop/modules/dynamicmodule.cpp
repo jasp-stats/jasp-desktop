@@ -914,6 +914,10 @@ stringset DynamicModule::requiredModules() const
 QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
 #ifdef __APPLE__
 	
+	if(QFileInfo::exists(QDir::cleanPath(libpath + "/READY"))) {
+		return libpath;
+	}
+
 	//we copy everything because we need to patch and resign it all
 	const std::string devMod = Settings::value(Settings::DIRECT_DEVMOD_NAME).toString().toStdString();
 	if(devMod.empty())
