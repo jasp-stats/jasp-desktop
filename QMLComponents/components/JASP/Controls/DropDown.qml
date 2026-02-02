@@ -3,6 +3,63 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype DropDown
+    \inqmlmodule JASP.Controls 1.0
+    \brief A selection control that presents a list of options in a dropdown menu.
+
+    Returns the value of the selected item as a string to R.
+
+    \section1 R Binding
+
+    \list
+    \li \b{Bound Control:} ComboBoxBase (inherits BoundControlBase)
+    \li \b{R Type:} \c character
+    \li \b{Default:} First item's value, or "" if addEmptyValue is true
+    \li \b{Serialization:} String — currentValue property → JSON string
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b label (string) - Label displayed before the dropdown. Default: "".
+    \li \b currentValue (var) - The value of the currently selected item.
+    \li \b currentIndex (int) - Index of currently selected item. Default: 0.
+    \li \b values (array) - Simple array of values (creates value=label pairs). Default: [].
+    \li \b source (var) - Source for populating from variables or other controls.
+    \li \b addEmptyValue (bool) - Add an empty option at the start. Default: false.
+    \li \b placeholderText (string) - Text shown when empty value is selected. Default: "".
+    \endlist
+
+    \section1 Inherited from JASPControl
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b activated(int index) - Emitted when user selects an item.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    DropDown {
+        name: "correlationType"
+        label: qsTr("Correlation coefficient")
+        values: [
+            { label: qsTr("Pearson"),  value: "pearson"  },
+            { label: qsTr("Spearman"), value: "spearman" }
+        ]
+        indexDefaultValue: 0
+    }
+    \endqml
+*/
 ComboBoxBase
 {
 	id:					comboBox

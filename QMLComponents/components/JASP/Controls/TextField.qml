@@ -21,6 +21,62 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype TextField
+    \inqmlmodule JASP.Controls 1.0
+    \brief A single-line text input control for entering strings.
+
+    For numeric input, use IntegerField, DoubleField, or PercentField.
+
+    \section1 R Binding
+
+    \list
+    \li \b{Bound Control:} TextInputBase (inherits BoundControlBase)
+    \li \b{R Type:} \c character
+    \li \b{Default:} "" or value of defaultValue property
+    \li \b{Serialization:} String — value property → JSON string
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b value (string) - Current text value. Default: "".
+    \li \b label (string) - Label displayed before the field. Default: "".
+    \li \b afterLabel (string) - Label displayed after the field. Default: "".
+    \li \b defaultValue (var) - Value restored when field is empty on blur.
+    \li \b placeholderText (string) - Greyed text shown when field is empty. Default: "".
+    \li \b fieldWidth (int) - Width of the input field. Default: jaspTheme.textFieldWidth.
+    \li \b selectValueOnFocus (bool) - Select all text when focused. Default: false.
+    \li \b editable (bool) - Whether user can edit the text. Default: true.
+    \endlist
+
+    \section1 Inherited from JASPControl
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b editingFinished() - Emitted when user completes editing (blur or Enter).
+    \li \b textEdited() - Emitted on each keystroke.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    TextField {
+        name: "tableTitle"
+        label: qsTr("Table title")
+        placeholderText: qsTr("Enter title...")
+        fieldWidth: 200
+    }
+    \endqml
+*/
 TextInputBase
 {
 	id:					textField

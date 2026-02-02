@@ -1,0 +1,34 @@
+project = JASP-QML
+description = JASP QML Components Reference
+version = 1.0
+
+# -- Input Settings --
+# Point to the source code containing the /*! comments */
+sourcedirs = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls \
+             c:/JASP-Packages/jasp-desktop/QMLComponents/doc
+headerdirs = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls
+imagedirs  = ./images
+
+# Tell qdoc to parse QML files - use correct syntax
+sources.fileextensions = *.qml *.qdoc
+headers.fileextensions = *.h
+
+# -- QML Module Configuration --
+# Point to the directory containing qmldir (parent of Controls)
+qmlimportpath = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP
+
+# -- Output Settings --
+outputdir  = ./html_out
+outputformats = HTML
+
+# -- Module Registration --
+qhp.projects = JASP
+qhp.JASP.file = jasp.qhp
+qhp.JASP.namespace = org.jasp-stats.qml.1.0
+qhp.JASP.virtualFolder = jasp
+qhp.JASP.indexTitle = JASP QML Controls
+qhp.JASP.indexRoot =
+
+# -- HTML Styling --
+HTML.stylesheets = style.css
+HTML.headerstyles = "<link rel='stylesheet' type='text/css' href='style/style.css'/>"

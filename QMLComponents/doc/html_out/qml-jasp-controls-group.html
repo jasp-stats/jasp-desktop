@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- Group.qml -->
+  <meta name="description" content="A layout container that groups related controls together.">
+  <title>Group QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>Group</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-from-jaspcontrol">Inherited from JASPControl</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">Group QML Type</h1>
+<!-- $$$Group-brief -->
+<p>A layout container that groups related controls together. <a href="#details">More...</a></p>
+<!-- @@@Group -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-group-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$Group-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Provides automatic label alignment and optional title.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>Bound Control:</b> None (isBound: false)</li>
+<li><b>R Type:</b> N/A</li>
+<li><b>Default:</b> N/A</li>
+<li><b>Serialization:</b> N/A &mdash; Layout only</li>
+</ul>
+<div class="admonition note">
+<p><b>Note: </b>Group is a layout-only control. It does not bind to R options. Child controls within the Group handle their own bindings independently.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>title</b> (string) - Optional title displayed above the group. Default: &quot;&quot;.</li>
+<li><b>columns</b> (int) - Number of columns for child layout. Default: 1.</li>
+<li><b>rowSpacing</b> (int) - Vertical spacing between rows. Default: jaspTheme.rowGroupSpacing.</li>
+<li><b>columnSpacing</b> (int) - Horizontal spacing between columns. Default: jaspTheme.columnGroupSpacing.</li>
+<li><b>indent</b> (bool) - Add left indentation to the group. Default: false.</li>
+<li><b>alignFields</b> (bool) - Auto-align input fields (e.g., <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> labels). Default: true.</li>
+</ul>
+<h2 id="inherited-from-jaspcontrol">Inherited from JASPControl</h2>
+<ul>
+<li><b>enabled</b> (bool) - Enable/disable all child controls. Default: true.</li>
+<li><b>visible</b> (bool) - Show/hide the entire group. Default: true.</li>
+<li><b>toolTip</b> (string) - Hover tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-group.html" translate="no">Group</a></span> {
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Descriptive Statistics&quot;</span>)
+
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;mean&quot;</span>;   <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Mean&quot;</span>)   }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;median&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Median&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;mode&quot;</span>;   <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Mode&quot;</span>)   }
+}</pre>
+<!-- @@@Group -->
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- TextField.qml -->
+  <meta name="description" content="A single-line text input control for entering strings.">
+  <title>TextField QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>TextField</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-from-jaspcontrol">Inherited from JASPControl</a></li>
+<li class="level2"><a href="#signals">Signals</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">TextField QML Type</h1>
+<!-- $$$TextField-brief -->
+<p>A single-line text input control for entering strings. <a href="#details">More...</a></p>
+<!-- @@@TextField -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-textfield-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$TextField-description -->
+<h2 id="details">Detailed Description</h2>
+<p>For numeric input, use IntegerField, DoubleField, or PercentField.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>Bound Control:</b> TextInputBase (inherits BoundControlBase)</li>
+<li><b>R Type:</b> <code translate="no">character</code></li>
+<li><b>Default:</b> &quot;&quot; or value of defaultValue property</li>
+<li><b>Serialization:</b> String &mdash; value property → JSON string</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>value</b> (string) - Current text value. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Label displayed before the field. Default: &quot;&quot;.</li>
+<li><b>afterLabel</b> (string) - Label displayed after the field. Default: &quot;&quot;.</li>
+<li><b>defaultValue</b> (var) - Value restored when field is empty on blur.</li>
+<li><b>placeholderText</b> (string) - Greyed text shown when field is empty. Default: &quot;&quot;.</li>
+<li><b>fieldWidth</b> (int) - Width of the input field. Default: jaspTheme.textFieldWidth.</li>
+<li><b>selectValueOnFocus</b> (bool) - Select all text when focused. Default: false.</li>
+<li><b>editable</b> (bool) - Whether user can edit the text. Default: true.</li>
+</ul>
+<h2 id="inherited-from-jaspcontrol">Inherited from JASPControl</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>toolTip</b> (string) - Hover tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="signals">Signals</h2>
+<ul>
+<li><b>editingFinished()</b> - Emitted when user completes editing (blur or Enter).</li>
+<li><b>textEdited()</b> - Emitted on each keystroke.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-textfield.html" translate="no">TextField</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;tableTitle&quot;</span>
+    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Table title&quot;</span>)
+    <span class="name">placeholderText</span>: <span class="name">qsTr</span>(<span class="string">&quot;Enter title...&quot;</span>)
+    <span class="name">fieldWidth</span>: <span class="number">200</span>
+}</pre>
+<!-- @@@TextField -->
+</body>
+</html>

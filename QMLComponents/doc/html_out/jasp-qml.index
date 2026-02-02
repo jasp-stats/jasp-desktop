@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE QDOCINDEX>
+<INDEX url="" title="JASP QML Components Reference" version="1.0" project="JASP-QML">
+    <namespace name="" status="active" access="public" module="jasp-qml">
+        <page name="index.html" href="index.html" status="active" location="index.qdoc" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/doc/index.qdoc" lineno="1" documented="true" subtype="page" title="JASP QML Controls" fulltitle="JASP QML Controls" subtitle="" brief="Overview of the custom UI components used in JASP">
+            <contents name="introduction" title="Introduction" level="1"/>
+            <contents name="getting-started" title="Getting Started" level="1"/>
+            <contents name="key-components" title="Key Components" level="1"/>
+            <contents name="core-controls-documented" title="Core Controls (Documented)" level="1"/>
+        </page>
+        <page name="test.html" href="test.html" status="active" location="test.qdoc" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/doc/test.qdoc" lineno="1" documented="true" subtype="page" title="Test Page" fulltitle="Test Page" subtitle="" brief="This is a test page to verify sourcedirs"/>
+        <qmlclass name="CheckBox" qml-module-name="JASP.Controls" fullname="JASP.Controls.CheckBox" href="qml-jasp-controls-checkbox.html" status="active" access="public" location="CheckBox.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CheckBox.qml" lineno="23" documented="true" title="CheckBox" fulltitle="CheckBox" subtitle="" brief="A boolean toggle control that binds a true/false value to an R option">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="DropDown" qml-module-name="JASP.Controls" fullname="JASP.Controls.DropDown" href="qml-jasp-controls-dropdown.html" status="active" access="public" location="DropDown.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/DropDown.qml" lineno="6" documented="true" title="DropDown" fulltitle="DropDown" subtitle="" brief="A selection control that presents a list of options in a dropdown menu">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="Group" qml-module-name="JASP.Controls" fullname="JASP.Controls.Group" href="qml-jasp-controls-group.html" status="active" access="public" location="Group.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/Group.qml" lineno="24" documented="true" title="Group" fulltitle="Group" subtitle="" brief="A layout container that groups related controls together">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="TextField" qml-module-name="JASP.Controls" fullname="JASP.Controls.TextField" href="qml-jasp-controls-textfield.html" status="active" access="public" location="TextField.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/TextField.qml" lineno="24" documented="true" title="TextField" fulltitle="TextField" subtitle="" brief="A single-line text input control for entering strings">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="VariablesList" qml-module-name="JASP.Controls" fullname="JASP.Controls.VariablesList" href="qml-jasp-controls-variableslist.html" status="active" access="public" location="VariablesList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/VariablesList.qml" lineno="25" documented="true" title="VariablesList" fulltitle="VariablesList" subtitle="" brief="Primary variable selection control in JASP">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlmodule name="JASP.Controls" qml-module-name="JASP.Controls" qml-module-version="1.0" href="jasp-controls-qmlmodule.html" status="active" location="module.qdoc" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/doc/module.qdoc" lineno="1" documented="true" seen="true" title="JASP.Controls QML Module" brief="Library of custom JASP UI components">
+            <contents name="core-controls" title="Core Controls" level="1"/>
+        </qmlmodule>
+    </namespace>
+</INDEX>

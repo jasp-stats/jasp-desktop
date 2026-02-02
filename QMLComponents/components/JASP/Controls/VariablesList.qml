@@ -16,13 +16,69 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 import QtQuick
 import QtQuick.Controls  as QTCONTROLS
 import QtQml.Models
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype VariablesList
+    \inqmlmodule JASP.Controls 1.0
+    \brief The primary variable selection control in JASP.
+
+    Displays a list where users can drag-and-drop variables from the dataset.
+
+    \section1 R Binding
+
+    \list
+    \li \b{Bound Control:} VariablesListBase + BoundControlTerms
+    \li \b{R Type:} list or character vector
+    \li \b{Default:} [] (empty array)
+    \li \b{Serialization:} Array of variable objects or simple strings (depends on listViewType)
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
+    \li \b singleVariable (bool) - Limit to one variable (sets maxRows: 1). Default: false.
+    \li \b maxRows (int) - Maximum variables allowed (-1 = unlimited). Default: -1.
+    \li \b listViewType (enum) - Type: JASP.AssignedVariables, JASP.Interaction, JASP.RepeatedMeasures, JASP.Layers.
+    \li \b allowedColumns (array) - Restrict to column types: "scale", "ordinal", "nominal". Default: [].
+    \li \b draggable (bool) - Allow drag-and-drop operations. Default: true.
+    \li \b showVariableTypeIcon (bool) - Display variable type icons. Default: true.
+    \li \b rowComponent (Component) - QML component for custom row controls.
+    \endlist
+
+    \section1 Inherited from JASPControl
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b itemDoubleClicked(int index) - User double-clicked a variable.
+    \li \b itemsDropped(indexes, dropList, dropItemIndex) - Variables were dropped.
+    \li \b selectedItemsChanged() - Selection changed.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    VariablesList {
+        name: "dependent"
+        title: qsTr("Dependent Variable")
+        singleVariable: true
+        allowedColumns: ["scale"]
+    }
+    \endqml
+*/
 VariablesListBase
 {
 	id								: variablesList

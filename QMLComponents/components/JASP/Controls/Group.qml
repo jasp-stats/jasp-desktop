@@ -17,10 +17,60 @@
 //
 
 import QtQuick
-import QtQuick.Layouts		as L
+import QtQuick.Layouts	as L
 import JASP.Controls
 //import JASP
 
+/*!
+    \qmltype Group
+    \inqmlmodule JASP.Controls 1.0
+    \brief A layout container that groups related controls together.
+
+    Provides automatic label alignment and optional title.
+
+    \section1 R Binding
+
+    \list
+    \li \b{Bound Control:} None (isBound: false)
+    \li \b{R Type:} N/A
+    \li \b{Default:} N/A
+    \li \b{Serialization:} N/A — Layout only
+    \endlist
+
+    \note Group is a layout-only control. It does not bind to R options.
+          Child controls within the Group handle their own bindings independently.
+
+    \section1 Properties
+
+    \list
+    \li \b title (string) - Optional title displayed above the group. Default: "".
+    \li \b columns (int) - Number of columns for child layout. Default: 1.
+    \li \b rowSpacing (int) - Vertical spacing between rows. Default: jaspTheme.rowGroupSpacing.
+    \li \b columnSpacing (int) - Horizontal spacing between columns. Default: jaspTheme.columnGroupSpacing.
+    \li \b indent (bool) - Add left indentation to the group. Default: false.
+    \li \b alignFields (bool) - Auto-align input fields (e.g., TextField labels). Default: true.
+    \endlist
+
+    \section1 Inherited from JASPControl
+
+    \list
+    \li \b enabled (bool) - Enable/disable all child controls. Default: true.
+    \li \b visible (bool) - Show/hide the entire group. Default: true.
+    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Group {
+        title: qsTr("Descriptive Statistics")
+
+        CheckBox { name: "mean";   label: qsTr("Mean")   }
+        CheckBox { name: "median"; label: qsTr("Median") }
+        CheckBox { name: "mode";   label: qsTr("Mode")   }
+    }
+    \endqml
+*/
 GroupBoxBase
 {
 	id						: groupBox

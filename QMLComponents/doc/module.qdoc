@@ -1,0 +1,16 @@
+/*!
+    \qmlmodule JASP.Controls 1.0
+    \title JASP.Controls QML Module
+    \brief The library of custom JASP UI components.
+    
+    This module contains all the visual elements used to build JASP analyses.
+    
+    \section1 Core Controls
+    \list
+        \li \l {JASP.Controls::CheckBox} {CheckBox} - Boolean toggle control
+        \li \l {JASP.Controls::DropDown} {DropDown} - Selection dropdown
+        \li \l {JASP.Controls::TextField} {TextField} - Text input field
+        \li \l {JASP.Controls::VariablesList} {VariablesList} - Variable selection list
+        \li \l {JASP.Controls::Group} {Group} - Layout container
+    \endlist
+*/
