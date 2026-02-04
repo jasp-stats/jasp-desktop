@@ -501,6 +501,14 @@ FocusScope
 			visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling
 			z:				10
 
+			MouseArea
+			{
+				anchors.fill: parent
+				propagateComposedEvents: false
+				hoverEnabled: true
+				preventStealing: true
+			}
+
 			Column
 			{
 				anchors.centerIn:	parent
