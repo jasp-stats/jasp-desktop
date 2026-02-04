@@ -162,6 +162,10 @@ void EngineRepresentation::handleEngineCrash()
 		return;
 	}
 
+	try {
+		std::string tmp;
+		channel()->receive(tmp, 50);
+	} catch (...) {}
 	setState(engineState::initializing);
 
 	emit requestEngineRestartAfterCrash(this); //Only for actual crashes
