@@ -49,24 +49,24 @@ void TextInputBase::bindTo(const Json::Value& value)
 	{
 	case TextInputType::IntegerInputType:
 		int intVal;
-		if (value.isNumeric())		
+		if (value.isNumeric())
 			_value = value.asInt();
-		
+
 		else if (value.isString() && QColumnUtils::getIntValue(tq(value.asString()), intVal))
 			_value = intVal;
-		
+
 		break;
-		
+
 	case TextInputType::NumberInputType:
 	case TextInputType::PercentIntputType:
 	{
 		double dblVal = 0;
-		if (value.isNumeric())		
+		if (value.isNumeric())
 			dblVal = value.asDouble();
-		
+
 		else if (value.isString() && !QColumnUtils::getDoubleValue(tq(value.asString()), dblVal, false)) // value comes from the analyses.json: it's already an english format string
 			dblVal = NAN;
-			
+
 		_value = dblVal; //Stored as the user enters (so 0-100), but sent in json / 100 through
 		//This mean the "bound value" is 0...1 so:
 		if(_inputType == TextInputType::PercentIntputType)
@@ -102,7 +102,9 @@ void TextInputBase::bindTo(const Json::Value& value)
 			if (!strValue.isEmpty() && !QColumnUtils::getDoubleValue(strValue, dblVal, false)) // value comes from the analyses.json: it's already an english format string
 			{
 				setIsRCode();
-				runRScript("as.character(" + _value.toString() + ")", true);
+				_value = strValue;
+				// The analysis is not yet stored in analyses, and running a script now won't work
+				// But as the real value is used to check constraints, and this is the intialization of the form, we can expect that the value fulfills the constraints.
 				setRealValue = false;
 			}
 			else
@@ -118,32 +120,32 @@ void TextInputBase::bindTo(const Json::Value& value)
 	}
 	case TextInputType::ComputedColumnType:
 	{
-		if (value.isString())	
+		if (value.isString())
 			_value = tq(value.asString());
-		
+
 		setIsColumn(true);
 		checkIfColumnIsFreeOrMine();
 		break;
 	}
 	case TextInputType::CheckColumnFreeOrMineType:
 	{
-		if (value.isString())	
+		if (value.isString())
 			_value = tq(value.asString());
-		
+
 		checkIfColumnIsFreeOrMine();
 		break;
 	}
 	case TextInputType::AddColumnType:
 	{
-		if (value.isString())	
+		if (value.isString())
 			_value = tq(value.asString());
-		
+
 		columnType	colType		= static_cast<columnType>(property("columnType").toInt());
 		setIsColumn(false, colType);
 		checkIfColumnIsFreeOrMine();
 		break;
 	}
-		
+
 	default:
 		if (value.isString())
 			_value = tq(value.asString());
@@ -163,7 +165,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 Json::Value TextInputBase::createJson() const
 {
 	QVariant value = property("displayValue");
-	if (value.toString() == "" && !_defaultValue.isNull())	
+	if (value.toString() == "" && !_defaultValue.isNull())
 		value = _defaultValue;
 
 	return _getJsonValue(value);
@@ -213,12 +215,12 @@ void TextInputBase::setDisplayValue()
 {
 	int		valueInt;
 	double	valueDbl;
-	QString showThis	= QColumnUtils::getIntValue(_value, valueInt) ? 
-							QString::number(valueInt) 
-						:	QColumnUtils::getDoubleValue(_value, valueDbl) ? 
-								QColumnUtils::doubleToString(valueDbl, false) 
+	QString showThis	= QColumnUtils::getIntValue(_value, valueInt) ?
+							QString::number(valueInt)
+						:	QColumnUtils::getDoubleValue(_value, valueDbl) ?
+								QColumnUtils::doubleToString(valueDbl, false)
 							:	_value.toString();
-																																				  
+
 	setProperty("displayValue", showThis);
 }
 
@@ -273,7 +275,7 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 
 QString TextInputBase::friendlyName() const
 {
-	switch (_inputType)	
+	switch (_inputType)
 	{
 	case TextInputType::IntegerInputType:			return tr("Integer Field");
 	case TextInputType::NumberInputType:			return tr("Double Field");
@@ -288,25 +290,25 @@ QString TextInputBase::friendlyName() const
 	}
 }
 
-QVariant TextInputBase::defaultValue() const	
-{ 
+QVariant TextInputBase::defaultValue() const
+{
 	return _defaultValue;
 }
 
-QVariant TextInputBase::value() const	
-{ 
-	QVariant showThis = _value.isNull() ? _defaultValue : _value; 
-	
-	return showThis;	
+QVariant TextInputBase::value() const
+{
+	QVariant showThis = _value.isNull() ? _defaultValue : _value;
+
+	return showThis;
 }
 
 void TextInputBase::checkIfColumnIsFreeOrMine()
 {
 	QString val = _value.toString();
-	
+
 	if(val.isEmpty())
 		return;
-	
+
 	if(form() && !form()->isColumnFreeOrMine(val))
 	{
 		setHasScriptError(true);
@@ -314,7 +316,7 @@ void TextInputBase::checkIfColumnIsFreeOrMine()
 	}
 	else
 		setHasScriptError(false);
-		
+
 }
 
 bool TextInputBase::encodeValue() const
@@ -356,10 +358,10 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 	double	valueDbl;
 	bool	isInt,
 			isDbl;
-	
+
 	isInt = QColumnUtils::getIntValue(		value.toString(), valueInt);
 	isDbl = QColumnUtils::getDoubleValue(	value.toString(), valueDbl, false); // value is already an english format converted double
-	
+
 	switch (_inputType)
 	{
 	case TextInputBase::FormulaType:			return isDbl ? Json::Value(valueDbl) : fq(value.toString()); // Keep it as string and do not try to make it an integer or a double
@@ -376,15 +378,15 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 		{
 			isInt = QColumnUtils::getIntValue(		chunk, valueInt);
 			isDbl = QColumnUtils::getDoubleValue(	chunk, valueDbl, false);
-			
+
 			if (isInt || isDbl)
 				values.append(isDbl ? valueDbl : double(valueInt));
 		}
 		return values;
 	}
-	default:	
-		return isInt ? Json::Value(valueInt) 
-					 : isDbl ? Json::Value(valueDbl) 
+	default:
+		return isInt ? Json::Value(valueInt)
+					 : isDbl ? Json::Value(valueDbl)
 							 : fq(value.toString());
 	}
 }
@@ -400,11 +402,11 @@ void TextInputBase::setValue(QVariant value, bool useLocale)
 {
 	double valueDbl;
 	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, useLocale))
-		value = valueDbl;	
-	
+		value = valueDbl;
+
 	bool hasChanged = _value != value;
 	_value = value;
-	
+
 	if(_inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType)
 		checkIfColumnIsFreeOrMine();
 
@@ -424,15 +426,15 @@ void TextInputBase::setDefaultValue(QVariant value)
 	double valueDbl;
 	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, false)) // Don't use locale with default value: they are set by the analysis, not by the user.
 		value = valueDbl;
-		
+
 	bool	hasChanged	= _defaultValue !=  value,
 			curValIsDef	= _defaultValue == _value;
-	
+
 	_defaultValue = value;
-	
+
 	if(hasChanged)
 		emit defaultValueChanged();
-	
+
 	if(curValIsDef)
 		setValue(_defaultValue, false);
 }
