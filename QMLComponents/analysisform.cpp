@@ -103,6 +103,17 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 	return defaultValue;
 }
 
+QVariant AnalysisForm::options() const
+{
+	return jsonToQVariant(_analysis->boundValues());
+}
+
+void AnalysisForm::setOptions(const QVariantMap &options)
+{
+	_analysis->setOrgBoundValues(qvariantToJson(options));
+	setAnalysisUp();
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)

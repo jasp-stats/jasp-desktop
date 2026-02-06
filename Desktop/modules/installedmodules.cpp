@@ -6,6 +6,7 @@
 #include <fstream>
 #include "gui/preferencesmodel.h"
 #include "log.h"
+#include "resultstesting/compareresults.h"
 
 
 const std::string InstalledModules::settingsPath = "modules-settings.json";
@@ -77,7 +78,7 @@ std::vector<InstalledModules::ModuleInfo> InstalledModules::getModules() {
 		}
 	}
 
-	if(!PreferencesModel::prefs()->developerMode())
+	if(!PreferencesModel::prefs()->developerMode() && !resultXmlCompare::compareResults::theOne()->testMode())
 		modules.erase("jaspTestModule");
 
 

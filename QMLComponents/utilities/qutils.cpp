@@ -317,6 +317,71 @@ QPoint maxQModelIndex(const QItemSelection &list)
 	return QPoint(c, r);
 }
 
+
+QVariant jsonToQVariant(const Json::Value & jsonValue)
+{
+	switch(jsonValue.type())
+	{
+	case Json::intValue:		return jsonValue.asInt();
+	case Json::uintValue:		return jsonValue.asUInt();
+	case Json::realValue:		return jsonValue.asDouble();
+	case Json::stringValue:		return tq(jsonValue.asString());
+	case Json::booleanValue:	return jsonValue.asBool();
+	case Json::arrayValue:
+	{
+		QVariantList varValues;
+		for (const Json::Value& value : jsonValue)
+			varValues.push_back(jsonToQVariant(value));
+		return varValues;
+	}
+	case Json::objectValue:
+	{
+		QVariantMap varValues;
+		for (const std::string& optionName : jsonValue.getMemberNames())
+			varValues[tq(optionName)] = jsonToQVariant(jsonValue[optionName]);
+		return varValues;
+	}
+	default:
+		return QVariant();
+	}
+}
+
+Json::Value qvariantToJson(const QVariant & varValue)
+{
+	switch (varValue.typeId())
+	{
+	case QMetaType::Int:		return varValue.toInt();
+	case QMetaType::UInt:		return varValue.toUInt();
+	case QMetaType::Long:
+	case QMetaType::LongLong:	return varValue.toLongLong();
+	case QMetaType::ULong:
+	case QMetaType::ULongLong:	return varValue.toULongLong();
+	case QMetaType::Bool:		return varValue.toBool();
+	case QMetaType::QString:	return fq(varValue.toString());
+	case QMetaType::QVariantList:
+	{
+		Json::Value jsonArray(Json::arrayValue);
+		for (const QVariant& value : varValue.toList())
+			jsonArray.append(qvariantToJson(value));
+		return jsonArray;
+	}
+	case QMetaType::QVariantMap:
+	{
+		Json::Value jsonObject(Json::objectValue);
+		QMapIterator<QString, QVariant> it(varValue.toMap() );
+		while (it.hasNext())
+		{
+			it.next();
+			jsonObject[fq(it.key())] = qvariantToJson(it.value());
+		}
+		return jsonObject;
+	}
+	default:
+		return Json::nullValue;
+	}
+}
+
+
 QLocale QColumnUtils::_lastQLocale = QLocale();
 QString QColumnUtils::_lastQLocaleId = "C";
 
