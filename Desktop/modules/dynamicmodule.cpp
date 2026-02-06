@@ -196,7 +196,8 @@ void DynamicModule::initialize()
 
 		QFile upgradesFile(upgradesInfo.absoluteFilePath());
 	
-		upgradesFile.open(QFile::ReadOnly);
+		if(!upgradesFile.open(QFile::ReadOnly))
+			Log::log() << "Cannot open upgradesFile: " << upgradesFile.fileName() << " with error: " << upgradesFile.errorString() << std::endl;
 
 		qmlTxt = upgradesFile.readAll();
 
@@ -221,7 +222,10 @@ void DynamicModule::initialize()
 	}
 	
 	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
-	DESCRIPTION.open(QFile::ReadOnly);
+
+	if(!DESCRIPTION.open(QFile::ReadOnly))
+		Log::log() << "Cannot load DESCRIPTION: " << DESCRIPTION.fileName() << " with error code: " << DESCRIPTION.error() << std::endl;
+
 	QString txt = DESCRIPTION.readAll();
 	loadDESCRIPTION(txt);
 	loadRequiredModulesFromDESCRIPTIONTxt(txt);
@@ -701,7 +705,9 @@ QString DynamicModule::getFileFromFolder(const QString &  filepath, const QStrin
 		{
 			Log::log() << "Found " << searchMe << "!" << std::endl;
 			QFile foundIt(dir.absoluteFilePath(entry));
-			foundIt.open(QFile::ReadOnly);
+			if(!foundIt.open(QFile::ReadOnly))
+				Log::log() << "Cannot open foundIt: " << foundIt.fileName() << " with error: " << foundIt.errorString() << std::endl;
+
 			return foundIt.readAll();
 		}
 

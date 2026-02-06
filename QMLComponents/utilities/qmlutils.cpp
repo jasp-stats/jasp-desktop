@@ -150,7 +150,8 @@ QObject * instantiateQml(const QUrl & filePath, const std::string & moduleName, 
 	QString 	qmlTxt;
 	QFile		qmlFile(qmlFileInfo.absoluteFilePath());
 
-				qmlFile.open(QIODevice::ReadOnly);
+	if(!qmlFile.open(QIODevice::ReadOnly))
+		Log::log() << "Cannot open qmlFile: " << qmlFile.fileName() << " with error: " << qmlFile.errorString() << std::endl;
 	qmlTxt =	qmlFile.readAll();
 				qmlFile.close();
 

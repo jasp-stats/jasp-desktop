@@ -1723,7 +1723,9 @@ void MainWindow::saveTextToFileHandler(const QString &filename, const QString &d
 	else
 	{
 		QFile file(filename);
-		file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+		if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+			Log::log() << "Cannot open file: " << file.fileName() << "with error: " << file.errorString() << std::endl;
+
 		QTextStream stream(&file);
 
 		stream << data;

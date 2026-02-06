@@ -203,7 +203,9 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 void Upgrader::loadOldSchoolUpgrades()
 {
 	QFile upgradesFile(":/resources/../modules/upgrader/upgrades.json");
-	upgradesFile.open(QFile::OpenModeFlag::Text | QFile::OpenModeFlag::ReadOnly);
+
+	if (!upgradesFile.open(QFile::ReadOnly | QFile::Text))
+		Log::log() << "Cannot open upgradeFile：" << upgradesFile.errorString();
 
 	if(upgradesFile.isOpen())
 	{

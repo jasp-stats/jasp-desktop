@@ -145,7 +145,9 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	QString fullpath = tq(TempFiles::createSpecific_clipboard(fq(path)));
 
 	QFile file(fullpath);
-	file.open(QIODevice::WriteOnly);
+	if(!file.open(QIODevice::WriteOnly))
+		Log::log() << "Cannot open file in saveTempImage: " << file.fileName() << " with error: " << file.errorString() << std::endl;
+
 	file.write(byteArray);
 	file.close();
 

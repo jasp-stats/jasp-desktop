@@ -124,7 +124,6 @@ target_include_directories(
     ${LIBRDATA_INCLUDE_DIRS}
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
-    $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     ${LIBFREEXL_INCLUDE_DIRS}
@@ -161,8 +160,6 @@ target_link_libraries(
     Qt::QuickControls2
     Qt::QuickControls2Impl
     Qt::QuickWidgets
-    $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
-    $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
     Qt::QuickTemplates2
     Qt::DBus
     Qt::QmlWorkerScript
