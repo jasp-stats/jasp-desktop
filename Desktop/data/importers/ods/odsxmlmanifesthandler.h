@@ -11,12 +11,12 @@ namespace ods
 class XmlManifestHandler : public XmlHandler
 {
 public:
-		explicit XmlManifestHandler(ods::ODSImportDataSet *data);
+	explicit XmlManifestHandler(ods::ODSImportDataSet *data);
 
-		bool parse(QXmlStreamReader &reader);
+	bool parse(QXmlStreamReader &reader);
 
 private:
-		bool _foundRoot = false; /**< Found archive root in manifest? */
+	bool _foundRoot = false; /**< Found archive root in manifest? */
 };
 
 } // namespace ods
