@@ -35,7 +35,7 @@ class AnalysisForm;
 
 ///
 /// A single instantiated analysis, aka it was clicked by the user and now has a qml-form loaded and some (rudimentary) output in the results or is on its way there.
-/// This has its counterpart in AnysisForm which is the backend of the qml `Form {}` element. 
+/// This has its counterpart in AnysisForm which is the backend of the qml `Form {}` element.
 /// Analysis and AnalysisForm together handle most of the interaction between the user and (eventually) R
 /// If R should do something with an analysis the status will change to either `Empty` or one of `SaveImg, EditImg or RewriteImgs` and `EngineSync` will notice.
 /// Any commands for the Engine are then issued through EngineSync/EngineRepresentation
@@ -232,7 +232,7 @@ protected:
 								_oldMetaData		= Json::nullValue;
 	std::string					_preUpgraderVersion	= "0";
 
-	
+
 private:
 	size_t						_id,
 								_counter						= 0;

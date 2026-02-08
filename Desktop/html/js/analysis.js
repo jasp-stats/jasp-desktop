@@ -149,6 +149,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			if ("revision" in imageEditResults)
 				this.imageBeingEdited.setRevision(imageEditResults["revision"]);
 
+			// Update the interactive plotly data so toggling to the interactive view shows the edited plot
+			if ("interactiveJsonData" in imageEditResults && imageEditResults["interactiveJsonData"] !== null)
+				this.imageBeingEdited.model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
+
 			this.imageBeingEdited.reRender();
 		}
 	},
@@ -523,7 +527,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			let data = results[name];
 			let itemView = this.createChild(data, this.model.get("status"), meta);
-			
+
 			if (itemView === null)
 				continue;
 
