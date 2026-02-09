@@ -6,10 +6,6 @@
 	path = Tools/jaspTools
 	url = https://github.com/jasp-stats/jaspTools/
 	branch = master
-[submodule "Common/jaspColumnEncoder"]
-	path = Common/jaspColumnEncoder
-	url = https://github.com/jasp-stats/jaspColumnEncoder
-	branch = master
 [submodule "Engine/jaspModuleBundleManager"]
 	path = Engine/jaspModuleBundleManager
 	url = https://github.com/jasp-stats/jaspModuleBundleManager.git
