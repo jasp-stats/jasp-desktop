@@ -119,3 +119,90 @@ bool Version::isEmpty() const
 		_release	== 0 &&
 		_fourth		== 0;
 }
+
+
+void split_helper(const std::string& in, const char delim, std::vector<std::string>& parts) {
+	std::stringstream ss(in);
+	std::string segment;
+
+	parts.clear();
+	while(std::getline(ss, segment, delim)) {
+		parts.push_back(segment);
+	}
+}
+
+BundleVersion::BundleVersion(const std::string &version)
+{
+	std::string normalVersionNums;
+	std::string extension = "";
+
+	std::vector<std::string> split;
+	split_helper(version, '-', split);
+	if(split.size() == 1) normalVersionNums = version;
+	else if(split.size() == 2) {
+		normalVersionNums = split[0];
+		extension = split[1];
+	}
+	else throw Version::encodingError("multiple '-' in Version number: " + version);
+
+	fromString(normalVersionNums);
+	if(!extension.empty()) {
+		//parse extension
+		split_helper(extension, '.', split);
+		if(split.size() == 1) {
+			_type = typefromString(extension);
+		}
+		else if(split.size() == 2) {
+			_type = typefromString(split[0]);
+			_buildnum = std::stoul(split[1]);
+		}
+		else throw Version::encodingError("corrupt version extension in: " + version);
+	}
+
+}
+
+std::string BundleVersion::asString(size_t versionNumbersToInclude) const
+{
+	return Version::asString(versionNumbersToInclude) +  BundleVersion::typetoString(_type) + "." + std::to_string(_buildnum);
+}
+
+bool BundleVersion::operator <(const BundleVersion &other) const
+{
+	if(Version::operator!=(other))
+		return Version::operator<(other);
+	if(_type != other._type)
+		return _type < other._type;
+	else
+		return _buildnum < other._buildnum;
+
+}
+
+bool BundleVersion::operator !=(const BundleVersion &other) const
+{
+	return Version::operator!=(other) || _buildnum != other._buildnum || _type != other._type;
+}
+
+bool	BundleVersion::operator ==	(const BundleVersion & other) const {	return !operator!=(other);						}
+bool	BundleVersion::operator <=	(const BundleVersion & other) const {	return operator==(other) || operator<(other);	}
+bool	BundleVersion::operator >=	(const BundleVersion & other) const {	return !operator<(other);						}
+bool	BundleVersion::operator >	(const BundleVersion & other) const { return operator!=(other) && operator>=(other);	}
+
+std::string BundleVersion::typetoString(const Type type) const
+{
+	switch (type) {
+	case Type::Alpha:
+		return "alpha";
+	case Type::Beta:
+		return "beta";
+	case Type::Release:
+		return "release";
+	}
+}
+
+BundleVersion::Type BundleVersion::typefromString(const std::string& str) const
+{
+	if(str == "alpha") return Type::Alpha;
+	else if(str == "beta") return Type::Beta;
+	else if(str == "release") return Type::Release;
+	else throw Version::encodingError("Unknown Version number type: " + str);
+}

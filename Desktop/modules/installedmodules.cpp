@@ -36,7 +36,7 @@ void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules
 	}
 
 	info.name = root["name"].asString();
-	info.version = Version(strVersion);
+	info.version = BundleVersion(strVersion);
 }
 
 std::vector<InstalledModules::ModuleInfo> InstalledModules::getAllAvailableModules() {

@@ -70,4 +70,35 @@ private:
 					_fourth		= 0; //This is just here to be able to parse older files...
 };
 
+
+class BundleVersion : public Version {
+
+public:
+	BundleVersion(const char * version) : BundleVersion(std::string(version)) {};
+	explicit BundleVersion(const std::string & version = "0.0.0");
+
+	///By default this tries to minimize the string, so all trailing zeroes + dots are removed. Unless versionNumbersToInclude is set to something >1. If 2 then major and minor are always shown, etc.
+	std::string asString(size_t versionNumbersToInclude = 0) const;
+
+	bool		operator <	(const BundleVersion & other) const;
+	bool		operator <=	(const BundleVersion & other) const;
+	bool		operator >=	(const BundleVersion & other) const;
+	bool		operator >	(const BundleVersion & other) const;
+	bool		operator ==	(const BundleVersion & other) const;
+	bool		operator !=	(const BundleVersion & other) const;
+
+private:
+
+	enum class Type {
+		Alpha = 1,
+		Beta = 4,
+		Release = 9001
+	};
+	std::string typetoString(const Type type) const;
+	Type typefromString(const std::string& str) const;
+
+	Type _type = Type::Release;
+	uint32_t _buildnum = 0;
+};
+
 #endif // VERSION_H

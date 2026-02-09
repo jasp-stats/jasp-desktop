@@ -42,7 +42,7 @@ public:
 		std::string libpath = "";
 		bool common = false;
 		bool bundled = false;
-		Version version;
+		BundleVersion version;
 	};
 
 	static std::vector<ModuleInfo> getAllAvailableModules();
