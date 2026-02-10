@@ -13,10 +13,8 @@ import JASP.Controls
     \section1 R Binding
 
     \list
-    \li \b{Bound Control:} ComboBoxBase (inherits BoundControlBase)
     \li \b{R Type:} \c character
     \li \b{Default:} First item's value, or "" if addEmptyValue is true
-    \li \b{Serialization:} String — currentValue property → JSON string
     \endlist
 
     \section1 Properties
@@ -27,17 +25,18 @@ import JASP.Controls
     \li \b currentValue (var) - The value of the currently selected item.
     \li \b currentIndex (int) - Index of currently selected item. Default: 0.
     \li \b values (array) - Simple array of values (creates value=label pairs). Default: [].
-    \li \b source (var) - Source for populating from variables or other controls.
+    \li \b source (var) - Source for populating from variables or other controls. Can be the id or the name (or an array of ids/names) of the controls.
     \li \b addEmptyValue (bool) - Add an empty option at the start. Default: false.
-    \li \b placeholderText (string) - Text shown when empty value is selected. Default: "".
+    \li \b placeholderText (string) - Text shown when empty value is selected. Default: "<no choice>".
     \endlist
 
-    \section1 Inherited from JASPControl
+    \section1 Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.
     \li \b visible (bool) - Whether the control is visible. Default: true.
-    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
     \endlist
 
     \section1 Signals
@@ -58,6 +57,12 @@ import JASP.Controls
         ]
         indexDefaultValue: 0
     }
+    DropDown {
+        name: "factor"
+        label: qsTr("Choose factor variable")
+        source: factors // id of the factors VariablesList
+    }
+
     \endqml
 */
 ComboBoxBase

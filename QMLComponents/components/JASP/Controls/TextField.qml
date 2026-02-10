@@ -28,13 +28,10 @@ import JASP.Controls
 
     For numeric input, use IntegerField, DoubleField, or PercentField.
 
-    \section1 R Binding
 
     \list
-    \li \b{Bound Control:} TextInputBase (inherits BoundControlBase)
     \li \b{R Type:} \c character
     \li \b{Default:} "" or value of defaultValue property
-    \li \b{Serialization:} String — value property → JSON string
     \endlist
 
     \section1 Properties
@@ -46,19 +43,20 @@ import JASP.Controls
     \li \b afterLabel (string) - Label displayed after the field. Default: "".
     \li \b defaultValue (var) - Value restored when field is empty on blur.
     \li \b placeholderText (string) - Greyed text shown when field is empty. Default: "".
-    \li \b fieldWidth (int) - Width of the input field. Default: jaspTheme.textFieldWidth.
+    \li \b fieldWidth (int) - Width of the input field. Default: 200.
     \li \b selectValueOnFocus (bool) - Select all text when focused. Default: false.
     \li \b editable (bool) - Whether user can edit the text. Default: true.
     \endlist
-
-    \section1 Inherited from JASPControl
+    
+    \section1 Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.
     \li \b visible (bool) - Whether the control is visible. Default: true.
-    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
     \endlist
-
+    
     \section1 Signals
 
     \list

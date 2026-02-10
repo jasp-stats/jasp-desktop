@@ -9,37 +9,97 @@
             <contents name="core-controls-documented" title="Core Controls (Documented)" level="1"/>
         </page>
         <page name="test.html" href="test.html" status="active" location="test.qdoc" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/doc/test.qdoc" lineno="1" documented="true" subtype="page" title="Test Page" fulltitle="Test Page" subtitle="" brief="This is a test page to verify sourcedirs"/>
+        <qmlclass name="ALTNavTag" qml-module-name="JASP.Controls" fullname="JASP.Controls.ALTNavTag" href="qml-jasp-controls-altnavtag.html" status="active" access="public" location="ALTNavTag.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ALTNavTag.qml" lineno="8" documented="true" title="ALTNavTag" fulltitle="ALTNavTag" subtitle="" brief="Internal tag displayed during ALT keyboard navigation">
+            <contents name="properties" title="Properties" level="1"/>
+        </qmlclass>
+        <qmlclass name="AddColumnField" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::TextField" fullname="JASP.Controls.AddColumnField" href="qml-jasp-controls-addcolumnfield.html" status="active" access="public" location="AddColumnField.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AddColumnField.qml" lineno="23" documented="true" title="AddColumnField" fulltitle="AddColumnField" subtitle="" brief="A text input field that creates a new computed column in the dataset">
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="AllowedTypeIcons" qml-module-name="JASP.Controls" fullname="JASP.Controls.AllowedTypeIcons" href="qml-jasp-controls-allowedtypeicons.html" status="active" access="public" location="AllowedTypeIcons.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AllowedTypeIcons.qml" lineno="3" documented="true" title="AllowedTypeIcons" fulltitle="AllowedTypeIcons" subtitle="" brief="Internal component that displays variable type filter icons">
+            <contents name="properties" title="Properties" level="1"/>
+        </qmlclass>
+        <qmlclass name="AssignButton" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::Button" fullname="JASP.Controls.AssignButton" href="qml-jasp-controls-assignbutton.html" status="active" access="public" location="AssignButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AssignButton.qml" lineno="21" documented="true" title="AssignButton" fulltitle="AssignButton" subtitle="" brief="Internal arrow button for moving variables between source and target lists">
+            <contents name="properties" title="Properties" level="1"/>
+        </qmlclass>
+        <qmlclass name="AssignedPairsVariablesList" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::VariablesList" fullname="JASP.Controls.AssignedPairsVariablesList" href="qml-jasp-controls-assignedpairsvariableslist.html" status="active" access="public" location="AssignedPairsVariablesList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AssignedPairsVariablesList.qml" lineno="21" documented="true" title="AssignedPairsVariablesList" fulltitle="AssignedPairsVariablesList" subtitle="" brief="A variable list preset for paired variable assignment">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="AssignedRepeatedMeasuresCells" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::VariablesList" fullname="JASP.Controls.AssignedRepeatedMeasuresCells" href="qml-jasp-controls-assignedrepeatedmeasurescells.html" status="active" access="public" location="AssignedRepeatedMeasuresCells.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AssignedRepeatedMeasuresCells.qml" lineno="21" documented="true" title="AssignedRepeatedMeasuresCells" fulltitle="AssignedRepeatedMeasuresCells" subtitle="" brief="A variable list preset for assigning variables to repeated measures cells">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="AssignedVariablesList" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::VariablesList" fullname="JASP.Controls.AssignedVariablesList" href="qml-jasp-controls-assignedvariableslist.html" status="active" access="public" location="AssignedVariablesList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AssignedVariablesList.qml" lineno="20" documented="true" title="AssignedVariablesList" fulltitle="AssignedVariablesList" subtitle="" brief="A variable list preset for assigned variable selection">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="AvailableVariablesList" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::VariablesList" fullname="JASP.Controls.AvailableVariablesList" href="qml-jasp-controls-availablevariableslist.html" status="active" access="public" location="AvailableVariablesList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AvailableVariablesList.qml" lineno="21" documented="true" title="AvailableVariablesList" fulltitle="AvailableVariablesList" subtitle="" brief="Source list showing all available dataset variables">
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="BasicThreeButtonTableView" qml-module-name="JASP.Controls" fullname="JASP.Controls.BasicThreeButtonTableView" href="qml-jasp-controls-basicthreebuttontableview.html" status="active" access="public" location="BasicThreeButtonTableView.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/BasicThreeButtonTableView.qml" lineno="23" documented="true" title="BasicThreeButtonTableView" fulltitle="BasicThreeButtonTableView" subtitle="" brief="A table input control with Add, Delete, and Reset buttons">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="BayesFactorType" qml-module-name="JASP.Controls" qml-base-type="::RadioButtonGroup" fullname="JASP.Controls.BayesFactorType" href="qml-jasp-controls-bayesfactortype.html" status="active" access="public" location="BayesFactorType.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/BayesFactorType.qml" lineno="23" documented="true" title="BayesFactorType" fulltitle="BayesFactorType" subtitle="" brief="A pre-built radio button group for selecting Bayes Factor reporting format">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="Button" qml-module-name="JASP.Controls" fullname="JASP.Controls.Button" href="qml-jasp-controls-button.html" status="active" access="public" location="Button.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/Button.qml" lineno="21" documented="true" title="Button" fulltitle="Button" subtitle="" brief="A generic clickable button">
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="signals" title="Signals" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
+        <qmlclass name="CIField" qml-module-name="JASP.Controls" qml-base-type="::PercentField" fullname="JASP.Controls.CIField" href="qml-jasp-controls-cifield.html" status="active" access="public" location="CIField.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CIField.qml" lineno="23" documented="true" title="CIField" fulltitle="CIField" subtitle="" brief="A percentage input field preset for confidence interval width">
+            <contents name="r-binding" title="R Binding" level="1"/>
+            <contents name="properties" title="Properties" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
+            <contents name="example" title="Example" level="1"/>
+        </qmlclass>
         <qmlclass name="CheckBox" qml-module-name="JASP.Controls" fullname="JASP.Controls.CheckBox" href="qml-jasp-controls-checkbox.html" status="active" access="public" location="CheckBox.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CheckBox.qml" lineno="23" documented="true" title="CheckBox" fulltitle="CheckBox" subtitle="" brief="A boolean toggle control that binds a true/false value to an R option">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="signals" title="Signals" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="DropDown" qml-module-name="JASP.Controls" fullname="JASP.Controls.DropDown" href="qml-jasp-controls-dropdown.html" status="active" access="public" location="DropDown.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/DropDown.qml" lineno="6" documented="true" title="DropDown" fulltitle="DropDown" subtitle="" brief="A selection control that presents a list of options in a dropdown menu">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="signals" title="Signals" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="Group" qml-module-name="JASP.Controls" fullname="JASP.Controls.Group" href="qml-jasp-controls-group.html" status="active" access="public" location="Group.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/Group.qml" lineno="24" documented="true" title="Group" fulltitle="Group" subtitle="" brief="A layout container that groups related controls together">
-            <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="TextField" qml-module-name="JASP.Controls" fullname="JASP.Controls.TextField" href="qml-jasp-controls-textfield.html" status="active" access="public" location="TextField.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/TextField.qml" lineno="24" documented="true" title="TextField" fulltitle="TextField" subtitle="" brief="A single-line text input control for entering strings">
-            <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="signals" title="Signals" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="VariablesList" qml-module-name="JASP.Controls" fullname="JASP.Controls.VariablesList" href="qml-jasp-controls-variableslist.html" status="active" access="public" location="VariablesList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/VariablesList.qml" lineno="25" documented="true" title="VariablesList" fulltitle="VariablesList" subtitle="" brief="Primary variable selection control in JASP">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="inherited-from-jaspcontrol" title="Inherited from JASPControl" level="1"/>
+            <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="signals" title="Signals" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>

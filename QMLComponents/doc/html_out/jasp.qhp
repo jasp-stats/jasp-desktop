@@ -7,6 +7,42 @@
         <toc>
             <section ref="index.html" title="JASP QML Controls">
                 <section ref="" title="">
+                    <section ref="qml-jasp-controls-altnavtag.html" title="ALTNavTag Type Reference">
+                        <section ref="qml-jasp-controls-altnavtag-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-addcolumnfield.html" title="AddColumnField Type Reference">
+                        <section ref="qml-jasp-controls-addcolumnfield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-allowedtypeicons.html" title="AllowedTypeIcons Type Reference">
+                        <section ref="qml-jasp-controls-allowedtypeicons-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-assignbutton.html" title="AssignButton Type Reference">
+                        <section ref="qml-jasp-controls-assignbutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-assignedpairsvariableslist.html" title="AssignedPairsVariablesList Type Reference">
+                        <section ref="qml-jasp-controls-assignedpairsvariableslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-assignedrepeatedmeasurescells.html" title="AssignedRepeatedMeasuresCells Type Reference">
+                        <section ref="qml-jasp-controls-assignedrepeatedmeasurescells-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-assignedvariableslist.html" title="AssignedVariablesList Type Reference">
+                        <section ref="qml-jasp-controls-assignedvariableslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-availablevariableslist.html" title="AvailableVariablesList Type Reference">
+                        <section ref="qml-jasp-controls-availablevariableslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-basicthreebuttontableview.html" title="BasicThreeButtonTableView Type Reference">
+                        <section ref="qml-jasp-controls-basicthreebuttontableview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-bayesfactortype.html" title="BayesFactorType Type Reference">
+                        <section ref="qml-jasp-controls-bayesfactortype-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-button.html" title="Button Type Reference">
+                        <section ref="qml-jasp-controls-button-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-cifield.html" title="CIField Type Reference">
+                        <section ref="qml-jasp-controls-cifield-members.html" title="List of all members"/>
+                    </section>
                     <section ref="qml-jasp-controls-checkbox.html" title="CheckBox Type Reference">
                         <section ref="qml-jasp-controls-checkbox-members.html" title="List of all members"/>
                     </section>
@@ -29,6 +65,30 @@
             </section>
         </toc>
         <keywords>
+            <keyword name="ALTNavTag" id="QML.ALTNavTag" ref="qml-jasp-controls-altnavtag.html"/>
+            <keyword name="ALTNavTag" id="QML.JASP.Controls1.ALTNavTag" ref="qml-jasp-controls-altnavtag.html"/>
+            <keyword name="AddColumnField" id="QML.AddColumnField" ref="qml-jasp-controls-addcolumnfield.html"/>
+            <keyword name="AddColumnField" id="QML.JASP.Controls1.AddColumnField" ref="qml-jasp-controls-addcolumnfield.html"/>
+            <keyword name="AllowedTypeIcons" id="QML.AllowedTypeIcons" ref="qml-jasp-controls-allowedtypeicons.html"/>
+            <keyword name="AllowedTypeIcons" id="QML.JASP.Controls1.AllowedTypeIcons" ref="qml-jasp-controls-allowedtypeicons.html"/>
+            <keyword name="AssignButton" id="QML.AssignButton" ref="qml-jasp-controls-assignbutton.html"/>
+            <keyword name="AssignButton" id="QML.JASP.Controls1.AssignButton" ref="qml-jasp-controls-assignbutton.html"/>
+            <keyword name="AssignedPairsVariablesList" id="QML.AssignedPairsVariablesList" ref="qml-jasp-controls-assignedpairsvariableslist.html"/>
+            <keyword name="AssignedPairsVariablesList" id="QML.JASP.Controls1.AssignedPairsVariablesList" ref="qml-jasp-controls-assignedpairsvariableslist.html"/>
+            <keyword name="AssignedRepeatedMeasuresCells" id="QML.AssignedRepeatedMeasuresCells" ref="qml-jasp-controls-assignedrepeatedmeasurescells.html"/>
+            <keyword name="AssignedRepeatedMeasuresCells" id="QML.JASP.Controls1.AssignedRepeatedMeasuresCells" ref="qml-jasp-controls-assignedrepeatedmeasurescells.html"/>
+            <keyword name="AssignedVariablesList" id="QML.AssignedVariablesList" ref="qml-jasp-controls-assignedvariableslist.html"/>
+            <keyword name="AssignedVariablesList" id="QML.JASP.Controls1.AssignedVariablesList" ref="qml-jasp-controls-assignedvariableslist.html"/>
+            <keyword name="AvailableVariablesList" id="QML.AvailableVariablesList" ref="qml-jasp-controls-availablevariableslist.html"/>
+            <keyword name="AvailableVariablesList" id="QML.JASP.Controls1.AvailableVariablesList" ref="qml-jasp-controls-availablevariableslist.html"/>
+            <keyword name="BasicThreeButtonTableView" id="QML.BasicThreeButtonTableView" ref="qml-jasp-controls-basicthreebuttontableview.html"/>
+            <keyword name="BasicThreeButtonTableView" id="QML.JASP.Controls1.BasicThreeButtonTableView" ref="qml-jasp-controls-basicthreebuttontableview.html"/>
+            <keyword name="BayesFactorType" id="QML.BayesFactorType" ref="qml-jasp-controls-bayesfactortype.html"/>
+            <keyword name="BayesFactorType" id="QML.JASP.Controls1.BayesFactorType" ref="qml-jasp-controls-bayesfactortype.html"/>
+            <keyword name="Button" id="QML.Button" ref="qml-jasp-controls-button.html"/>
+            <keyword name="Button" id="QML.JASP.Controls1.Button" ref="qml-jasp-controls-button.html"/>
+            <keyword name="CIField" id="QML.CIField" ref="qml-jasp-controls-cifield.html"/>
+            <keyword name="CIField" id="QML.JASP.Controls1.CIField" ref="qml-jasp-controls-cifield.html"/>
             <keyword name="CheckBox" id="QML.CheckBox" ref="qml-jasp-controls-checkbox.html"/>
             <keyword name="CheckBox" id="QML.JASP.Controls1.CheckBox" ref="qml-jasp-controls-checkbox.html"/>
             <keyword name="DropDown" id="QML.DropDown" ref="qml-jasp-controls-dropdown.html"/>
@@ -46,8 +106,32 @@
         <files>
             <file>index.html</file>
             <file>jasp-controls-qmlmodule.html</file>
+            <file>qml-jasp-controls-addcolumnfield-members.html</file>
+            <file>qml-jasp-controls-addcolumnfield.html</file>
+            <file>qml-jasp-controls-allowedtypeicons-members.html</file>
+            <file>qml-jasp-controls-allowedtypeicons.html</file>
+            <file>qml-jasp-controls-altnavtag-members.html</file>
+            <file>qml-jasp-controls-altnavtag.html</file>
+            <file>qml-jasp-controls-assignbutton-members.html</file>
+            <file>qml-jasp-controls-assignbutton.html</file>
+            <file>qml-jasp-controls-assignedpairsvariableslist-members.html</file>
+            <file>qml-jasp-controls-assignedpairsvariableslist.html</file>
+            <file>qml-jasp-controls-assignedrepeatedmeasurescells-members.html</file>
+            <file>qml-jasp-controls-assignedrepeatedmeasurescells.html</file>
+            <file>qml-jasp-controls-assignedvariableslist-members.html</file>
+            <file>qml-jasp-controls-assignedvariableslist.html</file>
+            <file>qml-jasp-controls-availablevariableslist-members.html</file>
+            <file>qml-jasp-controls-availablevariableslist.html</file>
+            <file>qml-jasp-controls-basicthreebuttontableview-members.html</file>
+            <file>qml-jasp-controls-basicthreebuttontableview.html</file>
+            <file>qml-jasp-controls-bayesfactortype-members.html</file>
+            <file>qml-jasp-controls-bayesfactortype.html</file>
+            <file>qml-jasp-controls-button-members.html</file>
+            <file>qml-jasp-controls-button.html</file>
             <file>qml-jasp-controls-checkbox-members.html</file>
             <file>qml-jasp-controls-checkbox.html</file>
+            <file>qml-jasp-controls-cifield-members.html</file>
+            <file>qml-jasp-controls-cifield.html</file>
             <file>qml-jasp-controls-dropdown-members.html</file>
             <file>qml-jasp-controls-dropdown.html</file>
             <file>qml-jasp-controls-group-members.html</file>

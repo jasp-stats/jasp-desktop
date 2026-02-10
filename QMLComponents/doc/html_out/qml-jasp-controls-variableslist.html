@@ -16,7 +16,7 @@
 <li class="level1"><a href="#details">Detailed Description</a></li>
 <li class="level2"><a href="#r-binding">R Binding</a></li>
 <li class="level2"><a href="#properties">Properties</a></li>
-<li class="level2"><a href="#inherited-from-jaspcontrol">Inherited from JASPControl</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
 <li class="level2"><a href="#signals">Signals</a></li>
 <li class="level2"><a href="#example">Example</a></li>
 </ul>
@@ -28,19 +28,19 @@
 <!-- @@@VariablesList -->
 <div class="table"><table class="alignedsummary requisites" translate="no">
 <tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-assignedpairsvariableslist.html" translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.html" translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a>, and <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a></p>
+</td></tr>
 </table></div>
 <ul>
 <li><a href="qml-jasp-controls-variableslist-members.html">List of all members, including inherited members</a></li>
 </ul>
 <!-- $$$VariablesList-description -->
 <h2 id="details">Detailed Description</h2>
-<p>Displays a list where users can drag-and-drop variables from the dataset.</p>
+<p>Displays a list where users can drag-and-drop variables from the dataset. This is usually used inside a VariablesForm</p>
 <h2 id="r-binding">R Binding</h2>
 <ul>
-<li><b>Bound Control:</b> VariablesListBase + BoundControlTerms</li>
 <li><b>R Type:</b> list or character vector</li>
 <li><b>Default:</b> [] (empty array)</li>
-<li><b>Serialization:</b> Array of variable objects or simple strings (depends on listViewType)</li>
 </ul>
 <h2 id="properties">Properties</h2>
 <ul>
@@ -52,13 +52,15 @@
 <li><b>allowedColumns</b> (array) - Restrict to column types: &quot;scale&quot;, &quot;ordinal&quot;, &quot;nominal&quot;. Default: [].</li>
 <li><b>draggable</b> (bool) - Allow drag-and-drop operations. Default: true.</li>
 <li><b>showVariableTypeIcon</b> (bool) - Display variable type icons. Default: true.</li>
-<li><b>rowComponent</b> (Component) - QML component for custom row controls.</li>
+<li><b>source</b> (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.</li>
+<li><b>rowComponent</b> (Component) - QML component for custom row controls. Can be used to add e.g. a <a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a> for each variable in the VariablesList.</li>
 </ul>
-<h2 id="inherited-from-jaspcontrol">Inherited from JASPControl</h2>
+<h2 id="inherited-properties">Inherited Properties</h2>
 <ul>
 <li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
 <li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
-<li><b>toolTip</b> (string) - Hover tooltip text. Default: &quot;&quot;.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
 </ul>
 <h2 id="signals">Signals</h2>
 <ul>
@@ -67,11 +69,18 @@
 <li><b>selectedItemsChanged()</b> - Selection changed.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></span> {
-    <span class="name">name</span>: <span class="string">&quot;dependent&quot;</span>
-    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Dependent Variable&quot;</span>)
-    <span class="name">singleVariable</span>: <span class="number">true</span>
-    <span class="name">allowedColumns</span>: [<span class="string">&quot;scale&quot;</span>]
+<pre class="qml" translate="no">VariablesList {
+    name: &quot;dependent&quot;
+    title: qsTr(&quot;Dependent Variable&quot;)
+    singleVariable: true
+    allowedColumns: [&quot;scale&quot;]
+}
+
+VariablesList {
+    name: &quot;modelTerms&quot;
+    title: qsTr(&quot;Model Terms&quot;)
+    listViewType: JASP.Interaction
+    rowComponent: CheckBox { name: &quot;isNuisance&quot; }
 }</pre>
 <!-- @@@VariablesList -->
 </body>

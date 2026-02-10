@@ -28,15 +28,6 @@ import JASP.Controls
 
     Provides automatic label alignment and optional title.
 
-    \section1 R Binding
-
-    \list
-    \li \b{Bound Control:} None (isBound: false)
-    \li \b{R Type:} N/A
-    \li \b{Default:} N/A
-    \li \b{Serialization:} N/A — Layout only
-    \endlist
-
     \note Group is a layout-only control. It does not bind to R options.
           Child controls within the Group handle their own bindings independently.
 
@@ -45,18 +36,19 @@ import JASP.Controls
     \list
     \li \b title (string) - Optional title displayed above the group. Default: "".
     \li \b columns (int) - Number of columns for child layout. Default: 1.
-    \li \b rowSpacing (int) - Vertical spacing between rows. Default: jaspTheme.rowGroupSpacing.
-    \li \b columnSpacing (int) - Horizontal spacing between columns. Default: jaspTheme.columnGroupSpacing.
+    \li \b rowSpacing (int) - Vertical spacing between rows. Default: 5.
+    \li \b columnSpacing (int) - Horizontal spacing between columns. Default: 10.
     \li \b indent (bool) - Add left indentation to the group. Default: false.
-    \li \b alignFields (bool) - Auto-align input fields (e.g., TextField labels). Default: true.
+    \li \b alignFields (bool) - Auto-align input fields (e.g., TextField and DropDown labels). Default: true.
     \endlist
 
-    \section1 Inherited from JASPControl
+    \section1 Inherited Properties
 
     \list
-    \li \b enabled (bool) - Enable/disable all child controls. Default: true.
-    \li \b visible (bool) - Show/hide the entire group. Default: true.
-    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
     \endlist
 
     \section1 Example

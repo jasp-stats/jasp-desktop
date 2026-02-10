@@ -28,14 +28,13 @@ import JASP
     \brief The primary variable selection control in JASP.
 
     Displays a list where users can drag-and-drop variables from the dataset.
+    This is usually used inside a VariablesForm
 
     \section1 R Binding
 
     \list
-    \li \b{Bound Control:} VariablesListBase + BoundControlTerms
     \li \b{R Type:} list or character vector
     \li \b{Default:} [] (empty array)
-    \li \b{Serialization:} Array of variable objects or simple strings (depends on listViewType)
     \endlist
 
     \section1 Properties
@@ -49,15 +48,17 @@ import JASP
     \li \b allowedColumns (array) - Restrict to column types: "scale", "ordinal", "nominal". Default: [].
     \li \b draggable (bool) - Allow drag-and-drop operations. Default: true.
     \li \b showVariableTypeIcon (bool) - Display variable type icons. Default: true.
-    \li \b rowComponent (Component) - QML component for custom row controls.
+    \li \b source (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.
+    \li \b rowComponent (Component) - QML component for custom row controls. Can be used to add e.g. a CheckBox for each variable in the VariablesList.
     \endlist
 
-    \section1 Inherited from JASPControl
+    \section1 Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.
     \li \b visible (bool) - Whether the control is visible. Default: true.
-    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
     \endlist
 
     \section1 Signals
@@ -77,6 +78,14 @@ import JASP
         singleVariable: true
         allowedColumns: ["scale"]
     }
+
+    VariablesList {
+        name: "modelTerms"
+        title: qsTr("Model Terms")
+        listViewType: JASP.Interaction
+        rowComponent: CheckBox { name: "isNuisance" }
+    }
+
     \endqml
 */
 VariablesListBase

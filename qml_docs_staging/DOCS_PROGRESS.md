@@ -131,18 +131,18 @@ JASPControl (jaspcontrol.h) ← Base for ALL controls
 
 ## Progress Checklist
 
-- [ ] ALTNavTag.qml
-- [ ] AddColumnField.qml
-- [ ] AllowedTypeIcons.qml
-- [ ] AssignButton.qml
-- [ ] AssignedPairsVariablesList.qml
-- [ ] AssignedRepeatedMeasuresCells.qml
-- [ ] AssignedVariablesList.qml
-- [ ] AvailableVariablesList.qml
-- [ ] BasicThreeButtonTableView.qml
-- [ ] BayesFactorType.qml
-- [ ] Button.qml
-- [ ] CIField.qml
+- [x] ALTNavTag.qml
+- [x] AddColumnField.qml
+- [x] AllowedTypeIcons.qml
+- [x] AssignButton.qml
+- [x] AssignedPairsVariablesList.qml
+- [x] AssignedRepeatedMeasuresCells.qml
+- [x] AssignedVariablesList.qml
+- [x] AvailableVariablesList.qml
+- [x] BasicThreeButtonTableView.qml
+- [x] BayesFactorType.qml
+- [x] Button.qml
+- [x] CIField.qml
 - [x] CheckBox.qml
 - [ ] CheckColumnIsFreeOrMineField.qml
 - [ ] Chi2TestTableView.qml
@@ -198,130 +198,89 @@ JASPControl (jaspcontrol.h) ← Base for ALL controls
 
 ---
 
-## Style Guide (v2 - Serialization Aware)
+## Style Guide (v3 - Simplified for Users)
 
-This template captures the critical **QML → C++ → R** data flow in JASP.
+This style guide defines the format for QDoc comments embedded in QML source files.
+The documentation is written for **module developers** who use JASP controls in their analysis forms.
 
-### Architecture Overview
+### Key Principles
 
-```
-┌──────────────────┐     ┌─────────────────────┐     ┌──────────────┐
-│   QML Control    │────▶│  BoundControl (C++) │────▶│   R Options  │
-│  (CheckBox.qml)  │     │   boundValue()      │     │  (JSON→R)    │
-└──────────────────┘     └─────────────────────┘     └──────────────┘
-        │                         │
-        │ `name` property         │ setBoundValue(Json::Value)
-        │ binds to R option       │ createJson() → default value
-        ▼                         ▼
-    options$name              JSON serialization
-```
-
-**Key C++ Interface:** `BoundControl` (see `boundcontrols/boundcontrol.h`)
-- `createJson()` – Returns the default JSON structure
-- `boundValue()` – Returns current JSON value sent to R
-- `setBoundValue()` – Updates value when user interacts
+1. **No internal C++ details** — Do not expose `BoundControlBase`, `CheckBoxBase`, or other C++ class names. Users only need to know the QML API.
+2. **No `Serialization` line** — Serialization is an internal implementation detail.
+3. **Use actual values** — Replace `jaspTheme.*` references with their resolved numeric defaults (e.g., `jaspTheme.textFieldWidth` → `200`, `jaspTheme.rowGroupSpacing` → `5`, `jaspTheme.columnGroupSpacing` → `10`).
+4. **Inherited Properties section** — Use the heading `\section1 Inherited Properties` (not "Inherited from JASPControl").
+5. **Always include `info`** — The `info` property must appear in every Inherited Properties section. It is the primary mechanism for generating help documentation.
 
 ---
 
-### Documentation Template
+### QDoc Comment Template
 
-Use this exact structure for each component's `.md` file:
-
-````markdown
-# [ComponentName]
-
-**Inherits:** [ParentComponent]  
-**Path:** `QMLComponents/components/JASP/Controls/[ComponentName].qml`  
-**Valid Parents:** [e.g., `VariablesForm`, `Group`, `Section`, or "Any Layout"]
-
-## Brief
-
-[One sentence description of what this component does from a user/developer perspective.]
-
-## R Data Signature
-
-| Aspect | Details |
-| :----- | :------ |
-| **Bound Control** | [C++ class, e.g., `CheckBoxBase`, `ComboBoxBase`, `VariablesListBase`] |
-| **Serialization** | [e.g., "Standard boolean", "String from `value` property", "Array of variable names"] |
-| **R Data Type** | [e.g., `logical`, `character`, `character vector`, `list`] |
-| **Default Value** | [e.g., `FALSE`, `""`, `[]`] |
-
-**Example R Access:**
-```r
-# In your R analysis function:
-options$optionName  # Returns: TRUE/FALSE
-```
-
-## Properties
-
-| Name | Type | Default | Bound | Description |
-| :--- | :--- | :------ | :---- | :---------- |
-| `name` | string | `""` | **Yes** | The R option name this control binds to. |
-| [prop] | [type] | [default] | [Yes/No] | [Description] |
-
-### Complex Property Notes
-
-*(Include only when a property requires special JSON structure or has non-obvious behavior)*
-
-**`model`** (for DropDown):  
-Must be an array of objects with `value` and `label` keys:
-```json
-[{"value": "pearson", "label": "Pearson"}, {"value": "spearman", "label": "Spearman"}]
-```
-
-## Signals
-
-| Signal | Description |
-| :----- | :---------- |
-| `clicked()` | Emitted when user activates the control. |
-
-## Usage Example
+Use this format inside each `.qml` file, placed **immediately above** the root element:
 
 ```qml
-// Qt6 CMake module - no version number needed (Qt6 style)
-import JASP.Controls
+/*!
+    \qmltype [ComponentName]
+    \inqmlmodule JASP.Controls 1.0
+    \brief [One-line description.]
 
-[ComponentName] {
-    name: "myOption"
-    label: qsTr("My Label")
-    // Other commonly used properties
-}
+    [Optional longer description.]
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} [e.g., \c logical, \c character, list or character vector]
+    \li \b{Default:} [e.g., \c FALSE, "" , [] (empty array)]
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b [prop] ([type]) - [Description]. Default: [value].
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b [signalName]([params]) - [Description].
+    \endlist
+
+    \section1 Example
+
+    \qml
+    [ComponentName] {
+        name: "myOption"
+        label: qsTr("My Label")
+    }
+    \endqml
+*/
 ```
-````
 
----
-
-### Serialization Categories
-
-Reference these when documenting the "R Data Signature" section:
-
-| Category | Bound Control (C++) | R Type | Example Components |
-| :------- | :------------------ | :----- | :----------------- |
-| **Boolean** | `CheckBoxBase` | `logical` | CheckBox, Switch |
-| **Single Value** | `ComboBoxBase`, `TextInputBase` | `character`, `numeric` | DropDown, TextField, IntegerField, DoubleField |
-| **Variable Selection** | `VariablesListBase` + `BoundControlTerms` | `character vector` or `list` | VariablesList, AssignedVariablesList |
-| **Table Data** | `TableViewBase` + `BoundControlTableView` | `data.frame` or `matrix` | TableView, CustomContrastsTableView |
-| **Grouped Options** | `RadioButtonGroupBase` | `character` (selected value) | RadioButtonGroup |
-| **Text Block** | `TextAreaBase` + `BoundControlTextArea` | `character` | TextArea, JAGSTextArea |
-| **Non-Bound (Layout)** | None | N/A | Group, Section, RowLayout, ColumnLayout |
+> [!IMPORTANT]
+> For layout-only controls (e.g., `Group`) that do not bind to R options, omit the
+> `\section1 R Binding` section entirely. Use a `\note` to indicate the control is layout-only.
 
 ---
 
 ### Guidelines
 
 1. **Component Name**: Extract from filename (e.g., `CheckBox.qml` → `CheckBox`).
-2. **Inherits**: Look for the root element in the QML file (e.g., `CheckBoxBase`).
-3. **Bound Control**: Search for the corresponding C++ class in `QMLComponents/controls/` or `QMLComponents/boundcontrols/`.
-4. **Properties**:
-   - Mark `Bound: Yes` if the property affects the JSON sent to R.
-   - Include default values when explicitly set in QML.
-   - Note aliases (e.g., `label` → `text` → `control.text`).
-5. **R Data Signature**: This is the **most important section** for module developers.
-   - Explain exactly what R code like `options$myOption` will return.
-   - Include the R data type and a concrete example.
-6. **Valid Parents**: Note which container types the control is designed to work with.
-7. **Inheritance Flattening**: If a component inherits from a JASP control (e.g., `JASPControl`), check the parent's C++ header. Document inherited properties like `toolTip`, `enabled`, `visible`, `info`, and `indent` in the child's documentation so developers know they are available.
+2. **R Binding**: Only include `R Type` and `Default`. Do **not** include `Bound Control` or `Serialization`.
+3. **Properties**: List all user-facing QML properties with type, description, and default.
+   - Use resolved numeric values instead of `jaspTheme.*` references.
+   - Note aliases where helpful (e.g., `title` / `label`).
+4. **Inherited Properties**: Always include `enabled`, `visible`, `info`, and `toolTip` with the exact descriptions shown in the template above.
+5. **Signals**: List only signals that module developers would connect to.
+6. **Examples**: Provide at least one realistic usage example. Show multiple examples when the control has distinct usage patterns (e.g., `DropDown` with static values vs. with `source`).
 
 ---
 
@@ -400,9 +359,9 @@ Use fully-qualified names with the `JASP.Controls::` prefix:
 
 | Status | Count | Notes |
 | :----- | :---- | :---- |
-| ✅ Embedded (QDoc) | 5 | CheckBox, DropDown, TextField, VariablesList, Group |
+| ✅ Embedded (QDoc) | 17 | CheckBox, DropDown, TextField, VariablesList, Group, ALTNavTag, AddColumnField, AllowedTypeIcons, AssignButton, AssignedPairsVariablesList, AssignedRepeatedMeasuresCells, AssignedVariablesList, AvailableVariablesList, BasicThreeButtonTableView, BayesFactorType, Button, CIField |
 | 🔄 In Progress | 0 | |
-| ⏳ Pending | 59 | |
+| ⏳ Pending | 47 | |
 
 > [!TIP]
 > MVP complete! 5 core controls now have QDoc-style comments embedded in source.

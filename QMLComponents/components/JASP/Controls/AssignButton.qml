@@ -16,9 +16,26 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 import QtQuick
 
+/*!
+    \qmltype AssignButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief Internal arrow button for moving variables between source and target lists.
+
+    \note This is an internal UI component used by VariablesForm.
+    Module developers do not use this control directly.
+    It renders a left/right arrow button that moves selected variables between
+    an available variables list and an assigned variables list.
+
+    \section1 Properties
+
+    \list
+    \li \b leftSource (var) - The variables list on the left side.
+    \li \b rightSource (var) - The variables list on the right side.
+    \li \b leftToRight (bool) - Direction of the arrow. Default: true.
+    \endlist
+*/
 Button
 {
 	id:					button

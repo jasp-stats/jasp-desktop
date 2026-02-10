@@ -30,10 +30,8 @@ import JASP.Controls
     \section1 R Binding
 
     \list
-    \li \b{Bound Control:} CheckBoxBase (inherits BoundControlBase)
     \li \b{R Type:} \c logical
     \li \b{Default:} \c FALSE
-    \li \b{Serialization:} Boolean — checked property → JSON true/false
     \endlist
 
     \section1 Properties
@@ -47,12 +45,13 @@ import JASP.Controls
     \li \b columns (int) - Number of columns for child controls layout. Default: 1.
     \endlist
 
-    \section1 Inherited from JASPControl
+    \section1 Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.
     \li \b visible (bool) - Whether the control is visible. Default: true.
-    \li \b toolTip (string) - Hover tooltip text. Default: "".
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
     \endlist
 
     \section1 Signals
