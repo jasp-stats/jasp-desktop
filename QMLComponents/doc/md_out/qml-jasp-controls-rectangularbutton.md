@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 RectangularButton
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -13,28 +10,17 @@ RectangularButton
 - [Signals](#signals)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # RectangularButton QML Type
 
 A styled rectangular button with optional icon and text.
-[More...](#details)
 
-<div class="table">
 
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherited By:     | <a href="qml-jasp-controls-roundedbutton.md" 
-                     translate="no">RoundedButton</a>                |
+| Inherited By:     | [RoundedButton](qml-jasp-controls-roundedbutton.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-rectangularbutton-members.md)
@@ -43,17 +29,13 @@ A styled rectangular button with optional icon and text.
 
 A Rectangle-based button supporting text, icon, or both. Provides hover,
 pressed, and disabled states with JASP theming. Used as the base for
-<a href="qml-jasp-controls-roundedbutton.md"
-translate="no">RoundedButton</a> and
-<a href="qml-jasp-controls-menubutton.md"
-translate="no">MenuButton</a>.
+[RoundedButton](qml-jasp-controls-roundedbutton.md) and
+[MenuButton](qml-jasp-controls-menubutton.md).
 
-<div class="admonition note">
 
 **Note:** This is primarily an internal UI component. Module developers
 typically use Button instead.
 
-</div>
 
 ## Properties
 

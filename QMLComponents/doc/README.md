@@ -40,9 +40,9 @@ qdoc QMLComponents/doc/jasp_qml.qdocconf
 
 ### 2. Generate Markdown (Secondary)
 
-Since `qdoc` (Qt 5) does not natively support Markdown output, we use `pandoc` to convert the generated HTML files.
+Since `qdoc` (Qt 5) does not natively support Markdown output, we use `pandoc` to convert the generated HTML files, then run a post-processing script to fix artifacts.
 
-**Command (PowerShell):**
+**Step 1 — Convert HTML to Markdown (PowerShell):**
 ```powershell
 # Create output directory
 New-Item -ItemType Directory -Force -Path "QMLComponents/doc/md_out"
@@ -52,12 +52,19 @@ Get-ChildItem "QMLComponents/doc/html_out/*.html" | ForEach-Object {
     Write-Host "Converting $($_.Name)..."
     pandoc $_.FullName -o ("QMLComponents/doc/md_out/" + $_.BaseName + ".md") -t gfm 
 }
-
-# Fix links (replace .html with .md)
-Get-ChildItem "QMLComponents/doc/md_out/*.md" | ForEach-Object { 
-    (Get-Content $_.FullName).Replace('.html)', '.md)').Replace('.html#', '.md#').Replace('.html"', '.md"') | Set-Content $_.FullName 
-}
 ```
+
+**Step 2 — Post-process (Bash / Git Bash / WSL):**
+```bash
+bash QMLComponents/doc/fix-markdown.sh QMLComponents/doc/md_out
+```
+
+The `fix-markdown.sh` script handles:
+- Fixing internal links (`.html` → `.md`)
+- Converting `<a translate="no">` tags to proper Markdown links
+- Removing dead `[More...]` anchors
+- Stripping leftover HTML `<div>` wrappers
+- Rebuilding `index.md` with the full component table
 
 **Output:**
 - The generated Markdown files will be in `QMLComponents/doc/md_out`.
@@ -71,3 +78,12 @@ Get-ChildItem "QMLComponents/doc/md_out/*.md" | ForEach-Object {
 - **"Unknown base" warnings**:
     - You may see warnings like `Unknown base 'JASPControl'`.
     - This happens because the C++ base classes are not documented in this QDoc pass. These warnings can be ignored if the QML API documentation itself renders correctly.
+
+## CI Automation
+
+Documentation is **automatically regenerated** via GitHub Actions when QML source files or QDoc configuration files are pushed to the `development` branch.
+
+- **Workflow file**: `.github/workflows/generate-qml-docs.yml`
+- **Trigger**: Push to `development` that modifies files in `QMLComponents/components/JASP/Controls/` or `QMLComponents/doc/`
+- **What it does**: Runs `qdoc` → `pandoc` → link fix → commits updated `html_out/` and `md_out/` back to `development`
+- **Manual trigger**: The workflow can also be run manually via the GitHub Actions UI (`workflow_dispatch`)

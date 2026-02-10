@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 SimpleTableView
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -15,36 +12,24 @@ SimpleTableView
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # SimpleTableView QML Type
 
 A table view preset with Add Column, Delete Column, and Reset buttons.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
-translate="no">BasicThreeButtonTableView</a> |
+| Inherits: | [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-simpletableview-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
-translate="no">BasicThreeButtonTableView</a> with the Simple model type.
+Extends [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) with the Simple model type.
 Columns can be added and removed dynamically. Reset restores the initial
 column layout.
 

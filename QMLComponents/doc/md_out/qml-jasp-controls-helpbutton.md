@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 HelpButton
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -12,45 +9,31 @@ HelpButton
 - [Properties](#properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # HelpButton QML Type
 
 A small info button that opens a help page for the current analysis.
-[More...](#details)
 
-<div class="table">
 
 |                   |                                             |
 |-------------------|---------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                  |
-| Inherits:         | <a href="qml-jasp-controls-menubutton.md" 
-                     translate="no">MenuButton</a>                |
+| Inherits:         | [MenuButton](qml-jasp-controls-menubutton.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-helpbutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-menubutton.md"
-translate="no">MenuButton</a> with an info icon. When clicked, opens or
+Extends [MenuButton](qml-jasp-controls-menubutton.md) with an info icon. When clicked, opens or
 toggles the specified help page in the JASP help panel. Only works
 within a Form.
 
-<div class="admonition note">
 
 **Note:** HelpButton does not bind to R options. It is a UI-only
 control.
 
-</div>
 
 ## Properties
 

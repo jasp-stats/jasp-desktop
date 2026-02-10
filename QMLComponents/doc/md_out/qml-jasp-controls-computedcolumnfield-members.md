@@ -1,14 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 ComputedColumnField
 
-<div class="sidebar">
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # List of All Members for ComputedColumnField
 

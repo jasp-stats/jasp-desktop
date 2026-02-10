@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 InputListView
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -14,26 +11,16 @@ InputListView
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # InputListView QML Type
 
 An editable scrollable list for entering free-text values.
-[More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-inputlistview-members.md)

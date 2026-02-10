@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 SortMenuButton
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -12,44 +9,30 @@ SortMenuButton
 - [Properties](#properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # SortMenuButton QML Type
 
 A circular sort button that opens a sort-order popup.
-[More...](#details)
 
-<div class="table">
 
 |                   |                                             |
 |-------------------|---------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                  |
-| Inherits:         | <a href="qml-jasp-controls-menubutton.md" 
-                     translate="no">MenuButton</a>                |
+| Inherits:         | [MenuButton](qml-jasp-controls-menubutton.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-sortmenubutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-menubutton.md"
-translate="no">MenuButton</a> with a sort icon. When clicked, opens a
+Extends [MenuButton](qml-jasp-controls-menubutton.md) with a sort icon. When clicked, opens a
 popup menu driven by sortMenuModel to let users re-order list items.
 
-<div class="admonition note">
 
 **Note:** This is primarily an internal UI component used by list
 controls.
 
-</div>
 
 ## Properties
 

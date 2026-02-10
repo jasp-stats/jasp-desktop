@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 MenuButton
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -13,48 +10,31 @@ MenuButton
 - [Signals](#signals)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # MenuButton QML Type
 
 A button with optional submenu arrow and hover-to-open behaviour.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-roundedbutton.md"
-translate="no">RoundedButton</a> |
-| Inherited By: | <a href="qml-jasp-controls-helpbutton.md"
-translate="no">HelpButton</a> and <a href="qml-jasp-controls-sortmenubutton.md"
-translate="no">SortMenuButton</a> |
+| Inherits: | [RoundedButton](qml-jasp-controls-roundedbutton.md) |
+| Inherited By: | [HelpButton](qml-jasp-controls-helpbutton.md) and [SortMenuButton](qml-jasp-controls-sortmenubutton.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-menubutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-roundedbutton.md"
-translate="no">RoundedButton</a> with hover-delay logic and a submenu
+Extends [RoundedButton](qml-jasp-controls-roundedbutton.md) with hover-delay logic and a submenu
 indicator arrow. Used internally for ribbon menus and toolbar items.
 
-<div class="admonition note">
 
 **Note:** This is primarily an internal UI component. Module developers
-typically use Button or <a href="qml-jasp-controls-helpbutton.md"
-translate="no">HelpButton</a> instead.
+typically use Button or [HelpButton](qml-jasp-controls-helpbutton.md) instead.
 
-</div>
 
 ## Properties
 

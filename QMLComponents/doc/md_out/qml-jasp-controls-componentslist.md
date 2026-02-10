@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 ComponentsList
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -15,26 +12,16 @@ ComponentsList
 - [Signals](#signals)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # ComponentsList QML Type
 
 A dynamic list that repeats a user-defined component for each row.
-[More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-componentslist-members.md)

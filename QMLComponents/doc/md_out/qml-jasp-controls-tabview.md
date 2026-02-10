@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 TabView
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -14,25 +11,16 @@ TabView
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # TabView QML Type
 
-A tabbed container that manages dynamic panels. [More...](#details)
+A tabbed container that manages dynamic panels. 
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-tabview-members.md)

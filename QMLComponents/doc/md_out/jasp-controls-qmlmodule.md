@@ -1,23 +1,14 @@
-<div class="sidebar">
 
-<div id="sidebar-content" class="sidebar-content">
 
-</div>
-
-</div>
 
 # JASP.Controls QML Module
 
-<div id="details" class="descr">
 
 This module contains all the visual elements used to build JASP
 analyses.
 
 The complete list of types is automatically generated below.
 
-</div>
-
-<div class="table">
 
 |  |  |
 |----|----|
@@ -86,4 +77,4 @@ The complete list of types is automatically generated below.
 | [VariablesForm](qml-jasp-controls-variablesform.md) | A two-column layout with available variables on the left and assigned lists on the right |
 | [VariablesList](qml-jasp-controls-variableslist.md) | Primary variable selection control in JASP |
 
-</div>
+

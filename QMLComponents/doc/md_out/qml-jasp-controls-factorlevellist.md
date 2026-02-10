@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 FactorLevelList
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -14,25 +11,16 @@ FactorLevelList
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # FactorLevelList QML Type
 
-A grid editor for defining factors and their levels. [More...](#details)
+A grid editor for defining factors and their levels. 
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-factorlevellist-members.md)

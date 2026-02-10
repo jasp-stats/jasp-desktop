@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 JAGSTextArea
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -15,26 +12,17 @@ JAGSTextArea
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # JAGSTextArea QML Type
 
-A text area preset for writing JAGS model code. [More...](#details)
+A text area preset for writing JAGS model code. 
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textarea.md" translate="no">TextArea</a> |
+| Inherits: | [TextArea](qml-jasp-controls-textarea.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-jagstextarea-members.md)
@@ -42,7 +30,7 @@ A text area preset for writing JAGS model code. [More...](#details)
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textarea.md" translate="no">TextArea</a>
+[TextArea](qml-jasp-controls-textarea.md)
 with the JAGS model text type, line numbers, and R syntax highlighting.
 Used in analyses that require user-specified JAGS models.
 

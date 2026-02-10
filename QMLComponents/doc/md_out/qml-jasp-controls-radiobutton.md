@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 RadioButton
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -14,27 +11,17 @@ RadioButton
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # RadioButton QML Type
 
 A radio button option within a
-<a href="qml-jasp-controls-radiobuttongroup.md"
-translate="no">RadioButtonGroup</a>. [More...](#details)
+[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md). 
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-radiobutton-members.md)
@@ -42,15 +29,13 @@ translate="no">RadioButtonGroup</a>. [More...](#details)
 ## Detailed Description
 
 Backed by RadioButtonBase. When checked, its name is sent as the value
-of the parent <a href="qml-jasp-controls-radiobuttongroup.md"
-translate="no">RadioButtonGroup</a>. Supports nested child controls that
+of the parent [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md). Supports nested child controls that
 can be enabled only when this radio button is selected.
 
 ## R Binding
 
 - **R Type:** Used as a value option within a
-  <a href="qml-jasp-controls-radiobuttongroup.md"
-  translate="no">RadioButtonGroup</a> (string).
+  [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md) (string).
 - **Default:** unchecked
 
 ## Properties

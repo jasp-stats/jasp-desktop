@@ -1,10 +1,7 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 Chi2TestTableView
 
-<div class="sidebar">
-
-<div class="toc">
 
 ### Contents
 
@@ -16,36 +13,24 @@ Chi2TestTableView
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # Chi2TestTableView QML Type
 
 A table view preset for entering multinomial chi-squared hypotheses.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
-translate="no">BasicThreeButtonTableView</a> |
+| Inherits: | [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-chi2testtableview-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
-translate="no">BasicThreeButtonTableView</a> with the MultinomialChi2
+Extends [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) with the MultinomialChi2
 model type. The three buttons are configured as Add Column, Delete
 Column, and Reset. Column headers default to "H₀ (a)", "H₀ (b)", etc.
 
