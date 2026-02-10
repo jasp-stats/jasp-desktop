@@ -353,9 +353,9 @@ Json::Value qvariantToJson(const QVariant & varValue)
 	case QMetaType::Int:		return varValue.toInt();
 	case QMetaType::UInt:		return varValue.toUInt();
 	case QMetaType::Long:
-	case QMetaType::LongLong:	return varValue.toLongLong();
+    case QMetaType::LongLong:	return static_cast<Json::Int64>(varValue.toLongLong());
 	case QMetaType::ULong:
-	case QMetaType::ULongLong:	return varValue.toULongLong();
+    case QMetaType::ULongLong:	return static_cast<Json::UInt64>(varValue.toULongLong());
 	case QMetaType::Bool:		return varValue.toBool();
 	case QMetaType::QString:	return fq(varValue.toString());
 	case QMetaType::QVariantList:
