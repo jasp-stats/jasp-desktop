@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 VariablesForm
 
@@ -34,21 +34,21 @@ lists on the right. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-variablesform-members.html)
+  members](qml-jasp-controls-variablesform-members.md)
 
 ## Detailed Description
 
 Backed by VariablesFormBase. Automatically creates an
-<a href="qml-jasp-controls-availablevariableslist.html"
+<a href="qml-jasp-controls-availablevariableslist.md"
 translate="no">AvailableVariablesList</a> and positions
-<a href="qml-jasp-controls-assignedvariableslist.html"
+<a href="qml-jasp-controls-assignedvariableslist.md"
 translate="no">AssignedVariablesList</a> controls alongside assign
 buttons. Heights of variable lists are auto-adjusted to fill the form.
 
 <div class="admonition note">
 
 **Note:** VariablesForm does not bind directly to R options. The child
-<a href="qml-jasp-controls-variableslist.html"
+<a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a> controls each have their own R binding.
 
 </div>

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ContrastsList
 
@@ -36,14 +36,14 @@ A composite control for specifying contrasts for factor variables.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-contrastslist-members.html)
+  members](qml-jasp-controls-contrastslist-members.md)
 
 ## Detailed Description
 
-Combines a <a href="qml-jasp-controls-variableslist.html"
+Combines a <a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a> (showing factors with contrast type
 dropdowns) and an optional
-<a href="qml-jasp-controls-customcontraststableview.html"
+<a href="qml-jasp-controls-customcontraststableview.md"
 translate="no">CustomContrastsTableView</a> for entering custom contrast
 weights. Each factor gets a dropdown to select a contrast type (none,
 deviation, simple, difference, Helmert, repeated, polynomial, or
@@ -59,7 +59,7 @@ custom).
 - **factorsSourceName** (string) - Name of the source control providing
   factor variables. Default: "fixedFactors".
 - **source** (var) - Alias for the internal
-  <a href="qml-jasp-controls-variableslist.html"
+  <a href="qml-jasp-controls-variableslist.md"
   translate="no">VariablesList</a> source.
 - **repeatedMeasureFactors** (string) - Name of the repeated measures
   factors source. Default: "repeatedMeasuresFactors".

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AllowedTypeIcons
 
@@ -33,7 +33,7 @@ Internal component that displays variable type filter icons.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-allowedtypeicons-members.html)
+  members](qml-jasp-controls-allowedtypeicons-members.md)
 
 ## Detailed Description
 
@@ -42,7 +42,7 @@ Internal component that displays variable type filter icons.
 **Note:** This is an internal UI component. Module developers do not use
 this control directly. It renders a row of icons indicating which
 variable types (scale, ordinal, nominal) are allowed in a particular
-<a href="qml-jasp-controls-variableslist.html"
+<a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a>.
 
 </div>

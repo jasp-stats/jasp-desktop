@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TextField
 
@@ -32,27 +32,27 @@ A single-line text input control for entering strings.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-addcolumnfield.html"
-translate="no">AddColumnField</a>, <a href="qml-jasp-controls-checkcolumnisfreeorminefield.html"
-translate="no">CheckColumnIsFreeOrMineField</a>, <a href="qml-jasp-controls-computedcolumnfield.html"
-translate="no">ComputedColumnField</a>, <a href="qml-jasp-controls-doublefield.html"
-translate="no">DoubleField</a>, <a href="qml-jasp-controls-fileselector.html"
-translate="no">FileSelector</a>, <a href="qml-jasp-controls-formulafield.html"
-translate="no">FormulaField</a>, and <a href="qml-jasp-controls-integerfield.html"
+| Inherited By: | <a href="qml-jasp-controls-addcolumnfield.md"
+translate="no">AddColumnField</a>, <a href="qml-jasp-controls-checkcolumnisfreeorminefield.md"
+translate="no">CheckColumnIsFreeOrMineField</a>, <a href="qml-jasp-controls-computedcolumnfield.md"
+translate="no">ComputedColumnField</a>, <a href="qml-jasp-controls-doublefield.md"
+translate="no">DoubleField</a>, <a href="qml-jasp-controls-fileselector.md"
+translate="no">FileSelector</a>, <a href="qml-jasp-controls-formulafield.md"
+translate="no">FormulaField</a>, and <a href="qml-jasp-controls-integerfield.md"
 translate="no">IntegerField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-textfield-members.html)
+  members](qml-jasp-controls-textfield-members.md)
 
 ## Detailed Description
 
-For numeric input, use <a href="qml-jasp-controls-integerfield.html"
+For numeric input, use <a href="qml-jasp-controls-integerfield.md"
 translate="no">IntegerField</a>,
-<a href="qml-jasp-controls-doublefield.html"
+<a href="qml-jasp-controls-doublefield.md"
 translate="no">DoubleField</a>, or
-<a href="qml-jasp-controls-percentfield.html"
+<a href="qml-jasp-controls-percentfield.md"
 translate="no">PercentField</a>.
 
 - **R Type:** `character`

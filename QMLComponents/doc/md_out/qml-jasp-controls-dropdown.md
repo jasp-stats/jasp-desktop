@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DropDown
 
@@ -33,13 +33,13 @@ A selection control that presents a list of options in a dropdown menu.
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherited By:     | <a href="qml-jasp-controls-colorpalette.html" 
+| Inherited By:     | <a href="qml-jasp-controls-colorpalette.md" 
                      translate="no">ColorPalette</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-dropdown-members.html)
+  members](qml-jasp-controls-dropdown-members.md)
 
 ## Detailed Description
 

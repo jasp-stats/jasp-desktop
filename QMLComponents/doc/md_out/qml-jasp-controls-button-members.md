@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Button
 
@@ -13,4 +13,4 @@ Button
 # List of All Members for Button
 
 This is the complete list of members for
-[Button](qml-jasp-controls-button.html), including inherited members.
+[Button](qml-jasp-controls-button.md), including inherited members.

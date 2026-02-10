@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 JagsTableView
 
@@ -33,17 +33,17 @@ A table view preset for entering JAGS data. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.html"
+| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-jagstableview-members.html)
+  members](qml-jasp-controls-jagstableview-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-basicthreebuttontableview.html"
+Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> with the JAGSDataInput
 model type. Buttons are configured as Add Data, Delete Data, and Reset.
 Cell values are strings. Row count is capped by maxDataEntries.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 VariablesForm
 
@@ -13,5 +13,5 @@ VariablesForm
 # List of All Members for VariablesForm
 
 This is the complete list of members for
-[VariablesForm](qml-jasp-controls-variablesform.html), including
+[VariablesForm](qml-jasp-controls-variablesform.md), including
 inherited members.

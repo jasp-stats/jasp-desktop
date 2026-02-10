@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 JASPScrollBar
 
@@ -31,7 +31,7 @@ An internal custom scrollbar for flickable content. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-jaspscrollbar-members.html)
+  members](qml-jasp-controls-jaspscrollbar-members.md)
 
 ## Detailed Description
 

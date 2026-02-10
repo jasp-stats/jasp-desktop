@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Slider
 
@@ -35,12 +35,12 @@ A slider with a linked numeric text field. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-slider-members.html)
+  members](qml-jasp-controls-slider-members.md)
 
 ## Detailed Description
 
 Backed by SliderBase. Displays a draggable slider alongside a
-<a href="qml-jasp-controls-doublefield.html"
+<a href="qml-jasp-controls-doublefield.md"
 translate="no">DoubleField</a> that stays synchronized. Supports
 vertical and horizontal orientations.
 

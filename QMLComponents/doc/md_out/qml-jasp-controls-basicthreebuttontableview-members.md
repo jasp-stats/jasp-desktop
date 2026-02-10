@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 BasicThreeButtonTableView
 
@@ -13,5 +13,5 @@ BasicThreeButtonTableView
 # List of All Members for BasicThreeButtonTableView
 
 This is the complete list of members for
-[BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.html),
+[BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md),
 including inherited members.

@@ -26,178 +26,178 @@ See the JASP.Controls module for all available types.
 <div class="flowListDiv" translate="no">
 
 **A**  
-[AddColumnField](qml-jasp-controls-addcolumnfield.html)
+[AddColumnField](qml-jasp-controls-addcolumnfield.md)
 
-[AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.html)
+[AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.md)
 
-[ALTNavTag](qml-jasp-controls-altnavtag.html)
+[ALTNavTag](qml-jasp-controls-altnavtag.md)
 
-[AssignButton](qml-jasp-controls-assignbutton.html)
+[AssignButton](qml-jasp-controls-assignbutton.md)
 
-[AssignedPairsVariablesList](qml-jasp-controls-assignedpairsvariableslist.html)
+[AssignedPairsVariablesList](qml-jasp-controls-assignedpairsvariableslist.md)
 
-[AssignedRepeatedMeasuresCells](qml-jasp-controls-assignedrepeatedmeasurescells.html)
+[AssignedRepeatedMeasuresCells](qml-jasp-controls-assignedrepeatedmeasurescells.md)
 
-[AssignedVariablesList](qml-jasp-controls-assignedvariableslist.html)
+[AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md)
 
-[AvailableVariablesList](qml-jasp-controls-availablevariableslist.html)
+[AvailableVariablesList](qml-jasp-controls-availablevariableslist.md)
 
 <!-- -->
 
 **B**  
-[BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.html)
+[BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md)
 
-[BayesFactorType](qml-jasp-controls-bayesfactortype.html)
+[BayesFactorType](qml-jasp-controls-bayesfactortype.md)
 
-[Button](qml-jasp-controls-button.html)
+[Button](qml-jasp-controls-button.md)
 
 <!-- -->
 
 **C**  
-[CheckBox](qml-jasp-controls-checkbox.html)
+[CheckBox](qml-jasp-controls-checkbox.md)
 
-[CheckColumnIsFreeOrMineField](qml-jasp-controls-checkcolumnisfreeorminefield.html)
+[CheckColumnIsFreeOrMineField](qml-jasp-controls-checkcolumnisfreeorminefield.md)
 
-[Chi2TestTableView](qml-jasp-controls-chi2testtableview.html)
+[Chi2TestTableView](qml-jasp-controls-chi2testtableview.md)
 
-[CIField](qml-jasp-controls-cifield.html)
+[CIField](qml-jasp-controls-cifield.md)
 
-[ColorPalette](qml-jasp-controls-colorpalette.html)
+[ColorPalette](qml-jasp-controls-colorpalette.md)
 
-[ColumnLayout](qml-jasp-controls-columnlayout.html)
+[ColumnLayout](qml-jasp-controls-columnlayout.md)
 
-[ComponentsList](qml-jasp-controls-componentslist.html)
+[ComponentsList](qml-jasp-controls-componentslist.md)
 
-[ComputedColumnField](qml-jasp-controls-computedcolumnfield.html)
+[ComputedColumnField](qml-jasp-controls-computedcolumnfield.md)
 
-[ContrastsList](qml-jasp-controls-contrastslist.html)
+[ContrastsList](qml-jasp-controls-contrastslist.md)
 
-[ControlErrorMessage](qml-jasp-controls-controlerrormessage.html)
+[ControlErrorMessage](qml-jasp-controls-controlerrormessage.md)
 
-[CrossButton](qml-jasp-controls-crossbutton.html)
+[CrossButton](qml-jasp-controls-crossbutton.md)
 
-[CustomContrastsTableView](qml-jasp-controls-customcontraststableview.html)
+[CustomContrastsTableView](qml-jasp-controls-customcontraststableview.md)
 
 <!-- -->
 
 **D**  
-[Divider](qml-jasp-controls-divider.html)
+[Divider](qml-jasp-controls-divider.md)
 
-[DoubleField](qml-jasp-controls-doublefield.html)
+[DoubleField](qml-jasp-controls-doublefield.md)
 
-[DropDown](qml-jasp-controls-dropdown.html)
+[DropDown](qml-jasp-controls-dropdown.md)
 
 <!-- -->
 
 **F**  
-[FactorLevelList](qml-jasp-controls-factorlevellist.html)
+[FactorLevelList](qml-jasp-controls-factorlevellist.md)
 
-[FactorsForm](qml-jasp-controls-factorsform.html)
+[FactorsForm](qml-jasp-controls-factorsform.md)
 
-[FactorsList](qml-jasp-controls-factorslist.html)
+[FactorsList](qml-jasp-controls-factorslist.md)
 
-[FileSelector](qml-jasp-controls-fileselector.html)
+[FileSelector](qml-jasp-controls-fileselector.md)
 
-[Form](qml-jasp-controls-form.html)
+[Form](qml-jasp-controls-form.md)
 
-[FormulaField](qml-jasp-controls-formulafield.html)
+[FormulaField](qml-jasp-controls-formulafield.md)
 
 <!-- -->
 
 **G**  
-[GridLayout](qml-jasp-controls-gridlayout.html)
+[GridLayout](qml-jasp-controls-gridlayout.md)
 
-[Group](qml-jasp-controls-group.html)
+[Group](qml-jasp-controls-group.md)
 
 <!-- -->
 
 **H**  
-[HelpButton](qml-jasp-controls-helpbutton.html)
+[HelpButton](qml-jasp-controls-helpbutton.md)
 
 <!-- -->
 
 **I**  
-[InputListView](qml-jasp-controls-inputlistview.html)
+[InputListView](qml-jasp-controls-inputlistview.md)
 
-[IntegerField](qml-jasp-controls-integerfield.html)
+[IntegerField](qml-jasp-controls-integerfield.md)
 
 <!-- -->
 
 **J**  
-[JagsTableView](qml-jasp-controls-jagstableview.html)
+[JagsTableView](qml-jasp-controls-jagstableview.md)
 
-[JAGSTextArea](qml-jasp-controls-jagstextarea.html)
+[JAGSTextArea](qml-jasp-controls-jagstextarea.md)
 
-[JASPScrollBar](qml-jasp-controls-jaspscrollbar.html)
+[JASPScrollBar](qml-jasp-controls-jaspscrollbar.md)
 
 <!-- -->
 
 **L**  
-[Label](qml-jasp-controls-label.html)
+[Label](qml-jasp-controls-label.md)
 
 <!-- -->
 
 **M**  
-[MenuButton](qml-jasp-controls-menubutton.html)
+[MenuButton](qml-jasp-controls-menubutton.md)
 
-[ModelTermsList](qml-jasp-controls-modeltermslist.html)
+[ModelTermsList](qml-jasp-controls-modeltermslist.md)
 
 <!-- -->
 
 **P**  
-[PercentField](qml-jasp-controls-percentfield.html)
+[PercentField](qml-jasp-controls-percentfield.md)
 
 <!-- -->
 
 **R**  
-[RadioButton](qml-jasp-controls-radiobutton.html)
+[RadioButton](qml-jasp-controls-radiobutton.md)
 
-[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.html)
+[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md)
 
-[RectangularButton](qml-jasp-controls-rectangularbutton.html)
+[RectangularButton](qml-jasp-controls-rectangularbutton.md)
 
-[RoundedButton](qml-jasp-controls-roundedbutton.html)
+[RoundedButton](qml-jasp-controls-roundedbutton.md)
 
-[RowLayout](qml-jasp-controls-rowlayout.html)
+[RowLayout](qml-jasp-controls-rowlayout.md)
 
 <!-- -->
 
 **S**  
-[ScrollMoreIndicator](qml-jasp-controls-scrollmoreindicator.html)
+[ScrollMoreIndicator](qml-jasp-controls-scrollmoreindicator.md)
 
-[Section](qml-jasp-controls-section.html)
+[Section](qml-jasp-controls-section.md)
 
-[SetSeed](qml-jasp-controls-setseed.html)
+[SetSeed](qml-jasp-controls-setseed.md)
 
-[SimpleTableView](qml-jasp-controls-simpletableview.html)
+[SimpleTableView](qml-jasp-controls-simpletableview.md)
 
-[Slider](qml-jasp-controls-slider.html)
+[Slider](qml-jasp-controls-slider.md)
 
-[SortMenuButton](qml-jasp-controls-sortmenubutton.html)
+[SortMenuButton](qml-jasp-controls-sortmenubutton.md)
 
-[SubjectivePriors](qml-jasp-controls-subjectivepriors.html)
+[SubjectivePriors](qml-jasp-controls-subjectivepriors.md)
 
-[Switch](qml-jasp-controls-switch.html)
+[Switch](qml-jasp-controls-switch.md)
 
 <!-- -->
 
 **T**  
-[TableView](qml-jasp-controls-tableview.html)
+[TableView](qml-jasp-controls-tableview.md)
 
-[TabView](qml-jasp-controls-tabview.html)
+[TabView](qml-jasp-controls-tabview.md)
 
-[Text](qml-jasp-controls-text.html)
+[Text](qml-jasp-controls-text.md)
 
-[TextArea](qml-jasp-controls-textarea.html)
+[TextArea](qml-jasp-controls-textarea.md)
 
-[TextField](qml-jasp-controls-textfield.html)
+[TextField](qml-jasp-controls-textfield.md)
 
 <!-- -->
 
 **V**  
-[VariablesForm](qml-jasp-controls-variablesform.html)
+[VariablesForm](qml-jasp-controls-variablesform.md)
 
-[VariablesList](qml-jasp-controls-variableslist.html)
+[VariablesList](qml-jasp-controls-variableslist.md)
 
 </div>
 

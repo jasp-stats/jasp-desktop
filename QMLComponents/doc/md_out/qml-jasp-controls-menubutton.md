@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 MenuButton
 
@@ -31,27 +31,27 @@ A button with optional submenu arrow and hover-to-open behaviour.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-roundedbutton.html"
+| Inherits: | <a href="qml-jasp-controls-roundedbutton.md"
 translate="no">RoundedButton</a> |
-| Inherited By: | <a href="qml-jasp-controls-helpbutton.html"
-translate="no">HelpButton</a> and <a href="qml-jasp-controls-sortmenubutton.html"
+| Inherited By: | <a href="qml-jasp-controls-helpbutton.md"
+translate="no">HelpButton</a> and <a href="qml-jasp-controls-sortmenubutton.md"
 translate="no">SortMenuButton</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-menubutton-members.html)
+  members](qml-jasp-controls-menubutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-roundedbutton.html"
+Extends <a href="qml-jasp-controls-roundedbutton.md"
 translate="no">RoundedButton</a> with hover-delay logic and a submenu
 indicator arrow. Used internally for ribbon menus and toolbar items.
 
 <div class="admonition note">
 
 **Note:** This is primarily an internal UI component. Module developers
-typically use Button or <a href="qml-jasp-controls-helpbutton.html"
+typically use Button or <a href="qml-jasp-controls-helpbutton.md"
 translate="no">HelpButton</a> instead.
 
 </div>

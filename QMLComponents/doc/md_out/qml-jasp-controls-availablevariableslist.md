@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AvailableVariablesList
 
@@ -32,19 +32,19 @@ The source list showing all available dataset variables.
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | <a href="qml-jasp-controls-variableslist.html" 
+| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
                      translate="no">VariablesList</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-availablevariableslist-members.html)
+  members](qml-jasp-controls-availablevariableslist-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-variableslist.html"
+Extends <a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a> configured as the source (available)
-list in a <a href="qml-jasp-controls-variablesform.html"
+list in a <a href="qml-jasp-controls-variablesform.md"
 translate="no">VariablesForm</a>. This control is not bound to R
 options. It displays all dataset variables from which users can drag
 variables into assigned lists.
@@ -52,7 +52,7 @@ variables into assigned lists.
 <div class="admonition note">
 
 **Note:** AvailableVariablesList does not bind to R options. It is
-automatically managed by <a href="qml-jasp-controls-variablesform.html"
+automatically managed by <a href="qml-jasp-controls-variablesform.md"
 translate="no">VariablesForm</a>.
 
 </div>

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Section
 
@@ -30,13 +30,13 @@ A collapsible panel that groups child controls under a clickable header.
 |                   |                                                   |
 |-------------------|---------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                        |
-| Inherited By:     | <a href="qml-jasp-controls-subjectivepriors.html" 
+| Inherited By:     | <a href="qml-jasp-controls-subjectivepriors.md" 
                      translate="no">SubjectivePriors</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-section-members.html)
+  members](qml-jasp-controls-section-members.md)
 
 ## Detailed Description
 
@@ -58,7 +58,7 @@ control.
 - **expanded** (bool) - Whether the section content is visible. Default:
   false.
 - **columns** (int) - Number of columns in the content
-  <a href="qml-jasp-controls-gridlayout.html"
+  <a href="qml-jasp-controls-gridlayout.md"
   translate="no">GridLayout</a>. Default: 2.
 - **spacing** (real) - Row spacing in the content area. Default:
   jaspTheme.rowGridSpacing.

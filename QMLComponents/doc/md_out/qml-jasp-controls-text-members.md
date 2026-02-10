@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Text
 
@@ -13,4 +13,4 @@ Text
 # List of All Members for Text
 
 This is the complete list of members for
-[Text](qml-jasp-controls-text.html), including inherited members.
+[Text](qml-jasp-controls-text.md), including inherited members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TableView
 
@@ -36,14 +36,14 @@ A scrollable, editable data table for entering structured values.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-tableview-members.html)
+  members](qml-jasp-controls-tableview-members.md)
 
 ## Detailed Description
 
 Backed by TableViewBase. Renders a grid of editable cells with column
 and row headers, scrollbars, and optional add/remove column buttons (for
 GridInput model type). Each cell uses a
-<a href="qml-jasp-controls-formulafield.html"
+<a href="qml-jasp-controls-formulafield.md"
 translate="no">FormulaField</a> with configurable validators (integer,
 double, string).
 

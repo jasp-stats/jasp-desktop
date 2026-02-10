@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CrossButton
 
@@ -33,13 +33,13 @@ An internal × (cross) button used to dismiss or remove items.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-crossbutton-members.html)
+  members](qml-jasp-controls-crossbutton-members.md)
 
 ## Detailed Description
 
 Renders two rotated rectangles forming an × icon. Thickens on hover for
 visual feedback. Used internally by
-<a href="qml-jasp-controls-controlerrormessage.html"
+<a href="qml-jasp-controls-controlerrormessage.md"
 translate="no">ControlErrorMessage</a> and other components.
 
 <div class="admonition note">

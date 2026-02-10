@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FactorsList
 
@@ -35,21 +35,21 @@ factor panels. [More...](#details)
 |                   |                                                        |
 |-------------------|--------------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                             |
-| Inherits:         | <a href="qml-jasp-controls-assignedvariableslist.html" 
+| Inherits:         | <a href="qml-jasp-controls-assignedvariableslist.md" 
                      translate="no">AssignedVariablesList</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-factorslist-members.html)
+  members](qml-jasp-controls-factorslist-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-assignedvariableslist.html"
+Extends <a href="qml-jasp-controls-assignedvariableslist.md"
 translate="no">AssignedVariablesList</a> by adding an editable
-<a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 for the factor title. Typically used inside
-<a href="qml-jasp-controls-factorsform.html"
+<a href="qml-jasp-controls-factorsform.md"
 translate="no">FactorsForm</a>; each FactorsList panel represents one
 factor and its assigned variables.
 

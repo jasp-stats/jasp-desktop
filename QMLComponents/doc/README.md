@@ -52,6 +52,11 @@ Get-ChildItem "QMLComponents/doc/html_out/*.html" | ForEach-Object {
     Write-Host "Converting $($_.Name)..."
     pandoc $_.FullName -o ("QMLComponents/doc/md_out/" + $_.BaseName + ".md") -t gfm 
 }
+
+# Fix links (replace .html with .md)
+Get-ChildItem "QMLComponents/doc/md_out/*.md" | ForEach-Object { 
+    (Get-Content $_.FullName).Replace('.html)', '.md)').Replace('.html#', '.md#').Replace('.html"', '.md"') | Set-Content $_.FullName 
+}
 ```
 
 **Output:**

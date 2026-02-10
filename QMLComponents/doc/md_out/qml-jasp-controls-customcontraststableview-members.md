@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CustomContrastsTableView
 
@@ -13,5 +13,5 @@ CustomContrastsTableView
 # List of All Members for CustomContrastsTableView
 
 This is the complete list of members for
-[CustomContrastsTableView](qml-jasp-controls-customcontraststableview.html),
+[CustomContrastsTableView](qml-jasp-controls-customcontraststableview.md),
 including inherited members.

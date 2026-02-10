@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Label
 
@@ -13,4 +13,4 @@ Label
 # List of All Members for Label
 
 This is the complete list of members for
-[Label](qml-jasp-controls-label.html), including inherited members.
+[Label](qml-jasp-controls-label.md), including inherited members.

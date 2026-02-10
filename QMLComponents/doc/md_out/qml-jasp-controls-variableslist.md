@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 VariablesList
 
@@ -32,23 +32,23 @@ The primary variable selection control in JASP. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-assignedpairsvariableslist.html"
-translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.html"
-translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.html"
-translate="no">AssignedVariablesList</a>, <a href="qml-jasp-controls-availablevariableslist.html"
-translate="no">AvailableVariablesList</a>, and <a href="qml-jasp-controls-modeltermslist.html"
+| Inherited By: | <a href="qml-jasp-controls-assignedpairsvariableslist.md"
+translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.md"
+translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.md"
+translate="no">AssignedVariablesList</a>, <a href="qml-jasp-controls-availablevariableslist.md"
+translate="no">AvailableVariablesList</a>, and <a href="qml-jasp-controls-modeltermslist.md"
 translate="no">ModelTermsList</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-variableslist-members.html)
+  members](qml-jasp-controls-variableslist-members.md)
 
 ## Detailed Description
 
 Displays a list where users can drag-and-drop variables from the
 dataset. This is usually used inside a
-<a href="qml-jasp-controls-variablesform.html"
+<a href="qml-jasp-controls-variablesform.md"
 translate="no">VariablesForm</a>
 
 ## R Binding
@@ -77,7 +77,7 @@ translate="no">VariablesForm</a>
   combination) of other controls having variables.
 - **rowComponent** (Component) - QML component for custom row controls.
   Can be used to add e.g. a
-  <a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a>
+  <a href="qml-jasp-controls-checkbox.md" translate="no">CheckBox</a>
   for each variable in the VariablesList.
 
 ## Inherited Properties

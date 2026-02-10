@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 JAGSTextArea
 
@@ -13,5 +13,5 @@ JAGSTextArea
 # List of All Members for JAGSTextArea
 
 This is the complete list of members for
-[JAGSTextArea](qml-jasp-controls-jagstextarea.html), including inherited
+[JAGSTextArea](qml-jasp-controls-jagstextarea.md), including inherited
 members.

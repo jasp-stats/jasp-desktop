@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DoubleField
 
@@ -34,19 +34,19 @@ A text field preset for entering numeric (double) values.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> |
-| Inherited By: | <a href="qml-jasp-controls-percentfield.html"
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
+| Inherited By: | <a href="qml-jasp-controls-percentfield.md"
 translate="no">PercentField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-doublefield-members.html)
+  members](qml-jasp-controls-doublefield-members.md)
 
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with the "number" input type and a built-in JASPDoubleValidator.
 Supports configurable minimum, maximum, decimal precision, and sign
 constraints.

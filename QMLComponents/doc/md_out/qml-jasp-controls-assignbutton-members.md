@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AssignButton
 
@@ -13,5 +13,5 @@ AssignButton
 # List of All Members for AssignButton
 
 This is the complete list of members for
-[AssignButton](qml-jasp-controls-assignbutton.html), including inherited
+[AssignButton](qml-jasp-controls-assignbutton.md), including inherited
 members.

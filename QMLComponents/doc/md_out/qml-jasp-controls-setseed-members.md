@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SetSeed
 
@@ -13,4 +13,4 @@ SetSeed
 # List of All Members for SetSeed
 
 This is the complete list of members for
-[SetSeed](qml-jasp-controls-setseed.html), including inherited members.
+[SetSeed](qml-jasp-controls-setseed.md), including inherited members.

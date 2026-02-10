@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 InputListView
 
@@ -36,7 +36,7 @@ An editable scrollable list for entering free-text values.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-inputlistview-members.html)
+  members](qml-jasp-controls-inputlistview-members.md)
 
 ## Detailed Description
 

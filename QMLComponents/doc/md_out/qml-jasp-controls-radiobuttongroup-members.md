@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RadioButtonGroup
 
@@ -13,5 +13,5 @@ RadioButtonGroup
 # List of All Members for RadioButtonGroup
 
 This is the complete list of members for
-[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.html), including
+[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md), including
 inherited members.

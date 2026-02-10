@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 JagsTableView
 
@@ -13,5 +13,5 @@ JagsTableView
 # List of All Members for JagsTableView
 
 This is the complete list of members for
-[JagsTableView](qml-jasp-controls-jagstableview.html), including
+[JagsTableView](qml-jasp-controls-jagstableview.md), including
 inherited members.

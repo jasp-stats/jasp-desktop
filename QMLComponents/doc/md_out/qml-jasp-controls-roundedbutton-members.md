@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RoundedButton
 
@@ -13,5 +13,5 @@ RoundedButton
 # List of All Members for RoundedButton
 
 This is the complete list of members for
-[RoundedButton](qml-jasp-controls-roundedbutton.html), including
+[RoundedButton](qml-jasp-controls-roundedbutton.md), including
 inherited members.

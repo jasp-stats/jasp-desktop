@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FileSelector
 
@@ -13,5 +13,5 @@ FileSelector
 # List of All Members for FileSelector
 
 This is the complete list of members for
-[FileSelector](qml-jasp-controls-fileselector.html), including inherited
+[FileSelector](qml-jasp-controls-fileselector.md), including inherited
 members.

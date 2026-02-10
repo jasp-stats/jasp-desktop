@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AllowedTypeIcons
 
@@ -13,5 +13,5 @@ AllowedTypeIcons
 # List of All Members for AllowedTypeIcons
 
 This is the complete list of members for
-[AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.html), including
+[AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.md), including
 inherited members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SubjectivePriors
 
@@ -13,5 +13,5 @@ SubjectivePriors
 # List of All Members for SubjectivePriors
 
 This is the complete list of members for
-[SubjectivePriors](qml-jasp-controls-subjectivepriors.html), including
+[SubjectivePriors](qml-jasp-controls-subjectivepriors.md), including
 inherited members.

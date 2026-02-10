@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Group
 
@@ -13,4 +13,4 @@ Group
 # List of All Members for Group
 
 This is the complete list of members for
-[Group](qml-jasp-controls-group.html), including inherited members.
+[Group](qml-jasp-controls-group.md), including inherited members.

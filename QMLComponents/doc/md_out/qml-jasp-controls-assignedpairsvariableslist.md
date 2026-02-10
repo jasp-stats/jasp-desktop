@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AssignedPairsVariablesList
 
@@ -33,17 +33,17 @@ A variable list preset for paired variable assignment.
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | <a href="qml-jasp-controls-variableslist.html" 
+| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
                      translate="no">VariablesList</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-assignedpairsvariableslist-members.html)
+  members](qml-jasp-controls-assignedpairsvariableslist-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-variableslist.html"
+Extends <a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a> with a two-column layout where
 variables are assigned in pairs. Uses drop-replace mode so each slot
 accepts exactly one variable.

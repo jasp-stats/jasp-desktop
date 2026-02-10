@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ScrollMoreIndicator
 
@@ -32,7 +32,7 @@ scrolling. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-scrollmoreindicator-members.html)
+  members](qml-jasp-controls-scrollmoreindicator-members.md)
 
 ## Detailed Description
 

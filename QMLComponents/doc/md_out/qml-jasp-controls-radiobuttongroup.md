@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RadioButtonGroup
 
@@ -31,18 +31,18 @@ A group of mutually exclusive radio button options. [More...](#details)
 |                   |                                                  |
 |-------------------|--------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                       |
-| Inherited By:     | <a href="qml-jasp-controls-bayesfactortype.html" 
+| Inherited By:     | <a href="qml-jasp-controls-bayesfactortype.md" 
                      translate="no">BayesFactorType</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-radiobuttongroup-members.html)
+  members](qml-jasp-controls-radiobuttongroup-members.md)
 
 ## Detailed Description
 
 Backed by RadioButtonsGroupBase. Contains
-<a href="qml-jasp-controls-radiobutton.html"
+<a href="qml-jasp-controls-radiobutton.md"
 translate="no">RadioButton</a> children, of which exactly one can be
 checked at a time. The checked button's name is sent as the option value
 to R.
@@ -50,10 +50,10 @@ to R.
 ## R Binding
 
 - **R Type:** `character` (the name/value of the selected
-  <a href="qml-jasp-controls-radiobutton.html"
+  <a href="qml-jasp-controls-radiobutton.md"
   translate="no">RadioButton</a>)
 - **Default:** Value of the initially checked
-  <a href="qml-jasp-controls-radiobutton.html"
+  <a href="qml-jasp-controls-radiobutton.md"
   translate="no">RadioButton</a>
 
 ## Properties

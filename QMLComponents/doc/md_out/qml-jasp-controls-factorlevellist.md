@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FactorLevelList
 
@@ -35,7 +35,7 @@ A grid editor for defining factors and their levels. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-factorlevellist-members.html)
+  members](qml-jasp-controls-factorlevellist-members.md)
 
 ## Detailed Description
 

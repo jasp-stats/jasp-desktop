@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 IntegerField
 
@@ -33,17 +33,17 @@ A text field preset for entering integer values. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> |
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-integerfield-members.html)
+  members](qml-jasp-controls-integerfield-members.md)
 
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with the "integer" input type and a JASPDoubleValidator configured for
 zero decimal places. Supports configurable minimum, maximum, and sign
 constraints.

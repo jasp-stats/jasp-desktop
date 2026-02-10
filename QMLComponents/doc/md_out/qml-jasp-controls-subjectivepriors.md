@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SubjectivePriors
 
@@ -31,12 +31,12 @@ options. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-section.html" translate="no">Section</a> |
+| Inherits: | <a href="qml-jasp-controls-section.md" translate="no">Section</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-subjectivepriors-members.html)
+  members](qml-jasp-controls-subjectivepriors-members.md)
 
 ## Detailed Description
 

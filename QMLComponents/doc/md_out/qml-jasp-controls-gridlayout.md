@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 GridLayout
 
@@ -33,7 +33,7 @@ A responsive grid layout with JASP-themed spacing. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-gridlayout-members.html)
+  members](qml-jasp-controls-gridlayout-members.md)
 
 ## Detailed Description
 

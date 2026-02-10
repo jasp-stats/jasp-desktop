@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ColumnLayout
 
@@ -13,5 +13,5 @@ ColumnLayout
 # List of All Members for ColumnLayout
 
 This is the complete list of members for
-[ColumnLayout](qml-jasp-controls-columnlayout.html), including inherited
+[ColumnLayout](qml-jasp-controls-columnlayout.md), including inherited
 members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Chi2TestTableView
 
@@ -13,5 +13,5 @@ Chi2TestTableView
 # List of All Members for Chi2TestTableView
 
 This is the complete list of members for
-[Chi2TestTableView](qml-jasp-controls-chi2testtableview.html), including
+[Chi2TestTableView](qml-jasp-controls-chi2testtableview.md), including
 inherited members.

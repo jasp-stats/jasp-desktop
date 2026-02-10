@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Divider
 
@@ -34,7 +34,7 @@ A horizontal line separator with an optional centered label.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-divider-members.html)
+  members](qml-jasp-controls-divider-members.md)
 
 ## Detailed Description
 

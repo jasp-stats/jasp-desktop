@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ContrastsList
 
@@ -13,5 +13,5 @@ ContrastsList
 # List of All Members for ContrastsList
 
 This is the complete list of members for
-[ContrastsList](qml-jasp-controls-contrastslist.html), including
+[ContrastsList](qml-jasp-controls-contrastslist.md), including
 inherited members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 IntegerField
 
@@ -13,5 +13,5 @@ IntegerField
 # List of All Members for IntegerField
 
 This is the complete list of members for
-[IntegerField](qml-jasp-controls-integerfield.html), including inherited
+[IntegerField](qml-jasp-controls-integerfield.md), including inherited
 members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 BayesFactorType
 
@@ -13,5 +13,5 @@ BayesFactorType
 # List of All Members for BayesFactorType
 
 This is the complete list of members for
-[BayesFactorType](qml-jasp-controls-bayesfactortype.html), including
+[BayesFactorType](qml-jasp-controls-bayesfactortype.md), including
 inherited members.

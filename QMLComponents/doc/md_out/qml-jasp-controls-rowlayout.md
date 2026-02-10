@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RowLayout
 
@@ -32,7 +32,7 @@ A horizontal layout with JASP-themed spacing. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-rowlayout-members.html)
+  members](qml-jasp-controls-rowlayout-members.md)
 
 ## Detailed Description
 

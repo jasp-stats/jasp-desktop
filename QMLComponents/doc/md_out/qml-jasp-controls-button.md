@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Button
 
@@ -31,13 +31,13 @@ A generic clickable button. [More...](#details)
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherited By:     | <a href="qml-jasp-controls-assignbutton.html" 
+| Inherited By:     | <a href="qml-jasp-controls-assignbutton.md" 
                      translate="no">AssignButton</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-button-members.html)
+  members](qml-jasp-controls-button-members.md)
 
 ## Detailed Description
 

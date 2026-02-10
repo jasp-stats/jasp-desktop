@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CheckBox
 
@@ -13,5 +13,5 @@ CheckBox
 # List of All Members for CheckBox
 
 This is the complete list of members for
-[CheckBox](qml-jasp-controls-checkbox.html), including inherited
+[CheckBox](qml-jasp-controls-checkbox.md), including inherited
 members.

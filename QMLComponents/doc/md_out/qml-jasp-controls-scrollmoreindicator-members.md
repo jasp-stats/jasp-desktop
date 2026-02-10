@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ScrollMoreIndicator
 
@@ -13,5 +13,5 @@ ScrollMoreIndicator
 # List of All Members for ScrollMoreIndicator
 
 This is the complete list of members for
-[ScrollMoreIndicator](qml-jasp-controls-scrollmoreindicator.html),
+[ScrollMoreIndicator](qml-jasp-controls-scrollmoreindicator.md),
 including inherited members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RectangularButton
 
@@ -31,21 +31,21 @@ A styled rectangular button with optional icon and text.
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherited By:     | <a href="qml-jasp-controls-roundedbutton.html" 
+| Inherited By:     | <a href="qml-jasp-controls-roundedbutton.md" 
                      translate="no">RoundedButton</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-rectangularbutton-members.html)
+  members](qml-jasp-controls-rectangularbutton-members.md)
 
 ## Detailed Description
 
 A Rectangle-based button supporting text, icon, or both. Provides hover,
 pressed, and disabled states with JASP theming. Used as the base for
-<a href="qml-jasp-controls-roundedbutton.html"
+<a href="qml-jasp-controls-roundedbutton.md"
 translate="no">RoundedButton</a> and
-<a href="qml-jasp-controls-menubutton.html"
+<a href="qml-jasp-controls-menubutton.md"
 translate="no">MenuButton</a>.
 
 <div class="admonition note">

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ComputedColumnField
 
@@ -13,5 +13,5 @@ ComputedColumnField
 # List of All Members for ComputedColumnField
 
 This is the complete list of members for
-[ComputedColumnField](qml-jasp-controls-computedcolumnfield.html),
+[ComputedColumnField](qml-jasp-controls-computedcolumnfield.md),
 including inherited members.

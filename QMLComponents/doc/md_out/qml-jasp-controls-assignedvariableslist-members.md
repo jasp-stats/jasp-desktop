@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AssignedVariablesList
 
@@ -13,5 +13,5 @@ AssignedVariablesList
 # List of All Members for AssignedVariablesList
 
 This is the complete list of members for
-[AssignedVariablesList](qml-jasp-controls-assignedvariableslist.html),
+[AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md),
 including inherited members.

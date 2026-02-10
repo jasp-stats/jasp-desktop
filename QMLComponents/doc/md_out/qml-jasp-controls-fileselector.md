@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FileSelector
 
@@ -34,17 +34,17 @@ A text field with a browse button for selecting files or directories.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> |
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-fileselector-members.html)
+  members](qml-jasp-controls-fileselector-members.md)
 
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with a "Browse" button that opens a native file dialog. Supports saving,
 loading, directory selection, and file type filtering.
 

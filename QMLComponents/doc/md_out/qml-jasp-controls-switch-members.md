@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Switch
 
@@ -13,4 +13,4 @@ Switch
 # List of All Members for Switch
 
 This is the complete list of members for
-[Switch](qml-jasp-controls-switch.html), including inherited members.
+[Switch](qml-jasp-controls-switch.md), including inherited members.

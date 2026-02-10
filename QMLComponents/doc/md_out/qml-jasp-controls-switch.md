@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Switch
 
@@ -35,13 +35,13 @@ A toggle switch control. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-switch-members.html)
+  members](qml-jasp-controls-switch-members.md)
 
 ## Detailed Description
 
 Backed by CheckBoxBase with a sliding toggle indicator instead of a
 checkbox. Binds a boolean value to R, similar to
-<a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a>
+<a href="qml-jasp-controls-checkbox.md" translate="no">CheckBox</a>
 but with a different visual appearance.
 
 ## R Binding

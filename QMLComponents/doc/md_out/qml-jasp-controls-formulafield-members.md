@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FormulaField
 
@@ -13,5 +13,5 @@ FormulaField
 # List of All Members for FormulaField
 
 This is the complete list of members for
-[FormulaField](qml-jasp-controls-formulafield.html), including inherited
+[FormulaField](qml-jasp-controls-formulafield.md), including inherited
 members.

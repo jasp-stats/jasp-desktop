@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ALTNavTag
 
@@ -33,7 +33,7 @@ Internal tag displayed during ALT keyboard navigation.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-altnavtag-members.html)
+  members](qml-jasp-controls-altnavtag-members.md)
 
 ## Detailed Description
 

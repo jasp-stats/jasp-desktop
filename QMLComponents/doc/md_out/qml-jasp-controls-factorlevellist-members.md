@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FactorLevelList
 
@@ -13,5 +13,5 @@ FactorLevelList
 # List of All Members for FactorLevelList
 
 This is the complete list of members for
-[FactorLevelList](qml-jasp-controls-factorlevellist.html), including
+[FactorLevelList](qml-jasp-controls-factorlevellist.md), including
 inherited members.

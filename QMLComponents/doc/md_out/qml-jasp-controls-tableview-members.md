@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TableView
 
@@ -13,5 +13,5 @@ TableView
 # List of All Members for TableView
 
 This is the complete list of members for
-[TableView](qml-jasp-controls-tableview.html), including inherited
+[TableView](qml-jasp-controls-tableview.md), including inherited
 members.

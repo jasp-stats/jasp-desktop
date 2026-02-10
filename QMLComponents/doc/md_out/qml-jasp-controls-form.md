@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Form
 
@@ -34,13 +34,13 @@ The top-level container for an analysis input form. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-form-members.html)
+  members](qml-jasp-controls-form-members.md)
 
 ## Detailed Description
 
 Wraps AnalysisForm and provides the standard layout for a JASP analysis:
 error/warning message boxes, an optional R syntax panel, and a
-<a href="qml-jasp-controls-gridlayout.html"
+<a href="qml-jasp-controls-gridlayout.md"
 translate="no">GridLayout</a> content area where child controls are
 placed. Every analysis QML file uses Form as its root element.
 
@@ -54,7 +54,7 @@ of their analysis QML files.
 ## Properties
 
 - **columns** (int) - Number of columns in the form's
-  <a href="qml-jasp-controls-gridlayout.html"
+  <a href="qml-jasp-controls-gridlayout.md"
   translate="no">GridLayout</a>. Default: 2.
 - **plotWidth** (int) - Default width for plots in this analysis.
   Default: 480.

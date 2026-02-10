@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SimpleTableView
 
@@ -13,5 +13,5 @@ SimpleTableView
 # List of All Members for SimpleTableView
 
 This is the complete list of members for
-[SimpleTableView](qml-jasp-controls-simpletableview.html), including
+[SimpleTableView](qml-jasp-controls-simpletableview.md), including
 inherited members.

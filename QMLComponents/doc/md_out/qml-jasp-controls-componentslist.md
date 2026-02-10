@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ComponentsList
 
@@ -37,7 +37,7 @@ A dynamic list that repeats a user-defined component for each row.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-componentslist-members.html)
+  members](qml-jasp-controls-componentslist-members.md)
 
 ## Detailed Description
 

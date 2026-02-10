@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Label
 
@@ -33,7 +33,7 @@ A JASP-themed text label. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-label-members.html)
+  members](qml-jasp-controls-label-members.md)
 
 ## Detailed Description
 

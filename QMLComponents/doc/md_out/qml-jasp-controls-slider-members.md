@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Slider
 
@@ -13,4 +13,4 @@ Slider
 # List of All Members for Slider
 
 This is the complete list of members for
-[Slider](qml-jasp-controls-slider.html), including inherited members.
+[Slider](qml-jasp-controls-slider.md), including inherited members.

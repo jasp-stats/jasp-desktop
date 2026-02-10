@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 BayesFactorType
 
@@ -32,13 +32,13 @@ format. [More...](#details)
 |                   |                                                   |
 |-------------------|---------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                        |
-| Inherits:         | <a href="qml-jasp-controls-radiobuttongroup.html" 
+| Inherits:         | <a href="qml-jasp-controls-radiobuttongroup.md" 
                      translate="no">RadioButtonGroup</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-bayesfactortype-members.html)
+  members](qml-jasp-controls-bayesfactortype-members.md)
 
 ## Detailed Description
 

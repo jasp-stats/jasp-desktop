@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 JAGSTextArea
 
@@ -32,17 +32,17 @@ A text area preset for writing JAGS model code. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textarea.html" translate="no">TextArea</a> |
+| Inherits: | <a href="qml-jasp-controls-textarea.md" translate="no">TextArea</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-jagstextarea-members.html)
+  members](qml-jasp-controls-jagstextarea-members.md)
 
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textarea.html" translate="no">TextArea</a>
+<a href="qml-jasp-controls-textarea.md" translate="no">TextArea</a>
 with the JAGS model text type, line numbers, and R syntax highlighting.
 Used in analyses that require user-specified JAGS models.
 

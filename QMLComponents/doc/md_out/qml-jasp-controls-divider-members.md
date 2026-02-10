@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Divider
 
@@ -13,4 +13,4 @@ Divider
 # List of All Members for Divider
 
 This is the complete list of members for
-[Divider](qml-jasp-controls-divider.html), including inherited members.
+[Divider](qml-jasp-controls-divider.md), including inherited members.

@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 GridLayout
 
@@ -13,5 +13,5 @@ GridLayout
 # List of All Members for GridLayout
 
 This is the complete list of members for
-[GridLayout](qml-jasp-controls-gridlayout.html), including inherited
+[GridLayout](qml-jasp-controls-gridlayout.md), including inherited
 members.

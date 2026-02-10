@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DoubleField
 
@@ -13,5 +13,5 @@ DoubleField
 # List of All Members for DoubleField
 
 This is the complete list of members for
-[DoubleField](qml-jasp-controls-doublefield.html), including inherited
+[DoubleField](qml-jasp-controls-doublefield.md), including inherited
 members.

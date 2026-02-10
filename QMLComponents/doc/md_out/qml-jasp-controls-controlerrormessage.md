@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ControlErrorMessage
 
@@ -32,7 +32,7 @@ control. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-controlerrormessage-members.html)
+  members](qml-jasp-controls-controlerrormessage-members.md)
 
 ## Detailed Description
 

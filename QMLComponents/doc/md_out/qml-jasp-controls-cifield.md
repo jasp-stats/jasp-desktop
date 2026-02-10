@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CIField
 
@@ -32,17 +32,17 @@ A percentage input field preset for confidence interval width.
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherits:         | <a href="qml-jasp-controls-percentfield.html" 
+| Inherits:         | <a href="qml-jasp-controls-percentfield.md" 
                      translate="no">PercentField</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-cifield-members.html)
+  members](qml-jasp-controls-cifield-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-percentfield.html"
+Extends <a href="qml-jasp-controls-percentfield.md"
 translate="no">PercentField</a> with defaults suitable for confidence
 interval input: 95% default value, 1 decimal place, and exclusive bounds
 (0-100 not included).

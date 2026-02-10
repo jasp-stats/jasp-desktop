@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ALTNavTag
 
@@ -13,5 +13,5 @@ ALTNavTag
 # List of All Members for ALTNavTag
 
 This is the complete list of members for
-[ALTNavTag](qml-jasp-controls-altnavtag.html), including inherited
+[ALTNavTag](qml-jasp-controls-altnavtag.md), including inherited
 members.

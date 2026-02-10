@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TabView
 
@@ -35,7 +35,7 @@ A tabbed container that manages dynamic panels. [More...](#details)
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-tabview-members.html)
+  members](qml-jasp-controls-tabview-members.md)
 
 ## Detailed Description
 

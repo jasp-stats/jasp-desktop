@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DropDown
 
@@ -13,5 +13,5 @@ DropDown
 # List of All Members for DropDown
 
 This is the complete list of members for
-[DropDown](qml-jasp-controls-dropdown.html), including inherited
+[DropDown](qml-jasp-controls-dropdown.md), including inherited
 members.

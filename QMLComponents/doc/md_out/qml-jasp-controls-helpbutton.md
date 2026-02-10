@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 HelpButton
 
@@ -30,17 +30,17 @@ A small info button that opens a help page for the current analysis.
 |                   |                                             |
 |-------------------|---------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                  |
-| Inherits:         | <a href="qml-jasp-controls-menubutton.html" 
+| Inherits:         | <a href="qml-jasp-controls-menubutton.md" 
                      translate="no">MenuButton</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-helpbutton-members.html)
+  members](qml-jasp-controls-helpbutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-menubutton.html"
+Extends <a href="qml-jasp-controls-menubutton.md"
 translate="no">MenuButton</a> with an info icon. When clicked, opens or
 toggles the specified help page in the JASP help panel. Only works
 within a Form.

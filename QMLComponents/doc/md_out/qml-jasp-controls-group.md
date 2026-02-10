@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Group
 
@@ -31,12 +31,12 @@ A layout container that groups related controls together.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-setseed.html" translate="no">SetSeed</a> |
+| Inherited By: | <a href="qml-jasp-controls-setseed.md" translate="no">SetSeed</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-group-members.html)
+  members](qml-jasp-controls-group-members.md)
 
 ## Detailed Description
 
@@ -59,9 +59,9 @@ Child controls within the Group handle their own bindings independently.
   10.
 - **indent** (bool) - Add left indentation to the group. Default: false.
 - **alignFields** (bool) - Auto-align input fields (e.g.,
-  <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+  <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
   and
-  <a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a>
+  <a href="qml-jasp-controls-dropdown.md" translate="no">DropDown</a>
   labels). Default: true.
 
 ## Inherited Properties

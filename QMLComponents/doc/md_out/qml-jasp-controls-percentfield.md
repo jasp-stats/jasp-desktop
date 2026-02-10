@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 PercentField
 
@@ -34,18 +34,18 @@ A numeric field preset for entering percentage values (0–100).
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-doublefield.html"
+| Inherits: | <a href="qml-jasp-controls-doublefield.md"
 translate="no">DoubleField</a> |
-| Inherited By: | <a href="qml-jasp-controls-cifield.html" translate="no">CIField</a> |
+| Inherited By: | <a href="qml-jasp-controls-cifield.md" translate="no">CIField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-percentfield-members.html)
+  members](qml-jasp-controls-percentfield-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-doublefield.html"
+Extends <a href="qml-jasp-controls-doublefield.md"
 translate="no">DoubleField</a> with the "percent" input type, 0 decimal
 places, and a "%" suffix label. Min is 0, max is 100.
 

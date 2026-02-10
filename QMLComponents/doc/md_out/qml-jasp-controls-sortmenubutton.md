@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SortMenuButton
 
@@ -30,17 +30,17 @@ A circular sort button that opens a sort-order popup.
 |                   |                                             |
 |-------------------|---------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                  |
-| Inherits:         | <a href="qml-jasp-controls-menubutton.html" 
+| Inherits:         | <a href="qml-jasp-controls-menubutton.md" 
                      translate="no">MenuButton</a>                |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-sortmenubutton-members.html)
+  members](qml-jasp-controls-sortmenubutton-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-menubutton.html"
+Extends <a href="qml-jasp-controls-menubutton.md"
 translate="no">MenuButton</a> with a sort icon. When clicked, opens a
 popup menu driven by sortMenuModel to let users re-order list items.
 

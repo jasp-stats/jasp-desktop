@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TextArea
 
@@ -13,5 +13,5 @@ TextArea
 # List of All Members for TextArea
 
 This is the complete list of members for
-[TextArea](qml-jasp-controls-textarea.html), including inherited
+[TextArea](qml-jasp-controls-textarea.md), including inherited
 members.

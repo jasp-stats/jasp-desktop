@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FactorsForm
 
@@ -36,13 +36,13 @@ A form for defining latent factors by assigning observed variables.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-factorsform-members.html)
+  members](qml-jasp-controls-factorsform-members.md)
 
 ## Detailed Description
 
-Combines an <a href="qml-jasp-controls-availablevariableslist.html"
+Combines an <a href="qml-jasp-controls-availablevariableslist.md"
 translate="no">AvailableVariablesList</a> with dynamically created
-<a href="qml-jasp-controls-factorslist.html"
+<a href="qml-jasp-controls-factorslist.md"
 translate="no">FactorsList</a> panels. Users can add or remove factors
 and assign variables to each using assign buttons. Commonly used in
 Exploratory/Confirmatory Factor Analysis.

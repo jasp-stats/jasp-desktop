@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 MenuButton
 
@@ -13,5 +13,5 @@ MenuButton
 # List of All Members for MenuButton
 
 This is the complete list of members for
-[MenuButton](qml-jasp-controls-menubutton.html), including inherited
+[MenuButton](qml-jasp-controls-menubutton.md), including inherited
 members.

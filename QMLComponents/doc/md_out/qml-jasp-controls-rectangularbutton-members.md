@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RectangularButton
 
@@ -13,5 +13,5 @@ RectangularButton
 # List of All Members for RectangularButton
 
 This is the complete list of members for
-[RectangularButton](qml-jasp-controls-rectangularbutton.html), including
+[RectangularButton](qml-jasp-controls-rectangularbutton.md), including
 inherited members.

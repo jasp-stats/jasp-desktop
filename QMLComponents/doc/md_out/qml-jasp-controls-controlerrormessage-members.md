@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ControlErrorMessage
 
@@ -13,5 +13,5 @@ ControlErrorMessage
 # List of All Members for ControlErrorMessage
 
 This is the complete list of members for
-[ControlErrorMessage](qml-jasp-controls-controlerrormessage.html),
+[ControlErrorMessage](qml-jasp-controls-controlerrormessage.md),
 including inherited members.

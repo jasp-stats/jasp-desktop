@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SimpleTableView
 
@@ -33,17 +33,17 @@ A table view preset with Add Column, Delete Column, and Reset buttons.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.html"
+| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-simpletableview-members.html)
+  members](qml-jasp-controls-simpletableview-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-basicthreebuttontableview.html"
+Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> with the Simple model type.
 Columns can be added and removed dynamically. Reset restores the initial
 column layout.

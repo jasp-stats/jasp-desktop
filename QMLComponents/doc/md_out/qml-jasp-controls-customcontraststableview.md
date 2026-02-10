@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CustomContrastsTableView
 
@@ -33,17 +33,17 @@ A table view preset for entering custom contrast weight matrices.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.html"
+| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-customcontraststableview-members.html)
+  members](qml-jasp-controls-customcontraststableview-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-basicthreebuttontableview.html"
+Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
 translate="no">BasicThreeButtonTableView</a> with the CustomContrasts
 model type. Buttons are configured as Add Contrast, Delete Contrast, and
 Reset, placed in a row above the table. Rows are automatically populated

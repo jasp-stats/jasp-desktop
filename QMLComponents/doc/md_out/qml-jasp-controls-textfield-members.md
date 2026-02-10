@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 TextField
 
@@ -13,5 +13,5 @@ TextField
 # List of All Members for TextField
 
 This is the complete list of members for
-[TextField](qml-jasp-controls-textfield.html), including inherited
+[TextField](qml-jasp-controls-textfield.md), including inherited
 members.

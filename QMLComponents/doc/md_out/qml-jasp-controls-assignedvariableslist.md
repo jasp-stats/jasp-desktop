@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AssignedVariablesList
 
@@ -33,22 +33,22 @@ A variable list preset for assigned variable selection.
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | <a href="qml-jasp-controls-variableslist.html" 
+| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
                      translate="no">VariablesList</a>                |
-| Inherited By:     | <a href="qml-jasp-controls-factorslist.html"   
+| Inherited By:     | <a href="qml-jasp-controls-factorslist.md"   
                      translate="no">FactorsList</a>                  |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-assignedvariableslist-members.html)
+  members](qml-jasp-controls-assignedvariableslist-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-variableslist.html"
+Extends <a href="qml-jasp-controls-variableslist.md"
 translate="no">VariablesList</a> with drop-insert mode for standard
 variable assignment. This is the default target list used in a
-<a href="qml-jasp-controls-variablesform.html"
+<a href="qml-jasp-controls-variablesform.md"
 translate="no">VariablesForm</a>.
 
 ## R Binding

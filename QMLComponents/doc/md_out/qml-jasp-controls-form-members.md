@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Form
 
@@ -13,4 +13,4 @@ Form
 # List of All Members for Form
 
 This is the complete list of members for
-[Form](qml-jasp-controls-form.html), including inherited members.
+[Form](qml-jasp-controls-form.md), including inherited members.

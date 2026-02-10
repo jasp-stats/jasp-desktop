@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 BasicThreeButtonTableView
 
@@ -33,21 +33,21 @@ A table input control with Add, Delete, and Reset buttons.
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-chi2testtableview.html"
-translate="no">Chi2TestTableView</a>, <a href="qml-jasp-controls-customcontraststableview.html"
-translate="no">CustomContrastsTableView</a>, <a href="qml-jasp-controls-jagstableview.html"
-translate="no">JagsTableView</a>, and <a href="qml-jasp-controls-simpletableview.html"
+| Inherited By: | <a href="qml-jasp-controls-chi2testtableview.md"
+translate="no">Chi2TestTableView</a>, <a href="qml-jasp-controls-customcontraststableview.md"
+translate="no">CustomContrastsTableView</a>, <a href="qml-jasp-controls-jagstableview.md"
+translate="no">JagsTableView</a>, and <a href="qml-jasp-controls-simpletableview.md"
 translate="no">SimpleTableView</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-basicthreebuttontableview-members.html)
+  members](qml-jasp-controls-basicthreebuttontableview-members.md)
 
 ## Detailed Description
 
 Wraps a
-<a href="qml-jasp-controls-tableview.html" translate="no">TableView</a>
+<a href="qml-jasp-controls-tableview.md" translate="no">TableView</a>
 with three action buttons for managing rows. Used for entering
 structured data such as matrices or custom data tables.
 
@@ -95,7 +95,7 @@ structured data such as matrices or custom data tables.
 - **deleteClicked()** - Emitted when the Delete button is clicked.
 - **resetClicked()** - Emitted when the Reset button is clicked.
 - **tableViewCompleted()** - Emitted when the internal
-  <a href="qml-jasp-controls-tableview.html" translate="no">TableView</a>
+  <a href="qml-jasp-controls-tableview.md" translate="no">TableView</a>
   has completed initialization.
 
 ## Example

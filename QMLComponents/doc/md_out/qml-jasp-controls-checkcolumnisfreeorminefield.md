@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CheckColumnIsFreeOrMineField
 
@@ -33,17 +33,17 @@ the current analysis. [More...](#details)
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> |
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
 
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-checkcolumnisfreeorminefield-members.html)
+  members](qml-jasp-controls-checkcolumnisfreeorminefield-members.md)
 
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.html" translate="no">TextField</a>
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with the "checkColumn" input type, which ensures the entered column name
 is either not yet used in the dataset or already belongs to the current
 analysis. Typically used when an analysis creates or claims a computed

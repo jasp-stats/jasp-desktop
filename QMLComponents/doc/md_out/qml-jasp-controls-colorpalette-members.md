@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ColorPalette
 
@@ -13,5 +13,5 @@ ColorPalette
 # List of All Members for ColorPalette
 
 This is the complete list of members for
-[ColorPalette](qml-jasp-controls-colorpalette.html), including inherited
+[ColorPalette](qml-jasp-controls-colorpalette.md), including inherited
 members.

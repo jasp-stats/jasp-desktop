@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AvailableVariablesList
 
@@ -13,5 +13,5 @@ AvailableVariablesList
 # List of All Members for AvailableVariablesList
 
 This is the complete list of members for
-[AvailableVariablesList](qml-jasp-controls-availablevariableslist.html),
+[AvailableVariablesList](qml-jasp-controls-availablevariableslist.md),
 including inherited members.

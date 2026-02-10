@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ColumnLayout
 
@@ -34,7 +34,7 @@ A vertical layout container with JASP-themed spacing.
 </div>
 
 - [List of all members, including inherited
-  members](qml-jasp-controls-columnlayout-members.html)
+  members](qml-jasp-controls-columnlayout-members.md)
 
 ## Detailed Description
 

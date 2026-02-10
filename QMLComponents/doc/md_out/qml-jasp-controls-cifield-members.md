@@ -1,4 +1,4 @@
-<a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a>
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CIField
 
@@ -13,4 +13,4 @@ CIField
 # List of All Members for CIField
 
 This is the complete list of members for
-[CIField](qml-jasp-controls-cifield.html), including inherited members.
+[CIField](qml-jasp-controls-cifield.md), including inherited members.
