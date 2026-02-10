@@ -196,6 +196,8 @@ std::string BundleVersion::typetoString(const Type type) const
 		return "beta";
 	case Type::Release:
 		return "release";
+    default:
+        throw Version::encodingError("Unkown version type");
 	}
 }
 
