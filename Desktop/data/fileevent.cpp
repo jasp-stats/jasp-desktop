@@ -183,10 +183,11 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::xpt:
 		case Utils::FileType::sas7bdat:
 		case Utils::FileType::sas7bcat:	return tr("Importing SAS File");
-		case Utils::FileType::dta:		return tr("Importing STATA File");
-		case Utils::FileType::jasp:		return tr("Loading JASP File");
+		case Utils::FileType::dta:			return tr("Importing STATA File");
+		case Utils::FileType::jasp:			return tr("Loading JASP File");
 		case Utils::FileType::rdata:
-		case Utils::FileType::rds:      return tr("Loading R Data File");
+		case Utils::FileType::rds:			return tr("Loading R Data File");
+		case Utils::FileType::mwx:			return tr("Loading Minitab Data Workbook File");
 		default:						return tr("Loading File");
 		}
 		break;
