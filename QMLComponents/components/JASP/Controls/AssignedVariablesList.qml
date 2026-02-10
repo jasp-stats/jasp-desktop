@@ -32,16 +32,17 @@ import JASP
     \li \b{Default:} [] (empty array)
     \endlist
 
-    \section1 Properties
+    \section1 Inherited Properties from VariablesList
 
     \list
     \li \b name (string) - R option name this control binds to. Default: "".
     \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
     \li \b singleVariable (bool) - Limit to one variable (sets maxRows: 1). Default: false.
     \li \b allowedColumns (array) - Restrict to column types: "scale", "ordinal", "nominal". Default: [].
+    \li \b showVariableTypeIcon (bool) - Display variable type icons. Default: false.
     \endlist
 
-    \section1 Inherited Properties
+    \section1 Other Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.

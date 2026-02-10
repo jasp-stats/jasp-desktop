@@ -18,6 +18,22 @@
 
 import QtQuick
 
+/*!
+    \qmltype Text
+    \inqmlmodule JASP.Controls 1.0
+    \brief A JASP-themed text display element.
+
+    Wraps Qt's Text with the JASP default font and color scheme. Text color
+    automatically adjusts when the control is disabled.
+
+    \note Text does not bind to R options. It is a display-only control.
+
+    \section1 Example
+
+    \qml
+    Text { text: qsTr("Note: values are log-transformed.") }
+    \endqml
+*/
 Text
 {
 		font:					jaspTheme.font

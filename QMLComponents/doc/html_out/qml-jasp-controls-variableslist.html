@@ -28,7 +28,7 @@
 <!-- @@@VariablesList -->
 <div class="table"><table class="alignedsummary requisites" translate="no">
 <tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
-<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-assignedpairsvariableslist.html" translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.html" translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a>, and <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a></p>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-assignedpairsvariableslist.html" translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.html" translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a>, <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a>, and <a href="qml-jasp-controls-modeltermslist.html" translate="no">ModelTermsList</a></p>
 </td></tr>
 </table></div>
 <ul>
@@ -36,7 +36,7 @@
 </ul>
 <!-- $$$VariablesList-description -->
 <h2 id="details">Detailed Description</h2>
-<p>Displays a list where users can drag-and-drop variables from the dataset. This is usually used inside a VariablesForm</p>
+<p>Displays a list where users can drag-and-drop variables from the dataset. This is usually used inside a <a href="qml-jasp-controls-variablesform.html" translate="no">VariablesForm</a></p>
 <h2 id="r-binding">R Binding</h2>
 <ul>
 <li><b>R Type:</b> list or character vector</li>
@@ -69,18 +69,20 @@
 <li><b>selectedItemsChanged()</b> - Selection changed.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no">VariablesList {
-    name: &quot;dependent&quot;
-    title: qsTr(&quot;Dependent Variable&quot;)
-    singleVariable: true
-    allowedColumns: [&quot;scale&quot;]
-}
+<pre class="qml" translate="no"><span class="type">Column</span> {
+    <span class="type"><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;dependent&quot;</span>
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Dependent Variable&quot;</span>)
+        <span class="name">singleVariable</span>: <span class="number">true</span>
+        <span class="name">allowedColumns</span>: [<span class="string">&quot;scale&quot;</span>]
+    }
 
-VariablesList {
-    name: &quot;modelTerms&quot;
-    title: qsTr(&quot;Model Terms&quot;)
-    listViewType: JASP.Interaction
-    rowComponent: CheckBox { name: &quot;isNuisance&quot; }
+    <span class="type"><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;modelTerms&quot;</span>
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Model Terms&quot;</span>)
+        <span class="name">listViewType</span>: <span class="name">JASP</span>.<span class="name">Interaction</span>
+        <span class="name">rowComponent</span>: <span class="name">CheckBox</span> { <span class="name">name</span>: <span class="string">&quot;isNuisance&quot;</span> }
+    }
 }</pre>
 <!-- @@@VariablesList -->
 </body>

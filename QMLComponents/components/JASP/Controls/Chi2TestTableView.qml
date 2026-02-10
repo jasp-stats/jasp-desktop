@@ -22,6 +22,57 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype Chi2TestTableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A table view preset for entering multinomial chi-squared hypotheses.
+
+    Extends BasicThreeButtonTableView with the MultinomialChi2 model type.
+    The three buttons are configured as Add Column, Delete Column, and Reset.
+    Column headers default to "H₀ (a)", "H₀ (b)", etc.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} matrix
+    \li \b{Default:} Empty table
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b maxNumHypotheses (int) - Maximum number of hypothesis columns allowed. Default: 10.
+    \li \b colHeader (string) - Custom column header text. When empty, uses "H₀ (a)", "H₀ (b)", etc. Default: "".
+    \endlist
+
+    \section1 Inherited Properties from BasicThreeButtonTableView
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b source (var) - Source for populating the table.
+    \li \b initialRowCount (int) - Number of rows at creation.
+    \li \b defaultValue (var) - Default value for new cells.
+    \li \b buttonsInRow (bool) - Place buttons in a row above the table. Default: false.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Chi2TestTableView {
+        name: "tableWidget"
+        maxNumHypotheses: 5
+    }
+    \endqml
+*/
 BasicThreeButtonTableView
 {
 	id				: chi2TestTableView

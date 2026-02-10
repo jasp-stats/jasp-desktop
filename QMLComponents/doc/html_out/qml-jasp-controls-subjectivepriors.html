@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- SubjectivePriors.qml -->
+  <meta name="description" content="A preset &quot;Prior&quot; section with default and informed prior distribution options.">
+  <title>SubjectivePriors QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>SubjectivePriors</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">SubjectivePriors QML Type</h1>
+<!-- $$$SubjectivePriors-brief -->
+<p>A preset &quot;Prior&quot; section with default and informed prior distribution options. <a href="#details">More...</a></p>
+<!-- @@@SubjectivePriors -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-section.html" translate="no">Section</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-subjectivepriors-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$SubjectivePriors-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends Section with a complete prior specification panel for Bayesian analyses. Contains radio buttons for standardized and raw effect sizes, supporting Cauchy, Normal, t, Uniform, and Half-normal distributions with configurable parameters (location, scale, mean, std, df).</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Options:</b><ul>
+<li><code translate="no">effectSize</code> (string) &mdash; &quot;standardized&quot; or &quot;dienes&quot;</li>
+<li><code translate="no">effectSizeStandardized</code> (string) &mdash; &quot;default&quot; or &quot;informative&quot;</li>
+<li><code translate="no">defaultStandardizedEffectSize</code> (string) &mdash; distribution name</li>
+<li><code translate="no">priorWidth</code> (numeric) &mdash; Cauchy scale parameter</li>
+<li>Additional distribution parameters (location, scale, mean, std, df)</li>
+</ul>
+</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>informedPriorsEnabled</b> (bool) - Alias for the enabled state of informed priors. Default: true.</li>
+<li><b>defaultPriorsChecked</b> (bool) - Alias for whether default priors are checked. Default: true.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-subjectivepriors.html" translate="no">SubjectivePriors</a></span> {}</pre>
+<!-- @@@SubjectivePriors -->
+</body>
+</html>

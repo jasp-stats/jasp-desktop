@@ -20,6 +20,46 @@
 import QtQuick
 import JASP.Controls
 
+/*!
+    \qmltype ColorPalette
+    \inqmlmodule JASP.Controls 1.0
+    \brief A dropdown preset for selecting a color palette for plots.
+
+    Extends DropDown with a predefined list of color palettes commonly used in JASP plots.
+    Includes colorblind-friendly, Viridis, ggplot2, and other standard palettes.
+    Defaults to "colorblind" and binds to the R option "colorPalette".
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character
+    \li \b{Default:} "colorblind"
+    \endlist
+
+    \section1 Inherited Properties from DropDown
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "colorPalette".
+    \li \b label (string) - Label displayed before the dropdown. Default: "Color palette".
+    \li \b values (array) - List of palette options. Pre-populated with standard palettes.
+    \li \b currentValue (var) - The value of the currently selected palette.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    ColorPalette { }
+    \endqml
+*/
 DropDown
 {
 	name: "colorPalette"

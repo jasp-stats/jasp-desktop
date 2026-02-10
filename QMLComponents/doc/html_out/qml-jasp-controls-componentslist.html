@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- ComponentsList.qml -->
+  <meta name="description" content="A dynamic list that repeats a user-defined component for each row.">
+  <title>ComponentsList QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>ComponentsList</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#signals">Signals</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">ComponentsList QML Type</h1>
+<!-- $$$ComponentsList-brief -->
+<p>A dynamic list that repeats a user-defined component for each row. <a href="#details">More...</a></p>
+<!-- @@@ComponentsList -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-componentslist-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$ComponentsList-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a scrollable list of repeated QML components defined via a rowComponent. Rows can be added and removed by the user (when addItemManually is true) or populated from a source control. Each row's controls are bound to separate R list entries.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (array of objects, one per row)</li>
+<li><b>Default:</b> [] (empty array)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>title</b> (string) - Title displayed above the list. Alias: label. Default: &quot;&quot;.</li>
+<li><b>source</b> (var) - Source control for populating rows. Default: undefined.</li>
+<li><b>rSource</b> (string) - R source for populating rows. Default: &quot;&quot;.</li>
+<li><b>addItemManually</b> (bool) - Allow user to add/remove rows via buttons. Default: false when source is set.</li>
+<li><b>minimumItems</b> (int) - Minimum number of rows that must remain. Default: 0.</li>
+<li><b>maximumItems</b> (int) - Maximum number of rows allowed (-1 for unlimited). Default: -1.</li>
+<li><b>columns</b> (int) - Number of grid columns for the component layout. Default: 2 when addItemManually, 1 otherwise.</li>
+<li><b>rows</b> (int) - Number of grid rows. Default: equals row count.</li>
+<li><b>rowSpacing</b> (real) - Vertical spacing between rows. Default: 1.</li>
+<li><b>columnSpacing</b> (real) - Horizontal spacing between columns. Default: 10.</li>
+<li><b>showAddIcon</b> (bool) - Show the add-row icon button. Default: equals addItemManually.</li>
+<li><b>addIcon</b> (string) - Icon file for the add button. Default: &quot;round_addition.png&quot;.</li>
+<li><b>removeIcon</b> (string) - Icon file for the remove button. Default: &quot;cross.png&quot;.</li>
+<li><b>addTooltip</b> (string) - Tooltip for the add button. Default: &quot;Add a row&quot;.</li>
+<li><b>removeTooltip</b> (string) - Tooltip for the remove button. Default: &quot;Remove a row&quot;.</li>
+<li><b>addBorder</b> (bool) - Draw a border around the list. Default: true.</li>
+<li><b>headerLabels</b> (array) - Column header labels for the component grid. Default: [].</li>
+<li><b>newItemValue</b> (string) - Default value key for new rows. Default: &quot;#&quot;.</li>
+<li><b>duplicateWhenAdding</b> (bool) - Duplicate the last row when adding. Default: false.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="signals">Signals</h2>
+<ul>
+<li><b>addItem()</b> - Emitted when a new row should be added.</li>
+<li><b>removeItem(int index)</b> - Emitted when a row should be removed.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-componentslist.html" translate="no">ComponentsList</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;contrasts&quot;</span>
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Contrasts&quot;</span>)
+    <span class="name">source</span>: <span class="string">&quot;fixedFactors&quot;</span>
+    <span class="name">rowComponent</span>: <span class="name">DropDown</span> {
+        <span class="name">name</span>: <span class="string">&quot;contrast&quot;</span>
+        <span class="name">source</span>: [
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;None&quot;</span>),       value: <span class="string">&quot;none&quot;</span>       },
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Deviation&quot;</span>),  value: <span class="string">&quot;deviation&quot;</span>  },
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Helmert&quot;</span>),    value: <span class="string">&quot;helmert&quot;</span>    }
+        ]
+    }
+}</pre>
+<!-- @@@ComponentsList -->
+</body>
+</html>

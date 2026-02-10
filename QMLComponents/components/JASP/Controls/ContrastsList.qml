@@ -21,6 +21,50 @@ import JASP.Controls
 import QtQuick.Layouts as L
 import JASP
 
+/*!
+    \qmltype ContrastsList
+    \inqmlmodule JASP.Controls 1.0
+    \brief A composite control for specifying contrasts for factor variables.
+
+    Combines a VariablesList (showing factors with contrast type dropdowns) and an optional
+    CustomContrastsTableView for entering custom contrast weights. Each factor gets a
+    dropdown to select a contrast type (none, deviation, simple, difference, Helmert,
+    repeated, polynomial, or custom).
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} list (contrasts per factor, plus custom contrast matrices)
+    \li \b{Default:} All factors set to "none"
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b factorsSourceName (string) - Name of the source control providing factor variables. Default: "fixedFactors".
+    \li \b source (var) - Alias for the internal VariablesList source.
+    \li \b repeatedMeasureFactors (string) - Name of the repeated measures factors source. Default: "repeatedMeasuresFactors".
+    \li \b addCustom (bool) - Whether to include "custom" as a contrast option. Default: true.
+    \li \b contrastValues (array) - Available contrast types. Default: none, deviation, simple, difference, Helmert, repeated, polynomial, custom.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    ContrastsList {
+        factorsSourceName: "fixedFactors"
+    }
+    \endqml
+*/
 Item
 {
 	id					: contrastsList

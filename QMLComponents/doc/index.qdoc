@@ -15,13 +15,7 @@
     \section1 Key Components
     See the \l {JASP.Controls 1.0} {JASP.Controls} module for all available types.
     
-    \section1 Core Controls (Documented)
-    \list
-        \li \l {JASP.Controls::VariablesList} {VariablesList} - The primary variable selection control.
-        \li \l {JASP.Controls::CheckBox} {CheckBox} - Boolean toggle input.
-        \li \l {JASP.Controls::DropDown} {DropDown} - Selection dropdown.
-        \li \l {JASP.Controls::TextField} {TextField} - Text input field.
-        \li \l {JASP.Controls::Group} {Group} - Layout container.
-    \endlist
+    \section1 All Controls
+    \generatelist qmltypes
 */
 

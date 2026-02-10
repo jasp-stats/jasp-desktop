@@ -72,18 +72,20 @@ import JASP
     \section1 Example
 
     \qml
-    VariablesList {
-        name: "dependent"
-        title: qsTr("Dependent Variable")
-        singleVariable: true
-        allowedColumns: ["scale"]
-    }
+    Column {
+        VariablesList {
+            name: "dependent"
+            title: qsTr("Dependent Variable")
+            singleVariable: true
+            allowedColumns: ["scale"]
+        }
 
-    VariablesList {
-        name: "modelTerms"
-        title: qsTr("Model Terms")
-        listViewType: JASP.Interaction
-        rowComponent: CheckBox { name: "isNuisance" }
+        VariablesList {
+            name: "modelTerms"
+            title: qsTr("Model Terms")
+            listViewType: JASP.Interaction
+            rowComponent: CheckBox { name: "isNuisance" }
+        }
     }
 
     \endqml

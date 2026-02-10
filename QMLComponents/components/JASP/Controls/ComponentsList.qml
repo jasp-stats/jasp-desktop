@@ -22,6 +22,81 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype ComponentsList
+    \inqmlmodule JASP.Controls 1.0
+    \brief A dynamic list that repeats a user-defined component for each row.
+
+    Displays a scrollable list of repeated QML components defined via a rowComponent.
+    Rows can be added and removed by the user (when addItemManually is true) or
+    populated from a source control. Each row's controls are bound to separate R list entries.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} list (array of objects, one per row)
+    \li \b{Default:} [] (empty array)
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
+    \li \b source (var) - Source control for populating rows. Default: undefined.
+    \li \b rSource (string) - R source for populating rows. Default: "".
+    \li \b addItemManually (bool) - Allow user to add/remove rows via buttons. Default: false when source is set.
+    \li \b minimumItems (int) - Minimum number of rows that must remain. Default: 0.
+    \li \b maximumItems (int) - Maximum number of rows allowed (-1 for unlimited). Default: -1.
+    \li \b columns (int) - Number of grid columns for the component layout. Default: 2 when addItemManually, 1 otherwise.
+    \li \b rows (int) - Number of grid rows. Default: equals row count.
+    \li \b rowSpacing (real) - Vertical spacing between rows. Default: 1.
+    \li \b columnSpacing (real) - Horizontal spacing between columns. Default: 10.
+    \li \b showAddIcon (bool) - Show the add-row icon button. Default: equals addItemManually.
+    \li \b addIcon (string) - Icon file for the add button. Default: "round_addition.png".
+    \li \b removeIcon (string) - Icon file for the remove button. Default: "cross.png".
+    \li \b addTooltip (string) - Tooltip for the add button. Default: "Add a row".
+    \li \b removeTooltip (string) - Tooltip for the remove button. Default: "Remove a row".
+    \li \b addBorder (bool) - Draw a border around the list. Default: true.
+    \li \b headerLabels (array) - Column header labels for the component grid. Default: [].
+    \li \b newItemValue (string) - Default value key for new rows. Default: "#".
+    \li \b duplicateWhenAdding (bool) - Duplicate the last row when adding. Default: false.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b addItem() - Emitted when a new row should be added.
+    \li \b removeItem(int index) - Emitted when a row should be removed.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    ComponentsList {
+        name: "contrasts"
+        title: qsTr("Contrasts")
+        source: "fixedFactors"
+        rowComponent: DropDown {
+            name: "contrast"
+            source: [
+                { label: qsTr("None"),       value: "none"       },
+                { label: qsTr("Deviation"),  value: "deviation"  },
+                { label: qsTr("Helmert"),    value: "helmert"    }
+            ]
+        }
+    }
+    \endqml
+*/
 ComponentsListBase
 {
 	id						: componentsList

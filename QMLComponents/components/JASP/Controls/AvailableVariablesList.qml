@@ -30,13 +30,13 @@ import JASP
     \note AvailableVariablesList does not bind to R options.
     It is automatically managed by VariablesForm.
 
-    \section1 Properties
+    \section1 Inherited Properties from VariablesList
 
     \list
     \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
     \endlist
 
-    \section1 Inherited Properties
+    \section1 Other Inherited Properties
 
     \list
     \li \b enabled (bool) - Whether the control is interactive. Default: true.

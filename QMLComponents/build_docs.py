@@ -72,11 +72,65 @@ def main():
         print(f"Execution failed: {e}")
         sys.exit(1)
 
-    # 4. Verification
+    # 4. Conversion to Markdown (if pandoc is available)
+    pandoc_exe = shutil.which("pandoc")
+    if pandoc_exe:
+        print("-" * 40)
+        print(f"Pandoc found: {pandoc_exe}")
+        
+        md_output_dir = os.path.join("doc", "md_out")
+        if os.path.exists(md_output_dir):
+            shutil.rmtree(md_output_dir)
+        os.makedirs(md_output_dir)
+        
+        print(f"Converting HTML to Markdown in: {md_output_dir}")
+        
+        html_files = []
+        for root, dirs, files in os.walk(output_dir):
+            for file in files:
+                if file.endswith(".html"):
+                    html_files.append(os.path.join(root, file))
+        
+        count = 0
+        for html_file in html_files:
+            rel_path = os.path.relpath(html_file, output_dir)
+            md_filename = os.path.splitext(rel_path)[0] + ".md"
+            md_file = os.path.join(md_output_dir, md_filename)
+            
+            # Ensure subdirectories exist
+            os.makedirs(os.path.dirname(md_file), exist_ok=True)
+            
+            # Convert
+            # from html to gfm (GitHub Flavored Markdown)
+            cmd_pandoc = [pandoc_exe, html_file, "-f", "html", "-t", "gfm", "-o", md_file]
+            
+            try:
+                subprocess.run(cmd_pandoc, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                count += 1
+                
+                # Fix links: replace .html with .md in the generated file
+                with open(md_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                if ".html" in content:
+                    content = content.replace(".html", ".md")
+                    with open(md_file, 'w', encoding='utf-8') as f:
+                        f.write(content)
+
+            except subprocess.CalledProcessError:
+                print(f"Failed to convert: {html_file}")
+
+        print(f"Converted {count} files to Markdown.")
+        print("-" * 40)
+        print(f"[SUCCESS] Markdown docs generated at: {os.path.abspath(md_output_dir)}")
+    else:
+        print("Pandoc not found. Skipping Markdown conversion.")
+
+    # 5. Verification (HTML)
     index_html = os.path.join(output_dir, "index.html")
     if os.path.exists(index_html):
         print("-" * 40)
-        print(f"[SUCCESS] Docs generated at: {os.path.abspath(index_html)}")
+        print(f"[SUCCESS] HTML Docs generated at: {os.path.abspath(index_html)}")
         print("-" * 40)
     else:
         print("Error: Build finished but index.html was not found.")

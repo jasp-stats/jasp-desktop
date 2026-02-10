@@ -21,6 +21,55 @@ import QtQuick.Controls	as QtC
 import JASP.Controls
 
 
+/*!
+    \qmltype RadioButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A radio button option within a RadioButtonGroup.
+
+    Backed by RadioButtonBase. When checked, its name is sent as the value
+    of the parent RadioButtonGroup. Supports nested child controls that
+    can be enabled only when this radio button is selected.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} Used as a value option within a RadioButtonGroup (string).
+    \li \b{Default:} unchecked
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - Value sent to R when this option is selected. Alias: value. Default: "".
+    \li \b label (string) - Text displayed next to the radio indicator. Alias: text. Default: "".
+    \li \b checked (bool) - Whether this radio button is currently selected. Default: false.
+    \li \b childrenOnSameRow (bool) - Place child controls on the same row. Default: false.
+    \li \b enableChildrenOnChecked (bool) - Only enable child controls when checked. Default: true.
+    \li \b indentChildren (bool) - Indent child controls below the label. Default: true.
+    \li \b columns (int) - Number of columns in the child controls area. Default: 1.
+    \li \b textFormat (enum) - Qt text format for the label. Default: Text.AutoText.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    RadioButtonGroup {
+        name: "hypothesis"
+        RadioButton { value: "twoSided"; label: qsTr("≠ Test value"); checked: true }
+        RadioButton { value: "greater";  label: qsTr("> Test value") }
+        RadioButton { value: "less";     label: qsTr("< Test value") }
+    }
+    \endqml
+*/
 RadioButtonBase
 {
 	id:						radioButton

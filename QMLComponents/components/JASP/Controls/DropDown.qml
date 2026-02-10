@@ -48,19 +48,21 @@ import JASP.Controls
     \section1 Example
 
     \qml
-    DropDown {
-        name: "correlationType"
-        label: qsTr("Correlation coefficient")
-        values: [
-            { label: qsTr("Pearson"),  value: "pearson"  },
-            { label: qsTr("Spearman"), value: "spearman" }
-        ]
-        indexDefaultValue: 0
-    }
-    DropDown {
-        name: "factor"
-        label: qsTr("Choose factor variable")
-        source: factors // id of the factors VariablesList
+    Column {
+        DropDown {
+            name: "correlationType"
+            label: qsTr("Correlation coefficient")
+            values: [
+                { label: qsTr("Pearson"),  value: "pearson"  },
+                { label: qsTr("Spearman"), value: "spearman" }
+            ]
+            indexDefaultValue: 0
+        }
+        DropDown {
+            name: "factor"
+            label: qsTr("Choose factor variable")
+            source: factors // id of the factors VariablesList
+        }
     }
 
     \endqml

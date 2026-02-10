@@ -19,6 +19,28 @@
 import QtQuick
 import QtQuick.Controls as QtC
 
+/*!
+    \qmltype Label
+    \inqmlmodule JASP.Controls 1.0
+    \brief A JASP-themed text label.
+
+    Wraps Qt's Label with the JASP default font and color scheme. Text color
+    automatically adjusts when the control is disabled.
+
+    \note Label does not bind to R options. It is a display-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b text (string) - Text to display. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Label { text: qsTr("Effect size:") }
+    \endqml
+*/
 QtC.Label
 {
 	font:	jaspTheme.font

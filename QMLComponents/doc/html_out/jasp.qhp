@@ -46,17 +46,158 @@
                     <section ref="qml-jasp-controls-checkbox.html" title="CheckBox Type Reference">
                         <section ref="qml-jasp-controls-checkbox-members.html" title="List of all members"/>
                     </section>
+                    <section ref="qml-jasp-controls-checkcolumnisfreeorminefield.html" title="CheckColumnIsFreeOrMineField Type Reference">
+                        <section ref="qml-jasp-controls-checkcolumnisfreeorminefield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-chi2testtableview.html" title="Chi2TestTableView Type Reference">
+                        <section ref="qml-jasp-controls-chi2testtableview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-colorpalette.html" title="ColorPalette Type Reference">
+                        <section ref="qml-jasp-controls-colorpalette-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-columnlayout.html" title="ColumnLayout Type Reference">
+                        <section ref="qml-jasp-controls-columnlayout-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-componentslist.html" title="ComponentsList Type Reference">
+                        <section ref="qml-jasp-controls-componentslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-computedcolumnfield.html" title="ComputedColumnField Type Reference">
+                        <section ref="qml-jasp-controls-computedcolumnfield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-contrastslist.html" title="ContrastsList Type Reference">
+                        <section ref="qml-jasp-controls-contrastslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-controlerrormessage.html" title="ControlErrorMessage Type Reference">
+                        <section ref="qml-jasp-controls-controlerrormessage-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-crossbutton.html" title="CrossButton Type Reference">
+                        <section ref="qml-jasp-controls-crossbutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-customcontraststableview.html" title="CustomContrastsTableView Type Reference">
+                        <section ref="qml-jasp-controls-customcontraststableview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-divider.html" title="Divider Type Reference">
+                        <section ref="qml-jasp-controls-divider-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-doublefield.html" title="DoubleField Type Reference">
+                        <section ref="qml-jasp-controls-doublefield-members.html" title="List of all members"/>
+                    </section>
                     <section ref="qml-jasp-controls-dropdown.html" title="DropDown Type Reference">
                         <section ref="qml-jasp-controls-dropdown-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-factorlevellist.html" title="FactorLevelList Type Reference">
+                        <section ref="qml-jasp-controls-factorlevellist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-factorsform.html" title="FactorsForm Type Reference">
+                        <section ref="qml-jasp-controls-factorsform-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-factorslist.html" title="FactorsList Type Reference">
+                        <section ref="qml-jasp-controls-factorslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-fileselector.html" title="FileSelector Type Reference">
+                        <section ref="qml-jasp-controls-fileselector-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-form.html" title="Form Type Reference">
+                        <section ref="qml-jasp-controls-form-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-formulafield.html" title="FormulaField Type Reference">
+                        <section ref="qml-jasp-controls-formulafield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-gridlayout.html" title="GridLayout Type Reference">
+                        <section ref="qml-jasp-controls-gridlayout-members.html" title="List of all members"/>
                     </section>
                     <section ref="qml-jasp-controls-group.html" title="Group Type Reference">
                         <section ref="qml-jasp-controls-group-members.html" title="List of all members"/>
                     </section>
+                    <section ref="qml-jasp-controls-helpbutton.html" title="HelpButton Type Reference">
+                        <section ref="qml-jasp-controls-helpbutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-inputlistview.html" title="InputListView Type Reference">
+                        <section ref="qml-jasp-controls-inputlistview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-integerfield.html" title="IntegerField Type Reference">
+                        <section ref="qml-jasp-controls-integerfield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-jagstextarea.html" title="JAGSTextArea Type Reference">
+                        <section ref="qml-jasp-controls-jagstextarea-members.html" title="List of all members"/>
+                    </section>
                     <section ref="index.html" title="JASP QML Controls"/>
                     <section ref="jasp-controls-qmlmodule.html" title="JASP.Controls QML Module"/>
+                    <section ref="qml-jasp-controls-jaspscrollbar.html" title="JASPScrollBar Type Reference">
+                        <section ref="qml-jasp-controls-jaspscrollbar-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-jagstableview.html" title="JagsTableView Type Reference">
+                        <section ref="qml-jasp-controls-jagstableview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-label.html" title="Label Type Reference">
+                        <section ref="qml-jasp-controls-label-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-menubutton.html" title="MenuButton Type Reference">
+                        <section ref="qml-jasp-controls-menubutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-modeltermslist.html" title="ModelTermsList Type Reference">
+                        <section ref="qml-jasp-controls-modeltermslist-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-percentfield.html" title="PercentField Type Reference">
+                        <section ref="qml-jasp-controls-percentfield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-radiobutton.html" title="RadioButton Type Reference">
+                        <section ref="qml-jasp-controls-radiobutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-radiobuttongroup.html" title="RadioButtonGroup Type Reference">
+                        <section ref="qml-jasp-controls-radiobuttongroup-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-rectangularbutton.html" title="RectangularButton Type Reference">
+                        <section ref="qml-jasp-controls-rectangularbutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-roundedbutton.html" title="RoundedButton Type Reference">
+                        <section ref="qml-jasp-controls-roundedbutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-rowlayout.html" title="RowLayout Type Reference">
+                        <section ref="qml-jasp-controls-rowlayout-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-scrollmoreindicator.html" title="ScrollMoreIndicator Type Reference">
+                        <section ref="qml-jasp-controls-scrollmoreindicator-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-section.html" title="Section Type Reference">
+                        <section ref="qml-jasp-controls-section-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-setseed.html" title="SetSeed Type Reference">
+                        <section ref="qml-jasp-controls-setseed-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-simpletableview.html" title="SimpleTableView Type Reference">
+                        <section ref="qml-jasp-controls-simpletableview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-slider.html" title="Slider Type Reference">
+                        <section ref="qml-jasp-controls-slider-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-sortmenubutton.html" title="SortMenuButton Type Reference">
+                        <section ref="qml-jasp-controls-sortmenubutton-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-subjectivepriors.html" title="SubjectivePriors Type Reference">
+                        <section ref="qml-jasp-controls-subjectivepriors-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-switch.html" title="Switch Type Reference">
+                        <section ref="qml-jasp-controls-switch-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-tabview.html" title="TabView Type Reference">
+                        <section ref="qml-jasp-controls-tabview-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-tableview.html" title="TableView Type Reference">
+                        <section ref="qml-jasp-controls-tableview-members.html" title="List of all members"/>
+                    </section>
                     <section ref="test.html" title="Test Page"/>
+                    <section ref="qml-jasp-controls-text.html" title="Text Type Reference">
+                        <section ref="qml-jasp-controls-text-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-textarea.html" title="TextArea Type Reference">
+                        <section ref="qml-jasp-controls-textarea-members.html" title="List of all members"/>
+                    </section>
                     <section ref="qml-jasp-controls-textfield.html" title="TextField Type Reference">
                         <section ref="qml-jasp-controls-textfield-members.html" title="List of all members"/>
+                    </section>
+                    <section ref="qml-jasp-controls-variablesform.html" title="VariablesForm Type Reference">
+                        <section ref="qml-jasp-controls-variablesform-members.html" title="List of all members"/>
                     </section>
                     <section ref="qml-jasp-controls-variableslist.html" title="VariablesList Type Reference">
                         <section ref="qml-jasp-controls-variableslist-members.html" title="List of all members"/>
@@ -91,15 +232,109 @@
             <keyword name="CIField" id="QML.JASP.Controls1.CIField" ref="qml-jasp-controls-cifield.html"/>
             <keyword name="CheckBox" id="QML.CheckBox" ref="qml-jasp-controls-checkbox.html"/>
             <keyword name="CheckBox" id="QML.JASP.Controls1.CheckBox" ref="qml-jasp-controls-checkbox.html"/>
+            <keyword name="CheckColumnIsFreeOrMineField" id="QML.CheckColumnIsFreeOrMineField" ref="qml-jasp-controls-checkcolumnisfreeorminefield.html"/>
+            <keyword name="CheckColumnIsFreeOrMineField" id="QML.JASP.Controls1.CheckColumnIsFreeOrMineField" ref="qml-jasp-controls-checkcolumnisfreeorminefield.html"/>
+            <keyword name="Chi2TestTableView" id="QML.Chi2TestTableView" ref="qml-jasp-controls-chi2testtableview.html"/>
+            <keyword name="Chi2TestTableView" id="QML.JASP.Controls1.Chi2TestTableView" ref="qml-jasp-controls-chi2testtableview.html"/>
+            <keyword name="ColorPalette" id="QML.ColorPalette" ref="qml-jasp-controls-colorpalette.html"/>
+            <keyword name="ColorPalette" id="QML.JASP.Controls1.ColorPalette" ref="qml-jasp-controls-colorpalette.html"/>
+            <keyword name="ColumnLayout" id="QML.ColumnLayout" ref="qml-jasp-controls-columnlayout.html"/>
+            <keyword name="ColumnLayout" id="QML.JASP.Controls1.ColumnLayout" ref="qml-jasp-controls-columnlayout.html"/>
+            <keyword name="ComponentsList" id="QML.ComponentsList" ref="qml-jasp-controls-componentslist.html"/>
+            <keyword name="ComponentsList" id="QML.JASP.Controls1.ComponentsList" ref="qml-jasp-controls-componentslist.html"/>
+            <keyword name="ComputedColumnField" id="QML.ComputedColumnField" ref="qml-jasp-controls-computedcolumnfield.html"/>
+            <keyword name="ComputedColumnField" id="QML.JASP.Controls1.ComputedColumnField" ref="qml-jasp-controls-computedcolumnfield.html"/>
+            <keyword name="ContrastsList" id="QML.ContrastsList" ref="qml-jasp-controls-contrastslist.html"/>
+            <keyword name="ContrastsList" id="QML.JASP.Controls1.ContrastsList" ref="qml-jasp-controls-contrastslist.html"/>
+            <keyword name="ControlErrorMessage" id="QML.ControlErrorMessage" ref="qml-jasp-controls-controlerrormessage.html"/>
+            <keyword name="ControlErrorMessage" id="QML.JASP.Controls1.ControlErrorMessage" ref="qml-jasp-controls-controlerrormessage.html"/>
+            <keyword name="CrossButton" id="QML.CrossButton" ref="qml-jasp-controls-crossbutton.html"/>
+            <keyword name="CrossButton" id="QML.JASP.Controls1.CrossButton" ref="qml-jasp-controls-crossbutton.html"/>
+            <keyword name="CustomContrastsTableView" id="QML.CustomContrastsTableView" ref="qml-jasp-controls-customcontraststableview.html"/>
+            <keyword name="CustomContrastsTableView" id="QML.JASP.Controls1.CustomContrastsTableView" ref="qml-jasp-controls-customcontraststableview.html"/>
+            <keyword name="Divider" id="QML.Divider" ref="qml-jasp-controls-divider.html"/>
+            <keyword name="Divider" id="QML.JASP.Controls1.Divider" ref="qml-jasp-controls-divider.html"/>
+            <keyword name="DoubleField" id="QML.DoubleField" ref="qml-jasp-controls-doublefield.html"/>
+            <keyword name="DoubleField" id="QML.JASP.Controls1.DoubleField" ref="qml-jasp-controls-doublefield.html"/>
             <keyword name="DropDown" id="QML.DropDown" ref="qml-jasp-controls-dropdown.html"/>
             <keyword name="DropDown" id="QML.JASP.Controls1.DropDown" ref="qml-jasp-controls-dropdown.html"/>
+            <keyword name="FactorLevelList" id="QML.FactorLevelList" ref="qml-jasp-controls-factorlevellist.html"/>
+            <keyword name="FactorLevelList" id="QML.JASP.Controls1.FactorLevelList" ref="qml-jasp-controls-factorlevellist.html"/>
+            <keyword name="FactorsForm" id="QML.FactorsForm" ref="qml-jasp-controls-factorsform.html"/>
+            <keyword name="FactorsForm" id="QML.JASP.Controls1.FactorsForm" ref="qml-jasp-controls-factorsform.html"/>
+            <keyword name="FactorsList" id="QML.FactorsList" ref="qml-jasp-controls-factorslist.html"/>
+            <keyword name="FactorsList" id="QML.JASP.Controls1.FactorsList" ref="qml-jasp-controls-factorslist.html"/>
+            <keyword name="FileSelector" id="QML.FileSelector" ref="qml-jasp-controls-fileselector.html"/>
+            <keyword name="FileSelector" id="QML.JASP.Controls1.FileSelector" ref="qml-jasp-controls-fileselector.html"/>
+            <keyword name="Form" id="QML.Form" ref="qml-jasp-controls-form.html"/>
+            <keyword name="Form" id="QML.JASP.Controls1.Form" ref="qml-jasp-controls-form.html"/>
+            <keyword name="FormulaField" id="QML.FormulaField" ref="qml-jasp-controls-formulafield.html"/>
+            <keyword name="FormulaField" id="QML.JASP.Controls1.FormulaField" ref="qml-jasp-controls-formulafield.html"/>
+            <keyword name="GridLayout" id="QML.GridLayout" ref="qml-jasp-controls-gridlayout.html"/>
+            <keyword name="GridLayout" id="QML.JASP.Controls1.GridLayout" ref="qml-jasp-controls-gridlayout.html"/>
             <keyword name="Group" id="QML.Group" ref="qml-jasp-controls-group.html"/>
             <keyword name="Group" id="QML.JASP.Controls1.Group" ref="qml-jasp-controls-group.html"/>
+            <keyword name="HelpButton" id="QML.HelpButton" ref="qml-jasp-controls-helpbutton.html"/>
+            <keyword name="HelpButton" id="QML.JASP.Controls1.HelpButton" ref="qml-jasp-controls-helpbutton.html"/>
+            <keyword name="InputListView" id="QML.InputListView" ref="qml-jasp-controls-inputlistview.html"/>
+            <keyword name="InputListView" id="QML.JASP.Controls1.InputListView" ref="qml-jasp-controls-inputlistview.html"/>
+            <keyword name="IntegerField" id="QML.IntegerField" ref="qml-jasp-controls-integerfield.html"/>
+            <keyword name="IntegerField" id="QML.JASP.Controls1.IntegerField" ref="qml-jasp-controls-integerfield.html"/>
+            <keyword name="JAGSTextArea" id="QML.JAGSTextArea" ref="qml-jasp-controls-jagstextarea.html"/>
+            <keyword name="JAGSTextArea" id="QML.JASP.Controls1.JAGSTextArea" ref="qml-jasp-controls-jagstextarea.html"/>
             <keyword name="JASP QML Controls" id="JASP QML Controls" ref="index.html"/>
             <keyword name="JASP.Controls" id="QML.Controls.JASP" ref="jasp-controls-qmlmodule.html"/>
+            <keyword name="JASPScrollBar" id="QML.JASPScrollBar" ref="qml-jasp-controls-jaspscrollbar.html"/>
+            <keyword name="JASPScrollBar" id="QML.JASP.Controls1.JASPScrollBar" ref="qml-jasp-controls-jaspscrollbar.html"/>
+            <keyword name="JagsTableView" id="QML.JagsTableView" ref="qml-jasp-controls-jagstableview.html"/>
+            <keyword name="JagsTableView" id="QML.JASP.Controls1.JagsTableView" ref="qml-jasp-controls-jagstableview.html"/>
+            <keyword name="Label" id="QML.Label" ref="qml-jasp-controls-label.html"/>
+            <keyword name="Label" id="QML.JASP.Controls1.Label" ref="qml-jasp-controls-label.html"/>
+            <keyword name="MenuButton" id="QML.MenuButton" ref="qml-jasp-controls-menubutton.html"/>
+            <keyword name="MenuButton" id="QML.JASP.Controls1.MenuButton" ref="qml-jasp-controls-menubutton.html"/>
+            <keyword name="ModelTermsList" id="QML.ModelTermsList" ref="qml-jasp-controls-modeltermslist.html"/>
+            <keyword name="ModelTermsList" id="QML.JASP.Controls1.ModelTermsList" ref="qml-jasp-controls-modeltermslist.html"/>
+            <keyword name="PercentField" id="QML.PercentField" ref="qml-jasp-controls-percentfield.html"/>
+            <keyword name="PercentField" id="QML.JASP.Controls1.PercentField" ref="qml-jasp-controls-percentfield.html"/>
+            <keyword name="RadioButton" id="QML.RadioButton" ref="qml-jasp-controls-radiobutton.html"/>
+            <keyword name="RadioButton" id="QML.JASP.Controls1.RadioButton" ref="qml-jasp-controls-radiobutton.html"/>
+            <keyword name="RadioButtonGroup" id="QML.RadioButtonGroup" ref="qml-jasp-controls-radiobuttongroup.html"/>
+            <keyword name="RadioButtonGroup" id="QML.JASP.Controls1.RadioButtonGroup" ref="qml-jasp-controls-radiobuttongroup.html"/>
+            <keyword name="RectangularButton" id="QML.RectangularButton" ref="qml-jasp-controls-rectangularbutton.html"/>
+            <keyword name="RectangularButton" id="QML.JASP.Controls1.RectangularButton" ref="qml-jasp-controls-rectangularbutton.html"/>
+            <keyword name="RoundedButton" id="QML.RoundedButton" ref="qml-jasp-controls-roundedbutton.html"/>
+            <keyword name="RoundedButton" id="QML.JASP.Controls1.RoundedButton" ref="qml-jasp-controls-roundedbutton.html"/>
+            <keyword name="RowLayout" id="QML.RowLayout" ref="qml-jasp-controls-rowlayout.html"/>
+            <keyword name="RowLayout" id="QML.JASP.Controls1.RowLayout" ref="qml-jasp-controls-rowlayout.html"/>
+            <keyword name="ScrollMoreIndicator" id="QML.ScrollMoreIndicator" ref="qml-jasp-controls-scrollmoreindicator.html"/>
+            <keyword name="ScrollMoreIndicator" id="QML.JASP.Controls1.ScrollMoreIndicator" ref="qml-jasp-controls-scrollmoreindicator.html"/>
+            <keyword name="Section" id="QML.Section" ref="qml-jasp-controls-section.html"/>
+            <keyword name="Section" id="QML.JASP.Controls1.Section" ref="qml-jasp-controls-section.html"/>
+            <keyword name="SetSeed" id="QML.SetSeed" ref="qml-jasp-controls-setseed.html"/>
+            <keyword name="SetSeed" id="QML.JASP.Controls1.SetSeed" ref="qml-jasp-controls-setseed.html"/>
+            <keyword name="SimpleTableView" id="QML.SimpleTableView" ref="qml-jasp-controls-simpletableview.html"/>
+            <keyword name="SimpleTableView" id="QML.JASP.Controls1.SimpleTableView" ref="qml-jasp-controls-simpletableview.html"/>
+            <keyword name="Slider" id="QML.Slider" ref="qml-jasp-controls-slider.html"/>
+            <keyword name="Slider" id="QML.JASP.Controls1.Slider" ref="qml-jasp-controls-slider.html"/>
+            <keyword name="SortMenuButton" id="QML.SortMenuButton" ref="qml-jasp-controls-sortmenubutton.html"/>
+            <keyword name="SortMenuButton" id="QML.JASP.Controls1.SortMenuButton" ref="qml-jasp-controls-sortmenubutton.html"/>
+            <keyword name="SubjectivePriors" id="QML.SubjectivePriors" ref="qml-jasp-controls-subjectivepriors.html"/>
+            <keyword name="SubjectivePriors" id="QML.JASP.Controls1.SubjectivePriors" ref="qml-jasp-controls-subjectivepriors.html"/>
+            <keyword name="Switch" id="QML.Switch" ref="qml-jasp-controls-switch.html"/>
+            <keyword name="Switch" id="QML.JASP.Controls1.Switch" ref="qml-jasp-controls-switch.html"/>
+            <keyword name="TabView" id="QML.TabView" ref="qml-jasp-controls-tabview.html"/>
+            <keyword name="TabView" id="QML.JASP.Controls1.TabView" ref="qml-jasp-controls-tabview.html"/>
+            <keyword name="TableView" id="QML.TableView" ref="qml-jasp-controls-tableview.html"/>
+            <keyword name="TableView" id="QML.JASP.Controls1.TableView" ref="qml-jasp-controls-tableview.html"/>
             <keyword name="Test Page" id="Test Page" ref="test.html"/>
+            <keyword name="Text" id="QML.Text" ref="qml-jasp-controls-text.html"/>
+            <keyword name="Text" id="QML.JASP.Controls1.Text" ref="qml-jasp-controls-text.html"/>
+            <keyword name="TextArea" id="QML.TextArea" ref="qml-jasp-controls-textarea.html"/>
+            <keyword name="TextArea" id="QML.JASP.Controls1.TextArea" ref="qml-jasp-controls-textarea.html"/>
             <keyword name="TextField" id="QML.TextField" ref="qml-jasp-controls-textfield.html"/>
             <keyword name="TextField" id="QML.JASP.Controls1.TextField" ref="qml-jasp-controls-textfield.html"/>
+            <keyword name="VariablesForm" id="QML.VariablesForm" ref="qml-jasp-controls-variablesform.html"/>
+            <keyword name="VariablesForm" id="QML.JASP.Controls1.VariablesForm" ref="qml-jasp-controls-variablesform.html"/>
             <keyword name="VariablesList" id="QML.VariablesList" ref="qml-jasp-controls-variableslist.html"/>
             <keyword name="VariablesList" id="QML.JASP.Controls1.VariablesList" ref="qml-jasp-controls-variableslist.html"/>
         </keywords>
@@ -130,14 +365,108 @@
             <file>qml-jasp-controls-button.html</file>
             <file>qml-jasp-controls-checkbox-members.html</file>
             <file>qml-jasp-controls-checkbox.html</file>
+            <file>qml-jasp-controls-checkcolumnisfreeorminefield-members.html</file>
+            <file>qml-jasp-controls-checkcolumnisfreeorminefield.html</file>
+            <file>qml-jasp-controls-chi2testtableview-members.html</file>
+            <file>qml-jasp-controls-chi2testtableview.html</file>
             <file>qml-jasp-controls-cifield-members.html</file>
             <file>qml-jasp-controls-cifield.html</file>
+            <file>qml-jasp-controls-colorpalette-members.html</file>
+            <file>qml-jasp-controls-colorpalette.html</file>
+            <file>qml-jasp-controls-columnlayout-members.html</file>
+            <file>qml-jasp-controls-columnlayout.html</file>
+            <file>qml-jasp-controls-componentslist-members.html</file>
+            <file>qml-jasp-controls-componentslist.html</file>
+            <file>qml-jasp-controls-computedcolumnfield-members.html</file>
+            <file>qml-jasp-controls-computedcolumnfield.html</file>
+            <file>qml-jasp-controls-contrastslist-members.html</file>
+            <file>qml-jasp-controls-contrastslist.html</file>
+            <file>qml-jasp-controls-controlerrormessage-members.html</file>
+            <file>qml-jasp-controls-controlerrormessage.html</file>
+            <file>qml-jasp-controls-crossbutton-members.html</file>
+            <file>qml-jasp-controls-crossbutton.html</file>
+            <file>qml-jasp-controls-customcontraststableview-members.html</file>
+            <file>qml-jasp-controls-customcontraststableview.html</file>
+            <file>qml-jasp-controls-divider-members.html</file>
+            <file>qml-jasp-controls-divider.html</file>
+            <file>qml-jasp-controls-doublefield-members.html</file>
+            <file>qml-jasp-controls-doublefield.html</file>
             <file>qml-jasp-controls-dropdown-members.html</file>
             <file>qml-jasp-controls-dropdown.html</file>
+            <file>qml-jasp-controls-factorlevellist-members.html</file>
+            <file>qml-jasp-controls-factorlevellist.html</file>
+            <file>qml-jasp-controls-factorsform-members.html</file>
+            <file>qml-jasp-controls-factorsform.html</file>
+            <file>qml-jasp-controls-factorslist-members.html</file>
+            <file>qml-jasp-controls-factorslist.html</file>
+            <file>qml-jasp-controls-fileselector-members.html</file>
+            <file>qml-jasp-controls-fileselector.html</file>
+            <file>qml-jasp-controls-form-members.html</file>
+            <file>qml-jasp-controls-form.html</file>
+            <file>qml-jasp-controls-formulafield-members.html</file>
+            <file>qml-jasp-controls-formulafield.html</file>
+            <file>qml-jasp-controls-gridlayout-members.html</file>
+            <file>qml-jasp-controls-gridlayout.html</file>
             <file>qml-jasp-controls-group-members.html</file>
             <file>qml-jasp-controls-group.html</file>
+            <file>qml-jasp-controls-helpbutton-members.html</file>
+            <file>qml-jasp-controls-helpbutton.html</file>
+            <file>qml-jasp-controls-inputlistview-members.html</file>
+            <file>qml-jasp-controls-inputlistview.html</file>
+            <file>qml-jasp-controls-integerfield-members.html</file>
+            <file>qml-jasp-controls-integerfield.html</file>
+            <file>qml-jasp-controls-jagstableview-members.html</file>
+            <file>qml-jasp-controls-jagstableview.html</file>
+            <file>qml-jasp-controls-jagstextarea-members.html</file>
+            <file>qml-jasp-controls-jagstextarea.html</file>
+            <file>qml-jasp-controls-jaspscrollbar-members.html</file>
+            <file>qml-jasp-controls-jaspscrollbar.html</file>
+            <file>qml-jasp-controls-label-members.html</file>
+            <file>qml-jasp-controls-label.html</file>
+            <file>qml-jasp-controls-menubutton-members.html</file>
+            <file>qml-jasp-controls-menubutton.html</file>
+            <file>qml-jasp-controls-modeltermslist-members.html</file>
+            <file>qml-jasp-controls-modeltermslist.html</file>
+            <file>qml-jasp-controls-percentfield-members.html</file>
+            <file>qml-jasp-controls-percentfield.html</file>
+            <file>qml-jasp-controls-radiobutton-members.html</file>
+            <file>qml-jasp-controls-radiobutton.html</file>
+            <file>qml-jasp-controls-radiobuttongroup-members.html</file>
+            <file>qml-jasp-controls-radiobuttongroup.html</file>
+            <file>qml-jasp-controls-rectangularbutton-members.html</file>
+            <file>qml-jasp-controls-rectangularbutton.html</file>
+            <file>qml-jasp-controls-roundedbutton-members.html</file>
+            <file>qml-jasp-controls-roundedbutton.html</file>
+            <file>qml-jasp-controls-rowlayout-members.html</file>
+            <file>qml-jasp-controls-rowlayout.html</file>
+            <file>qml-jasp-controls-scrollmoreindicator-members.html</file>
+            <file>qml-jasp-controls-scrollmoreindicator.html</file>
+            <file>qml-jasp-controls-section-members.html</file>
+            <file>qml-jasp-controls-section.html</file>
+            <file>qml-jasp-controls-setseed-members.html</file>
+            <file>qml-jasp-controls-setseed.html</file>
+            <file>qml-jasp-controls-simpletableview-members.html</file>
+            <file>qml-jasp-controls-simpletableview.html</file>
+            <file>qml-jasp-controls-slider-members.html</file>
+            <file>qml-jasp-controls-slider.html</file>
+            <file>qml-jasp-controls-sortmenubutton-members.html</file>
+            <file>qml-jasp-controls-sortmenubutton.html</file>
+            <file>qml-jasp-controls-subjectivepriors-members.html</file>
+            <file>qml-jasp-controls-subjectivepriors.html</file>
+            <file>qml-jasp-controls-switch-members.html</file>
+            <file>qml-jasp-controls-switch.html</file>
+            <file>qml-jasp-controls-tableview-members.html</file>
+            <file>qml-jasp-controls-tableview.html</file>
+            <file>qml-jasp-controls-tabview-members.html</file>
+            <file>qml-jasp-controls-tabview.html</file>
+            <file>qml-jasp-controls-text-members.html</file>
+            <file>qml-jasp-controls-text.html</file>
+            <file>qml-jasp-controls-textarea-members.html</file>
+            <file>qml-jasp-controls-textarea.html</file>
             <file>qml-jasp-controls-textfield-members.html</file>
             <file>qml-jasp-controls-textfield.html</file>
+            <file>qml-jasp-controls-variablesform-members.html</file>
+            <file>qml-jasp-controls-variablesform.html</file>
             <file>qml-jasp-controls-variableslist-members.html</file>
             <file>qml-jasp-controls-variableslist.html</file>
             <file>test.html</file>

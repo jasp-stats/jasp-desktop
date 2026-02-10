@@ -15,8 +15,8 @@
 <ul>
 <li class="level1"><a href="#details">Detailed Description</a></li>
 <li class="level2"><a href="#r-binding">R Binding</a></li>
-<li class="level2"><a href="#properties">Properties</a></li>
-<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-variableslist">Inherited Properties from VariablesList</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
 <li class="level2"><a href="#example">Example</a></li>
 </ul>
 </div>
@@ -35,18 +35,20 @@
 </ul>
 <!-- $$$AssignedRepeatedMeasuresCells-description -->
 <h2 id="details">Detailed Description</h2>
-<p>Extends <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> with a two-column layout designed for repeated measures designs. Uses drop-replace mode and restricts to scale variables only. Typically used within a VariablesForm alongside a FactorsForm that defines the repeated measures factors.</p>
+<p>Extends <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> with a two-column layout designed for repeated measures designs. Uses drop-replace mode and restricts to scale variables only. Typically used within a <a href="qml-jasp-controls-variablesform.html" translate="no">VariablesForm</a> alongside a <a href="qml-jasp-controls-factorsform.html" translate="no">FactorsForm</a> that defines the repeated measures factors.</p>
 <h2 id="r-binding">R Binding</h2>
 <ul>
 <li><b>R Type:</b> list</li>
 <li><b>Default:</b> [] (empty array)</li>
 </ul>
-<h2 id="properties">Properties</h2>
+<h2 id="inherited-properties-from-variableslist">Inherited Properties from VariablesList</h2>
 <ul>
 <li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
 <li><b>title</b> (string) - Title displayed above the list. Alias: label. Default: &quot;&quot;.</li>
+<li><b>allowedColumns</b> (array) - Restrict to column types: &quot;scale&quot;, &quot;ordinal&quot;, &quot;nominal&quot;. Default: [].</li>
+<li><b>showVariableTypeIcon</b> (bool) - Display variable type icons. Default: false.</li>
 </ul>
-<h2 id="inherited-properties">Inherited Properties</h2>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
 <ul>
 <li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
 <li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>

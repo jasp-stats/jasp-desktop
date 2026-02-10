@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- RowLayout.qml -->
+  <meta name="description" content="A horizontal layout with JASP-themed spacing.">
+  <title>RowLayout QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>RowLayout</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">RowLayout QML Type</h1>
+<!-- $$$RowLayout-brief -->
+<p>A horizontal layout with JASP-themed spacing. <a href="#details">More...</a></p>
+<!-- @@@RowLayout -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-rowlayout-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$RowLayout-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Wraps Qt's RowLayout with default spacing from jaspTheme.rowGridSpacing and top-left alignment.</p>
+<div class="admonition note">
+<p><b>Note: </b>RowLayout does not bind to R options. It is a layout-only control.</p>
+</div>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-rowlayout.html" translate="no">RowLayout</a></span> {
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;mean&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Mean&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;sd&quot;</span>;   <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Std. deviation&quot;</span>) }
+}</pre>
+<!-- @@@RowLayout -->
+</body>
+</html>

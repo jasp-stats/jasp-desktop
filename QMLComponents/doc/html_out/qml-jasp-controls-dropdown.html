@@ -28,6 +28,8 @@
 <!-- @@@DropDown -->
 <div class="table"><table class="alignedsummary requisites" translate="no">
 <tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-colorpalette.html" translate="no">ColorPalette</a></p>
+</td></tr>
 </table></div>
 <ul>
 <li><a href="qml-jasp-controls-dropdown-members.html">List of all members, including inherited members</a></li>
@@ -63,19 +65,21 @@
 <li><b>activated(int index)</b> - Emitted when user selects an item.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no">DropDown {
-    name: &quot;correlationType&quot;
-    label: qsTr(&quot;Correlation coefficient&quot;)
-    values: [
-        { label: qsTr(&quot;Pearson&quot;),  value: &quot;pearson&quot;  },
-        { label: qsTr(&quot;Spearman&quot;), value: &quot;spearman&quot; }
-    ]
-    indexDefaultValue: 0
-}
-DropDown {
-    name: &quot;factor&quot;
-    label: qsTr(&quot;Choose factor variable&quot;)
-    source: factors // id of the factors VariablesList
+<pre class="qml" translate="no"><span class="type">Column</span> {
+    <span class="type"><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;correlationType&quot;</span>
+        <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Correlation coefficient&quot;</span>)
+        <span class="name">values</span>: [
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Pearson&quot;</span>),  value: <span class="string">&quot;pearson&quot;</span>  },
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Spearman&quot;</span>), value: <span class="string">&quot;spearman&quot;</span> }
+        ]
+        <span class="name">indexDefaultValue</span>: <span class="number">0</span>
+    }
+    <span class="type"><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;factor&quot;</span>
+        <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Choose factor variable&quot;</span>)
+        <span class="name">source</span>: <span class="name">factors</span> <span class="comment">// id of the factors VariablesList</span>
+    }
 }</pre>
 <!-- @@@DropDown -->
 </body>

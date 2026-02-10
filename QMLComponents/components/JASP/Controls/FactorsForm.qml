@@ -3,6 +3,57 @@ import JASP.Controls
 import JASP
 import QtQuick.Layouts
 
+/*!
+    \qmltype FactorsForm
+    \inqmlmodule JASP.Controls 1.0
+    \brief A form for defining latent factors by assigning observed variables.
+
+    Combines an AvailableVariablesList with dynamically created FactorsList panels.
+    Users can add or remove factors and assign variables to each using assign buttons.
+    Commonly used in Exploratory/Confirmatory Factor Analysis.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} list (one entry per factor containing name, title, and assigned variable names)
+    \li \b{Default:} One empty factor
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b availableVariablesListName (string) - Name of the available variables source. Default: "allAvailableVariables".
+    \li \b allowedColumns (array) - Column types allowed for assignment. Default: ["scale"].
+    \li \b initNumberFactors (int) - Initial number of factor lists shown. Default: 1.
+    \li \b baseName (string) - Base name for factor R option keys (not translated). Default: "Factor".
+    \li \b baseTitle (string) - Base display title for factors (translated). Default: "Factor".
+    \li \b startIndex (int) - Starting index for factor numbering. Default: 1.
+    \li \b allowInteraction (bool) - Allow interaction terms in factor lists. Default: false.
+    \li \b allowTypeChange (bool) - Allow changing variable type icons. Default: false.
+    \li \b addInteractionsByDefault (bool) - Automatically add interactions. Default: false.
+    \li \b nested (bool) - Use nested factor structure. Default: false.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    FactorsForm {
+        name: "factors"
+        initNumberFactors: 2
+        allowedColumns: ["scale"]
+    }
+    \endqml
+*/
 FactorsFormBase
 {
 	id:					   factorsForm

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- FactorsForm.qml -->
+  <meta name="description" content="A form for defining latent factors by assigning observed variables.">
+  <title>FactorsForm QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>FactorsForm</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">FactorsForm QML Type</h1>
+<!-- $$$FactorsForm-brief -->
+<p>A form for defining latent factors by assigning observed variables. <a href="#details">More...</a></p>
+<!-- @@@FactorsForm -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-factorsform-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$FactorsForm-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Combines an <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a> with dynamically created <a href="qml-jasp-controls-factorslist.html" translate="no">FactorsList</a> panels. Users can add or remove factors and assign variables to each using assign buttons. Commonly used in Exploratory/Confirmatory Factor Analysis.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (one entry per factor containing name, title, and assigned variable names)</li>
+<li><b>Default:</b> One empty factor</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>availableVariablesListName</b> (string) - Name of the available variables source. Default: &quot;allAvailableVariables&quot;.</li>
+<li><b>allowedColumns</b> (array) - Column types allowed for assignment. Default: [&quot;scale&quot;].</li>
+<li><b>initNumberFactors</b> (int) - Initial number of factor lists shown. Default: 1.</li>
+<li><b>baseName</b> (string) - Base name for factor R option keys (not translated). Default: &quot;Factor&quot;.</li>
+<li><b>baseTitle</b> (string) - Base display title for factors (translated). Default: &quot;Factor&quot;.</li>
+<li><b>startIndex</b> (int) - Starting index for factor numbering. Default: 1.</li>
+<li><b>allowInteraction</b> (bool) - Allow interaction terms in factor lists. Default: false.</li>
+<li><b>allowTypeChange</b> (bool) - Allow changing variable type icons. Default: false.</li>
+<li><b>addInteractionsByDefault</b> (bool) - Automatically add interactions. Default: false.</li>
+<li><b>nested</b> (bool) - Use nested factor structure. Default: false.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-factorsform.html" translate="no">FactorsForm</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;factors&quot;</span>
+    <span class="name">initNumberFactors</span>: <span class="number">2</span>
+    <span class="name">allowedColumns</span>: [<span class="string">&quot;scale&quot;</span>]
+}</pre>
+<!-- @@@FactorsForm -->
+</body>
+</html>

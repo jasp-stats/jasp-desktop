@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- PercentField.qml -->
+  <meta name="description" content="A numeric field preset for entering percentage values (0&ndash;100).">
+  <title>PercentField QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>PercentField</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-doublefield">Inherited Properties from DoubleField</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">PercentField QML Type</h1>
+<!-- $$$PercentField-brief -->
+<p>A numeric field preset for entering percentage values (0&ndash;100). <a href="#details">More...</a></p>
+<!-- @@@PercentField -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a></p>
+</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-cifield.html" translate="no">CIField</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-percentfield-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$PercentField-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a> with the &quot;percent&quot; input type, 0 decimal places, and a &quot;%&quot; suffix label. Min is 0, max is 100.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">numeric</code> (percentage)</li>
+<li><b>Default:</b> 50</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>showPercent</b> (bool) - Show the &quot;%&quot; suffix after the field. Default: true.</li>
+</ul>
+<h2 id="inherited-properties-from-doublefield">Inherited Properties from DoubleField</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>defaultValue</b> (var) - Default value. Default: 50.</li>
+<li><b>min</b> (double) - Minimum value. Default: 0.</li>
+<li><b>max</b> (double) - Maximum value. Default: 100.</li>
+<li><b>decimals</b> (int) - Decimal places. Default: 0.</li>
+<li><b>label</b> (string) - Label displayed before the field. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-percentfield.html" translate="no">PercentField</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;confidenceLevel&quot;</span>
+    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Confidence interval&quot;</span>)
+    <span class="name">defaultValue</span>: <span class="number">95</span>
+}</pre>
+<!-- @@@PercentField -->
+</body>
+</html>

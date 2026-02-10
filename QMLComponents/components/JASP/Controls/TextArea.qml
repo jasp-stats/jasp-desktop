@@ -4,6 +4,57 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype TextArea
+    \inqmlmodule JASP.Controls 1.0
+    \brief A multi-line text input with optional line numbers and syntax highlighting.
+
+    Backed by TextAreaBase. Supports multiple text types (default, source,
+    JAGS model, lavaan model) with corresponding syntax highlighting.
+    Includes Ctrl+Enter to apply, undo/redo support, and scrollable editing.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character (string)
+    \li \b{Default:} ""
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Label displayed above the text area. Default: "".
+    \li \b text (string) - Current text content. Default: "".
+    \li \b textType (enum) - Type of text (JASP.TextTypeDefault, JASP.TextTypeSource, JASP.TextTypeJAGSmodel, JASP.TextTypeLavaan). Default: JASP.TextTypeDefault.
+    \li \b showLineNumber (bool) - Show line numbers in the gutter. Default: false.
+    \li \b wrapMode (enum) - Text wrapping mode. Default: TextEdit.Wrap.
+    \li \b separator (string) - Separator used to split text into list values. Default: "\\n".
+    \li \b trim (bool) - Trim whitespace before applying. Default: false.
+    \li \b useTabAsSpaces (bool) - Convert Tab key to spaces. Default: true.
+    \li \b placeholderText (string) - Placeholder text. Default: "".
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    TextArea {
+        name: "rCode"
+        title: qsTr("R Script")
+        textType: JASP.TextTypeSource
+        showLineNumber: true
+    }
+    \endqml
+*/
 TextAreaBase
 {
 	id:					textArea

@@ -20,6 +20,45 @@ import QtQuick
 import QtQuick.Controls
 
 
+/*!
+    \qmltype RectangularButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A styled rectangular button with optional icon and text.
+
+    A Rectangle-based button supporting text, icon, or both. Provides hover,
+    pressed, and disabled states with JASP theming. Used as the base for
+    RoundedButton and MenuButton.
+
+    \note This is primarily an internal UI component. Module developers typically
+    use Button instead.
+
+    \section1 Properties
+
+    \list
+    \li \b text (string) - Button label text. Default: "".
+    \li \b toolTip (string) - Tooltip shown on hover. Default: "".
+    \li \b iconSource (string) - Path to the button icon. Default: "".
+    \li \b showIconAndText (bool) - Show both icon and text simultaneously. Default: false.
+    \li \b centerText (bool) - Center the text within the button. Default: true.
+    \li \b iconLeft (bool) - Place icon on the left side. Default: true.
+    \li \b isLink (bool) - Style as a hyperlink. Default: false.
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b clicked() - Emitted when the button is clicked.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    RectangularButton {
+        text: qsTr("Apply")
+        iconSource: jaspTheme.iconPath + "confirm.png"
+    }
+    \endqml
+*/
 Rectangle
 {
 	id:				filterButtonRoot

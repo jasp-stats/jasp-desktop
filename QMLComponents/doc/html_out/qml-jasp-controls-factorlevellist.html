@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- FactorLevelList.qml -->
+  <meta name="description" content="A grid editor for defining factors and their levels.">
+  <title>FactorLevelList QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>FactorLevelList</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">FactorLevelList QML Type</h1>
+<!-- $$$FactorLevelList-brief -->
+<p>A grid editor for defining factors and their levels. <a href="#details">More...</a></p>
+<!-- @@@FactorLevelList -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-factorlevellist-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$FactorLevelList-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a scrollable grid where users can name factors and their levels. New factors and levels are added by typing in placeholder rows. Existing items can be renamed or deleted. Used in repeated-measures ANOVA and similar analyses.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (named lists of factor levels)</li>
+<li><b>Default:</b> One factor with two levels</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>title</b> (string) - Title displayed above the list. Default: &quot;&quot;.</li>
+<li><b>factorName</b> (string) - Base label for factor rows. Default: &quot;Factor&quot;.</li>
+<li><b>levelName</b> (string) - Base label for level rows. Default: &quot;Level&quot;.</li>
+<li><b>factorPlaceHolder</b> (string) - Placeholder text for new factor rows. Default: &quot;New Factor&quot;.</li>
+<li><b>levelPlaceHolder</b> (string) - Placeholder text for new level rows. Default: &quot;New Level&quot;.</li>
+<li><b>minFactors</b> (int) - Minimum number of factors. Default: 1.</li>
+<li><b>minLevels</b> (int) - Minimum number of levels per factor. Default: 2.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-factorlevellist.html" translate="no">FactorLevelList</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;repeatedMeasuresFactors&quot;</span>
+}</pre>
+<!-- @@@FactorLevelList -->
+</body>
+</html>

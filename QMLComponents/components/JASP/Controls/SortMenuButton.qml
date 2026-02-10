@@ -1,6 +1,30 @@
 import QtQuick
 
 
+/*!
+    \qmltype SortMenuButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A circular sort button that opens a sort-order popup.
+
+    Extends MenuButton with a sort icon. When clicked, opens a popup menu
+    driven by sortMenuModel to let users re-order list items.
+
+    \note This is primarily an internal UI component used by list controls.
+
+    \section1 Properties
+
+    \list
+    \li \b sortMenuModel (var) - Model providing sort options. Default: null.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    SortMenuButton {
+        sortMenuModel: myList.sortMenuModel
+    }
+    \endqml
+*/
 MenuButton
 {
 	id:					sortButton

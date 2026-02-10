@@ -22,6 +22,54 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype CustomContrastsTableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A table view preset for entering custom contrast weight matrices.
+
+    Extends BasicThreeButtonTableView with the CustomContrasts model type.
+    Buttons are configured as Add Contrast, Delete Contrast, and Reset, placed in a row
+    above the table. Rows are automatically populated from the factor levels.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} matrix
+    \li \b{Default:} Identity contrast matrix matching factor levels
+    \endlist
+
+    \section1 Inherited Properties from BasicThreeButtonTableView
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b source (var) - Source for populating the table.
+    \li \b factorsSource (var) - Source providing factor level information for row headers.
+    \li \b itemType (var) - Data type for cell values. Default: JASP.Double.
+    \li \b minimum (var) - Minimum allowed value for cells. Default: -Infinity.
+    \li \b decimals (int) - Number of decimal places. Default: 3.
+    \li \b columnName (string) - Column name alias for the contrast variable.
+    \li \b buttonsInRow (bool) - Place buttons in a row above the table. Default: true.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    CustomContrastsTableView {
+        name: "values"
+        columnName: "myFactor"
+        factorsSource: "repeatedMeasuresFactors"
+    }
+    \endqml
+*/
 BasicThreeButtonTableView
 {
 	id				: customContrastsTV

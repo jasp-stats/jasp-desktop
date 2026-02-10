@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- ModelTermsList.qml -->
+  <meta name="description" content="A preset VariablesList for building ANOVA model terms.">
+  <title>ModelTermsList QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>ModelTermsList</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-variableslist">Inherited Properties from VariablesList</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">ModelTermsList QML Type</h1>
+<!-- $$$ModelTermsList-brief -->
+<p>A preset <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> for building ANOVA model terms. <a href="#details">More...</a></p>
+<!-- @@@ModelTermsList -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-modeltermslist-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$ModelTermsList-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> with interaction-mode drag-and-drop, an &quot;Add to null model&quot; checkbox per row, and automatic nuisance flagging based on a source list (e.g. randomFactors).</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (each element contains component variable names and isNuisance flag)</li>
+<li><b>Default:</b> [] (empty)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>checkedPerDefault</b> (string) - Name of the source list whose variables should be checked as nuisance by default. Default: &quot;randomFactors&quot;.</li>
+</ul>
+<h2 id="inherited-properties-from-variableslist">Inherited Properties from VariablesList</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;modelTerms&quot;.</li>
+<li><b>title</b> (string) - Title above the list. Default: &quot;Model Terms&quot;.</li>
+<li><b>listViewType</b> (enum) - List interaction mode. Default: JASP.Interaction.</li>
+<li><b>dropMode</b> (enum) - How dropped items are inserted. Default: JASP.DropInsert.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-modeltermslist.html" translate="no">ModelTermsList</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;modelTerms&quot;</span>
+}</pre>
+<!-- @@@ModelTermsList -->
+</body>
+</html>
