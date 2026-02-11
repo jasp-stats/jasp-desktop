@@ -27,19 +27,14 @@ ImportDataSet* MinitabImporter::loadFile(const std::string &locator, std::functi
 		if (minitab.getColCount() == 0)
 			throw std::runtime_error(fq(tr("The Minitab file contains no valid columns.")));
 
-
 		std::vector<MwxImportColumn*> importColumns;
 		importColumns.reserve(minitab.getColCount());
 		
 		minitab.getColumns(importColumns, data);
 		progressCallback(90);
 
-
 		for (MwxImportColumn* col : importColumns)
-		{
-			col->finish(false); 
 			data->addColumn(col);
-		}
 
 		data->buildDictionary();
 	}

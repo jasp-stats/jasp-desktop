@@ -10,9 +10,7 @@ MwxImportColumn::MwxImportColumn(ImportDataSet* importDataSet, const std::string
 
 MwxImportColumn::~MwxImportColumn()
 {
-	JASPTIMER_SCOPE(RDataImportColumn::~RDataImportColumn());
 }
-
 
 size_t MwxImportColumn::size() const
 {
@@ -22,25 +20,23 @@ size_t MwxImportColumn::size() const
 std::string MwxImportColumn::valueLookup(size_t row) const
 
 {
-
 	return row < _data.size() ? _data[row] : "";
-
 }
 
 std::string MwxImportColumn::labelLookup(size_t row) const
 {
-		if (_levels.empty() || row >= _data.size())
-				return "";
-	
-		int levelIndex;
-		
-		if (ColumnUtils::getIntValue(_data[row], levelIndex))
-		{
-			if (levelIndex > 0 && levelIndex <= static_cast<int>(_levels.size()))
-				return _levels[levelIndex - 1];
-		}
-	
+	if (_levels.empty() || row >= _data.size())
 		return "";
+
+	int levelIndex;
+	
+	if (ColumnUtils::getIntValue(_data[row], levelIndex))
+	{
+		if (levelIndex > 0 && levelIndex <= static_cast<int>(_levels.size()))
+			return _levels[levelIndex - 1];
+	}
+
+	return "";
 }
 
 void MwxImportColumn::addValue(const std::string &value, int index)

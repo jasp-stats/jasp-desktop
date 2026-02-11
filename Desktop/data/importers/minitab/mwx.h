@@ -33,25 +33,26 @@ public:
 	Minitab(const std::string &path);
 
 	void						parseMwx();
-	void						getColumns(std::vector<MwxImportColumn*> &outColumns, ImportDataSet* dataSet);
+	void						getColumns(std::vector<MwxImportColumn*> &columns, ImportDataSet* dataSet);
 
 	uint32_t				getRowCount() const { return _numRows; }
 	uint16_t				getColCount() const { return _numCols; }
 
 private:
-	std::string			_path;
-	Json::Value			_sheetRoot,  // root/0/sheet.json
-										_metadata;  // metadata such (sheet_metadata_20.json)
+	std::string			_filePath;
 
-		
-	stringvec				_levels;
-		
-	uint32_t				_numRows;
-	uint16_t				_numCols;
-		
+	std::string			getSheetUri() const;
+	void						parseOrdering(const Json::Value &varBody, stringvec &levels, std::map<std::string, std::string> &textToIdMap) const;
 	std::string			findMetadataPath();
 
 	Json::Value			readJsonFromArchive(const std::string &entryPath);
+	Json::Value			_sheetJson,			// root/0/sheet.json
+									_metadataJson;	// metadata such (sheet_metadata_20.json)
+
+	stringvec			_levels;
+	size_t				_numRows,
+						_numCols;
+
 };
 
 #endif // MWX_H
