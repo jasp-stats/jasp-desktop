@@ -25,9 +25,9 @@ import JASP.Controls
     \inqmlmodule JASP.Controls 1.0
     \brief A two-column layout with available variables on the left and assigned lists on the right.
 
-    Backed by VariablesFormBase. Automatically creates an AvailableVariablesList
-    and positions AssignedVariablesList controls alongside assign buttons.
-    Heights of variable lists are auto-adjusted to fill the form.
+	Creates a form where an AvailableVariablesList and one or more AssignedVariablesList are connected.
+	It creates automatically the Arrow buttons for each AssignedVariablesList and sets their height
+	to fill the form.
 
     \note VariablesForm does not bind directly to R options. The child
     VariablesList controls each have their own R binding.

@@ -41,7 +41,7 @@ import JASP.Controls
     \li \b negativeValues (bool) - Allow negative integers. Default: false.
     \li \b min (int) - Minimum allowed value. Default: 0 (or -2147483647 when negativeValues is true).
     \li \b max (int) - Maximum allowed value. Default: 2147483647.
-    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax.
+    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or JASP.None.
     \endlist
 
     \section1 Inherited Properties from TextField

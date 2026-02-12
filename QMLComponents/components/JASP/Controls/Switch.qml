@@ -25,7 +25,7 @@ import JASP.Controls
     \inqmlmodule JASP.Controls 1.0
     \brief A toggle switch control.
 
-    Backed by CheckBoxBase with a sliding toggle indicator instead of a
+	A sliding toggle indicator that can be used instead of a
     checkbox. Binds a boolean value to R, similar to CheckBox but with
     a different visual appearance.
 

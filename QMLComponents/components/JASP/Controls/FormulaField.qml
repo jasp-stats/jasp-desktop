@@ -39,11 +39,11 @@ import JASP
     \section1 Properties
 
     \list
-    \li \b realValue (double) - The evaluated numeric result of the formula. Default: 0.
-    \li \b realValues (array) - Array of evaluated results when formula yields multiple values. Default: [].
+    \li \b realValue (double) - The evaluated numeric result of the formula. Read-only.
+    \li \b realValues (array) - Array of evaluated results when formula yields multiple values. Read-only.
     \li \b min (double) - Minimum allowed evaluated value. Default: -Infinity.
     \li \b max (double) - Maximum allowed evaluated value. Default: Infinity.
-    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax.
+    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or JASP.None.
     \li \b parseDefaultValue (bool) - Whether the default value should be parsed as a formula. Default: true.
     \endlist
 
@@ -70,7 +70,7 @@ import JASP
     \section1 Example
 
     \qml
-    FormulaField {
+    FormulaField { // The user can here type '1/3' or 'sin(10)'
         name: "priorMean"
         label: qsTr("Prior mean")
         defaultValue: "0"

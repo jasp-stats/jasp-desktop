@@ -25,7 +25,7 @@ import JASP
     \inqmlmodule JASP.Controls 1.0
     \brief The top-level container for an analysis input form.
 
-    Wraps AnalysisForm and provides the standard layout for a JASP analysis:
+	It provides the standard layout for a JASP analysis:
     error/warning message boxes, an optional R syntax panel, and a GridLayout
     content area where child controls are placed. Every analysis QML file
     uses Form as its root element.

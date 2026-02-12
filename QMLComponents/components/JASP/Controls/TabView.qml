@@ -26,10 +26,12 @@ import JASP.Controls
     \inqmlmodule JASP.Controls 1.0
     \brief A tabbed container that manages dynamic panels.
 
-    Backed by ComponentsListBase. Displays a tab bar where each tab shows
+	Displays a tab bar where each tab shows
     its own panel of child controls. Tabs can be added, removed, and
     renamed (double-click). Commonly used when an analysis needs a variable
     number of configuration panels (e.g. one per group).
+	It has in fact the same functinality as ComponentsList, buut instead of displaying the components in rows,
+	it display them as Tabs.
 
     \section1 R Binding
 
@@ -43,9 +45,11 @@ import JASP.Controls
     \list
     \li \b name (string) - R option name this control binds to. Default: "".
     \li \b label (string) - Title displayed above the tab bar. Alias: title. Default: "".
-    \li \b content (Component) - QML component instantiated for each tab. Alias: rowComponent. Default: null.
+	\li \b source (var) - Source control for populating the tabs. Default: undefined. This can be an id or name (or an array of names/ids) of another controls.
+	\li \b content (Component) - One QML component (use Row or RowLayout if more items are needed), that will be repeated for each row. In each row, you can use the rowValue, rowLabel, rowType or rowIndex that gives you resp. the value, label, type (if it is a variable) and index linked to each row.
     \li \b showAddIcon (bool) - Show a "+" button to add tabs. Default: true when addItemManually.
     \li \b showRemoveIcon (bool) - Show a "×" icon on each tab. Default: true when addItemManually.
+	\li \b addItemManually (bool) - Allow user to add/remove tabs. Default: false when source is set, true otherwise
     \li \b tabNameEditable (bool) - Allow double-click to rename tabs. Default: true when addItemManually.
     \li \b newTabName (string) - Default name for newly added tabs. Default: "New tab".
     \li \b currentIndex (int) - Index of the currently selected tab. Default: 0.
@@ -67,9 +71,7 @@ import JASP.Controls
         name: "models"
         title: qsTr("Models")
         newTabName: qsTr("Model 1")
-        content: Group {
-            VariablesList { name: "predictors"; title: qsTr("Predictors") }
-        }
+		content:  VariablesList { name: "predictors"; title: qsTr("Predictors") }
     }
     \endqml
 */

@@ -41,7 +41,7 @@ import JASP.Controls
     \li \b min (double) - Minimum allowed value. Default: 0 (or -Infinity when negativeValues is true).
     \li \b max (double) - Maximum allowed value. Default: Infinity.
     \li \b decimals (int) - Number of decimal places. Default: 3.
-    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax.
+    \li \b inclusive (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or JASP.None.
     \endlist
 
     \section1 Inherited Properties from TextField
@@ -52,7 +52,7 @@ import JASP.Controls
     \li \b defaultValue (var) - Default value. Default: 0.
     \li \b label (string) - Label displayed before the field. Default: "".
     \li \b afterLabel (string) - Label displayed after the field. Default: "".
-    \li \b fieldWidth (int) - Width of the input field. Default: jaspTheme.numericFieldWidth.
+    \li \b fieldWidth (int) - Width of the input field. Default: 40.
     \endlist
 
     \section1 Other Inherited Properties

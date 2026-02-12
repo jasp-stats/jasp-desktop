@@ -28,7 +28,7 @@ import JASP
     \inqmlmodule JASP.Controls 1.0
     \brief A scrollable, editable data table for entering structured values.
 
-    Backed by TableViewBase. Renders a grid of editable cells with column and
+	Renders a grid of editable cells with column and
     row headers, scrollbars, and optional add/remove column buttons (for
     GridInput model type). Each cell uses a FormulaField with configurable
     validators (integer, double, string).

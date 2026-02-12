@@ -27,7 +27,7 @@ import JASP.Controls
     \inqmlmodule JASP.Controls 1.0
     \brief A group of mutually exclusive radio button options.
 
-    Backed by RadioButtonsGroupBase. Contains RadioButton children, of which
+	Contains RadioButton children, of which
     exactly one can be checked at a time. The checked button's name is sent
     as the option value to R.
 
@@ -45,8 +45,7 @@ import JASP.Controls
     \li \b title (string) - Title label displayed above or beside the group. Alias: text. Default: "".
     \li \b radioButtonsOnSameRow (bool) - Place all radio buttons on one row. Default: false.
     \li \b columns (int) - Number of columns in the content area. Default: 1 (or children.length when radioButtonsOnSameRow).
-    \li \b leftPadding (int) - Left padding for the content area. Default: jaspTheme.groupContentPadding.
-    \li \b textFormat (int) - Qt text format for the title. Default: Text.AutoText.
+	\li \b leftPadding (int) - Left padding for the content area. Default: 10.
     \endlist
 
     \section1 Inherited Properties

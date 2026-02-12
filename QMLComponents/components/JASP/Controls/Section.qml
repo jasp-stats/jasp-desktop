@@ -40,7 +40,6 @@ import JASP
     \li \b columns (int) - Number of columns in the content GridLayout. Default: 2.
     \li \b spacing (real) - Row spacing in the content area. Default: jaspTheme.rowGridSpacing.
     \li \b info (string) - Info used for tooltips and help generation. Default: "".
-    \li \b textFormat (int) - Qt text format for the title. Default: Text.AutoText.
     \endlist
 
     \section1 Example

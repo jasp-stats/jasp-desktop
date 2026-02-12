@@ -43,15 +43,14 @@ import JASP
     \list
     \li \b name (string) - R option name this control binds to. Default: "".
     \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
-    \li \b source (var) - Source control for populating rows. Default: undefined.
+	\li \b source (var) - Source control for populating rows. Default: undefined. This can be an id or name (or an array of names/ids) of another controls.
     \li \b rSource (string) - R source for populating rows. Default: "".
-    \li \b addItemManually (bool) - Allow user to add/remove rows via buttons. Default: false when source is set.
+	\li \b rowComponent (Component) - One QML component (use Row or RowLayout if more items are needed), that will be repeated for each row. In each row, you can use the rowValue, rowLabel, rowType or rowIndex that gives you resp. the value, label, type (if it is a variable) and index linked to each row.
+	\li \b addItemManually (bool) - Allow user to add/remove rows via buttons. Default: false when source is set, true otherwise
     \li \b minimumItems (int) - Minimum number of rows that must remain. Default: 0.
     \li \b maximumItems (int) - Maximum number of rows allowed (-1 for unlimited). Default: -1.
-    \li \b columns (int) - Number of grid columns for the component layout. Default: 2 when addItemManually, 1 otherwise.
-    \li \b rows (int) - Number of grid rows. Default: equals row count.
+	\li \b rows (int) - Number of grid rows. Default: equals row count. Read only.
     \li \b rowSpacing (real) - Vertical spacing between rows. Default: 1.
-    \li \b columnSpacing (real) - Horizontal spacing between columns. Default: 10.
     \li \b showAddIcon (bool) - Show the add-row icon button. Default: equals addItemManually.
     \li \b addIcon (string) - Icon file for the add button. Default: "round_addition.png".
     \li \b removeIcon (string) - Icon file for the remove button. Default: "cross.png".
@@ -86,15 +85,30 @@ import JASP
         name: "contrasts"
         title: qsTr("Contrasts")
         source: "fixedFactors"
-        rowComponent: DropDown {
-            name: "contrast"
-            source: [
-                { label: qsTr("None"),       value: "none"       },
-                { label: qsTr("Deviation"),  value: "deviation"  },
-                { label: qsTr("Helmert"),    value: "helmert"    }
-            ]
+		headerLabels: [qsTr("Contrast")]
+		rowComponent: Row {
+			Text { text: rowValue }	// rowValue contains the name of the variable
+			DropDown {
+				name: "contrast"
+				source: [
+					{ label: qsTr("None"),       value: "none"       },
+					{ label: qsTr("Deviation"),  value: "deviation"  },
+					{ label: qsTr("Helmert"),    value: "helmert"    }
+				]
+			}
         }
     }
+	ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
+		name: "extraValues"
+		title: qsTr("Extra values")
+		headerLabels: [qsTr("Alpha", qtStr("Beta")]
+		minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
+		rowComponent: Row {
+			IntegerField	{ name: "alphaValue" }
+			DoubleValue		{ name: "betaValue" }
+		}
+	}
+
     \endqml
 */
 ComponentsListBase

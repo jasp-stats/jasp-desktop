@@ -9,7 +9,7 @@ import JASP
     \inqmlmodule JASP.Controls 1.0
     \brief A multi-line text input with optional line numbers and syntax highlighting.
 
-    Backed by TextAreaBase. Supports multiple text types (default, source,
+	Supports multiple text types (default, source,
     JAGS model, lavaan model) with corresponding syntax highlighting.
     Includes Ctrl+Enter to apply, undo/redo support, and scrollable editing.
 

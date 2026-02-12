@@ -47,7 +47,6 @@ import JASP.Controls
     \li \b enableChildrenOnChecked (bool) - Only enable child controls when checked. Default: true.
     \li \b indentChildren (bool) - Indent child controls below the label. Default: true.
     \li \b columns (int) - Number of columns in the child controls area. Default: 1.
-    \li \b textFormat (enum) - Qt text format for the label. Default: Text.AutoText.
     \endlist
 
     \section1 Inherited Properties
@@ -68,6 +67,18 @@ import JASP.Controls
         RadioButton { value: "greater";  label: qsTr("> Test value") }
         RadioButton { value: "less";     label: qsTr("< Test value") }
     }
+
+	RadioButtonGroup {
+		title: qsTr("Operation")
+		name: "operation"
+		RadioButton {
+			value: "plus"; label: qsTr("Plus"); checked: true
+			DoubleField { label: "Extra Quantity; name: "plusExtraQuantity} // This DoubleField will be eanbled only if Plus option is checked
+		}
+		RadioButton { value: "Multiply";  label: qsTr("Multiply") }
+		RadioButton { value: "Divide";    label: qsTr("Divide") }
+	}
+
     \endqml
 */
 RadioButtonBase
