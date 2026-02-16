@@ -1,18 +1,26 @@
+<div class="sidebar">
 
+<div id="sidebar-content" class="sidebar-content">
 
+</div>
+
+</div>
 
 # JASP.Controls QML Module
 
+<div id="details" class="descr">
 
 This module contains all the visual elements used to build JASP
 analyses.
 
 The complete list of types is automatically generated below.
 
+</div>
+
+<div class="table">
 
 |  |  |
 |----|----|
-| [ALTNavTag](qml-jasp-controls-altnavtag.md) | Internal tag displayed during ALT keyboard navigation |
 | [AddColumnField](qml-jasp-controls-addcolumnfield.md) | A text input field that creates a new computed column in the dataset |
 | [AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.md) | Internal component that displays variable type filter icons |
 | [AssignButton](qml-jasp-controls-assignbutton.md) | Internal arrow button for moving variables between source and target lists |
@@ -33,7 +41,6 @@ The complete list of types is automatically generated below.
 | [ComputedColumnField](qml-jasp-controls-computedcolumnfield.md) | A text field for entering a computed column name |
 | [ContrastsList](qml-jasp-controls-contrastslist.md) | A composite control for specifying contrasts for factor variables |
 | [ControlErrorMessage](qml-jasp-controls-controlerrormessage.md) | An internal popup that displays validation errors or warnings above a control |
-| [CrossButton](qml-jasp-controls-crossbutton.md) | An internal × (cross) button used to dismiss or remove items |
 | [CustomContrastsTableView](qml-jasp-controls-customcontraststableview.md) | A table view preset for entering custom contrast weight matrices |
 | [Divider](qml-jasp-controls-divider.md) | A horizontal line separator with an optional centered label |
 | [DoubleField](qml-jasp-controls-doublefield.md) | A text field preset for entering numeric (double) values |
@@ -46,27 +53,20 @@ The complete list of types is automatically generated below.
 | [FormulaField](qml-jasp-controls-formulafield.md) | A text field preset for entering R-style formulas |
 | [GridLayout](qml-jasp-controls-gridlayout.md) | A responsive grid layout with JASP-themed spacing |
 | [Group](qml-jasp-controls-group.md) | A layout container that groups related controls together |
-| [HelpButton](qml-jasp-controls-helpbutton.md) | A small info button that opens a help page for the current analysis |
 | [InputListView](qml-jasp-controls-inputlistview.md) | An editable scrollable list for entering free-text values |
 | [IntegerField](qml-jasp-controls-integerfield.md) | A text field preset for entering integer values |
 | [JAGSTextArea](qml-jasp-controls-jagstextarea.md) | A text area preset for writing JAGS model code |
-| [JASPScrollBar](qml-jasp-controls-jaspscrollbar.md) | An internal custom scrollbar for flickable content |
 | [JagsTableView](qml-jasp-controls-jagstableview.md) | A table view preset for entering JAGS data |
 | [Label](qml-jasp-controls-label.md) | A JASP-themed text label |
-| [MenuButton](qml-jasp-controls-menubutton.md) | A button with optional submenu arrow and hover-to-open behaviour |
 | [ModelTermsList](qml-jasp-controls-modeltermslist.md) | A preset VariablesList for building ANOVA model terms |
 | [PercentField](qml-jasp-controls-percentfield.md) | A numeric field preset for entering percentage values (0–100) |
 | [RadioButton](qml-jasp-controls-radiobutton.md) | A radio button option within a RadioButtonGroup |
 | [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md) | A group of mutually exclusive radio button options |
-| [RectangularButton](qml-jasp-controls-rectangularbutton.md) | A styled rectangular button with optional icon and text |
-| [RoundedButton](qml-jasp-controls-roundedbutton.md) | A RectangularButton with rounded corners |
 | [RowLayout](qml-jasp-controls-rowlayout.md) | A horizontal layout with JASP-themed spacing |
-| [ScrollMoreIndicator](qml-jasp-controls-scrollmoreindicator.md) | An internal gradient shadow indicating more content is available by scrolling |
 | [Section](qml-jasp-controls-section.md) | A collapsible panel that groups child controls under a clickable header |
 | [SetSeed](qml-jasp-controls-setseed.md) | A preset "Repeatability" group with a seed checkbox and integer field |
 | [SimpleTableView](qml-jasp-controls-simpletableview.md) | A table view preset with Add Column, Delete Column, and Reset buttons |
 | [Slider](qml-jasp-controls-slider.md) | A slider with a linked numeric text field |
-| [SortMenuButton](qml-jasp-controls-sortmenubutton.md) | A circular sort button that opens a sort-order popup |
 | [SubjectivePriors](qml-jasp-controls-subjectivepriors.md) | A preset "Prior" section with default and informed prior distribution options |
 | [Switch](qml-jasp-controls-switch.md) | A toggle switch control |
 | [TabView](qml-jasp-controls-tabview.md) | A tabbed container that manages dynamic panels |
@@ -77,4 +77,4 @@ The complete list of types is automatically generated below.
 | [VariablesForm](qml-jasp-controls-variablesform.md) | A two-column layout with available variables on the left and assigned lists on the right |
 | [VariablesList](qml-jasp-controls-variableslist.md) | Primary variable selection control in JASP |
 
-
+</div>

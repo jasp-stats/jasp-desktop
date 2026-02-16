@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FormulaField
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -13,17 +16,26 @@ FormulaField
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # FormulaField QML Type
 
-A text field preset for entering R-style formulas. 
+A text field preset for entering R-style formulas. [More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [TextField](qml-jasp-controls-textfield.md) |
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-formulafield-members.md)
@@ -31,7 +43,7 @@ A text field preset for entering R-style formulas.
 ## Detailed Description
 
 Extends
-[TextField](qml-jasp-controls-textfield.md)
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with the "formula" input type. Formulas are evaluated by the R engine
 and validated against configurable min/max bounds. The computed numeric
 result is accessible via realValue.
@@ -44,14 +56,15 @@ result is accessible via realValue.
 ## Properties
 
 - **realValue** (double) - The evaluated numeric result of the formula.
-  Default: 0.
+  Read-only.
 - **realValues** (array) - Array of evaluated results when formula
-  yields multiple values. Default: \[\].
+  yields multiple values. Read-only.
 - **min** (double) - Minimum allowed evaluated value. Default:
   -Infinity.
 - **max** (double) - Maximum allowed evaluated value. Default: Infinity.
 - **inclusive** (enum) - Whether min/max bounds are inclusive. Default:
-  JASP.MinMax.
+  JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or
+  JASP.None.
 - **parseDefaultValue** (bool) - Whether the default value should be
   parsed as a formula. Default: true.
 
@@ -79,7 +92,7 @@ result is accessible via realValue.
 ## Example
 
 ``` qml
-FormulaField {
+FormulaField { // The user can here type '1/3' or 'sin(10)'
     name: "priorMean"
     label: qsTr("Prior mean")
     defaultValue: "0"

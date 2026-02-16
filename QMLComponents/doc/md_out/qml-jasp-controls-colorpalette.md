@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ColorPalette
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -12,17 +15,27 @@ ColorPalette
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # ColorPalette QML Type
 
 A dropdown preset for selecting a color palette for plots.
+[More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [DropDown](qml-jasp-controls-dropdown.md) |
+| Inherits: | <a href="qml-jasp-controls-dropdown.md" translate="no">DropDown</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-colorpalette-members.md)
@@ -30,7 +43,7 @@ A dropdown preset for selecting a color palette for plots.
 ## Detailed Description
 
 Extends
-[DropDown](qml-jasp-controls-dropdown.md)
+<a href="qml-jasp-controls-dropdown.md" translate="no">DropDown</a>
 with a predefined list of color palettes commonly used in JASP plots.
 Includes colorblind-friendly, Viridis, ggplot2, and other standard
 palettes. Defaults to "colorblind" and binds to the R option

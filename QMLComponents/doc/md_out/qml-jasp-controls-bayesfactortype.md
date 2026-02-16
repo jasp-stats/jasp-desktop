@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 BayesFactorType
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -11,18 +14,28 @@ BayesFactorType
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # BayesFactorType QML Type
 
 A pre-built radio button group for selecting Bayes Factor reporting
-format. 
+format. [More...](#details)
 
+<div class="table">
 
 |                   |                                                   |
 |-------------------|---------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                        |
-| Inherits:         | [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md)                |
+| Inherits:         | <a href="qml-jasp-controls-radiobuttongroup.md" 
+                     translate="no">RadioButtonGroup</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-bayesfactortype-members.md)

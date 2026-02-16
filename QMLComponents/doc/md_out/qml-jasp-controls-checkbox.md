@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CheckBox
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -12,16 +15,26 @@ CheckBox
 - [Signals](#signals)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # CheckBox QML Type
 
 A boolean toggle control that binds a true/false value to an R option.
+[More...](#details)
 
+<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-checkbox-members.md)

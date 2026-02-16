@@ -44,15 +44,14 @@
 <ul>
 <li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
 <li><b>title</b> (string) - Title displayed above the list. Alias: label. Default: &quot;&quot;.</li>
-<li><b>source</b> (var) - Source control for populating rows. Default: undefined.</li>
+<li><b>source</b> (var) - Source control for populating rows. Default: undefined. This can be an id or name (or an array of names/ids) of another controls.</li>
 <li><b>rSource</b> (string) - R source for populating rows. Default: &quot;&quot;.</li>
-<li><b>addItemManually</b> (bool) - Allow user to add/remove rows via buttons. Default: false when source is set.</li>
+<li><b>rowComponent</b> (Component) - One QML component (use Row or <a href="qml-jasp-controls-rowlayout.html" translate="no">RowLayout</a> if more items are needed), that will be repeated for each row. In each row, you can use the rowValue, rowLabel, rowType or rowIndex that gives you resp. the value, label, type (if it is a variable) and index linked to each row.</li>
+<li><b>addItemManually</b> (bool) - Allow user to add/remove rows via buttons. Default: false when source is set, true otherwise</li>
 <li><b>minimumItems</b> (int) - Minimum number of rows that must remain. Default: 0.</li>
 <li><b>maximumItems</b> (int) - Maximum number of rows allowed (-1 for unlimited). Default: -1.</li>
-<li><b>columns</b> (int) - Number of grid columns for the component layout. Default: 2 when addItemManually, 1 otherwise.</li>
-<li><b>rows</b> (int) - Number of grid rows. Default: equals row count.</li>
+<li><b>rows</b> (int) - Number of grid rows. Default: equals row count. Read only.</li>
 <li><b>rowSpacing</b> (real) - Vertical spacing between rows. Default: 1.</li>
-<li><b>columnSpacing</b> (real) - Horizontal spacing between columns. Default: 10.</li>
 <li><b>showAddIcon</b> (bool) - Show the add-row icon button. Default: equals addItemManually.</li>
 <li><b>addIcon</b> (string) - Icon file for the add button. Default: &quot;round_addition.png&quot;.</li>
 <li><b>removeIcon</b> (string) - Icon file for the remove button. Default: &quot;cross.png&quot;.</li>
@@ -76,19 +75,33 @@
 <li><b>removeItem(int index)</b> - Emitted when a row should be removed.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-componentslist.html" translate="no">ComponentsList</a></span> {
-    <span class="name">name</span>: <span class="string">&quot;contrasts&quot;</span>
-    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Contrasts&quot;</span>)
-    <span class="name">source</span>: <span class="string">&quot;fixedFactors&quot;</span>
-    <span class="name">rowComponent</span>: <span class="name">DropDown</span> {
-        <span class="name">name</span>: <span class="string">&quot;contrast&quot;</span>
-        <span class="name">source</span>: [
-            { label: <span class="name">qsTr</span>(<span class="string">&quot;None&quot;</span>),       value: <span class="string">&quot;none&quot;</span>       },
-            { label: <span class="name">qsTr</span>(<span class="string">&quot;Deviation&quot;</span>),  value: <span class="string">&quot;deviation&quot;</span>  },
-            { label: <span class="name">qsTr</span>(<span class="string">&quot;Helmert&quot;</span>),    value: <span class="string">&quot;helmert&quot;</span>    }
-        ]
+<pre class="qml" translate="no">ComponentsList {
+    name: &quot;contrasts&quot;
+    title: qsTr(&quot;Contrasts&quot;)
+    source: &quot;fixedFactors&quot;
+            headerLabels: [qsTr(&quot;Contrast&quot;)]
+            rowComponent: Row {
+                    Text { text: rowValue } // rowValue contains the name of the variable
+                    DropDown {
+                            name: &quot;contrast&quot;
+                            source: [
+                                    { label: qsTr(&quot;None&quot;),       value: &quot;none&quot;       },
+                                    { label: qsTr(&quot;Deviation&quot;),  value: &quot;deviation&quot;  },
+                                    { label: qsTr(&quot;Helmert&quot;),    value: &quot;helmert&quot;    }
+                            ]
+                    }
     }
-}</pre>
+}
+    ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
+            name: &quot;extraValues&quot;
+            title: qsTr(&quot;Extra values&quot;)
+            headerLabels: [qsTr(&quot;Alpha&quot;, qtStr(&quot;Beta&quot;)]
+            minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
+            rowComponent: Row {
+                    IntegerField    { name: &quot;alphaValue&quot; }
+                    DoubleValue             { name: &quot;betaValue&quot; }
+            }
+    }</pre>
 <!-- @@@ComponentsList -->
 </body>
 </html>

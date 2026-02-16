@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Switch
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -11,25 +14,34 @@ Switch
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # Switch QML Type
 
-A toggle switch control. 
+A toggle switch control. [More...](#details)
 
+<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-switch-members.md)
 
 ## Detailed Description
 
-Backed by CheckBoxBase with a sliding toggle indicator instead of a
-checkbox. Binds a boolean value to R, similar to
-[CheckBox](qml-jasp-controls-checkbox.md)
+A sliding toggle indicator that can be used instead of a checkbox. Binds
+a boolean value to R, similar to
+<a href="qml-jasp-controls-checkbox.md" translate="no">CheckBox</a>
 but with a different visual appearance.
 
 ## R Binding

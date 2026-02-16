@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DoubleField
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -13,18 +16,29 @@ DoubleField
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # DoubleField QML Type
 
 A text field preset for entering numeric (double) values.
+[More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [TextField](qml-jasp-controls-textfield.md) |
-| Inherited By: | [PercentField](qml-jasp-controls-percentfield.md) |
+| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
+| Inherited By: | <a href="qml-jasp-controls-percentfield.md"
+translate="no">PercentField</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-doublefield-members.md)
@@ -32,7 +46,7 @@ A text field preset for entering numeric (double) values.
 ## Detailed Description
 
 Extends
-[TextField](qml-jasp-controls-textfield.md)
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 with the "number" input type and a built-in JASPDoubleValidator.
 Supports configurable minimum, maximum, decimal precision, and sign
 constraints.
@@ -50,7 +64,8 @@ constraints.
 - **max** (double) - Maximum allowed value. Default: Infinity.
 - **decimals** (int) - Number of decimal places. Default: 3.
 - **inclusive** (enum) - Whether min/max bounds are inclusive. Default:
-  JASP.MinMax.
+  JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or
+  JASP.None.
 
 ## Inherited Properties from TextField
 
@@ -60,8 +75,7 @@ constraints.
 - **label** (string) - Label displayed before the field. Default: "".
 - **afterLabel** (string) - Label displayed after the field. Default:
   "".
-- **fieldWidth** (int) - Width of the input field. Default:
-  jaspTheme.numericFieldWidth.
+- **fieldWidth** (int) - Width of the input field. Default: 40.
 
 ## Other Inherited Properties
 

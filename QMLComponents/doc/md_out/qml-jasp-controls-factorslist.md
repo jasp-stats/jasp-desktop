@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 FactorsList
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -14,28 +17,40 @@ FactorsList
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # FactorsList QML Type
 
 An assigned variables list with an editable title, used for individual
-factor panels. 
+factor panels. [More...](#details)
 
+<div class="table">
 
 |                   |                                                        |
 |-------------------|--------------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                             |
-| Inherits:         | [AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md)                |
+| Inherits:         | <a href="qml-jasp-controls-assignedvariableslist.md" 
+                     translate="no">AssignedVariablesList</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-factorslist-members.md)
 
 ## Detailed Description
 
-Extends [AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md) by adding an editable
-[TextField](qml-jasp-controls-textfield.md)
+Extends <a href="qml-jasp-controls-assignedvariableslist.md"
+translate="no">AssignedVariablesList</a> by adding an editable
+<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
 for the factor title. Typically used inside
-[FactorsForm](qml-jasp-controls-factorsform.md); each FactorsList panel represents one
+<a href="qml-jasp-controls-factorsform.md"
+translate="no">FactorsForm</a>; each FactorsList panel represents one
 factor and its assigned variables.
 
 ## R Binding

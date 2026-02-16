@@ -9,9 +9,6 @@
             <contents name="all-controls" title="All Controls" level="1"/>
         </page>
         <page name="test.html" href="test.html" status="active" location="test.qdoc" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/doc/test.qdoc" lineno="1" documented="true" subtype="page" title="Test Page" fulltitle="Test Page" subtitle="" brief="This is a test page to verify sourcedirs"/>
-        <qmlclass name="ALTNavTag" qml-module-name="JASP.Controls" fullname="JASP.Controls.ALTNavTag" href="qml-jasp-controls-altnavtag.html" status="active" access="public" location="ALTNavTag.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ALTNavTag.qml" lineno="8" documented="true" title="ALTNavTag" fulltitle="ALTNavTag" subtitle="" brief="Internal tag displayed during ALT keyboard navigation">
-            <contents name="properties" title="Properties" level="1"/>
-        </qmlclass>
         <qmlclass name="AddColumnField" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::TextField" fullname="JASP.Controls.AddColumnField" href="qml-jasp-controls-addcolumnfield.html" status="active" access="public" location="AddColumnField.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/AddColumnField.qml" lineno="23" documented="true" title="AddColumnField" fulltitle="AddColumnField" subtitle="" brief="A text input field that creates a new computed column in the dataset">
             <contents name="properties" title="Properties" level="1"/>
             <contents name="inherited-properties" title="Inherited Properties" level="1"/>
@@ -121,9 +118,6 @@
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="ControlErrorMessage" qml-module-name="JASP.Controls" fullname="JASP.Controls.ControlErrorMessage" href="qml-jasp-controls-controlerrormessage.html" status="active" access="public" location="ControlErrorMessage.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ControlErrorMessage.qml" lineno="21" documented="true" title="ControlErrorMessage" fulltitle="ControlErrorMessage" subtitle="" brief="An internal popup that displays validation errors or warnings above a control"/>
-        <qmlclass name="CrossButton" qml-module-name="JASP.Controls" fullname="JASP.Controls.CrossButton" href="qml-jasp-controls-crossbutton.html" status="active" access="public" location="CrossButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CrossButton.qml" lineno="21" documented="true" title="CrossButton" fulltitle="CrossButton" subtitle="" brief="An internal × (cross) button used to dismiss or remove items">
-            <contents name="signals" title="Signals" level="1"/>
-        </qmlclass>
         <qmlclass name="CustomContrastsTableView" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::BasicThreeButtonTableView" fullname="JASP.Controls.CustomContrastsTableView" href="qml-jasp-controls-customcontraststableview.html" status="active" access="public" location="CustomContrastsTableView.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CustomContrastsTableView.qml" lineno="25" documented="true" title="CustomContrastsTableView" fulltitle="CustomContrastsTableView" subtitle="" brief="A table view preset for entering custom contrast weight matrices">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="inherited-properties-from-basicthreebuttontableview" title="Inherited Properties from BasicThreeButtonTableView" level="1"/>
@@ -196,10 +190,6 @@
             <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
-        <qmlclass name="HelpButton" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::MenuButton" fullname="JASP.Controls.HelpButton" href="qml-jasp-controls-helpbutton.html" status="active" access="public" location="HelpButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/HelpButton.qml" lineno="23" documented="true" title="HelpButton" fulltitle="HelpButton" subtitle="" brief="A small info button that opens a help page for the current analysis">
-            <contents name="properties" title="Properties" level="1"/>
-            <contents name="example" title="Example" level="1"/>
-        </qmlclass>
         <qmlclass name="InputListView" qml-module-name="JASP.Controls" fullname="JASP.Controls.InputListView" href="qml-jasp-controls-inputlistview.html" status="active" access="public" location="InputListView.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/InputListView.qml" lineno="23" documented="true" title="InputListView" fulltitle="InputListView" subtitle="" brief="An editable scrollable list for entering free-text values">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
@@ -219,7 +209,6 @@
             <contents name="other-inherited-properties" title="Other Inherited Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
-        <qmlclass name="JASPScrollBar" qml-module-name="JASP.Controls" fullname="JASP.Controls.JASPScrollBar" href="qml-jasp-controls-jaspscrollbar.html" status="active" access="public" location="JASPScrollBar.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/JASPScrollBar.qml" lineno="23" documented="true" title="JASPScrollBar" fulltitle="JASPScrollBar" subtitle="" brief="An internal custom scrollbar for flickable content"/>
         <qmlclass name="JagsTableView" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::BasicThreeButtonTableView" fullname="JASP.Controls.JagsTableView" href="qml-jasp-controls-jagstableview.html" status="active" access="public" location="JagsTableView.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/JagsTableView.qml" lineno="25" documented="true" title="JagsTableView" fulltitle="JagsTableView" subtitle="" brief="A table view preset for entering JAGS data">
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
@@ -229,11 +218,6 @@
         </qmlclass>
         <qmlclass name="Label" qml-module-name="JASP.Controls" fullname="JASP.Controls.Label" href="qml-jasp-controls-label.html" status="active" access="public" location="Label.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/Label.qml" lineno="22" documented="true" title="Label" fulltitle="Label" subtitle="" brief="A JASP-themed text label">
             <contents name="properties" title="Properties" level="1"/>
-            <contents name="example" title="Example" level="1"/>
-        </qmlclass>
-        <qmlclass name="MenuButton" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::RoundedButton" fullname="JASP.Controls.MenuButton" href="qml-jasp-controls-menubutton.html" status="active" access="public" location="MenuButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/MenuButton.qml" lineno="5" documented="true" title="MenuButton" fulltitle="MenuButton" subtitle="" brief="A button with optional submenu arrow and hover-to-open behaviour">
-            <contents name="properties" title="Properties" level="1"/>
-            <contents name="signals" title="Signals" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="ModelTermsList" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::VariablesList" fullname="JASP.Controls.ModelTermsList" href="qml-jasp-controls-modeltermslist.html" status="active" access="public" location="ModelTermsList.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ModelTermsList.qml" lineno="24" documented="true" title="ModelTermsList" fulltitle="ModelTermsList" subtitle="" brief="A preset VariablesList for building ANOVA model terms">
@@ -262,16 +246,9 @@
             <contents name="inherited-properties" title="Inherited Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
-        <qmlclass name="RectangularButton" qml-module-name="JASP.Controls" fullname="JASP.Controls.RectangularButton" href="qml-jasp-controls-rectangularbutton.html" status="active" access="public" location="RectangularButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/RectangularButton.qml" lineno="23" documented="true" title="RectangularButton" fulltitle="RectangularButton" subtitle="" brief="A styled rectangular button with optional icon and text">
-            <contents name="properties" title="Properties" level="1"/>
-            <contents name="signals" title="Signals" level="1"/>
-            <contents name="example" title="Example" level="1"/>
-        </qmlclass>
-        <qmlclass name="RoundedButton" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::RectangularButton" fullname="JASP.Controls.RoundedButton" href="qml-jasp-controls-roundedbutton.html" status="active" access="public" location="RoundedButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/RoundedButton.qml" lineno="3" documented="true" title="RoundedButton" fulltitle="RoundedButton" subtitle="" brief="A RectangularButton with rounded corners"/>
         <qmlclass name="RowLayout" qml-module-name="JASP.Controls" fullname="JASP.Controls.RowLayout" href="qml-jasp-controls-rowlayout.html" status="active" access="public" location="RowLayout.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/RowLayout.qml" lineno="22" documented="true" title="RowLayout" fulltitle="RowLayout" subtitle="" brief="A horizontal layout with JASP-themed spacing">
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
-        <qmlclass name="ScrollMoreIndicator" qml-module-name="JASP.Controls" fullname="JASP.Controls.ScrollMoreIndicator" href="qml-jasp-controls-scrollmoreindicator.html" status="active" access="public" location="ScrollMoreIndicator.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ScrollMoreIndicator.qml" lineno="3" documented="true" title="ScrollMoreIndicator" fulltitle="ScrollMoreIndicator" subtitle="" brief="An internal gradient shadow indicating more content is available by scrolling"/>
         <qmlclass name="Section" qml-module-name="JASP.Controls" fullname="JASP.Controls.Section" href="qml-jasp-controls-section.html" status="active" access="public" location="Section.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/Section.qml" lineno="24" documented="true" title="Section" fulltitle="Section" subtitle="" brief="A collapsible panel that groups child controls under a clickable header">
             <contents name="properties" title="Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
@@ -290,10 +267,6 @@
             <contents name="r-binding" title="R Binding" level="1"/>
             <contents name="properties" title="Properties" level="1"/>
             <contents name="inherited-properties" title="Inherited Properties" level="1"/>
-            <contents name="example" title="Example" level="1"/>
-        </qmlclass>
-        <qmlclass name="SortMenuButton" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::MenuButton" fullname="JASP.Controls.SortMenuButton" href="qml-jasp-controls-sortmenubutton.html" status="active" access="public" location="SortMenuButton.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/SortMenuButton.qml" lineno="4" documented="true" title="SortMenuButton" fulltitle="SortMenuButton" subtitle="" brief="A circular sort button that opens a sort-order popup">
-            <contents name="properties" title="Properties" level="1"/>
             <contents name="example" title="Example" level="1"/>
         </qmlclass>
         <qmlclass name="SubjectivePriors" qml-module-name="JASP.Controls" qml-base-type="JASP.Controls::Section" fullname="JASP.Controls.SubjectivePriors" href="qml-jasp-controls-subjectivepriors.html" status="active" access="public" location="SubjectivePriors.qml" filepath="C:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/SubjectivePriors.qml" lineno="25" documented="true" title="SubjectivePriors" fulltitle="SubjectivePriors" subtitle="" brief="A preset &quot;Prior&quot; section with default and informed prior distribution options">

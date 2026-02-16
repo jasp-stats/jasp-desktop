@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 VariablesForm
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -9,32 +12,49 @@ VariablesForm
 - [Properties](#properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # VariablesForm QML Type
 
 A two-column layout with available variables on the left and assigned
-lists on the right. 
+lists on the right. [More...](#details)
 
+<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-variablesform-members.md)
 
 ## Detailed Description
 
-Backed by VariablesFormBase. Automatically creates an
-[AvailableVariablesList](qml-jasp-controls-availablevariableslist.md) and positions
-[AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md) controls alongside assign
-buttons. Heights of variable lists are auto-adjusted to fill the form.
+Creates a form where an
+<a href="qml-jasp-controls-availablevariableslist.md"
+translate="no">AvailableVariablesList</a> and one or more
+<a href="qml-jasp-controls-assignedvariableslist.md"
+translate="no">AssignedVariablesList</a> are connected. It creates
+automatically the Arrow buttons for each
+<a href="qml-jasp-controls-assignedvariableslist.md"
+translate="no">AssignedVariablesList</a> and sets their height to fill
+the form.
 
+<div class="admonition note">
 
 **Note:** VariablesForm does not bind directly to R options. The child
-[VariablesList](qml-jasp-controls-variableslist.md) controls each have their own R binding.
+<a href="qml-jasp-controls-variableslist.md"
+translate="no">VariablesList</a> controls each have their own R binding.
 
+</div>
 
 ## Properties
 

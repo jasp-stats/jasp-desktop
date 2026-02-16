@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 ModelTermsList
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -13,24 +16,37 @@ ModelTermsList
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # ModelTermsList QML Type
 
-A preset [VariablesList](qml-jasp-controls-variableslist.md) for building ANOVA model terms.
+A preset <a href="qml-jasp-controls-variableslist.md"
+translate="no">VariablesList</a> for building ANOVA model terms.
+[More...](#details)
 
+<div class="table">
 
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | [VariablesList](qml-jasp-controls-variableslist.md)                |
+| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
+                     translate="no">VariablesList</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-modeltermslist-members.md)
 
 ## Detailed Description
 
-Extends [VariablesList](qml-jasp-controls-variableslist.md) with interaction-mode drag-and-drop, an
+Extends <a href="qml-jasp-controls-variableslist.md"
+translate="no">VariablesList</a> with interaction-mode drag-and-drop, an
 "Add to null model" checkbox per row, and automatic nuisance flagging
 based on a source list (e.g. randomFactors).
 

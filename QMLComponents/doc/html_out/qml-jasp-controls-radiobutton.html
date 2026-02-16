@@ -48,7 +48,6 @@
 <li><b>enableChildrenOnChecked</b> (bool) - Only enable child controls when checked. Default: true.</li>
 <li><b>indentChildren</b> (bool) - Indent child controls below the label. Default: true.</li>
 <li><b>columns</b> (int) - Number of columns in the child controls area. Default: 1.</li>
-<li><b>textFormat</b> (enum) - Qt text format for the label. Default: Text.AutoText.</li>
 </ul>
 <h2 id="inherited-properties">Inherited Properties</h2>
 <ul>
@@ -58,12 +57,23 @@
 <li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></span> {
-    <span class="name">name</span>: <span class="string">&quot;hypothesis&quot;</span>
-    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;twoSided&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;≠ Test value&quot;</span>); <span class="name">checked</span>: <span class="number">true</span> }
-    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;greater&quot;</span>;  <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&gt; Test value&quot;</span>) }
-    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;less&quot;</span>;     <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&lt; Test value&quot;</span>) }
-}</pre>
+<pre class="qml" translate="no">RadioButtonGroup {
+    name: &quot;hypothesis&quot;
+    RadioButton { value: &quot;twoSided&quot;; label: qsTr(&quot;≠ Test value&quot;); checked: true }
+    RadioButton { value: &quot;greater&quot;;  label: qsTr(&quot;&gt; Test value&quot;) }
+    RadioButton { value: &quot;less&quot;;     label: qsTr(&quot;&lt; Test value&quot;) }
+}
+
+    RadioButtonGroup {
+            title: qsTr(&quot;Operation&quot;)
+            name: &quot;operation&quot;
+            RadioButton {
+                    value: &quot;plus&quot;; label: qsTr(&quot;Plus&quot;); checked: true
+                    DoubleField { label: &quot;Extra Quantity; name: &quot;plusExtraQuantity} // This DoubleField will be eanbled only if Plus option is checked
+            }
+            RadioButton { value: &quot;Multiply&quot;;  label: qsTr(&quot;Multiply&quot;) }
+            RadioButton { value: &quot;Divide&quot;;    label: qsTr(&quot;Divide&quot;) }
+    }</pre>
 <!-- @@@RadioButton -->
 </body>
 </html>

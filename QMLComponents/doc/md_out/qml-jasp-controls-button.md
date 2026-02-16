@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 Button
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -11,27 +14,39 @@ Button
 - [Signals](#signals)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # Button QML Type
 
-A generic clickable button. 
+A generic clickable button. [More...](#details)
 
+<div class="table">
 
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherited By:     | [AssignButton](qml-jasp-controls-assignbutton.md)                |
+| Inherited By:     | <a href="qml-jasp-controls-assignbutton.md" 
+                     translate="no">AssignButton</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-button-members.md)
 
 ## Detailed Description
 
+<div class="admonition note">
 
 **Note:** Button does not bind to R options. It is used for triggering
 actions in the UI.
 
+</div>
 
 ## Properties
 

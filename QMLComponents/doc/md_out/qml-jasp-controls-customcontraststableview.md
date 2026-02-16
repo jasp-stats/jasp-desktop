@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 CustomContrastsTableView
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -12,24 +15,36 @@ CustomContrastsTableView
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # CustomContrastsTableView QML Type
 
 A table view preset for entering custom contrast weight matrices.
+[More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) |
+| Inherits: | <a href="qml-jasp-controls-basicthreebuttontableview.md"
+translate="no">BasicThreeButtonTableView</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-customcontraststableview-members.md)
 
 ## Detailed Description
 
-Extends [BasicThreeButtonTableView](qml-jasp-controls-basicthreebuttontableview.md) with the CustomContrasts
+Extends <a href="qml-jasp-controls-basicthreebuttontableview.md"
+translate="no">BasicThreeButtonTableView</a> with the CustomContrasts
 model type. Buttons are configured as Add Contrast, Delete Contrast, and
 Reset, placed in a row above the table. Rows are automatically populated
 from the factor levels.

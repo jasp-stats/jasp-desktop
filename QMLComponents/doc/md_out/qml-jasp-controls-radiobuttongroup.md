@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RadioButtonGroup
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -11,34 +14,46 @@ RadioButtonGroup
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # RadioButtonGroup QML Type
 
-A group of mutually exclusive radio button options. 
+A group of mutually exclusive radio button options. [More...](#details)
 
+<div class="table">
 
 |                   |                                                  |
 |-------------------|--------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                       |
-| Inherited By:     | [BayesFactorType](qml-jasp-controls-bayesfactortype.md)                |
+| Inherited By:     | <a href="qml-jasp-controls-bayesfactortype.md" 
+                     translate="no">BayesFactorType</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-radiobuttongroup-members.md)
 
 ## Detailed Description
 
-Backed by RadioButtonsGroupBase. Contains
-[RadioButton](qml-jasp-controls-radiobutton.md) children, of which exactly one can be
+Contains <a href="qml-jasp-controls-radiobutton.md"
+translate="no">RadioButton</a> children, of which exactly one can be
 checked at a time. The checked button's name is sent as the option value
 to R.
 
 ## R Binding
 
 - **R Type:** `character` (the name/value of the selected
-  [RadioButton](qml-jasp-controls-radiobutton.md))
+  <a href="qml-jasp-controls-radiobutton.md"
+  translate="no">RadioButton</a>)
 - **Default:** Value of the initially checked
-  [RadioButton](qml-jasp-controls-radiobutton.md)
+  <a href="qml-jasp-controls-radiobutton.md"
+  translate="no">RadioButton</a>
 
 ## Properties
 
@@ -50,9 +65,7 @@ to R.
 - **columns** (int) - Number of columns in the content area. Default: 1
   (or children.length when radioButtonsOnSameRow).
 - **leftPadding** (int) - Left padding for the content area. Default:
-  jaspTheme.groupContentPadding.
-- **textFormat** (int) - Qt text format for the title. Default:
-  Text.AutoText.
+  10.
 
 ## Inherited Properties
 

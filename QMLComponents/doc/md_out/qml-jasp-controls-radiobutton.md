@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 RadioButton
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -11,17 +14,27 @@ RadioButton
 - [Inherited Properties](#inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # RadioButton QML Type
 
 A radio button option within a
-[RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md). 
+<a href="qml-jasp-controls-radiobuttongroup.md"
+translate="no">RadioButtonGroup</a>. [More...](#details)
 
+<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-radiobutton-members.md)
@@ -29,13 +42,15 @@ A radio button option within a
 ## Detailed Description
 
 Backed by RadioButtonBase. When checked, its name is sent as the value
-of the parent [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md). Supports nested child controls that
+of the parent <a href="qml-jasp-controls-radiobuttongroup.md"
+translate="no">RadioButtonGroup</a>. Supports nested child controls that
 can be enabled only when this radio button is selected.
 
 ## R Binding
 
 - **R Type:** Used as a value option within a
-  [RadioButtonGroup](qml-jasp-controls-radiobuttongroup.md) (string).
+  <a href="qml-jasp-controls-radiobuttongroup.md"
+  translate="no">RadioButtonGroup</a> (string).
 - **Default:** unchecked
 
 ## Properties
@@ -54,8 +69,6 @@ can be enabled only when this radio button is selected.
   Default: true.
 - **columns** (int) - Number of columns in the child controls area.
   Default: 1.
-- **textFormat** (enum) - Qt text format for the label. Default:
-  Text.AutoText.
 
 ## Inherited Properties
 
@@ -76,4 +89,15 @@ RadioButtonGroup {
     RadioButton { value: "greater";  label: qsTr("> Test value") }
     RadioButton { value: "less";     label: qsTr("< Test value") }
 }
+
+    RadioButtonGroup {
+            title: qsTr("Operation")
+            name: "operation"
+            RadioButton {
+                    value: "plus"; label: qsTr("Plus"); checked: true
+                    DoubleField { label: "Extra Quantity; name: "plusExtraQuantity} // This DoubleField will be eanbled only if Plus option is checked
+            }
+            RadioButton { value: "Multiply";  label: qsTr("Multiply") }
+            RadioButton { value: "Divide";    label: qsTr("Divide") }
+    }
 ```

@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SubjectivePriors
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -10,18 +13,27 @@ SubjectivePriors
 - [Properties](#properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # SubjectivePriors QML Type
 
 A preset "Prior" section with default and informed prior distribution
-options. 
+options. [More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [Section](qml-jasp-controls-section.md) |
+| Inherits: | <a href="qml-jasp-controls-section.md" translate="no">Section</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-subjectivepriors-members.md)

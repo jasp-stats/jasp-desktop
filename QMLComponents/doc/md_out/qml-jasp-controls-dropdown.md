@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 DropDown
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -12,17 +15,28 @@ DropDown
 - [Signals](#signals)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # DropDown QML Type
 
 A selection control that presents a list of options in a dropdown menu.
+[More...](#details)
 
+<div class="table">
 
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherited By:     | [ColorPalette](qml-jasp-controls-colorpalette.md)                |
+| Inherited By:     | <a href="qml-jasp-controls-colorpalette.md" 
+                     translate="no">ColorPalette</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-dropdown-members.md)

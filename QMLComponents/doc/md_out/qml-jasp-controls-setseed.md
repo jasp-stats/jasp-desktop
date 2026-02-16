@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 SetSeed
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -9,17 +12,27 @@ SetSeed
 - [R Binding](#r-binding)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # SetSeed QML Type
 
 A preset "Repeatability" group with a seed checkbox and integer field.
+[More...](#details)
 
+<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | [Group](qml-jasp-controls-group.md) |
+| Inherits: | <a href="qml-jasp-controls-group.md" translate="no">Group</a> |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-setseed-members.md)
@@ -28,8 +41,9 @@ A preset "Repeatability" group with a seed checkbox and integer field.
 
 Provides a standardized Group titled "Repeatability" containing a "Set
 seed"
-[CheckBox](qml-jasp-controls-checkbox.md)
-with an [IntegerField](qml-jasp-controls-integerfield.md) for the seed value. Drop this into any
+<a href="qml-jasp-controls-checkbox.md" translate="no">CheckBox</a>
+with an <a href="qml-jasp-controls-integerfield.md"
+translate="no">IntegerField</a> for the seed value. Drop this into any
 analysis that uses random sampling.
 
 ## R Binding

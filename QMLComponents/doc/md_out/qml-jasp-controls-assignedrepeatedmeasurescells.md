@@ -1,7 +1,10 @@
-[JASP.Controls](jasp-controls-qmlmodule.md)
+<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
 
 AssignedRepeatedMeasuresCells
 
+<div class="sidebar">
+
+<div class="toc">
 
 ### Contents
 
@@ -12,29 +15,42 @@ AssignedRepeatedMeasuresCells
 - [Other Inherited Properties](#other-inherited-properties)
 - [Example](#example)
 
+</div>
+
+<div id="sidebar-content" class="sidebar-content">
+
+</div>
+
+</div>
 
 # AssignedRepeatedMeasuresCells QML Type
 
 A variable list preset for assigning variables to repeated measures
-cells. 
+cells. [More...](#details)
 
+<div class="table">
 
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | [VariablesList](qml-jasp-controls-variableslist.md)                |
+| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
+                     translate="no">VariablesList</a>                |
 
+</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-assignedrepeatedmeasurescells-members.md)
 
 ## Detailed Description
 
-Extends [VariablesList](qml-jasp-controls-variableslist.md) with a two-column layout designed for
+Extends <a href="qml-jasp-controls-variableslist.md"
+translate="no">VariablesList</a> with a two-column layout designed for
 repeated measures designs. Uses drop-replace mode and restricts to scale
 variables only. Typically used within a
-[VariablesForm](qml-jasp-controls-variablesform.md) alongside a
-[FactorsForm](qml-jasp-controls-factorsform.md) that defines the repeated measures
+<a href="qml-jasp-controls-variablesform.md"
+translate="no">VariablesForm</a> alongside a
+<a href="qml-jasp-controls-factorsform.md"
+translate="no">FactorsForm</a> that defines the repeated measures
 factors.
 
 ## R Binding
