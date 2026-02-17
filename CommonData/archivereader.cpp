@@ -104,7 +104,10 @@ void ArchiveReader::writeEntryToTempFiles(std::function<void(float)> progressCal
     totalBytes = 1.0 / totalBytes;
 
     if (bytesAvailable() == 0)
-        throw runtime_error("Entry '"+_entryPath+"' has zero bytes data...");
+	{
+		Log::log() << "Entry '" << _entryPath << "' has zero bytes data, skipping it..." << std::endl;
+		return;
+	}
 
 
     std::ofstream file(TempFiles::createSpecific("", _entryPath).c_str(),  std::ios::out | std::ios::binary);
