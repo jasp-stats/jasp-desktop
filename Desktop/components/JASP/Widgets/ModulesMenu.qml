@@ -131,6 +131,9 @@ FocusScope
 				let index = name.lastIndexOf('.');
 				let extension = index !== -1 ? name.substring(index + 1) : '';
 				if(extension === 'JASPModule') {
+                    index = name.indexOf('_');
+                    moduleStore.currentModuleName = index !== -1 ? name.substring(0, index) : name;
+                    moduleStore.isInitiatingDownload = false;
 					moduleStore.downloadInProgress = true
 					moduleStore.downloadTotal = request.totalBytes
 					moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
@@ -141,11 +144,13 @@ FocusScope
 					request.cancel()
 			}
 
-			onDownloadFinished: function(request) {
+            onDownloadFinished: function(request) { //All Jasp Store module installs run via this code
 				moduleStore.downloadInProgress = false
 				moduleStore.currentDownloadRequest = null
 				if (request.state !== WebEngineDownloadRequest.DownloadCompleted) {
 					console.log("Download interrupted:", request.interruptReasonString)
+                    moduleStore.isInitiatingDownload = false; //failsafe
+                    moduleStore.triggerNextDownload()
 					return
 				}
 				console.log("Download finished:", request.downloadFileName)
@@ -183,6 +188,44 @@ FocusScope
 				property int		downloadTotal;
 				property var		currentDownloadRequest: null;
 
+                property bool    isInitiatingDownload: false
+                property var     downloadQueue: []
+                property bool    isProcessingQueue: false
+                property int     batchTotal: 0
+                property int     batchCurrent: 0
+                property string  currentModuleName: ""
+
+                function triggerNextDownload() {
+                    if (isInitiatingDownload || downloadInProgress || moduleLibrary.isInstalling) { //To many double triggers of signals to guard against
+                        return;
+                    }
+
+                    if (downloadQueue.length > 0) {
+                        isProcessingQueue = true;
+                        isInitiatingDownload = true;
+                        batchCurrent++;
+                        let nextUrl = downloadQueue.shift();
+                        //little hack so we may process the downloads using the existing code path in WebEngineProfile
+                        let jsSnippet = "var a = document.createElement('a'); a.href = '" + nextUrl + "'; a.download = ''; document.body.appendChild(a); a.click(); document.body.removeChild(a);";
+                        runJavaScript(jsSnippet);
+                    } else {
+                        isProcessingQueue = false;
+                        isInitiatingDownload = false;
+                        batchTotal = 0;
+                        batchCurrent = 0;
+                        currentModuleName = "";
+                    }
+                }
+
+                Connections {
+                    target: moduleLibrary
+                    function onIsInstallingChanged() {
+                        if (!moduleLibrary.isInstalling && moduleStore.isProcessingQueue) {
+                            moduleStore.triggerNextDownload();
+                        }
+                    }
+                }
+
 				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
 
 				QtObject {
@@ -195,16 +238,32 @@ FocusScope
 
 					signal environmentInfoChanged(var environmentInfo)
 
-					Component.onCompleted: moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
-					Component.onDestruction: moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+                    Component.onCompleted: {
+                        moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
+                    }
+                    Component.onDestruction: {
+                        moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+                    }
 
 					function uninstall(moduleName) {
 						moduleLibrary.uninstallJASPModule(moduleName)
 					}
 
-					function installMany(asset_urls) {
-						moduleLibrary.installManyJASPModules(asset_urls)
-					}
+                    function installMany(asset_urls) { //We fill a queue and trigger first download
+                        if (!asset_urls || asset_urls.length === 0) return;
+                        if (!moduleStore.isProcessingQueue && !moduleStore.downloadInProgress && !moduleLibrary.isInstalling) {
+                            moduleStore.batchTotal = asset_urls.length;
+                            moduleStore.batchCurrent = 0;
+                        }
+
+                        for (let i = 0; i < asset_urls.length; i++) {
+                            moduleStore.downloadQueue.push(asset_urls[i]);
+                        }
+
+                        if (!moduleStore.downloadInProgress && !moduleStore.isProcessingQueue) { //les go
+                            moduleStore.triggerNextDownload();
+                        }
+                    }
 				}
 			}
 
@@ -320,7 +379,7 @@ FocusScope
 					width:							parent.width - (jaspTheme.generalAnchorMargin * 2)
 					x:								jaspTheme.generalAnchorMargin
 					model:							workspaceModel
-					resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
+                    resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
 					showWorkspaceMissingValues:		false
 				}
 			}
@@ -333,8 +392,8 @@ FocusScope
 				visible:	!ribbonModel.dataMode
 				//anchors.right: parent.right //vertScroller.visible ? vertScroller.left : parent.right
 
-				property int buttonMargin:	3  * preferencesModel.uiScale
-				property int buttonWidth:	width - (buttonMargin * 2)
+                property int buttonMargin:	3  * preferencesModel.uiScale
+                property int buttonWidth:	width - (buttonMargin * 2)
 				property int buttonHeight:	40  * preferencesModel.uiScale
 
 				MenuButton
@@ -344,8 +403,8 @@ FocusScope
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
-					onClicked: 			moduleInstallerDialog.open()
-					iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
+                    onClicked: 			moduleInstallerDialog.open()
+                    iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 					showIconAndText:	true
 					iconLeft:			false
                     toolTip:			qsTr("Install a local module")
@@ -502,7 +561,7 @@ FocusScope
 			id:				progressOverlay
 			anchors.fill:	parent
 			color:			jaspTheme.grayDarker
-			visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling
+            visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
 			z:				10
 
 			MouseArea
@@ -522,8 +581,13 @@ FocusScope
 				Text
 				{
 					id:					progressText
-					text:				moduleStore.downloadInProgress ? qsTr("Downloading module...") : qsTr("Installing module...")
-					color:				"white"
+                    text: {
+                        let name = moduleStore.currentModuleName !== "" ? moduleStore.currentModuleName : qsTr("module");
+                        let action = moduleStore.downloadInProgress ? qsTr("Downloading") : qsTr("Installing");
+                        let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
+                        return progress + " " + action + " " + name + "...";
+                    }
+                    color:				"white"
 					font.pixelSize:		16 * preferencesModel.uiScale
 					anchors.horizontalCenter: parent.horizontalCenter
 				}

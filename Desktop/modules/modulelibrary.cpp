@@ -118,17 +118,3 @@ void ModuleLibrary::finishInstalling()
     _isInstalling = false;
     emit isInstallingChanged();
 }
-
-void ModuleLibrary::installManyJASPModules(const QStringList &assetUrls)
-{
-    if (auto *dynMods = Modules::DynamicModules::dynMods())
-    {
-        for (const QString & url : assetUrls) {
-            if (url.endsWith(".jaspModule")) {
-                // TODO Download asset to jaspTmpDir and
-                // dynMods->installModuleFromAssetUrl(downloadedFilePath);
-                // TODO give feedback to user about progress/errors
-            }
-        }
-    }
-}
