@@ -107,8 +107,7 @@ public:
 	QString				titleQ()			const { return QString::fromStdString(title());			}
 	bool				requiresData()		const { return AnalysisEntry::requiresDataEntries(_menuEntries); }
 	std::string			author()			const { return _author;									}
-	std::string			version()			const { return _version;								}
-	QString				versionQ()			const { return QString::fromStdString(_version);		}
+	const Version	&	version()			const { return _version;								}
 	std::string			website()			const { return _website;								}
 	std::string			license()			const { return _license;								}
 	std::string			maintainer()		const { return _maintainer;								}
@@ -242,8 +241,8 @@ private:
 						_installLog			= "",
 						_maintainer,
 						_descriptionTxt,
-						_modulePackage		= "",
-						_version;
+						_modulePackage		= "";
+	Version				_version;
 	bool				_installing			= false,
 						_installed			= false,
 						_isDeveloperMod		= false,

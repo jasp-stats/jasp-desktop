@@ -87,14 +87,14 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	return analysis;
 }
 
-Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, Json::Value* options)
+Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, const Json::Value & options)
 {
 	return create(Json::nullValue, analysisEntry, _nextId++, Analysis::Empty, true, "", "", options);
 }
 
-Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, std::string title, std::string moduleVersion, Json::Value *options)
+Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, const std::string & title, const Version & loadedVersion, const Json::Value & options)
 {
-	Analysis *analysis = new Analysis(id, analysisEntry, title, moduleVersion, options);
+	Analysis *analysis = new Analysis(id, analysisEntry, title, loadedVersion, options);
 
 	analysis->checkDefaultTitleFromJASPFile(analysisData);
 	
@@ -542,12 +542,8 @@ Analysis* Analyses::createAnalysis(const QString& module, const QString& analysi
 	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
 	Json::Value options = JASPConfiguration::getInstance()->getAnalysisOptionValues(module, analysis);
 
-	if (dynamicModule) {
-		if(options != Json::nullValue)
-			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)), &options);
-		else
-			return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)));
-	}
+	if (dynamicModule)
+		return create(dynamicModule->retrieveCorrespondingAnalysisEntry(fq(analysis)), options);
 	else
 		return nullptr;
 

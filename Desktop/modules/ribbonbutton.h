@@ -77,7 +77,7 @@ public:
 	bool						active()													const			{ return _active;											}
 	QString						toolTip()													const			{ return _toolTipF ? _toolTipF() : _toolTip;											}
 	bool						isBundled()													const			{ return _module && _module->isBundled();					}
-	QString						version()													const			{ return !_module ? "?" : _module->versionQ();				}
+	QString						version()													const			{ return !_module ? "?" : tq(_module->version().asString());	}
 	bool						ready()														const			{ return _ready;											}
 	bool						error()														const			{ return _error;											}
 	bool						remember()													const			{ return _remember;											}

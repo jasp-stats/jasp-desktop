@@ -548,7 +548,7 @@ AnalysisEntry* DynamicModule::retrieveCorrespondingAnalysisEntry(const Json::Val
 		throw ModuleException(name(), "Tried to load an AnalysisEntry for module (" + moduleName +") from me...");
 
 	if(Version(moduleVersion) != version())
-		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version() << std::endl;
+		std::cerr << "Loading analysis based on different version of module(" << moduleName << "), but going ahead anyway. Analysis based on version: " << moduleVersion << " and actual loaded version of module is: " << version().asString() << std::endl;
 
 	std::string codedReference = jsonFromJaspFile.get("analysisEntry", "AnalysisEntry's coded reference wasn't actually specified!").asString();
 
@@ -856,7 +856,7 @@ Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunctio
 	Json::Value json(Json::objectValue);
 
 	json["moduleName"]			= name();
-	json["moduleVersion"]		= version();
+	json["moduleVersion"]		= version().asString();
 	json["moduleMaintainer"]	= maintainer();
 	json["moduleWebsite"]		= website();
 	json["analysisEntry"]		= analysisFunction;

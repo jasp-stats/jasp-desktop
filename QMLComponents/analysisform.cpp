@@ -695,9 +695,9 @@ void AnalysisForm::knownIssuesUpdated()
 	if(!_formCompleted || !_analysis)
 		return;
 
-	if(KnownIssues::issues()->hasIssues(_analysis->module(), _analysis->name()))
+	if(KnownIssues::issues()->hasIssues(_analysis->module(), _analysis->moduleVersion(), _analysis->name()))
 	{
-		const std::vector<KnownIssues::issue> & issues = KnownIssues::issues()->getIssues(_analysis->module(), _analysis->name());
+		const std::vector<KnownIssues::issue> & issues = KnownIssues::issues()->getIssues(_analysis->module(),  _analysis->moduleVersion(), _analysis->name());
 
 		for(const KnownIssues::issue & issue : issues)
 		{

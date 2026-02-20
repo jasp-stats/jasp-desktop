@@ -58,7 +58,7 @@ public:
 	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 						Analysis(size_t id, Analysis * duplicateMe);
-						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", std::string moduleVersion = "", Json::Value *data = nullptr);
+						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & moduleVersion, const Json::Value & data);
 
 	virtual				~Analysis();
 
