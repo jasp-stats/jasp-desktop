@@ -70,7 +70,7 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Json::Value				&	optionsJson		= analysisData["options"];
 	std::string					title			= analysisData.get("title", "").asString();
 	Modules::AnalysisEntry	*	analysisEntry	= Modules::DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
-	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), &optionsJson);
+	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson);
 	
 	if(msgs.count(Modules::analysisLog))
 	{
@@ -92,9 +92,9 @@ Analysis* Analyses::create(Modules::AnalysisEntry * analysisEntry, const Json::V
 	return create(Json::nullValue, analysisEntry, _nextId++, Analysis::Empty, true, "", "", options);
 }
 
-Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, const std::string & title, const Version & loadedVersion, const Json::Value & options)
+Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status, bool notifyAll, const std::string & title, const Version & optionsVersion, const Json::Value & options)
 {
-	Analysis *analysis = new Analysis(id, analysisEntry, title, loadedVersion, options);
+	Analysis *analysis = new Analysis(id, analysisEntry, title, optionsVersion, options);
 
 	analysis->checkDefaultTitleFromJASPFile(analysisData);
 	

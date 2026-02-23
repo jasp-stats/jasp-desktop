@@ -31,8 +31,8 @@
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 
-Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & moduleVersion, const Json::Value & data) :
-	  AnalysisBase(Analyses::analyses(), moduleVersion),
+Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
+	  AnalysisBase(Analyses::analyses()),
 		_id(				id),
 		_name(			analysisEntry->function()),
 		_qml(			analysisEntry->qml().empty() ? _name : analysisEntry->qml()),
@@ -41,13 +41,13 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_moduleData(		analysisEntry),
 		_dynamicModule(	_moduleData->dynamicModule())
 {
-	// If the moduleVersion parameter is given, this is the version this analysis was stored with (in a JASP file).
+	// If the optionsVersion parameter is given, this is the version this analysis was stored with (in a JASP file).
 	// This version might be not the same as the current module version: in this case, the analysis will have to be refreshed.
-	if(_moduleVersion.isEmpty() && _dynamicModule)
-		_moduleVersion = _dynamicModule->version();
+	if(!optionsVersion.isEmpty() && _dynamicModule)
+		_optionsFromDifferentVersion = _dynamicModule->version() != optionsVersion;
 
-	if (data)
-		setBoundValues(data); //Same story as other constructor
+	if (options)
+		setBoundValues(options); //Same story as other constructor
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
@@ -481,8 +481,7 @@ void Analysis::setStatus(Analysis::Status status)
 		
 		_wasUpgraded		= false;
 		_storedWithoutState	= false;
-		// The analysis has been run, so its version is the same as the module version.
-		_moduleVersion		= _dynamicModule ?  _dynamicModule->version() : AppInfo::version;
+		_optionsFromDifferentVersion = false;
 
 		if(neededRefresh != needsRefresh())
 			emit needsRefreshChanged();
@@ -993,8 +992,7 @@ void Analysis::setUpgradeMsgs(const Modules::UpgradeMsgs &msgs)
 
 bool Analysis::needsRefresh() const
 {
-	bool differentVersion = _moduleVersion != (_dynamicModule ? _dynamicModule->version() : AppInfo::version);
-	return _wasUpgraded || _storedWithoutState || differentVersion;
+	return _wasUpgraded || _storedWithoutState || _optionsFromDifferentVersion;
 }
 
 bool Analysis::isWaitingForModule()

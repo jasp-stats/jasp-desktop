@@ -58,7 +58,7 @@ public:
 	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 						Analysis(size_t id, Analysis * duplicateMe);
-						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & moduleVersion, const Json::Value & data);
+						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options);
 
 	virtual				~Analysis();
 
@@ -155,6 +155,7 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
+	const Version	&		moduleVersion()										const	override	{ return _dynamicModule ? _dynamicModule->version() : AppInfo::version; }
 
 	const Json::Value			&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	Json::Value						rSources()									const;
@@ -243,6 +244,7 @@ private:
 								_lastQmlFormPath				= "";
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
+								_optionsFromDifferentVersion	= false,
 								_storedWithoutState				= false,
 								_tryToFixNotes					= false,
 								_hasReport						= false,

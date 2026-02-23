@@ -6,9 +6,8 @@
 const std::string AnalysisBase::emptyString;
 const stringvec AnalysisBase::emptyStringVec;
 
-AnalysisBase::AnalysisBase(QObject* parent, Version moduleVersion)
+AnalysisBase::AnalysisBase(QObject* parent)
 	: QObject(parent)
-	, _moduleVersion(moduleVersion)
 {
 	// If the parent object is the form, just use it. This is used in R-Syntax mode when the AnalysisForm::parseOptions creates a dummy AnalysisBase
 	_analysisForm = qobject_cast<AnalysisForm*>(parent);
@@ -16,7 +15,6 @@ AnalysisBase::AnalysisBase(QObject* parent, Version moduleVersion)
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
-	, _moduleVersion(duplicateMe->moduleVersion())
 	, _boundValues(duplicateMe->boundValues())
 {
 }
