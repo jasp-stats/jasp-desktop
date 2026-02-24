@@ -605,11 +605,14 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 	
 	statement << "INSERT OR REPLACE INTO " << dataSetName(data->id()) << " (";
 
-	//Add columnnames for data we want to insert
+	//Add columnnames for data we want to insert and ensure row counts are consistent
 	for(Column * col : columns)
 	{
 		assert(col->data() == data); //Little sanity check
 		statement << "Column_" << col->id() << "_DBL"<< ", "  << "Column_" << col->id() << "_INT" << ", ";
+
+		if(col->rowCount() < data->rowCount())
+			col->setRowCount(data->rowCount());
 	}
 
 	//And the filtername and rowNumber
