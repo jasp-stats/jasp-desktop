@@ -1,11 +1,11 @@
 on:
-  push:
-    branches: [development]
-    paths:
-      - 'QMLComponents/components/JASP/Controls/**'
-      - 'QMLComponents/doc/*.qdoc'
-      - 'QMLComponents/doc/*.qdocconf'
-
+#  push:
+#    branches: [development]
+#    paths:
+#      - 'QMLComponents/components/JASP/Controls/**'
+#      - 'QMLComponents/doc/*.qdoc'
+#      - 'QMLComponents/doc/*.qdocconf'
+#
   workflow_dispatch:
 
 name: generate-qml-docs
