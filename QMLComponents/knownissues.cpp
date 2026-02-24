@@ -150,21 +150,19 @@ void KnownIssues::addIssue(const std::string & module, const Version & version, 
 	default:				Log::log() << "KnownIssues::addIssue got unexpected type for \"options\", so ignoring it." << std::endl;
 	}
 
-	_issues[std::make_pair(module, version)][analysis].push_back(newIssue);
+	_issues[module][version][analysis].push_back(newIssue);
 }
 
 bool KnownIssues::hasIssues(const std::string & module, const Version& version, const std::string & analysis)
 {
-	auto key = std::make_pair(module, version);
-	return _issues.count(key) > 0 && _issues[key].count(analysis) > 0;
+	return _issues.count(module) > 0 && _issues[module].count(version) > 0 && _issues[module][version].count(analysis) > 0;
 }
 
 bool KnownIssues::hasIssues(const std::string & module, const Version& version, const std::string & analysis, const std::string & option)
 {
 	if(!hasIssues(module, version, analysis)) return false;
 
-	auto key = std::make_pair(module, version);
-	for(const issue & anIssue : _issues[key][analysis])
+	for(const issue & anIssue : _issues[module][version][analysis])
 		if(anIssue.options.count(option) > 0)
 			return true;
 
@@ -179,8 +177,7 @@ std::string KnownIssues::issuesForAnalysis(const std::string & module, const Ver
 
 	out << "<ul>";
 
-	auto key = std::make_pair(module, version);
-	for(const issue & anIssue : _issues[key][analysis])
+	for(const issue & anIssue : _issues[module][version][analysis])
 		out << "<li>" << anIssue.info << "</li>\n";
 
 	out << "</ul>";
