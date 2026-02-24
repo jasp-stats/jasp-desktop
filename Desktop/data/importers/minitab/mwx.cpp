@@ -54,7 +54,9 @@ void Minitab::getColumns(std::vector<MwxImportColumn *> &columns, ImportDataSet 
 		// seems name rules is valid in JASP
 		std::string name = varBody.get("Name", "V" + std::to_string(i + 1)).asString();
 		names.push_back(name);
-
+		
+		std::string colDesc = varBody.get("Desc", name).asString();
+		
 		stringvec levels;
 		std::map<std::string, std::string> textToIdMap;
 		parseOrdering(varBody, levels, textToIdMap);
@@ -72,6 +74,8 @@ void Minitab::getColumns(std::vector<MwxImportColumn *> &columns, ImportDataSet 
 
 		auto impCol = new MwxImportColumn(dataSet, name, levels, type);
 
+		impCol->setTitle(colDesc);
+		
 		if (varDataBody.isMember("TextData"))
 		{
 			for (const auto &val : varDataBody["TextData"])
