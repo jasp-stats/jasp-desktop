@@ -27,11 +27,11 @@ if(USE_CONAN)
 
   # We use our own recipe with some patches to cook up a functional version of freexl, so get the recipe:
   message(STATUS "Cloning private freexl dependency")
-  set(FREEXL_VERSION "2.0.99.cci.20250526")
+  set(FREEXL_VERSION "2.0.99.cci.20260225")
   FetchContent_Declare(
     freexl
     GIT_REPOSITORY   https://github.com/jasp-stats/conan-recipes.git
-    GIT_TAG          e02cefc5a37684749a20d31500fc54468383e30a
+    GIT_TAG          620019a56c6ba94936c9844ab5c79e8db9baa06b
   )
   FetchContent_MakeAvailable(freexl)
 
