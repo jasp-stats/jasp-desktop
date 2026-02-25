@@ -90,6 +90,11 @@ void Minitab::getColumns(std::vector<MwxImportColumn *> &columns, ImportDataSet 
 				impCol->addValue(val.isNull() ? "" : ColumnUtils::doubleToStringMaxPrec(val.asDouble(), false));
 		}
 
+		while (impCol->size() < _numRows)
+		{
+				impCol->addValue("");  //filling to keep col length consistently
+		}
+
 		columns.push_back(impCol);
 	}
 }
