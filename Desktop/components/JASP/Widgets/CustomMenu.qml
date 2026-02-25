@@ -18,6 +18,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import JASP.Controls				as JASPControl
 import Qt5Compat.GraphicalEffects
 
@@ -436,13 +437,15 @@ FocusScope
 		}
 	}
 
-	RectangularGlow
+	RectangularShadow
 	{
 		id				: menuShadow
 		anchors.fill	: menuRectangle
-		color			: jaspTheme.shadow
-		spread			: 0.2
-		cornerRadius	: menuRectangle.radius + glowRadius
-		glowRadius		: 5
+		color			: jaspTheme.grayDarker
+		blur			: 5
+		spread			: 2
+		radius			: menuRectangle.radius
+		offset.x		: 1
+		offset.y		: 2
 	}
 }
