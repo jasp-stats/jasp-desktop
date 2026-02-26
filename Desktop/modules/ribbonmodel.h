@@ -50,6 +50,7 @@ public:
 		ModuleRole,
 		ActiveRole,
 		BundledRole,
+		DevModRole,
 		VersionRole,
 		SpecialRole
 	};

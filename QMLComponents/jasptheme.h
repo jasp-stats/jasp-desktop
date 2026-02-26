@@ -151,6 +151,7 @@ class JaspTheme : public QQuickItem
 	Q_PROPERTY(theme_sizeType     menuItemHeight                  READ menuItemHeight                  WRITE setMenuItemHeight                  NOTIFY menuItemHeightChanged                  )
 	Q_PROPERTY(theme_sizeType     menuGroupTitleHeight            READ menuGroupTitleHeight            WRITE setMenuGroupTitleHeight            NOTIFY menuGroupTitleHeightChanged            )
 	Q_PROPERTY(theme_sizeType     menuHeaderHeight                READ menuHeaderHeight                WRITE setMenuHeaderHeight                NOTIFY menuHeaderHeightChanged                )
+	Q_PROPERTY(theme_sizeType     tooltipMaxWidth				  READ tooltipMaxWidth                 WRITE setTooltipMaxWidth                 NOTIFY tooltipMaxWidthChanged                 )
 
 	//Velocities:
 	Q_PROPERTY(float              maximumFlickVelocity            READ maximumFlickVelocity                                                     NOTIFY maximumFlickVelocityChanged            )
@@ -306,6 +307,7 @@ public:
 	theme_sizeType		menuItemHeight()					const	{ return _menuItemHeight					* uiScale(); }
 	theme_sizeType		menuGroupTitleHeight()				const	{ return _menuGroupTitleHeight				* uiScale(); }
 	theme_sizeType		menuHeaderHeight()					const	{ return _menuHeaderHeight					* uiScale(); }
+	theme_sizeType		tooltipMaxWidth()					const	{ return _tooltipMaxWidth					* uiScale(); }
 	float				maximumFlickVelocity()				const	{ return _maximumFlickVelocity;				}
 	int					hoverTime()							const	{ return _hoverTime;					}
 	int					fileMenuSlideDuration()				const	{ return _fileMenuSlideDuration;		}
@@ -447,6 +449,7 @@ signals:
 	void menuItemHeightChanged();
 	void menuGroupTitleHeightChanged();
 	void menuHeaderHeightChanged();
+	void tooltipMaxWidthChanged();
 	void maximumFlickVelocityChanged();
 	void hoverTimeChanged(theme_timeType hoverTime);
 	void fileMenuSlideDurationChanged(theme_timeType fileMenuSlideDuration);
@@ -581,6 +584,7 @@ public slots:
 	void setScrollbarBoxWidthBig(theme_sizeType scrollbarBoxWidthBig);
 	void setScrollbarBoxWidth(theme_sizeType scrollbarBoxWidth);
 	void setMenuItemHeight(theme_sizeType menuItemHeight);
+	void setTooltipMaxWidth(theme_sizeType tooltipMaxWidth);
 	void setMenuGroupTitleHeight(theme_sizeType menuGroupTitleHeight);
 	void setMenuHeaderHeight(theme_sizeType menuHeaderHeight);
 	void setHoverTime(theme_timeType hoverTime);
@@ -729,7 +733,8 @@ private:
 						_scrollbarBoxWidth,
 						_menuItemHeight,
 						_menuGroupTitleHeight,
-						_menuHeaderHeight;
+						_menuHeaderHeight,
+						_tooltipMaxWidth;
 
 	//Times: https://www.youtube.com/watch?v=90WDats6eE
 	theme_timeType		_hoverTime							=  400,

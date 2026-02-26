@@ -26,15 +26,15 @@ msgstr "Uniforme"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr "gl:"
+msgstr "GL:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr "típico:"
+msgstr "Padrón:"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "media:"
+msgstr "Media:"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
@@ -42,11 +42,11 @@ msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "escala:"
+msgstr "Escala:"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr "posición:"
+msgstr "Posición:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
@@ -2666,30 +2666,6 @@ msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "Fallou a carga de actualizacións para o módulo %1"
 
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
-"Fallou o módulo de inicio mentres comezaba JASP; débese eliminar o módulo?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed with the following message:\n"
-"%1\n"
-"\n"
-"Should the module be removed?"
-msgstr ""
-"Fallou o módulo de inicio mentres comezaba JASP coa seguinte mensaxe:\n"
-"%1\n"
-"\n"
-"Débese eliminar o módulo?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Initializing module %1 failed"
-msgstr "Fallou o módulo %1 de inicio"
-
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -4300,7 +4276,7 @@ msgstr "Violeta"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr "GGplot2"
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
@@ -6174,4 +6150,21 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
+msgstr "Non se atopou o ficheiro %1 no cartafol %2"
+
+msgctxt "tst_formulaField|"
+msgid "Dummy"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading Minitab Data Workbook File"
+msgstr ""
+
+msgctxt "ExcelImporter|"
+msgid "The Minitab file contains no valid columns."
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Minitab Workbook files %1"
 msgstr ""

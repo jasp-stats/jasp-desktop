@@ -50,7 +50,6 @@ public:
 							~DynamicModules() override;
 	static DynamicModules * dynMods()	{ return _singleton; }
 
-	void					initializeInstalledModules();
 	void					registerQMLTypes();
 
 	bool					unpackAndInstallModule(		const	std::string & moduleZipFilename);
@@ -147,6 +146,8 @@ signals:
 	void moduleEnabledChanged(QString moduleName, bool enabled);
 	void dataLoadedChanged(bool dataLoaded);
 	void loadedModulesChanged();
+	void reloadAnalysesJson();
+	void storeAnalysesJson();
 
 private:
 	Modules::DynamicModule	*	requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet);

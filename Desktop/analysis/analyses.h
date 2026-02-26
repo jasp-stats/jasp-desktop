@@ -63,9 +63,9 @@ public:
 
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
-	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, std::string title = "", std::string moduleVersion = "", Json::Value *options = nullptr);
+	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, const std::string & title = "", const Version & loadedVersion = "", const Json::Value & options = Json::nullValue);
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(Json::nullValue, analysisEntry, _nextId++);						}
-	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, Json::Value* options);
+	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, const Json::Value & options);
 
 	Analysis	*	operator[](size_t index)	{ return _analysisMap[_orderedIds[index]]; }
 	Analysis	*	get(size_t id) const		{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
@@ -78,6 +78,7 @@ public:
 	bool			allFinished()	const;
 	void			setAnalysesUserData(Json::Value userData);
 	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
+	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
@@ -140,6 +141,8 @@ public slots:
 	void moveAnalysesResults(Analysis* fromAnalysis, int index);
 	void showRSyntaxInResults(bool show);
 	void dataModeChanged(bool dataMode);
+	void saveAnalysesJsonForReload();
+	void reloadSavedAnalysesJson();
 
 signals:
 	void analysesUnselected();
@@ -190,7 +193,8 @@ private:
 	static Analyses				*	_singleton;
 
 	Json::Value						_resultsMeta, //Stored Notes and custom title
-									_allUserData; //Notes and stuff?
+									_allUserData, //Notes and stuff?
+									_tempSave;    //For when modules need to be reloaded
 
 	std::map<size_t, Analysis*>		_analysisMap;
 	std::vector<size_t>				_orderedIds;

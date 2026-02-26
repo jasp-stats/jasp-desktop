@@ -27,8 +27,6 @@ Rectangle
 
 	ToolTip.visible:	toolTip != "" && toolTipMouseArea.containsMouse
 	ToolTip.text:		toolTip
-	ToolTip.timeout:	3000
-	ToolTip.delay:		500
 
 	MouseArea
 	{

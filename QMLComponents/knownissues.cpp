@@ -20,10 +20,14 @@ KnownIssues::KnownIssues(QObject * parent) : QObject(parent)
 {
 	assert(!_knownIssues);
 	_knownIssues = this;
+	loadKnownJson();
 }
 
 void KnownIssues::loadLocalJson(const std::string & filePath, bool saveIt)
 {
+	if (!QFileInfo::exists(tq(filePath)))
+		return;
+
 	std::ifstream readMe(filePath);
 
 	Json::Value json;
@@ -64,19 +68,27 @@ void KnownIssues::loadJson(const Json::Value & json, bool saveIt)
 	{
 		if(!json.isObject()) throw std::runtime_error("expected issues json to be an object");
 
-		const std::string version = AppInfo::version.asString();
+		const std::string jaspVersion = AppInfo::version.asString();
 
-		if(json.isMember(version))
-			for(		const std::string & module		: json[version]						.getMemberNames())
-				for(	const std::string & analysis	: json[version][module]				.getMemberNames())
+		if(json.isMember(jaspVersion))
+		{
+			const Json::Value & modulesWithKnownIssues = json[jaspVersion];
+			for( const std::string & moduleName	: modulesWithKnownIssues.getMemberNames())
+			{
+				const Json::Value & moduleWithKnownIssues	= modulesWithKnownIssues[moduleName];
+				Version				moduleVersion			= moduleWithKnownIssues["version"].asString();
+				const Json::Value & analyses				= moduleWithKnownIssues["analyses"];
+				for(const std::string & analysisName : analyses.getMemberNames())
 				{
-					const Json::Value & perAnalysis = json[version][module][analysis];
+					const Json::Value & knownIssueDescription = analyses[analysisName];
 
-					if(perAnalysis.isObject())	addIssue(module, analysis, perAnalysis);
-					if(perAnalysis.isArray())
-						for(const Json::Value & entry : perAnalysis)
-							addIssue(module, analysis, entry);
+					if(knownIssueDescription.isObject())	addIssue(moduleName, moduleVersion, analysisName, knownIssueDescription);
+					if(knownIssueDescription.isArray())
+						for(const Json::Value & entry : knownIssueDescription)
+							addIssue(moduleName, moduleVersion, analysisName, entry);
 				}
+			}
+		}
 	}
 	catch(const std::exception & e)
 	{
@@ -119,7 +131,7 @@ bool KnownIssues::knownJsonExpired() const
 	return now - modTime > EXPIRATION_TIME_SEC;
 }
 
-void KnownIssues::addIssue(const std::string & module, const std::string & analysis, const Json::Value & issueJson)
+void KnownIssues::addIssue(const std::string & module, const Version & version, const std::string & analysis, const Json::Value & issueJson)
 {
 	issue newIssue;
 
@@ -138,34 +150,34 @@ void KnownIssues::addIssue(const std::string & module, const std::string & analy
 	default:				Log::log() << "KnownIssues::addIssue got unexpected type for \"options\", so ignoring it." << std::endl;
 	}
 
-	_issues[module][analysis].push_back(newIssue);
+	_issues[module][version][analysis].push_back(newIssue);
 }
 
-bool KnownIssues::hasIssues(const std::string & module, const std::string & analysis)
+bool KnownIssues::hasIssues(const std::string & module, const Version& version, const std::string & analysis)
 {
-	return _issues.count(module) > 0 && _issues[module].count(analysis) > 0;
+	return _issues.count(module) > 0 && _issues[module].count(version) > 0 && _issues[module][version].count(analysis) > 0;
 }
 
-bool KnownIssues::hasIssues(const std::string & module, const std::string & analysis, const std::string & option)
+bool KnownIssues::hasIssues(const std::string & module, const Version& version, const std::string & analysis, const std::string & option)
 {
-	if(!hasIssues(module, analysis)) return false;
+	if(!hasIssues(module, version, analysis)) return false;
 
-	for(const issue & anIssue : _issues[module][analysis])
+	for(const issue & anIssue : _issues[module][version][analysis])
 		if(anIssue.options.count(option) > 0)
 			return true;
 
 	return false;
 }
 
-std::string KnownIssues::issuesForAnalysis(const std::string & module, const std::string & analysis)
+std::string KnownIssues::issuesForAnalysis(const std::string & module, const Version& version, const std::string & analysis)
 {
-	if(!hasIssues(module, analysis)) return "";
+	if(!hasIssues(module, version, analysis)) return "";
 
 	std::stringstream out;
 
 	out << "<ul>";
 
-	for(const issue & anIssue : _issues[module][analysis])
+	for(const issue & anIssue : _issues[module][version][analysis])
 		out << "<li>" << anIssue.info << "</li>\n";
 
 	out << "</ul>";

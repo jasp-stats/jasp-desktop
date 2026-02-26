@@ -92,9 +92,7 @@ QString AppDirs::bundledModulesDir()
 #else  //Normal linux build
 	folder = programDir().absoluteFilePath("../Modules") + '/';
 #endif
-	// @Joris, I think these guys should be one level up,
-	// they are not binaries, so, they should not be in
-	// the binary folder in my opinion.
+
 	return folder;
 }
 

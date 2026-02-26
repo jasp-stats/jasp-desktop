@@ -16,7 +16,7 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.0.12",
+      "Version": "1.1.1",
       "Source": "Repository"
     }
   }

@@ -6,6 +6,7 @@
 #include <fstream>
 #include "gui/preferencesmodel.h"
 #include "log.h"
+#include "resultstesting/compareresults.h"
 
 
 const std::string InstalledModules::settingsPath = "modules-settings.json";
@@ -36,7 +37,7 @@ void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules
 	}
 
 	info.name = root["name"].asString();
-	info.version = Version(strVersion);
+	info.version = BundleVersion(strVersion);
 }
 
 std::vector<InstalledModules::ModuleInfo> InstalledModules::getAllAvailableModules() {
@@ -54,7 +55,10 @@ std::vector<InstalledModules::ModuleInfo> InstalledModules::getAllAvailableModul
 			try {
 				parseModuleInfo(dir.filePath(manifest).toStdString(), info);
 			}
-			catch(...) { continue; }
+			catch(std::exception & e) { 
+				Log::log() << "Could not parse module manifest, error: " << e.what() << std::endl;
+				continue; 
+			}
 			info.libpath = QDir(path.c_str()).filePath(info.name.c_str()).toStdString();
 			info.bundled = bundled;
 			modules.push_back(info);
@@ -72,12 +76,12 @@ std::vector<InstalledModules::ModuleInfo> InstalledModules::getModules() {
 	auto modulesAll = getAllAvailableModules();
 	std::map<std::string, InstalledModules::ModuleInfo> modules;
 	for(const auto& module : modulesAll) { //remove duplicates take highest version
-		if(modules.find(module.name) == modules.end() || modules[module.name].version >= module.version) {
+		if(modules.find(module.name) == modules.end() || modules[module.name] < module) {
 			modules[module.name] = module;
 		}
 	}
 
-	if(!PreferencesModel::prefs()->developerMode())
+	if(!PreferencesModel::prefs()->developerMode() && !resultXmlCompare::compareResults::theOne()->testMode())
 		modules.erase("jaspTestModule");
 
 
@@ -87,21 +91,21 @@ std::vector<InstalledModules::ModuleInfo> InstalledModules::getModules() {
 	std::ifstream in(settings);
 	Json::Value root;
 	Json::Reader().parse(in, root);
-	Json::Value commonNamesJson = root.get("common", Json::arrayValue);
-	Json::Value extraNamesJson = root.get("extra", Json::arrayValue);
-	if(!commonNamesJson.isArray()) commonNamesJson = Json::arrayValue;
-	if(!extraNamesJson.isArray()) extraNamesJson = Json::arrayValue;
+	Json::Value commonNamesJson = root.get("common", Json::arrayValue),
+				extraNamesJson	= root.get("extra", Json::arrayValue);
+	if(!commonNamesJson.isArray())	commonNamesJson = Json::arrayValue;
+	if(!extraNamesJson.isArray())	extraNamesJson = Json::arrayValue;
 
 
 	std::vector<InstalledModules::ModuleInfo> orderedModules = {};
-	for(auto name : commonNamesJson) {
+	for(auto & name : commonNamesJson) {
 		if(modules.find(name.asString()) != modules.end()) {
 			modules[name.asString()].common = true;
 			orderedModules.push_back(modules[name.asString()]);
 			modules.erase(name.asString());
 		}
 	}
-	for(auto& name : extraNamesJson) {
+	for(auto & name : extraNamesJson) {
 		if(modules.find(name.asString()) != modules.end()) {
 			orderedModules.push_back(modules[name.asString()]);
 			modules.erase(name.asString());
@@ -122,7 +126,7 @@ std::map<std::string, std::string> InstalledModules::getInstalledModuleVersions(
 	std::map<std::string, std::string> moduleVersionMap;
 	auto modules = getModules();
 	for(auto& module : modules) {
-		moduleVersionMap[module.name] = module.version.asString(4);
+		moduleVersionMap[module.name] = module.version.asString(3);
 	}
 	return moduleVersionMap;
 }

@@ -127,17 +127,8 @@ DropArea
 			}
 		}
 
-
-		ToolTip
-		{
-			text:			qsTr("Drag to reorder the analyses")
-			timeout:		jaspTheme.toolTipTimeout
-			delay:			jaspTheme.toolTipDelay
-			font:			jaspTheme.font
-			visible:		mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
-			y:				mouseArea.mouseY
-			x:				mouseArea.mouseX + 5
-		}
+		ToolTip.text:		qsTr("Drag to reorder the analyses")
+		ToolTip.visible:	mouseArea.containsMouse && !analysesModel.moving && analysesModel.rowCount() > 1
 
 		MouseArea
 		{

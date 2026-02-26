@@ -142,8 +142,6 @@ void ResourceButtons::setSelectedButton(ButtonType selectedButton)
 		emit dataChanged(newIndex, newIndex);
 		setCurrentQML(qml(_selectedButton));
 	}
-	else
-		setCurrentQML("");
 
 	emit selectedButtonChanged(_selectedButton);
 }

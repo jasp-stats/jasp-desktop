@@ -41,6 +41,7 @@ public:
 	enum ListModelRoles
 	{
         NameRole = Qt::UserRole + 1,
+		InfoRole,
 		TypeRole,
 		SelectedRole,
 		SelectableRole,

@@ -33,6 +33,7 @@
 	<url type="homepage">http://www.jasp-stats.org</url>
 	<url type="bugtracker">https://github.com/jasp-stats/jasp-issues/issues</url>
 	<url type="donation">https://jasp-stats.org/donate/</url>
+	<url type="vcs-browser">https://github.com/jasp-stats/jasp-desktop</url>
   <branding>
   <color type="primary" scheme_preference="light">#14a1e3</color>
   <color type="primary" scheme_preference="dark">#14a1e3</color>

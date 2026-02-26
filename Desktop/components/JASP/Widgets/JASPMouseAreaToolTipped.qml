@@ -10,8 +10,8 @@ MouseArea
 
 	cursorShape:	dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
-	property int toolTipDelay:		500
-	property int toolTipTimeOut:	4000
+	property int toolTipDelay:		jaspTheme.toolTipDelay
+	property int toolTipTimeOut:	jaspTheme.toolTipTimeout
 	property string toolTipText:	"edit toolTipText!"
 
 	property bool _toolTipVisible:	false

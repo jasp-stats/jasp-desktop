@@ -17,7 +17,7 @@ class AnalysisBase : public QObject
 	Q_PROPERTY(QString				qmlError				READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
 
 public:
-	explicit AnalysisBase(QObject *parent = nullptr, Version moduleVersion = AppInfo::version);
+	explicit AnalysisBase(QObject *parent = nullptr);
 	AnalysisBase(QObject *parent, AnalysisBase* duplicateMe);
 
 	virtual				bool				isOwnComputedColumn(const std::string &col)					const	{ return false; }
@@ -28,7 +28,7 @@ public:
 	virtual				bool				isDuplicate()												const	{ return false;				}
 	virtual				bool				wasUpgraded()												const	{ return false;				}
 	virtual				bool				needsRefresh()												const	{ return false;				}
-	virtual				const std::string & module()													const	{ return emptyString;		}
+	virtual				const std::string   module()													const	{ return emptyString;		}
 	virtual				const std::string & name()														const	{ return emptyString;		}
 	virtual				const std::string & title()														const	{ return emptyString;		}
 	virtual				const std::string & titleDefault()												const	{ return emptyString;		}
@@ -46,22 +46,20 @@ public:
 	virtual				void				destroyForm();
 	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 
-	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue)										const	{ return defaultValue;		}
-	virtual QVariant getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)		const	{ return defaultValue;		}
-	virtual bool optionLocked(const QString& name) const { return false; };
+	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
+	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
+	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
+	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
 						const Json::Value &	boundValues()												const	{ return _boundValues;		}
-						const Json::Value &	orgBoundValues()											const	{ return _orgBoundValues;	}
 						const Json::Value &	boundValue(const std::string& name,
 														 const QVector<JASPControl::ParentKey>& parentKeys = {});
 
 						void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
 						void				setBoundValues(const Json::Value& boundValues);
-						void				setOrgBoundValues(const Json::Value& orgBoundValues)				{ _orgBoundValues = orgBoundValues; }
 						const Json::Value	optionsMeta()												const	{ return _boundValues.get(".meta", Json::nullValue);	}
-						void				clearOptions()														{ _boundValues.clear();		}
+						void				clearBoundValues()													{ _boundValues.clear();		}
 
-						const Version	  &	moduleVersion()												const	{ return _moduleVersion;	}
 
 						QQuickItem		  *	formItem()													const;
 
@@ -77,7 +75,7 @@ public slots:
 	virtual void	requestComputedColumnCreationHandler(	const std::string & columnName)						{}
 	virtual void	requestComputedColumnDestructionHandler(const std::string & columnName)						{}
 	virtual void	onUsedVariablesChanged()																	{}
-	
+
 
 signals:
 	void			sendRScriptSignal(QString script, QString controlName, bool whiteListedVersion, QString module);
@@ -95,12 +93,9 @@ protected:
 	AnalysisForm*	_analysisForm		= nullptr;
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
-	Version			_moduleVersion;
 
 private:
-	Json::Value		_boundValues		= Json::objectValue,
-					_orgBoundValues		= Json::objectValue;
-
+	Json::Value		_boundValues		= Json::objectValue;
 
 
 protected:

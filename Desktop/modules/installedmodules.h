@@ -38,11 +38,12 @@ class InstalledModules {
 public:
 
 	struct ModuleInfo {
-		std::string name = "";
-		std::string libpath = "";
-		bool common = false;
-		bool bundled = false;
-		Version version;
+		std::string 	name	= "",
+						libpath = "";
+		bool			common	= false,
+						bundled	= false;
+		BundleVersion	version;
+
 	};
 
 	static std::vector<ModuleInfo> getAllAvailableModules();
@@ -58,5 +59,22 @@ private:
 	static const std::string settingsPath;
 
 };
+
+
+inline bool operator<(const InstalledModules::ModuleInfo & lhs, const InstalledModules::ModuleInfo & rhs)
+{
+	if(lhs.name != rhs.name)
+		return lhs.name < rhs.name;
+	
+	if(lhs.version != rhs.version)
+		return lhs.version < rhs.version;
+	
+	//If it is the same version we should prioritize the one the user installed, so this one is smaller than if it isnt bundled while the other is.
+	return !lhs.bundled && rhs.bundled;
+};
+
+inline bool operator> (const InstalledModules::ModuleInfo & lhs, const InstalledModules::ModuleInfo & rhs) { return rhs < lhs; }
+inline bool operator<=(const InstalledModules::ModuleInfo & lhs, const InstalledModules::ModuleInfo & rhs) { return !(lhs > rhs); }
+inline bool operator>=(const InstalledModules::ModuleInfo & lhs, const InstalledModules::ModuleInfo & rhs) { return !(lhs < rhs); }
 
 #endif // INSTALLEDMODULES_H

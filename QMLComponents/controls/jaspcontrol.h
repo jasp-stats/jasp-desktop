@@ -48,6 +48,7 @@ class JASPControl : public QQuickItem
 	Q_PROPERTY( int									alignment				READ alignment				WRITE setAlignment													)
 	Q_PROPERTY( Qt::FocusReason						focusReason				READ getFocusReason																				)
 	Q_PROPERTY( QVariant							depends					READ explicitDepends		WRITE setExplicitDepends		NOTIFY explicitDependsChanged		)
+	Q_PROPERTY( QQuickItem						*	mouseAreaZone			READ mouseAreaZone			WRITE setMouseAreaZone			NOTIFY mouseAreaZoneChanged			)
 
 protected:
 	typedef std::set<JASPControl*>			Set;
@@ -153,6 +154,7 @@ public:
 	Qt::FocusReason		getFocusReason()			const	{ return _focusReason;					}
 	bool				dependsOnDynamicComponents() const	{ return _dependsOnDynamicComponents;	}
 	const QVariant&		explicitDepends()			const	{ return _explicitDepends;				}
+	QQuickItem		*	mouseAreaZone()				const	{ return _mouseAreaZone;				}
 
 	QString				humanFriendlyLabel()		const;
 
@@ -217,6 +219,7 @@ public slots:
 	GENERIC_SET_FUNCTION(IsDependency			, _isDependency			, isDependencyChanged			, bool			)
 	GENERIC_SET_FUNCTION(ShouldStealHover		, _shouldStealHover		, shouldStealHoverChanged		, bool			)
 	GENERIC_SET_FUNCTION(Background				, _background			, backgroundChanged				, QQuickItem*	)
+	GENERIC_SET_FUNCTION(MouseAreaZone			, _mouseAreaZone		, mouseAreaZoneChanged			, QQuickItem*	)
 	GENERIC_SET_FUNCTION(DependencyMustContain	, _dependencyMustContain, dependencyMustContainChanged	, QStringList	)
 	GENERIC_SET_FUNCTION(ExplicitDepends		, _explicitDepends		, explicitDependsChanged		, QVariant		)
 	GENERIC_SET_FUNCTION(Info					, _info					, infoChanged					, QString		)
@@ -262,6 +265,7 @@ signals:
 	void	boundValueChanged(JASPControl* control);
 	void	usedVariablesChanged();
 	void	explicitDependsChanged();
+	void	mouseAreaZoneChanged();
 
 	void					requestColumnCreation(std::string columnName, columnType columnType);
 	void					requestComputedColumnCreation(std::string columnName);
@@ -306,7 +310,9 @@ protected:
 	QQuickItem			*	_childControlsArea			= nullptr,
 						*	_innerControl				= nullptr,
 						*	_background					= nullptr,
-						*	_focusIndicator				= nullptr;
+						*	_focusIndicator				= nullptr,
+						*	_mouseAreaZone				= nullptr;
+
 
 	QColor					_defaultBorderColor;
 	float					_defaultBorderWidth			= 0;

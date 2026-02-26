@@ -2835,32 +2835,6 @@ msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "モジュール %1 のアップグレードの読み込みに失敗しました"
 
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
-"JASP起動時のモジュールの初期化に失敗しましたが、モジュールを削除すべきです"
-"か？"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed with the following message:\n"
-"%1\n"
-"\n"
-"Should the module be removed?"
-msgstr ""
-"JASP の起動中にモジュールを初期化できませんでした。メッセージは次の通りで"
-"す:\n"
-"%1\n"
-"\n"
-"モジュールを削除しますか?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Initializing module %1 failed"
-msgstr "モジュール%1の初期化に失敗しました"
-
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
@@ -5146,7 +5120,7 @@ msgstr ""
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
-msgstr ""
+msgstr "新しいデータセットをロードしています"
 
 msgctxt "ActionButtons|"
 msgid "New"
@@ -5154,7 +5128,7 @@ msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "Excelファイルをインポートしています"
 
 #, qt-format
 msgctxt "Computer|"
@@ -6017,4 +5991,21 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
+msgstr "ファイル %1 がフォルダ %2 に見つかりません"
+
+msgctxt "tst_formulaField|"
+msgid "Dummy"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading Minitab Data Workbook File"
+msgstr ""
+
+msgctxt "ExcelImporter|"
+msgid "The Minitab file contains no valid columns."
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Minitab Workbook files %1"
 msgstr ""

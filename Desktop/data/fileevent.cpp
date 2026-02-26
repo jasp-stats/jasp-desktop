@@ -174,20 +174,22 @@ QString FileEvent::getProgressMsg() const
 		case Utils::FileType::csv:
 		case Utils::FileType::txt:
 		case Utils::FileType::tsv:
-		case Utils::FileType::ods:		return tr("Importing Data from %1").arg(FileTypeBaseToQString(_type).toUpper());
+		case Utils::FileType::ods:			return tr("Importing Data from %1").arg(FileTypeBaseToQString(_type).toUpper());
 		case Utils::FileType::xls:
-		case Utils::FileType::xlsx:		return tr("Importing Excel File");
+		case Utils::FileType::xlsx:			return tr("Importing Excel File");
         case Utils::FileType::sav:
 		case Utils::FileType::zsav:
-		case Utils::FileType::por:		return tr("Importing SPSS File");
+		case Utils::FileType::por:			return tr("Importing SPSS File");
 		case Utils::FileType::xpt:
 		case Utils::FileType::sas7bdat:
-		case Utils::FileType::sas7bcat:	return tr("Importing SAS File");
-		case Utils::FileType::dta:		return tr("Importing STATA File");
-		case Utils::FileType::jasp:		return tr("Loading JASP File");
+		case Utils::FileType::sas7bcat:		return tr("Importing SAS File");
+		case Utils::FileType::dta:			return tr("Importing STATA File");
+		case Utils::FileType::jasp:			return tr("Loading JASP File");
 		case Utils::FileType::rdata:
-		case Utils::FileType::rds:      return tr("Loading R Data File");
-		default:						return tr("Loading File");
+		case Utils::FileType::rds:			return tr("Loading R Data File");
+		case Utils::FileType::mwx:
+		case Utils::FileType::mpx:			return tr("Loading Minitab Data Workbook File");
+		default:							return tr("Loading File");
 		}
 		break;
 

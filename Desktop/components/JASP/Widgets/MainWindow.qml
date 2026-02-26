@@ -284,20 +284,4 @@ Window
 		z:					10
 		anchors.fill:		parent
 	}
-	
-	//Utility:
-	property Item _toolTipOverrideItem: Item
-	{
-		//These properties override those for ALL attached ToolTips in the application
-		//ToolTip.toolTip shouldn't be changed anywhere else otherwise we get hard to debug behaviour
-		ToolTip.toolTip.contentItem:	Text
-		{
-			font:			jaspTheme.font
-			wrapMode:		Text.WrapAtWordBoundaryOrAnywhere
-			text:			ToolTip.toolTip.text
-			color:			jaspTheme.textEnabled
-		}
-		ToolTip.toolTip.implicitWidth:			Math.min(jaspTheme.formWidth * 0.8, ToolTip.toolTip.contentItem.implicitWidth + (2 * ToolTip.toolTip.padding))
-		ToolTip.toolTip.z:						1234
-	}
 }

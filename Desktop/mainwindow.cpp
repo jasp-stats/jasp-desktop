@@ -83,7 +83,8 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	JASPTIMER_START(MainWindowConstructor);
 
 	
-	QQuickStyle::setStyle("Basic");
+	QQuickStyle::setStyle("JASP.Style");
+	QQuickStyle::setFallbackStyle("Basic");
 	QQuickWindow::setTextRenderType(Settings::value(Settings::GUI_USE_QT_TEXTRENDER).toBool() ?
 										QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
 
@@ -556,6 +557,9 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::reloadQmlImportPaths,				this,					&MainWindow::setQmlImportPaths,								Qt::QueuedConnection); //If this is queued this should make the loadingprocess of qml a bit less weird I think.
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_engineSync,			&EngineSync::killModuleEngine								);
 	connect(_dynamicModules,		&DynamicModules::isModuleInstallRequestActive,		_engineSync,			&EngineSync::isModuleInstallRequestActive					);
+	
+	connect(_dynamicModules,		&DynamicModules::storeAnalysesJson,					_analyses,				&Analyses::saveAnalysesJsonForReload						);
+	connect(_dynamicModules,		&DynamicModules::reloadAnalysesJson,				_analyses,				&Analyses::reloadSavedAnalysesJson,							Qt::QueuedConnection);
 
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_fileMenu,				&FileMenu::refresh											);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
@@ -1833,7 +1837,7 @@ bool MainWindow::startDataEditorHandler()
 			else
 			{
 				QString caption = "Find Data File";
-				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds)";
+				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
 
 				dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
 				if (dataFilePath == "")

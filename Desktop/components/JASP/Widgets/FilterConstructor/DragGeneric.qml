@@ -29,8 +29,6 @@ MouseArea
 	property string toolTipText: ""
 	property string shownToolTipText: toolTipText
 	
-	ToolTip.timeout:			jaspTheme.toolTipTimeout
-	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.visible:	shownToolTipText != "" && containsMouse
 	ToolTip.text:		shownToolTipText
 

@@ -58,7 +58,7 @@ public:
 	static Analysis::Status analysisResultsStatusToAnalysisStatus(analysisResultStatus result);
 
 						Analysis(size_t id, Analysis * duplicateMe);
-						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, std::string title = "", std::string moduleVersion = "", Json::Value *data = nullptr);
+						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options);
 
 	virtual				~Analysis();
 
@@ -103,7 +103,7 @@ public:
 	const	std::string		&	title()				const	override	{ return _title;							}
 	const	std::string		&	titleDefault()		const	override	{ return _titleDefault;						}
 	const	std::string		&	rfile()				const				{ return _rfile;							}
-	const	std::string		&	module()			const	override	{ return _moduleData->dynamicModule()->name();	}
+	const	std::string			module()			const	override	{ return _moduleData && _moduleData->dynamicModule() ? _moduleData->dynamicModule()->name() : "???";	}
 			size_t				id()				const				{ return _id;								}
 			Status				status()			const				{ return _status;							}
 			QString				statusQ()			const				{ return tq(statusToString(_status));		}
@@ -155,6 +155,7 @@ public:
 	void					setUpgradeMsgs(const Modules::UpgradeMsgs & msgs);
 
 	const stringvec &		upgradeMsgsForOption(const std::string & name)		const	override;
+	const Version	&		moduleVersion()										const	override	{ return _dynamicModule ? _dynamicModule->version() : AppInfo::version; }
 
 	const Json::Value			&	getRSource(const std::string & name)		const	override	{ return _rSources.count(name) > 0 ? _rSources.at(name) : Json::Value::null; }
 	Json::Value						rSources()									const;
@@ -243,6 +244,7 @@ private:
 								_lastQmlFormPath				= "";
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
+								_optionsFromDifferentVersion	= false,
 								_storedWithoutState				= false,
 								_tryToFixNotes					= false,
 								_hasReport						= false,

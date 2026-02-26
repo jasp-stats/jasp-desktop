@@ -2972,31 +2972,6 @@ msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "İptal Et"
 
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
-"JASP başlatma sırasında modülün başlatılması başarısız oldu, modül "
-"kaldırılmalı mı?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed with the following message:\n"
-"%1\n"
-"\n"
-"Should the module be removed?"
-msgstr ""
-"JASP başlatma sırasında modülün başlatılması şu mesajla başarısız oldu:\n"
-"%1\n"
-"\n"
-"Modül kaldırılmalı mı?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Initializing module %1 failed"
-msgstr "%1 modülünün başlatılması başarısız oldu"
-
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr "R kodunu bir konsolda yürütün"
@@ -6105,4 +6080,21 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
+msgstr ""
+
+msgctxt "tst_formulaField|"
+msgid "Dummy"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading Minitab Data Workbook File"
+msgstr ""
+
+msgctxt "ExcelImporter|"
+msgid "The Minitab file contains no valid columns."
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Minitab Workbook files %1"
 msgstr ""

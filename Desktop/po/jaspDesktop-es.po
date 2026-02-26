@@ -1349,11 +1349,11 @@ msgstr "Informado"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr "posición:"
+msgstr "Posición:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr "escala:"
+msgstr "Escala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
@@ -1361,11 +1361,11 @@ msgstr "Normal"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr "media:"
+msgstr "Media:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr "típico:"
+msgstr "Típica:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
@@ -1373,7 +1373,7 @@ msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr "gl:"
+msgstr "GL:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
@@ -3015,31 +3015,6 @@ msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "Cancelar"
 
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed, should the module be removed?"
-msgstr ""
-"Falló el módulo de inicio mientras comenzaba JASP; ¿se debe eliminar el "
-"módulo?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Initializing module during JASP startup failed with the following message:\n"
-"%1\n"
-"\n"
-"Should the module be removed?"
-msgstr ""
-"Falló el módulo de inicio mientras comenzaba JASP con el siguiente mensaje:\n"
-"%1\n"
-"\n"
-"Se debe eliminar el módulo?"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Initializing module %1 failed"
-msgstr "Falló el módulo %1 de inicio"
-
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr "Ejecutar un código de R en la consola"
@@ -4320,7 +4295,7 @@ msgstr "Violeta"
 
 msgctxt "ColorPalette|"
 msgid "ggplot2"
-msgstr "GGplot2"
+msgstr "ggplot2"
 
 msgctxt "ColorPalette|"
 msgid "Gray"
@@ -6203,4 +6178,21 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
+msgstr "Non se encontró el archivo %1 en la carpeta %2"
+
+msgctxt "tst_formulaField|"
+msgid "Dummy"
+msgstr ""
+
+msgctxt "FileEvent|"
+msgid "Loading Minitab Data Workbook File"
+msgstr ""
+
+msgctxt "ExcelImporter|"
+msgid "The Minitab file contains no valid columns."
+msgstr ""
+
+#, qt-format
+msgctxt "Computer|"
+msgid "Minitab Workbook files %1"
 msgstr ""

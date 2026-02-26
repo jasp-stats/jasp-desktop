@@ -62,27 +62,21 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     QVariantMap envInfo;
     envInfo["version"] = QString(AppInfo::version.asString(3).c_str());
     
-    auto platform = DynamicRuntimeInfo::getRuntimeEnvironment();
-	auto arch = DynamicRuntimeInfo::getMicroArch();
+    auto platform	= DynamicRuntimeInfo::getRuntimeEnvironment();
+	auto arch		= DynamicRuntimeInfo::getMicroArch();
+	
     std::string platformArch;
-	if(platform == RuntimeEnvironment::MAC)
-		platformArch = arch == MicroArch::AARCH64 ? "MacOS_arm64" : "MacOS_x86_64";
-	else if(platform == RuntimeEnvironment::FLATPAK)
-		platformArch = arch == MicroArch::AARCH64 ? "Flatpak_aarch64" : "Flatpak_x86_64";
-	else if(platform == RuntimeEnvironment::LINUX_LOCAL)
-        // When developing within devcontainer then jaspModule files with Flatpak_x86_64 also work?
-		platformArch = arch == MicroArch::AARCH64 ? "Flatpak_aarch64" : "Flatpak_x86_64";
-	else
-		platformArch = "Windows_x86-64";
-    envInfo["arch"] = QString::fromStdString(platformArch);
-    // Preferences needed in webapp
-    envInfo["developerMode"] = PreferencesModel::prefs()->developerMode();
-    envInfo["theme"] = PreferencesModel::prefs()->currentThemeName().replace("Theme", "");
-    envInfo["font"] = PreferencesModel::prefs()->interfaceFont();
-    // do replace to enforce BCP 47 language tag format
-    envInfo["language"] = PreferencesModel::prefs()->languageCode().replace("_", "-");
-
-    envInfo["installedModules"] = installedModulesInfo();
+	if(platform == RuntimeEnvironment::MAC)					platformArch = arch == MicroArch::AARCH64 ? "MacOS_arm64" : "MacOS_x86_64";
+	else if(platform == RuntimeEnvironment::FLATPAK)		platformArch = arch == MicroArch::AARCH64 ? "Flatpak_aarch64" : "Flatpak_x86_64";
+	else if(platform == RuntimeEnvironment::LINUX_LOCAL)	platformArch = arch == MicroArch::AARCH64 ? "Flatpak_aarch64" : "Flatpak_x86_64";      // When developing within devcontainer then jaspModule files with Flatpak_x86_64 also work? No...
+	else													platformArch = "Windows_x86-64";
+	
+    envInfo["arch"]					= tq(platformArch);
+    envInfo["developerMode"]		= PreferencesModel::prefs()->developerMode();						// Preferences needed in webapp
+    envInfo["theme"]				= PreferencesModel::prefs()->currentThemeName().replace("Theme", "");
+    envInfo["font"]					= PreferencesModel::prefs()->interfaceFont();
+    envInfo["language"]				= PreferencesModel::prefs()->languageCode().replace("_", "-");		// do replace to enforce BCP 47 language tag format
+    envInfo["installedModules"]		= installedModulesInfo();
     envInfo["uninstallableModules"] = getUninstallableModules();
     return envInfo;
 }
@@ -97,7 +91,7 @@ QVariantMap ModuleLibrary::installedModulesInfo() const
 {
     QVariantMap installedModules;
     for (auto const& [key, val] : InstalledModules::getInstalledModuleVersions())
-        installedModules[QString::fromStdString(key)] = QString::fromStdString(val);
+        installedModules[tq(key)] = tq(val);
     return installedModules;
 }
 

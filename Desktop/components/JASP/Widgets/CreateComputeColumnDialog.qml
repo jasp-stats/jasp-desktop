@@ -145,8 +145,6 @@ Popup
 							width:					Math.max(implicitWidth, nameBox.width)
 							selectByMouse:			true
 	
-							ToolTip.timeout:		jaspTheme.toolTipTimeout
-							ToolTip.delay:			jaspTheme.toolTipDelay
 							ToolTip.visible:		columnNameInUse
 							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")
 	

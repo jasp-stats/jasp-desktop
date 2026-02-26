@@ -103,6 +103,17 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 	return defaultValue;
 }
 
+QVariant AnalysisForm::options() const
+{
+	return jsonToQVariant(_analysis->boundValues());
+}
+
+void AnalysisForm::setOptions(const QVariantMap &options)
+{
+	_analysis->setBoundValues(qvariantToJson(options));
+	setAnalysisUp();
+}
+
 void AnalysisForm::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
 {
 	if (change == ItemChange::ItemSceneChange && !value.window)
@@ -145,7 +156,7 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
 				blockValueChangeSignal(true);
-				_analysis->clearOptions();
+				_analysis->clearBoundValues();
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
@@ -659,11 +670,14 @@ void AnalysisForm::setAnalysisUp()
 
 	blockValueChangeSignal(true);
 
+	// When reading from JASP file or when reloading the QML file, the boundValues are set to the analysis.
+	// Keep these values before the controls are set up (they might set default values), and then bind each control to its initial value
+	Json::Value initialOptions	= _analysis->boundValues();
+
 	_setUpControls();
 
-	Json::Value defaultOptions = _analysis->orgBoundValues();
-	_analysis->clearOptions();
-	bindTo(defaultOptions);
+	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
+	bindTo(initialOptions);
 	lockOptions();
 
 	blockValueChangeSignal(false, false);
@@ -681,9 +695,9 @@ void AnalysisForm::knownIssuesUpdated()
 	if(!_formCompleted || !_analysis)
 		return;
 
-	if(KnownIssues::issues()->hasIssues(_analysis->module(), _analysis->name()))
+	if(KnownIssues::issues()->hasIssues(_analysis->module(), _analysis->moduleVersion(), _analysis->name()))
 	{
-		const std::vector<KnownIssues::issue> & issues = KnownIssues::issues()->getIssues(_analysis->module(), _analysis->name());
+		const std::vector<KnownIssues::issue> & issues = KnownIssues::issues()->getIssues(_analysis->module(),  _analysis->moduleVersion(), _analysis->name());
 
 		for(const KnownIssues::issue & issue : issues)
 		{

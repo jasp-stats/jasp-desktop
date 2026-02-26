@@ -248,8 +248,6 @@ ComponentsListBase
 				width					: jaspTheme.iconSize
 
 				QtControls.ToolTip.text			: removeTooltip
-				QtControls.ToolTip.timeout		: jaspTheme.toolTipTimeout
-				QtControls.ToolTip.delay		: jaspTheme.toolTipDelay
 				QtControls.ToolTip.visible		: removeTooltip !== "" && deleteMouseArea.containsMouse
 
 				MouseArea

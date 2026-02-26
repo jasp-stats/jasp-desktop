@@ -113,8 +113,6 @@ ComponentsListBase
 					width					: jaspTheme.iconSize * preferencesModel.uiScale
 
 					QtControls.ToolTip.text			: tabView.removeTooltip
-					QtControls.ToolTip.timeout		: jaspTheme.toolTipTimeout
-					QtControls.ToolTip.delay		: jaspTheme.toolTipDelay
 					QtControls.ToolTip.visible		: tabView.removeTooltip !== "" && deleteMouseArea.containsMouse
 
 					MouseArea
@@ -177,8 +175,6 @@ ComponentsListBase
 			QtControls.ToolTip
 			{
 				text			: qsTr("Double click to edit this name")
-				timeout			: jaspTheme.toolTipTimeout
-				delay			: jaspTheme.toolTipDelay
 				visible			: tabView.tabNameEditable && tabButton.hovered
 			}
 

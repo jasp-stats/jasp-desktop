@@ -66,6 +66,8 @@ inline	QList<int>							tql(const std::set<int>						 & from)	{ return QList<int
 		QJSValue							tqj(const Json::Value						 & json,	const QQuickItem * qItem);
 		QPoint								minQModelIndex(const QItemSelection			 & list);
 		QPoint								maxQModelIndex(const QItemSelection			 & list);
+		QVariant							jsonToQVariant(const Json::Value & jsonValue);
+		Json::Value							qvariantToJson(const QVariant & varValue);
 
 template<typename T> inline		std::vector<T>	fq(QVector<T>		in) { return in.toStdVector();				}
 template<typename T> inline		QVector<T>		tq(std::vector<T>	in) { return QVector<T>::fromStdVector(in); }

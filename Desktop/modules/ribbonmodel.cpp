@@ -242,6 +242,7 @@ QVariant RibbonModel::data(const QModelIndex &index, int role) const
 	case ModuleNameRole:	return ribbonButtonModelAt(row)->nameQ();
 	case ModuleRole:		return QVariant::fromValue(ribbonButtonModelAt(row)->dynamicModule());
 	case BundledRole:		return ribbonButtonModelAt(row)->isBundled();
+	case DevModRole:		return ribbonButtonModelAt(row)->dynamicModule() && ribbonButtonModelAt(row)->dynamicModule()->isDevMod();
 	case VersionRole:		return ribbonButtonModelAt(row)->version();
 	case SpecialRole:		return ribbonButtonModelAt(row)->isSpecial();
 	case ClusterRole:		//To Do!?
@@ -263,6 +264,7 @@ QHash<int, QByteArray> RibbonModel::roleNames() const
 		{ ModuleRole,		"dynamicModule"		},
 		{ ActiveRole,		"active"			},
 		{ BundledRole,		"isBundled"			},
+		{ DevModRole,		"isDevMod"			},
 		{ VersionRole,		"moduleVersion"		},
 		{ SpecialRole,		"isSpecial"			}
 	};

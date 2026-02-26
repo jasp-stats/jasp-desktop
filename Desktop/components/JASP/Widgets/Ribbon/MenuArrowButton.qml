@@ -51,8 +51,6 @@ Rectangle
 
 
 	ToolTip.text:				toolTip
-	ToolTip.timeout:			jaspTheme.toolTipTimeout
-	ToolTip.delay:				jaspTheme.toolTipDelay
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
 
 	signal clicked

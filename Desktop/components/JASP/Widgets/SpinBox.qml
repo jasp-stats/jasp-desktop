@@ -127,8 +127,6 @@ Item
 		}
 
 		ToolTip.text:				root.toolTip
-		ToolTip.timeout:			jaspTheme.toolTipTimeout
-		ToolTip.delay:				jaspTheme.toolTipDelay
 		ToolTip.visible:			root.toolTip !== "" && ( hoverMe.containsMouse || minus.hovered || plus.hovered )
 
 		background: Rectangle

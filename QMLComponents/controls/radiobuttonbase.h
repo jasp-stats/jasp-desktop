@@ -28,14 +28,15 @@ class RadioButtonBase : public JASPControl
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY(JASPControl* group READ group NOTIFY groupChanged) // Cannot have a RadioButtonsGroupBase property: compilation error in the moc stuff.
+	Q_PROPERTY(JASPControl* group READ group WRITE setGroup NOTIFY groupChanged) // Cannot have a RadioButtonsGroupBase property: compilation error in the moc stuff.
 
 public:
 	RadioButtonBase(QQuickItem* parent = nullptr);
 
 	bool infoLabelItalic()	const	override	{ return true; }
 
-	JASPControl* group();
+	JASPControl*	group();
+	void			setGroup(JASPControl* group);
 
 public slots:
 	Q_INVOKABLE void registerWithParent();
