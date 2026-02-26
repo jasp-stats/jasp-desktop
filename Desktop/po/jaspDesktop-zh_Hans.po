@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-02-26 13:09+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5893,13 +5899,13 @@ msgstr ""
 
 msgctxt "FileEvent|"
 msgid "Loading Minitab Data Workbook File"
-msgstr ""
+msgstr "正在加载 Minitab 数据工作簿"
 
 msgctxt "ExcelImporter|"
 msgid "The Minitab file contains no valid columns."
-msgstr ""
+msgstr "Minitab 文件无效。"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Minitab Workbook files %1"
-msgstr ""
+msgstr "Minitab 数据工作簿 %1"
