@@ -150,8 +150,8 @@ You can build either with terminal, by opening a new terminal and:
 ```shell
 mkdir ~/.config
 export GITHUB_PAT=<your GitHub token>
-export Qt6_DIR=/opt/Qt/6.10.1/gcc_64/lib/cmake
-CMAKE_PREFIX_PATH=/opt/Qt/6.10.1/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
+export Qt6_DIR=/opt/Qt/6.10.2/gcc_64/lib/cmake
+CMAKE_PREFIX_PATH=/opt/Qt/6.10.2/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
 cmake --build jasp-build --target all -j6
 
 # Start JASP desktop application
