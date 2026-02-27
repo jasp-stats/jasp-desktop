@@ -182,6 +182,8 @@ FocusScope
 				url:                    preferencesModel.checkUpdates ? preferencesModel.moduleLibraryURL : "about:blank"
 				profile:                moduleStoreProfile
 
+				zoomFactor: preferencesModel.uiScale
+
 				property bool	downloadInProgress: false;
 				property bool	installInProgress: false;
 				property int		downloadProgress;
