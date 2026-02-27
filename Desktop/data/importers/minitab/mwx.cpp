@@ -1,7 +1,6 @@
 #include "mwx.h"
 #include "minitabimportcolumn.h"
 #include "log.h"
-#include "columnutils.h"
 #include "archivereader.h"
 #include <QFileInfo>
 #include <QString>
@@ -87,7 +86,7 @@ void Minitab::getColumns(std::vector<MwxImportColumn *> &columns, ImportDataSet 
 		else if (varDataBody.isMember("NumericData"))
 		{
 			for (const auto &val : varDataBody["NumericData"])
-				impCol->addValue(val.isNull() ? "" : ColumnUtils::doubleToStringMaxPrec(val.asDouble(), false));
+				impCol->addValue(val.isNull() ? "" : val.asString());
 		}
 
 		while (impCol->size() < _numRows)
