@@ -140,8 +140,10 @@ FocusScope
 					moduleStore.currentDownloadRequest = request
 					request.accept()
 				}
-				else
+				else {
+					Qt.openUrlExternally(request.url)
 					request.cancel()
+				}
 			}
 
             onDownloadFinished: function(request) { //All Jasp Store module installs run via this code
