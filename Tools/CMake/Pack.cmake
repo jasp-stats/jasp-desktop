@@ -72,18 +72,6 @@ if(WIN32)
     COMMAND cmd.exe /C RecreateJunctions.cmd)
 
   add_custom_target(
-    wix
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASPFilesFragment.wixobj"
-               "${CMAKE_SOURCE_DIR}/JASP.wixobj"
-               "${CMAKE_SOURCE_DIR}/JASP/JASP.msi"
-               "${CMAKE_SOURCE_DIR}/JASP/JASP.wixpdb"
-    COMMAND ${CMAKE_COMMAND} -E make_directory JASP
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
-    COMMAND cmd.exe /C WIX.cmd)
-
-  add_custom_target(
     zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
