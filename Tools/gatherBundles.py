@@ -103,10 +103,14 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
                     f.write(chunk)
 
     if not flatpak:
+        win_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["windows"]]
+        mac_arm_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_arm"]]
+        mac_intel_list = [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_intel"]]
+
         json_output = {
-            "Windows-x86_64": [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["windows"]],
-            "MacOS-arm64":    [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_arm"]],
-            "MacOS-x86_64":   [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_intel"]]
+            "Windows-x86_64": sorted(win_list, key=lambda item: item["url"]),
+            "MacOS-arm64":    sorted(mac_arm_list, key=lambda item: item["url"]),
+            "MacOS-x86_64":   sorted(mac_intel_list, key=lambda item: item["url"])
         }
         print(json.dumps(json_output, indent=4))
 
