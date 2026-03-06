@@ -56,9 +56,9 @@ set(MSIX_STORE_BETA_PUBLISHER
     "CN=044465FF-CD1D-4EC4-B82B-C244199F66F9"
     CACHE STRING "Publisher set for store beta msix package")
 
-set(MSIX_SIDELOAD_PUBLISHER
+set(MSIX_STANDALONE_PUBLISHER
     "CN=JASP Services B.V., O=JASP Services B.V., L=Hilversum, S=Noord-Holland, C=NL"
-    CACHE STRING "Publisher set for sideloaded msix package")
+    CACHE STRING "Publisher set for standalone msix package")
 
 set(MSIX_NIGHTLY_PUBLISHER
     "CN=JASP, O=JASP, L=Amsterdam, S=Noord-Holland, C=NL"

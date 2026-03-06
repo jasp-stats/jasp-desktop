@@ -383,8 +383,8 @@ if(WIN32)
                 ${CMAKE_BINARY_DIR}/AppxManifest-store.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-store-beta.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-store-beta.xml @ONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-sideload.xml.in
-                ${CMAKE_BINARY_DIR}/AppxManifest-sideload.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-standalone.xml.in
+                ${CMAKE_BINARY_DIR}/AppxManifest-standalone.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-nightly.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-nightly.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/msix.cmd.in

@@ -115,7 +115,7 @@ QString AppDirs::documents()
 QString AppDirs::sandboxedDocuments()
 {
 	const QString name = "JASP_Sandbox";
-	QDir res(AppDirs::documents());
+    QDir res(AppDirs::documents());
 	res.mkdir(name);
 	res.cd(name);
 	return res.absolutePath();
@@ -123,7 +123,7 @@ QString AppDirs::sandboxedDocuments()
 
 QString AppDirs::logDir()	
 {
-	QString path = appData();
+    QString path = sandboxedDocuments();
 	path += "/Logs/";
 
 	QDir log(path);

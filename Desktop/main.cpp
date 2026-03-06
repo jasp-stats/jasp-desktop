@@ -456,6 +456,8 @@ int main(int argc, char *argv[])
 		QCoreApplication::setOrganizationDomain("jasp-stats.org");
 		QCoreApplication::setApplicationName("JASP");
 	}
+	QSettings::setDefaultFormat(QSettings::IniFormat);
+
 #else
 	QCoreApplication::setOrganizationName("JASP");
 	QCoreApplication::setOrganizationDomain("jasp-stats.org");
