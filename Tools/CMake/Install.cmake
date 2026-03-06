@@ -361,14 +361,6 @@ if(WIN32)
     NORMALIZE
     R_BIN_PATH_NATIVE)
 
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxi.in
-                 ${CMAKE_BINARY_DIR}/JASP.wxi @ONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/JASP.wxs
-                 ${CMAKE_BINARY_DIR}/JASP.wxs @ONLY)
-
-  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msi/WIX.cmd.in
-                 ${CMAKE_BINARY_DIR}/WIX.cmd @ONLY)
-
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/zip/ZIP.cmd.in
                  ${CMAKE_BINARY_DIR}/ZIP.cmd @ONLY)
 
