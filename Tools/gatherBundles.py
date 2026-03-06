@@ -122,23 +122,51 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
 
 def main():
     parser = argparse.ArgumentParser(prog='gatherModuleJson', description='Generates module json from a dir containing jasp submodules')
-    parser.add_argument('dir')
-    parser.add_argument('token')
-    parser.add_argument('--prerelease', action='store_true')
-    parser.add_argument('--flatpak', action='store_true')
-    parser.add_argument('--download', action='store_true')
+    parser.add_argument('dir', help='Directory containing the JASP submodules')
+    parser.add_argument('token', help='GitHub Personal Access Token')
+    parser.add_argument('--json', help='Path to the JSON file defining module categories', default='modules.json')
+    parser.add_argument('--prerelease', action='store_true', help='Include prerelease assets')
+    parser.add_argument('--flatpak', action='store_true', help='Download flatpak assets')
+    parser.add_argument('--download', action='store_true', help='Download all non-flatpak assets')
+    parser.add_argument('--core', action='store_true', help='Only gather modules listed as "common" in the JSON')
+
     args = parser.parse_args()
     
+    core_modules = []
+    if args.core:
+        try:
+            with open(args.json, 'r') as f:
+                module_data = json.load(f)
+                # Map the "common" key from JSON to the "core" concept
+                core_modules = module_data.get("common", []) 
+        except FileNotFoundError:
+            print(f"Error: JSON file '{args.json}' not found. Cannot filter by core.", file=sys.stderr)
+            sys.exit(1)
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON: {e}", file=sys.stderr)
+            sys.exit(1)
+
     path = Path(args.dir) 
     
-    # Construct module list
-    official = ['jasp-stats-modules/' + y.name for y in path.glob('Official/*') if y.is_dir()]
-    community = ['Community/' + y.name for y in path.glob('jasp-modules/*') if y.is_dir()]
-    modules = official + community
-    
+    # Helper function to check if a module should be included
+    def should_include(module_name):
+        if not args.core:
+            return True
+        return module_name in core_modules
+
+    # Construct module list with filtering
+    modules = [
+        'jasp-stats-modules/' + y.name 
+        for y in path.glob('Official/*') 
+        if y.is_dir() and should_include(y.name)
+    ]
+        
+    if not modules:
+        print("No modules found matching the criteria.", file=sys.stderr)
+        return
+
     print(f"Gathering modules: {modules}", file=sys.stderr)
     gatherMod(modules, args.token, args.prerelease, args.flatpak, args.download)
-
 
 if __name__ == "__main__":
     main()
