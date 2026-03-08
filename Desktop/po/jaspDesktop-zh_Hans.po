@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-03-09 05:29+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5898,69 +5904,69 @@ msgstr "Minitab 数据工作簿 %1"
 
 msgctxt "ModulesMenu|"
 msgid "module"
-msgstr ""
+msgstr "模块"
 
 msgctxt "ModulesMenu|"
 msgid "Downloading"
-msgstr ""
+msgstr "正在下载"
 
 msgctxt "ModulesMenu|"
 msgid "Installing"
-msgstr ""
+msgstr "正在安装"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid " (%1/%2)"
-msgstr ""
+msgstr " (%1/%2)"
 
 msgctxt "PrefsResults|"
 msgid "Show interactive plots by default, where possible."
-msgstr ""
+msgstr "默认显示交互式图表（如果可用）。"
 
 msgctxt "PrefsResults|"
 msgid ""
 "When enabled shows the interactive plots by default, you can always switch "
 "them in the plots own dropdown too."
 msgstr ""
+"启用后，默认情况下会显示交互式图表，您也可以随时在图表自身的下拉菜单中切换它"
+"们。"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Point"
-msgstr ""
+msgstr "点"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Horizontal Line"
-msgstr ""
+msgstr "水平线"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
-msgstr ""
+msgstr "竖线"
 
 msgctxt "PlotEditor|"
 msgid "References"
-msgstr ""
+msgstr "参考线"
 
 msgctxt "PlotEditor::References|"
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
-#, fuzzy
 msgctxt "PlotEditor::References|"
 msgid "Text"
 msgstr "文本"
 
 msgctxt "PlotEditor::References|"
 msgid "Horizontal"
-msgstr ""
+msgstr "水平的"
 
 msgctxt "PlotEditor::References|"
 msgid "Vertical"
-msgstr ""
+msgstr "垂直的"
 
-#, fuzzy
 msgctxt "PlotEditor::References|"
 msgid "Remove"
 msgstr "移除"
 
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
-msgstr ""
+msgstr "切换为静态/交互式图表"
