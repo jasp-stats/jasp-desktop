@@ -18,12 +18,10 @@
 
 #include "analyses.h"
 #include "tempfiles.h"
-#include "utilities/settings.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "modules/ribbonmodel.h"
 #include "analysisform.h"
 #include "knownissues.h"
-#include "timers.h"
 #include <QTimer>
 #include <QFile>
 #include "log.h"
@@ -66,10 +64,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	
 	Modules::UpgradeMsgs		msgs;
-	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(analysisData, msgs);
+	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
 	std::string					title			= analysisData.get("title", "").asString();
-	Modules::AnalysisEntry	*	analysisEntry	= Modules::DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+	Modules::AnalysisEntry	*	analysisEntry	= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
 	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson);
 	
 	if(msgs.count(Modules::analysisLog))
@@ -539,7 +537,7 @@ QHash<int, QByteArray>	Analyses::roleNames() const
 
 Analysis* Analyses::createAnalysis(const QString& module, const QString& analysis)
 {
-	Modules::DynamicModule * dynamicModule = Modules::DynamicModules::dynMods()->dynamicModule(module.toStdString());
+	Modules::DynamicModule * dynamicModule = DynamicModules::dynMods()->dynamicModule(module.toStdString());
 	Json::Value options = JASPConfiguration::getInstance()->getAnalysisOptionValues(module, analysis);
 
 	if (dynamicModule)

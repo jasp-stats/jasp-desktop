@@ -70,11 +70,6 @@ public:
 	void	removeChild(DescriptionChildBase * child);
 
 	std::vector<AnalysisEntry *>	menuEntries()		const;
-	std::set<std::string>			requiredModules()	const;
-
-	
-	
-
 	
 public slots:
 	void setName(					QString						name			);

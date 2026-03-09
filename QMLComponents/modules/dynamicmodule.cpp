@@ -18,26 +18,21 @@
 
 
 #include "log.h"
-#include <locale>
 #include <QThread>
 #include <iostream>
-#include "tempfiles.h"
 #include <QQmlContext>
 #include <QQmlIncubator>
 #include "dynamicmodule.h"
-#include "dynamicmodules.h"
 #include <QRegularExpression>
 #include "utilities/qutils.h"
+#include "utilities/extractarchive.h"
 #include "upgrader/upgrades.h"
 #include "utilities/appdirs.h"
-#include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
-#include "utilities/languagemodel.h"
 #include "description/description.h"
-#include "utilities/extractarchive.h"
 #include "utilities/qmlutils.h"
 #include "utilities/qutils.h"
-#include "mainwindow.h"
+#include "preferencesmodelbase.h"
 
 #ifdef __APPLE__
 #include "otoolstuff.h"
@@ -69,12 +64,12 @@ DynamicModule::DynamicModule(QString moduleDirectory, QObject *parent, bool bund
 }
 
 ///This constructor takes the path to an R-package as first argument, this R-package must also be a jasp-module and will be installed to the app-directory for the particular OS it runs on.
-DynamicModule::DynamicModule(std::string modulePackageFile, QObject *parent, bool unpack) : QObject(parent), _modulePackage(modulePackageFile)
+DynamicModule::DynamicModule(QQmlContext * context, std::string modulePackageFile, QObject *parent, bool unpack) : QObject(parent), _modulePackage(modulePackageFile)
 {
-	_name			= extractPackageNameFromArchive(modulePackageFile);
+	_name			= extractPackageNameFromArchive(context, modulePackageFile);
 	_moduleFolder	= QFileInfo(AppDirs::userModulesDir() + QString::fromStdString(_name) + "/");
 
-	loadDescriptionFromArchive(_modulePackage);
+	loadDescriptionFromArchive(context, _modulePackage);
 	loadDESCRIPTION(tq(getDESCRIPTIONFromArchive(_modulePackage)));
 }
 
@@ -91,44 +86,54 @@ void DynamicModule::developmentModuleFolderCreate()
 }
 
 ///This constructor is meant specifically for the development module and only *it*!
-DynamicModule::DynamicModule(QObject * parent) : QObject(parent), _isDeveloperMod(true)
+DynamicModule::DynamicModule(QObject * parent, QQmlContext * context) : QObject(parent), _isDeveloperMod(true)
 {
-	_modulePackage	= Settings::value(Settings::DEVELOPER_FOLDER).toString().toStdString();
+	_modulePackage	= PreferencesModelBase::preferences()->developerMode();
 	_moduleFolder	= developmentModuleFolder();
 
-					_name = extractPackageNameFromFolder(_modulePackage);
+					_name = extractPackageNameFromFolder(context, _modulePackage);
 	if(_name == "") _name = defaultDevelopmentModuleName();
 
 	Log::log() << "Development Module is constructed with name: '" << _name << "' and will be installed to '" << _moduleFolder.absoluteFilePath().toStdString() << "' from source dir: '" << _modulePackage << "'" << std::endl;
 
 	_developmentModuleName = _name;
 
-	loadDescriptionFromFolder(_modulePackage);
+	loadDescriptionFromFolder(context, _modulePackage);
 	loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(_modulePackage)));
 }
 
 
-///This constructor is meant specifically for the development module from a libpath
-DynamicModule::DynamicModule(QObject * parent, QString libpath) : QObject(parent), _isDeveloperMod(true), _isLibpathDevMod(true)
+///This constructor is meant specifically for the development module from a libpath, or for loading a module from source
+DynamicModule::DynamicModule(QObject * parent, QQmlContext * context, QString libpath, bool isDevMod ) : QObject(parent), _isDeveloperMod(isDevMod), _isLibpathDevMod(isDevMod), _isSource(!isDevMod)
 {
-	libpath = patchLibPathHelperFunc(libpath);
-	_modulePackage	= fq(libpath + "/" + Settings::value(Settings::DIRECT_DEVMOD_NAME).toString() + "/");
-	_moduleFolder	= QFileInfo(libpath + "/");
-	_name = extractPackageNameFromFolder(_modulePackage);
+	if (isDevMod)
+	{
+		libpath = patchLibPathHelperFunc(libpath);
+		_modulePackage	= fq(libpath + "/" + PreferencesModelBase::preferences()->developerModeName() + "/");
+		_moduleFolder	= QFileInfo(libpath + "/");
+		_name = extractPackageNameFromFolder(context, _modulePackage);
 
-	if(_name == "") _name = defaultDevelopmentModuleName();
+		if(_name == "") _name = defaultDevelopmentModuleName();
 
-	Log::log() << "Development Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
+		Log::log() << "Development Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
 
-	_developmentModuleName = _name;
+		_developmentModuleName = _name;
+	}
+	else
+	{
+		_modulePackage = fq(libpath);
+		_moduleFolder	= QFileInfo(libpath + "/");
+		_name = extractPackageNameFromFolder(context, _modulePackage);
+		Log::log() << "Module is constructed with name: '" << _name << "' and will intialized from libpath: " << _moduleFolder.absoluteFilePath().toStdString() << std::endl;
+	}
 
-	loadDescriptionFromFolder(_modulePackage);
+	loadDescriptionFromFolder(context, _modulePackage);
 	loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(_modulePackage)));
 	setInstalled(true);
 }
 
 
-void DynamicModule::initialize()
+void DynamicModule::initialize(QQmlContext * context)
 {
 
 	//Log::log() << "DynamicModule::initialize() called for " << _moduleFolder.absolutePath() << std::endl;
@@ -140,9 +145,9 @@ void DynamicModule::initialize()
 //	else if(!_moduleFolder.isWritable())	throw std::runtime_error(_moduleFolder.absolutePath().toStdString() + " is not writable!");
 
 	setInitialized(true);
-	auto checkForExistence = [&](std::string name, bool isFile = false)
+	auto checkForExistence = [&](std::string name, bool isFile = false, bool searchInRootFolder = false)
 	{
-		QString modPath = _moduleFolder.absolutePath() + "/" + nameQ() + "/" + QString::fromStdString(name);
+		QString modPath		= _moduleFolder.absolutePath() + (isSource() ? (searchInRootFolder ? "" : "/inst") : ("/" + nameQ())) + "/" + QString::fromStdString(name);
 		QFileInfo checkInfo(modPath);
 
 		std::string errorMsg = "";
@@ -186,7 +191,7 @@ void DynamicModule::initialize()
 		throw std::runtime_error("Couldn't find " + getQmlDescriptionFilename());
 	}
 	
-	loadDescriptionQml(qmlTxt, url);
+	loadDescriptionQml(context, qmlTxt, url);
 
 	try
 	{
@@ -204,7 +209,7 @@ void DynamicModule::initialize()
 		if(qmlTxt == "")
 			throw std::runtime_error(getQmlUpgradesFilename() + " is empty!");
 		
-		loadUpgradesQML(qmlTxt, url);
+		loadUpgradesQML(context, qmlTxt, url);
 	
 	}
 	catch(ModuleException & upgradeLoadError)
@@ -221,7 +226,7 @@ void DynamicModule::initialize()
 		Log::log() << "Loading " << getQmlUpgradesFilename() << " had the following std:runtime_error: '" << qmlNotFound.what() << "' this will be ignored." << std::endl;
 	}
 	
-	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true).absoluteFilePath());
+	QFile DESCRIPTION(checkForExistence("DESCRIPTION", true, true).absoluteFilePath());
 
 	if(!DESCRIPTION.open(QFile::ReadOnly))
 		Log::log() << "Cannot load DESCRIPTION: " << DESCRIPTION.fileName() << " with error code: " << DESCRIPTION.error() << std::endl;
@@ -231,7 +236,7 @@ void DynamicModule::initialize()
 	loadRequiredModulesFromDESCRIPTIONTxt(txt);
 }
 
-void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath, bool onlyIfNotLoadedYet)
+void DynamicModule::loadDescriptionFromFolder(QQmlContext * context, const std::string & folderPath, bool onlyIfNotLoadedYet)
 {
 	if(onlyIfNotLoadedYet && _description)
 		return;
@@ -243,12 +248,12 @@ void DynamicModule::loadDescriptionFromFolder( const std::string & folderPath, b
 	
 	QUrl url = QUrl(".");
 	
-	loadDescriptionQml(tq(descriptionQml), url);
+	loadDescriptionQml(context, tq(descriptionQml), url);
 	
 	loadRequiredModulesFromFolder(_modulePackage);
 }
 
-void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
+void DynamicModule::loadDescriptionFromArchive(QQmlContext * context, const std::string & archivePath)
 {
 	std::string descriptionQml  = getDescriptionQmlFromArchive(archivePath);
 
@@ -257,7 +262,7 @@ void DynamicModule::loadDescriptionFromArchive(const std::string & archivePath)
 
 	QUrl url = QUrl(".");
 	
-	loadDescriptionQml(tq(descriptionQml), url);
+	loadDescriptionQml(context, tq(descriptionQml), url);
 	
 	loadRequiredModulesFromArchive(archivePath);
 }
@@ -329,17 +334,17 @@ void DynamicModule::loadDESCRIPTION(QString descriptionText)
 }
 
 
-Description * DynamicModule::instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
+Description * DynamicModule::instantiateDescriptionQml(QQmlContext* context, const QString & descriptionTxt, const QUrl & url, const std::string & moduleName)
 {
-	Description * description = qobject_cast<Description*>(instantiateQml(descriptionTxt, url, moduleName, "Description", getQmlDescriptionFilename(), MainWindow::singleton()->giveRootQmlContext()));
+	Description * description = qobject_cast<Description*>(instantiateQml(descriptionTxt, url, moduleName, "Description", getQmlDescriptionFilename(), context));
 
 	return description;
 }
 
 
-Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, const QUrl & url, const std::string & moduleName)
+Upgrades * DynamicModule::instantiateUpgradesQml(QQmlContext* context, const QString & upgradesTxt, const QUrl & url, const std::string & moduleName)
 {
-	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename(), MainWindow::singleton()->giveRootQmlContext()));
+	Upgrades * upgrades = qobject_cast<Upgrades*>(instantiateQml(upgradesTxt, url, moduleName, "Upgrades", getQmlUpgradesFilename(), context));
 
 	//Log::log() << "Dynamic module " << moduleName << " got upgrades? " << ( upgrades ? "yes!" : "no...") << std::endl;
 
@@ -349,9 +354,9 @@ Upgrades * DynamicModule::instantiateUpgradesQml(const QString & upgradesTxt, co
 }
 
 
-void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUrl & url)
+void DynamicModule::loadDescriptionQml(QQmlContext * context, const QString & descriptionTxt, const QUrl & url)
 {
-	Description * description = instantiateDescriptionQml(descriptionTxt, url, name());
+	Description * description = instantiateDescriptionQml(context, descriptionTxt, url, name());
 
 	if(!description)
 		throw ModuleException(name(), getQmlDescriptionFilename() + " must have Description item as root!");
@@ -361,9 +366,9 @@ void DynamicModule::loadDescriptionQml(const QString & descriptionTxt, const QUr
 	loadInfoFromDescriptionItem(description);
 }
 
-void DynamicModule::loadUpgradesQML(const QString & upgradesTxt, const QUrl & url)
+void DynamicModule::loadUpgradesQML(QQmlContext * context, const QString & upgradesTxt, const QUrl & url)
 {
-	Upgrades * upgrades = instantiateUpgradesQml(upgradesTxt, url, name());
+	Upgrades * upgrades = instantiateUpgradesQml(context, upgradesTxt, url, name());
 
 	if(!upgrades)
 		throw ModuleException(name(), getQmlUpgradesFilename() + " could not be instantiated!\nIt must have Upgrades item as root and, well not contain any errors.\nCheck the log for more details.");
@@ -655,12 +660,12 @@ void DynamicModule::setStatus(moduleStatus newStatus)
 		emit readyForUseChanged();
 }
 
-void DynamicModule::reloadDescription()
+void DynamicModule::reloadDescription(QQmlContext * context)
 {
 	try
 	{
 		std::string folder = fq(_moduleFolder.absoluteFilePath() + "/" + nameQ() + "/");
-		loadDescriptionFromFolder(folder, false);
+		loadDescriptionFromFolder(context, folder, false);
 		loadDESCRIPTION(tq(getDESCRIPTIONFromFolder(folder)));
 	}
 	catch(std::runtime_error e) { return; } //If it doesnt work then never mind.
@@ -727,7 +732,7 @@ std::string DynamicModule::getFileFromFolder(const std::string &  filepath, cons
 }
 
 
-std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(const std::string & descriptionTxt)
+std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(QQmlContext * context, const std::string & descriptionTxt)
 {
 	std::string foundName = "";
 
@@ -736,7 +741,7 @@ std::string DynamicModule::extractPackageNameFromDescriptionQmlTxt(const std::st
 
 	try
 	{
-		Description * desc = instantiateDescriptionQml(tq(descriptionTxt), QUrl::fromLocalFile(tq(getQmlDescriptionFilename())), "???");
+		Description * desc = instantiateDescriptionQml(context, tq(descriptionTxt), QUrl::fromLocalFile(tq(getQmlDescriptionFilename())), "???");
 
 		foundName = fq(desc->name());
 
@@ -796,14 +801,14 @@ std::string DynamicModule::extractPackageNameFromDESCRIPTIONTxt(const std::strin
 	return foundName;
 }
 
-std::string DynamicModule::extractPackageNameFromArchive(const std::string & archiveFilepath)
+std::string DynamicModule::extractPackageNameFromArchive(QQmlContext * context, const std::string & archiveFilepath)
 {
 	Log::log() << "Trying to extract package name from archive '" << archiveFilepath << "'" << std::endl;
 
 	std::string foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromArchive(archiveFilepath));
 
 	if(foundName == "") //Ok, so lets find it in QML ?
-		foundName = extractPackageNameFromDescriptionQmlTxt(getDescriptionQmlFromArchive(archiveFilepath));
+		foundName = extractPackageNameFromDescriptionQmlTxt(context, getDescriptionQmlFromArchive(archiveFilepath));
 
 	if(foundName == "") //Then we will just use the archive name and see if that works..
 	{
@@ -833,11 +838,11 @@ std::string DynamicModule::extractPackageNameFromArchive(const std::string & arc
 	return foundName;
 }
 
-std::string DynamicModule::extractPackageNameFromFolder(const std::string & folderFilepath)
+std::string DynamicModule::extractPackageNameFromFolder(QQmlContext * context, const std::string & folderFilepath)
 {
 	Log::log() << "Trying to extract package name from folder '" << folderFilepath << "'" << std::endl;
 
-	std::string foundName = extractPackageNameFromDescriptionQmlTxt(getDescriptionQmlFromFolder(folderFilepath));
+	std::string foundName = extractPackageNameFromDescriptionQmlTxt(context, getDescriptionQmlFromFolder(folderFilepath));
 
 	if(foundName == "") //Ok lets try to find DESCRIPTION then
 		foundName = extractPackageNameFromDESCRIPTIONTxt(getDESCRIPTIONFromFolder(folderFilepath));
@@ -868,6 +873,11 @@ Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunctio
 	json["analysisEntry"]		= analysisFunction;
 
 	return json;
+}
+
+QString DynamicModule::statusQ()
+{
+	return moduleStatusToQString(_status);
 }
 
 bool DynamicModule::isDescriptionFile(const std::string & filename)
@@ -906,16 +916,6 @@ void DynamicModule::setImportsR(stringset importsR)
 	}
 }
 
-stringset DynamicModule::requiredModules() const 
-{
-	stringset out;
-	
-	for(const std::string & pkg : _importsR)
-		if(DynamicModules::dynMods()->dynamicModule(pkg))
-			out.insert(pkg);
-	
-	return out;
-}
 
 bool DynamicModule::useSubMenus() const
 {
@@ -930,7 +930,7 @@ QString DynamicModule::patchLibPathHelperFunc(QString libpath) {
 	}
 
 	//we copy everything because we need to patch and resign it all
-	const std::string devMod = Settings::value(Settings::DIRECT_DEVMOD_NAME).toString().toStdString();
+	const std::string devMod = fq(PreferencesModelBase::preferences()->developerModeName());
 	if(devMod.empty())
 		throw std::runtime_error("No development module name set!");
 

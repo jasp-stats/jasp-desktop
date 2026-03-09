@@ -34,11 +34,14 @@
 #include "utilities/qutils.h"
 #include "enginedefinitions.h"
 #include "upgrader/upgradeDefinitions.h"
+#include "enginedefinitions.h"
 
 namespace Modules
 {
 
 typedef std::set<std::string> stringset;
+typedef std::map<std::string, Modules::DynamicModule*> ModulesMap;
+
 
 struct ModuleException : public std::runtime_error
 {
@@ -74,13 +77,13 @@ public:
 	explicit DynamicModule(QString moduleDirectory, QObject *parent, bool isBundled, bool isCommon);
 
 	///This constructor takes the path to an R-package as first argument, this R-package must also be a jasp-module and will be installed to the app-directory for the particular OS it runs on.
-	explicit DynamicModule(std::string modulePackageFile, QObject *parent, bool unpack = true);
+	explicit DynamicModule(QQmlContext * context, std::string modulePackageFile, QObject *parent, bool unpack = true);
 
 	///This constructor is meant specifically for the development module and only *it*!
-	explicit DynamicModule(QObject * parent);
+	explicit DynamicModule(QObject * parent, QQmlContext * context);
 
 	///This constructor is meant specifically for development modules initialized form a libpaths
-	explicit DynamicModule(QObject *parent, QString libpath);
+	explicit DynamicModule(QObject *parent, QQmlContext * context, QString libpath, bool isDevMod = true);
 
 
 	~DynamicModule() override
@@ -118,13 +121,13 @@ public:
 	bool				hasWrappers()		const { return _hasWrappers;							}
 	bool				useSubMenus()		const;
 	bool				isDevMod()			const { return _isDeveloperMod;							}
+	bool				isSource()			const { return _isSource;								}
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}
 	bool				installNeeded()		const { return _status == moduleStatus::installNeeded;	}
 	QString				moduleRLibrary()	const { return  _moduleFolder.absolutePath();			}
 	const stringset &	importsR()			const { return _importsR;						}
 	QStringList			importsRQ()			const { return tql(_importsR);					}
-	stringset			requiredModules()	const;
 	
 	std::string			getLibPathsToUse()	const;
 
@@ -159,7 +162,7 @@ public:
 	static std::string	succesResultString() { return "succes!"; }
 
 	QString			installLog()	const	{ return QString::fromStdString(_installLog);	}
-	QString			statusQ()		const	{ return moduleStatusToQString(_status);		}
+	QString			statusQ();
 	moduleStatus	status()		const	{ return _status;		}
 
 	bool shouldUninstallPackagesInRForUninstall();
@@ -170,15 +173,15 @@ public:
 	bool isBundled()	const { return _bundled;		}
 	bool isLibpathDevMod() const { return _isLibpathDevMod; }
 
-	void initialize();
-	void loadDescriptionQml(const QString		& descriptionTxt,	const QUrl		& url);
+	void initialize(QQmlContext * context);
+	void loadDescriptionQml(QQmlContext * context, const QString		& descriptionTxt,	const QUrl		& url);
 	void loadDESCRIPTION(		  QString		  descriptionText);
-	void loadUpgradesQML(	const QString		& upgradesTxt,		const QUrl		& url);
+	void loadUpgradesQML(	QQmlContext * context, const QString		& upgradesTxt,		const QUrl		& url);
 	bool hasUpgradesToApply(const std::string	& function,			const Version	& version);
 	void applyUpgrade(		const std::string	& function,			const Version	& version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken);
 
-	void loadDescriptionFromFolder(									const std::string & folderPath, bool onlyIfNotLoadedYet = true);
-	void loadDescriptionFromArchive(								const std::string & archivePath);
+	void loadDescriptionFromFolder(									QQmlContext * context, const std::string & folderPath, bool onlyIfNotLoadedYet = true);
+	void loadDescriptionFromArchive(								QQmlContext * context, const std::string & archivePath);
 	void loadRequiredModulesFromFolder(								const std::string & folderPath)			{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromFolder ( folderPath  ) ) ); }
 	void loadRequiredModulesFromArchive(							const std::string & archivePath)		{ loadRequiredModulesFromDESCRIPTIONTxt( tq( getDESCRIPTIONFromArchive( archivePath ) ) ); }
 	void loadRequiredModulesFromDESCRIPTIONTxt(						const QString	  & DESCRIPTION);
@@ -188,22 +191,22 @@ public:
 	static std::string	getDESCRIPTIONFromFolder(					const std::string & folderPath);
 	static std::string	getDescriptionQmlFromArchive(				const std::string & archivePath);
 	static std::string	getDescriptionQmlFromFolder(				const std::string & folderPath);
-	static std::string	extractPackageNameFromArchive(				const std::string & archivePath);
-	static std::string	extractPackageNameFromFolder(				const std::string & folderPath);
+	static std::string	extractPackageNameFromArchive(				QQmlContext * context, const std::string & archivePath);
+	static std::string	extractPackageNameFromFolder(				QQmlContext * context, const std::string & folderPath);
 	static std::string	extractPackageNameFromDESCRIPTIONTxt(		const std::string & DESCRIPTION);
-	static std::string	extractPackageNameFromDescriptionQmlTxt(	const std::string & descriptionQmlTxt);
+	static std::string	extractPackageNameFromDescriptionQmlTxt(	QQmlContext * context, const std::string & descriptionQmlTxt);
 	static std::string	extractPackageNameFromDescriptionJsonTxt(	const std::string & descriptionJsonTxt);
 
 	///Make sure url ends with the actual filename of the qml you are loading, otherwise translations will not work! Also make it with QUrl::fromLocalFile otherwise Windows messes things up
-	static Description	* instantiateDescriptionQml(const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
-	static Upgrades		* instantiateUpgradesQml(	const QString & upgradesTxt,	const QUrl & url, const std::string & moduleName);
+	static Description	* instantiateDescriptionQml(QQmlContext * context, const QString & descriptionTxt, const QUrl & url, const std::string & moduleName);
+	static Upgrades		* instantiateUpgradesQml(	QQmlContext * context, const QString & upgradesTxt,	const QUrl & url, const std::string & moduleName);
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
 	void preprocessMarkdownHelp(QString & md) const;
 
 public slots:
-	void reloadDescription();
+	void reloadDescription(QQmlContext * context);
 	void setInstalling(			bool		installing);
 	void setInitialized(		bool		initialized);
 	void setBundled(			bool		isBundled);
@@ -246,6 +249,7 @@ private:
 	bool				_installing			= false,
 						_installed			= false,
 						_isDeveloperMod		= false,
+						_isSource			= false,
 						_isLibpathDevMod	= false,
 						_initialized		= false,
 						_bundled			= false,

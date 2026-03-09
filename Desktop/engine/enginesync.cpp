@@ -776,15 +776,13 @@ bool EngineSync::processComputedColumnQueue()
 
 bool EngineSync::processDynamicModules()
 {
-	using DynMods = Modules::DynamicModules;
-	
-	if(!DynMods::dynMods())
+	if(!DynamicModules::dynMods())
 		return {}; //Only for testing!
 	
 	try
 	{
-		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
-        stringset	wantToRunUninstall	= DynMods::dynMods()->modulesNeedingUninstall();
+		stringset	wantToRunInstall	= DynamicModules::dynMods()->moduleBundlesNeedingInstall();
+		stringset	wantToRunUninstall	= DynamicModules::dynMods()->modulesNeedingUninstall();
 
         if(_rCmder->installingModule() || _rCmder->unInstallingModule()) //lets only process one dynamic module install/remove at a time for the sake of sanity.
             return {};
@@ -794,11 +792,11 @@ bool EngineSync::processDynamicModules()
             if(_rCmder->idle()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
             {
                 if(wantToRunInstall.size() > 0) {
-                    _rCmder->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
+					_rCmder->runModuleInstallRequestOnProcess(DynamicModules::dynMods()->getJsonForBundleInstallRequest());
                     wantToRunInstall = {};
                 }
                 else if(wantToRunUninstall.size() > 0) {
-                    _rCmder->runModuleUnInstallRequestOnProcess(DynMods::dynMods()->getJsonForModuleUninstallRequest());
+					_rCmder->runModuleUnInstallRequestOnProcess(DynamicModules::dynMods()->getJsonForModuleUninstallRequest());
                     wantToRunUninstall = {};
                 }
             }

@@ -319,7 +319,7 @@ private:
 	ComputedColumnModel			*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
-	Modules::DynamicModules		*	_dynamicModules			= nullptr;
+	DynamicModules				*	_dynamicModules			= nullptr;
 	RibbonModel					*	_ribbonModel			= nullptr;
 	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
 	RibbonModelUncommon			*	_ribbonModelUncommon	= nullptr;

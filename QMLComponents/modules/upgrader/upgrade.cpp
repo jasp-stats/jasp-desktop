@@ -1,10 +1,9 @@
-#include "gui/preferencesmodel.h"
 #include "utilities/qutils.h"
 #include "changebase.h"
 #include "upgrades.h"
 #include "upgrade.h"
+#include "modules/dynamicmodule.h"
 #include "log.h"
-#include "modules/dynamicmodules.h"
 
 namespace Modules
 {
@@ -72,7 +71,7 @@ void Upgrade::applyUpgrade(const std::string & function, const Version & version
 
 bool Upgrade::isModuleDev() const
 {
-	return DynamicModules::developmentModuleName() == fq(module());
+	return DynamicModule::developmentModuleName() == fq(module());
 }
 
 QString Upgrade::toString() 

@@ -1,7 +1,7 @@
 #include "log.h"
 #include "utilities/qutils.h"
 #include "../analysisentry.h"
-#include "gui/preferencesmodel.h"
+#include "preferencesmodelbase.h"
 
 #define DELAYED_ENUM_DECLARATION_CPP
 #include "entrybase.h"
@@ -15,7 +15,7 @@ const char * EntryError::what() const noexcept { return std::runtime_error::what
 
 EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(entryType)
 {
-	connect(PreferencesModel::prefs(), &PreferencesModel::developerModeChanged, this, &EntryBase::devModeChanged);
+	connect(PreferencesModelBase::preferences(), &PreferencesModelBase::developerModeChanged, this, &EntryBase::devModeChanged);
 
 	connect(this, &EntryBase::menuChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::titleChanged,			this, &EntryBase::somethingChanged);
@@ -59,7 +59,7 @@ QString EntryBase::toString() const
 
 bool EntryBase::shouldBeAdded() const
 {
-	return enabled() && (!debug() || PreferencesModel::prefs()->developerMode());
+	return enabled() && (!debug() || PreferencesModelBase::preferences()->developerMode());
 }
 
 void EntryBase::setMenu(QString menu)

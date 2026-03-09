@@ -25,12 +25,9 @@
 #include <filesystem>
 #include <QObject>
 #include "version.h"
-#include "dynamicmodule.h"
+#include "modules/dynamicmodule.h"
 #include <QFileSystemWatcher>
-#include "upgrader/upgradeDefinitions.h"
-
-namespace Modules
-{
+#include "modules/upgrader/upgradeDefinitions.h"
 
 /// 
 /// This class handles all dynamic modules and (un)loading them, as well as facilitating installation etc
@@ -50,8 +47,6 @@ public:
 							~DynamicModules() override;
 	static DynamicModules * dynMods()	{ return _singleton; }
 
-	void					registerQMLTypes();
-
 	bool					unpackAndInstallModule(		const	std::string & moduleZipFilename);
 	void					uninstallModule(			const	std::string & moduleName);
 	std::string				loadModule(					const	std::string & moduleName);
@@ -67,9 +62,6 @@ public:
 	QString					moduleDirectoryQ(			const	QString     & moduleName)	const;
 
 	bool					moduleIsInstalledByUser(	const	std::string & moduleName)	const { return std::filesystem::exists(moduleDirectoryW(moduleName));	}
-
-	bool					moduleHasUpgradesToApply(	const	 std::string & module,		const std::string & function, const Version & version);
-	void					applyUpgrade(				const	 std::string & module,		const std::string & function, const Version	& version, Json::Value & analysesJson, Modules::UpgradeMsgs & msgs, Modules::StepsTaken & stepsTaken);
 
 	stringset				moduleBundlesNeedingInstall()		const;
 	stringset				modulesNeedingUninstall()			const;
@@ -110,8 +102,9 @@ public:
 
 	QStringList importPaths() const;
 
-	const QStringList loadedModules() const;
-	const QStringList loadedModulesTitles() const;
+	const QStringList			loadedModules()			const;
+	const QStringList			loadedModulesTitles()	const;
+	const Modules::ModulesMap &	modules()				const	{ return _modules; };
 
 public slots:
 	void installationPackagesSucceeded(	const QString		& moduleNames);
@@ -160,7 +153,7 @@ private:
 	static DynamicModules								*	_singleton;
 	std::set<std::string>									_commonModuleNames;
 	std::vector<std::string>								_moduleNames;
-	std::map<std::string, Modules::DynamicModule*>			_modules;
+	Modules::ModulesMap										_modules;
 	std::set<std::string>									_moduleBundlesNeedingInstall;
 	std::set<std::string>									_modulesNeedingRemoval;
 	std::filesystem::path									_modulesInstallDirectory;
@@ -176,7 +169,5 @@ private:
 														*	_devModHelpWatcher			= nullptr;
 	Modules::DynamicModule								*	_devModule					= nullptr;
 };
-
-}
 
 #endif // DYNAMICMODULES_H

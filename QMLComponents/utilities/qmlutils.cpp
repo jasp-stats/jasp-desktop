@@ -14,7 +14,16 @@
 #include "preferencesmodelbase.h"
 #include "jasptheme.h"
 #include "knownissues.h"
-
+#include "modules/upgrader/upgrades.h"
+#include "modules/upgrader/upgrade.h"
+#include "modules/upgrader/changejs.h"
+#include "modules/upgrader/changecopy.h"
+#include "modules/upgrader/changeremove.h"
+#include "modules/upgrader/changerename.h"
+#include "modules/upgrader/changesetvalue.h"
+#include "modules/upgrader/changeincompatible.h"
+#include "modules/description/description.h"
+#include "modules/description/entrybase.h"
 
 #ifdef linux
 #include <QtGlobal>
@@ -235,6 +244,26 @@ void QmlUtils::setGlobalPropertiesInQMLContext(QQmlContext * ctxt)
 
 	qmlRegisterUncreatableType<JASPControl>(					"JASP",		1, 0, "JASP",					"Impossible to create JASP Object");
 	qmlRegisterUncreatableType<ALTNavPostfixAssignmentStrategy>("JASP",		1, 0, "AssignmentStrategy",		"Can't make it"	);
+}
+
+void QmlUtils::registerQmlModuleTypes()
+{
+	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
+	qmlRegisterType<Modules::AnalysisItem>						("JASP.Module", 1, 0, "Analysis"						);
+	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
+	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
+	qmlRegisterType<Modules::GroupTitleSmall>					("JASP.Module", 1, 0, "GroupTitleSmall"					);
+	qmlRegisterType<Modules::Upgrades>							("JASP.Module", 1, 0, "Upgrades"						);
+	qmlRegisterType<Modules::Upgrade>							("JASP.Module", 1, 0, "Upgrade"							);
+	qmlRegisterType<Modules::ChangeJS>							("JASP.Module", 1, 0, "ChangeJS"						);
+	qmlRegisterType<Modules::ChangeCopy>						("JASP.Module", 1, 0, "ChangeCopy"						);
+	qmlRegisterType<Modules::ChangeRename>						("JASP.Module", 1, 0, "ChangeRename"					);
+	qmlRegisterType<Modules::ChangeRemove>						("JASP.Module", 1, 0, "ChangeRemove"					);
+	qmlRegisterType<Modules::ChangeIncompatible>				("JASP.Module", 1, 0, "ChangeIncompatible"				);
+	qmlRegisterType<Modules::ChangeSetValue>					("JASP.Module", 1, 0, "ChangeSetValue"					);
+	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",						"Superclass for menu entries, shouldn't be instantiated manually");
+	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",					"Can only be instantiated by JASP");
+	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",			"Superclass for Description info, shouldn't be instantiated manually");
 }
 
 void QmlUtils::setupQMLEngine(QQmlEngine *engine)

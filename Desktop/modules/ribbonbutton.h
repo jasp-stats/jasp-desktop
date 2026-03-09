@@ -73,7 +73,7 @@ public:
 	Modules::AnalysisEntry	*	getEntry(const std::string& name);
 	QVariant					menu()														const			{ return QVariant::fromValue(_menuModel);					}
 	stringvec					getAllEntries()												const;
-	bool						dataLoaded()												const			{ return Modules::DynamicModules::dynMods() &&  Modules::DynamicModules::dynMods()->dataLoaded();	}
+	bool						dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
 	bool						active()													const			{ return _active;											}
 	QString						toolTip()													const			{ return _toolTipF ? _toolTipF() : _toolTip;											}
 	bool						isBundled()													const			{ return _module && _module->isBundled();					}

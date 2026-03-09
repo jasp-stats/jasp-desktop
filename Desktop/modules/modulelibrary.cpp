@@ -7,7 +7,7 @@
 #include "gui/preferencesmodel.h"
 #include "installedmodules.h"
 #include "dynamicmodules.h"
-#include "dynamicmodule.h"
+#include "modules/dynamicmodule.h"
 #include "engine/enginesync.h"
 #include "utilities/appdirs.h"
 #include "utilities/dynamicruntimeinfo.h"
@@ -19,14 +19,14 @@ ModuleLibrary::ModuleLibrary(QObject *parent)
 {
     _singleton = this;
 
-    if (auto *dynMods = Modules::DynamicModules::dynMods())
+	if (auto *dynMods = DynamicModules::dynMods())
     {
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) { 
+		connect(dynMods, &DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) {
             emitEnvironmentInfoChanged(); 
             finishInstalling();
         });
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });       
+		connect(dynMods, &DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
+		connect(dynMods, &DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
     }
     if (auto *engineSync = EngineSync::singleton())
     {
@@ -83,7 +83,7 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
 
 void ModuleLibrary::uninstallJASPModule(const QString &moduleName)
 {
-    if (auto *dynMods = Modules::DynamicModules::dynMods())
+	if (auto *dynMods = DynamicModules::dynMods())
         dynMods->uninstallModule(moduleName.toStdString());
 }
 

@@ -1,7 +1,6 @@
 #include "upgrader.h"
 #include "log.h"
-#include "analysis/analysis.h"
-#include "../dynamicmodule.h"
+#include "utilities/qutils.h"
 #include <QFile>
 #include "utilities/messageforwarder.h"
 #include <QTimer>
@@ -32,35 +31,6 @@ Upgrader::~Upgrader()
 	_singleton = nullptr;
 }
 
-void Upgrader::processUpgradeJson(const std::string & module, const Json::Value & upgrades)
-{
-	try
-	{
-		if(_allSteps.count(module) > 0)
-			removeStepsOfModule(module);
-
-		if(!upgrades.isArray())
-			throw upgradeLoadError(upgrades, "Cannot load upgrades for module '" + module + "' because it is not an array of upgrade steps... This is what it looks like:");
-
-		Steps & steps = _allSteps[module];
-
-		for(const Json::Value & entry : upgrades)
-			steps.push_back(new UpgradeStep(entry, module));
-
-
-		for(const UpgradeStep * step : steps)
-			if(_searcher[step->fromModule()].count(step->fromVersion()) > 0 && _searcher[step->fromModule()][step->fromVersion()].count(step->fromFunction()) > 0)
-				throw upgradeLoadError(upgrades, "Could not store step " + step->toString() + " because for this fromModule and fromVersion there is already a step stored: " + _searcher[step->fromModule()][step->fromVersion()][step->fromFunction()]->toString());
-			else
-				_searcher[step->fromModule()][step->fromVersion()][step->fromFunction()] = step;
-	}
-	catch(upgradeLoadError & e)
-	{
-		Log::log() << "Loading upgrades of '" << module << "'" << " failed with error:\n" << e.what() << std::endl;
-		MessageForwarder::showWarning(tr("Error Loading Upgrades"), tr("While loading upgrades for %1 an error was encountered: %2").arg("JASP").arg(e.what()));
-	}
-}
-
 void Upgrader::removeStepsOfModule(const std::string & module)
 {
 	if(_allSteps.count(module) == 0)
@@ -88,7 +58,7 @@ void Upgrader::removeStepsOfModule(const std::string & module)
 	_allSteps.erase(module);
 }
 
-bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) const
+bool Upgrader::upgradeAnalysisData(const ModulesMap& modules, Json::Value & analysis, UpgradeMsgs & msgs) const
 {
 	StepsTaken	stepsTaken;
 
@@ -96,7 +66,7 @@ bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) c
 
 	try
 	{
-		_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken);
+		_upgradeOptionsFromJaspFile(modules, analysis, msgs, stepsTaken);
 		
 		
 
@@ -117,7 +87,7 @@ bool Upgrader::upgradeAnalysisData(Json::Value & analysis, UpgradeMsgs & msgs) c
 	return stepsTaken.size() > 0;
 }
 
-void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const
+void Upgrader::_upgradeOptionsFromJaspFile(const ModulesMap & modules, Json::Value & analysis, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const
 {
 	std::string		module		= (analysis.isMember("dynamicModule") ? analysis["dynamicModule"]["moduleName"]		: analysis.get("module", "Common")	).asString(),
 					function	= (analysis.isMember("dynamicModule") ? analysis["dynamicModule"]["analysisEntry"]	: analysis["name"]					).asString(); //name in a jasp file analyses.json refers to the function... analysis["name"] really should be the same as in ...["analysisEntry"] btw. Left the ternary here cause it looks nicer
@@ -185,43 +155,19 @@ void Upgrader::_upgradeOptionsFromJaspFile(Json::Value & analysis, UpgradeMsgs &
 	
 			Log::log() << "Options were upgraded to module '" << step->toModule() << "' with function '" << step->toFunction() << "' and version '" << step->toVersion().asString() << "'!" << std::endl;
 	
-			_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken); //See if we can upgrade some more
+			_upgradeOptionsFromJaspFile(modules, analysis, msgs, stepsTaken); //See if we can upgrade some more
 			
 			return;
 		}
 	}
 	
-	if(DynamicModules::dynMods()->moduleHasUpgradesToApply(module, function, version))
+	if (modules.count(module)> 0 && modules.at(module)->hasUpgradesToApply(function, version))
 	{
-		DynamicModules::dynMods()->applyUpgrade(module, function, version, analysis, msgs, stepsTaken); //This eventually also checks if there was a loop or not.
-		_upgradeOptionsFromJaspFile(analysis, msgs, stepsTaken);
+		modules.at(module)->applyUpgrade(function, version, analysis, msgs, stepsTaken);
+		_upgradeOptionsFromJaspFile(modules, analysis, msgs, stepsTaken);
 	}
 	else
 		Log::log () << "Nope, no upgrades to be done." << std::endl;
-}
-
-void Upgrader::loadOldSchoolUpgrades()
-{
-	QFile upgradesFile(":/resources/../modules/upgrader/upgrades.json");
-
-	if (!upgradesFile.open(QFile::ReadOnly | QFile::Text))
-		Log::log() << "Cannot open upgradeFile：" << upgradesFile.errorString();
-
-	if(upgradesFile.isOpen())
-	{
-
-		std::string upgradesTxt = upgradesFile.readAll().toStdString();
-		Json::Value upgradesJson;
-
-		if(Json::Reader().parse(upgradesTxt, upgradesJson))
-		{
-			processUpgradeJson("JASP", upgradesJson);
-			return;
-		}
-	}
-
-	MessageForwarder::showWarning(tr("Upgrades couldn't be read"),
-		tr("The necessary upgrades for reading older JASP-files could not be read...\nYou can still use JASP and even read (some) older files but some options might not be understood properly and some analyses might fail to load entirely."));
 }
 
 }

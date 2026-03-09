@@ -153,8 +153,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 	ALTNavControl::ctrl()->enableAlTNavigation(_preferences->ALTNavModeActive());
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
-
-	_dynamicModules->registerQMLTypes();
+	QmlUtils::registerQmlModuleTypes();
 
 	QTimer::singleShot(0, this, [&]() { loadQML(); });
 
@@ -727,9 +726,6 @@ void MainWindow::loadQML()
 	//connect(DataSetView::lastInstancedDataSetView(), &DataSetView::selectionStartChanged,	_columnModel,	&ColumnModel::changeSelectedColumn);
 
 	Log::log() << "QML Initialized!"  << std::endl;
-
-	Log::log() << "Loading upgrades definitions"  << std::endl;
-	_upgrader->loadOldSchoolUpgrades();
 
 	//And now we disconnect the exit on fail lambda because we won't be needing it later
 	disconnect(exitOnFailConnection);

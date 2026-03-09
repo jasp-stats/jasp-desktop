@@ -4,6 +4,7 @@
 #include <set>
 #include <QObject>
 #include "upgradestep.h"
+#include "modules/dynamicmodule.h"
 
 class Analysis;
 
@@ -32,15 +33,13 @@ public:
 	static Upgrader * upgrader() { return _singleton; }
 	~Upgrader();
 
-	void processUpgradeJson(const std::string & module, const Json::Value & upgrades);
 	void removeStepsOfModule(const std::string & module);
-	void loadOldSchoolUpgrades();
 
-	bool upgradeAnalysisData(Json::Value & analysisData, UpgradeMsgs & msgs) const;
+	bool upgradeAnalysisData (const ModulesMap & modules, Json::Value & analysisData, UpgradeMsgs & msgs) const;
 
 private:
 	static Upgrader * _singleton;
-	void _upgradeOptionsFromJaspFile(Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const;
+	void _upgradeOptionsFromJaspFile(const ModulesMap & modules, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken) const;
 
 	StepsPerMod		_allSteps; //vectors of steps organized by name of originating module
 	StepSearch		_searcher; //a map organized by from-module with maps organized as a step per version.

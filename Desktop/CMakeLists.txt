@@ -253,7 +253,6 @@ qt_add_resources(
 
 # and some random stuff
 set(RESOURCES_RESOURCE_FILES
-    "resources/../modules/upgrader/upgrades.json"
     "resources/fonts/FiraCode-Retina.ttf" "resources/fonts/FreeSans.ttf")
 
 qt_add_resources(

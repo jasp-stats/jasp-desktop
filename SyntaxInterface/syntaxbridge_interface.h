@@ -55,8 +55,8 @@ struct SyntaxBridgeDataSet {
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeCleanup();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
-SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name, bool preloadData);
-SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* qmlFileName, const char* analysisName, const char* analysisTitle, bool preloadData);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* analysisName);
 
 } // extern "C"
 
