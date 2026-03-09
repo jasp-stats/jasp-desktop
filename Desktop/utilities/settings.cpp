@@ -119,18 +119,34 @@ const Settings::Setting Settings::Values[] = {
 	{"showInteractiveDefault",		true	},
 	{"autoSaveOn",					true	},
 	{"autoSaveInterval",			5*60	},
-};	
+};
 
-QVariant Settings::value(Settings::Type key)
-{
-	if(resultXmlCompare::compareResults::theOne()->testMode())
-		switch(key)
-		{
-		default:						return defaultValue(key);
-		case Type::STORE_STATE_ETC:		return false; //Dont store state in the data library
-		}
-	
-	return getSettings()->value(Settings::Values[key].type, defaultValue(key));
+QVariant Settings::value(Settings::Type key) {
+    if(resultXmlCompare::compareResults::theOne()->testMode())
+        switch(key)
+        {
+        default:                        return defaultValue(key);
+        case Type::STORE_STATE_ETC:     return false; //Dont store state in the data library
+        }
+
+    QString settingStringName = Settings::Values[key].type;
+
+#ifdef WIN32
+    //Check Machine-wide Policy for entreprise/admins
+    QSettings machinePolicy("HKEY_LOCAL_MACHINE\\Software\\Policies\\JASP", QSettings::NativeFormat);
+    if (machinePolicy.contains(settingStringName)) {
+        return machinePolicy.value(settingStringName);
+    }
+
+    //Check User-specific Policy
+    QSettings userPolicy("HKEY_CURRENT_USER\\Software\\Policies\\JASP", QSettings::NativeFormat);
+    if (userPolicy.contains(settingStringName)) {
+        return userPolicy.value(settingStringName);
+    }
+#endif
+
+    //Normal Qt setting
+    return getSettings()->value(settingStringName, defaultValue(key));
 }
 
 QVariant Settings::defaultValue(Settings::Type key)
