@@ -169,11 +169,6 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 
 }
 
-void rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath)
-{
-	jaspRCPP_junctionHelper(collectNotRestore, modulesFolder.c_str(), linkFolder.c_str(), junctionFilePath.c_str());
-}
-
 extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 {
 	static std::string out;

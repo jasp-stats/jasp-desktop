@@ -4,7 +4,7 @@
 #include "log.h"
 #include "dirs.h"
 
-QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootStrap)
+QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 {
 	QDir				programDir	= AppDirs::programDir();
 	QString				engineExe	= programDir.absoluteFilePath("JASPEngine");
@@ -53,10 +53,8 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine(bool bootS
 	
 #undef ARCH_SUBPATH
 
-	if(bootStrap)
-		env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/junction_bootstrap_library") + ";" + _R_HOME + "/library");
-	else
-		env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/R_cpp_includes_library") + ";" + _R_HOME + "/library");
+
+	env.insert("R_LIBS",			programDir.absoluteFilePath("Modules/Tools/R_cpp_includes_library") + ";" + _R_HOME + "/library");
 
 	env.insert("R_ENVIRON",			"something-which-doesn't-exist");
 	env.insert("R_PROFILE",			"something-which-doesn't-exist");

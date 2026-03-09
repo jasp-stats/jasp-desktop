@@ -89,6 +89,7 @@ std::string DynamicRuntimeInfo::dynamicRuntimeInfoFilePath()
 	case RuntimeEnvironment::ZIP:
 		return fq(AppDirs::programDir().absoluteFilePath(tq(dynamicInfoFileName)));
 	case RuntimeEnvironment::MSIX:
+	case RuntimeEnvironment::MSI:
 		return fq(AppDirs::appData(false) + "/" + tq(dynamicInfoFileName));
 	default:
 		return "";
@@ -133,7 +134,7 @@ RuntimeEnvironment DynamicRuntimeInfo::getRuntimeEnvironment()
 	if(!in)
 	{
 		Log::log() << "Failed to open specified static runtime file" << std::endl;
-		return RuntimeEnvironment::UNKNOWN;;
+		return RuntimeEnvironment::UNKNOWN;
 	}
 
 	Json::Value root;

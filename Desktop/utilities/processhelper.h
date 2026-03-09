@@ -10,7 +10,7 @@ class ProcessHelper
 {
 public:
 	
-    static QProcessEnvironment	getProcessEnvironmentForJaspEngine(bool bootStrap = false);
+    static QProcessEnvironment	getProcessEnvironmentForJaspEngine();
 #ifdef _WIN32 
 	static void					fixPATHForWindows(QProcessEnvironment & env);
 #endif

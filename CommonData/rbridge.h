@@ -82,7 +82,6 @@ extern "C" {
 
 	void				rbridge_setDataBridge(DataBridge * dataBridge);
 	void				rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont, bool insideJasp = true);
-	void				rbridge_junctionHelper(bool collectNotRestore, const std::string & modulesFolder, const std::string& linkFolder, const std::string& junctionFilePath);
 
 	void				rbridge_memoryCleaning();
 
