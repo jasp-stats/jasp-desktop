@@ -42,18 +42,7 @@ set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 
-# --- WIX
 if(WIN32)
-  set(CPACK_GENERATOR "WIX")
-
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
-
-  set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/windows/jaspLicense.rtf")
-  set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
-  set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
-  set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/windows/installerBanner.png")
-  set(CPACK_WIX_UI_DIALOG
-      "${CMAKE_SOURCE_DIR}/Tools/windows/installerBackground.png")
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/Upload.cmd.in
                  ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
@@ -61,15 +50,10 @@ if(WIN32)
   add_custom_target(
     collect-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions.rds"
-    COMMAND cmd.exe /C CollectJunctions.cmd
+    BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions_map.txt"
+    COMMAND cmd.exe /C JunctionTool.exe -s Modules
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/")
-
-  add_custom_target(
-    recreate-junctions
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    COMMAND cmd.exe /C RecreateJunctions.cmd)
+            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/")
 
   add_custom_target(
     zip
@@ -77,7 +61,7 @@ if(WIN32)
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
+            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_SOURCE_DIR}/Tools/windows/zip/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
@@ -87,7 +71,7 @@ if(WIN32)
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions.rds" "${JASP_INSTALL_PREFIX}/"
+            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/Tools/windows/msix/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C msix.cmd)

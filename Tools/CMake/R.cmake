@@ -852,7 +852,6 @@ endif()
 set(RENV_LIBRARY                        "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
 set(R_CPP_INCLUDES_LIBRARY              "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
 set(JASP_MODULE_BUNDLE_MANAGER_LIBRARY  "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleBundleManager_library")
-set(JUNCTION_HANDLING_LIBRARY           "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})
@@ -933,16 +932,6 @@ if(APPLE)
 endif()
 
 endif()
-
-execute_process(
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/R-Interface
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/workarounds.R
-          ${MODULES_BINARY_PATH}/Tools/
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different R/symlinkTools.R
-          ${MODULES_BINARY_PATH}/Tools/)
-
-
-
           
 include(FindRPackagePath)
 

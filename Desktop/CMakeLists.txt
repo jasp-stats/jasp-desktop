@@ -32,6 +32,7 @@ message(STATUS "githubpat.h is successfully generated...")
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
+list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/junctionTool/main.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
@@ -87,6 +88,10 @@ if(WINDOWS)
   add_executable(ContainerFilePermissionChecker "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
   add_dependencies(JASP ContainerFilePermissionChecker)
 
+  message(STATUS "We will build the windows junctionTool")
+  add_executable(JunctionTool "${CMAKE_CURRENT_LIST_DIR}/junction_tool/main.cpp")
+  add_dependencies(JASP JunctionTool)
+
   set_target_properties(JASP PROPERTIES OUTPUT_NAME "JASPDesktop") # https://github.com/jasp-stats/jasp-issues/issues/1030
 endif()
 
@@ -103,14 +108,6 @@ endif()
 
 if(APPLE)
   add_dependencies(JASPDesktopLib readstat)
-endif()
-
-if(WINDOWS)
-  # This is added to the build folder that JASP doesn't try to recreate the
-  # junctions in the build folder, they are there anyway!
-  execute_process(
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E touch "junctions-recreated-successfully.log")
 endif()
 
 target_include_directories(

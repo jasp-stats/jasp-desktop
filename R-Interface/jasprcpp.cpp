@@ -307,25 +307,6 @@ void STDCALL jaspRCPP_init_jaspBase()
 	jaspRCPP_logString("Finished initializing jaspBase.\n");
 }
 
-void STDCALL jaspRCPP_junctionHelper(bool collectNotRestore, const char * modulesFolder, const char * linkFolder, const char * junctionsFilePath)
-{
-#ifndef JASP_NO_RINSIDE
-	new RInside();
-#endif
-	auto rEnvironment = Rcpp::Environment::global_env();
-
-	std::cout << "RInside created, now about to " << (collectNotRestore ? "collect" :  "recreate") << " Modules junctions in renv-cache" << std::endl;
-
-	_parseEvalQNT("source('Modules/Tools/symlinkTools.R')");
-	rEnvironment["modulesFolder"] = modulesFolder;
-	rEnvironment["symFolder"] = linkFolder;
-	rEnvironment["junctionsFilePath"] = junctionsFilePath;
-	_parseEvalQNT(".libPaths( c( paste0( modulesFolder, 'Tools/junction_bootstrap_library' )  , .libPaths() ) )");
-
-	if(collectNotRestore)	_parseEvalQNT("collectAndStoreJunctions(modulesFolder)");
-	else					_parseEvalQNT("restoreModulesIfNeeded( modulesFolder, symFolder, junctionsFilePath)");
-}
-
 void STDCALL jaspRCPP_purgeGlobalEnvironment()
 {
 	jaspRCPP_parseEvalQNT("jaspBase:::.cleanEngineMemory()", false);

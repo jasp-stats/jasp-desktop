@@ -52,27 +52,6 @@ void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
 #ifdef _WIN32
 int wmain( int argc, wchar_t *argv[ ], wchar_t *envp[ ] )
 {
-	if(argc == 3)
-	{
-		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2]));
-		if(arg1 == "--collectJunctions")
-		{
-			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
-			rbridge_junctionHelper(true, arg2, "", "");
-			exit(0);
-		}
-	}
-	else if(argc == 5)
-	{
-		std::string arg1(Utils::wstringToString(argv[1])), arg2(Utils::wstringToString(argv[2])), arg3(Utils::wstringToString(argv[3])), arg4(Utils::wstringToString(argv[4]));
-		if(arg1 == "--recreateJunctions")
-		{
-			Log::log() << "Engine started for junctions, got folder '" << arg2 << "'!" << std::endl;
-			rbridge_junctionHelper(false, arg2, arg3, arg4);
-			exit(0);
-		}
-	}
-
 	if(argc > 4)
 	{
 		unsigned long	slaveNo			= wcstoul(argv[1], NULL, 10),

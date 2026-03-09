@@ -39,76 +39,50 @@
 const std::string	jaspExtension		= ".jasp",
 					unitTestArg			= "--unitTest",
 					saveArg				= "--save",
-					timeOutArg			= "--timeOut=",
-					junctionArg			= "--junctions",
-					removeJunctionsArg	= "--removeJunctions";
+					timeOutArg			= "--timeOut=";
 
 #ifdef _WIN32
 #include "utilities/dynamicruntimeinfo.h"
 #include "utilities/processhelper.h"
-// This function simply sets the proper environment of jaspengine, and starts it in junction-fixing mode or remove-junction mode.
-// The junction-fixining mode is called after the installer runs to fix the junctions in Modules that actually point to renv-cache instead of nowhere
-// The remove-junction mode is called before the uninstaller runs to remove all these junctions: doing this prevent the uninstaller to run for ages.
-bool runJaspEngineJunctionFixer(int argc, char *argv[], bool removeJunctions = false, bool exitAfterwards = true)
+
+bool createJunctions(const QString& toolPath, const QString& mapFilePath, const QString& baseDirPath)
 {
-	QApplication	*	app		= exitAfterwards ? new QApplication(argc, argv) : nullptr;
-	QProcessEnvironment env		= ProcessHelper::getProcessEnvironmentForJaspEngine(true);
-	QString				workDir = QFileInfo( QCoreApplication::applicationFilePath() ).absoluteDir().absolutePath();
+    QProcess junctionTool;
+    QString modulesPath = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("Modules");
+    
+    junctionTool.setProcessChannelMode(QProcess::ForwardedChannels);
+    
+    junctionTool.setProgram(toolPath);
+    junctionTool.setArguments({"-c", QDir::toNativeSeparators(mapFilePath), QDir::toNativeSeparators(baseDirPath), QDir::toNativeSeparators(modulesPath)});
 
-	QProcess engine;
+    Log::log() << "Starting junction tool..." << std::endl;
+    junctionTool.start();
 
-	engine.setProcessChannelMode(QProcess::ForwardedChannels);
-	engine.setProcessEnvironment(env);
-	engine.setWorkingDirectory(workDir);
-	engine.setProgram("JASPEngine.exe");
+    if (!junctionTool.waitForStarted()) {
+        Log::log() << "Failed to start junction_tool.exe!" << std::endl;
+        return false;
+    }
 
-	//remove any leftover ModuleDir
-	QDir modulesDir(AppDirs::bundledModulesDir());
-	if(modulesDir.exists() && AppDirs::bundledModulesDir().contains("Modules", Qt::CaseInsensitive) && DynamicRuntimeInfo::getInstance()->getRuntimeEnvironment() != RuntimeEnvironment::ZIP)
-	{
-		std::function<void(QDir)> removeDir = [&](QDir x) -> void {
-			for(const auto& entry : x.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files))
-			{
-				if(entry.isFile() || entry.isSymLink()) entry.absoluteDir().rmdir(entry.fileName());
-				else if(entry.isJunction()) entry.absoluteDir().rmdir(entry.fileName());
-				else if(entry.isDir()) removeDir(QDir(entry.absoluteFilePath()));
-			}
-			x.rmdir(".");
-		};
-		removeDir(modulesDir);
-	}
+    // 120 seconds is more than enough time.
+    if (!junctionTool.waitForFinished(120000)) {
+        Log::log() << "junction_tool.exe timed out! Terminating..." << std::endl;
+        junctionTool.kill();
+        junctionTool.waitForFinished();
+        return false;
+    }
 
-	if (removeJunctions)
-	{
-		std::cout << "Junctions removal " << (!modulesDir.exists() ? "succeeded" : "failed") << std::endl;
-		if(exitAfterwards)
-			exit(!modulesDir.exists());
-		return !modulesDir.exists();
-	}
-	else
-	{
-		bool created = QDir().mkpath(modulesDir.absolutePath());
-		if(created)
-			std::cout << "Junction folder created" << std::endl;
-		engine.setArguments({"--recreateJunctions", workDir + "/Modules/", modulesDir.absolutePath(), workDir + "/junctions.rds"});
-	}
-	engine.start();
+    if (junctionTool.exitStatus() == QProcess::CrashExit) {
+        Log::log() << "junction_tool.exe crashed unexpectedly!" << std::endl;
+        return false;
+    }
 
-	if(!engine.waitForStarted())		{	std::cerr << "JASPEngine failed to start for junctions!" << std::endl;						exit(2); }
-	//Something like 10 minutes tops should be more than enough for the junctions to be replaced and otherwise it probably crashed?
-	if(!engine.waitForFinished(600000)) {	std::cerr << "JASPEngine started but timed out before finishing junctions!" << std::endl;	exit(3); }
+    int exitCode = junctionTool.exitCode();
+    if (exitCode != 0) {
+        Log::log() << "junction_tool.exe returned error code: " << exitCode << std::endl;
+        return false;
+    }
 
-	bool worked = engine.exitCode() == 0;
-	//log our success so we dont do it a second time
-	if(worked)
-		worked = worked && DynamicRuntimeInfo::getInstance()->writeDynamicRuntimeInfoFile();
-
-	std::cout << "Replacing junctions with JASPEngine seems to have " << (worked ? "worked." : "failed.")  << std::endl;
-
-	if(exitAfterwards)
-		exit(engine.exitCode());
-
-	return worked;
+	return DynamicRuntimeInfo::getInstance()->writeDynamicRuntimeInfoFile(); //write file so we only do this once
 }
 
 #endif
@@ -152,8 +126,6 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 #ifdef _WIN32
 		else if(args[arg] == "--sandbox")			{			containerSettingForced	= true;		container = true; }
 		else if(args[arg] == "--noSandbox")			{			containerSettingForced	= true;		container = false; }
-		else if(args[arg] == junctionArg)						runJaspEngineJunctionFixer(argc, argv, false); //Run the junctionfixer, it will exit the application btw!
-		else if(args[arg] == removeJunctionsArg)				runJaspEngineJunctionFixer(argc, argv, true);  //Remove the junctions
 #endif
 		else if(args[arg] == "--unitTestRecursive")
 		{
@@ -322,7 +294,6 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled, this will be saved to your settings.\n"
 					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
 			   #ifdef _WIN32
-					<< "If --junctions is specified JASP will recreate the junctions in Modules/ to renv-cache/, this needs to be done at least once after install, but is usually triggered automatically."
 					<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."
 			   #endif
 					<< "This text will be shown when either --help or -h is specified or something else that JASP does not understand is given as argument.\n"
@@ -563,7 +534,7 @@ int main(int argc, char *argv[])
 				QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating junctions, one moment please", "Creating junctions, one moment please");
 				msgBox->show();
 
-				if(!runJaspEngineJunctionFixer(argc, argv, false, false))
+                if(!createJunctions("junctionTool", "junctions_map.txt", AppDirs::bundledModulesDir()))
 				{
 					std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
 					exit(254);
