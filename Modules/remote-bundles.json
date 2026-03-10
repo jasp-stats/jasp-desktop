@@ -1,6 +1,30 @@
 {
     "Windows-x86_64": [
         {
+            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspAnova_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "2124f9c163162cc596c9ea08f2d06f50e4b545cf539446da206c3a3aedf349cd"
+        },
+        {
+            "url": "https://github.com/jasp-stats-modules/jaspDescriptives/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspDescriptives_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "01b011ab37ac2e77c4309e744108936b69d3b1b4de45f6813c1cc8dd031fd0cb"
+        },
+        {
+            "url": "https://github.com/jasp-stats-modules/jaspFactor/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspFactor_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "3b2b859dc281d162f8ba3f85689410786a989d92c4a1dbe97715ca5a472e254b"
+        },
+        {
+            "url": "https://github.com/jasp-stats-modules/jaspFrequencies/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspFrequencies_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "af379b2f093f14b1e7e72b6e6eda15ccb5abc24362ec86b796a4dbb05bfb241b"
+        },
+        {
+            "url": "https://github.com/jasp-stats-modules/jaspMixedModels/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspMixedModels_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "a3eed5a1386c2e068d74c858d169a603ac23327d0f771613c635c50ace6cc632"
+        },
+        {
+            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspRegression_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "aa84505443daac2907942594bd475493ea49aaeef2d6b2e9aaf74193151e6490"
+        },
+        {
             "url": "https://github.com/jasp-stats-modules/jaspTTests/releases/download/0.95.5-beta.5_R-4-5-2_Beta/jaspTTests_0.95.5-beta.5_Windows_x86-64_R-4-5-2.JASPModule",
             "checksum": "f8701e1e42d48894854de6131e9c427b64949dfa5ae5473c9d798f538aee9e06"
         }
