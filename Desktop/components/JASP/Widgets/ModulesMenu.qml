@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as QTC
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import JASP.Controls
 import QtWebEngine
 import QtWebChannel
@@ -566,10 +567,19 @@ FocusScope
 		Rectangle
 		{
 			id:				progressOverlay
-			anchors.fill:	parent
+			anchors
+			{
+				left:		moduleStoreContainer.left
+				right:		moduleStoreContainer.right
+				top:		moduleStoreContainer.top
+				bottom:		moduleStoreContainer.bottom
+			}
 			color:			jaspTheme.grayDarker
             visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
 			z:				10
+			clip:			true
+			property real	waveHeight:		86 * preferencesModel.uiScale
+			property real	waveWidth:		1400 * preferencesModel.uiScale
 
 			MouseArea
 			{
@@ -579,8 +589,59 @@ FocusScope
 				preventStealing: true
 			}
 
+			Image
+			{
+				id:						overlayTopWave
+				z:						1
+				opacity:				0.35
+				fillMode:				Image.TileHorizontally
+				horizontalAlignment:	Image.AlignHCenter
+				height:					sourceSize.height
+				width:					progressOverlay.width + progressOverlay.waveWidth
+				sourceSize.width:		progressOverlay.waveWidth
+				sourceSize.height:		progressOverlay.waveHeight
+				source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+				cache:					false
+				anchors.top:			parent.top
+
+				NumberAnimation on x
+				{
+					from:		0
+					to:			-progressOverlay.waveWidth
+					duration:	8000
+					loops:		Animation.Infinite
+					running:	progressOverlay.visible
+				}
+			}
+
+			Image
+			{
+				id:						overlayBottomWave
+				z:						1
+				opacity:				0.35
+				fillMode:				overlayTopWave.fillMode
+				horizontalAlignment:	Image.AlignHCenter
+				height:					overlayTopWave.height
+				width:					progressOverlay.width + progressOverlay.waveWidth
+				sourceSize.width:		overlayTopWave.sourceSize.width
+				sourceSize.height:		overlayTopWave.sourceSize.height
+				source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+				cache:					false
+				anchors.bottom:			parent.bottom
+
+				NumberAnimation on x
+				{
+					from:		0
+					to:			-progressOverlay.waveWidth
+					duration:	8000
+					loops:		Animation.Infinite
+					running:	progressOverlay.visible
+				}
+			}
+
 			Column
 			{
+				z:					2
 				anchors.centerIn:	parent
 				spacing:			10 * preferencesModel.uiScale
 				width:				300 * preferencesModel.uiScale
