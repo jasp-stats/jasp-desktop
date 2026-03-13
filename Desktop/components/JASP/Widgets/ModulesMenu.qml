@@ -574,7 +574,7 @@ FocusScope
 				top:		moduleStoreContainer.top
 				bottom:		moduleStoreContainer.bottom
 			}
-			color:			jaspTheme.grayDarker
+			color:			jaspTheme.fileMenuColorBackground
             visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
 			z:				10
 			clip:			true
@@ -655,7 +655,7 @@ FocusScope
                         let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
                         return progress + " " + action + " " + name + "...";
                     }
-                    color:				"white"
+                    color:				jaspTheme.black
 					font.pixelSize:		16 * preferencesModel.uiScale
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
@@ -691,7 +691,7 @@ FocusScope
 					{
 						anchors.centerIn:	parent
 						text:				moduleStore.downloadTotal > 0 ? Math.round((moduleStore.downloadProgress / moduleStore.downloadTotal) * 100) + "%" : "0%"
-						color:				"white"
+						color:				jaspTheme.black
 						font.pixelSize:		12 * preferencesModel.uiScale
 					}
 				}
