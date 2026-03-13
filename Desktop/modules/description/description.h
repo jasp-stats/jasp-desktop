@@ -40,6 +40,7 @@ class Description : public QQuickItem
 	Q_PROPERTY(bool						hasWrappers		READ hasWrappers		WRITE setHasWrappers		NOTIFY hasWrappersChanged		)
 	Q_PROPERTY(bool						alwaysSaveState	READ alwaysSaveState	WRITE setAlwaysSaveState	NOTIFY alwaysSaveStateChanged	)
 	Q_PROPERTY(bool						neverSaveState	READ neverSaveState		WRITE setNeverSaveState		NOTIFY neverSaveStateChanged	)
+	Q_PROPERTY(bool						useSubMenus		READ useSubMenus		WRITE setUseSubMenus		NOTIFY useSubMenusChanged		)
 
 public:
 	Description(QQuickItem *parent = nullptr);
@@ -63,6 +64,7 @@ public:
 	bool			hasWrappers()		const { return _hasWrappers;				}
 	bool			alwaysSaveState()	const;	
 	bool			neverSaveState()	const;
+	bool			useSubMenus()		const { return _useSubMenus;				}
 
 	void	addChild(	DescriptionChildBase * child);
 	void	removeChild(DescriptionChildBase * child);
@@ -72,7 +74,7 @@ public:
 
 	
 	
-	
+
 	
 public slots:
 	void setName(					QString						name			);
@@ -91,7 +93,8 @@ public slots:
 	void setHasWrappers(			bool						hasWrappers		);
 	void setNeverSaveState(			bool						newNeverSaveState);
 	void setAlwaysSaveState(		bool						newAlwaysSaveState);
-	
+	void setUseSubMenus(			bool						useSubMenus);
+
 signals:
 	void titleChanged(				QString						title			);
 	void iconChanged(				QString						icon			);
@@ -110,7 +113,8 @@ signals:
 	void childChanged();
 	void alwaysSaveStateChanged();
 	void neverSaveStateChanged();
-	
+	void useSubMenusChanged();
+
 private:
 	void					setUpDelayedUpdate();
 	void					connectChangesToDelay();
@@ -128,7 +132,8 @@ private:
 							_hasWrappers		= false,
 							_preloadData		= true,
 							_alwaysSaveState	= false,
-							_neverSaveState		= false;
+							_neverSaveState		= false,
+							_useSubMenus		= false;
 	DynamicModule		*	_dynMod				= nullptr;
 	QList<EntryBase*>		_entries;
 	QTimer					_timer;

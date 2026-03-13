@@ -66,7 +66,7 @@ RibbonButton::RibbonButton(QObject *parent,	std::string name, std::function<std:
 RibbonButton::RibbonButton(QObject *parent, std::string name,	std::function<std::string()> titleF, std::string icon, Modules::AnalysisEntries * funcEntries, std::function<QString()> toolTipF, bool enabled, bool remember, bool defaultActiveBinding)
 	: QObject(parent), _enabled(enabled), _defaultActiveBinding(defaultActiveBinding), _remember(remember), _special(true), _module(nullptr)
 {
-	_menuModel = new MenuModel(this, funcEntries);
+	_menuModel = new MenuModel(this, *funcEntries);
 
 	setRequiresData(AnalysisEntry::requiresDataEntries(*funcEntries));
 	setModuleName(name);

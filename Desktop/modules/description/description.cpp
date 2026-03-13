@@ -218,7 +218,7 @@ std::vector<AnalysisEntry*> Description::menuEntries() const
 			AnalysisEntry *analysisEntry = entry->convertToAnalysisEntry(requiresDataDef(), preloadData());
 			if (analysisEntry != nullptr)
 			{
-				if (analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())
+				if (!useSubMenus() && analysisEntry->isGroupTitle() && previousEntry != nullptr && !previousEntry->isSeparator())
 					entries.push_back(new AnalysisEntry()); // Add a separator
 				entries.push_back(analysisEntry);
 				previousEntry = analysisEntry;
@@ -253,6 +253,14 @@ void Description::setAlwaysSaveState(bool newAlwaysSaveState)
 		return;
 	_alwaysSaveState = newAlwaysSaveState;
 	emit alwaysSaveStateChanged();
+}
+
+void Description::setUseSubMenus(bool useSubMenus)
+{
+	if (_useSubMenus == useSubMenus)
+		return;
+	_useSubMenus = useSubMenus;
+	emit useSubMenusChanged();
 }
 
 bool Description::neverSaveState() const

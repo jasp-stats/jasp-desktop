@@ -50,7 +50,7 @@ class RibbonButton : public QObject
 	Q_PROPERTY(bool		ready			READ ready				WRITE setReady				NOTIFY readyChanged			)
 	Q_PROPERTY(bool		error			READ error				WRITE setError				NOTIFY errorChanged			)
 	Q_PROPERTY(bool		remember		READ remember			WRITE setRemember			NOTIFY rememberChanged		)
-	Q_PROPERTY(bool separator READ separator WRITE setSeparator NOTIFY separatorChanged)
+	Q_PROPERTY(bool		separator		READ separator			WRITE setSeparator			NOTIFY separatorChanged)
 
 public:
 

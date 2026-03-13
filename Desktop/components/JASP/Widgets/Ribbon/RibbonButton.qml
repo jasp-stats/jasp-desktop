@@ -109,29 +109,34 @@ Item
 
 		var functionCall = function (index)
 		{
-			var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
-			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
-            
-			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+			var menuModel	= customMenu.props['model']
+			var subMenuModel = menuModel.getSubMenu(index)
+			if (subMenuModel)
+				showMySubMenu(subMenuModel, index)
+			else
+			{
+				var analysisName  = menuModel.getAnalysisFunction(index);
+				var analysisTitle = menuModel.getAnalysisTitle(index);
+				var analysisQML   = menuModel.getAnalysisQML(index);
 
-			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
-			customMenu.hide();
-			customMenu.focus = false;
+				messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+
+				ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+				customMenu.hide();
+				customMenu.focus = false;
+			}
 		}
 
-		// Key Navigation with Up or Down. Only navigate valid analysis items
-		//	@index
-		//	@direction: +1 or -1
 		var navigateFunc = function (index, direction)
 		{
 			let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
+			let hasSubMenus = customMenu.hasSubMenus
 			while(true)
 			{
 				let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
 				let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
 
-				if (name !== "" && name !== '???' && isEnabled)
+				if ((hasSubMenus || (name !== "" && name !== '???')) && isEnabled)
 					break;
 
 				nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
@@ -154,9 +159,9 @@ Item
 		var props =
 		{
 			"model"					: ribbonButton.menu,
-
 			"functionCall"			: functionCall,
 			"hasIcons"				: ribbonButton.menu.hasIcons(),
+			"hasSubMenus"			: ribbonButton.menu.hasSubMenus(),
 			"navigateFunc"			: navigateFunc,
 			"parentNavigateFunc"	: parentNavigateFunc
 		};
@@ -165,6 +170,69 @@ Item
 
 		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
+	}
+
+	function showMySubMenu(subMenu, menuIndex)
+	{
+
+		if (subMenu.rowCount() === 0)
+			return
+
+		var functionCall = function (index)
+		{
+			var menuModel		= customSubMenu.props['model']
+			var analysisName	= menuModel.getAnalysisFunction(index);
+			var analysisTitle	= menuModel.getAnalysisTitle(index);
+			var analysisQML		= menuModel.getAnalysisQML(index);
+
+			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+
+			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+			customSubMenu.hide();
+			customSubMenu.focus = false;
+		}
+
+		// Key Navigation with Up or Down. Only navigate valid analysis items
+		//	@index
+		//	@direction: +1 or -1
+		var navigateFunc = function (index, direction)
+		{
+			let nextIndex = mod(index + direction, customSubMenu.props['model'].rowCount());
+			while(true)
+			{
+				let name	  = customSubMenu.props['model'].getAnalysisFunction(nextIndex);
+				let isEnabled = customSubMenu.props['model'].isAnalysisEnabled(nextIndex);
+
+				if (name !== "" && name !== '???' && isEnabled)
+					break;
+
+				nextIndex = mod(nextIndex + direction, customSubMenu.props['model'].rowCount());
+			}
+			return nextIndex;
+		}
+
+		// Forward navigation call to parent list
+		//	@index
+		//	@direction: +1 or -1
+		var parentNavigateFunc = function (direction)
+		{
+			customSubMenu.hide()
+			customMenu.forceActiveFocus();
+		}
+
+		var props =
+		{
+			"model"					: subMenu,
+			"functionCall"			: functionCall,
+			"hasIcons"				: subMenu.hasIcons(),
+			"navigateFunc"			: navigateFunc,
+			"parentNavigateFunc"	: parentNavigateFunc
+		};
+
+		let subItem = customMenu.currentMenuItem(menuIndex)
+		let offsetY = subItem.mapToItem(ribbonButton, 0, 0).y
+
+		customSubMenu.toggle(ribbonButton, props, customMenu.width, offsetY);
 	}
 
 	Rectangle

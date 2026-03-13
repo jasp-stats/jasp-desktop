@@ -116,7 +116,7 @@ public:
 	std::string			modulePackage()		const { return _modulePackage;							}
 	bool				isCommon()			const { return _isCommon;								}
 	bool				hasWrappers()		const { return _hasWrappers;							}
-
+	bool				useSubMenus()		const;
 	bool				isDevMod()			const { return _isDeveloperMod;							}
 	bool				error()				const { return _status == moduleStatus::error;			}
 	bool				readyForUse()		const { return _status == moduleStatus::readyForUse;	}

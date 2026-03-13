@@ -151,6 +151,11 @@ Window
 			id:			customMenu
 			z:			5
 		}
+		CustomMenu
+		{
+			id:			customSubMenu
+			z:			6
+		}
 
 		FileMenu
 		{
