@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls as QTC
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import JASP.Controls
 import QtWebEngine
 import QtWebChannel
