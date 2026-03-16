@@ -397,7 +397,7 @@ FocusScope
 								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
 
 
-								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + (subMenuItemImage.visible ? subMenuItemImage.width : 0) + 15 * preferencesModel.uiScale
+								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + (subMenuItemArrow.visible ? subMenuItemArrow.width : 0) + 15 * preferencesModel.uiScale
 
 								Image
 								{
@@ -439,7 +439,7 @@ FocusScope
 
 								Image
 								{
-									id					: subMenuItemImage
+									id					: subMenuItemArrow
 									height				: 15 * preferencesModel.uiScale
 									width				: height
 									visible				: menu.hasSubMenus
@@ -463,7 +463,7 @@ FocusScope
 									hoverEnabled	: true
 									anchors.fill	: parent
 									onClicked		: callMenuAction(index)
-									enabled			: subMenuItemImage.visible
+									enabled			: subMenuItemArrow.visible
 								}
 
 

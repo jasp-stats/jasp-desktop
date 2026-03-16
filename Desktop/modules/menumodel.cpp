@@ -46,6 +46,7 @@ void MenuModel::_setEntries(const Modules::AnalysisEntries & entries)
 	_subMenus.clear();
 	if (_module && _module->useSubMenus() && !_isSubMenu)
 	{
+		// Keep only the main entries, and add submenus
 		Modules::AnalysisEntries mainEntries, subEntries;
 		QString currentGroupTitle;
 		// If the first items are not group items, then add them to the main menu.

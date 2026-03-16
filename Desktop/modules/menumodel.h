@@ -79,7 +79,7 @@ private:
 
 	RibbonButton				*	_ribbonButton	= nullptr;
 	Modules::DynamicModule		*	_module			= nullptr;
-	Modules::AnalysisEntries		_entries;		//For special buttons
+	Modules::AnalysisEntries		_entries;
 	bool							_hasIcons		= false;
 	std::map<QString, MenuModel *>	_subMenus;
 	bool							_isSubMenu		= false;

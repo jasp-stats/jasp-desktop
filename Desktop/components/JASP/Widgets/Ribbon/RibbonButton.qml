@@ -138,6 +138,7 @@ Item
 				let name	  = menuModel.getAnalysisFunction(nextIndex);
 				let isEnabled = menuModel.isAnalysisEnabled(nextIndex);
 
+				// If it is disabled, and not an anlysis entry, nor a group with a submenu: skip it
 				if ((hasSubMenus || (name !== "" && name !== '???')) && isEnabled)
 					break;
 
