@@ -103,43 +103,45 @@ Item
 
 	function showMyMenu()
 	{
-
 		if (ribbonButton.menu.rowCount() <= 1)
 			return
 
 		var functionCall = function (index)
 		{
-			var menuModel	= customMenu.props['model']
-			var subMenuModel = menuModel.getSubMenu(index)
+			let menuModel	= customMenu.props['model']
+
+			if (index < 0 || index >= menuModel.rowCount())
+				return;
+
+			let subMenuModel = menuModel.getSubMenu(index)
 			if (subMenuModel)
 				showMySubMenu(subMenuModel, index)
 			else
 			{
-				var analysisName  = menuModel.getAnalysisFunction(index);
-				var analysisTitle = menuModel.getAnalysisTitle(index);
-				var analysisQML   = menuModel.getAnalysisQML(index);
-
-				messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
-
-				ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+				ribbonModel.analysisClicked(menuModel.getAnalysisFunction(index), menuModel.getAnalysisQML(index), menuModel.getAnalysisTitle(index), ribbonButton.moduleName)
 				customMenu.hide();
 				customMenu.focus = false;
 			}
 		}
 
+		// Key Navigation with Up or Down. Only navigate valid analysis items
+		//	@index
+		//	@direction: +1 or -1
 		var navigateFunc = function (index, direction)
 		{
-			let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
+			let menuModel	= customMenu.props['model']
+			let nextIndex = mod(index + direction, menuModel.rowCount());
 			let hasSubMenus = customMenu.hasSubMenus
+
 			while(true)
 			{
-				let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
-				let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
+				let name	  = menuModel.getAnalysisFunction(nextIndex);
+				let isEnabled = menuModel.isAnalysisEnabled(nextIndex);
 
 				if ((hasSubMenus || (name !== "" && name !== '???')) && isEnabled)
 					break;
 
-				nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
+				nextIndex = mod(nextIndex + direction, menuModel.rowCount());
 			}
 			return nextIndex;
 		}
@@ -149,11 +151,19 @@ Item
 		//	@direction: +1 or -1
 		var parentNavigateFunc = function (direction)
 		{
-			customMenu.hide()
-			jaspRibbons.forceActiveFocus();
-			jaspRibbons.navigateFunction(direction);
-			if (buttonList.currentItem)
-				buttonList.currentItem.showMyMenu();
+			let menuModel		= customMenu.props['model']
+			let subMenuModel	= subMenuModel = menuModel.getSubMenu(customMenu.currentIndex)
+
+			if (direction === 1 && subMenuModel)
+				showMySubMenu(subMenuModel, customMenu.currentIndex)
+			else
+			{
+				customMenu.hide()
+				jaspRibbons.forceActiveFocus();
+				jaspRibbons.navigateFunction(direction);
+				if (buttonList.currentItem)
+					buttonList.currentItem.showMyMenu();
+			}
 		}
 
 		var props =
@@ -174,20 +184,17 @@ Item
 
 	function showMySubMenu(subMenu, menuIndex)
 	{
-
 		if (subMenu.rowCount() === 0)
 			return
 
-		var functionCall = function (index)
+		var subMenuFunctionCall = function (index)
 		{
-			var menuModel		= customSubMenu.props['model']
-			var analysisName	= menuModel.getAnalysisFunction(index);
-			var analysisTitle	= menuModel.getAnalysisTitle(index);
-			var analysisQML		= menuModel.getAnalysisQML(index);
+			let subMenuModel	= customSubMenu.props['model']
 
-			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+			if (index < 0 || index >= subMenuModel.rowCount())
+				return;
 
-			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
+			ribbonModel.analysisClicked(subMenuModel.getAnalysisFunction(index), subMenuModel.getAnalysisQML(index), subMenuModel.getAnalysisTitle(index), ribbonButton.moduleName)
 			customSubMenu.hide();
 			customSubMenu.focus = false;
 		}
@@ -195,18 +202,22 @@ Item
 		// Key Navigation with Up or Down. Only navigate valid analysis items
 		//	@index
 		//	@direction: +1 or -1
-		var navigateFunc = function (index, direction)
+		var subMenuNavigateFunc = function (index, direction)
 		{
-			let nextIndex = mod(index + direction, customSubMenu.props['model'].rowCount());
+			let subMenuModel	= customSubMenu.props['model']
+			let nextIndex		= mod(index + direction, subMenuModel.rowCount());
+			let startIndex		= nextIndex
 			while(true)
 			{
-				let name	  = customSubMenu.props['model'].getAnalysisFunction(nextIndex);
-				let isEnabled = customSubMenu.props['model'].isAnalysisEnabled(nextIndex);
+				let name	  = subMenuModel.getAnalysisFunction(nextIndex);
+				let isEnabled = subMenuModel.isAnalysisEnabled(nextIndex);
 
 				if (name !== "" && name !== '???' && isEnabled)
 					break;
 
-				nextIndex = mod(nextIndex + direction, customSubMenu.props['model'].rowCount());
+				nextIndex = mod(nextIndex + direction,subMenuModel .rowCount());
+				if (nextIndex === startIndex)
+					break;
 			}
 			return nextIndex;
 		}
@@ -214,7 +225,7 @@ Item
 		// Forward navigation call to parent list
 		//	@index
 		//	@direction: +1 or -1
-		var parentNavigateFunc = function (direction)
+		var subMenuParentNavigateFunc = function (direction)
 		{
 			customSubMenu.hide()
 			customMenu.forceActiveFocus();
@@ -223,10 +234,10 @@ Item
 		var props =
 		{
 			"model"					: subMenu,
-			"functionCall"			: functionCall,
+			"functionCall"			: subMenuFunctionCall,
 			"hasIcons"				: subMenu.hasIcons(),
-			"navigateFunc"			: navigateFunc,
-			"parentNavigateFunc"	: parentNavigateFunc
+			"navigateFunc"			: subMenuNavigateFunc,
+			"parentNavigateFunc"	: subMenuParentNavigateFunc
 		};
 
 		let subItem = customMenu.currentMenuItem(menuIndex)

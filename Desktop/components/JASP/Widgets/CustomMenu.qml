@@ -73,11 +73,7 @@ FocusScope
 		case Qt.Key_Return:
 		case Qt.Key_Space:
 			if (currentIndex > -1)
-			{
 				callMenuAction(currentIndex)
-				menu.currentIndex = -1;
-			}
-			closeMenu();
 			break;
 		case Qt.Key_Escape:
 			menu.currentIndex = -1;
@@ -118,7 +114,7 @@ FocusScope
 		menu.showMe			= true;
 
 		menu.forceActiveFocus();
-
+		navigate(1)
 	}
 
 	function hide()
@@ -385,11 +381,21 @@ FocusScope
 						{
 							id: menuGroupTitle
 
-							Item
+							Rectangle
 							{
 								id		: menuItem
 								width	: initWidth
 								height	: (isSmall ? 0.666 : 1) * jaspTheme.menuGroupTitleHeight
+								color	: (model.modelData === undefined) && !menuItem.itemEnabled
+												? "transparent"
+												: groupMouseArea.pressed || index == currentIndex
+													? jaspTheme.buttonColorPressed
+													: groupMouseArea.containsMouse
+														? jaspTheme.buttonColorHovered
+														: "transparent"
+
+								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+
 
 								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + (subMenuItemImage.visible ? subMenuItemImage.width : 0) + 15 * preferencesModel.uiScale
 

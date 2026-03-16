@@ -146,6 +146,9 @@ Modules::AnalysisEntry *MenuModel::getAnalysisEntry(const std::string& func)
 
 QVariant MenuModel::getSubMenu(int index) const
 {
+	if (index < 0 || index >= analysisEntries().size())
+		return QVariant();
+
 	QString title = getAnalysisTitle(index);
 	if (_subMenus.count(title))
 		return QVariant::fromValue(_subMenus.at(title));
