@@ -52,17 +52,22 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	struct archive *a;
 
 	_now = time(nullptr); //Give all files same timestamp
-
-	a = archive_write_new();
-	archive_write_set_format_zip(a);
-
+	
 	std::filesystem::path tmpPath = path;
 	bool encrypt = JaspEncryptionData::getInstance()->encryptionActive();
 	if(encrypt) {
 		if(!JaspEncryptionData::getInstance()->paramsSet())
 			DesktopCommunicator::singleton()->queryEncryptionSettings();
+		
+		if(!JaspEncryptionData::getInstance()->paramsSet())
+			throw std::runtime_error(DesktopCommunicator::tr("No password given!").toStdString());
+		
 		tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
 	}
+
+	a = archive_write_new();
+	archive_write_set_format_zip(a);
+	
 
 #ifdef _WIN32
 	if (archive_write_open_filename_w(a, QString(tmpPath.c_str()).toStdWString().c_str()) != ARCHIVE_OK)

@@ -25,12 +25,15 @@ Window
 
     onCloseModel:
     {
-        encryptionModel.visible = false
         encryptionModel.submit();
         encryptWindow.close()
     }
 
-    onClosing: closeModel()
+    onClosing: 
+    {
+        if(encryptionModel.visible)
+            encryptionModel.cancel();
+    }
 
     onVisibleChanged: {
         passwordInput.displayValue = ""

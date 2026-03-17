@@ -29,6 +29,7 @@ public:
 	void setVisible(bool newVisible);
 
 	Q_INVOKABLE void submit();
+	Q_INVOKABLE void cancel();
 
     QString publickey() const;
     void setPublickey(const QString &newPublickey);

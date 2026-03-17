@@ -38,13 +38,13 @@ private:
     static std::mutex mtx;
     JaspEncryptionData() {}
 
-    std::string _password = "";
-    std::string _publickeyResponse = "";
-    std::string _passwordSaltResponse = "";
-    std::string _privatekey = "";
-    bool _encryptionActive = false;
-	bool _jaspTeamSubmission = false;
-	bool _parametersSet = false;
+    std::string _password				= "",
+				_publickeyResponse		= "",
+				_passwordSaltResponse	= "",
+				_privatekey				= "";
+    bool		_encryptionActive		= false,
+				_jaspTeamSubmission		= false,
+				_parametersSet			= false;
 
 	const std::string JASPTeamPublicKey = "sRIvR8JdS9XUTPDpo74Z8MAebG/at315MXTnRybHH2o="; //base64
 };

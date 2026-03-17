@@ -42,7 +42,6 @@ jobs:
             dir: '${{ github.workspace }}/qtinstall'
             
       - name: Install dependencies of build system
-<<<<<<< HEAD
         run: |
             # act -j build-jasp was stuck on typing y to continue
             sudo apt install -y libboost-dev libjsoncpp25 libjsoncpp-dev libarchive13 libarchive-dev

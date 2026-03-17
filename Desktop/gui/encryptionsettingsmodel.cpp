@@ -50,6 +50,7 @@ void EncryptionSettingsModel::setEncryptionActive(bool value)
 void EncryptionSettingsModel::queryEncryptionSettings()
 {
 	JaspEncryptionData::getInstance()->reset();
+	
     emit passwordChanged();
     emit jaspSubmissionChanged();
     emit encryptionActiveChanged();
@@ -73,7 +74,16 @@ void EncryptionSettingsModel::setVisible(bool newVisible)
 
 void EncryptionSettingsModel::submit()
 {
+	setVisible(false);
+	
 	JaspEncryptionData::getInstance()->setParamsSet(true);
+	emit queryComplete();
+}
+
+void EncryptionSettingsModel::cancel()
+{
+	setVisible(false);
+		
 	emit queryComplete();
 }
 

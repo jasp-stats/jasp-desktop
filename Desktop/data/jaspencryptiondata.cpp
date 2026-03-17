@@ -29,11 +29,12 @@ std::string JaspEncryptionData::getPasswordSaltResponse()
 
 void JaspEncryptionData::reset()
 {
-	_parametersSet = false;
-	_encryptionActive = false;
+	_parametersSet		= false;
+	_encryptionActive	= false;
 	_jaspTeamSubmission = false;
+	
 	_password.clear();
-    _publickeyResponse.clear();
     _privatekey.clear();
+	_publickeyResponse.clear();
     _passwordSaltResponse.clear();
 }
