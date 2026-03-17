@@ -10,7 +10,6 @@
 #include "data/importers/jaspimporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
-#include "data/importers/jaspimporterold.h"
 #include "data/importers/readstatimporter.h"
 
 
@@ -180,12 +179,7 @@ void TestAll::testJaspDataImport()
 	
 	std::cerr << "Testing " << dataFileAbsolutePath << std::endl;
 
-	bool useOldImporter = JASPImporterOld::isCompatible(fq(dataFileAbsolutePath)) != JASPImporterOld::Compatibility::NotCompatible;
-
-	std::cerr << (useOldImporter ? "Using old importer" : "Using normal importer") << std::endl;
-	
-	if(useOldImporter)  JASPImporterOld::loadDataSet(fq(dataFileAbsolutePath),	[](int){});
-	else                JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
+	JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
 	
 	DataSet * dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,						"No dataset!");

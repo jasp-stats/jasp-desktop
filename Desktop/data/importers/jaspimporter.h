@@ -29,12 +29,13 @@
 ///
 /// Loads a jasp file
 /// From 0.18 onwards this is simplified by having an sqlite file as the main container of data.
-/// For loading older files (jaspArchiveVersion < 4.0.0) see JASPImporterOld
 class JASPImporter
 {
 	Q_DECLARE_TR_FUNCTIONS(JASPImporter)
 public:
 	enum class Compatibility { NotCompatible, Limited, Compatible };
+
+	static const Version minJaspVersion;
 
 	static void loadDataSet(const std::string &path, std::function<void(int)> progressCallback);
 	static Compatibility isCompatible(const std::string &path);
