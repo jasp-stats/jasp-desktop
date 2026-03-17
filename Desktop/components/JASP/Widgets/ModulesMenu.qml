@@ -321,6 +321,7 @@ FocusScope
 			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
 			contentWidth:			width
 			width:                  visible ? 340 * preferencesModel.uiScale : 0
+			clip:					true
 
 			anchors
 			{
