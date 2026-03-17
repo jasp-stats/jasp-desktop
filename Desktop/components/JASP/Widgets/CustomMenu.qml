@@ -441,11 +441,11 @@ FocusScope
 	{
 		id				: menuShadow
 		anchors.fill	: menuRectangle
-		color			: jaspTheme.grayDarker
+		color			: jaspTheme.shadow
 		blur			: 5
 		spread			: 2
 		radius			: menuRectangle.radius
-		offset.x		: 1
+		offset.x		: 2
 		offset.y		: 2
 	}
 }
