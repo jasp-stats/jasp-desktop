@@ -56,7 +56,6 @@ if(USE_CONAN)
     else()
       message(CHECK_FAIL "build freexl failed")
     endif()
-    file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/_deps/)
     
     execute_process(
       COMMAND_ECHO STDOUT
@@ -79,7 +78,6 @@ if(USE_CONAN)
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND zsh -c -l "export CC=\"\"; export CCX=\"\"; conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION} -s build_type=${CMAKE_BUILD_TYPE} -s os.version=${CMAKE_OSX_DEPLOYMENT_TARGET} --build=missing --test-missing")    
-    file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/_deps/)    
     
     execute_process(
         COMMAND_ECHO STDOUT
