@@ -150,6 +150,12 @@ Window
 		{
 			id:			customMenu
 			z:			5
+			
+			function hideMenus() 
+			{
+				customMenu.hide();
+				customSubMenu.hide();
+			}
 		}
 		CustomMenu
 		{
@@ -239,7 +245,7 @@ Window
 			{
 				if(customMenu.visible)
 				{
-					customMenu.hide()
+					customMenu.hideMenus()
 					mouse.accepted = false;
 				}
 

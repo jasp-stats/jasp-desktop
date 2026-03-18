@@ -23,7 +23,7 @@ MenuButton
 		var functionCall = function (index)
 		{
 			sortMenuModel.clickSortItem(index)
-			customMenu.hide()
+			customMenu.hideMenus()
 		}
 
 		var props = {

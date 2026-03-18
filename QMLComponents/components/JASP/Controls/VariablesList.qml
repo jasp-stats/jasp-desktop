@@ -577,7 +577,7 @@ VariablesListBase
 						var functionCall = function (index)
 						{
 							variablesList.setVariableType(itemRectangle.rank, variablesList.allowedTypesModel.getType(index))
-							customMenu.hide()
+							customMenu.hideMenus()
 						}
 
 						var props =

@@ -56,7 +56,7 @@ Item
 	{
 		if (event.key === Qt.Key_Escape)
 		{
-			customMenu.hide();
+			customMenu.hideMenus();
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
 		{
@@ -79,7 +79,7 @@ Item
 		if (!ribbonButton.focus)
 		{
 			myMenuOpen = false;
-			customMenu.hide();
+			customMenu.hideMenus();
 		}
 	}
 
@@ -87,14 +87,14 @@ Item
 	{
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
-			customMenu.hide()
+			customMenu.hideMenus()
             messages.log("startOrShowMenu() for " + ribbonButton.moduleName)
 			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
 
 		}
 		else if (ribbonButton.menu.rowCount() === 1)
 		{
-			customMenu.hide()
+			customMenu.hideMenus()
 			ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 		}
 		else
@@ -119,7 +119,7 @@ Item
 			else
 			{
 				ribbonModel.analysisClicked(menuModel.getAnalysisFunction(index), menuModel.getAnalysisQML(index), menuModel.getAnalysisTitle(index), ribbonButton.moduleName)
-				customMenu.hide();
+				customMenu.hideMenus();
 				customMenu.focus = false;
 			}
 		}
@@ -159,7 +159,7 @@ Item
 				showMySubMenu(subMenuModel, customMenu.currentIndex)
 			else
 			{
-				customMenu.hide()
+				customMenu.hideMenus()
 				jaspRibbons.forceActiveFocus();
 				jaspRibbons.navigateFunction(direction);
 				if (buttonList.currentItem)
@@ -372,7 +372,7 @@ Item
 				if (myMenuOpen)
 				{
 					ribbonButton.focus = false;
-					customMenu.hide();
+					customMenu.hideMenus();
 				}
 				else
 				{

@@ -76,7 +76,7 @@ Rectangle
 				var functionCall      = function (index)
 				{
 					colIcon.setColumnType(columnTypesModel.getType(index));
-					customMenu.hide()
+					customMenu.hideMenus()
 				}
 
 				var props = {

@@ -177,7 +177,7 @@ FocusScope
 			modulesPlusButton.showPressed = false;
 			isFileMenuPressed             = false;
 			ribbonMenu.focusOut();
-			customMenu.hide()
+			customMenu.hideMenus()
 		}
 
 		anchors
@@ -227,7 +227,7 @@ FocusScope
 
 			fileMenuModel.visible = false;
 			isFileMenuPressed     = false;
-			customMenu.hide()
+			customMenu.hideMenus()
 			ribbonMenu.focusOut();
 		}
 
