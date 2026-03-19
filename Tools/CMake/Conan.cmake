@@ -56,7 +56,7 @@ if(USE_CONAN)
     else()
       message(CHECK_FAIL "build freexl failed")
     endif()
-    
+        
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -66,6 +66,8 @@ if(USE_CONAN)
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing)
   
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES _deps)
+    
       # configure conan for apple
   elseif(APPLE)
 
@@ -97,7 +99,8 @@ if(USE_CONAN)
   endif()
 
   include(${CMAKE_BINARY_DIR}/_conan_build/conan_toolchain.cmake)
-
+  
+  set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES _deps)
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)
