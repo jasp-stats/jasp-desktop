@@ -64,6 +64,8 @@ void TableViewBase::setUpModel()
 
 void TableViewBase::setUp()
 {
+	JASPTIMER_SCOPE(TableViewBase::setUp);
+	
 	switch (modelType())
 	{
 	case ModelType::CustomContrasts			: _boundControl = new BoundControlContrastsTableView(this); break;

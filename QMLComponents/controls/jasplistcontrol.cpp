@@ -143,6 +143,8 @@ void JASPListControl::_termsChangedHandler()
 
 void JASPListControl::setUp()
 {
+	JASPTIMER_SCOPE(JASPListControl::setUp);
+	
 	if (!model())	setUpModel();
 	JASPControl::setUp();
 

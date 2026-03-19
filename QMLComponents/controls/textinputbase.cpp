@@ -184,6 +184,8 @@ bool TextInputBase::isJsonValid(const Json::Value &value) const
 
 void TextInputBase::setUp()
 {
+	JASPTIMER_SCOPE(TextInputBase::setUp);
+	
 	QString type = property("inputType").toString();
 
 		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
@@ -198,21 +200,31 @@ void TextInputBase::setUp()
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
 
+	JASPTIMER_START(TextInputBase::setUp do weird oldschool connect);
 	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
+	JASPTIMER_STOP(TextInputBase::setUp do weird oldschool connect);
 
+	JASPTIMER_START(TextInputBase::setUp do normal connect);
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
+	JASPTIMER_STOP(TextInputBase::setUp do normal connect);
 
+	JASPTIMER_START(TextInputBase::setUp setValue);
 	if (_value.isNull()) // If the value is not directly set, use the default value.
 		setValue(_defaultValue, false);
+	JASPTIMER_STOP(TextInputBase::setUp setValue);
 
+	JASPTIMER_START(TextInputBase::setUp call JASPControl::setUp());
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
+	JASPTIMER_STOP(TextInputBase::setUp call JASPControl::setUp());
 }
 
 void TextInputBase::setDisplayValue()
 {
+	JASPTIMER_SCOPE(TextInputBase::setDisplayValue);
+
 	int		valueInt;
 	double	valueDbl;
 	QString showThis	= QColumnUtils::getIntValue(_value, valueInt) ?
@@ -400,6 +412,8 @@ void TextInputBase::valueChangedSlot()
 
 void TextInputBase::setValue(QVariant value, bool useLocale)
 {
+	JASPTIMER_SCOPE(TextInputBase::setValue);
+
 	double valueDbl;
 	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, useLocale))
 		value = valueDbl;
@@ -423,6 +437,8 @@ void TextInputBase::setValue(QVariant value, bool useLocale)
 
 void TextInputBase::setDefaultValue(QVariant value)
 {
+	JASPTIMER_SCOPE(TextInputBase::setDefaultValue);
+
 	double valueDbl;
 	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, false)) // Don't use locale with default value: they are set by the analysis, not by the user.
 		value = valueDbl;
@@ -441,6 +457,8 @@ void TextInputBase::setDefaultValue(QVariant value)
 
 void TextInputBase::_setBoundValue()
 {
+	JASPTIMER_SCOPE(TextInputBase::_setBoundValue);
+
 	if (_inputType == TextInputType::FormulaType)
 	{
 		double valueDbl = 0;

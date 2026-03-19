@@ -35,7 +35,9 @@ target_link_libraries(
 
 target_compile_definitions(
   Common PUBLIC
-                $<$<BOOL:${JASP_TIMER_USED}>:PROFILE_JASP>
+                #$<$<BOOL:${JASP_TIMER_USED}>:
+                PROFILE_JASP
+                #>
         JSONCPP_NO_LOCALE_SUPPORT	)
 
 if(WINDOWS)

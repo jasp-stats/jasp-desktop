@@ -1,10 +1,11 @@
 #ifndef JASPCONTROL_H
 #define JASPCONTROL_H
 
-#include <QQuickItem>
 #include <QPropertyAnimation>
 #include "utilities/qutils.h"
 #include "columntype.h"
+#include <QQuickItem>
+#include "timers.h"
 
 class AnalysisForm;
 class JASPListControl;

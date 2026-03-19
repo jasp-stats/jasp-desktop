@@ -851,8 +851,9 @@ endif()
 
 set(RENV_LIBRARY                        "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
 set(R_CPP_INCLUDES_LIBRARY              "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
-set(JASP_MODULE_BUNDLE_MANAGER_LIBRARY  "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleBundleManager_library")
 set(JUNCTION_HANDLING_LIBRARY           "${CMAKE_BINARY_DIR}/Modules/Tools/junction_bootstrap_library")
+set(JASP_MODULE_BUNDLE_MANAGER_LIBRARY  "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleBundleManager_library")
+
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})
@@ -860,8 +861,11 @@ file(MAKE_DIRECTORY ${RENV_SANDBOX})
 # also, the sandbox paths may need to be adjusted on windows (they are symlinks)
 
 message(STATUS "Setting up renv, Rcpp, RInside, and jaspModuleBundleManager, etc")
-message(STATUS "RENV_LIBRARY           = ${RENV_LIBRARY}")
-message(STATUS "R_CPP_INCLUDES_LIBRARY = ${R_CPP_INCLUDES_LIBRARY}")
+
+message(STATUS "RENV_LIBRARY                       = ${RENV_LIBRARY}")
+message(STATUS "R_CPP_INCLUDES_LIBRARY             = ${R_CPP_INCLUDES_LIBRARY}")
+message(STATUS "JUNCTION_HANDLING_LIBRARY          = ${JUNCTION_HANDLING_LIBRARY}")
+message(STATUS "JASP_MODULE_BUNDLE_MANAGER_LIBRARY = ${JASP_MODULE_BUNDLE_MANAGER_LIBRARY}")
 
 
 if(FLATPAK_USED)

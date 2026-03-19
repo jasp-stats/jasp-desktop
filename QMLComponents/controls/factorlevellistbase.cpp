@@ -34,6 +34,8 @@ void FactorLevelListBase::setUpModel()
 
 void FactorLevelListBase::setUp()
 {
+	JASPTIMER_SCOPE(FactorLevelListBase::setUp);
+	
 	JASPListControl::setUp();
 
 	connect(this, &FactorLevelListBase::itemChanged, _factorLevelsModel, &ListModelFactorLevels::itemChanged);

@@ -16,16 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+#include "log.h"
 #include "qutils.h"
+#include "timers.h"
+#include "appinfo.h"
+#include <QDateTime>
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QStringList>
 #include <QDirIterator>
-#include <QDateTime>
-#include "log.h"
-#include "appinfo.h"
 #include "simplecrypt.h"
-#include "log.h"
 #include "emptyvalues.h"
 #include "columnutils.h"
 
@@ -508,6 +508,7 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 	
 	altFuncToString = [locale, useThousandSeps](double dbl, int precision, bool sepas)
 	{
+		JASPTIMER_SCOPE(QColumnUtils altFuncToString);
 		QLocale loc(locale);
 		
 		if(!sepas || !useThousandSeps)
@@ -518,6 +519,7 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 	
 	altFuncCurToString = [locale, useThousandSeps](double dbl, const std::string & symbol, bool sepas)
 	{
+		JASPTIMER_SCOPE(QColumnUtils altFuncCurToString);
 		QLocale loc(locale);
 		
 		if(!sepas || !useThousandSeps)
@@ -528,6 +530,8 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 
 	altFuncToDouble = [locale, useThousandSeps](const std::string & str, double & dbl)
 	{
+		JASPTIMER_SCOPE(QColumnUtils altFuncToDouble);
+		
 		bool	isDouble	= false;
 				dbl			= locale.toDouble(tq(str), &isDouble);
 		
@@ -539,6 +543,8 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 
 	altFuncToInt = [locale, useThousandSeps](const std::string & str, int & intVal)
 	{
+		JASPTIMER_SCOPE(QColumnUtils altFuncToInt);
+		
 		bool isInt = false;
 		intVal = locale.toInt(tq(str), &isInt);
 

@@ -48,6 +48,8 @@ void AnalysisBase::destroyForm()
 
 void AnalysisBase::createForm(QQuickItem* parentItem)
 {
+	JASPTIMER_SCOPE(AnalysisBase::createForm);
+	
 	Log::log() << "Analysis(" << this << ")::createForm() called with parentItem " << parentItem << std::endl;
 
 	setQmlError("");

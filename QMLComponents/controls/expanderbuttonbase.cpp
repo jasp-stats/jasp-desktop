@@ -27,6 +27,8 @@ ExpanderButtonBase::ExpanderButtonBase(QQuickItem *parent)
 
 void ExpanderButtonBase::setUp()
 {
+	JASPTIMER_SCOPE(ExpanderButtonBase::setUp);
+	
 	if (!form())
 		return;
 

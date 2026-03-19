@@ -84,6 +84,8 @@ int QmlUtils::variantToInt(const QVariant &val)
 
 QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename, QQmlContext * ctxt)
 {
+	JASPTIMER_SCOPE(QML Utils instantiateQml);
+	
 	QObject * obj = nullptr;
 
 #ifdef QMLENGINE_DOES_ALL_THE_WORK
@@ -139,6 +141,8 @@ QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::st
 
 QObject * instantiateQml(const QUrl & filePath, const std::string & moduleName, QQmlContext * ctxt)
 {
+	JASPTIMER_SCOPE(QML Utils instantiateQml from file);
+	
 	if(!filePath.isLocalFile())
 		throw std::runtime_error(fq(filePath.toLocalFile()) + " is not a local file...");
 

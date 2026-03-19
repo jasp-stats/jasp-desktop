@@ -359,6 +359,8 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::createForm(QQuickItem* parentItem)
 {
+	JASPTIMER_SCOPE(Analysis::createForm);
+	
 	AnalysisBase::createForm(parentItem);
 
 	if (_analysisForm)

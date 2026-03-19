@@ -65,6 +65,8 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 
 void ComponentsListBase::setUp()
 {
+	JASPTIMER_SCOPE(ComponentsListBase::setUp);
+	
 	JASPListControl::setUp();
 
 	QQuickItem* ancestor = parentItem();

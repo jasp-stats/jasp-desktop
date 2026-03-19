@@ -18,19 +18,19 @@
 
 #include "analysisform.h"
 #include "knownissues.h"
-#include "boundcontrols/boundcontrol.h"
 #include "utilities/qutils.h"
+#include "preferencesmodelbase.h"
 #include "controls/jasplistcontrol.h"
 #include "controls/expanderbuttonbase.h"
-#include "log.h"
+#include "boundcontrols/boundcontrol.h"
 #include "controls/jaspcontrol.h"
 #include "rsyntax/rsyntax.h"
-
 #include <QQmlProperty>
 #include <QQmlContext>
 #include <QQmlEngine>
+#include "timers.h"
 #include <QTimer>
-#include "preferencesmodelbase.h"
+#include "log.h"
 
 using namespace std;
 
@@ -38,6 +38,9 @@ const QString AnalysisForm::rSyntaxControlName = "__RSyntaxTextArea";
 
 AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 {
+	JASPTIMER_SCOPE(AnalysisForm::AnalysisForm);
+	JASPTIMER_START(AnalysisForm::formCompleted from constructor);
+	
 	setObjectName("AnalysisForm");
 
 	_rSyntax = new RSyntax(this);
@@ -242,12 +245,15 @@ void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
 
 void AnalysisForm::_setUpControls()
 {
+
 	_setUpModels();
 	_setUp();
 }
 
 void AnalysisForm::_setUpModels()
 {
+	JASPTIMER_SCOPE(AnalysisForm::_setUpModels);
+	
 	for (JASPControl* control : _controls.values())
 	{
 		JASPListControl*	listControl = qobject_cast<JASPListControl*>(control);
@@ -335,6 +341,8 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 
 void AnalysisForm::_setUp()
 {
+	JASPTIMER_SCOPE(AnalysisForm::_setUp);
+	
 	QList<JASPControl*> controls = _controls.values();
 
 	for (JASPControl* control : controls)
@@ -430,6 +438,8 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
+	JASPTIMER_SCOPE(AnalysisForm::bindTo);
+	
 	std::set<std::string> controlsJsonWrong;
 
 	for (JASPControl* control : _dependsOrderedCtrls)
@@ -647,14 +657,19 @@ void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
 
 void AnalysisForm::formCompletedHandler()
 {
+	JASPTIMER_SCOPE(AnalysisForm::formCompletedHandler);
+	JASPTIMER_STOP(AnalysisForm::formCompleted from constructor);
 	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
 
 	_formCompleted = true;
 	setAnalysisUp();
+	
+	
 }
 
 void AnalysisForm::setAnalysisUp()
 {
+	JASPTIMER_SCOPE(AnalysisForm::setAnalysisUp);
 	if(!_formCompleted)
 		return;
 

@@ -118,9 +118,9 @@ option(JASP_USES_QT_HERE "Indicates whether some projects are using Qt" ON)
 # add_definitions(-DJASP_RESULTS_DEBUG_TRACES)
 
 option(JASP_TIMER_USED "Use JASP timer for profiling" OFF)
-if(JASP_TIMER_USED)
+#if(JASP_TIMER_USED)
   add_definitions(-DPROFILE_JASP)
-endif()
+#endif()
 
 option(UPDATE_JASP_SUBMODULES
        "Whether to automatically initialize and update the submodules" OFF)
