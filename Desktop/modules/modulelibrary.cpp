@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QDir>
+#include <qjsonobject.h>
 
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
@@ -11,6 +12,7 @@
 #include "engine/enginesync.h"
 #include "utilities/appdirs.h"
 #include "utilities/dynamicruntimeinfo.h"
+#include "log.h"
 
 ModuleLibrary * ModuleLibrary::_singleton = nullptr;
 
@@ -78,6 +80,7 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     envInfo["language"]				= PreferencesModel::prefs()->languageCode().replace("_", "-");		// do replace to enforce BCP 47 language tag format
     envInfo["installedModules"]		= installedModulesInfo();
     envInfo["uninstallableModules"] = getUninstallableModules();
+		
     return envInfo;
 }
 
@@ -102,8 +105,18 @@ QStringList ModuleLibrary::getUninstallableModules() const
     return dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 }
 
+QString ModuleLibrary::getEnvironmentInfoJson() const
+{
+	QVariantMap envInfo = getEnvironmentInfo();
+	QJsonDocument infoDoc = QJsonDocument(QJsonObject::fromVariantMap(envInfo));
+		
+	return infoDoc.toJson(QJsonDocument::Indented);
+}
+
 void ModuleLibrary::emitEnvironmentInfoChanged()
 {
+	Log::log() << "ModuleLibrary: Environment state updated: " << getEnvironmentInfoJson().toStdString() << std::endl;
+
     emit environmentInfoChanged(getEnvironmentInfo());
 }
 
