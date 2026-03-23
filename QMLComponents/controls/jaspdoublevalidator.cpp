@@ -23,6 +23,8 @@
 
 QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 {
+	JASPTIMER_SCOPE(JASPDoubleValidator::validate);
+	
 	if (s.isEmpty() || (s.startsWith("-") && s.length() == 1 && bottom() < 0))
 	{
 		// allow empty field or standalone minus sign
@@ -81,6 +83,9 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 
 QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
 {
+	JASPTIMER_SCOPE(JASPDoubleValidator::validationMessage);
+	
+	
 	QString message = tr("The value must be ");
 	bool hasValidation = false;
 	if (!_isInf(bottom()))
@@ -111,6 +116,8 @@ QString	JASPDoubleValidator::validationMessage(const QString& fieldName)
 
 bool JASPDoubleValidator::_isInf(double value)
 {
+	JASPTIMER_SCOPE(JASPDoubleValidator::_isInf);
+	
 	static int intInfinity = 2147483647; // 2 ^ 32 - 1
 
 	return isinf(value) || int(value) == intInfinity || int(value) == -intInfinity;
