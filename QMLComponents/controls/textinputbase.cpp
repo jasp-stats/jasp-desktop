@@ -156,7 +156,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		break;
 	}
 
-	setDisplayValue();
+	updateDisplayValue();
 	emit valueChanged();
 
 	BoundControlBase::bindTo(value);
@@ -164,7 +164,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 
 Json::Value TextInputBase::createJson() const
 {
-	QVariant value = property("displayValue");
+	QVariant value = _displayValue;
 	if (value.toString() == "" && !_defaultValue.isNull())
 		value = _defaultValue;
 
@@ -200,40 +200,31 @@ void TextInputBase::setUp()
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
 
-	JASPTIMER_START(TextInputBase::setUp do weird oldschool connect);
-	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
-	JASPTIMER_STOP(TextInputBase::setUp do weird oldschool connect);
-
-	JASPTIMER_START(TextInputBase::setUp do normal connect);
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
-		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
-	JASPTIMER_STOP(TextInputBase::setUp do normal connect);
+		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::updateDisplayValue);
 
-	JASPTIMER_START(TextInputBase::setUp setValue);
 	if (_value.isNull()) // If the value is not directly set, use the default value.
 		setValue(_defaultValue, false);
-	JASPTIMER_STOP(TextInputBase::setUp setValue);
 
-	JASPTIMER_START(TextInputBase::setUp call JASPControl::setUp());
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
-	JASPTIMER_STOP(TextInputBase::setUp call JASPControl::setUp());
 }
 
-void TextInputBase::setDisplayValue()
+void TextInputBase::updateDisplayValue()
 {
 	JASPTIMER_SCOPE(TextInputBase::setDisplayValue);
 
 	int		valueInt;
 	double	valueDbl;
-	QString showThis	= QColumnUtils::getIntValue(_value, valueInt) ?
-							QString::number(valueInt)
-						:	QColumnUtils::getDoubleValue(_value, valueDbl) ?
-								QColumnUtils::doubleToString(valueDbl, false)
-							:	_value.toString();
-
-	setProperty("displayValue", showThis);
+	
+	_setDisplayValue(
+		QColumnUtils::getIntValue(_value, valueInt) 
+		?	QString::number(valueInt)
+		:	QColumnUtils::getDoubleValue(_value, valueDbl) 
+			?	QColumnUtils::doubleToString(valueDbl, false)
+			:	_value.toString()
+	);
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)
@@ -403,13 +394,6 @@ Json::Value TextInputBase::_getJsonValue(QVariant value) const
 	}
 }
 
-void TextInputBase::valueChangedSlot()
-{
-	QVariant prop = property("displayValue");
-
-	setValue(prop);
-}
-
 void TextInputBase::setValue(QVariant value, bool useLocale)
 {
 	JASPTIMER_SCOPE(TextInputBase::setValue);
@@ -424,7 +408,7 @@ void TextInputBase::setValue(QVariant value, bool useLocale)
 	if(_inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType)
 		checkIfColumnIsFreeOrMine();
 
-	setDisplayValue();
+	updateDisplayValue();
 
 	if (hasChanged)
 	{
@@ -497,3 +481,23 @@ void TextInputBase::_setBoundValue()
 
 }
 
+
+QString TextInputBase::displayValue() const
+{
+	return _displayValue;
+}
+
+void TextInputBase::setDisplayValue(const QString &newDisplayValue)
+{
+	_setDisplayValue(newDisplayValue);
+	setValue(_displayValue);
+}
+
+void TextInputBase::_setDisplayValue(const QString &newDisplayValue)
+{
+	if (_displayValue == newDisplayValue)
+		return;
+	
+	_displayValue = newDisplayValue;
+	emit displayValueChanged();
+}

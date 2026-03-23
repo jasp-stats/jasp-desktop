@@ -34,7 +34,6 @@ TextInputBase
 	
 	property alias	control:			control
 	property alias	text:				textField.label
-	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
 	property int	textFormat:			Text.AutoText
 	property var	lastValidValue:		defaultValue
 	property int	fieldWidth:			jaspTheme.textFieldWidth
@@ -174,6 +173,19 @@ TextInputBase
 		selectedTextColor:		jaspTheme.white
 		selectionColor:			jaspTheme.itemSelectedColor
 		enabled:				textField.editable
+		text:					textField.displayValue
+		
+		Connections
+		{
+			target:				textField
+			
+			function onDisplayValueChanged()
+			{
+				control.text = textField.displayValue	
+			}
+		}
+		
+		onEditingFinished:		textField.displayValue = text;
 
 		property bool tooLongText: contentWidth > (width - leftPadding - rightPadding)
 

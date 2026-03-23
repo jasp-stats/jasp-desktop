@@ -29,6 +29,7 @@ class TextInputBase : public JASPControl, public BoundControlBase
 
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged		)
 	Q_PROPERTY( QVariant	defaultValue		READ defaultValue			WRITE setDefaultValue		NOTIFY defaultValueChanged			)
+	Q_PROPERTY( QString		displayValue		READ displayValue			WRITE setDisplayValue		NOTIFY displayValueChanged			)
 	Q_PROPERTY( QString		label				READ label					WRITE setLabel				NOTIFY labelChanged					)
 	Q_PROPERTY( QString		afterLabel			READ afterLabel				WRITE setAfterLabel			NOTIFY afterLabelChanged			)
 	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
@@ -57,6 +58,8 @@ public:
 	
 	void			checkIfColumnIsFreeOrMine();
 
+	QString			displayValue() const;
+	
 signals:
 	void		formulaCheckSucceeded();
 	void		hasScriptErrorChanged();
@@ -64,18 +67,20 @@ signals:
 	void		valueChanged();
 	void		labelChanged();
 	void		afterLabelChanged();
-
+	void		displayValueChanged();
+	
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
-	
 	GENERIC_SET_FUNCTION(Label,				_label,				labelChanged,			QString		)
 	GENERIC_SET_FUNCTION(AfterLabel,		_afterLabel,		afterLabelChanged,		QString		)
-	void setValue(			QVariant value, bool useLocale = true);
-	void setDefaultValue(	QVariant value);
+	
+	void			setValue(			QVariant value, bool useLocale = true);
+	void			setDefaultValue(	QVariant value);
+	void			setDisplayValue(const QString &newDisplayValue);
+	void			_setDisplayValue(const QString &newDisplayValue);
 
 private slots:
-	void		valueChangedSlot();
-	void		setDisplayValue();
+	void		updateDisplayValue();
 
 private:
 	Json::Value	_getJsonValue(QVariant value) const;
@@ -87,7 +92,8 @@ private:
 
 	TextInputType			_inputType;
 	QString					_label,
-							_afterLabel;
+							_afterLabel,
+							_displayValue;
 
 	bool					_parseDefaultValue	= true;
 	QVariant				_defaultValue		= "",
