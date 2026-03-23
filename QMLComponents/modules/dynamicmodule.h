@@ -109,12 +109,12 @@ public:
 	std::string			title()				const { return (isDevMod() ? "Dev: " : "") + _title;	}
 	QString				titleQ()			const { return QString::fromStdString(title());			}
 	bool				requiresData()		const { return AnalysisEntry::requiresDataEntries(_menuEntries); }
-	std::string			author()			const { return _author;									}
-	const Version	&	version()			const { return _version;								}
-	std::string			website()			const { return _website;								}
-	std::string			license()			const { return _license;								}
-	std::string			maintainer()		const { return _maintainer;								}
-	std::string			description()		const { return _descriptionTxt;							}
+	const QString	&	author()			const;
+	const Version	&	version()			const;
+	const QUrl		&	website()			const;
+	const QString	&	license()			const;
+	const QString	&	maintainer()		const;
+	const QString	&	description()		const;
 	Description		*	descriptionQml()	const { return _description;							}
 	std::string			modulePackage()		const { return _modulePackage;							}
 	bool				isCommon()			const { return _isCommon;								}
@@ -238,14 +238,8 @@ private:
 	std::string			_name,
 						_title,
 						_icon,
-						_author,
-						_website,
-						_license,
 						_installLog			= "",
-						_maintainer,
-						_descriptionTxt,
 						_modulePackage		= "";
-	Version				_version;
 	bool				_installing			= false,
 						_installed			= false,
 						_isDeveloperMod		= false,

@@ -40,7 +40,6 @@
 #include "utilities/appdirs.h"
 #include "modules/dynamicmodule.h"
 
-
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
@@ -162,29 +161,12 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath)
 		return "Error during initialization";
 
 	static std::string result;
-	QString modulePathQ		= tq(modulePath),
-			moduleNameQ;
 
-	QDir moduleDir(modulePathQ);
+	QString modulePathQ = tq(modulePath);
 
-	if (!moduleDir.exists())
-	{
-		result = fq("Module path not found: " + modulePathQ);
-		return result.c_str();
-	}
+	ModuleInfo description = parseDescription(modulePathQ);
 
-	Modules::DynamicModule * module = new Modules::DynamicModule(gl_application, gl_qmlEngine->rootContext(), modulePath, false);
-	module->initialize(gl_qmlEngine->rootContext());
-
-
-	std::vector<AnalysisInfo> analyses;
-	for (Modules::AnalysisEntry * analysisEntry : module->menu())
-	{
-		if (analysisEntry->isAnalysis())
-			analyses.push_back(AnalysisInfo(tq(analysisEntry->function()), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData()));
-	}
-
-	for (const AnalysisInfo & analysis : analyses)
+	for (const AnalysisInfo & analysis : description.analyses)
 	{
 		Log::log() << "Analysis " << analysis.analysisName << " with qml file " << analysis.qmlFileName << std::endl;
 		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData))
@@ -233,6 +215,53 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 
 	return result.c_str();
 }
+
+const char* STDCALL syntaxBridgeParseDescription(const char* modulePath)
+{
+	if (!init())
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return "";
+	}
+
+	ModuleInfo description = parseDescription(tq(modulePath));
+
+	Json::Value jsonDescription(Json::objectValue);
+
+	jsonDescription["name"]				= fq(description.name);
+	jsonDescription["title"]			= fq(description.title);
+	jsonDescription["author"]			= fq(description.author);
+	jsonDescription["website"]			= fq(description.website);
+	jsonDescription["license"]			= fq(description.license);
+	jsonDescription["maintainer"]		= fq(description.maintainer);
+	jsonDescription["description"]		= fq(description.description);
+	jsonDescription["requiresData"]		= description.requiresData;
+	jsonDescription["hasWrappers"]		= description.hasWrappers;
+	jsonDescription["isCommon"]			= description.isCommon;
+	jsonDescription["version"]			= description.version.asString();
+
+	Json::Value	analyses(Json::arrayValue);
+
+	for (const AnalysisInfo & analysis : description.analyses)
+	{
+		Json::Value jsonAnalysis(Json::objectValue);
+		jsonAnalysis["name"]		= fq(analysis.analysisName);
+		jsonAnalysis["qml"]			= fq(analysis.qmlFileName);
+		jsonAnalysis["title"]		= fq(analysis.analysisTitle);
+		jsonAnalysis["preloadData"]	= analysis.preloadData;
+		jsonAnalysis["hasWrapper"]	= analysis.hasWrapper;
+
+		analyses.append(jsonAnalysis);
+	}
+
+	jsonDescription["analyses"]		= analyses;
+
+	static std::string result;
+	result = jsonDescription.toStyledString();
+
+	return result.c_str();
+}
+
 
 } // extern "C"
 
@@ -443,6 +472,31 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 	}
 
 	return true;
+}
+
+ModuleInfo parseDescription(const QString & modulePath)
+{
+	QDir moduleDir(modulePath);
+
+	if (!moduleDir.exists())
+	{
+		Log::log() << "Module path not found: " + modulePath << std::endl;
+		return ModuleInfo();
+	}
+
+	Modules::DynamicModule * module = new Modules::DynamicModule(gl_application, gl_qmlEngine->rootContext(), modulePath, false);
+	module->initialize(gl_qmlEngine->rootContext());
+
+	ModuleInfo moduleInfo(module->nameQ(), module->titleQ(), module->author(), module->website().toString(), module->license(), module->maintainer(), module->description(),
+						  module->requiresData(), module->isCommon(), module->hasWrappers(), module->version());
+
+	for (Modules::AnalysisEntry * analysisEntry : module->menu())
+	{
+		if (analysisEntry->isAnalysis())
+			moduleInfo.analyses.push_back(AnalysisInfo(tq(analysisEntry->function()), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), analysisEntry->hasWrapper()));
+	}
+
+	return moduleInfo;
 }
 
 

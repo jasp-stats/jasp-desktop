@@ -330,7 +330,7 @@ void DynamicModule::loadDESCRIPTION(QString descriptionText)
 	_description->setAuthor(		entries["Author"]);
 	_description->setMaintainer(	entries["Maintainer"]);
 	_description->setWebsite(		entries["Website"]);
-	_description->setLicense(		entries["License"]);
+	_description->setLicense(		entries["License"]);	
 }
 
 
@@ -403,12 +403,6 @@ void DynamicModule::loadInfoFromDescriptionItem(Description * description)
 
 	_title							= fq(description->title());
 	_icon							= fq(description->icon());
-	_author							= fq(description->author());
-	_license						= fq(description->license());
-	_website						= fq(description->website().toString());
-	_maintainer						= fq(description->maintainer());
-	_descriptionTxt					= fq(description->description());
-	_version						= fq(description->version());
 	_hasWrappers					= description->hasWrappers();
 
 	for(auto * menuEntry : _menuEntries)
@@ -539,6 +533,38 @@ QString DynamicModule::helpFolderPath() const
 {
 	return tq(moduleInstFolder() + "/help/");
 }
+
+
+const QString &	DynamicModule::author()	const
+{
+	return _description->author();
+}
+
+const Version & DynamicModule::version() const
+{
+	return _description->version();
+}
+
+const QUrl & DynamicModule::website() const
+{
+	return _description->website();
+}
+
+const QString & DynamicModule::license() const
+{
+	return _description->license();
+}
+
+const QString & DynamicModule::maintainer()	const
+{
+	return _description->maintainer();
+}
+
+const QString & DynamicModule::description() const
+{
+	return _description->description();
+}
+
 
 ///The helpcontents might contain relative paths, this is sadly enough not easy to solve because the HelpWindow relies on its url to find relevant things in Resources
 ///What we can do however is preprocess the markdown and replace certain string(s), in this case "%HELP_FOLDER%"
@@ -868,8 +894,8 @@ Json::Value DynamicModule::asJsonForJaspFile(const std::string & analysisFunctio
 
 	json["moduleName"]			= name();
 	json["moduleVersion"]		= version().asString();
-	json["moduleMaintainer"]	= maintainer();
-	json["moduleWebsite"]		= website();
+	json["moduleMaintainer"]	= fq(maintainer());
+	json["moduleWebsite"]		= fq(website().toString());
 	json["analysisEntry"]		= analysisFunction;
 
 	return json;

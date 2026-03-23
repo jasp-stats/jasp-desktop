@@ -28,7 +28,7 @@ class Description : public QQuickItem
 	Q_PROPERTY(QString					title			READ title				WRITE setTitle				NOTIFY titleChanged				)
 	Q_PROPERTY(QString					icon			READ icon				WRITE setIcon				NOTIFY iconChanged				)
 	Q_PROPERTY(QString					description		READ description		WRITE setDescription		NOTIFY descriptionChanged		)
-	Q_PROPERTY(QString					version			READ version			WRITE setDummy				NOTIFY versionChanged			)
+	Q_PROPERTY(QString					version			READ versionStr			WRITE setDummy				NOTIFY versionChanged			)
 	Q_PROPERTY(QString					author			READ author				WRITE setDummy				NOTIFY authorChanged			)
 	Q_PROPERTY(QString					maintainer		READ maintainer			WRITE setDummy				NOTIFY maintainerChanged		)
 	Q_PROPERTY(QUrl						website			READ website			WRITE setDummyUrl			NOTIFY websiteChanged			)
@@ -49,15 +49,16 @@ public:
 	void			setDummy(QString ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
 	void			setDummyUrl(QUrl ) {}; // Temporary placeholder to make existing entries in Description.qml not stop it from loading, can be removed once all modules are updated
 	
-	QString			name()				const { return _name;						}
-	QString			title()				const { return _title;						}
-	QString			icon()				const { return _icon;						}
-	QString			description()		const { return _description;				}
-	QString			version()			const { return tq(_version.asString(3));	}
-	QString			author()			const { return _author;						}
-	QString			maintainer()		const { return _maintainer;					}
-	QUrl			website()			const { return _website;					}
-	QString			license()			const { return _license;					}
+	const QString &	name()				const { return _name;						}
+	const QString & title()				const { return _title;						}
+	const QString & icon()				const { return _icon;						}
+	const QString & description()		const { return _description;				}
+	const Version & version()			const { return _version;					}
+	QString versionStr()				const { return tq(_version.asString());		}
+	const QString & author()			const { return _author;						}
+	const QString & maintainer()		const { return _maintainer;					}
+	const QUrl	  & website()			const { return _website;					}
+	const QString & license()			const { return _license;					}
 	bool			requiresDataDef()	const { return _requiresDataDef;			}
 	bool			preloadData()		const;
 	DynamicModule * dynMod()			const { return _dynMod;						}

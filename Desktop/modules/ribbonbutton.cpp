@@ -39,7 +39,7 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	setDynamicModule(module);
 
 	setTitle(			_module->title()					);
-	setToolTip(		tq(	_module->description()	)			);
+	setToolTip(			_module->description()				);
 	setRequiresData(	_module->requiresData()				);
 	setIsCommon(		_module->isCommon()					);
 	setModuleName(		_module->name()						);
@@ -103,10 +103,10 @@ void RibbonButton::reloadDynamicModule(DynamicModule * dynMod)
 		setDynamicModule(dynMod);
 
 	setTitle(			_module->title()			);
-	setToolTip(		tq(	_module->description())	);
-	setRequiresData(	_module->requiresData()	);
-	setIconSource(tq(	_module->iconFilePath()));
-	setModuleName(		_module->name()			);
+	setToolTip(			_module->description()		);
+	setRequiresData(	_module->requiresData()		);
+	setIconSource(tq(	_module->iconFilePath())	);
+	setModuleName(		_module->name()				);
 
 	emit iChanged(this);
 }

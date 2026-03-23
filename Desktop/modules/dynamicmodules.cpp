@@ -781,7 +781,7 @@ QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePa
 				"<i>See website for further details: <a href=\"http://%6\">%6</a></i>"	"<br>"
 			  )
 			.arg(desc->title())
-			.arg(desc->version())
+			.arg(desc->versionStr())
 			.arg(desc->description())
 			.arg(desc->author())
 			.arg(desc->maintainer())
