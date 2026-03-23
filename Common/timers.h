@@ -19,6 +19,7 @@ struct customtimer
 	void	start()
 	{
 			lastStart = std::chrono::steady_clock::now();
+			totalStarts++;
 	}
 	
 	void resume() { start(); }
@@ -31,11 +32,12 @@ struct customtimer
 	
 	std::string format()
 	{
-		return std::to_string(totalDuration) + "s";
+		return std::to_string(totalDuration) + "s in " + std::to_string(totalStarts) + " times for an average of "+ std::to_string(totalDuration / std::max(totalStarts, 1))+"s per call";
 	}
 	
-	std::chrono::time_point<std::chrono::steady_clock> lastStart;
-	double totalDuration = 0;
+	std::chrono::time_point<std::chrono::steady_clock>	lastStart;
+	double												totalDuration = 0;
+	int													totalStarts = 0;
 };
 
 
