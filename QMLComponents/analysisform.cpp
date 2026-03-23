@@ -263,6 +263,8 @@ void AnalysisForm::_setUpModels()
 
 void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 {
+	JASPTIMER_SCOPE(AnalysisForm::sortControls);
+	
 	for (JASPControl* control : controls)
 	{
 		control->addExplicitDependency();
@@ -276,7 +278,7 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		// We have then simply to use the size of their 'depends' set, to sort the controls.
 		for (size_t index = 0; index < depends.size(); index++)
 		{
-			JASPControl					* depend		= depends[index];
+			JASPControl						* depend		= depends[index];
 			const std::set<JASPControl*>	& dependdepends = depend->depends();
 
 			for (JASPControl* dependdepend : dependdepends)
@@ -494,6 +496,8 @@ void AnalysisForm::addFormWarning(const QString & warning)
 //Maybe even to full QML? Why don't we just use a loader...
 void AnalysisForm::addControlError(JASPControl* control, QString message, bool temporary, bool warning, bool closeable)
 {
+	JASPTIMER_SCOPE(AnalysisForm::addControlError);
+	
 	if (!control)
 	{
 		// Quite bad: write it at least to the log

@@ -127,6 +127,8 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 
 void ComboBoxBase::setUp()
 {
+	JASPTIMER_SCOPE(ComboBoxBase::setUp);
+	
 	JASPListControl::setUp();
 
 	_model->sourceTermsReset();

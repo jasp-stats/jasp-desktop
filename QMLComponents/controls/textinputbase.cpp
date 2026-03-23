@@ -19,6 +19,7 @@
 #include "textinputbase.h"
 #include "analysisform.h"
 #include "columnutils.h"
+#include "log.h"
 
 using namespace std;
 
@@ -114,7 +115,10 @@ void TextInputBase::bindTo(const Json::Value& value)
 			_value = QVariant();
 
 		if (setRealValue)
+		{
+			JASPTIMER_SCOPE(setProperty realValue bindTo);
 			setProperty("realValue", _value);
+		}
 
 		break;
 	}
@@ -213,7 +217,16 @@ void TextInputBase::setUp()
 
 void TextInputBase::updateDisplayValue()
 {
-	JASPTIMER_SCOPE(TextInputBase::setDisplayValue);
+	JASPTIMER_SCOPE(TextInputBase::updateDisplayValue);
+	
+	static std::map<TextInputBase *, size_t> calledTimes;
+	
+	//THIS IS VERY MUCH FOR DEBUGGING!
+	if(calledTimes[this]++ > 30)
+	{
+		Log::log() << "TextInputBase::updateDisplayValue got called " << calledTimes[this] << " many times for the same control " << this << std::endl;
+	}
+		
 
 	int		valueInt;
 	double	valueDbl;
@@ -267,6 +280,8 @@ void TextInputBase::rScriptDoneHandler(const QString &result)
 
 	if (succes)
 	{
+		JASPTIMER_SCOPE(setProperty realValue rScriptDoneHandler);
+		
 		emit formulaCheckSucceeded();
 		setProperty("realValues", values);
 		if (values.length() > 0)
@@ -357,6 +372,8 @@ bool TextInputBase::_formulaResultInBounds(double result)
 
 Json::Value TextInputBase::_getJsonValue(QVariant value) const
 {
+	JASPTIMER_SCOPE(TextInputBase::_getJsonValue);
+	
 	int		valueInt;
 	double	valueDbl;
 	bool	isInt,
@@ -408,10 +425,10 @@ void TextInputBase::setValue(QVariant value, bool useLocale)
 	if(_inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType)
 		checkIfColumnIsFreeOrMine();
 
-	updateDisplayValue();
-
 	if (hasChanged)
 	{
+		updateDisplayValue();
+		
 		emit valueChanged();
 
 		if (initialized())
@@ -452,7 +469,10 @@ void TextInputBase::_setBoundValue()
 		{
 			if (_formulaResultInBounds(valueDbl))
 			{
-				setProperty("realValue", _value);
+				{
+					JASPTIMER_SCOPE(setProperty realValue _setBoundValue);
+					setProperty("realValue", _value);
+				}
 				setBoundValue(_getJsonValue(_value));
 				clearControlError();
 				setHasScriptError(false);
@@ -495,6 +515,8 @@ void TextInputBase::setDisplayValue(const QString &newDisplayValue)
 
 void TextInputBase::_setDisplayValue(const QString &newDisplayValue)
 {
+	JASPTIMER_SCOPE(TextInputBase::_setDisplayValue);
+	
 	if (_displayValue == newDisplayValue)
 		return;
 	

@@ -67,6 +67,8 @@ bool TextAreaBase::containsVariables() const
 
 void TextAreaBase::setUp()
 {
+	JASPTIMER_SCOPE(TextAreaBase::setUp);
+	
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);												break;
