@@ -574,6 +574,8 @@ bool AnalysisForm::hasError()
 
 QString AnalysisForm::getError(bool withControlName)
 {
+	JASPTIMER_SCOPE(AnalysisForm::getError);
+	
 	QString message;
 
 	for (QQuickItem* item : _controlErrorMessageCache)
@@ -593,6 +595,8 @@ QString AnalysisForm::getError(bool withControlName)
 
 void AnalysisForm::clearControlError(JASPControl* control)
 {
+	JASPTIMER_SCOPE(AnalysisForm::clearControlError);
+	
 	if (!control) return;
 
 	for (QQuickItem * errorItem : _controlErrorMessageCache)
@@ -605,6 +609,8 @@ void AnalysisForm::clearControlError(JASPControl* control)
 
 void AnalysisForm::clearFormErrors()
 {
+	JASPTIMER_SCOPE(AnalysisForm::clearFormErrors);
+	
 	_formErrors.clear();
 	emit errorsChanged();
 
@@ -618,6 +624,8 @@ void AnalysisForm::clearFormErrors()
 
 void AnalysisForm::clearFormWarnings()
 {
+	JASPTIMER_SCOPE(AnalysisForm::clearFormWarnings);
+	
 	_formWarnings.clear();
 	emit warningsChanged();
 
@@ -662,6 +670,7 @@ void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
 void AnalysisForm::formCompletedHandler()
 {
 	JASPTIMER_SCOPE(AnalysisForm::formCompletedHandler);
+	
 	JASPTIMER_STOP(AnalysisForm::formCompleted from constructor);
 	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
 
@@ -733,12 +742,16 @@ void AnalysisForm::knownIssuesUpdated()
 
 void AnalysisForm::setControlIsDependency(QString controlName, bool isDependency)
 {
+	JASPTIMER_SCOPE(AnalysisForm::setControlIsDependency);
+	
 	if(_controls.count(controlName) > 0)
 		_controls[controlName]->setProperty("isDependency", isDependency);
 }
 
 void AnalysisForm::setControlMustContain(QString controlName, QStringList containThis)
 {
+	JASPTIMER_SCOPE(AnalysisForm::setControlMustContain);
+	
 	if(_controls.count(controlName) > 0)
 		_controls[controlName]->setProperty("dependencyMustContain", containThis);
 }
@@ -789,6 +802,8 @@ void AnalysisForm::setRunOnChange(bool change)
 
 void AnalysisForm::blockValueChangeSignal(bool block, bool notifyOnceUnblocked)
 {
+	JASPTIMER_SCOPE(AnalysisForm::blockValueChangeSignal);
+	
 	if (block)
 		_valueChangedSignalsBlocked++;
 	else
@@ -868,6 +883,8 @@ std::vector<std::vector<string> > AnalysisForm::getValuesFromRSource(const QStri
 
 std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath)
 {
+	JASPTIMER_SCOPE(AnalysisForm::_getValuesFromJson);
+	
 	auto getValueFromJson = [](const Json::Value& jsonValue) -> std::vector<std::string>
 	{
 		if (jsonValue.isString())			return {jsonValue.asString()};

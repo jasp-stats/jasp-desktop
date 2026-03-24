@@ -62,8 +62,8 @@ TextInputBase
 
 	function doEditingFinished()
 	{
-		if (displayValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
-			displayValue = defaultValue;
+		//if (displayValue === "" && defaultValue !== undefined && String(defaultValue) !== "")
+		//	displayValue = defaultValue;
 		lastValidValue = displayValue
 		editingFinished();
 	}
@@ -175,15 +175,15 @@ TextInputBase
 		enabled:				textField.editable
 		text:					textField.displayValue
 		
-		Connections
-		{
-			target:				textField
-			
-			function onDisplayValueChanged()
-			{
-				control.text = textField.displayValue	
-			}
-		}
+		//Connections
+		//{
+		//	target:				textField
+		//	
+		//	function onDisplayValueChanged()
+		//	{
+		//		control.text = textField.displayValue	
+		//	}
+		//}
 		
 		onEditingFinished:		textField.displayValue = text;
 

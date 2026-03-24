@@ -219,15 +219,6 @@ void TextInputBase::updateDisplayValue()
 {
 	JASPTIMER_SCOPE(TextInputBase::updateDisplayValue);
 	
-	static std::map<TextInputBase *, size_t> calledTimes;
-	
-	//THIS IS VERY MUCH FOR DEBUGGING!
-	if(calledTimes[this]++ > 30)
-	{
-		Log::log() << "TextInputBase::updateDisplayValue got called " << calledTimes[this] << " many times for the same control " << this << std::endl;
-	}
-		
-
 	int		valueInt;
 	double	valueDbl;
 	

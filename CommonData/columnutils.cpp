@@ -96,6 +96,7 @@ bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue, bool 
 	
 	try
 	{
+		JASPTIMER_SCOPE(ColumnUtils::getDoubleValue boost lexical cast);
 		doubleValue = boost::lexical_cast<double>((value));
 		return true;
 	}
@@ -103,6 +104,7 @@ bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue, bool 
 	{
 		try
 		{
+			JASPTIMER_SCOPE(ColumnUtils::getDoubleValue boost lexical cast after deeuropeanise); 
 			doubleValue = boost::lexical_cast<double>(deEuropeaniseForImport(value));
 			return true;
 		}
@@ -203,6 +205,8 @@ bool ColumnUtils::convertVecToDouble(const stringvec & values, doublevec & doubl
 
 std::string ColumnUtils::deEuropeaniseForImport(std::string value)
 {
+	JASPTIMER_SCOPE(ColumnUtils::deEuropeaniseForImport);
+	
 	int dots	= 0,
 		commas	= 0;
 
