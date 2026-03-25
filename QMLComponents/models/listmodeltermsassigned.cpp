@@ -69,6 +69,8 @@ Terms ListModelTermsAssigned::canAddTerms(const Terms& terms) const
 
 Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemIndex, const Terms::RelatedValuesPerTerm& rowValues)
 {
+	JASPTIMER_SCOPE(ListModelTermsAssigned::addTerms);
+	
 	Terms termsToSendBack;
 	int maxRows = listView()->maxRows(); // maxRows == -1 means no maximum
 

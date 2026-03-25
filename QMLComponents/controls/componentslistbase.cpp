@@ -384,7 +384,10 @@ void ComponentsListBase::addItemHandler()
 		rowValues[newItemValue] = jsonValues;
 	}
 	_termsModel->addTerms(newTerms, -1, rowValues);
+	
+	JASPTIMER_START(ComponentsListBase::addItemHandler setProperty currentIndex);
 	setProperty("currentIndex", _termsModel->rowCount() - 1);
+	JASPTIMER_STOP(ComponentsListBase::addItemHandler setProperty currentIndex);
 }
 
 void ComponentsListBase::removeItemHandler(int index)
@@ -446,6 +449,8 @@ QString ComponentsListBase::_makeUnique(const QString &val, int index) const
 
 QString ComponentsListBase::_makeUnique(const QString &val, const QList<QString> &values, int index) const
 {
+	JASPTIMER_SCOPE(ComponentsListBase::_makeUnique);
+	
 	QString result = val;
 
 	bool isUnique = true;
