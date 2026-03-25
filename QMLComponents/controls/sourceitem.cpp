@@ -96,6 +96,8 @@ SourceItem::SourceItem(JASPListControl *listControl)
 
 void SourceItem::_setUp()
 {
+	JASPTIMER_SCOPE(SourceItem::_setUp);
+	
 	if (_isValuesSource)
 		// Add a ListModelTermsAvailable to contain the values given in the source
 		_sourceNativeModel = new ListModelTermsAvailable(_targetListControl, _values);
@@ -126,6 +128,8 @@ void SourceItem::_setUp()
 
 void SourceItem::_findModelAndControl()
 {
+	JASPTIMER_SCOPE(SourceItem::_findModelAndControl);
+	
 	if (_targetListControl->form() && !_sourceName.isEmpty() && !_sourceListModel && _targetListControl->parentListView())
 	{
 		// Case when we are in a form, we have source name, but not yet the corresponding control. The rowControls should be here initialized
@@ -167,6 +171,8 @@ void SourceItem::_findModelAndControl()
 
 void SourceItem::connectModels()
 {
+	JASPTIMER_SCOPE(SourceItem::connectModels);
+			
 	if (!_targetListControl->initialized() || _connected) return;
 
 	if (!_sourceNativeModel && _sourceListControl)
@@ -233,6 +239,8 @@ void SourceItem::connectModels()
 
 void SourceItem::disconnectModels()
 {
+	JASPTIMER_SCOPE(SourceItem::disconnectModels);
+	
 	if (!_connected) 
 		return;
 
@@ -279,6 +287,8 @@ void SourceItem::_rSourceChanged(const QString& name)
 
 QList<QVariant> SourceItem::getListVariant(QVariant var)
 {
+	JASPTIMER_SCOPE(SourceItem::getListVariant);
+	
 	QList<QVariant> listVar;
 
 	if (!var.isValid() || var.isNull())
@@ -337,6 +347,8 @@ QString SourceItem::_readRSourceName(const QString& sourceNameExt, QString& sour
 
 QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, const QVariant& source, Terms& sourceValues, QVector<SourceItem*>& rSources, QAbstractItemModel*& nativeModel)
 {
+	JASPTIMER_SCOPE(SourceItem::_readSource);
+	
 	QMap<QString, QVariant> map;
 	QString sourceName, sourceControlName, sourceUse;
 
@@ -417,6 +429,8 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 Terms SourceItem::_readValues(JASPListControl* listControl, const QVariant& values)
 {
+	JASPTIMER_SCOPE(SourceItem::_readValues);
+	
 	Terms result;
 
 	bool isInteger = false;
@@ -482,6 +496,8 @@ SourceItem* SourceItem::_readRSource(JASPListControl* listControl, const QVarian
 
 QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 {
+	JASPTIMER_SCOPE(SourceItem::readAllSources);
+	
 	QVector<SourceItem*> sources;
 
 	if (listControl->values().isValid() && !listControl->values().isNull())
@@ -539,6 +555,8 @@ QVector<SourceItem*> SourceItem::readAllSources(JASPListControl* listControl)
 
 Terms SourceItem::_readAllTerms()
 {
+	JASPTIMER_SCOPE(SourceItem::_readAllTerms);
+	
 	Terms terms;
 
 	if (_isRSource)
@@ -616,6 +634,8 @@ Terms SourceItem::_readAllTerms()
 
 Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms, const QString& condition, const QVector<ConditionVariable>& conditionVariables, const QMap<QString, Terms>& termsMap)
 {
+	JASPTIMER_SCOPE(SourceItem::filterTermsWithCondition);
+	
 	Terms filteredTerms;
 	JASPListControl* listControl = model->listView();
 	QJSEngine* jsEngine = qmlEngine(listControl);
@@ -753,6 +773,8 @@ Terms SourceItem::getTerms()
 
 QSet<QString> SourceItem::usedControls() const
 {
+	JASPTIMER_SCOPE(SourceItem::usedControls);
+	
 	QSet<QString> result;
 
 	if (!_rowControlName.isEmpty())
