@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 
 #include <fcntl.h>
-
+#include "utilities/qutils.h"
 //#include "libzip/config.h"
 #include <archive.h>
 #include <archive_entry.h>
@@ -48,8 +48,11 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 	case Compatibility::NotCompatible:
 	{
 		if (DataSetPackage::pkg()->jaspVersion() < JASPImporter::minJaspVersion)
-			throw std::runtime_error("The JASP file is too old (" + (DataSetPackage::pkg()->jaspVersion().isEmpty() ? "older than " + (JASPImporter::minJaspVersion.asString()) : DataSetPackage::pkg()->jaspVersion().asString()) + ") and is not supported anymore.\n" +
-						"Load and save it first in an intermediate JASP version (newer than " + JASPImporter::minJaspVersion.asString() + " and older than 0.96.1) to upgrade your JASP file to a compatible version");
+			throw std::runtime_error(
+					fq(tr("The JASP file is too old (%1) and is not supported anymore.\n"
+						"Load and save it first in an intermediate JASP version (between %2 and 0.96.1) to upgrade your JASP file to a compatible version")
+				.arg(DataSetPackage::pkg()->jaspVersion().isEmpty() ? "older than " + (JASPImporter::minJaspVersion.asString()) : DataSetPackage::pkg()->jaspVersion().asString())
+				.arg(JASPImporter::minJaspVersion.asString())));
 		else
 			throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	}
