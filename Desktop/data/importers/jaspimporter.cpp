@@ -49,7 +49,7 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 	{
 		if (DataSetPackage::pkg()->jaspVersion() < JASPImporter::minJaspVersion)
 			throw std::runtime_error("The JASP file is too old (" + (DataSetPackage::pkg()->jaspVersion().isEmpty() ? "older than " + (JASPImporter::minJaspVersion.asString()) : DataSetPackage::pkg()->jaspVersion().asString()) + ") and is not supported anymore.\n" +
-						"Load first an intermediate JASP version (newer than " + JASPImporter::minJaspVersion.asString() + ") to upgrade your JASP file to a compatible version");
+						"Load and save it first in an intermediate JASP version (newer than " + JASPImporter::minJaspVersion.asString() + " and older than 0.96.1) to upgrade your JASP file to a compatible version");
 		else
 			throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
 	}
