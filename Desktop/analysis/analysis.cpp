@@ -547,6 +547,10 @@ void Analysis::boundValueChangedHandler()
 	emit userModifiedSomething();
 	incrementRevision(); // To make sure we always process all changed options we increment the revision whenever anything changes
 
+	if(_revision > 5000)
+		"???";
+		
+	
 	Log::log() << "Option changed for analysis '" << name() << "' and id " << id() << ", revision incremented to: " << _revision << std::endl;
 
 	if (_refreshBlocked)

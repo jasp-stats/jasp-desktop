@@ -23,12 +23,16 @@
 ComponentsListBase::ComponentsListBase(QQuickItem *parent)
 	: JASPListControl(parent), BoundControlBase(this)
 {
+	JASPTIMER_SCOPE(ComponentsListBase::ComponentsListBase);
+	
 	_controlType			= ControlType::ComponentsList;
 	_useControlMouseArea	= false;
 }
 
 void ComponentsListBase::setUpModel()
 {
+	JASPTIMER_SCOPE(ComponentsListBase::setUpModel);
+	
 	_termsModel = new ListModelTermsAssigned(this);
 	JASPListControl::setUpModel();
 
@@ -41,6 +45,8 @@ void ComponentsListBase::setUpModel()
 
 void ComponentsListBase::bindTo(const Json::Value& value)
 {
+	JASPTIMER_SCOPE(ComponentsListBase::bindTo);
+	
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
@@ -85,6 +91,8 @@ void ComponentsListBase::setUp()
 
 Json::Value ComponentsListBase::createJson() const
 {
+	JASPTIMER_SCOPE(ComponentsListBase::createJson);
+	
 	std::string keyValue = fq(_optionKeyValue),
 				keyLabel = fq(_optionKeyLabel);
 	Json::Value result(Json::arrayValue);
@@ -175,6 +183,8 @@ Json::Value ComponentsListBase::createJson() const
 
 void ComponentsListBase::resetDefaultValue()
 {
+	JASPTIMER_SCOPE(ComponentsListBase::resetDefaultValue);
+	
 	if (hasSource()) return;
 
 	// This slot is called when the component is initialized
@@ -226,6 +236,8 @@ bool ComponentsListBase::isJsonValid(const Json::Value &value) const
 
 void ComponentsListBase::termsChangedHandler()
 {
+	JASPTIMER_SCOPE(ComponentsListBase::termsChangedHandler);
+	
 	JASPListControl::termsChangedHandler();
 
 	setBoundValue(_termsModel->terms().getOptionsWithRelatedValues(_termsModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables()));
@@ -250,6 +262,8 @@ void ComponentsListBase::bindOffsets()
 
 QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 {
+	JASPTIMER_SCOPE(ComponentsListBase::controlNameXOffsetMap);
+	
 	// The headers should be aligned with the controls of the ComponentsList
 	// The headerLabels property is an array that can contain 2 kind of values:
 	// . if it is just a string, then this is the header label of a ith control.
@@ -332,6 +346,8 @@ Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, c
 
 void ComponentsListBase::addItemHandler()
 {
+	JASPTIMER_SCOPE(ComponentsListBase::addItemHandler);
+	
 	Terms newTerms;
 	QString newItemValue = _makeUnique(_newItemValue, _termsModel->terms().values());
 	QString newItemLabel = _makeUnique(_newItemLabel, _termsModel->terms().labels());
@@ -379,6 +395,8 @@ void ComponentsListBase::removeItemHandler(int index)
 
 void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 {
+	JASPTIMER_SCOPE(ComponentsListBase::keyValueChangedHandler);
+	
 	if (index < 0 || index >= _termsModel->rowCount())
 		return;
 
@@ -394,6 +412,8 @@ void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 
 QString ComponentsListBase::_changeLastNumber(const QString &val) const
 {
+	JASPTIMER_SCOPE(ComponentsListBase::_changeLastNumber);
+	
 	QString result = val;
 	
 	int index;

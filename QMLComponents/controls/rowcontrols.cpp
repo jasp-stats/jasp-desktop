@@ -36,6 +36,8 @@ RowControls::RowControls(ListModel* parent
 // So this RowControls instance needs to exist already.
 void RowControls::initValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues)
 {
+	JASPTIMER_SCOPE(RowControls::initValues);
+	
 	JASPListControl* listView = _parentModel->listView();
 
 	QQmlContext* context = new QQmlContext(qmlContext(listView), this);
@@ -72,6 +74,8 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 
 void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json::Value>& rowValues)
 {
+	JASPTIMER_SCOPE(RowControls::resetValues);
+	
 	// Cannot use qmlContext(item) : setContextProperty would generate: 'Cannot set property on internal context.' error
 	_context->setContextProperty("rowIndex", row);
 	_context->setContextProperty("rowLabel", key.label());
@@ -84,6 +88,8 @@ void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json
 
 void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 {
+	JASPTIMER_SCOPE(RowControls::_setValues);
+	
 	// The controls (when created or reused) need to be initialized
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	JASPListControl* parentControl = _parentModel->listView();
@@ -122,6 +128,8 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 
 bool RowControls::addJASPControl(JASPControl *control)
 {
+	JASPTIMER_SCOPE(RowControls::addJASPControl);
+	
 	bool success = false;
 	JASPListControl* listView = _parentModel->listView();
 
@@ -140,6 +148,8 @@ bool RowControls::addJASPControl(JASPControl *control)
 
 void RowControls::disconnectAndDeleteControls()
 {
+	JASPTIMER_SCOPE(RowControls::disconnectAndDeleteControls);
+	
 	// If a control depends on a source, disconnect this source with this control.
 	for (JASPControl* control : _rowJASPControlMap.values())
 	{
