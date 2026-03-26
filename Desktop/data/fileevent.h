@@ -46,7 +46,7 @@ public:
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
-	void				setComplete(bool success = true, const QString &message = "");
+	void				setComplete(bool success = true, const QString &message = "", bool silent = false);
 	void				chain(FileEvent *event);
 
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
@@ -54,6 +54,7 @@ public:
 	bool				isExample()		const;
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
 	bool				isCompleted()	const { return _completed;						}
+	bool				isSilent()		const { return _silent;							}
 	bool				isSuccessful()	const { return _success;						}
 	bool				isTmp()			const { return _tmp; }
 	static bool			autoSaveExists();
@@ -90,6 +91,7 @@ private:
 						_message;
 	bool				_completed		= false,
 						_success		= false,
+						_silent			= false,
 						_tmp			= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;

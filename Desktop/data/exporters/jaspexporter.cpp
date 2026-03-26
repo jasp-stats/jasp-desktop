@@ -47,7 +47,7 @@ JASPExporter::JASPExporter()
 	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }
 
-void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
+bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	struct archive *a;
 
@@ -57,7 +57,10 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	bool encrypt = JaspEncryptionData::getInstance()->encryptionActive();
 	if(encrypt) {
 		if(!JaspEncryptionData::getInstance()->paramsSet())
-			DesktopCommunicator::singleton()->queryEncryptionSettings();
+		{
+			if (!DesktopCommunicator::singleton()->queryEncryptionSettings())
+				return false; // Cancelled
+		}
 		
 		if(!JaspEncryptionData::getInstance()->paramsSet())
 			throw std::runtime_error(DesktopCommunicator::tr("No password given!").toStdString());
@@ -102,6 +105,8 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 
 	//Make sure it is now always considered "loading" in DataSetPackage
 	DataSetPackage::pkg()->setLoaded(true);
+
+	return true;
 }
 
 void JASPExporter::saveManifest(archive * a)

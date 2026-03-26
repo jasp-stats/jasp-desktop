@@ -91,14 +91,14 @@ void EncryptionSettingsModel::submit()
 	setVisible(false);
 	
 	JaspEncryptionData::getInstance()->setParamsSet(true);
-	emit queryComplete();
+	emit queryComplete(true);
 }
 
 void EncryptionSettingsModel::cancel()
 {
 	setVisible(false);
 		
-	emit queryComplete();
+	emit queryComplete(false);
 }
 
 QString EncryptionSettingsModel::publickey() const

@@ -39,7 +39,7 @@
 
 const Version JASPImporter::minJaspVersion = Version("0.18.0");
 
-void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)> progressCallback)
+bool JASPImporter::loadDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {	
 	JASPTIMER_RESUME(JASPImporter::loadDataSet INIT);
 
@@ -55,7 +55,8 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 			JaspEncryptionData::getInstance()->setEncryptionActive(true);
 			tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
 			Json::Value root;
-			DesktopCommunicator::singleton()->queryEncryptionSettings(true);
+			if (!DesktopCommunicator::singleton()->queryEncryptionSettings(true))
+				return false;
             auto privKey = JaspEncryptionData::getInstance()->getPrivatekey();
             std::string responsePublicKey = "";
             std::string responsePasswordSalt = "";
@@ -102,6 +103,8 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 
 	if(encrypted) //delete the decrypted tmp file we made
 		std::filesystem::remove(tmpPath);
+
+	return true;
 }
 
 JASPImporter::Compatibility JASPImporter::isCompatible(const std::string &path)

@@ -37,7 +37,7 @@ public:
 
 	static const Version minJaspVersion;
 
-	static void loadDataSet(const std::string &path, std::function<void(int)> progressCallback);
+	static bool loadDataSet(const std::string &path, std::function<void(int)> progressCallback);
 	static Compatibility isCompatible(const std::string &path);
 
 private:

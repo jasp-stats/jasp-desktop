@@ -1422,7 +1422,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
+			if (!event->isSilent())
+				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	emit exitSignal(3);
 
@@ -1468,7 +1469,8 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
+			if (!event->isSilent())
+				MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)
 				std::cerr << "Tested " << event->path().toStdString() << " but saving failed because of: " << event->message().toStdString() << std::endl;

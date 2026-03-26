@@ -123,7 +123,16 @@ void AsyncLoader::saveTask(FileEvent *event)
 		DataSetPackage::pkg()->doWalCheckPoint();
 
 		Exporter *exporter = event->exporter();
-        if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
+		if (exporter)
+		{
+			bool result = exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
+			if (!result)
+			{
+				Utils::removeFile(fq(tempPath));
+				event->setComplete(false, "", true);
+				return;
+			}
+		}
 		else			throw runtime_error("No Exporter found!");
 
 		int attempts = 1;
@@ -240,8 +249,22 @@ void AsyncLoader::loadPackage(QString id)
 				pkg->createDataSet();
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
-					_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
-			else	_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
+				_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
+			else
+			{
+				bool result = _loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
+
+				if (!result)
+				{
+					DataSetPackage::pkg()->dbDelete();
+					DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
+
+					if (dataNode != nullptr)
+						_odm->deleteActionDataNode(id);
+					_currentEvent->setComplete(false, "", true);
+					return;
+				}
+			}
 
 			if(_currentEvent->operation() != FileEvent::FileSyncData && _currentEvent->type() != Utils::FileType::jasp && !_currentEvent->isReadOnly())
 				pkg->setSynchingExternally(true);

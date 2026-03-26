@@ -17,7 +17,7 @@ public:
 
 	bool useNativeFileDialog();
 	bool engineSandbox();
-	void queryEncryptionSettings(bool readingMode = false);
+	bool queryEncryptionSettings(bool readingMode = false);
 
 signals:
 	void queryEncryptionSettingsSignal(bool readingMode);
@@ -28,12 +28,13 @@ signals:
 	bool engineSandboxSignal();
 
 public slots:
-	void encryptionSettingsQueryComplete();
+	void encryptionSettingsQueryComplete(bool submit);
 
 private:
 	static DesktopCommunicator * _singleton;
 
 	bool queryCondition = false; // against spurious wakeup
+	bool querySubmitted = false;
 	std::mutex queryLock;
 	std::condition_variable query_cv;
 };

@@ -32,7 +32,7 @@ DataExporter::DataExporter(bool includeComputeColumns) : _includeComputeColumns(
 
 DataExporter::~DataExporter() {}
 
-void DataExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
+bool DataExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	progressCallback(0);
 
@@ -44,6 +44,8 @@ void DataExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	outfile.close();
 
 	progressCallback(100);
+
+	return true;
 }
 
 

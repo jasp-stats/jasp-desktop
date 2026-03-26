@@ -99,11 +99,12 @@ bool FileEvent::setPath(const QString & path)
 
 }
 
-void FileEvent::setComplete(bool success, const QString & message)
+void FileEvent::setComplete(bool success, const QString & message, bool silent)
 {
 	_completed	= true;
 	_success	= success;
 	_message	= message;
+	_silent		= silent;
 
 	emit completed(this);
 }

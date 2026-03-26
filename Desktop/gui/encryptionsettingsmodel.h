@@ -42,7 +42,7 @@ public:
     void setPrivatekey(const QString &newPrivatekey);
 
 signals:
-	void queryComplete();
+	void queryComplete(bool submit);
 	void passwordChanged();
 	void jaspSubmissionChanged();
 	void encryptionActiveChanged();

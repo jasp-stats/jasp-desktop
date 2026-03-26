@@ -64,11 +64,12 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
-void DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
+bool DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
 
 	Importer* importer = getImporter(locator, extension);
+	bool result = false;
 
 	if (importer)
 	{
@@ -76,11 +77,13 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
-		JASPImporter::loadDataSet(locator, progress);
+		result = JASPImporter::loadDataSet(locator, progress);
 	else
 		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
 
 	JASPTIMER_STOP(DataSetLoader::loadPackage);
+
+	return result;
 }
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)
