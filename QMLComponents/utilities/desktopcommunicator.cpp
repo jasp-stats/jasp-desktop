@@ -38,7 +38,7 @@ bool DesktopCommunicator::engineSandbox()
 #endif
 }
 
-void DesktopCommunicator::queryEncryptionSettings()
+void DesktopCommunicator::queryEncryptionSettings(bool readingMode)
 {
 #ifdef BUILDING_JASP
 	if(QThread::currentThread() == qApp->thread()) {
@@ -48,7 +48,7 @@ void DesktopCommunicator::queryEncryptionSettings()
 
 	queryCondition = false;
 	std::unique_lock<std::mutex> lock(queryLock);
-	emit queryEncryptionSettingsSignal();
+	emit queryEncryptionSettingsSignal(readingMode);
 	query_cv.wait(lock, [&] { return queryCondition; });
 #else
 	return;

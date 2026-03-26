@@ -69,6 +69,7 @@ Window
         CheckBox {
             id: jaspSubmission
             text: qsTr("JASP Team Submission.")
+            visible: !encryptionModel.readingMode
         }
 
         CheckBox {

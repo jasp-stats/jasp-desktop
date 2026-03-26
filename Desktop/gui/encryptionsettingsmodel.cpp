@@ -47,8 +47,9 @@ void EncryptionSettingsModel::setEncryptionActive(bool value)
 	emit encryptionActiveChanged();
 }
 
-void EncryptionSettingsModel::queryEncryptionSettings()
+void EncryptionSettingsModel::queryEncryptionSettings(bool readingMode)
 {
+	setReadingMode(readingMode);
 	JaspEncryptionData::getInstance()->reset();
 	
     emit passwordChanged();
@@ -70,6 +71,19 @@ void EncryptionSettingsModel::setVisible(bool newVisible)
 		return;
 	_visible = newVisible;
 	emit visibleChanged();
+}
+
+bool EncryptionSettingsModel::readingMode() const
+{
+	return _readingMode;
+}
+
+void EncryptionSettingsModel::setReadingMode(bool readingMode)
+{
+	if (_readingMode == readingMode)
+		return;
+	_readingMode = readingMode;
+	emit readingModeChanged();
 }
 
 void EncryptionSettingsModel::submit()

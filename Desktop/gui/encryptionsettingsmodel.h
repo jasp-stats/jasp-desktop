@@ -6,12 +6,13 @@
 class EncryptionSettingsModel : public QObject
 {
 	Q_OBJECT
-    Q_PROPERTY(bool		 visible            READ visible                 WRITE setVisible                NOTIFY visibleChanged				)
+	Q_PROPERTY(bool		 visible            READ visible                WRITE setVisible                NOTIFY visibleChanged				)
     Q_PROPERTY(QString	 password           READ password				WRITE setPassword               NOTIFY passwordChanged				)
     Q_PROPERTY(bool		 jaspSubmission     READ jaspSubmission			WRITE setJaspSubmission         NOTIFY jaspSubmissionChanged		)
     Q_PROPERTY(bool		 encryptionActive   READ encryptionActive		WRITE setEncryptionActive       NOTIFY encryptionActiveChanged		)
-    Q_PROPERTY(QString	 publickey          READ publickey				WRITE setPublickey              NOTIFY publickeyChanged				)
-    Q_PROPERTY(QString	 privatekey         READ privatekey  			WRITE setPrivatekey             NOTIFY privatekeyChanged				)
+	Q_PROPERTY(bool		 readingMode		READ readingMode			WRITE setReadingMode			NOTIFY readingModeChanged			)
+	Q_PROPERTY(QString	 publickey          READ publickey				WRITE setPublickey              NOTIFY publickeyChanged				)
+	Q_PROPERTY(QString	 privatekey         READ privatekey  			WRITE setPrivatekey             NOTIFY privatekeyChanged			)
 
 public:
 	explicit EncryptionSettingsModel(QObject *parent = nullptr);
@@ -27,6 +28,9 @@ public:
 
 	bool visible() const;
 	void setVisible(bool newVisible);
+
+	bool readingMode() const;
+	void setReadingMode(bool readingMode);
 
 	Q_INVOKABLE void submit();
 	Q_INVOKABLE void cancel();
@@ -45,12 +49,14 @@ signals:
 	void visibleChanged();
     void publickeyChanged();
     void privatekeyChanged();
+	void readingModeChanged();
 
 public slots:
-	void queryEncryptionSettings();
+	void queryEncryptionSettings(bool readingMode);
 
 private:
 	bool _visible = false;
+	bool _readingMode = false;
 };
 
 #endif // ENCRYPTIONSETTINGSMODEL_H

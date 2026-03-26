@@ -55,7 +55,7 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 			JaspEncryptionData::getInstance()->setEncryptionActive(true);
 			tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
 			Json::Value root;
-			DesktopCommunicator::singleton()->queryEncryptionSettings();
+			DesktopCommunicator::singleton()->queryEncryptionSettings(true);
             auto privKey = JaspEncryptionData::getInstance()->getPrivatekey();
             std::string responsePublicKey = "";
             std::string responsePasswordSalt = "";
@@ -70,9 +70,8 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 			throw std::runtime_error("Decryption failed. Please confirm the password was right. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
 		}
 	}
-	readManifest(tmpPath.generic_string());
 
-	switch(isCompatible(path))
+	switch(isCompatible(tmpPath.generic_string()))
 	{
 	case Compatibility::NotCompatible:
 	{

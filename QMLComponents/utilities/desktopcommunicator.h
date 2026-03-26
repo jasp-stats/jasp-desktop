@@ -17,10 +17,10 @@ public:
 
 	bool useNativeFileDialog();
 	bool engineSandbox();
-	void queryEncryptionSettings();
+	void queryEncryptionSettings(bool readingMode = false);
 
 signals:
-	void queryEncryptionSettingsSignal();
+	void queryEncryptionSettingsSignal(bool readingMode);
 	void currentJaspThemeChanged();
 	void uiScaleChanged();
 	void interfaceFontChanged();
