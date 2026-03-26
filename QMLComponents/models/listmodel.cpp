@@ -225,6 +225,7 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 		if (!terms().containsValue(key))
 		{
 			_rowControlsMap[key]->disconnectAndDeleteControls();
+			_rowControlsMap[key]->deleteLater();
 			removedKeys.append(key);
 		}
 

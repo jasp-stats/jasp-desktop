@@ -46,7 +46,6 @@ TextInputBase
 	property bool	moveFocusOnEdit:	true
 	property alias	validator:			control.validator
 	property alias	controlLabel:		beforeLabel
-	property string	inputType:			"string"
 	property bool	useLastValidValue:	true
 	property bool	editable:			true
 	property var	undoModel

@@ -190,20 +190,6 @@ void TextInputBase::setUp()
 {
 	JASPTIMER_SCOPE(TextInputBase::setUp);
 	
-	QString type = property("inputType").toString();
-
-		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
-	else if (type == "number")			_inputType = TextInputType::NumberInputType;
-	else if (type == "percent")			_inputType = TextInputType::PercentIntputType;
-	else if (type == "doubleArray")		_inputType = TextInputType::DoubleArrayInputType;
-	else if (type == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
-	else if (type == "checkColumn")		_inputType = TextInputType::CheckColumnFreeOrMineType;
-	else if (type == "addColumn")		_inputType = TextInputType::AddColumnType;
-	else if (type == "formula")			_inputType = TextInputType::FormulaType;
-	else								_inputType = TextInputType::StringInputType;
-
-	_parseDefaultValue = property("parseDefaultValue").toBool();
-
 	if (form())
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
@@ -333,8 +319,11 @@ bool TextInputBase::encodeValue() const
 	return _inputType == TextInputType::ComputedColumnType || _inputType == TextInputType::AddColumnType || _inputType == TextInputType::CheckColumnFreeOrMineType;
 }
 
+
 bool TextInputBase::_formulaResultInBounds(double result)
 {
+	JASPTIMER_SCOPE(TextInputBase::_formulaResultInBounds);
+	
 	double min			= property("min").toDouble();
 	double max			= property("max").toDouble();
 	JASPControl::Inclusive inclusive = JASPControl::Inclusive(property("inclusive").toInt());
@@ -514,3 +503,51 @@ void TextInputBase::_setDisplayValue(const QString &newDisplayValue)
 	_displayValue = newDisplayValue;
 	emit displayValueChanged();
 }
+
+bool TextInputBase::parseDefaultValue() const
+{
+	return _parseDefaultValue;
+}
+
+void TextInputBase::setParseDefaultValue(bool newParseDefaultValue)
+{
+	if (_parseDefaultValue == newParseDefaultValue)
+		return;
+	_parseDefaultValue = newParseDefaultValue;
+	emit parseDefaultValueChanged();
+}
+
+void TextInputBase::setInputType(const QString &newInputType)
+{
+	auto oldInputType = _inputType;
+	
+	if (		newInputType == "integer")			_inputType = TextInputType::IntegerInputType;
+	else if (	newInputType == "number")			_inputType = TextInputType::NumberInputType;
+	else if (	newInputType == "percent")			_inputType = TextInputType::PercentIntputType;
+	else if (	newInputType == "doubleArray")		_inputType = TextInputType::DoubleArrayInputType;
+	else if (	newInputType == "computedColumn")	_inputType = TextInputType::ComputedColumnType;
+	else if (	newInputType == "checkColumn")		_inputType = TextInputType::CheckColumnFreeOrMineType;
+	else if (	newInputType == "addColumn")		_inputType = TextInputType::AddColumnType;
+	else if (	newInputType == "formula")			_inputType = TextInputType::FormulaType;
+	else											_inputType = TextInputType::StringInputType;
+	
+	if(oldInputType != _inputType)
+		emit inputTypeChanged();
+}
+
+QString TextInputBase::inputTypeTxt()
+{
+	switch(_inputType)
+	{
+	case TextInputType::IntegerInputType:					return "integer";
+	case TextInputType::NumberInputType:					return "number";
+	case TextInputType::PercentIntputType:					return "percent";
+	case TextInputType::DoubleArrayInputType:				return "doubleArray";
+	case TextInputType::ComputedColumnType:					return "computedColumn";
+	case TextInputType::CheckColumnFreeOrMineType:			return "checkColumn";
+	case TextInputType::AddColumnType:						return "addColumn";
+	case TextInputType::FormulaType:						return "formula";
+	case TextInputType::StringInputType:					return "string";
+	}
+}
+

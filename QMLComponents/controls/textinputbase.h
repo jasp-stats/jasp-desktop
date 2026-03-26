@@ -33,6 +33,9 @@ class TextInputBase : public JASPControl, public BoundControlBase
 	Q_PROPERTY( QString		label				READ label					WRITE setLabel				NOTIFY labelChanged					)
 	Q_PROPERTY( QString		afterLabel			READ afterLabel				WRITE setAfterLabel			NOTIFY afterLabelChanged			)
 	Q_PROPERTY( QVariant	value				READ value					WRITE setValue				NOTIFY valueChanged					)
+	Q_PROPERTY( bool		parseDefaultValue	READ parseDefaultValue		WRITE setParseDefaultValue	NOTIFY parseDefaultValueChanged		)
+	Q_PROPERTY( QString		inputType			READ inputTypeTxt				WRITE setInputType			NOTIFY inputTypeChanged				)
+				
 
 public:
 	enum TextInputType { IntegerInputType = 0, StringInputType, NumberInputType, PercentIntputType, DoubleArrayInputType, ComputedColumnType, AddColumnType, CheckColumnFreeOrMineType, FormulaType};
@@ -47,6 +50,7 @@ public:
 	bool		encodeValue()								const	override;
 
 	TextInputType	inputType()										{ return _inputType; }
+	QString			inputTypeTxt();
 	QString			friendlyName() const override;
 	bool			hasScriptError()						const	{ return _hasScriptError;		}
 	QVariant		defaultValue()							const;
@@ -60,6 +64,11 @@ public:
 
 	QString			displayValue() const;
 	
+	bool parseDefaultValue() const;
+	void setParseDefaultValue(bool newParseDefaultValue);
+	
+	void setInputType(const QString &newInputType);
+	
 signals:
 	void		formulaCheckSucceeded();
 	void		hasScriptErrorChanged();
@@ -68,6 +77,10 @@ signals:
 	void		labelChanged();
 	void		afterLabelChanged();
 	void		displayValueChanged();
+	
+	void parseDefaultValueChanged();
+	
+	void inputTypeChanged();
 	
 public slots:
 	GENERIC_SET_FUNCTION(HasScriptError,	_hasScriptError,	hasScriptErrorChanged,	bool		)
@@ -90,7 +103,7 @@ private:
 
 	void		_setBoundValue();
 
-	TextInputType			_inputType;
+	TextInputType			_inputType			= StringInputType;
 	QString					_label,
 							_afterLabel,
 							_displayValue;

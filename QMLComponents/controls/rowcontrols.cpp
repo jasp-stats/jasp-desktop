@@ -40,36 +40,45 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	
 	JASPListControl* listView = _parentModel->listView();
 
-	QQmlContext* context = new QQmlContext(qmlContext(listView), this);
-	context->setContextProperty("isDynamic", true);
-	context->setContextProperty("form", listView->form());
-	context->setContextProperty("listView", listView);
-	context->setContextProperty("isNew", rowValues.empty());
-	context->setContextProperty("rowIndex",	row);
-	context->setContextProperty("rowLabel", key.label());
-	context->setContextProperty("rowValue", key.value());
-	context->setContextProperty("rowType", columnTypeToQString(key.type()));
-
-
-	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
+	JASPTIMER_START(RowControls::initValues context);
+	_context = new QQmlContext(qmlContext(listView), this);
+	_context->setContextProperty("isDynamic",	true);
+	_context->setContextProperty("form",		listView->form());
+	_context->setContextProperty("listView",	listView);
+	_context->setContextProperty("isNew",		rowValues.empty());
+	_context->setContextProperty("rowIndex",	row);
+	_context->setContextProperty("rowLabel",	key.label());
+	_context->setContextProperty("rowValue",	key.value());
+	_context->setContextProperty("rowType",		columnTypeToQString(key.type()));
+	JASPTIMER_STOP(RowControls::initValues context);
+	
+	JASPTIMER_START(RowControls::initValues create rowobject);
+	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(_context)); // The _rowJASPControlMap will be filled during this step
 	assert(_rowObject);
 	if (!_rowObject)
 	{
 		Log::log() << "Could not create control in " << listView->name() << std::endl;
 		return;
 	}
+	JASPTIMER_STOP(RowControls::initValues create rowobject);
 
+	
+	JASPTIMER_START(RowControls::initValues setParent);
 	_rowObject->setParent(_parentModel);
-	_context = context;
+	JASPTIMER_STOP(RowControls::initValues setParent);
 
+	JASPTIMER_START(RowControls::initValues setup control);
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	for (JASPControl* control : controls)
 		control->setUp();
+	JASPTIMER_STOP(RowControls::initValues setup control);
 
 	_initialized = true;
 	emit initializedChanged();
 
+	JASPTIMER_START(RowControls::initValues _setValues);
 	_setValues(rowValues);
+	JASPTIMER_STOP(RowControls::initValues _setValues);
 }
 
 void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json::Value>& rowValues)
