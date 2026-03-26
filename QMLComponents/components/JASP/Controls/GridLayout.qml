@@ -57,6 +57,8 @@ QT.GridLayout
 	{
 		if (!_initialized || (width === 0)) return;
 
+		mainWindow.qmlTimerStart("GridLayout _checkColumns");
+
 		if (width < (implicitWidth - 1) && gridLayout.columns >= 2)
 		{
 			if (columnSpacing > (jaspTheme.columnGridSpacing / 2) && ((implicitWidth - width) < (jaspTheme.columnGridSpacing / 2) * (gridLayout.columns - 1)))
@@ -71,6 +73,8 @@ QT.GridLayout
 				gridLayout.columns--;
 			}
 		}
+
+		mainWindow.qmlTimerStop("GridLayout _checkColumns");
 	}
 
 	onCountChanged:

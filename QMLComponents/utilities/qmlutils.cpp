@@ -79,6 +79,22 @@ int QmlUtils::variantToInt(const QVariant &val)
 	return 0;
 }
 
+void qmlErrorLogger(bool isError, QList<QQmlError> errors, const std::string & filename, const std::string & moduleName)
+{
+	if(!isError) return;
+
+	std::stringstream out;
+
+	out << "Loading " << filename << " for module " << moduleName << " had errors:\n";
+
+	for(const QQmlError & error : errors)
+		out << error.toString() << "\n";
+
+	Log::log() << out.str() << std::flush;
+
+	throw qmlLoadError("There were errors loading " + filename + ":\n" + out.str());
+};
+
 //Turning QMLENGINE_DOES_ALL_THE_WORK on also works fine, but has slightly less transparent errormsgs so isn't recommended
 //#define QMLENGINE_DOES_ALL_THE_WORK
 
@@ -104,23 +120,7 @@ QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::st
 		Log::log() << whatAmILoading << " for module " << moduleName << " is still loading, make sure you load a local file and that Windows doesn't mess this up for you..." << std::endl;
 
 
-	auto errorLogger =[&](bool isError, QList<QQmlError> errors)
-	{
-		if(!isError) return;
-
-		std::stringstream out;
-
-		out << "Loading " << filename << " for module " << moduleName << " had errors:\n";
-
-		for(const QQmlError & error : errors)
-			out << error.toString() << "\n";
-
-		Log::log() << out.str() << std::flush;
-
-		throw qmlLoadError("There were errors loading " + filename + ":\n" + out.str());
-	};
-
-	errorLogger(qmlComp.isError(), qmlComp.errors());
+	qmlErrorLogger(qmlComp.isError(), qmlComp.errors(), filename, moduleName);
 
 	if(!qmlComp.isReady())
 		throw qmlLoadError(whatAmILoading + " Component is not ready!");
@@ -130,7 +130,7 @@ QObject * instantiateQml(const QString & qmlTxt, const QUrl & url, const std::st
 
 	qmlComp.create(localIncubator);
 
-	errorLogger(localIncubator.isError(), localIncubator.errors());
+	qmlErrorLogger(localIncubator.isError(), localIncubator.errors(),filename, moduleName);
 
 	obj = localIncubator.object();
 

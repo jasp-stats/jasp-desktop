@@ -44,6 +44,8 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 
 void JASPListControl::setUpModel()
 {
+	JASPTIMER_SCOPE(JASPListControl::setUpModel);
+
 	if (model() && form() && !_parentListView)	form()->addModel(model());
 
 	emit modelChanged();
@@ -51,6 +53,8 @@ void JASPListControl::setUpModel()
 
 void JASPListControl::_checkAllSourcesAreConnected(bool addConnect)
 {
+	JASPTIMER_SCOPE(JASPListControl::_checkAllSourcesAreConnected);
+
 	bool allConnected = true;
 	for (SourceItem* sourceItem : _sourceItems)
 	{
@@ -72,6 +76,8 @@ void JASPListControl::_checkAllSourcesAreConnected(bool addConnect)
 
 void JASPListControl::_setupSources()
 {
+	JASPTIMER_SCOPE(JASPListControl::_setupSources);
+
 	for (SourceItem* sourceItem : _sourceItems)
 	{
 		sourceItem->deleteLater();
@@ -85,6 +91,8 @@ void JASPListControl::_setupSources()
 
 bool JASPListControl::containsVariables() const
 {
+	JASPTIMER_SCOPE(JASPListControl::containsVariables);
+
 	// If it is an assigned variablesList, check whether the available variablesList contains variables
 	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(model());
 	if (assignedModel && assignedModel->availableModel() && assignedModel->availableModel()->listView()->containsVariables())
@@ -135,6 +143,8 @@ void JASPListControl::termsChangedHandler()
 
 void JASPListControl::_termsChangedHandler() 
 {
+	JASPTIMER_SCOPE(JASPListControl::_termsChangedHandler);
+
 	termsChangedHandler();
 	
 	if (containsVariables() && isBound() && model())
@@ -176,6 +186,8 @@ void JASPListControl::setUp()
 
 void JASPListControl::cleanUp()
 {
+	JASPTIMER_SCOPE(JASPListControl::cleanUp);
+
 	try
 	{
 		ListModel* _model = model();
@@ -220,6 +232,8 @@ Terms JASPListControl::_getCombinedTerms(SourceItem* sourceToCombine)
 
 void JASPListControl::applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis)
 {
+	JASPTIMER_SCOPE(JASPListControl::applyToAllSources);
+
 	for (SourceItem* sourceItem : _sourceItems)
 		applyThis(sourceItem, sourceItem->combineWithOtherModels() ? _getCombinedTerms(sourceItem) : sourceItem->getTerms());
 }
@@ -261,6 +275,8 @@ int JASPListControl::count()
 
 double JASPListControl::maxTermsWidth()
 {
+	JASPTIMER_SCOPE(JASPListControl::maxTermsWidth);
+
 	if (!model()) return 0;
 	double maxWidth = 0;
 
@@ -281,6 +297,8 @@ JASPControls JASPListControl::getMDSubItems(const QQuickItem*) const
 {
 	if (!model())
 		return {};
+
+	JASPTIMER_SCOPE(JASPListControl::getMDSubItems);
 
 	// If row components are used, use only the items of the first row (if exists) to generate the help.
 	const ListModel::RowControlMap & map = model()->getAllRowControls();

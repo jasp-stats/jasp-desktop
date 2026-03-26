@@ -193,6 +193,8 @@ void ListModel::setRowComponent(QQmlComponent* rowComponent)
 
 void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 {
+	JASPTIMER_SCOPE(ListModel::setUpRowControls);
+
 	if (_rowComponent == nullptr)
 		return;
 

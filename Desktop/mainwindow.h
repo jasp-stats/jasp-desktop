@@ -173,6 +173,11 @@ public slots:
 	void redo();
 	void openURLFile(QString fileURLPath);
 
+	void qmlTimerStart(const QString & name);
+	void qmlTimerStop(const QString & name);
+
+
+
 	QObject * loadQmlData(QString data, QUrl url);
 
 	QQmlContext * giveRootQmlContext();

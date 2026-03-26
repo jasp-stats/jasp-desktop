@@ -123,6 +123,8 @@ void Terms::set(const std::vector<std::vector<string> > &terms, bool isUnique)
 
 void Terms::set(const QList<Term> &terms, bool isUnique)
 {
+	JASPTIMER_SCOPE(Terms::set listterm terms isUnique);
+
 	_terms.clear();
 	_valueMap.clear();
 
@@ -133,6 +135,7 @@ void Terms::set(const QList<Term> &terms, bool isUnique)
 
 void Terms::set(const Terms &terms, bool isUnique)
 {
+	JASPTIMER_SCOPE(Terms::set terms terms isUnique);
 	_terms.clear();
 	_valueMap.clear();
 	_hasDuplicate = terms.hasDuplicate();
@@ -144,6 +147,8 @@ void Terms::set(const Terms &terms, bool isUnique)
 
 void Terms::set(const QList<QString> &terms, bool isUnique)
 {
+	JASPTIMER_SCOPE(Terms::set stringlist terms isUnique);
+
 	_terms.clear();
 	_valueMap.clear();
 
@@ -163,6 +168,8 @@ void Terms::removeParent() {
 
 void Terms::add(const Term &term, bool isUnique)
 {
+	JASPTIMER_SCOPE(Terms::add);
+
 	if (!isUnique || _hasDuplicate)
 	{
 		if (!_hasDuplicate && containsValue(term)) _hasDuplicate = true;
@@ -218,6 +225,9 @@ void Terms::add(const Term &term, bool isUnique)
 
 void Terms::insert(int index, const Term &term)
 {
+
+	JASPTIMER_SCOPE(Terms::insert);
+
 	if (_parent == nullptr)
 	{
 		if (index > _terms.size())
@@ -235,12 +245,16 @@ void Terms::insert(int index, const Term &term)
 
 void Terms::insert(int index, const Terms &terms)
 {
+	JASPTIMER_SCOPE(Terms::insert terms);
+
 	for (const Term& term : terms)
 		insert(index++, term);
 }
 
 void Terms::add(const Terms &terms)
 {
+	JASPTIMER_SCOPE(Terms::add terms);
+
 	_hasDuplicate = _hasDuplicate || terms.hasDuplicate();
 
 	for(const Term & term : terms)
@@ -661,6 +675,8 @@ bool Terms::componentLessThan(const QString &c1, const QString &c2) const
 
 void Terms::remove(const Terms &terms)
 {
+	JASPTIMER_SCOPE(Terms::remove terms);
+
 	for(const Term &term : terms)
 	{
 		vector<Term>::iterator itr = find(_terms.begin(), _terms.end(), term);

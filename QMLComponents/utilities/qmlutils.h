@@ -46,5 +46,6 @@ public slots:
 
 QObject * instantiateQml(							const QUrl 	& filePath, const std::string & moduleName,																		QQmlContext * ctxt = nullptr);
 QObject * instantiateQml(const QString 	& qmlTxt, 	const QUrl & url, 		const std::string & moduleName, const std::string & whatAmILoading, const std::string & filename, 	QQmlContext * ctxt = nullptr);
+void qmlErrorLogger(bool isError, QList<QQmlError> errors, const std::string & filename, const std::string & moduleName);
 
 #endif // QMLUTILS_H

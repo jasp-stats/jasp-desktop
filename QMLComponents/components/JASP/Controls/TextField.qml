@@ -88,6 +88,8 @@ TextInputBase
 	
 	Component.onCompleted:
 	{
+		mainWindow.qmlTimerStart("TextField onCompleted");
+
 		if (!beforeLabel.text && textField.text)
 			beforeLabel.text = textField.text;
 		
@@ -97,6 +99,8 @@ TextInputBase
 		control.released.connect(released);
 		if (control.text)
 			lastValidValue = control.text;
+
+		mainWindow.qmlTimerStop("TextField onCompleted");
 	}
 
 	// The value should be checked only when the control is initialized.
@@ -108,15 +112,23 @@ TextInputBase
 	{
 		if (!initialized && isBound) return false
 
+		mainWindow.qmlTimerStart("TextField checkValue");
+
 		if (control.acceptableInput)
 		{
 			if (!hasScriptError)
 				clearControlError();
+
+			mainWindow.qmlTimerStop("TextField checkValue");
 			return true;
 		}
 
-		if (addErrorIfNotFocussed && activeFocus) return false
-		if (!control.validator || (typeof control.validator.validationMessage !== "function")) return false;
+		if ((addErrorIfNotFocussed && activeFocus)												||
+		 (!control.validator || (typeof control.validator.validationMessage !== "function")))
+		{
+			mainWindow.qmlTimerStop("TextField checkValue");
+			return false;
+		}
 
 		var msg = control.validator.validationMessage(beforeLabel.text)
 
@@ -131,6 +143,7 @@ TextInputBase
 		else
 			addControlError(msg)
 
+		mainWindow.qmlTimerStop("TextField checkValue");
 		return false
 	}
 

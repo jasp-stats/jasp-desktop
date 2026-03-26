@@ -2360,3 +2360,15 @@ bool MainWindow::hadFatalError() const
 {
 	return _hadFatalError;
 }
+
+
+void MainWindow::qmlTimerStart(const QString &name)
+{
+	JASPTIMER_STARTQML("qml" + fq(name));
+}
+
+
+void MainWindow::qmlTimerStop(const QString &name)
+{
+	JASPTIMER_STOPQML("qml" + fq(name));
+}

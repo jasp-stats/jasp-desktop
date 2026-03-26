@@ -22,6 +22,7 @@
 #include "controls/rowcontrols.h"
 #include "controls/jasplistcontrol.h"
 #include <QTimer>
+#include "log.h"
 
 
 using namespace std;
@@ -89,6 +90,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 
 	if (dropItemIndex == 0 && maxRows == termsToAdd.size())
 	{
+		JASPTIMER_SCOPE(ListModelTermsAssigned::addTerms replace and reset);
 		// If we replace all the items, use beginResetModel
 		termsToSendBack = terms();
 		newTerms = termsToAdd;
@@ -99,6 +101,9 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 	}
 	else
 	{
+		JASPTIMER_SCOPE(ListModelTermsAssigned::addTerms beginning and end);
+		Log::log() << "ListModelTermsAssigned::addTerms gets dropItemIndex: " << dropItemIndex << " terms().size(): " << terms().size() << " termsToAdd.size(): " <<  termsToAdd.size() << std::endl;
+
 		// We try to use beginInsertRows/endInsetRows (and beginRemoveRows/endRemoveRows) to set the values instead of beginResetModel: this is indeed the right way to use QAbstractItemModel
 		// By using beginResetModel/endResetModel all QML objects of the list are removed and rebuild again. This should not be a problem, apart from one special case:
 		// in a TabView, if the user changes the title of a Tab and clicks direclty the '+' button to add another tab, adding a new tab will be done first, and will add a new
@@ -107,6 +112,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 		if (dropItemIndex < 0 || dropItemIndex > terms().size())
 			dropItemIndex = terms().size();
 
+		JASPTIMER_START(ListModelTermsAssigned::addTerms beginning rows 1);
 		beginInsertRows(QModelIndex(), dropItemIndex, dropItemIndex + termsToAdd.size() - 1);
 		newTerms = terms();
 		if (dropItemIndex < terms().size())
@@ -121,9 +127,11 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 		}
 
 		endInsertRows();
+		JASPTIMER_STOP(ListModelTermsAssigned::addTerms beginning rows 1);
 
 		if (maxRows > 0 && newTerms.size() > maxRows)
 		{
+			JASPTIMER_START(ListModelTermsAssigned::addTerms beginning rows 2);
 			for (size_t i = maxRows; i < newTerms.size(); i++)
 				termsToSendBack.add(newTerms.at(i));
 			newTerms.remove(maxRows, newTerms.size() - maxRows);
@@ -133,6 +141,7 @@ Terms ListModelTermsAssigned::addTerms(const Terms& termsToAdd, int dropItemInde
 			endRemoveRows();
 
 			listView()->addControlWarningTemporary(tr("Only %1 variables are allowed").arg(maxRows));
+			JASPTIMER_STOP(ListModelTermsAssigned::addTerms beginning rows 2);
 		}
 	}
 

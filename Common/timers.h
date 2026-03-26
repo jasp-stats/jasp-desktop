@@ -45,11 +45,13 @@ customtimer * _getTimer(std::string timerName);
 customtimer * _getTimerC(std::string timerName);
 void _printAllTimers();
 
-#define JASPTIMER_START(  TIMERNAME ) _getTimer( #TIMERNAME )->start()
-#define JASPTIMER_RESUME( TIMERNAME ) _getTimer( #TIMERNAME )->resume()
-#define JASPTIMER_STOP(   TIMERNAME ) _getTimerC( #TIMERNAME )->stop()
-#define JASPTIMER_PRINT(  TIMERNAME ) Log::log() << #TIMERNAME << " ran for " << _getTimer( #TIMERNAME )->format() << std::endl
-#define JASPTIMER_FINISH( TIMERNAME ) JASPTIMER_STOP(TIMERNAME); JASPTIMER_PRINT(TIMERNAME)
+#define JASPTIMER_STOP(     TIMERNAME ) _getTimerC(#TIMERNAME )->stop()
+#define JASPTIMER_START(    TIMERNAME ) _getTimer( #TIMERNAME )->start()
+#define JASPTIMER_STARTQML( TIMERNAME ) _getTimer(  TIMERNAME )->start()
+#define JASPTIMER_STOPQML(  TIMERNAME ) _getTimerC( TIMERNAME )->stop()
+#define JASPTIMER_RESUME(   TIMERNAME ) _getTimer( #TIMERNAME )->resume()
+#define JASPTIMER_PRINT(    TIMERNAME ) Log::log() << #TIMERNAME << " ran for " << _getTimer( #TIMERNAME )->format() << std::endl
+#define JASPTIMER_FINISH(   TIMERNAME ) JASPTIMER_STOP(TIMERNAME); JASPTIMER_PRINT(TIMERNAME)
 #define JASPTIMER_PRINTALL() _printAllTimers()
 
 struct _JaspTimerScopeMeasure
@@ -64,9 +66,11 @@ struct _JaspTimerScopeMeasure
 
 #else
 //No timers please!
-#define JASPTIMER_START(  TIMERNAME ) /* TIMERNAME */
-#define JASPTIMER_RESUME( TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_STOP(   TIMERNAME ) /* TIMERNAME */
+#define JASPTIMER_START(  TIMERNAME ) /* TIMERNAME */
+#define JASPTIMER_STOPQML(   TIMERNAME ) /* TIMERNAME */
+#define JASPTIMER_STARTQML(  TIMERNAME ) /* TIMERNAME */
+#define JASPTIMER_RESUME( TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_PRINT(  TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_FINISH( TIMERNAME ) /* TIMERNAME */
 #define JASPTIMER_PRINTALL() /* bla bla bla */
