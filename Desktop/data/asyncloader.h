@@ -29,6 +29,13 @@
 
 #include "osf/onlinedatamanager.h"
 
+struct LoaderException : public std::runtime_error
+{
+	LoaderException(const std::string & _problemDescription, bool _cancelled = false);
+
+	bool cancelled = false;
+};
+
 ///
 /// Used to run importers and exporters in a different thread from the main event loop.
 /// This way we can keep the interface responsive but it is important to make sure the right kind of qt connections are used.

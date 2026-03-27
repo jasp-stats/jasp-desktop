@@ -27,6 +27,7 @@
 #include "importers/excelimporter.h"
 #include "importers/rdataimporter.h"
 #include "importers/minitabimporter.h"
+#include "asyncloader.h"
 
 #include <QFileInfo>
 
@@ -64,12 +65,11 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
-bool DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
+void DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
 
 	Importer* importer = getImporter(locator, extension);
-	bool result = false;
 
 	if (importer)
 	{
@@ -77,13 +77,12 @@ bool DataSetLoader::loadPackage(const string &locator, const string &extension, 
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
-		result = JASPImporter::loadDataSet(locator, progress);
+		JASPImporter::loadDataSet(locator, progress);
 	else
-		throw std::runtime_error("JASP does not support loading the file-type \"" + extension + '"');
+		throw LoaderException("JASP does not support loading the file-type \"" + extension + '"');
 
 	JASPTIMER_STOP(DataSetLoader::loadPackage);
 
-	return result;
 }
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)

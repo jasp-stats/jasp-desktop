@@ -1422,7 +1422,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			if (!event->isSilent())
+			if (!event->isCancelled())
 				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	emit exitSignal(3);
@@ -1469,7 +1469,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			if (!event->isSilent())
+			if (!event->isCancelled())
 				MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)

@@ -5,20 +5,15 @@ Window
 {
     id:	encryptWindow
 
-    minimumWidth: Math.max(passwordInput.minWidth, jaspSubmission.implicitWidth, showAdvancedCheckbox.implicitWidth) + winPadding * 2
-    minimumHeight: contentColumn.implicitHeight
-
-
-    // default property alias	content:			contentInfo.children
-    //         property string labelcolor:			"#F99800"
-    //         property string closebuttoncolor:	jaspTheme.blue
-
+    minimumWidth:           Math.max(passwordInput.minWidth, jaspSubmission.implicitWidth, showAdvancedCheckbox.implicitWidth) + windowPadding * 2
+    minimumHeight:          contentColumn.implicitHeight + (advancedSettings.visible ? advancedSettings.implicitHeight + jaspTheme.groupContentPadding : 0) + buttons.height + windowPadding * 3
     visible:                encryptionModel.visible
     title:					qsTr("Enter Encryption Settings")
     modality:               Qt.ApplicationModal
     color:                  jaspTheme.white
+    //transientParent:        mainWindowRoot
 
-    property real winPadding: 20 * jaspTheme.uiScale
+    property real windowPadding: 20 * jaspTheme.uiScale
 
     signal closeModel();
 
@@ -34,7 +29,7 @@ Window
             encryptionModel.cancel();
     }
 
-    onVisibleChanged: {
+    onVisibleChanged: if (visible) {
         passwordInput.displayValue = ""
         privateKey.displayValue = ""
         publicKey.displayValue = ""
@@ -43,46 +38,55 @@ Window
         passwordInput.forceActiveFocus();
     }
 
-    Shortcut { onActivated: closeModel();	sequences: ["Ctrl+Q", "Ctrl+W", Qt.Key_Close]; }
+    Shortcut { onActivated: encryptionModel.cancel();	sequences: ["Ctrl+Q", Qt.Key_Close]; }
 
     Connections
     {
         target:			mainWindow
-        function onCloseWindows() { closeModel(); }
+        function onCloseWindows() { encryptionModel.cancel(); }
     }
 
-    Column {
-        id:             contentColumn
+    Column
+    {
         spacing:        jaspTheme.groupContentPadding
-        padding:        winPadding
+        leftPadding:    windowPadding
+        topPadding:     windowPadding
 
-        TextField {
-            id: passwordInput
-            text: qsTr("Password:")
-            fieldWidth: encryptWindow.width - controlLabel.implicitWidth - jaspTheme.labelSpacing - 2 * winPadding
+        Column
+        {
+            id:             contentColumn
+            spacing:        jaspTheme.groupContentPadding
 
-            property int minWidth: controlLabel.implicitWidth + 300 * jaspTheme.uiScale
+            TextField {
+                id:         passwordInput
+                text:       qsTr("Password:")
+                fieldWidth: encryptWindow.width - controlLabel.implicitWidth - jaspTheme.labelSpacing - 2 * windowPadding
 
-            control.echoMode: TextInput.Password
-            control.Keys.onReturnPressed: (event)=> { submitButton.onClicked() }
+                property int minWidth: controlLabel.implicitWidth + 300 * jaspTheme.uiScale
+
+                control.echoMode: TextInput.Password
+                control.Keys.onReturnPressed: (event)=> { submitButton.onClicked() }
+            }
+
+            CheckBox {
+                id:         jaspSubmission
+                text:       qsTr("JASP Team Submission.")
+                visible:    !encryptionModel.readingMode
+                info:       qsTr("Click here if you want the JASP Team be able to open the file")
+            }
+
+            CheckBox {
+                id:         showAdvancedCheckbox
+                text:       qsTr("Advanced Settings")
+            }
         }
 
-        CheckBox {
-            id: jaspSubmission
-            text: qsTr("JASP Team Submission.")
-            visible: !encryptionModel.readingMode
-        }
-
-        CheckBox {
-            id: showAdvancedCheckbox
-            text: qsTr("Advanced Settings")
-        }
-
-        Group {
+        Group
+        {
             id: advancedSettings
             visible: showAdvancedCheckbox.checked
 
-            property real fieldWidth: encryptWindow.width - Math.max(privateKey.controlLabel.implicitWidth, publicKey.controlLabel.implicitWidth) - jaspTheme.labelSpacing - 2 * winPadding
+            property real fieldWidth: encryptWindow.width - Math.max(privateKey.controlLabel.implicitWidth, publicKey.controlLabel.implicitWidth) - jaspTheme.labelSpacing - 2 * windowPadding
 
             TextField {
                 id: privateKey
@@ -101,36 +105,43 @@ Window
                 fieldWidth: advancedSettings.fieldWidth
             }
         }
+    }
 
-        Row
+    Row
+    {
+        id: buttons
+        spacing: 10 * jaspTheme.uiScale
+
+        anchors.bottom:         parent.bottom
+        anchors.bottomMargin:   windowPadding
+        anchors.left:           parent.left
+        anchors.leftMargin:     windowPadding
+
+        property real buttonWidth: (encryptWindow.width - windowPadding * 2 - buttons.spacing) / 2
+        Button
         {
-            id: buttons
-            spacing: 10 * jaspTheme.uiScale
-            property real buttonWidth: (encryptWindow.width - winPadding * 2 - buttons.spacing) / 2
-            Button {
-                id: submitButton
-                text: qsTr("Submit")
-                width: buttons.buttonWidth
-                control.color: jaspTheme.blue
-                onClicked: {
-                    encryptionModel.encryptionActive = true;
-                    encryptionModel.password = passwordInput.displayValue;
-                    encryptionModel.jaspSubmission = jaspSubmission.checked;
-                    encryptionModel.publickey = publicKey.displayValue;
-                    encryptionModel.privatekey = privateKey.displayValue
-                    closeModel();
-                }
+            id: submitButton
+            text: qsTr("Submit")
+            width: buttons.buttonWidth
+            control.color: jaspTheme.blue
+            onClicked: {
+                encryptionModel.encryptionActive = true;
+                encryptionModel.password = passwordInput.displayValue;
+                encryptionModel.jaspSubmission = jaspSubmission.checked;
+                encryptionModel.publickey = publicKey.displayValue;
+                encryptionModel.privatekey = privateKey.displayValue
+                closeModel();
             }
+        }
 
-            Button {
-                id: cancelButton
-                text: qsTr("Cancel")
-                width: buttons.buttonWidth
-                onClicked: {
-                    encryptionModel.cancel()
-                }
+        Button
+        {
+            id: cancelButton
+            text: qsTr("Cancel")
+            width: buttons.buttonWidth
+            onClicked: {
+                encryptionModel.cancel()
             }
-
         }
 
     }

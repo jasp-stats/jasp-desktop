@@ -55,7 +55,7 @@ bool ResultExporter::prepareForExport()
 	return true;
 }
 
-bool ResultExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
+void ResultExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	//set the needed settings and wait for their application to be finished
 	prepareForExport();
@@ -100,6 +100,4 @@ bool ResultExporter::saveDataSet(const std::string &path, std::function<void(int
 		outfile.close();
 		progressCallback(100);
 	}
-
-	return true;
 }

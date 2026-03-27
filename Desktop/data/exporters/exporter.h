@@ -43,7 +43,7 @@ protected:
 
 public:
 	virtual ~Exporter();
-	virtual bool saveDataSet(const std::string &path, std::function<void (int)> progressCallback) = 0;
+	virtual void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) = 0;
 
 	Utils::FileType			getDefaultFileType();
 	Utils::FileTypeVector	getAllowedFileTypes();

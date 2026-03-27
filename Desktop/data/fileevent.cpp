@@ -99,12 +99,12 @@ bool FileEvent::setPath(const QString & path)
 
 }
 
-void FileEvent::setComplete(bool success, const QString & message, bool silent)
+void FileEvent::setComplete(bool success, const QString & message, bool cancelled)
 {
 	_completed	= true;
 	_success	= success;
 	_message	= message;
-	_silent		= silent;
+	_cancelled	= cancelled;
 
 	emit completed(this);
 }
@@ -209,5 +209,10 @@ QString FileEvent::getProgressMsg() const
 	}
 
 	return tr("Processing File"); //This will never show up on screen right?
+}
+
+void FileEvent::setSilent(bool newSilent)
+{
+	_cancelled = newSilent;
 }
 

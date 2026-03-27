@@ -46,7 +46,7 @@ public:
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
-	void				setComplete(bool success = true, const QString &message = "", bool silent = false);
+	void				setComplete(bool success = true, const QString &message = "", bool cancelled = false);
 	void				chain(FileEvent *event);
 
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
@@ -54,7 +54,7 @@ public:
 	bool				isExample()		const;
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
 	bool				isCompleted()	const { return _completed;						}
-	bool				isSilent()		const { return _silent;							}
+	bool				isCancelled()	const { return _cancelled;						}
 	bool				isSuccessful()	const { return _success;						}
 	bool				isTmp()			const { return _tmp; }
 	static bool			autoSaveExists();
@@ -75,6 +75,8 @@ public:
 
 	QString				getProgressMsg() const;
 
+	void setSilent(bool newSilent);
+
 signals:
 	void completed(FileEvent *event);
 
@@ -91,7 +93,7 @@ private:
 						_message;
 	bool				_completed		= false,
 						_success		= false,
-						_silent			= false,
+						_cancelled		= false,
 						_tmp			= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;

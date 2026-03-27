@@ -33,6 +33,10 @@
 
 using namespace std;
 
+LoaderException::LoaderException(const std::string & _problemDescription, bool _cancelled)
+	: std::runtime_error(_problemDescription), cancelled(_cancelled)
+{}
+
 AsyncLoader::AsyncLoader(QObject *parent) :
 	QObject(parent)
 { 
@@ -123,17 +127,8 @@ void AsyncLoader::saveTask(FileEvent *event)
 		DataSetPackage::pkg()->doWalCheckPoint();
 
 		Exporter *exporter = event->exporter();
-		if (exporter)
-		{
-			bool result = exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
-			if (!result)
-			{
-				Utils::removeFile(fq(tempPath));
-				event->setComplete(false, "", true);
-				return;
-			}
-		}
-		else			throw runtime_error("No Exporter found!");
+		if (exporter)	exporter->saveDataSet(fq(tempPath), boost::bind(&AsyncLoader::progressHandler, this, _1));
+		else			throw LoaderException("No Exporter found!");
 
 		int attempts = 1;
 
@@ -151,7 +146,7 @@ void AsyncLoader::saveTask(FileEvent *event)
 		}
 		
 		if(!renameSucceeded)
-			throw runtime_error("File '" + fq(path) + "' or '" + fq(tempPath) + "' is being used by another application.");
+			throw LoaderException("File '" + fq(path) + "' or '" + fq(tempPath) + "' is being used by another application.");
 
 		
 		if (event->isOnlineNode())	// Not really sure why we would need to do the invokeMethod here?
@@ -164,17 +159,15 @@ void AsyncLoader::saveTask(FileEvent *event)
 		else
 			event->setComplete();
 	}
-	catch (runtime_error & e)
+	catch (LoaderException & e)
 	{
-		Log::log() << "Runtime Exception in saveTask: " << e.what() << std::endl;
-
+		Log::log() << "Loader Exception in saveTask: " << e.what() << std::endl;
 		Utils::removeFile(fq(tempPath));
-		event->setComplete(false, e.what());
+		event->setComplete(false, e.what(), e.cancelled);
 	}
 	catch (exception & e)
 	{
 		Log::log() << "Exception in saveTask: " << e.what() << std::endl;
-
 		Utils::removeFile(fq(tempPath));
 		event->setComplete(false, e.what());
 	}
@@ -229,7 +222,7 @@ void AsyncLoader::loadPackage(QString id)
 				dataNode = _odm->getActionDataNode(id);
 
 				if (dataNode != nullptr && dataNode->error())
-					throw runtime_error(fq(dataNode->errorMessage()));
+					throw LoaderException(fq(dataNode->errorMessage()));
 
 				//Generated local path has no extension
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
@@ -251,20 +244,7 @@ void AsyncLoader::loadPackage(QString id)
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 				_loader.syncPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
 			else
-			{
-				bool result = _loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
-
-				if (!result)
-				{
-					DataSetPackage::pkg()->dbDelete();
-					DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
-
-					if (dataNode != nullptr)
-						_odm->deleteActionDataNode(id);
-					_currentEvent->setComplete(false, "", true);
-					return;
-				}
-			}
+				_loader.loadPackage(path, extension, boost::bind(&AsyncLoader::progressHandler, this, _1));
 
 			if(_currentEvent->operation() != FileEvent::FileSyncData && _currentEvent->type() != Utils::FileType::jasp && !_currentEvent->isReadOnly())
 				pkg->setSynchingExternally(true);
@@ -272,9 +252,7 @@ void AsyncLoader::loadPackage(QString id)
 			QString calcMD5 = fileChecksum(tq(path), QCryptographicHash::Md5);
 
 			if (dataNode != nullptr && calcMD5 != dataNode->md5().toLower())
-				throw runtime_error("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
-
-
+				throw LoaderException("The security check of the downloaded file has failed.\n\nLoading has been cancelled due to an MD5 mismatch.");
 
 			pkg->setInitialMD5(fq(calcMD5));
 
@@ -302,20 +280,23 @@ void AsyncLoader::loadPackage(QString id)
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
-		catch (runtime_error & e)
+		catch (LoaderException & e)
 		{
-			Log::log() << "Runtime Exception in loadPackage: " << e.what() << std::endl;
+			Log::log() << "Loader Exception in loadPackage: " << e.what() << std::endl;
 
 			DataSetPackage::pkg()->dbDelete();
 			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
-			_currentEvent->setComplete(false, e.what());
+			_currentEvent->setComplete(false, e.what(), e.cancelled);
 		}
 		catch (exception & e)
 		{
 			Log::log() << "Exception in loadPackage: " << e.what() << std::endl;
+
+			DataSetPackage::pkg()->dbDelete();
+			DataSetPackage::pkg()->deleteDataSet(); //Make sure we dont keep failed stuff in memory
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
@@ -355,7 +336,7 @@ void AsyncLoader::uploadFileFinished(QString id)
 				dataNode = _odm->getActionDataNode(id);
 
 				if (dataNode->error())
-					throw runtime_error(fq(dataNode->errorMessage()));
+					throw LoaderException(fq(dataNode->errorMessage()));
 
 				path = fq(_odm->getLocalPath(_currentEvent->path()));
 
@@ -370,13 +351,13 @@ void AsyncLoader::uploadFileFinished(QString id)
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
 		}
-		catch (runtime_error & e)
+		catch (LoaderException & e)
 		{
-			Log::log() << "Runtime Exception in uploadFileFinished: " << e.what() << std::endl;
+			Log::log() << "Loader Exception in uploadFileFinished: " << e.what() << std::endl;
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
-			_currentEvent->setComplete(false, e.what());
+			_currentEvent->setComplete(false, e.what(), e.cancelled);
 		}
 		catch (exception & e)
 		{

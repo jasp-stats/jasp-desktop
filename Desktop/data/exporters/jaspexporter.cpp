@@ -34,6 +34,7 @@
 #include <fstream>
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
+#include "data/asyncloader.h"
 
 #include <utilities/desktopcommunicator.h>
 
@@ -47,7 +48,7 @@ JASPExporter::JASPExporter()
 	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }
 
-bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
+void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {
 	struct archive *a;
 
@@ -59,11 +60,11 @@ bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 		if(!JaspEncryptionData::getInstance()->paramsSet())
 		{
 			if (!DesktopCommunicator::singleton()->queryEncryptionSettings())
-				return false; // Cancelled
+				throw LoaderException("Query encryption settings is cancelled", true); // Cancelled
 		}
 		
 		if(!JaspEncryptionData::getInstance()->paramsSet())
-			throw std::runtime_error(DesktopCommunicator::tr("No password given!").toStdString());
+			throw LoaderException(DesktopCommunicator::tr("No password given!").toStdString());
 		
 		tmpPath = std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
 	}
@@ -77,7 +78,7 @@ bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 #else
 	if (archive_write_open_filename(a, tmpPath.c_str()) != ARCHIVE_OK)
 #endif
-		throw std::runtime_error(std::string("File could not be opened because of ") + archive_error_string(a));
+		throw LoaderException(std::string("File could not be opened because of ") + archive_error_string(a));
 
 	saveManifest(a);    progressCallback(10);
 	saveAnalyses(a);    progressCallback(30);
@@ -85,7 +86,7 @@ bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	saveDatabase(a);    progressCallback(100);
 
 	if (archive_write_close(a) != ARCHIVE_OK)
-		throw std::runtime_error("File could not be closed.");
+		throw LoaderException("File could not be closed.");
 
 	archive_write_free(a);
 	if(encrypt) {
@@ -98,15 +99,13 @@ bool JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
                 JASPEncrypt::encrypt(tmpPath, path, JaspEncryptionData::getInstance()->getPassword(), root, JaspEncryptionData::getInstance()->getPublicKeyResponse());
 		} catch (std::exception& e) {
 			Log::log() << "Encryption failed: " << e.what() << std::endl;
-			throw std::runtime_error("Encryption failed. Click 'Save As' and save as normal Jasp File. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
+			throw LoaderException("Encryption failed. Click 'Save As' and save as normal Jasp File. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
 		}
 		std::filesystem::remove(tmpPath);
 	}
 
 	//Make sure it is now always considered "loading" in DataSetPackage
 	DataSetPackage::pkg()->setLoaded(true);
-
-	return true;
 }
 
 void JASPExporter::saveManifest(archive * a)
@@ -162,7 +161,7 @@ void JASPExporter::saveTempFile(archive *a, const std::string & filePath)
 #ifdef JASP_DEBUG
         //If we are building jasp ourselves or debuging it might be helpful to know stuff is not getting written.
         //A normal user should however not be forced to endure a crash for that. Because half a jasp file could be better than nothing
-        throw std::runtime_error("JASP Export: cannot find/open file " + filePath);
+		throw LoaderException("JASP Export: cannot find/open file " + filePath);
 #endif
     }
 	readTempFile.close();
@@ -185,7 +184,7 @@ void JASPExporter::makeEntry(archive * a, const std::string & filename, const st
 	size_t written = archive_write_data(a,  data.c_str(), data.size());
 
 	if(written != data.size())
-		throw std::runtime_error("Saving file " + filename + " to jaspFile did not write properly, only " +
+		throw LoaderException("Saving file " + filename + " to jaspFile did not write properly, only " +
 			std::to_string(written) + " bytes written while " + std::to_string(data.size()) + " were expected...");
 
 	archive_entry_free(entry);
