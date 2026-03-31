@@ -276,6 +276,9 @@ std::string Label::labelDisplay() const
 
 bool Label::isEmptyValue() const
 {
+	if(!std::isnan(_dblValue) && _column->isEmptyValue(_dblValue))
+			return true;
+		
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
 
