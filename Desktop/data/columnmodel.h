@@ -43,6 +43,8 @@ class ColumnModel : public DataSetTableProxy
 	Q_PROPERTY(QString		computeFilter				READ computeFilter				WRITE setComputeFilter			NOTIFY computeFilterChanged				)
     Q_PROPERTY(QString		dropLevels					READ dropLevels					WRITE setDropLevels				NOTIFY dropLevelsChanged                )
 	Q_PROPERTY(bool			isComputed					READ isComputed													NOTIFY isComputedChanged				)
+	Q_PROPERTY(bool			hasLabels					READ hasLabels					WRITE setHasLabels				NOTIFY hasLabelsChanged					)
+	
 
 public:
 	ColumnModel(DataSetTableModel* dataSetTableModel);
@@ -121,6 +123,9 @@ public:
 	
 	
 	
+	bool hasLabels() const;
+	void setHasLabels(bool newHasLabels);
+	
 public slots:
 	void filteredOutChangedHandler(int col);
 	void setVisible(bool visible);
@@ -174,6 +179,7 @@ signals:
 	void autoSortChanged();
 	void hasSeveralNumericValuesChanged();
 	void computeFilterChanged();
+	void hasLabelsChanged();
 	
 private:
 	std::vector<size_t>		getSortedSelection()					const;

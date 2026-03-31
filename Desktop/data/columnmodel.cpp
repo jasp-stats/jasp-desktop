@@ -279,8 +279,7 @@ QVariantList ColumnModel::tabs() const
 		if (col->isComputed() && (col->codeType() == computedColumnType::rCode || col->codeType() == computedColumnType::constructorCode))
 			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "computed"), std::make_pair("title", tr("Computed column definition"))}));
 
-		if (rowCount() > 0)
-			tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "label"), std::make_pair("title", tr("Label editor"))}));
+		tabs.push_back(QMap<QString, QVariant>({  std::make_pair("name", "label"), std::make_pair("title", tr("Label editor"))}));
 	}
 
 	QMap<QString, QVariant> misingValues =	{  std::make_pair("name", "missingValues"), std::make_pair("title", tr("Missing values"))};
@@ -656,6 +655,7 @@ void ColumnModel::refresh()
 	endResetModel();
 
 	emit autoSortChanged();
+	emit hasLabelsChanged();
 	emit dropLevelsChanged();
 	emit columnNameChanged();
 	emit columnTitleChanged();
@@ -935,3 +935,16 @@ void ColumnModel::languageChangedHandler()
 
 
 
+
+bool ColumnModel::hasLabels() const
+{
+	return column() ? column()->hasLabels() : false;
+}
+
+void ColumnModel::setHasLabels(bool newHasLabels)
+{
+	if(column())
+		column()->setHasLabels(newHasLabels);
+	
+	refresh();
+}
