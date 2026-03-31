@@ -13,18 +13,18 @@ TextAreaBase
 	implicitWidth:		width
 	focusIndicator:		flickableRectangle
 	innerControl:		control
+	infoText:			applyScriptInfo
+
 	
 	property alias	control				: control
 	property alias	wrapMode			: control.wrapMode
 	property alias	text				: control.text
-	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
-	property alias  infoText			: infoText.text
+	property string applyScriptInfo		: Qt.platform.os === "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  font				: control.font
 	property alias  textDocument		: control.textDocument
 	property bool   trim				: false
 	property var    modelParameterView	: null
 	property string separator			: "\n"
-	property var	separators			: []
 	property alias	radius				: flickableRectangle.radius
 	property alias	placeholderText		: control.placeholderText
 	property var	undoModel
@@ -208,6 +208,7 @@ TextAreaBase
 	Text
 	{
 		id:						infoText
+		text:					textArea.infoText
 		z:						2
 		anchors.bottom:			parent.bottom
 		anchors.right:			parent.right
@@ -216,7 +217,6 @@ TextAreaBase
 		rightPadding:			leftPadding
 		bottomPadding:			3 * preferencesModel.uiScale
 		topPadding:				bottomPadding
-		text:					textArea.applyScriptInfo
 		font:					jaspTheme.font
 		horizontalAlignment:	Text.AlignHCenter
 		verticalAlignment:		Text.AlignVCenter

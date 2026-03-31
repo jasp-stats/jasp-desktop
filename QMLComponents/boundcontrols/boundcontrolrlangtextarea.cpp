@@ -51,6 +51,11 @@ void BoundControlRlangTextArea::bindTo(const Json::Value &value)
 
 }
 
+void BoundControlRlangTextArea::resetBoundValue()
+{
+	_setBoundValues(false);
+}
+
 Json::Value BoundControlRlangTextArea::createJson() const
 {
 	Json::Value result;
@@ -160,11 +165,13 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 	return QString();
 }
 
-void BoundControlRlangTextArea::_setBoundValues()
+void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 {
 	Json::Value boundValue(Json::objectValue);
 
-	boundValue["modelOriginal"] = _textArea->text().toStdString();
+	std::string text = _textArea->text().toStdString();
+
+	boundValue["modelOriginal"] = text;
 	boundValue["model"]			= _textEncoded.toStdString();
 
 	Json::Value columns(Json::arrayValue),
@@ -178,7 +185,7 @@ void BoundControlRlangTextArea::_setBoundValues()
 		value.append(column);
 	}
 
-	if (_textArea->model())
+	if (setModel && _textArea->model())
 		_textArea->model()->initTerms(terms);
 	boundValue["columns"]	= columns;
 	boundValue["value"]		= value;

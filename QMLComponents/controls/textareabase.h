@@ -36,11 +36,14 @@ class TextAreaBase : public JASPListControl, public BoundControl
 	Q_OBJECT
 	QML_ELEMENT
 
+	Q_PROPERTY( QString		infoText			READ infoText				WRITE setInfoText			NOTIFY infoTextChanged							)
 	Q_PROPERTY( TextType	textType			READ textType				WRITE setTextType			NOTIFY textTypeChanged							)
 	Q_PROPERTY( bool		hasScriptError		READ hasScriptError			WRITE setHasScriptError		NOTIFY hasScriptErrorChanged					)
 	Q_PROPERTY( bool		autoCheckSyntax		READ autoCheckSyntax		WRITE setAutoCheckSyntax	NOTIFY autoCheckSyntaxChanged					)
 	Q_PROPERTY( bool		checkSyntax			READ checkSyntax			WRITE setCheckSyntax		NOTIFY checkSyntaxChanged						)
 	Q_PROPERTY( QString		variableSeparator	READ variableSeparator		WRITE setVariableSeparator	NOTIFY variableSeparatorChanged					)
+	Q_PROPERTY( QStringList	separators			READ separators				WRITE setSeparators			NOTIFY separatorsChanged						)
+
 
 public:
 	TextAreaBase(QQuickItem* parent = nullptr);
@@ -69,8 +72,9 @@ public:
 
 	TextType					textType()									const				{ return _textType;										}
 	bool						hasScriptError()							const				{ return _hasScriptError;								}
-	const QList<QString>&		separators()								const				{ return _separators;									}
+	const QStringList		&	separators()								const				{ return _separators;									}
 	QString						variableSeparator()							const				{ return _variableSeparator;							}
+	const QString			&	infoText()									const				{ return _infoText;										}
 	QString						text();
 	void						setText(const QString& text);
 
@@ -84,6 +88,8 @@ public slots:
 	GENERIC_SET_FUNCTION(AutoCheckSyntax,		_autoCheckSyntax,		autoCheckSyntaxChanged,		bool		)
 	GENERIC_SET_FUNCTION(CheckSyntax,			_checkSyntax,			checkSyntaxChanged,			bool		)
 	GENERIC_SET_FUNCTION(VariableSeparator,		_variableSeparator,		variableSeparatorChanged,	QString		)
+	GENERIC_SET_FUNCTION(InfoText,				_infoText,				infoTextChanged,			QString		)
+	GENERIC_SET_FUNCTION(Separators,			_separators,			separatorsChanged,			QStringList	)
 
 	void	checkSyntaxHandler()		{ if(_checkSyntax)		_boundControl->checkSyntax();		}
 	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax)	checkSyntaxHandler();				}
@@ -96,6 +102,8 @@ signals:
 	void	autoCheckSyntaxChanged();
 	void	checkSyntaxChanged();
 	void	variableSeparatorChanged();
+	void	infoTextChanged();
+	void	separatorsChanged();
 
 protected slots:
 	void	termsChangedHandler()		override;
@@ -108,9 +116,10 @@ protected:
 	bool						_hasScriptError			= false,
 								_autoCheckSyntax		= true,
 								_checkSyntax			= true;
-	QString						_variableSeparator		= "_";
-	QList<QString>				_separators;
-	
+	QString						_variableSeparator		= "_",
+								_infoText;
+	QStringList					_separators;
+
 	ListModelTermsAvailable*	_model					= nullptr;
 };
 

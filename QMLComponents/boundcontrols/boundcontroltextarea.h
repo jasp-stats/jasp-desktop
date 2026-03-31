@@ -33,6 +33,7 @@ public:
 	bool					isJsonValid(const Json::Value& optionValue) const	override;
 	Json::Value				createJson()								const	override;
 	void					bindTo(const Json::Value& value)					override;
+	void					resetBoundValue()									override;
 
 	virtual	void			checkSyntax();
 	virtual QString			rScriptDoneHandler(const QString &result)	{ throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler!\nResult was: " + result.toStdString()); };
