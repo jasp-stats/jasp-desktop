@@ -53,6 +53,7 @@ public:
 
 			void					dbCreate(	int index);
 			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
+			void					dbLoadOldIndex(	int index);						///< Loads pre ~0.96.1 data (with both DBL and INT cols)
 			void					dbLoadIndex(int index, bool getValues = true);
 			void					dbUpdateComputedColumnStuff();
 			void					dbUpdateValues();
@@ -61,6 +62,7 @@ public:
 			
 			bool					setName(			const std::string & name			);
 			void					setTitle(			const std::string & title			);
+			void					setHasLabels(		bool				haveLabels		);
 			bool					setRCode(			const std::string & rCode			);
 			bool					setError(			const std::string & error			);
 			void					setType(			columnType			colType			);
@@ -83,6 +85,8 @@ public:
 
 			bool					initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool leaveBatchedUnfinished = false);
 			bool					overwriteDataAndType(	stringvec		data, columnType colType, bool computed);
+			void					labelsToNoLabels();
+			void					noLabelsToLabels();
 			
 			bool					allLabelsPassFilter()	const;
 			bool					hasFilter()				const;
@@ -100,6 +104,7 @@ public:
 			bool					shouldDropLevels()		const	{ return _dropLevels != dropLevelsType::keep; }
 			bool					invalidated()			const	{ return _invalidated;		}
 			bool					autoSortByValue()		const	{ return _autoSortByValue;	}
+			bool					hasLabels()				const	{ return _hasLabels;		}
 			computedColumnType		codeType()				const	{ return _codeType;			}
 			const std::string	&	name()					const	{ return _name;				}
 			const std::string	&	title()					const	{ return _title.empty() ? _name : _title;	}
@@ -110,14 +115,11 @@ public:
 				  std::string		rCodeStripped()			const	{ return stringUtils::stripRComments(_rCode);	}
 				  std::string		constructorJsonStr()	const	{ return _constructorJson.toStyledString();	}
 			const Json::Value	&	constructorJson()		const	{ return _constructorJson;	}
-			size_t					rowCount()				const	{ return _dbls.size(); }
+			size_t					rowCount()				const	{ return std::max(_ints.size(), _dbls.size()); }
 			const intvec		&	ints()					const	{ return _ints; }
 			const doublevec		&	dbls()					const	{ return _dbls; }
+			const stringvec		&	strs()					const	{ return _strs;	}
 			
-			void					upgradeSetDoubleLabelsInInts();			///< Used by upgrade 0.18.* -> 0.19
-			void					upgradeExtractDoublesIntsFromLabels();	///< Used by upgrade 0.18.* -> 0.19
-			void					upgradeDoublesToLabels();				///< 0.19.* -> 0.95
-
 			void					labelsClear(bool doIncRevision=true);
 			int						labelsAdd(			int display);
 			int						labelsAdd(			const std::string & display);
@@ -130,7 +132,9 @@ public:
 			void					labelsShrinkOnlyToSize( size_t highestToKeep);
 			
 			int						nonFilteredNumericsCount();
-            stringvec				nonFilteredLevels();
+			int						nonFilteredNumericsCount() const;
+            const stringvec	 &		nonFilteredLevels();
+			const stringvec	 &		nonFilteredLevels() const;
 			void					nonFilteredCountersReset(bool updateLabelIndexes = true);
 
 			std::set<size_t>		labelsMoveRows(std::vector<size_t> rows, bool up);
@@ -157,8 +161,7 @@ public:
 			bool					setStringValue(				size_t row, const std::string & value, const std::string & label = "", bool writeToDB = true); ///< Does two things, if label=="" it will handle user input, as value or label depending on columnType. Otherwise it will simply try to use userEntered as a value. But this will trigger the setting of type
 			bool					setValue(					size_t row,		  std::string   value, const std::string & label,	bool writeToDB = true, bool useLocale = true);
 			bool					setValue(					size_t row, int					value,								bool writeToDB = true);
-			bool					setValue(					size_t row, double				value,								bool writeToDB = true);
-			bool					setValue(					size_t row, int					valueInt, double valueDbl,			bool writeToDB = true);
+			bool					setValue(					size_t row, double valueDbl,  const std::string & valueStr,			bool writeToDB = true);
 			columnType				setValues(				const stringvec &	values, const stringvec &	labels, int thresholdScale, bool * changedSomething = nullptr, bool useLocale = true); ///< Returns what would be the most sensible columntype
 			columnType				setValues(size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * changedSomething = nullptr, bool useLocale = true); ///< Returns what would be the most sensible columntype
 			
@@ -233,6 +236,8 @@ public:
 	static	void					setAutoSortByValuesByDefault(bool autoSort);
 	static	bool					autoSortByValuesByDefault();
 	
+			void					addLabelManually(std::string value, std::string label);
+			void					deleteLabelManually(int labelIndex);
 protected:
 			void					_checkForDependencyLoop(stringset foundNames, std::list<std::string> loopList);
 			void					_dbUpdateLabelOrder(bool noIncRevisionWhenBatchedPlease = false);		///< Sets the order of the _labels to label.order and in DB
@@ -247,6 +252,9 @@ protected:
 			std::map<Label*,size_t> valuesAlphabeticalOffsets();
 			int						_labelMapIt(Label *label);
 			void					_labelMapUpdates(Label *label, const std::string & previousDisplay, const std::string & previousOriginal);
+			void					_handleWidthChangeWithoutLabels();
+			
+			
 private:
 			DataSet			* const	_data;
 			EmptyValues		* const	_emptyValues;
@@ -259,7 +267,8 @@ private:
 			int						_nonFilteredNumericsCount	= -1;
 			bool					_invalidated				= false,
 									_autoSortByValue,
-									_hasShadows					= false;
+									_hasShadows					= false,
+									_hasLabels					= false;
 			dropLevelsType			_dropLevels					= dropLevelsType::noChoice;
 			computedColumnType		_codeType					= computedColumnType::notComputed;
 			std::string				_name,
@@ -269,8 +278,9 @@ private:
 									_rCode,
 									_computeFilter;
 			Json::Value				_constructorJson			= Json::objectValue;
-			doublevec				_dbls;
-			intvec					_ints;
+			intvec					_ints; ///For when there are labels
+			stringvec				_strs; ///For when there are no labels
+			doublevec				_dbls; ///For when there are no labels
 			stringset				_dependsOnColumns;
 			std::map<int, Label*>	_labelByIntsIdMap,
 									_labelByNonEmptyIndex;

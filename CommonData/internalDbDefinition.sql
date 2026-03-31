@@ -39,6 +39,7 @@ CREATE TABLE Columns
 	autoSortByValue		INT,
 	dropLevels			INT,
 	invalidated			INT		NULL,
+	hasLabels			INT		DEFAULT 0,
 	codeType			TEXT	NULL, 
 	rCode				TEXT	NULL, 
 	error				TEXT	NULL, 

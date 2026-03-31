@@ -140,6 +140,7 @@ public:
 	void		columnDelete(				int columnId, bool					cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
 	void		columnSetType(				int columnId, columnType			colType);
 	void		columnSetAutoSort(			int columnId, bool					sort);
+	void		columnSetHasLabels(			int columnId, bool					hasLabels);
 	void		columnSetInvalidated(		int columnId, bool					invalidated);
 	void		columnSetDropLevels(		int columnId, int					dropLevels);
 	void		columnSetName(				int columnId, const std::string &	name);
@@ -147,14 +148,18 @@ public:
 	void		columnSetEmptyVals(			int columnId, const std::string &	emptyValsJson);
 	void		columnSetDescription(		int columnId, const std::string &	description);
 	void		columnSetComputeFilter(		int columnId, const std::string &	computeFilter);
-	void		columnGetBasicInfo(			int columnId,		std::string &	name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels);
+	void		columnGetBasicInfo(			int columnId,		std::string &	name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels, bool & hasLabels);
 	void		columnSetComputedInfo(		int columnId, int analysisId,  bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	std::string & constructorJson, const std::string & computeFilter);
 	void		columnGetComputedInfo(		int columnId, int &analysisId, bool & invalidated, computedColumnType & codeType,		std::string & rCode,		std::string & error,		Json::Value & constructorJson, std::string & computeFilter);
-	void		columnSetValues(			int columnId, const intvec	  & ints, const doublevec & dbls);
-	void		columnSetValue(				int columnId, size_t row, int valueInt, double valueDbl);
+	void		columnSetValues(			int columnId, const intvec	  & ints);
+	void		columnSetValues(			int columnId, const doublevec & dbls, const stringvec & strs);
+	void		columnSetValue(				int columnId, size_t row, int valueInt);
+	void		columnSetValue(				int columnId, size_t row, double dbl, const std::string & str);
 	size_t		columnGetLabelCount(		int columnId);
-	void		columnGetValues(			int columnId,	intvec		& ints, doublevec & dbls);
-	std::string columnBaseName(				int columnId) const;
+	void		columnGetValues(			int columnId,	intvec		& ints,						const std::string & postFix = "");
+	void		columnGetValues(			int columnId,	doublevec	& dbls, stringvec & strs,	const std::string & postFix = "");
+	std::string columnBaseName(				int columnId,	const std::string & postFix = "") const;
+
 	
 	void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedLabelsLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});

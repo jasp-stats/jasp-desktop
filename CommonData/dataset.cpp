@@ -322,74 +322,60 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 	//Log::log() << "colCount: " << colCount << ", " << "rowCount: " << rowCount() << std::endl;
 
 	float colProgressMult = 1.0 / colCount;
-
-	Json::Value emptyValsJson;
-	Json::Reader().parse(emptyVals, emptyValsJson);
-
+	
 	bool	do019Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.19",
 			do096Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.96";
 
 	//Ideally we have the emptyvalues before loading the columns, so we get the right labels in the labeleditor, butr for older than 0.19 stuff is complicated so we do that later.
+	Json::Value emptyValsJson;
+	Json::Reader().parse(emptyVals,		emptyValsJson);
 
-	if(!do019Fix)
+	if(!do019Fix && !do096Fix)
+	{
 		_emptyValues->fromJson(emptyValsJson);
 
-	for(size_t i=0; i<colCount; i++)
+		for(size_t i=0; i<colCount; i++)
+		{
+			if(_columns.size() == i)
+				_columns.push_back(new Column(this));
+	
+			_columns[i]->dbLoadIndex(i, false);
+			
+			progressCallback(0.2 + (i * colProgressMult * 0.3)); //should end at 0.5
+		}
+	
+		for(size_t i=colCount; i<_columns.size(); i++)
+			delete _columns[i];
+	
+		_columns.resize(colCount);
+	
+		db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.50 + (p * 0.25)); });
+		db().dataSetBatchedLabelsLoad(this, [&](float p){ progressCallback(0.75 + (p * 0.25)); });
+	}
+	else
 	{
-		if(_columns.size() == i)
-			_columns.push_back(new Column(this));
-
-		_columns[i]->dbLoadIndex(i, false);
+		if(do019Fix)	upgradeEmptyValsFrom018To019(emptyValsJson);
+		else			_emptyValues->fromJson(emptyValsJson);
+			
+		for(size_t i=0; i<colCount; i++)
+		{
+			if(_columns.size() == i)
+				_columns.push_back(new Column(this));
+	
+			_columns[i]->dbLoadOldIndex(i);
+			
+			progressCallback(0.2 + (i * colProgressMult * 0.6));
+		}
 		
-		progressCallback(0.2 + (i * colProgressMult * 0.3)); //should end at 0.5
+		db().dataSetCreateTable(this);
+		db().dataSetBatchedValuesUpdate(this, _columns, [&](float p){ progressCallback(0.8 + (p * 0.2)); });
 	}
-
-	for(size_t i=colCount; i<_columns.size(); i++)
-		delete _columns[i];
-
-	_columns.resize(colCount);
-
-	db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.50 + (p * 0.25)); });
-	db().dataSetBatchedLabelsLoad(this, [&](float p){ progressCallback(0.75 + (p * 0.25)); });
-
-
-	
-	if(do096Fix)
-		beginBatchedToDB();
-	
-	if(do019Fix)	upgradeTo019(emptyValsJson);
-	
-	if(do096Fix)
-	{
-		upgrade019To095();
-		endBatchedToDB();
-	}
-	
 	
 }
 
-void DataSet::upgradeTo019(const Json::Value & emptyVals)
+
+void DataSet::upgradeEmptyValsFrom018To019(const Json::Value & emptyVals)
 {
-	for(Column * column : _columns)
-	{
-		switch(column->type())
-		{
-		case columnType::scale:
-			column->upgradeSetDoubleLabelsInInts();
-			break;
-		
-		case columnType::ordinal:
-		case columnType::nominal:
-		case columnType::nominalText:
-			column->upgradeExtractDoublesIntsFromLabels();
-			break;
-			
-		default:
-			Log::log() << "Column " << column->name() << " has unknown type, id: " << column->id() << std::endl;
-			break;
-		}
-	}
-	
 	//So, 0.18.0, 0.18.1, 0.18.2 jaspfiles cant be loaded in 0.18.3
 	//also, those versions were pretty buggy, so here we will just try to handle the case of 0.18.3
 	//above we made sure _ints and _dbls are synched again.
@@ -434,14 +420,6 @@ void DataSet::upgradeTo019(const Json::Value & emptyVals)
 	incRevision();
 }
 
-void DataSet::upgrade019To095()
-{
-	// 0.19.* versions attempted to speedup scalar columns by not making labels for double-only columns. This in the end required so many caches that it slowed it down and made it complicated.
-	// Now we just make labels for everything, however, they are missing for 0.19.* files. 
-	
-	for(Column * col : _columns)
-		col->upgradeDoublesToLabels();
-}
 
 int DataSet::columnCount() const
 {

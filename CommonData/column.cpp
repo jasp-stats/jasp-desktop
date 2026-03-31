@@ -57,7 +57,9 @@ void Column::dbLoad(int id, bool getValues)
 	Json::Value emptyVals;
 	int dropLevelsTypeInt = static_cast<int>(_dropLevels);
 	
-	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue, dropLevelsTypeInt);
+	std::string oldError = _error;
+	
+	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue, dropLevelsTypeInt, _hasLabels);
 	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson, _computeFilter);
 	
 	try { _dropLevels = dropLevelsType(dropLevelsTypeInt); } catch(...){}
@@ -67,12 +69,68 @@ void Column::dbLoad(int id, bool getValues)
 	
 	if(getValues)
 	{
-		db().labelsLoad(this);
-		db().columnGetValues(_id, _ints, _dbls);
+		if(_hasLabels)
+		{
+			db().labelsLoad(this);
+			db().columnGetValues(_id, _ints);
+		}
+		else
+			db().columnGetValues(_id, _dbls, _strs);
 	}
 
 	_resetLabelValueMap();
 
+	db().transactionReadEnd();
+}
+
+void Column::dbLoadOldIndex(int index)
+{
+	JASPTIMER_SCOPE(Column::dbLoadOldIndex);
+	
+	_id = db().columnIdForIndex(_data->id(), index);
+
+	assert(_id != -1);
+
+	db().transactionReadBegin();
+	
+	dbLoad(_id, false);
+	
+	db().columnGetValues(_id, _ints,		"INT");
+	db().columnGetValues(_id, _dbls, _strs, "DBL");
+	
+	if(std::none_of(_ints.begin(), _ints.end(), [](int i){ return i != Label::NO_LABEL && i != 0 && i != EmptyValues::missingValueInteger; }))
+	{
+		_hasLabels = false;
+		_ints.clear();
+		labelsClear();
+		db().labelsClear(_id);
+		
+		for(int row=0; row<_strs.size() && row < _dbls.size(); row++)
+		{
+			Log::log() << "_strs["<< row << "] == " << _strs[row] << " and  _dbls["<< row << "] == " << _dbls[row]  << std::endl;
+			
+			double dbl;
+			
+			if(ColumnUtils::getDoubleValue(_strs[row], dbl, false) && ((std::isnan(dbl) && std::isnan(_dbls[row])) || _dbls[row] == dbl))
+				_strs[row] = "";
+		}
+		
+	}
+	else
+	{
+		_hasLabels = true;
+		
+		db().labelsLoad(this);
+		_resetLabelValueMap();
+		
+		for(int row=0; row<_ints.size() && row < _dbls.size(); row++)
+		{
+			//if(_ints[row] == 	
+			Label * l = labelByIntsId(_ints[row]);
+			Log::log() << "_ints["<< row << "] == " << _ints[row] << " and  _dbls["<< row << "] == " << _dbls[row] << " label is: '" << ( !l ? "null" : l->labelDisplay()) << "'" << std::endl;
+		}
+	}
+	
 	db().transactionReadEnd();
 }
 
@@ -423,6 +481,7 @@ columnTypeChangeResult Column::changeType(columnType colType)
 	}
 }
 
+
 void Column::setDefaultValues(enum columnType columnType)
 {
 	JASPTIMER_SCOPE(Column::setDefaultValues);
@@ -430,11 +489,9 @@ void Column::setDefaultValues(enum columnType columnType)
 	if(columnType != columnType::unknown)
 		setType(columnType);
 	
-	for(size_t i=0; i<_ints.size(); i++)
-	{
-		_ints[i] =  EmptyValues::missingValueInteger;
-		_dbls[i] =  EmptyValues::missingValueDouble;
-	}
+	for(size_t i=0; i<rowCount(); i++)
+		if(_hasLabels)		setValue(i, EmptyValues::missingValueInteger,		false);
+	else					setValue(i, EmptyValues::missingValueDouble,	"", false);
 	
 	labelsClear();
 	
@@ -458,7 +515,12 @@ void Column::setDropLevels(dropLevelsType dropEm)
 void Column::dbUpdateValues()
 {
 	if(!_data->writeBatchedToDB())
-		db().columnSetValues(_id, _ints, _dbls);
+	{
+		if(_hasLabels)
+			db().columnSetValues(_id, _ints);
+		else
+			db().columnSetValues(_id, _dbls, _strs);
+	}
 	
 	incRevision();
 }
@@ -511,67 +573,126 @@ columnType Column::setValues(const stringvec & values, const stringvec & labels,
 				);
 }
 
+				
 columnType Column::setValues(size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, int thresholdScale, bool * aChange, bool useLocale)
 {
 	JASPTIMER_SCOPE(Column::setValues);
 
-	if(aChange && _dbls.size() != rows)
+	if(aChange && rowCount() != rows)
 		(*aChange) = true;
 
-	size_t prevSize = _ints.size();
-	
-	JASPTIMER_RESUME(Column::setValues set size etc);
-	
-	_dbls.resize(rows);
-	_ints.resize(rows);
-	
-	for(size_t resetRow=prevSize; resetRow<_ints.size(); resetRow++)
-	{
-		_ints[resetRow]	= EmptyValues::missingValueInteger;
-		_dbls[resetRow] = EmptyValues::missingValueDouble;
-	}
-	
-	JASPTIMER_STOP(Column::setValues set size etc);
+	size_t prevSize = rowCount();
 	
 	bool	onlyDoubles = true, 
 			onlyInts	= true;
 	
 	//Weve already made sure we have only 1 label per value and display combo, because otherwise this will get too complicated
 
-	intset	ints;  // to suggest whether this is a scalar or not we need to know whether we have more than treshold ints or not.
+	intset	ints;  // to suggest whether this is a scalar or not we need to know whether we have more than threshold ints or not.
 	int		tmpInt;
 	double	tmpDbl;
 	
-	JASPTIMER_RESUME(Column::setValues call setValue and count integers);
 	
-	for(size_t i=0; i<rows; i++)
+	bool allTheSame = true;
+	
+	if(prevSize == 0)
+		//Should we have labels?
+		for(int r=0; r<rows && allTheSame; r++)
+			if(valueLookup(r) != labelLookup(r) && labelLookup(r) != "")
+				allTheSame = false;
+	
+	if(allTheSame)
 	{
-		const std::string	value = valueLookup(i),
-							label = labelLookup(i);
-
-		if(setValue(i, value, label, false, useLocale) && aChange)
-			(*aChange) = true;
-				
-		if(value != "" || label != "")
+		setHasLabels(false);
+		_hasShadows = false;
+		_maxWidthValue = 0;
+		_maxWidthLabel = 0;
+		
+		_dbls.resize(rows);
+		_strs.resize(rows);
+		
+		for(size_t resetRow=prevSize; resetRow<_ints.size(); resetRow++)
 		{
-			if(ColumnUtils::getIntValue(value, tmpInt))
-				ints.insert(tmpInt);
-			else if(!isEmptyValue(value))
-				onlyInts = false;
-			
-			if(!ColumnUtils::getDoubleValue(value, tmpDbl, useLocale) && !isEmptyValue(value))
-				onlyDoubles = false;
+			_dbls[resetRow]	= EmptyValues::missingValueDouble;
+			_strs[resetRow] = "";
 		}
+
+	
+		JASPTIMER_RESUME(Column::setValues call setValue and count integers);
+		
+		for(size_t i=0; i<rows; i++)
+		{
+			std::string	valueStr = valueLookup(i);
+			double		valueDbl = EmptyValues::missingValueDouble;
+
+			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(valueStr)));
+			
+			if(ColumnUtils::getDoubleValue(valueStr, valueDbl))
+				valueStr = "";
+			
+			if(setValue(i, valueDbl, valueStr, false) && aChange)
+				(*aChange) = true;
+					
+			if(valueStr != "")
+			{
+				if(ColumnUtils::getIntValue(valueStr, tmpInt))
+					ints.insert(tmpInt);
+				else if(!isEmptyValue(valueStr))
+					onlyInts = false;
+				
+				if(!isEmptyValue(valueStr))
+					onlyDoubles = false;
+			}
+			else if(!std::isnan(valueDbl))
+			{
+				if(std::abs(valueDbl - double(int(valueDbl))) < .00001)
+					ints.insert(int(valueDbl));
+				else if(!isEmptyValue(valueDbl))
+					onlyInts = false;
+			}
+		}
+
+		_maxWidthLabel = _maxWidthValue;
+	}
+	else
+	{
+		setHasLabels(true);
+		
+		_ints.resize(rows);
+		
+		for(size_t resetRow=prevSize; resetRow<_ints.size(); resetRow++)
+			_ints[resetRow]	= EmptyValues::missingValueInteger;
+
+		JASPTIMER_RESUME(Column::setValues call setValue and count integers);
+		
+		for(size_t i=0; i<rows; i++)
+		{
+			const std::string	value = valueLookup(i),
+								label = labelLookup(i);
+			
+			if(setValue(i, value, label, false, useLocale) && aChange)
+				(*aChange) = true;
+					
+			if(value != "" || label != "")
+			{
+				if(ColumnUtils::getIntValue(value, tmpInt))
+					ints.insert(tmpInt);
+				else if(!isEmptyValue(value))
+					onlyInts = false;
+				
+				if(!ColumnUtils::getDoubleValue(value, tmpDbl, useLocale) && !isEmptyValue(value))
+					onlyDoubles = false;
+			}
+		}
+		
+		if(labelsRemoveOrphans() && aChange)
+			(*aChange) = true;
+		
+		JASPTIMER_STOP(Column::setValues call setValue and count integers);
 	}
 	
-	if(labelsRemoveOrphans() && aChange)
-		(*aChange) = true;
-	
-	JASPTIMER_STOP(Column::setValues call setValue and count integers);
-	
-	
 	dbUpdateValues();
-	
+
 	//Now determine what the most logical columntype would be given the current values AND empty values!
 	if(onlyInts && ints.size() <= thresholdScale && ints.size() > 0)
 	{
@@ -585,7 +706,6 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 	
 	
 	//So not everything was an int or a dbl so lets go through the current ints, count total labels and determine whether it might be nominal or ordinal
-	std::set<double> doublesNonNA;
 	std::set<Label*> labelsNonNA;
 	
 	JASPTIMER_RESUME(Column::setValues count labels);
@@ -593,21 +713,16 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 	for(size_t i=0; i<_ints.size(); i++)
 	{
 		int value = _ints[i];
+
+		Label * label = labelByIntsId(value);
 		
-		if(value != Label::NO_LABEL)
-		{
-			Label * label = labelByIntsId(value);
-			
-			if(label && !label->isEmptyValue())
-				labelsNonNA.insert(label);
-		}
-		else if(!isEmptyValue(_dbls[i]))
-			doublesNonNA.insert(_dbls[i]);
+		if(label && !label->isEmptyValue())
+			labelsNonNA.insert(label);
 	}
 	
 	JASPTIMER_STOP(Column::setValues count labels);
 	
-	size_t howManyLabelLike = doublesNonNA.size() && labelsNonNA.size();
+	size_t howManyLabelLike = labelsNonNA.size();
 
 	if(howManyLabelLike <= 2 || howManyLabelLike > thresholdScale)
 		return columnType::nominal;
@@ -663,24 +778,21 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType, bool co
 {
 	JASPTIMER_SCOPE(Column::overwriteDataAndType);
 	
-	if(computeFilter() != "")
-	{
-		Filter theFilter(data(), computeFilter(), false);
-		
-		const boolvec & filtered = theFilter.filtered();
-		stringvec		newData;
-						newData	 . reserve(filtered.size());
-		
-		for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < colData.size(); iFilter++)
-			newData.push_back(filtered[iFilter] ? colData[iData++] : "");
-			
-		colData = newData;
-	}
+	assert(data()->filter()->name() == computeFilter());
+	
+	const boolvec & filtered = data()->filter()->filtered();
+	stringvec		newData;
+					newData	 . reserve(filtered.size());
+					
+	for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < colData.size(); iFilter++)
+		newData.push_back(filtered[iFilter] ? colData[iData++] : "");
+					
+	colData = newData;
 	
 	Log::log() << "Column " << _name << " overwriteDataAndType(" << colData.size() << " rows of data, "<<columnTypeToString(colType)<<", bool computed=" << (computed ? "true" : "false") << ")" << std::endl;
 	
 	//Now to make sure that the colData is neither bigger nor smaller than the dataset:
-	colData.resize(_data->rowCount()); //Either add blanks rows add end or drop superfluous data
+	colData.resize(data()->rowCount()); //Either add blanks rows add end or drop superfluous data
 	
 	bool			changes		= _type != colType,
 					toScale		= colType == columnType::scale;
@@ -688,36 +800,45 @@ bool Column::overwriteDataAndType(stringvec colData, columnType colType, bool co
 				&	values		= toScale  ? colData : otherData,
 				&	labels		= !toScale ? colData : otherData;
 	
-	// If we are going to allow users to edit things it would be nice if we didnt just throw it away so rough
-	// See: https://github.com/jasp-stats/INTERNAL-jasp/issues/2680
-	// All we have to do is find the value/label per label/value given depending on the selected columnType
 	
-	strstrmap											replacePerKey;
-	std::function<std::string(const std::string &)>		getOther		= [&](const std::string & in) 
-	{ 
-		if(!replacePerKey.count(in))
-		{
-			Label * tmp = toScale ? labelByValue(in) : labelByDisplay(in); 
-			replacePerKey[in] = !tmp ? in : toScale ? tmp->label() : tmp->originalValueAsString();
-		}
+	if(_hasLabels)
+	{
 		
-		return replacePerKey.at(in);
-	};
+		// If we are going to allow users to edit things it would be nice if we didnt just throw it away so rough
+		// See: https://github.com/jasp-stats/INTERNAL-jasp/issues/2680
+		// All we have to do is find the value/label per label/value given depending on the selected columnType
+		
+		strstrmap											replacePerKey;
+		std::function<std::string(const std::string &)>		getOther		= [&](const std::string & in) 
+		{ 
+			if(!replacePerKey.count(in))
+			{
+				Label * tmp = toScale ? labelByValue(in) : labelByDisplay(in); 
+				replacePerKey[in] = !tmp ? in : toScale ? tmp->label() : tmp->originalValueAsString();
+			}
+			
+			return replacePerKey.at(in);
+		};
+		
+		for(size_t i=0; i<colData.size(); i++)
+			otherData[i] = getOther(colData[i]);
+		
+		// overwriteDataAndType is called only by the Engine, when R computes some values for a column (computed columns)
+		// In this case, the locale used is just UTF-8/C, so the locale chosen by the user should not be used to convert the values.
+		beginBatchedLabelsDB();
+		setValues(values, labels, 0, &changes, false);
+		nonFilteredCountersReset();
+		labelsHandleAutoSort();
+		endBatchedLabelsDB();
+	}
+	else // no labels
+	{
+		setValues(colData, colData, 0, &changes, false);
+	}
 	
-	for(size_t i=0; i<colData.size(); i++)
-		otherData[i] = getOther(colData[i]);
-	
-	// overwriteDataAndType is called only by the Engine, when R computes some values for a column (computed columns)
-	// In this case, the locale used is just UTF-8/C, so the locale chosen by the user should not be used to convert the values.
-	beginBatchedLabelsDB();
-	setValues(values, labels, 0, &changes, false);
 	if(computed && _codeType == computedColumnType::analysisNotComputed && _analysisId != -1)
 		setCodeType(computedColumnType::analysis);
 	setType(colType);
-	nonFilteredCountersReset();
-	labelsHandleAutoSort();
-	endBatchedLabelsDB();
-	
 	
 	return changes;
 }
@@ -920,6 +1041,8 @@ int Column::labelsAdd(int value, const std::string & display, bool filterAllows,
 
 void Column::labelsRemove(int labelIndex)
 {
+	assert(_hasLabels);
+	
 	if(_labels.size() > labelIndex)
 	{
 		Label * label = _labels[labelIndex];
@@ -930,13 +1053,10 @@ void Column::labelsRemove(int labelIndex)
 		
 		for(size_t i=0; i<_ints.size(); i++)
 			if(_ints[i] == intsId)
-			{
 				_ints[i] = EmptyValues::missingValueInteger;
-				_dbls[i] = EmptyValues::missingValueDouble;
-			}
 	}
 	
-	db().columnSetValues(_id, _ints, _dbls);
+	db().columnSetValues(_id, _ints);
 	nonFilteredCountersReset();
 	_dbUpdateLabelOrder();
 	
@@ -946,6 +1066,7 @@ void Column::labelsRemove(int labelIndex)
 int Column::labelsSet(int labelIndex, int value, const std::string &display, bool filterAllows, const std::string &description, const Json::Value &originalValue, int order, int id)
 {
 	JASPTIMER_SCOPE(Column::labelsSet);
+	assert(_hasLabels);
 
 	Label * label = nullptr;
 	if(_labels.size() > labelIndex)
@@ -973,6 +1094,7 @@ int Column::labelsSet(int labelIndex, int value, const std::string &display, boo
 void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder)
 {
 	if (valuesToRemove.empty()) return;
+	assert(_hasLabels);
 
 	JASPTIMER_SCOPE(Column::labelsRemoveByIntsId);
 
@@ -1009,6 +1131,8 @@ void Column::labelsRemoveByIntsId(std::set<int> valuesToRemove, bool updateOrder
 
 void Column::labelsShrinkOnlyToSize(size_t newSize)
 {
+	assert(_hasLabels);
+	
 	for(size_t i=newSize; i<_labels.size(); i++)
 		delete _labels[i];
 	
@@ -1027,13 +1151,23 @@ int Column::nonFilteredNumericsCount()
 		doubleset numerics;
 
 		for(size_t r=0; r<_data->rowCount(); r++)
-			if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
+		{
+			if(_hasLabels)
+			{
+				Label * l = labelByIntsId(_ints[r]);
+				
+				if(_data->filter()->filtered()[r] && l && !l->isEmptyValue())
+					numerics.insert(l->originalValueAsDouble());
+			}
+			else
+				if(_data->filter()->filtered()[r] && !isEmptyValue(_dbls[r]))
 					numerics.insert(_dbls[r]);
+		}
 
-		if(!shouldDropLevels())
+		if(_hasLabels && !shouldDropLevels())
 			for(Label * label : _labels)
-				if(label->originalValue().isDouble() && label->isEmptyValue())
-					numerics.insert(label->originalValue().asDouble());
+				if(!std::isnan(label->originalValueAsDouble()) && !label->isEmptyValue()) //This was originally just a emptyValue check, but why would we want the empty values in particular?
+					numerics.insert(label->originalValueAsDouble());
 
 		_nonFilteredNumericsCount = numerics.size();
 	}
@@ -1041,37 +1175,66 @@ int Column::nonFilteredNumericsCount()
 	return _nonFilteredNumericsCount;
 }
 
-stringvec Column::nonFilteredLevels()
+
+int Column::nonFilteredNumericsCount() const
+{
+#ifdef JASP_DEBUG
+	if(_nonFilteredNumericsCount == -1)
+		throw std::runtime_error("nonFilteredNumericsCount() const was not initialized");
+#endif
+	
+	return _nonFilteredNumericsCount;
+}
+
+
+const stringvec & Column::nonFilteredLevels() 
 {
 	if (_nonFilteredLevels.empty())
 	{
 		JASPTIMER_SCOPE(Column::nonFilteredLevels);
-		stringset levels;
-		for(size_t r=0; r<_data->rowCount(); r++)
-			if(_data->filter()->filtered()[r])
-			{
-				if(_ints[r] != Label::NO_LABEL)
-				{
-					Label * label = labelByIntsId(_ints[r]);
-					if(label && !label->isEmptyValue())
-						levels.insert(label->label());
-				}
-				else if(!isEmptyValue(_dbls[r]))
-					levels.insert(ColumnUtils::doubleToString(_dbls[r]));
-			}
-
-		if(!shouldDropLevels())
+		if(_hasLabels)
+		{
+			stringset 	levels;
+			intset		collected;
+	
+			for(size_t r=0; r<data()->rowCount(); r++)
+				if(data()->filter()->filtered()[r])
+					if(_ints[r] != Label::NO_LABEL)
+					{
+						if(!collected.count(_ints[r]))
+						{
+							Label * label = labelByIntsId(_ints[r]);
+							if(label && !label->isEmptyValue())
+								levels.insert(label->label());
+							
+							collected.insert(_ints[r]);
+						}
+					}
+	
+			if(!shouldDropLevels())
+				for(Label * label : _labels)
+					levels.insert(label->label());
+	
+			// Use the right label order
 			for(Label * label : _labels)
-				levels.insert(label->label());
-
-		// Use the right label order
-		for(Label * label : _labels)
-			if (levels.count(label->label()))
-				_nonFilteredLevels.push_back(label->label());
+				if (levels.count(label->label()))
+					_nonFilteredLevels.push_back(label->label());
+		}
+		else
+		{
+			intvec intVals;
+			_nonFilteredLevels = dataAsRLevels(intVals, data()->filter()->filtered());
+		}
 	}
 
 	return _nonFilteredLevels;
 }
+
+const stringvec & Column::nonFilteredLevels() const
+{
+	return _nonFilteredLevels;
+}
+ 
 
 void Column::nonFilteredCountersReset(bool updateLabelIndexes)
 {
@@ -1115,6 +1278,9 @@ std::string Column::_getLabelDisplayStringByValue(int key, bool ignoreEmptyValue
 
 std::string Column::getDisplay(size_t row, bool fancyEmptyValue, bool sepas) const
 {
+	if(!_hasLabels)
+		getValue(row, fancyEmptyValue, false, sepas);
+	
 	return _type == columnType::scale	
 		?	getValue(row, fancyEmptyValue, false, sepas)
 		:	getLabel(row, fancyEmptyValue, false, sepas);
@@ -1134,15 +1300,31 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 	
 	if (row < rowCount())
 	{
-		if (asType == columnType::scale || _ints[row] == Label::NO_LABEL)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
-
-		else if (_ints[row] != EmptyValues::missingValueInteger)
+		if(_hasLabels)
 		{
-			Label * label = labelByIntsId(_ints[row]);
-
-			if(label)
-				return label->originalValueAsString(fancyEmptyValue, ignoreEmptyValue);
+			if (_ints[row] != EmptyValues::missingValueInteger)
+			{
+				Label * label = labelByIntsId(_ints[row]);
+	
+				if(label)
+				{
+					if (asType == columnType::scale)
+						return doubleToDisplayString(label->originalValueAsDouble(), fancyEmptyValue, ignoreEmptyValue, sepas);
+					return label->originalValueAsString(fancyEmptyValue, ignoreEmptyValue);
+				}
+			}
+		}
+		else
+		{
+			const double		& _dbl = _dbls[row];
+			const std::string	& _str = _strs[row];
+			
+			if (asType == columnType::scale)
+				return doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
+			
+			return _str != ""
+					? _str 
+					: doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
 		}
 	}
 	
@@ -1151,16 +1333,22 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 
 std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas) const
 {
-	if (row < rowCount())
+	if(!_hasLabels)
 	{
-		if (_ints[row] == Label::NO_LABEL)
-			return doubleToDisplayString(_dbls[row], fancyEmptyValue, ignoreEmptyValue, sepas);
-		else
-			return _getLabelDisplayStringByValue(_ints[row], ignoreEmptyValue);
+		const double		& _dbl = _dbls[row];
+		const std::string	& _str = _strs[row];
+
+		return _str != ""
+				? _str
+				: doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
 	}
 	
+	if (row < rowCount() && _ints[row] != Label::NO_LABEL)
+			return _getLabelDisplayStringByValue(_ints[row], ignoreEmptyValue);
+		
 	return fancyEmptyValue ? EmptyValues::displayString() : "";
 }
+
 
 std::string Column::doubleToDisplayString(double dbl, bool fancyEmptyValue, bool ignoreEmptyValue, bool sepas) const
 {
@@ -1201,8 +1389,11 @@ stringvec Column::labelsAsStrings() const
 	return returnMe;
 }
 
+
 stringvec Column::nonEmptyLevelsStrings() const
 {
+	if(!_hasLabels)
+		return {};
 	
 	stringvec returnMe;
 	returnMe.resize(labelsNonEmptyCount());
@@ -1234,64 +1425,126 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter)
 
 	//We ignore emptyvalues and depending on whether filter is usable (length is data length) we filter out rows we dont need
 	const bool 	useFilter 	= filter.size() == rowCount();
-	int  		valuesSize	= 0;
 
-	intset		ids;
-	stringset	usedLevels; //https://github.com/jasp-stats/jasp-issues/issues/3721 points out rightly that if you map multiple values to the same label, they should then be 1 label in ordinal/nominal!
-
-	for(size_t row=0; row<rowCount(); row++)
-		if(!useFilter || filter[row])
-		{
-			valuesSize++;
-			ids.insert(_ints[row]);
-		}
+	if(_hasLabels)
+	{
+		int  		valuesSize	= 0;
+		intset		ids;
+		stringset	usedLevels; //https://github.com/jasp-stats/jasp-issues/issues/3721 points out rightly that if you map multiple values to the same label, they should then be 1 label in ordinal/nominal!
 	
-	for(int id : ids)
-		if(id != Label::NO_LABEL && id != EmptyValues::missingValueInteger)
-		{
-			Label * label = labelByIntsId(id);
-
-			if(label && !label->isEmptyValue())
-				usedLevels.insert(label->label());
-		}
-	
-	stringvec levels;
-	levels.reserve(usedLevels.size());
-
-	strintmap labelToLevel;
-
-	for(Label * label : _labels)
-		if(!labelToLevel.count(label->label()) && (usedLevels.count(label->label()) || !shouldDropLevels()))
-		{
-			levels.push_back(label->label());
-			labelToLevel[label->label()] = levels.size();
-		}
-		
-	values.resize(valuesSize);
-
-	for(size_t row=0, valueRow=0; row<rowCount() && valueRow < valuesSize; row++)
-		if(!useFilter || filter[row])
-		{
-			values[valueRow] = EmptyValues::missingValueInteger;
-
-			if(_ints[row] != Label::NO_LABEL && _ints[row] != EmptyValues::missingValueInteger)
+		for(size_t row=0; row<rowCount(); row++)
+			if(!useFilter || filter[row])
 			{
-				Label * label = labelByIntsId(_ints[row]);
-
-				if(label && labelToLevel.count(label->label()))
-					values[valueRow] = labelToLevel.at(label->label());
+				valuesSize++;
+				ids.insert(_ints[row]);
+			}
+		
+		for(int id : ids)
+			if(id != Label::NO_LABEL && id != EmptyValues::missingValueInteger)
+			{
+				Label * label = labelByIntsId(id);
+	
+				if(label && !label->isEmptyValue())
+					usedLevels.insert(label->label());
+			}
+		
+		stringvec levels;
+		levels.reserve(usedLevels.size());
+	
+		strintmap labelToLevel;
+	
+		for(Label * label : _labels)
+			if(!labelToLevel.count(label->label()) && (usedLevels.count(label->label()) || !shouldDropLevels()))
+			{
+				levels.push_back(label->label());
+				labelToLevel[label->label()] = levels.size();
 			}
 			
-			valueRow++;
-		}
+		values.resize(valuesSize);
 	
-	return levels;
+		for(size_t row=0, valueRow=0; row<rowCount() && valueRow < valuesSize; row++)
+			if(!useFilter || filter[row])
+			{
+				values[valueRow] = EmptyValues::missingValueInteger;
+	
+				if(_ints[row] != Label::NO_LABEL && _ints[row] != EmptyValues::missingValueInteger)
+				{
+					Label * label = labelByIntsId(_ints[row]);
+	
+					if(label && labelToLevel.count(label->label()))
+						values[valueRow] = labelToLevel.at(label->label());
+				}
+				
+				valueRow++;
+			}
+		
+		return levels;
+	}
+	else // if !_hasLabels
+	{
+		stringvec	strs = _strs;
+		stringset	levelSet;
+		
+		std::map<std::string, double> weWereDoublesToBeginWith;
+		
+		for(size_t r=0; r<strs.size(); r++)
+			if(!useFilter || filter[r])
+				if(strs[r] == "")
+				{
+					strs[r] = doubleToDisplayString(_dbls[r], false, false, false);
+					weWereDoublesToBeginWith[strs[r]] = _dbls[r];
+				}
+		
+		for(size_t r=0; r<strs.size(); r++)
+			if(!useFilter || filter[r])
+				levelSet.insert(strs[r]);
+		
+		levelSet.erase("");
+		
+		stringvec levels(levelSet.begin(), levelSet.end());
+		
+		std::sort(levels.begin(), levels.end(), [&weWereDoublesToBeginWith](const std::string & l, const std::string & r)
+		{
+			if(weWereDoublesToBeginWith.count(l) && weWereDoublesToBeginWith.count(r))
+				return weWereDoublesToBeginWith.at(l) < weWereDoublesToBeginWith.at(r);
+			else if(weWereDoublesToBeginWith.count(l))
+				return true;
+			else  if(weWereDoublesToBeginWith.count(r))
+				return false;
+			else 
+				return l < r;
+		});
+		
+		std::map<std::string, int> levelToInt;
+		for(int i=0; i<levels.size(); i++)
+			levelToInt[levels[i]] = i+1;
+		
+		values.clear();
+		for(size_t r=0; r<strs.size(); r++)
+			if(!useFilter || filter[r])
+				values.push_back(strs[r] == "" ? EmptyValues::missingValueInteger : levelToInt[strs[r]]);
+
+		return levels;		
+	}
 }
 
 doublevec Column::dataAsRDoubles(const boolvec &filter) const
 {
 	JASPTIMER_SCOPE(Column::dataAsRDoubles);
-
+	
+	if(!_hasLabels)
+	{
+		if(filter.size() == 0)
+			return _dbls;
+		
+		assert(filter.size() == rowCount());
+		
+		doublevec dbls;
+		for(size_t row=0; row<rowCount(); row++)
+			if(filter[row])
+				dbls.push_back(_dbls[row]);
+		return dbls;
+	}
 	
 	doublevec doubles;
 		
@@ -1299,17 +1552,22 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 
 	//depending on whether filter is usable (length is data length) we filter out rows we dont need
 	bool useFilter = filter.size() == rowCount();
-	doubles.reserve(_dbls.size());
+	doubles.reserve(_ints.size());
 	
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
-			doubles.push_back(!isEmptyValue(_dbls[row]) ? _dbls[row] : EmptyValues::missingValueDouble);
+		{
+			Label * l = labelByRow(row);
+			doubles.push_back(l && !l->isEmptyValue() ? l->originalValueAsDouble() : EmptyValues::missingValueDouble);
+		}
 				
 	return doubles;
 }
 
 void Column::labelValueChanged(Label *label, const Json::Value & previousOriginal)
 {
+	assert(_hasLabels);
+	
 	auto prevOrigV	= Label::originalValueAsString(this, previousOriginal);
 	auto oldValDis	= std::make_pair(prevOrigV, label->label());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
@@ -1322,12 +1580,6 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 	//And that its new location is free:
 	assert(_labelByValDis.count(label->origValDisplay()) == 0 || _labelByValDis.at(label->origValDisplay()) == label);
 
-	double theDouble = label->originalValue().isDouble() ? label->originalValue().asDouble() : EmptyValues::missingValueDouble;
-	
-	for(size_t r=0; r<_dbls.size(); r++)
-		if(_ints[r] == label->intsId())
-			_dbls[r] = theDouble;
-
 	_labelMapUpdates(label, label->lastOrigValDisplay().second, label->lastOrigValDisplay().first);
 
 	if(merged)
@@ -1336,6 +1588,29 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 	nonFilteredCountersReset();
 	
 	dbUpdateValues();
+}
+
+
+void Column::_handleWidthChangeWithoutLabels()
+{
+	_hasShadows		= false;
+	_maxWidthValue	= 0;
+	_maxWidthLabel	= 0;
+
+	for(int r=0; r<_dbls.size(); r++)
+	{
+		const std::string	v = getValue(r),
+							l = getLabel(r);
+
+		uint64_t	lv = stringUtils::approximateVisualLength(v),
+					ll = stringUtils::approximateVisualLength(l);
+
+		_maxWidthValue = std::max(_maxWidthValue, int(lv));
+		_maxWidthLabel = std::max(_maxWidthLabel, int(ll));
+
+		if(l != "" && v != l)
+			_hasShadows = true;
+	}
 }
 
 void Column::_labelMapUpdates(Label * label, const std::string & previousDisplay, const std::string & previousOriginal)
@@ -1504,6 +1779,7 @@ Label * Column::labelByRow(int row) const
 	return nullptr;
 }
 
+
 bool Column::setStringValue(size_t row, const std::string & userEntered, const std::string & labelButOnlyFromSpreadsheetPaste, bool writeToDB)
 {
     JASPTIMER_SCOPE(Column::setStringValue);
@@ -1511,18 +1787,33 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 	if(userEntered == "" && labelButOnlyFromSpreadsheetPaste == "")
 	{
 		const auto	cur = type() == columnType::scale ?  getValue(row, false, false) : getLabel(row, false, false);
-		Label	*	label = labelByRow(row);
-		
-		if(label && label->isEmptyValue())	return false;
-		if (cur == "")						return false;
-		else								return setValue(row, EmptyValues::missingValueDouble, writeToDB);
+
+		if(_hasLabels)
+		{
+			Label	*	label = labelByRow(row);
+
+			if(label && label->isEmptyValue())	return false;
+			if (cur == "")						return false;
+			else								return setValue(row, EmptyValues::missingValueInteger, writeToDB);
+		}
+		else
+		{
+			if (cur == "")
+				return false;
+
+			bool aChange = setValue(row, EmptyValues::missingValueDouble, "", writeToDB);
+			_handleWidthChangeWithoutLabels();
+			return aChange;
+
+		}
 	}
-	
+
 	double		newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool		itsADouble		= ColumnUtils::getDoubleValue(userEntered, newDoubleToSet),
 				itsMissingVal	= isEmptyValue(userEntered);	
-	bool		nothingThereYet	=	std::none_of(_ints.begin(), _ints.end(), [&](int i)		{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || (!labelByIntsId(i) || labelByIntsId(i)->isEmptyValue())); })
-								&&	std::none_of(_dbls.begin(), _dbls.end(), [&](double d)	{ return !(std::isnan(d) || isEmptyValue(d)); });	
+	bool		nothingThereYet	= _hasLabels	?  std::none_of(_ints.begin(), _ints.end(), [&](int i)						{ return !(i == Label::NO_LABEL || i == EmptyValues::missingValueInteger || labelByIntsId(i)->isEmptyValue()); })
+												:  std::none_of(_dbls.begin(), _dbls.end(), [&](double d)					{ return !(std::isnan(d) || isEmptyValue(d)); })
+												&& std::none_of(_strs.begin(), _strs.end(), [&](const std::string & str)	{ return !str.empty(); });
 	
 	if(nothingThereYet && !itsMissingVal)
 	{
@@ -1534,19 +1825,27 @@ bool Column::setStringValue(size_t row, const std::string & userEntered, const s
 		else if(!isEmptyValue(userEntered))
 			setType(columnType::nominal);
 	}
-		
-	return setValue(row, userEntered, labelButOnlyFromSpreadsheetPaste, writeToDB);
+
+	if(_hasLabels)
+		return setValue(row, userEntered,		labelButOnlyFromSpreadsheetPaste,	writeToDB);
+	else
+	{
+		bool aChange = setValue(row, newDoubleToSet,	itsADouble ? "" : userEntered,		writeToDB);
+		_handleWidthChangeWithoutLabels();
+		return aChange;
+	}
 }
+
 
 bool Column::setValue(size_t row, std::string value, const std::string & label, bool writeToDB, bool useLocale)
 {
 	JASPTIMER_SCOPE(Column::setValue(stringstring));
     
-	//If value != "" and label == "" that means we got copy pasted stuff in the viewer. And we just dont have labels, but we can treat it like we are editing
+	//If value != "" and label == "" that means we got copy pasted stuff in the viewer, and we just dont have labels, but we can treat it like we are editing.
 	//if both are "" we just want to clear the cell
 	//the assumption is that this is not direct user-input, but internal jasp stuff.
 	if(value == "" && label == "")
-		return setValue(row, EmptyValues::missingValueDouble, writeToDB);
+		return setValue(row, EmptyValues::missingValueInteger, writeToDB);
 	
 	double	newDoubleToSet	= EmptyValues::missingValueDouble;
 	bool	itsADouble		= ColumnUtils::getDoubleValue(value, newDoubleToSet, useLocale);
@@ -1559,38 +1858,48 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 
 	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
 
-
 	if(!newLabel)
 		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
 
-	return setValue(row, newLabel->intsId(), newDoubleToSet, writeToDB);
+	return setValue(row, newLabel->intsId(), writeToDB);
 }
 
-bool Column::setValue(size_t row, int value, bool writeToDB)
+bool Column::setValue(size_t row, int valueInt, bool writeToDB)
 {
-	return setValue(row, value, EmptyValues::missingValueDouble, writeToDB);
-}
-
-bool Column::setValue(size_t row, double value, bool writeToDB)
-{
-	return setValue(row, Label::NO_LABEL, value, writeToDB);
-}
-
-bool Column::setValue(size_t row, int valueInt, double valueDbl, bool writeToDB)
-{
-	JASPTIMER_SCOPE(Column::setValue double);
+	assert(_hasLabels);
 	
-	if(row >= _dbls.size())
+	
+	if(row >= _ints.size())
 		return false;
 	
-	bool changed = !Utils::isEqual(_dbls[row], valueDbl) || _ints[row] != valueInt;
+	bool changed = _ints[row] != valueInt;
 	
-	_dbls[row] = valueDbl;
 	_ints[row] = valueInt;
 	
 	if(writeToDB && !_data->writeBatchedToDB())
 	{
-		db().columnSetValue(_id, row, valueInt, valueDbl);
+		db().columnSetValue(_id, row, valueInt);
+		incRevision();
+	}
+	
+	return changed;
+}
+
+bool Column::setValue(size_t row, double valueDbl,  const std::string & valueStr, bool writeToDB)
+{
+	assert(!_hasLabels);
+	
+	if(row >= _dbls.size())
+		return false;
+	
+	bool changed = _dbls[row] != valueDbl || _strs[row] != valueStr;
+	
+	_dbls[row] = valueDbl;
+	_strs[row] = valueStr;
+	
+	if(writeToDB && !_data->writeBatchedToDB())
+	{
+		db().columnSetValue(_id, row, valueDbl, valueStr);
 		incRevision();
 	}
 	
@@ -1599,54 +1908,75 @@ bool Column::setValue(size_t row, int valueInt, double valueDbl, bool writeToDB)
 
 void Column::rowInsertEmptyVal(size_t row)
 {
-	_dbls.insert(_dbls.begin() + row, EmptyValues::missingValueDouble);
-	_ints.insert(_ints.begin() + row, EmptyValues::missingValueInteger);
+	if(_hasLabels)
+		_ints.insert(_ints.begin() + row, EmptyValues::missingValueInteger);
+	else
+	{
+		_dbls.insert(_dbls.begin() + row, EmptyValues::missingValueDouble);
+		_strs.insert(_strs.begin() + row, "");
+	}
 }
 
 void Column::rowDelete(size_t row)
 {
-	_dbls.erase(_dbls.begin() + row);
-	_ints.erase(_ints.begin() + row);
+	if(_hasLabels)
+		_ints.erase(_ints.begin() + row);
+	else
+	{
+		_dbls.erase(_dbls.begin() + row);
+		_strs.erase(_strs.begin() + row);
+	}
 	
 	nonFilteredCountersReset();
 }
 
 void Column::setRowCount(size_t rows)
 {
-	_dbls.resize(rows);
-	_ints.resize(rows);
+	if(_hasLabels)
+		_ints.resize(rows);
+	else
+	{
+		_dbls.resize(rows);
+		_strs.resize(rows);
+	}
 	
 	nonFilteredCountersReset();
 }
 
 Label *Column::labelByIntsId(int value) const
 {
-	JASPTIMER_SCOPE(Column::labelByValue);
-
+	assert(_hasLabels);
+	
 	return value != Label::NO_LABEL && value != EmptyValues::missingValueInteger && _labelByIntsIdMap.count(value) ? _labelByIntsIdMap.at(value) : nullptr;
 }
 
 Label * Column::labelByDisplay(const std::string & display) const
 {
+	assert(_hasLabels);
+	
 	Labelset labels		= labelsByDisplay(display);
 	return labels.size() == 0 ? nullptr : *labels.begin();	
 }
 
 Labelset Column::labelsByDisplay(const std::string & display) const
 {
-	JASPTIMER_SCOPE(Column::labelsByDisplay);
-
+	assert(_hasLabels);
+	
 	return _labelsByDisplay.count(display) ? _labelsByDisplay.at(display) : Labelset{};
 }
 
 Label * Column::labelByValue(const std::string & value) const
 {
+	assert(_hasLabels);
+	
 	Labelset labels		= labelsByValue(value);
 	return labels.size() == 0 ? nullptr : *labels.begin();
 }
 
 Labelset Column::labelsByValue(const std::string & value) const
 {
+	assert(_hasLabels);
+	
 	JASPTIMER_SCOPE(Column::labelsByValue);
 	return _labelsByValue.count(value) ? _labelsByValue.at(value) : Labelset{};
 }
@@ -1654,6 +1984,8 @@ Labelset Column::labelsByValue(const std::string & value) const
 Label * Column::labelByValueAndDisplay(const std::string &value, const std::string &labelText) const
 {
 	JASPTIMER_SCOPE(Column::labelsByValueAndDisplay);
+	
+	assert(_hasLabels);
 
 	auto valDis = std::make_pair(value, labelText);
 	return _labelByValDis.count(valDis) == 0 ? nullptr : _labelByValDis.at(valDis);
@@ -1707,6 +2039,7 @@ bool Column::labelsRemoveOrphans()
 	
 	return idsNotUsed.size();
 }
+
 
 
 std::set<size_t> Column::labelsMoveRows(std::vector<size_t> rows, bool up)
@@ -1864,8 +2197,7 @@ void Column::valuesReverse()
 			label->_label = Label::processLabel(oldLabel, label->originalValueAsString());
 		}
 	}
-	
-	upgradeExtractDoublesIntsFromLabels(); //Make sure _dbls reflect _ints
+		
 	dbUpdateValues();
 	
 	labelsHandleAutoSort(false);
@@ -1934,6 +2266,31 @@ bool Column::checkForUpdates()
 	return true;
 }
 
+
+void Column::addLabelManually(std::string value, std::string label)
+{
+	assert(_hasLabels);
+	
+	int labelIntsId = labelsAdd(label, value);
+	
+	labelByIntsId(labelIntsId)->setUserAdded(true);
+	
+	if(dropLevels() == dropLevelsType::noChoice) //No choice was made yet, but the user added a label, so I guess they want all labels
+		setDropLevels(dropLevelsType::keep);
+	
+	labelsHandleAutoSort();
+	incRevision();
+}
+
+void Column::deleteLabelManually(int labelIndex)
+{
+	assert(_hasLabels);
+	
+	labelsRemove(labelIndex);
+	incRevision();
+}
+
+
 bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const 
 {
 	if(!(title == _title && strEmptyVals == emptyValues()->emptyStrings() || rows != rowCount()))
@@ -1956,48 +2313,7 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 	
 	return false;
 }
-
-void Column::upgradeSetDoubleLabelsInInts()
-{
-	_ints = intvec(_dbls.size(), Label::NO_LABEL);
-}
-
-void Column::upgradeDoublesToLabels()
-{	
-	beginBatchedLabelsDB();
 	
-	for(size_t row=0; row<_dbls.size(); row++)
-		if(std::isnan(_dbls[row]))
-		{
-			if(_ints[row] == Label::NO_LABEL)
-				continue;
-			
-			Label * label = labelByIntsId(_ints[row]);
-			
-			if(label && !std::isnan(label->originalValueAsDouble()))
-				_dbls[row] = label->originalValueAsDouble();
-			
-		}
-		else if(_ints[row] == Label::NO_LABEL)
-		{
-			std::string		dblStr	= Column::doubleToDisplayString(_dbls[row], false, false);
-			Label		*	label	= labelByValue(dblStr);
-			_ints[row]				= label ? label->intsId() : labelsAdd(dblStr);
-		}
-}
-
-void Column::upgradeExtractDoublesIntsFromLabels()
-{
-	_dbls.resize(_ints.size());
-	
-	for(size_t r=0; r<_dbls.size(); r++)
-	{
-		Label * label = labelByIntsId(_ints[r]);
-		
-		_dbls [r] = ! label || !label->originalValue().isDouble() ? EmptyValues::missingValueDouble : label->originalValue().asDouble();
-	}
-}
-
 void Column::checkForLoopInDependencies(std::string code)
 {
 	stringset dependencies	= _data->findUsedColumnNames(code);
@@ -2415,4 +2731,95 @@ bool Column::initFromLookups(const std::string & newName, size_t rows, const std
 	if(!leaveBatchedUnfinished)		endBatchedLabelsDB();
 
 	return anyChanges || type() != prevType;
+}
+
+
+
+void Column::setHasLabels(bool haveLabels)
+{
+	if(haveLabels == _hasLabels)
+		return;
+	
+	
+	if(!_hasLabels) noLabelsToLabels();
+	else			labelsToNoLabels();	
+}
+
+void Column::labelsToNoLabels()
+{
+	const auto size = _ints.size();
+	
+	db().transactionWriteBegin();
+	
+	_strs.clear();
+	_strs.reserve(size);
+	
+	_dbls.clear();
+	_dbls.reserve(size);
+
+	_maxWidthLabel	= 0;
+	_maxWidthValue	= 0;
+	
+	for(int _int : _ints)
+	{
+		thread_local std::string	str;
+		thread_local double			dbl;
+		thread_local Label	*		label;
+		
+		label	= labelByIntsId(_int);
+		str		= label ? label->_label		: "";
+		dbl		= label ? label->_dblValue	: EmptyValues::missingValueDouble;
+		
+		_strs.push_back(str);
+		_dbls.push_back(dbl);
+
+		_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(str.empty() ? doubleToDisplayString(dbl) : str)));
+	}
+
+	_maxWidthLabel = _maxWidthValue;
+	
+	labelsClear(false);
+	
+	_ints.clear();
+	
+	db().columnSetValues(_id, _dbls, _strs);
+	db().columnSetHasLabels(_id, _hasLabels);
+
+	_hasLabels		= false;
+	_hasShadows		= false;
+
+	db().transactionWriteEnd();
+	
+	incRevision();
+	
+}
+
+void Column::noLabelsToLabels()
+{
+	const auto size = _dbls.size();
+	
+	db().transactionWriteBegin();
+	beginBatchedLabelsDB();
+	_hasLabels	= true;
+	_hasShadows = false;
+	
+	_ints.clear();
+	_ints.reserve(size);
+	
+	for(size_t row=0; row<size; row++)
+		_ints.push_back(_strs[row].empty() ? labelsAdd(_dbls[row]) : labelsAdd(_strs[row]));
+	
+	_dbls.clear();
+	_strs.clear();
+	
+	db().columnSetValues(_id, _ints);
+	db().columnSetHasLabels(_id, _hasLabels);
+	
+	labelsHandleAutoSort(false);
+
+	endBatchedLabelsDB();
+	
+	db().transactionWriteEnd();
+	
+	incRevision();
 }
