@@ -282,6 +282,16 @@ bool Label::isEmptyValue() const
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
 
+std::pair<std::string, std::string> Label::origValDisplay() const	
+{
+	
+	const std::string value = originalValueAsString();
+	
+	return std::make_pair(value, processLabel(label(), value)); 
+}
+
+
+
 std::string Label::originalValueAsString(bool fancyEmptyValue, bool ignoreEmpty) const
 {
 	return originalValueAsString(_column, _originalValue, fancyEmptyValue, ignoreEmpty);

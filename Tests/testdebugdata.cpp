@@ -23,6 +23,11 @@ void TestDebugData::init()
 	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), [](int i){});
 
 	_data = _pkg->dataSet();
+	
+	Column * facFive = _data->column("facFive");
+	
+	if(!facFive->hasLabels())
+		facFive->noLabelsToLabels();
 }
 
 void TestDebugData::cleanup()
@@ -106,10 +111,11 @@ void TestDebugData::testReverseNumericals()
 	
 	parser.parse(jsonReversed, hardcoded);
 	
-	QVERIFY2(hardcoded == labelsAfter1,		"Reversing values is not right!");
-	
 	if(hardcoded != labelsAfter1)
 		std::cerr << labelsAfter1 << std::endl;
+	
+	QVERIFY2(hardcoded == labelsAfter1,		"Reversing values is not right!");
+	
 	
 	DataSet loadMe(_data->id());
 	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
@@ -251,6 +257,9 @@ void TestDebugData::testEmptyValues()
 	QVERIFY2(_data,		"No dataset!");
 	
 	Column * contBinom = _data->column("contBinom");
+	
+	if(!contBinom->hasLabels())
+		contBinom->noLabelsToLabels();
 	
 	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 2, "Not right amount of non-empty labels!");
 	

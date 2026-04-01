@@ -126,8 +126,9 @@ public:
 	//Columns & Data/Values
 	//Index stuff:
 	int			columnInsert(			int dataSetId, int index = -1, const std::string & name = "", columnType colType = columnType::unknown, bool alterTable=true);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
+	intvec		columnsInsert(			int dataSetId, int count, int index, const std::string &name, columnType colType, bool alterTable);
 	int			columnLastFreeIndex(	int dataSetId);
-	void		columnIndexIncrements(	int dataSetId, int index);																			///< If index already is in use that column and all after are incremented by 1
+	void		columnIndexIncrements(	int dataSetId, int index, int count);																			///< If index already is in use that column and all after are incremented by 1
 	void		columnIndexDecrements(	int dataSetId, int index);																			///< Indices bigger than index are decremented, assumption is that the previous one using it has been removed already
 	int			columnIdForIndex(		int dataSetId, int index);
 	int			columnIndexForId(		int columnId);
@@ -194,6 +195,7 @@ public:
     void        preloadInterfaceForThread();
 	void		close();					///< Closes the loaded database and disconnects
 
+	
 private:
 	sqlite3	*	_db();
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility

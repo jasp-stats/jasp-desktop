@@ -45,8 +45,8 @@ public:
 			bool				filterAllows()				const	{ return _filterAllows;		}
 	const	Json::Value		&	originalValue()				const	{ return _originalValue;	}
 			double				originalValueAsDouble()		const	{ return _dblValue;			}
-	std::pair<std::string
-		,std::string>			origValDisplay()			const	{ return std::make_pair(originalValueAsString(), label()); }
+			std::pair<std::string
+			,std::string>			origValDisplay()			const;
 	std::pair<std::string
 		,std::string>			lastOrigValDisplay()		const	{ return _lastValDisMapping; }
 	

@@ -1004,6 +1004,13 @@ int Column::labelsAdd(const std::string &display, const std::string &value)
 int Column::labelsAdd(const std::string & display, const std::string & description, const Json::Value & originalValue)
 {
 	JASPTIMER_SCOPE(Column::labelsAdd 3 args);
+	
+	std::string oriString			= Label::originalValueAsString(this, originalValue),
+				displayProcessed	= Label::processLabel(display, oriString);
+	auto		valDisplay			= std::make_pair(oriString, displayProcessed);
+
+	if(_labelByValDis.count(valDisplay))
+		return _labelByValDis.at(valDisplay)->intsId();
 
 	return labelsAdd(++_highestIntsId, display, true, description, originalValue);
 }

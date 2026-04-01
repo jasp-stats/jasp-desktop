@@ -492,48 +492,68 @@ void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> & v
 
 int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string & name, columnType colType, bool alterTable)
 {
+	intvec ids = columnsInsert(dataSetId, 1, index, name, colType, alterTable);
+	return ids.front();
+}
+
+intvec DatabaseInterface::columnsInsert(int dataSetId, int count, int index, const std::string & name, columnType colType, bool alterTable)
+{
 	JASPTIMER_SCOPE(DatabaseInterface::columnInsert);
 	transactionWriteBegin();
 	
 	if(index == -1)	index = columnLastFreeIndex(dataSetId);
-	else			columnIndexIncrements(dataSetId, index);
+	else			columnIndexIncrements(dataSetId, index, count);
 
 #ifdef SIR_LOG_A_LOT
 	Log::log() << "columnIndex for insert: " << index << " and dataSet: " << dataSetId << std::endl;
 #endif
-
-	//Create column entry
-	int columnId = runStatementsId("INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id;", [&](sqlite3_stmt * stmt)
+	
+	intvec ids;
+	int curCol = 0;
+	
+	bindParametersType _bindParams =  [&](sqlite3_stmt * stmt)
 	{
 		sqlite3_bind_int(stmt,	1, dataSetId);
 		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
 
 		std::string colT = columnTypeToString(colType);
 		sqlite3_bind_text(stmt, 3, colT.c_str(), colT.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	4, index);
-	});
+		sqlite3_bind_int(stmt,	4, index+curCol++);
+	};
 
-#ifdef SIR_LOG_A_LOT
-	if(columnId == -1)
-		Log::log() << "Inserting column failed!" << std::endl;
-#endif
+	std::function<void(size_t,size_t, sqlite3_stmt*)> processRow = [&](size_t row, size_t rep, sqlite3_stmt * stmt)
+	{
+		assert(sqlite3_column_count(stmt) == 1);
 
+		ids.push_back(sqlite3_column_int(stmt, 0));
+	};
 	
+	_runStatementsRepeatedly("INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+		{
+			(*bindParams) = &_bindParams;
+			
+			return curCol < count;
+		}, & processRow);
+	
+
 	if(alterTable) //If not then via dataSetCreateTable
 	{
-		//Add a scalar and ordinal/nominal column to DataSet_# for the column
-		const std::string alterDatasetPrefix = "ALTER TABLE " + dataSetName(dataSetId);
-		const std::string addColumnFragment  = " ADD  " + columnBaseName(columnId);
-	
-		runStatements(alterDatasetPrefix + addColumnFragment + "_DBL REAL NULL;");
-		runStatements(alterDatasetPrefix + addColumnFragment + "_INT INT  NULL;");
+		std::stringstream statement;
+		
+		for(int id : ids)
+			statement	<< "ALTER TABLE " << dataSetName(dataSetId)
+						<< " ADD  "		<< columnBaseName(id)
+						<< " NUM  NULL;\n";
+		
+		runStatements(statement.str());
 	}
 	
 	//The labels will be added separately later
 
 	transactionWriteEnd();
-	return columnId;
+	return ids;
 }
+
 
 void DatabaseInterface::dataSetCreateTable(DataSet * dataSet)
 {
@@ -563,11 +583,11 @@ int	DatabaseInterface::columnLastFreeIndex(int dataSetId)
 	return 1 + runStatementsId("SELECT MAX(colIdx) from Columns WHERE dataSet=" + std::to_string(dataSetId) + ";");
 }
 
-void DatabaseInterface::columnIndexIncrements(int dataSetId, int index)
+void DatabaseInterface::columnIndexIncrements(int dataSetId, int index, int count)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnIndexIncrements);
 	if(columnIdForIndex(dataSetId, index) != -1)
-		runStatements("UPDATE Columns SET colIdx=colIdx+1 WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx >= " + std::to_string(index) +";");
+		runStatements("UPDATE Columns SET colIdx=colIdx+"+std::to_string(count)+ " WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx >= " + std::to_string(index) +";");
 //Actually the following else is not necessary
 //	else
 //		throw std::runtime_error("columnIndexIncrements has a problem: index " + std::to_string(index) + " in dataSet " + std::to_string(dataSetId) + " already exists!");
@@ -1185,6 +1205,7 @@ std::string DatabaseInterface::filterTableName(int filterIndex) const
 	return "Filter_"  + std::to_string(filterIndex);
 }
 
+
 void DatabaseInterface::columnDelete(int columnId, bool cleanUpRest)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnDelete);
@@ -1200,8 +1221,7 @@ void DatabaseInterface::columnDelete(int columnId, bool cleanUpRest)
 		const std::string & alterDatasetPrefix = "ALTER TABLE Dataset_"  + std::to_string(dataSetId)	+ " ";
 		const std::string & addColumnFragment  = "DROP COLUMN  " + columnBaseName(columnId);
 
-		runStatements(alterDatasetPrefix + addColumnFragment + "_DBL;");
-		runStatements(alterDatasetPrefix + addColumnFragment + "_INT;");
+		runStatements(alterDatasetPrefix + addColumnFragment + ";");
 	}
 
 	//Delete column entry
