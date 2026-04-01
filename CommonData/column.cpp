@@ -779,21 +779,23 @@ bool Column::setDescriptions(strstrmap labelToDescriptionMap)
 	return anyChange;
 }
 
-
 bool Column::overwriteDataAndType(stringvec colData, columnType colType, bool computed)
 {
 	JASPTIMER_SCOPE(Column::overwriteDataAndType);
 	
-	assert(data()->filter()->name() == computeFilter());
-	
-	const boolvec & filtered = data()->filter()->filtered();
-	stringvec		newData;
-					newData	 . reserve(filtered.size());
-					
-	for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < colData.size(); iFilter++)
-		newData.push_back(filtered[iFilter] ? colData[iData++] : "");
-					
-	colData = newData;
+	if(computeFilter() != "")
+	{
+		Filter theFilter(data(), computeFilter(), false);
+		
+		const boolvec & filtered = theFilter.filtered();
+		stringvec		newData;
+						newData	 . reserve(filtered.size());
+		
+		for(size_t iFilter=0, iData=0; iFilter < filtered.size() && iData < colData.size(); iFilter++)
+			newData.push_back(filtered[iFilter] ? colData[iData++] : "");
+			
+		colData = newData;
+	}
 	
 	Log::log() << "Column " << _name << " overwriteDataAndType(" << colData.size() << " rows of data, "<<columnTypeToString(colType)<<", bool computed=" << (computed ? "true" : "false") << ")" << std::endl;
 	

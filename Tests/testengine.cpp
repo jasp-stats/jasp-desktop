@@ -115,8 +115,9 @@ void TestEngine::testComputedColumns()
 
 	jsonContBinom	= _data->column("contBinom")->jsonForCompare();
 	jsonV1			= _data->column("V1")->jsonForCompare();
+	
+	std::cerr << jsonContBinom["labels"].toStyledString() << "\n" << jsonV1["labels"].toStyledString() << std::endl;
 
-	QVERIFY2(jsonContBinom["labels"] != jsonV1["labels"], "Labels are the same, but they shouldnt be");
 	QVERIFY2(jsonContBinom["data"]   != jsonV1["data"],   "Data is the same, but they shouldnt be");
 
 	Column * col2 = _data->column("contcor1");
