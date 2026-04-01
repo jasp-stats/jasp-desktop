@@ -2241,6 +2241,9 @@ void DatabaseInterface::create()
 	}
 	
 	int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, NULL);
+	
+	_transactionWriteDepth = 0;
+	_transactionReadDepth = 0;
 
 	if(ret != SQLITE_OK)
 	{
@@ -2337,6 +2340,8 @@ void DatabaseInterface::load()
 
 	_dbCheckMutex.lock();
 	_dbs[std::this_thread::get_id()] = db;
+	_transactionWriteDepth = 0;
+	_transactionReadDepth = 0;
 	_dbCheckMutex.unlock();
 	_loadMutex.unlock();
 

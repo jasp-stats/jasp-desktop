@@ -61,131 +61,9 @@
                 "9"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 0,
-                    "originalValue": "1"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 1,
-                    "originalValue": "2"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 2,
-                    "originalValue": "3"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 3,
-                    "originalValue": "4"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 4,
-                    "originalValue": "5"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 5,
-                    "originalValue": "6"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 6,
-                    "originalValue": "8"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 7,
-                    "originalValue": "9"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 8,
-                    "originalValue": "10"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 9,
-                    "originalValue": "11"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 10,
-                    "originalValue": "12"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 11,
-                    "originalValue": "13"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 12,
-                    "originalValue": "14"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 13,
-                    "originalValue": "20"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "N/A",
-                    "order": 14,
-                    "originalValue": "N/A"
-                }
-            ],
+            "labels": [],
             "name": "ToysOwned",
-            "nonEmptyLabels": [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6",
-                "8",
-                "9",
-                "10",
-                "11",
-                "12",
-                "13",
-                "14",
-                "20",
-                "N/A"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -251,51 +129,9 @@
                 "Chirpy Bird"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Chew Toy",
-                    "order": 0,
-                    "originalValue": "Chew Toy"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Chirpy Bird",
-                    "order": 1,
-                    "originalValue": "Chirpy Bird"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Rope Bone",
-                    "order": 2,
-                    "originalValue": "Rope Bone"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Stuffed Monkey",
-                    "order": 3,
-                    "originalValue": "Stuffed Monkey"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Tennis Ball",
-                    "order": 4,
-                    "originalValue": "Tennis Ball"
-                }
-            ],
+            "labels": [],
             "name": "Favorite",
-            "nonEmptyLabels": [
-                "Chew Toy",
-                "Chirpy Bird",
-                "Rope Bone",
-                "Stuffed Monkey",
-                "Tennis Ball"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -361,43 +197,9 @@
                 "Chihuahua"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Chihuahua",
-                    "order": 0,
-                    "originalValue": "Chihuahua"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Fuzzy Dog",
-                    "order": 1,
-                    "originalValue": "Fuzzy Dog"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Retriever",
-                    "order": 2,
-                    "originalValue": "Retriever"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "chihuahua",
-                    "order": 3,
-                    "originalValue": "chihuahua"
-                }
-            ],
+            "labels": [],
             "name": "DogBreed",
-            "nonEmptyLabels": [
-                "Chihuahua",
-                "Fuzzy Dog",
-                "Retriever",
-                "chihuahua"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -463,35 +265,9 @@
                 "Medium"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Large",
-                    "order": 0,
-                    "originalValue": "Large"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Medium",
-                    "order": 1,
-                    "originalValue": "Medium"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Small",
-                    "order": 2,
-                    "originalValue": "Small"
-                }
-            ],
+            "labels": [],
             "name": "DogSize",
-            "nonEmptyLabels": [
-                "Large",
-                "Medium",
-                "Small"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -557,35 +333,9 @@
                 "Hedge Hog"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Duck",
-                    "order": 0,
-                    "originalValue": "Duck"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Hedge Hog",
-                    "order": 1,
-                    "originalValue": "Hedge Hog"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "Lamb Chop",
-                    "order": 2,
-                    "originalValue": "Lamb Chop"
-                }
-            ],
+            "labels": [],
             "name": "Toy Chosen",
-            "nonEmptyLabels": [
-                "Duck",
-                "Hedge Hog",
-                "Lamb Chop"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "nominal"
@@ -651,147 +401,9 @@
                 "6"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 0,
-                    "originalValue": "1"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 1,
-                    "originalValue": "2"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 2,
-                    "originalValue": "3"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 3,
-                    "originalValue": "5"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 4,
-                    "originalValue": "6"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 5,
-                    "originalValue": "7"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 6,
-                    "originalValue": "8"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 7,
-                    "originalValue": "9"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 8,
-                    "originalValue": "10"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 9,
-                    "originalValue": "11"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 10,
-                    "originalValue": "12"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 11,
-                    "originalValue": "13"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 12,
-                    "originalValue": "14"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 13,
-                    "originalValue": "16"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 14,
-                    "originalValue": "17"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 15,
-                    "originalValue": "19"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 16,
-                    "originalValue": "20"
-                }
-            ],
+            "labels": [],
             "name": "DaysToFail",
-            "nonEmptyLabels": [
-                "1",
-                "2",
-                "3",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9",
-                "10",
-                "11",
-                "12",
-                "13",
-                "14",
-                "16",
-                "17",
-                "19",
-                "20"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "scale"
@@ -857,35 +469,9 @@
                 "0"
             ],
             "description": "",
-            "labels": [
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 0,
-                    "originalValue": "0"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 1,
-                    "originalValue": "1"
-                },
-                {
-                    "description": "",
-                    "filterAllows": true,
-                    "label": "",
-                    "order": 2,
-                    "originalValue": "11"
-                }
-            ],
+            "labels": [],
             "name": "Sex",
-            "nonEmptyLabels": [
-                "0",
-                "1",
-                "11"
-            ],
+            "nonEmptyLabels": [],
             "rCode": "",
             "title": "",
             "type": "ordinal"
