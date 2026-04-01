@@ -10,6 +10,7 @@
 #include <QQmlEngine>
 #include <QTimer>
 #include <QQuickWindow>
+#include <QElapsedTimer>
 
 const QStringList JASPControl::_optionReservedNames = {"data", "version"};
 
@@ -179,12 +180,17 @@ void JASPControl::setHasWarning(bool hasWarning)
 
 void JASPControl::componentComplete()
 {
+	QElapsedTimer ccTimer; ccTimer.start();
+
 	QQuickItem::componentComplete();
 	_setBackgroundColor();
 	_setVisible();
 
+	qint64 ccBase = ccTimer.elapsed();
+
 	connect(this, &JASPControl::initializedChanged, this, &JASPControl::_checkControlName);
 
+	qint64 ccMouseStart = ccTimer.elapsed();
 	if (_useControlMouseArea)
 	{
 		if (!_mouseAreaZone)
@@ -201,6 +207,7 @@ void JASPControl::componentComplete()
 		else
 			Log::log() << "Cannot create a Mouse Area!!!" << std::endl;
 	}
+	qint64 ccMouseEnd = ccTimer.elapsed();
 
 	QQmlContext* context = qmlContext(this);
 	bool isDynamic = context->contextProperty("isDynamic").toBool();
@@ -272,6 +279,11 @@ void JASPControl::componentComplete()
 
 	if (_form)
 		connect(this, &JASPControl::boundValueChanged, _form, &AnalysisForm::boundValueChangedHandler);
+
+	qint64 ccMs = ccTimer.elapsed();
+	if (ccMs > 20)
+		Log::log() << "[PERF] JASPControl::componentComplete() SLOW: " << name() << " type=" << objectName()
+				   << " took " << ccMs << "ms (base=" << ccBase << "ms, mouseArea=" << (ccMouseEnd - ccMouseStart) << "ms)" << std::endl;
 }
 
 void JASPControl::setCursorShape(int shape)

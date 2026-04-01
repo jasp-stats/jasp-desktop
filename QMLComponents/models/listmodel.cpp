@@ -23,6 +23,7 @@
 #include "controls/sourceitem.h"
 #include "log.h"
 #include "jsonutilities.h"
+#include <QElapsedTimer>
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
@@ -84,6 +85,8 @@ void ListModel::initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm&
 
 void ListModel::_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm& allValuesMap, bool initRowControls)
 {
+	QElapsedTimer t; t.start();
+
 	beginResetModel();
 	if (initRowControls)
 		// If some row controls are not used anymore, they will be removed during setUpRowControls
@@ -92,8 +95,14 @@ void ListModel::_initTerms(const Terms &terms, const Terms::RelatedValuesPerTerm
 	_setTerms(terms);
 	endResetModel();
 
-	if (initRowControls)	
+	qint64 resetMs = t.elapsed();
+
+	if (initRowControls)
 		_connectAllSourcesControls();
+
+	qint64 totalMs = t.elapsed();
+	if (totalMs > 50)
+		Log::log() << "[PERF] ListModel::_initTerms() " << name() << " took " << totalMs << "ms (resetModel=" << resetMs << "ms, terms=" << terms.size() << ")" << std::endl;
 }
 
 void ListModel::_connectAllSourcesControls()
@@ -196,6 +205,8 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 	if (_rowComponent == nullptr)
 		return;
 
+	QElapsedTimer t; t.start();
+
 	if (!onlyRemove)
 	{
 		int row = 0;
@@ -216,7 +227,7 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 			row++;
 		}
 	}
-	
+
 	// Disconnect and delete all controls that are not used anymore
 	QStringList removedKeys;
 	for (const QString& key : _rowControlsMap.keys())
@@ -228,6 +239,10 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 
 	for (const QString& key : removedKeys)
 		_rowControlsMap.remove(key);
+
+	qint64 ms = t.elapsed();
+	if (ms > 50)
+		Log::log() << "[PERF] ListModel::setUpRowControls() " << name() << " took " << ms << "ms, rows=" << terms().size() << std::endl;
 }
 
 Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
@@ -474,7 +489,11 @@ void ListModel::cleanUp()
 
 void ListModel::sourceTermsReset()
 {
+	QElapsedTimer t; t.start();
 	_initTerms(getSourceTerms(), Terms::RelatedValuesPerTerm(), false);
+	qint64 ms = t.elapsed();
+	if (ms > 50)
+		Log::log() << "[PERF] ListModel::sourceTermsReset() " << name() << " took " << ms << "ms" << std::endl;
 }
 
 int ListModel::rowCount(const QModelIndex &) const

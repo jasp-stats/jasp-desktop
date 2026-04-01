@@ -2,6 +2,7 @@
 #include "analysisform.h"
 #include "log.h"
 #include "utilities/qmlutils.h"
+#include <QElapsedTimer>
 
 const std::string AnalysisBase::emptyString;
 const stringvec AnalysisBase::emptyStringVec;
@@ -69,9 +70,12 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 
 	try
 	{
-		Log::log()  << std::endl << "Loading QML form from: " << qmlFormPath(false, false) << std::endl;
+		QElapsedTimer perfTimer;
+		Log::log()  << std::endl << "[PERF] Loading QML form from: " << qmlFormPath(false, false) << std::endl;
 
+		perfTimer.start();
 		QObject * newForm = instantiateQml(QUrl::fromLocalFile(tq(qmlFormPath(false, false))), module(), qmlContext(parentItem));
+		Log::log() << "[PERF] instantiateQml() took " << perfTimer.elapsed() << "ms" << std::endl;
 
 		Log::log() << "Created a form, got pointer " << newForm << std::endl;
 
@@ -80,7 +84,10 @@ void AnalysisBase::createForm(QQuickItem* parentItem)
 		if(!_analysisForm)
 			throw std::logic_error("QML file '" + qmlFormPath(false, false) + "' didn't spawn into AnalysisForm, but into: " + (newForm ? fq(newForm->objectName()) : "null"));
 
+		perfTimer.restart();
 		_analysisForm->setAnalysis(this);
+		Log::log() << "[PERF] setAnalysis() took " << perfTimer.elapsed() << "ms" << std::endl;
+
 		_analysisForm->setParent(this);
 		_analysisForm->setParentItem(parentItem);
 

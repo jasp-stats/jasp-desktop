@@ -213,6 +213,19 @@ DropArea
 
 			onExpandedChanged: { if(!shouldExpand) firstExpansion = false; }
 
+			onShouldExpandChanged:
+			{
+				if (shouldExpand && formParent.myAnalysis && !formParent.loaded)
+					// Use Qt.callLater to ensure any other analysis's form is destroyed first,
+					// keeping the total QML scene small for fast form creation.
+					Qt.callLater(function() {
+						if (expanderButton.shouldExpand && formParent.myAnalysis && !formParent.loaded)
+							formParent.myAnalysis.createForm(formParent);
+					});
+				else if (!shouldExpand && formParent.myAnalysis && formParent.loaded)
+					formParent.myAnalysis.destroyForm();
+			}
+
 			SequentialAnimation {
 				id: postExpansionTasksHandler
 				PauseAnimation { duration: 100 }
@@ -602,8 +615,8 @@ DropArea
 
 					onMyAnalysisChanged:
 					{
-						if(myAnalysis)
-							myAnalysis.createForm(formParent); //Make sure Analysis knows where to create the form (and might even trigger the creation immediately)
+						if(myAnalysis && expanderButton.shouldExpand)
+							myAnalysis.createForm(formParent); //Only create form when this analysis is the active/expanded one
 					}
 
 					Connections

@@ -43,7 +43,7 @@ public:
 											bool ignoreReadyForUse = false)								const;
 	virtual Q_INVOKABLE	QString				helpFile()													const	{ return ""; }
 	virtual Q_INVOKABLE void				createForm(QQuickItem* parentItem=nullptr);
-	virtual				void				destroyForm();
+	virtual Q_INVOKABLE void				destroyForm();
 	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}

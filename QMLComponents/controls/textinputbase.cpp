@@ -19,6 +19,8 @@
 #include "textinputbase.h"
 #include "analysisform.h"
 #include "columnutils.h"
+#include "log.h"
+#include <QElapsedTimer>
 
 using namespace std;
 
@@ -184,6 +186,8 @@ bool TextInputBase::isJsonValid(const Json::Value &value) const
 
 void TextInputBase::setUp()
 {
+	QElapsedTimer t; t.start();
+
 	QString type = property("inputType").toString();
 
 		 if (type == "integer")			_inputType = TextInputType::IntegerInputType;
@@ -198,21 +202,36 @@ void TextInputBase::setUp()
 
 	_parseDefaultValue = property("parseDefaultValue").toBool();
 
+	qint64 t1 = t.elapsed();
+
 	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
 
+	qint64 t2 = t.elapsed();
+
 	if (form())
-		// For unknown reason, when the language is changed, QML reset the default value.
-		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
+
+	qint64 t3 = t.elapsed();
 
 	if (_value.isNull()) // If the value is not directly set, use the default value.
 		setValue(_defaultValue, false);
 
+	qint64 t4 = t.elapsed();
+
 	JASPControl::setUp(); // It might need the _inputType, so call it after it is set.
+
+	qint64 t5 = t.elapsed();
+
+	if (t5 > 50)
+		Log::log() << "[PERF]           TextInputBase::setUp() " << name() << " took " << t5 << "ms"
+				   << " (props=" << t1 << "ms, connect1=" << (t2-t1) << "ms, connect2=" << (t3-t2) << "ms, setValue=" << (t4-t3) << "ms, baseSetUp=" << (t5-t4) << "ms)"
+				   << " _value.isNull=" << _value.isNull()
+				   << std::endl;
 }
 
 void TextInputBase::setDisplayValue()
 {
+	QElapsedTimer t; t.start();
 	int		valueInt;
 	double	valueDbl;
 	QString showThis	= QColumnUtils::getIntValue(_value, valueInt) ?
@@ -222,6 +241,9 @@ void TextInputBase::setDisplayValue()
 							:	_value.toString();
 
 	setProperty("displayValue", showThis);
+	qint64 ms = t.elapsed();
+	if (ms > 30)
+		Log::log() << "[PERF]             TextInputBase::setDisplayValue() " << name() << " setProperty took " << ms << "ms" << std::endl;
 }
 
 void TextInputBase::rScriptDoneHandler(const QString &result)

@@ -30,6 +30,7 @@
 #include "preferencesmodelbase.h"
 
 #include <QQmlContext>
+#include <QElapsedTimer>
 
 
 JASPListControl::JASPListControl(QQuickItem *parent)
@@ -143,6 +144,9 @@ void JASPListControl::_termsChangedHandler()
 
 void JASPListControl::setUp()
 {
+	QElapsedTimer t;
+	t.start();
+
 	if (!model())	setUpModel();
 	JASPControl::setUp();
 
@@ -150,9 +154,18 @@ void JASPListControl::setUp()
 	if (!listModel)	return;
 
 	listModel->setRowComponent(rowComponent());
-	_setupSources();
 
+	QElapsedTimer st; st.start();
+	_setupSources();
+	qint64 srcMs = st.elapsed();
+
+	st.restart();
 	_setAllowedVariables();
+	qint64 avMs = st.elapsed();
+
+	qint64 totalMs = t.elapsed();
+	if (totalMs > 50)
+		Log::log() << "[PERF]         JASPListControl::setUp() " << name() << " took " << totalMs << "ms (sources=" << srcMs << "ms, allowedVars=" << avMs << "ms)" << std::endl;
 
 	connect(this,								&JASPListControl::sourceChanged,				this,	&JASPListControl::sourceChangedHandler		);
 	connect(listModel,							&ListModel::termsChanged,						this,	&JASPListControl::_termsChangedHandler		);

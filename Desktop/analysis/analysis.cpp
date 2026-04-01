@@ -31,6 +31,7 @@
 #include "utilities/messageforwarder.h"
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
+#include <QElapsedTimer>
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
 	  AnalysisBase(Analyses::analyses()),
@@ -359,6 +360,9 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::createForm(QQuickItem* parentItem)
 {
+	QElapsedTimer perfTimer; perfTimer.start();
+	Log::log() << "[PERF] Analysis::createForm() START for " << name() << " (id=" << id() << ")" << std::endl;
+
 	AnalysisBase::createForm(parentItem);
 
 	if (_analysisForm)
@@ -376,6 +380,8 @@ void Analysis::createForm(QQuickItem* parentItem)
 	}
 
 	_lastQmlFormPath = qmlFormPath(false, true); //dont leave this uninitialized
+
+	Log::log() << "[PERF] Analysis::createForm() TOTAL took " << perfTimer.elapsed() << "ms for " << name() << std::endl;
 }
 
 Analysis::Status Analysis::analysisResultsStatusToAnalysisStatus(analysisResultStatus result)

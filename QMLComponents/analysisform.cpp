@@ -30,6 +30,7 @@
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "preferencesmodelbase.h"
 
 using namespace std;
@@ -242,8 +243,14 @@ void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
 
 void AnalysisForm::_setUpControls()
 {
+	QElapsedTimer t;
+	t.start();
 	_setUpModels();
+	Log::log() << "[PERF]   _setUpModels() took " << t.elapsed() << "ms" << std::endl;
+
+	t.restart();
 	_setUp();
+	Log::log() << "[PERF]   _setUp() took " << t.elapsed() << "ms" << std::endl;
 }
 
 void AnalysisForm::_setUpModels()
@@ -335,12 +342,25 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 
 void AnalysisForm::_setUp()
 {
+	QElapsedTimer t;
 	QList<JASPControl*> controls = _controls.values();
 
-	for (JASPControl* control : controls)
-		control->setUp();
+	Log::log() << "[PERF]     _setUp() starting with " << controls.size() << " controls" << std::endl;
 
+	t.start();
+	for (JASPControl* control : controls)
+	{
+		QElapsedTimer ct; ct.start();
+		control->setUp();
+		qint64 ctMs = ct.elapsed();
+		if (ctMs > 50)
+			Log::log() << "[PERF]       control->setUp() SLOW: " << control->name() << " (" << control->objectName() << ") took " << ctMs << "ms" << std::endl;
+	}
+	Log::log() << "[PERF]     all control->setUp() took " << t.elapsed() << "ms" << std::endl;
+
+	t.restart();
 	sortControls(controls);
+	Log::log() << "[PERF]     sortControls() took " << t.elapsed() << "ms" << std::endl;
 
 	for (JASPControl* control : controls)
 	{
@@ -348,7 +368,9 @@ void AnalysisForm::_setUp()
 		connect(control, &JASPControl::helpMDChanged, this, &AnalysisForm::helpMDChanged);
 	}
 
+	t.restart();
 	_rSyntax->setUp();
+	Log::log() << "[PERF]     _rSyntax->setUp() took " << t.elapsed() << "ms" << std::endl;
 
 	emit helpMDChanged(); //Because we just got info on our lovely children in _orderedControls
 }
@@ -430,8 +452,10 @@ void AnalysisForm::_addLoadingError(QStringList wrongJson)
 
 void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 {
+	QElapsedTimer t, ct;
 	std::set<std::string> controlsJsonWrong;
 
+	t.start();
 	for (JASPControl* control : _dependsOrderedCtrls)
 	{
 		BoundControl* boundControl = control->boundControl();
@@ -451,8 +475,13 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 			}
 		}
 
+		ct.start();
 		control->setInitialized(optionValue);
+		qint64 ctMs = ct.elapsed();
+		if (ctMs > 50)
+			Log::log() << "[PERF]     bindTo control->setInitialized() SLOW: " << control->name() << " took " << ctMs << "ms" << std::endl;
 	}
+	Log::log() << "[PERF]   bindTo setInitialized loop took " << t.elapsed() << "ms" << std::endl;
 
 	_addLoadingError(tql(controlsJsonWrong));
 
@@ -647,7 +676,7 @@ void AnalysisForm::setOptionNameConversion(const QVariantList & conv)
 
 void AnalysisForm::formCompletedHandler()
 {
-	Log::log() << "AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
+	Log::log() << "[PERF] AnalysisForm::formCompletedHandler for " << this << " called." << std::endl;
 
 	_formCompleted = true;
 	setAnalysisUp();
@@ -666,7 +695,10 @@ void AnalysisForm::setAnalysisUp()
 			return;
 	}
 
-	Log::log() << "AnalysisForm::setAnalysisUp() for " << this << std::endl;
+	QElapsedTimer totalTimer, stepTimer;
+	totalTimer.start();
+
+	Log::log() << "AnalysisForm::setAnalysisUp() for " << this << " [PERF] START, controls count=" << _controls.size() << std::endl;
 
 	blockValueChangeSignal(true);
 
@@ -674,11 +706,19 @@ void AnalysisForm::setAnalysisUp()
 	// Keep these values before the controls are set up (they might set default values), and then bind each control to its initial value
 	Json::Value initialOptions	= _analysis->boundValues();
 
+	stepTimer.start();
 	_setUpControls();
+	Log::log() << "[PERF] _setUpControls() took " << stepTimer.elapsed() << "ms" << std::endl;
 
 	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
+
+	stepTimer.restart();
 	bindTo(initialOptions);
+	Log::log() << "[PERF] bindTo() took " << stepTimer.elapsed() << "ms, dependsOrderedCtrls count=" << _dependsOrderedCtrls.size() << std::endl;
+
+	stepTimer.restart();
 	lockOptions();
+	Log::log() << "[PERF] lockOptions() took " << stepTimer.elapsed() << "ms" << std::endl;
 
 	blockValueChangeSignal(false, false);
 
@@ -688,6 +728,8 @@ void AnalysisForm::setAnalysisUp()
 	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
 
 	emit analysisChanged();
+
+	Log::log() << "[PERF] setAnalysisUp() TOTAL took " << totalTimer.elapsed() << "ms" << std::endl;
 }
 
 void AnalysisForm::knownIssuesUpdated()

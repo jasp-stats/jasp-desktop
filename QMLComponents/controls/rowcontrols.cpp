@@ -25,6 +25,7 @@
 #include "log.h"
 
 #include <QQmlContext>
+#include <QElapsedTimer>
 
 RowControls::RowControls(ListModel* parent
 						 , QQmlComponent* component)
@@ -36,6 +37,7 @@ RowControls::RowControls(ListModel* parent
 // So this RowControls instance needs to exist already.
 void RowControls::initValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues)
 {
+	QElapsedTimer t; t.start();
 	JASPListControl* listView = _parentModel->listView();
 
 	QQmlContext* context = new QQmlContext(qmlContext(listView), this);
@@ -48,8 +50,10 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	context->setContextProperty("rowValue", key.value());
 	context->setContextProperty("rowType", columnTypeToQString(key.type()));
 
-
+	QElapsedTimer ct; ct.start();
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
+	qint64 createMs = ct.elapsed();
+
 	assert(_rowObject);
 	if (!_rowObject)
 	{
@@ -60,14 +64,23 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	_rowObject->setParent(_parentModel);
 	_context = context;
 
+	ct.restart();
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	for (JASPControl* control : controls)
 		control->setUp();
+	qint64 setUpMs = ct.elapsed();
 
 	_initialized = true;
 	emit initializedChanged();
 
+	ct.restart();
 	_setValues(rowValues);
+	qint64 setValMs = ct.elapsed();
+
+	qint64 totalMs = t.elapsed();
+	if (totalMs > 50)
+		Log::log() << "[PERF] RowControls::initValues() row=" << row << " key=" << key.value() << " in " << listView->name()
+				   << " took " << totalMs << "ms (create=" << createMs << "ms, setUp=" << setUpMs << "ms, setValues=" << setValMs << "ms, controls=" << controls.size() << ")" << std::endl;
 }
 
 void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json::Value>& rowValues)
@@ -84,15 +97,19 @@ void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json
 
 void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 {
+	QElapsedTimer t; t.start();
+
 	// The controls (when created or reused) need to be initialized
 	QList<JASPControl*> controls = _rowJASPControlMap.values();
 	JASPListControl* parentControl = _parentModel->listView();
 	AnalysisForm* form = parentControl->form();
 
-
+	QElapsedTimer st; st.start();
 	if (form)
 		form->sortControls(controls);
+	qint64 sortMs = st.elapsed();
 
+	st.restart();
 	for (JASPControl* control : controls)
 	{
 		JASPListControl* listView = dynamic_cast<JASPListControl*>(control);
@@ -114,10 +131,15 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 
 		control->setInitialized(optionValue);
 	}
+	qint64 initMs = st.elapsed();
 
 	if (form)
 		// setInitialized binds value to the control, but does not signal the change. So we have to manually emit the signal
 		emit parentControl->boundValueChanged(parentControl);
+
+	qint64 totalMs = t.elapsed();
+	if (totalMs > 50)
+		Log::log() << "[PERF] RowControls::_setValues() in " << parentControl->name() << " took " << totalMs << "ms (sort=" << sortMs << "ms, init=" << initMs << "ms, controls=" << controls.size() << ")" << std::endl;
 }
 
 bool RowControls::addJASPControl(JASPControl *control)
