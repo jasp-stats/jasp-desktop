@@ -134,6 +134,9 @@ void Column::dbLoadOldIndex(int index, bool do019Fix)
 		//}
 	}
 	
+	db().columnSetHasLabels(_id, _hasLabels);
+	incRevision();
+	
 	db().transactionReadEnd();
 }
 
