@@ -53,7 +53,7 @@ public:
 
 			void					dbCreate(	int index);
 			void					dbLoad(		int id=-1, bool getValues = true);	///< Loads *and* reloads from DB!
-			void					dbLoadOldIndex(	int index);						///< Loads pre ~0.96.1 data (with both DBL and INT cols)
+			void					dbLoadOldIndex(	int index, bool do019Fix);						///< Loads pre ~0.96.1 data (with both DBL and INT cols)
 			void					dbLoadIndex(int index, bool getValues = true);
 			void					dbUpdateComputedColumnStuff();
 			void					dbUpdateValues();

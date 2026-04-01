@@ -83,7 +83,7 @@ void Column::dbLoad(int id, bool getValues)
 	db().transactionReadEnd();
 }
 
-void Column::dbLoadOldIndex(int index)
+void Column::dbLoadOldIndex(int index, bool do019Fix)
 {
 	JASPTIMER_SCOPE(Column::dbLoadOldIndex);
 	
@@ -98,7 +98,7 @@ void Column::dbLoadOldIndex(int index)
 	db().columnGetValues(_id, _ints,		"INT");
 	db().columnGetValues(_id, _dbls, _strs, "DBL");
 	
-	if(std::none_of(_ints.begin(), _ints.end(), [](int i){ return i != Label::NO_LABEL && i != 0 && i != EmptyValues::missingValueInteger; }))
+	if(std::none_of(_ints.begin(), _ints.end(), [&do019Fix](int i){ return i != Label::NO_LABEL && i != EmptyValues::missingValueInteger && (do019Fix && i != 0); }))
 	{
 		_hasLabels = false;
 		_ints.clear();
@@ -122,6 +122,9 @@ void Column::dbLoadOldIndex(int index)
 		
 		db().labelsLoad(this);
 		_resetLabelValueMap();
+		
+		_strs.clear();
+		_dbls.clear();
 		
 		//for(int row=0; row<_ints.size() && row < _dbls.size(); row++)
 		//{

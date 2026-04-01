@@ -8,17 +8,17 @@
 
 stringset DataSet::_defaultEmptyvalues;
 
-DataSet::DataSet(int index)
+DataSet::DataSet(int id)
 	: DataSetBaseNode(dataSetBaseNodeType::dataSet, nullptr)
 {
-	Log::log() << "DataSet::DataSet(index=" << index << ")" << std::endl;
+	Log::log() << "DataSet::DataSet(index=" << id << ")" << std::endl;
 
 	_dataNode		= new DataSetBaseNode(dataSetBaseNodeType::data,	this);
 	_filtersNode	= new DataSetBaseNode(dataSetBaseNodeType::filters, this);
 	_emptyValues	= new EmptyValues();
 	
-	if(index == -1)         dbCreate();
-	else if(index > 0)		dbLoad(index);
+	if(id == -1)        dbCreate();
+	else if(id > 0)		dbLoad(id);
 }
 
 DataSet::~DataSet()
@@ -324,13 +324,13 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 	float colProgressMult = 1.0 / colCount;
 	
 	bool	do019Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.19",
-			do096Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.96";
+			do0961Fix	= doUpgradeFrom != Version() && doUpgradeFrom < "0.96.1";
 
 	//Ideally we have the emptyvalues before loading the columns, so we get the right labels in the labeleditor, butr for older than 0.19 stuff is complicated so we do that later.
 	Json::Value emptyValsJson;
 	Json::Reader().parse(emptyVals,		emptyValsJson);
 
-	if(!do019Fix && !do096Fix)
+	if(!do019Fix && !do0961Fix)
 	{
 		_emptyValues->fromJson(emptyValsJson);
 
@@ -362,7 +362,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 			if(_columns.size() == i)
 				_columns.push_back(new Column(this));
 	
-			_columns[i]->dbLoadOldIndex(i);
+			_columns[i]->dbLoadOldIndex(i, do019Fix);
 			
 			progressCallback(0.2 + (i * colProgressMult * 0.6));
 		}
