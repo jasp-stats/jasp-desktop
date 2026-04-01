@@ -54,16 +54,14 @@ void Column::dbLoad(int id, bool getValues)
 
 	db().transactionReadBegin();
 	
-	Json::Value emptyVals;
-	int dropLevelsTypeInt = static_cast<int>(_dropLevels);
-	
-	std::string oldError = _error;
+	Json::Value			emptyVals;
+	int					dropLevelsTypeInt	= static_cast<int>(_dropLevels);
+	std::string			oldError			= _error;
 	
 	db().columnGetBasicInfo(	_id, _name, _title, _description, _type, _revision, emptyVals, _autoSortByValue, dropLevelsTypeInt, _hasLabels);
 	db().columnGetComputedInfo(	_id, _analysisId, _invalidated, _codeType, _rCode, _error, _constructorJson, _computeFilter);
 	
 	try { _dropLevels = dropLevelsType(dropLevelsTypeInt); } catch(...){}
-	
 	
 	_emptyValues->fromJson(emptyVals);
 	
@@ -75,7 +73,9 @@ void Column::dbLoad(int id, bool getValues)
 			db().columnGetValues(_id, _ints);
 		}
 		else
+		{
 			db().columnGetValues(_id, _dbls, _strs);
+		}
 	}
 
 	_resetLabelValueMap();
@@ -1933,11 +1933,16 @@ void Column::rowDelete(size_t row)
 void Column::setRowCount(size_t rows)
 {
 	if(_hasLabels)
-		_ints.resize(rows);
+	{
+		_ints.resize(rows, EmptyValues::missingValueInteger);
+		_dbls.clear();
+		_strs.clear();
+	}
 	else
 	{
-		_dbls.resize(rows);
-		_strs.resize(rows);
+		_dbls.resize(rows, EmptyValues::missingValueDouble);
+		_strs.resize(rows,	"");
+		_ints.clear();
 	}
 	
 	nonFilteredCountersReset();
@@ -2384,6 +2389,7 @@ Json::Value Column::serialize() const
 	json["constructorJson"] = _constructorJson;
 	json["autoSortByValue"] = _autoSortByValue;
 	json["description"]		= _description;
+	json["hasLabels"]		= _hasLabels;
 	json["codeType"]		= int(_codeType);
 	json["error"]			= _error;
 	json["type"]			= int(_type);
@@ -2395,10 +2401,15 @@ Json::Value Column::serialize() const
 	Json::Value jsonInts(Json::arrayValue);
 	for (int i : _ints)
 		jsonInts.append(i);
+	
+	Json::Value jsonStrs(Json::arrayValue);
+	for (const std::string & str : _strs)
+		jsonStrs.append(str);
 
 	json["customEmptyValues"]	= _emptyValues->toJson();
 
 	json["labels"]				= serializeLabels();
+	json["strs"]				= jsonStrs;
 	json["dbls"]				= jsonDbls;
 	json["ints"]				= jsonInts;
 
@@ -2564,6 +2575,7 @@ void Column::deserialize(const Json::Value &json)
 	_codeType			= computedColumnType(json["codeType"].asInt());
 	_rCode				= json["rCode"].asString();
 	_error				= json["error"].asString();
+	_hasLabels			= json["hasLabels"].asBool();
 	_analysisId			= json["analysisId"].asInt();
 	_constructorJson	= json["constructorJson"];
 	_autoSortByValue	= json["autoSortByValue"].asBool();
@@ -2584,7 +2596,12 @@ void Column::deserialize(const Json::Value &json)
 	for (const Json::Value& intJson : json["ints"])
 		_ints[i++] = intJson.asInt();
 	
-	assert(_ints.size() == _dbls.size());
+	i=0;
+	_strs.resize(json["strs"].size());
+	for (const Json::Value& strJson : json["strs"])
+		_strs[i++] = strJson.asString();
+	
+	assert(_strs.size() == _dbls.size());
 	
 	dbUpdateValues();
 }
@@ -2742,7 +2759,7 @@ void Column::setHasLabels(bool haveLabels)
 	
 	
 	if(!_hasLabels) noLabelsToLabels();
-	else			labelsToNoLabels();	
+	else			labelsToNoLabels();
 }
 
 void Column::labelsToNoLabels()
@@ -2782,12 +2799,13 @@ void Column::labelsToNoLabels()
 	
 	_ints.clear();
 	
-	db().columnSetValues(_id, _dbls, _strs);
-	db().columnSetHasLabels(_id, _hasLabels);
+	
 
 	_hasLabels		= false;
 	_hasShadows		= false;
-
+	
+	db().columnSetValues(_id, _dbls, _strs);
+	db().columnSetHasLabels(_id, _hasLabels);
 	db().transactionWriteEnd();
 	
 	incRevision();

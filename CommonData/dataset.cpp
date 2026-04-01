@@ -348,7 +348,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 			delete _columns[i];
 	
 		_columns.resize(colCount);
-	
+			
 		db().dataSetBatchedValuesLoad(this, [&](float p){ progressCallback(0.50 + (p * 0.25)); });
 		db().dataSetBatchedLabelsLoad(this, [&](float p){ progressCallback(0.75 + (p * 0.25)); });
 	}

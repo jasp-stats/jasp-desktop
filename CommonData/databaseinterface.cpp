@@ -1,4 +1,5 @@
 ﻿#include "databaseinterface.h"
+#include "columnutils.h"
 #include "columntype.h"
 #include "tempfiles.h"
 #include <sqlite3.h>
@@ -753,6 +754,8 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 				
 				Column * col = group[colI];
 				
+				
+				
 				if(col->hasLabels())
 				{
 					int valueDb = !sqlite3_column_text(	stmt, colI) ? EmptyValues::missingValueInteger : sqlite3_column_int(stmt, colI);
@@ -761,9 +764,12 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 				}
 				else
 				{
-					double			dbDbl = _doubleTroubleReader(stmt, colI);
-					std::string		dbStr = !std::isnan(dbDbl) ? "" : _wrap_sqlite3_column_text(stmt, colI);
 					
+					
+					
+					std::string		dbStr;
+					double			dbDbl = _doubleTroubleReader(stmt, colI, &dbStr);
+		
 					col->_strs[row] = dbStr;
 					col->_dbls[row] = dbDbl;
 				}
@@ -1007,11 +1013,14 @@ void DatabaseInterface::_doubleTroubleBinder(sqlite3_stmt * stmt, int param, dou
 		sqlite3_bind_double(stmt, param, dbl);
 }
 
-double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI)
+double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI, std::string * textReturn)
 {	
 	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader);
 
 	const std::string strVal = _wrap_sqlite3_column_text(stmt, colI);
+	
+	if(textReturn)
+		*textReturn = "";
 	
 	if(!strVal.empty())
 	{
@@ -1027,8 +1036,16 @@ double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI)
 		else if(strVal == _nan)			return EmptyValues::missingValueDouble;
 		
 	}
-
-	return sqlite3_column_double(stmt, colI);
+	
+	double dbl = EmptyValues::missingValueDouble;
+	
+	if(ColumnUtils::getDoubleValue(strVal, dbl))
+		return dbl;		// we can return the double because the textReturn is already set to empty
+	
+	if(textReturn)
+		*textReturn = strVal;
+	
+	return EmptyValues::missingValueDouble;
 }
 
 size_t DatabaseInterface::columnGetLabelCount(int columnId)
@@ -1111,8 +1128,8 @@ void DatabaseInterface::columnGetValues(int columnId, doublevec &dbls, stringvec
 		double				dbl = _doubleTroubleReader(		stmt, 0);
 		const std::string & str = _wrap_sqlite3_column_text(stmt, 0);
 
+		strs[row] = str;
 		dbls[row] = dbl;
-		strs[row] = std::isnan(dbl) ? str : "";
 	};
 
 	runStatements("SELECT " + columnBaseName(columnId, postFix) + " FROM " + dataSetName(dataSet) + " ORDER BY rowNumber;", prepare, processRow);
