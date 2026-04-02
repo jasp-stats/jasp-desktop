@@ -288,5 +288,27 @@ void TestDebugData::testEmptyValues()
 	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 0,	"There should be no labels anymore!");
 }
 
+void TestDebugData::testChangeLabel()
+{
+	QVERIFY2(_data,		"No dataset!");
+	
+	Column * contBinom = _data->column("contBinom");
+	
+	QVERIFY2(!contBinom->hasLabels(),							"contBinom really should be initialized without labels");
+	
+	contBinom->noLabelsToLabels();
+	
+	QVERIFY2(contBinom->hasLabels(),							"contBinom should now have labels");
+	
+	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(contBinom->labels()[0]), "A", int(DataSetPackage::specialRoles::label));
+	
+	QVERIFY2(contBinom->labels()[0]->labelDisplay() == "A",		"contBinom failed renaming first label to A");
+	
+	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(contBinom->labels()[1]), "B", int(DataSetPackage::specialRoles::value));
+	
+	QVERIFY2(contBinom->labels()[1]->labelDisplay() == "B",		"contBinom failed renaming first value (and thus also label!) to B");
+	
+}
+
 
 QTEST_MAIN(TestDebugData)
