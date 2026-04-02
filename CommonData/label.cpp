@@ -139,7 +139,7 @@ bool Label::setLabel(const std::string & label)
 {
 	if(_label != label)
 	{
-		std::string oldLabel = Label::label();
+		std::string oldLabel = _label;
 		_label = label;
 		
 		_column->labelDisplayChanged(this, oldLabel);
@@ -181,7 +181,7 @@ bool Label::setOriginalValue(const Json::Value & originalValue)
 
 bool Label::setOrigValLabel(const Json::Value &originalValue)
 {
-	std::string oldLabel	= label(),
+	std::string oldLabel	= _label,
 				newLabel	= !originalValue.isDouble() ? originalValue.asString() : "";
 	Json::Value previous	= _originalValue;
 	bool		labelChange = _label			!= newLabel || previous != originalValue, //If they are both "" it could still be a change because the originalValue apparently changed and that is what is shown
