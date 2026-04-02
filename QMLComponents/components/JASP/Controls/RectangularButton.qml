@@ -44,6 +44,12 @@ Rectangle
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 	property real	centerParentX:		(parent.width / 2) - x
+	property color	defaultColor:		!enabled ? jaspTheme.buttonColorDisabled
+												 : _pressed ? jaspTheme.buttonColorPressed
+															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
+																															: jaspTheme.buttonColor
+	property color defaultBorderColor:	enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
+																							: jaspTheme.buttonBorderColor
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
 
@@ -53,14 +59,9 @@ Rectangle
 	implicitHeight:						_scaledDim
 	width:								implicitWidth
 	height:								implicitHeight
-	color:								!enabled ? jaspTheme.buttonColorDisabled
-												 : _pressed ? jaspTheme.buttonColorPressed
-															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
-																															: jaspTheme.buttonColor
-	border.color:						enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
-																							: jaspTheme.buttonBorderColor
+	color:								defaultColor
+	border.color:						defaultBorderColor
 	border.width:						1
-
 
 	ToolTip.text:						toolTip
 	ToolTip.visible:					toolTip !== "" && buttonMouseArea.containsMouse
@@ -70,6 +71,7 @@ Rectangle
 	Keys.onReturnPressed:				(event)=>	clicked();
 
 	signal clicked()
+	signal doubleClicked()
 
 
 
@@ -81,6 +83,7 @@ Rectangle
 		hoverEnabled:				true
 		cursorShape:				filterButtonRoot.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 		onClicked:					filterButtonRoot.clicked();
+		onDoubleClicked:			filterButtonRoot.doubleClicked();
 		//visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}
