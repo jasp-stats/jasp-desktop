@@ -1873,6 +1873,13 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 
 	if(itsADouble)
 		value = ColumnUtils::doubleToString(newDoubleToSet);
+	
+	if(!_hasLabels)
+	{
+		assert(labelIsValue);
+		
+		return setValue(row, newDoubleToSet, !itsADouble ? value : "");
+	}
 
 
 	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);

@@ -1756,6 +1756,23 @@ void DataSetPackage::setColumnDropLevels(size_t columnIndex, dropLevelsType drop
 	emit refreshAllAnalyses();
 }
 
+void DataSetPackage::setColumnHasLabels(size_t columnIndex, bool hasLabels)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	
+	if (!column)
+		return;
+
+	column->setHasLabels(hasLabels);
+	
+	refresh();
+	emit labelsReordered(tq(column->name()));
+	
+}
+
 
 void DataSetPackage::setColumnHasCustomEmptyValues(size_t columnIndex, bool hasCustomEmptyValue)
 {

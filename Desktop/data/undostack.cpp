@@ -367,6 +367,12 @@ SetColumnPropertyCommand::SetColumnPropertyCommand(QAbstractItemModel *model, QV
 			_oldValue = columnModel->dropLevels();
 			setText(QObject::tr("Change column drop levels of '%1' from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
 			break;
+
+		
+		case ColumnProperty::HasLabels:
+			_oldValue = columnModel->hasLabels();
+			setText(QObject::tr("Change column '%1' having labels from '%2' to '%3'").arg(columnName(), _oldValue.toString(), _newValue.toString()));
+			break;
 		}
 	}
 	else
@@ -405,6 +411,10 @@ void SetColumnPropertyCommand::undo()
 	case ColumnProperty::DropLevels:
 		DataSetPackage::pkg()->setColumnDropLevels(_colId, dropLevelsTypeFromQString(_oldValue.toString()));
 		break;
+		
+	case ColumnProperty::HasLabels:
+		DataSetPackage::pkg()->setColumnHasLabels(_colId, _oldValue.toBool());
+		break;
 	}
 }
 
@@ -434,6 +444,10 @@ void SetColumnPropertyCommand::redo()
 		
 	case ColumnProperty::DropLevels:
 		DataSetPackage::pkg()->setColumnDropLevels(_colId, dropLevelsTypeFromQString(_newValue.toString()));
+		break;
+		
+	case ColumnProperty::HasLabels:
+		DataSetPackage::pkg()->setColumnHasLabels(_colId, _newValue.toBool());
 		break;
 	}
 

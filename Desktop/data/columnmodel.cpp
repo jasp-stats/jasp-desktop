@@ -150,7 +150,6 @@ void ColumnModel::setDropLevels(QString dropLevels)
 		_undoStack->pushCommand(new SetColumnPropertyCommand(this, dropLevelsTypeToQString(dropEm), SetColumnPropertyCommand::ColumnProperty::DropLevels));
 }
 
-
 QString ColumnModel::columnDescription() const
 {
 	if (_virtual) return _dummyColumn.description;
@@ -931,11 +930,6 @@ void ColumnModel::languageChangedHandler()
 	emit tabsChanged();
 }
 
-
-
-
-
-
 bool ColumnModel::hasLabels() const
 {
 	return column() ? column()->hasLabels() : false;
@@ -943,10 +937,10 @@ bool ColumnModel::hasLabels() const
 
 void ColumnModel::setHasLabels(bool newHasLabels)
 {
+	if (_beingRefreshed)
+		return;
+
+
 	if(column())
-		column()->setHasLabels(newHasLabels);
-	
-	refresh();
-	DataSetPackage::pkg()->refresh();
-	emit DataSetPackage::pkg()->labelsReordered(tq(column()->name()));
+		_undoStack->pushCommand(new SetColumnPropertyCommand(this, newHasLabels, SetColumnPropertyCommand::ColumnProperty::HasLabels));
 }
