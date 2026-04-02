@@ -32,6 +32,7 @@
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include <QAccessible>
+#include <QScopeGuard>
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
 	  AnalysisBase(Analyses::analyses()),
@@ -370,10 +371,9 @@ void Analysis::createForm(QQuickItem* parentItem)
 	// these notifications. The handler is restored immediately afterwards so that
 	// accessibility works normally during regular user interaction.
 	auto previousAccessibilityUpdateHandler = QAccessible::installUpdateHandler([](QAccessibleEvent*) {});
+	auto restoreAccessibilityHandler = qScopeGuard([&]() { QAccessible::installUpdateHandler(previousAccessibilityUpdateHandler); });
 
 	AnalysisBase::createForm(parentItem);
-
-	QAccessible::installUpdateHandler(previousAccessibilityUpdateHandler);
 
 	if (_analysisForm)
 	{
