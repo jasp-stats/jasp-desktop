@@ -947,4 +947,6 @@ void ColumnModel::setHasLabels(bool newHasLabels)
 		column()->setHasLabels(newHasLabels);
 	
 	refresh();
+	DataSetPackage::pkg()->refresh();
+	emit DataSetPackage::pkg()->labelsReordered(tq(column()->name()));
 }

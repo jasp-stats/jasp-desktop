@@ -630,18 +630,16 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		{
 			std::string	valueStr = valueLookup(i);
 			double		valueDbl = EmptyValues::missingValueDouble;
+			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl);
 
 			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(valueStr)));
-			
-			if(ColumnUtils::getDoubleValue(valueStr, valueDbl))
-				valueStr = "";
-			
-			if(setValue(i, valueDbl, valueStr, false) && aChange)
+		
+			if(setValue(i, valueDbl, isDouble ? "" : valueStr, false) && aChange)
 				(*aChange) = true;
 					
-			if(valueStr != "")
+			if(!isDouble)
 			{
-				if(ColumnUtils::getIntValue(valueStr, tmpInt))
+				if(ColumnUtils::getIntValue(valueStr, tmpInt))  // 🤷
 					ints.insert(tmpInt);
 				else if(!isEmptyValue(valueStr))
 					onlyInts = false;
@@ -649,9 +647,10 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 				if(!isEmptyValue(valueStr))
 					onlyDoubles = false;
 			}
-			else if(!std::isnan(valueDbl))
+			else
 			{
-				if(std::abs(valueDbl - double(int(valueDbl))) < .00001)
+				//If the string made from a double is the same as the string made from a double made from an int made from a double, then it must be an integer?
+				if(doubleToDisplayString(valueDbl) ==  doubleToDisplayString(double(int(valueDbl))))
 					ints.insert(int(valueDbl));
 				else if(!isEmptyValue(valueDbl))
 					onlyInts = false;
