@@ -31,6 +31,7 @@
 #include "utilities/messageforwarder.h"
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
+#include <QAccessible>
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
 	  AnalysisBase(Analyses::analyses()),
@@ -359,7 +360,20 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::createForm(QQuickItem* parentItem)
 {
+	// Suppress accessibility (UI Automation) events during bulk form creation.
+	// On Windows 11, background UIA clients such as Power Automate Desktop intercept
+	// every text-change event via the OS accessibility infrastructure. Each setText()
+	// on a QML TextField triggers a cross-process UIA notification through the kernel
+	// (~65 ms overhead per call). With 35+ text fields per analysis form this causes
+	// multi-second freezes that grow with the number of open analyses.
+	// Installing a no-op update handler for the duration of form creation suppresses
+	// these notifications. The handler is restored immediately afterwards so that
+	// accessibility works normally during regular user interaction.
+	auto previousAccessibilityUpdateHandler = QAccessible::installUpdateHandler([](QAccessibleEvent*) {});
+
 	AnalysisBase::createForm(parentItem);
+
+	QAccessible::installUpdateHandler(previousAccessibilityUpdateHandler);
 
 	if (_analysisForm)
 	{
