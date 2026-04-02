@@ -979,6 +979,11 @@ int Column::labelsAdd(int display)
 	return labelsAdd(std::to_string(display));
 }
 
+int Column::labelsAdd(double display)
+{
+	return labelsAdd(doubleToDisplayString(display, false, true));
+}
+
 int Column::labelsAdd(const std::string &display)
 {
 	return labelsAdd(display, display);
