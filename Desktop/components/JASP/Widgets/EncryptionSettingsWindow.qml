@@ -64,6 +64,7 @@ Window
 
                 property int minWidth: controlLabel.implicitWidth + 300 * jaspTheme.uiScale
 
+                showEyeInside: true
                 control.echoMode: TextInput.Password
                 control.Keys.onReturnPressed: (event)=> { submitButton.onClicked() }
             }
