@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-04-08 17:09+0000\n"
+"Last-Translator: 陳正昌 <chencc99@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -609,12 +615,12 @@ msgstr "改變CRAN知識庫: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr "產生MD檔"
+msgstr "生成說明用 Markdown 檔案"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD幫助檔。"
+msgstr "啟用此功能將依據 QML 選項中的資訊生成 Markdown 說明檔。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
@@ -674,7 +680,7 @@ msgstr "表格設定"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr "顯示實際的p值"
+msgstr "顯示實際的 p 值"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
@@ -2579,7 +2585,7 @@ msgstr "結果與幫助："
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr "右方主題"
+msgstr "淺色主題"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
@@ -4886,7 +4892,6 @@ msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
 msgstr "歡迎使用拖放篩選！\n"
 
-#, fuzzy
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "點擊圖示可更改變數類型"
@@ -5068,7 +5073,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr "為此計算欄位選擇一個篩選"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "移除"
@@ -5262,7 +5266,7 @@ msgstr "選擇設定檔"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr "選擇設定檔"
+msgstr "選擇設定檔。"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
@@ -5340,7 +5344,6 @@ msgctxt "QObject|"
 msgid "Continue"
 msgstr "繼續"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Exit"
 msgstr "關閉"
@@ -5497,7 +5500,7 @@ msgstr "自動保存的時間間隔(以分鐘計)"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr "每次自動保存之間的時間間隔（分鐘）"
+msgstr "每次自動保存之間的時間間隔（分鐘）。"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -5536,7 +5539,6 @@ msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
 msgstr "%1 秒前已儲存，可能仍載入於另一個 JASP 中。"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recovery"
 msgstr "復原"
@@ -5564,7 +5566,6 @@ msgstr ""
 "\n"
 "是否重新整理分析？"
 
-#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Version incompatibility"
 msgstr "檔案版本不相容"
@@ -5649,7 +5650,6 @@ msgctxt "ModulesMenu|"
 msgid "Install a local module"
 msgstr "安裝本地模組"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Cancel"
 msgstr "取消"
@@ -5727,7 +5727,6 @@ msgctxt "PlotEditor::References|"
 msgid "Type"
 msgstr "類型"
 
-#, fuzzy
 msgctxt "PlotEditor::References|"
 msgid "Text"
 msgstr "文字"
@@ -5768,18 +5767,18 @@ msgstr ""
 "請先在介於 %2 與 0.96.1 之間的中間 JASP 版本中載入並儲存該檔案，以將其升級至"
 "相容之版本"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr "嘗試從目錄%1 初始化模組時發生錯誤，錯誤為：%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr "嘗試載入模組 %1 時出錯，錯誤為：“%2”"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
@@ -5797,12 +5796,10 @@ msgstr ""
 "移除模組 %1 失敗，錯誤訊息如下：\n"
 "%2"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select a folder"
-msgstr "選擇文件夾"
+msgstr "選擇資料夾"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
@@ -5811,7 +5808,6 @@ msgstr ""
 "要安裝開發模組，您需要選擇所要載入的資料夾，您可在檔案功能表的偏好>進階下執行"
 "此操作。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "選擇現有資料夾"
@@ -5825,7 +5821,6 @@ msgstr ""
 "若要安裝開發模組，您需要選擇一個已存在之資料夾，您選擇了「%1」，但該資料夾不"
 "存在。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Problem initializing module"
 msgstr "啟動模組時發生問題"
@@ -5838,45 +5833,39 @@ msgstr ""
 "載入開發中模組發生問題：\n"
 "\n"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Missing files or folders"
-msgstr "缺少檔案或文件夾"
+msgstr "缺少檔案或資料夾"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr "所選資料夾不能安裝為開發人員模組，因為不含所需的檔和資料夾。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/Description.qml file."
 msgstr "建立一個 inst/Description.qml 檔。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a R directory containing your analysis code."
 msgstr "建立包含分析語法的 R 目錄。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
 msgstr "建立一個包含您 optionsforms 的 inst/qml 目錄。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
 msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing %1"
 msgstr "缺少 %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
@@ -5886,7 +5875,7 @@ msgstr ""
 "您可能刪除了開發模組目錄中的 %1。沒有它，您的模組無法運作，請將其放回原處。目"
 "前將先保留舊的%2檔。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
@@ -5897,34 +5886,34 @@ msgstr ""
 "開發模組目錄中似乎從未有過 %1。沒有它，您的模組無法運作，請務必確實建立一個模"
 "組。不確定您如何能安裝此模組，您應要卸載開發模組"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "%1 was removed!"
 msgstr "%1 已被刪除！"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
 msgstr "您似乎已刪除 %1，但您的模組需要此檔才能正常工作。現在將卸載開發模組。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing folder %1"
-msgstr "遺失 %1文件夾"
+msgstr "遺失 %1資料夾"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
 "directory. Without it your module cannot work, make sure to put it back. For "
 "now your old folder will be kept."
 msgstr ""
-"疑似 %1文件夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
-"目前先保留舊文件夾。"
+"疑似 %1資料夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
+"目前先保留舊資料夾。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
@@ -5932,15 +5921,14 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"疑似開發模組目錄中從未建置 %1文件夾，需要該檔案夾模組才能執行模組。無法得知開"
+"疑似開發模組目錄中從未建置 %1資料夾，需要該檔案夾模組才能執行模組。無法得知開"
 "發模組如何安裝，請將之移除"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
 msgstr "載入模組描述時出現問題"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "<i>無法從存檔中加載模組描述檔: '%1'</i>"
@@ -5957,62 +5945,61 @@ msgstr ""
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Enter Encryption Settings"
-msgstr ""
+msgstr "進入加密設定"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Password:"
-msgstr ""
+msgstr "密碼："
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "JASP Team Submission."
-msgstr ""
+msgstr "提交給 JASP 團隊。"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Click here if you want the JASP Team be able to open the file"
-msgstr ""
+msgstr "如果您希望 JASP 團隊能夠開啟此檔案，請點擊此處"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Advanced Settings"
-msgstr ""
+msgstr "進階設定"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Private key (base64)"
-msgstr ""
+msgstr "私鑰（Base64 編碼）"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Receiver Public key (base64)"
-msgstr ""
+msgstr "接收者公鑰（Base64 編碼）"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Submit"
-msgstr ""
+msgstr "提交"
 
-#, fuzzy
 msgctxt "EncryptionSettingsWindow|"
 msgid "Cancel"
 msgstr "取消"
 
 msgctxt "VariablesWindow|"
 msgid "Use labels"
-msgstr ""
+msgstr "使用標籤"
 
 msgctxt "DesktopCommunicator|"
 msgid "No password given!"
-msgstr ""
+msgstr "未提供密碼！"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column '%1' having labels from '%2' to '%3'"
-msgstr ""
+msgstr "將欄位 '%1' 的標籤從 '%2' 變更為 '%3'"
 
 msgctxt "AutoSaveFileSystem|"
 msgid "encrypted"
-msgstr ""
+msgstr "已加密"
 
 msgctxt "Computer|"
 msgid "Save (encrypted) JASP file"
-msgstr ""
+msgstr "儲存（加密）JASP 檔案"
 
 msgctxt "Computer|"
 msgid "Encrypted JASP Files"
-msgstr ""
+msgstr "加密的 JASP 檔案"
