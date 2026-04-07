@@ -212,6 +212,28 @@ TextInputBase
 			textFormat:				textField.textFormat
 		}
 	}
+	
+	Image 
+	{
+		id:						eyeInside
+		visible:				control.showEyeInside
+		z:						20
+		source:					control.echoMode === TextInput.Password ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
+		anchors.right:			control.right
+		anchors.rightMargin:	4
+		anchors.verticalCenter:	control.verticalCenter
+		width:					control.height
+		height:					control.height
+		
+		MouseArea 
+		{
+			anchors.fill:		parent
+			hoverEnabled:		true
+			cursorShape:		Qt.PointingHandCursor
+			onClicked:			control.echoMode = (control.echoMode === TextInput.Password) ? TextInput.Normal : TextInput.Password
+		}
+	}
+	
 
 	QTC.TextField
 	{
@@ -268,26 +290,6 @@ TextInputBase
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
 
-		Image 
-		{
-			id:						eyeInside
-			visible:				control.showEyeInside
-			z:						2
-			source:					control.echoMode === TextInput.Password ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
-			anchors.right:			control.right
-			anchors.rightMargin:	4
-			anchors.verticalCenter:	control.verticalCenter
-			width:					parent.height
-			height:					parent.height
-			
-			MouseArea 
-			{
-				anchors.fill:		parent
-				hoverEnabled:		true
-				cursorShape:		Qt.PointingHandCursor
-				onClicked:			control.echoMode = (control.echoMode === TextInput.Password) ? TextInput.Normal : TextInput.Password
-			}
-		}
 
 		onActiveFocusChanged:
 		{
