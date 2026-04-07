@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-04-07 08:09+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5769,19 +5775,23 @@ msgid ""
 "Load and save it first in an intermediate JASP version (between %2 and "
 "0.96.1) to upgrade your JASP file to a compatible version"
 msgstr ""
+"JASP 文件版本过旧 (%1)，已不再受支持。\n"
+"\n"
+"请先使用中间版本的 JASP 文件（介于 %2 和 0.96.1 之间）加载并保存该文件，以将"
+"其升级到兼容版本。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr "尝试从目录 %1 初始化模块时发生错误，错误为：%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr "在尝试加载模块 %1 时出现错误，错误为：\"%2\""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
@@ -5790,7 +5800,7 @@ msgstr ""
 "模块 %1 安装失败，错误信息如下：\n"
 "%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "The removal of Module %1 failed with the following errormessage:\n"
@@ -5799,12 +5809,10 @@ msgstr ""
 "卸载模块 %1 失败，错误信息如下：\n"
 "%2"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select a folder"
 msgstr "选择件夹"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
@@ -5813,22 +5821,20 @@ msgstr ""
 "要安装开发模块，您需要选择要观看和加载的文件夹，您可以在 文件菜单的 首选项->"
 "高级 下执行此操作。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "选择现有文件夹"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
 "selected '%1' but it doesn't exist."
 msgstr "您需要选择已有文件夹来安装开发模块，您选择了“%1”，但它不存在。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Problem initializing module"
-msgstr "初始化模块问题"
+msgstr "模块初始化出现问题"
 
 #, fuzzy
 msgctxt "DynamicModules|"
@@ -5839,45 +5845,39 @@ msgstr ""
 "加载开发者模块时出现问题：\n"
 "\n"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Missing files or folders"
 msgstr "缺失文件或文件夹"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
-msgstr "所选文件夹无法安装为开发者模块，因为它不包含所有必需的文件和文件夹。"
+msgstr "所选文件夹无法安装为开发者模块，因为它不包含所有必要的文件和文件夹。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/Description.qml file."
 msgstr "创建一个 inst/Description.qml 文件。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a R directory containing your analysis code."
 msgstr "创建包含分析代码的 R 目录。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
 msgstr "创建包含选项表的 inst/qml 目录。"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "创建一个包含ribbonbuttons图标的 inst/icons 目录。"
+msgstr "创建一个包含菜单栏图标的 inst/icons 目录。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing %1"
-msgstr "缺少 %1"
+msgstr "缺失 %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
