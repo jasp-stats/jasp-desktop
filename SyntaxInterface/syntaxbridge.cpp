@@ -39,6 +39,7 @@
 #include "dirs.h"
 #include "utilities/appdirs.h"
 #include "modules/dynamicmodule.h"
+#include "archivereader.h"
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -261,6 +262,70 @@ const char* STDCALL syntaxBridgeParseDescription(const char* modulePath)
 
 	return result.c_str();
 }
+
+void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
+{
+	if (!init(dbInMemory))
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return;
+	}
+
+	ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float p){});
+	ManifestInfo info = ArchiveReader::readManifest(filePath);
+
+	DataSetProvider* provider = DataSetProvider::getProvider(dbInMemory, false);
+
+	provider->loadDatabase(info.jaspVersion);
+}
+
+const char*	STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
+{
+	if (!init())
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return "";
+	}
+
+	static std::string result;
+
+	result = "";
+	Json::Value analysesData;
+
+	if (ArchiveReader::parseJsonEntry(analysesData, filePath, "analyses.json", false))
+	{
+		Json::Value analysesDataList = analysesData.get("analyses",	analysesData);
+		if (analysisNr < analysesDataList.size())
+			result = analysesDataList[analysisNr]["options"].toStyledString();
+		else
+			Log::log() << "Analyis number is higher than the number of analyses (" << analysesDataList.size() << ") in the JASP file" << std::endl;
+	}
+	else
+		Log::log() << "Fail to open or read the JASP file " << filePath << std::endl;
+
+
+	return result.c_str();
+}
+
+const char*	STDCALL syntaxBridgeGetVariableNames()
+{
+	DataSetProvider* provider = DataSetProvider::getProvider(false, false);
+	if (!provider)
+		return "";
+
+	static std::string result;
+
+	QStringList names = provider->provideInfo(VariableInfo::VariableNames).toStringList();
+	Json::Value jsonNames(Json::arrayValue);
+
+	for (const QString & name : names)
+		jsonNames.append(fq(name));
+
+	result = jsonNames.toStyledString();
+
+	return result.c_str();
+}
+
 
 
 } // extern "C"
@@ -498,8 +563,6 @@ ModuleInfo parseDescription(const QString & modulePath)
 
 	return moduleInfo;
 }
-
-
 
 
 

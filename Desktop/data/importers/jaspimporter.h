@@ -44,8 +44,6 @@ private:
 	static void loadDataArchive(		const std::string &path, std::function<void(int)> progressCallback);
 	static void loadJASPArchive(		const std::string &path, std::function<void(int)> progressCallback);
 
-	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
-	static void readManifest(const std::string &path);
 	static Compatibility isCompatible();
 
 	static const Version maxSupportedJaspArchiveVersion;

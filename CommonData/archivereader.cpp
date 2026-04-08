@@ -54,7 +54,7 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 
 	if (_archiveExists)
 	{
-        _archive = archive_read_new();
+		_archive = archive_read_new();
 		archive_read_support_filter_all(_archive);
 		archive_read_support_format_all(_archive);
 
@@ -66,8 +66,8 @@ void ArchiveReader::openEntry(const string &archivePath, const string &entryPath
 
 		if (r == ARCHIVE_OK)
 		{
-            _isOpen = true;
-            bool success = false;
+					_isOpen = true;
+			bool	success = false;
 
             archive_entry * entry;
 			while (archive_read_next_header(_archive, &entry) == ARCHIVE_OK)
@@ -270,3 +270,97 @@ vector<string> ArchiveReader::getEntryPaths(const string &archivePath, const str
 	}
 	return files;
 }
+
+ManifestInfo::ManifestInfo(const std::string & _jaspArchiveVersion, const std::string & _jaspVersion) :
+	jaspArchiveVersion{_jaspArchiveVersion}, jaspVersion{_jaspVersion}
+{
+}
+
+ManifestInfo ArchiveReader::readManifest(const std::string &path)
+{
+	static const std::string manifestName = "manifest.json";
+
+	ManifestInfo info;
+	ArchiveReader	manifestReader;
+	manifestReader.openEntry(path, manifestName); //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
+	int64_t         size				= manifestReader.bytesAvailable();
+	int             errorCode;
+
+	if (size > 0)
+	{
+		std::string manifestStr = manifestReader.readAllData(sizeof(char), errorCode);
+
+		if (errorCode != 0)
+			throw std::runtime_error("Could not read manifest of JASP archive.");
+
+		Json::Reader    parser;
+		Json::Value     manifest;
+		parser.parse(manifestStr, manifest);
+
+		info.jaspArchiveVersion	= manifest.get("jaspArchiveVersion", "").asString();
+		info.jaspVersion		= manifest.get("jaspVersion",		"").asString();
+	}
+
+	if (info.jaspArchiveVersion.empty())
+		throw std::runtime_error("Archive missing version information.");
+
+	return info;
+}
+
+bool ArchiveReader::parseJsonEntry(Json::Value &root, const std::string &path,  const std::string &entry, bool required)
+{
+	//Not particularly happy about the way we need to add a delete at every return here. Would be better to not use `new` and just instantiate a scoped var
+	//But that would require removing some `std::runtime_error` from `openEntry` in the `ArchiveReader` constructor.
+	// And this is not the time to rewrite too many things.
+	ArchiveReader * dataEntry = NULL;
+	try
+	{
+		dataEntry = new ArchiveReader(path, entry);
+	}
+	catch(...)
+	{
+		return false;
+	}
+
+	if (!dataEntry->archiveExists())
+	{
+		delete dataEntry;
+		throw std::runtime_error("The selected JASP archive '" + path + "' could not be found.");
+	}
+
+	if (!dataEntry->exists())
+	{
+		delete dataEntry;
+
+		if (required)
+			throw std::runtime_error("Entry '" + entry + "' could not be found in JASP archive.");
+
+		return false;
+	}
+
+	int64_t size = dataEntry->bytesAvailable();
+	if (size > 0)
+	{
+		char *data = new char[size];
+		int64_t startOffset = dataEntry->pos();
+		int errorCode = 0;
+		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
+
+		if (errorCode < 0)
+		{
+			delete dataEntry;
+			throw std::runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
+		}
+
+		Json::Reader jsonReader;
+		jsonReader.parse(data, (char*)(data + (size * sizeof(char))), root);
+
+		delete[] data;
+	}
+
+	dataEntry->close();
+
+	delete dataEntry;
+	return true;
+}
+
