@@ -121,7 +121,7 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 	_db->load();
 	_db->upgradeDBFromVersion(jaspVersion);
 
-	_dataSet = new DataSet(0);
+	_dataSet = new DataSet(0); // Setting 0 for "do nothing" because otherwise we can't pass on jaspVersion
 	_dataSet->dbLoad(1, [](float p) {}, jaspVersion);
 
 	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
