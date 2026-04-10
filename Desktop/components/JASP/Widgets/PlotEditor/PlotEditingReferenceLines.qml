@@ -11,68 +11,68 @@ import JASP
 JASPW.JASPDataView
 {
 	id:				jaspDataView
-	model:			plotEditorModel.references	
-	
+	model:			plotEditorModel.references
+
 	onWidthChanged:	plotEditorModel.references.viewWidth = width
-	
+
 	rowNumberDelegate:	null
-	
-	itemDelegate:	Component { Loader 
-	{ 
-		
+
+	itemDelegate:	Component { Loader
+	{
+
 		property int		rowIdx:			rowIndex
 		property int		columnIdx:		columnIndex
 		property string		modelText:		itemText
 		property var		modelData:		itemData
 		property bool		modelEnabled:	itemEnabled
-		
-		sourceComponent: columnIndex === 0 ? typeSelector : columnIndex == 4 ? eraseButton : textView;
+
+		sourceComponent: columnIndex === 0 ? typeSelector : columnIndex === 6 ? styleSelector : columnIndex === 7 ? eraseButton : textView;
 	}}
-	
-	
-	editDelegate:   Component { Loader 
-	{ 
-			
+
+
+	editDelegate:   Component { Loader
+	{
+
 			property int            rowIdx:                 rowIndex
 			property int            columnIdx:              columnIndex
 			property string         modelText:              itemText
 			property var            modelData:              itemData
 			//property bool			modelEnabled:			itemEnabled
-		
+
 			sourceComponent: textEdit
 	}}
 
 	Component
 	{
 		id:		textView
-		
-		Text		
-		{  
+
+		Text
+		{
 			text:		modelText == "" ? "..." : modelText;
-			font:		jaspTheme.font; 
-			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled; 
+			font:		jaspTheme.font;
+			color:		enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled;
 			enabled:	modelEnabled
 			visible:	enabled
 			MouseArea
-			{ 
-				anchors.fill:	parent; 
+			{
+				anchors.fill:	parent;
 				onClicked:		jaspDataView.view.edit(rowIdx, columnIdx)
 			}
-			
+
 		//	opacity:				rowIdx < jaspDataView.view.rowCount - 1 ? 1.0 : 0.5
-			
+
 		}
 	}
-	
+
 	Component
 	{
 		id:		textEdit
-		
+
 		TextInput
 		{
 			id:						editItem
 			text:					modelText
-			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled; 
+			color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled;
 			font:					jaspTheme.font
 			focus:					true
 			clip:					true
@@ -81,60 +81,103 @@ JASPW.JASPDataView
 			Keys.onReturnPressed:	{saveEdit(); jaspDataView.view.forceActiveFocus(); }
 			Component.onCompleted:	forceActiveFocus()
 			//enabled:				modelEnabled
-			onActiveFocusChanged:	
+			onActiveFocusChanged:
 			{
 				if(!activeFocus)
 				{
-					
+
 					text = Qt.binding(function() {return modelText;});
 				}
 			}
-			
+
 			function saveEdit()
 			{
 				jaspDataView.view.commitEdit(rowIdx, columnIdx, text);
 				jaspDataView.view.clearEdit();
 			}
-			
+
 			//opacity:				rowIdx < jaspDataView.view.rowCount - 1 ? 1.0 : 0.5
 		}
 	}
-	
-	ListModel 
+
+	ListModel
 	{
 		id: typeModel
-	
+
 		ListElement {	value:  0; name:	qsTr("Point")			}
 		ListElement {	value:  1; name:	qsTr("Horizontal Line")	}
 		ListElement {	value:  2; name:	qsTr("Vertical Line")	}
 	}
-	
+
+	ListModel
+	{
+		id: lineTypeModel
+
+		ListElement {	value:  0; name:	qsTr("Solid")		}
+		ListElement {	value:  1; name:	qsTr("Dashed")		}
+		ListElement {	value:  2; name:	qsTr("Dotted")		}
+		ListElement {	value:  3; name:	qsTr("Dot-Dash")	}
+		ListElement {	value:  4; name:	qsTr("Long Dash")	}
+		ListElement {	value:  5; name:	qsTr("Two Dash")	}
+	}
+
+	ListModel
+	{
+		id: shapeModel
+
+		ListElement {	value:  0; name:	qsTr("Circle")		}
+		ListElement {	value:  1; name:	qsTr("Square")		}
+		ListElement {	value:  2; name:	qsTr("Triangle")	}
+		ListElement {	value:  3; name:	qsTr("Diamond")		}
+		ListElement {	value:  4; name:	qsTr("Cross")		}
+		ListElement {	value:  5; name:	qsTr("Star")		}
+	}
+
 	Component
 	{
 		id:		typeSelector
-		
+
 		JASPC.DropDown
-		{  
+		{
 			fieldWidth:				width
 			source:					typeModel
 			currentIndex:			modelData
-			onValueChanged:	
+			onValueChanged:
 			{
 				if(modelData != currentIndex)
 					jaspDataView.view.model.setData(jaspDataView.view.model.index(rowIdx, columnIdx), currentIndex);
 			}
-			
+
 			//opacity:	rowIdx < jaspDataView.view.rowCount - 1 ? 1.0 : 0.5
 		}
 	}
-	
+
+	Component
+	{
+		id:		styleSelector
+
+		JASPC.DropDown
+		{
+			readonly property int rowType:	jaspDataView.view.model.data(jaspDataView.view.model.index(rowIdx, 0))
+
+			fieldWidth:				width
+			source:					rowType === 0 ? shapeModel : lineTypeModel
+			currentIndex:			modelData
+			onValueChanged:
+			{
+				if(modelData != currentIndex)
+					jaspDataView.view.model.setData(jaspDataView.view.model.index(rowIdx, columnIdx), currentIndex);
+			}
+		}
+	}
+
 	Component
 	{
 		id:		eraseButton
 
-		
+
 		JASPC.RectangularButton
-		{		
+		{
 			text:			"X"
 			onClicked:		model.setData(model.index(rowIdx, columnIdx), true);
 			//visible:		rowIdx < jaspDataView.view.rowCount - 1
