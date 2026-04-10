@@ -9,7 +9,7 @@ namespace PlotEditor
 References::References(PlotEditorModel * model)
 	: QAbstractTableModel{model}, _model(model)
 {
-	
+
 }
 
 int PlotEditor::References::rowCount(const QModelIndex &parent) const
@@ -19,7 +19,7 @@ int PlotEditor::References::rowCount(const QModelIndex &parent) const
 
 int PlotEditor::References::columnCount(const QModelIndex &parent) const
 {
-	return 5;
+	return 8;
 }
 
 // I hate the following and fixes for this kind of shenanigans are in a different branch but for now just do this:
@@ -43,16 +43,21 @@ bool References::indexDisabled(const QModelIndex &index) const
 {
 	if(index.row() >= rowCount())
 		return false;
-	
-	if(index.row() >= _refs.size() || _refs[index.row()].point)
+
+	if(index.row() >= _refs.size())
 		return false;
-	
-	if(_refs[index.row()].horizontal && index.column() == 2)
+
+	const Reference & ref = _refs[index.row()];
+
+	if(ref.point)
+		return false;
+
+	if(ref.horizontal && index.column() == 2)
 		return true;
-	
-	if(!_refs[index.row()].horizontal && index.column() == 3)
+
+	if(!ref.horizontal && index.column() == 3)
 		return true;
-	
+
 	return false;
 }
 
@@ -68,7 +73,7 @@ QVariant PlotEditor::References::headerData(int section, Qt::Orientation orienta
 {
 	if(orientation == Qt::Vertical)
 		return QVariant();
-	
+
 	switch(role)
 	{
 	default:
@@ -78,19 +83,22 @@ QVariant PlotEditor::References::headerData(int section, Qt::Orientation orienta
 		case 1:			return tr("Text");
 		case 2:			return tr("Horizontal");
 		case 3:			return tr("Vertical");
-		case 4:			return tr("Remove");
+		case 4:			return tr("Color");
+		case 5:			return tr("Size");
+		case 6:			return tr("Style");
+		case 7:			return tr("Remove");
 		};
 		break;
-	
+
 	case int(dataPkgRoles::maxColString):
 	case int(dataPkgRoles::maxRowHeaderString):
 	case int(dataPkgRoles::maxColumnHeaderString):
 		return QVariant();
-		
+
 	case int(dataPkgRoles::columnWidthFallback):
 		return _widths.size() > section ? _widths[section] : 200;
 	}
-	
+
 	return QVariant();
 }
 
@@ -111,7 +119,7 @@ bool References::removeRows(int rows, int count, const QModelIndex &parent)
 	rows = std::min(rows, int(_refs.size()) - count);
 	if(rows < 0 || count < 1)
 		return false;
-	
+
 	emit addToUndoStack();
 	beginRemoveRows(QModelIndex(), rows, rows+count-1);
 	for(int c=0; c<count; c++)
@@ -125,7 +133,7 @@ QVariant PlotEditor::References::data(const QModelIndex &index, int role) const
 {
 	if(role != Qt::DisplayRole || index.row() < 0 || index.row() > _refs.size() || index.column() < 0 || index.column() >= columnCount() )
 		return QVariant();
-	
+
 	if(index.row() == _refs.size()) //Special "add a row"-row
 		switch(index.column())
 		{
@@ -133,26 +141,32 @@ QVariant PlotEditor::References::data(const QModelIndex &index, int role) const
 		default:		return "";
 		case 2:			return 0;
 		case 3:			return 0;
+		case 4:			return "black";
+		case 5:			return 1.0;
+		case 6:			return int(LineType::Solid);
 		}
-	
+
 	const Reference & ref = _refs[index.row()];
-	
+
 	switch(index.column())
 	{
 	case 0:			return ref.point ? ReferenceType::Point : ref.horizontal ? ReferenceType::LineHorizontal : ReferenceType::LineVertical;
 	case 1:			return ref.text;
 	case 2:			return ref.x;
 	case 3:			return ref.y;
+	case 4:			return ref.color;
+	case 5:			return ref.linewidth;
+	case 6:			return ref.linetype;
 	}
-									   
+
 	return QVariant();
 }
-									   
+
 bool References::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if(index.row() < 0 || index.row() > _refs.size() || index.column() < 0 || index.column() >= columnCount() )
 		return false;
-	
+
 	if(index.row() == _refs.size())
 	{
 		if(index.column() == 0 && ReferenceType(value.toInt()) == ReferenceType::Point)
@@ -160,28 +174,28 @@ bool References::setData(const QModelIndex &index, const QVariant &value, int ro
 		else
 			insertRows(index.row(), 1);
 	}
-	
+
 	emit addToUndoStack();
-	
+
 	beginResetModel();
 	Reference & ref = _refs[index.row()];
-	
+
 	switch(index.column())
 	{
 	default:
 		return false;
-		
-	case 0:			
+
+	case 0:
 	{
 		ref.point		= ReferenceType(value.toInt()) == ReferenceType::Point;
 		ref.horizontal	= ReferenceType(value.toInt()) == ReferenceType::LineHorizontal;
 		break;
 	}
-	case 1:			
+	case 1:
 	{
 		ref.text = value.toString();
 		break;
-	}	
+	}
 	case 2:
 	{
 		ref.x = value.toDouble();
@@ -193,6 +207,21 @@ bool References::setData(const QModelIndex &index, const QVariant &value, int ro
 		break;
 	}
 	case 4:
+	{
+		ref.color = value.toString();
+		break;
+	}
+	case 5:
+	{
+		ref.linewidth = value.toDouble();
+		break;
+	}
+	case 6:
+	{
+		ref.linetype = value.toInt();
+		break;
+	}
+	case 7:
 		removeRows(index.row(), 1);
 		break;
 	}
@@ -200,13 +229,13 @@ bool References::setData(const QModelIndex &index, const QVariant &value, int ro
 	//emit dataChanged(References::index(index.row(), 0), References::index(index.row(), columnCount()));
 	emit somethingChanged();
 	return true;
-	
+
 }
 
 Json::Value PlotEditor::References::toJson() const
 {
 	Json::Value val = Json::arrayValue;
-	
+
 	for(const Reference & l : _refs)
 	{
 		Json::Value obj;
@@ -215,9 +244,12 @@ Json::Value PlotEditor::References::toJson() const
 		obj["point"]		= l.point;
 		obj["x"]			= l.x;
 		obj["y"]			= l.y;
+		obj["color"]		= fq(l.color);
+		obj["linewidth"]	= l.linewidth;
+		obj["linetype"]		= l.linetype;
 		val.append(obj);
 	}
-	
+
 	return val;
 }
 
@@ -229,11 +261,14 @@ void PlotEditor::References::fromJson(const Json::Value &json)
 	if(json.type() == Json::arrayValue)
 		for(const Json::Value & r : json)
 			_refs.push_back(Reference{
-				tq(r.get("text",	"???")	.asString()), 
+				tq(r.get("text",	"???")	.asString()),
 				r.get("horizontal", true)	.asBool(),
 				r.get("point",		false)	.asBool(),
 				r.get("x",			0.)		.asDouble(),
-				r.get("y",			0.)		.asDouble()
+				r.get("y",			0.)		.asDouble(),
+				tq(r.get("color",	"black").asString()),
+				r.get("linewidth",	1.0)	.asDouble(),
+				r.get("linetype",	0)		.asInt()
 			});
 	endResetModel();
 	emit somethingChanged();
@@ -243,7 +278,7 @@ void References::setColWidth(int index, int width)
 {
 	if(_widths.size() > index && _widths[index] == width)
 		return;
-	
+
 	if(_widths.size() <= index)
 		_widths.resize(index+1);
 	_widths[index] = width;
@@ -260,12 +295,12 @@ void References::setViewWidth(int newViewWidth)
 		return;
 	_viewWidth = newViewWidth;
 	emit viewWidthChanged();
-	
-	int fiver = newViewWidth / 5;
-	
+
+	int eighter = newViewWidth / 8;
+
 	beginResetModel();
-	for(int i=0; i<5; i++)
-		setColWidth(i, fiver);
+	for(int i=0; i<8; i++)
+		setColWidth(i, eighter);
 	endResetModel();
 }
 
