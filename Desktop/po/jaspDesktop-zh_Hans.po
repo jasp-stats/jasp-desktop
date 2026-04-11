@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-04-12 08:12+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.17-dev\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -5830,7 +5836,6 @@ msgctxt "DynamicModules|"
 msgid "Problem initializing module"
 msgstr "模块初始化出现问题"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
@@ -5881,7 +5886,7 @@ msgstr ""
 "您似乎已经从开发模块目录中移除了 %1 。没有它，您的模块无法工作，请务必将其放"
 "回原位。现在，您的旧文件 %2 将被保留。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
@@ -5889,28 +5894,27 @@ msgid ""
 "installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"您的开发模块目录中似乎从未出现过 %1 。没有它，您的模块无法工作，请务必创建一"
-"个模块。如何安装有点神秘，因此现在应卸载开发模块"
+"你的开发模块目录下似乎没有 %1。没有它，你的模块无法工作，请确保创建一个。你的"
+"安装方式可能有问题，因此现在需要卸载该开发模块"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "%1 was removed!"
 msgstr "%1 已被移除！"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
 "work. The development module is going to be uninstalled now."
-msgstr ""
-"您似乎已经删除了 %1，但您的模块需要此文件才能工作。现在将卸载开发模块。"
+msgstr "你似乎已经删除了 %1，但你的模块需要此文件才能工作。现在将卸载开发模块。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing folder %1"
 msgstr "缺少文件夹 %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
@@ -5920,7 +5924,7 @@ msgstr ""
 "您似乎已从开发模块目录中删除了文件夹 %1。没有它，您的模块将无法工作，请确保将"
 "其放回原处。现在您的旧文件夹将被保留。"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
@@ -5928,32 +5932,31 @@ msgid ""
 "you installed is a bit of a mystery and thus the development module shall be "
 "uninstalled now"
 msgstr ""
-"您的开发模块目录中似乎从未有过文件夹 %1。没有它，您的模块无法工作，请确保创建"
-"一个。您如何安装有点神秘，因此现在应卸载开发模块"
+"你的开发模块目录下似乎没有 %1。没有它，你的模块无法工作，请确保创建一个。你的"
+"安装方式可能有误，因此现在需要卸载该开发模块"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
-msgstr "加载模块描述遇到问题"
+msgstr "加载模块描述文件遇到问题"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "<i>无法加载存档中模块的描述：'%1'</i>"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
 "maintained by %5.</i><br><i>See website for further details: <a "
 "href=\"http://%6\">%6</a></i><br>"
 msgstr ""
-"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 %5维护。</"
-"i><br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
+"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 %5维护。</i>"
+"<br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Enter Encryption Settings"
-msgstr ""
+msgstr "输入加密设置"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Password:"
