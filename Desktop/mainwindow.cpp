@@ -335,7 +335,7 @@ const QString MainWindow::commUrlMembers() const
 const QString MainWindow::contactUrlFeatures() const
 {
 #ifdef PRO
-	return PRO_FEATURES_URL;	
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";	
 #else
 	return "https://jasp-stats.org/request-feature";	
 #endif
@@ -344,7 +344,16 @@ const QString MainWindow::contactUrlFeatures() const
 const QString MainWindow::contactUrlBugs() const
 {
 #ifdef PRO
-	return PRO_BUGS_URL;	
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";	
+#else
+	return "https://jasp-stats.org/report-bug";
+#endif
+}
+
+const QString MainWindow::contactUrlCrashReport() const
+{
+#ifdef PRO
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
 #else
 	return "https://jasp-stats.org/report-bug";
 #endif
@@ -353,7 +362,22 @@ const QString MainWindow::contactUrlBugs() const
 const QString MainWindow::contactText() const
 {
 #ifdef PRO
-	return "Fill me!";
+	return tr(
+		"<h3>Contact</h3>\n"
+		"The following links will bring you directly to your company's own issue tracker.\n"
+		"<ul><li><a href=\"%1\">Feature requests</a>, when you would like something added to JASP.</li>"
+		"<li><a href=\"%2\">Bug reports</a>, when a feature in JASP doesn't work as it should.</li>"
+		"<li><a href=\"%3\">Crash reports</a>, for the unfortunate situation where JASP crashes.</li>"
+		"</ul>\n"
+		"There you will be in direct contact with the JASP software developers.\n"
+		"\n"
+		"You can find out more about JASP Services BV at <a href=\"%3\">our website</a>."
+	)
+	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
+	.arg(	contactUrlFeatures()
+	,		contactUrlBugs()
+	,		contactUrlCrashReport()
+	,		"https://jasp-services.com");
 #else
 	return tr(
 		"<h3>Contact</h3>\n"

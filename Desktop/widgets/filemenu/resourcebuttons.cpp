@@ -17,7 +17,9 @@ void ResourceButtons::loadButtonData()
 		{ButtonType::CurrentFile,	tr("Current File"),	false,	"./CurrentFile.qml"		, false},
 		{ButtonType::Computer,		tr("Computer"),		false,	"./Computer.qml"		, true},
 		{ButtonType::AutoSaves,		tr("Recovery"),		false,	"./AutoSaves.qml"		, true},
+#ifndef PRO
 		{ButtonType::OSF,			tr("OSF"),			false,	"./OSF.qml"				, true},
+#endif
 		{ButtonType::Database,		tr("Database"),		false,	"./Database.qml"		, true},
 		{ButtonType::DataLibrary,	tr("Data Library"),	false,	"./DataLibrary.qml"		, true},
 		{ButtonType::PrefsData,		tr("Data"),			false,	"./PrefsData.qml"		, true},

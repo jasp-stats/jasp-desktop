@@ -131,8 +131,9 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
-	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlBugs()		const;
+	const QString 		contactUrlFeatures()	const;
+	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
 	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected

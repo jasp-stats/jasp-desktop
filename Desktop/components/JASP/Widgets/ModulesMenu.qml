@@ -607,7 +607,7 @@ FocusScope
 				width:					progressOverlay.width + progressOverlay.waveWidth
 				sourceSize.width:		progressOverlay.waveWidth
 				sourceSize.height:		progressOverlay.waveHeight
-				source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+				source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-down-blue-120.svg" : "jasp-wave-down-pro-120.svg")
 				cache:					false
 				anchors.top:			parent.top
 
@@ -632,7 +632,7 @@ FocusScope
 				width:					progressOverlay.width + progressOverlay.waveWidth
 				sourceSize.width:		overlayTopWave.sourceSize.width
 				sourceSize.height:		overlayTopWave.sourceSize.height
-				source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+				source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-up-green-120.svg" : "jasp-wave-up-pro-120.svg")
 				cache:					false
 				anchors.bottom:			parent.bottom
 

@@ -68,13 +68,12 @@ project(
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP     TRUE)
 set(PRO               TRUE                                  CACHE BOOL "Are we building the pro-version?")
-set(PRO_FEATURES_URL  "https://support.jasp-services.com/"  CACHE STRING "Where does this pro-version user go for their feature requests?")
-set(PRO_BUGS_URL      "https://support.jasp-services.com/"  CACHE STRING "Where does this pro-version user go for their bug reports?")
+set(PRO_COMPANY_NAME  "TESTING"  CACHE STRING "What company is this for?")
+
 
 if(PRO)
   add_definitions(-DPRO)
-  add_definitions(-DPRO_FEATURES_URL="${PRO_FEATURES_URL}")
-  add_definitions(-DPRO_BUGS_URL="${PRO_BUGS_URL}")
+  add_definitions(-DPRO_COMPANY_NAME="${PRO_COMPANY_NAME}")
 endif()
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)

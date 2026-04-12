@@ -115,7 +115,7 @@ QString ModuleLibrary::getEnvironmentInfoJson() const
 
 void ModuleLibrary::emitEnvironmentInfoChanged()
 {
-	Log::log() << "ModuleLibrary: Environment state updated: " << getEnvironmentInfoJson().replace('\n', ' ').toStdString() << std::endl;
+	//Log::log() << "ModuleLibrary: Environment state updated: " << getEnvironmentInfoJson().replace('\n', ' ').toStdString() << std::endl;
 
     emit environmentInfoChanged(getEnvironmentInfo());
 }
