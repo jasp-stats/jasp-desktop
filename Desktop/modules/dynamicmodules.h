@@ -98,7 +98,7 @@ public:
 	bool developersModuleInstallButtonEnabled() const { return _devModInstallButtonOn; }
 	bool dataLoaded()							const { return _dataLoaded;	}
 
-	void insertCommonModuleNames(std::set<std::string> commonModules) { for(const std::string & common : commonModules) _commonModuleNames.insert(common); };
+	void insertCommonModuleNames(std::set<std::string> commonModules);;
 
 	QStringList importPaths() const;
 
