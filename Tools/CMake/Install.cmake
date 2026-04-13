@@ -407,8 +407,11 @@ if(WIN32)
     REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
 
   install(DIRECTORY ${CMAKE_SOURCE_DIR}/Resources/ DESTINATION Resources)
-
-  install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
+  if(PRO)
+    install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon-pro.ico DESTINATION . RENAME icon.ico)
+  else()
+    install(FILES ${CMAKE_SOURCE_DIR}/Desktop/icon.ico DESTINATION .)
+  endif()
 
   install(
     FILES ${CMAKE_SOURCE_DIR}/R-Interface/R/workarounds.R
