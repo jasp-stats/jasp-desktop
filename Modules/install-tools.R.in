@@ -47,11 +47,9 @@ renv::restore(
 
 cat("installing jaspModuleBundleManager\n")
 
-renv::install(
-  file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
-	library  = JASP_MODULE_BUNDLE_MANAGER_LIBRARY,
-	clean    = TRUE,
-	rebuild  = TRUE,
- 	repos    =  "http://cloud.r-project.org",
-	dependencies = FALSE
+install.packages(
+    file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
+    lib   = JASP_MODULE_BUNDLE_MANAGER_LIBRARY,
+    repos = NULL,
+    type  = "source"
 )
