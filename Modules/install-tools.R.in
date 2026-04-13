@@ -51,6 +51,7 @@ renv::install(
   file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
 	library  = JASP_MODULE_BUNDLE_MANAGER_LIBRARY,
 	clean    = TRUE,
+	rebuild  = TRUE,
  	repos    =  "http://cloud.r-project.org",
 	dependencies = FALSE
 )
