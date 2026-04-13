@@ -97,20 +97,23 @@ import JASP
 				]
 			}
         }
-    }
+	}
+	\endqml
+
+	\qml
 	ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
 		name: "extraValues"
 		title: qsTr("Extra values")
-		headerLabels: [qsTr("Alpha", qtStr("Beta")]
+		headerLabels: [qsTr("Alpha"), qtStr("Beta")]
 		minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
 		rowComponent: Row {
 			IntegerField	{ name: "alphaValue" }
 			DoubleValue		{ name: "betaValue" }
 		}
 	}
-
-    \endqml
+	\endqml
 */
+
 ComponentsListBase
 {
 	id						: componentsList

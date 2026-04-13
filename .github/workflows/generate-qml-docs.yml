@@ -25,7 +25,9 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.8.*'
-          modules: 'qttools'
+
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
 
       - name: Generate HTML documentation
         run: qdoc QMLComponents/doc/jasp_qml.qdocconf

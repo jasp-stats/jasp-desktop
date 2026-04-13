@@ -67,18 +67,19 @@ import JASP.Controls
         RadioButton { value: "greater";  label: qsTr("> Test value") }
         RadioButton { value: "less";     label: qsTr("< Test value") }
     }
+	\endqml
 
+	\qml
 	RadioButtonGroup {
 		title: qsTr("Operation")
 		name: "operation"
 		RadioButton {
 			value: "plus"; label: qsTr("Plus"); checked: true
-			DoubleField { label: "Extra Quantity; name: "plusExtraQuantity} // This DoubleField will be eanbled only if Plus option is checked
+			DoubleField { label: "Extra Quantity"; name: "plusExtraQuantity"} // This DoubleField will be eanbled only if Plus option is checked
 		}
 		RadioButton { value: "Multiply";  label: qsTr("Multiply") }
 		RadioButton { value: "Divide";    label: qsTr("Divide") }
 	}
-
     \endqml
 */
 RadioButtonBase

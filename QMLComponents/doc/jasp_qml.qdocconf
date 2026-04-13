@@ -1,12 +1,12 @@
 project = JASP-QML
 description = JASP QML Components Reference
 version = 1.0
-
+jasp_source_dir = ${GITHUB_WORKSPACE}
 # -- Input Settings --
 # Point to the source code containing the /*! comments */
-sourcedirs = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls \
-             c:/JASP-Packages/jasp-desktop/QMLComponents/doc
-headerdirs = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls
+sourcedirs = ${jasp_source_dir}/QMLComponents/components/JASP/Controls \
+                ${jasp_source_dir}/QMLComponents/doc
+headerdirs = ${jasp_source_dir}/QMLComponents/components/JASP/Controls
 imagedirs  = ./images
 
 # Tell qdoc to parse QML files - use correct syntax
@@ -16,19 +16,22 @@ headers.fileextensions = *.h
 # -- Exclude internal-only UI controls --
 # These components are used internally by the JASP framework
 # and should not appear in the module developer documentation.
-excludefiles += c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ALTNavTag.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/CrossButton.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/JASPScrollBar.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/MenuButton.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/HelpButton.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/RoundedButton.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/RectangularButton.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/ScrollMoreIndicator.qml \
-                c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP/Controls/SortMenuButton.qml
+excludefiles += ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ALTNavTag.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/CrossButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/JASPScrollBar.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/MenuButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/HelpButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/RoundedButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/RectangularButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ScrollMoreIndicator.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/SortMenuButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/AllowedTypeIcons.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/AssignButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ControlErrorMessages.qml
 
 # -- QML Module Configuration --
 # Point to the directory containing qmldir (parent of Controls)
-qmlimportpath = c:/JASP-Packages/jasp-desktop/QMLComponents/components/JASP
+qmlimportpath = ${jasp_source_dir}/QMLComponents/components/JASP
 
 # -- Output Settings --
 outputdir  = ./html_out
