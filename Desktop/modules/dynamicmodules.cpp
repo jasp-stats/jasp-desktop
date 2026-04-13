@@ -75,8 +75,10 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 #ifndef PRO
 			false;
 #else
-			newMod->name() == "jaspQualityControl" ||
-			newMod->name() == "jaspAudit";
+			newMod->name() == "jaspQualityControl"		||
+			newMod->name() == "jaspAudit"				||
+			newMod->name() == "jaspDistributions"		||
+			newMod->name() == "jaspAcceptanceSampling"	;
 							  			
 #endif
 	

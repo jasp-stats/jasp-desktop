@@ -50,7 +50,9 @@ void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesT
 	std::set<std::string> commonNames = {
 #ifdef PRO
 		"jaspQualityControl",
-		"jaspAudit"		
+		"jaspAudit",
+		"jaspDistributions",		
+		"jaspAcceptanceSampling"		
 #endif
 	};
 
