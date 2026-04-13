@@ -1,39 +1,17 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 TableView
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # TableView QML Type
 
 A scrollable, editable data table for entering structured values.
-[More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-tableview-members.md)
@@ -42,8 +20,7 @@ A scrollable, editable data table for entering structured values.
 
 Renders a grid of editable cells with column and row headers,
 scrollbars, and optional add/remove column buttons (for GridInput model
-type). Each cell uses a <a href="qml-jasp-controls-formulafield.md"
-translate="no">FormulaField</a> with configurable validators (integer,
+type). Each cell uses a [FormulaField](qml-jasp-controls-formulafield.md) with configurable validators (integer,
 double, string).
 
 ## R Binding

@@ -1,59 +1,34 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 RadioButtonGroup
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # RadioButtonGroup QML Type
 
 A group of mutually exclusive radio button options. [More...](#details)
 
-<div class="table">
 
 |                   |                                                  |
 |-------------------|--------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                       |
-| Inherited By:     | <a href="qml-jasp-controls-bayesfactortype.md" 
-                     translate="no">BayesFactorType</a>                |
+| Inherited By:     | [BayesFactorType](qml-jasp-controls-bayesfactortype.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-radiobuttongroup-members.md)
 
 ## Detailed Description
 
-Contains <a href="qml-jasp-controls-radiobutton.md"
-translate="no">RadioButton</a> children, of which exactly one can be
+Contains [RadioButton](qml-jasp-controls-radiobutton.md) children, of which exactly one can be
 checked at a time. The checked button's name is sent as the option value
 to R.
 
 ## R Binding
 
 - **R Type:** `character` (the name/value of the selected
-  <a href="qml-jasp-controls-radiobutton.md"
-  translate="no">RadioButton</a>)
+  [RadioButton](qml-jasp-controls-radiobutton.md))
 - **Default:** Value of the initially checked
-  <a href="qml-jasp-controls-radiobutton.md"
-  translate="no">RadioButton</a>
+  [RadioButton](qml-jasp-controls-radiobutton.md)
 
 ## Properties
 

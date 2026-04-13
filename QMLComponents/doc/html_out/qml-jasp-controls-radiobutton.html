@@ -57,23 +57,22 @@
 <li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no">RadioButtonGroup {
-    name: &quot;hypothesis&quot;
-    RadioButton { value: &quot;twoSided&quot;; label: qsTr(&quot;≠ Test value&quot;); checked: true }
-    RadioButton { value: &quot;greater&quot;;  label: qsTr(&quot;&gt; Test value&quot;) }
-    RadioButton { value: &quot;less&quot;;     label: qsTr(&quot;&lt; Test value&quot;) }
-}
-
-    RadioButtonGroup {
-            title: qsTr(&quot;Operation&quot;)
-            name: &quot;operation&quot;
-            RadioButton {
-                    value: &quot;plus&quot;; label: qsTr(&quot;Plus&quot;); checked: true
-                    DoubleField { label: &quot;Extra Quantity; name: &quot;plusExtraQuantity} // This DoubleField will be eanbled only if Plus option is checked
-            }
-            RadioButton { value: &quot;Multiply&quot;;  label: qsTr(&quot;Multiply&quot;) }
-            RadioButton { value: &quot;Divide&quot;;    label: qsTr(&quot;Divide&quot;) }
-    }</pre>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;hypothesis&quot;</span>
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;twoSided&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;≠ Test value&quot;</span>); <span class="name">checked</span>: <span class="number">true</span> }
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;greater&quot;</span>;  <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&gt; Test value&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;less&quot;</span>;     <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&lt; Test value&quot;</span>) }
+}</pre>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></span> {
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Operation&quot;</span>)
+        <span class="name">name</span>: <span class="string">&quot;operation&quot;</span>
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> {
+                <span class="name">value</span>: <span class="string">&quot;plus&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Plus&quot;</span>); <span class="name">checked</span>: <span class="number">true</span>
+                <span class="type"><a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a></span> { <span class="name">label</span>: <span class="string">&quot;Extra Quantity&quot;</span>; <span class="name">name</span>: <span class="string">&quot;plusExtraQuantity&quot;</span>} <span class="comment">// This DoubleField will be eanbled only if Plus option is checked</span>
+        }
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;Multiply&quot;</span>;  <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Multiply&quot;</span>) }
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;Divide&quot;</span>;    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Divide&quot;</span>) }
+}</pre>
 <!-- @@@RadioButton -->
 </body>
 </html>

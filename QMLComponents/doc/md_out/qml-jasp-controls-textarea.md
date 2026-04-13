@@ -1,41 +1,19 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 TextArea
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # TextArea QML Type
 
 A multi-line text input with optional line numbers and syntax
 highlighting. [More...](#details)
 
-<div class="table">
 
 |                   |                                               |
 |-------------------|-----------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                    |
-| Inherited By:     | <a href="qml-jasp-controls-jagstextarea.md" 
-                     translate="no">JAGSTextArea</a>                |
+| Inherited By:     | [JAGSTextArea](qml-jasp-controls-jagstextarea.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-textarea-members.md)

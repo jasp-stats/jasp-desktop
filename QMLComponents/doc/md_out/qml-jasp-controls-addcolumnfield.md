@@ -1,39 +1,18 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 AddColumnField
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # AddColumnField QML Type
 
 A text input field that creates a new computed column in the dataset.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
+| Inherits: | [TextField](qml-jasp-controls-textfield.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-addcolumnfield-members.md)
@@ -41,7 +20,7 @@ A text input field that creates a new computed column in the dataset.
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
+[TextField](qml-jasp-controls-textfield.md)
 with inputType set to "addColumn". The entered name becomes the name of
 a new column added to the dataset by the analysis.
 

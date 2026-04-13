@@ -1,45 +1,18 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 BasicThreeButtonTableView
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Signals](#signals)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # BasicThreeButtonTableView QML Type
 
 A table input control with Add, Delete, and Reset buttons.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-chi2testtableview.md"
-translate="no">Chi2TestTableView</a>, <a href="qml-jasp-controls-customcontraststableview.md"
-translate="no">CustomContrastsTableView</a>, <a href="qml-jasp-controls-jagstableview.md"
-translate="no">JagsTableView</a>, and <a href="qml-jasp-controls-simpletableview.md"
-translate="no">SimpleTableView</a> |
+| Inherited By: | [Chi2TestTableView](qml-jasp-controls-chi2testtableview.md), [CustomContrastsTableView](qml-jasp-controls-customcontraststableview.md), [JagsTableView](qml-jasp-controls-jagstableview.md), and [SimpleTableView](qml-jasp-controls-simpletableview.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-basicthreebuttontableview-members.md)
@@ -47,7 +20,7 @@ translate="no">SimpleTableView</a> |
 ## Detailed Description
 
 Wraps a
-<a href="qml-jasp-controls-tableview.md" translate="no">TableView</a>
+[TableView](qml-jasp-controls-tableview.md)
 with three action buttons for managing rows. Used for entering
 structured data such as matrices or custom data tables.
 
@@ -95,7 +68,7 @@ structured data such as matrices or custom data tables.
 - **deleteClicked()** - Emitted when the Delete button is clicked.
 - **resetClicked()** - Emitted when the Reset button is clicked.
 - **tableViewCompleted()** - Emitted when the internal
-  <a href="qml-jasp-controls-tableview.md" translate="no">TableView</a>
+  [TableView](qml-jasp-controls-tableview.md)
   has completed initialization.
 
 ## Example

@@ -1,39 +1,18 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 Group
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # Group QML Type
 
 A layout container that groups related controls together.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-setseed.md" translate="no">SetSeed</a> |
+| Inherited By: | [SetSeed](qml-jasp-controls-setseed.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-group-members.md)
@@ -42,12 +21,10 @@ A layout container that groups related controls together.
 
 Provides automatic label alignment and optional title.
 
-<div class="admonition note">
 
 **Note:** Group is a layout-only control. It does not bind to R options.
 Child controls within the Group handle their own bindings independently.
 
-</div>
 
 ## Properties
 
@@ -59,9 +36,9 @@ Child controls within the Group handle their own bindings independently.
   10.
 - **indent** (bool) - Add left indentation to the group. Default: false.
 - **alignFields** (bool) - Auto-align input fields (e.g.,
-  <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
+  [TextField](qml-jasp-controls-textfield.md)
   and
-  <a href="qml-jasp-controls-dropdown.md" translate="no">DropDown</a>
+  [DropDown](qml-jasp-controls-dropdown.md)
   labels). Default: true.
 
 ## Inherited Properties

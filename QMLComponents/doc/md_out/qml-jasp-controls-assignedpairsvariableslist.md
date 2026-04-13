@@ -1,50 +1,25 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 AssignedPairsVariablesList
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Inherited Properties from
-  VariablesList](#inherited-properties-from-variableslist)
-- [Other Inherited Properties](#other-inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # AssignedPairsVariablesList QML Type
 
 A variable list preset for paired variable assignment.
-[More...](#details)
 
-<div class="table">
 
 |                   |                                                |
 |-------------------|------------------------------------------------|
 | Import Statement: | `import JASP.Controls 1.0`                     |
-| Inherits:         | <a href="qml-jasp-controls-variableslist.md" 
-                     translate="no">VariablesList</a>                |
+| Inherits:         | [VariablesList](qml-jasp-controls-variableslist.md)                |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-assignedpairsvariableslist-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-variableslist.md"
-translate="no">VariablesList</a> with a two-column layout where
+Extends [VariablesList](qml-jasp-controls-variableslist.md) with a two-column layout where
 variables are assigned in pairs. Uses drop-replace mode so each slot
 accepts exactly one variable.
 

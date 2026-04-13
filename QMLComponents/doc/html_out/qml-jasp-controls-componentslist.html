@@ -75,33 +75,33 @@
 <li><b>removeItem(int index)</b> - Emitted when a row should be removed.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="qml" translate="no">ComponentsList {
-    name: &quot;contrasts&quot;
-    title: qsTr(&quot;Contrasts&quot;)
-    source: &quot;fixedFactors&quot;
-            headerLabels: [qsTr(&quot;Contrast&quot;)]
-            rowComponent: Row {
-                    Text { text: rowValue } // rowValue contains the name of the variable
-                    DropDown {
-                            name: &quot;contrast&quot;
-                            source: [
-                                    { label: qsTr(&quot;None&quot;),       value: &quot;none&quot;       },
-                                    { label: qsTr(&quot;Deviation&quot;),  value: &quot;deviation&quot;  },
-                                    { label: qsTr(&quot;Helmert&quot;),    value: &quot;helmert&quot;    }
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-componentslist.html" translate="no">ComponentsList</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;contrasts&quot;</span>
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Contrasts&quot;</span>)
+    <span class="name">source</span>: <span class="string">&quot;fixedFactors&quot;</span>
+            <span class="name">headerLabels</span>: [<span class="name">qsTr</span>(<span class="string">&quot;Contrast&quot;</span>)]
+            <span class="name">rowComponent</span>: <span class="name">Row</span> {
+                    <span class="type"><a href="qml-jasp-controls-text.html" translate="no">Text</a></span> { <span class="name">text</span>: <span class="name">rowValue</span> } <span class="comment">// rowValue contains the name of the variable</span>
+                    <span class="type"><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></span> {
+                            <span class="name">name</span>: <span class="string">&quot;contrast&quot;</span>
+                            <span class="name">source</span>: [
+                                    { label: <span class="name">qsTr</span>(<span class="string">&quot;None&quot;</span>),       value: <span class="string">&quot;none&quot;</span>       },
+                                    { label: <span class="name">qsTr</span>(<span class="string">&quot;Deviation&quot;</span>),  value: <span class="string">&quot;deviation&quot;</span>  },
+                                    { label: <span class="name">qsTr</span>(<span class="string">&quot;Helmert&quot;</span>),    value: <span class="string">&quot;helmert&quot;</span>    }
                             ]
                     }
     }
-}
-    ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
-            name: &quot;extraValues&quot;
-            title: qsTr(&quot;Extra values&quot;)
-            headerLabels: [qsTr(&quot;Alpha&quot;, qtStr(&quot;Beta&quot;)]
-            minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
-            rowComponent: Row {
-                    IntegerField    { name: &quot;alphaValue&quot; }
-                    DoubleValue             { name: &quot;betaValue&quot; }
-            }
     }</pre>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-componentslist.html" translate="no">ComponentsList</a></span> { <span class="comment">// Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows</span>
+        <span class="name">name</span>: <span class="string">&quot;extraValues&quot;</span>
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Extra values&quot;</span>)
+        <span class="name">headerLabels</span>: [<span class="name">qsTr</span>(<span class="string">&quot;Alpha&quot;</span>), <span class="name">qtStr</span>(<span class="string">&quot;Beta&quot;</span>)]
+        <span class="name">minimumItems</span>: <span class="number">2</span> <span class="comment">// 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row</span>
+        <span class="name">rowComponent</span>: <span class="name">Row</span> {
+                <span class="type"><a href="qml-jasp-controls-integerfield.html" translate="no">IntegerField</a></span>    { <span class="name">name</span>: <span class="string">&quot;alphaValue&quot;</span> }
+                <span class="type">DoubleValue</span>             { <span class="name">name</span>: <span class="string">&quot;betaValue&quot;</span> }
+        }
+}</pre>
 <!-- @@@ComponentsList -->
 </body>
 </html>

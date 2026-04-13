@@ -1,41 +1,18 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 FormulaField
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties from
-  TextField](#inherited-properties-from-textfield)
-- [Other Inherited Properties](#other-inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # FormulaField QML Type
 
 A text field preset for entering R-style formulas. [More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
+| Inherits: | [TextField](qml-jasp-controls-textfield.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-formulafield-members.md)
@@ -43,7 +20,7 @@ A text field preset for entering R-style formulas. [More...](#details)
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
+[TextField](qml-jasp-controls-textfield.md)
 with the "formula" input type. Formulas are evaluated by the R engine
 and validated against configurable min/max bounds. The computed numeric
 result is accessible via realValue.

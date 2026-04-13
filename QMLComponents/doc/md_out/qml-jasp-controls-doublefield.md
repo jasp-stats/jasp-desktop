@@ -1,44 +1,19 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 DoubleField
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties from
-  TextField](#inherited-properties-from-textfield)
-- [Other Inherited Properties](#other-inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # DoubleField QML Type
 
 A text field preset for entering numeric (double) values.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-textfield.md" translate="no">TextField</a> |
-| Inherited By: | <a href="qml-jasp-controls-percentfield.md"
-translate="no">PercentField</a> |
+| Inherits: | [TextField](qml-jasp-controls-textfield.md) |
+| Inherited By: | [PercentField](qml-jasp-controls-percentfield.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-doublefield-members.md)
@@ -46,7 +21,7 @@ translate="no">PercentField</a> |
 ## Detailed Description
 
 Extends
-<a href="qml-jasp-controls-textfield.md" translate="no">TextField</a>
+[TextField](qml-jasp-controls-textfield.md)
 with the "number" input type and a built-in JASPDoubleValidator.
 Supports configurable minimum, maximum, decimal precision, and sign
 constraints.

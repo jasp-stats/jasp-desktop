@@ -1,29 +1,17 @@
-<div class="sidebar">
 
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # JASP.Controls QML Module
 
-<div id="details" class="descr">
 
 This module contains all the visual elements used to build JASP
 analyses.
 
 The complete list of types is automatically generated below.
 
-</div>
-
-<div class="table">
 
 |  |  |
 |----|----|
 | [AddColumnField](qml-jasp-controls-addcolumnfield.md) | A text input field that creates a new computed column in the dataset |
-| [AllowedTypeIcons](qml-jasp-controls-allowedtypeicons.md) | Internal component that displays variable type filter icons |
-| [AssignButton](qml-jasp-controls-assignbutton.md) | Internal arrow button for moving variables between source and target lists |
 | [AssignedPairsVariablesList](qml-jasp-controls-assignedpairsvariableslist.md) | A variable list preset for paired variable assignment |
 | [AssignedRepeatedMeasuresCells](qml-jasp-controls-assignedrepeatedmeasurescells.md) | A variable list preset for assigning variables to repeated measures cells |
 | [AssignedVariablesList](qml-jasp-controls-assignedvariableslist.md) | A variable list preset for assigned variable selection |
@@ -77,4 +65,3 @@ The complete list of types is automatically generated below.
 | [VariablesForm](qml-jasp-controls-variablesform.md) | A two-column layout with available variables on the left and assigned lists on the right |
 | [VariablesList](qml-jasp-controls-variableslist.md) | Primary variable selection control in JASP |
 
-</div>

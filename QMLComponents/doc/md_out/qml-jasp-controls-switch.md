@@ -1,38 +1,17 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 Switch
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # Switch QML Type
 
 A toggle switch control. [More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-switch-members.md)
@@ -41,7 +20,7 @@ A toggle switch control. [More...](#details)
 
 A sliding toggle indicator that can be used instead of a checkbox. Binds
 a boolean value to R, similar to
-<a href="qml-jasp-controls-checkbox.md" translate="no">CheckBox</a>
+[CheckBox](qml-jasp-controls-checkbox.md)
 but with a different visual appearance.
 
 ## R Binding

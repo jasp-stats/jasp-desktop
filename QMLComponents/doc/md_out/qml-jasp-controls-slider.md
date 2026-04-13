@@ -1,38 +1,17 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 Slider
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # Slider QML Type
 
 A slider with a linked numeric text field. [More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-slider-members.md)
@@ -40,8 +19,7 @@ A slider with a linked numeric text field. [More...](#details)
 ## Detailed Description
 
 Backed by SliderBase. Displays a draggable slider alongside a
-<a href="qml-jasp-controls-doublefield.md"
-translate="no">DoubleField</a> that stays synchronized. Supports
+[DoubleField](qml-jasp-controls-doublefield.md) that stays synchronized. Supports
 vertical and horizontal orientations.
 
 ## R Binding

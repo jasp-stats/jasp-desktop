@@ -1,52 +1,26 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 PercentField
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties from
-  DoubleField](#inherited-properties-from-doublefield)
-- [Other Inherited Properties](#other-inherited-properties)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # PercentField QML Type
 
 A numeric field preset for entering percentage values (0–100).
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherits: | <a href="qml-jasp-controls-doublefield.md"
-translate="no">DoubleField</a> |
-| Inherited By: | <a href="qml-jasp-controls-cifield.md" translate="no">CIField</a> |
+| Inherits: | [DoubleField](qml-jasp-controls-doublefield.md) |
+| Inherited By: | [CIField](qml-jasp-controls-cifield.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-percentfield-members.md)
 
 ## Detailed Description
 
-Extends <a href="qml-jasp-controls-doublefield.md"
-translate="no">DoubleField</a> with the "percent" input type, 0 decimal
+Extends [DoubleField](qml-jasp-controls-doublefield.md) with the "percent" input type, 0 decimal
 places, and a "%" suffix label. Min is 0, max is 100.
 
 ## R Binding

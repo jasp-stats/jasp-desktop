@@ -1,40 +1,17 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 ComponentsList
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [R Binding](#r-binding)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Signals](#signals)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # ComponentsList QML Type
 
 A dynamic list that repeats a user-defined component for each row.
-[More...](#details)
 
-<div class="table">
 
 |                   |                            |
 |-------------------|----------------------------|
 | Import Statement: | `import JASP.Controls 1.0` |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-componentslist-members.md)
@@ -61,7 +38,7 @@ controls are bound to separate R list entries.
   another controls.
 - **rSource** (string) - R source for populating rows. Default: "".
 - **rowComponent** (Component) - One QML component (use Row or
-  <a href="qml-jasp-controls-rowlayout.md" translate="no">RowLayout</a>
+  [RowLayout](qml-jasp-controls-rowlayout.md)
   if more items are needed), that will be repeated for each row. In each
   row, you can use the rowValue, rowLabel, rowType or rowIndex that
   gives you resp. the value, label, type (if it is a variable) and index
@@ -127,15 +104,18 @@ ComponentsList {
                             ]
                     }
     }
-}
-    ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
-            name: "extraValues"
-            title: qsTr("Extra values")
-            headerLabels: [qsTr("Alpha", qtStr("Beta")]
-            minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
-            rowComponent: Row {
-                    IntegerField    { name: "alphaValue" }
-                    DoubleValue             { name: "betaValue" }
-            }
     }
+```
+
+``` qml
+ComponentsList { // Here no source is given, so addItemManually is true, and the user will see a '+' button to add more rows
+        name: "extraValues"
+        title: qsTr("Extra values")
+        headerLabels: [qsTr("Alpha"), qtStr("Beta")]
+        minimumItems: 2 // 2 rows will be uatomatically initialized. If more rows are added, a delete icon will be added beside each new row, so that the user can delete this row
+        rowComponent: Row {
+                IntegerField    { name: "alphaValue" }
+                DoubleValue             { name: "betaValue" }
+        }
+}
 ```

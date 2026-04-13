@@ -1,59 +1,27 @@
-<a href="jasp-controls-qmlmodule.md" translate="no">JASP.Controls</a>
+[JASP.Controls](jasp-controls-qmlmodule.md)
 
 TextField
 
-<div class="sidebar">
-
-<div class="toc">
-
-### Contents
-
-- [Detailed Description](#details)
-- [Properties](#properties)
-- [Inherited Properties](#inherited-properties)
-- [Signals](#signals)
-- [Example](#example)
-
-</div>
-
-<div id="sidebar-content" class="sidebar-content">
-
-</div>
-
-</div>
 
 # TextField QML Type
 
 A single-line text input control for entering strings.
-[More...](#details)
 
-<div class="table">
 
 |  |  |
 |----|----|
 | Import Statement: | `import JASP.Controls 1.0` |
-| Inherited By: | <a href="qml-jasp-controls-addcolumnfield.md"
-translate="no">AddColumnField</a>, <a href="qml-jasp-controls-checkcolumnisfreeorminefield.md"
-translate="no">CheckColumnIsFreeOrMineField</a>, <a href="qml-jasp-controls-computedcolumnfield.md"
-translate="no">ComputedColumnField</a>, <a href="qml-jasp-controls-doublefield.md"
-translate="no">DoubleField</a>, <a href="qml-jasp-controls-fileselector.md"
-translate="no">FileSelector</a>, <a href="qml-jasp-controls-formulafield.md"
-translate="no">FormulaField</a>, and <a href="qml-jasp-controls-integerfield.md"
-translate="no">IntegerField</a> |
+| Inherited By: | [AddColumnField](qml-jasp-controls-addcolumnfield.md), [CheckColumnIsFreeOrMineField](qml-jasp-controls-checkcolumnisfreeorminefield.md), [ComputedColumnField](qml-jasp-controls-computedcolumnfield.md), [DoubleField](qml-jasp-controls-doublefield.md), [FileSelector](qml-jasp-controls-fileselector.md), [FormulaField](qml-jasp-controls-formulafield.md), and [IntegerField](qml-jasp-controls-integerfield.md) |
 
-</div>
 
 - [List of all members, including inherited
   members](qml-jasp-controls-textfield-members.md)
 
 ## Detailed Description
 
-For numeric input, use <a href="qml-jasp-controls-integerfield.md"
-translate="no">IntegerField</a>,
-<a href="qml-jasp-controls-doublefield.md"
-translate="no">DoubleField</a>, or
-<a href="qml-jasp-controls-percentfield.md"
-translate="no">PercentField</a>.
+For numeric input, use [IntegerField](qml-jasp-controls-integerfield.md),
+[DoubleField](qml-jasp-controls-doublefield.md), or
+[PercentField](qml-jasp-controls-percentfield.md).
 
 - **R Type:** `character`
 - **Default:** "" or value of defaultValue property

@@ -10,12 +10,6 @@
                     <section ref="qml-jasp-controls-addcolumnfield.html" title="AddColumnField Type Reference">
                         <section ref="qml-jasp-controls-addcolumnfield-members.html" title="List of all members"/>
                     </section>
-                    <section ref="qml-jasp-controls-allowedtypeicons.html" title="AllowedTypeIcons Type Reference">
-                        <section ref="qml-jasp-controls-allowedtypeicons-members.html" title="List of all members"/>
-                    </section>
-                    <section ref="qml-jasp-controls-assignbutton.html" title="AssignButton Type Reference">
-                        <section ref="qml-jasp-controls-assignbutton-members.html" title="List of all members"/>
-                    </section>
                     <section ref="qml-jasp-controls-assignedpairsvariableslist.html" title="AssignedPairsVariablesList Type Reference">
                         <section ref="qml-jasp-controls-assignedpairsvariableslist-members.html" title="List of all members"/>
                     </section>
@@ -181,10 +175,6 @@
         <keywords>
             <keyword name="AddColumnField" id="QML.AddColumnField" ref="qml-jasp-controls-addcolumnfield.html"/>
             <keyword name="AddColumnField" id="QML.JASP.Controls1.AddColumnField" ref="qml-jasp-controls-addcolumnfield.html"/>
-            <keyword name="AllowedTypeIcons" id="QML.AllowedTypeIcons" ref="qml-jasp-controls-allowedtypeicons.html"/>
-            <keyword name="AllowedTypeIcons" id="QML.JASP.Controls1.AllowedTypeIcons" ref="qml-jasp-controls-allowedtypeicons.html"/>
-            <keyword name="AssignButton" id="QML.AssignButton" ref="qml-jasp-controls-assignbutton.html"/>
-            <keyword name="AssignButton" id="QML.JASP.Controls1.AssignButton" ref="qml-jasp-controls-assignbutton.html"/>
             <keyword name="AssignedPairsVariablesList" id="QML.AssignedPairsVariablesList" ref="qml-jasp-controls-assignedpairsvariableslist.html"/>
             <keyword name="AssignedPairsVariablesList" id="QML.JASP.Controls1.AssignedPairsVariablesList" ref="qml-jasp-controls-assignedpairsvariableslist.html"/>
             <keyword name="AssignedRepeatedMeasuresCells" id="QML.AssignedRepeatedMeasuresCells" ref="qml-jasp-controls-assignedrepeatedmeasurescells.html"/>
@@ -298,10 +288,6 @@
             <file>jasp-controls-qmlmodule.html</file>
             <file>qml-jasp-controls-addcolumnfield-members.html</file>
             <file>qml-jasp-controls-addcolumnfield.html</file>
-            <file>qml-jasp-controls-allowedtypeicons-members.html</file>
-            <file>qml-jasp-controls-allowedtypeicons.html</file>
-            <file>qml-jasp-controls-assignbutton-members.html</file>
-            <file>qml-jasp-controls-assignbutton.html</file>
             <file>qml-jasp-controls-assignedpairsvariableslist-members.html</file>
             <file>qml-jasp-controls-assignedpairsvariableslist.html</file>
             <file>qml-jasp-controls-assignedrepeatedmeasurescells-members.html</file>
