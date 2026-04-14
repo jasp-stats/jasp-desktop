@@ -67,7 +67,7 @@ project(
 #needed for R-Interface and QMLComponents for them to build stuff properly when *inside* JASP
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP     TRUE)
-set(PRO               TRUE                                  CACHE BOOL "Are we building the pro-version?")
+set(PRO               TRUE       CACHE BOOL   "Are we building the pro-version?")
 set(PRO_COMPANY_NAME  "TESTING"  CACHE STRING "What company is this for?")
 
 
@@ -84,7 +84,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(INTERACTIVE_PLOTS OFF)
+set(INTERACTIVE_PLOTS ON)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE
