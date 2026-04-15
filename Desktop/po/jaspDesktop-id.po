@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-14 16:16+0000\n"
+"PO-Revision-Date: 2026-04-15 22:17+0000\n"
 "Last-Translator: Zahid Rizky Fakhri <zahidrizkyfakhri@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/id/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 "X-Language: id\n"
 "X-Qt-Contexts: true\n"
 
@@ -220,15 +220,13 @@ msgctxt "ComputeColumnWindow|"
 msgid "product of values"
 msgstr "produk nilai"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "mengembalikan nilai minimum"
+msgstr "menghasilkan minimum nilai"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "mengembalikan nilai maksimum"
+msgstr "menghasilkan maksimum nilai"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
@@ -282,19 +280,17 @@ msgstr ""
 "Transformasi-Z Fisher inversi (yaitu, tangen hiperbolik) untuk mengubah "
 "bilangan riil menjadi bilangan antara -1 dan 1"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "pisahkan data Anda pada level numBreaks"
+msgstr "bagikan data Anda di tingkat numBreaks"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr "ganti setiap data hilang (NA) pada kolom dengan nilai pada replaceWith"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "pernyataan jika-lainnya"
+msgstr "pernyataan if-else"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -541,7 +537,6 @@ msgctxt "Computer|"
 msgid "Recent Folders"
 msgstr "Folder Terbaru"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Browse"
 msgstr "Telusuri"
@@ -856,6 +851,9 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Jika dinonaktifkan itu tidak akan menggunakan dialog berkas sistem operasi "
+"Anda tetapi itu dibuat oleh Qt. Ini mungkin mengatasi beberapa masalah di "
+"Windows di mana JASP mengalami kerusakan saat \"Telusuri\" ditekan."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
@@ -1049,22 +1047,18 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr "nilai absolut"
+msgstr "Nilai absolut"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr "simpangan baku"
+msgstr "deviasi standar"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
 msgstr "varians"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "penjumlahan"
@@ -1073,39 +1067,33 @@ msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr ""
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr "mengembalikan nilai minimum"
+msgstr "menghasilkan minimum nilai"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr "mengembalikan nilai maksimum"
+msgstr "menghasilkan maksimum nilai"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "rerata"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr "bulatkan y ke n desimal"
+msgstr "membulatkan y ke desimal n"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr ""
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
 msgstr "median"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr "pernyataan jika-lainnya"
+msgstr "pernyataan if-else"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1143,12 +1131,10 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "Buka Dokumentasi"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
 msgstr "Sembunyikan saringan"
@@ -1181,7 +1167,6 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr ""
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Atur ulang"
@@ -1194,15 +1179,13 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr ""
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
 msgstr "Ubah ukuran data/hasil"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr "Drag untuk menampilkan data"
+msgstr "Seret untuk menampilkan data"
 
 msgctxt "MainPage|"
 msgid "Results"
@@ -1310,17 +1293,14 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr ""
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr "Tambah Kolom"
+msgstr "Tambahkan Kolom"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "Hapus Kolom"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Atur ulang"
@@ -1728,7 +1708,6 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr ""
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
 msgstr "Simpan"
@@ -2076,7 +2055,6 @@ msgctxt "ActionButtons|"
 msgid "Open"
 msgstr ""
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
 msgstr "Simpan"
@@ -2097,7 +2075,6 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr ""
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
 msgstr "Tutup"
@@ -2247,15 +2224,13 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr ""
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
 msgstr "OSF"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr "Perpustakaan Data"
+msgstr "Pustaka Data"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -2695,7 +2670,6 @@ msgctxt "TableView|"
 msgid "Add to the right"
 msgstr ""
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "Hapus"
@@ -2830,7 +2804,6 @@ msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "Buka Dokumentasi"
@@ -2882,7 +2855,6 @@ msgctxt "Database|"
 msgid "Name"
 msgstr ""
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Browse"
 msgstr "Telusuri"
@@ -2895,7 +2867,6 @@ msgctxt "Database|"
 msgid "Password"
 msgstr ""
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
 msgstr "Ingat saya"
@@ -3106,15 +3077,13 @@ msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr ""
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
-msgstr "Sembunyikan opsi input"
+msgstr "Sembunyikan opsi masukan"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
-msgstr "Tampilkan opsi input"
+msgstr "Tampilkan opsi masukan"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3367,7 +3336,6 @@ msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr ""
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "Nilai Baru"
@@ -3377,10 +3345,9 @@ msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr "Opsi lain-lain"
+msgstr "Opsi lainnya"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
@@ -3534,7 +3501,6 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr ""
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "Pilih Semua"
@@ -3937,12 +3903,10 @@ msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
 msgstr ""
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "Tentang JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "Tutup"
@@ -4076,7 +4040,6 @@ msgctxt "QObject|"
 msgid "Column added by analysis"
 msgstr ""
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Skala"
@@ -4339,10 +4302,9 @@ msgctxt "DataTableView|"
 msgid "Insert R column after"
 msgstr ""
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr "Klik di sini untuk mengubah tipe kolom"
+msgstr "Klik di sini untuk mengubah jenis kolom"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
@@ -4670,7 +4632,6 @@ msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr ""
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "Skala"
@@ -5583,7 +5544,6 @@ msgctxt "PlotEditor::References|"
 msgid "Type"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditor::References|"
 msgid "Text"
 msgstr "Teks"
