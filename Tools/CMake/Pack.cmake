@@ -46,10 +46,16 @@ set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 if(WIN32)
   set(CPACK_GENERATOR "WIX")
 
-  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
+  if(PRO)
+    set(ICON "icon-pro.ico")
+  else()
+    set(ICON "icon.ico")
+  endif()
+    
+  set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Desktop/${ICON}")
+  set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/${ICON}")
 
   set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/Tools/windows/jaspLicense.rtf")
-  set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/Desktop/icon.ico")
   set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
   set(CPACK_WIX_UI_BANNER "${CMAKE_SOURCE_DIR}/Tools/windows/installerBanner.png")
   set(CPACK_WIX_UI_DIALOG
