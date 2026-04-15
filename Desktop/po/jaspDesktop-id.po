@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-15 22:17+0000\n"
+"PO-Revision-Date: 2026-04-16 07:37+0000\n"
 "Last-Translator: Zahid Rizky Fakhri <zahidrizkyfakhri@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/id/>\n"
@@ -861,191 +861,193 @@ msgstr "Berkas Terbaru"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Kode kolom terhitung dihapus"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Kode kolom terhitung diterapkan"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "Silakan masukkan semua argumen - lihat kolom ditandai dengan merah."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "Hanya satu rumus per kolom terhitung diizinkan."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "Selamat datang di konstruktor kolom terhitung seret dan lepas!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"Tempatkan cuplikan yang tidak diinginkan di sini; klik dua kali untuk "
+"menghapus seluruh papan"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "Penjumlahan"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Pengurangan"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Perkalian"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "Pembagian"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Pangkat (2^3 menghasilkan 8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "Akar kuadrat"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Modulo: menghasilkan sisa pembagian. 3%2 menghasilkan 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "menghasilkan logika dan dapat berupa akar dari rumus filter"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Persamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Pertidaksamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Kurang dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Kurang dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lebih dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lebih dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "Dan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Atau: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Pisah: menerapkan filter secara terpisah ke setiap subgrup"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "bukan: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "Penjumlahan"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Pengurangan"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Perkalian"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "Pembagian"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Pangkat (2^3 menghasilkan 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "Akar kuadrat"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Modulo: menghasilkan sisa pembagian. 3%2 menghasilkan 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "menghasilkan logika"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Persamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Pertidaksamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Kurang dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Kurang dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lebih dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lebih dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "Dan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Atau: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Pisah: menerapkan filter secara terpisah ke setiap subgrup"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "Bukan: %1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
@@ -1065,7 +1067,7 @@ msgstr "penjumlahan"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "produk nilai"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
@@ -1085,7 +1087,7 @@ msgstr "membulatkan y ke desimal n"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "menghasilkan jumlah elemen dalam y"
 
 msgctxt "FilterWindow|"
 msgid "median"
@@ -1097,15 +1099,17 @@ msgstr "pernyataan if-else"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "Filter Diubah"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
 msgstr ""
+"Ada perubahan yang tidak diterapkan ke filter Anda; apa yang Anda ingin "
+"lakukan?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "Alihkan ke filter R"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
