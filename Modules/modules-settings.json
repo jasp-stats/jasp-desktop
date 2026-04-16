@@ -1,6 +1,10 @@
 {
     "common" : [
         "jaspDescriptives",
+		"jaspQualityControl",
+		"jaspAudit",
+		"jaspAcceptanceSampling",
+		"jaspDistributions",
 		"jaspTTests",
 		"jaspAnova",
 		"jaspMixedModels",
@@ -9,15 +13,12 @@
 		"jaspFactor"
     ],
     "extra" : [
-		"jaspAcceptanceSampling",
-		"jaspAudit",
 		"jaspBain",
 		"jaspBFF",
 		"jaspBfpack",
 		"jaspBsts",
 		"jaspCircular",
 		"jaspCochrane",
-		"jaspDistributions",
 		"jaspEquivalenceTTests",
 		"jaspEsci",
 		"jaspJags",
@@ -30,7 +31,6 @@
 		"jaspPredictiveAnalytics",
 		"jaspProcess",
 		"jaspProphet",
-		"jaspQualityControl",
 		"jaspReliability",
 		"jaspRobustTTests",
 		"jaspSem",
