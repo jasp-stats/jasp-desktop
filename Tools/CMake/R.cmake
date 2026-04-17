@@ -258,12 +258,11 @@ if(APPLE AND NOT CUSTOM_R_PATH STREQUAL "" AND EXISTS "${CUSTOM_R_PATH}")
   set(R_EXECUTABLE    "${R_HOME_PATH}/bin/R")
   set(R_INCLUDE_PATH  "${R_HOME_PATH}/include")
 
-  # Derive R_FRAMEWORK_PATH from R_HOME (which is .../R.framework/Versions/X/Resources)
-  # We need the directory *containing* R.framework for find_library.
-  get_filename_component(_R_FW_RESOURCES "${R_HOME_PATH}" DIRECTORY)   # .../Versions/X
-  get_filename_component(_R_FW_VERSION   "${_R_FW_RESOURCES}" DIRECTORY) # .../Versions
-  get_filename_component(_R_FW_DIR       "${_R_FW_VERSION}" DIRECTORY)   # .../R.framework
-  get_filename_component(R_FRAMEWORK_PATH "${_R_FW_DIR}" DIRECTORY)      # .../Frameworks
+  # Derive R_FRAMEWORK_PATH from R_HOME.
+  # R RHOME may return either the symlinked path (.../R.framework/Resources)
+  # or the versioned path (.../R.framework/Versions/X/Resources).
+  # Strip everything from /R.framework/ onward to get the parent directory.
+  string(REGEX REPLACE "/R\\.framework/.*$" "" R_FRAMEWORK_PATH "${R_HOME_PATH}")
 
   message(STATUS "[R] Using CUSTOM_R_PATH on macOS: ${CUSTOM_R_PATH}")
   message(STATUS "[R] Derived R_FRAMEWORK_PATH: ${R_FRAMEWORK_PATH}")
