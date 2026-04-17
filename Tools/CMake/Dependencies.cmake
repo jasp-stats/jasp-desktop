@@ -22,7 +22,7 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Dependencies)
 
 add_custom_target(Dependencies)
 
-if(APPLE)
+if(APPLE AND NOT USE_QT_STATIC_LIBS)
 
   add_dependencies(Dependencies readstat)
 

@@ -38,21 +38,20 @@ if(NOT WIN32)
   find_package(PkgConfig REQUIRED)
 endif()
 
-find_package(ZLIB 1.2 REQUIRED)
-find_package(Iconv 1.16 REQUIRED)
-find_package(SQLite3 3.37.0 REQUIRED)
+# Determine early whether we are using a static Qt build.
+# Static Qt builds only need a subset of third-party libraries
+# (the SyntaxInterface / library-only path).
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
-#if(USE_CONAN)
-#  find_package(jsoncpp 1.9 REQUIRED)
-#endif()
-
-find_package(OpenSSL 1.1.1 COMPONENTS SSL Crypto)
-if(NOT OpenSSL_FOUND)
-  message(
-    FATAL_ERROR
-      "CMake cannot find the OpenSSL. Set the variable 'OPENSSL_ROOT_DIR' to your OpenSSL installation directory."
-  )
+get_target_property(QT_TARGET_TYPE Qt6::Core TYPE)
+set(USE_QT_STATIC_LIBS OFF)
+message(STATUS "QT_TARGET_TYPE: ${QT_TARGET_TYPE}")
+if(QT_TARGET_TYPE STREQUAL STATIC_LIBRARY)
+  set(USE_QT_STATIC_LIBS ON)
 endif()
+
+# Libraries needed by the SyntaxInterface chain (Common, CommonData, QMLComponents)
+find_package(SQLite3 3.37.0 REQUIRED)
 
 find_package(LibArchive 3.5)
 if((NOT LibArchive_FOUND) AND (NOT WIN32))
@@ -69,13 +68,25 @@ endif()
 
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.78)
-find_package(Qt6 REQUIRED COMPONENTS Core)
 
-get_target_property(QT_TARGET_TYPE Qt6::Core TYPE)
-set(USE_QT_STATIC_LIBS OFF)
-message(STATUS "QT_TARGET_TYPE: ${QT_TARGET_TYPE}")
-if(QT_TARGET_TYPE STREQUAL STATIC_LIBRARY)
-  set(USE_QT_STATIC_LIBS ON)
+# Libraries only needed for the full Desktop/Engine build
+if(NOT USE_QT_STATIC_LIBS)
+
+  find_package(ZLIB 1.2 REQUIRED)
+  find_package(Iconv 1.16 REQUIRED)
+
+  #if(USE_CONAN)
+  #  find_package(jsoncpp 1.9 REQUIRED)
+  #endif()
+
+  find_package(OpenSSL 1.1.1 COMPONENTS SSL Crypto)
+  if(NOT OpenSSL_FOUND)
+    message(
+      FATAL_ERROR
+        "CMake cannot find the OpenSSL. Set the variable 'OPENSSL_ROOT_DIR' to your OpenSSL installation directory."
+    )
+  endif()
+
 endif()
 
 if(NOT FLATPAK_USED)
@@ -160,6 +171,8 @@ if(LINUX)
     message(CHECK_FAIL "not found")
     message(FATAL_ERROR "librt is required for building libCommon on Linux")
   endif()
+
+  if(NOT USE_QT_STATIC_LIBS)
 
   if(FLATPAK_USED)
     set(LIBREADSTAT_INCLUDE_DIRS /app/include)
@@ -249,9 +262,11 @@ if(LINUX)
   find_package(PkgConfig)
   #pkg_check_modules(_PKGCONFIG_LIB_JSONCPP REQUIRED jsoncpp>=1.9)
 
+  endif() # NOT USE_QT_STATIC_LIBS
+
 endif()
 
-if(APPLE)
+if(APPLE AND NOT USE_QT_STATIC_LIBS)
 
   message(CHECK_START "Looking for 'libbrotlicommon'")
 
@@ -263,7 +278,7 @@ if(APPLE)
 
 endif()
 
-if(WIN32)
+if(WIN32 AND NOT USE_QT_STATIC_LIBS)
 
   include(FindRToolsDLLPath)
   

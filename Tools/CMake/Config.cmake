@@ -47,13 +47,20 @@ option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
-option(USE_CONAN "Whether to use CONAN package manager" OFF)
+option(REQUIRE_GITHUB_PAT "Require GITHUB_PAT environment variable (disable for library-only builds)" ON)
+
+# Conan is needed on macOS and Windows to provide third-party libraries;
+# on Linux they come from the system package manager instead.
+if(APPLE OR WIN32)
+  set(_CONAN_DEFAULT ON)
+else()
+  set(_CONAN_DEFAULT OFF)
+endif()
+option(USE_CONAN "Whether to use CONAN package manager" ${_CONAN_DEFAULT})
 
 # ------------
 
 if(APPLE)
-
-  set(USE_CONAN ON)
 
   option(SIGN_AT_BUILD_TIME
          "Whether to sign every library during the configuration and build" ON)
@@ -134,7 +141,6 @@ endif()
 
 if(WIN32)
 
-  set(USE_CONAN ON)
   set(SYSTEM_TYPE WIN32)
   set(VS_PATH 
     "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC"
@@ -265,13 +271,19 @@ message(CHECK_START "Looking if GITHUB_PAT is set as an environment variable.")
 set(GITHUB_PAT      $ENV{GITHUB_PAT})
 
 if(GITHUB_PAT STREQUAL "")
-  message(CHECK_FAIL "not found")
-  message(
-    FATAL_ERROR
-      "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
-  )
+  if(REQUIRE_GITHUB_PAT)
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
+    )
+  else()
+    message(CHECK_FAIL "not found (not required for this build)")
+    set(GITHUB_PAT "unset")
+  endif()
+else()
+  message(CHECK_PASS "found")
 endif()
-message(CHECK_PASS "found")
 
 message(CHECK_START "Looking if GITHUB_PAT_DEF is set as an environment variable.")
 set(GITHUB_PAT_DEF      $ENV{GITHUB_PAT_DEF})
