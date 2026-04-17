@@ -36,8 +36,8 @@ if(USE_QT_STATIC_LIBS)
 	target_link_libraries(
 		SyntaxInterface
 		PUBLIC
-		$<$<PLATFORM_ID:Windows>:${CMAKE_PREFIX_PATH}/plugins/platforms/qminimal.lib>
-		$<$<NOT:$<PLATFORM_ID:Windows>>:${CMAKE_PREFIX_PATH}/plugins/platforms/libqminimal.a>
+		$<$<PLATFORM_ID:Windows>:${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/platforms/qminimal.lib>
+		$<$<NOT:$<PLATFORM_ID:Windows>>:${QT6_INSTALL_PREFIX}/${QT6_INSTALL_PLUGINS}/platforms/libqminimal.a>
 	)
 endif()
 
