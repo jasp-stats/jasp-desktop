@@ -133,6 +133,9 @@ bool ComputedColumnModel::areLoopDependenciesOk(const std::string & columnName, 
 
 void ComputedColumnModel::emitSendComputeCode(Column * column)
 {
+	if(!column)
+		return;
+
 	const std::string code = column->rCodeStripped();
 	if(code.empty())
 		return;
@@ -144,12 +147,18 @@ void ComputedColumnModel::emitSendComputeCode(Column * column)
 
 void ComputedColumnModel::sendCode(const QString & code, const QString & json)
 {
+	if(!_selectedColumn)
+		return;
+
 	DataSetPackage::pkg()->undoStack()->push(new SetComputedColumnCodeCommand(DataSetPackage::pkg(), _selectedColumn->name(), code, json));
 }
 
 
 void ComputedColumnModel::sendCode(const QString & code)
 {
+	if(!_selectedColumn)
+		return;
+
 	setComputeColumnRCode(code);
 	emitSendComputeCode(_selectedColumn);
 }
