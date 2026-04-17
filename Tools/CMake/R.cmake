@@ -257,7 +257,28 @@ if(APPLE AND NOT CUSTOM_R_PATH STREQUAL "" AND EXISTS "${CUSTOM_R_PATH}")
   set(R_OPT_PATH      "${R_HOME_PATH}/opt")
   set(R_EXECUTABLE    "${R_HOME_PATH}/bin/R")
   set(R_INCLUDE_PATH  "${R_HOME_PATH}/include")
+
+  # Derive R_FRAMEWORK_PATH from R_HOME (which is .../R.framework/Versions/X/Resources)
+  # We need the directory *containing* R.framework for find_library.
+  get_filename_component(_R_FW_RESOURCES "${R_HOME_PATH}" DIRECTORY)   # .../Versions/X
+  get_filename_component(_R_FW_VERSION   "${_R_FW_RESOURCES}" DIRECTORY) # .../Versions
+  get_filename_component(_R_FW_DIR       "${_R_FW_VERSION}" DIRECTORY)   # .../R.framework
+  get_filename_component(R_FRAMEWORK_PATH "${_R_FW_DIR}" DIRECTORY)      # .../Frameworks
+
   message(STATUS "[R] Using CUSTOM_R_PATH on macOS: ${CUSTOM_R_PATH}")
+  message(STATUS "[R] Derived R_FRAMEWORK_PATH: ${R_FRAMEWORK_PATH}")
+
+  find_library(
+    _R_Framework
+    NAMES R
+    PATHS ${R_FRAMEWORK_PATH}
+    NO_DEFAULT_PATH NO_CACHE REQUIRED)
+
+  find_library(
+    _LIB_R
+    NAMES R
+    PATHS ${R_HOME_PATH}/lib
+    NO_DEFAULT_PATH NO_CACHE REQUIRED)
 
 elseif(APPLE)
 
