@@ -321,6 +321,16 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 	if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 	{
 		bindTo(parsedOptions);
+
+		// Process events so that QML property bindings (especially validator-backed
+		// acceptableInput on text fields) are re-evaluated after the programmatic
+		// text changes from bindTo. Without this, acceptableInput may stay stale
+		// (based on the initial empty text) and checkValue() wrongly reports errors.
+		if (auto *app = QGuiApplication::instance())
+			app->processEvents();
+
+		clearAllErrors();
+
 		parsedOptions = _analysis->boundValues();
 	}
 

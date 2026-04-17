@@ -380,9 +380,10 @@ bool init(bool dbInMemory)
 
 	std::vector<const char*> arguments = {"JASP"}; //{qmlR, platformArg, platformOpt};
 
-
-	int		argc = arguments.size();
-	char** argvs = new char*[argc];
+	// argc and argv must remain valid for the entire lifetime of the QGuiApplication
+	// (QGuiApplication takes argc by reference), so they must be static.
+	static int		argc = arguments.size();
+	static char** argvs = new char*[argc];
 
 	for (int i = 0; i < argc; i++)
 	{
