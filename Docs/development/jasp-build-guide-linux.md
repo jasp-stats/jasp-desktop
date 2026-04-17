@@ -150,16 +150,17 @@ You can build either with terminal, by opening a new terminal and:
 ```shell
 mkdir ~/.config
 export GITHUB_PAT=<your GitHub token>
-export Qt6_DIR=/opt/Qt/6.8.3/gcc_64/lib/cmake
-CMAKE_PREFIX_PATH=/opt/Qt/6.8.3/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
+export Qt6_DIR=/opt/Qt/6.10.3/gcc_64/lib/cmake
+CMAKE_PREFIX_PATH=/opt/Qt/6.10.3/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
 cmake --build jasp-build --target all -j6
 
 # Start JASP desktop application
-./jasp-build/Desktop/JASP --safeGraphics
+./jasp-build/Desktop/JASP
 ```
 
 ```shell
-QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics 
+QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP
+# In VS code, forward port 8123 to localhost:8123
 # In Chrome or Edge, open http://localhost:8123 to inspect the webengine process
 ```
 
@@ -170,7 +171,8 @@ xhost +local:
 # and try again
 ```
 
-If you see the JASP window is fully black then resize the window to force a redraw.
+If you see the JASP window is fully black then resize the window to force a redraw
+or add `--safeGraphics`.
 
 You can also use QT creator with
 
