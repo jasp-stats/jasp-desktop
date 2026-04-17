@@ -247,7 +247,19 @@ cmake_print_variables(MODULES_RENV_CACHE_PATH)
 
 # ------
 
-if(APPLE)
+if(APPLE AND NOT CUSTOM_R_PATH STREQUAL "" AND EXISTS "${CUSTOM_R_PATH}")
+
+  # Lightweight path: use a pre-existing R installation via CUSTOM_R_PATH.
+  # Skips the full R.framework download, patching, and code-signing.
+  # Used by SyntaxInterface CI, but also available for local builds.
+  set(R_HOME_PATH     "${CUSTOM_R_PATH}")
+  set(R_LIBRARY_PATH  "${R_HOME_PATH}/library")
+  set(R_OPT_PATH      "${R_HOME_PATH}/opt")
+  set(R_EXECUTABLE    "${R_HOME_PATH}/bin/R")
+  set(R_INCLUDE_PATH  "${R_HOME_PATH}/include")
+  message(STATUS "[R] Using CUSTOM_R_PATH on macOS: ${CUSTOM_R_PATH}")
+
+elseif(APPLE)
 
   set(R_FRAMEWORK_PATH	"${CMAKE_BINARY_DIR}/Frameworks")
   set(R_HOME_PATH		"${R_FRAMEWORK_PATH}/R.framework/Versions/${R_DIR_NAME}/Resources")
