@@ -138,9 +138,18 @@ FocusScope
 				let index = name.lastIndexOf('.');
 				let extension = index !== -1 ? name.substring(index + 1) : '';
 				if(extension === 'JASPModule') {
-                    index = name.indexOf('_');
-                    moduleStore.currentModuleName = index !== -1 ? name.substring(0, index) : name;
-                    moduleStore.isInitiatingDownload = false;
+					// Use translated module name from url hash if available, fallback to filename parsing
+					const url = new URL(request.url);
+					const hash = url.hash ? url.hash.substring(1) : '';
+					const hashParams = new URLSearchParams(hash);
+					const translatedName = hashParams.get('t');
+					if (translatedName) {
+						moduleStore.currentModuleName = translatedName;
+					} else {
+						index = name.indexOf('_');
+						moduleStore.currentModuleName = index !== -1 ? name.substring(0, index) : name;
+					}
+					moduleStore.isInitiatingDownload = false;
 					moduleStore.downloadInProgress = true
 					moduleStore.downloadTotal = request.totalBytes
 					moduleStore.downloadProgress = Qt.binding(function() { return request.receivedBytes; })
@@ -660,7 +669,7 @@ FocusScope
                         let name = moduleStore.currentModuleName !== "" ? moduleStore.currentModuleName : qsTr("module");
                         let action = moduleStore.downloadInProgress ? qsTr("Downloading") : qsTr("Installing");
                         let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
-                        return progress + " " + action + " " + name + "...";
+                        return progress + " " + action + " " + name + " ...";
                     }
                     color:				jaspTheme.black
 					font.pixelSize:		16 * preferencesModel.uiScale
