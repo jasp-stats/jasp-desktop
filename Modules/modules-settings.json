@@ -5,12 +5,15 @@
 		"jaspAudit",
 		"jaspAcceptanceSampling",
 		"jaspDistributions",
+		"jaspMachineLearning",
 		"jaspTTests",
 		"jaspAnova",
 		"jaspMixedModels",
 		"jaspRegression",
 		"jaspFrequencies",
-		"jaspFactor"
+		"jaspFactor",
+		"jaspPredictiveAnalytics"
+		
     ],
     "extra" : [
 		"jaspBain",
@@ -24,11 +27,9 @@
 		"jaspJags",
 		"jaspLearnBayes",
 		"jaspLearnStats",
-		"jaspMachineLearning",
 		"jaspMetaAnalysis",
 		"jaspNetwork",
 		"jaspPower",
-		"jaspPredictiveAnalytics",
 		"jaspProcess",
 		"jaspProphet",
 		"jaspReliability",

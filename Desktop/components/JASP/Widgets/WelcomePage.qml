@@ -55,7 +55,7 @@ FocusScope
 			Text
 			{
 				id:				welcomeToJASP
-				text:			qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;")
+				text:			! PRO? qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;") : qsTr("Welcome to JASP Enterprise").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
 				font.family:	jaspTheme.font.family
 				font.pixelSize: 30 * welcomeRoot.scaler
@@ -66,6 +66,25 @@ FocusScope
 				anchors
 				{
 					horizontalCenter:	parent.horizontalCenter
+				}
+			}
+			
+			Text
+			{
+				id:				scg
+				text:			"SCG&nbsp;Chemicals&nbsp;2026"
+				color:			jaspTheme.white
+				font.family:	jaspTheme.font.family
+				font.pixelSize: 20 * welcomeRoot.scaler
+				font.weight:	Font.Medium
+				renderType:		Text.QtRendering
+				textFormat:		Text.StyledText
+
+				anchors
+				{
+					horizontalCenter:	parent.horizontalCenter
+					top:				welcomeToJASP.bottom
+					topMargin:			height * 2
 				}
 			}
 
@@ -240,7 +259,7 @@ FocusScope
 				}
 
 			}
-
+			
 			Rectangle
 			{
 				id:					downloadNewJASPButton
