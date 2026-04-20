@@ -20,6 +20,56 @@ import QtQuick
 import QtQml.Models
 import JASP.Controls
 
+/*!
+    \qmltype InputListView
+    \inqmlmodule JASP.Controls 1.0
+    \brief An editable scrollable list for entering free-text values.
+
+    Displays a scrollable grid of text fields where users can type custom values.
+    New items are added by typing in a virtual placeholder row. Items can be
+    deleted via a cross icon. Optionally supports a row component displayed
+    alongside each entry.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} array of strings
+    \li \b{Default:} [] (empty array, or defaultValues if set)
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
+    \li \b rowComponentTitle (string) - Title for the row component column. Default: "".
+    \li \b defaultValues (array) - Initial values to populate the list. Default: [].
+    \li \b minRows (int) - Minimum number of rows. Default: 0.
+    \li \b addVirtual (bool) - Show a placeholder row for adding new items. Default: true.
+    \li \b placeHolder (string) - Placeholder text for new items. Default: "New Value".
+    \li \b cellHeight (real) - Height of each row cell. Default: 20.
+    \li \b cellWidth (real) - Width of each row cell. Default: list width.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    InputListView {
+        name: "customValues"
+        title: qsTr("Values")
+        defaultValues: ["0.5", "1.0", "1.5"]
+    }
+    \endqml
+*/
 InputListBase
 {
 	id						: inputListView

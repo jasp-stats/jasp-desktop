@@ -98,7 +98,7 @@ public:
 	std::string dataSetName(			int dataSetId) const;
 	int			dataSetIncRevision(		int dataSetId);
 	int			dataSetGetRevision(		int dataSetId);
-	int			dataSetGetFilter(		int dataSetId);
+	intset		dataSetGetFilters(		int dataSetId);
 	void		dataSetInsertEmptyRow(	int dataSetId, size_t row);
 	void		dataSetCreateTable(		DataSet * dataSet); ///< Assumes you are importing fresh data and havent created any DataSet_? table yet
 
@@ -126,8 +126,9 @@ public:
 	//Columns & Data/Values
 	//Index stuff:
 	int			columnInsert(			int dataSetId, int index = -1, const std::string & name = "", columnType colType = columnType::unknown, bool alterTable=true);	///< Insert a row into Columns and create the corresponding columns in DataSet_? Also makes sure the indices are correct
+	intvec		columnsInsert(			int dataSetId, int count, int index, const std::string &name, columnType colType, bool alterTable);
 	int			columnLastFreeIndex(	int dataSetId);
-	void		columnIndexIncrements(	int dataSetId, int index);																			///< If index already is in use that column and all after are incremented by 1
+	void		columnIndexIncrements(	int dataSetId, int index, int count);																			///< If index already is in use that column and all after are incremented by 1
 	void		columnIndexDecrements(	int dataSetId, int index);																			///< Indices bigger than index are decremented, assumption is that the previous one using it has been removed already
 	int			columnIdForIndex(		int dataSetId, int index);
 	int			columnIndexForId(		int columnId);
@@ -140,6 +141,7 @@ public:
 	void		columnDelete(				int columnId, bool					cleanUpRest = true);			///< Also makes sure indices stay as contiguous and correct as before. disable cleanUpRest to just clear from Columns
 	void		columnSetType(				int columnId, columnType			colType);
 	void		columnSetAutoSort(			int columnId, bool					sort);
+	void		columnSetHasLabels(			int columnId, bool					hasLabels);
 	void		columnSetInvalidated(		int columnId, bool					invalidated);
 	void		columnSetDropLevels(		int columnId, int					dropLevels);
 	void		columnSetName(				int columnId, const std::string &	name);
@@ -147,14 +149,18 @@ public:
 	void		columnSetEmptyVals(			int columnId, const std::string &	emptyValsJson);
 	void		columnSetDescription(		int columnId, const std::string &	description);
 	void		columnSetComputeFilter(		int columnId, const std::string &	computeFilter);
-	void		columnGetBasicInfo(			int columnId,		std::string &	name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels);
+	void		columnGetBasicInfo(			int columnId,		std::string &	name, std::string & title, std::string & description, columnType & colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels, bool & hasLabels);
 	void		columnSetComputedInfo(		int columnId, int analysisId,  bool   invalidated, computedColumnType   codeType, const	std::string & rCode, const	std::string & error, const	std::string & constructorJson, const std::string & computeFilter);
 	void		columnGetComputedInfo(		int columnId, int &analysisId, bool & invalidated, computedColumnType & codeType,		std::string & rCode,		std::string & error,		Json::Value & constructorJson, std::string & computeFilter);
-	void		columnSetValues(			int columnId, const intvec	  & ints, const doublevec & dbls);
-	void		columnSetValue(				int columnId, size_t row, int valueInt, double valueDbl);
+	void		columnSetValues(			int columnId, const intvec	  & ints);
+	void		columnSetValues(			int columnId, const doublevec & dbls, const stringvec & strs);
+	void		columnSetValue(				int columnId, size_t row, int valueInt);
+	void		columnSetValue(				int columnId, size_t row, double dbl, const std::string & str);
 	size_t		columnGetLabelCount(		int columnId);
-	void		columnGetValues(			int columnId,	intvec		& ints, doublevec & dbls);
-	std::string columnBaseName(				int columnId) const;
+	void		columnGetValues(			int columnId,	intvec		& ints,						const std::string & postFix = "");
+	void		columnGetValues(			int columnId,	doublevec	& dbls, stringvec & strs,	const std::string & postFix = "");
+	std::string columnBaseName(				int columnId,	const std::string & postFix = "") const;
+
 	
 	void		dataSetBatchedValuesLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
 	void		dataSetBatchedLabelsLoad(	DataSet * data, std::function<void(float)> progressCallback = [](float){});
@@ -166,6 +172,7 @@ public:
 	void		labelDelete(	int id);
 	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order, bool & userAdded);
 	void		labelSetOrder(	int id, int order);
+	bool		labelExists(	int	columnId, int intsId);
 	void		labelsLoad(			Column  * column);
 	void		labelsLoad(	const	Columns & columns);//, std::function<void(float)> progressCallback);
 	void		labelsWrite(const	Columns & columns, std::function<void(float)> progressCallback);
@@ -188,16 +195,17 @@ public:
 
     void        preloadInterfaceForThread();
 	void		close();					///< Closes the loaded database and disconnects
+	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
+	
 private:
 	sqlite3	*	_db();
 	void		_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl);	///< Needed to work around the lack of support for NAN, INF and NEG_INF in sqlite, converts those to string to make use of sqlite flexibility
-	double		_doubleTroubleReader(sqlite3_stmt *stmt, int colI);					///< The reading counterpart to _doubleTroubleBinder to convert string representations of NAN, INF and NEG_INF back to double
+	double		_doubleTroubleReader(sqlite3_stmt *stmt, int colI, std::string * textReturn = nullptr);					///< The reading counterpart to _doubleTroubleBinder to convert string representations of NAN, INF and NEG_INF back to double
 	void		_runStatements(				const std::string & statements,						std::function<void(sqlite3_stmt *stmt)> *	bindParameters = nullptr,	std::function<void(size_t row, sqlite3_stmt *stmt)> *	processRow = nullptr, bool ignoreFails = false);	///< Runs several sql statements without looking at the results. Unless processRow is not NULL, then this is called for each row.
 	void		_runStatementsRepeatedly(	const std::string & statements, std::function<bool(	std::function<void(sqlite3_stmt *stmt)> **	bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow = nullptr, bool ignoreFails = false);
 
 	void		create();					///< Creates a new sqlite database in sessiondir and loads it
-	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
 	std::map<std::thread::id, sqlite3*>		_dbs;
 	std::thread::id							_dbCreator;

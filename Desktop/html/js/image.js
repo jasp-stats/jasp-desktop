@@ -45,7 +45,10 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	isEditable:					function() {	return this.model.get("error") === null;						},
 	isConvertible:				function() {	return this.model.get("error") === null && this.model.get("convertible") ===  true;	},
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
-	hasInteractive:				function() {	return this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;	},
+	hasInteractive:				function() {	
+		if(!useInteractivePlots) 
+			return false; 
+		return this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	interactiveImageClicked:	function() {
@@ -213,9 +216,10 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 
 	render: function () {//interactive = false) {
 
-		var hasInteractive = this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;
+		var hasInteractiveError = this.model.get("interactiveConvertError") != ""
+		var hasInteractive		= !hasInteractiveError && this.model.get("interactiveJsonData") != "";
 		
-		if (hasInteractive && ((this.model.get("userInteractive") && this.model.get("interactive")) || (!this.model.get("userInteractive") && window.globSet.showInteractiveDefault))) {
+		if (useInteractivePlots && hasInteractive && ((this.model.get("userInteractive") && this.model.get("interactive")) || (!this.model.get("userInteractive") && window.globSet.showInteractiveDefault))) {
 
 			console.log("image.js: this is where the post step to run the json happens!");
 			this.preRenderPlotly();
@@ -225,7 +229,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 			if (!error) {
 				this.plotlyRetryCount = 0; // Reset retry counter
 				jQuery(document).ready(() => this.renderPlotlyIfDivExists());
-			}
+			}			
 
 		} else {
 			console.log("image.js: jaspHtml but not plotly or we just want to see the normal plot!")

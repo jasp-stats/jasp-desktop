@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- DoubleField.qml -->
+  <meta name="description" content="A text field preset for entering numeric (double) values.">
+  <title>DoubleField QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>DoubleField</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-textfield">Inherited Properties from TextField</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">DoubleField QML Type</h1>
+<!-- $$$DoubleField-brief -->
+<p>A text field preset for entering numeric (double) values. <a href="#details">More...</a></p>
+<!-- @@@DoubleField -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-textfield.html" translate="no">TextField</a></p>
+</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-percentfield.html" translate="no">PercentField</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-doublefield-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$DoubleField-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> with the &quot;number&quot; input type and a built-in JASPDoubleValidator. Supports configurable minimum, maximum, decimal precision, and sign constraints.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">numeric</code></li>
+<li><b>Default:</b> 0</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>negativeValues</b> (bool) - Allow negative numbers. Default: false.</li>
+<li><b>min</b> (double) - Minimum allowed value. Default: 0 (or -Infinity when negativeValues is true).</li>
+<li><b>max</b> (double) - Maximum allowed value. Default: Infinity.</li>
+<li><b>decimals</b> (int) - Number of decimal places. Default: 3.</li>
+<li><b>inclusive</b> (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or JASP.None.</li>
+</ul>
+<h2 id="inherited-properties-from-textfield">Inherited Properties from TextField</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>value</b> (string) - Current text value. Default: &quot;&quot;.</li>
+<li><b>defaultValue</b> (var) - Default value. Default: 0.</li>
+<li><b>label</b> (string) - Label displayed before the field. Default: &quot;&quot;.</li>
+<li><b>afterLabel</b> (string) - Label displayed after the field. Default: &quot;&quot;.</li>
+<li><b>fieldWidth</b> (int) - Width of the input field. Default: 40.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;alpha&quot;</span>
+    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Significance level&quot;</span>)
+    <span class="name">defaultValue</span>: <span class="number">0.05</span>
+    <span class="name">min</span>: <span class="number">0</span>
+    <span class="name">max</span>: <span class="number">1</span>
+    <span class="name">decimals</span>: <span class="number">3</span>
+}</pre>
+<!-- @@@DoubleField -->
+</body>
+</html>

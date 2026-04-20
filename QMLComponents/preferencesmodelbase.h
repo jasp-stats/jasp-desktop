@@ -23,6 +23,7 @@ public:
 	virtual float	ribbonBarHeightScale()	const	{ return 1.0;	}
 	virtual bool	animationsOn()			const	{ return false; }
 	virtual bool	developerMode()			const	{ return false;	}
+	virtual QString	developerModeName()		const	{ return "";	}
 
 	static PreferencesModelBase* preferences();
 

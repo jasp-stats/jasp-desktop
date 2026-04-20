@@ -155,6 +155,7 @@ public:
 	void			zoomReset();
 	int				maxEnginesAdmin() 						const;
 	bool			developerMode()							const override;
+	QString			developerModeName()						const override;
 	bool			ALTNavModeActive()						const override;
     bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;

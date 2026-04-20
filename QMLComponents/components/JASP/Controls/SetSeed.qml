@@ -19,6 +19,31 @@
 
 import JASP.Controls
 
+/*!
+    \qmltype SetSeed
+    \inqmlmodule JASP.Controls 1.0
+    \brief A preset "Repeatability" group with a seed checkbox and integer field.
+
+    Provides a standardized Group titled "Repeatability" containing a
+    "Set seed" CheckBox with an IntegerField for the seed value.
+    Drop this into any analysis that uses random sampling.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Options:}
+        \list
+        \li \c setSeed (bool) — Whether seeding is enabled
+        \li \c seed (integer) — The seed value
+        \endlist
+    \endlist
+
+    \section1 Example
+
+    \qml
+    SetSeed {}
+    \endqml
+*/
 Group
 {
 	title: qsTr("Repeatability")

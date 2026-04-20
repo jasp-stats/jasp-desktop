@@ -1912,30 +1912,6 @@ msgstr ""
 "\n"
 "%2"
 
-msgctxt "Modules::Upgrader|"
-msgid "Error Loading Upgrades"
-msgstr "加载升级时出错"
-
-#, qt-format
-msgctxt "Modules::Upgrader|"
-msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr "在加载%1的升级时，遇到了一个错误: %2"
-
-msgctxt "Modules::Upgrader|"
-msgid "Upgrades couldn't be read"
-msgstr "无法读取升级"
-
-msgctxt "Modules::Upgrader|"
-msgid ""
-"The necessary upgrades for reading older JASP-files could not be read...\n"
-"You can still use JASP and even read (some) older files but some options "
-"might not be understood properly and some analyses might fail to load "
-"entirely."
-msgstr ""
-"无法读取读取旧 JASP 文件的必要升级...\n"
-"您仍然可以使用 JASP，甚至读取（某些）较旧的文件，但某些选项可能无法正确理解，"
-"并且某些分析可能无法完全加载。"
-
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "文件已更改"
@@ -2519,161 +2495,6 @@ msgstr ""
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "模块%1的升级加载失败"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr "尝试从目录 %1 初始化模块时发生错误，错误为：%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr "在尝试加载模块 %1 时出现错误，错误为：\"%2\""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The installation of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"模块 %1 安装失败，错误信息如下：\n"
-"%2"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Select a folder"
-msgstr "选择件夹"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select the folder you want to "
-"watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
-"要安装开发模块，您需要选择要观看和加载的文件夹，您可以在 文件菜单的 首选项->"
-"高级 下执行此操作。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Problem initializing module"
-msgstr "初始化模块问题"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"There was a problem loading the developer module:\n"
-"\n"
-msgstr ""
-"加载开发者模块时出现问题：\n"
-"\n"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Missing files or folders"
-msgstr "缺失文件或文件夹"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr "所选文件夹无法安装为开发者模块，因为它不包含所有必需的文件和文件夹。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "创建一个 inst/Description.qml 文件。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "创建包含分析代码的 R 目录。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "创建包含选项表的 inst/qml 目录。"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "创建一个包含ribbonbuttons图标的 inst/icons 目录。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing %1"
-msgstr "缺少 %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"您似乎已经从开发模块目录中移除了 %1 。没有它，您的模块无法工作，请务必将其放"
-"回原位。现在，您的旧文件 %2 将被保留。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"您的开发模块目录中似乎从未出现过 %1 。没有它，您的模块无法工作，请务必创建一"
-"个模块。如何安装有点神秘，因此现在应卸载开发模块"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "%1 was removed!"
-msgstr "%1 已被移除！"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-"您似乎已经删除了 %1，但您的模块需要此文件才能工作。现在将卸载开发模块。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing folder %1"
-msgstr "缺少文件夹 %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"您似乎已从开发模块目录中删除了文件夹 %1。没有它，您的模块将无法工作，请确保将"
-"其放回原处。现在您的旧文件夹将被保留。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"您的开发模块目录中似乎从未有过文件夹 %1。没有它，您的模块无法工作，请确保创建"
-"一个。您如何安装有点神秘，因此现在应卸载开发模块"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Loading module description encountered a problem"
-msgstr "加载模块描述遇到问题"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "<i>无法加载存档中模块的描述：'%1'</i>"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a "
-"href=\"http://%6\">%6</a></i><br>"
-msgstr ""
-"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 %5维护。</"
-"i><br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
@@ -3323,10 +3144,6 @@ msgctxt "PrefsAdvanced|"
 msgid "Show engines"
 msgstr "显示引擎"
 
-msgctxt "Modules::DynamicModules|"
-msgid "Select an exisiting folder"
-msgstr "选择现有文件夹"
-
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr "显示 R 语法"
@@ -3566,10 +3383,6 @@ msgid "Generate Wrapper"
 msgstr "生成封装类"
 
 msgctxt "Computer|"
-msgid "Save"
-msgstr "保存"
-
-msgctxt "Computer|"
 msgid "JASP Files"
 msgstr "JASP 文件"
 
@@ -3647,15 +3460,6 @@ msgid "Would you like to save your changes to the Filter?"
 msgstr "您想保存对筛选器的更改吗？"
 
 msgctxt "FilterWindow|"
-msgid "Your changes will be lost if you don't save them."
-msgstr "如果不保存，您的更改将会丢失。"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid "Would you like to save your changes to %1 file?"
-msgstr "您想将更改保存到文件 %1 吗？"
-
-msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "如果不保存，您的更改将会丢失。"
 
@@ -5253,13 +5057,6 @@ msgctxt "VariablesList|"
 msgid "Column description: "
 msgstr "列说明： "
 
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '%1' but it doesn't exist."
-msgstr "您需要选择已有文件夹来安装开发模块，您选择了“%1”，但它不存在。"
-
 msgctxt "MainPage|"
 msgid "Remove this note"
 msgstr "删除此注释"
@@ -5866,22 +5663,13 @@ msgid "Cancel download"
 msgstr "取消下载"
 
 #, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The removal of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"卸载模块 %1 失败，错误信息如下：\n"
-"%2"
-
-#, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
 msgstr "文件夹 %2 中未找到 %1 文件"
 
 msgctxt "tst_formulaField|"
 msgid "Dummy"
-msgstr ""
+msgstr "Dummy"
 
 msgctxt "FileEvent|"
 msgid "Loading Minitab Data Workbook File"
@@ -5898,17 +5686,327 @@ msgstr "Minitab 数据工作簿 %1"
 
 msgctxt "ModulesMenu|"
 msgid "module"
-msgstr ""
+msgstr "模块"
 
 msgctxt "ModulesMenu|"
 msgid "Downloading"
-msgstr ""
+msgstr "正在下载"
 
 msgctxt "ModulesMenu|"
 msgid "Installing"
-msgstr ""
+msgstr "正在安装"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid " (%1/%2)"
+msgstr " (%1/%2)"
+
+msgctxt "PrefsResults|"
+msgid "Show interactive plots by default, where possible."
+msgstr "默认显示交互式图表（如果可用）。"
+
+msgctxt "PrefsResults|"
+msgid ""
+"When enabled shows the interactive plots by default, you can always switch "
+"them in the plots own dropdown too."
+msgstr ""
+"启用后，默认情况下会显示交互式图表，您也可以随时在图表自身的下拉菜单中切换它"
+"们。"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Point"
+msgstr "点"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Horizontal Line"
+msgstr "水平线"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Vertical Line"
+msgstr "竖线"
+
+msgctxt "PlotEditor|"
+msgid "References"
+msgstr "参考线"
+
+msgctxt "PlotEditor::References|"
+msgid "Type"
+msgstr "类型"
+
+msgctxt "PlotEditor::References|"
+msgid "Text"
+msgstr "文本"
+
+msgctxt "PlotEditor::References|"
+msgid "Horizontal"
+msgstr "水平的"
+
+msgctxt "PlotEditor::References|"
+msgid "Vertical"
+msgstr "垂直的"
+
+msgctxt "PlotEditor::References|"
+msgid "Remove"
+msgstr "移除"
+
+msgctxt "ResultMenuModel|"
+msgid "Switch Static/Interactive Image"
+msgstr "切换为静态/交互式图表"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 has been modified"
+msgstr "%1 已经发生修改"
+
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes?"
+msgstr "要保存这些更改吗？"
+
+#, qt-format
+msgctxt "JASPImporter|"
+msgid ""
+"The JASP file is too old (%1) and is not supported anymore.\n"
+"Load and save it first in an intermediate JASP version (between %2 and "
+"0.96.1) to upgrade your JASP file to a compatible version"
+msgstr ""
+"JASP 文件版本过旧 (%1)，已不再受支持。\n"
+"\n"
+"请先使用中间版本的 JASP 文件（介于 %2 和 0.96.1 之间）加载并保存该文件，以将"
+"其升级到兼容版本。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr "尝试从目录 %1 初始化模块时发生错误，错误为：%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr "在尝试加载模块 %1 时出现错误，错误为：\"%2\""
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"模块 %1 安装失败，错误信息如下：\n"
+"%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The removal of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"卸载模块 %1 失败，错误信息如下：\n"
+"%2"
+
+msgctxt "DynamicModules|"
+msgid "Select a folder"
+msgstr "选择件夹"
+
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+"要安装开发模块，您需要选择要观看和加载的文件夹，您可以在 文件菜单的 首选项->"
+"高级 下执行此操作。"
+
+msgctxt "DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr "选择现有文件夹"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr "您需要选择已有文件夹来安装开发模块，您选择了“%1”，但它不存在。"
+
+msgctxt "DynamicModules|"
+msgid "Problem initializing module"
+msgstr "模块初始化出现问题"
+
+msgctxt "DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+"加载开发者模块时出现问题：\n"
+"\n"
+
+msgctxt "DynamicModules|"
+msgid "Missing files or folders"
+msgstr "缺失文件或文件夹"
+
+msgctxt "DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr "所选文件夹无法安装为开发者模块，因为它不包含所有必要的文件和文件夹。"
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/Description.qml file."
+msgstr "创建一个 inst/Description.qml 文件。"
+
+msgctxt "DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr "创建包含分析代码的 R 目录。"
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr "创建包含选项表的 inst/qml 目录。"
+
+msgctxt "DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr "创建一个包含菜单栏图标的 inst/icons 目录。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing %1"
+msgstr "缺失 %1"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+"您似乎已经从开发模块目录中移除了 %1 。没有它，您的模块无法工作，请务必将其放"
+"回原位。现在，您的旧文件 %2 将被保留。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"你的开发模块目录下似乎没有 %1。没有它，你的模块无法工作，请确保创建一个。你的"
+"安装方式可能有问题，因此现在需要卸载该开发模块"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "%1 was removed!"
+msgstr "%1 已被移除！"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr ""
+"你似乎已经删除了 %1，但你的模块需要此文件才能工作。现在将卸载开发模块。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing folder %1"
+msgstr "缺少文件夹 %1"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+"您似乎已从开发模块目录中删除了文件夹 %1。没有它，您的模块将无法工作，请确保将"
+"其放回原处。现在您的旧文件夹将被保留。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"你的开发模块目录下似乎没有 %1。没有它，你的模块无法工作，请确保创建一个。你的"
+"安装方式可能有误，因此现在需要卸载该开发模块"
+
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr "加载模块描述文件遇到问题"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr "<i>无法加载存档中模块的描述：'%1'</i>"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
+msgstr ""
+"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 创建并由 %5维护。</"
+"i><br><i>有关详细信息，请参阅网站：<a href=\"http://%6\">%6</a></i><br>"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Enter Encryption Settings"
+msgstr "输入加密设置"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Password:"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "JASP Team Submission."
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Click here if you want the JASP Team be able to open the file"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Advanced Settings"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Private key (base64)"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Receiver Public key (base64)"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Submit"
+msgstr ""
+
+#, fuzzy
+msgctxt "EncryptionSettingsWindow|"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "VariablesWindow|"
+msgid "Use labels"
+msgstr ""
+
+msgctxt "DesktopCommunicator|"
+msgid "No password given!"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column '%1' having labels from '%2' to '%3'"
+msgstr ""
+
+msgctxt "AutoSaveFileSystem|"
+msgid "encrypted"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Save (encrypted) JASP file"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Encrypted JASP Files"
 msgstr ""

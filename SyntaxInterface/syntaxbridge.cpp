@@ -38,7 +38,8 @@
 #include "utilities/qmlutils.h"
 #include "dirs.h"
 #include "utilities/appdirs.h"
-
+#include "modules/dynamicmodule.h"
+#include "archivereader.h"
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -155,75 +156,21 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 }
 
 
-const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, bool preloadData)
+const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath)
 {
 	if (!init())
 		return "Error during initialization";
 
 	static std::string result;
-	QString modulePathQ		= tq(modulePath),
-			moduleNameQ;
 
-	QDir moduleDir(modulePathQ);
+	QString modulePathQ = tq(modulePath);
 
-	if (!moduleDir.exists())
+	ModuleInfo description = parseDescription(modulePathQ);
+
+	for (const AnalysisInfo & analysis : description.analyses)
 	{
-		result = fq("Module path not found: " + modulePathQ);
-		return result.c_str();
-	}
-
-	QVector<AnalysisInfo> analyses;
-	QFile qmlDescriptionFile(modulePathQ + "/inst/Description.qml");
-	if (!qmlDescriptionFile.exists())
-	{
-		result = "Description.qml file not found in " + fq(modulePathQ);
-		return result.c_str();
-	}
-
-	QString fileContent;
-	QStringList analysesPart;
-	// TODO: The Description.qml cannot be loaded by the QML Engine, since it does not have access to the JASP.Module
-	// If JASP.Module is set as a a Qt module/plugin (as JASP.Controls), then we could load it and uses the Description object directly.
-	// For the time being, just try to parse the Description.qml to detect the Analyses and their properties.
-	if (qmlDescriptionFile.open(QIODevice::ReadOnly))
-	{
-		fileContent = qmlDescriptionFile.readAll();
-		analysesPart = fileContent.split("Analysis");
-		for (int i = 1; i < analysesPart.length(); i++)
-		{
-			QStringList lines = analysesPart[i].split("\n");
-			QString analysisName, qmlFileName, analysisTitle;
-
-			for (QString line : lines)
-			{
-				line = line.trimmed();
-				if (line.startsWith("func"))
-					analysisName = line.split(":")[1].trimmed().replace('"', "");
-				else if (line.startsWith("qml"))
-					qmlFileName = line.split(":")[1].trimmed().replace('"', "");
-				else if (line.startsWith("title"))
-				{
-					analysisTitle = line.split(":")[1].trimmed();
-					if (analysisTitle.startsWith("qsTr"))
-						analysisTitle = analysisTitle.remove(0, std::string("qsTr(\"").length()).chopped(1);
-
-					analysisTitle = analysisTitle.replace('"', "");
-				}
-			}
-
-			if (!analysisName.isEmpty())
-			{
-				if (qmlFileName.isEmpty())
-					qmlFileName = analysisName + ".qml";
-				analyses.append(AnalysisInfo(analysisName, qmlFileName, analysisTitle));
-			}
-		}
-	}
-
-	for (auto & analysis : analyses)
-	{
-		Log::log() << "Analysis " << fq(analysis.analysisName) << " with qml file " << fq(analysis.qmlFileName) << std::endl;
-		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, preloadData))
+		Log::log() << "Analysis " << analysis.analysisName << " with qml file " << analysis.qmlFileName << std::endl;
+		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData))
 		{
 			result = "Error when generating wrapper of " + fq(analysis.analysisName);
 			return result.c_str();
@@ -234,7 +181,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath, b
 }
 
 
-const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* qmlFileName, const char* analysisName, const char* analysisTitle, bool preloadData)
+const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* analysisName)
 {
 	if (!init())
 		return "Error during initialization";
@@ -243,31 +190,143 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 
 	gl_qmlEngine->clearComponentCache();
 
-	QString qmlFileNameQ	= tq(qmlFileName),
-			modulePathQ		= tq(modulePath),
-			moduleNameQ,
-			analysisNameQ	= tq(analysisName),
-			analysisTitleQ	= tq(analysisTitle);
+	Modules::DynamicModule * module = new Modules::DynamicModule(gl_application, gl_qmlEngine->rootContext(), modulePath, false);
+	module->initialize(gl_qmlEngine->rootContext());
 
-	QDir moduleDir(modulePathQ);
+	std::string analysisNameStr = analysisName,
+				modulePathStr	= modulePath;
 
-	if (!moduleDir.exists())
+	for (Modules::AnalysisEntry * analysisEntry : module->menu())
 	{
-		result = "Module path not found: " + fq(modulePathQ);
-		return result.c_str();
+		if (analysisEntry->isAnalysis() && analysisEntry->function() == analysisNameStr)
+		{
+			if (!generateWrapper(tq(modulePathStr), tq(analysisNameStr), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData()))
+			{
+				result = "Error when generating wrapper of " + analysisNameStr;
+				return result.c_str();
+			}
+
+			result = "Wrapper generated for analysis " + analysisNameStr;
+			return result.c_str();
+
+		}
 	}
 
-	// If JASP.Module is set as a a Qt module/plugin (as JASP.Controls), then we could load it and uses the Description object directly, and know directly
-	// what is the name of the qml file and if it uses preloadData
-	if (!generateWrapper(modulePathQ, analysisNameQ, qmlFileNameQ, analysisTitleQ, preloadData))
-	{
-		result = "Error when generating wrapper of " + fq(analysisNameQ);
-		return result.c_str();
-	}
+	result = "Cannot find analysis " + analysisNameStr + " in module path " + modulePathStr;
 
-	result = "Wrapper generated for analysis " + fq(analysisNameQ);
 	return result.c_str();
 }
+
+const char* STDCALL syntaxBridgeParseDescription(const char* modulePath)
+{
+	if (!init())
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return "";
+	}
+
+	ModuleInfo description = parseDescription(tq(modulePath));
+
+	Json::Value jsonDescription(Json::objectValue);
+
+	jsonDescription["name"]				= fq(description.name);
+	jsonDescription["title"]			= fq(description.title);
+	jsonDescription["author"]			= fq(description.author);
+	jsonDescription["website"]			= fq(description.website);
+	jsonDescription["license"]			= fq(description.license);
+	jsonDescription["maintainer"]		= fq(description.maintainer);
+	jsonDescription["description"]		= fq(description.description);
+	jsonDescription["requiresData"]		= description.requiresData;
+	jsonDescription["hasWrappers"]		= description.hasWrappers;
+	jsonDescription["isCommon"]			= description.isCommon;
+	jsonDescription["version"]			= description.version.asString();
+
+	Json::Value	analyses(Json::arrayValue);
+
+	for (const AnalysisInfo & analysis : description.analyses)
+	{
+		Json::Value jsonAnalysis(Json::objectValue);
+		jsonAnalysis["name"]		= fq(analysis.analysisName);
+		jsonAnalysis["qml"]			= fq(analysis.qmlFileName);
+		jsonAnalysis["title"]		= fq(analysis.analysisTitle);
+		jsonAnalysis["preloadData"]	= analysis.preloadData;
+		jsonAnalysis["hasWrapper"]	= analysis.hasWrapper;
+
+		analyses.append(jsonAnalysis);
+	}
+
+	jsonDescription["analyses"]		= analyses;
+
+	static std::string result;
+	result = jsonDescription.toStyledString();
+
+	return result.c_str();
+}
+
+void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
+{
+	if (!init(dbInMemory))
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return;
+	}
+
+	ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float p){});
+	ManifestInfo info = ArchiveReader::readManifest(filePath);
+
+	DataSetProvider* provider = DataSetProvider::getProvider(dbInMemory, false);
+
+	provider->loadDatabase(info.jaspVersion);
+}
+
+const char*	STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
+{
+	if (!init())
+	{
+		Log::log() << "Error during initialization" << std::endl;
+		return "";
+	}
+
+	static std::string result;
+
+	result = "";
+	Json::Value analysesData;
+
+	if (ArchiveReader::parseJsonEntry(analysesData, filePath, "analyses.json", false))
+	{
+		Json::Value analysesDataList = analysesData.get("analyses",	analysesData);
+		if (analysisNr < analysesDataList.size())
+			result = analysesDataList[analysisNr]["options"].toStyledString();
+		else
+			Log::log() << "Analyis number is higher than the number of analyses (" << analysesDataList.size() << ") in the JASP file" << std::endl;
+	}
+	else
+		Log::log() << "Fail to open or read the JASP file " << filePath << std::endl;
+
+
+	return result.c_str();
+}
+
+const char*	STDCALL syntaxBridgeGetVariableNames()
+{
+	DataSetProvider* provider = DataSetProvider::getProvider(false, false);
+	if (!provider)
+		return "";
+
+	static std::string result;
+
+	QStringList names = provider->provideInfo(VariableInfo::VariableNames).toStringList();
+	Json::Value jsonNames(Json::arrayValue);
+
+	for (const QString & name : names)
+		jsonNames.append(fq(name));
+
+	result = jsonNames.toStyledString();
+
+	return result.c_str();
+}
+
+
 
 } // extern "C"
 
@@ -343,6 +402,7 @@ bool init(bool dbInMemory)
 	DataSetProvider::getProvider(dbInMemory, false, gl_application); // Create the DataSetProvider in case the loadDataSet was not already called
 
 	QmlUtils::setupQMLEngine(gl_qmlEngine);
+	QmlUtils::registerQmlModuleTypes();
 
 	gl_dataBridge = new DataBridge(ProcessInfo::currentPID(), dbInMemory);
 	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
@@ -479,7 +539,30 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 	return true;
 }
 
+ModuleInfo parseDescription(const QString & modulePath)
+{
+	QDir moduleDir(modulePath);
 
+	if (!moduleDir.exists())
+	{
+		Log::log() << "Module path not found: " + modulePath << std::endl;
+		return ModuleInfo();
+	}
+
+	Modules::DynamicModule * module = new Modules::DynamicModule(gl_application, gl_qmlEngine->rootContext(), modulePath, false);
+	module->initialize(gl_qmlEngine->rootContext());
+
+	ModuleInfo moduleInfo(module->nameQ(), module->titleQ(), module->author(), module->website().toString(), module->license(), module->maintainer(), module->description(),
+						  module->requiresData(), module->isCommon(), module->hasWrappers(), module->version());
+
+	for (Modules::AnalysisEntry * analysisEntry : module->menu())
+	{
+		if (analysisEntry->isAnalysis())
+			moduleInfo.analyses.push_back(AnalysisInfo(tq(analysisEntry->function()), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), analysisEntry->hasWrapper()));
+	}
+
+	return moduleInfo;
+}
 
 
 

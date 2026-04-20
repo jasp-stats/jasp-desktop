@@ -509,7 +509,7 @@ Item
 						var name		= customMenu.props['model'].getName(index);
 						var jsfunction	= customMenu.props['model'].getJSFunction(index);
 
-						customMenu.hide()
+						customMenu.hideMenus()
 
 						if (name === 'hasExportResults')				{ fileMenuModel.exportResultsInteractive();		return; }
 						if (name === 'hasRefreshAllAnalyses')			{ resultsJsInterface.refreshAllAnalyses();		return;	}

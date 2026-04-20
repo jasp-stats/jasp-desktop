@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- RadioButton.qml -->
+  <meta name="description" content="A radio button option within a RadioButtonGroup.">
+  <title>RadioButton QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>RadioButton</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">RadioButton QML Type</h1>
+<!-- $$$RadioButton-brief -->
+<p>A radio button option within a <a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a>. <a href="#details">More...</a></p>
+<!-- @@@RadioButton -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-radiobutton-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$RadioButton-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Backed by RadioButtonBase. When checked, its name is sent as the value of the parent <a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a>. Supports nested child controls that can be enabled only when this radio button is selected.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> Used as a value option within a <a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a> (string).</li>
+<li><b>Default:</b> unchecked</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - Value sent to R when this option is selected. Alias: value. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Text displayed next to the radio indicator. Alias: text. Default: &quot;&quot;.</li>
+<li><b>checked</b> (bool) - Whether this radio button is currently selected. Default: false.</li>
+<li><b>childrenOnSameRow</b> (bool) - Place child controls on the same row. Default: false.</li>
+<li><b>enableChildrenOnChecked</b> (bool) - Only enable child controls when checked. Default: true.</li>
+<li><b>indentChildren</b> (bool) - Indent child controls below the label. Default: true.</li>
+<li><b>columns</b> (int) - Number of columns in the child controls area. Default: 1.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;hypothesis&quot;</span>
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;twoSided&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;≠ Test value&quot;</span>); <span class="name">checked</span>: <span class="number">true</span> }
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;greater&quot;</span>;  <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&gt; Test value&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;less&quot;</span>;     <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;&lt; Test value&quot;</span>) }
+}</pre>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></span> {
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Operation&quot;</span>)
+        <span class="name">name</span>: <span class="string">&quot;operation&quot;</span>
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> {
+                <span class="name">value</span>: <span class="string">&quot;plus&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Plus&quot;</span>); <span class="name">checked</span>: <span class="number">true</span>
+                <span class="type"><a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a></span> { <span class="name">label</span>: <span class="string">&quot;Extra Quantity&quot;</span>; <span class="name">name</span>: <span class="string">&quot;plusExtraQuantity&quot;</span>} <span class="comment">// This DoubleField will be eanbled only if Plus option is checked</span>
+        }
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;Multiply&quot;</span>;  <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Multiply&quot;</span>) }
+        <span class="type"><a href="qml-jasp-controls-radiobutton.html" translate="no">RadioButton</a></span> { <span class="name">value</span>: <span class="string">&quot;Divide&quot;</span>;    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Divide&quot;</span>) }
+}</pre>
+<!-- @@@RadioButton -->
+</body>
+</html>

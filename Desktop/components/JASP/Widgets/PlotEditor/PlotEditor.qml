@@ -208,6 +208,7 @@ Popup
 						PlotEditTabHead
 						{
 							buttonText:				qsTr("References")
+							visible:				INTERACTIVE_PLOTS
 						}
 						
 						Component.onCompleted:		setCurrentIndex(0);
@@ -278,7 +279,7 @@ Popup
 								}
 							}
 							
-							PlotEditingReferenceLines	{}
+							PlotEditingReferenceLines	{ visible: INTERACTIVE_PLOTS }
 						}
 					}
 

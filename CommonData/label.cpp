@@ -139,7 +139,7 @@ bool Label::setLabel(const std::string & label)
 {
 	if(_label != label)
 	{
-		std::string oldLabel = Label::label();
+		std::string oldLabel = _label;
 		_label = label;
 		
 		_column->labelDisplayChanged(this, oldLabel);
@@ -181,7 +181,7 @@ bool Label::setOriginalValue(const Json::Value & originalValue)
 
 bool Label::setOrigValLabel(const Json::Value &originalValue)
 {
-	std::string oldLabel	= label(),
+	std::string oldLabel	= _label,
 				newLabel	= !originalValue.isDouble() ? originalValue.asString() : "";
 	Json::Value previous	= _originalValue;
 	bool		labelChange = _label			!= newLabel || previous != originalValue, //If they are both "" it could still be a change because the originalValue apparently changed and that is what is shown
@@ -276,8 +276,21 @@ std::string Label::labelDisplay() const
 
 bool Label::isEmptyValue() const
 {
+	if(!std::isnan(_dblValue) && _column->isEmptyValue(_dblValue))
+			return true;
+		
 	return _column->isEmptyValue(originalValueAsString(false)) || _column->isEmptyValue(label());
 }
+
+std::pair<std::string, std::string> Label::origValDisplay() const	
+{
+	
+	const std::string value = originalValueAsString();
+	
+	return std::make_pair(value, processLabel(label(), value)); 
+}
+
+
 
 std::string Label::originalValueAsString(bool fancyEmptyValue, bool ignoreEmpty) const
 {

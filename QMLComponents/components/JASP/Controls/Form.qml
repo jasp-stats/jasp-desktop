@@ -20,6 +20,48 @@ import QtQuick.Controls as QtC
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype Form
+    \inqmlmodule JASP.Controls 1.0
+    \brief The top-level container for an analysis input form.
+
+	It provides the standard layout for a JASP analysis:
+    error/warning message boxes, an optional R syntax panel, and a GridLayout
+    content area where child controls are placed. Every analysis QML file
+    uses Form as its root element.
+
+    \note Module developers should always use Form as the root element of their
+    analysis QML files.
+
+    \section1 Properties
+
+    \list
+    \li \b columns (int) - Number of columns in the form's GridLayout. Default: 2.
+    \li \b plotWidth (int) - Default width for plots in this analysis. Default: 480.
+    \li \b plotHeight (int) - Default height for plots in this analysis. Default: 320.
+    \li \b majorVersion (int) - Major version of the form. Default: 1.
+    \li \b minorVersion (int) - Minor version of the form. Default: 0.
+    \li \b runAnalysisWhenOptionChange (bool) - Re-run analysis on any option change. Default: true.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Form {
+        VariablesForm {
+            AvailableVariablesList { name: "allVariables" }
+            AssignedVariablesList  { name: "dependent"; singleVariable: true }
+        }
+    }
+    \endqml
+*/
 AnalysisForm
 {
 	id					: form

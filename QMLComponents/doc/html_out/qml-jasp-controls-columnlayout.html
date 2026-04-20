@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- ColumnLayout.qml -->
+  <meta name="description" content="A vertical layout container with JASP-themed spacing.">
+  <title>ColumnLayout QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>ColumnLayout</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">ColumnLayout QML Type</h1>
+<!-- $$$ColumnLayout-brief -->
+<p>A vertical layout container with JASP-themed spacing. <a href="#details">More...</a></p>
+<!-- @@@ColumnLayout -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-columnlayout-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$ColumnLayout-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Wraps Qt's ColumnLayout with default spacing and alignment suited for JASP analysis forms. Child items are arranged vertically from top to bottom.</p>
+<div class="admonition note">
+<p><b>Note: </b>ColumnLayout does not bind to R options. It is a layout-only control.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>spacing</b> (real) - Vertical spacing between child items. Default: 5.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-columnlayout.html" translate="no">ColumnLayout</a></span> {
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;option1&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Option 1&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;option2&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Option 2&quot;</span>) }
+}</pre>
+<!-- @@@ColumnLayout -->
+</body>
+</html>

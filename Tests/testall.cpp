@@ -8,9 +8,9 @@
 #include "data/importers/csvimporter.h"
 #include "data/importers/odsimporter.h"
 #include "data/importers/jaspimporter.h"
+#include "data/exporters/jaspexporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
-#include "data/importers/jaspimporterold.h"
 #include "data/importers/readstatimporter.h"
 
 
@@ -109,7 +109,7 @@ void TestAll::testDataImport()
 		std::cerr << "Json does not exist yet, creating it now!" << std::endl;
 		QFile jsonFile(jsonFilePath);
 		jsonFile.open(QFile::OpenModeFlag::WriteOnly);
-		jsonFile.write(stringUtils::replaceBy(compareMe.toStyledString(), "\n", " ").c_str());
+		jsonFile.write(compareMe.toStyledString().c_str());
 		jsonFile.close();
 	}
 
@@ -117,9 +117,6 @@ void TestAll::testDataImport()
 
 	QFile jsonFile(jsonFilePath);
 
-	
-	
-	
 	jsonFile.open(QFile::OpenModeFlag::ReadOnly);
 
 	std::string jsonTxt  = fq(jsonFile.readAll());
@@ -161,6 +158,49 @@ void TestAll::testJaspDataImport_data()
 	}
 }
 
+void TestAll::testJaspRoundRobin_data()
+{
+	testJaspDataImport_data();
+}
+
+void TestAll::testJaspRoundRobin()
+{
+	QFETCH(QString, folder);
+	QFETCH(QString, dataFileAbsolutePath);
+
+	QDir subDir(_testLibrary());
+	subDir.cd(folder);
+
+	if(_pkg)
+		delete _pkg;
+
+	if(_importer)
+		delete _importer;
+
+	_pkg = new DataSetPackage(this);
+	
+	std::cerr << "Testing " << dataFileAbsolutePath << std::endl;
+	JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
+	
+	DataSet *	dataSet		= _pkg->dataSet();
+	QVERIFY2(dataSet,			"No dataset!");
+	
+	Json::Value compareMe	= dataSet->jsonForCompare();
+	std::string jaspFile	= TempFiles::createSpecific("testjasp", "temp.jasp");
+
+	std::cerr << "Storing jasp file temporarily to: " << jaspFile << std::endl;
+	JASPExporter().saveDataSet(jaspFile, [](int){});
+	
+	_pkg->reset();
+	QVERIFY2(_pkg->dataSet()->jsonForCompare() != compareMe, "DataSet should be different after resetting DataSetPackage!");
+	
+	JASPImporter::loadDataSet(jaspFile, [](int){});
+	
+	dataSet = _pkg->dataSet();
+	QVERIFY2(dataSet,									"No dataset!");
+	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
+}
+
 
 void TestAll::testJaspDataImport()
 {
@@ -180,12 +220,7 @@ void TestAll::testJaspDataImport()
 	
 	std::cerr << "Testing " << dataFileAbsolutePath << std::endl;
 
-	bool useOldImporter = JASPImporterOld::isCompatible(fq(dataFileAbsolutePath)) != JASPImporterOld::Compatibility::NotCompatible;
-
-	std::cerr << (useOldImporter ? "Using old importer" : "Using normal importer") << std::endl;
-	
-	if(useOldImporter)  JASPImporterOld::loadDataSet(fq(dataFileAbsolutePath),	[](int){});
-	else                JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
+	JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
 	
 	DataSet * dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,						"No dataset!");
@@ -204,7 +239,7 @@ void TestAll::testJaspDataImport()
 		std::cerr << "Json does not exist yet, creating it now!" << std::endl;
 		QFile jsonFile(jsonFilePath);
 		jsonFile.open(QFile::OpenModeFlag::WriteOnly);
-		jsonFile.write(stringUtils::replaceBy(compareMe.toStyledString(), "\n", " ").c_str());
+		jsonFile.write(compareMe.toStyledString().c_str());
 		jsonFile.close();
 
 	}
@@ -212,8 +247,6 @@ void TestAll::testJaspDataImport()
 	QVERIFY(jsonFileIn.exists());
 
 	QFile jsonFile(jsonFilePath);
-
-	
 	
 	
 	jsonFile.open(QFile::OpenModeFlag::ReadOnly);

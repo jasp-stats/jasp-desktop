@@ -25,6 +25,8 @@
 #include "log.h"
 
 #include <QQmlContext>
+#include <QAccessible>
+#include <QScopeGuard>
 
 RowControls::RowControls(ListModel* parent
 						 , QQmlComponent* component)
@@ -36,6 +38,11 @@ RowControls::RowControls(ListModel* parent
 // So this RowControls instance needs to exist already.
 void RowControls::initValues(int row, const Term& key, const QMap<QString, Json::Value>& rowValues)
 {
+	// Suppress UIA events during row control creation — same issue as Analysis::createForm().
+	// See jasp-stats/jasp-desktop#6173 for details.
+	auto prevHandler = QAccessible::installUpdateHandler([](QAccessibleEvent*) {});
+	auto restoreHandler = qScopeGuard([&]() { QAccessible::installUpdateHandler(prevHandler); });
+
 	JASPListControl* listView = _parentModel->listView();
 
 	QQmlContext* context = new QQmlContext(qmlContext(listView), this);

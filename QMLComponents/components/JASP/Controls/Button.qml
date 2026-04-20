@@ -18,6 +18,43 @@
 import QtQuick
 import JASP.Controls
 
+/*!
+    \qmltype Button
+    \inqmlmodule JASP.Controls 1.0
+    \brief A generic clickable button.
+
+    \note Button does not bind to R options. It is used for triggering actions in the UI.
+
+    \section1 Properties
+
+    \list
+    \li \b text (string) - Button label text. Alias: label. Default: "".
+    \li \b iconSource (string) - Path to an icon displayed on the button.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b clicked() - Emitted when the button is clicked.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Button {
+        text: qsTr("Run Analysis")
+    }
+    \endqml
+*/
 JASPControl
 {
 	id:					button

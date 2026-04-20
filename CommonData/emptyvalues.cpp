@@ -83,10 +83,10 @@ void EmptyValues::setHasCustomEmptyValues(bool hasThem)
 
 bool EmptyValues::isEmptyValue(const std::string& val) const
 {
-	return (hasEmptyValues() && _emptyStrings.count(val)) || ( _parent && _parent->isEmptyValue(val));
+	return val.empty() || (hasEmptyValues() && _emptyStrings.count(val)) || ( _parent && _parent->isEmptyValue(val));
 }
 
 bool EmptyValues::isEmptyValue(const double val) const
 {
-	return (hasEmptyValues() && (std::isnan(val) || _emptyDoubles.count(val))) || ( _parent && _parent->isEmptyValue(val));
+	return std::isnan(val) || (hasEmptyValues() && _emptyDoubles.count(val)) || (_parent && _parent->isEmptyValue(val));
 }

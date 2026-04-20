@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- GridLayout.qml -->
+  <meta name="description" content="A responsive grid layout with JASP-themed spacing.">
+  <title>GridLayout QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>GridLayout</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">GridLayout QML Type</h1>
+<!-- $$$GridLayout-brief -->
+<p>A responsive grid layout with JASP-themed spacing. <a href="#details">More...</a></p>
+<!-- @@@GridLayout -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-gridlayout-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$GridLayout-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Wraps Qt's GridLayout with default row/column spacing and a 2-column layout. Automatically reduces column count or spacing when content overflows the available width. Used as the default layout container inside Form.</p>
+<div class="admonition note">
+<p><b>Note: </b>GridLayout does not bind to R options. It is a layout-only control.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>columns</b> (int) - Number of grid columns. Auto-reduces on overflow. Default: 2.</li>
+<li><b>rowSpacing</b> (real) - Vertical spacing between rows. Default: jaspTheme.rowGridSpacing.</li>
+<li><b>columnSpacing</b> (real) - Horizontal spacing between columns. Default: jaspTheme.columnGridSpacing.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-gridlayout.html" translate="no">GridLayout</a></span> {
+    <span class="name">columns</span>: <span class="number">3</span>
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;opt1&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Option 1&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;opt2&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Option 2&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;opt3&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Option 3&quot;</span>) }
+}</pre>
+<!-- @@@GridLayout -->
+</body>
+</html>

@@ -185,7 +185,7 @@ void DataSetPackage::generateEmptyData()
 	createDataSet();
 	
 	setDataSetSize(1, 1);
-	_dataSet->column(0)->initFromLookups(freeNewColumnName(0), 1, [](size_t){return "";}, [](size_t){return "";}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault(), false);
+	_dataSet->column(0)->initFromLookups(freeNewColumnName(0), 1, [](size_t){return "";}, [](size_t){return "";}, "", columnType::scale, {}, PreferencesModel::prefs()->thresholdScale(), PreferencesModel::prefs()->orderByValueByDefault());
 
 	endLoadingData();
 	
@@ -1754,6 +1754,23 @@ void DataSetPackage::setColumnDropLevels(size_t columnIndex, dropLevelsType drop
 	
 	emit refreshAllCompCols();
 	emit refreshAllAnalyses();
+}
+
+void DataSetPackage::setColumnHasLabels(size_t columnIndex, bool hasLabels)
+{
+	if(!_dataSet)
+		return;
+
+	Column* column = _dataSet->column(columnIndex);
+	
+	if (!column)
+		return;
+
+	column->setHasLabels(hasLabels);
+	
+	refresh();
+	emit labelsReordered(tq(column->name()));
+	
 }
 
 

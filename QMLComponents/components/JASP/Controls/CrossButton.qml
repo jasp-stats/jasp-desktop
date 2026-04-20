@@ -18,6 +18,22 @@
 import QtQuick
 import JASP
 
+/*!
+    \qmltype CrossButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief An internal × (cross) button used to dismiss or remove items.
+
+    Renders two rotated rectangles forming an × icon. Thickens on hover for visual feedback.
+    Used internally by ControlErrorMessage and other components.
+
+    \note This is an internal component. Module developers do not need to use this directly.
+
+    \section1 Signals
+
+    \list
+    \li \b crossClicked() - Emitted when the cross button is clicked.
+    \endlist
+*/
 Item
 {
 	id				: crossRectangle

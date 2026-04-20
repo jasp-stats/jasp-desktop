@@ -29,7 +29,6 @@ class JASPExporter: public Exporter
 {
 public:
 	static const Version jaspArchiveVersion;
-	static const Version dataArchiveVersion;
 
 	JASPExporter();
 	void saveDataSet(const std::string &path, std::function<void (int)> progressCallback) override;

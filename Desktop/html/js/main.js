@@ -3,6 +3,7 @@
 var jasp = null;
 var scrollAtAll = true;
 var analysesGlobal = null;
+var useInteractivePlots = false;
 
 $(document).ready(function () {
 	var d		= new Date();
@@ -110,14 +111,14 @@ $(document).ready(function () {
 	window.setAnalysesTitle = function(newTitle) { analyses.setTitle(newTitle); }
 
 
+	window.setInteractivePlots	= function(interactive)		{ useInteractivePlots = interactive;			}
+	window.setAppVersion		= function(version)			{ $(".app-version").text("Version " + version);	}
+	window.noInstructions		= function()				{ $('#instructions').text("");					}
+	window.noPatchinfo			= function()				{ $('#patchinfo').text("");						}
+	window.setTextHeight		= function(height)			{ $('body').css('font-size', height + 'px');	}
+	window.showInstructions		= function()				{ showInstructions = true;						}
 
-	window.setAppVersion	= function(version) { $(".app-version").text("Version " + version);	}
-	window.noInstructions	= function()		{ $('#instructions').text("");					}
-	window.noPatchinfo		= function()		{ $('#patchinfo').text("");						}
-	window.setTextHeight	= function(height)	{ $('body').css('font-size', height + 'px');	}
-	window.showInstructions = function()		{ showInstructions = true;						}
-
-	window.hideInstructions = function () {
+	window.hideInstructions		= function () {
 
 		showInstructions = false
 

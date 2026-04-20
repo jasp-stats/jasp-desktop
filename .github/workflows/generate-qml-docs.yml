@@ -1,0 +1,58 @@
+on:
+#  push:
+#    branches: [development]
+#    paths:
+#      - 'QMLComponents/components/JASP/Controls/**'
+#      - 'QMLComponents/doc/*.qdoc'
+#      - 'QMLComponents/doc/*.qdocconf'
+#
+  workflow_dispatch:
+
+name: generate-qml-docs
+
+jobs:
+  generate-qml-docs:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Qt (qdoc)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+
+      - name: Install pandoc
+        uses: pandoc/actions/setup@v1
+
+      - name: Generate HTML documentation
+        run: qdoc QMLComponents/doc/jasp_qml.qdocconf
+
+      - name: Convert HTML to Markdown
+        run: |
+          mkdir -p QMLComponents/doc/md_out
+          for f in QMLComponents/doc/html_out/*.html; do
+            echo "Converting $(basename "$f")..."
+            pandoc "$f" -o "QMLComponents/doc/md_out/$(basename "${f%.html}.md")" -t gfm
+          done
+
+      - name: Post-process Markdown
+        run: |
+          chmod +x QMLComponents/doc/fix-markdown.sh
+          bash QMLComponents/doc/fix-markdown.sh QMLComponents/doc/md_out
+
+      - name: Commit and push generated docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add QMLComponents/doc/html_out/ QMLComponents/doc/md_out/
+          if git diff --cached --quiet; then
+            echo "No documentation changes detected."
+          else
+            git commit -m "docs: regenerate QML documentation [skip ci]"
+            git push
+          fi

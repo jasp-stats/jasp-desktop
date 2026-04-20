@@ -25,6 +25,16 @@
 #include <functional>
 
 #include <archive.h>
+#include "json/json.h"
+
+struct ManifestInfo
+{
+	std::string jaspArchiveVersion,
+				jaspVersion;
+
+	ManifestInfo() {}
+	ManifestInfo(const std::string & _jaspArchiveVersion, const std::string & _jaspVersion);
+};
 
 /**
  * @brief The ArchiveReader class - Reads archives.
@@ -128,6 +138,10 @@ public:
 	std::string extension() const;
 
 	static std::vector<std::string> getEntryPaths(const std::string &archivePath, const std::string &entryBaseDirectory = std::string());
+
+	static ManifestInfo readManifest(const std::string & path);
+
+	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
 
 private:
 

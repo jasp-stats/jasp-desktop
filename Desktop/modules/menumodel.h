@@ -46,13 +46,8 @@ public:
 	};
 
 	MenuModel(RibbonButton * parent, Modules::DynamicModule		* module);
-	MenuModel(RibbonButton * parent, Modules::AnalysisEntries	* entries = new Modules::AnalysisEntries()); //The default new entries is to make sure that analysisEntries() has something to return for special buttons without their own entries
-
-	~MenuModel()
-	{
-		delete _entries;
-		_entries = nullptr;
-	}
+	MenuModel(RibbonButton * parent, Modules::DynamicModule		* module, const Modules::AnalysisEntries	& entries, bool isSubMenu);
+	MenuModel(RibbonButton * parent, const Modules::AnalysisEntries	& entries = Modules::AnalysisEntries()); //The default new entries is to make sure that analysisEntries() has something to return for special buttons without their own entries
 
 	int										rowCount(const QModelIndex &parent = QModelIndex())			const override	{	return analysisEntries().size();	}
 	QVariant								data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
@@ -69,17 +64,25 @@ public:
 	Q_INVOKABLE QString						getAnalysisFunction(int index)								const			{	return QString::fromStdString(analysisEntries().at(index)->function());	}
 	Q_INVOKABLE QString						getAnalysisTitle(	int index)								const			{	return QString::fromStdString(analysisEntries().at(index)->title());	}
 	Q_INVOKABLE QString						getAnalysisQML(		int index)								const			{	return QString::fromStdString(analysisEntries().at(index)->qml());	}
+	Q_INVOKABLE QVariant					getSubMenu(			int index)								const;
 	Q_INVOKABLE bool						iconSmall(			int index)								const			{	return analysisEntries().at(index)->smallIcon();	}
 	Q_INVOKABLE bool						isAnalysisEnabled(	int index);
-	void									setDynamicModule(Modules::DynamicModule * module)							{ beginResetModel(); _module = module; endResetModel(); }
+	void									setDynamicModule(Modules::DynamicModule * module);
 
-	Q_INVOKABLE bool						hasIcons()													const			{	return _hasIcons; }
+	Q_INVOKABLE bool						hasIcons()													const			{	return _hasIcons;	}
+	Q_INVOKABLE bool						hasSubMenus()												const			{	return _subMenus.size() > 0; }
+
 
 private:
+	void									_setEntries(const Modules::AnalysisEntries & entries);
+
+
 	RibbonButton				*	_ribbonButton	= nullptr;
 	Modules::DynamicModule		*	_module			= nullptr;
-	Modules::AnalysisEntries	*	_entries		= nullptr;		//For special buttons
+	Modules::AnalysisEntries		_entries;
 	bool							_hasIcons		= false;
+	std::map<QString, MenuModel *>	_subMenus;
+	bool							_isSubMenu		= false;
 };
 
 #endif

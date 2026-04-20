@@ -121,10 +121,10 @@ target_include_directories(
     ${LIBRDATA_INCLUDE_DIRS}
     # JSONCPP
     $<$<PLATFORM_ID:Linux>:${_PKGCONFIG_LIB_JSONCPP_INCLUDEDIR}>
-    $<$<BOOL:${FLATPAK_USED}>:/app/include/QtCore5Compat>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineQuick>
     $<$<BOOL:${FLATPAK_USED}>:/app/include/QtWebEngineCore>
     ${LIBFREEXL_INCLUDE_DIRS}
+    ${libsodium_INCLUDE_DIR}
 )
 
 target_include_directories(
@@ -158,8 +158,6 @@ target_link_libraries(
     Qt::QuickControls2
     Qt::QuickControls2Impl
     Qt::QuickWidgets
-    $<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
-    $<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
     Qt::QuickTemplates2
     Qt::DBus
     Qt::QmlWorkerScript
@@ -171,6 +169,7 @@ target_link_libraries(
     OpenSSL::Crypto
     # FreeXL
     ${LIBFREEXL_LIBRARIES}
+    ${libsodium_LIBRARIES}
     $<$<NOT:$<BOOL:${LINUX}>>:freexl::freexl>
     # ReadStat -----------------------------------
     ${LIBREADSTAT_LIBRARIES}
@@ -195,6 +194,11 @@ target_link_libraries(
 
 target_compile_definitions(JASPDesktopLib PUBLIC JASP_USES_QT_HERE)
 target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)
+
+if(INTERACTIVE_PLOTS)
+target_compile_definitions(JASPDesktopLib PUBLIC INTERACTIVE_PLOTS)
+target_compile_definitions(JASP           PUBLIC INTERACTIVE_PLOTS)
+endif()
 
 if(NOT WINDOWS)
   target_compile_options(JASPDesktopLib PUBLIC -Wno-deprecated-declarations)
@@ -253,7 +257,6 @@ qt_add_resources(
 
 # and some random stuff
 set(RESOURCES_RESOURCE_FILES
-    "resources/../modules/upgrader/upgrades.json"
     "resources/fonts/FiraCode-Retina.ttf" "resources/fonts/FreeSans.ttf")
 
 qt_add_resources(

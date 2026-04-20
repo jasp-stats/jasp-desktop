@@ -22,6 +22,28 @@ import QtQuick.Layouts
 
 
 
+/*!
+    \qmltype Divider
+    \inqmlmodule JASP.Controls 1.0
+    \brief A horizontal line separator with an optional centered label.
+
+    Renders a thin horizontal rule across the full form width. When a label is provided,
+    it is centered over the line with a background fill to create a visual break between sections.
+
+    \note Divider does not bind to R options. It is a layout-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b label (string) - Text displayed centered on the divider line. Default: "" (no label).
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Divider { label: qsTr("Advanced Options") }
+    \endqml
+*/
 Item
 {
 	property alias label: titleText.text

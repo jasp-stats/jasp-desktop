@@ -178,7 +178,13 @@ For a more in-depth approach, check-out these reference materials:
 - [JASP QML guide](/Docs/development/jasp-qml-guide.md)
 - [R Analyses guide](/Docs/development/r-analyses-guide.md) (or how to use `jaspResults`)
 
-## 7. How to contribute a module?
+### How to submit your module to our online module library?
+Send us message! Or make an issue [here](https://github.com/jasp-stats/jasp-issues/issues). 
+We love to be in contact and help out!
+More extensive documentation on the module submission and update process can be found [here](https://github.com/jasp-stats-modules/modules-registry/tree/main)
+
+
+## 7. How to contribute to an existing module?
 
 1. Push your changes to your fork.
 2. Submit a Pull Request to the [jasp-stats](https://github.com/jasp-stats) organization.

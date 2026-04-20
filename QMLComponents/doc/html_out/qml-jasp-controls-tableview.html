@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- TableView.qml -->
+  <meta name="description" content="A scrollable, editable data table for entering structured values.">
+  <title>TableView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>TableView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">TableView QML Type</h1>
+<!-- $$$TableView-brief -->
+<p>A scrollable, editable data table for entering structured values. <a href="#details">More...</a></p>
+<!-- @@@TableView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-tableview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$TableView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Renders a grid of editable cells with column and row headers, scrollbars, and optional add/remove column buttons (for GridInput model type). Each cell uses a <a href="qml-jasp-controls-formulafield.html" translate="no">FormulaField</a> with configurable validators (integer, double, string).</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> data.frame or matrix</li>
+<li><b>Default:</b> Depends on model type</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>modelType</b> (enum) - Table model type (JASP.Simple, JASP.GridInput, JASP.CustomContrasts, etc.). Default: depends on usage.</li>
+<li><b>defaultValue</b> (string) - Default value for new cells. Default: depends on modelType.</li>
+<li><b>initialColumnCount</b> (int) - Starting column count. Default: depends on modelType.</li>
+<li><b>cornerText</b> (string) - Text in the top-left corner cell. Default: &quot;Row #&quot;.</li>
+<li><b>minimum</b> (double) - Minimum numeric value for cells. Default: 0.</li>
+<li><b>decimals</b> (int) - Decimal places for double validation. Default: 1.</li>
+<li><b>isFirstColEditable</b> (bool) - Whether the first column is editable. Default: true.</li>
+<li><b>showAddRemoveButtons</b> (bool) - Show column add/remove buttons. Default: true for GridInput.</li>
+<li><b>factorsSource</b> (string) - Source for factor columns. Default: &quot;&quot;.</li>
+<li><b>filter</b> (string) - R expression filtering rows. Default: &quot;rep(TRUE, rowcount)&quot;.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-tableview.html" translate="no">TableView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;coefficients&quot;</span>
+    <span class="name">modelType</span>: <span class="name">JASP</span>.<span class="name">GridInput</span>
+    <span class="name">initialColumnCount</span>: <span class="number">3</span>
+}</pre>
+<!-- @@@TableView -->
+</body>
+</html>

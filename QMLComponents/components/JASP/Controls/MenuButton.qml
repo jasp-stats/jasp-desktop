@@ -2,6 +2,39 @@ import QtQuick
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype MenuButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A button with optional submenu arrow and hover-to-open behaviour.
+
+    Extends RoundedButton with hover-delay logic and a submenu indicator arrow.
+    Used internally for ribbon menus and toolbar items.
+
+    \note This is primarily an internal UI component. Module developers typically
+    use Button or HelpButton instead.
+
+    \section1 Properties
+
+    \list
+    \li \b hasSubMenu (bool) - Show a submenu arrow and enable hover-to-open. Default: false.
+    \li \b defaultColor (color) - Background color when idle. Default: "transparent".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b hoverClicked() - Emitted when hover-delay triggers on a submenu button.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    MenuButton {
+        text: qsTr("Options")
+        hasSubMenu: true
+    }
+    \endqml
+*/
 RoundedButton
 {
 	property bool	hasSubMenu:			false

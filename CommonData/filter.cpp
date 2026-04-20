@@ -24,7 +24,7 @@ void Filter::dbCreate()
 	_id = db().filterInsert(_data->id(), _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
 }
 
-void Filter::dbUpdate()
+void Filter::dbUpdate(bool writeFiltered)
 {
 	JASPTIMER_SCOPE(Filter::dbUpdate);
 
@@ -34,6 +34,9 @@ void Filter::dbUpdate()
 	{
 		db().transactionWriteBegin();
 		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
+		
+		if(writeFiltered)
+			db().filterWrite(_id, _filtered);
 
 		incRevision();
 		db().transactionWriteEnd();
@@ -159,7 +162,9 @@ bool Filter::checkForUpdates()
 {
 	if(_id == -1)
 	{
-		_id = db().dataSetGetFilter(_data->id());
+		for(int anId : db().dataSetGetFilters(_data->id()))
+			if(_id == -1 || anId < _id) //< _id because the default filter will probably have the lowest id, while those for audit 
+				_id = anId;
 		
 		if(_id == -1)
 			return false;

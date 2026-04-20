@@ -1,0 +1,9 @@
+/*!
+    \qmlmodule JASP.Controls 1.0
+    \title JASP.Controls QML Module
+    \brief The library of custom JASP UI components.
+    
+    This module contains all the visual elements used to build JASP analyses.
+    
+    The complete list of types is automatically generated below.
+*/

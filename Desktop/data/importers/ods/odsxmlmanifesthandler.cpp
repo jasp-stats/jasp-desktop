@@ -1,82 +1,52 @@
 #include <QRegularExpression>
 #include "odsxmlmanifesthandler.h"
 
-using namespace std;
-using namespace ods;
-
-XmlManifestHandler::XmlManifestHandler(ODSImportDataSet *data)
- : XmlHandler(data)
- , _foundRoot(false)
+namespace ods
 {
 
+XmlManifestHandler::XmlManifestHandler(ods::ODSImportDataSet *data)
+	: XmlHandler(data)
+	, _foundRoot(false)
+{
 }
 
-/**
- * @brief startElement Called on the start of an element.
- * @param namespaceURI - the URI.
- * @param localName - local name (name without prefix).
- * @param qName - Qualified name.
- * @param atts- Attributes.
- * @return true on no error found.
- *
- * Called when a <tag ...> construction found.
- *
- */
-bool XmlManifestHandler::startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts)
+bool XmlManifestHandler::parse(QXmlStreamReader &reader)
 {
 	static const QString localNameFileEntry("file-entry");
-	static const QString attNamemediaType("manifest:media-type");
 	static const QString attNameFullPath("manifest:full-path");
+	static const QString attNamemediaType("manifest:media-type");
 	static const QString sheetMediaType("application/vnd.oasis.opendocument.spreadsheet");
-	static const QString root("/");
-	static const QRegularExpression rx(_dataSet->contentRegExpression, QRegularExpression::CaseInsensitiveOption);
+	static const QString rootPath("/");
 
-	if (localName == localNameFileEntry)
+	const QRegularExpression rx(_dataSet->contentRegExpression, QRegularExpression::CaseInsensitiveOption);
+
+	while (!reader.atEnd() && !reader.hasError())
 	{
-		QString fullPath = atts.value(attNameFullPath);
-		QString mediaType = atts.value(attNamemediaType);
+		QXmlStreamReader::TokenType token = reader.readNext();
 
-		// are we a spread-sheet?
-		if ((fullPath == root) && (!_foundRoot))
+		if (token == QXmlStreamReader::StartElement)
 		{
-			_foundRoot = true;
-			if (mediaType != sheetMediaType)
-				throw runtime_error("File is not a ODS spreadsheet.");
+			if (reader.name() == localNameFileEntry)
+			{
+				QXmlStreamAttributes atts = reader.attributes();
+				QString fullPath  = atts.value(attNameFullPath).toString();
+				QString mediaType = atts.value(attNamemediaType).toString();
 
-		}
-		else if (rx.match(fullPath).hasMatch() && _foundRoot)
-		{ // Found a content file name.
-			_dataSet->setContentFilename(fullPath.toStdString());
+				if (fullPath == rootPath && !_foundRoot)
+				{
+					_foundRoot = true;
+					if (mediaType != sheetMediaType)
+							throw std::runtime_error("File is not a ODS spreadsheet.");
+				}
+				else if (_foundRoot && rx.match(fullPath).hasMatch())
+				{
+					_dataSet->setContentFilename(fullPath.toStdString());
+				}
+			}
 		}
 	}
 
-	return true;
+	return !reader.hasError();
 }
 
-/**
- * @brief endElement Called on the end of an element.
- * @param namespaceURI - the URI.
- * @param localName - local name (name without prefix).
- * @param qName - Qualified name.
- * @param atts- Attributes.
- * @return true on no error found.
- *
- * Called when a </tag> construction found.
- *
- */
-bool XmlManifestHandler::endElement(const QString &namespaceURI, const QString &localName, const QString &qName)
-{
-
-	return true;
-}
-
-/**
- * @brief characters Called when char data found.
- * @param ch The found data.
- * @return true on no error.
- */
-bool XmlManifestHandler::characters(const QString &ch)
-{
-
-	return true;
-}
+} // namespace ods

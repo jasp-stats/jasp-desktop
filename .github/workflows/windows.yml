@@ -1,48 +1,104 @@
-name: Windows
+name: 'Windows'
 
 on:
-  push:
-    branches:
-      - github-action-debug
-
+   pull_request:
+     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', 'windows.yml']
+   workflow_dispatch:
+   
 jobs:
-  qt:
-    name: Windows Build
+      
+   build-jasp:
+   
     runs-on: windows-latest
-
+    env:
+       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+       
+    name: build test on Windows
+        
     steps:
-      - name: Cache Qt
-        uses: actions/cache@v1  # not v2!
+
+      - uses: r-lib/actions/setup-r@v2
         with:
-          path: ../Qt/6.2.4
-          key: ${{ runner.os }}-QtCache-Qt6-2
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+          r-version: 'release'
+          windows-path-include-rtools: false
+          windows-path-include-mingw: true
+        
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4
         with:
-          version: '6.2.4'
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
-          install-deps: 'true'
-          modules: 'qtwebengine'
-          cached: ${{ steps.cache-qt-6-2.outputs.cache-hit }}
-          setup-python: 'true'
-          tools: ''
-          set-env: 'true'
-          tools-only: 'false'
-      - name: Installing Conan
+            version: 6.10.*
+            aqtversion: '==3.1.*'
+            host: 'windows'
+            target: 'desktop'
+            arch: 'win64_msvc2022_64'
+            cache: 'false'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qt5compat qtshadertools'
+            tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
+
+      - name: dependencies for rtools
         run: |
-          pip install wheel setuptools
-          pip install conan --upgrade
-          conan --version
-      - name: Configuring Conan Profile
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-toolchain make autoconf automake wget git cmake mingw-w64-ucrt-x86_64-libiconv libtool zlib-devel mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-readstat"
+      
+      - name: Download and build rdata
         run: |
-          conan profile new default --detect
-          conan profile show default
-      - uses: actions/checkout@v2
-      - name: Configure
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "git clone https://github.com/WizardMac/librdata.git"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./autogen.sh"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./configure --host=$MINGW_CHOST --build=$MINGW_CHOST && make && make install"
+      
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+        with:
+          audit_token: ${{ secrets.CONAN_AUDIT_TOKEN }}
+          cache_packages: true
+            
+      - name: Configure CMake Generator
+        shell: pwsh
         run: |
-          git submodule update --init
-          cmake -S . -B build -DGITHUB_PAT=${{ secrets.GPAT_FOR_JASP }} -DGITHUB_BUILD=ON
-      - name: Building JASP
-        run: cmake --build build
+           #make a global conan config file.
+           $conanConfigHome = (conan config home).Trim()
+           $globalConfPath = Join-Path $conanConfigHome "global.conf"
+           New-Item -ItemType Directory -Force -Path $conanConfigHome | Out-Null
+           "tools.cmake.cmaketoolchain:generator=Ninja`ntools.build:skip_test=true" | Set-Content -Path $globalConfPath -Encoding utf8
+           Get-Content $globalConfPath
+           conan config show *
+      
+      - uses: ilammy/msvc-dev-cmd@v1
+      
+      - uses: actions/checkout@v4
+      
+      - name: Configure JASP desktop
+        run: |
+            git submodule update --init
+            cmake -S . -B jasp-build `
+            -DCMAKE_GENERATOR="Ninja" `
+            -DCMAKE_BUILD_TYPE="Release" `
+            -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" `
+            -DBUILD_TESTS=ON `
+            -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC" `
+            -DRTOOLS_PATH="C:/rtools45/ucrt64"
+        env:
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC"
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+  
+      - name: Build JASP desktop
+        run: |
+             & "$env:IQTA_TOOLS\CMake_64\bin\cmake.exe" --build jasp-build --target all
+        env: 
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/"
+
+      - name: Run Tests
+        shell: pwsh
+        run: |
+            cd jasp-build
+            ls
+            $env:QT_QPA_PLATFORM = "offscreen"
+            & ".\JASPTest.exe"
+            & ".\JASPQuickTest.exe"
+            & ".\JASPTestDebugData.exe"
+            & ".\JASPTestEngine.exe"
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Tests failed with exit code $LASTEXITCODE"
+                exit $LASTEXITCODE
+            }

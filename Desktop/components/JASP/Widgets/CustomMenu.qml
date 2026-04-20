@@ -18,19 +18,20 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import JASP.Controls				as JASPControl
-import Qt5Compat.GraphicalEffects
 
 FocusScope
 {
 	id							: menu
 	width						: menuRectangle.width
 	height						: menuRectangle.height
-	visible						: showMe && activeFocus
+	visible						: showMe && (activeFocus || (hasSubMenus && customSubMenu.activeFocus))
 	x							: Math.min(menuMinPos.x + (menuMinIsMin ? Math.max(0, menuX) : menuX), menuMaxPos.x - (width  + 2) )
 	y							: Math.min(menuMinPos.y + (menuMinIsMin ? Math.max(0, menuY) : menuY), menuMaxPos.y - (height + 2) )
 	property var	props		: undefined
 	property bool	hasIcons	: true
+	property bool	hasSubMenus	: false
 	property real	_iconPad	: 5 * preferencesModel.uiScale
 	property int	menuX		: menuOffset.x + menuScroll.x
 	property int	menuY		: menuOffset.y + menuScroll.y
@@ -72,11 +73,7 @@ FocusScope
 		case Qt.Key_Return:
 		case Qt.Key_Space:
 			if (currentIndex > -1)
-			{
 				callMenuAction(currentIndex)
-				menu.currentIndex = -1;
-			}
-			closeMenu();
 			break;
 		case Qt.Key_Escape:
 			menu.currentIndex = -1;
@@ -89,7 +86,8 @@ FocusScope
 
 	onPropsChanged:
 	{
-		hasIcons = (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"])) ? true : menu.props["hasIcons"]
+		hasIcons	= (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"]))		? true	: menu.props["hasIcons"]
+		hasSubMenus = (menu.props === undefined || "undefined" === typeof(menu.props["hasSubMenus"]))	? false : menu.props["hasSubMenus"]
 
 		if (menu.props === undefined || menu.props["model"] !== resultMenuModel)
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
@@ -116,7 +114,7 @@ FocusScope
 		menu.showMe			= true;
 
 		menu.forceActiveFocus();
-
+		navigate(1)
 	}
 
 	function hide()
@@ -168,6 +166,11 @@ FocusScope
 		if (menu.sourceItem !== null)
 			menu.sourceItem.forceActiveFocus()
 		menu.props['functionCall'](index)
+	}
+
+	function currentMenuItem(index)
+	{
+		return repeater.itemAt(index)
 	}
 
 	Rectangle
@@ -362,6 +365,7 @@ FocusScope
 										verticalCenter	: parent.verticalCenter
 									}
 								}
+
 								MouseArea
 								{
 									id				: mouseArea
@@ -377,13 +381,23 @@ FocusScope
 						{
 							id: menuGroupTitle
 
-							Item
+							Rectangle
 							{
 								id		: menuItem
 								width	: initWidth
 								height	: (isSmall ? 0.666 : 1) * jaspTheme.menuGroupTitleHeight
+								color	: (model.modelData === undefined) && !menuItem.itemEnabled
+												? "transparent"
+												: groupMouseArea.pressed || index == currentIndex
+													? jaspTheme.buttonColorPressed
+													: groupMouseArea.containsMouse
+														? jaspTheme.buttonColorHovered
+														: "transparent"
 
-								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + 15 * preferencesModel.uiScale
+								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+
+
+								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + (subMenuItemArrow.visible ? subMenuItemArrow.width : 0) + 15 * preferencesModel.uiScale
 
 								Image
 								{
@@ -422,6 +436,37 @@ FocusScope
 										verticalCenter	: parent.verticalCenter
 									}
 								}
+
+								Image
+								{
+									id					: subMenuItemArrow
+									height				: 15 * preferencesModel.uiScale
+									width				: height
+									visible				: menu.hasSubMenus
+
+									source				: jaspTheme.iconPath + "arrow-right.png"
+									smooth				: true
+									mipmap				: true
+									fillMode			: Image.PreserveAspectFit
+
+									verticalAlignment	: Text.AlignVCenter
+									anchors
+									{
+										right			: parent.right
+										verticalCenter	: parent.verticalCenter
+									}
+								}
+
+								MouseArea
+								{
+									id				: groupMouseArea
+									hoverEnabled	: true
+									anchors.fill	: parent
+									onClicked		: callMenuAction(index)
+									enabled			: subMenuItemArrow.visible
+								}
+
+
 							}
 						}
 
@@ -436,13 +481,15 @@ FocusScope
 		}
 	}
 
-	RectangularGlow
+	RectangularShadow
 	{
 		id				: menuShadow
 		anchors.fill	: menuRectangle
 		color			: jaspTheme.shadow
-		spread			: 0.2
-		cornerRadius	: menuRectangle.radius + glowRadius
-		glowRadius		: 5
+		blur			: 5
+		spread			: 2
+		radius			: menuRectangle.radius
+		offset.x		: 2
+		offset.y		: 2
 	}
 }

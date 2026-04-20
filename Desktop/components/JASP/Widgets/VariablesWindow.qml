@@ -279,9 +279,34 @@ FocusScope
 					id: computedColumnWindow
 				}
 
-				LabelEditorWindow
+				Rectangle
 				{
-					id: labelEditonWindow
+					id:			labelsView
+					color:		jaspTheme.uiBackground
+					enabled:	!columnModel.isVirtual
+					
+					CheckBox
+					{
+						id:					columnHasLabels
+						label:				qsTr("Use labels")
+						checked:			columnModel.hasLabels
+						onCheckedChanged:	columnModel.hasLabels = checked
+					}
+				
+					LabelEditorWindow
+					{
+						id:					labelEditonWindow
+						enabled:			columnModel.hasLabels
+						height:				labelsView.height - y
+						opacity:			enabled ? 1 : .5
+						anchors
+						{
+							top:		columnHasLabels.bottom
+							left:		parent.left
+							right:		parent.right
+							margins:	jaspTheme.generalAnchorMargin
+						}
+					}
 				}
 
 				Rectangle

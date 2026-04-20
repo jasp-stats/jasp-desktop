@@ -1,0 +1,15 @@
+body { font-family: "Segoe UI", sans-serif; color: #333; line-height: 1.6; max-width: 1000px; margin: 0 auto; padding: 20px; }
+h1, h2, h3 { color: #0097e6; } /* JASP Blue */
+h1 { border-bottom: 2px solid #eee; padding-bottom: 10px; }
+a { color: #0097e6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Table Styling (Critical for R Data Signatures) */
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+th { background-color: #f8f9fa; color: #444; }
+tr:hover { background-color: #f1f1f1; }
+
+/* Code Blocks */
+pre { background: #f4f4f4; padding: 15px; border-radius: 5px; border-left: 4px solid #0097e6; overflow-x: auto; }
+code { font-family: "Consolas", monospace; color: #d63031; }

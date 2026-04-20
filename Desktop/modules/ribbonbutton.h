@@ -50,7 +50,7 @@ class RibbonButton : public QObject
 	Q_PROPERTY(bool		ready			READ ready				WRITE setReady				NOTIFY readyChanged			)
 	Q_PROPERTY(bool		error			READ error				WRITE setError				NOTIFY errorChanged			)
 	Q_PROPERTY(bool		remember		READ remember			WRITE setRemember			NOTIFY rememberChanged		)
-	Q_PROPERTY(bool separator READ separator WRITE setSeparator NOTIFY separatorChanged)
+	Q_PROPERTY(bool		separator		READ separator			WRITE setSeparator			NOTIFY separatorChanged)
 
 public:
 
@@ -73,7 +73,7 @@ public:
 	Modules::AnalysisEntry	*	getEntry(const std::string& name);
 	QVariant					menu()														const			{ return QVariant::fromValue(_menuModel);					}
 	stringvec					getAllEntries()												const;
-	bool						dataLoaded()												const			{ return Modules::DynamicModules::dynMods() &&  Modules::DynamicModules::dynMods()->dataLoaded();	}
+	bool						dataLoaded()												const			{ return DynamicModules::dynMods() &&  DynamicModules::dynMods()->dataLoaded();	}
 	bool						active()													const			{ return _active;											}
 	QString						toolTip()													const			{ return _toolTipF ? _toolTipF() : _toolTip;											}
 	bool						isBundled()													const			{ return _module && _module->isBundled();					}

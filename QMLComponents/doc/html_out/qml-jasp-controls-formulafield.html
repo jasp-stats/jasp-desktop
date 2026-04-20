@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- FormulaField.qml -->
+  <meta name="description" content="A text field preset for entering R-style formulas.">
+  <title>FormulaField QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>FormulaField</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-textfield">Inherited Properties from TextField</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">FormulaField QML Type</h1>
+<!-- $$$FormulaField-brief -->
+<p>A text field preset for entering R-style formulas. <a href="#details">More...</a></p>
+<!-- @@@FormulaField -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-textfield.html" translate="no">TextField</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-formulafield-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$FormulaField-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> with the &quot;formula&quot; input type. Formulas are evaluated by the R engine and validated against configurable min/max bounds. The computed numeric result is accessible via realValue.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code> (formula string, evaluated to numeric)</li>
+<li><b>Default:</b> &quot;0&quot;</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>realValue</b> (double) - The evaluated numeric result of the formula. Read-only.</li>
+<li><b>realValues</b> (array) - Array of evaluated results when formula yields multiple values. Read-only.</li>
+<li><b>min</b> (double) - Minimum allowed evaluated value. Default: -Infinity.</li>
+<li><b>max</b> (double) - Maximum allowed evaluated value. Default: Infinity.</li>
+<li><b>inclusive</b> (enum) - Whether min/max bounds are inclusive. Default: JASP.MinMax. Can have also the values JASP.MinOnly, JASP.MaxOnly or JASP.None.</li>
+<li><b>parseDefaultValue</b> (bool) - Whether the default value should be parsed as a formula. Default: true.</li>
+</ul>
+<h2 id="inherited-properties-from-textfield">Inherited Properties from TextField</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>value</b> (string) - Current formula text. Default: &quot;&quot;.</li>
+<li><b>defaultValue</b> (var) - Default formula text. Default: &quot;0&quot;.</li>
+<li><b>label</b> (string) - Label displayed before the field. Default: &quot;&quot;.</li>
+<li><b>afterLabel</b> (string) - Label displayed after the field. Default: &quot;&quot;.</li>
+<li><b>fieldWidth</b> (int) - Width of the input field. Default: jaspTheme.textFieldWidth / 2.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-formulafield.html" translate="no">FormulaField</a></span> { <span class="comment">// The user can here type '1/3' or 'sin(10)'</span>
+    <span class="name">name</span>: <span class="string">&quot;priorMean&quot;</span>
+    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Prior mean&quot;</span>)
+    <span class="name">defaultValue</span>: <span class="string">&quot;0&quot;</span>
+}</pre>
+<!-- @@@FormulaField -->
+</body>
+</html>

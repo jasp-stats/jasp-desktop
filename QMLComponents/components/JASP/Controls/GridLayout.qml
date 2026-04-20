@@ -20,6 +20,36 @@ import QtQuick
 import QtQuick.Layouts as QT
 
 
+/*!
+    \qmltype GridLayout
+    \inqmlmodule JASP.Controls 1.0
+    \brief A responsive grid layout with JASP-themed spacing.
+
+    Wraps Qt's GridLayout with default row/column spacing and a 2-column layout.
+    Automatically reduces column count or spacing when content overflows the available width.
+    Used as the default layout container inside Form.
+
+    \note GridLayout does not bind to R options. It is a layout-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b columns (int) - Number of grid columns. Auto-reduces on overflow. Default: 2.
+    \li \b rowSpacing (real) - Vertical spacing between rows. Default: jaspTheme.rowGridSpacing.
+    \li \b columnSpacing (real) - Horizontal spacing between columns. Default: jaspTheme.columnGridSpacing.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    GridLayout {
+        columns: 3
+        CheckBox { name: "opt1"; label: qsTr("Option 1") }
+        CheckBox { name: "opt2"; label: qsTr("Option 2") }
+        CheckBox { name: "opt3"; label: qsTr("Option 3") }
+    }
+    \endqml
+*/
 QT.GridLayout
 {
 	id:						gridLayout

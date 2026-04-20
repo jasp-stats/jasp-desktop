@@ -137,8 +137,8 @@ Item
 		ALTNavigation.strategy:				AssignmentStrategy.INDEXED
 		ALTNavigation.requestedPostfix:		"M"
 
-		onDragStarted:					customMenu.hide()
-		onMovementStarted:				customMenu.hide()
+		onDragStarted:					customMenu.hideMenus()
+		onMovementStarted:				customMenu.hideMenus()
 		Keys.onPressed: (event) =>
 		{
 			if (event.key === Qt.Key_Left || event.key === Qt.Key_Backtab)

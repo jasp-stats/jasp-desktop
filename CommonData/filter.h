@@ -48,7 +48,7 @@ public:
 	void				setId(				int		id)			{ _id = id; }
 
 	void				dbCreate();
-	void				dbUpdate();
+	void				dbUpdate(bool writeFiltered = false);
 	void				dbUpdateErrorMsg();
 	void				dbLoad();
 	bool				dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if an error is set

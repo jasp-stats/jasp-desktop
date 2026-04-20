@@ -21,6 +21,50 @@ import QtQuick
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype SimpleTableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A table view preset with Add Column, Delete Column, and Reset buttons.
+
+    Extends BasicThreeButtonTableView with the Simple model type.
+    Columns can be added and removed dynamically. Reset restores the
+    initial column layout.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} data.frame
+    \li \b{Default:} Table with initialColumnCount columns and initialRowCount rows
+    \endlist
+
+    \section1 Inherited Properties from BasicThreeButtonTableView
+
+    \list
+    \li \b name (string) - R option name. Default: "".
+    \li \b source (var) - Source for populating the table.
+    \li \b initialColumnCount (int) - Starting column count. Default: 1.
+    \li \b initialRowCount (int) - Starting row count. Default: 0.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    SimpleTableView {
+        name: "priorMatrix"
+        initialColumnCount: 3
+        initialRowCount: 3
+    }
+    \endqml
+*/
 BasicThreeButtonTableView
 {
 	modelType		: JASP.Simple

@@ -17,8 +17,15 @@ FocusScope
 
 	property bool opened: false //should be from some model
 	property int currentIndex: preferencesModel.developerMode ? -3 : -1  // -2, -3 denote install module and developer mode buttons
+	
+	onVisibleChanged: engineSync.activateUtilEngine = visible
 
-	onOpenedChanged: if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
+	onOpenedChanged: {
+		
+		if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
+		
+		
+	}
 
 	Keys.onEscapePressed:	closeAndFocusRibbon();
 	Keys.onRightPressed:	closeAndFocusRibbon();
@@ -321,6 +328,7 @@ FocusScope
 			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
 			contentWidth:			width
 			width:                  visible ? 340 * preferencesModel.uiScale : 0
+			clip:					true
 
 			anchors
 			{
@@ -566,10 +574,19 @@ FocusScope
 		Rectangle
 		{
 			id:				progressOverlay
-			anchors.fill:	parent
-			color:			jaspTheme.grayDarker
+			anchors
+			{
+				left:		moduleStoreContainer.left
+				right:		moduleStoreContainer.right
+				top:		moduleStoreContainer.top
+				bottom:		moduleStoreContainer.bottom
+			}
+			color:			jaspTheme.fileMenuColorBackground
             visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
 			z:				10
+			clip:			true
+			property real	waveHeight:		86 * preferencesModel.uiScale
+			property real	waveWidth:		1400 * preferencesModel.uiScale
 
 			MouseArea
 			{
@@ -579,8 +596,59 @@ FocusScope
 				preventStealing: true
 			}
 
+			Image
+			{
+				id:						overlayTopWave
+				z:						1
+				opacity:				0.35
+				fillMode:				Image.TileHorizontally
+				horizontalAlignment:	Image.AlignHCenter
+				height:					sourceSize.height
+				width:					progressOverlay.width + progressOverlay.waveWidth
+				sourceSize.width:		progressOverlay.waveWidth
+				sourceSize.height:		progressOverlay.waveHeight
+				source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+				cache:					false
+				anchors.top:			parent.top
+
+				NumberAnimation on x
+				{
+					from:		0
+					to:			-progressOverlay.waveWidth
+					duration:	8000
+					loops:		Animation.Infinite
+					running:	progressOverlay.visible
+				}
+			}
+
+			Image
+			{
+				id:						overlayBottomWave
+				z:						1
+				opacity:				0.35
+				fillMode:				overlayTopWave.fillMode
+				horizontalAlignment:	Image.AlignHCenter
+				height:					overlayTopWave.height
+				width:					progressOverlay.width + progressOverlay.waveWidth
+				sourceSize.width:		overlayTopWave.sourceSize.width
+				sourceSize.height:		overlayTopWave.sourceSize.height
+				source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+				cache:					false
+				anchors.bottom:			parent.bottom
+
+				NumberAnimation on x
+				{
+					from:		0
+					to:			-progressOverlay.waveWidth
+					duration:	8000
+					loops:		Animation.Infinite
+					running:	progressOverlay.visible
+				}
+			}
+
 			Column
 			{
+				z:					2
 				anchors.centerIn:	parent
 				spacing:			10 * preferencesModel.uiScale
 				width:				300 * preferencesModel.uiScale
@@ -594,7 +662,7 @@ FocusScope
                         let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
                         return progress + " " + action + " " + name + "...";
                     }
-                    color:				"white"
+                    color:				jaspTheme.black
 					font.pixelSize:		16 * preferencesModel.uiScale
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
@@ -630,7 +698,7 @@ FocusScope
 					{
 						anchors.centerIn:	parent
 						text:				moduleStore.downloadTotal > 0 ? Math.round((moduleStore.downloadProgress / moduleStore.downloadTotal) * 100) + "%" : "0%"
-						color:				"white"
+						color:				jaspTheme.black
 						font.pixelSize:		12 * preferencesModel.uiScale
 					}
 				}

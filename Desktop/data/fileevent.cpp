@@ -16,6 +16,12 @@
 // <http://www.gnu.org/licenses/>.
 //
 
+#include "fileevent.h"
+#include "exporters/exporter.h"
+#include "exporters/dataexporter.h"
+#include "exporters/resultexporter.h"
+#include "exporters/jaspexporter.h"
+
 #include <QTimer>
 #include "fileevent.h"
 #include "processinfo.h"
@@ -93,11 +99,12 @@ bool FileEvent::setPath(const QString & path)
 
 }
 
-void FileEvent::setComplete(bool success, const QString & message)
+void FileEvent::setComplete(bool success, const QString & message, bool cancelled)
 {
 	_completed	= true;
 	_success	= success;
 	_message	= message;
+	_cancelled	= cancelled;
 
 	emit completed(this);
 }
@@ -202,5 +209,10 @@ QString FileEvent::getProgressMsg() const
 	}
 
 	return tr("Processing File"); //This will never show up on screen right?
+}
+
+void FileEvent::setSilent(bool newSilent)
+{
+	_cancelled = newSilent;
 }
 

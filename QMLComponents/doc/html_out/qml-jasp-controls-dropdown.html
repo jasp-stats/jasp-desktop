@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- DropDown.qml -->
+  <meta name="description" content="A selection control that presents a list of options in a dropdown menu.">
+  <title>DropDown QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>DropDown</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#signals">Signals</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">DropDown QML Type</h1>
+<!-- $$$DropDown-brief -->
+<p>A selection control that presents a list of options in a dropdown menu. <a href="#details">More...</a></p>
+<!-- @@@DropDown -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-colorpalette.html" translate="no">ColorPalette</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-dropdown-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$DropDown-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Returns the value of the selected item as a string to R.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code></li>
+<li><b>Default:</b> First item's value, or &quot;&quot; if addEmptyValue is true</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Label displayed before the dropdown. Default: &quot;&quot;.</li>
+<li><b>currentValue</b> (var) - The value of the currently selected item.</li>
+<li><b>currentIndex</b> (int) - Index of currently selected item. Default: 0.</li>
+<li><b>values</b> (array) - Simple array of values (creates value=label pairs). Default: [].</li>
+<li><b>source</b> (var) - Source for populating from variables or other controls. Can be the id or the name (or an array of ids/names) of the controls.</li>
+<li><b>addEmptyValue</b> (bool) - Add an empty option at the start. Default: false.</li>
+<li><b>placeholderText</b> (string) - Text shown when empty value is selected. Default: &quot;&lt;no choice&gt;&quot;.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="signals">Signals</h2>
+<ul>
+<li><b>activated(int index)</b> - Emitted when user selects an item.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type">Column</span> {
+    <span class="type"><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;correlationType&quot;</span>
+        <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Correlation coefficient&quot;</span>)
+        <span class="name">values</span>: [
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Pearson&quot;</span>),  value: <span class="string">&quot;pearson&quot;</span>  },
+            { label: <span class="name">qsTr</span>(<span class="string">&quot;Spearman&quot;</span>), value: <span class="string">&quot;spearman&quot;</span> }
+        ]
+        <span class="name">indexDefaultValue</span>: <span class="number">0</span>
+    }
+    <span class="type"><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;factor&quot;</span>
+        <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Choose factor variable&quot;</span>)
+        <span class="name">source</span>: <span class="name">factors</span> <span class="comment">// id of the factors VariablesList</span>
+    }
+}</pre>
+<!-- @@@DropDown -->
+</body>
+</html>

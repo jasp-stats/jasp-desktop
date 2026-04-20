@@ -83,6 +83,9 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 		QString version = AboutModel::version();
 
 		runJavaScript("window.setAppVersion('" + version + "')");
+#ifdef INTERACTIVE_PLOTS
+		runJavaScript("window.setInteractivePlots(true)");
+#endif
 
 		setGlobalJsValues();
 		setFontFamily();
@@ -152,7 +155,9 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	QString fullpath = tq(TempFiles::createSpecific_clipboard(fq(path)));
 
 	QFile file(fullpath);
-	file.open(QIODevice::WriteOnly);
+	if(!file.open(QIODevice::WriteOnly))
+		Log::log() << "Cannot open file in saveTempImage: " << file.fileName() << " with error: " << file.errorString() << std::endl;
+
 	file.write(byteArray);
 	file.close();
 

@@ -136,31 +136,51 @@ if(WIN32)
 
   set(USE_CONAN ON)
   set(SYSTEM_TYPE WIN32)
+  set(VS_PATH 
+    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC"
+    CACHE PATH "Visual Studio edition path")
 
+  if(MSVC_VERSION EQUAL 1950)
+    # VS 2026 MSVC_TOOLSET_VERSION will not correct on some old cmake version.
+    set(MSVC_TOOLSET_VERSION 145)
+  endif()
+  
   message(STATUS ${MSVC_TOOLSET_VERSION})
   message(STATUS ${MSVC_VERSION})
 
-  if(MSVC_VERSION GREATER "1930")
+  if(MSVC_TOOLSET_VERSION  GREATER_EQUAL "143")
+    set(VC_MERGE_MODULE_NAME
+        "Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm"
+        CACHE STRING "Module Merge Name")
+    set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
+    set(VC_TOOLS_REDIST_PATH
+        "${VS_PATH}\\Redist\\MSVC\\v${MSVC_TOOLSET_VERSION}"
+    )
+    set(VC_VARS_PATH_NATIVE
+        "${VS_PATH}\\Auxiliary\\Build"
+    )
+  elseif(MSVC_VERSION GREATER "1930")
     set(VC_MERGE_MODULE_NAME
         "Microsoft_VC143_CRT_x64.msm"
         CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
     set(VC_TOOLS_REDIST_PATH
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Redist\\MSVC\\v143"
+        "${VS_PATH}\\Redist\\MSVC\\v143"
     )
     set(VC_VARS_PATH_NATIVE
-        "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build"
+        "${VS_PATH}\\Auxiliary\\Build"
     )
-  elseif(MSVC_VERSION GREATER "1920")
+  elseif(MSVC_VERSION EQUAL "1920")
+    set(VS_PATH "C:\\Program Files\\Microsoft Visual Studio\\2019\\Community\\VC")
     set(VC_MERGE_MODULE_NAME
         "Microsoft_VC142_CRT_x64.msm"
         CACHE STRING "Module Merge Name")
     set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
     set(VC_TOOLS_REDIST_PATH
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Redist\\MSVC\\v142"
+        "${VS_PATH}\\Redist\\MSVC\\v143"
     )
     set(VC_VARS_PATH_NATIVE
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Auxiliary\\Build"
+        "${VS_PATH}\\Auxiliary\\Build"
     )
   endif()
 

@@ -20,7 +20,60 @@ import QtQuick
 import QtQuick.Controls as QtC
 import JASP.Controls
 
+/*!
+    \qmltype CheckBox
+    \inqmlmodule JASP.Controls 1.0
+    \brief A boolean toggle control that binds a true/false value to an R option.
 
+    CheckBox can optionally contain child controls that become enabled when checked.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c logical
+    \li \b{Default:} \c FALSE
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b checked (bool) - Current checked state. Default: false.
+    \li \b label (string) - Text displayed next to the checkbox. Default: "".
+    \li \b childrenOnSameRow (bool) - If true, child controls layout horizontally. Default: false.
+    \li \b enableChildrenOnChecked (bool) - If true, children enabled only when checked. Default: true.
+    \li \b columns (int) - Number of columns for child controls layout. Default: 1.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b clicked() - Emitted when user clicks the checkbox.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    CheckBox {
+        name: "includeCI"
+        label: qsTr("Confidence interval")
+        checked: true
+
+        CIField {
+            name: "ciWidth"
+        }
+    }
+    \endqml
+*/
 CheckBoxBase
 {
 	id:					checkBox

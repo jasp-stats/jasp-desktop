@@ -37,6 +37,7 @@
 #include "data/labelfiltergenerator.h"
 #include "engine/enginesync.h"
 #include "gui/aboutmodel.h"
+#include "gui/encryptionsettingsmodel.h"
 #include "models/columntypesmodel.h"
 #include "gui/preferencesmodel.h"
 #include "modules/ribbonmodelfiltered.h"
@@ -114,6 +115,7 @@ public:
 	int					progressBarProgress()	const	{ return _progressBarProgress;	}
 	const QString &		progressBarStatus()		const	{ return _progressBarStatus;	}
 	QString				windowTitle()			const;
+	QString				currentFileUserReadable()			const;
 	int					screenPPI()				const	{ return _screenPPI;			}
 	bool				dataAvailable()			const	{ return _dataAvailable;		}
 	bool				analysesAvailable()		const	{ return _analysesAvailable;	}
@@ -318,7 +320,7 @@ private:
 	ComputedColumnModel			*	_computedColumnsModel	= nullptr;
 	FilterModel					*	_filterModel			= nullptr;
 	OnlineDataManager			*	_odm					= nullptr;
-	Modules::DynamicModules		*	_dynamicModules			= nullptr;
+	DynamicModules				*	_dynamicModules			= nullptr;
 	RibbonModel					*	_ribbonModel			= nullptr;
 	RibbonModelFiltered			*	_ribbonModelFiltered	= nullptr;
 	RibbonModelUncommon			*	_ribbonModelUncommon	= nullptr;
@@ -326,6 +328,7 @@ private:
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
 	AboutModel					*	_aboutModel				= nullptr;
+	EncryptionSettingsModel		*	_encryptionModel		= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;
 	ResultMenuModel				*	_resultMenuModel		= nullptr;
 	LanguageModel				*	_languageModel			= nullptr;

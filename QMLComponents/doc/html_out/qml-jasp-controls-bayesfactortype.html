@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- BayesFactorType.qml -->
+  <meta name="description" content="A pre-built radio button group for selecting Bayes Factor reporting format.">
+  <title>BayesFactorType QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>BayesFactorType</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">BayesFactorType QML Type</h1>
+<!-- $$$BayesFactorType-brief -->
+<p>A pre-built radio button group for selecting Bayes Factor reporting format. <a href="#details">More...</a></p>
+<!-- @@@BayesFactorType -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-radiobuttongroup.html" translate="no">RadioButtonGroup</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-bayesfactortype-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$BayesFactorType-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Provides three options: BF₁₀ (or BF₊₀/BF₋₀ for one-sided), BF₀₁, and Log(BF₁₀). The subscript signs automatically adjust based on the correlated property.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code></li>
+<li><b>Default:</b> &quot;BF10&quot;</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;bayesFactorType&quot;.</li>
+<li><b>title</b> (string) - Title displayed above the group. Default: &quot;Bayes Factor&quot;.</li>
+<li><b>correlated</b> (string) - Hypothesis direction: &quot;twoSided&quot;, &quot;greater&quot;, or &quot;less&quot;. Controls subscript display. Default: &quot;twoSided&quot;.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-bayesfactortype.html" translate="no">BayesFactorType</a></span> {}</pre>
+<!-- @@@BayesFactorType -->
+</body>
+</html>

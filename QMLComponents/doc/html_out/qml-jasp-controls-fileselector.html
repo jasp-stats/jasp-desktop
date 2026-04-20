@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- FileSelector.qml -->
+  <meta name="description" content="A text field with a browse button for selecting files or directories.">
+  <title>FileSelector QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>FileSelector</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-textfield">Inherited Properties from TextField</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">FileSelector QML Type</h1>
+<!-- $$$FileSelector-brief -->
+<p>A text field with a browse button for selecting files or directories. <a href="#details">More...</a></p>
+<!-- @@@FileSelector -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-textfield.html" translate="no">TextField</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-fileselector-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$FileSelector-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-textfield.html" translate="no">TextField</a> with a &quot;Browse&quot; button that opens a native file dialog. Supports saving, loading, directory selection, and file type filtering.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code> (file path)</li>
+<li><b>Default:</b> &quot;&quot;</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>save</b> (bool) - If true, opens a save dialog; otherwise a load dialog. Default: true.</li>
+<li><b>caption</b> (string) - Caption for the file dialog. Default: auto-generated from save.</li>
+<li><b>filter</b> (string) - File filter pattern (e.g. &quot;*.csv&quot;). Default: &quot;*&quot;.</li>
+<li><b>buttonText</b> (string) - Text on the browse button. Default: &quot;Browse&quot;.</li>
+<li><b>directory</b> (bool) - If true, browses for a directory instead of a file. Default: false.</li>
+<li><b>multiple</b> (bool) - Allow selecting multiple files (load mode only). Default: false.</li>
+</ul>
+<h2 id="inherited-properties-from-textfield">Inherited Properties from TextField</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>value</b> (string) - Current file path. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Label displayed before the field. Default: auto-generated from save.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-fileselector.html" translate="no">FileSelector</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;outputFile&quot;</span>
+    <span class="name">save</span>: <span class="number">true</span>
+    <span class="name">filter</span>: <span class="string">&quot;*.csv&quot;</span>
+}</pre>
+<!-- @@@FileSelector -->
+</body>
+</html>

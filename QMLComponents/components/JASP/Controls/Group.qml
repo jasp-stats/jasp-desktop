@@ -17,10 +17,52 @@
 //
 
 import QtQuick
-import QtQuick.Layouts		as L
+import QtQuick.Layouts	as L
 import JASP.Controls
 //import JASP
 
+/*!
+    \qmltype Group
+    \inqmlmodule JASP.Controls 1.0
+    \brief A layout container that groups related controls together.
+
+    Provides automatic label alignment and optional title.
+
+    \note Group is a layout-only control. It does not bind to R options.
+          Child controls within the Group handle their own bindings independently.
+
+    \section1 Properties
+
+    \list
+    \li \b title (string) - Optional title displayed above the group. Default: "".
+    \li \b columns (int) - Number of columns for child layout. Default: 1.
+    \li \b rowSpacing (int) - Vertical spacing between rows. Default: 5.
+    \li \b columnSpacing (int) - Horizontal spacing between columns. Default: 10.
+    \li \b indent (bool) - Add left indentation to the group. Default: false.
+    \li \b alignFields (bool) - Auto-align input fields (e.g., TextField and DropDown labels). Default: true.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Group {
+        title: qsTr("Descriptive Statistics")
+
+        CheckBox { name: "mean";   label: qsTr("Mean")   }
+        CheckBox { name: "median"; label: qsTr("Median") }
+        CheckBox { name: "mode";   label: qsTr("Mode")   }
+    }
+    \endqml
+*/
 GroupBoxBase
 {
 	id						: groupBox

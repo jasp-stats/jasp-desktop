@@ -23,6 +23,58 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype TableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A scrollable, editable data table for entering structured values.
+
+	Renders a grid of editable cells with column and
+    row headers, scrollbars, and optional add/remove column buttons (for
+    GridInput model type). Each cell uses a FormulaField with configurable
+    validators (integer, double, string).
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} data.frame or matrix
+    \li \b{Default:} Depends on model type
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b modelType (enum) - Table model type (JASP.Simple, JASP.GridInput, JASP.CustomContrasts, etc.). Default: depends on usage.
+    \li \b defaultValue (string) - Default value for new cells. Default: depends on modelType.
+    \li \b initialColumnCount (int) - Starting column count. Default: depends on modelType.
+    \li \b cornerText (string) - Text in the top-left corner cell. Default: "Row #".
+    \li \b minimum (double) - Minimum numeric value for cells. Default: 0.
+    \li \b decimals (int) - Decimal places for double validation. Default: 1.
+    \li \b isFirstColEditable (bool) - Whether the first column is editable. Default: true.
+    \li \b showAddRemoveButtons (bool) - Show column add/remove buttons. Default: true for GridInput.
+    \li \b factorsSource (string) - Source for factor columns. Default: "".
+    \li \b filter (string) - R expression filtering rows. Default: "rep(TRUE, rowcount)".
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    TableView {
+        name: "coefficients"
+        modelType: JASP.GridInput
+        initialColumnCount: 3
+    }
+    \endqml
+*/
 TableViewBase
 {
 	id:					tableView

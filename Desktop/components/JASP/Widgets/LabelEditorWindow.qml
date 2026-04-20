@@ -168,7 +168,7 @@ FocusScope
 								{
 									text:					qsTr("Filter")
 									font:					jaspTheme.font
-									color:					levelsTableView.filterEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+									color:					enabled && levelsTableView.filterEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 									anchors.centerIn:		parent
 									horizontalAlignment:	Text.AlignHCenter
 									verticalAlignment:		Text.AlignVCenter
@@ -184,7 +184,7 @@ FocusScope
 							{
 								text:					qsTr("Value")
 								font:					jaspTheme.font
-								color:					levelsTableView.valueEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+								color:					enabled && levelsTableView.valueEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								width:					levelsTableView.valueColWidth
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
@@ -199,7 +199,7 @@ FocusScope
 							{
 								text:					qsTr("Label")
 								font:					jaspTheme.font
-								color:					levelsTableView.labelEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
+								color:					enabled && levelsTableView.labelEditable ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								leftPadding:			3 * jaspTheme.uiScale
 								anchors.verticalCenter:	parent.verticalCenter
 								width:					levelsTableView.labelColWidthMaxed
@@ -219,7 +219,7 @@ FocusScope
 									id:						removeText
 									text:					qsTr("Remove")
 									font:					jaspTheme.font
-									color:					jaspTheme.textEnabled
+									color:					enabled  ? jaspTheme.textEnabled : jaspTheme.textDisabled
 									anchors.centerIn:		parent
 								}
 							}
@@ -287,6 +287,7 @@ FocusScope
 										margins:			levelsTableView.itemVerticalPadding
 										horizontalCenter:	filterCheckButton.horizontalCenter
 									}
+									opacity:				enabled ? 1 : 0.5
 								}
 							}
 						}
@@ -335,7 +336,7 @@ FocusScope
 							TextInput
 							{
 								id:					valueInput
-								color:				jaspTheme.textEnabled
+								color:				enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 								text:				itemValue
 								font:				jaspTheme.font
@@ -424,7 +425,7 @@ FocusScope
 							TextInput
 							{
 								id:					labelInput
-								color:				jaspTheme.textEnabled
+								color:				enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 
 								text:				itemText
 								font:				jaspTheme.font
@@ -502,7 +503,7 @@ FocusScope
 							{
 								text:					"⌫"
 								font:					jaspTheme.font
-								color:					jaspTheme.textEnabled
+								color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 								anchors.verticalCenter:	parent.verticalCenter
 								horizontalAlignment:	Text.AlignHCenter
 								width:					levelsTableView.filterColWidth;
@@ -604,7 +605,7 @@ FocusScope
 				id:						newLevelValueInput
 				
 				font:					jaspTheme.font
-				color:					jaspTheme.textEnabled
+				color:					enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 				selectedTextColor:		jaspTheme.white
 				selectionColor:			jaspTheme.itemSelectedColor
 				selectByMouse:			true
@@ -636,7 +637,7 @@ FocusScope
 				id:					newLevelLabelInput
 				
 				font:				jaspTheme.font
-				color:				jaspTheme.textEnabled
+				color:				enabled ? jaspTheme.textEnabled : jaspTheme.textDisabled
 				selectedTextColor:	jaspTheme.white
 				selectionColor:		jaspTheme.itemSelectedColor
 				selectByMouse:		true
@@ -666,6 +667,9 @@ FocusScope
 				iconSource:		jaspTheme.iconPath +  "addition-sign-small.svg"
 				onClicked:		
 				{ 
+					if(!columnModel.hasLabels)
+						return;
+					
 					if(newLevelValueInput.text == "" && newLevelLabelInput.text == "")
 					{
 						newLevelValueInput.forceActiveFocus();
@@ -740,7 +744,7 @@ FocusScope
 					height:			buttonColumnVariablesWindow.buttonHeight
 					implicitHeight: buttonColumnVariablesWindow.buttonHeight
 					width:			height
-					color:			columnModel.autoSort ? jaspTheme.jaspBlue : jaspTheme.buttonColor
+					color:			enabled && columnModel.autoSort ? jaspTheme.jaspBlue : defaultColor
 				}
 				
 				RoundedButton

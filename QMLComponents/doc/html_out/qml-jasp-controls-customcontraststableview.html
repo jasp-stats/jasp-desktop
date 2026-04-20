@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- CustomContrastsTableView.qml -->
+  <meta name="description" content="A table view preset for entering custom contrast weight matrices.">
+  <title>CustomContrastsTableView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>CustomContrastsTableView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#inherited-properties-from-basicthreebuttontableview">Inherited Properties from BasicThreeButtonTableView</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">CustomContrastsTableView QML Type</h1>
+<!-- $$$CustomContrastsTableView-brief -->
+<p>A table view preset for entering custom contrast weight matrices. <a href="#details">More...</a></p>
+<!-- @@@CustomContrastsTableView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-basicthreebuttontableview.html" translate="no">BasicThreeButtonTableView</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-customcontraststableview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$CustomContrastsTableView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-basicthreebuttontableview.html" translate="no">BasicThreeButtonTableView</a> with the CustomContrasts model type. Buttons are configured as Add Contrast, Delete Contrast, and Reset, placed in a row above the table. Rows are automatically populated from the factor levels.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> matrix</li>
+<li><b>Default:</b> Identity contrast matrix matching factor levels</li>
+</ul>
+<h2 id="inherited-properties-from-basicthreebuttontableview">Inherited Properties from BasicThreeButtonTableView</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>source</b> (var) - Source for populating the table.</li>
+<li><b>factorsSource</b> (var) - Source providing factor level information for row headers.</li>
+<li><b>itemType</b> (var) - Data type for cell values. Default: JASP.Double.</li>
+<li><b>minimum</b> (var) - Minimum allowed value for cells. Default: -Infinity.</li>
+<li><b>decimals</b> (int) - Number of decimal places. Default: 3.</li>
+<li><b>columnName</b> (string) - Column name alias for the contrast variable.</li>
+<li><b>buttonsInRow</b> (bool) - Place buttons in a row above the table. Default: true.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-customcontraststableview.html" translate="no">CustomContrastsTableView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;values&quot;</span>
+    <span class="name">columnName</span>: <span class="string">&quot;myFactor&quot;</span>
+    <span class="name">factorsSource</span>: <span class="string">&quot;repeatedMeasuresFactors&quot;</span>
+}</pre>
+<!-- @@@CustomContrastsTableView -->
+</body>
+</html>

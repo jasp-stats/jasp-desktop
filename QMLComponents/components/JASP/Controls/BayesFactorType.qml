@@ -16,11 +16,48 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 import QtQuick
 import JASP.Controls
 
 
+/*!
+    \qmltype BayesFactorType
+    \inqmlmodule JASP.Controls 1.0
+    \brief A pre-built radio button group for selecting Bayes Factor reporting format.
+
+    Provides three options: BF₁₀ (or BF₊₀/BF₋₀ for one-sided), BF₀₁, and Log(BF₁₀).
+    The subscript signs automatically adjust based on the correlated property.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character
+    \li \b{Default:} "BF10"
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "bayesFactorType".
+    \li \b title (string) - Title displayed above the group. Default: "Bayes Factor".
+    \li \b correlated (string) - Hypothesis direction: "twoSided", "greater", or "less". Controls subscript display. Default: "twoSided".
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    BayesFactorType {}
+    \endqml
+*/
 RadioButtonGroup
 {
 	title: qsTr("Bayes Factor")                     ; name: "bayesFactorType"

@@ -224,7 +224,7 @@ void EngineRepresentation::moduleLoad()
 	if(!idle())
 		return;
 
-	runModuleLoadRequestOnProcess(Modules::DynamicModules::dynMods()->dynamicModule(_dynModName)->requestJsonForPackageLoadingRequest());
+	runModuleLoadRequestOnProcess(DynamicModules::dynMods()->dynamicModule(_dynModName)->requestJsonForPackageLoadingRequest());
 }
 
 void EngineRepresentation::processReplies()

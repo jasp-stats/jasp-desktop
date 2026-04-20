@@ -23,6 +23,11 @@ void TestDebugData::init()
 	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), [](int i){});
 
 	_data = _pkg->dataSet();
+	
+	Column * facFive = _data->column("facFive");
+	
+	if(!facFive->hasLabels())
+		facFive->noLabelsToLabels();
 }
 
 void TestDebugData::cleanup()
@@ -106,10 +111,11 @@ void TestDebugData::testReverseNumericals()
 	
 	parser.parse(jsonReversed, hardcoded);
 	
-	QVERIFY2(hardcoded == labelsAfter1,		"Reversing values is not right!");
-	
 	if(hardcoded != labelsAfter1)
 		std::cerr << labelsAfter1 << std::endl;
+	
+	QVERIFY2(hardcoded == labelsAfter1,		"Reversing values is not right!");
+	
 	
 	DataSet loadMe(_data->id());
 	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
@@ -252,6 +258,9 @@ void TestDebugData::testEmptyValues()
 	
 	Column * contBinom = _data->column("contBinom");
 	
+	if(!contBinom->hasLabels())
+		contBinom->noLabelsToLabels();
+	
 	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 2, "Not right amount of non-empty labels!");
 	
 	contBinom->setHasCustomEmptyValues(true);
@@ -277,6 +286,24 @@ void TestDebugData::testEmptyValues()
 	contBinom->setHasCustomEmptyValues(true);
 	contBinom->setCustomEmptyValues({"0"});
 	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 0,	"There should be no labels anymore!");
+}
+
+void TestDebugData::testChangeLabel()
+{
+	QVERIFY2(_data,		"No dataset!");
+	
+	Column * contBinom = _data->column("contBinom");
+	
+	QVERIFY2(contBinom->hasLabels(),							"contBinom should have labels");
+	
+	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(contBinom->labels()[0]), "A", int(DataSetPackage::specialRoles::label));
+	
+	QVERIFY2(contBinom->labels()[0]->labelDisplay() == "A",		"contBinom failed renaming first label to A");
+	
+	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(contBinom->labels()[1]), "B", int(DataSetPackage::specialRoles::value));
+	
+	QVERIFY2(contBinom->labels()[1]->labelDisplay() == "B",		"contBinom failed renaming first value (and thus also label!) to B");
+	
 }
 
 

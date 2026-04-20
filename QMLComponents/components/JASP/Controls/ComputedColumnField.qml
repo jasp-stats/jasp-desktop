@@ -19,6 +19,51 @@
 import QtQuick
 import JASP.Controls
 
+/*!
+    \qmltype ComputedColumnField
+    \inqmlmodule JASP.Controls 1.0
+    \brief A text field for entering a computed column name.
+
+    Extends TextField with the "computedColumn" input type. The entered name is used
+    to create or reference a computed column in the dataset. Validation ensures the
+    column name is valid and available.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character
+    \li \b{Default:} ""
+    \endlist
+
+    \section1 Inherited Properties from TextField
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b value (string) - Current text value. Default: "".
+    \li \b label (string) - Label displayed before the field. Default: "".
+    \li \b afterLabel (string) - Label displayed after the field. Default: "".
+    \li \b fieldWidth (int) - Width of the input field. Default: 200.
+    \li \b placeholderText (string) - Greyed text shown when field is empty. Default: "".
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    ComputedColumnField {
+        name: "generatedColumn"
+        label: qsTr("Column name")
+    }
+    \endqml
+*/
 TextField
 {
 	inputType:			"computedColumn"

@@ -111,6 +111,7 @@ const Settings::Setting Settings::Values[] = {
     {"engineSandbox",				false	},
 #endif
 	{"remoteConfiguration",			false   },
+	
 	{"remoteConfigurationURL",		""		},
 	{"localConfigurationPath",		""		},
 	{"useConfigurationFile",		true	},

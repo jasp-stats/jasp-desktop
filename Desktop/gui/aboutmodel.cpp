@@ -2,6 +2,7 @@
 #include "appinfo.h"
 #include "utilities/qutils.h"
 #include "mainwindow.h"
+#include "modules/modulelibrary.h"
 
 bool AboutModel::visible() const
 {
@@ -54,7 +55,7 @@ void AboutModel::setVisible(bool visible)
 
 QString AboutModel::systemInfo()
 {
-	static QString info;
+	QString info;
 	
 	if(info == "")
 	{
@@ -85,6 +86,13 @@ QString AboutModel::systemInfo()
 		info += "Platform Name: "    + QGuiApplication::platformName() + "\n";
 		info += "System Local: "     + QLocale::system().name() + "\n\n";
 
+		info += "-------- Module Library Info --------\n";
+		ModuleLibrary* lib = ModuleLibrary::singleton(); 
+		if (lib)
+			info += lib->getEnvironmentInfoJson() + "\n\n";
+		else
+			info += "ModuleLibrary not available!\n\n";
+		
 		process.start(command, arguments);
 		process.waitForFinished(5000);
 
