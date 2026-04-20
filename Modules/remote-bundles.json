@@ -1,5 +1,9 @@
 {
     "Windows-x86_64": [
+		{
+            "url": "https://github.com/jasp-stats-modules/jaspDistributions/releases/download/0.96.2-beta.0_R-4-5-2_Beta/jaspDistributions_0.96.2-beta.0_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "f5326539091ca574bc0631103501da39303a36883c192fec6f3135a94ba62662"
+        },
         {
             "url": "https://github.com/jasp-stats-modules/jaspEquivalenceTTests/releases/download/0.96.1-beta.2_R-4-5-2_Beta/jaspEquivalenceTTests_0.96.1-beta.2_Windows_x86-64_R-4-5-2.JASPModule",
             "checksum": "b71fe09db1de1595035097127bb8dd978ca546bc91ca5824a7d9d94d04e342d7"
