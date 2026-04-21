@@ -196,18 +196,17 @@ FocusScope
 				}
 
 
-				property bool	downloadInProgress: false;
-				property bool	installInProgress: false;
+				property bool		downloadInProgress: false;
+				property bool		installInProgress: false;
 				property int		downloadProgress;
 				property int		downloadTotal;
 				property var		currentDownloadRequest: null;
-
-                property bool    isInitiatingDownload: false
-                property var     downloadQueue: []
-                property bool    isProcessingQueue: false
-                property int     batchTotal: 0
-                property int     batchCurrent: 0
-                property string  currentModuleName: ""
+                property bool		isInitiatingDownload: false
+                property var		downloadQueue: []
+                property bool		isProcessingQueue: false
+                property int		batchTotal: 0
+                property int		batchCurrent: 0
+                property string		currentModuleName: ""
 
                 function triggerNextDownload() {
                     if (isInitiatingDownload || downloadInProgress || moduleLibrary.isInstalling) { //To many double triggers of signals to guard against
@@ -239,6 +238,15 @@ FocusScope
                         }
                     }
                 }
+				
+				Connections
+				{
+					target:		analyses
+					
+					function onSuggestModulesInstall(names)
+					{
+						runJavaScript("???");
+					}
 
 				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
 

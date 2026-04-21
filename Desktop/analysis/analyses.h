@@ -172,6 +172,8 @@ signals:
 	bool developerMode();
 	void setResultsMeta(QString json);
 	void moveAnalyses(quint64 fromId, quint64 toId);
+	
+	void suggestModulesInstall(QStringList);
 
 	Column *			requestComputedColumnCreation(		const std::string & columnName, Analysis *source);
 	bool				requestColumnCreation(				const std::string & columnName, Analysis *source, columnType type);

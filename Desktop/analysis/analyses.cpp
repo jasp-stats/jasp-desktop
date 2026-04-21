@@ -420,7 +420,7 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 
 void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
 {
-	if (DataSetPackage::pkg()->hasAnalyses())
+	if (DataSetPackage::pkg()->hasAnalysesData())
 	{
 		Json::Value analysesData = DataSetPackage::pkg()->analysesData();
 		
@@ -455,6 +455,32 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 	stringstream	corruptionStrings;
 
 	Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
+	const auto & _installed = Modules::DynamicModules::dynMods()->moduleNames();
+	stringset	modules, 
+				missing, 
+				installed(_installed.begin(), _installed.end());
+	
+	for (const Json::Value & analysisData : analysesDataList)
+		if(analysisData.isMember("dynamicModule"))
+		{
+			const auto & module = analysisData["dynamicModule"]["moduleName"].asString();
+			modules.insert(module);
+			
+			if(!installed.count(module))
+				missing.insert(module);
+		}
+	
+	if(missing.size() > 0)
+	{
+		errorFound = true;
+		errorMsg << "Missing modules:";
+		for(auto & n : missing)
+			errorMsg << " " << n;
+		errorMsg << "\n";
+		
+		emit suggestModulesInstall(tql(modules));
+	}
+	
 	
 	//There is no point trying to show progress here because qml is not updated while this function runs...
 	for (const Json::Value & analysisData : analysesDataList)

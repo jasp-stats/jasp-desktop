@@ -150,7 +150,7 @@ public:
 				QString				description()						const;
 				QString				currentFile()						const	{ return _currentFile;						 }
 				QString				autoSavedFileName()					const;
-				bool				hasAnalyses()						const	{ return _analysesData.size() > 0;				}
+				bool				hasAnalysesData()						const	{ return _analysesData.size() > 0;				}
 				bool				synchingData()						const	{ return _synchingData;								}
 				std::string			dataFilePath()						const	{ return _dataSet ? _dataSet->dataFilePath() : "";  }
 				bool				dataFileCanHaveLabels()				const;
