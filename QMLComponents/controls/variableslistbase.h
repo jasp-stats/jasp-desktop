@@ -37,7 +37,7 @@ class VariablesListBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( QString				interactionHighOrderCheckBox		READ interactionHighOrderCheckBox		WRITE setInteractionHighOrderCheckBox		NOTIFY interactionHighOrderCheckBoxChanged		)
 	Q_PROPERTY( bool				keepVariablesWhenMoved				READ keepVariablesWhenMoved				WRITE setKeepVariablesWhenMoved				NOTIFY keepVariablesWhenMovedChanged			)
 	Q_PROPERTY( bool				addInteractionsByDefault			READ addInteractionsByDefault			WRITE setAddInteractionsByDefault			NOTIFY addInteractionsByDefaultChanged			)
-	Q_PROPERTY( bool				interactionContainLowerTerms		READ addInteractionsByDefault			WRITE setInteractionContainLowerTerms		NOTIFY interactionContainLowerTermsChanged		)
+	Q_PROPERTY( bool				interactionContainLowerTerms		READ interactionContainLowerTerms		WRITE setInteractionContainLowerTerms		NOTIFY interactionContainLowerTermsChanged		)
 	Q_PROPERTY( QVariant			sourceWithoutDefaultInteraction		READ sourceWithoutDefaultInteraction	WRITE setSourceWithoutDefaultInteraction	NOTIFY sourceWithoutDefaultInteractionChanged	)
 
 public:
@@ -120,7 +120,7 @@ protected:
 
 	ListModelDraggable	*		_tempDropModel = nullptr;
 	QList<int>					_tempIndexes;
-	int							_tempDropItemIndex;
+	int							_tempDropItemIndex		= -1;
 
 	QStringList					_dropKeys;
 	QVariant					_sourceWithoutDefaultInteraction;

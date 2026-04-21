@@ -194,12 +194,10 @@ bool RadioButtonsGroupBase::isJsonValid(const Json::Value &value) const
 
 void RadioButtonsGroupBase::clickHandler(RadioButtonBase* button)
 {
-	if (!initialized()) return;
+	if (!initialized() || !button) return;
 
-	if (button)
-		_setCheckedButton(button);
-	else
-		Log::log() << "Object clicked is not a RadioButton item! Name" << button->objectName().toStdString();
+	_setCheckedButton(button);
+
 	emit clicked();
 }
 

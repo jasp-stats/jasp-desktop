@@ -109,7 +109,7 @@ void VariablesFormBase::componentComplete()
 
 void VariablesFormBase::setMarginBetweenVariablesLists(qreal value)
 {
-	if (qFuzzyCompare(value, _marginBetweenVariablesLists))
+	if (!qFuzzyCompare(value, _marginBetweenVariablesLists))
 	{
 		_marginBetweenVariablesLists = value;
 		emit marginBetweenVariablesListsChanged();
@@ -118,7 +118,7 @@ void VariablesFormBase::setMarginBetweenVariablesLists(qreal value)
 
 void VariablesFormBase::setMinimumHeightVariablesLists(qreal value)
 {
-	if (qFuzzyCompare(value, _minimumHeightVariablesLists))
+	if (!qFuzzyCompare(value, _minimumHeightVariablesLists))
 	{
 		_minimumHeightVariablesLists = value;
 		emit minimumHeightVariablesListsChanged();

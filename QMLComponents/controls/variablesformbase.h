@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-#ifndef VARIABLESFROMBASE_H
-#define VARIABLESFROMBASE_H
+#ifndef VARIABLESFORMBASE_H
+#define VARIABLESFORMBASE_H
 
 #include "jaspcontrol.h"
 
@@ -73,4 +73,4 @@ private:
 
 };
 
-#endif // VARIABLESFROMBASE_H
+#endif // VARIABLESFORMBASE_H
