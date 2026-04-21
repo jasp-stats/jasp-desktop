@@ -188,7 +188,7 @@ FocusScope
 				anchors.fill:			parent
 				url:                    preferencesModel.checkUpdates ? preferencesModel.moduleLibraryURL : "about:blank"
 				profile:                moduleStoreProfile
-				zoomFactor: preferencesModel.uiScale
+				zoomFactor:             preferencesModel.uiScale
 
 				onNewWindowRequested: (request) =>
 				{
