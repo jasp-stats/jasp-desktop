@@ -28,6 +28,7 @@
 #include "timers.h"
 #include "common.h"
 #include "utils.h"
+#include "data/fileevent.h"
 
 ///
 /// Base class for all exporters

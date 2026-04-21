@@ -29,7 +29,7 @@ class SvgToPng {
 	 * Convert all SVG inside the specified element to PNG format and replace the original SVG elements with PNG
 	 * @method convert
 	 * @param {HTMLElement} element
-	 * @returns {HTMLElement} 
+	 * @returns {HTMLElement}
 	 */
 	convert(element) {
 		const svgs = element.querySelectorAll("svg");
@@ -526,6 +526,10 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.options.hasCollapse)
 			this.options['collapseOptions'] = this.parent.collapseOptions();
 
+		// TODO: check if this is needed
+		if (this.options.hasInteractiveImg)
+			this.options['interactiveOptions'] = this.parent.interactiveOptions();
+
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
 		return true;
@@ -550,12 +554,13 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasNotes:				(parent.hasNotes		=== undefined || parent.hasNotes())			&& parent.notesMenuClicked			!== undefined,
 			hasSaveImg:				(parent.isConvertible	=== undefined || parent.isConvertible())	&& parent.saveImageClicked			!== undefined,
 			hasEditImg:				(parent.isEditable		=== undefined || parent.isEditable())		&& parent.editImageClicked			!== undefined,
-			hasEditTitle:			(parent.hasEditTitle	=== undefined || parent.hasEditTitle())		&& parent.editTitleClicked			!== undefined,
+			hasInteractiveImg:		(parent.hasInteractive	=== undefined || parent.hasInteractive())	&& parent.interactiveImageClicked	!== undefined,
+			hasEditTitle:			(parent.hasEditTitle	=== undefined || parent.hasEditTitle())	&& parent.editTitleClicked			!== undefined,
 			hasRemove:				(parent.hasRemove		=== undefined || parent.hasRemove())		&& parent.removeMenuClicked			!== undefined,
-			hasDuplicate:			(parent.hasDuplicate	=== undefined || parent.hasDuplicate())		&& parent.duplicateMenuClicked		!== undefined,
+			hasDuplicate:			(parent.hasDuplicate	=== undefined || parent.hasDuplicate())	&& parent.duplicateMenuClicked		!== undefined,
 			hasShowDeps:			(parent.hasShowDeps		=== undefined || parent.hasShowDeps())		&& parent.showDependenciesClicked	!== undefined,
 			hasCollapse:			(parent.hasCollapse		=== undefined || parent.hasCollapse())		&& parent.collapseMenuClicked		!== undefined,
-			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())		&& parent.latexCodeMenuClicked		!== undefined,
+			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())	&& parent.latexCodeMenuClicked		!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
 			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
 			hasExportResults:		parent.menuName			=== 'All',
@@ -567,7 +572,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.hasMenu =	this.options.hasCopy			|| this.options.hasCite		|| this.options.hasSaveImg		|| this.options.hasEditImg		||
 						this.options.hasDuplicate		|| this.options.hasNotes	|| this.options.hasRemove		|| this.options.hasRemoveAll	||
 						this.options.hasEditTitle		|| this.options.hasCollapse || this.options.hasLaTeXCode	|| this.options.hasShowDeps		||
-						this.options.hasExportResults	 ;
+						this.options.hasExportResults	|| this.options.hasInteractiveImg ;
 	},
 
 	selectionElement: function() {	return this.parent.$el;	},

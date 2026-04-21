@@ -22,6 +22,55 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype JagsTableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A table view preset for entering JAGS data.
+
+    Extends BasicThreeButtonTableView with the JAGSDataInput model type.
+    Buttons are configured as Add Data, Delete Data, and Reset. Cell values
+    are strings. Row count is capped by maxDataEntries.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} data.frame
+    \li \b{Default:} Empty table with 2 columns
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b maxDataEntries (int) - Maximum number of data rows allowed. Default: 30.
+    \endlist
+
+    \section1 Inherited Properties from BasicThreeButtonTableView
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b source (var) - Source for populating the table.
+    \li \b initialColumnCount (int) - Number of columns at creation. Default: 2.
+    \li \b initialRowCount (int) - Number of rows at creation. Default: 0.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    JagsTableView {
+        name: "dataInput"
+        maxDataEntries: 50
+    }
+    \endqml
+*/
 BasicThreeButtonTableView
 {
 	id					: jagsTableView

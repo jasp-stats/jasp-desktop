@@ -614,7 +614,7 @@ if(APPLE)
   set_property(
     DIRECTORY
     APPEND
-    PROPERTY ADDITIONAL_CLEAN_FILES ${R_FRAMEWORK_PATH})
+    PROPERTY ADDITIONAL_CLEAN_FILES ${R_FRAMEWORK_PATH}/R.framework)
 
   message(CHECK_START "Checking for 'R.framework'")
   find_library(
@@ -955,6 +955,9 @@ message(STATUS "RENV_PATH              = ${RENV_PATH}")
 message(STATUS "RCPP_PATH              = ${RCPP_PATH}")
 message(STATUS "RINSIDE_PATH           = ${RINSIDE_PATH}")
 
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES _cache)
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES ${R_CPP_INCLUDES_LIBRARY})
+
 # if(NOT EXISTS ${RENV_PATH})
 #     message(FATAL_ERROR "'renv' installation has failed!")
 # endif()
@@ -1035,7 +1038,7 @@ if(WIN32)
   else()
     message(CHECK_FAIL "failed")
   endif()
-
+  
 elseif(APPLE)
 
   # ----- Downloading and Building jags

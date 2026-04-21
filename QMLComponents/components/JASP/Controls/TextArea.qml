@@ -4,6 +4,57 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype TextArea
+    \inqmlmodule JASP.Controls 1.0
+    \brief A multi-line text input with optional line numbers and syntax highlighting.
+
+	Supports multiple text types (default, source,
+    JAGS model, lavaan model) with corresponding syntax highlighting.
+    Includes Ctrl+Enter to apply, undo/redo support, and scrollable editing.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character (string)
+    \li \b{Default:} ""
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Label displayed above the text area. Default: "".
+    \li \b text (string) - Current text content. Default: "".
+    \li \b textType (enum) - Type of text (JASP.TextTypeDefault, JASP.TextTypeSource, JASP.TextTypeJAGSmodel, JASP.TextTypeLavaan). Default: JASP.TextTypeDefault.
+    \li \b showLineNumber (bool) - Show line numbers in the gutter. Default: false.
+    \li \b wrapMode (enum) - Text wrapping mode. Default: TextEdit.Wrap.
+    \li \b separator (string) - Separator used to split text into list values. Default: "\\n".
+    \li \b trim (bool) - Trim whitespace before applying. Default: false.
+    \li \b useTabAsSpaces (bool) - Convert Tab key to spaces. Default: true.
+    \li \b placeholderText (string) - Placeholder text. Default: "".
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    TextArea {
+        name: "rCode"
+        title: qsTr("R Script")
+        textType: JASP.TextTypeSource
+        showLineNumber: true
+    }
+    \endqml
+*/
 TextAreaBase
 {
 	id:					textArea
@@ -13,18 +64,18 @@ TextAreaBase
 	implicitWidth:		width
 	focusIndicator:		flickableRectangle
 	innerControl:		control
+	infoText:			applyScriptInfo
+
 	
 	property alias	control				: control
 	property alias	wrapMode			: control.wrapMode
 	property alias	text				: control.text
-	property string applyScriptInfo		: Qt.platform.os == "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
-	property alias  infoText			: infoText.text
+	property string applyScriptInfo		: Qt.platform.os === "osx" ? qsTr("\u2318 + Enter to apply") : qsTr("Ctrl + Enter to apply")
 	property alias  font				: control.font
 	property alias  textDocument		: control.textDocument
 	property bool   trim				: false
 	property var    modelParameterView	: null
 	property string separator			: "\n"
-	property var	separators			: []
 	property alias	radius				: flickableRectangle.radius
 	property alias	placeholderText		: control.placeholderText
 	property var	undoModel
@@ -208,6 +259,7 @@ TextAreaBase
 	Text
 	{
 		id:						infoText
+		text:					textArea.infoText
 		z:						2
 		anchors.bottom:			parent.bottom
 		anchors.right:			parent.right
@@ -216,7 +268,6 @@ TextAreaBase
 		rightPadding:			leftPadding
 		bottomPadding:			3 * preferencesModel.uiScale
 		topPadding:				bottomPadding
-		text:					textArea.applyScriptInfo
 		font:					jaspTheme.font
 		horizontalAlignment:	Text.AlignHCenter
 		verticalAlignment:		Text.AlignVCenter

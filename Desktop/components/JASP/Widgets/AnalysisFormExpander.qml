@@ -1,7 +1,7 @@
 ﻿import QtQuick
 import QtQuick.Controls
 import JASP.Controls
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 
 DropArea
 {
@@ -162,17 +162,21 @@ DropArea
 			height: jaspTheme.formExpanderHeaderHeight + (2 * jaspTheme.formMargin) //We only want to see a tooltip when we are hovering the "button" part of AnalysisFormExpander
 		}
 
-		RectangularGlow
+		RectangularShadow
 		{
 			id				: shadow
 			anchors.centerIn: draggableItem
 			width			: draggableItem.width
 			height			: draggableItem.height
+		
 			visible			: draggableItem.Drag.active
+			
 			color			: jaspTheme.grayDarker
-			spread			: 0.2
-			cornerRadius	: expanderButton.radius + glowRadius
-			glowRadius		: 5
+			blur			: 10
+			spread			: 3
+			radius			: expanderButton.radius
+			offset.x		: 0
+			offset.y		: 0
 		}
 
 		Rectangle

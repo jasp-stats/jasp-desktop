@@ -3,6 +3,55 @@ import QtQuick.Controls as QtC
 import JASP.Controls
 import QtQuick.Layouts
 
+/*!
+    \qmltype Slider
+    \inqmlmodule JASP.Controls 1.0
+    \brief A slider with a linked numeric text field.
+
+    Backed by SliderBase. Displays a draggable slider alongside a DoubleField
+    that stays synchronized. Supports vertical and horizontal orientations.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c numeric
+    \li \b{Default:} 0.5
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b label (string) - Label displayed above the slider. Default: "".
+    \li \b value (real) - Current slider value. Default: 0.5.
+    \li \b min (real) - Minimum value. Alias: from. Default: 0.
+    \li \b max (real) - Maximum value. Alias: to. Default: 1.
+    \li \b stepSize (real) - Step increment. Default: 1 / 10^decimals.
+    \li \b decimals (int) - Decimal places for the text field. Default: 2.
+    \li \b vertical (bool) - Use vertical orientation. Default: true.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Slider {
+        name: "prior"
+        label: qsTr("Prior width")
+        value: 0.707
+        min: 0
+        max: 2
+    }
+    \endqml
+*/
 SliderBase
 {
 	id:					slider

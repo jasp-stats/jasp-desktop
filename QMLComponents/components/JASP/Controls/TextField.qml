@@ -21,6 +21,60 @@ import QtQuick.Controls as QTC
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype TextField
+    \inqmlmodule JASP.Controls 1.0
+    \brief A single-line text input control for entering strings.
+
+    For numeric input, use IntegerField, DoubleField, or PercentField.
+
+
+    \list
+    \li \b{R Type:} \c character
+    \li \b{Default:} "" or value of defaultValue property
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b value (string) - Current text value. Default: "".
+    \li \b label (string) - Label displayed before the field. Default: "".
+    \li \b afterLabel (string) - Label displayed after the field. Default: "".
+    \li \b defaultValue (var) - Value restored when field is empty on blur.
+    \li \b placeholderText (string) - Greyed text shown when field is empty. Default: "".
+    \li \b fieldWidth (int) - Width of the input field. Default: 200.
+    \li \b selectValueOnFocus (bool) - Select all text when focused. Default: false.
+    \li \b editable (bool) - Whether user can edit the text. Default: true.
+    \endlist
+    
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+    
+    \section1 Signals
+
+    \list
+    \li \b editingFinished() - Emitted when user completes editing (blur or Enter).
+    \li \b textEdited() - Emitted on each keystroke.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    TextField {
+        name: "tableTitle"
+        label: qsTr("Table title")
+        placeholderText: qsTr("Enter title...")
+        fieldWidth: 200
+    }
+    \endqml
+*/
 TextInputBase
 {
 	id:					textField
@@ -51,6 +105,8 @@ TextInputBase
 	property bool	useLastValidValue:	true
 	property bool	editable:			true
 	property var	undoModel
+
+	property alias showEyeInside: control.showEyeInside
 
 	property double controlXOffset:		0
 	property bool	alignInGroup:		true
@@ -156,6 +212,28 @@ TextInputBase
 			textFormat:				textField.textFormat
 		}
 	}
+	
+	Image 
+	{
+		id:						eyeInside
+		visible:				control.showEyeInside
+		z:						20
+		source:					control.echoMode === TextInput.Password ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
+		anchors.right:			control.right
+		anchors.rightMargin:	4
+		anchors.verticalCenter:	control.verticalCenter
+		width:					control.height
+		height:					control.height
+		
+		MouseArea 
+		{
+			anchors.fill:		parent
+			hoverEnabled:		true
+			cursorShape:		Qt.PointingHandCursor
+			onClicked:			control.echoMode = (control.echoMode === TextInput.Password) ? TextInput.Normal : TextInput.Password
+		}
+	}
+	
 
 	QTC.TextField
 	{
@@ -176,9 +254,10 @@ TextInputBase
 		enabled:				textField.editable
 
 		property bool tooLongText: contentWidth > (width - leftPadding - rightPadding)
+		property bool showEyeInside: false
 
 		QTC.ToolTip.text		: control.text
-		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus)
+		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus) && control.echoMode != QTC.TextInput.Password
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
@@ -210,6 +289,7 @@ TextInputBase
 			visible:			textField.useExternalBorder
 			radius:				jaspTheme.jaspControlHighlightWidth
 		}
+
 
 		onActiveFocusChanged:
 		{

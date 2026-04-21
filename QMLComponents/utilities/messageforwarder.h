@@ -41,11 +41,13 @@ public:
 	static DialogResponse showYesNoCancel(		QString title, QString message, QString YesButtonText = "", QString NoButtonText = "",	QString CancelButtonText = "",	QMessageBox::Icon icon = QMessageBox::Question);
 
 	static QString browseOpenFile(			QString caption, QString browsePath,	QString filter, bool multiple = false);
-	static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);
-	static QString browseOpenFolder(		QString caption, QString browsePath);
+    static QString browseSaveFile(			QString caption, QString browsePath,	QString filter, QString * selectedExtension = nullptr);
+    static QString browseSaveFile(const QString& caption, const QString& browsePath,	const QString& filter, QString& selectedFilter, QString & selectedExtension);
+    static QString browseOpenFolder(		QString caption, QString browsePath);
 	static QString browseOpenFolder(		QString caption);
 	static QString browseOpenFileDocuments(	QString caption,						QString filter, bool multiple = false);
 	static QString browseSaveFileDocuments(	QString caption,						QString filter);
+    static QString queryTextInput(const QString& caption, const QString& elementName, const QString& defaultValue, bool& passwordGiven, bool password = true);
 
 	static QString askPassword(QString title, QString message);
 

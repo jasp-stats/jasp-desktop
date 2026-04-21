@@ -39,6 +39,11 @@
   <color type="primary" scheme_preference="dark">#14a1e3</color>
   </branding>
 	<releases>
+	<release version="0.96.0" date="2026-03-03">
+                <description><p>
+See 0.96.0 Release notes on our Github Page
+                </p></description>
+        </release>
 	<release version="0.95.4" date="2025-10-13">
                 <description><p>
 See 0.95.4 Release notes on our Github Page

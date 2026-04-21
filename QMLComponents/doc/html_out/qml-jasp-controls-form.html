@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- Form.qml -->
+  <meta name="description" content="The top-level container for an analysis input form.">
+  <title>Form QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>Form</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">Form QML Type</h1>
+<!-- $$$Form-brief -->
+<p>The top-level container for an analysis input form. <a href="#details">More...</a></p>
+<!-- @@@Form -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-form-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$Form-description -->
+<h2 id="details">Detailed Description</h2>
+<p>It provides the standard layout for a JASP analysis: error/warning message boxes, an optional R syntax panel, and a <a href="qml-jasp-controls-gridlayout.html" translate="no">GridLayout</a> content area where child controls are placed. Every analysis QML file uses Form as its root element.</p>
+<div class="admonition note">
+<p><b>Note: </b>Module developers should always use Form as the root element of their analysis QML files.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>columns</b> (int) - Number of columns in the form's <a href="qml-jasp-controls-gridlayout.html" translate="no">GridLayout</a>. Default: 2.</li>
+<li><b>plotWidth</b> (int) - Default width for plots in this analysis. Default: 480.</li>
+<li><b>plotHeight</b> (int) - Default height for plots in this analysis. Default: 320.</li>
+<li><b>majorVersion</b> (int) - Major version of the form. Default: 1.</li>
+<li><b>minorVersion</b> (int) - Minor version of the form. Default: 0.</li>
+<li><b>runAnalysisWhenOptionChange</b> (bool) - Re-run analysis on any option change. Default: true.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-form.html" translate="no">Form</a></span> {
+    <span class="type"><a href="qml-jasp-controls-variablesform.html" translate="no">VariablesForm</a></span> {
+        <span class="type"><a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a></span> { <span class="name">name</span>: <span class="string">&quot;allVariables&quot;</span> }
+        <span class="type"><a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a></span>  { <span class="name">name</span>: <span class="string">&quot;dependent&quot;</span>; <span class="name">singleVariable</span>: <span class="number">true</span> }
+    }
+}</pre>
+<!-- @@@Form -->
+</body>
+</html>

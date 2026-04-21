@@ -56,6 +56,7 @@ jobs:
             sudo apt install -y libnss3-dev libnspr4-dev
             sudo apt install -y libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxi-dev
             sudo apt install -y libasound2-dev libxkbfile-dev
+            sudo apt install -y libsodium-dev
             git clone https://github.com/jasp-stats/freexl.git
             cd freexl && ./configure && make && sudo make install
         env:

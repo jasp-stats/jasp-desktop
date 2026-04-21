@@ -29,12 +29,13 @@
 ///
 /// Loads a jasp file
 /// From 0.18 onwards this is simplified by having an sqlite file as the main container of data.
-/// For loading older files (jaspArchiveVersion < 4.0.0) see JASPImporterOld
 class JASPImporter
 {
 	Q_DECLARE_TR_FUNCTIONS(JASPImporter)
 public:
 	enum class Compatibility { NotCompatible, Limited, Compatible };
+
+	static const Version minJaspVersion;
 
 	static void loadDataSet(const std::string &path, std::function<void(int)> progressCallback);
 	static Compatibility isCompatible(const std::string &path);
@@ -43,11 +44,8 @@ private:
 	static void loadDataArchive(		const std::string &path, std::function<void(int)> progressCallback);
 	static void loadJASPArchive(		const std::string &path, std::function<void(int)> progressCallback);
 
-	static bool parseJsonEntry(Json::Value &root, const std::string &path, const std::string &entry, bool required);
-	static void readManifest(const std::string &path);
 	static Compatibility isCompatible();
 
-	
 	static const Version maxSupportedJaspArchiveVersion;
 };
 

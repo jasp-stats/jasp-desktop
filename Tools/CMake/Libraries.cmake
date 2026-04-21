@@ -68,7 +68,7 @@ if((NOT LibArchive_FOUND) AND (NOT WIN32))
 endif()
 
 set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.78 REQUIRED COMPONENTS system)
+find_package(Boost 1.78)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
 get_target_property(QT_TARGET_TYPE Qt6::Core TYPE)
@@ -91,7 +91,6 @@ if(NOT FLATPAK_USED)
       QuickControls2Impl
       QmlWorkerScript
       QuickWidgets
-      Core5Compat
   )
   if(NOT USE_QT_STATIC_LIBS)
     find_package(
@@ -141,14 +140,6 @@ else()
        ${Qt6WebEngineQuick_DIR}
     NO_DEFAULT_PATH)
 
-  find_package(
-    Qt6Core5Compat
-    REQUIRED
-    PATHS
-	  "/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/cmake/Qt6Core5Compat/"
-	  ${Qt6Core5Compat_DIR}
-    NO_DEFAULT_PATH)
-
 endif()
 
 if(LINUX)
@@ -192,6 +183,26 @@ if(LINUX)
     message(
       FATAL_ERROR
         "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+    )
+  endif()
+
+  # ---- libsodium ----
+  message(CHECK_START "Looking for `libsodium`")
+    set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
+    set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+
+  message(CHECK_START "Looking for libsodium.so")
+  find_library(libsodium_LIBRARIES libsodium.so
+            HINTS ${LIBSODIUM_LIBRARY_DIRS} REQUIRED)
+
+  if(EXISTS ${libsodium_LIBRARIES})
+    message(CHECK_PASS "found")
+    message(STATUS "  ${LIBSODIUM_LIBRARIES}")
+  else()
+    message(CHECK_FAIL "not found")
+    message(
+      FATAL_ERROR
+        "libsodium is required for building on Linux, please follow the build instruction before you continue."
     )
   endif()
 
@@ -247,6 +258,8 @@ if(APPLE)
   find_package(Brotli 1.0.9 REQUIRED)
   find_package(freexl 2.0.99 REQUIRED)
   find_package(librdata REQUIRED)
+  find_package(libsodium 1.0.20 REQUIRED)
+
 
 endif()
 
@@ -255,6 +268,8 @@ if(WIN32)
   include(FindRToolsDLLPath)
   
   find_package(freexl 2.0.99 REQUIRED)
+  find_package(libsodium 1.0.20 REQUIRED)
+
 
   copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
   copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)

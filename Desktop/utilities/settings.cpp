@@ -111,11 +111,13 @@ const Settings::Setting Settings::Values[] = {
     {"engineSandbox",				false	},
 #endif
 	{"remoteConfiguration",			false   },
+	
 	{"remoteConfigurationURL",		""		},
 	{"localConfigurationPath",		""		},
 	{"useConfigurationFile",		true	},
 	{"startMaximized",				false	},
 	{"storeStateEtc",				false	},
+	{"showInteractiveDefault",		true	},
 	{"autoSaveOn",					true	},
 	{"autoSaveInterval",			5*60	},
 };	

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- BasicThreeButtonTableView.qml -->
+  <meta name="description" content="A table input control with Add, Delete, and Reset buttons.">
+  <title>BasicThreeButtonTableView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>BasicThreeButtonTableView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#signals">Signals</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">BasicThreeButtonTableView QML Type</h1>
+<!-- $$$BasicThreeButtonTableView-brief -->
+<p>A table input control with Add, Delete, and Reset buttons. <a href="#details">More...</a></p>
+<!-- @@@BasicThreeButtonTableView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-chi2testtableview.html" translate="no">Chi2TestTableView</a>, <a href="qml-jasp-controls-customcontraststableview.html" translate="no">CustomContrastsTableView</a>, <a href="qml-jasp-controls-jagstableview.html" translate="no">JagsTableView</a>, and <a href="qml-jasp-controls-simpletableview.html" translate="no">SimpleTableView</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-basicthreebuttontableview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$BasicThreeButtonTableView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Wraps a <a href="qml-jasp-controls-tableview.html" translate="no">TableView</a> with three action buttons for managing rows. Used for entering structured data such as matrices or custom data tables.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> data.frame or matrix</li>
+<li><b>Default:</b> Empty table with initialRowCount rows and initialColumnCount columns</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>source</b> (var) - Source for populating the table.</li>
+<li><b>values</b> (var) - Values to populate the table with.</li>
+<li><b>initialColumnCount</b> (int) - Number of columns at creation.</li>
+<li><b>initialRowCount</b> (int) - Number of rows at creation.</li>
+<li><b>cornerText</b> (string) - Text displayed in the top-left corner cell.</li>
+<li><b>columnNames</b> (list) - Custom column header names.</li>
+<li><b>rowNames</b> (list) - Custom row header names.</li>
+<li><b>defaultValue</b> (var) - Default value for new cells.</li>
+<li><b>minimum</b> (var) - Minimum allowed value for cells.</li>
+<li><b>decimals</b> (int) - Number of decimal places for numeric cells.</li>
+<li><b>isFirstColEditable</b> (bool) - Whether the first column is editable.</li>
+<li><b>buttonsInRow</b> (bool) - Place buttons in a row above the table instead of a column on the left. Default: false.</li>
+<li><b>showButtons</b> (bool) - Show the Add/Delete/Reset buttons. Default: true.</li>
+<li><b>showAddButton</b> (bool) - Show the Add button. Default: true.</li>
+<li><b>showDeleteButton</b> (bool) - Show the Delete button. Default: true.</li>
+<li><b>showResetButton</b> (bool) - Show the Reset button. Default: true.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="signals">Signals</h2>
+<ul>
+<li><b>addClicked()</b> - Emitted when the Add button is clicked.</li>
+<li><b>deleteClicked()</b> - Emitted when the Delete button is clicked.</li>
+<li><b>resetClicked()</b> - Emitted when the Reset button is clicked.</li>
+<li><b>tableViewCompleted()</b> - Emitted when the internal <a href="qml-jasp-controls-tableview.html" translate="no">TableView</a> has completed initialization.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-basicthreebuttontableview.html" translate="no">BasicThreeButtonTableView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;priorCounts&quot;</span>
+    <span class="name">initialColumnCount</span>: <span class="number">3</span>
+    <span class="name">initialRowCount</span>: <span class="number">2</span>
+    <span class="name">columnNames</span>: [<span class="name">qsTr</span>(<span class="string">&quot;Group 1&quot;</span>), <span class="name">qsTr</span>(<span class="string">&quot;Group 2&quot;</span>), <span class="name">qsTr</span>(<span class="string">&quot;Group 3&quot;</span>)]
+}</pre>
+<!-- @@@BasicThreeButtonTableView -->
+</body>
+</html>

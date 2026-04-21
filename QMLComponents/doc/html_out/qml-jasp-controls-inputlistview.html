@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- InputListView.qml -->
+  <meta name="description" content="An editable scrollable list for entering free-text values.">
+  <title>InputListView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>InputListView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">InputListView QML Type</h1>
+<!-- $$$InputListView-brief -->
+<p>An editable scrollable list for entering free-text values. <a href="#details">More...</a></p>
+<!-- @@@InputListView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-inputlistview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$InputListView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a scrollable grid of text fields where users can type custom values. New items are added by typing in a virtual placeholder row. Items can be deleted via a cross icon. Optionally supports a row component displayed alongside each entry.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> array of strings</li>
+<li><b>Default:</b> [] (empty array, or defaultValues if set)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>title</b> (string) - Title displayed above the list. Alias: label. Default: &quot;&quot;.</li>
+<li><b>rowComponentTitle</b> (string) - Title for the row component column. Default: &quot;&quot;.</li>
+<li><b>defaultValues</b> (array) - Initial values to populate the list. Default: [].</li>
+<li><b>minRows</b> (int) - Minimum number of rows. Default: 0.</li>
+<li><b>addVirtual</b> (bool) - Show a placeholder row for adding new items. Default: true.</li>
+<li><b>placeHolder</b> (string) - Placeholder text for new items. Default: &quot;New Value&quot;.</li>
+<li><b>cellHeight</b> (real) - Height of each row cell. Default: 20.</li>
+<li><b>cellWidth</b> (real) - Width of each row cell. Default: list width.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-inputlistview.html" translate="no">InputListView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;customValues&quot;</span>
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Values&quot;</span>)
+    <span class="name">defaultValues</span>: [<span class="string">&quot;0.5&quot;</span>, <span class="string">&quot;1.0&quot;</span>, <span class="string">&quot;1.5&quot;</span>]
+}</pre>
+<!-- @@@InputListView -->
+</body>
+</html>

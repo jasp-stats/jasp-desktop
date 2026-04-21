@@ -14,21 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 #include "odsimporter.h"
 
 #include "ods/odsxmlmanifesthandler.h"
 #include "ods/odsxmlcontentshandler.h"
 #include "archivereader.h"
-#include <QXmlInputSource>
+#include <QXmlStreamReader>
 #include "log.h"
 #include "timers.h"
 
 namespace ods
 {
 
-// Implmemtation of Inporter base class.
-ODSImporter::ODSImporter()  : Importer() 
+ODSImporter::ODSImporter() : Importer()
 {}
 
 ImportDataSet* ODSImporter::loadFile(const std::string &locator, std::function<void(int)> progressCallback)
@@ -36,18 +34,18 @@ ImportDataSet* ODSImporter::loadFile(const std::string &locator, std::function<v
 	JASPTIMER_RESUME(ODSImporter::loadFile);
 
 	// Create new data set.
-	ODSImportDataSet * result = new ODSImportDataSet(this);
+	ods::ODSImportDataSet * result = new ods::ODSImportDataSet(this);
 
 	// Check mnaifest for the contents file.
 	progressCallback(0); //"Reading ODS manifest.",
 	readManifest(locator, result);
 
 	// Read the sheet contents.
-	progressCallback(33); // "Reading ODS contents.",
+	progressCallback(33);
 	readContents(locator, result);
 
 	// Do post load processing:
-	progressCallback(60); //"Processing.",
+	progressCallback(60);
 	result->postLoadProcess();
 
 	// Build the dictionary for sync.
@@ -58,56 +56,54 @@ ImportDataSet* ODSImporter::loadFile(const std::string &locator, std::function<v
 	return result;
 }
 
-void ODSImporter::readManifest(const std::string &path, ODSImportDataSet *dataset)
+void ODSImporter::readManifest(const std::string &path, ods::ODSImportDataSet *dataset)
 {
+	ArchiveReader manifest(path, ods::ODSImportDataSet::manifestPath);
+	std::string tmp;
+	int errorCode = 0;
 
-	QXmlInputSource src;
+	tmp = manifest.readAllData(4096, errorCode);
+	if (tmp.empty() || errorCode < 0)
 	{
-		// Get the data file proper from the ODS manifest file.
-		ArchiveReader manifest(path, ODSImportDataSet::manifestPath);
-		std::string tmp;
-		int errorCode = 0;
-		if (((tmp = manifest.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
-			throw std::runtime_error("Error reading manifest in ODS.");
-		src.setData(QString::fromStdString(tmp));
 		manifest.close();
+		throw std::runtime_error("Error reading manifest in ODS.");
 	}
+	manifest.close();
 
+	QByteArray data = QByteArray::fromStdString(tmp);
+	QXmlStreamReader reader(data);
+
+	ods::XmlManifestHandler manHandler(dataset);
+	if (!manHandler.parse(reader))
 	{
-		XmlManifestHandler * manHandler = new XmlManifestHandler(dataset);
-		QXmlSimpleReader reader;
-		reader.setContentHandler(manHandler);
-		reader.setErrorHandler(manHandler);
-		reader.parse(src);
+		Log::log() << "Manifest Parse Error: " << reader.errorString().toStdString();
 	}
 }
 
-void ODSImporter::readContents(const std::string &path, ODSImportDataSet *dataset)
+void ODSImporter::readContents(const std::string &path, ods::ODSImportDataSet *dataset)
 {
-
 	ArchiveReader contents(path, dataset->getContentFilename());
 
-	QXmlInputSource src;
-	{
-		std::string tmp;
-		int errorCode = 0;
-		if (((tmp = contents.readAllData(4096, errorCode)).size() == 0) || (errorCode < 0))
-			throw std::runtime_error("Error reading contents in ODS.");	
-//#ifdef JASP_DEBUG
-//		Log::log()  << "ODS XML looks like:\n" << tmp << std::endl;
-//#endif
-		src.setData(QString::fromStdString(tmp));
-	}
+	std::string tmp;
+	int errorCode = 0;
+	tmp = contents.readAllData(4096, errorCode);
 
+	if (tmp.empty() || errorCode < 0)
 	{
-		ODSXmlContentsHandler * contentsHandler = new ODSXmlContentsHandler(dataset);
-		QXmlSimpleReader reader;
-		reader.setContentHandler(contentsHandler);
-		reader.setErrorHandler(contentsHandler);
-		reader.parse(src);
+		contents.close();
+		throw std::runtime_error("Error reading contents in ODS.");
 	}
-
 	contents.close();
+
+	QByteArray data = QByteArray::fromStdString(tmp);
+	QXmlStreamReader reader(data);
+
+	ods::ODSXmlContentsHandler contentsHandler(dataset);
+
+	if (!contentsHandler.parse(reader))
+	{
+		throw std::runtime_error("XML Parse Error: " + reader.errorString().toStdString());
+	}
 }
 
-}
+} // namespace ods

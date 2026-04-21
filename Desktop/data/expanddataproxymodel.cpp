@@ -277,10 +277,20 @@ void ExpandDataProxyModel::resize(int row, int col, bool onlyExpand, const QStri
 		_undoStack->endMacro();
 }
 
+bool ExpandDataProxyModel::useUndoStack() const
+{
+	return dynamic_cast<DataSetTableModel*>(_sourceModel);
+}
+
 bool ExpandDataProxyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if (!_sourceModel || index.row() < 0 || index.column() < 0)
 		return false;
+	
+	if(!useUndoStack())
+	{
+		return _sourceModel->setData(_sourceModel->index(index.row(), index.column()), value, role);	
+	}
 
 	resize(index.row(), index.column());
 	_undoStack->endMacro(new SetDataCommand(_sourceModel, index.row(), index.column(), value, role));

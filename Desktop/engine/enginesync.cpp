@@ -130,12 +130,15 @@ EngineSync::~EngineSync()
 
 int EngineSync::rowCount(const QModelIndex &) const
 {
-	return _engines.size();
+	return _engines.size() + int(_rCmder != nullptr);
 }
 
 std::vector<EngineRepresentation*>  EngineSync::orderedEngines() const
 {
 	std::vector<EngineRepresentation*> ordered(_engines.begin(), _engines.end());
+	
+	if(_rCmder)
+		ordered.push_back(_rCmder);
 
 	std::sort(ordered.begin(), ordered.end(), [](EngineRepresentation * l, EngineRepresentation * r) { return l->channelNumber() < r->channelNumber(); });
 
@@ -430,8 +433,10 @@ void EngineSync::process()
         if(_rCmder->module() != "" && !_rCmder->moduleLoaded() && !_rCmder->moduleLoading())
             _rCmder->moduleLoad();
     }
-    else {
-        createRCmdEngine(); //just create this by default to run certain bits of utility like module install/remove
+    else 
+	{
+		if(_activateUtilEngine)
+			createRCmdEngine(); //Dont just create this by default because it causes crashes on waking from long sleeps...
     }
 	
 	restartKilledAndStoppedEngines();
@@ -776,15 +781,13 @@ bool EngineSync::processComputedColumnQueue()
 
 bool EngineSync::processDynamicModules()
 {
-	using DynMods = Modules::DynamicModules;
-	
-	if(!DynMods::dynMods())
+	if(!DynamicModules::dynMods())
 		return {}; //Only for testing!
 	
 	try
 	{
-		stringset	wantToRunInstall	= DynMods::dynMods()->moduleBundlesNeedingInstall();
-        stringset	wantToRunUninstall	= DynMods::dynMods()->modulesNeedingUninstall();
+		stringset	wantToRunInstall	= DynamicModules::dynMods()->moduleBundlesNeedingInstall();
+		stringset	wantToRunUninstall	= DynamicModules::dynMods()->modulesNeedingUninstall();
 
         if(_rCmder->installingModule() || _rCmder->unInstallingModule()) //lets only process one dynamic module install/remove at a time for the sake of sanity.
             return {};
@@ -794,11 +797,11 @@ bool EngineSync::processDynamicModules()
             if(_rCmder->idle()) //We don't care if the engine is meant for some module or other. We restart afterwards anyway
             {
                 if(wantToRunInstall.size() > 0) {
-                    _rCmder->runModuleInstallRequestOnProcess(DynMods::dynMods()->getJsonForBundleInstallRequest());
+					_rCmder->runModuleInstallRequestOnProcess(DynamicModules::dynMods()->getJsonForBundleInstallRequest());
                     wantToRunInstall = {};
                 }
                 else if(wantToRunUninstall.size() > 0) {
-                    _rCmder->runModuleUnInstallRequestOnProcess(DynMods::dynMods()->getJsonForModuleUninstallRequest());
+					_rCmder->runModuleUnInstallRequestOnProcess(DynamicModules::dynMods()->getJsonForModuleUninstallRequest());
                     wantToRunUninstall = {};
                 }
             }
@@ -1439,19 +1442,22 @@ void EngineSync::destroyEngine(EngineRepresentation * engine)
 		});
 	}
 
-	if(engine->module() != "")	_moduleEngines.erase(engine->module());
-	else
+	if(engine != _rCmder)
 	{
-		std::string modName = "";
-
-		for(const auto & nameEngine : _moduleEngines)
-			if(nameEngine.second == engine)
-				modName = nameEngine.first;
-
-		_moduleEngines.erase(modName);
+		if(engine->module() != "")	_moduleEngines.erase(engine->module());
+		else
+		{
+			std::string modName = "";
+	
+			for(const auto & nameEngine : _moduleEngines)
+				if(nameEngine.second == engine)
+					modName = nameEngine.first;
+	
+			_moduleEngines.erase(modName);
+		}
+	
+		_engines.erase(engine);
 	}
-
-	_engines.erase(engine);
 
 	delete engine;
 
@@ -1470,4 +1476,21 @@ void EngineSync::stopAndDestroyEngine(EngineRepresentation * engine)
 {
 	engine->shutEngineDown();
 	destroyEngine(engine);
+}
+
+bool EngineSync::activateUtilEngine() const
+{
+	return _activateUtilEngine;
+}
+
+void EngineSync::setActivateUtilEngine(bool newActivateUtilEngine)
+{
+	if (_activateUtilEngine == newActivateUtilEngine)
+		return;
+	
+	_activateUtilEngine = newActivateUtilEngine;
+	emit activateUtilEngineChanged();
+	
+	
+	
 }

@@ -84,7 +84,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			useConfigurationFile	READ useConfigurationFile		WRITE setUseConfigurationFile		NOTIFY useConfigurationFileChanged		)
 	Q_PROPERTY(bool			startMaximized			READ startMaximized				WRITE setStartMaximized				NOTIFY startMaximizedChanged			)
 	Q_PROPERTY(bool			storeStateEtc			READ storeStateEtc				WRITE setStoreStateEtc				NOTIFY storeStateEtcChanged				)
-	
+	Q_PROPERTY(bool			showInteractiveDefault	READ showInteractiveDefault		WRITE setShowInteractiveDefault		NOTIFY showInteractiveDefaultChanged	)
 	Q_PROPERTY(int			autoSaveIntervalSec		READ autoSaveIntervalSec		WRITE setAutoSaveIntervalSec		NOTIFY autoSaveIntervalSecChanged		)
 	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll				WRITE setAutoSaveAtAll				NOTIFY autoSaveAtAllChanged				)
 	
@@ -155,6 +155,7 @@ public:
 	void			zoomReset();
 	int				maxEnginesAdmin() 						const;
 	bool			developerMode()							const override;
+	QString			developerModeName()						const override;
 	bool			ALTNavModeActive()						const override;
     bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;
@@ -183,6 +184,9 @@ public:
 	
 	bool storeStateEtc() const;
 	void setStoreStateEtc(bool newStoreStateEtc);
+	
+	bool showInteractiveDefault() const;
+	void setShowInteractiveDefault(bool newShowInteractiveDefault);
 	
 public slots:
 	bool engineSandbox()							const;
@@ -321,6 +325,7 @@ signals:
 	void useConfigurationFileChanged(	bool		enabled);
 	void startMaximizedChanged(			bool		startMaximized);
 	void storeStateEtcChanged(			bool		state);
+	void showInteractiveDefaultChanged(	bool		interactive);
 	void autoSaveIntervalSecChanged(	int			interval);
 	void autoSaveAtAllChanged(			bool		autoSave);
 	
@@ -335,14 +340,13 @@ private:
 					_allResultFonts,
 					_allCodeFonts;
 	QVariantList	_pdfPageSizeModel;
-	bool			_githubPatCustom; //Should be initialized on prefs construction
-
+	bool			_githubPatCustom, //Should be initialized on prefs construction
+					_autoSaveIntervalSec,
+					_autoSaveAtAll;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;
 	QStringList		_splitValues(const QString& values)				const;
 	void			_setEmptyValues(const QStringList& values);
-	bool _autoSaveIntervalSec;
-	bool _autoSaveAtAll;
 };
 
 #endif // PREFERENCESDIALOG_H

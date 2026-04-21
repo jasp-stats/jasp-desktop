@@ -25,7 +25,7 @@ import JASP
 
  */
 
-Column
+ColumnLayout
 {
 					id:			axis
 					spacing:	jaspTheme.columnGroupSpacing
@@ -37,6 +37,8 @@ Column
 		label		: qsTr("Show title")
 		checked		: axisModel.titleType !== AxisModel.TitleNull
 		onClicked	: axisModel.titleType = (checked ? AxisModel.TitleCharacter : AxisModel.TitleNull)
+		
+		Layout.fillWidth:	true
 
 		JASPC.TextField
 		{
@@ -56,6 +58,8 @@ Column
 		checked		: axisModel.breaksType !== AxisModel.BreaksNull
 		onClicked	: axisModel.breaksType = (checked ? lastBreakType : AxisModel.BreaksNull)
 		columns		: 1
+		
+		Layout.fillWidth:	true
 
 		property int lastBreakType: AxisModel.BreaksRange
 
@@ -151,6 +155,7 @@ Column
 	{
 		title	: qsTr("Advanced")
 		columns	: 1
+		Layout.fillWidth:	true
 
 		JASPC.CheckBox
 		{

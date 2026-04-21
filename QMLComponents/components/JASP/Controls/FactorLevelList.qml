@@ -20,6 +20,53 @@ import QtQuick
 import QtQml.Models
 import JASP.Controls
 
+/*!
+    \qmltype FactorLevelList
+    \inqmlmodule JASP.Controls 1.0
+    \brief A grid editor for defining factors and their levels.
+
+    Displays a scrollable grid where users can name factors and their levels.
+    New factors and levels are added by typing in placeholder rows.
+    Existing items can be renamed or deleted. Used in repeated-measures ANOVA
+    and similar analyses.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} list (named lists of factor levels)
+    \li \b{Default:} One factor with two levels
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title displayed above the list. Default: "".
+    \li \b factorName (string) - Base label for factor rows. Default: "Factor".
+    \li \b levelName (string) - Base label for level rows. Default: "Level".
+    \li \b factorPlaceHolder (string) - Placeholder text for new factor rows. Default: "New Factor".
+    \li \b levelPlaceHolder (string) - Placeholder text for new level rows. Default: "New Level".
+    \li \b minFactors (int) - Minimum number of factors. Default: 1.
+    \li \b minLevels (int) - Minimum number of levels per factor. Default: 2.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    FactorLevelList {
+        name: "repeatedMeasuresFactors"
+    }
+    \endqml
+*/
 FactorLevelListBase
 {
 	id:							repeatedMeasuresFactorsList

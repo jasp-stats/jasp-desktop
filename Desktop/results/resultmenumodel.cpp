@@ -26,7 +26,7 @@
 
 ResultMenuModel::ResultMenuModel(QObject *parent) : QAbstractListModel(parent),
 	_entriesOrder({"hasCollapse", "hasEditTitle", "hasCopy", "hasLaTeXCode", "hasCite", "hasSaveImg", "hasExportResults",
-				"hasEditImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowRSyntax", "hasShowDeps"})
+				"hasEditImg", "hasInteractiveImg", "hasNotes", "hasDuplicate", "hasRemove", "hasRemoveAllAnalyses", "hasRefreshAllAnalyses", "hasShowRSyntax", "hasShowDeps"})
 {
 	_generateCorrectlyTranslatedResultEntries();
 
@@ -37,21 +37,22 @@ void ResultMenuModel::_generateCorrectlyTranslatedResultEntries()
 {
 	_allResultEntries =
 	{
-		{	"hasCollapse",				ResultMenuEntry(tr("Collapse"),				"hasCollapse",				"collapse.png",				"window.collapseMenuClicked();")	},
-		{	"hasEditTitle",				ResultMenuEntry(tr("Edit Title"),			"hasEditTitle",				"edit-pencil.png",			"window.editTitleMenuClicked();")	},
-		{	"hasCopy",					ResultMenuEntry(tr("Copy"),					"hasCopy",					"copy.png",					"window.copyMenuClicked();")		},
-		{	"hasLaTeXCode",				ResultMenuEntry(tr("Copy LaTeX"),			"hasLaTeXCode",				"code-icon.png",			"window.latexCodeMenuClicked();")	},
-		{	"hasCite",					ResultMenuEntry(tr("Copy Citations"),		"hasCite",					"cite.png",					"window.citeMenuClicked();")		},
-		{	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),		"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
-		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),			"hasEditImg",				"editImage.png",			"window.editImageClicked();")		},
-		{	"hasNotes",					ResultMenuEntry(tr("Add Note"),				"hasNotes",					"",							"")									},
-		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),			"hasDuplicate",				"duplicate.svg",			"window.duplicateMenuClicked();")	},
-		{	"hasRemove",				ResultMenuEntry(tr("Remove"),				"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
-		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),			"hasRemoveAllAnalyses",		"close-button.png",			"")									},
-		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),			"hasRefreshAllAnalyses",	"",							"")									},
-		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),	"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
-		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),		"hasExportResults",			"",							"")									},
-		{	"hasShowRSyntax",			ResultMenuEntry(tr("Show R Syntax"),		"hasShowRSyntax",			"R-roundbutton.svg",		"")									}
+		{	"hasCollapse",				ResultMenuEntry(tr("Collapse"),							"hasCollapse",				"collapse.png",				"window.collapseMenuClicked();")	},
+		{	"hasEditTitle",				ResultMenuEntry(tr("Edit Title"),						"hasEditTitle",				"edit-pencil.png",			"window.editTitleMenuClicked();")	},
+		{	"hasCopy",					ResultMenuEntry(tr("Copy"),								"hasCopy",					"copy.png",					"window.copyMenuClicked();")		},
+		{	"hasLaTeXCode",				ResultMenuEntry(tr("Copy LaTeX"),						"hasLaTeXCode",				"code-icon.png",			"window.latexCodeMenuClicked();")	},
+		{	"hasCite",					ResultMenuEntry(tr("Copy Citations"),					"hasCite",					"cite.png",					"window.citeMenuClicked();")		},
+		{	"hasSaveImg",				ResultMenuEntry(tr("Save Image As"),					"hasSaveImg",				"document-save-as.png",		"window.saveImageClicked();")		},
+		{	"hasEditImg",				ResultMenuEntry(tr("Edit Image"),						"hasEditImg",				"editImage.png",			"window.editImageClicked();")		},
+		{	"hasInteractiveImg",		ResultMenuEntry(tr("Switch Static/Interactive Image"),	"hasInteractiveImg",		"",							"window.interactiveImageClicked();")		},
+		{	"hasNotes",					ResultMenuEntry(tr("Add Note"),							"hasNotes",					"",							"")									},
+		{	"hasDuplicate",				ResultMenuEntry(tr("Duplicate"),						"hasDuplicate",				"duplicate.svg",			"window.duplicateMenuClicked();")	},
+		{	"hasRemove",				ResultMenuEntry(tr("Remove"),							"hasRemove",				"close-button.png",			"window.removeMenuClicked();")		},
+		{	"hasRemoveAllAnalyses",		ResultMenuEntry(tr("Remove All"),						"hasRemoveAllAnalyses",		"close-button.png",			"")									},
+		{	"hasRefreshAllAnalyses",	ResultMenuEntry(tr("Refresh All"),						"hasRefreshAllAnalyses",	"",							"")									},
+		{	"hasShowDeps",				ResultMenuEntry(tr("Show Dependencies"),				"hasShowDeps",				"",							"window.showDependenciesClicked()")	},
+		{	"hasExportResults",			ResultMenuEntry(tr("Export Results"),					"hasExportResults",			"",							"")									},
+		{	"hasShowRSyntax",			ResultMenuEntry(tr("Show R Syntax"),					"hasShowRSyntax",			"R-roundbutton.svg",		"")									}
    };
 }
 

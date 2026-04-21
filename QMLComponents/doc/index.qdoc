@@ -1,0 +1,21 @@
+/*!
+    \page index.html
+    \title JASP QML Controls
+    \brief Overview of the custom UI components used in JASP.
+
+    \section1 Introduction
+    Welcome to the JASP QML Reference documentation. This library contains the custom controls used to build JASP analysis modules.
+
+    \section1 Getting Started
+    To use these controls, import the module in your QML file:
+    \code
+    import JASP.Controls 1.0
+    \endcode
+
+    \section1 Key Components
+    See the \l {JASP.Controls 1.0} {JASP.Controls} module for all available types.
+    
+    \section1 All Controls
+    \generatelist qmltypes
+*/
+

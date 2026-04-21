@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- JagsTableView.qml -->
+  <meta name="description" content="A table view preset for entering JAGS data.">
+  <title>JagsTableView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>JagsTableView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties-from-basicthreebuttontableview">Inherited Properties from BasicThreeButtonTableView</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">JagsTableView QML Type</h1>
+<!-- $$$JagsTableView-brief -->
+<p>A table view preset for entering JAGS data. <a href="#details">More...</a></p>
+<!-- @@@JagsTableView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-basicthreebuttontableview.html" translate="no">BasicThreeButtonTableView</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-jagstableview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$JagsTableView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-basicthreebuttontableview.html" translate="no">BasicThreeButtonTableView</a> with the JAGSDataInput model type. Buttons are configured as Add Data, Delete Data, and Reset. Cell values are strings. Row count is capped by maxDataEntries.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> data.frame</li>
+<li><b>Default:</b> Empty table with 2 columns</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>maxDataEntries</b> (int) - Maximum number of data rows allowed. Default: 30.</li>
+</ul>
+<h2 id="inherited-properties-from-basicthreebuttontableview">Inherited Properties from BasicThreeButtonTableView</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>source</b> (var) - Source for populating the table.</li>
+<li><b>initialColumnCount</b> (int) - Number of columns at creation. Default: 2.</li>
+<li><b>initialRowCount</b> (int) - Number of rows at creation. Default: 0.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-jagstableview.html" translate="no">JagsTableView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;dataInput&quot;</span>
+    <span class="name">maxDataEntries</span>: <span class="number">50</span>
+}</pre>
+<!-- @@@JagsTableView -->
+</body>
+</html>

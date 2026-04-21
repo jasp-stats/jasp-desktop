@@ -22,6 +22,7 @@ public:
 
 	static void setGlobalPropertiesInQMLContext(QQmlContext * ctxt);
 	static void setupQMLEngine(QQmlEngine* engine);
+	static void registerQmlModuleTypes();
 
 #ifdef linux
 // Functions for qml cache bug workaround on linux

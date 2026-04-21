@@ -9,7 +9,6 @@
 #include <QDateTime>
 #include <QFile>
 #include <QDirIterator>
-#include <QStringRef>
 #include "tempfiles.h"
 #include "log.h"
 
@@ -262,12 +261,16 @@ void Reporter::writeReportLog()
 
 	if(!reportLogFile.exists())
 	{
-		reportLogFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text);
+		if(!reportLogFile.open(QIODevice::WriteOnly | QIODevice::Truncate  | QIODevice::Text))
+			Log::log() << "Reporter::writeReportLog: Failed to open log file for appending!" << std::endl;
+		
 		reportLogFile.write("DateTime,NeutralReports,ImportantReports\n");
 		reportLogFile.close();
 	}
 
-	reportLogFile.open(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Text);
+	if(!reportLogFile.open(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Text))
+		Log::log() << "Reporter::writeReportLog: Failed to open log file for appending!" << std::endl;
+	
 	QStringList writeThis = {
 		'"' + QDateTime::currentDateTimeUtc().toString() + '"',
 		tq(std::to_string(_reportsNeutral)),

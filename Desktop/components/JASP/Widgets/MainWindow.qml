@@ -150,6 +150,17 @@ Window
 		{
 			id:			customMenu
 			z:			5
+			
+			function hideMenus() 
+			{
+				customMenu.hide();
+				customSubMenu.hide();
+			}
+		}
+		CustomMenu
+		{
+			id:			customSubMenu
+			z:			6
 		}
 
 		FileMenu
@@ -234,7 +245,7 @@ Window
 			{
 				if(customMenu.visible)
 				{
-					customMenu.hide()
+					customMenu.hideMenus()
 					mouse.accepted = false;
 				}
 

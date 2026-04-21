@@ -22,6 +22,42 @@ import QtQuick.Layouts
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype SubjectivePriors
+    \inqmlmodule JASP.Controls 1.0
+    \brief A preset "Prior" section with default and informed prior distribution options.
+
+    Extends Section with a complete prior specification panel for Bayesian analyses.
+    Contains radio buttons for standardized and raw effect sizes, supporting
+    Cauchy, Normal, t, Uniform, and Half-normal distributions with configurable
+    parameters (location, scale, mean, std, df).
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Options:}
+        \list
+        \li \c effectSize (string) — "standardized" or "dienes"
+        \li \c effectSizeStandardized (string) — "default" or "informative"
+        \li \c defaultStandardizedEffectSize (string) — distribution name
+        \li \c priorWidth (numeric) — Cauchy scale parameter
+        \li Additional distribution parameters (location, scale, mean, std, df)
+        \endlist
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b informedPriorsEnabled (bool) - Alias for the enabled state of informed priors. Default: true.
+    \li \b defaultPriorsChecked (bool) - Alias for whether default priors are checked. Default: true.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    SubjectivePriors {}
+    \endqml
+*/
 Section
 {
 	title: qsTr("Prior")

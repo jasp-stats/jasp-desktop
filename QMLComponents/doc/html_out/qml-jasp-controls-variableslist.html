@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- VariablesList.qml -->
+  <meta name="description" content="The primary variable selection control in JASP.">
+  <title>VariablesList QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>VariablesList</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#signals">Signals</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">VariablesList QML Type</h1>
+<!-- $$$VariablesList-brief -->
+<p>The primary variable selection control in JASP. <a href="#details">More...</a></p>
+<!-- @@@VariablesList -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-assignedpairsvariableslist.html" translate="no">AssignedPairsVariablesList</a>, <a href="qml-jasp-controls-assignedrepeatedmeasurescells.html" translate="no">AssignedRepeatedMeasuresCells</a>, <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a>, <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a>, and <a href="qml-jasp-controls-modeltermslist.html" translate="no">ModelTermsList</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-variableslist-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$VariablesList-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a list where users can drag-and-drop variables from the dataset. This is usually used inside a <a href="qml-jasp-controls-variablesform.html" translate="no">VariablesForm</a></p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list or character vector</li>
+<li><b>Default:</b> [] (empty array)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>title</b> (string) - Title displayed above the list. Alias: label. Default: &quot;&quot;.</li>
+<li><b>singleVariable</b> (bool) - Limit to one variable (sets maxRows: 1). Default: false.</li>
+<li><b>maxRows</b> (int) - Maximum variables allowed (-1 = unlimited). Default: -1.</li>
+<li><b>listViewType</b> (enum) - Type: JASP.AssignedVariables, JASP.Interaction, JASP.RepeatedMeasures, JASP.Layers.</li>
+<li><b>allowedColumns</b> (array) - Restrict to column types: &quot;scale&quot;, &quot;ordinal&quot;, &quot;nominal&quot;. Default: [].</li>
+<li><b>draggable</b> (bool) - Allow drag-and-drop operations. Default: true.</li>
+<li><b>showVariableTypeIcon</b> (bool) - Display variable type icons. Default: true.</li>
+<li><b>source</b> (var) - Source for populating the VariablesList. Per default it will be all variables. Can be set to an id or a name (or a combination) of other controls having variables.</li>
+<li><b>rowComponent</b> (Component) - QML component for custom row controls. Can be used to add e.g. a <a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a> for each variable in the VariablesList.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="signals">Signals</h2>
+<ul>
+<li><b>itemDoubleClicked(int index)</b> - User double-clicked a variable.</li>
+<li><b>itemsDropped(indexes, dropList, dropItemIndex)</b> - Variables were dropped.</li>
+<li><b>selectedItemsChanged()</b> - Selection changed.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type">Column</span> {
+    <span class="type"><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;dependent&quot;</span>
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Dependent Variable&quot;</span>)
+        <span class="name">singleVariable</span>: <span class="number">true</span>
+        <span class="name">allowedColumns</span>: [<span class="string">&quot;scale&quot;</span>]
+    }
+
+    <span class="type"><a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a></span> {
+        <span class="name">name</span>: <span class="string">&quot;modelTerms&quot;</span>
+        <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Model Terms&quot;</span>)
+        <span class="name">listViewType</span>: <span class="name">JASP</span>.<span class="name">Interaction</span>
+        <span class="name">rowComponent</span>: <span class="name">CheckBox</span> { <span class="name">name</span>: <span class="string">&quot;isNuisance&quot;</span> }
+    }
+}</pre>
+<!-- @@@VariablesList -->
+</body>
+</html>

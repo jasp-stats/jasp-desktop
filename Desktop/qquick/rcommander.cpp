@@ -81,7 +81,7 @@ bool RCommander::parseAnalysisCode(const QString& code, QString& moduleName, QSt
 	moduleName = analysisParts[0];
 	analysisName = analysisParts[1];
 
-	Modules::DynamicModule* module = Modules::DynamicModules::dynMods()->dynamicModule(moduleName);
+	Modules::DynamicModule* module = DynamicModules::dynMods()->dynamicModule(moduleName);
 	if (!module) return false;
 
 	for (const Modules::AnalysisEntry* entry : module->menu())

@@ -1984,32 +1984,6 @@ msgstr ""
 "\n"
 "%2"
 
-msgctxt "Modules::Upgrader|"
-msgid "Error Loading Upgrades"
-msgstr "Błąd podczas ładowania aktualizacji"
-
-#, qt-format
-msgctxt "Modules::Upgrader|"
-msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr "Podczas ładowania aktualizacji dla %1 wystąpił błąd: %2"
-
-msgctxt "Modules::Upgrader|"
-msgid "Upgrades couldn't be read"
-msgstr "Nie udało się odczytać aktualizacji"
-
-msgctxt "Modules::Upgrader|"
-msgid ""
-"The necessary upgrades for reading older JASP-files could not be read...\n"
-"You can still use JASP and even read (some) older files but some options "
-"might not be understood properly and some analyses might fail to load "
-"entirely."
-msgstr ""
-"Nie udało się załadować aktualizacji niezbędnych do odczytu starszych plików "
-"JASP...\n"
-"Nadal można używać JASP, a nawet odczytywać (niektóre) starsze pliki, ale "
-"niektóre opcje mogą nie być rozpoznane prawidłowo, a niektóre analizy mogą "
-"nie zostać całkowicie załadowane."
-
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "Plik został zmieniony"
@@ -2602,174 +2576,6 @@ msgstr ""
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "Ładowanie aktualizacji modułu %1 nie powiodło się"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr ""
-"Podczas próby inicjalizacji modułu z katalogu %1 wystąpił następujący błąd: "
-"%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
-"Wystąpił błąd podczas próby załadowania modułu %1. Komunikat błędu: '%2'"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The installation of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"Instalacja modułu %1 nie powiodła się. Komunikat błędu:\n"
-"%2"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Select a folder"
-msgstr "Wybierz folder"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select the folder you want to "
-"watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
-"Aby zainstalować moduł rozwojowy musisz wybrać folder. Możesz to zrobić w "
-"menu Plik->Ustawienia->Zaawansowane."
-
-msgctxt "Modules::DynamicModules|"
-msgid "Problem initializing module"
-msgstr "Wystąpił problem w trakcie inicjalizacji modułu"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"There was a problem loading the developer module:\n"
-"\n"
-msgstr ""
-"Podczas ładowania modułu rozwojowego wystąpił problem:\n"
-"\n"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Missing files or folders"
-msgstr "Brakujące pliki lub foldery"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr ""
-"Wybrany folder nie może być zainstalowany jako moduł rozwojowy, ponieważ nie "
-"zawiera wszystkich niezbędnych plików i folderów."
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "Utwórz plik inst/Description.qml."
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "Utwórz katalog języka R zawierający kod analizy."
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Utwórz katalog inst/qml zawierający optionsforms."
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "Utwórz katalog inst/icons zawierający ikony dla przycisków wstążki."
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing %1"
-msgstr "Brakujące %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"Wygląda na to, że %1 zostało usunięte z katalogu modułów rozwojowych. Bez "
-"niego wybrany moduł nie może działać - należy umieść go z powrotem. Na razie "
-"stary plik %2 zostanie zachowany."
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Wygląda na to, że %1 nigdy nie występował w katalogu modułów rozwojowych. "
-"Bez niego wybrany moduł nie będzie działał; należy upewnić się, że zostanie "
-"on stworzony. Sposób w jaki udało się zakończyć instalację jest nieznany, "
-"dlatego moduł rozwojowy zostanie teraz odinstalowany"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "%1 was removed!"
-msgstr "%1 został usunięty!"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr ""
-"Wygląda na to, że %1 zostało usunięte. Ten plik jest wymagany do działania "
-"wybranego modułu. Moduł rozwojowy zostanie teraz odinstalowany."
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing folder %1"
-msgstr "Brak folderu %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"Wygląda na to, że folder %1 został usunięty z katalogu modułów rozwojowych. "
-"Bez niego wybrany moduł nie może działać - należy umieścić go z powrotem. Na "
-"razie stara wersja folderu zostanie zachowany."
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"Wygląda na to, że folder %1 nigdy nie występował w katalogu modułów "
-"rozwojowych. Bez niego wybrany moduł nie będzie działał; należy upewnić się, "
-"że zostanie on stworzony. Sposób w jaki w ogóle udało się zainstalować ten "
-"moduł pozostaje zagadką, dlatego zostanie on teraz odinstalowany"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Loading module description encountered a problem"
-msgstr "Podczas ładowania opisu modułu wystąpił problem"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "<i>Nie udało się załadować opisu modułu w archiwum: '%1'</i>"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a "
-"href=\"http://%6\">%6</a></i><br>"
-msgstr ""
-"<h3>%1</h3><i>Wersja %2</i><br><p>%3</p><br><i>Utworzona przez %4 i "
-"utrzymywana przez %5.</i><br><i>Więcej informacji można znaleźć na stronie "
-"internetowej: <a href=\"http://%6\">%6</a></i><br>"
 
 #, qt-format
 msgctxt "ListModelTableViewBase|"
@@ -3464,10 +3270,6 @@ msgctxt "PrefsAdvanced|"
 msgid "Show engines"
 msgstr "Pokaż silniki"
 
-msgctxt "Modules::DynamicModules|"
-msgid "Select an exisiting folder"
-msgstr "Wybierz istniejący folder"
-
 msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr "Pokaż składnię języka R"
@@ -3711,10 +3513,6 @@ msgid "Generate Wrapper"
 msgstr "Wygeneruj wrapper"
 
 msgctxt "Computer|"
-msgid "Save"
-msgstr "Zapisz"
-
-msgctxt "Computer|"
 msgid "JASP Files"
 msgstr "Pliki JASP"
 
@@ -3792,15 +3590,6 @@ msgid "Would you like to save your changes to the Filter?"
 msgstr "Czy chcesz zapisać zmiany w Filtrze?"
 
 msgctxt "FilterWindow|"
-msgid "Your changes will be lost if you don't save them."
-msgstr "Zmiany zostaną utracone, jeżeli ich nie zapiszesz."
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid "Would you like to save your changes to %1 file?"
-msgstr "Czy chcesz zapisać zmiany w pliku %1?"
-
-msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "Zmiany zostaną utracone, jeżeli ich nie zapiszesz."
 
@@ -5449,15 +5238,6 @@ msgctxt "VariablesList|"
 msgid "Column description: "
 msgstr "Opis kolumny: "
 
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '%1' but it doesn't exist."
-msgstr ""
-"Aby zainstalować moduł należy wybrać istniejący folder. Wybrano „%1”, ale "
-"taki folder nie istnieje."
-
 msgctxt "MainPage|"
 msgid "Remove this note"
 msgstr "Usuń tę notatkę"
@@ -6058,14 +5838,6 @@ msgctxt "ModulesMenu|"
 msgid "Install a local module"
 msgstr ""
 
-msgctxt "ModulesMenu|"
-msgid "Downloading module..."
-msgstr ""
-
-msgctxt "ModulesMenu|"
-msgid "Installing module..."
-msgstr ""
-
 #, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Cancel"
@@ -6073,13 +5845,6 @@ msgstr "Anuluj"
 
 msgctxt "ModulesMenu|"
 msgid "Cancel download"
-msgstr ""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The removal of Module %1 failed with the following errormessage:\n"
-"%2"
 msgstr ""
 
 #, qt-format
@@ -6102,4 +5867,352 @@ msgstr ""
 #, qt-format
 msgctxt "Computer|"
 msgid "Minitab Workbook files %1"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "module"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Downloading"
+msgstr ""
+
+msgctxt "ModulesMenu|"
+msgid "Installing"
+msgstr ""
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid " (%1/%2)"
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Show interactive plots by default, where possible."
+msgstr ""
+
+msgctxt "PrefsResults|"
+msgid ""
+"When enabled shows the interactive plots by default, you can always switch "
+"them in the plots own dropdown too."
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Point"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Horizontal Line"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Vertical Line"
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "References"
+msgstr ""
+
+msgctxt "PlotEditor::References|"
+msgid "Type"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::References|"
+msgid "Text"
+msgstr "Tekst"
+
+msgctxt "PlotEditor::References|"
+msgid "Horizontal"
+msgstr ""
+
+msgctxt "PlotEditor::References|"
+msgid "Vertical"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditor::References|"
+msgid "Remove"
+msgstr "Usuń"
+
+msgctxt "ResultMenuModel|"
+msgid "Switch Static/Interactive Image"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 has been modified"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes?"
+msgstr ""
+
+#, qt-format
+msgctxt "JASPImporter|"
+msgid ""
+"The JASP file is too old (%1) and is not supported anymore.\n"
+"Load and save it first in an intermediate JASP version (between %2 and "
+"0.96.1) to upgrade your JASP file to a compatible version"
+msgstr ""
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr ""
+"Podczas próby inicjalizacji modułu z katalogu %1 wystąpił następujący błąd: "
+"%2"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr ""
+"Wystąpił błąd podczas próby załadowania modułu %1. Komunikat błędu: '%2'"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"Instalacja modułu %1 nie powiodła się. Komunikat błędu:\n"
+"%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The removal of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Select a folder"
+msgstr "Wybierz folder"
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+"Aby zainstalować moduł rozwojowy musisz wybrać folder. Możesz to zrobić w "
+"menu Plik->Ustawienia->Zaawansowane."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr "Wybierz istniejący folder"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+"Aby zainstalować moduł należy wybrać istniejący folder. Wybrano „%1”, ale "
+"taki folder nie istnieje."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Problem initializing module"
+msgstr "Wystąpił problem w trakcie inicjalizacji modułu"
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+"Podczas ładowania modułu rozwojowego wystąpił problem:\n"
+"\n"
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Missing files or folders"
+msgstr "Brakujące pliki lub foldery"
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr ""
+"Wybrany folder nie może być zainstalowany jako moduł rozwojowy, ponieważ nie "
+"zawiera wszystkich niezbędnych plików i folderów."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Create a inst/Description.qml file."
+msgstr "Utwórz plik inst/Description.qml."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr "Utwórz katalog języka R zawierający kod analizy."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr "Utwórz katalog inst/qml zawierający optionsforms."
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr "Utwórz katalog inst/icons zawierający ikony dla przycisków wstążki."
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing %1"
+msgstr "Brakujące %1"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+"Wygląda na to, że %1 zostało usunięte z katalogu modułów rozwojowych. Bez "
+"niego wybrany moduł nie może działać - należy umieść go z powrotem. Na razie "
+"stary plik %2 zostanie zachowany."
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"Wygląda na to, że %1 nigdy nie występował w katalogu modułów rozwojowych. "
+"Bez niego wybrany moduł nie będzie działał; należy upewnić się, że zostanie "
+"on stworzony. Sposób w jaki udało się zakończyć instalację jest nieznany, "
+"dlatego moduł rozwojowy zostanie teraz odinstalowany"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid "%1 was removed!"
+msgstr "%1 został usunięty!"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr ""
+"Wygląda na to, że %1 zostało usunięte. Ten plik jest wymagany do działania "
+"wybranego modułu. Moduł rozwojowy zostanie teraz odinstalowany."
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing folder %1"
+msgstr "Brak folderu %1"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+"Wygląda na to, że folder %1 został usunięty z katalogu modułów rozwojowych. "
+"Bez niego wybrany moduł nie może działać - należy umieścić go z powrotem. Na "
+"razie stara wersja folderu zostanie zachowany."
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"Wygląda na to, że folder %1 nigdy nie występował w katalogu modułów "
+"rozwojowych. Bez niego wybrany moduł nie będzie działał; należy upewnić się, "
+"że zostanie on stworzony. Sposób w jaki w ogóle udało się zainstalować ten "
+"moduł pozostaje zagadką, dlatego zostanie on teraz odinstalowany"
+
+#, fuzzy
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr "Podczas ładowania opisu modułu wystąpił problem"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr "<i>Nie udało się załadować opisu modułu w archiwum: '%1'</i>"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
+msgstr ""
+"<h3>%1</h3><i>Wersja %2</i><br><p>%3</p><br><i>Utworzona przez %4 i "
+"utrzymywana przez %5.</i><br><i>Więcej informacji można znaleźć na stronie "
+"internetowej: <a href=\"http://%6\">%6</a></i><br>"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Enter Encryption Settings"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Password:"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "JASP Team Submission."
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Click here if you want the JASP Team be able to open the file"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Advanced Settings"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Private key (base64)"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Receiver Public key (base64)"
+msgstr ""
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Submit"
+msgstr ""
+
+#, fuzzy
+msgctxt "EncryptionSettingsWindow|"
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgctxt "VariablesWindow|"
+msgid "Use labels"
+msgstr ""
+
+msgctxt "DesktopCommunicator|"
+msgid "No password given!"
+msgstr ""
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column '%1' having labels from '%2' to '%3'"
+msgstr ""
+
+msgctxt "AutoSaveFileSystem|"
+msgid "encrypted"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Save (encrypted) JASP file"
+msgstr ""
+
+msgctxt "Computer|"
+msgid "Encrypted JASP Files"
 msgstr ""

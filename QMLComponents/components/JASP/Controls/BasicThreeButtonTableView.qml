@@ -16,11 +16,76 @@
 // <http://www.gnu.org/licenses/>.
 //
 
-
 import QtQuick
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype BasicThreeButtonTableView
+    \inqmlmodule JASP.Controls 1.0
+    \brief A table input control with Add, Delete, and Reset buttons.
+
+    Wraps a TableView with three action buttons for managing rows.
+    Used for entering structured data such as matrices or custom data tables.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} data.frame or matrix
+    \li \b{Default:} Empty table with initialRowCount rows and initialColumnCount columns
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b source (var) - Source for populating the table.
+    \li \b values (var) - Values to populate the table with.
+    \li \b initialColumnCount (int) - Number of columns at creation.
+    \li \b initialRowCount (int) - Number of rows at creation.
+    \li \b cornerText (string) - Text displayed in the top-left corner cell.
+    \li \b columnNames (list) - Custom column header names.
+    \li \b rowNames (list) - Custom row header names.
+    \li \b defaultValue (var) - Default value for new cells.
+    \li \b minimum (var) - Minimum allowed value for cells.
+    \li \b decimals (int) - Number of decimal places for numeric cells.
+    \li \b isFirstColEditable (bool) - Whether the first column is editable.
+    \li \b buttonsInRow (bool) - Place buttons in a row above the table instead of a column on the left. Default: false.
+    \li \b showButtons (bool) - Show the Add/Delete/Reset buttons. Default: true.
+    \li \b showAddButton (bool) - Show the Add button. Default: true.
+    \li \b showDeleteButton (bool) - Show the Delete button. Default: true.
+    \li \b showResetButton (bool) - Show the Reset button. Default: true.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b addClicked() - Emitted when the Add button is clicked.
+    \li \b deleteClicked() - Emitted when the Delete button is clicked.
+    \li \b resetClicked() - Emitted when the Reset button is clicked.
+    \li \b tableViewCompleted() - Emitted when the internal TableView has completed initialization.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    BasicThreeButtonTableView {
+        name: "priorCounts"
+        initialColumnCount: 3
+        initialRowCount: 2
+        columnNames: [qsTr("Group 1"), qsTr("Group 2"), qsTr("Group 3")]
+    }
+    \endqml
+*/
 Item
 {
 	id				: basicButtonTableView

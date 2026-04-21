@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- VariablesForm.qml -->
+  <meta name="description" content="A two-column layout with available variables on the left and assigned lists on the right.">
+  <title>VariablesForm QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>VariablesForm</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">VariablesForm QML Type</h1>
+<!-- $$$VariablesForm-brief -->
+<p>A two-column layout with available variables on the left and assigned lists on the right. <a href="#details">More...</a></p>
+<!-- @@@VariablesForm -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-variablesform-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$VariablesForm-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Creates a form where an <a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a> and one or more <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a> are connected. It creates automatically the Arrow buttons for each <a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a> and sets their height to fill the form.</p>
+<div class="admonition note">
+<p><b>Note: </b>VariablesForm does not bind directly to R options. The child <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> controls each have their own R binding.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>listWidth</b> (int) - Width of each variable list. Default: width * 2 / 5.</li>
+<li><b>removeInvisibles</b> (bool) - Remove invisible controls from the layout. Default: false.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-variablesform.html" translate="no">VariablesForm</a></span> {
+    <span class="type"><a href="qml-jasp-controls-availablevariableslist.html" translate="no">AvailableVariablesList</a></span> { <span class="name">name</span>: <span class="string">&quot;allVariables&quot;</span> }
+    <span class="type"><a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a></span> { <span class="name">name</span>: <span class="string">&quot;dependent&quot;</span>; <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Dependent Variable&quot;</span>); <span class="name">singleVariable</span>: <span class="number">true</span> }
+    <span class="type"><a href="qml-jasp-controls-assignedvariableslist.html" translate="no">AssignedVariablesList</a></span> { <span class="name">name</span>: <span class="string">&quot;fixedFactors&quot;</span>; <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Fixed Factors&quot;</span>); <span class="name">allowedColumns</span>: [<span class="string">&quot;nominal&quot;</span>] }
+}</pre>
+<!-- @@@VariablesForm -->
+</body>
+</html>

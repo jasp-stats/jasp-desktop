@@ -2,11 +2,12 @@
 #define PLOTEDITORMODEL_H
 
 #include <QUrl>
+#include <stack>
 #include <QObject>
 #include <json/json.h>
 #include "ploteditoraxismodel.h"
 #include "ploteditorcoordinates.h"
-#include <stack>
+#include "ploteditorreferencelines.h"
 
 class Analyses;
 class Analysis;
@@ -38,6 +39,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(bool						redoEnabled		READ redoEnabled							NOTIFY unOrRedoEnabledChanged	)
 	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged		)
 	Q_PROPERTY(AxisType					axisType		READ axisType		WRITE setAxisType		NOTIFY axisTypeChanged			)
+	Q_PROPERTY(References *				references		READ references								NOTIFY referencesChanged		)
 
 public:
 	explicit PlotEditorModel();
@@ -72,6 +74,8 @@ public:
 	void					setBlockChanges(bool change) { _blockChanges = change; }
 	bool					blockChanges()	const { return _blockChanges;	}
 
+	References *references() const;
+	
 signals:
 	void visibleChanged(		bool		visible			);
 	void nameChanged(			QString		name			);
@@ -91,6 +95,8 @@ signals:
 	void currentAxisChanged(	AxisModel * currentAxis);
 	void axisTypeChanged(		AxisType	axisType);
 
+	void referencesChanged();
+	
 public slots:
 	void showPlotEditor(int id, QString options);
 	void updateOptions(Analysis* analysis);
@@ -103,9 +109,9 @@ public slots:
 	void setHeight(			int						height			);
 	void setLoading(		bool					loading			);
 	
-	void					resetDefaults();
-	void					cancelPlot();
-	void					savePlot()	const;
+	void resetDefaults();
+	void cancelPlot();
+	void savePlot()	const;
 	void setAxisType(		const AxisType			axisType		);
 
 	void somethingChanged();
@@ -126,34 +132,36 @@ private:
 	void		updatePlot(Json::Value& imageOptions);
 
 private:
-	Analysis			*	_analysis		= nullptr;
-	AxisModel			*	_xAxis			= nullptr,
-						*	_yAxis			= nullptr,
-						*	_currentAxis	= nullptr;
+	Analysis				*	_analysis		= nullptr;
+	AxisModel				*	_xAxis			= nullptr,
+							*	_yAxis			= nullptr,
+							*	_currentAxis	= nullptr;
+	References				*	_references		= nullptr;
 
 	//Coordinates				_coordinates;
-	Json::Value				_imgOptions		= Json::nullValue,
-							_originalImgOps	= Json::nullValue;
-	std::map<int, Json::Value> _editedImgsMap;
-	QString					_name,
-							_data,
-							_title;
-	bool					_visible		= false,
-							_goBlank		= false,
-							_loading		= false,
-							_validOptions	= false,
-							_blockChanges	= false;
-	int						_width,
-							_height;
-	double					_ppi;
+	Json::Value					_imgOptions		= Json::nullValue,
+								_originalImgOps	= Json::nullValue;
+	std::map<int, Json::Value>	_editedImgsMap;
+	QString						_name,
+								_data,
+								_title;
+	bool						_visible		= false,
+								_goBlank		= false,
+								_loading		= false,
+								_validOptions	= false,
+								_blockChanges	= false;
+	int							_width,
+								_height;
+	double						_ppi;
 
-	static int				_editRequest;
+	static int					_editRequest;
 
 
 	std::stack<undoRedoData>	_undo,
 								_redo;
 
-	AxisType				_axisType		= AxisType::Xaxis;
+	AxisType					_axisType		= AxisType::Xaxis;
+	
 };
 
 }

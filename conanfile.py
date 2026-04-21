@@ -26,6 +26,7 @@ class JaspConanConfig(ConanFile):
         self.requires("gmp/6.3.0")
         self.requires("mpfr/4.2.1")
         self.requires("freexl/2.0.99.cci.20260225")
+        self.requires("libsodium/1.0.20")
         # librdata is not available for Windows platforms on conan-center yet
         if self.settings_build.os == "Macos":
             self.requires("librdata/0.0.0.cci.20231003") 

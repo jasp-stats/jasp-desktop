@@ -101,6 +101,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		this.model.on("CustomOptions:changed",		function (options)			{											this.trigger("optionschanged",		this.model.get("id"), options)	},	this);
 		this.model.on("SaveImage:clicked",			function (options)			{											this.trigger("saveimage",			this.model.get("id"), options)	},	this);
 		this.model.on("EditImage:clicked",			function (image, options)	{ this.imageBeingEdited = image;			this.trigger("editimage",			this.model.get("id"), options)	},	this);
+		this.model.on("InteractiveImage:clicked",	function (options)			{											this.trigger("interactiveImage",	this.model.get("id"), options)	},	this);
 		this.model.on("ShowDependencies:clicked",	function (optName)			{											this.trigger("showDependencies",	this.model.get("id"), optName)	},	this);
 
 		this.$el.on("changed:userData",	this, this.onUserDataChanged);
@@ -147,6 +148,10 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		if (this.imageBeingEdited !== null) {
 			if ("revision" in imageEditResults)
 				this.imageBeingEdited.setRevision(imageEditResults["revision"]);
+
+			// Update the interactive plotly data so toggling to the interactive view shows the edited plot
+			if ("interactiveJsonData" in imageEditResults && imageEditResults["interactiveJsonData"] !== null)
+				this.imageBeingEdited.model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
 
 			this.imageBeingEdited.reRender();
 		}
@@ -522,7 +527,7 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 
 			let data = results[name];
 			let itemView = this.createChild(data, this.model.get("status"), meta);
-			
+
 			if (itemView === null)
 				continue;
 

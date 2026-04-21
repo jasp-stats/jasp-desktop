@@ -78,6 +78,7 @@ if(length(remoteBundleURLS) > 0) {
         if(!all(res)) {
             toDownload <- toDownload[!res]
             cat("Unable to download the following bundles: ", paste(toDownload, sep = ' '), '\n')
+            quit(status=66)
         }
 
         #clean up the download folder a bit by removing all bundles we where not instructed to download

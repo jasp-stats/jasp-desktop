@@ -62,6 +62,10 @@
             <uap:FileType>.dta</uap:FileType>
             <uap:FileType>.sas7bdat</uap:FileType>
             <uap:FileType>.sas7bcat</uap:FileType>
+            <uap:FileType>.rdata</uap:FileType>
+            <uap:FileType>.rds</uap:FileType>
+            <uap:FileType>.mwx</uap:FileType>
+            <uap:FileType>.mpx</uap:FileType>
           </uap:SupportedFileTypes>
           <uap:Logo>Assets\Square44x44Logo.png</uap:Logo>
 

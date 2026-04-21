@@ -20,6 +20,16 @@
 import QtQuick
 import QtQml
 
+/*!
+    \qmltype JASPScrollBar
+    \inqmlmodule JASP.Controls 1.0
+    \brief An internal custom scrollbar for flickable content.
+
+    Provides vertical or horizontal scrolling for a Flickable item. Supports
+    drag-scrolling, click-to-position, mouse wheel, and optional arrow buttons.
+
+    \note This is an internal component. Module developers do not need to use this directly.
+*/
 Item
 {
 									id							: scrollbar

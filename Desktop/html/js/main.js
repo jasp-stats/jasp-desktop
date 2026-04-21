@@ -3,6 +3,7 @@
 var jasp = null;
 var scrollAtAll = true;
 var analysesGlobal = null;
+var useInteractivePlots = false;
 
 $(document).ready(function () {
 	var d		= new Date();
@@ -25,7 +26,8 @@ $(document).ready(function () {
 		"pExact" :				false,
 		"decimals":				"",
 		"tempFolder":			"",
-		"normalizedNotation":	true
+		"normalizedNotation":	true,
+		"showInteractiveDefault":	true
 	}
 
 	var selectedAnalysisId	= -1;
@@ -109,14 +111,14 @@ $(document).ready(function () {
 	window.setAnalysesTitle = function(newTitle) { analyses.setTitle(newTitle); }
 
 
+	window.setInteractivePlots	= function(interactive)		{ useInteractivePlots = interactive;			}
+	window.setAppVersion		= function(version)			{ $(".app-version").text("Version " + version);	}
+	window.noInstructions		= function()				{ $('#instructions').text("");					}
+	window.noPatchinfo			= function()				{ $('#patchinfo').text("");						}
+	window.setTextHeight		= function(height)			{ $('body').css('font-size', height + 'px');	}
+	window.showInstructions		= function()				{ showInstructions = true;						}
 
-	window.setAppVersion	= function(version) { $(".app-version").text("Version " + version);	}
-	window.noInstructions	= function()		{ $('#instructions').text("");					}
-	window.noPatchinfo		= function()		{ $('#patchinfo').text("");						}
-	window.setTextHeight	= function(height)	{ $('body').css('font-size', height + 'px');	}
-	window.showInstructions = function()		{ showInstructions = true;						}
-
-	window.hideInstructions = function () {
+	window.hideInstructions		= function () {
 
 		showInstructions = false
 
@@ -147,6 +149,7 @@ $(document).ready(function () {
 	//Ok we .bind() the menuObject to the function because otherwise javascript decides that "this" is window and not a plot/analysis/table/whatever...
 	window.saveImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.saveImageClicked			.bind(window.menuObject) ); }
 	window.editImageClicked			= function () { window.menuObjectFunctionCaller( window.menuObject.editImageClicked			.bind(window.menuObject) ); }
+	window.interactiveImageClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.interactiveImageClicked	.bind(window.menuObject) ); }
 	window.editTitleMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.editTitleClicked			.bind(window.menuObject) ); }
 	window.collapseMenuClicked		= function () { window.menuObjectFunctionCaller( window.menuObject.collapseMenuClicked		.bind(window.menuObject) ); }
 	window.showDependenciesClicked	= function () { window.menuObjectFunctionCaller( window.menuObject.showDependenciesClicked	.bind(window.menuObject) ); }
@@ -483,6 +486,8 @@ $(document).ready(function () {
 			jaspWidget.on("optionschanged",				function (id, options)	{ jasp.analysisChangedDownstream(id, JSON.stringify(options))	});
 			jaspWidget.on("saveimage",					function (id, options)	{ jasp.analysisSaveImage(id, JSON.stringify(options))			});
 			jaspWidget.on("editimage",					function (id, options)	{ jasp.analysisEditImage(id, JSON.stringify(options))			});
+			jaspWidget.on("interactiveImage",			function (id, options)	{ console.log("interactiveImage clicked!")						});
+			// TODO plotly: here we need to call interactiveImage?
 			jaspWidget.on("showDependencies",			function (id, optName)	{ jasp.showDependenciesInAnalysis(id, optName);					});
 			jaspWidget.on("analysis:remove",			function (id)			{ jasp.removeAnalysisRequest(id);								});
 			jaspWidget.on("analysis:duplicate",			function (id)			{ jasp.duplicateAnalysis(id);									});

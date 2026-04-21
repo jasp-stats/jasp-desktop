@@ -36,6 +36,8 @@
 #include "filemenulistitem.h"
 #include "actionbuttons.h"
 #include "resourcebuttonsvisible.h"
+#include "analysis/analysis.h"
+
 
 class MainWindow;
 class DataSetPackage;

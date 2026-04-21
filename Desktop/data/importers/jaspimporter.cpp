@@ -22,7 +22,7 @@
 #include <sys/stat.h>
 
 #include <fcntl.h>
-
+#include "utilities/qutils.h"
 //#include "libzip/config.h"
 #include <archive.h>
 #include <archive_entry.h>
@@ -30,8 +30,15 @@
 #include "archivereader.h"
 #include "tempfiles.h"
 #include "../exporters/jaspexporter.h"
+#include "log.h"
 
 #include "resultstesting/compareresults.h"
+#include "data/jaspencryptiondata.h"
+#include "data/jaspencrypt.h"
+#include "utilities/desktopcommunicator.h"
+#include "data/asyncloader.h"
+
+const Version JASPImporter::minJaspVersion = Version("0.18.0");
 
 void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)> progressCallback)
 {	
@@ -41,12 +48,54 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 
 	packageData->setIsJaspFile(true);
 
-	readManifest(path);
+	//do some decrypting if necessary
+	bool					encrypted	= JASPEncrypt::detectEncryptedJASPFile(path);
+	std::filesystem::path	tmpPath		= path;
+	
+	if(encrypted) 
+	{
+		try 
+		{
+			JaspEncryptionData::getInstance()->setEncryptionActive(true);
+						
+			if (!DesktopCommunicator::singleton()->queryEncryptionSettings(true))
+				throw LoaderException("Query Encryption Settings cancelled", true);
+			
+						tmpPath					= std::filesystem::temp_directory_path() / ("_tmp_unlock_" + std::filesystem::path(path).filename().generic_string());
+			Json::Value root;
+            std::string	privKey					= JaspEncryptionData::getInstance()->getPrivatekey(),
+						responsePublicKey		= "",
+						responsePasswordSalt	= "";
+			bool		usePrivKey				= privKey.length();
+			
+			//check if user want to use privkey or password to decrypt
+			
+            JASPEncrypt::decrypt(tmpPath, path, usePrivKey ? privKey : JaspEncryptionData::getInstance()->getPassword(), root, responsePublicKey, responsePasswordSalt, usePrivKey);
+            
+            JaspEncryptionData::getInstance()->setPublicKeyResponse(responsePublicKey);
+            JaspEncryptionData::getInstance()->setPasswordSaltResponse(responsePasswordSalt);
+			
+		} catch (LoaderException& e) {
+			throw e;
+		} catch (std::exception& e) {
+			Log::log() << "Decrypt failed: " << e.what() << std::endl;
+			throw LoaderException("Decryption failed. Please confirm the password was right. \n\n" + std::string(" Technical Reason: ") + std::string(e.what()));
+		}
+	}
 
-	switch(isCompatible())
+	switch(isCompatible(tmpPath.generic_string()))
 	{
 	case Compatibility::NotCompatible:
-		throw std::runtime_error("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
+	{
+		if (DataSetPackage::pkg()->jaspVersion() < JASPImporter::minJaspVersion)
+			throw LoaderException(
+				fq(tr("The JASP file is too old (%1) and is not supported anymore.\n"
+					  "Load and save it first in an intermediate JASP version (between %2 and 0.96.1) to upgrade your JASP file to a compatible version")
+					   .arg(DataSetPackage::pkg()->jaspVersion().isEmpty() ? "older than " + (JASPImporter::minJaspVersion.asString()) : DataSetPackage::pkg()->jaspVersion().asString())
+					   .arg(JASPImporter::minJaspVersion.asString())));
+		else
+			throw LoaderException("The file version is too new.\nPlease update to the latest version of JASP to view this file.");
+	}
 
 	case Compatibility::Limited:
 			packageData->setWarningMessage("This file was created by a newer version of JASP and may not have complete functionality.");
@@ -59,16 +108,22 @@ void JASPImporter::loadDataSet(const std::string &path, std::function<void(int)>
 	JASPTIMER_STOP(JASPImporter::loadDataSet INIT);
 
 	packageData->beginLoadingData();
-	loadDataArchive(path, progressCallback);
-	loadJASPArchive(path, progressCallback);
+	loadDataArchive(tmpPath.generic_string(), progressCallback);
+	loadJASPArchive(tmpPath.generic_string(), progressCallback);
 	packageData->endLoadingData();
+
+	if(encrypted) //delete the decrypted tmp file we made
+		std::filesystem::remove(tmpPath);
 }
 
 JASPImporter::Compatibility JASPImporter::isCompatible(const std::string &path)
 {
 	try
 	{
-		readManifest(path);
+		ManifestInfo info = ArchiveReader::readManifest(path);
+		DataSetPackage::pkg()->setArchiveVersion(	Version(info.jaspArchiveVersion));
+		DataSetPackage::pkg()->setJaspVersion(		Version(info.jaspVersion));
+
 		return isCompatible();
 	}
 	catch(...)
@@ -97,7 +152,7 @@ void JASPImporter::loadDataArchive(const std::string &path, std::function<void(i
 		std::string		html			= resultsEntry.readAllData(sizeof(char), errorCode);
 
 		if (errorCode != 0)
-			throw std::runtime_error("Could not read result from 'index.html' in JASP archive.");
+			throw LoaderException("Could not read result from 'index.html' in JASP archive.");
 
 		resultXmlCompare::compareResults::theOne()->setOriginalResult(QString::fromStdString(html));
 	}
@@ -108,7 +163,7 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 	JASPTIMER_SCOPE(JASPImporter::loadJASPArchive_1_00 read analyses.json);
 	Json::Value analysesData;
 
-	if (parseJsonEntry(analysesData, path, "analyses.json", false))
+	if (ArchiveReader::parseJsonEntry(analysesData, path, "analyses.json", false))
 	{
 		stringvec resources = ArchiveReader::getEntryPaths(path, "resources");
 	
@@ -138,100 +193,9 @@ void JASPImporter::loadJASPArchive(const std::string &path, std::function<void(i
 	progressCallback(100); //"Initializing Analyses & Results",
 }
 
-
-void JASPImporter::readManifest(const std::string &path)
-{
-	bool            foundVersion		= false;
-	std::string     manifestName		= "manifest.json";
-	ArchiveReader	manifestReader;
-	manifestReader.openEntry(path, manifestName); //separate from constructor to avoid a failed close (because an exception in constructor messes up destructor)
-    int64_t         size				= manifestReader.bytesAvailable();
-    int             errorCode;
-
-	if (size > 0)
-	{
-		std::string manifestStr = manifestReader.readAllData(sizeof(char), errorCode);
-
-		if (errorCode != 0)
-			throw std::runtime_error("Could not read manifest of JASP archive.");
-
-		Json::Reader    parser;
-		Json::Value     manifest;
-		parser.parse(manifestStr, manifest);
-
-		std::string jaspArchiveVersionStr	= manifest.get("jaspArchiveVersion", "").asString();
-		std::string jaspVersionStr			= manifest.get("jaspVersion",		"").asString();
-
-		foundVersion = ! jaspArchiveVersionStr.empty();
-
-		DataSetPackage::pkg()->setArchiveVersion(	Version(jaspArchiveVersionStr));
-		DataSetPackage::pkg()->setJaspVersion(		Version(jaspVersionStr));
-	}
-
-	if ( ! foundVersion)
-		throw std::runtime_error("Archive missing version information.");
-}
-
-bool JASPImporter::parseJsonEntry(Json::Value &root, const std::string &path,  const std::string &entry, bool required)
-{
-	//Not particularly happy about the way we need to add a delete at every return here. Would be better to not use `new` and just instantiate a scoped var
-	//But that would require removing some `std::runtime_error` from `openEntry` in the `ArchiveReader` constructor. 
-	// And this is not the time to rewrite too many things.
-	ArchiveReader * dataEntry = NULL;
-	try
-	{
-		dataEntry = new ArchiveReader(path, entry);
-	}
-	catch(...)
-	{
-		return false;
-	}
-	
-	if (!dataEntry->archiveExists())
-	{
-		delete dataEntry;
-		throw std::runtime_error("The selected JASP archive '" + path + "' could not be found.");
-	}
-
-	if (!dataEntry->exists())
-	{
-		delete dataEntry;
-		
-		if (required)
-			throw std::runtime_error("Entry '" + entry + "' could not be found in JASP archive.");
-
-		return false;
-	}
-
-    int64_t size = dataEntry->bytesAvailable();
-	if (size > 0)
-	{
-		char *data = new char[size];
-        int64_t startOffset = dataEntry->pos();
-		int errorCode = 0;
-		while (dataEntry->readData(&data[dataEntry->pos() - startOffset], 8016, errorCode) > 0 && errorCode == 0) ;
-
-		if (errorCode < 0)
-		{
-			delete dataEntry;
-			throw std::runtime_error("Could not read Entry '" + entry + "' in JASP archive.");
-		}
-
-		Json::Reader jsonReader;
-		jsonReader.parse(data, (char*)(data + (size * sizeof(char))), root);
-
-		delete[] data;
-	}
-
-	dataEntry->close();
-
-	delete dataEntry;
-	return true;
-}
-
 JASPImporter::Compatibility JASPImporter::isCompatible()
 {
-	if (DataSetPackage::pkg()->archiveVersion().major()		> JASPExporter::jaspArchiveVersion.major() )
+	if ((DataSetPackage::pkg()->jaspVersion() < JASPImporter::minJaspVersion) || (DataSetPackage::pkg()->archiveVersion().major() > JASPExporter::jaspArchiveVersion.major()) )
 		return Compatibility::NotCompatible;
 
 	if (DataSetPackage::pkg()->archiveVersion().minor()		> JASPExporter::jaspArchiveVersion.minor() )

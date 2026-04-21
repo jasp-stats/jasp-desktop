@@ -15,6 +15,8 @@ private slots:
 	void	testDataImport_data();
 	void	testJaspDataImport();
 	void	testJaspDataImport_data();
+	void	testJaspRoundRobin_data();
+	void	testJaspRoundRobin();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

@@ -44,6 +44,8 @@ public:
     Q_INVOKABLE void startInstalling();
     Q_INVOKABLE void finishInstalling();
 
+	QString getEnvironmentInfoJson() const;
+		
     bool isInstalling() const { return _isInstalling; }
 
 signals:

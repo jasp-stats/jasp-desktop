@@ -33,26 +33,35 @@ class EngineSync : public QAbstractListModel
 {
 	Q_OBJECT
 	
+	Q_PROPERTY(bool activateUtilEngine	READ activateUtilEngine WRITE setActivateUtilEngine NOTIFY activateUtilEngineChanged)
+	
 public:
-
-	EngineSync(QObject *parent);
-	~EngineSync();
-
-	void start();
-	void killProcessTimer();
-	bool allEnginesInitializing(std::set<EngineRepresentation *> these = {}); ///< If `these` isn't filled all engines are checked
-
-	static EngineSync * singleton() { return _singleton; }
-
-    EngineRepresentation *	createNewEngine(bool addToEngines = true, int overrideChannel = -1, bool privileged = false);
+							EngineSync(const EngineSync &)	= delete;
+							EngineSync(EngineSync &&)		= delete;
+	EngineSync				&operator=(const EngineSync &)	= delete;
+	EngineSync				&operator=(EngineSync &&)		= delete;
+	
+							EngineSync(QObject *parent);
+							~EngineSync();
+	
+	void					start();
+	void					killProcessTimer();
+	bool					allEnginesInitializing(std::set<EngineRepresentation *> these =	{}); ///< If `these` isn't filled all engines are checked
+	
+	static EngineSync	*	singleton() { return _singleton; }
+	
+	EngineRepresentation *	createNewEngine(bool addToEngines = true,  int overrideChannel = -1, bool privileged = false);
 	EngineRepresentation *	createRCmdEngine();
+	
+	int						rowCount(const QModelIndex & = QModelIndex()) const override;
+	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+	QHash<int, QByteArray>	roleNames() const override;
+	
+	std::string				currentStateForDebug() const;
 
-	int						rowCount(const QModelIndex & = QModelIndex())				const override;
-	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
-	QHash<int, QByteArray>	roleNames()													const override;
-
-	std::string	currentStateForDebug() const;
-
+	bool					activateUtilEngine() const;
+	void					setActivateUtilEngine(bool newActivateUtilEngine);
+	
 public slots:
 	void		destroyEngine(EngineRepresentation * engine);
 	void		stopAndDestroyEngine(EngineRepresentation * engine);
@@ -107,11 +116,13 @@ signals:
 	void		reloadData();
 	void		checkDataSetForUpdates();
 
+	void		activateUtilEngineChanged();
+	
 private:
 	//These process functions can request a new engine to be started:
 	stringset	processRCodeQueue();
 	bool		processComputedColumnQueue();
-    bool    processDynamicModules();
+    bool		processDynamicModules();
 	stringset	processAnalysisRequests();	///< Returns modules that still need an engine
 	
 	void		processLogCfgRequests();
@@ -168,7 +179,8 @@ private:
 	RFilterStore					*	_waitingFilter					= nullptr;
 	bool								_stopProcessing					= false,
 										_dataMode						= false,
-										_filterRunning					= false;
+										_filterRunning					= false,
+										_activateUtilEngine				= false;
 	int									_filterCurrentRequestID			= 0;
 	std::string							_memoryName,
 										_engineInfo;
@@ -183,7 +195,6 @@ private:
 	EngineRepresentation			*	_rCmder				= nullptr;	///< For those special occassions where you just want to shout at R in a more personal manner
 	IPCChannel						*	_rCmderChannel		= nullptr;	///< The channel for shouting at R in a more personal manner
 	std::vector<int64_t>				_engineStopTimes;				///< Here we keep track of how long ago it is an engine shut down, this way we can give it a slight time between closing and starting an engine. To avoid shared memory problems on windows.
-
 };
 
 #endif // ENGINESYNC_H

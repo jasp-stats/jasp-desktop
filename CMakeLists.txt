@@ -59,7 +59,7 @@ endif()
 
 project(
   JASP
-  VERSION 0.96.0.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
+  VERSION 0.96.1.0 # <major>[.<minor>[.<patch>[.<tweak>]]]
   LANGUAGES CXX C
   HOMEPAGE_URL "http://jasp-stats.org/"
   DESCRIPTION "A fresh way to do statistics")
@@ -75,6 +75,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_FIND_FRAMEWORK ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(INTERACTIVE_PLOTS OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE

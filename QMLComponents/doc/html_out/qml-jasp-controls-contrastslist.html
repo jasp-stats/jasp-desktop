@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- ContrastsList.qml -->
+  <meta name="description" content="A composite control for specifying contrasts for factor variables.">
+  <title>ContrastsList QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>ContrastsList</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">ContrastsList QML Type</h1>
+<!-- $$$ContrastsList-brief -->
+<p>A composite control for specifying contrasts for factor variables. <a href="#details">More...</a></p>
+<!-- @@@ContrastsList -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-contrastslist-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$ContrastsList-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Combines a <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> (showing factors with contrast type dropdowns) and an optional <a href="qml-jasp-controls-customcontraststableview.html" translate="no">CustomContrastsTableView</a> for entering custom contrast weights. Each factor gets a dropdown to select a contrast type (none, deviation, simple, difference, Helmert, repeated, polynomial, or custom).</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (contrasts per factor, plus custom contrast matrices)</li>
+<li><b>Default:</b> All factors set to &quot;none&quot;</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>factorsSourceName</b> (string) - Name of the source control providing factor variables. Default: &quot;fixedFactors&quot;.</li>
+<li><b>source</b> (var) - Alias for the internal <a href="qml-jasp-controls-variableslist.html" translate="no">VariablesList</a> source.</li>
+<li><b>repeatedMeasureFactors</b> (string) - Name of the repeated measures factors source. Default: &quot;repeatedMeasuresFactors&quot;.</li>
+<li><b>addCustom</b> (bool) - Whether to include &quot;custom&quot; as a contrast option. Default: true.</li>
+<li><b>contrastValues</b> (array) - Available contrast types. Default: none, deviation, simple, difference, Helmert, repeated, polynomial, custom.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-contrastslist.html" translate="no">ContrastsList</a></span> {
+    <span class="name">factorsSourceName</span>: <span class="string">&quot;fixedFactors&quot;</span>
+}</pre>
+<!-- @@@ContrastsList -->
+</body>
+</html>

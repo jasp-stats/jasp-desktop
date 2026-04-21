@@ -210,11 +210,12 @@ DropArea {
 					createString(text)
 				else if(dropKeys.indexOf("boolean") >= 0)
 				{
-					var boolVal = false;
-					if((!isNaN(asNumber) && asNumber != 0) || text.toLowerCase() === "true")
-						boolVal = true;
-					
-					createBool(boolVal)
+					if (!isNaN(asNumber))
+						createBool(asNumber != 0)
+					else if (text.toLowerCase() === "true")
+						createBool(true)
+					else if (text.toLowerCase() === "false")
+						createBool(false)
 				}
 			}
 

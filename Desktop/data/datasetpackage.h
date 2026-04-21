@@ -241,6 +241,7 @@ public:
 				void						setColumnName(						size_t				columnIndex, const std::string	& newName);
 				void						setColumnTitle(						size_t				columnIndex, const std::string	& newTitle);
 				void						setColumnDropLevels(				size_t					columnIndex, dropLevelsType dropLevels);
+				void						setColumnHasLabels(					size_t					columnIndex, bool hasLabels);
 				void						setColumnDescription(				size_t				columnIndex, const std::string	& newDescription);
 				void						setColumnComputedType(				size_t				columnIndex, computedColumnType	type);
 				void						setColumnComputeFilter(				size_t columnIndex, const std::string &newFilter);

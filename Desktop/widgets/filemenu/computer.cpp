@@ -19,7 +19,9 @@
 #include "computer.h"
 #include <QDir>
 #include "utilities/messageforwarder.h"
+#include "utilities/desktopcommunicator.h"
 #include "log.h"
+#include "data/jaspencryptiondata.h"
 
 Computer::Computer(FileMenu *parent): FileMenuObject(parent)
 {
@@ -103,8 +105,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 		break;
 
 	case FileEvent::FileSave:
-		caption = tr("Save");
-		filter  = tr("JASP Files") + " (*.jasp)";
+        caption = tr("Save (encrypted) JASP file");
+		filter  = tr("JASP Files") + " (*.jasp);;" + tr("Encrypted JASP Files") + " (*.jasp)";
 		if(!browsePath.endsWith(".jasp"))
 			browsePath += ".jasp";
 		break;
@@ -114,8 +116,8 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 	}
 
 
-	QString extension,
-			finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter, &extension);
+    QString extension, selectedFilter,
+            finalPath = MessageForwarder::browseSaveFile(caption, browsePath, filter, selectedFilter, extension);
 
 	FileEvent *event = new FileEvent(this, mode);
 
@@ -127,9 +129,15 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 															 !finalPath.endsWith(".pdf",  Qt::CaseInsensitive))	)	finalPath.append(QString(".html"));
 		else if	(mode == FileEvent::FileExportData		&&	(!finalPath.endsWith(".csv",  Qt::CaseInsensitive) &&
 															 !finalPath.endsWith(".txt",  Qt::CaseInsensitive) &&
-															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));			
-		
-		event->setPath(finalPath);
+															 !finalPath.endsWith(".tsv",  Qt::CaseInsensitive))	)	finalPath.append(QString(".csv"));
+
+		JaspEncryptionData::getInstance()->reset();
+        if(selectedFilter.contains("encrypt", Qt::CaseInsensitive))
+			JaspEncryptionData::getInstance()->setEncryptionActive(true);
+		else
+			JaspEncryptionData::getInstance()->setEncryptionActive(false);
+
+        event->setPath(finalPath);
 		emit dataSetIORequest(event);
 	}
 	else

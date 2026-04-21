@@ -21,6 +21,39 @@ import QtQuick.Layouts	as L
 import JASP.Controls
 import JASP
 
+/*!
+    \qmltype Section
+    \inqmlmodule JASP.Controls 1.0
+    \brief A collapsible panel that groups child controls under a clickable header.
+
+    Displays a titled expander bar with an arrow icon. Clicking the header
+    toggles visibility of the child controls area with an animated transition.
+    Commonly used to organize optional or advanced settings.
+
+    \note Section does not bind to R options. It is a layout-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b title (string) - Text displayed in the expander header. Alias: text. Default: "".
+    \li \b expanded (bool) - Whether the section content is visible. Default: false.
+    \li \b columns (int) - Number of columns in the content GridLayout. Default: 2.
+    \li \b spacing (real) - Row spacing in the content area. Default: jaspTheme.rowGridSpacing.
+    \li \b info (string) - Info used for tooltips and help generation. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Section {
+        title: qsTr("Advanced Options")
+        expanded: false
+
+        CheckBox { name: "verbose"; label: qsTr("Verbose output") }
+        IntegerField { name: "maxIter"; label: qsTr("Max iterations"); defaultValue: 500 }
+    }
+    \endqml
+*/
 FocusScope
 {
 	id					: expanderWrapper

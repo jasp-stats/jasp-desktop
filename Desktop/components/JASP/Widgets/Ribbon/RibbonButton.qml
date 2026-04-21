@@ -56,7 +56,7 @@ Item
 	{
 		if (event.key === Qt.Key_Escape)
 		{
-			customMenu.hide();
+			customMenu.hideMenus();
 		}
 		else if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
 		{
@@ -79,7 +79,7 @@ Item
 		if (!ribbonButton.focus)
 		{
 			myMenuOpen = false;
-			customMenu.hide();
+			customMenu.hideMenus();
 		}
 	}
 
@@ -87,14 +87,14 @@ Item
 	{
 		if (ribbonButton.menu.rowCount() === 0) //Probably special?
 		{
-			customMenu.hide()
+			customMenu.hideMenus()
             messages.log("startOrShowMenu() for " + ribbonButton.moduleName)
 			ribbonModel.analysisClicked("", "", "", ribbonButton.moduleName)
 
 		}
 		else if (ribbonButton.menu.rowCount() === 1)
 		{
-			customMenu.hide()
+			customMenu.hideMenus()
 			ribbonModel.analysisClicked(ribbonButton.menu.getFirstAnalysisFunction(), ribbonButton.menu.getFirstAnalysisQML(), ribbonButton.menu.getFirstAnalysisTitle(), ribbonButton.moduleName)
 		}
 		else
@@ -103,21 +103,25 @@ Item
 
 	function showMyMenu()
 	{
-
 		if (ribbonButton.menu.rowCount() <= 1)
 			return
 
 		var functionCall = function (index)
 		{
-			var analysisName  = customMenu.props['model'].getAnalysisFunction(index);
-			var analysisTitle = customMenu.props['model'].getAnalysisTitle(index);
-			var analysisQML   = customMenu.props['model'].getAnalysisQML(index);
-            
-			messages.log("showMyMenu() for " + ribbonButton.moduleName + " name " + analysisName + " title " + analysisTitle)
+			let menuModel	= customMenu.props['model']
 
-			ribbonModel.analysisClicked(analysisName, analysisQML, analysisTitle, ribbonButton.moduleName)
-			customMenu.hide();
-			customMenu.focus = false;
+			if (index < 0 || index >= menuModel.rowCount())
+				return;
+
+			let subMenuModel = menuModel.getSubMenu(index)
+			if (subMenuModel)
+				showMySubMenu(subMenuModel, index)
+			else
+			{
+				ribbonModel.analysisClicked(menuModel.getAnalysisFunction(index), menuModel.getAnalysisQML(index), menuModel.getAnalysisTitle(index), ribbonButton.moduleName)
+				customMenu.hideMenus();
+				customMenu.focus = false;
+			}
 		}
 
 		// Key Navigation with Up or Down. Only navigate valid analysis items
@@ -125,16 +129,20 @@ Item
 		//	@direction: +1 or -1
 		var navigateFunc = function (index, direction)
 		{
-			let nextIndex = mod(index + direction, customMenu.props['model'].rowCount());
+			let menuModel	= customMenu.props['model']
+			let nextIndex = mod(index + direction, menuModel.rowCount());
+			let hasSubMenus = customMenu.hasSubMenus
+
 			while(true)
 			{
-				let name	  = customMenu.props['model'].getAnalysisFunction(nextIndex);
-				let isEnabled = customMenu.props['model'].isAnalysisEnabled(nextIndex);
+				let name	  = menuModel.getAnalysisFunction(nextIndex);
+				let isEnabled = menuModel.isAnalysisEnabled(nextIndex);
 
-				if (name !== "" && name !== '???' && isEnabled)
+				// If it is disabled, and not an anlysis entry, nor a group with a submenu: skip it
+				if ((hasSubMenus || (name !== "" && name !== '???')) && isEnabled)
 					break;
 
-				nextIndex = mod(nextIndex + direction, customMenu.props['model'].rowCount());
+				nextIndex = mod(nextIndex + direction, menuModel.rowCount());
 			}
 			return nextIndex;
 		}
@@ -144,19 +152,27 @@ Item
 		//	@direction: +1 or -1
 		var parentNavigateFunc = function (direction)
 		{
-			customMenu.hide()
-			jaspRibbons.forceActiveFocus();
-			jaspRibbons.navigateFunction(direction);
-			if (buttonList.currentItem)
-				buttonList.currentItem.showMyMenu();
+			let menuModel		= customMenu.props['model']
+			let subMenuModel	= subMenuModel = menuModel.getSubMenu(customMenu.currentIndex)
+
+			if (direction === 1 && subMenuModel)
+				showMySubMenu(subMenuModel, customMenu.currentIndex)
+			else
+			{
+				customMenu.hideMenus()
+				jaspRibbons.forceActiveFocus();
+				jaspRibbons.navigateFunction(direction);
+				if (buttonList.currentItem)
+					buttonList.currentItem.showMyMenu();
+			}
 		}
 
 		var props =
 		{
 			"model"					: ribbonButton.menu,
-
 			"functionCall"			: functionCall,
 			"hasIcons"				: ribbonButton.menu.hasIcons(),
+			"hasSubMenus"			: ribbonButton.menu.hasSubMenus(),
 			"navigateFunc"			: navigateFunc,
 			"parentNavigateFunc"	: parentNavigateFunc
 		};
@@ -165,6 +181,70 @@ Item
 
 		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
+	}
+
+	function showMySubMenu(subMenu, menuIndex)
+	{
+		if (subMenu.rowCount() === 0)
+			return
+
+		var subMenuFunctionCall = function (index)
+		{
+			let subMenuModel	= customSubMenu.props['model']
+
+			if (index < 0 || index >= subMenuModel.rowCount())
+				return;
+
+			ribbonModel.analysisClicked(subMenuModel.getAnalysisFunction(index), subMenuModel.getAnalysisQML(index), subMenuModel.getAnalysisTitle(index), ribbonButton.moduleName)
+			customSubMenu.hide();
+			customSubMenu.focus = false;
+		}
+
+		// Key Navigation with Up or Down. Only navigate valid analysis items
+		//	@index
+		//	@direction: +1 or -1
+		var subMenuNavigateFunc = function (index, direction)
+		{
+			let subMenuModel	= customSubMenu.props['model']
+			let nextIndex		= mod(index + direction, subMenuModel.rowCount());
+			let startIndex		= nextIndex
+			while(true)
+			{
+				let name	  = subMenuModel.getAnalysisFunction(nextIndex);
+				let isEnabled = subMenuModel.isAnalysisEnabled(nextIndex);
+
+				if (name !== "" && name !== '???' && isEnabled)
+					break;
+
+				nextIndex = mod(nextIndex + direction,subMenuModel .rowCount());
+				if (nextIndex === startIndex)
+					break;
+			}
+			return nextIndex;
+		}
+
+		// Forward navigation call to parent list
+		//	@index
+		//	@direction: +1 or -1
+		var subMenuParentNavigateFunc = function (direction)
+		{
+			customSubMenu.hide()
+			customMenu.forceActiveFocus();
+		}
+
+		var props =
+		{
+			"model"					: subMenu,
+			"functionCall"			: subMenuFunctionCall,
+			"hasIcons"				: subMenu.hasIcons(),
+			"navigateFunc"			: subMenuNavigateFunc,
+			"parentNavigateFunc"	: subMenuParentNavigateFunc
+		};
+
+		let subItem = customMenu.currentMenuItem(menuIndex)
+		let offsetY = subItem.mapToItem(ribbonButton, 0, 0).y
+
+		customSubMenu.toggle(ribbonButton, props, customMenu.width, offsetY);
 	}
 
 	Rectangle
@@ -292,7 +372,7 @@ Item
 				if (myMenuOpen)
 				{
 					ribbonButton.focus = false;
-					customMenu.hide();
+					customMenu.hideMenus();
 				}
 				else
 				{

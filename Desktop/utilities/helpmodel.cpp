@@ -246,7 +246,10 @@ bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, Q
 
 	if (fileHTML.exists())
 	{
-		fileHTML.open(QFile::ReadOnly);
+		if(!fileHTML.open(QFile::ReadOnly))
+		{
+			Log::log() << "Cannot open fileHTML: " << fileHTML.fileName() << " with error: " << fileHTML.errorString() << std::endl;
+		}
 		content = QString::fromUtf8(fileHTML.readAll());
 		fileHTML.close();
 
@@ -256,7 +259,9 @@ bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, Q
 	}
 	else if (fileMD.exists())
 	{
-		fileMD.open(QFile::ReadOnly);
+		if(!fileMD.open(QFile::ReadOnly))
+			Log::log() << "Cannot open fileMD: " << fileMD.fileName() << " with error: " << fileMD.errorString() << std::endl;
+
 		content = QString::fromUtf8(fileMD.readAll());
 		fileMD.close();
 		found = true;

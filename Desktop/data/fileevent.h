@@ -21,9 +21,10 @@
 
 #include <QObject>
 #include <QMetaType>
-
-#include "exporters/exporter.h"
+#include "json/json.h"
 #include "utilenums.h"
+
+class Exporter;
 
 ///
 /// This class is used to handle the communication to and from the asynchronous loading/synching/saving file processes.
@@ -45,7 +46,7 @@ public:
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
-	void				setComplete(bool success = true, const QString &message = "");
+	void				setComplete(bool success = true, const QString &message = "", bool cancelled = false);
 	void				chain(FileEvent *event);
 
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
@@ -53,6 +54,7 @@ public:
 	bool				isExample()		const;
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
 	bool				isCompleted()	const { return _completed;						}
+	bool				isCancelled()	const { return _cancelled;						}
 	bool				isSuccessful()	const { return _success;						}
 	bool				isTmp()			const { return _tmp; }
 	static bool			autoSaveExists();
@@ -73,6 +75,8 @@ public:
 
 	QString				getProgressMsg() const;
 
+	void setSilent(bool newSilent);
+
 signals:
 	void completed(FileEvent *event);
 
@@ -89,6 +93,7 @@ private:
 						_message;
 	bool				_completed		= false,
 						_success		= false,
+						_cancelled		= false,
 						_tmp			= false;
 	FileEvent		*	_chainedTo		= nullptr;
 	Exporter		*	_exporter		= nullptr;

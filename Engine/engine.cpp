@@ -734,7 +734,7 @@ void Engine::runAnalysis()
 
 	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
 
-	
+	//Log::log() << "Encoded options right before calling R are:\n" << encodedAnalysisOptions << std::endl;
 
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
 								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 

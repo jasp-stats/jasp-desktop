@@ -15,15 +15,18 @@ int PlotEditorModel::_editRequest = 0;
 PlotEditorModel::PlotEditorModel()
 	: QObject(Analyses::analyses())
 {
-	_xAxis = new AxisModel(this, true);
-	_yAxis = new AxisModel(this, true);
-	_currentAxis = _xAxis;
-	_ppi   = PreferencesModel::prefs()->plotPPI();
+	_xAxis			= new AxisModel(this, true);
+	_yAxis			= new AxisModel(this, true);
+	_currentAxis	= _xAxis;
+	_ppi			= PreferencesModel::prefs()->plotPPI();
+	_references		= new References(this);
 
-	connect(_xAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
-	connect(_yAxis,		&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
-	connect(_xAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
-	connect(_yAxis,		&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+	connect(_xAxis,			&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_yAxis,			&AxisModel::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_references,	&References::somethingChanged,	this,	&PlotEditorModel::somethingChanged);
+	connect(_references,	&References::addToUndoStack,	this,	&PlotEditorModel::addToUndoStack);
+	connect(_xAxis,			&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
+	connect(_yAxis,			&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
 
 }
 
@@ -79,13 +82,9 @@ void PlotEditorModel::setup()
 		return;
 	}
 
-	Json::Value	xAxis	=	editOptions.get(	"xAxis",		Json::objectValue),
-				yAxis	=	editOptions.get(	"yAxis",		Json::objectValue);
-
-	_xAxis->setAxisData(xAxis);
-	_yAxis->setAxisData(yAxis);
-
-	//_coordinates.loadCoordinates(editOptions.get("coordinates", Json::objectValue)); // To Do Vincent Pedata: is this the right json object?
+	_xAxis		->setAxisData(	editOptions.get("xAxis",		Json::objectValue));
+	_yAxis		->setAxisData(	editOptions.get("yAxis",		Json::objectValue));
+	_references	->fromJson(		editOptions.get("references",	Json::arrayValue));
 
 	_originalImgOps = _imgOptions = generateImgOptions();
 }
@@ -128,8 +127,9 @@ void PlotEditorModel::reset()
 Json::Value PlotEditorModel::generateImgOptions() const
 {
 	Json::Value newOptions = _imgOptions;
-	newOptions["editOptions"]["xAxis"]	= _xAxis->getAxisData();
-	newOptions["editOptions"]["yAxis"]	= _yAxis->getAxisData();
+	newOptions["editOptions"]["xAxis"]		= _xAxis->getAxisData();
+	newOptions["editOptions"]["yAxis"]		= _yAxis->getAxisData();
+	newOptions["editOptions"]["references"]	= _references->toJson();
 
 	newOptions["name"]		= name().toStdString();
 	newOptions["data"]		= data().toStdString();
@@ -368,6 +368,11 @@ void PlotEditorModel::setLoading(bool loading)
 	
 	_loading = loading;
 	emit loadingChanged(_loading);
+}
+
+References *PlotEditorModel::references() const
+{
+	return _references;
 }
 
 }

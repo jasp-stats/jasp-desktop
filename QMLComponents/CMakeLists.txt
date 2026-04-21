@@ -36,6 +36,10 @@ message(STATUS "appdirs.h is successfully generated...")
 
 target_compile_definitions(QMLComponents PUBLIC JASP_USES_QT_HERE)
 
+if(INTERACTIVE_PLOTS)
+target_compile_definitions(QMLComponents PUBLIC INTERACTIVE_PLOTS)
+endif()
+
 target_include_directories(
 	QMLComponents
 	PUBLIC # JASP
@@ -61,8 +65,6 @@ target_link_libraries(
 	Qt::QuickControls2Impl
 	Qt::QuickWidgets
 	Qt::QuickTemplates2
-	$<$<NOT:$<BOOL:${FLATPAK_USED}>>:Qt::Core5Compat>
-	$<$<BOOL:${FLATPAK_USED}>:/app/lib/$ENV{FLATPAK_ARCH}-linux-gnu/libQt6Core5Compat.so>
 )
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

@@ -23,6 +23,7 @@
 #include "analyses.h"
 #include "tempfiles.h"
 #include "analysisform.h"
+#include "columnencoder.h"
 #include "utilities/qutils.h"
 #include "utilities/reporter.h"
 #include "gui/preferencesmodel.h"
@@ -30,6 +31,8 @@
 #include "utilities/messageforwarder.h"
 #include "modules/description/description.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
+#include <QAccessible>
+#include <QScopeGuard>
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
 	  AnalysisBase(Analyses::analyses()),
@@ -120,7 +123,7 @@ bool Analysis::checkAnalysisEntry()
 
 		The `RibbonModel` has its own copy and `Analysis` points there.
 		We also have DynamicModule(s) which contains the original data as loaded from Description.qml and the Ribbon* objects are created based on that.
-		
+
 		This might mean that when a development module is installed the Analysis still has a pointer to the old RibbonButton/Model info and must be updated.
 		Same for when Description.qml was changed and thus reloaded.
 
@@ -287,6 +290,10 @@ void Analysis::imageEdited(const Json::Value & results)
 		if (_imgResults.get("resized", false).asBool() && !_imgResults.get("error", true).asBool())
 			updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
 	}
+
+	// Convert interactiveJsonData file paths to actual JSON objects for the front-end
+	_imgResults = loadPlotlyJsonInResults(_imgResults);
+
 	setStatus(Analysis::Complete);
 
 	emit imageEditedSignal(this);
@@ -354,6 +361,18 @@ Analysis::Status Analysis::parseStatus(std::string name)
 
 void Analysis::createForm(QQuickItem* parentItem)
 {
+	// Suppress accessibility (UI Automation) events during bulk form creation.
+	// On Windows 11, background UIA clients such as Power Automate Desktop intercept
+	// every text-change event via the OS accessibility infrastructure. Each setText()
+	// on a QML TextField triggers a cross-process UIA notification through the kernel
+	// (~65 ms overhead per call). With 35+ text fields per analysis form this causes
+	// multi-second freezes that grow with the number of open analyses.
+	// Installing a no-op update handler for the duration of form creation suppresses
+	// these notifications. The handler is restored immediately afterwards so that
+	// accessibility works normally during regular user interaction.
+	auto previousAccessibilityUpdateHandler = QAccessible::installUpdateHandler([](QAccessibleEvent*) {});
+	auto restoreAccessibilityHandler = qScopeGuard([&]() { QAccessible::installUpdateHandler(previousAccessibilityUpdateHandler); });
+
 	AnalysisBase::createForm(parentItem);
 
 	if (_analysisForm)
@@ -408,6 +427,47 @@ std::string Analysis::statusToString(Status status)
 	}
 }
 
+Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
+{
+	auto loadFile = [](const std::string & tempFileRelativePath)
+	{
+		QFile plotlyJsonFile(tq(TempFiles::sessionDirName() + "/" + tempFileRelativePath));
+
+		if(plotlyJsonFile.open(QFile::OpenModeFlag::ReadOnly))
+		{
+			Json::Value plotlyJson;
+			Json::Reader jsonReader;
+
+			jsonReader.parse(plotlyJsonFile.readAll().toStdString(),plotlyJson, false);
+
+			ColumnEncoder::decodeJson(plotlyJson);
+
+			return plotlyJson;
+		}
+		return Json::Value("");
+	};
+
+
+	std::function<void(Json::Value &)> recursiveFixer;
+
+	recursiveFixer = [&loadFile, &recursiveFixer](Json::Value & results)
+	{
+		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString() && QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + results["interactiveJsonData"].asString())))
+			results["interactiveJsonData"] = loadFile(results["interactiveJsonData"].asString());
+
+		if(results.isObject())
+			for(const std::string & member : results.getMemberNames())
+				recursiveFixer(results[member]);
+		else if(results.isArray())
+			for(int arrayIndex = 0; arrayIndex < results.size(); arrayIndex++)
+				recursiveFixer(results[arrayIndex]);
+	};
+
+	recursiveFixer(results);
+
+	return results;
+}
+
 Json::Value Analysis::asJSON(bool withRSource) const
 {
 	Json::Value analysisAsJson = Json::objectValue;
@@ -419,7 +479,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["hasReport"]		= _hasReport;
 	analysisAsJson["progress"]		= _progress;
-	analysisAsJson["results"]		= _results;
+	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
@@ -428,6 +488,13 @@ Json::Value Analysis::asJSON(bool withRSource) const
 
 	if (withRSource)
 		analysisAsJson["rSources"]	= rSources();
+	
+	
+	analysisAsJson["columns"]		= Json::arrayValue;
+	
+	for(Column * column : DataSetPackage::pkg()->dataSet()->columns())
+		if(column->analysisId() == _id)
+			analysisAsJson["columns"].append(column->name());
 
 	Log::log() << "Analysis::asJSON():\n" << analysisAsJson.toStyledString() << std::endl;
 
@@ -478,7 +545,7 @@ void Analysis::setStatus(Analysis::Status status)
 		bool neededRefresh = needsRefresh();
 
 		TempFiles::deleteList(TempFiles::retrieveList(_id));
-		
+
 		_wasUpgraded		= false;
 		_storedWithoutState	= false;
 		_optionsFromDifferentVersion = false;
@@ -790,7 +857,7 @@ Json::Value Analysis::rSources() const
 bool Analysis::isOwnComputedColumn(const std::string & colName) const
 {
 	Column * col = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->column(colName) : nullptr;
-	
+
 	return col->analysisId() == id();
 }
 
@@ -1071,7 +1138,7 @@ void Analysis::reloadForm()
 void Analysis::analysisQMLFileChanged()
 {
 	Log::log() << "Analysis::analysisQMLFileChanged() for " << name() << " (" << id() << ")" << std::endl;
-	
+
 	if(form() && form()->formCompleted())	reloadForm();
 	else if(qmlError() != "")				createForm(); //Last time it failed apparently
 	else
@@ -1201,8 +1268,8 @@ bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 {
 	if(DataSetPackage::pkg()->isColumnNameFree(columnName))
 		return true;
-	
+
 	Column * col = DataSetPackage::pkg()->getColumn(columnName.toStdString());
-	
+
 	return col->analysisId() == id();
 }

@@ -20,6 +20,35 @@ import QtQuick
 import QtQuick.Layouts
 import JASP.Controls
 
+/*!
+    \qmltype VariablesForm
+    \inqmlmodule JASP.Controls 1.0
+    \brief A two-column layout with available variables on the left and assigned lists on the right.
+
+	Creates a form where an AvailableVariablesList and one or more AssignedVariablesList are connected.
+	It creates automatically the Arrow buttons for each AssignedVariablesList and sets their height
+	to fill the form.
+
+    \note VariablesForm does not bind directly to R options. The child
+    VariablesList controls each have their own R binding.
+
+    \section1 Properties
+
+    \list
+    \li \b listWidth (int) - Width of each variable list. Default: width * 2 / 5.
+    \li \b removeInvisibles (bool) - Remove invisible controls from the layout. Default: false.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    VariablesForm {
+        AvailableVariablesList { name: "allVariables" }
+        AssignedVariablesList { name: "dependent"; title: qsTr("Dependent Variable"); singleVariable: true }
+        AssignedVariablesList { name: "fixedFactors"; title: qsTr("Fixed Factors"); allowedColumns: ["nominal"] }
+    }
+    \endqml
+*/
 VariablesFormBase
 {
 	id							: variablesForm

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- Slider.qml -->
+  <meta name="description" content="A slider with a linked numeric text field.">
+  <title>Slider QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>Slider</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">Slider QML Type</h1>
+<!-- $$$Slider-brief -->
+<p>A slider with a linked numeric text field. <a href="#details">More...</a></p>
+<!-- @@@Slider -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-slider-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$Slider-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Backed by SliderBase. Displays a draggable slider alongside a <a href="qml-jasp-controls-doublefield.html" translate="no">DoubleField</a> that stays synchronized. Supports vertical and horizontal orientations.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">numeric</code></li>
+<li><b>Default:</b> 0.5</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Label displayed above the slider. Default: &quot;&quot;.</li>
+<li><b>value</b> (real) - Current slider value. Default: 0.5.</li>
+<li><b>min</b> (real) - Minimum value. Alias: from. Default: 0.</li>
+<li><b>max</b> (real) - Maximum value. Alias: to. Default: 1.</li>
+<li><b>stepSize</b> (real) - Step increment. Default: 1 / 10^decimals.</li>
+<li><b>decimals</b> (int) - Decimal places for the text field. Default: 2.</li>
+<li><b>vertical</b> (bool) - Use vertical orientation. Default: true.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-slider.html" translate="no">Slider</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;prior&quot;</span>
+    <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Prior width&quot;</span>)
+    <span class="name">value</span>: <span class="number">0.707</span>
+    <span class="name">min</span>: <span class="number">0</span>
+    <span class="name">max</span>: <span class="number">2</span>
+}</pre>
+<!-- @@@Slider -->
+</body>
+</html>

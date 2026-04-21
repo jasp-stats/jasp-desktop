@@ -18,6 +18,17 @@
 import QtQuick
 import JASP
 
+/*!
+    \qmltype ControlErrorMessage
+    \inqmlmodule JASP.Controls 1.0
+    \brief An internal popup that displays validation errors or warnings above a control.
+
+    Shows a colored message box positioned above the associated control. Automatically
+    repositions when the form layout changes. Temporary messages auto-dismiss after 4 seconds.
+
+    \note This is an internal component used by the JASP framework. Module developers
+    do not need to use this directly.
+*/
 Rectangle
 {
 	id				: controlErrorMessage

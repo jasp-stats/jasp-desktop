@@ -1,0 +1,50 @@
+project = JASP-QML
+description = JASP QML Components Reference
+version = 1.0
+jasp_source_dir = ${GITHUB_WORKSPACE}
+# -- Input Settings --
+# Point to the source code containing the /*! comments */
+sourcedirs = ${jasp_source_dir}/QMLComponents/components/JASP/Controls \
+                ${jasp_source_dir}/QMLComponents/doc
+headerdirs = ${jasp_source_dir}/QMLComponents/components/JASP/Controls
+imagedirs  = ./images
+
+# Tell qdoc to parse QML files - use correct syntax
+sources.fileextensions = *.qml *.qdoc
+headers.fileextensions = *.h
+
+# -- Exclude internal-only UI controls --
+# These components are used internally by the JASP framework
+# and should not appear in the module developer documentation.
+excludefiles += ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ALTNavTag.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/CrossButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/JASPScrollBar.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/MenuButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/HelpButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/RoundedButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/RectangularButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ScrollMoreIndicator.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/SortMenuButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/AllowedTypeIcons.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/AssignButton.qml \
+                ${jasp_source_dir}/QMLComponents/components/JASP/Controls/ControlErrorMessages.qml
+
+# -- QML Module Configuration --
+# Point to the directory containing qmldir (parent of Controls)
+qmlimportpath = ${jasp_source_dir}/QMLComponents/components/JASP
+
+# -- Output Settings --
+outputdir  = ./html_out
+outputformats = HTML
+
+# -- Module Registration --
+qhp.projects = JASP
+qhp.JASP.file = jasp.qhp
+qhp.JASP.namespace = org.jasp-stats.qml.1.0
+qhp.JASP.virtualFolder = jasp
+qhp.JASP.indexTitle = JASP QML Controls
+qhp.JASP.indexRoot =
+
+# -- HTML Styling --
+HTML.stylesheets = style.css
+HTML.headerstyles = "<link rel='stylesheet' type='text/css' href='style/style.css'/>"

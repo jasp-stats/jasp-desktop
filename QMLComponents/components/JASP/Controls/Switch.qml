@@ -20,6 +20,48 @@ import QtQuick
 import QtQuick.Controls
 import JASP.Controls
 
+/*!
+    \qmltype Switch
+    \inqmlmodule JASP.Controls 1.0
+    \brief A toggle switch control.
+
+	A sliding toggle indicator that can be used instead of a
+    checkbox. Binds a boolean value to R, similar to CheckBox but with
+    a different visual appearance.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c logical
+    \li \b{Default:} false
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b label (string) - Text displayed next to the switch. Default: "".
+    \li \b checked (bool) - Whether the switch is on. Default: false.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    Switch {
+        name: "darkMode"
+        label: qsTr("Dark mode")
+    }
+    \endqml
+*/
 CheckBoxBase
 {
 	implicitWidth:				control.indicator.height + (4 * preferencesModel.uiScale)

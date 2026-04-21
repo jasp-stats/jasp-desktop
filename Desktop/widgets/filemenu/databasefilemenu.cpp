@@ -1,4 +1,5 @@
 #include "databasefilemenu.h"
+#include "data/datasetpackage.h"
 #include "utilities/settings.h"
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>

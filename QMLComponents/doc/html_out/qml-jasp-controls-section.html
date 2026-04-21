@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- Section.qml -->
+  <meta name="description" content="A collapsible panel that groups child controls under a clickable header.">
+  <title>Section QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>Section</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">Section QML Type</h1>
+<!-- $$$Section-brief -->
+<p>A collapsible panel that groups child controls under a clickable header. <a href="#details">More...</a></p>
+<!-- @@@Section -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-subjectivepriors.html" translate="no">SubjectivePriors</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-section-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$Section-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a titled expander bar with an arrow icon. Clicking the header toggles visibility of the child controls area with an animated transition. Commonly used to organize optional or advanced settings.</p>
+<div class="admonition note">
+<p><b>Note: </b>Section does not bind to R options. It is a layout-only control.</p>
+</div>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>title</b> (string) - Text displayed in the expander header. Alias: text. Default: &quot;&quot;.</li>
+<li><b>expanded</b> (bool) - Whether the section content is visible. Default: false.</li>
+<li><b>columns</b> (int) - Number of columns in the content <a href="qml-jasp-controls-gridlayout.html" translate="no">GridLayout</a>. Default: 2.</li>
+<li><b>spacing</b> (real) - Row spacing in the content area. Default: jaspTheme.rowGridSpacing.</li>
+<li><b>info</b> (string) - Info used for tooltips and help generation. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-section.html" translate="no">Section</a></span> {
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Advanced Options&quot;</span>)
+    <span class="name">expanded</span>: <span class="number">false</span>
+
+    <span class="type"><a href="qml-jasp-controls-checkbox.html" translate="no">CheckBox</a></span> { <span class="name">name</span>: <span class="string">&quot;verbose&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Verbose output&quot;</span>) }
+    <span class="type"><a href="qml-jasp-controls-integerfield.html" translate="no">IntegerField</a></span> { <span class="name">name</span>: <span class="string">&quot;maxIter&quot;</span>; <span class="name">label</span>: <span class="name">qsTr</span>(<span class="string">&quot;Max iterations&quot;</span>); <span class="name">defaultValue</span>: <span class="number">500</span> }
+}</pre>
+<!-- @@@Section -->
+</body>
+</html>

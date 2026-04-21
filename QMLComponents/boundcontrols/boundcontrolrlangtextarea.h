@@ -32,6 +32,7 @@ public:
 	bool		isJsonValid(const Json::Value& optionValue)		const	override;
 	Json::Value	createJson()									const	override;
 	void		bindTo(const Json::Value &value)						override;
+	void		resetBoundValue()										override;
 
 	void		checkSyntax()											override;
 	QString		rScriptDoneHandler(const QString &result)				override;
@@ -39,7 +40,7 @@ public:
 protected:
 	RLangType								_langType				= RLangType::Lavaan;
 	const char *							_checkSyntaxRFunctionName();
-	void									_setBoundValues();
+	void									_setBoundValues(bool setModel = true);
 
 	RSyntaxHighlighter*						_rLangHighlighter		= nullptr;
 

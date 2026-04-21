@@ -20,7 +20,28 @@ import QtQuick
 import QtQuick.Layouts
 import JASP.Controls
 
-///Simple help button that shows you the 'helpPage'. Only works when run from a Form.
+/*!
+    \qmltype HelpButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A small info button that opens a help page for the current analysis.
+
+    Extends MenuButton with an info icon. When clicked, opens or toggles the specified
+    help page in the JASP help panel. Only works within a Form.
+
+    \note HelpButton does not bind to R options. It is a UI-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b helpPage (string) - Name of the help page to display. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    HelpButton { helpPage: "anova" }
+    \endqml
+*/
 MenuButton
 {
 	property string helpPage: ""

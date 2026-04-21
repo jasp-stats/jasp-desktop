@@ -57,7 +57,7 @@ void DataSetProvider::resetDataSet()
 		_dataSet->dbDelete();
 		delete _dataSet;
 	}
-	
+
 	_dataSet = new DataSet();
 }
 
@@ -111,6 +111,20 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 
 	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
 
+}
+
+void DataSetProvider::loadDatabase(const Version & jaspVersion)
+{
+	delete _dataSet;
+
+	_db->close();
+	_db->load();
+	_db->upgradeDBFromVersion(jaspVersion);
+
+	_dataSet = new DataSet(0); // Setting 0 for "do nothing" because otherwise we can't pass on jaspVersion
+	_dataSet->dbLoad(1, [](float p) {}, jaspVersion);
+
+	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
 }
 
 QVariantList DataSetProvider::_getDoubleList(Column * column) const

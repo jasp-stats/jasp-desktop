@@ -95,6 +95,10 @@
 					<string>sas7bcat</string>
 					<string>por</string>
 					<string>dta</string>
+					<string>rdata</string>
+					<string>rds</string>
+					<string>mwx</string>
+					<string>mpx</string>
 				</array>
 			</dict>
 		</array>

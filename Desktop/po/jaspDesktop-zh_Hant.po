@@ -609,12 +609,12 @@ msgstr "改變CRAN知識庫: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
-msgstr "產生MD檔"
+msgstr "生成說明用 Markdown 檔案"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
-msgstr "啟用此選項將會產生qml選項中的MD幫助檔。"
+msgstr "啟用此功能將依據 QML 選項中的資訊生成 Markdown 說明檔。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
@@ -674,7 +674,7 @@ msgstr "表格設定"
 
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr "顯示實際的p值"
+msgstr "顯示實際的 p 值"
 
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
@@ -1905,30 +1905,6 @@ msgstr ""
 "\n"
 "%2"
 
-msgctxt "Modules::Upgrader|"
-msgid "Error Loading Upgrades"
-msgstr "載入升級時出錯"
-
-#, qt-format
-msgctxt "Modules::Upgrader|"
-msgid "While loading upgrades for %1 an error was encountered: %2"
-msgstr "為 %1 載入升級時遇到錯誤：%2"
-
-msgctxt "Modules::Upgrader|"
-msgid "Upgrades couldn't be read"
-msgstr "無法讀取升級"
-
-msgctxt "Modules::Upgrader|"
-msgid ""
-"The necessary upgrades for reading older JASP-files could not be read...\n"
-"You can still use JASP and even read (some) older files but some options "
-"might not be understood properly and some analyses might fail to load "
-"entirely."
-msgstr ""
-"無法讀取讀取較舊的 JASP 檔所需的升級...\n"
-"您仍然可以使用 JASP，甚至可以讀取（某些）較舊的檔，但某些選項可能無法正確理"
-"解，並且某些分析可能無法完全載入。"
-
 msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "檔案已更改"
@@ -1994,7 +1970,7 @@ msgstr " 處理中"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "當機"
+msgstr "收合"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
@@ -2513,160 +2489,6 @@ msgid "Loading upgrades for module %1 failed"
 msgstr "無法載入模組 %1 升級"
 
 #, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"An error occured trying to initialize a module from dir %1, the error was: %2"
-msgstr "嘗試從目錄%1 初始化模組時發生錯誤，錯誤為：%2"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr "嘗試載入模組 %1 時出錯，錯誤為：“%2”"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The installation of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
-"模組 %1 安裝失敗，錯誤訊息如下：\n"
-"%2"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Select a folder"
-msgstr "選擇文件夾"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select the folder you want to "
-"watch and load, you can do this under the filemenu, Preferences->Advanced."
-msgstr ""
-"要安裝開發模組，您需要選擇所要載入的資料夾，您可在檔案功能表的偏好>進階下執行"
-"此操作。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Problem initializing module"
-msgstr "啟動模組時發生問題"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"There was a problem loading the developer module:\n"
-"\n"
-msgstr ""
-"載入開發中模組發生問題：\n"
-"\n"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Missing files or folders"
-msgstr "缺少檔案或文件夾"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The selected folder cannot be installed as a developer module because it "
-"does not contain all the necessary files and folders."
-msgstr "所選資料夾不能安裝為開發人員模組，因為不含所需的檔和資料夾。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/Description.qml file."
-msgstr "建立一個 inst/Description.qml 檔。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a R directory containing your analysis code."
-msgstr "建立包含分析語法的 R 目錄。"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "建立一個包含您 optionsforms 的 inst/qml 目錄。"
-
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"Create a inst/icons directory containing the icons for your ribbonbuttons."
-msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing %1"
-msgstr "缺少 %1"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 from your development module directory. Without "
-"it your module cannot work, make sure to put it back. For now your old %2 "
-"file will be kept."
-msgstr ""
-"您可能刪除了開發模組目錄中的 %1。沒有它，您的模組無法運作，請將其放回原處。目"
-"前將先保留舊的%2檔。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had a %1 in your development module directory. "
-"Without it your module cannot work, make sure to create one. How you "
-"installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"開發模組目錄中似乎從未有過 %1。沒有它，您的模組無法運作，請務必確實建立一個模"
-"組。不確定您如何能安裝此模組，您應要卸載開發模組"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "%1 was removed!"
-msgstr "%1 已被刪除！"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed %1 but this file is required for your module to "
-"work. The development module is going to be uninstalled now."
-msgstr "您似乎已刪除 %1，但您的模組需要此檔才能正常工作。現在將卸載開發模組。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "Missing folder %1"
-msgstr "遺失 %1文件夾"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have removed the folder %1 from your development module "
-"directory. Without it your module cannot work, make sure to put it back. For "
-"now your old folder will be kept."
-msgstr ""
-"疑似 %1文件夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
-"目前先保留舊文件夾。"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"You seem to have never had the folder %1 in your development module "
-"directory. Without it your module cannot work, make sure to create one. How "
-"you installed is a bit of a mystery and thus the development module shall be "
-"uninstalled now"
-msgstr ""
-"疑似開發模組目錄中從未建置 %1文件夾，需要該檔案夾模組才能執行模組。無法得知開"
-"發模組如何安裝，請將之移除"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Loading module description encountered a problem"
-msgstr "載入模組描述時出現問題"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid "<i>Could not load the description of the module in archive: '%1'</i>"
-msgstr "<i>無法從存檔中加載模組描述檔: '%1'</i>"
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
-"maintained by %5.</i><br><i>See website for further details: <a "
-"href=\"http://%6\">%6</a></i><br>"
-msgstr ""
-"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 所建立，並由 %5所維"
-"護。</i><br><i>相關資訊，請參閱網站：<a href=\"http://%6\">%6</a></i><br>"
-
-#, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
 msgstr "來源中的行數大於 %1 的行數"
@@ -2757,7 +2579,7 @@ msgstr "結果與幫助："
 
 msgctxt "PrefsUI|"
 msgid "Light theme"
-msgstr "右方主題"
+msgstr "淺色主題"
 
 msgctxt "PrefsUI|"
 msgid "Dark theme"
@@ -3203,7 +3025,7 @@ msgstr "使用指數符號"
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
-msgstr "如果禁用會將文本渲染切換為本機。"
+msgstr "如果停用會將文字渲染切換到原生模式。"
 
 msgctxt "PrefsUI|"
 msgid "Reporting mode"
@@ -3326,10 +3148,6 @@ msgstr "無法使用使用者 %3 連接到 %2 處的資料庫 %1，最後一個�
 msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades gave the following error(s): %1"
 msgstr "載入升級時出現以下錯誤：%1"
-
-msgctxt "Modules::DynamicModules|"
-msgid "Select an exisiting folder"
-msgstr "選擇現有資料夾"
 
 msgctxt "Reporter|"
 msgid "No datafile"
@@ -3555,10 +3373,6 @@ msgid "Generate Wrapper"
 msgstr "生成包裝器"
 
 msgctxt "Computer|"
-msgid "Save"
-msgstr "儲存"
-
-msgctxt "Computer|"
 msgid "JASP Files"
 msgstr "JASP 檔"
 
@@ -3636,15 +3450,6 @@ msgid "Would you like to save your changes to the Filter?"
 msgstr "是否要保存對篩選器所做的更改？"
 
 msgctxt "FilterWindow|"
-msgid "Your changes will be lost if you don't save them."
-msgstr "如果不保存更改，更改將丟失。"
-
-#, qt-format
-msgctxt "MainWindow|"
-msgid "Would you like to save your changes to %1 file?"
-msgstr "是否要將更改保存到 %1 檔案？"
-
-msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "如果不保存更改，更改將丟失。"
 
@@ -4657,17 +4462,17 @@ msgstr "更改變項類型失敗"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "欄位「%1」由分析產生，其類型為固定。"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
-msgstr ""
+msgstr "將欄位「%2」之類型設為「%1」"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr ""
+msgstr "反轉欄位「%1」之數值"
 
 #, qt-format
 msgctxt "QObject|"
@@ -4676,7 +4481,7 @@ msgstr "反轉列“%1”的標籤"
 
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr ""
+msgstr "依數值排序標籤"
 
 msgctxt "WelcomePage|"
 msgid ""
@@ -4697,41 +4502,41 @@ msgstr "功能請求"
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
-msgstr ""
+msgstr "在 %1 處插入 %2 個欄位"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
-msgstr ""
+msgstr "在 %1 處插入 %2 列"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr ""
+msgstr "在列「%1」欄「%2」貼上數值"
 
 msgctxt "DataSetView|"
 msgid "Cutting all data"
-msgstr ""
+msgstr "刪除所有資料"
 
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
-msgstr ""
+msgstr "多項卡方表"
 
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
-msgstr ""
+msgstr "JAGS 表"
 
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
-msgstr ""
+msgstr "自訂對比表"
 
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
-msgstr ""
+msgstr "篩選資料輸入表"
 
 msgctxt "TableViewBase|"
 msgid "Grid Table"
-msgstr ""
+msgstr "格線表"
 
 msgctxt "TableViewBase|"
 msgid "Table"
@@ -4739,7 +4544,7 @@ msgstr "表"
 
 msgctxt "TextInputBase|"
 msgid "Double Field"
-msgstr ""
+msgstr "雙欄位"
 
 msgctxt "PrefsData|"
 msgid "Import settings"
@@ -4751,6 +4556,9 @@ msgid ""
 "scalars. Think 1 million+ rows of random floating point numbers.\n"
 "If you find that loading of such a file is slow you can disable this option."
 msgstr ""
+"這可能會在載入非常大型且包含大量純量的資料集時造成效能下降。請想像超過100萬筆"
+"隨機浮點數資料的情況。\n"
+"如果發現載入此類檔案速度緩慢，可以停用此選項。"
 
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
@@ -4759,12 +4567,12 @@ msgstr "自動判定匯入資料之尺度：設定臨界值"
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
-msgstr ""
+msgstr "移除 %1 列"
 
 #, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
-msgstr ""
+msgstr "移除 %1 欄"
 
 #, qt-format
 msgctxt "CommunityWindow|"
@@ -4848,7 +4656,7 @@ msgstr "拜訪官網"
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
-msgstr ""
+msgstr "切換欄位「%1」依數值自動排序標籤"
 
 msgctxt "RibbonModel|"
 msgid "Resize Data"
@@ -4884,6 +4692,12 @@ msgid ""
 "you *in the analysis* that there is something you should take into account. "
 "Luckily we almost never need to use it."
 msgstr ""
+"JASP 在更新時不會分享您的任何資料，甚至不會分享您使用的 JASP 版本。\n"
+"它確實會將您的 IP 位址分享給伺服器，但這是網際網路運作所必需的。\n"
+"\n"
+"它下載的已知問題清單很少使用，大多數問題都在 jasp-issues (https://github.com/"
+"jasp-stats/jasp-issues/issues)。然而，如果我們發現分析中不慎出現嚴重錯誤，此"
+"功能將在分析中向您顯示需要注意的事項。幸運的是，我們幾乎從不需要使用它。"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4892,11 +4706,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
+"共有 %1 個水準，其中 %2 個具有數值。\n"
+"作為「%3」，其形式為：%4\n"
+"%5"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr ""
+msgstr "隱含遺漏值：%1"
 
 #, qt-format
 msgctxt "DataSetPackage|"
@@ -4904,6 +4721,8 @@ msgid ""
 "There are %1 total levels.\n"
 "As a '%2' it looks like: %3"
 msgstr ""
+"共有 %1 個水準。\n"
+"作為「%2」，其形式為：%3"
 
 msgctxt "MainWindow|"
 msgid "Check for updates"
@@ -4921,6 +4740,12 @@ msgid ""
 "\n"
 "This setting can always be changed in the Interface Preferences."
 msgstr ""
+"JASP 是否應在我們的伺服器上檢查更新，並在有新版本時通知您？\n"
+"\n"
+"JASP 在更新時不會分享您的任何資料，甚至不會分享您使用的 JASP 版本。\n"
+"它確實會將您的 IP 位址分享給我們的伺服器，但這是網際網路運作所必需的。\n"
+"\n"
+"此設定隨時可在「介面偏好設定」中更改。"
 
 msgctxt "MainWindow|"
 msgid "Yes"
@@ -4933,7 +4758,7 @@ msgstr "否"
 #, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
-msgstr ""
+msgstr "僅允許 %1 個變項"
 
 msgctxt "VariableInfo|"
 msgid "Scale"
@@ -4965,6 +4790,8 @@ msgid ""
 "scale variable is used, JASP checks whether the number of levels of this "
 "variable exceeds this maximum."
 msgstr ""
+"對於某些變項僅接受名義或次序之分析，若使用尺度變項，JASP 會檢查該變項之水準數"
+"是否超過此最大值。"
 
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
@@ -4976,42 +4803,42 @@ msgstr "新建資料"
 
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
-msgstr ""
+msgstr "匯入 Excel 檔案"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
-msgstr ""
+msgstr "所有資料集 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
-msgstr ""
+msgstr "JASP 檔案 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
-msgstr ""
+msgstr "CSV 文字檔案 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
-msgstr ""
+msgstr "試算表檔案 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
-msgstr ""
+msgstr "SPSS 檔案 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
-msgstr ""
+msgstr "Stata 檔案 %1"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
-msgstr ""
+msgstr "SAS 檔案 %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
@@ -5039,48 +4866,47 @@ msgstr "版面大小"
 
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
-msgstr ""
+msgstr "已清除篩選\n"
 
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
-msgstr ""
+msgstr "已套用篩選\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "請輸入所有參數——請參見標記為紅色之欄位。\n"
 
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
-msgstr ""
+msgstr "公式未回傳一組邏輯值，因此無法用於篩選。\n"
 
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
-msgstr ""
+msgstr "歡迎使用拖放篩選！\n"
 
-#, fuzzy
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "點擊圖示可更改變數類型"
 
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
-msgstr ""
+msgstr "欄位名稱為自由欄位"
 
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "欄位「%1」已存在，且非由此分析所建立。"
 
 #, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
-msgstr ""
+msgstr "篩選發生錯誤「%1」"
 
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr ""
+msgstr "自動依標籤之數值排序"
 
 msgctxt "FilterModel|"
 msgid ""
@@ -5092,16 +4918,21 @@ msgid ""
 "& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
+"上方您看到的是 JASP 為數值篩選與拖放篩選所產生之程式碼。\n"
+"此預設結果儲存於「generatedFilter」，可被替換或與自訂篩選合併使用。\n"
+"若要合併，可使用「&」附加子句：「generatedFilter & customFilter & "
+"perhapsAnotherFilter」\n"
+"點選右下角之 (i) 圖示以取得進一步說明。\n"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
-msgstr ""
+msgstr "最小水準數為 %1。變項 %2 僅有 %3 個水準"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
-msgstr ""
+msgstr "最大水準數為 %1。變項 %2 有 %3 個水準。"
 
 #, qt-format
 msgctxt "JASPListControl|"
@@ -5111,20 +4942,23 @@ msgid ""
 "either change its type, or change 'Maximum allowed levels for scale' in "
 "Preferences / Data menu"
 msgstr ""
+"嘗試將尺度變項 %1 轉換為 %2 變項，但其水準數 %3 超過最大值 %4。若仍欲使用此變"
+"項，請變更其類型，或於「偏好設定 / 資料」選單中變更「尺度變項允許之最大水準"
+"數」"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
-msgstr ""
+msgstr "最小數值個數為 %1。變項 %2 僅有 %3 個不同數值"
 
 #, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
-msgstr ""
+msgstr "最大數值個數為 %1。變項 %2 有 %3 個不同數值"
 
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
@@ -5132,41 +4966,41 @@ msgstr "開發者模式"
 
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
-msgstr ""
+msgstr "開發模組"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
 "sources."
-msgstr ""
+msgstr "從 R 函式庫中的二進位檔載入模組，而非從原始碼安裝。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
-msgstr ""
+msgstr "來源資料夾："
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "選擇已安裝開發模組的 R 套件庫"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
-msgstr ""
+msgstr "模組名稱："
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr ""
+msgstr "輸入您想載入的開發模組（套件）名稱"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "透過填寫相關設定來選擇開發者模組"
 
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
-msgstr ""
+msgstr "重新整理開發者模組 "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "從檔案中讀取到 0 個有效欄位，請檢查您的資料檔案。"
 
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
@@ -5212,16 +5046,9 @@ msgctxt "VariablesList|"
 msgid "Column description: "
 msgstr "欄說明： "
 
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"To install a development module you need to select and existing folder, you "
-"selected '%1' but it doesn't exist."
-msgstr ""
-
 msgctxt "MainPage|"
 msgid "Remove this note"
-msgstr ""
+msgstr "移除此註解"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5229,16 +5056,17 @@ msgid ""
 "For this: open the file menu (the blue hamburger button left top), navigate "
 "to Advanced Preferences and check the 'Log to file' checkbox."
 msgstr ""
+"沒有可用的日誌檔。若要取得更多資訊，請啟用日誌功能：打開檔案選單（左上角藍色"
+"漢堡選單），進入進階設定，勾選「記錄到檔案」選項。"
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr ""
+msgstr "請將這些日誌檔案拖放至此問題中： "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
-msgstr ""
+msgstr "為此計算欄位選擇一個篩選"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "移除"
@@ -5249,59 +5077,59 @@ msgstr "新增新的水準："
 
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
-msgstr ""
+msgstr "新增資料中遺漏之水準"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
 "ones and those added later manually."
-msgstr ""
+msgstr "保留水準，因此所有水準（包括被篩除者及後續手動新增者）均會傳遞至分析。"
 
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
 "sent to the analysis."
-msgstr ""
+msgstr "捨棄水準，因此僅有（可能經過篩選之）資料中的水準會傳送至分析。"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "關閉自動排序以反轉所有標籤之順序"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "關閉自動排序以手動上移標籤"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "關閉自動排序以手動下移標籤"
 
 msgctxt "QObject|"
 msgid "No filter"
-msgstr ""
+msgstr "無篩選"
 
 msgctxt "QObject|"
 msgid "Use filter"
-msgstr ""
+msgstr "使用篩選"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "將欄位「%1」之計算篩選從「%2」變更為「%3」"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
-msgstr ""
+msgstr "將欄位「%1」之捨棄水準從「%2」變更為「%3」"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
-msgstr ""
+msgstr "刪除欄位「%2」之標籤 %1"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr ""
+msgstr "將數值「%1」與標籤「%2」新增至欄位「%3」"
 
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
@@ -5317,98 +5145,98 @@ msgstr "使用千位分隔符號"
 
 msgctxt "PrefsUI|"
 msgid "Disable to remove thousands separators from all numbers."
-msgstr ""
+msgstr "停用以移除所有數字之千分位分隔符號。"
 
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
-msgstr ""
+msgstr "選擇檔案..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
-msgstr ""
+msgstr "選擇資料夾..."
 
 msgctxt "PreferencesModel|"
 msgid "Select a R-library..."
-msgstr ""
+msgstr "選擇 R 函式庫..."
 
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
-msgstr ""
+msgstr "安全圖形模式已變更"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
 "effect you need to restart JASP"
-msgstr ""
+msgstr "您已變更 JASP 之安全圖形模式，此選項需重新啟動 JASP 方能生效"
 
 msgctxt "PreferencesModel|"
 msgid "Text rendering setting changed"
-msgstr ""
+msgstr "文字呈現設定已變更"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The textrendering setting has been changed, this will only take full effect "
 "after JASP is restarted."
-msgstr ""
+msgstr "文字呈現設定已變更，此設定需重新啟動 JASP 後方能完全生效。"
 
 msgctxt "PreferencesModel|"
 msgid "Engine Sandbox setting changed"
-msgstr ""
+msgstr "引擎沙盒設定已變更"
 
 msgctxt "PreferencesModel|"
 msgid ""
 "The Engine Sandbox setting has been changed, this will only take full effect "
 "after JASP is restarted."
-msgstr ""
+msgstr "引擎沙盒設定已變更，此設定需重新啟動 JASP 後方能完全生效。"
 
 msgctxt "MessageForwarder|"
 msgid "Sandbox warning"
-msgstr ""
+msgstr "沙盒警告"
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to save a file outside of the sandbox directory! We will correct "
 "the path to: "
-msgstr ""
+msgstr "您欲將檔案儲存於沙盒目錄之外！我們將修正路徑為： "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to load a file outside of the sandbox directory! This will fail "
 "please move the file to: "
-msgstr ""
+msgstr "您欲載入沙盒目錄以外之檔案！此操作將失敗，請將檔案移至： "
 
 msgctxt "MessageForwarder|"
 msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
-msgstr ""
+msgstr "jasp 引擎正在安全沙盒模式中執行，僅能存取： "
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "列平均數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "列總和"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "列標準差"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "列變異數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "列中位數"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "列最小值"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "列最大值"
 
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
@@ -5432,53 +5260,53 @@ msgstr "選擇設定檔"
 
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
-msgstr "選擇設定檔"
+msgstr "選擇設定檔。"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
-msgstr ""
+msgstr "列平均數"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
-msgstr ""
+msgstr "列總和"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
-msgstr ""
+msgstr "列標準差"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
-msgstr ""
+msgstr "列變異數"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
-msgstr ""
+msgstr "列中位數"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
-msgstr ""
+msgstr "列最小值"
 
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
-msgstr ""
+msgstr "列最大值"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
-msgstr ""
+msgstr "JASP 啟動時是否應將視窗最大化？"
 
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
 "appdata."
-msgstr ""
+msgstr "這將會清除應用程式資料中的「renv」、「Modules」及開發模組資料夾。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
-msgstr ""
+msgstr "啟用 renv 模式"
 
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
-msgstr ""
+msgstr "專案函式庫："
 
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
@@ -5494,20 +5322,22 @@ msgid ""
 "\n"
 "We would be grateful if you could report this error to the JASP team."
 msgstr ""
+"JASP 發生嚴重錯誤，無法繼續計算。\n"
+"\n"
+"若您能將此錯誤回報給 JASP 團隊，我們將不勝感激。"
 
 msgctxt "MainWindow|"
 msgid "Salvage"
-msgstr ""
+msgstr "挽救"
 
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
-msgstr ""
+msgstr "安全沙盒錯誤"
 
 msgctxt "QObject|"
 msgid "Continue"
-msgstr ""
+msgstr "繼續"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Exit"
 msgstr "關閉"
@@ -5515,24 +5345,24 @@ msgstr "關閉"
 #, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
-msgstr ""
+msgstr "可能之數值為：%1"
 
 #, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
-msgstr ""
+msgstr "最初於 %2 匯入至 %1"
 
 msgctxt "FileEvent|"
 msgid "Loading R Data File"
-msgstr ""
+msgstr "載入 R 資料檔"
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "從檔案中讀取到 0 個有效欄位，請檢查您的資料檔案。"
 
 msgctxt "MainWindow|"
 msgid "Salvaging"
-msgstr ""
+msgstr "正在挽救"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5546,11 +5376,17 @@ msgid ""
 "Analyses or computed columns and the like will not function anymore until "
 "you restart JASP."
 msgstr ""
+"很抱歉，JASP 發生嚴重錯誤。\n"
+"為了讓您能從此狀況中挽救或復原部分內容，JASP 將維持部分功能。\n"
+"\n"
+"例如，您可以儲存當前的工作區，或嘗試變更設定以預防下次再發生問題。\n"
+"\n"
+"在您重新啟動 JASP 之前，分析、計算欄位等功能將無法再正常運作。"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
-msgstr ""
+msgstr "R 資料檔 %1"
 
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
@@ -5562,22 +5398,22 @@ msgstr "增加至虛無模型"
 
 msgctxt "MainWindow|"
 msgid "Open file"
-msgstr ""
+msgstr "開啟檔案"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
-msgstr ""
+msgstr "無法存取檔案 %1"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
-msgstr ""
+msgstr "找不到檔案 %1。"
 
 #, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
-msgstr ""
+msgstr "JASP 不支援此檔案類型 %1。"
 
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
@@ -5587,11 +5423,11 @@ msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
 "lot."
-msgstr ""
+msgstr "啟用此功能可能導致 jasp 檔案大小增加，有時幅度相當大。"
 
 msgctxt "MainWindow|"
 msgid "Stored without state"
-msgstr ""
+msgstr "儲存時不含狀態"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5600,6 +5436,9 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析儲存時不含狀態，若要儲存圖形，必須先重新整理。\n"
+"\n"
+"是否重新整理分析？"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -5608,12 +5447,17 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析儲存時不含狀態，若要調整圖形大小，必須先重新整理。\n"
+"\n"
+"是否重新整理分析？"
 
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
 "sandboxing. Do you wish to continue without it? (probably fine)"
 msgstr ""
+"無法啟用安全沙盒。您的系統不支援安全沙盒功能。是否要在無沙盒情況下繼續？（通"
+"常無礙）"
 
 msgctxt "AutoSaves|"
 msgid "Recovery"
@@ -5650,61 +5494,60 @@ msgstr "自動保存的時間間隔(以分鐘計)"
 
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
-msgstr "每次自動保存之間的時間間隔（分鐘）"
+msgstr "每次自動保存之間的時間間隔（分鐘）。"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
-msgstr ""
+msgstr "%1 已自動儲存"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
-msgstr ""
+msgstr "完整路徑：%1"
 
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
-msgstr ""
+msgstr "未儲存之工作區"
 
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
-msgstr ""
+msgstr "資料檔 %1 之未儲存工作區"
 
 msgctxt "DataSetPackage|"
 msgid "Autosave"
-msgstr ""
+msgstr "自動儲存"
 
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
-msgstr ""
+msgstr "正在儲存自動儲存之 JASP 檔案"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
-msgstr ""
+msgstr "已儲存於 %1"
 
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
-msgstr ""
+msgstr "%1 秒前已儲存，可能仍載入於另一個 JASP 中。"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recovery"
 msgstr "復原"
 
 msgctxt "RibbonModel|"
 msgid "Test"
-msgstr ""
+msgstr "檢定"
 
 msgctxt "RibbonModel|"
 msgid "Run tests"
-msgstr ""
+msgstr "執行檢定"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Stored without state"
-msgstr ""
+msgstr "儲存時不含狀態"
 
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid ""
@@ -5713,8 +5556,10 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析儲存時不含狀態，若要編輯圖形，必須先重新整理。\n"
+"\n"
+"是否重新整理分析？"
 
-#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Version incompatibility"
 msgstr "檔案版本不相容"
@@ -5726,6 +5571,9 @@ msgid ""
 "\n"
 "Refresh the analysis?"
 msgstr ""
+"此分析是在較舊版本之 JASP 中建立的，若要編輯圖形，必須先重新整理。\n"
+"\n"
+"是否重新整理分析？"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5734,6 +5582,8 @@ msgid ""
 "or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
 "and 'upper' limits."
 msgstr ""
+"雙參數 Box-Cox 轉換，根據三種方法之一自動決定形狀參數 lambda：「loglik」、"
+"「sd」或「movingRange」。最佳 lambda 之搜尋範圍限於「下限」與「上限」之間。"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5741,6 +5591,8 @@ msgid ""
 "greater than -shift) to stabilize variance and attempt to make the data more "
 "normal distribution-like."
 msgstr ""
+"雙參數冪次轉換（尺度不變之 Box-Cox；轉換大於 -shift 之數值），用以穩定變異數"
+"並試圖使資料更接近常態分配。"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5748,6 +5600,8 @@ msgid ""
 "parameter lambda. The search for optimal lambda is bounded within 'lower' "
 "and 'upper' limits."
 msgstr ""
+"雙參數冪次轉換，自動決定形狀參數 lambda。最佳 lambda 之搜尋範圍限於「下限」與"
+"「上限」之間。"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -5755,77 +5609,391 @@ msgid ""
 "determination of the shape parameter lambda. The search for optimal lambda "
 "is bounded within 'lower' and 'upper' limits."
 msgstr ""
+"Yeo-Johnson 轉換（可轉換任意實數值），自動決定形狀參數 lambda。最佳 lambda 之"
+"搜尋範圍限於「下限」與「上限」之間。"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Johnson transform (transforms any real values). The search for optimal "
 "parameter is bounded within 'lower' and 'upper' limits."
 msgstr ""
+"Johnson 轉換（可轉換任意實數值）。最佳參數之搜尋範圍限於「下限」與「上限」之"
+"間。"
 
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
-msgstr ""
+msgstr "模組函式庫 URL： "
 
 msgctxt "ModulesMenu|"
 msgid "Not allowed to show the module library to install modules"
-msgstr ""
+msgstr "不允許顯示用於安裝模組之模組函式庫"
 
 msgctxt "ModulesMenu|"
 msgid ""
 "In \"Preferences\" > \"Interface\" the \"Check for updates\" option is "
 "turned off. Please turn it on to see the module library."
 msgstr ""
+"在「偏好設定」>「介面」中，「檢查更新」選項目前為關閉狀態。請將其開啟以查看模"
+"組函式庫。"
 
 msgctxt "ModulesMenu|"
 msgid "Install Local Module"
-msgstr ""
+msgstr "安裝本地模組"
 
 msgctxt "ModulesMenu|"
 msgid "Install a local module"
-msgstr ""
+msgstr "安裝本地模組"
 
-msgctxt "ModulesMenu|"
-msgid "Downloading module..."
-msgstr ""
-
-msgctxt "ModulesMenu|"
-msgid "Installing module..."
-msgstr ""
-
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Cancel"
 msgstr "取消"
 
 msgctxt "ModulesMenu|"
 msgid "Cancel download"
-msgstr ""
-
-#, qt-format
-msgctxt "Modules::DynamicModules|"
-msgid ""
-"The removal of Module %1 failed with the following errormessage:\n"
-"%2"
-msgstr ""
+msgstr "取消下載"
 
 #, qt-format
 msgctxt "Modules::DynamicModule|"
 msgid "No %1 file found in folder %2"
-msgstr ""
+msgstr "在資料夾 %2 中未找到 %1 檔案"
 
 msgctxt "tst_formulaField|"
 msgid "Dummy"
-msgstr ""
+msgstr "虛擬變項"
 
 msgctxt "FileEvent|"
 msgid "Loading Minitab Data Workbook File"
-msgstr ""
+msgstr "載入 Minitab 資料工作簿檔案"
 
 msgctxt "ExcelImporter|"
 msgid "The Minitab file contains no valid columns."
-msgstr ""
+msgstr "Minitab 檔案中不包含有效欄位。"
 
 #, qt-format
 msgctxt "Computer|"
 msgid "Minitab Workbook files %1"
+msgstr "Minitab 工作簿檔案 %1"
+
+msgctxt "ModulesMenu|"
+msgid "module"
+msgstr "模組"
+
+msgctxt "ModulesMenu|"
+msgid "Downloading"
+msgstr "正在下載"
+
+msgctxt "ModulesMenu|"
+msgid "Installing"
+msgstr "正在安裝"
+
+#, qt-format
+msgctxt "ModulesMenu|"
+msgid " (%1/%2)"
 msgstr ""
+
+msgctxt "PrefsResults|"
+msgid "Show interactive plots by default, where possible."
+msgstr "在可能的情況下，預設顯示互動式圖形。"
+
+msgctxt "PrefsResults|"
+msgid ""
+"When enabled shows the interactive plots by default, you can always switch "
+"them in the plots own dropdown too."
+msgstr "啟用時，預設顯示互動式圖形，您隨時也可以在圖形自身的下拉選單中切換。"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Point"
+msgstr "點"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Horizontal Line"
+msgstr "水平線"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Vertical Line"
+msgstr "垂直線"
+
+msgctxt "PlotEditor|"
+msgid "References"
+msgstr "參照"
+
+msgctxt "PlotEditor::References|"
+msgid "Type"
+msgstr "類型"
+
+msgctxt "PlotEditor::References|"
+msgid "Text"
+msgstr "文字"
+
+msgctxt "PlotEditor::References|"
+msgid "Horizontal"
+msgstr "水平"
+
+msgctxt "PlotEditor::References|"
+msgid "Vertical"
+msgstr "垂直"
+
+msgctxt "PlotEditor::References|"
+msgid "Remove"
+msgstr "移除"
+
+msgctxt "ResultMenuModel|"
+msgid "Switch Static/Interactive Image"
+msgstr "切換靜態/互動式圖形"
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 has been modified"
+msgstr "%1 已被修改"
+
+msgctxt "MainWindow|"
+msgid "Would you like to save your changes?"
+msgstr "是否要儲存您的變更？"
+
+#, qt-format
+msgctxt "JASPImporter|"
+msgid ""
+"The JASP file is too old (%1) and is not supported anymore.\n"
+"Load and save it first in an intermediate JASP version (between %2 and "
+"0.96.1) to upgrade your JASP file to a compatible version"
+msgstr ""
+"JASP 檔案版本過舊（%1），已不再支援。\n"
+"請先在介於 %2 與 0.96.1 之間的中間 JASP 版本中載入並儲存該檔案，以將其升級至"
+"相容之版本"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"An error occured trying to initialize a module from dir %1, the error was: %2"
+msgstr "嘗試從目錄%1 初始化模組時發生錯誤，錯誤為：%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "An error occured trying to load module %1, the error was: '%2'"
+msgstr "嘗試載入模組 %1 時出錯，錯誤為：“%2”"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The installation of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"模組 %1 安裝失敗，錯誤訊息如下：\n"
+"%2"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"The removal of Module %1 failed with the following errormessage:\n"
+"%2"
+msgstr ""
+"移除模組 %1 失敗，錯誤訊息如下：\n"
+"%2"
+
+msgctxt "DynamicModules|"
+msgid "Select a folder"
+msgstr "選擇資料夾"
+
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select the folder you want to "
+"watch and load, you can do this under the filemenu, Preferences->Advanced."
+msgstr ""
+"要安裝開發模組，您需要選擇所要載入的資料夾，您可在檔案功能表的偏好>進階下執行"
+"此操作。"
+
+msgctxt "DynamicModules|"
+msgid "Select an exisiting folder"
+msgstr "選擇現有資料夾"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"To install a development module you need to select and existing folder, you "
+"selected '%1' but it doesn't exist."
+msgstr ""
+"若要安裝開發模組，您需要選擇一個已存在之資料夾，您選擇了「%1」，但該資料夾不"
+"存在。"
+
+msgctxt "DynamicModules|"
+msgid "Problem initializing module"
+msgstr "啟動模組時發生問題"
+
+msgctxt "DynamicModules|"
+msgid ""
+"There was a problem loading the developer module:\n"
+"\n"
+msgstr ""
+"載入開發中模組發生問題：\n"
+"\n"
+
+msgctxt "DynamicModules|"
+msgid "Missing files or folders"
+msgstr "缺少檔案或資料夾"
+
+msgctxt "DynamicModules|"
+msgid ""
+"The selected folder cannot be installed as a developer module because it "
+"does not contain all the necessary files and folders."
+msgstr "所選資料夾不能安裝為開發人員模組，因為不含所需的檔和資料夾。"
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/Description.qml file."
+msgstr "建立一個 inst/Description.qml 檔。"
+
+msgctxt "DynamicModules|"
+msgid "Create a R directory containing your analysis code."
+msgstr "建立包含分析語法的 R 目錄。"
+
+msgctxt "DynamicModules|"
+msgid "Create a inst/qml directory containing your optionsforms."
+msgstr "建立一個包含您 optionsforms 的 inst/qml 目錄。"
+
+msgctxt "DynamicModules|"
+msgid ""
+"Create a inst/icons directory containing the icons for your ribbonbuttons."
+msgstr "建立一個包含功能區按鈕圖示的 inst/icons 目錄。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing %1"
+msgstr "缺少 %1"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 from your development module directory. Without "
+"it your module cannot work, make sure to put it back. For now your old %2 "
+"file will be kept."
+msgstr ""
+"您可能刪除了開發模組目錄中的 %1。沒有它，您的模組無法運作，請將其放回原處。目"
+"前將先保留舊的%2檔。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had a %1 in your development module directory. "
+"Without it your module cannot work, make sure to create one. How you "
+"installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"開發模組目錄中似乎從未有過 %1。沒有它，您的模組無法運作，請務必確實建立一個模"
+"組。不確定您如何能安裝此模組，您應要卸載開發模組"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "%1 was removed!"
+msgstr "%1 已被刪除！"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed %1 but this file is required for your module to "
+"work. The development module is going to be uninstalled now."
+msgstr "您似乎已刪除 %1，但您的模組需要此檔才能正常工作。現在將卸載開發模組。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "Missing folder %1"
+msgstr "遺失 %1資料夾"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have removed the folder %1 from your development module "
+"directory. Without it your module cannot work, make sure to put it back. For "
+"now your old folder will be kept."
+msgstr ""
+"疑似 %1資料夾從發展模組目錄中被移除。需要該模組才能執行程式，請將該模組復原，"
+"目前先保留舊資料夾。"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"You seem to have never had the folder %1 in your development module "
+"directory. Without it your module cannot work, make sure to create one. How "
+"you installed is a bit of a mystery and thus the development module shall be "
+"uninstalled now"
+msgstr ""
+"疑似開發模組目錄中從未建置 %1資料夾，需要該檔案夾模組才能執行模組。無法得知開"
+"發模組如何安裝，請將之移除"
+
+msgctxt "DynamicModules|"
+msgid "Loading module description encountered a problem"
+msgstr "載入模組描述時出現問題"
+
+#, qt-format
+msgctxt "DynamicModules|"
+msgid "<i>Could not load the description of the module in archive: '%1'</i>"
+msgstr "<i>無法從存檔中加載模組描述檔: '%1'</i>"
+
+#, fuzzy, qt-format
+msgctxt "DynamicModules|"
+msgid ""
+"<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
+"maintained by %5.</i><br><i>See website for further details: <a "
+"href=\"http://%6\">%6</a></i><br>"
+msgstr ""
+"<h3>%1</h3><i>版本 %2</i><br><p>%3</p><br><br><i>由 %4 所建立，並由 %5所維"
+"護。</i><br><i>相關資訊，請參閱網站：<a href=\"http://%6\">%6</a></i><br>"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Enter Encryption Settings"
+msgstr "進入加密設定"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Password:"
+msgstr "密碼："
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "JASP Team Submission."
+msgstr "提交給 JASP 團隊。"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Click here if you want the JASP Team be able to open the file"
+msgstr "如果您希望 JASP 團隊能夠開啟此檔案，請點擊此處"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Advanced Settings"
+msgstr "進階設定"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Private key (base64)"
+msgstr "私鑰（Base64 編碼）"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Receiver Public key (base64)"
+msgstr "接收者公鑰（Base64 編碼）"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Submit"
+msgstr "提交"
+
+msgctxt "EncryptionSettingsWindow|"
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "VariablesWindow|"
+msgid "Use labels"
+msgstr "使用標籤"
+
+msgctxt "DesktopCommunicator|"
+msgid "No password given!"
+msgstr "未提供密碼！"
+
+#, qt-format
+msgctxt "QObject|"
+msgid "Change column '%1' having labels from '%2' to '%3'"
+msgstr "將欄位 '%1' 的標籤從 '%2' 變更為 '%3'"
+
+msgctxt "AutoSaveFileSystem|"
+msgid "encrypted"
+msgstr "已加密"
+
+msgctxt "Computer|"
+msgid "Save (encrypted) JASP file"
+msgstr "儲存（加密）JASP 檔案"
+
+msgctxt "Computer|"
+msgid "Encrypted JASP Files"
+msgstr "加密的 JASP 檔案"

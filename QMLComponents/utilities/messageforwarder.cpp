@@ -201,41 +201,58 @@ QString MessageForwarder::browseSaveFileDocuments(QString caption, QString filte
 	return browseSaveFile(caption, constrainToSandboxStartDir(AppDirs::documents()), filter);
 }
 
+QString MessageForwarder::queryTextInput(const QString &caption, const QString &elementName, const QString &defaultValue, bool& passwordGiven, bool password)
+{
+    bool ok{};
+    QString text = QInputDialog::getText(nullptr, caption,
+                                         elementName, password ? QLineEdit::Password : QLineEdit::Normal,
+                                         defaultValue, &passwordGiven);
+    if (!passwordGiven)  text = "";
+    return text;
+}
+
+QString MessageForwarder::browseSaveFile(const QString& caption, const QString& browsePath, const QString& filter, QString& selectedFilter, QString & selectedExtension) {
+    Log::log() << "MessageForwarder::browseSaveFile(\"" << caption.toStdString() << "\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
+
+    QString saveFileName;
+
+    if(useNativeFileDialogs())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
+    else						saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter, QFileDialog::DontUseNativeDialog);
+
+    Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << selectedFilter << std::endl;
+
+    //Lets make sure the extension is added:
+    static const QRegularExpression extReg("\\*\\.(\\w+)");
+    QRegularExpressionMatch  possibleMatch = extReg.match(selectedFilter);
+
+    if(possibleMatch.hasMatch())
+    {
+        QString ext = possibleMatch.captured(1);
+
+        if(!saveFileName.endsWith(ext))
+            saveFileName += "." + ext;
+
+        selectedExtension = ext;
+    }
+    else //So the filter doesnt tell us the extension but the caller expects to know what is what
+    {
+        if(saveFileName.lastIndexOf('.') >= 0) selectedExtension = saveFileName.mid(saveFileName.lastIndexOf('.') + 1);
+        else	 selectedExtension = ""; //???
+    }
+
+    Log::log() << "Selected extension: '" << selectedExtension << "'" << std::endl;
+
+    return saveFileName;
+}
+
+
 QString MessageForwarder::browseSaveFile(QString caption, QString browsePath, QString filter, QString * selectedExtension)
 {
-	Log::log() << "MessageForwarder::browseSaveFile(\"" << caption.toStdString() << "\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
-
-	QString saveFileName, selectedFilter;
-
-	if(useNativeFileDialogs())	saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter);
-	else						saveFileName = 	QFileDialog::getSaveFileName(nullptr, caption, browsePath, filter, &selectedFilter, QFileDialog::DontUseNativeDialog);
-
-	Log::log() << "Selected save file: " << saveFileName << " and selected filter: " << selectedFilter << std::endl;
-
-	//Lets make sure the extension is added:
-	static const QRegularExpression extReg("\\*\\.(\\w+)");
-	QRegularExpressionMatch  possibleMatch = extReg.match(selectedFilter);
-
-	if(possibleMatch.hasMatch())
-	{
-		QString ext = possibleMatch.captured(1);
-
-		if(!saveFileName.endsWith(ext))
-			saveFileName += "." + ext;
-
-		if(selectedExtension)
-			*selectedExtension = ext;
-	}
-	else if(selectedExtension)//So the filter doesnt tell us the extension but the caller expects to know what is what
-	{
-		if(saveFileName.lastIndexOf('.') >= 0)	*selectedExtension = saveFileName.mid(saveFileName.lastIndexOf('.') + 1);
-		else									*selectedExtension = ""; //???
-	}
-
-	if(selectedExtension)
-		Log::log() << "Selected extension: '" << *selectedExtension << "'" << std::endl;
-
-	return saveFileName;
+    QString selectedFilter, ext;
+    if(selectedExtension)
+        return browseSaveFile(caption, browsePath, filter, selectedFilter, *selectedExtension);
+    else
+        return browseSaveFile(caption, browsePath, filter, selectedFilter, ext);
 }
 
 QString MessageForwarder::browseOpenFolder(QString caption, QString browsePath)

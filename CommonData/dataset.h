@@ -92,8 +92,7 @@ public:
 			Json::Value				jsonForCompare() const;
 			
 private:
-			void					upgradeTo019(const Json::Value & emptyVals);
-			void					upgrade019To095();
+			void					upgradeEmptyValsFrom018To019(const Json::Value & emptyVals);
 			void					setEmptyValuesJsonOldStuff(	const Json::Value & emptyValues);
 			
 			

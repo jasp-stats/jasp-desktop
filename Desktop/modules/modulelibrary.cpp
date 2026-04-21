@@ -2,15 +2,17 @@
 
 #include <QString>
 #include <QDir>
+#include <qjsonobject.h>
 
 #include "appinfo.h"
 #include "gui/preferencesmodel.h"
 #include "installedmodules.h"
 #include "dynamicmodules.h"
-#include "dynamicmodule.h"
+#include "modules/dynamicmodule.h"
 #include "engine/enginesync.h"
 #include "utilities/appdirs.h"
 #include "utilities/dynamicruntimeinfo.h"
+#include "log.h"
 
 ModuleLibrary * ModuleLibrary::_singleton = nullptr;
 
@@ -19,14 +21,14 @@ ModuleLibrary::ModuleLibrary(QObject *parent)
 {
     _singleton = this;
 
-    if (auto *dynMods = Modules::DynamicModules::dynMods())
+	if (auto *dynMods = DynamicModules::dynMods())
     {
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) { 
+		connect(dynMods, &DynamicModules::dynamicModuleAdded,      this, [this](Modules::DynamicModule *) {
             emitEnvironmentInfoChanged(); 
             finishInstalling();
         });
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
-        connect(dynMods, &Modules::DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });       
+		connect(dynMods, &DynamicModules::dynamicModuleChanged,    this, [this](Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
+		connect(dynMods, &DynamicModules::dynamicModuleReplaced,   this, [this](Modules::DynamicModule *, Modules::DynamicModule *) { emitEnvironmentInfoChanged(); });
     }
     if (auto *engineSync = EngineSync::singleton())
     {
@@ -78,12 +80,13 @@ QVariantMap ModuleLibrary::getEnvironmentInfo() const
     envInfo["language"]				= PreferencesModel::prefs()->languageCode().replace("_", "-");		// do replace to enforce BCP 47 language tag format
     envInfo["installedModules"]		= installedModulesInfo();
     envInfo["uninstallableModules"] = getUninstallableModules();
+		
     return envInfo;
 }
 
 void ModuleLibrary::uninstallJASPModule(const QString &moduleName)
 {
-    if (auto *dynMods = Modules::DynamicModules::dynMods())
+	if (auto *dynMods = DynamicModules::dynMods())
         dynMods->uninstallModule(moduleName.toStdString());
 }
 
@@ -102,8 +105,18 @@ QStringList ModuleLibrary::getUninstallableModules() const
     return dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 }
 
+QString ModuleLibrary::getEnvironmentInfoJson() const
+{
+	QVariantMap envInfo = getEnvironmentInfo();
+	QJsonDocument infoDoc = QJsonDocument(QJsonObject::fromVariantMap(envInfo));
+		
+	return infoDoc.toJson(QJsonDocument::Indented);
+}
+
 void ModuleLibrary::emitEnvironmentInfoChanged()
 {
+	Log::log() << "ModuleLibrary: Environment state updated: " << getEnvironmentInfoJson().replace('\n', ' ').toStdString() << std::endl;
+
     emit environmentInfoChanged(getEnvironmentInfo());
 }
 

@@ -24,15 +24,78 @@
 MenuModel::MenuModel(RibbonButton *parent, Modules::DynamicModule * module)
 	: QAbstractListModel(parent), _ribbonButton(parent), _module(module)
 {
+	_setEntries(module->menu());
 
+	connect(module, &Modules::DynamicModule::descriptionReloaded, this, [this](Modules::DynamicModule * module) {_setEntries(module->menu()); });
 }
 
-MenuModel::MenuModel(RibbonButton * parent, Modules::AnalysisEntries * entries)
-: QAbstractListModel(parent), _ribbonButton(parent), _entries(entries)
+MenuModel::MenuModel(RibbonButton * parent, const Modules::AnalysisEntries & entries)
+: QAbstractListModel(parent), _ribbonButton(parent)
 {
-	for(const auto * entry : *_entries)
+	_setEntries(entries);
+}
+
+MenuModel::MenuModel(RibbonButton *parent, Modules::DynamicModule * module, const Modules::AnalysisEntries & entries, bool isSubMenu)
+	: QAbstractListModel(parent), _ribbonButton(parent), _module(module), _isSubMenu(isSubMenu)
+{
+	_setEntries(entries);
+}
+
+void MenuModel::_setEntries(const Modules::AnalysisEntries & entries)
+{
+	_subMenus.clear();
+	if (_module && _module->useSubMenus() && !_isSubMenu)
+	{
+		// Keep only the main entries, and add submenus
+		Modules::AnalysisEntries mainEntries, subEntries;
+		QString currentGroupTitle;
+		// If the first items are not group items, then add them to the main menu.
+		// When a group item is found, all items afterwards are set in a submenu, until another group item is found.
+		for(auto * entry : entries)
+		{
+			if (entry->isGroupTitle())
+			{
+				mainEntries.push_back(entry);	// Add the Group to the main menu
+				if (!currentGroupTitle.isEmpty())
+				{
+					// The group is complete: add a subMenu
+					_subMenus[currentGroupTitle] = new MenuModel(_ribbonButton, _module, subEntries, true);
+					subEntries.clear();
+				}
+				currentGroupTitle = tq(entry->title());
+			}
+			else if (currentGroupTitle.isEmpty())
+				mainEntries.push_back(entry); // No group item found yet: add it to the main menu.
+			else
+				subEntries.push_back(entry);
+		}
+		_entries = mainEntries;
+
+		if (!subEntries.empty() && !currentGroupTitle.isEmpty())
+			_subMenus[currentGroupTitle] = new MenuModel(_ribbonButton, _module, subEntries, true);
+	}
+	else
+		_entries = entries;
+
+	_hasIcons = false;
+	for(const auto * entry : _entries)
 		if(entry->icon() != "")
 			_hasIcons = true;
+}
+
+
+void MenuModel::setDynamicModule(Modules::DynamicModule *module)
+{
+	if (_module == module)
+		return;
+
+	beginResetModel();
+
+	_module = module;
+	_setEntries(module->menu());
+	connect(module, &Modules::DynamicModule::descriptionReloaded, this, [this](Modules::DynamicModule * module) {_setEntries(module->menu()); });
+
+	endResetModel();
 }
 
 QVariant MenuModel::data(const QModelIndex &index, int role) const
@@ -82,9 +145,21 @@ Modules::AnalysisEntry *MenuModel::getAnalysisEntry(const std::string& func)
 	return nullptr;
 }
 
+QVariant MenuModel::getSubMenu(int index) const
+{
+	if (index < 0 || index >= analysisEntries().size())
+		return QVariant();
+
+	QString title = getAnalysisTitle(index);
+	if (_subMenus.count(title))
+		return QVariant::fromValue(_subMenus.at(title));
+
+	return QVariant();
+}
+
 const std::vector<Modules::AnalysisEntry*> &	MenuModel::analysisEntries() const
 {
-	return _module ? _module->menu() : *_entries;
+	return _entries;
 }
 
 bool MenuModel::isAnalysisEnabled(int index)

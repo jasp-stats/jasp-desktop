@@ -201,6 +201,7 @@ void DataSetViewBase::modelDataChanged(const QModelIndex &topLeft, const QModelI
 					{
 						//Changes here should be considered also for DataSetViewBase::setStyleDataItem:
 						context->setContextProperty("itemText",			_model->data(modelIndex));
+						context->setContextProperty("itemEnabled",		bool(_model->flags(modelIndex) & Qt::ItemIsEnabled));
 						context->setContextProperty("itemTextEdit",		_model->data(modelIndex, getRole("noSepaDisplay")));
 						context->setContextProperty("itemShadowText",	_model->data(modelIndex, getRole("shadowDisplay")));
 						context->setContextProperty("itemLabel",		_model->data(modelIndex, getRole("label")));
@@ -1475,7 +1476,7 @@ void DataSetViewBase::onDataModeChanged(bool dataMode)
 void DataSetViewBase::commitLastEdit()
 {
 	Log::log() << "Commit last edit" << std::endl;
-	if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item)
+	if(_prevEditRow != -1 && _prevEditCol != -1 && _editItemContextual && _editItemContextual->item && _editItemContextual->item->property("text").isValid())
 		commitEdit(_prevEditRow, _prevEditCol, _editItemContextual->item->property("text"));
 }
 
@@ -1485,7 +1486,9 @@ QQmlContext * DataSetViewBase::setStyleDataItem(QQmlContext * previousContext, b
 
 	QModelIndex modelIndex = _model->index(row, col);
 
-	bool isEditable(_model->flags(modelIndex) & Qt::ItemIsEditable);
+	auto	flagsModel	= _model->flags(modelIndex);
+	bool	isEditable	( flagsModel & Qt::ItemIsEditable),
+			isEnabled	( flagsModel & Qt::ItemIsEnabled);
 
 	if(isEditable || _storedDisplayText.count(row) == 0 || _storedDisplayText[row].count(col) == 0)
 		_storedDisplayText[row][col] = _model->data(modelIndex, Qt::DisplayRole).toString();
@@ -1510,6 +1513,8 @@ QQmlContext * DataSetViewBase::setStyleDataItem(QQmlContext * previousContext, b
 	//The first four also get updated in DataSetViewBase::modelDataChanged!
 	//If adding or changes behaviour also do that there
 	previousContext->setContextProperty("itemText",			text);
+	previousContext->setContextProperty("itemData",			_model->data(modelIndex));
+	previousContext->setContextProperty("itemEnabled",		isEnabled);
 	previousContext->setContextProperty("itemTextEdit",		textEdit);
 	previousContext->setContextProperty("itemShadowText",	_model->data(modelIndex, getRole("shadowDisplay")));
 	previousContext->setContextProperty("itemLabel",		_model->data(modelIndex, getRole("label")));

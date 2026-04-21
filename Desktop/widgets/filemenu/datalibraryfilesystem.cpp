@@ -200,8 +200,7 @@ QJsonDocument *DataLibraryFileSystem::getJsonDocument()
 		return nullptr;
 	}
 
-	index.open(QFile::ReadOnly);
-	if ( ! index.isOpen())
+	if (!index.open(QFile::ReadOnly))
 	{
 		Log::log()  << "BackStageForm::loadExamples();  index could not be opened" << std::endl;
 		return nullptr;

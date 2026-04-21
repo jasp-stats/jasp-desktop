@@ -105,8 +105,18 @@ void ListModel::_connectAllSourcesControls()
 void ListModel::_setAllowedType(Term& term) const
 {
 	columnType type = term.type();
-	if (type != columnType::unknown && !_listView->isTypeAllowed(type))
-		term.setType(_listView->defaultType());
+	if (type != columnType::unknown)
+	{
+		if (!_listView->isTypeAllowed(type))
+			term.setType(_listView->defaultType());
+		else
+		{
+			// If the real type is now allowed, change the type to its original one.
+			columnType realType = getVariableRealType(term.value());
+			if (type != realType && _listView->isTypeAllowed(realType))
+				term.setType(realType);
+		}
+	}
 }
 
 Term ListModel::_checkTermType(const Term &term) const

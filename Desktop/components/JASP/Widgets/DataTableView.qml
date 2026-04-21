@@ -165,7 +165,7 @@ FocusScope
 					"functionCall": function (index)
 					{
 						menuFunctions[index]();
-						customMenu.hide()
+						customMenu.hideMenus()
 					}
 				};
 

@@ -80,15 +80,6 @@ void TextAreaBase::setUp()
 
 	JASPListControl::setUp();
 
-	QList<QVariant> separators = property("separators").toList();
-	if (separators.isEmpty())
-		_separators.push_back(property("separator").toString());
-	else
-	{
-		for (QVariant& separator : separators)
-			_separators.push_back(separator.toString());
-	}
-
 	//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
 	//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
 	connect(VariableInfo::info(),	&VariableInfo::rowCountChanged,		this,		&TextAreaBase::checkSyntaxMaybeHandler);
@@ -103,12 +94,12 @@ void TextAreaBase::rScriptDoneHandler(const QString & result)
 	if (error.isEmpty())
 	{
 		setHasScriptError(false);
-		setProperty("infoText", tr("Model applied"));
+		setInfoText(tr("Model applied"));
 	}
 	else
 	{
 		setHasScriptError(true);
-		setProperty("infoText", result);
+		setInfoText(result);
 	}
 }
 
@@ -126,8 +117,8 @@ void TextAreaBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
-	if ((_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeMetaSem || _textType == TextType::TextTypeCSem) && form() && initialized())
-		form()->refreshAnalysis();
+	if (initialized())
+		resetBoundValue();
 }
 
 void TextAreaBase::_setInitialized(const Json::Value &value)

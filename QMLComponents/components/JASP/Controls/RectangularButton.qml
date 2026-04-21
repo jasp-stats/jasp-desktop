@@ -20,6 +20,45 @@ import QtQuick
 import QtQuick.Controls
 
 
+/*!
+    \qmltype RectangularButton
+    \inqmlmodule JASP.Controls 1.0
+    \brief A styled rectangular button with optional icon and text.
+
+    A Rectangle-based button supporting text, icon, or both. Provides hover,
+    pressed, and disabled states with JASP theming. Used as the base for
+    RoundedButton and MenuButton.
+
+    \note This is primarily an internal UI component. Module developers typically
+    use Button instead.
+
+    \section1 Properties
+
+    \list
+    \li \b text (string) - Button label text. Default: "".
+    \li \b toolTip (string) - Tooltip shown on hover. Default: "".
+    \li \b iconSource (string) - Path to the button icon. Default: "".
+    \li \b showIconAndText (bool) - Show both icon and text simultaneously. Default: false.
+    \li \b centerText (bool) - Center the text within the button. Default: true.
+    \li \b iconLeft (bool) - Place icon on the left side. Default: true.
+    \li \b isLink (bool) - Style as a hyperlink. Default: false.
+    \endlist
+
+    \section1 Signals
+
+    \list
+    \li \b clicked() - Emitted when the button is clicked.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    RectangularButton {
+        text: qsTr("Apply")
+        iconSource: jaspTheme.iconPath + "confirm.png"
+    }
+    \endqml
+*/
 Rectangle
 {
 	id:				filterButtonRoot
@@ -44,6 +83,12 @@ Rectangle
 	property alias	font:				buttonText.font
 	property alias	icon:				buttonIcon
 	property real	centerParentX:		(parent.width / 2) - x
+	property color	defaultColor:		!enabled ? jaspTheme.buttonColorDisabled
+												 : _pressed ? jaspTheme.buttonColorPressed
+															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
+																															: jaspTheme.buttonColor
+	property color defaultBorderColor:	enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
+																							: jaspTheme.buttonBorderColor
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
 
@@ -53,14 +98,9 @@ Rectangle
 	implicitHeight:						_scaledDim
 	width:								implicitWidth
 	height:								implicitHeight
-	color:								!enabled ? jaspTheme.buttonColorDisabled
-												 : _pressed ? jaspTheme.buttonColorPressed
-															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
-																															: jaspTheme.buttonColor
-	border.color:						enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
-																							: jaspTheme.buttonBorderColor
+	color:								defaultColor
+	border.color:						defaultBorderColor
 	border.width:						1
-
 
 	ToolTip.text:						toolTip
 	ToolTip.visible:					toolTip !== "" && buttonMouseArea.containsMouse
@@ -70,6 +110,7 @@ Rectangle
 	Keys.onReturnPressed:				(event)=>	clicked();
 
 	signal clicked()
+	signal doubleClicked()
 
 
 
@@ -81,6 +122,7 @@ Rectangle
 		hoverEnabled:				true
 		cursorShape:				filterButtonRoot.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 		onClicked:					filterButtonRoot.clicked();
+		onDoubleClicked:			filterButtonRoot.doubleClicked();
 		//visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}

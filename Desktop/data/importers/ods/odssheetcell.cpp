@@ -78,7 +78,7 @@ void ODSSheetCell::setTypeAndValue(XmlDatatype type, const QString &data)
 		int hours; int mins; int secs;
 		sscanf(data.toStdString().c_str(), "PT%dH%dM%dS'", &hours, &mins, &secs);
 		QTime time(hours % 24, mins, secs);
-        setValue(time.toString(Qt::DateFormat::ISODate));
+		setValue(time.toString(Qt::DateFormat::ISODate));
 		_xmlType = odsType_string;
 	}
 		break;

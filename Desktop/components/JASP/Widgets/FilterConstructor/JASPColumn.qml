@@ -151,7 +151,7 @@ Item
 				var functionCall      = function (index)
 				{
 					columnTypeUser = columnTypesModel.getType(index)
-					customMenu.hide()
+					customMenu.hideMenus()
 				}
 
 				var props = {

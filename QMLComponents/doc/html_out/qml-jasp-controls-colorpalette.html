@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- ColorPalette.qml -->
+  <meta name="description" content="A dropdown preset for selecting a color palette for plots.">
+  <title>ColorPalette QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>ColorPalette</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#inherited-properties-from-dropdown">Inherited Properties from DropDown</a></li>
+<li class="level2"><a href="#other-inherited-properties">Other Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">ColorPalette QML Type</h1>
+<!-- $$$ColorPalette-brief -->
+<p>A dropdown preset for selecting a color palette for plots. <a href="#details">More...</a></p>
+<!-- @@@ColorPalette -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-colorpalette-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$ColorPalette-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Extends <a href="qml-jasp-controls-dropdown.html" translate="no">DropDown</a> with a predefined list of color palettes commonly used in JASP plots. Includes colorblind-friendly, Viridis, ggplot2, and other standard palettes. Defaults to &quot;colorblind&quot; and binds to the R option &quot;colorPalette&quot;.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code></li>
+<li><b>Default:</b> &quot;colorblind&quot;</li>
+</ul>
+<h2 id="inherited-properties-from-dropdown">Inherited Properties from DropDown</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;colorPalette&quot;.</li>
+<li><b>label</b> (string) - Label displayed before the dropdown. Default: &quot;Color palette&quot;.</li>
+<li><b>values</b> (array) - List of palette options. Pre-populated with standard palettes.</li>
+<li><b>currentValue</b> (var) - The value of the currently selected palette.</li>
+</ul>
+<h2 id="other-inherited-properties">Other Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-colorpalette.html" translate="no">ColorPalette</a></span> { }</pre>
+<!-- @@@ColorPalette -->
+</body>
+</html>

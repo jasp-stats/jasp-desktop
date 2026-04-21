@@ -30,28 +30,15 @@
 #include "utilities/settings.h"
 #include "utilities/extractarchive.h"
 #include "utilities/messageforwarder.h"
-#include "modules/upgrader/upgrades.h"
-#include "modules/upgrader/upgrade.h"
-#include "modules/upgrader/changejs.h"
-#include "modules/upgrader/changecopy.h"
-#include "modules/upgrader/changeremove.h"
-#include "modules/upgrader/changerename.h"
-#include "modules/upgrader/changesetvalue.h"
-#include "modules/upgrader/changeincompatible.h"
-#include "modules/description/description.h"
-#include "modules/description/entrybase.h"
 #include "engine/enginesync.h"
-#include "installedmodules.h"
-#include "utilities/dynamicruntimeinfo.h"
+#include "modules/description/description.h"
+#include "mainwindow.h"
 
 
 #ifdef __APPLE__
 #include "otoolstuff.h"
 #include <filesystem>
 #endif
-
-namespace Modules
-{
 
 DynamicModules * DynamicModules::_singleton = nullptr;
 
@@ -77,12 +64,12 @@ DynamicModules::~DynamicModules()
 bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled, bool isCommon)
 {
 	if(moduleDir.size() == 0)
-		throw ModuleException("???", "Empty path was supplied to DynamicsModules::loadModule..");
+		throw Modules::ModuleException("???", "Empty path was supplied to DynamicsModules::loadModule..");
 
 	if(moduleDir[moduleDir.size() - 1] != '/')
 		moduleDir += '/';
 
-	DynamicModule	*newMod		= new DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
+	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
 
 	if(isCommon)
 		_commonModuleNames.insert(newMod->name());
@@ -93,15 +80,15 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 	return true;
 }
 
-bool DynamicModules::initializeModule(DynamicModule * module)
+bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 {
 	std::string	moduleName;
 
 	try
 	{
-							moduleName				= module->name();
-		DynamicModule	*	oldModule				= _modules.count(moduleName) > 0 && _modules[moduleName] != module ? _modules[moduleName] : nullptr;
-		bool				wasAddedAlready			= true;
+									moduleName				= module->name();
+		Modules::DynamicModule	*	oldModule				= _modules.count(moduleName) > 0 && _modules[moduleName] != module ? _modules[moduleName] : nullptr;
+		bool						wasAddedAlready			= true;
 
 		if(std::count(_moduleNames.begin(), _moduleNames.end(), moduleName) == 0)
 		{
@@ -119,10 +106,10 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 		
 		if(!module->initialized())
 		{
-			connect(module, &DynamicModule::readyForUseChanged,				this,	&DynamicModules::loadedModulesChanged			);
-			connect(module, &DynamicModule::titleChanged,					this,	&DynamicModules::loadedModulesChanged			);
-			connect(module, &DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
-			connect(module, &DynamicModule::statusChanged,					module,	[this, module, moduleName]()
+			connect(module, &Modules::DynamicModule::readyForUseChanged,			this,	&DynamicModules::loadedModulesChanged			);
+			connect(module, &Modules::DynamicModule::titleChanged,					this,	&DynamicModules::loadedModulesChanged			);
+			connect(module, &Modules::DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
+			connect(module, &Modules::DynamicModule::statusChanged,					module,	[this, module, moduleName]()
 			{
 				if(module->status() == moduleStatus::error)
 				{
@@ -131,7 +118,7 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 				}
 			});
 			
-			module->initialize();
+			module->initialize(MainWindow::singleton()->giveRootQmlContext());
 		}
 
 		if(!wasAddedAlready)
@@ -154,8 +141,8 @@ bool DynamicModules::initializeModule(DynamicModule * module)
 
 		return true;
 	}
-	catch(ModuleException & e)		{ MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
-	catch(std::runtime_error & e)	{ MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
+	catch(Modules::ModuleException & e)		{ MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
+	catch(std::runtime_error & e)			{ MessageForwarder::showWarning(tr("An error occured trying to initialize a module from dir %1, the error was: %2").arg(module->moduleRLibrary()).arg(e.what())); }
 
 	if(_modules.count(moduleName) > 0)
 	{
@@ -197,7 +184,7 @@ void DynamicModules::unloadModule(const std::string & moduleName)
 
 	if(_modules.count(moduleName) > 0)
 	{
-		DynamicModule * dynMod = _modules[moduleName];
+		Modules::DynamicModule * dynMod = _modules[moduleName];
 
 		emit dynamicModuleUnloadBegin(dynMod);
 		emit reloadQmlImportPaths();
@@ -239,14 +226,14 @@ QStringList DynamicModules::importPaths() const
 }
 
 
-void DynamicModules::replaceModule(DynamicModule * module)
+void DynamicModules::replaceModule(Modules::DynamicModule * module)
 {
 	std::string moduleName = module->name();
 
 	if(_modules[moduleName] == module)
 		return;
 
-	DynamicModule * oldModule = _modules[moduleName];
+	Modules::DynamicModule * oldModule = _modules[moduleName];
 
 	_modules[moduleName] = module;
 
@@ -296,7 +283,7 @@ void DynamicModules::uninstallModule(const std::string & moduleName)
 
 }
 
-DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
+Modules::DynamicModule* DynamicModules::requestModuleForSomethingAndRemoveIt(std::set<std::string> & theSet)
 {
 	if(theSet.size() == 0)
 		return nullptr;
@@ -387,7 +374,7 @@ Json::Value DynamicModules::getJsonForModuleUninstallRequest()
 	return requestJson;
 }
 
-DynamicModule *DynamicModules::dynamicModuleLowerCased(QString moduleName) const
+Modules::DynamicModule *DynamicModules::dynamicModuleLowerCased(QString moduleName) const
 {
 	moduleName = moduleName.toLower(); //just enforce it
 
@@ -456,7 +443,7 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	if(_modules.count(moduleName) > 0)
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
-	throw ModuleException(moduleName,
+	throw Modules::ModuleException(moduleName,
 		"Module is not available, to load this JASP file properly you will need to install it first and then retry.\n"
 		"If you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or"
 		", if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\"."
@@ -521,8 +508,9 @@ void DynamicModules::installJASPDeveloperModule()
 	try
 	{
 		emit storeAnalysesJson();
-		
-		DynamicModule * devMod = directLibpathEnabled ? new DynamicModule(this, modulePath) : new DynamicModule(this);
+
+		QQmlContext * context = MainWindow::singleton()->giveRootQmlContext();
+		Modules::DynamicModule * devMod = directLibpathEnabled ? new Modules::DynamicModule(this, context, modulePath) : new Modules::DynamicModule(this, context);
 
 		std::string origin	= devMod->modulePackage(),
 					name	= devMod->name(),
@@ -568,7 +556,7 @@ void DynamicModules::startWatchingDevelopersModule()
 		{
 			QDir instDir(entry.absoluteFilePath());
 			for(const QFileInfo & entryinst : instDir.entryInfoList(QDir::Filter::Dirs | QDir::Filter::Files | QDir::Filter::NoDotAndDotDot))
-				if(entryinst.isFile() && DynamicModule::isDescriptionFile(entryinst.fileName()))
+				if(entryinst.isFile() && Modules::DynamicModule::isDescriptionFile(entryinst.fileName()))
 					descFound = entryinst.fileName();
 				else if(entryinst.isDir())
 				{
@@ -584,7 +572,7 @@ void DynamicModules::startWatchingDevelopersModule()
 			iconsFound = true;
 		else if(entry.isDir() && entry.fileName().toUpper() == "R")
 			rFound = true;
-		else if(entry.isFile() && DynamicModule::isDescriptionFile(entry.fileName()))
+		else if(entry.isFile() && Modules::DynamicModule::isDescriptionFile(entry.fileName()))
 				descFound = entry.fileName();
 
 	if(!(descFound != "" && rFound && qmlFound && iconsFound))
@@ -642,7 +630,7 @@ void DynamicModules::devModCopyDescription(QString filename)
 			QFile	srcFileChanged(src.absoluteFilePath()),
 					dstFileChanged(dst.absoluteFilePath());
 
-			this->_modules[this->developmentModuleName()]->reloadDescription();
+			this->_modules[this->developmentModuleName()]->reloadDescription(MainWindow::singleton()->giveRootQmlContext());
 			this->regenerateDeveloperModuleRPackage();
 		}
 		else
@@ -747,16 +735,6 @@ QString DynamicModules::moduleDirectoryQ(const QString & moduleName)	const
 													return AppDirs::userModulesDir() + moduleName + '/';
 }
 
-bool DynamicModules::moduleHasUpgradesToApply(const std::string & module, const std::string & function, const Version & version)
-{
-	return _modules.count(module)> 0 && _modules[module]->hasUpgradesToApply(function, version);
-}
-
-void DynamicModules::applyUpgrade(const std::string & module, const std::string & function, const Version & version, Json::Value & analysesJson, UpgradeMsgs & msgs, StepsTaken & stepsTaken)
-{
-	return _modules[module]->applyUpgrade(function, version, analysesJson, msgs, stepsTaken);
-}
-
 std::string DynamicModules::moduleDirectory(const std::string & moduleName)	const
 {
 	return moduleDirectoryQ(tq(moduleName)).toStdString();
@@ -778,13 +756,13 @@ void DynamicModules::setDevelopersModuleInstallButtonEnabled(bool developersModu
 
 QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePath)
 {
-	Description * desc = nullptr;
+	Modules::Description * desc = nullptr;
 
 	try
 	{
-		desc = DynamicModule::instantiateDescriptionQml(tq(DynamicModule::getDescriptionQmlFromArchive(fq(archiveFilePath))), QUrl("Description.qml"), fq(QFileInfo(archiveFilePath).baseName()));
+		desc = Modules::DynamicModule::instantiateDescriptionQml(MainWindow::singleton()->giveRootQmlContext(), tq(Modules::DynamicModule::getDescriptionQmlFromArchive(fq(archiveFilePath))), QUrl("Description.qml"), fq(QFileInfo(archiveFilePath).baseName()));
 	}
-	catch(ModuleException & e)
+	catch(Modules::ModuleException & e)
 	{
 		MessageForwarder::showWarning(tr("Loading module description encountered a problem"), e.what());
 		return "";
@@ -803,7 +781,7 @@ QString DynamicModules::getDescriptionFormattedFromArchive(QString archiveFilePa
 				"<i>See website for further details: <a href=\"http://%6\">%6</a></i>"	"<br>"
 			  )
 			.arg(desc->title())
-			.arg(desc->version())
+			.arg(desc->versionStr())
 			.arg(desc->description())
 			.arg(desc->author())
 			.arg(desc->maintainer())
@@ -853,26 +831,6 @@ QStringList DynamicModules::requiredModulesLibPaths(QString moduleName)
 	return returnThis;
 }
 
-void DynamicModules::registerQMLTypes()
-{
-	qmlRegisterType<Modules::Description>						("JASP.Module", 1, 0, "Description"						);
-	qmlRegisterType<Modules::AnalysisItem>						("JASP.Module", 1, 0, "Analysis"						);
-	qmlRegisterType<Modules::Separator>							("JASP.Module", 1, 0, "Separator"						);
-	qmlRegisterType<Modules::GroupTitle>						("JASP.Module", 1, 0, "GroupTitle"						);
-	qmlRegisterType<Modules::GroupTitleSmall>					("JASP.Module", 1, 0, "GroupTitleSmall"					);
-	qmlRegisterType<Modules::Upgrades>							("JASP.Module", 1, 0, "Upgrades"						);
-	qmlRegisterType<Modules::Upgrade>							("JASP.Module", 1, 0, "Upgrade"							);
-	qmlRegisterType<Modules::ChangeJS>							("JASP.Module", 1, 0, "ChangeJS"						);
-	qmlRegisterType<Modules::ChangeCopy>						("JASP.Module", 1, 0, "ChangeCopy"						);
-	qmlRegisterType<Modules::ChangeRename>						("JASP.Module", 1, 0, "ChangeRename"					);
-	qmlRegisterType<Modules::ChangeRemove>						("JASP.Module", 1, 0, "ChangeRemove"					);
-	qmlRegisterType<Modules::ChangeIncompatible>				("JASP.Module", 1, 0, "ChangeIncompatible"				);
-	qmlRegisterType<Modules::ChangeSetValue>					("JASP.Module", 1, 0, "ChangeSetValue"					);
-	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",						"Superclass for menu entries, shouldn't be instantiated manually");
-	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",					"Can only be instantiated by JASP");
-	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",			"Superclass for Description info, shouldn't be instantiated manually");
-}
-
 const QStringList DynamicModules::loadedModules() const
 {
 	QStringList mods;
@@ -895,5 +853,3 @@ const QStringList DynamicModules::loadedModulesTitles() const
 	return mods;
 }
 
-
-}

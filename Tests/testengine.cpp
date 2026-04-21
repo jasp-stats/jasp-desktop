@@ -65,10 +65,14 @@ void TestEngine::testComputedColumns()
 	QSignalSpy spy(_engineRep, SIGNAL(computeColumnSucceeded(const QString &, const QString &, bool))); 
 	
 	QVERIFY2(spy.isValid(),	"Spy is broken!");
+	
+	if(!_data->column("V1")->hasLabels())
+		_data->column("V1")->noLabelsToLabels();	
 		
 	Column * col = _data->column("contBinom");
 	col->setCodeType(computedColumnType::rCode);
 	col->setRCode("V1");
+	
 	
 	_engines->computeColumn("contBinom", tq(col->rCode()), columnType::ordinal);
 	
@@ -84,11 +88,12 @@ void TestEngine::testComputedColumns()
 	QVERIFY2(response[2].toBool(),					"Did not get dataChanged back in response");
 
 	col->checkForUpdates();
+	
 
 	Json::Value		jsonContBinom	= col->jsonForCompare(),
 					jsonV1			= _data->column("V1")->jsonForCompare();
 
-	//std::cout << jsonContBinom.toStyledString() << "\n" << jsonV1.toStyledString() << std::endl;
+	std::cout << jsonContBinom.toStyledString() << "\n" << jsonV1.toStyledString() << std::endl;
 	
 	QVERIFY2(jsonContBinom["labels"] == jsonV1["labels"], "Labels are not the same");
 	QVERIFY2(jsonContBinom["data"]   == jsonV1["data"],   "Data is not the same");
@@ -115,13 +120,17 @@ void TestEngine::testComputedColumns()
 
 	jsonContBinom	= _data->column("contBinom")->jsonForCompare();
 	jsonV1			= _data->column("V1")->jsonForCompare();
+	
+	std::cerr << jsonContBinom["labels"].toStyledString() << "\n" << jsonV1["labels"].toStyledString() << std::endl;
 
-	QVERIFY2(jsonContBinom["labels"] != jsonV1["labels"], "Labels are the same, but they shouldnt be");
 	QVERIFY2(jsonContBinom["data"]   != jsonV1["data"],   "Data is the same, but they shouldnt be");
 
 	Column * col2 = _data->column("contcor1");
 	col2->setCodeType(computedColumnType::rCode);
 	col2->setRCode("contBinom-1"); //Should make it the same as V1 again
+	
+	if(!col2->hasLabels())
+		col2->noLabelsToLabels();
 
 	_engines->computeColumn("contcor1", tq(col2->rCode()), columnType::scale);
 

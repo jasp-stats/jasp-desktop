@@ -20,6 +20,31 @@ import QtQuick
 import QtQuick.Layouts
 
 
+/*!
+    \qmltype ColumnLayout
+    \inqmlmodule JASP.Controls 1.0
+    \brief A vertical layout container with JASP-themed spacing.
+
+    Wraps Qt's ColumnLayout with default spacing and alignment suited for JASP analysis forms.
+    Child items are arranged vertically from top to bottom.
+
+    \note ColumnLayout does not bind to R options. It is a layout-only control.
+
+    \section1 Properties
+
+    \list
+    \li \b spacing (real) - Vertical spacing between child items. Default: 5.
+    \endlist
+
+    \section1 Example
+
+    \qml
+    ColumnLayout {
+        CheckBox { name: "option1"; label: qsTr("Option 1") }
+        CheckBox { name: "option2"; label: qsTr("Option 2") }
+    }
+    \endqml
+*/
 ColumnLayout
 {
 	spacing:				jaspTheme.rowGridSpacing

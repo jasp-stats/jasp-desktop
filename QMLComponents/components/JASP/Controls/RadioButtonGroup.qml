@@ -22,6 +22,53 @@ import QtQuick.Layouts	as L
 import JASP.Controls
 
 
+/*!
+    \qmltype RadioButtonGroup
+    \inqmlmodule JASP.Controls 1.0
+    \brief A group of mutually exclusive radio button options.
+
+	Contains RadioButton children, of which
+    exactly one can be checked at a time. The checked button's name is sent
+    as the option value to R.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} \c character (the name/value of the selected RadioButton)
+    \li \b{Default:} Value of the initially checked RadioButton
+    \endlist
+
+    \section1 Properties
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title label displayed above or beside the group. Alias: text. Default: "".
+    \li \b radioButtonsOnSameRow (bool) - Place all radio buttons on one row. Default: false.
+    \li \b columns (int) - Number of columns in the content area. Default: 1 (or children.length when radioButtonsOnSameRow).
+	\li \b leftPadding (int) - Left padding for the content area. Default: 10.
+    \endlist
+
+    \section1 Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    RadioButtonGroup {
+        name: "hypothesis"
+        title: qsTr("Alt. Hypothesis")
+        RadioButton { value: "twoSided"; label: qsTr("≠ Test value"); checked: true }
+        RadioButton { value: "greater";  label: qsTr("> Test value") }
+        RadioButton { value: "less";     label: qsTr("< Test value") }
+    }
+    \endqml
+*/
 RadioButtonsGroupBase
 {
 	id:					control

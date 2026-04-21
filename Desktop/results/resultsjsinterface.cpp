@@ -83,6 +83,9 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 		QString version = AboutModel::version();
 
 		runJavaScript("window.setAppVersion('" + version + "')");
+#ifdef INTERACTIVE_PLOTS
+		runJavaScript("window.setInteractivePlots(true)");
+#endif
 
 		setGlobalJsValues();
 		setFontFamily();
@@ -125,16 +128,23 @@ void ResultsJsInterface::setFixDecimalsHandler(QString numDecimals)
 	runJavaScript("window.globSet.decimals = " + numDecimals + "; window.reRenderAnalyses();");
 }
 
+void ResultsJsInterface::setShowInteractiveDefaultHandler(bool showIt)
+{
+	runJavaScript("window.globSet.showInteractiveDefault = " +  QString(showIt ? "true" : "false")  + "; window.reRenderAnalyses();");
+}
+
 void ResultsJsInterface::setGlobalJsValues()
 {
-	QString exactPValueString			= PreferencesModel::prefs()->exactPValues() ? "true" : "false",
-			normalizedNotationString	= PreferencesModel::prefs()->normalizedNotation() ? "true" : "false",
-			tempFolder					= "file://" + tq(TempFiles::sessionDirName());
+	QString exactPValueString				= PreferencesModel::prefs()->exactPValues()				? "true" : "false",
+			normalizedNotationString		= PreferencesModel::prefs()->normalizedNotation()		? "true" : "false",
+			showInteractiveDefaultString	= PreferencesModel::prefs()->showInteractiveDefault()	? "true" : "false",
+			tempFolder						= "file://" + tq(TempFiles::sessionDirName());
 
-	QString js =	"  window.globSet.pExact = "				+ exactPValueString;
-	js +=			"; window.globSet.normalizedNotation = "	+ normalizedNotationString;
-	js +=			"; window.globSet.decimals = "				+ PreferencesModel::prefs()->fixedDecimalsForJS();
-	js +=			"; window.globSet.tempFolder = '"			+ tempFolder + "/'";
+	QString js =	"  window.globSet.pExact = "					+ exactPValueString;
+	js +=			"; window.globSet.normalizedNotation = "		+ normalizedNotationString;
+	js +=			"; window.globSet.decimals = "					+ PreferencesModel::prefs()->fixedDecimalsForJS();
+	js +=			"; window.globSet.tempFolder = '"				+ tempFolder + "/'";
+	js +=			"; window.globSet.showInteractiveDefault = "	+ showInteractiveDefaultString;
 	runJavaScript(js);
 }
 
@@ -145,7 +155,9 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 	QString fullpath = tq(TempFiles::createSpecific_clipboard(fq(path)));
 
 	QFile file(fullpath);
-	file.open(QIODevice::WriteOnly);
+	if(!file.open(QIODevice::WriteOnly))
+		Log::log() << "Cannot open file in saveTempImage: " << file.fileName() << " with error: " << file.errorString() << std::endl;
+
 	file.write(byteArray);
 	file.close();
 

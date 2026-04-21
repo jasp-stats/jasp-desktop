@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- TabView.qml -->
+  <meta name="description" content="A tabbed container that manages dynamic panels.">
+  <title>TabView QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>TabView</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">TabView QML Type</h1>
+<!-- $$$TabView-brief -->
+<p>A tabbed container that manages dynamic panels. <a href="#details">More...</a></p>
+<!-- @@@TabView -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-tabview-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$TabView-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Displays a tab bar where each tab shows its own panel of child controls. Tabs can be added, removed, and renamed (double-click). Commonly used when an analysis needs a variable number of configuration panels (e.g. one per group). It has in fact the same functinality as <a href="qml-jasp-controls-componentslist.html" translate="no">ComponentsList</a>, buut instead of displaying the components in rows, it display them as Tabs.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> list (each tab produces one element in the list)</li>
+<li><b>Default:</b> [] (one tab created by default)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>label</b> (string) - Title displayed above the tab bar. Alias: title. Default: &quot;&quot;.</li>
+<li><b>source</b> (var) - Source control for populating the tabs. Default: undefined. This can be an id or name (or an array of names/ids) of another controls.</li>
+<li><b>content</b> (Component) - One QML component (use Row or <a href="qml-jasp-controls-rowlayout.html" translate="no">RowLayout</a> if more items are needed), that will be repeated for each row. In each row, you can use the rowValue, rowLabel, rowType or rowIndex that gives you resp. the value, label, type (if it is a variable) and index linked to each row.</li>
+<li><b>showAddIcon</b> (bool) - Show a &quot;+&quot; button to add tabs. Default: true when addItemManually.</li>
+<li><b>showRemoveIcon</b> (bool) - Show a &quot;×&quot; icon on each tab. Default: true when addItemManually.</li>
+<li><b>addItemManually</b> (bool) - Allow user to add/remove tabs. Default: false when source is set, true otherwise</li>
+<li><b>tabNameEditable</b> (bool) - Allow double-click to rename tabs. Default: true when addItemManually.</li>
+<li><b>newTabName</b> (string) - Default name for newly added tabs. Default: &quot;New tab&quot;.</li>
+<li><b>currentIndex</b> (int) - Index of the currently selected tab. Default: 0.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-tabview.html" translate="no">TabView</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;models&quot;</span>
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Models&quot;</span>)
+    <span class="name">newTabName</span>: <span class="name">qsTr</span>(<span class="string">&quot;Model 1&quot;</span>)
+            <span class="name">content</span>:  <span class="name">VariablesList</span> { <span class="name">name</span>: <span class="string">&quot;predictors&quot;</span>; <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;Predictors&quot;</span>) }
+}</pre>
+<!-- @@@TabView -->
+</body>
+</html>

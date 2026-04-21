@@ -18,6 +18,48 @@
 
 import JASP
 
+/*!
+    \qmltype AssignedPairsVariablesList
+    \inqmlmodule JASP.Controls 1.0
+    \brief A variable list preset for paired variable assignment.
+
+    Extends VariablesList with a two-column layout where variables are assigned in pairs.
+    Uses drop-replace mode so each slot accepts exactly one variable.
+
+    \section1 R Binding
+
+    \list
+    \li \b{R Type:} list of paired character vectors
+    \li \b{Default:} [] (empty array)
+    \endlist
+
+    \section1 Inherited Properties from VariablesList
+
+    \list
+    \li \b name (string) - R option name this control binds to. Default: "".
+    \li \b title (string) - Title displayed above the list. Alias: label. Default: "".
+    \li \b allowedColumns (array) - Restrict to column types: "scale", "ordinal", "nominal". Default: [].
+    \li \b showVariableTypeIcon (bool) - Display variable type icons. Default: false.
+    \endlist
+
+    \section1 Other Inherited Properties
+
+    \list
+    \li \b enabled (bool) - Whether the control is interactive. Default: true.
+    \li \b visible (bool) - Whether the control is visible. Default: true.
+    \li \b info (string) - Info that will be used by tooltip and to generate the help. Default: "".
+    \li \b toolTip (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: "".
+    \endlist
+
+    \section1 Example
+
+    \qml
+    AssignedPairsVariablesList {
+        name: "pairs"
+        title: qsTr("Variable Pairs")
+    }
+    \endqml
+*/
 VariablesList
 {
 	listViewType			: JASP.AssignedVariables

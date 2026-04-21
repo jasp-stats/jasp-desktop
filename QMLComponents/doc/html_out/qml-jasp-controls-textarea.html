@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<!-- TextArea.qml -->
+  <meta name="description" content="A multi-line text input with optional line numbers and syntax highlighting.">
+  <title>TextArea QML Type | JASP-QML 1.0</title>
+<link rel='stylesheet' type='text/css' href='style/style.css'/></head>
+<body>
+<li><a href="jasp-controls-qmlmodule.html" translate="no">JASP.Controls</a></li>
+<li>TextArea</li>
+<div class="sidebar">
+<div class="toc">
+<h3 id="toc">Contents</h3>
+<ul>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+<li class="level2"><a href="#r-binding">R Binding</a></li>
+<li class="level2"><a href="#properties">Properties</a></li>
+<li class="level2"><a href="#inherited-properties">Inherited Properties</a></li>
+<li class="level2"><a href="#example">Example</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title" translate="no">TextArea QML Type</h1>
+<!-- $$$TextArea-brief -->
+<p>A multi-line text input with optional line numbers and syntax highlighting. <a href="#details">More...</a></p>
+<!-- @@@TextArea -->
+<div class="table"><table class="alignedsummary requisites" translate="no">
+<tr><td class="memItemLeft rightAlign topAlign"> Import Statement:</td><td class="memItemRight bottomAlign"> <code translate="no">import JASP.Controls 1.0</code></td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Inherited By:</td><td class="memItemRight bottomAlign"> <p><a href="qml-jasp-controls-jagstextarea.html" translate="no">JAGSTextArea</a></p>
+</td></tr>
+</table></div>
+<ul>
+<li><a href="qml-jasp-controls-textarea-members.html">List of all members, including inherited members</a></li>
+</ul>
+<!-- $$$TextArea-description -->
+<h2 id="details">Detailed Description</h2>
+<p>Supports multiple text types (default, source, JAGS model, lavaan model) with corresponding syntax highlighting. Includes Ctrl+Enter to apply, undo/redo support, and scrollable editing.</p>
+<h2 id="r-binding">R Binding</h2>
+<ul>
+<li><b>R Type:</b> <code translate="no">character</code> (string)</li>
+<li><b>Default:</b> &quot;&quot;</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<ul>
+<li><b>name</b> (string) - R option name this control binds to. Default: &quot;&quot;.</li>
+<li><b>title</b> (string) - Label displayed above the text area. Default: &quot;&quot;.</li>
+<li><b>text</b> (string) - Current text content. Default: &quot;&quot;.</li>
+<li><b>textType</b> (enum) - Type of text (JASP.TextTypeDefault, JASP.TextTypeSource, JASP.TextTypeJAGSmodel, JASP.TextTypeLavaan). Default: JASP.TextTypeDefault.</li>
+<li><b>showLineNumber</b> (bool) - Show line numbers in the gutter. Default: false.</li>
+<li><b>wrapMode</b> (enum) - Text wrapping mode. Default: TextEdit.Wrap.</li>
+<li><b>separator</b> (string) - Separator used to split text into list values. Default: &quot;\n&quot;.</li>
+<li><b>trim</b> (bool) - Trim whitespace before applying. Default: false.</li>
+<li><b>useTabAsSpaces</b> (bool) - Convert Tab key to spaces. Default: true.</li>
+<li><b>placeholderText</b> (string) - Placeholder text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="inherited-properties">Inherited Properties</h2>
+<ul>
+<li><b>enabled</b> (bool) - Whether the control is interactive. Default: true.</li>
+<li><b>visible</b> (bool) - Whether the control is visible. Default: true.</li>
+<li><b>info</b> (string) - Info that will be used by tooltip and to generate the help. Default: &quot;&quot;.</li>
+<li><b>toolTip</b> (string) - This property overwrite info property, in order to display a simpler tooltip text. Default: &quot;&quot;.</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="qml" translate="no"><span class="type"><a href="qml-jasp-controls-textarea.html" translate="no">TextArea</a></span> {
+    <span class="name">name</span>: <span class="string">&quot;rCode&quot;</span>
+    <span class="name">title</span>: <span class="name">qsTr</span>(<span class="string">&quot;R Script&quot;</span>)
+    <span class="name">textType</span>: <span class="name">JASP</span>.<span class="name">TextTypeSource</span>
+    <span class="name">showLineNumber</span>: <span class="number">true</span>
+}</pre>
+<!-- @@@TextArea -->
+</body>
+</html>

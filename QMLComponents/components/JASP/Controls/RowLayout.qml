@@ -19,6 +19,25 @@
 import QtQuick
 import QtQuick.Layouts
 
+/*!
+    \qmltype RowLayout
+    \inqmlmodule JASP.Controls 1.0
+    \brief A horizontal layout with JASP-themed spacing.
+
+    Wraps Qt's RowLayout with default spacing from jaspTheme.rowGridSpacing
+    and top-left alignment.
+
+    \note RowLayout does not bind to R options. It is a layout-only control.
+
+    \section1 Example
+
+    \qml
+    RowLayout {
+        CheckBox { name: "mean"; label: qsTr("Mean") }
+        CheckBox { name: "sd";   label: qsTr("Std. deviation") }
+    }
+    \endqml
+*/
 RowLayout
 {
 	spacing:				jaspTheme.rowGridSpacing
