@@ -42,11 +42,4 @@ cmake --build build --target wix
 
 cmake --build build --target zip
 
-rmdir .\build\Install /s /q
-robocopy .\build\InstallClean .\build\Install /e /nfl
-
-cmake --install build --component MSIX
-
-cmake --build build --target msix
-
 cmake --build build --target upload
