@@ -197,13 +197,13 @@ FocusScope
 				anchors.fill:			parent
 				url:                    preferencesModel.checkUpdates ? preferencesModel.moduleLibraryURL : "about:blank"
 				profile:                moduleStoreProfile
+				zoomFactor:             preferencesModel.uiScale
 
 				onNewWindowRequested: (request) =>
 				{
 					Qt.openUrlExternally(request.requestedUrl);
 					request.accept();
 				}
-
 
 				property bool	downloadInProgress: false;
 				property bool	installInProgress: false;
