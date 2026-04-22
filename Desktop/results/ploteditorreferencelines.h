@@ -5,6 +5,7 @@
 #include <qqmlintegration.h>
 #include <json/json.h>
 #include "utils.h"
+#include "controls/componentslistbase.h"
 
 namespace PlotEditor
 {
@@ -16,17 +17,14 @@ class References : public QAbstractTableModel
 {
 	Q_OBJECT
 	QML_ELEMENT
-	Q_PROPERTY(int viewWidth READ viewWidth WRITE setViewWidth NOTIFY viewWidthChanged)
+
+	Q_PROPERTY(int count READ count NOTIFY countChanged)
 
 public:
 	explicit References(PlotEditorModel * model);
 
 	enum ReferenceType  { Point, LineHorizontal, LineVertical};
 	Q_ENUM(ReferenceType)
-
-	enum LineType { Solid, Dashed, Dotted, DotDash, LongDash, TwoDash };
-	Q_ENUM(LineType)
-
 
 	struct Reference
 	{
@@ -44,38 +42,27 @@ public:
 	int						columnCount(const QModelIndex &parent = QModelIndex())								const	override;
 	QVariant				data(		const QModelIndex &index, int role = Qt::DisplayRole)					const	override;
 	bool					setData(	const QModelIndex &index, const QVariant &value, int role)						override;
-	QVariant				headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole )	const	override;
 	bool					insertRows(int rows, int count, const QModelIndex &parent = QModelIndex())					override;
 	bool					removeRows(int rows, int count, const QModelIndex &parent = QModelIndex())					override;
-	QHash<int, QByteArray>	roleNames()																			const	override;
-	Qt::ItemFlags			flags(const QModelIndex &index)														const	override;
+	int						count()	 { return rowCount(); }
 
 
 	Json::Value				toJson() const;
 	void					fromJson(const Json::Value & json);
 
-	int						viewWidth() const;
-	void					setViewWidth(int newViewWidth);
+	Q_INVOKABLE void		setItem(QQuickItem * item);
 
-
-public slots:
-	void					setColWidth(int index, int width);
-
-protected:
-	bool					indexDisabled(const QModelIndex &index) const;
 
 signals:
 	void					somethingChanged();
 	void					addToUndoStack();
+	void					countChanged();
 
-
-	void viewWidthChanged();
 
 protected:
 	PlotEditorModel		*	_model;
 	std::vector<Reference>	_refs;
-	intvec					_widths;
-	int						_viewWidth;
+	ComponentsListBase	*	_item = nullptr;
 
 };
 

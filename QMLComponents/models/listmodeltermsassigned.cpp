@@ -144,6 +144,7 @@ void ListModelTermsAssigned::removeTerm(int index)
 	beginRemoveRows(QModelIndex(), index, index);
 
 	const Term& term = terms().at(size_t(index));
+	AnalysisForm* form = listView()->form();
 
 	RowControls* controls = _rowControlsMap.value(term.value());
 	if (controls)
@@ -151,7 +152,8 @@ void ListModelTermsAssigned::removeTerm(int index)
 		for (JASPControl* control : controls->getJASPControlsMap().values())
 		{
 			control->setHasError(false);
-			listView()->form()->clearControlError(control);
+			if (form)
+				form->clearControlError(control);
 		}
 
 		_rowControlsMap.remove(term.value());
