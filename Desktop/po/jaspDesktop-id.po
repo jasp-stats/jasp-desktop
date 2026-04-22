@@ -212,17 +212,15 @@ msgstr "penjumlahan"
 
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "produk nilai"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "mengembalikan nilai minimum"
+msgstr "menghasilkan minimum nilai"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "mengembalikan nilai maksimum"
+msgstr "menghasilkan maksimum nilai"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
@@ -234,7 +232,7 @@ msgstr "bulatkan y ke n desimal"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "menghasilkan jumlah elemen dalam y"
 
 msgctxt "ComputeColumnWindow|"
 msgid "median"
@@ -246,15 +244,15 @@ msgstr "logaritma alami"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
-msgstr ""
+msgstr "logaritma dasar 2"
 
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
-msgstr ""
+msgstr "logaritma dasar 10"
 
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
-msgstr ""
+msgstr "logaritma y dalam 'dasar'"
 
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
@@ -276,19 +274,17 @@ msgstr ""
 "Transformasi-Z Fisher inversi (yaitu, tangen hiperbolik) untuk mengubah "
 "bilangan riil menjadi bilangan antara -1 dan 1"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
-msgstr "pisahkan data Anda pada level numBreaks"
+msgstr "bagikan data Anda di tingkat numBreaks"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr "ganti setiap data hilang (NA) pada kolom dengan nilai pada replaceWith"
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
-msgstr "pernyataan jika-lainnya"
+msgstr "pernyataan if-else"
 
 msgctxt "ComputeColumnWindow|"
 msgid ""
@@ -535,7 +531,6 @@ msgctxt "Computer|"
 msgid "Recent Folders"
 msgstr "Folder Terbaru"
 
-#, fuzzy
 msgctxt "Computer|"
 msgid "Browse"
 msgstr "Telusuri"
@@ -629,6 +624,9 @@ msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"Lanjutkan dari tempat Anda berhenti saat JASP dimulai lagi.\n"
+"Mengaktifkan opsi ini membuat JASP mengingat mana Modul yang telah "
+"diaktifkan."
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
@@ -847,268 +845,265 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Jika dinonaktifkan itu tidak akan menggunakan dialog berkas sistem operasi "
+"Anda tetapi itu dibuat oleh Qt. Ini mungkin mengatasi beberapa masalah di "
+"Windows di mana JASP mengalami kerusakan saat \"Telusuri\" ditekan."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Berkas Terbaru"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Kode kolom terhitung dihapus"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Kode kolom terhitung diterapkan"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "Silakan masukkan semua argumen - lihat kolom ditandai dengan merah."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "Hanya satu rumus per kolom terhitung diizinkan."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "Selamat datang di konstruktor kolom terhitung seret dan lepas!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"Tempatkan cuplikan yang tidak diinginkan di sini; klik dua kali untuk "
+"menghapus seluruh papan"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "Penjumlahan"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Pengurangan"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Perkalian"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "Pembagian"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Pangkat (2^3 menghasilkan 8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "Akar kuadrat"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Modulo: menghasilkan sisa pembagian. 3%2 menghasilkan 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "menghasilkan logika dan dapat berupa akar dari rumus filter"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Persamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Pertidaksamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Kurang dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Kurang dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lebih dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lebih dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "Dan: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Atau: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Pisah: menerapkan filter secara terpisah ke setiap subgrup"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "bukan: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "Penjumlahan"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Pengurangan"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Perkalian"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "Pembagian"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Pangkat (2^3 menghasilkan 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "Akar kuadrat"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr ""
+msgstr "Modulo: menghasilkan sisa pembagian. 3%2 menghasilkan 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "menghasilkan logika"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Persamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Pertidaksamaan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Kurang dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Kurang dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lebih dari: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lebih dari atau sama dengan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "Dan: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Atau: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Pisah: menerapkan filter secara terpisah ke setiap subgrup"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "Bukan: %1"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr "nilai absolut"
+msgstr "Nilai absolut"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr "simpangan baku"
+msgstr "deviasi standar"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
 msgstr "varians"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "penjumlahan"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
-msgstr ""
+msgstr "produk nilai"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr "mengembalikan nilai minimum"
+msgstr "menghasilkan minimum nilai"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr "mengembalikan nilai maksimum"
+msgstr "menghasilkan maksimum nilai"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "mean"
 msgstr "rerata"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr "bulatkan y ke n desimal"
+msgstr "membulatkan y ke desimal n"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "menghasilkan jumlah elemen dalam y"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "median"
 msgstr "median"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr "pernyataan jika-lainnya"
+msgstr "pernyataan if-else"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
-msgstr ""
+msgstr "Filter Diubah"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
 msgstr ""
+"Ada perubahan yang tidak diterapkan ke filter Anda; apa yang Anda ingin "
+"lakukan?"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
-msgstr ""
+msgstr "Alihkan ke filter R"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
@@ -1134,12 +1129,10 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr ""
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "Buka Dokumentasi"
 
-#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Hide filter"
 msgstr "Sembunyikan saringan"
@@ -1172,7 +1165,6 @@ msgctxt "JagsTableView|"
 msgid "Delete Data"
 msgstr ""
 
-#, fuzzy
 msgctxt "JagsTableView|"
 msgid "Reset"
 msgstr "Atur ulang"
@@ -1185,15 +1177,13 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr ""
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
 msgstr "Ubah ukuran data/hasil"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Drag to show data"
-msgstr "Drag untuk menampilkan data"
+msgstr "Seret untuk menampilkan data"
 
 msgctxt "MainPage|"
 msgid "Results"
@@ -1301,17 +1291,14 @@ msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr ""
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Add Column"
-msgstr "Tambah Kolom"
+msgstr "Tambahkan Kolom"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Delete Column"
 msgstr "Hapus Kolom"
 
-#, fuzzy
 msgctxt "SimpleTableView|"
 msgid "Reset"
 msgstr "Atur ulang"
@@ -1719,7 +1706,6 @@ msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr ""
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Save"
 msgstr "Simpan"
@@ -2067,7 +2053,6 @@ msgctxt "ActionButtons|"
 msgid "Open"
 msgstr ""
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save"
 msgstr "Simpan"
@@ -2088,7 +2073,6 @@ msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr ""
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Close"
 msgstr "Tutup"
@@ -2226,9 +2210,10 @@ msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Berkas Terbaru"
 
 msgctxt "ResourceButtons|"
 msgid "Current File"
@@ -2238,15 +2223,13 @@ msgctxt "ResourceButtons|"
 msgid "Computer"
 msgstr ""
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "OSF"
 msgstr "OSF"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Data Library"
-msgstr "Perpustakaan Data"
+msgstr "Pustaka Data"
 
 msgctxt "ResourceButtons|"
 msgid "Data"
@@ -2686,7 +2669,6 @@ msgctxt "TableView|"
 msgid "Add to the right"
 msgstr ""
 
-#, fuzzy
 msgctxt "TableView|"
 msgid "Delete"
 msgstr "Hapus"
@@ -2821,7 +2803,6 @@ msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "Buka Dokumentasi"
@@ -2873,7 +2854,6 @@ msgctxt "Database|"
 msgid "Name"
 msgstr ""
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Browse"
 msgstr "Telusuri"
@@ -2886,7 +2866,6 @@ msgctxt "Database|"
 msgid "Password"
 msgstr ""
 
-#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
 msgstr "Ingat saya"
@@ -3097,15 +3076,13 @@ msgctxt "AnalysisFormExpander|"
 msgid "Show R syntax"
 msgstr ""
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Hide input options"
-msgstr "Sembunyikan opsi input"
+msgstr "Sembunyikan opsi masukan"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Show input options"
-msgstr "Tampilkan opsi input"
+msgstr "Tampilkan opsi masukan"
 
 msgctxt "RCommanderWindow|"
 msgid ""
@@ -3358,7 +3335,6 @@ msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr ""
 
-#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "Nilai Baru"
@@ -3368,10 +3344,9 @@ msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr ""
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Miscellaneous options"
-msgstr "Opsi lain-lain"
+msgstr "Opsi lainnya"
 
 msgctxt "PrefsResults|"
 msgid "Show R syntax"
@@ -3525,7 +3500,6 @@ msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr ""
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "Pilih Semua"
@@ -3928,12 +3902,10 @@ msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
 msgstr ""
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "Tentang JASP"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "Tutup"
@@ -4067,7 +4039,6 @@ msgctxt "QObject|"
 msgid "Column added by analysis"
 msgstr ""
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Scale"
 msgstr "Skala"
@@ -4330,10 +4301,9 @@ msgctxt "DataTableView|"
 msgid "Insert R column after"
 msgstr ""
 
-#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
-msgstr "Klik di sini untuk mengubah tipe kolom"
+msgstr "Klik di sini untuk mengubah jenis kolom"
 
 msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
@@ -4661,7 +4631,6 @@ msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr ""
 
-#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Scale"
 msgstr "Skala"
@@ -5574,7 +5543,6 @@ msgctxt "PlotEditor::References|"
 msgid "Type"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditor::References|"
 msgid "Text"
 msgstr "Teks"

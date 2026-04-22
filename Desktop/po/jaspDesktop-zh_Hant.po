@@ -1970,7 +1970,7 @@ msgstr " 處理中"
 
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
-msgstr "當機"
+msgstr "收合"
 
 msgctxt "ResultMenuModel|"
 msgid "Edit Title"
