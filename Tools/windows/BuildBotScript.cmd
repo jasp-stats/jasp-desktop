@@ -36,8 +36,6 @@ cmake --build build --target install
 
 cmake --build build --target collect-junctions
 
-robocopy .\build\Install .\build\InstallClean /e /nfl
-
 cmake --build build --target wix
 
 cmake --build build --target zip
