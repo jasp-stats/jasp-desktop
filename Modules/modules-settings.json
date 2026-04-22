@@ -8,14 +8,14 @@
 		"jaspMachineLearning",
 		"jaspTTests",
 		"jaspAnova",
-		"jaspMixedModels",
 		"jaspRegression",
 		"jaspFrequencies",
-		"jaspFactor",
 		"jaspPredictiveAnalytics"
 		
     ],
     "extra" : [
+		"jaspFactor",
+		"jaspMixedModels",
 		"jaspBain",
 		"jaspBFF",
 		"jaspBfpack",
