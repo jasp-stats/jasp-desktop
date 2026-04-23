@@ -1,6 +1,8 @@
+
 #include "ploteditorreferencelines.h"
-#include "data/datasetpackageenums.h"
+
 #include "utilities/qutils.h"
+#include "utilities/utiltypes.h"
 #include "ploteditormodel.h"
 
 namespace PlotEditor
@@ -14,92 +16,12 @@ References::References(PlotEditorModel * model)
 
 int PlotEditor::References::rowCount(const QModelIndex &parent) const
 {
-	return _refs.size() + 1;
+	return _refs.size();
 }
 
 int PlotEditor::References::columnCount(const QModelIndex &parent) const
 {
-	return 8;
-}
-
-// I hate the following and fixes for this kind of shenanigans are in a different branch but for now just do this:
-QHash<int, QByteArray> PlotEditor::References::roleNames() const
-{
-	static bool						set = false;
-	static QHash<int, QByteArray> roles = QAbstractItemModel::roleNames ();
-
-	if(!set)
-	{
-		for(const auto & enumString : dataPkgRolesToStringMap())
-			roles[int(enumString.first)] = tq(enumString.second).toUtf8();
-
-		set = true;
-	}
-
-	return roles;
-}
-
-bool References::indexDisabled(const QModelIndex &index) const
-{
-	if(index.row() >= rowCount())
-		return false;
-
-	if(index.row() >= _refs.size())
-		return false;
-
-	const Reference & ref = _refs[index.row()];
-
-	if(ref.point)
-		return false;
-
-	if(ref.horizontal && index.column() == 2)
-		return true;
-
-	if(!ref.horizontal && index.column() == 3)
-		return true;
-
-	return false;
-}
-
-Qt::ItemFlags References::flags(const QModelIndex &index) const
-{
-	Qt::ItemFlags flags = QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
-	if(indexDisabled(index))
-		flags &= ~Qt::ItemIsEnabled;
-	return flags;
-}
-
-QVariant PlotEditor::References::headerData(int section, Qt::Orientation orientation, int role) const
-{
-	if(orientation == Qt::Vertical)
-		return QVariant();
-
-	switch(role)
-	{
-	default:
-		switch(section)
-		{
-		case 0:			return tr("Type");
-		case 1:			return tr("Text");
-		case 2:			return tr("Horizontal");
-		case 3:			return tr("Vertical");
-		case 4:			return tr("Color");
-		case 5:			return tr("Size");
-		case 6:			return tr("Style");
-		case 7:			return tr("Remove");
-		};
-		break;
-
-	case int(dataPkgRoles::maxColString):
-	case int(dataPkgRoles::maxRowHeaderString):
-	case int(dataPkgRoles::maxColumnHeaderString):
-		return QVariant();
-
-	case int(dataPkgRoles::columnWidthFallback):
-		return _widths.size() > section ? _widths[section] : 200;
-	}
-
-	return QVariant();
+	return 7;
 }
 
 bool References::insertRows(int rows, int count, const QModelIndex &parent)
@@ -111,6 +33,7 @@ bool References::insertRows(int rows, int count, const QModelIndex &parent)
 		_refs.insert(_refs.begin() + rows + c, Reference());
 	endInsertRows();
 	emit somethingChanged();
+	emit countChanged();
 	return true;
 }
 
@@ -126,25 +49,14 @@ bool References::removeRows(int rows, int count, const QModelIndex &parent)
 		_refs.erase(_refs.begin() + rows);
 	endRemoveRows();
 	emit somethingChanged();
+	emit countChanged();
 	return true;
 }
 
 QVariant PlotEditor::References::data(const QModelIndex &index, int role) const
 {
-	if(role != Qt::DisplayRole || index.row() < 0 || index.row() > _refs.size() || index.column() < 0 || index.column() >= columnCount() )
+	if(role != Qt::DisplayRole || index.row() < 0 || index.row() >= _refs.size() || index.column() < 0 || index.column() >= columnCount() )
 		return QVariant();
-
-	if(index.row() == _refs.size()) //Special "add a row"-row
-		switch(index.column())
-		{
-		case 0:			return ReferenceType::Point;
-		default:		return "";
-		case 2:			return 0;
-		case 3:			return 0;
-		case 4:			return "black";
-		case 5:			return 1.0;
-		case 6:			return int(LineType::Solid);
-		}
 
 	const Reference & ref = _refs[index.row()];
 
@@ -156,7 +68,7 @@ QVariant PlotEditor::References::data(const QModelIndex &index, int role) const
 	case 3:			return ref.y;
 	case 4:			return ref.color;
 	case 5:			return ref.linewidth;
-	case 6:			return ref.linetype;
+	case 6:			return ref.point ? PointTypeToQString(PointType(ref.linetype)) : LineTypeToQString(LineType(ref.linetype));
 	}
 
 	return QVariant();
@@ -165,6 +77,9 @@ QVariant PlotEditor::References::data(const QModelIndex &index, int role) const
 bool References::setData(const QModelIndex &index, const QVariant &value, int role)
 {
 	if(index.row() < 0 || index.row() > _refs.size() || index.column() < 0 || index.column() >= columnCount() )
+		return false;
+
+	if (!_item || !_item->initialized())
 		return false;
 
 	if(index.row() == _refs.size())
@@ -218,7 +133,11 @@ bool References::setData(const QModelIndex &index, const QVariant &value, int ro
 	}
 	case 6:
 	{
-		ref.linetype = value.toInt();
+		std::string str = fq(value.toString());
+		if (LineTypeValidName(str))
+			ref.linetype = int(LineTypeFromString(str));
+		else if (PointTypeValidName(str))
+			ref.linetype = int(PointTypeFromString(str));
 		break;
 	}
 	case 7:
@@ -272,36 +191,18 @@ void PlotEditor::References::fromJson(const Json::Value &json)
 			});
 	endResetModel();
 	emit somethingChanged();
+	emit countChanged();
 }
 
-void References::setColWidth(int index, int width)
+void References::setItem(QQuickItem *item)
 {
-	if(_widths.size() > index && _widths[index] == width)
-		return;
-
-	if(_widths.size() <= index)
-		_widths.resize(index+1);
-	_widths[index] = width;
-}
-
-int References::viewWidth() const
-{
-	return _viewWidth;
-}
-
-void References::setViewWidth(int newViewWidth)
-{
-	if (_viewWidth == newViewWidth)
-		return;
-	_viewWidth = newViewWidth;
-	emit viewWidthChanged();
-
-	int eighter = newViewWidth / 8;
-
-	beginResetModel();
-	for(int i=0; i<8; i++)
-		setColWidth(i, eighter);
-	endResetModel();
+	ComponentsListBase* comp = qobject_cast<ComponentsListBase *>(item);
+	if (comp)
+	{
+		_item = comp;
+		connect(_item, &ComponentsListBase::addItem,	this,	[this]()			{ insertRows(_refs.size(), 1);	});
+		connect(_item, &ComponentsListBase::removeItem, this,	[this](int index)	{ removeRows(index, 1);			});
+	}
 }
 
 }

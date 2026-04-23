@@ -164,8 +164,8 @@ Popup
 				Item
 				{
 					id:							axes
-					SplitView.preferredWidth:	parent.width * .3
-					SplitView.minimumWidth:		parent.width * .3
+					SplitView.preferredWidth:	parent.width * .45
+					SplitView.minimumWidth:		parent.width * .45
 					SplitView.maximumWidth:		parent.width * .9
 
 					property real	tabBarHeight:		28 * preferencesModel.uiScale
@@ -210,7 +210,6 @@ Popup
 							buttonText:				qsTr("References")
 							visible:				INTERACTIVE_PLOTS
 						}
-						
 						Component.onCompleted:		setCurrentIndex(0);
 					}
 					

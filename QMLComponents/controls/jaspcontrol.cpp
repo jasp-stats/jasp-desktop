@@ -206,17 +206,12 @@ void JASPControl::componentComplete()
 	bool isDynamic = context->contextProperty("isDynamic").toBool();
 	_form = context->contextProperty("form").value<AnalysisForm*>();
 
-	if (!_form)
+	if (!isDynamic && _form)
 	{
-		// The control is used outside of a form, typically this is used by the Desktop application direclty
-		// Just call its setup function, and it is then already initialized.
-		setUp();
-		setInitialized();
-	}
-	else if (!isDynamic)
 		// For statically build controls in a form, the form self will setup the controls when the form is completely loaded
 		// (by calling the AnalysisForm::setAnalysisUp function).
 		_form->addControl(this);
+	}
 	else
 	{
 		// The control is created dynamically, this is the case for row components.
@@ -256,7 +251,11 @@ void JASPControl::componentComplete()
 		if (parentlistView)
 			parentlistView->addRowControl(_parentListViewKey, this);
 		else
+		{
 			setUp(); // For controls not made via a row components (as in FactorsForm), setUp must be called
+			if (!_form)
+				setInitialized();
+		}
 	}
 
 	if (_background == nullptr && _innerControl != nullptr)
@@ -601,6 +600,7 @@ QString JASPControl::ControlTypeToFriendlyString(ControlType controlType)
 	case ControlType::GroupBox:						return tr("Group Box");				break;
 	case ControlType::TabView:						return tr("Tab View");				break;
 	case ControlType::VariablesForm:				return tr("Variables Form");		break;
+	case ControlType::ColorPicker:					return tr("Color Picker");			break;
 	}
 }
 

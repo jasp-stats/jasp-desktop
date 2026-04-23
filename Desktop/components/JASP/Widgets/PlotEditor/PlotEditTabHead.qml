@@ -10,6 +10,7 @@ TabButton
 {
 	id:			refTab
 	height:		axes.tabBarHeight + 2
+	width:		textItem.implicitWidth + 2 * jaspTheme.generalMenuMargin
 	clip:		true
 	
 	property string buttonText:	"Fill me"
@@ -42,6 +43,7 @@ TabButton
 	{
 		// The bottom of buttons are hidden to remove their bottom line with the radius
 		// So the text has to be moved higher from the horizontal middle line.
+		id:					textItem
 		topPadding:			-axes.tabButtonRadius * 3/4
 		font:				jaspTheme.font
 		color:				jaspTheme.black
