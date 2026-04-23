@@ -58,14 +58,15 @@ ComponentsList
 		{
 			name: "lineHorizontal"
 			enabled: lineTypes.value == 0 || lineTypes.value == 2
+			negativeValues: true
 			defaultValue: rowId.getData(2)
 			onValueChanged: rowId.setData(2, value)
-
 		}
 		DoubleField
 		{
 			name: "lineVertical"
 			enabled: lineTypes.value == 0 || lineTypes.value == 1
+			negativeValues: true
 			defaultValue: rowId.getData(3)
 			onValueChanged: rowId.setData(3, value)
 		}
