@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QDir>
+#include <QFile>
 #include <qjsonobject.h>
 
 #include "appinfo.h"
@@ -11,6 +12,7 @@
 #include "modules/dynamicmodule.h"
 #include "engine/enginesync.h"
 #include "utilities/appdirs.h"
+#include "dirs.h"
 #include "utilities/dynamicruntimeinfo.h"
 #include "log.h"
 
@@ -129,5 +131,20 @@ void ModuleLibrary::startInstalling()
 void ModuleLibrary::finishInstalling()
 {
     _isInstalling = false;
+    cleanupTempDir();
     emit isInstallingChanged();
+}
+
+void ModuleLibrary::cleanupTempDir()
+{
+    QDir tempDir(tq(Dirs::tempDir()));
+    QStringList bundles = tempDir.entryList({"*.JASPModule"}, QDir::Files);
+
+    Log::log() << "ModuleLibrary::cleanupTempDir() removing " << bundles.size() << " .JASPModule files from " << tq(Dirs::tempDir()).toStdString() << std::endl;
+
+    for (const QString &file : bundles)
+    {
+        Log::log() << "Removing temp module: " << tempDir.absoluteFilePath(file).toStdString() << std::endl;
+        QFile::remove(tempDir.absoluteFilePath(file));
+    }
 }
