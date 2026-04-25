@@ -134,6 +134,13 @@ FocusScope
 
 			onDownloadRequested: function(request) {
 				console.log("Download requested:", request.url)
+
+				if (moduleStore.downloadInProgress) {
+					console.log("Download already in progress, cancelling duplicate request.");
+					request.cancel();
+					return;
+				}
+
 				let name = request.downloadFileName
 				let index = name.lastIndexOf('.');
 				let extension = index !== -1 ? name.substring(index + 1) : '';
@@ -271,7 +278,9 @@ FocusScope
                         }
 
                         for (let i = 0; i < asset_urls.length; i++) {
-                            moduleStore.downloadQueue.push(asset_urls[i]);
+							if (moduleStore.downloadQueue.indexOf(asset_urls[i]) === -1) {
+								moduleStore.downloadQueue.push(asset_urls[i]);
+							}
                         }
 
                         if (!moduleStore.downloadInProgress && !moduleStore.isProcessingQueue) { //les go
