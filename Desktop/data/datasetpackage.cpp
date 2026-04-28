@@ -2027,8 +2027,13 @@ void DataSetPackage::setDefaultWorkspaceValues()
 {
 	_dataSet->setShowRSyntax(PreferencesModel::prefs()->showRSyntaxInResults());
 
+	setDefaultWorkspaceEmptyValues();
+}
+
+void DataSetPackage::setDefaultWorkspaceEmptyValues()
+{
 	stringvec prefs = fq(PreferencesModel::prefs()->emptyValues());
-	setWorkspaceEmptyValues(stringset(prefs.begin(), prefs.end()));	
+	setWorkspaceEmptyValues(stringset(prefs.begin(), prefs.end()));
 }
 
 void DataSetPackage::setWorkspaceEmptyValues(const stringset &emptyValues, bool reset)
