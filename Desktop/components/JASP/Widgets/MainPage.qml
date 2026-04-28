@@ -540,7 +540,6 @@ Item
 					customMenu.scrollOri		= resultsView.scrollPosition;
 					customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x) / resultsView.zoomFactor; });
 					customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.y - customMenu.scrollOri.y) / resultsView.zoomFactor; });
-					customMenu.menuMinIsMin		= true
 				}
 			}
 		}

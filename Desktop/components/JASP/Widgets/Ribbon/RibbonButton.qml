@@ -177,7 +177,7 @@ Item
 			"parentNavigateFunc"	: parentNavigateFunc
 		};
 
-		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
+		customMenu.toggle(ribbonButton, props);
 
 		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
@@ -242,9 +242,8 @@ Item
 		};
 
 		let subItem = customMenu.currentMenuItem(menuIndex)
-		let offsetY = subItem.mapToItem(ribbonButton, 0, 0).y
 
-		customSubMenu.toggle(ribbonButton, props, customMenu.width, offsetY);
+		customSubMenu.toggle(subItem, props);
 	}
 
 	Rectangle

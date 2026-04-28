@@ -27,26 +27,37 @@ FocusScope
 	width						: menuRectangle.width
 	height						: menuRectangle.height
 	visible						: showMe && (activeFocus || (hasSubMenus && customSubMenu.activeFocus))
-	x							: Math.min(menuMinPos.x + (menuMinIsMin ? Math.max(0, menuX) : menuX), menuMaxPos.x - (width  + 2) )
-	y							: Math.min(menuMinPos.y + (menuMinIsMin ? Math.max(0, menuY) : menuY), menuMaxPos.y - (height + 2) )
+	x							: Math.min(sourcePos.x + menuOffset.x + menuScroll.x, sceneWidth - (width  + 2) )
+	y							: sourcePos.y + menuOffset.y + menuScroll.y
 	property var	props		: undefined
 	property bool	hasIcons	: true
 	property bool	hasSubMenus	: false
-	property real	_iconPad	: 5 * preferencesModel.uiScale
-	property int	menuX		: menuOffset.x + menuScroll.x
-	property int	menuY		: menuOffset.y + menuScroll.y
 	property point	menuOffset	: "0,0"
-	property point	menuScroll	: "0,0"
-	property point	menuMinPos	: "0,0"
-	property point	menuMaxPos	: "0,0"
-	property bool	menuMinIsMin: false
+	property point	menuScroll	: "0,0" // Extra offset due to the scrolling where the custom menu is anchored
+	property point	sourcePos	: "0,0"
+	property real	sceneWidth	: mainWindowRoot.width
+	property real	sceneHeight	: mainWindowRoot.height
 	property bool	showMe		: false
 	property var    sourceItem  : null
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
+	property bool	isSubMenu	: false
 
 	property int	currentIndex: -1
 
 	onSourceItemChanged: { menu.currentIndex = -1; }
+
+	Connections
+	{
+		target:	menu.sourceItem
+		function onXChanged()
+		{
+			setSourcePos()
+		}
+		function onYChanged()
+		{
+			setSourcePos()
+		}
+	}
 
 	Keys.onPressed: (event)=>
 	{
@@ -93,6 +104,12 @@ FocusScope
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
 	}
 
+	function setSourcePos()
+	{
+		if (menu.sourceItem)
+			menu.sourcePos = menu.sourceItem.mapToItem(null, 1, 1);
+	}
+
 	function toggle(item, props, x_offset = 0, y_offset = 0)
 	{
 		if (item === menu.sourceItem && menu.visible)
@@ -104,14 +121,14 @@ FocusScope
 	function show(item, props, x_offset = 0, y_offset = 0)
 	{
 		menu.sourceItem     = item;
-		menu.menuMaxPos.x	= Qt.binding(function() { return mainWindowRoot.width;  });
-		menu.menuMaxPos.y	= Qt.binding(function() { return mainWindowRoot.height; });
-		menu.menuMinPos     = item.mapToItem(null, 1, 1);
+		setSourcePos()
 		menu.props          = props;
-		menu.menuOffset.x	= x_offset;
-		menu.menuOffset.y	= y_offset;
+		menu.menuOffset.x	= x_offset !== 0 ? x_offset : (menu.isSubMenu ? Qt.binding(function() { return item.width; }) : 0)
+		menu.menuOffset.y	= y_offset !== 0 ? y_offset : (menu.isSubMenu ? 0 : Qt.binding(function() { return item.height; }))
 		menu.menuScroll		= "0,0";
 		menu.showMe			= true;
+		menu.sceneWidth		= Qt.binding(function() { return mainWindowRoot.width })
+		menu.sceneHeight	= Qt.binding(function() { return mainWindowRoot.height })
 
 		menu.forceActiveFocus();
 		navigate(1)
@@ -122,17 +139,10 @@ FocusScope
 		menu.showMe			= false;
 		menu.sourceItem     = null;
 		menu.props			= undefined;
-		menu.menuMinIsMin	= false;
 		menu.menuOffset		= "0,0"
 		menu.menuScroll		= "0,0"
-		menu.menuMinPos		= "0,0"
+		menu.sourcePos		= "0,0"
 		menu.currentIndex   = -1;
-	}
-
-	function resizeElements(newWidth)
-	{
-		for (var i = 0; i < repeater.count; ++i)
-			repeater.itemAt(i).width = newWidth;
 	}
 
 	function navigate(direction)
@@ -170,17 +180,18 @@ FocusScope
 
 	function currentMenuItem(index)
 	{
-		return repeater.itemAt(index)
+		return repeater.itemAt(index).item
 	}
 
 	Rectangle
 	{
-		id		: menuRectangle
-		z		: menuShadow.z + 1
-		color	: jaspTheme.fileMenuColorBackground
-		focus	: true
-		width	: column.maxWidth + jaspTheme.menuPadding + itemScrollbar.width
-		height	: menuOffset.y + column.maxHeight > menuMaxPos.y ? menuMaxPos.y - menuOffset.y : column.maxHeight
+		id				: menuRectangle
+		z				: menuShadow.z + 1
+		color			: jaspTheme.fileMenuColorBackground
+		focus			: true
+		width			: column.columnWidth + 2 * jaspTheme.contentMargin + itemScrollbar.width + itemScrollbar.anchors.margins
+		implicitHeight	: column.height + 2 * jaspTheme.contentMargin
+		height			: (menu.y + implicitHeight) > sceneHeight ? (sceneHeight - menu.y) : implicitHeight
 
 		MouseArea
 		{
@@ -239,241 +250,248 @@ FocusScope
 		{
 			id						: itemFlickable
 			anchors.fill			: parent
-			anchors.topMargin		: jaspTheme.menuPadding / 2
-			anchors.leftMargin		: jaspTheme.menuPadding / 2
-			anchors.rightMargin		: itemScrollbar.width + jaspTheme.menuPadding / 2
 			clip					: true
 			boundsBehavior			: Flickable.StopAtBounds
-			contentWidth			: column.width
-			contentHeight			: column.height
+			contentWidth			: menuRectangle.width
+			contentHeight			: menuRectangle.implicitHeight
 
-
-			Column
+			Item // Need an extra Item round the Column, in order to set the top and left margin
 			{
-				id		: column
-				z		: menuRectangle.z + 1
-				spacing	: jaspTheme.menuSpacing
+				anchors.fill			: parent
+				anchors.topMargin		: jaspTheme.contentMargin
+				anchors.leftMargin		: jaspTheme.contentMargin
 
-				property real maxWidth	: 0
-				property real maxHeight	: 0
-
-				Repeater
+				Column
 				{
-					id		: repeater
-					model	: menu.props === undefined ? undefined : menu.props["model"]
+					id		: column
+					z		: menuRectangle.z + 1
+					spacing	: jaspTheme.menuSpacing
 
-					onItemAdded: (index, item)=>
+					property real columnWidth	: 0
+
+					function computeColumnWidth()
 					{
-						if (index === 0)
-						{
-							column.maxWidth  = 0;
-							column.maxHeight = 0;
-						}
+						let maxW = 0
 
-						column.maxHeight = column.maxHeight + (item.height + jaspTheme.menuSpacing)
+						for (let i = 0; i < repeater.count; ++i)
+							if (repeater.itemAt(i) && repeater.itemAt(i).item) // It might be null...
+								maxW = Math.max(repeater.itemAt(i).item.implicitWidth, maxW)
 
-						if (index === count - 1)
-							column.maxHeight += (jaspTheme.menuPadding - jaspTheme.menuSpacing)
-
-						column.maxWidth = Math.max(item.width + jaspTheme.menuPadding, column.maxWidth);
-
-						if (index === count - 1)
-							menu.resizeElements(column.maxWidth);
+						column.columnWidth = maxW
 					}
 
-					delegate: Loader
+					Repeater
 					{
-						sourceComponent :
+						id		: repeater
+						model	: menu.props === undefined ? undefined : menu.props["model"]
+
+						onItemAdded: (index, item)=>
 						{
-							if(model.modelData !== undefined)
-							{
-								if(model.modelData.startsWith("---"))
-								{
-									if(model.modelData == "---")	return menuSeparator;
-									else							return menuGroupTitle;
-								}
-								return menuDelegate;
-							}
-
-							if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
-							else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
-
-							return menuDelegate
+							column.computeColumnWidth()
 						}
 
-						Component
+						delegate: Loader
 						{
-							id: menuDelegate
-
-							Rectangle
+							sourceComponent :
 							{
-								id:		menuItem
-								width:	initWidth
-								height: jaspTheme.menuItemHeight
-								color:	(model.modelData === undefined) && !menuItem.itemEnabled
-												? "transparent"
-												: mouseArea.pressed || index == currentIndex
-													? jaspTheme.buttonColorPressed
-													: mouseArea.containsMouse
-														? jaspTheme.buttonColorHovered
-														: "transparent"
-
-								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
-								property int	padding:		4 + (menu.hasIcons ? 1 : 0) + (menuItemShortcut.text ? 1 : 0)
-								property double initWidth:		(menu.hasIcons ? menuItemImage.width : 0) + menuItemText.implicitWidth + menuItemShortcut.implicitWidth + menu._iconPad * padding
-
-								Image
+								if(model.modelData !== undefined)
 								{
-									id						: menuItemImage
-									height					: menuItem.height - (2 * menu._iconPad)
-									width					: menuItem.height - menu._iconPad
-
-									source					: menu.props.hasOwnProperty("icons") ? menu.props["icons"][index] : (model.modelData !== undefined ? "" : menuImageSource)
-									smooth					: true
-									mipmap					: true
-									fillMode				: Image.PreserveAspectFit
-
-									anchors.left			: parent.left
-									anchors.leftMargin		: menu._iconPad * 2
-									anchors.verticalCenter	: parent.verticalCenter
-								}
-
-								Text
-								{
-									id					: menuItemText
-									text				: model.modelData !== undefined ? model.modelData : displayText
-									font				: jaspTheme.font
-									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
-									anchors
+									if(model.modelData.startsWith("---"))
 									{
-										left			: menu.hasIcons ? menuItemImage.right : parent.left
-										leftMargin		: menu.hasIcons ? menu._iconPad : menu._iconPad * 2
-										verticalCenter	: parent.verticalCenter
+										if(model.modelData == "---")	return menuSeparator;
+										else							return menuGroupTitle;
 									}
+									return menuDelegate;
 								}
 
-								Text
+								if (model.isSeparator !== undefined && model.isSeparator)			return menuSeparator;
+								else if (model.isGroupTitle !== undefined && model.isGroupTitle)	return menuGroupTitle;
+
+								return menuDelegate
+							}
+
+							Component
+							{
+								id: menuDelegate
+
+								Rectangle
 								{
-									id					: menuItemShortcut
-									text				: menu.props.hasOwnProperty("shortcut") ? menu.props["shortcut"][index] : ""
-									font				: jaspTheme.font
-									color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
-									anchors
+									id:		menuItem
+									width:	column.columnWidth
+									height: jaspTheme.menuItemHeight
+									color:	(model.modelData === undefined) && !menuItem.itemEnabled
+													? "transparent"
+													: mouseArea.pressed || index == currentIndex
+														? jaspTheme.buttonColorPressed
+														: mouseArea.containsMouse
+															? jaspTheme.buttonColorHovered
+															: "transparent"
+
+									// The menuItemImage and menuItemText are anchored from the left, and menuItemShortcut from the right
+									// The implicitWidth takes care for an itemPadding at the left side (set in menuItemImage or menuItemText) and an itemPadding at the right side
+									// The computeColumnWidth function uses this implicitWidth to compute the column width
+									implicitWidth			: menuItemText.x + menuItemText.implicitWidth + jaspTheme.itemPadding + (menuItemShortcut.text ? menuItemShortcut.implicitWidth + menuItemShortcut.anchors.rightMargin : 0)
+									onImplicitWidthChanged	: column.computeColumnWidth()
+
+									property bool itemEnabled	: menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+
+									Image
 									{
-										right			: parent.right
-										rightMargin		: menu._iconPad * 2
-										verticalCenter	: parent.verticalCenter
-									}
-								}
+										id						: menuItemImage
+										height					: menu.hasIcons ? (menuItem.height - (2 * jaspTheme.contentMargin)) : 0
+										width					: height
 
-								MouseArea
-								{
-									id				: mouseArea
-									hoverEnabled	: true
-									anchors.fill	: parent
-									onClicked		: callMenuAction(index)
-									enabled			: menuItem.itemEnabled
+										source					: menu.props.hasOwnProperty("icons") ? menu.props["icons"][index] : (model.modelData !== undefined ? "" : menuImageSource)
+										smooth					: true
+										mipmap					: true
+										fillMode				: Image.PreserveAspectFit
+
+										anchors
+										{
+											left				: parent.left
+											leftMargin			: jaspTheme.itemPadding
+											verticalCenter		: parent.verticalCenter
+										}
+									}
+
+									Text
+									{
+										id						: menuItemText
+										text					: model.modelData !== undefined ? model.modelData : displayText
+										font					: jaspTheme.font
+										color					: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
+
+										anchors
+										{
+											left				: menu.hasIcons ? menuItemImage.right : parent.left
+											leftMargin			: jaspTheme.itemPadding
+											verticalCenter		: parent.verticalCenter
+										}
+									}
+
+									Text
+									{
+										id					: menuItemShortcut
+										text				: menu.props.hasOwnProperty("shortcut") ? menu.props["shortcut"][index] : ""
+										font				: jaspTheme.font
+										color				: menuItem.itemEnabled ? jaspTheme.black : jaspTheme.gray
+										anchors
+										{
+											right			: parent.right
+											rightMargin		: jaspTheme.itemPadding
+											verticalCenter	: parent.verticalCenter
+										}
+									}
+
+									MouseArea
+									{
+										id				: mouseArea
+										hoverEnabled	: true
+										anchors.fill	: parent
+										onClicked		: callMenuAction(index)
+										enabled			: menuItem.itemEnabled
+									}
 								}
 							}
-						}
 
-						Component
-						{
-							id: menuGroupTitle
-
-							Rectangle
+							Component
 							{
-								id		: menuItem
-								width	: initWidth
-								height	: (isSmall ? 0.666 : 1) * jaspTheme.menuGroupTitleHeight
-								color	: (model.modelData === undefined) && !menuItem.itemEnabled
-												? "transparent"
-												: groupMouseArea.pressed || index == currentIndex
-													? jaspTheme.buttonColorPressed
-													: groupMouseArea.containsMouse
-														? jaspTheme.buttonColorHovered
-														: "transparent"
+								id: menuGroupTitle
 
-								property bool	itemEnabled:	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
-
-
-								property double initWidth: menuItemImage.width + menuItemText.implicitWidth + (subMenuItemArrow.visible ? subMenuItemArrow.width : 0) + 15 * preferencesModel.uiScale
-
-								Image
+								Rectangle
 								{
-									id					: menuItemImage
-									height				: parent.height - (menu._iconPad * 2)
-									width				: height
+									id		: menuItem
+									width	: column.columnWidth
+									height	: (isSmall ? 0.666 : 1) * jaspTheme.menuGroupTitleHeight
+									color	: (model.modelData === undefined) && !menuItem.itemEnabled
+													? "transparent"
+													: groupMouseArea.pressed || index == currentIndex
+														? jaspTheme.buttonColorPressed
+														: groupMouseArea.containsMouse
+															? jaspTheme.buttonColorHovered
+															: "transparent"
 
-									source				: model.modelData !== undefined ? "" : menuImageSource
-									smooth				: true
-									mipmap				: true
-									fillMode			: Image.PreserveAspectFit
-									visible				: source != ""
 
-									anchors
+									// Same logic as in menuDelegate
+									implicitWidth			: menuItemText.x + menuItemText.implicitWidth + jaspTheme.itemPadding + (subMenuItemArrow.visible ? subMenuItemArrow.width + jaspTheme.menuSpacing : 0)
+									onImplicitWidthChanged	: column.computeColumnWidth()
+
+									property bool itemEnabled :	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
+
+									Image
 									{
-										top				: parent.top
-										left			: parent.left
-										bottom			: parent.bottom
-										leftMargin		: visible ? menu._iconPad : 0
-									}
-								}
+										id					: menuItemImage
+										height				: visible ? (parent.height - (jaspTheme.contentMargin * 2)) : 0
+										width				: height
 
-								Text
-								{
-									id					: menuItemText
-									text				: model.modelData !== undefined ? model.modelData.substring(3) : displayText
-									font				: isSmall ? jaspTheme.fontGroupTitleSmall : jaspTheme.fontGroupTitle
-									color				: jaspTheme.textEnabled
-									verticalAlignment	: Text.AlignVCenter
-									anchors
+										source				: model.modelData !== undefined ? "" : menuImageSource
+										smooth				: true
+										mipmap				: true
+										fillMode			: Image.PreserveAspectFit
+										visible				: source != ""
+
+										anchors
+										{
+											left			: parent.left
+											leftMargin		: jaspTheme.contentMargin
+											verticalCenter	: parent.verticalCenter
+										}
+									}
+
+									Text
 									{
-										left			: menuItemImage.visible ? menuItemImage.right : parent.left
-										right			: parent.right
-										leftMargin		: menu._iconPad
-										rightMargin		: menu._iconPad
-										verticalCenter	: parent.verticalCenter
+										id					: menuItemText
+										text				: model.modelData !== undefined ? model.modelData.substring(3) : displayText
+										font				: isSmall ? jaspTheme.fontGroupTitleSmall : jaspTheme.fontGroupTitle
+										color				: jaspTheme.textEnabled
+										verticalAlignment	: Text.AlignVCenter
+										anchors
+										{
+											left			: menuItemImage.visible ? menuItemImage.right : parent.left
+											leftMargin		: jaspTheme.itemPadding
+											verticalCenter	: parent.verticalCenter
+										}
 									}
-								}
 
-								Image
-								{
-									id					: subMenuItemArrow
-									height				: 15 * preferencesModel.uiScale
-									width				: height
-									visible				: menu.hasSubMenus
-
-									source				: jaspTheme.iconPath + "arrow-right.png"
-									smooth				: true
-									mipmap				: true
-									fillMode			: Image.PreserveAspectFit
-
-									verticalAlignment	: Text.AlignVCenter
-									anchors
+									Image
 									{
-										right			: parent.right
-										verticalCenter	: parent.verticalCenter
+										id					: subMenuItemArrow
+										height				: visible ? (15 * preferencesModel.uiScale) : 0
+										width				: height
+										visible				: menu.hasSubMenus
+
+										source				: jaspTheme.iconPath + "arrow-right.png"
+										smooth				: true
+										mipmap				: true
+										fillMode			: Image.PreserveAspectFit
+
+										verticalAlignment	: Text.AlignVCenter
+										anchors
+										{
+											right			: parent.right
+											rightMargin		: jaspTheme.menuSpacing
+											verticalCenter	: parent.verticalCenter
+										}
 									}
+
+									MouseArea
+									{
+										id				: groupMouseArea
+										hoverEnabled	: true
+										anchors.fill	: parent
+										onClicked		: callMenuAction(index)
+										enabled			: subMenuItemArrow.visible
+									}
+
+
 								}
-
-								MouseArea
-								{
-									id				: groupMouseArea
-									hoverEnabled	: true
-									anchors.fill	: parent
-									onClicked		: callMenuAction(index)
-									enabled			: subMenuItemArrow.visible
-								}
-
-
 							}
-						}
 
-						Component
-						{
-							id	: menuSeparator
-							ToolSeparator { orientation	: Qt.Horizontal }
+							Component
+							{
+								id	: menuSeparator
+								ToolSeparator { orientation	: Qt.Horizontal; width: column.columnWidth }
+							}
 						}
 					}
 				}
