@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-04-29 19:46+0000\n"
+"Last-Translator: ecadrian <ecadrian@hotmail.com>\n"
+"Language-Team: Galician <https://hosted.weblate.org/projects/jasp/"
+"jaspdesktop/gl/>\n"
+"Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 "X-Language: gl_ES\n"
 "X-Source-Language: C\n"
 "X-Qt-Contexts: true\n"
@@ -6003,11 +6009,11 @@ msgstr "Cambiar imaxe estática/interactiva"
 #, qt-format
 msgctxt "MainWindow|"
 msgid "%1 has been modified"
-msgstr ""
+msgstr "Modificouse %1"
 
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes?"
-msgstr ""
+msgstr "Queres gardar os teus cambios?"
 
 #, qt-format
 msgctxt "JASPImporter|"
@@ -6016,20 +6022,23 @@ msgid ""
 "Load and save it first in an intermediate JASP version (between %2 and "
 "0.96.1) to upgrade your JASP file to a compatible version"
 msgstr ""
+"O ficheiro de JASP é demasiado antigo (%1) e non se admite máis.\n"
+"Primeiro, carga e garda o teu ficheiro de JASP nunha versión intermedia de "
+"JASP (entre %2 e 0.96.1) para actualizalo a unha versión compatible"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
 msgstr ""
 "Ocorreu un fallo ao tratar de iniciar un módulo de dir %1; o fallo foi: %2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
 msgstr "Ocorreu un fallo ao tratar de cargar o módulo %1; o fallo foi: '%2'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "The installation of Module %1 failed with the following errormessage:\n"
@@ -6038,7 +6047,7 @@ msgstr ""
 "A instalación do Módulo %1 fallou coa seguinte mensaxe de fallo:\n"
 "%2"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "The removal of Module %1 failed with the following errormessage:\n"
@@ -6047,27 +6056,24 @@ msgstr ""
 "A eliminación do Módulo %1 fallou coa seguinte mensaxe de fallo:\n"
 "%2"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select a folder"
 msgstr "Escoller un cartafol"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
 "watch and load, you can do this under the filemenu, Preferences->Advanced."
 msgstr ""
 "Para instalar un módulo de desenvolvemento, necesitas seleccionar o cartafol "
-"que queres ver e cargar. Podes facer isto mediante o menú e Preferencias-"
-">Avanzado."
+"que queres ver e cargar. Podes facer isto mediante o menú de ficheiro e "
+"Preferencias->Avanzado."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Select an exisiting folder"
 msgstr "Escoller un cartafol xa existente"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
@@ -6076,12 +6082,10 @@ msgstr ""
 "Para instalar un módulo de desenvolvemento necesitas escoller un cartafol "
 "existente; escolliches '%1' pero non existe."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Problem initializing module"
 msgstr "Problema ao iniciar o módulo"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
@@ -6090,37 +6094,30 @@ msgstr ""
 "Houbo un problema ao cargar o módulo de desenvolvemento:\n"
 "\n"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Missing files or folders"
 msgstr "Faltan ficheiros ou cartafoles"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "The selected folder cannot be installed as a developer module because it "
 "does not contain all the necessary files and folders."
 msgstr ""
 "O cartafol seleccionado non se pode instalar como un módulo de "
-"desenvolvemento porque non contén todos os cartafoles e ficheiros necesarios."
+"desenvolvemento porque non contén tódolos cartafoles e ficheiros necesarios."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/Description.qml file."
 msgstr "Crear un ficheiro inst/Description.qml."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a R directory containing your analysis code."
 msgstr "Crear un directorio de R que conteña o teu código de análise."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr ""
-"Crear un directorio inst/qml que conteña os teus formularios de opción."
+msgstr "Crear un directorio inst/qml que conteña os teus formularios de opción."
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
@@ -6128,12 +6125,12 @@ msgstr ""
 "Crear un directorio inst/icons que conteña as iconas para os teus botóns de "
 "cinta."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing %1"
 msgstr "Falta %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
@@ -6144,7 +6141,7 @@ msgstr ""
 "Como sen iso o teu módulo non pode funcionar, asegúrate de repoñelo. Polo "
 "momento, o teu antigo ficheiro %2 vaise conservar."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
@@ -6157,12 +6154,12 @@ msgstr ""
 "crear un. Como o instalaches é un pouco misterioso, por iso o módulo de "
 "desenvolvemento debe desinstalarse agora"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "%1 was removed!"
 msgstr "Eliminouse %1!"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
@@ -6171,12 +6168,12 @@ msgstr ""
 "Semella que eliminaches %1, pero este ficheiro é necesario para que funcione "
 "o teu módulo. O módulo de desenvolvemento vaise desinstalar agora."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "Missing folder %1"
 msgstr "Falta o cartafol %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
@@ -6187,7 +6184,7 @@ msgstr ""
 "desenvolvemento. Como sen iso o teu módulo non pode funcionar, asegúrate de "
 "repoñelo. Polo momento, o teu antigo cartafol vaise conservar."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
@@ -6200,17 +6197,16 @@ msgstr ""
 "crear un. Como o instalaches é un pouco misterioso, por iso o módulo de "
 "desenvolvemento debe desinstalarse agora"
 
-#, fuzzy
 msgctxt "DynamicModules|"
 msgid "Loading module description encountered a problem"
 msgstr "Atopouse un problema ao cargar a descrición do módulo"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "<i>Non pode cargarse a descrición do módulo no ficheiro: '%1'</i>"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
@@ -6223,62 +6219,62 @@ msgstr ""
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Enter Encryption Settings"
-msgstr ""
+msgstr "Introducir a configuración do encriptado"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Password:"
-msgstr ""
+msgstr "Contrasinal:"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "JASP Team Submission."
-msgstr ""
+msgstr "Proposta do Equipo de JASP."
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Click here if you want the JASP Team be able to open the file"
 msgstr ""
+"Fai clic aquí se queres que o Equipo de JASP sexa capaz de abrir o ficheiro"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Advanced Settings"
-msgstr ""
+msgstr "Configuración avanzada"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Private key (base64)"
-msgstr ""
+msgstr "Clave privada (base64)"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Receiver Public key (base64)"
-msgstr ""
+msgstr "Clave pública do receptor (base64)"
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Submit"
-msgstr ""
+msgstr "Entregar"
 
-#, fuzzy
 msgctxt "EncryptionSettingsWindow|"
 msgid "Cancel"
 msgstr "Cancelar"
 
 msgctxt "VariablesWindow|"
 msgid "Use labels"
-msgstr ""
+msgstr "Utilizar etiquetas"
 
 msgctxt "DesktopCommunicator|"
 msgid "No password given!"
-msgstr ""
+msgstr "Non se proporcionou contrasinal!"
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Change column '%1' having labels from '%2' to '%3'"
-msgstr ""
+msgstr "Cambiar a columna '%1' tomando as etiquetas de '%2' a '%3'"
 
 msgctxt "AutoSaveFileSystem|"
 msgid "encrypted"
-msgstr ""
+msgstr "Encriptado"
 
 msgctxt "Computer|"
 msgid "Save (encrypted) JASP file"
-msgstr ""
+msgstr "Gardar (encriptado) o ficheiro de JASP"
 
 msgctxt "Computer|"
 msgid "Encrypted JASP Files"
-msgstr ""
+msgstr "Ficheiros encriptados de JASP"
