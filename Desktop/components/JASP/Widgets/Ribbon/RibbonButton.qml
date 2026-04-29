@@ -228,8 +228,20 @@ Item
 		//	@direction: +1 or -1
 		var subMenuParentNavigateFunc = function (direction)
 		{
-			customSubMenu.hide()
-			customMenu.forceActiveFocus();
+			if (direction === 1)
+			{
+				customMenu.hideMenus()
+				jaspRibbons.forceActiveFocus();
+				jaspRibbons.navigateFunction(direction);
+				if (buttonList.currentItem)
+					buttonList.currentItem.showMyMenu();
+			}
+			else
+			{
+				customSubMenu.hide()
+				customMenu.forceActiveFocus();
+			}
+
 		}
 
 		var props =
