@@ -166,6 +166,8 @@ Item
 
 				customMenu.menuScroll.x	= 0;
 				customMenu.menuScroll.y	= 0;
+				customMenu.menuMinIsMin	= true
+
 			}
 
 			cursorShape:		enabled ? Qt.PointingHandCursor : Qt.OpenHandCursor

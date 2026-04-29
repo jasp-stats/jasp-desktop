@@ -27,11 +27,13 @@ FocusScope
 	width						: menuRectangle.width
 	height						: menuRectangle.height
 	visible						: showMe && (activeFocus || (hasSubMenus && customSubMenu.activeFocus))
-	x							: Math.min(sourcePos.x + menuOffset.x + menuScroll.x, sceneWidth - (width  + 2) )
-	y							: sourcePos.y + menuOffset.y + menuScroll.y
+	x							: Math.min(sourcePos.x + realOffsetX, sceneWidth - (width  + 2) ) // Move the custom menu to the right if there is not enough space
+	y							: sourcePos.y + realOffsetY
 	property var	props		: undefined
 	property bool	hasIcons	: true
 	property bool	hasSubMenus	: false
+	property int	realOffsetX	: menuMinIsMin ? Math.max(menuOffset.x + menuScroll.x, 0) : menuOffset.x + menuScroll.x
+	property int	realOffsetY	: menuMinIsMin ? Math.max(menuOffset.y + menuScroll.y, 0) : menuOffset.y + menuScroll.y
 	property point	menuOffset	: "0,0"
 	property point	menuScroll	: "0,0" // Extra offset due to the scrolling where the custom menu is anchored
 	property point	sourcePos	: "0,0"
@@ -39,6 +41,7 @@ FocusScope
 	property real	sceneHeight	: mainWindowRoot.height
 	property bool	showMe		: false
 	property var    sourceItem  : null
+	property bool	menuMinIsMin: false // If set to true, this prevents the CustomMenu from going out of the scene by having a negative offset
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 	property bool	isSubMenu	: false
 
@@ -48,6 +51,7 @@ FocusScope
 
 	Connections
 	{
+		// As the sourcePos is calculated with the mapToItem function, there is no binding. So re-calculate the sourcePos each time the X or Y of the sourceItem changes.
 		target:	menu.sourceItem
 		function onXChanged()
 		{
@@ -123,6 +127,7 @@ FocusScope
 		menu.sourceItem     = item;
 		setSourcePos()
 		menu.props          = props;
+		// If the offset is not directly give, a menu should be set just onder the source item, or right beside the source item if it is a submenu.
 		menu.menuOffset.x	= x_offset !== 0 ? x_offset : (menu.isSubMenu ? Qt.binding(function() { return item.width; }) : 0)
 		menu.menuOffset.y	= y_offset !== 0 ? y_offset : (menu.isSubMenu ? 0 : Qt.binding(function() { return item.height; }))
 		menu.menuScroll		= "0,0";
@@ -139,6 +144,7 @@ FocusScope
 		menu.showMe			= false;
 		menu.sourceItem     = null;
 		menu.props			= undefined;
+		menu.menuMinIsMin	= false;
 		menu.menuOffset		= "0,0"
 		menu.menuScroll		= "0,0"
 		menu.sourcePos		= "0,0"
@@ -191,7 +197,7 @@ FocusScope
 		focus			: true
 		width			: column.columnWidth + 2 * jaspTheme.contentMargin + itemScrollbar.width + itemScrollbar.anchors.margins
 		implicitHeight	: column.height + 2 * jaspTheme.contentMargin
-		height			: (menu.y + implicitHeight) > sceneHeight ? (sceneHeight - menu.y) : implicitHeight
+		height			: (menu.y + implicitHeight) > sceneHeight ? (sceneHeight - menu.y) : implicitHeight // The menu should not exceed the scene
 
 		MouseArea
 		{

@@ -91,6 +91,7 @@ Rectangle
 
 				customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
 				customMenu.menuScroll.y	= 0;
+				customMenu.menuMinIsMin	= true
 				customMenu.sceneWidth		= Qt.binding(function() { return dataTableView.width + dataTableView.x })
 			}
 
