@@ -69,24 +69,24 @@ FocusScope
 				}
 			}
 			
-			Text
-			{
-				id:				scg
-				text:			"SCG&nbsp;Chemicals&nbsp;2026"
-				color:			jaspTheme.white
-				font.family:	jaspTheme.font.family
-				font.pixelSize: 20 * welcomeRoot.scaler
-				font.weight:	Font.Medium
-				renderType:		Text.QtRendering
-				textFormat:		Text.StyledText
+			//Text
+			//{
+			//	id:				scg
+			//	text:			company name
+			//	color:			jaspTheme.white
+			//	font.family:	jaspTheme.font.family
+			//	font.pixelSize: 20 * welcomeRoot.scaler
+			//	font.weight:	Font.Medium
+			//	renderType:		Text.QtRendering
+			//	textFormat:		Text.StyledText
 
-				anchors
-				{
-					horizontalCenter:	parent.horizontalCenter
-					top:				welcomeToJASP.bottom
-					topMargin:			height * 2
-				}
-			}
+			//	anchors
+			//	{
+			//		horizontalCenter:	parent.horizontalCenter
+			//		top:				welcomeToJASP.bottom
+			//		topMargin:			height * 2
+			//	}
+			//}
 
 
 
