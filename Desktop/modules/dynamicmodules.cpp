@@ -71,18 +71,8 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 
 	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
 
-	bool proLikesQCEtc = 
-#ifndef PRO
-			false;
-#else
-			newMod->name() == "jaspQualityControl"		||
-			newMod->name() == "jaspAudit"				||
-			newMod->name() == "jaspDistributions"		||
-			newMod->name() == "jaspAcceptanceSampling"	;
-							  			
-#endif
-	
-	if(isCommon || proLikesQCEtc)
+
+	if(isCommon)
 	{
 		_commonModuleNames.insert(newMod->name());
 		newMod->setIsCommon(true);
