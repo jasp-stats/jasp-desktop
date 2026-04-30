@@ -47,14 +47,7 @@ void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesT
 {
 	addSpecialRibbonButtonsEarly();
 	
-	std::set<std::string> commonNames = {
-#ifdef PRO
-		"jaspQualityControl",
-		"jaspAudit",
-		"jaspDistributions",		
-		"jaspAcceptanceSampling"		
-#endif
-	};
+	std::set<std::string> commonNames = {};
 
 	for(const auto& module : modulesToLoad) {
 		try {
