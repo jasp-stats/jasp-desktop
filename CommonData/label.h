@@ -75,7 +75,8 @@ public:
 	const	DatabaseInterface	& db() const;
 
 private:
-	void				_setOriginalValue(	const Json::Value & originalValue);
+	static std::string			_originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue = false, bool ignoreEmpty=true);
+	void						_setOriginalValue(	const Json::Value & originalValue);
 
 	Column		*	_column;
 

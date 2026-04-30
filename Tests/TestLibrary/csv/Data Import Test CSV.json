@@ -631,11 +631,8 @@
 			},
 			"data" : 
 			[
-				"Missing",
-				{
-					"l" : "",
-					"v" : "."
-				},
+				"",
+				"",
 				"",
 				"0.1",
 				"0.2",
@@ -647,95 +644,12 @@
 				"0.8"
 			],
 			"description" : "",
-			"labels" : 
-			[
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 0,
-					"originalValue" : "0.1"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 1,
-					"originalValue" : "0.2"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 2,
-					"originalValue" : "0.3"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 3,
-					"originalValue" : "0.4"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 4,
-					"originalValue" : "0.5"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 5,
-					"originalValue" : "0.6"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 6,
-					"originalValue" : "0.7"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "",
-					"order" : 7,
-					"originalValue" : "0.8"
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : ".",
-					"order" : 8,
-					"originalValue" : "."
-				},
-				{
-					"description" : "",
-					"filterAllows" : true,
-					"label" : "Missing",
-					"order" : 9,
-					"originalValue" : "Missing"
-				}
-			],
+			"labels" : [],
 			"name" : "Scale with Manual Missing Value",
-			"nonEmptyLabels" : 
-			[
-				"0.1",
-				"0.2",
-				"0.3",
-				"0.4",
-				"0.5",
-				"0.6",
-				"0.7",
-				"0.8",
-				"Missing"
-			],
+			"nonEmptyLabels" : [],
 			"rCode" : "",
 			"title" : "",
-			"type" : "nominal"
+			"type" : "scale"
 		},
 		{
 			"autoSortByValue" : true,
@@ -748,11 +662,8 @@
 			},
 			"data" : 
 			[
-				"Missing",
-				{
-					"l" : "",
-					"v" : "."
-				},
+				"",
+				"",
 				"",
 				"1",
 				"2",
@@ -847,12 +758,11 @@
 				"5",
 				"6",
 				"7",
-				"8",
-				"Missing"
+				"8"
 			],
 			"rCode" : "",
 			"title" : "",
-			"type" : "nominal"
+			"type" : "ordinal"
 		},
 		{
 			"autoSortByValue" : true,
@@ -865,11 +775,8 @@
 			},
 			"data" : 
 			[
-				"Missing",
-				{
-					"l" : "",
-					"v" : "."
-				},
+				"",
+				"",
 				"",
 				"1",
 				"2",
@@ -916,8 +823,7 @@
 			"nonEmptyLabels" : 
 			[
 				"1",
-				"2",
-				"Missing"
+				"2"
 			],
 			"rCode" : "",
 			"title" : "",
@@ -934,11 +840,8 @@
 			},
 			"data" : 
 			[
-				"Missing",
-				{
-					"l" : "",
-					"v" : "."
-				},
+				"",
+				"",
 				"",
 				"Hallo",
 				"Wereld",
@@ -985,7 +888,6 @@
 			"nonEmptyLabels" : 
 			[
 				"Hallo",
-				"Missing",
 				"Wereld"
 			],
 			"rCode" : "",
@@ -999,6 +901,7 @@
 		"strings" : 
 		[
 			".",
+			"Missing",
 			"NA",
 			"NaN",
 			"nan"

@@ -7,6 +7,7 @@
 #include "utilities/qutils.h"
 #include "engine/enginesync.h"
 #include "utilities/appdirs.h"
+#include "utilities/settings.h"
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 #include "engine/enginerepresentation.h"
@@ -21,7 +22,8 @@ void TestEngine::init()
 	TempFiles	::	clearSessionDir();
 	Dirs		::	setLocalAppdataDir(AppDirs::appData(false).toStdString());
 	TempFiles	::	init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
-
+	Settings	::	informSettingsThatThisIsATest();
+	
 	_pkg		=	new DataSetPackage(this);
 	_importer	=	new CSVImporter();
 	_engines	=	new EngineSync(this);

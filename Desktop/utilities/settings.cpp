@@ -2,6 +2,13 @@
 #include "resultstesting/compareresults.h"
 #include "gui/pdfdefinition.h"
 
+static bool _thisIsATest = false;
+
+void Settings::informSettingsThatThisIsATest()
+{
+	_thisIsATest = true;
+}
+
 QSettings* Settings::_settings = nullptr;
 
 const char *	Settings::defaultEmptyValues = "NaN|nan|.|NA";
@@ -124,7 +131,13 @@ const Settings::Setting Settings::Values[] = {
 
 QVariant Settings::value(Settings::Type key)
 {
-	if(resultXmlCompare::compareResults::theOne()->testMode())
+	
+	if(_thisIsATest && key == Settings::EMPTY_VALUES_LIST)
+	{
+		return QString(Settings::defaultEmptyValues) + "|Missing";
+	}
+	
+	if(resultXmlCompare::compareResults::theOne()->testMode() || _thisIsATest)
 		switch(key)
 		{
 		default:						return defaultValue(key);

@@ -403,6 +403,8 @@ void DataSet::upgradeEmptyValsFrom018To019(const Json::Value & emptyVals)
 						& missingDataPerColumn = emptyVals["missingDataPerColumn"], // object, names=columnnames: object { "row#": "original display" }
 						& workspaceEmptyValues = emptyVals["workspaceEmptyValues"]; // array of empty value strings
 	
+	Log::log() << "Upgrading empty values from 0.18 to higher looked at jsons:\nemptyValuesPerColumn: " << emptyValuesPerColumn.toStyledString() << "\nmissingDataPerColumn: " << missingDataPerColumn.toStyledString() << "\nworkspaceEmptyValues: " << workspaceEmptyValues.toStyledString() << std::endl;
+	
 	stringset workspaceEmpty = JsonUtilities::jsonStringArrayToSet(workspaceEmptyValues);
 	
 	for(Column * column : _columns)
@@ -430,11 +432,19 @@ void DataSet::upgradeEmptyValsFrom018To019(const Json::Value & emptyVals)
 		{
 			column->setHasCustomEmptyValues(true		);
 			column->setCustomEmptyValues(	emptyValSet	);
+			
+			Log::log() << "Based on this the new column emtpy values for " << column->name() << " are:\n" << column->emptyValues()->toJson().toStyledString() << std::endl;
 		}
 	}
 	
+	
+	
 	_emptyValues->setEmptyValues(workspaceEmpty);
-	incRevision();
+	
+	
+	Log::log() << "Based on this the new workspace emtpy values are:\n" << _emptyValues->toJson().toStyledString() << std::endl;
+	
+	dbUpdate();
 }
 
 

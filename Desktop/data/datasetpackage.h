@@ -274,6 +274,7 @@ public:
 				void						setWorkspaceEmptyValues(const stringset& emptyValues, bool resetModel = true);
 				void						setWorkspaceShowRSyntax(bool show);
 				void						setDefaultWorkspaceValues();
+				void						setDefaultWorkspaceEmptyValues();
 
 				void						databaseStartSynching(bool syncImmediately);
 				void						databaseStopSynching();

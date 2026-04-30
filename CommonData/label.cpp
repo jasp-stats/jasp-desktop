@@ -290,8 +290,6 @@ std::pair<std::string, std::string> Label::origValDisplay() const
 	return std::make_pair(value, processLabel(label(), value)); 
 }
 
-
-
 std::string Label::originalValueAsString(bool fancyEmptyValue, bool ignoreEmpty) const
 {
 	return originalValueAsString(_column, _originalValue, fancyEmptyValue, ignoreEmpty);
@@ -299,6 +297,17 @@ std::string Label::originalValueAsString(bool fancyEmptyValue, bool ignoreEmpty)
 
 std::string Label::originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue, bool ignoreEmpty)
 {
+	std::string val = _originalValueAsString(column, originalValue, fancyEmptyValue, ignoreEmpty);
+	
+	if(!column->isEmptyValue(val) || ignoreEmpty)
+		return val;
+	
+	return fancyEmptyValue ? EmptyValues::displayString() : "";
+}
+
+std::string Label::_originalValueAsString(const Column * column, const Json::Value & originalValue, bool fancyEmptyValue, bool ignoreEmpty)
+{
+	
 	switch(originalValue.type())
 	{
 	default:

@@ -162,11 +162,12 @@ Item
 				customMenu.scrollOri.x	= 0;
 				customMenu.scrollOri.y	= 0;
 
-				customMenu.toggle(parent, props, 0, height);
+				customMenu.toggle(parent, props);
 
 				customMenu.menuScroll.x	= 0;
 				customMenu.menuScroll.y	= 0;
 				customMenu.menuMinIsMin	= true
+
 			}
 
 			cursorShape:		enabled ? Qt.PointingHandCursor : Qt.OpenHandCursor

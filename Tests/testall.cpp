@@ -4,6 +4,7 @@
 #include "processinfo.h"
 #include "utilities/qutils.h"
 #include "databaseinterface.h"
+#include "utilities/settings.h"
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 #include "data/importers/odsimporter.h"
@@ -13,7 +14,6 @@
 #include "data/importers/rdataimporter.h"
 #include "data/importers/readstatimporter.h"
 
-
 void TestAll::initTestCase()
 {
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
@@ -21,6 +21,7 @@ void TestAll::initTestCase()
 
 void TestAll::init()
 {
+	Settings::informSettingsThatThisIsATest();
 	//_pkg->reset(false);
 }
 

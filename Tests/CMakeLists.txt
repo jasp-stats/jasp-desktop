@@ -112,10 +112,6 @@ target_link_libraries(
   Qt::Test
 )
 
-target_compile_definitions(
-  JASPTest
-  PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
-)
 
 target_compile_definitions(
   JASPTest

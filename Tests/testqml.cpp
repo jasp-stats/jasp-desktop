@@ -1,15 +1,18 @@
+#include "testqml.h"
 #include <QQmlEngine>
 #include "tempfiles.h"
 #include "processinfo.h"
-#include "testqml.h"
 #include "datasetprovider.h"
 #include "utilities/qmlutils.h"
+#include "utilities/settings.h"
 
 TestQml::TestQml(QObject *parent)
 	: QObject{parent}
 {
 	TempFiles::init(ProcessInfo::currentPID());
 	TempFiles::clearSessionDir();
+	
+	Settings::informSettingsThatThisIsATest();
 
 	DataSetProvider* prov = DataSetProvider::getProvider(false, true, parent);
 

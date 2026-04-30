@@ -748,6 +748,11 @@ void MainWindow::showEnginesWindow()
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/EnginesWindow.qml"));
 }
 
+void MainWindow::setDefaultWorkspaceEmptyValues()
+{
+	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
+}
+
 void MainWindow::setQmlImportPaths()
 {
 	static QStringList originalImportPaths = _qml->importPathList();

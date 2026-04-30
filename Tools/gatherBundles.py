@@ -76,17 +76,20 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
         try:
             repo = g.get_repo(repo_str)
             best_assets = find_latest_platform_assets(repo, include_prerelease)
-            if best_assets["windows"]:
-                results["windows"].append(best_assets["windows"])
-            if best_assets["mac_intel"]:
-                results["mac_intel"].append(best_assets["mac_intel"])
-            if best_assets["mac_arm"]:
-                results["mac_arm"].append(best_assets["mac_arm"])
-            if best_assets["flatpak"]:
-                results["flatpak"].append(best_assets["flatpak"])
+            
+            missing_platforms = [platform for platform, asset in best_assets.items() if asset is None]
+            
+            if missing_platforms:
+                raise ValueError(f"Missing assets for platforms: {', '.join(missing_platforms)}")
 
+            results["windows"].append(best_assets["windows"])
+            results["mac_intel"].append(best_assets["mac_intel"])
+            results["mac_arm"].append(best_assets["mac_arm"])
+            results["flatpak"].append(best_assets["flatpak"])
+            
         except Exception as e:
             print(f"Could not parse module {repo_str}: {e}", file=sys.stderr)
+            sys.exit(1)
 
     g.close()
 
@@ -105,8 +108,8 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
     if not flatpak:
         json_output = {
             "Windows-x86_64": [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["windows"]],
-            "MacOS-arm64":    [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_arm"]],
-            "MacOS-x86_64":   [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_intel"]]
+            "MacOS-arm64": [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_arm"]],
+            "MacOS-x86_64": [{"url": x.browser_download_url, "checksum": getattr(x, 'digest', '')[7:]} for x in results["mac_intel"]]
         }
         print(json.dumps(json_output, indent=4))
 
@@ -118,7 +121,6 @@ def gatherMod(repo_list, token, include_prerelease=False, flatpak=False, downloa
         all_assets = results["windows"] + results["mac_arm"] + results["mac_intel"]
         for x in all_assets:
             download(x.browser_download_url, token)
-
 
 def main():
     parser = argparse.ArgumentParser(prog='gatherModuleJson', description='Generates module json from a dir containing jasp submodules')

@@ -161,6 +161,7 @@ Window
 		{
 			id:			customSubMenu
 			z:			6
+			isSubMenu:	true
 		}
 
 		FileMenu

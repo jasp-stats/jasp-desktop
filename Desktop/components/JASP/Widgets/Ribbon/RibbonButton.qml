@@ -177,7 +177,7 @@ Item
 			"parentNavigateFunc"	: parentNavigateFunc
 		};
 
-		customMenu.toggle(ribbonButton, props, 0, ribbonButton.height);
+		customMenu.toggle(ribbonButton, props);
 
 		myMenuOpen = Qt.binding(function() { return customMenu.visible && customMenu.sourceItem == ribbonButton; });
 
@@ -228,8 +228,20 @@ Item
 		//	@direction: +1 or -1
 		var subMenuParentNavigateFunc = function (direction)
 		{
-			customSubMenu.hide()
-			customMenu.forceActiveFocus();
+			if (direction === 1)
+			{
+				customMenu.hideMenus()
+				jaspRibbons.forceActiveFocus();
+				jaspRibbons.navigateFunction(direction);
+				if (buttonList.currentItem)
+					buttonList.currentItem.showMyMenu();
+			}
+			else
+			{
+				customSubMenu.hide()
+				customMenu.forceActiveFocus();
+			}
+
 		}
 
 		var props =
@@ -242,9 +254,8 @@ Item
 		};
 
 		let subItem = customMenu.currentMenuItem(menuIndex)
-		let offsetY = subItem.mapToItem(ribbonButton, 0, 0).y
 
-		customSubMenu.toggle(ribbonButton, props, customMenu.width, offsetY);
+		customSubMenu.toggle(subItem, props);
 	}
 
 	Rectangle
