@@ -55,7 +55,7 @@ FocusScope
 			Text
 			{
 				id:				welcomeToJASP
-				text:			qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;")
+				text:			! PRO? qsTr("Welcome to JASP").replace(/, /g, ",&nbsp;") : qsTr("Welcome to JASP Enterprise").replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
 				font.family:	jaspTheme.font.family
 				font.pixelSize: 30 * welcomeRoot.scaler
@@ -68,6 +68,25 @@ FocusScope
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}
+			
+			//Text
+			//{
+			//	id:				scg
+			//	text:			company name
+			//	color:			jaspTheme.white
+			//	font.family:	jaspTheme.font.family
+			//	font.pixelSize: 20 * welcomeRoot.scaler
+			//	font.weight:	Font.Medium
+			//	renderType:		Text.QtRendering
+			//	textFormat:		Text.StyledText
+
+			//	anchors
+			//	{
+			//		horizontalCenter:	parent.horizontalCenter
+			//		top:				welcomeToJASP.bottom
+			//		topMargin:			height * 2
+			//	}
+			//}
 
 
 
@@ -89,7 +108,7 @@ FocusScope
 			Text
 			{
 				id:				freshAndFunky
-				text:			qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible").replace(/, /g, ",&nbsp;")
+				text:			(!PRO ? qsTr("A Fresh Way to Do Statistics: Free, Friendly, and Flexible") : qsTr("Open-Source Support for Enterprise Success")).replace(/, /g, ",&nbsp;")
 				color:			jaspTheme.white
 				font.family:	jaspTheme.font.family
 				font.pixelSize: 16 * welcomeRoot.scaler
@@ -189,17 +208,24 @@ FocusScope
 				}
 				Repeater
 				{
-					model:		[qsTr("Free:"), qsTr("Friendly:"), qsTr("Flexible:")]
+					model:		!PRO ? [qsTr("Free:"), qsTr("Friendly:"), qsTr("Flexible:")] : [ "Open:", "Secure:", "Effective:" ]
 					delegate:	blueKeyword
 
 				}
 				Repeater
 				{
-					model:		[
+					model:		!PRO ?
+								[
 									qsTr("JASP is an open-source project with structural support from the <a href=\"dummyLink\">University of Amsterdam &amp; others</a>.").replace(/, /g, ",&nbsp;"),
 									qsTr("JASP has an intuitive interface that was designed with the user in mind.").replace(/, /g, ",&nbsp;"),
 									qsTr("JASP offers standard analysis procedures in both their classical and Bayesian manifestations.").replace(/, /g, ",&nbsp;")
 								]
+								:
+								[ 
+										"Our source code will always be open and available", 
+										"Uses sandboxing to keep supply-chain attacks contained",
+										"Used world-wide for quality control and statistics" 
+								];
 					delegate:	explanationElement
 				}
 
@@ -208,7 +234,7 @@ FocusScope
 			Text
 			{
 				id:						openADataFile
-				text:					qsTr("So open a data file and take JASP for a spin!").replace(/, /g, ",&nbsp;")
+				text:					(!PRO ? qsTr("So open a data file and take JASP for a spin!") : qsTr("Get started!")).replace(/, /g, ",&nbsp;")
 				color:					jaspTheme.blue
 				font.underline:			true
 				font.family:			jaspTheme.font.family
@@ -233,7 +259,7 @@ FocusScope
 				}
 
 			}
-
+			
 			Rectangle
 			{
 				id:					downloadNewJASPButton
@@ -241,7 +267,7 @@ FocusScope
 				radius:				height / 2
 				height:				downloadNewJASP.height * 1.5
 				width:				downloadNewJASP.width  * 1.2
-				visible:			mainWindow.downloadNewJASPUrl !== ""
+				visible:			mainWindow.downloadNewJASPUrl !== "" && !PRO
 				z: 					1
 
 				anchors
@@ -277,11 +303,12 @@ FocusScope
 				}
 			}
 
-			property int widthOverflowers:	width * 0.9
+			property int widthOverflowers:	!PRO ? width * 0.9 : width * 0.7
 
 			Supporters
 			{
 				width:					parent.widthOverflowers
+				visible:				!PRO
 
 				anchors
 				{
@@ -302,7 +329,7 @@ FocusScope
 			height:					sourceSize.height //200  * welcomeRoot.scaler
 			sourceSize.width:		1400 * welcomeRoot.scaler
 			sourceSize.height:		86 * welcomeRoot.scaler
-			source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+			source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-down-blue-120.svg" : "jasp-wave-down-pro-120.svg")
 			cache:					false
 			anchors
 			{
@@ -320,7 +347,7 @@ FocusScope
 			height:					blueWave.height
 			sourceSize.width:		blueWave.sourceSize.width
 			sourceSize.height:		blueWave.sourceSize.height
-			source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+			source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-up-green-120.svg" : "jasp-wave-up-pro-120.svg")
 			cache:					false
 			anchors
 			{
@@ -334,8 +361,10 @@ FocusScope
 	Rectangle
 	{
 		id:			blueBackgroundTop
+		property color jaspProBackGroundTop:  "#007f8f"
+		
 		z:			-1
-		color:		jaspTheme.jaspBlue
+		color:		!PRO ? jaspTheme.jaspBlue : jaspProBackGroundTop
 		anchors
 		{
 			top:	parent.top
@@ -347,7 +376,7 @@ FocusScope
 		Image
 		{
 			id:				jaspLogo
-			source:			jaspTheme.iconPath + "jasp-logo.svg"
+			source:			jaspTheme.iconPath + (!PRO ? "jasp-logo.svg" : "jasp-logo-pro.svg")
 			width:			(190 / 40) * height
 			height:			info.height / 14
 			mipmap:			true
@@ -369,7 +398,7 @@ FocusScope
 			{
 				id:						logoMouse
 				hoverEnabled:			true
-				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
+				onClicked:				Qt.openUrlExternally(jaspStatsMouseArea.websiteUrl);
 				anchors.fill:			parent
 				cursorShape:			Qt.PointingHandCursor
 			}
@@ -408,7 +437,8 @@ FocusScope
 	{
 		id:			greenBackgroundTop
 		z:			-1
-		color:		jaspTheme.jaspGreen
+		property color jaspProBackGroundBottom: "#FF007F8F"
+		color:		!PRO ? jaspTheme.jaspGreen : jaspProBackGroundBottom
 		anchors
 		{
 			top:	parent.verticalCenter
@@ -535,12 +565,13 @@ FocusScope
 			
 			JASPMouseAreaToolTipped
 			{
-				id:						jaspStatsMouseArea
-				hoverEnabled:			true
-				onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org");
-				anchors.fill:			parent
-				cursorShape:			Qt.PointingHandCursor
-				toolTipText:			"https://www.jasp-stats.org"
+				id:							jaspStatsMouseArea
+				hoverEnabled:				true
+				property url websiteUrl:	!PRO ? "https://www.jasp-stats.org" : "https://www.jasp-services.com"
+				onClicked:					Qt.openUrlExternally(websiteUrl);
+				anchors.fill:				parent
+				cursorShape:				Qt.PointingHandCursor
+				toolTipText:				websiteUrl
 			}
 		}
 		
@@ -553,7 +584,7 @@ FocusScope
 
 		property var date:	new Date();
 
-		visible:			date.getMonth() === 11 && date.getDay() > 21 //11 is december and winter starts on the 21st
+		visible:			!PRO && date.getMonth() === 11 && date.getDay() > 21 //11 is december and winter starts on the 21st
 		playing:			visible
 		source:				visible ? "qrc:/html/img/snow.gif" : ""
 		fillMode:			Image.TileHorizontally

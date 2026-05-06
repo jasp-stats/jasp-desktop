@@ -1376,7 +1376,7 @@ std::string Column::getValue(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 				return doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
 			
 			return _str != ""
-					? _str 
+					? (ignoreEmptyValue || !isEmptyValue(_str) ? _str : "") 
 					: doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
 		}
 	}
@@ -1392,7 +1392,7 @@ std::string Column::getLabel(size_t row, bool fancyEmptyValue, bool ignoreEmptyV
 		const std::string	& _str = _strs[row];
 
 		return _str != ""
-				? _str
+				? (ignoreEmptyValue || !isEmptyValue(_str) ? _str : "")
 				: doubleToDisplayString(_dbl, fancyEmptyValue, ignoreEmptyValue, sepas);
 	}
 	
@@ -2508,6 +2508,7 @@ Json::Value Column::jsonForCompare() const
 	{
 		std::string label		= getLabel(i, true),
 					value		= getValue(i, true);
+				
 		Json::Value row			= label == value ? Json::Value(label) : Json::objectValue;
 		if(row.type() == Json::objectValue)
 		{

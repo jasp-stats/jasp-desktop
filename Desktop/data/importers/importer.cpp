@@ -6,6 +6,7 @@
 #include "timers.h"
 #include <QThreadPool>
 #include <queue>
+#include "data/asyncloader.h"
 
 Importer::Importer() 
 {
@@ -100,6 +101,9 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
 	_importDataSet = loadFile(locator, progressCallback);
 	JASPTIMER_STOP(Importer::loadDataSet loadFile);
+
+	if (!_importDataSet)
+		throw LoaderException("No data loaded", true);
 	
 	JASPTIMER_RESUME(Importer::loadDataSet createDataSetAndLoad);
 	int columnCount = _importDataSet->columnCount();

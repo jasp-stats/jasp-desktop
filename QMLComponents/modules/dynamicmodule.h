@@ -130,6 +130,7 @@ public:
 	QStringList			importsRQ()			const { return tql(_importsR);					}
 	
 	std::string			getLibPathsToUse()	const;
+	void				setIsCommon(bool common) { _isCommon = common;}
 
 	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }
 

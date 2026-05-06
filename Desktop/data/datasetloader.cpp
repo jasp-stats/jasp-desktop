@@ -34,6 +34,8 @@
 #include "timers.h"
 #include "utils.h"
 #include "log.h"
+#include "utilities/desktopcommunicator.h"
+#include "datasetpackage.h"
 
 using namespace std;
 using namespace ods;
@@ -74,6 +76,10 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 	if (importer)
 	{
 		importer->loadDataSet(locator, progress);
+		char chosenDelimiter = DesktopCommunicator::singleton()->knownCsvDelimiter();
+		if (chosenDelimiter != '\0' && DataSetPackage::pkg()->dataSet())
+			DataSetPackage::pkg()->dataSet()->setCsvDelimiter(chosenDelimiter);
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
@@ -91,7 +97,10 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 
 	if (importer)
 	{
+		if (DataSetPackage::pkg()->dataSet())
+			DesktopCommunicator::singleton()->setKnownCsvDelimiter(DataSetPackage::pkg()->dataSet()->csvDelimiter());
 		importer->syncDataSet(locator, progress);
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
 		delete importer;
 	}
 }

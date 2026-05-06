@@ -26,7 +26,6 @@ public:
 	static std::string			doubleToLocale(	const std::string	& value);
 
 	static void					convertEscapedUnicodeToUTF8(			std::string & inputStr);
-	static std::string			deEuropeaniseForImport(					std::string   value);		//Convert a string to a double with a dot for a separator
 
 	static std::string			doubleToString(			double dbl,		bool sepas = true, int precision = 10);
 	static std::string			doubleToStringMaxPrec(	double dbl,		bool sepas = true);

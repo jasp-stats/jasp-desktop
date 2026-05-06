@@ -46,6 +46,7 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesToLoad)
 {
 	addSpecialRibbonButtonsEarly();
+	
 	std::set<std::string> commonNames = {};
 
 	for(const auto& module : modulesToLoad) {

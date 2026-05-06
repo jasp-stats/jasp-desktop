@@ -435,7 +435,7 @@ void TextInputBase::setDefaultValue(QVariant value)
 	if(hasChanged)
 		emit defaultValueChanged();
 
-	if(curValIsDef)
+	if(curValIsDef && initialized())
 		setValue(_defaultValue, false);
 }
 

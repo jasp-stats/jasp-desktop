@@ -150,16 +150,16 @@ You can build either with terminal, by opening a new terminal and:
 ```shell
 mkdir ~/.config
 export GITHUB_PAT=<your GitHub token>
-export Qt6_DIR=/opt/Qt/6.8.3/gcc_64/lib/cmake
-CMAKE_PREFIX_PATH=/opt/Qt/6.8.3/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
+export Qt6_DIR=/opt/Qt/6.10.2/gcc_64/lib/cmake
+CMAKE_PREFIX_PATH=/opt/Qt/6.10.2/gcc_64/lib/cmake/ cmake -GNinja  -S . -B jasp-build
 cmake --build jasp-build --target all -j6
 
 # Start JASP desktop application
-./jasp-build/Desktop/JASP --safeGraphics
+QT_QUICK_BACKEND=software ./jasp-build/Desktop/JASP --safeGraphics
 ```
 
 ```shell
-QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics 
+QT_QUICK_BACKEND=software QTWEBENGINE_REMOTE_DEBUGGING=8123 ./jasp-build/Desktop/JASP --safeGraphics
 # In Chrome or Edge, open http://localhost:8123 to inspect the webengine process
 ```
 

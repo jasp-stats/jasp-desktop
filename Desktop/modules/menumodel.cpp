@@ -79,7 +79,7 @@ void MenuModel::_setEntries(const Modules::AnalysisEntries & entries)
 
 	_hasIcons = false;
 	for(const auto * entry : _entries)
-		if(entry->icon() != "")
+		if(entry->icon() != "" && !entry->isGroupTitle())
 			_hasIcons = true;
 }
 

@@ -2,6 +2,13 @@
 #include "resultstesting/compareresults.h"
 #include "gui/pdfdefinition.h"
 
+static bool _thisIsATest = false;
+
+void Settings::informSettingsThatThisIsATest()
+{
+	_thisIsATest = true;
+}
+
 QSettings* Settings::_settings = nullptr;
 
 const char *	Settings::defaultEmptyValues = "NaN|nan|.|NA";
@@ -123,13 +130,20 @@ const Settings::Setting Settings::Values[] = {
 };
 
 QVariant Settings::value(Settings::Type key) {
-    if(resultXmlCompare::compareResults::theOne()->testMode())
-        switch(key)
-        {
-        default:                        return defaultValue(key);
-        case Type::STORE_STATE_ETC:     return false; //Dont store state in the data library
-        }
-QString settingStringName = Settings::Values[key].type;
+
+	if(_thisIsATest && key == Settings::EMPTY_VALUES_LIST)
+	{
+		return QString(Settings::defaultEmptyValues) + "|Missing";
+	}
+	
+	if(resultXmlCompare::compareResults::theOne()->testMode() || _thisIsATest)
+  	switch(key)
+		{
+				default:                        return defaultValue(key);
+				case Type::STORE_STATE_ETC:     return false; //Dont store state in the data library
+		}
+	
+  QString settingStringName = Settings::Values[key].type;
 
 #ifdef WIN32
     // 1. Enterprise Machine Policy (Strict GPO from IT Admins)

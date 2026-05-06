@@ -657,7 +657,7 @@ VariablesListBase
 							variablesList.setSelectedItem(itemRectangle.rank)
 
 						if (itemRectangle.typeChangeable && mouse.x < icon.x + icon.width)
-							customMenu.toggle(itemRectangle, props, 0, parent.height);
+							customMenu.toggle(itemRectangle, props);
 					}
 					
 					onPressed: (mouse)=>

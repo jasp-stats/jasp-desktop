@@ -32,7 +32,9 @@ void ActionButtons::loadButtonData()
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
 		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}							},
 		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
+#ifndef PRO		
 		{FileOperation::Community,		tr("Community"),		true,	{}																																				},
+#endif
 		{FileOperation::About,			tr("About"),			true,	{}																																				}
 	  };
 	

@@ -42,3 +42,4 @@ ResizeDataDialog			1.0	ResizeDataDialog.qml
 RenameColumnDialog			1.0	RenameColumnDialog.qml
 WavyWindow                  1.0 WavyWindow.qml
 Supporters                  1.0 Supporters.qml
+PrefsLanguage				1.0 FileMenu/PrefsLanguage.qml

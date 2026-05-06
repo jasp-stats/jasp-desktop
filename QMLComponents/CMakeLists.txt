@@ -31,7 +31,7 @@ if(LINUX)
 endif()
 
 configure_file(${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h.in
-               ${CMAKE_CURRENT_LIST_DIR}/utilities//appdirs.h)
+               ${CMAKE_CURRENT_LIST_DIR}/utilities/appdirs.h)
 message(STATUS "appdirs.h is successfully generated...")
 
 target_compile_definitions(QMLComponents PUBLIC JASP_USES_QT_HERE)

@@ -25,5 +25,5 @@ AsyncLoaderThread::AsyncLoaderThread()
 AsyncLoaderThread::~AsyncLoaderThread()
 {
 	quit();
-	wait();
+	wait(120);
 }

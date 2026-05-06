@@ -5795,28 +5795,6 @@ msgctxt "PlotEditor|"
 msgid "References"
 msgstr ""
 
-msgctxt "PlotEditor::References|"
-msgid "Type"
-msgstr ""
-
-#, fuzzy
-msgctxt "PlotEditor::References|"
-msgid "Text"
-msgstr "Текстовая шкала"
-
-msgctxt "PlotEditor::References|"
-msgid "Horizontal"
-msgstr ""
-
-msgctxt "PlotEditor::References|"
-msgid "Vertical"
-msgstr ""
-
-#, fuzzy
-msgctxt "PlotEditor::References|"
-msgid "Remove"
-msgstr "Удалить"
-
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
 msgstr ""
@@ -6095,4 +6073,125 @@ msgstr ""
 
 msgctxt "Computer|"
 msgid "Encrypted JASP Files"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Type"
+msgstr ""
+
+#, fuzzy
+msgctxt "PlotEditingReferenceLines|"
+msgid "Text"
+msgstr "Текстовая шкала"
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Hor."
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Vert."
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Color"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Size"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Style"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Circle"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Square"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Triangle"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Diamond"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Cross"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Star"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Solid"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Dashed"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Dotted"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Dot-Dash"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Long Dash"
+msgstr ""
+
+msgctxt "PlotEditingReferenceLines|"
+msgid "Two Dash"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Welcome to JASP Enterprise"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Open-Source Support for Enterprise Success"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Get started!"
+msgstr ""
+
+msgctxt "ColorPicker|"
+msgid "Click"
+msgstr ""
+
+msgctxt "ColorPicker|"
+msgid "Click to pick up a color"
+msgstr ""
+
+msgctxt "ColorPicker|"
+msgid "Select the color"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid ""
+"<h3>Contact</h3>\n"
+"The following links will bring you directly to your company's own issue "
+"tracker.\n"
+"<ul><li><a href=\"%1\">Feature requests</a>, when you would like something "
+"added to JASP.</li><li><a href=\"%2\">Bug reports</a>, when a feature in "
+"JASP doesn't work as it should.</li><li><a href=\"%3\">Crash reports</a>, "
+"for the unfortunate situation where JASP crashes.</li></ul>\n"
+"There you will be in direct contact with the JASP software developers.\n"
+"\n"
+"You can find out more about JASP Services BV at <a href=\"%3\">our website</"
+"a>."
+msgstr ""
+
+msgctxt "JASPControl|"
+msgid "Color Picker"
 msgstr ""

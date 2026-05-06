@@ -109,6 +109,8 @@ public:
 	static QSettings* getSettings();
 	static const char *	defaultEmptyValues;
 	
+	static void informSettingsThatThisIsATest();
+	
 private:
 	struct Setting {
 		QString type;

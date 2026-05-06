@@ -4,6 +4,7 @@
 #include "processinfo.h"
 #include "utilities/qutils.h"
 #include "databaseinterface.h"
+#include "utilities/settings.h"
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 #include "data/importers/odsimporter.h"
@@ -11,8 +12,8 @@
 #include "data/exporters/jaspexporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
-#include "data/importers/readstatimporter.h"
 
+#include "data/importers/readstatimporter.h"
 
 void TestAll::initTestCase()
 {
@@ -21,6 +22,7 @@ void TestAll::initTestCase()
 
 void TestAll::init()
 {
+	Settings::informSettingsThatThisIsATest();
 	//_pkg->reset(false);
 }
 

@@ -52,6 +52,7 @@
 #include "utilities/helpmodel.h"
 #include "utilities/messageforwarder.h"
 #include "utilities/reporter.h"
+#include "utilities/csvpreviewmodel.h"
 #include "utilities/codepageswindows.h"
 #include "widgets/filemenu/filemenu.h"
 #include "data/workspacemodel.h"
@@ -131,8 +132,9 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
-	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlBugs()		const;
+	const QString 		contactUrlFeatures()	const;
+	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
 	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
@@ -150,6 +152,7 @@ public slots:
 	void setScreenPPI(int screenPPI);
 	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
+	void setDefaultWorkspaceEmptyValues();
 
 	void showRCommander();
 
@@ -342,6 +345,7 @@ private:
 	WorkspaceModel				*	_workspaceModel			= nullptr;
 	JASPConfiguration			*   _jaspConfiguration      = nullptr;
 	ModuleLibrary				*	_moduleLibrary			= nullptr;
+	CsvPreviewModel				*	_csvPreviewModel		= nullptr;
 
 	QSettings						_settings;
 

@@ -54,3 +54,12 @@ execute_process(
 	  @OPTIONS_RUNTIME@ "@JASP_INSTALL_PREFIX@")
 
 execute_process(COMMAND codesign --verify --verbose --display "@JASP_INSTALL_PREFIX@")
+
+execute_process(
+  COMMAND chmod -R a+rX "@JASP_INSTALL_PREFIX@"
+  RESULT_VARIABLE result_chmod)
+
+if(result_chmod)
+  message(WARNING "chmod -R a+rX @JASP_INSTALL_PREFIX@ failed: ${result_chmod}")
+endif()
+

@@ -1,8 +1,7 @@
 //
 // Copyright (C) 2013-2018 University of Amsterdam
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
+// This program is free to redistribute and/or modify under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 2 of the License, or
 // (at your option) any later version.
 //
@@ -14,11 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
+//
 #include "csvimporter.h"
 #include "csv/csvimportcolumn.h"
 #include "csv/csv.h"
 #include "timers.h"
+#include "utilities/desktopcommunicator.h"
 
 using namespace std;
 
@@ -36,6 +36,32 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 	CSV csv(locator);
     csv.open();
 
+	// Try to detect delimiter first
+	char detectedDelimiter = csv.delimiter();
+	char delimiter = detectedDelimiter;
+
+	if (!_synching)
+	{
+		try {
+			delimiter = DesktopCommunicator::singleton()->askCsvDelimiter(delimiter, QString::fromStdString(csv.firstRowsPlease()));
+		} catch (...) {
+			delimiter = detectedDelimiter;
+		}
+
+		if (!delimiter)
+			return nullptr;
+
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimiter);
+	}
+	else
+	{
+		char knownDelimiter = DesktopCommunicator::singleton()->knownCsvDelimiter();
+		if (knownDelimiter != '\0')
+			delimiter = knownDelimiter;
+	}
+
+
+	csv.setDelimiter(delimiter);
 	csv.readLine(colNames);
 	vector<CSVImportColumn *> importColumns;
 	importColumns.reserve(colNames.size());
@@ -46,7 +72,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 		string colName = *it;
         
 		if (colName == "")
-            colName = "V" + std::to_string(colNo+1);
+			colName = "V" + std::to_string(colNo+1);
 		else
 		{
 			// Colname should not be just an integer
@@ -84,8 +110,8 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 		}
 
 		if (line.size() != 0) //ignore empty lines
-            for(size_t i = 0; i<columnCount; i++)
-                importColumns.at(i)->addValue(i < line.size() ? line[i] : ""); //add components and add empty vals for missing columns
+			for(size_t i = 0; i<columnCount; i++)
+				importColumns.at(i)->addValue(i < line.size() ? line[i] : ""); //add components and add empty vals for missing columns
 
 		line.clear();
 		success = csv.readLine(line);

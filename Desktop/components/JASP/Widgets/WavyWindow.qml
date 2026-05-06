@@ -43,7 +43,7 @@ Window
 		anchors.right:	parent.right
 		height:			parent.height/4
 
-		source:			jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+		source:			jaspTheme.iconPath + (!PRO ? "jasp-wave-down-blue-120.svg" : "jasp-wave-down-pro-120.svg")
 		z:				10
 	}
 
@@ -164,7 +164,7 @@ Window
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		height:				parent.height/4
-		source:				jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+		source:				jaspTheme.iconPath + (!PRO ? "jasp-wave-up-green-120.svg" : "jasp-wave-up-pro-120.svg")
 		z:					10
 	}
 }

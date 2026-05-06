@@ -87,12 +87,12 @@ Rectangle
 				customMenu.scrollOri.x	= dataTableView.contentX;
 				customMenu.scrollOri.y	= 0;
 
-				customMenu.toggle(dataTableView, props, headerRoot.x - contentX, headerRoot.y + headerRoot.height - dataTableView.contentY);
+				customMenu.toggle(headerRoot, props);
 
 				customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
 				customMenu.menuScroll.y	= 0;
 				customMenu.menuMinIsMin	= true
-				customMenu.menuMaxPos.x	= dataTableView.width + dataTableView.x
+				customMenu.sceneWidth		= Qt.binding(function() { return dataTableView.width + dataTableView.x })
 			}
 
 			hoverEnabled:		true

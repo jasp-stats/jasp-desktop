@@ -268,12 +268,14 @@ ComboBoxBase
 					clip:			true
 					anchors.fill:	parent
 	
-					property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height	// Case Dropdowns used in Desktop
+					property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height		// Case Dropdowns used in Desktop
+											 : typeof csvPreviewWindow	!== 'undefined' ? csvPreviewWindow.height	// Case CSV Preview
 											 : typeof rcmdRoot			!== 'undefined' ? rcmdRoot.height			// Case Dropdown used in R Command
 											 : typeof backgroundForms	!== 'undefined' ? backgroundForms.height	// Case Dropdowns used in Analysis forms
 											 : typeof scrollPrefs		!== 'undefined' ? scrollPrefs.height		// When its used in a Prefs* page ?
 											 : Infinity
 	
+
 					//onMaxHeightChanged:		messages.log("maxHeight is now " + maxHeight + " for " + popupView);
 	
 					Rectangle

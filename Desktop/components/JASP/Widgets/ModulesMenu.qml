@@ -134,6 +134,13 @@ FocusScope
 
 			onDownloadRequested: function(request) {
 				console.log("Download requested:", request.url)
+
+				if (moduleStore.downloadInProgress) {
+					console.log("Download already in progress, cancelling duplicate request.");
+					request.cancel();
+					return;
+				}
+
 				let name = request.downloadFileName
 				let index = name.lastIndexOf('.');
 				let extension = index !== -1 ? name.substring(index + 1) : '';
@@ -188,13 +195,13 @@ FocusScope
 				anchors.fill:			parent
 				url:                    preferencesModel.checkUpdates ? preferencesModel.moduleLibraryURL : "about:blank"
 				profile:                moduleStoreProfile
+				zoomFactor:             preferencesModel.uiScale
 
 				onNewWindowRequested: (request) =>
 				{
 					Qt.openUrlExternally(request.requestedUrl);
 					request.accept();
 				}
-
 
 				property bool	downloadInProgress: false;
 				property bool	installInProgress: false;
@@ -271,7 +278,9 @@ FocusScope
                         }
 
                         for (let i = 0; i < asset_urls.length; i++) {
-                            moduleStore.downloadQueue.push(asset_urls[i]);
+							if (moduleStore.downloadQueue.indexOf(asset_urls[i]) === -1) {
+								moduleStore.downloadQueue.push(asset_urls[i]);
+							}
                         }
 
                         if (!moduleStore.downloadInProgress && !moduleStore.isProcessingQueue) { //les go
@@ -607,7 +616,7 @@ FocusScope
 				width:					progressOverlay.width + progressOverlay.waveWidth
 				sourceSize.width:		progressOverlay.waveWidth
 				sourceSize.height:		progressOverlay.waveHeight
-				source:					jaspTheme.iconPath + "jasp-wave-down-blue-120.svg"
+				source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-down-blue-120.svg" : "jasp-wave-down-pro-120.svg")
 				cache:					false
 				anchors.top:			parent.top
 
@@ -632,7 +641,7 @@ FocusScope
 				width:					progressOverlay.width + progressOverlay.waveWidth
 				sourceSize.width:		overlayTopWave.sourceSize.width
 				sourceSize.height:		overlayTopWave.sourceSize.height
-				source:					jaspTheme.iconPath + "jasp-wave-up-green-120.svg"
+				source:					jaspTheme.iconPath + (!PRO ? "jasp-wave-up-green-120.svg" : "jasp-wave-up-pro-120.svg")
 				cache:					false
 				anchors.bottom:			parent.bottom
 

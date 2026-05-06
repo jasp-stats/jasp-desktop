@@ -31,11 +31,11 @@ using boost::algorithm::trim;
 
 CSV::CSV(const string &path)
 {
-    _encoding = UTF8;
-    _delim = ',';
+	_encoding = UTF8;
+	_delim = ',';
 	_eof = false;
 
-    _path = path;
+	_path = path;
 	_fileSize = 0;
 	_filePosition = 0;
 	_numRows = -1;
@@ -242,7 +242,7 @@ bool CSV::readUtf8()
 		
 	case Native:
 	{
-		std::string raw	(&_rawBuffer[_rawBufferStartPos], &_rawBuffer[_rawBufferEndPos]),
+		std::string raw    (&_rawBuffer[_rawBufferStartPos], &_rawBuffer[_rawBufferEndPos]),
 					utf8(CodePagesWindows::convertCodePageStrToUtf8(raw));
 		
 		std::memcpy(&_utf8Buffer[_utf8BufferEndPos], utf8.c_str(), utf8.size());
@@ -297,13 +297,13 @@ bool CSV::readUtf8()
 
 void CSV::determineDelimiters(size_t fromHere)
 {
-	bool	inQuote		= false,
-			eol			= false;
-	int		semicolons	= 0,
-			commas		= 0,
-			spaces		= 0,
-			tabs		= 0,
-			stopped		= 0;
+	bool    inQuote        = false,
+			eol            = false;
+	int     semicolons    = 0,
+			commas        = 0,
+			spaces        = 0,
+			tabs          = 0,
+			stopped        = 0;
 
 	for (int i = fromHere; i < _utf8BufferEndPos && eol == false; i++)
 	{
@@ -338,7 +338,7 @@ void CSV::determineDelimiters(size_t fromHere)
 			break;
 		case '\r':
 		case '\n':
-			eol		= true;
+			eol        = true;
 			stopped = i;
 			while(stopped < _utf8BufferEndPos && (_utf8Buffer[stopped] == '\r' || _utf8Buffer[stopped] == '\n'))
 				stopped++;
@@ -481,32 +481,32 @@ bool CSV::readLine(vector<string> &items)
 		}
 		else if (ch == '\r')
 		{
-            if (items.size() > 0 || i > _utf8BufferStartPos) {
-                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-                trim(token);
-                items.push_back(token);
-            }
+			if (items.size() > 0 || i > _utf8BufferStartPos) {
+				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+				trim(token);
+				items.push_back(token);
+			}
 
 			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
 				_utf8BufferStartPos = i + 2;
 			else
 				_utf8BufferStartPos = i + 1;
 
-            if (items.size() > 0)
-                break;
+			if (items.size() > 0)
+				break;
 		}
 		else if (ch == '\n')
 		{
-            if (items.size() > 0 || i > _utf8BufferStartPos) {
-                string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-                trim(token);
-                items.push_back(token);
-            }
+			if (items.size() > 0 || i > _utf8BufferStartPos) {
+				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
+				trim(token);
+				items.push_back(token);
+			}
 
 			_utf8BufferStartPos = i + 1;
 
-            if (items.size() > 0)
-                break;
+			if (items.size() > 0)
+				break;
 		}
 
 		if (i >= _utf8BufferEndPos - 1)
@@ -519,11 +519,11 @@ bool CSV::readLine(vector<string> &items)
 			}
 			else // eof
 			{
-                if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
-                    string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
-                    trim(token);
-                    items.push_back(token);
-                }
+				if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
+					string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
+					trim(token);
+					items.push_back(token);
+				}
 				_eof = true;
 				break;
 			}
@@ -532,13 +532,13 @@ bool CSV::readLine(vector<string> &items)
 		i++;
 	}
 
-    for (size_t index = 0; index < items.size(); index++)
+	for (size_t index = 0; index < items.size(); index++)
 	{
-        string item = items.at(index);
+		string item = items.at(index);
 		boost::algorithm::replace_all(item, "\n", " "); // so we should not allow newlines in values right?
 		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
 			item = item.substr(1, item.size()-2);
-        items[index] = item;
+		items[index] = item;
 	}
 
 	return true;
@@ -562,6 +562,45 @@ int64_t CSV::numRows()
 void CSV::close()
 {
 	_stream.close();
+}
+
+string CSV::firstRowsPlease()
+{
+	//This should return the first couple of rows (including the header with the columns) only.
+	string snippet;
+	int rowsRead = 0;
+	const int maxRows = 20;
+
+	while (rowsRead < maxRows)
+	{
+		string line = readLineRaw();
+		if (line.empty())
+			break;
+		snippet += line + "\n";
+		rowsRead++;
+	}
+
+	// Reset all state so the caller can read from the beginning normally.
+	// Must mirror determineNumRows() so that BOM bytes are skipped and encoding
+	// is properly accounted for before the next readLine() call.
+	_filePosition = 0;
+	_eof = false;
+	_stream.clear();
+	_stream.seekg(0, std::ios::beg);
+
+	_rawBufferStartPos = 0;
+	_rawBufferEndPos   = 0;
+	_utf8BufferStartPos = 0;
+	_utf8BufferEndPos   = 0;
+
+	if (readRaw())
+	{
+		determineEncoding();
+		readUtf8();
+		determineDelimiters();
+	}
+
+	return snippet;
 }
 
 bool CSV::utf16to8(char *out, char *in, int outSize, int inSize, int &written, int &read, bool bigEndian)
@@ -590,21 +629,18 @@ bool CSV::utf16to8(char *out, char *in, int outSize, int inSize, int &written, i
 
 		read += justRead;
 		written += justWritten;
-
 	}
 
 	return read > 0 && written > 0;
-
 }
 
-bool CSV::utf16to32(uint32_t &out, char *in, int inSize, int& bytesRead, bool bigEndian)
+bool CSV::utf16to32(uint32_t &out, char *in, int inSize, int &bytesRead, bool bigEndian)
 {
 
 #define UNI_SUR_HIGH_START      (uint32_t)0xD800
 #define UNI_SUR_HIGH_END        (uint32_t)0xDBFF
 #define UNI_SUR_LOW_START       (uint32_t)0xDC00
 #define UNI_SUR_LOW_END         (uint32_t)0xDFFF
-
 #define UNI_HALF_SHIFT          (uint32_t)10
 #define UNI_HALF_BASE           (uint32_t)0x0010000UL
 #define UNI_HALF_MASK           (uint32_t)0x3FFUL
@@ -624,7 +660,6 @@ bool CSV::utf16to32(uint32_t &out, char *in, int inSize, int& bytesRead, bool bi
 	{
 		upper = *(uint16_t*)(in);
 	}
-
 
 	if ((uint32_t)(*in) >= UNI_SUR_HIGH_START && (uint32_t)(*in) <= UNI_SUR_LOW_START)
 	{
@@ -709,4 +744,65 @@ bool CSV::utf32to8(char *out, uint32_t in, int outSize, int &bytesWritten)
 	bytesWritten = width;
 
 	return true;
+}
+
+std::string CSV::readLineRaw()
+{
+	if (_eof)
+		return "";
+
+	if (_utf8BufferEndPos == _utf8BufferStartPos)
+	{
+		if (!readUtf8())
+			return "";
+	}
+
+	std::string result;
+
+	while (true)
+	{
+		// Scan the current buffer for a line terminator
+		int end = -1;
+		for (int i = _utf8BufferStartPos; i < _utf8BufferEndPos; ++i)
+		{
+			if (_utf8Buffer[i] == '\n' || _utf8Buffer[i] == '\r')
+			{
+				end = i;
+				break;
+			}
+		}
+
+		if (end != -1)
+		{
+			result.append(&_utf8Buffer[_utf8BufferStartPos], end - _utf8BufferStartPos);
+
+			bool hadCR = (_utf8Buffer[end] == '\r');
+
+			if (hadCR && end + 1 < _utf8BufferEndPos && _utf8Buffer[end + 1] == '\n')
+				_utf8BufferStartPos = end + 2;  // consume \r\n together
+			else
+				_utf8BufferStartPos = end + 1;  // consume lone \r or \n
+
+			// Handle \r\n split across a buffer boundary: \r was the last byte,
+			// peek into the next buffer to consume the \n if it's there.
+			if (hadCR && _utf8BufferStartPos == _utf8BufferEndPos)
+			{
+				if (readUtf8() && _utf8Buffer[_utf8BufferStartPos] == '\n')
+					_utf8BufferStartPos++;
+			}
+
+			return result;
+		}
+
+		// No newline in current buffer — accumulate it and load more data
+		result.append(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
+		_utf8BufferStartPos = _utf8BufferEndPos;  // mark all bytes consumed
+
+		if (!readUtf8())
+		{
+			// EOF: return the last line even without a trailing newline
+			_eof = true;
+			return result;
+		}
+	}
 }

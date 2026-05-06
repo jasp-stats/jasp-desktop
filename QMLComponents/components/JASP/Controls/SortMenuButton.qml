@@ -55,7 +55,7 @@ MenuButton
 			"functionCall"	: functionCall
 		};
 
-		customMenu.toggle(sortButton, props, 0, sortButton.height);
+		customMenu.toggle(sortButton, props);
 		customMenu.scrollOri		= scrollPosition;
 		customMenu.menuScroll.y		= Qt.binding(function() { return -1 * (scrollPosition.y - customMenu.scrollOri.y); });
 	}

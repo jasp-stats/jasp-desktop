@@ -89,9 +89,9 @@ public:
 	int			dataSetGetId();
 	bool		dataSetExists(			int dataSetId);
 	void		dataSetDelete(			int dataSetId);
-	int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false);		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
-	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false);		///< Updates an existing DataSet row in DataSets
-	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,	long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			  std::string & emptyValuesJson, int & revision, bool & dataSynch, bool & showRSyntax);	///< Loads an existing DataSet row into arguments
+	int			dataSetInsert(							const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false, char csvDelimiter = '\0');		///< Inserts a new DataSet row into DataSets and creates an empty DataSet_#id. returns id
+	void		dataSetUpdate(			int dataSetId,	const std::string & dataFilePath = "", long dataFileTimestamp = 0, const std::string & description = "", const std::string & databaseJson = "", const std::string & emptyValuesJson = "", bool dataSynch = false, bool showRSyntax = false, char csvDelimiter = '\0');		///< Updates an existing DataSet row in DataSets
+	void		dataSetLoad(			int dataSetId,		  std::string & dataFilePath,	long & dataFileTimestamp,		 std::string & description,			   std::string & databaseJson,			  std::string & emptyValuesJson, int & revision, bool & dataSynch, bool & showRSyntax, char & csvDelimiter);	///< Loads an existing DataSet row into arguments
 	static int	dataSetColCount(		int dataSetId);
 	static int	dataSetRowCount(		int dataSetId);
 	void		dataSetSetRowCount(		int dataSetId, size_t rowCount);

@@ -46,6 +46,7 @@
 
 #include "modules/installedmodules.h"
 #include "modules/dynamicmodules.h"
+#include "utilities/reporter.h"
 #include "modules/menumodel.h"
 
 #include "qquick/datasetview.h"
@@ -131,6 +132,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_columnTypesModel		= new ColumnTypesModel(this);
 	_jaspConfiguration		= JASPConfiguration::getInstance(this);
 	_moduleLibrary			= new ModuleLibrary();
+	_csvPreviewModel		= new CsvPreviewModel(this);
 
 #ifdef WIN32
 	_windowsWorkaroundCPs	= new CodePagesWindows(this);
@@ -334,16 +336,51 @@ const QString MainWindow::commUrlMembers() const
 
 const QString MainWindow::contactUrlFeatures() const
 {
+#ifdef PRO
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";	
+#else
 	return "https://jasp-stats.org/request-feature";	
+#endif
 }
 
 const QString MainWindow::contactUrlBugs() const
 {
+#ifdef PRO
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";	
+#else
 	return "https://jasp-stats.org/report-bug";
+#endif
+}
+
+const QString MainWindow::contactUrlCrashReport() const
+{
+#ifdef PRO
+	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
+#else
+	return "https://jasp-stats.org/report-bug";
+#endif
 }
 
 const QString MainWindow::contactText() const
 {
+#ifdef PRO
+	return tr(
+		"<h3>Contact</h3>\n"
+		"The following links will bring you directly to your company's own issue tracker.\n"
+		"<ul><li><a href=\"%1\">Feature requests</a>, when you would like something added to JASP.</li>"
+		"<li><a href=\"%2\">Bug reports</a>, when a feature in JASP doesn't work as it should.</li>"
+		"<li><a href=\"%3\">Crash reports</a>, for the unfortunate situation where JASP crashes.</li>"
+		"</ul>\n"
+		"There you will be in direct contact with the JASP software developers.\n"
+		"\n"
+		"You can find out more about JASP Services BV at <a href=\"%3\">our website</a>."
+	)
+	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
+	.arg(	contactUrlFeatures()
+	,		contactUrlBugs()
+	,		contactUrlCrashReport()
+	,		"https://jasp-services.com");
+#else
 	return tr(
 		"<h3>Contact</h3>\n"
 		"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>\n"
@@ -366,6 +403,7 @@ const QString MainWindow::contactText() const
 	,		"https://jasp-stats.org/world-map/"
 	,		"mailto:communications@jasp-stats.org"
 	,		"https://jasp-stats.org/donate/");
+#endif
 }
 
 
@@ -553,6 +591,7 @@ void MainWindow::makeConnections()
 	connect(dCSingleton,			&DesktopCommunicator::engineSandboxSignal,			_preferences,			&PreferencesModel::engineSandbox				);
 	connect(dCSingleton,			&DesktopCommunicator::queryEncryptionSettingsSignal, _encryptionModel,		&EncryptionSettingsModel::queryEncryptionSettings);
 	connect(_encryptionModel,		&EncryptionSettingsModel::queryComplete,			dCSingleton,			&DesktopCommunicator::encryptionSettingsQueryComplete);
+	connect(dCSingleton,			&DesktopCommunicator::askCsvDelimiterSignal,		_csvPreviewModel,		&CsvPreviewModel::preparePreview);
 
 
 	connect(_filterModel,			&FilterModel::refreshAllAnalyses,					_analyses,				&Analyses::refreshAllAnalyses,								Qt::QueuedConnection);
@@ -585,6 +624,7 @@ void MainWindow::makeConnections()
 	connect(_dynamicModules,		&DynamicModules::reloadAnalysesJson,				_analyses,				&Analyses::reloadSavedAnalysesJson,							Qt::QueuedConnection);
 
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_fileMenu,				&FileMenu::refresh											);
+	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_csvPreviewModel,		&CsvPreviewModel::updateLocale,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_analyses,				&Analyses::prepareForLanguageChange							);
 	connect(_languageModel,			&LanguageModel::aboutToChangeLanguage,				_package,				&DataSetPackage::prepareForLanguageChange					);
 	connect(_languageModel,			&LanguageModel::languageChangeDone,					_package,				&DataSetPackage::languageChangeDone							);
@@ -656,6 +696,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeConstructorCode",		int(computedColumnType::constructorCode)		);
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 	_qml->rootContext()->setContextProperty("moduleLibrary",							_moduleLibrary									);
+	_qml->rootContext()->setContextProperty("csvPreviewModel",							_csvPreviewModel								);
 
 	_qml->setOutputWarningsToStandardError(true);
 
@@ -705,6 +746,7 @@ void MainWindow::loadQML()
 	Log::log() << "Loading ContactWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading CommunityWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
 	Log::log() << "Loading EncryptionSettingsWindow"	<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/EncryptionSettingsWindow.qml"));
+	Log::log() << "Loading CSV Preview"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CsvPreview.qml"));
 	Log::log() << "Loading MainWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/MainWindow.qml"));
 
 	if(!DataSetView::mainDataViewer())
@@ -746,6 +788,11 @@ void MainWindow::showEnginesWindow()
 {
 	Log::log() << "Showing EnginesWindow"  << std::endl;
 	_qml->load(QUrl("qrc:///components/JASP/Widgets/EnginesWindow.qml"));
+}
+
+void MainWindow::setDefaultWorkspaceEmptyValues()
+{
+	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
 }
 
 void MainWindow::setQmlImportPaths()

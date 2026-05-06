@@ -71,8 +71,12 @@ bool DynamicModules::initializeModuleFromDir(std::string moduleDir, bool bundled
 
 	Modules::DynamicModule	*newMod		= new Modules::DynamicModule(QString::fromStdString(moduleDir), this, bundled, isCommon);
 
+
 	if(isCommon)
+	{
 		_commonModuleNames.insert(newMod->name());
+		newMod->setIsCommon(true);
+	}
 
 	if(!initializeModule(newMod))
 		return false;
@@ -589,6 +593,18 @@ void DynamicModules::startWatchingDevelopersModule()
 	devModWatchFolder("R",		_devModRWatcher);
 	devModWatchFolder("help",	_devModHelpWatcher);
 	//QML is watched by Analysis itself
+}
+
+void DynamicModules::insertCommonModuleNames(std::set<std::string> commonModules) 
+{ 
+	for(const std::string & common : commonModules)
+	{
+		_commonModuleNames.insert(common); 
+		
+		if(dynamicModule(common))
+			dynamicModule(common)->setIsCommon(true);
+	}
+
 }
 
 ///This function says it's copying something, and maybe it did that before, but it doesn't seem to be doing so now.

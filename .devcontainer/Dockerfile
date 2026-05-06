@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/cpp:ubuntu-24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=6.8.3
+ARG QT_VERSION=6.10.2
 ARG QT_MODULES="qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor"
 
 # 1) Base OS packages per Docs/development/jasp-build-guide-linux.md
@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3 python3
 RUN python3 -m venv /opt/aqt-venv \
     && /opt/aqt-venv/bin/pip install --no-cache-dir aqtinstall
 
-# 6) Install Qt 6.7.x with required modules via aqt from venv
+# 6) Install Qt with required modules via aqt from venv
 RUN set -eux; \
     /opt/aqt-venv/bin/aqt install-qt -O /opt/Qt linux desktop ${QT_VERSION} linux_gcc_64 -m ${QT_MODULES}; \
     ln -s /opt/Qt/${QT_VERSION}/linux_gcc_64/bin/qmake /usr/local/bin/qmake || true

@@ -4,6 +4,7 @@
 #include "testdebugdata.h"
 #include "utilities/qutils.h"
 #include "databaseinterface.h"
+#include "utilities/settings.h"
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 
@@ -16,6 +17,7 @@ void TestDebugData::initTestCase()
 void TestDebugData::init()
 {
 	TempFiles::clearSessionDir();
+	Settings::informSettingsThatThisIsATest();
 	
 	_pkg		= new DataSetPackage(this);
 	_importer	= new CSVImporter();
