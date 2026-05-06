@@ -17,8 +17,8 @@
             "checksum": "7a5914868176acf5d12bd5658fbdb4c64807d0c6e6f8c0547369214017e6cf46"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBfpack_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "9c0090020be5af60c93f84c75d5b19da50bdee264460206758e025006a291ff3"
+            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.96.1-release.0_R-4-5-2_Release/jaspBfpack_0.96.1-release.0_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "1922ad89a01d353f728699cb55d3278cf639420245a386b1b95e9d5a2addef38"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspBsts/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBsts_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
@@ -163,8 +163,8 @@
             "checksum": "db6e029508d5523772cbeae94fa7af47aea71cecbdb888e7a9d0671d25fa4036"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBfpack_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
-            "checksum": "901eb749e2d08bb6b7db4cfad25caa75b4718d0b31fe54c95942e61f26e7d3b6"
+            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.96.1-release.0_R-4-5-2_Release/jaspBfpack_0.96.1-release.0_MacOS_arm64_R-4-5-2.JASPModule",
+            "checksum": "8c3dad08ee86eba1220a684b31c54267e77d1e4f02f99ea68abef822ef5ff6d4"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspBsts/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBsts_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
@@ -309,8 +309,8 @@
             "checksum": "24703670edd5a2eeabeecd59b6c1341425af24f97d464dc7f483abd0060a60fc"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBfpack_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
-            "checksum": "a24f951bab24bc345b55a69d242f511beb6b7bf6b5f3f1046bb86ef65c6c94a7"
+            "url": "https://github.com/jasp-stats-modules/jaspBfpack/releases/download/0.96.1-release.0_R-4-5-2_Release/jaspBfpack_0.96.1-release.0_MacOS_x86_64_R-4-5-2.JASPModule",
+            "checksum": "bb1f252eba45e305d43081125081132465393dc3ed958be9f6a0c542130a9f46"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspBsts/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspBsts_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
