@@ -25,7 +25,7 @@
 class BoundControlRlangTextArea : public BoundControlTextArea
 {
 public:
-	enum class RLangType {Lavaan, CSem, MetaSem};
+	enum class RLangType {Lavaan, CSem, MetaSem, RCode};
 
 	BoundControlRlangTextArea(TextAreaBase* textArea, RLangType type = RLangType::Lavaan);
 

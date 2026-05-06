@@ -72,7 +72,7 @@ void TextAreaBase::setUp()
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);												break;
 	case TextType::TextTypeLavaan:		_boundControl = new BoundControlRlangTextArea(this, BoundControlRlangTextArea::RLangType::Lavaan);	break;
 	case TextType::TextTypeMetaSem:		_boundControl = new BoundControlRlangTextArea(this, BoundControlRlangTextArea::RLangType::MetaSem);	break;
-	case TextType::TextTypeRcode:		_boundControl = new BoundControlRlangTextArea(this, BoundControlRlangTextArea::RLangType::Lavaan);	break;
+	case TextType::TextTypeRcode:		_boundControl = new BoundControlRlangTextArea(this, BoundControlRlangTextArea::RLangType::RCode);	break;
 	case TextType::TextTypeCSem:		_boundControl = new BoundControlRlangTextArea(this, BoundControlRlangTextArea::RLangType::CSem);	break;
 	case TextType::TextTypeJAGSmodel:	_boundControl = new BoundControlJAGSTextArea(this);													break;
 	default:							_boundControl = new BoundControlTextArea(this);														break;

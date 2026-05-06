@@ -93,7 +93,7 @@ void BoundControlRlangTextArea::checkSyntax()
 		Log::log() << "Warning: no non prefixed entries returned from column encoder?";
 
 
-	if (!_textArea->initialized())
+	if (!_textArea->initialized() || _langType == RLangType::RCode)
 	{
 		// Do not run the engine to check the script if the control in not yet initialized
 		_setBoundValues();
@@ -210,7 +210,7 @@ const char* BoundControlRlangTextArea::_checkSyntaxRFunctionName()
 	{
 	case RLangType::CSem:		return "jaspSem:::checkCSemModel";
 	case RLangType::MetaSem:	return "jaspMetaAnalysis::checkMetaModel";
-	case RLangType::Lavaan:
-	default:					return "jaspSem:::checkLavaanModel";
+	case RLangType::Lavaan:		return "jaspSem:::checkLavaanModel";
+	default:					return "";
 	}
 }
