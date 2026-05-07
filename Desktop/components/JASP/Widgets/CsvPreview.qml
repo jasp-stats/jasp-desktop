@@ -36,14 +36,8 @@ Window
 	onVisibleChanged:
 	{
 		if (!visible) return
-		// Focus the currently active delimiter button when the dialog opens
-		for (var i = 0; i < delimiterRepeater.count; i++)
-		{
-			var btn = delimiterRepeater.itemAt(i)
-			if (btn && btn.selected) { btn.forceActiveFocus(); return }
-		}
-		if (delimiterRepeater.count > 0)
-			delimiterRepeater.itemAt(0).forceActiveFocus()
+
+		submitButton.forceActiveFocus()
 	}
 
 	onClosing:
@@ -102,7 +96,7 @@ Window
 
 						// Treat the delimiter buttons as a radio group: Tab exits the group,
 						// Left/Right navigate within it.
-						activeFocusOnTab:		false
+						//activeFocusOnTab:		false
 						KeyNavigation.tab:		advanced
 						KeyNavigation.backtab:	cancelButton
 
@@ -110,11 +104,13 @@ Window
 						{
 							event.accepted = true
 							if (index > 0) delimiterRepeater.itemAt(index - 1).forceActiveFocus()
+							else delimiterRepeater.itemAt(delimiterRepeater.count - 1).forceActiveFocus()
 						}
 						Keys.onRightPressed: (event) =>
 						{
 							event.accepted = true
 							if (index < delimiterRepeater.count - 1) delimiterRepeater.itemAt(index + 1).forceActiveFocus()
+							else delimiterRepeater.itemAt(0).forceActiveFocus()
 						}
 					}
 				}
@@ -246,11 +242,12 @@ Window
 			id: submitButton
 			text: qsTr("Load")
 			width: buttons.buttonWidth
-			control.color: jaspTheme.blue
+
+			control.color: activeFocus ? jaspTheme.blueDarker : jaspTheme.blue
 			onClicked: csvPreviewModel.visible = false
 			KeyNavigation.priority:	KeyNavigation.BeforeItem
-			KeyNavigation.tab:		cancelButton
-			KeyNavigation.backtab:	advanced
+			control.KeyNavigation.tab:		cancelButton
+			control.KeyNavigation.backtab:	advanced
 		}
 
 		JC.Button
@@ -265,7 +262,7 @@ Window
 			}
 			KeyNavigation.priority:	KeyNavigation.BeforeItem
 			KeyNavigation.tab:		delimiterRepeater.itemAt(0)
-			KeyNavigation.backtab:	submitButton
+			control.KeyNavigation.backtab:	submitButton
 		}
 	}
 }

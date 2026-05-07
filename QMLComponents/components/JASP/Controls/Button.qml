@@ -83,6 +83,7 @@ JASPControl
 	{
 		id:				control
 		anchors.fill:	parent
+		focus:			true
     }
 
 	Rectangle
