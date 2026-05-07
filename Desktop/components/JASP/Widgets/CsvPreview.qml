@@ -96,7 +96,7 @@ Window
 
 						// Treat the delimiter buttons as a radio group: Tab exits the group,
 						// Left/Right navigate within it.
-						//activeFocusOnTab:		false
+						activeFocusOnTab:		false
 						KeyNavigation.tab:		advanced
 						KeyNavigation.backtab:	cancelButton
 
@@ -246,8 +246,8 @@ Window
 			control.color: activeFocus ? jaspTheme.blueDarker : jaspTheme.blue
 			onClicked: csvPreviewModel.visible = false
 			KeyNavigation.priority:	KeyNavigation.BeforeItem
-			control.KeyNavigation.tab:		cancelButton
-			control.KeyNavigation.backtab:	advanced
+			KeyNavigation.tab:		cancelButton
+			KeyNavigation.backtab:	advanced
 		}
 
 		JC.Button
@@ -262,7 +262,7 @@ Window
 			}
 			KeyNavigation.priority:	KeyNavigation.BeforeItem
 			KeyNavigation.tab:		delimiterRepeater.itemAt(0)
-			control.KeyNavigation.backtab:	submitButton
+			KeyNavigation.backtab:	submitButton
 		}
 	}
 }
