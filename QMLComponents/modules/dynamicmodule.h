@@ -52,6 +52,7 @@ struct ModuleException : public std::runtime_error
 
 class Description;
 class Upgrades;
+class DataLibraryDescription;
 
 ///
 /// Contains all relevant information for a single (dynamic) module
@@ -139,8 +140,11 @@ public:
 	std::string			qmlFolder()											const;
 	std::string			iconFilePath(std::string whichIcon = "")			const;
 	std::string			iconFolder()										const;
+	std::string			examplesFolder()									const;
 	std::string			rModuleCall(	const std::string & function)		const;
 	QString				helpFolderPath()									const;
+
+	DataLibraryDescription * dataLibraryDescription() const { return _dataLibraryDescription; }
 
 	std::string			generateModuleLoadingR(bool shouldReturnSucces = true);
 	std::string			generateModuleUnloadingR();
@@ -204,6 +208,7 @@ public:
 
 	std::string toString();
 	void loadInfoFromDescriptionItem(Description * description);
+	void loadDataLibraryQml(QQmlContext * context);
 	void preprocessMarkdownHelp(QString & md) const;
 
 public slots:
@@ -228,6 +233,7 @@ signals:
 	void		bundledChanged(		bool isBundled);
 	void		registerForInstalling(const std::string & moduleName);
 	void		descriptionReloaded(Modules::DynamicModule * dynMod);
+	void		dataLibraryDescriptionChanged(Modules::DataLibraryDescription * desc);
 	void		importsRChanged();
 	void		errorChanged(bool error);
 	void		readyChanged(bool ready);	
@@ -252,8 +258,9 @@ private:
 						_hasWrappers		= false;
 	AnalysisEntries		_menuEntries;
 	stringset			_importsR;
-	Description		*	_description		= nullptr;
-	Upgrades		*	_upgrades			= nullptr;
+	Description				*	_description				= nullptr;
+	Upgrades				*	_upgrades					= nullptr;
+	DataLibraryDescription	*	_dataLibraryDescription		= nullptr;
 
 	static std::string			_developmentModuleName;
 	static const std::string	_moduleDirPostfix;

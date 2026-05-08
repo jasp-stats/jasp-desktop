@@ -4,6 +4,7 @@
 #include <QDir>
 #include "log.h"
 #include "datalibrary.h"
+#include "modules/dynamicmodules.h"
 
 DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs) : FileMenuBasicListModel(parent, new DataLibraryFileSystem(parent,  DataLibraryFileSystem::rootelementname )), _dataLibraryBreadCrumbsListModel(crumbs)
 {
@@ -11,6 +12,9 @@ DataLibraryListModel::DataLibraryListModel(QObject *parent, DataLibraryBreadCrum
 	_fsbmDataLibrary->refresh();
 
 	connect(this, &DataLibraryListModel::openFileEvent, dynamic_cast<DataLibrary *>(parent), &DataLibrary::openFile);
+
+	if (DynamicModules::dynMods())
+		connect(DynamicModules::dynMods(), &DynamicModules::loadedModulesChanged, this, &DataLibraryListModel::refresh);
 }
 
 void DataLibraryListModel::refresh()
