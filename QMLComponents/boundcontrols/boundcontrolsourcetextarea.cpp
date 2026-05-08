@@ -48,6 +48,7 @@ void BoundControlSourceTextArea::_setSourceTerms()
 	for (const QString& term : list)
 		terms.append(term.trimmed());
 
+	// Do not init the model terms when not necessary: this can call the resetBoundValues that calls checkSyntax
 	if (_textArea->model()->terms() != terms)
 		_textArea->model()->initTerms(terms);
 }

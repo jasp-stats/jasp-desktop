@@ -112,6 +112,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 
 	ListModelTermsAvailable* model = _textArea->availableModel();
 
+	// Do not init the model terms when not necessary: this can call the resetBoundValues that calls checkSyntax
 	if (model->terms() != _usedParameters.values())
 		model->initTerms(_usedParameters.values());
 }

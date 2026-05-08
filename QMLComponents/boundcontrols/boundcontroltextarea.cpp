@@ -33,6 +33,7 @@ void BoundControlTextArea::bindTo(const Json::Value &value)
 
 void BoundControlTextArea::resetBoundValue()
 {
+	// checkSyntax takes care that the right boundValue is set.
 	checkSyntax();
 }
 
