@@ -164,7 +164,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 
 Json::Value TextInputBase::createJson() const
 {
-	QVariant value = property("displayValue");
+	QVariant value = _value;
 	if (value.toString() == "" && !_defaultValue.isNull())
 		value = _defaultValue;
 
