@@ -33,7 +33,7 @@ void BoundControlTextArea::bindTo(const Json::Value &value)
 
 void BoundControlTextArea::resetBoundValue()
 {
-	setBoundValue(_textArea->text().toStdString());
+	checkSyntax();
 }
 
 bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue) const

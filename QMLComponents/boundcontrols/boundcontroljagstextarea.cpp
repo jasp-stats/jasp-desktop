@@ -111,7 +111,9 @@ void BoundControlJAGSTextArea::checkSyntax()
 	setBoundValue(boundValue);
 
 	ListModelTermsAvailable* model = _textArea->availableModel();
-	model->initTerms(_usedParameters.values());
+
+	if (model->terms() != _usedParameters.values())
+		model->initTerms(_usedParameters.values());
 }
 
 

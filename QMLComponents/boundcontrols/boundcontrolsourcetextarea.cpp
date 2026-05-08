@@ -47,5 +47,7 @@ void BoundControlSourceTextArea::_setSourceTerms()
 
 	for (const QString& term : list)
 		terms.append(term.trimmed());
-	_textArea->model()->initTerms(terms);
+
+	if (_textArea->model()->terms() != terms)
+		_textArea->model()->initTerms(terms);
 }
