@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-05-10 07:11+0000\n"
+"Last-Translator: 陳正昌 <chencc99@gmail.com>\n"
+"Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hant/>\n"
+"Language: zh_Hant\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.5-dev\n"
 "X-Language: zh_Hant\n"
 "X-Qt-Contexts: true\n"
 
@@ -5942,107 +5948,105 @@ msgctxt "Computer|"
 msgid "Encrypted JASP Files"
 msgstr "加密的 JASP 檔案"
 
-#, fuzzy
 msgctxt "PlotEditingReferenceLines|"
 msgid "Type"
 msgstr "類型"
 
-#, fuzzy
 msgctxt "PlotEditingReferenceLines|"
 msgid "Text"
 msgstr "文字"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Hor."
-msgstr ""
+msgstr "水平"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vert."
-msgstr ""
+msgstr "垂直"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Color"
-msgstr ""
+msgstr "顏色"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Size"
-msgstr ""
+msgstr "大小"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Style"
-msgstr ""
+msgstr "樣式"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Circle"
-msgstr ""
+msgstr "圓形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Square"
-msgstr ""
+msgstr "方形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Triangle"
-msgstr ""
+msgstr "三角形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Diamond"
-msgstr ""
+msgstr "菱形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Cross"
-msgstr ""
+msgstr "十字形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Star"
-msgstr ""
+msgstr "星形"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Solid"
-msgstr ""
+msgstr "實心"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dashed"
-msgstr ""
+msgstr "虛線"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dotted"
-msgstr ""
+msgstr "點線"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dot-Dash"
-msgstr ""
+msgstr "點－虛線"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Long Dash"
-msgstr ""
+msgstr "長虛線"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Two Dash"
-msgstr ""
+msgstr "雙虛線"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP Enterprise"
-msgstr ""
+msgstr "歡迎使用 JASP 企業版"
 
 msgctxt "WelcomePage|"
 msgid "Open-Source Support for Enterprise Success"
-msgstr ""
+msgstr "開源支援，成就企業"
 
 msgctxt "WelcomePage|"
 msgid "Get started!"
-msgstr ""
+msgstr "開始使用！"
 
 msgctxt "ColorPicker|"
 msgid "Click"
-msgstr ""
+msgstr "點擊"
 
 msgctxt "ColorPicker|"
 msgid "Click to pick up a color"
-msgstr ""
+msgstr "點擊以選取顏色"
 
 msgctxt "ColorPicker|"
 msgid "Select the color"
-msgstr ""
+msgstr "選擇顏色"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -6059,22 +6063,30 @@ msgid ""
 "You can find out more about JASP Services BV at <a href=\"%3\">our website</"
 "a>."
 msgstr ""
+"<h3>聯絡我們</h3> \n"
+"以下連結將直接帶您至貴公司專屬的議題追蹤系統。 \n"
+"<ul><li><a href=\"%1\">功能建議</a>：當您希望 JASP 新增某項功能時。</li><li>"
+"<a href=\"%2\">錯誤回報</a>：當 JASP 中的某項功能未如預期運作時。</li><li><a "
+"href=\"%3\">崩潰回報</a>：適用於 JASP 不幸當機的情況。</li></ul> \n"
+"您將可透過該系統與 JASP 軟體開發人員直接聯繫。\n"
+"\n"
+"欲了解關於 JASP Services BV 的更多資訊，請造訪<a href=\"%3\">我們的網站</a>。"
 
 msgctxt "JASPControl|"
 msgid "Color Picker"
-msgstr ""
+msgstr "顏色選擇器"
 
 msgctxt "CsvPreview|"
 msgid "Data Preview"
-msgstr ""
+msgstr "資料預覽"
 
 msgctxt "CsvPreview|"
 msgid "Select Delimiter:"
-msgstr ""
+msgstr "選擇分隔符號："
 
 msgctxt "CsvPreview|"
 msgid "Space"
-msgstr ""
+msgstr "空白"
 
 msgctxt "CsvPreview|"
 msgid "Tab"
@@ -6082,58 +6094,48 @@ msgstr ""
 
 msgctxt "CsvPreview|"
 msgid "Advanced"
-msgstr ""
+msgstr "進階設定"
 
 msgctxt "CsvPreview|"
 msgid "Load"
-msgstr ""
+msgstr "載入"
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Cancel"
 msgstr "取消"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Preferred language"
 msgstr "語言偏好"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Choose language"
-msgstr "選擇介面語言"
+msgstr "選擇語言"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use thousands separators"
 msgstr "使用千位分隔符號"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Disable to remove thousands separators from all numbers."
 msgstr "停用以移除所有數字之千分位分隔符號。"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr "以其他語言或區域的格式顯示數字"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr "使用下面指定的區域設置來顯示數字格式和貨幣。"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. language"
 msgstr "替代語言"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. territory"
 msgstr "替代區域"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Help us translate or improve JASP in your language"
 msgstr "幫助我們用您的語言翻譯或改進 JASP"
