@@ -400,6 +400,8 @@ void TextInputBase::valueChangedSlot()
 
 void TextInputBase::setValue(QVariant value, bool useLocale)
 {
+	if (!initialized()) // The value is not set by the user, but is read from QML or from the JASP file: never use the locale in this case.
+		useLocale = false;
 	double valueDbl;
 	if(QColumnUtils::getDoubleValue(value.toString(), valueDbl, useLocale))
 		value = valueDbl;
