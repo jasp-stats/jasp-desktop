@@ -2806,7 +2806,7 @@ bool Column::initFromLookups(const std::string & newName, size_t rows, const std
 	
 	bool		anyChanges		=	title != Column::title() || newName != name();
 	columnType	prevType		=	type(),
-				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, true, true);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, true, !_hasLabels);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 
 									
