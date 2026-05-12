@@ -48,6 +48,7 @@ option(RUN_IWYU "Whether to run Include What You Use" OFF)
 option(INSTALL_R_MODULES "Whether or not installing R Modules" ON)
 option(BUILD_TESTS "Whether to build the test suits" OFF)
 option(USE_CONAN "Whether to use CONAN package manager" OFF)
+option(JASP_SYNTAX_INTERFACE_ONLY "Limit Conan dependencies to those needed by SyntaxInterface only" OFF)
 
 # ------------
 

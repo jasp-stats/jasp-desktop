@@ -10,27 +10,38 @@ from conan import ConanFile
 class JaspConanConfig(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeToolchain", "CMakeDeps"
-    default_options = {"brotli*:shared": True, "sqlite3*:max_column": 32767}
+    options = {"syntax_interface_only": [True, False]}
+    default_options = {
+        "brotli*:shared": True,
+        "sqlite3*:max_column": 32767,
+        "syntax_interface_only": False,
+    }
 
     def requirements(self):
+        # Core dependencies required by SyntaxInterface (CommonData, Common)
         self.requires("libiconv/1.18", force=True)
         self.requires("boost/1.86.0")
         self.requires("zlib/1.3.1")
         self.requires("libarchive/3.8.1")
         self.requires("zstd/1.5.7")
-        self.requires("jsoncpp/1.9.6")
         self.requires("openssl/3.4.1")
-        self.requires("bison/3.7.6")
-        self.requires("brotli/1.1.0")
         self.requires("sqlite3/3.49.1")
-        self.requires("gmp/6.3.0")
-        self.requires("mpfr/4.2.1")
-        self.requires("freexl/2.0.99.cci.20260225")
-        self.requires("libsodium/1.0.20")
-        # librdata is not available for Windows platforms on conan-center yet
-        if self.settings_build.os == "Macos":
-            self.requires("librdata/0.0.0.cci.20231003") 
+
+        if not self.options.syntax_interface_only:
+            # jsoncpp is vendored in Common/json/ so Conan's copy is not linked,
+            # but keep it here for the full build to avoid unexpected Conan graph changes
+            self.requires("jsoncpp/1.9.6")
+            self.requires("brotli/1.1.0")
+            self.requires("gmp/6.3.0")
+            self.requires("mpfr/4.2.1")
+            self.requires("freexl/2.0.99.cci.20260225")
+            self.requires("libsodium/1.0.20")
+            # librdata is not available for Windows platforms on conan-center yet
+            if self.settings_build.os == "Macos":
+                self.requires("librdata/0.0.0.cci.20231003")
 
     def build_requirements(self):
         self.tool_requires("cmake/3.30.0")
+        if not self.options.syntax_interface_only:
+            self.tool_requires("bison/3.7.6")
 
