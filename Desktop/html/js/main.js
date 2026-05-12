@@ -39,7 +39,8 @@ $(document).ready(function () {
 
 	analysesGlobal 			= analyses
 
-	window.setZoom			= function (zoom)			{ document.body.style.zoom = "" + Math.floor(zoom * 100) + "%";	}
+	// see webengineView zoomFactor, disabled js solutions for now
+	// window.setZoom			= function (zoom)			{ document.body.style.zoom = "" + Math.floor(zoom * 100) + "%";	}
 	window.reRenderAnalyses = function ()				{ analyses.reRender();											}
 	window.moveAnalyses		= function (fromId, toId)	{ analyses.move(fromId, toId);									}
 

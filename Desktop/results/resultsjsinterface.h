@@ -135,7 +135,7 @@ public slots:
 	void cancelImageEdit(					int				id);
 	void exportSelected(			const	QString		&	filename);
 	void setResultsPageUrl(					QString			resultsPageUrl);
-	void setZoomInWebEngine();
+	// void setZoomInWebEngine();	// we use zoomFactor in webengine now, but let's not clean up it yet.
 	void setResultsLoaded(					bool			resultsLoaded);
 	void setScrollAtAll(					bool			scrollAtAll);
 	

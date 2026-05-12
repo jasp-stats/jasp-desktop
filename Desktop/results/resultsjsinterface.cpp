@@ -44,7 +44,7 @@ ResultsJsInterface::ResultsJsInterface(QObject *parent) : QObject(parent)
 {
 	_singleton = this;
 
-	connect(this, &ResultsJsInterface::zoomChanged,					this, &ResultsJsInterface::setZoomInWebEngine);
+	// connect(this, &ResultsJsInterface::zoomChanged,					this, &ResultsJsInterface::setZoomInWebEngine);
 	connect(this, &ResultsJsInterface::runJavaScriptSignalQueued,	this, &ResultsJsInterface::runJavaScriptSignal, Qt::QueuedConnection);
 	
 
@@ -65,10 +65,10 @@ void ResultsJsInterface::setZoom(double zoom)
 	emit zoomChanged();
 }
 
-void ResultsJsInterface::setZoomInWebEngine()
-{
-	runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
-}
+// void ResultsJsInterface::setZoomInWebEngine()
+// {
+// 	runJavaScript("window.setZoom(" + QString::number(_webEngineZoom) + ")");
+// }
 
 void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 {

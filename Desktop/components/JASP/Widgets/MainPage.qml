@@ -318,6 +318,8 @@ Item
 
 			url:					resultsJsInterface.resultsPageUrl
 
+			zoomFactor:				resultsJsInterface.zoom
+
 			onContextMenuRequested: (request) => request.accepted = true
 
 			backgroundColor:		jaspTheme.uiBackground
