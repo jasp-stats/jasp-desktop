@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-02-11 06:09+0000\n"
-"Last-Translator: Tran Thien Truong <truongtrandds@gmail.com>\n"
+"PO-Revision-Date: 2026-05-13 12:44+0000\n"
+"Last-Translator: Thành Khôi Lê <lethanhkhoi@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/vi/>\n"
 "Language: vi\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 2026.5.dev0\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -464,7 +464,7 @@ msgstr "Thứ bậc"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Nominal"
-msgstr "Danh định"
+msgstr "Định danh"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
@@ -485,116 +485,116 @@ msgstr "Bấm vào đây để tạo một cột tính mới '%1'"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr ""
+msgstr "Nhập vào một tên (chưa dùng) cho cột đã được tính toán"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
-msgstr ""
+msgstr "Đóng mà không tạo một cột được tính toán"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
-msgstr ""
+msgstr "Thêm tương phản"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
-msgstr ""
+msgstr "Xoá tương phản"
 
 msgctxt "CustomContrastsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Thiết lập lại"
 
 msgctxt "DataTableView|"
 msgid "Hide filter"
-msgstr ""
+msgstr "Ẩn bộ lọc"
 
 msgctxt "DataTableView|"
 msgid "Show filter"
-msgstr ""
+msgstr "Hiển thị bộ lọc"
 
 msgctxt "DataTableView|"
 msgid "Add computed column"
-msgstr ""
+msgstr "Thêm cột đã tính toán"
 
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr ""
+msgstr "Quay  lại %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
-msgstr ""
+msgstr "Bạn đang ở đây"
 
 msgctxt "Computer|"
 msgid "Recent Folders"
-msgstr ""
+msgstr "Thư mục gần đây"
 
 msgctxt "Computer|"
 msgid "Browse"
-msgstr ""
+msgstr "Duyệt"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr ""
+msgstr "Tệp dữ liệu gần đây để đồng bộ"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
-msgstr ""
+msgstr "Thư viện dữ liệu"
 
 msgctxt "ListItem|"
 msgid "Synchronize with this Data File"
-msgstr ""
+msgstr "Đồng bộ với tệp Dữ liệu này"
 
 msgctxt "ListItem|"
 msgid "Navigate to folder"
-msgstr ""
+msgstr "Duyệt đến Thư mục"
 
 msgctxt "ListItem|"
 msgid "Open JASP file"
-msgstr ""
+msgstr "Mở tệp JASP"
 
 msgctxt "ListItem|"
 msgid "Open data file"
-msgstr ""
+msgstr "Mở tệp dữ liệu"
 
 msgctxt "MenuHeader|"
 msgid "Show info about these preferences"
-msgstr ""
+msgstr "Hiển thị thông tin về các tùy chọn này"
 
 msgctxt "OSF|"
 msgid "Open Science Framework"
-msgstr ""
+msgstr "Mở khung Khoa học"
 
 msgctxt "OSF|"
 msgid "Logout"
-msgstr ""
+msgstr "Đăng xuất"
 
 msgctxt "OSF|"
 msgid "Create Folder"
-msgstr ""
+msgstr "Tạo Thư mục"
 
 msgctxt "OSF|"
 msgid "Foldername"
-msgstr ""
+msgstr "Tên Thư mục"
 
 msgctxt "OSF|"
 msgid "Filename"
-msgstr ""
+msgstr "Tên tệp"
 
 msgctxt "OSF|"
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 msgctxt "OSFLogin|"
 msgid "OSF"
-msgstr ""
+msgstr "OSF"
 
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
-msgstr ""
+msgstr "Đăng nhập bằng tài khoản OSF của bạn để tiếp tục"
 
 msgctxt "OSFLogin|"
 msgid "Sign in"
-msgstr ""
+msgstr "Đăng nhập"
 
 msgctxt "OSFLogin|"
 msgid "Remember me"
