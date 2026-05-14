@@ -68,30 +68,6 @@ void DataSetProvider::resetDataSet()
 	endResetModel();
 }
 
-void DataSetProvider::reloadDataSetFromDatabase()
-{
-	beginResetModel();
-	delete _dataSet;
-	_dataSet = nullptr;
-
-	int dataSetId = _db ? _db->dataSetGetId() : -1;
-	if (dataSetId == 1 && _db->tableExists(_db->dataSetName(dataSetId)))
-		_dataSet = new DataSet(dataSetId);
-	else
-		_dataSet = new DataSet();
-
-	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
-	endResetModel();
-
-	if (VariableInfo::info())
-	{
-		emit VariableInfo::info()->dataSetChanged();
-		emit VariableInfo::info()->rowCountChanged();
-		emit VariableInfo::info()->variableCountChanged();
-		emit VariableInfo::info()->dataAvailableChanged();
-	}
-}
-
 int	DataSetProvider::rowCount(const QModelIndex &) const
 {
 	return _dataSet->columnCount();
@@ -149,7 +125,7 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 	delete _dataSet;
 
 	_db->close();
-	_db->load();
+	_db->loadExisting();
 	_db->upgradeDBFromVersion(jaspVersion);
 
 	_dataSet = new DataSet(0); // Setting 0 for "do nothing" because otherwise we can't pass on jaspVersion

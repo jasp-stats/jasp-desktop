@@ -225,10 +225,38 @@ static void createDataBridge(bool dbInMemory)
 	gl_initializedDbInMemory = dbInMemory;
 }
 
+static void clearQmlFormCache()
+{
+	for (auto value : gl_qmlFormMap.values())
+		deleteQuickItem(value.second);
+
+	if (gl_application)
+		QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+
+	gl_qmlFormMap.clear();
+
+	if (gl_qmlEngine)
+	{
+		gl_qmlEngine->clearSingletons();
+		gl_qmlEngine->clearComponentCache();
+	}
+}
+
+static void refreshQmlDataSetInfoContext()
+{
+	if (gl_qmlEngine)
+		gl_qmlEngine->rootContext()->setContextProperty("dataSetInfo", VariableInfo::info());
+}
+
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
+	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
+	if (providerWillBeRecreated)
+		clearQmlFormCache();
+
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
 	gl_initializedDbInMemory = dbInMemory;
+	refreshQmlDataSetInfoContext();
 	return provider;
 }
 
@@ -257,19 +285,7 @@ static bool recreateCleanDataBridgeState(bool dbInMemory)
 extern "C" {
 void STDCALL syntaxBridgeClearQmlState()
 {
-	for (auto value : gl_qmlFormMap.values())
-		deleteQuickItem(value.second);
-
-	if (gl_application)
-		QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
-
-	gl_qmlFormMap.clear();
-
-	if (gl_qmlEngine)
-	{
-		gl_qmlEngine->clearSingletons();
-		gl_qmlEngine->clearComponentCache();
-	}
+	clearQmlFormCache();
 }
 
 void STDCALL syntaxBridgeClearDataSetState()
@@ -415,8 +431,6 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 		clearDataBridgeState();
 		nativeStateMutated = true;
 		DataSetProvider * provider = resetDataProvider(false, false);
-		DatabaseInterface * database = DatabaseInterface::singleton();
-		database->close();
 		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
 		provider->loadDatabase(jaspVersion);
 		status["databaseUpgraded"] = true;
