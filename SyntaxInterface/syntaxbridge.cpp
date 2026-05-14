@@ -45,6 +45,7 @@
 #include "databaseinterface.h"
 
 #include <string>
+#include <vector>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -62,6 +63,9 @@ static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
 static ColumnEncoder			*			gl_extraEncodings				= nullptr;
 static QMap<QString, std::pair<QDateTime, AnalysisForm* > >	gl_qmlFormMap;
+static int									gl_applicationArgc				= 0;
+static std::vector<std::string>				gl_applicationArgvStorage;
+static std::vector<char*>					gl_applicationArgv;
 
 static bool									gl_verbose						=
 #ifdef JASP_DEBUG
@@ -373,10 +377,8 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 		DatabaseInterface * database = DatabaseInterface::singleton();
 		database->close();
 		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
-		database->loadExisting();
-		database->upgradeDBFromVersion(jaspVersion);
+		provider->loadDatabase(jaspVersion);
 		status["databaseUpgraded"] = true;
-		provider->reloadDataSetFromDatabase();
 		createDataBridge(false);
 
 		DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
@@ -640,31 +642,19 @@ bool init(bool dbInMemory)
 		Log::log() << "R_HOME: " << fq(rHome) << std::endl;
 	}
 
-	int					dummyArgc = 1;
-	char				dummyArgv[2];
-	dummyArgv[0] = '?';
-	dummyArgv[1] = '\0';
-
 	//const char*	platformArg = "-platform";
 	//const char*	platformOpt = "minimal"; //"cocoa";
 
-	std::vector<const char*> arguments = {"JASP"}; //{qmlR, platformArg, platformOpt};
-
-
-	int		argc = arguments.size();
-	char** argvs = new char*[argc];
-
-	for (int i = 0; i < argc; i++)
-	{
-		argvs[i] = new char[strlen(arguments[i]) + 1];
-		memset(argvs[i], '\0',				strlen(arguments[i]) + 1);
-		memcpy(argvs[i], arguments[i],		strlen(arguments[i]));
-		argvs[i][							strlen(arguments[i])] = '\0';
-	}
+	gl_applicationArgvStorage = {"JASP"}; //{qmlR, platformArg, platformOpt};
+	gl_applicationArgv.clear();
+	for (std::string & argument : gl_applicationArgvStorage)
+		gl_applicationArgv.push_back(argument.data());
+	gl_applicationArgv.push_back(nullptr);
+	gl_applicationArgc = static_cast<int>(gl_applicationArgvStorage.size());
 
 	qputenv("QT_QPA_PLATFORM", "minimal");
 
-	gl_application = new QGuiApplication(argc, argvs);
+	gl_application = new QGuiApplication(gl_applicationArgc, gl_applicationArgv.data());
 	gl_qmlEngine = new QQmlEngine();
 
 	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
