@@ -58,6 +58,8 @@ Q_IMPORT_PLUGIN(JASP_ControlsPlugin)
 
 static bool									gl_initialized					= false;
 static bool									gl_initializedDbInMemory		= false;
+static bool									gl_rBridgeInitialized			= false;
+static bool									gl_jaspBaseInitialized			= false;
 static QGuiApplication			*			gl_application					= nullptr;
 static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
@@ -290,6 +292,45 @@ void STDCALL syntaxBridgeClearNativeState()
 void STDCALL syntaxBridgeCleanup()
 {
 	syntaxBridgeClearQmlState();
+}
+
+void STDCALL syntaxBridgeShutdown()
+{
+	syntaxBridgeClearQmlState();
+	clearDataBridgeState();
+
+	if (gl_extraEncodings)
+	{
+		delete gl_extraEncodings;
+		gl_extraEncodings = nullptr;
+	}
+
+	if (gl_initialized)
+	{
+		DataSetProvider * provider = DataSetProvider::getProvider(gl_initializedDbInMemory, false, gl_application);
+		delete provider;
+	}
+
+	if (gl_qmlEngine)
+	{
+		delete gl_qmlEngine;
+		gl_qmlEngine = nullptr;
+	}
+
+	if (gl_application)
+	{
+		gl_application->processEvents();
+		delete gl_application;
+		gl_application = nullptr;
+	}
+
+	gl_applicationArgc = 0;
+	gl_applicationArgv.clear();
+	gl_applicationArgvStorage.clear();
+	gl_initialized = false;
+	gl_initializedDbInMemory = false;
+	gl_rBridgeInitialized = false;
+	gl_jaspBaseInitialized = false;
 }
 
 void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
@@ -668,16 +709,38 @@ bool init(bool dbInMemory)
 	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 
 	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);
-
-	jaspRCPP_init_jaspBase();
+	gl_rBridgeInitialized = true;
 
 	return true;
+}
+
+void ensureRBridgeInitialized()
+{
+	if (gl_rBridgeInitialized)
+		return;
+
+	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);
+	gl_rBridgeInitialized = true;
+}
+
+void ensureJaspBaseInitialized()
+{
+	if (gl_jaspBaseInitialized)
+		return;
+
+	// Option parsing and dataset replay do not need jaspBase. Load it only for
+	// the less common path where QML explicitly asks to evaluate R code.
+	ensureRBridgeInitialized();
+	jaspRCPP_init_jaspBase();
+	gl_jaspBaseInitialized = true;
 }
 
 void sendRScriptHandler(AnalysisForm* form, QString script, QString controlName, bool whiteListedVersion)
 {
 	if (gl_verbose)
 		Log::log() << "R Script " << fq(script) << " sent by " << controlName << std::endl;
+
+	ensureJaspBaseInitialized();
 
 	bool hasError = false;
 	std::string result = rbridge_evalRCodeWhiteListed(fq(script).c_str(), whiteListedVersion);

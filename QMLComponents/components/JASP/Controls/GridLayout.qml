@@ -85,7 +85,7 @@ QT.GridLayout
 
 	function _checkColumns()
 	{
-		if (!_initialized || (width === 0)) return;
+		if (!_initialized || width <= 0 || implicitWidth <= 0 || !isFinite(width) || !isFinite(implicitWidth)) return;
 
 		if (width < (implicitWidth - 1) && gridLayout.columns >= 2)
 		{

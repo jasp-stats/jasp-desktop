@@ -55,6 +55,7 @@ struct SyntaxBridgeDataSet {
 
 
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeCleanup();
+SYNTAX_INTERFACE void				STDCALL syntaxBridgeShutdown();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearQmlState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearDataSetState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearNativeState();
