@@ -205,7 +205,11 @@ if(WIN32)
   else()
 
     message(CHECK_FAIL "not found.")
-    message(FATAL_ERROR "${VC_MERGE_MODULE_NAME} cannot be found.")
+    if(NOT JASP_SYNTAX_INTERFACE_ONLY)
+      message(FATAL_ERROR "${VC_MERGE_MODULE_NAME} cannot be found.")
+    else()
+      message(WARNING "${VC_MERGE_MODULE_NAME} not found — skipped (JASP_SYNTAX_INTERFACE_ONLY=ON).")
+    endif()
 
   endif()
 
