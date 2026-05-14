@@ -36,6 +36,12 @@ DataBridge::DataBridge(unsigned long sessionID, bool useMemory)
 	}
 }
 
+DataBridge::~DataBridge()
+{
+	delete _dataSet;
+	_dataSet = nullptr;
+}
+
 void DataBridge::provideStateFileName(std::string & root, std::string & relativePath)
 {
 	return TempFiles::createSpecific("state", _analysisId, root, relativePath);

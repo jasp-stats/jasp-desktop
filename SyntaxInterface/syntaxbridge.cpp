@@ -23,6 +23,8 @@
 #include <QFileInfo>
 #include <QQmlComponent>
 #include <QQuickItem>
+#include <QCoreApplication>
+#include <QEvent>
 #include <QDir>
 #include <QThread>
 #include <QQmlIncubator>
@@ -40,6 +42,9 @@
 #include "utilities/appdirs.h"
 #include "modules/dynamicmodule.h"
 #include "archivereader.h"
+#include "databaseinterface.h"
+
+#include <string>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -51,6 +56,7 @@ Q_IMPORT_PLUGIN(JASP_ControlsPlugin)
 #define STRINGIZE(x) _STRINGIZE(x)
 
 static bool									gl_initialized					= false;
+static bool									gl_initializedDbInMemory		= false;
 static QGuiApplication			*			gl_application					= nullptr;
 static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
@@ -73,11 +79,183 @@ static std::string							gl_param_resultFont				=
 	"freesans,sans-serif";
 #endif
 
+static bool readJaspJsonEntry(Json::Value & root, const char * filePath, const char * entry, std::string * error = nullptr)
+{
+	try
+	{
+		if (!filePath || std::string(filePath).empty())
+		{
+			if (error)
+				*error = "Cannot read from an empty JASP archive path.";
+			return false;
+		}
+
+		ArchiveReader reader(filePath, entry);
+		int errorCode = 0;
+		std::string json = reader.readAllData(sizeof(char), errorCode);
+		if (errorCode != 0)
+		{
+			if (error)
+				*error = std::string("Could not read entry ") + entry + " from JASP archive " + filePath + ".";
+			else
+				Log::log() << "Could not read JASP archive entry." << std::endl;
+			return false;
+		}
+
+		Json::Reader parser;
+		if (!parser.parse(json, root))
+		{
+			if (error)
+				*error = std::string("Could not parse entry ") + entry + " from JASP archive " + filePath + ".";
+			else
+				Log::log() << "Could not parse JASP archive entry." << std::endl;
+			return false;
+		}
+		return true;
+	}
+	catch (const std::exception & exception)
+	{
+		if (error)
+			*error = std::string("Could not read entry ") + entry + " from JASP archive " + (filePath ? filePath : "") + ": " + exception.what();
+		else
+			Log::log() << "Could not read JASP archive entry." << std::endl;
+		return false;
+	}
+}
+
+static const char* statusResult(Json::Value status)
+{
+	static std::string result;
+	result = status.toStyledString();
+	return result.c_str();
+}
+
+static Json::Value statusBase(const char * operation)
+{
+	Json::Value status(Json::objectValue);
+	status["operation"] = operation;
+	status["ok"] = false;
+	return status;
+}
+
+static const char* statusError(Json::Value status, const std::string & error)
+{
+	status["ok"] = false;
+	status["error"] = error;
+	Log::log() << error << std::endl;
+	return statusResult(status);
+}
+
+static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
+{
+	Json::Value status = statusBase("syntaxBridgeAnalysisOptionsFromJaspFile");
+	status["analysisNr"] = analysisNr;
+
+	Json::Value analysesJson;
+	std::string error;
+	if (!readJaspJsonEntry(analysesJson, filePath, "analyses.json", &error))
+	{
+		status["failure"] = "read";
+		status["error"] = error;
+		return status;
+	}
+
+	const Json::Value & analyses = analysesJson["analyses"];
+	if (!analyses.isArray())
+	{
+		status["failure"] = "schema";
+		status["error"] = std::string("JASP archive analyses.json does not contain an analyses array.");
+		return status;
+	}
+
+	status["analysisCount"] = static_cast<Json::UInt64>(analyses.size());
+	if (analysisNr < 0 || analysisNr >= int(analyses.size()))
+	{
+		status["failure"] = "index";
+		status["error"] = std::string("Could not find analysis ") + std::to_string(analysisNr) + " in JASP archive.";
+		return status;
+	}
+
+	const Json::Value & options = analyses[analysisNr]["options"];
+	if (options.isNull())
+	{
+		status["failure"] = "schema";
+		status["error"] = std::string("Analysis ") + std::to_string(analysisNr) + " does not contain options.";
+		return status;
+	}
+
+	status["ok"] = true;
+	status["options"] = options;
+	return status;
+}
+
+static void clearRequestedDataState()
+{
+	rbridge_setWantedCols(ColumnEncoder::colsPlusTypes());
+
+	ColumnEncoder::colTypeMap noColumns;
+	ColumnEncoder::columnEncoder()->setCurrentNames(noColumns);
+
+	if (gl_extraEncodings)
+		gl_extraEncodings->setCurrentNames(noColumns);
+}
+
+static void clearDataBridgeState()
+{
+	clearRequestedDataState();
+	rbridge_clearDataBridge();
+
+	if (gl_dataBridge)
+	{
+		delete gl_dataBridge;
+		gl_dataBridge = nullptr;
+	}
+}
+
+static void createDataBridge(bool dbInMemory)
+{
+	gl_dataBridge = new DataBridge(ProcessInfo::currentPID(), dbInMemory);
+	rbridge_setDataBridge(gl_dataBridge);
+	gl_initializedDbInMemory = dbInMemory;
+}
+
+static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
+{
+	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
+	gl_initializedDbInMemory = dbInMemory;
+	return provider;
+}
+
+static bool recreateCleanDataBridgeState(bool dbInMemory)
+{
+	try
+	{
+		clearDataBridgeState();
+		DataSetProvider::getProvider(!dbInMemory, true, gl_application);
+		resetDataProvider(dbInMemory, true);
+		createDataBridge(dbInMemory);
+		return gl_dataBridge != nullptr;
+	}
+	catch (const std::exception & exception)
+	{
+		Log::log() << "Could not restore SyntaxInterface native dataset state after failed JASP archive load: " << exception.what() << std::endl;
+	}
+	catch (...)
+	{
+		Log::log() << "Could not restore SyntaxInterface native dataset state after failed JASP archive load." << std::endl;
+	}
+
+	return false;
+}
+
 extern "C" {
-void STDCALL syntaxBridgeCleanup()
+void STDCALL syntaxBridgeClearQmlState()
 {
 	for (auto value : gl_qmlFormMap.values())
 		deleteQuickItem(value.second);
+
+	if (gl_application)
+		QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
 
 	gl_qmlFormMap.clear();
 
@@ -88,6 +266,28 @@ void STDCALL syntaxBridgeCleanup()
 	}
 }
 
+void STDCALL syntaxBridgeClearDataSetState()
+{
+	clearDataBridgeState();
+
+	if (gl_initialized)
+	{
+		resetDataProvider(gl_initializedDbInMemory, true);
+		createDataBridge(gl_initializedDbInMemory);
+	}
+}
+
+void STDCALL syntaxBridgeClearNativeState()
+{
+	syntaxBridgeClearQmlState();
+	syntaxBridgeClearDataSetState();
+}
+
+void STDCALL syntaxBridgeCleanup()
+{
+	syntaxBridgeClearQmlState();
+}
+
 void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
 	if (!init(dbInMemory))
@@ -96,7 +296,15 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		return;
 	}
 
-	DataSetProvider* provider = DataSetProvider::getProvider(dbInMemory);
+	DataSetProvider* provider = nullptr;
+	if (gl_initializedDbInMemory != dbInMemory)
+	{
+		clearDataBridgeState();
+		provider = resetDataProvider(dbInMemory, true);
+		createDataBridge(dbInMemory);
+	}
+	else
+		provider = DataSetProvider::getProvider(dbInMemory);
 
 	std::map<std::string, stringvec > dataSet;
 
@@ -110,6 +318,85 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 	}
 
 	provider->loadDataSet(dataSet, threshold, orderLabelsByValue);
+}
+
+void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
+{
+	syntaxBridgeLoadDataSetFromJaspFileStatus(filePath, dbInMemory);
+}
+
+const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory)
+{
+	Json::Value status = statusBase("syntaxBridgeLoadDataSetFromJaspFile");
+	status["dbInMemoryRequested"] = dbInMemory;
+	status["dbInMemoryUsed"] = false;
+
+	if (!filePath || std::string(filePath).empty())
+		return statusError(status, "Cannot load dataset from an empty JASP archive path.");
+
+	if (dbInMemory)
+		status["warning"] = "dbInMemory=TRUE is ignored for .jasp archives; SyntaxInterface loads archive databases through file-backed internal.sqlite.";
+
+	if (!init(false))
+	{
+		return statusError(status, "Error during initialization.");
+	}
+
+	bool nativeStateMutated = false;
+
+	try
+	{
+		Json::Value manifest;
+		std::string manifestError;
+		if (!readJaspJsonEntry(manifest, filePath, "manifest.json", &manifestError))
+			return statusError(status, manifestError);
+
+		std::string jaspVersionStr = manifest.get("jaspVersion", "").asString();
+		std::string archiveVersionStr = manifest.get("jaspArchiveVersion", "").asString();
+		if (archiveVersionStr.empty())
+			return statusError(status, "JASP archive manifest is missing jaspArchiveVersion.");
+		if (jaspVersionStr.empty())
+			return statusError(status, "JASP archive manifest is missing jaspVersion.");
+
+		status["jaspArchiveVersion"] = archiveVersionStr;
+		status["jaspVersion"] = jaspVersionStr;
+
+		Version jaspVersion(jaspVersionStr);
+
+		// Keep SyntaxInterface below Desktop's DataSetPackage/UI ownership while
+		// mirroring the archive import steps that matter for backend replay:
+		// extract internal.sqlite, upgrade it for the saved JASP version, then
+		// expose it through the bridge-owned DataBridge.
+		clearDataBridgeState();
+		nativeStateMutated = true;
+		DataSetProvider * provider = resetDataProvider(false, false);
+		DatabaseInterface * database = DatabaseInterface::singleton();
+		database->close();
+		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
+		database->loadExisting();
+		database->upgradeDBFromVersion(jaspVersion);
+		status["databaseUpgraded"] = true;
+		provider->reloadDataSetFromDatabase();
+		createDataBridge(false);
+
+		DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
+		if (!dataSet)
+		{
+			status["nativeStateRestored"] = recreateCleanDataBridgeState(false);
+			return statusError(status, std::string("Could not load dataset from JASP archive ") + filePath + ": no dataset was provided by the bridge.");
+		}
+
+		status["ok"] = true;
+		status["columnCount"] = static_cast<Json::UInt64>(dataSet->columnCount());
+		status["rowCount"] = static_cast<Json::UInt64>(dataSet->rowCount());
+		return statusResult(status);
+	}
+	catch (const std::exception & exception)
+	{
+		if (nativeStateMutated)
+			status["nativeStateRestored"] = recreateCleanDataBridgeState(false);
+		return statusError(status, std::string("Could not load dataset from JASP archive ") + filePath + ": " + exception.what());
+	}
 }
 
 const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
@@ -153,6 +440,31 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 	result = parsedOptions.toStyledString();
 
 	return result.c_str();
+}
+
+const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
+{
+	static std::string result;
+	result = "";
+
+	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
+	if (!status["ok"].asBool())
+	{
+		if (status.isMember("error"))
+			Log::log() << status["error"].asString() << std::endl;
+		return result.c_str();
+	}
+
+	result = status["options"].toStyledString();
+	return result.c_str();
+}
+
+const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
+{
+	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
+	if (!status["ok"].asBool() && status.isMember("error"))
+		Log::log() << status["error"].asString() << std::endl;
+	return statusResult(status);
 }
 
 
@@ -263,70 +575,27 @@ const char* STDCALL syntaxBridgeParseDescription(const char* modulePath)
 	return result.c_str();
 }
 
-void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
+const char* STDCALL syntaxBridgeGetVariableNames()
 {
-	if (!init(dbInMemory))
-	{
-		Log::log() << "Error during initialization" << std::endl;
-		return;
-	}
+	static std::string result;
 
-	ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float p){});
-	ManifestInfo info = ArchiveReader::readManifest(filePath);
-
-	DataSetProvider* provider = DataSetProvider::getProvider(dbInMemory, false);
-
-	provider->loadDatabase(info.jaspVersion);
-}
-
-const char*	STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
-{
 	if (!init())
 	{
 		Log::log() << "Error during initialization" << std::endl;
-		return "";
+		result = "";
+		return result.c_str();
 	}
 
-	static std::string result;
+	size_t numCols = 0;
+	const char ** columnNames = rbridge_allColumnNames(numCols, false);
 
-	result = "";
-	Json::Value analysesData;
-
-	if (ArchiveReader::parseJsonEntry(analysesData, filePath, "analyses.json", false))
-	{
-		Json::Value analysesDataList = analysesData.get("analyses",	analysesData);
-		if (analysisNr < analysesDataList.size())
-			result = analysesDataList[analysisNr]["options"].toStyledString();
-		else
-			Log::log() << "Analyis number is higher than the number of analyses (" << analysesDataList.size() << ") in the JASP file" << std::endl;
-	}
-	else
-		Log::log() << "Fail to open or read the JASP file " << filePath << std::endl;
-
-
-	return result.c_str();
-}
-
-const char*	STDCALL syntaxBridgeGetVariableNames()
-{
-	DataSetProvider* provider = DataSetProvider::getProvider(false, false);
-	if (!provider)
-		return "";
-
-	static std::string result;
-
-	QStringList names = provider->provideInfo(VariableInfo::VariableNames).toStringList();
 	Json::Value jsonNames(Json::arrayValue);
-
-	for (const QString & name : names)
-		jsonNames.append(fq(name));
+	for (size_t i = 0; i < numCols; ++i)
+		jsonNames.append(columnNames[i]);
 
 	result = jsonNames.toStyledString();
-
 	return result.c_str();
 }
-
-
 
 } // extern "C"
 
@@ -356,6 +625,7 @@ bool init(bool dbInMemory)
 {
 	if (gl_initialized) return true;
 	gl_initialized = true;
+	gl_initializedDbInMemory = dbInMemory;
 
 	if (gl_verbose)
 	{
@@ -404,7 +674,7 @@ bool init(bool dbInMemory)
 	QmlUtils::setupQMLEngine(gl_qmlEngine);
 	QmlUtils::registerQmlModuleTypes();
 
-	gl_dataBridge = new DataBridge(ProcessInfo::currentPID(), dbInMemory);
+	createDataBridge(dbInMemory);
 	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 
 	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);

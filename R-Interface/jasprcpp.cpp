@@ -80,9 +80,10 @@ int __parseEval(const std::string & line, SEXP & ans)
 //#ifdef PRINT_ENGINE_MESSAGES
 	//jaspRCPP_logString("parseEval: " + line + "\n");
 //#endif
+	ans = R_NilValue;
 	ParseStatus status;
 	SEXP cmdSexp, cmdexpr = R_NilValue;
-	int i, errorOccurred;
+	int i, errorOccurred, rc = 0;
 
 	PROTECT(cmdSexp = Rf_allocVector(STRSXP, 1));
 	SET_STRING_ELT(cmdSexp, 0, Rf_mkChar(line.c_str()));
@@ -94,17 +95,21 @@ int __parseEval(const std::string & line, SEXP & ans)
 		for(i = 0; i < Rf_length(cmdexpr); i++){
 			ans = R_tryEval(VECTOR_ELT(cmdexpr, i),  Rcpp::Environment::global_env(), &errorOccurred);
 			if (errorOccurred) {
-				UNPROTECT(2);
-				return 1;
+				rc = 1;
+				break;
 			}
 		}
 	}
-	return 0;
+	else
+		rc = 1;
+
+	UNPROTECT(2);
+	return rc;
 }
 
 SEXP _parseEval(const std::string &line)
 {
-	SEXP ans;
+	SEXP ans = R_NilValue;
 	int rc = __parseEval(line, ans);
 	if (rc != 0) {
 		throw std::runtime_error(std::string("Error evaluating: ") + line);
@@ -270,22 +275,22 @@ void STDCALL jaspRCPP_init_jaspBase()
 
 	auto rEnvironment = Rcpp::Environment::global_env();
 
-	rEnvironment[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef);
-	rEnvironment[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef);
-	rEnvironment[".deleteColumn"]					= Rcpp::XPtr<deleteColumnFuncDef>(	& _deleteColumnFuncDef);
-	rEnvironment[".getColumnType"]					= Rcpp::XPtr<getColumnTypeFuncDef>(	& _getColumnTypeFuncDef);
-	rEnvironment[".getColumnExists"]				= Rcpp::XPtr<getColumnExistsFDef>(	& _getColumnExistsFuncDef);
-	rEnvironment[".getColumnAnalysisId"]			= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnAnIdFuncDef);
-	rEnvironment[".getColumnOriginalIndex"]			= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnIndexFuncDef);
-	rEnvironment[".sendToDesktopFunction"]			= Rcpp::XPtr<sendFuncDef>(			&  _sendToDesktop);
-	rEnvironment[".pollMessagesFunction"]			= Rcpp::XPtr<pollMessagesFuncDef>(	&  _pollMessagesFunction);
-	rEnvironment[".setColumnDataAsScalePtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsScale);
-	rEnvironment[".setColumnDataAsOrdinalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal);
-	rEnvironment[".setColumnDataAsNominalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal);
-	rEnvironment[".shouldEncodeColName"]			= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldEncodeColumnName);
-	rEnvironment[".shouldDecodeColName"]			= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldDecodeColumnName);
-	rEnvironment[".encodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _encodeColumnName);
-	rEnvironment[".decodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _decodeColumnName);
+	rEnvironment[".logString"]						= Rcpp::XPtr<logFuncDef>(			& _logFuncDef, false);
+	rEnvironment[".createColumn"]					= Rcpp::XPtr<createColumnFuncDef>(	& _createColumnFuncDef, false);
+	rEnvironment[".deleteColumn"]					= Rcpp::XPtr<deleteColumnFuncDef>(	& _deleteColumnFuncDef, false);
+	rEnvironment[".getColumnType"]					= Rcpp::XPtr<getColumnTypeFuncDef>(	& _getColumnTypeFuncDef, false);
+	rEnvironment[".getColumnExists"]				= Rcpp::XPtr<getColumnExistsFDef>(	& _getColumnExistsFuncDef, false);
+	rEnvironment[".getColumnAnalysisId"]			= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnAnIdFuncDef, false);
+	rEnvironment[".getColumnOriginalIndex"]			= Rcpp::XPtr<getColumnAnIdFuncDef>(	& _getColumnIndexFuncDef, false);
+	rEnvironment[".sendToDesktopFunction"]			= Rcpp::XPtr<sendFuncDef>(			& _sendToDesktop, false);
+	rEnvironment[".pollMessagesFunction"]			= Rcpp::XPtr<pollMessagesFuncDef>(	& _pollMessagesFunction, false);
+	rEnvironment[".setColumnDataAsScalePtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsScale, false);
+	rEnvironment[".setColumnDataAsOrdinalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsOrdinal, false);
+	rEnvironment[".setColumnDataAsNominalPtr"]		= Rcpp::XPtr<setColumnDataFuncDef>(	& _setColumnDataAsNominal, false);
+	rEnvironment[".shouldEncodeColName"]			= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldEncodeColumnName, false);
+	rEnvironment[".shouldDecodeColName"]			= Rcpp::XPtr<shouldEnDecodeFuncDef>(& _shouldDecodeColumnName, false);
+	rEnvironment[".encodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _encodeColumnName, false);
+	rEnvironment[".decodeColName"]					= Rcpp::XPtr<enDecodeFuncDef>(		& _decodeColumnName, false);
 
 	//Pass a whole bunch of pointers to jaspBase
 	jaspRCPP_parseEvalQNT("jaspBase:::setColumnFuncs(		.setColumnDataAsScalePtr, .setColumnDataAsOrdinalPtr, .setColumnDataAsNominalPtr, .getColumnType, .getColumnAnalysisId, .getColumnOriginalIndex, .createColumn, .deleteColumn, .getColumnExists, .encodeColName, .decodeColName, .shouldEncodeColName, .shouldDecodeColName)");
@@ -1240,12 +1245,53 @@ std::string __sinkMe(const std::string code)
 	return	"sink(.outputSink);\n" + code; //default type = c('message', 'output') anyway
 }
 
+class SinkGuard
+{
+public:
+	SinkGuard()
+	{
+		_parseEvalQNT(__sinkMe());
+	}
+
+	~SinkGuard()
+	{
+		close();
+	}
+
+	void close()
+	{
+		if (!_active)
+			return;
+
+		try
+		{
+			SEXP ignored = R_NilValue;
+			int rc = __parseEval("sink();", ignored);
+			if (rc != 0)
+				jaspRCPP_logString("SinkGuard failed to close the R output sink.\n");
+		}
+		catch (const std::exception & exception)
+		{
+			jaspRCPP_logString(std::string("SinkGuard failed to close the R output sink: ") + exception.what() + "\n");
+		}
+		catch (...)
+		{
+			jaspRCPP_logString("SinkGuard failed to close the R output sink with an unknown exception.\n");
+		}
+
+		_active = false;
+	}
+
+private:
+	bool _active = true;
+};
+
 void jaspRCPP_setWorkingDirectory()
 {
 	std::string root = requestTempRootNameCB();
 	std::string code = "setwd(\"" + root + "\");";
-	_parseEvalQNT(__sinkMe(code));
-	_parseEvalQNT("sink();"); //Back to normal!
+	SinkGuard sinkGuard;
+	_parseEvalQNT(code);
 }
 
 void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
@@ -1256,10 +1302,9 @@ void jaspRCPP_parseEvalQNT(const std::string & code, bool setWd, bool preface)
 	if(preface)
 		jaspRCPP_parseEvalPreface(code);
 
-	_parseEvalQNT(__sinkMe());
+	SinkGuard sinkGuard;
 	_parseEvalQNT(code);
 	jaspRCPP_logString("\n");
-	_parseEvalQNT("sink();"); //Back to normal!
 }
 
 std::string jaspRCPP_parseEvalStringReturn(const std::string & code, bool setWd, bool preface)
@@ -1278,12 +1323,12 @@ SEXP jaspRCPP_parseEval(const std::string & code, bool setWd, bool preface)
 	if(preface)
 		jaspRCPP_parseEvalPreface(code);
 
-	_parseEvalQNT(__sinkMe());
-	SEXP returnthis = _parseEval(code); //Not throwing is nice actually! Well, unless you want to hear about missing modules etc...
+	SinkGuard sinkGuard;
+	SEXP returnthis = PROTECT(_parseEval(code)); // Keep the result alive while resetting the sink below.
 	jaspRCPP_logString("\n");
+	sinkGuard.close();
 
-	_parseEvalQNT("sink();"); //back to normal!
-
+	UNPROTECT(1);
 	return returnthis;
 }
 
@@ -1411,4 +1456,3 @@ SEXP jaspRCPP_CreateCaptureConnection()
 	UNPROTECT(1);
 	return rc;
 }
-

@@ -81,6 +81,7 @@ extern "C" {
 	typedef std::function<std::string (const std::string &, int progress)> RCallback;
 
 	void				rbridge_setDataBridge(DataBridge * dataBridge);
+	void				rbridge_clearDataBridge();
 	void				rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * encoder, const char * resultFont, bool insideJasp = true);
 
 	void				rbridge_memoryCleaning();

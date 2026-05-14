@@ -2378,6 +2378,11 @@ void DatabaseInterface::preloadInterfaceForThread()
 	_db();
 }
 
+void DatabaseInterface::loadExisting()
+{
+	load();
+}
+
 void DatabaseInterface::load()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::load);
@@ -2479,7 +2484,7 @@ void DatabaseInterface::close()
 
 	_dbCheckMutex.unlock();
 	
-	while(sqlite3_close(_dbCreated) != SQLITE_OK)
+	while(_dbCreated && sqlite3_close(_dbCreated) != SQLITE_OK)
 	{
 		std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
 	}

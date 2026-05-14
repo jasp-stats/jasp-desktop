@@ -207,6 +207,8 @@ else()
     USES_TERMINAL
     COMMENT "------ Configuring and Building the libR-Interface")
 
+  add_dependencies(SyntaxInterface R-Interface)
+
 endif()
 
 if(NOT USE_QT_STATIC_LIBS)

@@ -26,6 +26,11 @@ DataSetProvider* DataSetProvider::getProvider(bool inMemory, bool reset, QObject
 {
 	if (!_singleton)
 		_singleton = new DataSetProvider(inMemory, parent);
+	else if (_singleton->_inMemory != inMemory)
+	{
+		delete _singleton;
+		_singleton = new DataSetProvider(inMemory, parent);
+	}
 	else if (reset)
 		_singleton->resetDataSet();
 
@@ -41,7 +46,7 @@ DataSetProvider::~DataSetProvider()
 	_singleton = nullptr;
 }
 
-DataSetProvider::DataSetProvider(bool inMemory, QObject *parent) : QAbstractTableModel(parent)
+DataSetProvider::DataSetProvider(bool inMemory, QObject *parent) : QAbstractTableModel(parent), _inMemory(inMemory)
 {
 	_db	= new DatabaseInterface(true, inMemory);
 	_dataSet = new DataSet();
@@ -52,6 +57,7 @@ DataSetProvider::DataSetProvider(bool inMemory, QObject *parent) : QAbstractTabl
 
 void DataSetProvider::resetDataSet()
 {
+	beginResetModel();
 	if (_dataSet)
 	{
 		_dataSet->dbDelete();
@@ -59,6 +65,31 @@ void DataSetProvider::resetDataSet()
 	}
 
 	_dataSet = new DataSet();
+	endResetModel();
+}
+
+void DataSetProvider::reloadDataSetFromDatabase()
+{
+	beginResetModel();
+	delete _dataSet;
+	_dataSet = nullptr;
+
+	int dataSetId = _db ? _db->dataSetGetId() : -1;
+	if (dataSetId == 1 && _db->tableExists(_db->dataSetName(dataSetId)))
+		_dataSet = new DataSet(dataSetId);
+	else
+		_dataSet = new DataSet();
+
+	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
+	endResetModel();
+
+	if (VariableInfo::info())
+	{
+		emit VariableInfo::info()->dataSetChanged();
+		emit VariableInfo::info()->rowCountChanged();
+		emit VariableInfo::info()->variableCountChanged();
+		emit VariableInfo::info()->dataAvailableChanged();
+	}
 }
 
 int	DataSetProvider::rowCount(const QModelIndex &) const

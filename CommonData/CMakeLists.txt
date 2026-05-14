@@ -60,6 +60,10 @@ target_link_libraries(
 
 )
 
+if(MSVC)
+  target_compile_options(CommonData PRIVATE /EHsc)
+endif()
+
 target_compile_definitions(
   CommonData
   PUBLIC $<$<BOOL:${JASP_PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>

@@ -39,29 +39,35 @@
 
 extern "C" {
 
+// Keep these exported structs plain C ABI data. Callers must initialize every
+// field explicitly, e.g. with {} in C++ or calloc/memset in C.
 struct SyntaxBridgeColumn {
-	char	*   name	= nullptr;
-	char	**  values	= nullptr;
+	char	*   name;
+	char	**  values;
 } ;
 
 struct SyntaxBridgeDataSet {
-	char				*	name			= nullptr;
-	int						rowCount		= 0;
-	int						columnCount		= 0;
-	SyntaxBridgeColumn	*	columns			= nullptr;
+	char				*	name;
+	int						rowCount;
+	int						columnCount;
+	SyntaxBridgeColumn	*	columns;
 };
 
 
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeCleanup();
+SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearQmlState();
+SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearDataSetState();
+SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearNativeState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, const char* analysisName);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeParseDescription(const char* modulePath);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGetVariableNames();
-
 
 } // extern "C"
 

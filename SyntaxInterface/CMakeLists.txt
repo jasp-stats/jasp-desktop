@@ -43,7 +43,7 @@ endif()
 
 target_compile_definitions(
 	SyntaxInterface
-	PUBLIC
+	PRIVATE
 	SYNTAX_INTERFACE_LIBRARY
 	JASP_R_INTERFACE_LIBRARY
 	)
@@ -51,7 +51,7 @@ target_compile_definitions(
 if(USE_QT_STATIC_LIBS)
 	target_compile_definitions(
 		SyntaxInterface
-		PUBLIC
+		PRIVATE
 		USE_QT_STATIC_LIBS
 	)
 endif()

@@ -64,6 +64,13 @@ size_t _logWriteFunction(const void * buf, size_t len)
 void rbridge_setDataBridge(DataBridge * dataBridge)
 {
 	data_bridge = dataBridge;
+	rbridge_dataSet = nullptr;
+}
+
+void rbridge_clearDataBridge()
+{
+	data_bridge = nullptr;
+	rbridge_dataSet = nullptr;
 }
 
 const std::string jaspBaseDistributionSamplersR =

@@ -25,6 +25,11 @@ class DataBridge
 {
 public:
 	DataBridge(unsigned long sessionID, bool useMemory = false);
+	~DataBridge();
+	DataBridge(const DataBridge &) = delete;
+	DataBridge & operator=(const DataBridge &) = delete;
+	DataBridge(DataBridge &&) = delete;
+	DataBridge & operator=(DataBridge &&) = delete;
 
 	std::string				createColumn(				const std::string & columnName, bool computed=false); ///< Returns encoded columnname on success or "" on failure (cause it already exists)
 	bool					deleteColumn(				const std::string & columnName);
