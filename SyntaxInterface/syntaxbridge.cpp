@@ -166,7 +166,7 @@ static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
 		return status;
 	}
 
-	const Json::Value & analyses = analysesJson["analyses"];
+	const Json::Value & analyses = analysesJson.isArray() ? analysesJson : analysesJson["analyses"];
 	if (!analyses.isArray())
 	{
 		status["failure"] = "schema";
@@ -431,6 +431,7 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 		clearDataBridgeState();
 		nativeStateMutated = true;
 		DataSetProvider * provider = resetDataProvider(false, false);
+		provider->closeDatabase();
 		ArchiveReader(filePath, DatabaseInterface::singleton()->dbFile(true)).writeEntryToTempFiles([](float) {});
 		provider->loadDatabase(jaspVersion);
 		status["databaseUpgraded"] = true;

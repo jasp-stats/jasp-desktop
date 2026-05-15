@@ -111,6 +111,8 @@ void ArchiveReader::writeEntryToTempFiles(std::function<void(float)> progressCal
 
 
     std::ofstream file(TempFiles::createSpecific("", _entryPath).c_str(),  std::ios::out | std::ios::binary);
+	if (!file.is_open())
+		throw runtime_error("Could not open temporary archive entry '" + _entryPath + "' for writing.");
 
     static char streamBuff[8192 * 32];
     file.rdbuf()->pubsetbuf(streamBuff, sizeof(streamBuff)); //Set the buffer manually to make it much faster our issue https://github.com/jasp-stats/INTERNAL-jasp/issues/436 and solution from:  https://stackoverflow.com/a/15177770
@@ -130,10 +132,19 @@ void ArchiveReader::writeEntryToTempFiles(std::function<void(float)> progressCal
 
         if(bytes > 0 && errorCode == 0)		file.write(copyBuff, bytes);
         else                                break;
+
+		if (!file.good())
+			throw runtime_error("Could not write temporary archive entry '" + _entryPath + "'.");
     }
     while (true);
 
+	if (errorCode != 0)
+		throw runtime_error("Could not read archive entry '" + _entryPath + "'.");
+
     file.flush();
+	if (!file.good())
+		throw runtime_error("Could not flush temporary archive entry '" + _entryPath + "'.");
+
     file.close();
 }
 

@@ -41,6 +41,7 @@ public:
 	QVariant					data(		const QModelIndex & index, int role = Qt::DisplayRole)						const	override;
 
 	void						loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold = 10, bool orderLabelsByValue = true);
+	void						closeDatabase();
 	void						loadDatabase(const Version & jaspVersion);
 
 	QVariant					provideInfo(VariableInfo::InfoType info, const QString& colName = "", int row = 0)		const	override;
