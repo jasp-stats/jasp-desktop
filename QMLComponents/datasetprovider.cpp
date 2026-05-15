@@ -136,7 +136,7 @@ void DataSetProvider::loadDatabase(const Version & jaspVersion)
 	try
 	{
 		_db->close();
-		_db->loadExisting();
+		_db->load();
 		_db->upgradeDBFromVersion(jaspVersion);
 
 		std::unique_ptr<DataSet> loadedDataSet(new DataSet(0)); // Setting 0 for "do nothing" because otherwise we can't pass on jaspVersion

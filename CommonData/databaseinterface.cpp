@@ -2378,11 +2378,6 @@ void DatabaseInterface::preloadInterfaceForThread()
 	_db();
 }
 
-void DatabaseInterface::loadExisting()
-{
-	load();
-}
-
 void DatabaseInterface::load()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::load);
