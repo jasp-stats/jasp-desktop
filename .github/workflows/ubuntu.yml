@@ -17,13 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+       JASP_R_VERSION: '4.5.3'
   
     steps:
       - uses: actions/checkout@v3
       
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: 'release'
+          r-version: ${{ env.JASP_R_VERSION }}
       - name: Get Installed R Version
         run: echo "R_VERSION=$(R --version | head -n 1 | awk '{print $3}')" >> $GITHUB_ENV
       
