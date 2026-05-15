@@ -269,15 +269,6 @@ set(GITHUB_PAT_DEF "" CACHE STRING "GitHub Personal Access Token to use in relea
 message(CHECK_START "Looking if GITHUB_PAT is set as an environment variable.")
 set(GITHUB_PAT      $ENV{GITHUB_PAT})
 
-if(GITHUB_PAT STREQUAL "")
-  message(CHECK_FAIL "not found")
-  message(
-    FATAL_ERROR
-      "You probably need to set the GITHUB_PAT; otherwise CMAKE cannot effectively communicate with GitHub. If you are using Qt Creator, you can set a new environment GITHUB_PAT variable in Qt Creator."
-  )
-endif()
-message(CHECK_PASS "found")
-
 message(CHECK_START "Looking if GITHUB_PAT_DEF is set as an environment variable.")
 set(GITHUB_PAT_DEF      $ENV{GITHUB_PAT_DEF})
 
