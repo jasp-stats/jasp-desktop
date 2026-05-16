@@ -198,7 +198,7 @@ Window
 							anchors.margins:	8 * preferencesModel.uiScale
 							anchors.leftMargin:	3 * jaspTheme.itemPadding
 							text:				mainWindow.dataAvailable ?
-													qsTr("Enter your R code here.\nThe data is available unfiltered as 'data'\nand filtered as 'filteredData'.\nYou can also paste syntax-mode JASP analyses here.") :
+													qsTr("Enter your R code here.\nThe data is available unfiltered as '%1'\nand filtered as '%2'.\nYou can also paste syntax-mode JASP analyses here.").arg("data").arg("filteredData") :
 													qsTr("Enter your R code here.\n\nYou can also paste syntax-mode JASP analyses here.")
 							font:				jaspTheme.font
 							color:				jaspTheme.grayDarker
