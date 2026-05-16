@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-05-17 05:11+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
 
@@ -6069,82 +6075,81 @@ msgid ""
 "You can find out more about JASP Services BV at <a href=\"%3\">our website</"
 "a>."
 msgstr ""
+"<h3>联系我们</h3>\n"
+"\n"
+"以下链接将引导您进入贵司专属的问题跟踪系统。\n"
+"\n"
+"<ul><li><a href=\"%1\">功能请求</a>，当您希望在 JASP 中添加某些功能时。</li>"
+"<li><a href=\"%2\">错误报告</a>，当 JASP 的某个功能无法正常工作时。</li><li>"
+"<a href=\"%3\">崩溃报告</a>，用于报告 JASP 崩溃的意外情况。</li></ul>\n"
+"您可以在这里直接联系 JASP 软件开发人员。\n"
+"\n"
+"您可以在<a href=\"%3\">我们的网站</a>了解更多关于 JASP Services BV 的信息。"
 
 msgctxt "JASPControl|"
 msgid "Color Picker"
-msgstr ""
+msgstr "取色器"
 
 msgctxt "CsvPreview|"
 msgid "Data Preview"
-msgstr ""
+msgstr "数据预览"
 
 msgctxt "CsvPreview|"
 msgid "Select Delimiter:"
-msgstr ""
+msgstr "选择分隔符："
 
 msgctxt "CsvPreview|"
 msgid "Space"
-msgstr ""
+msgstr "空格"
 
 msgctxt "CsvPreview|"
 msgid "Tab"
-msgstr ""
+msgstr "制表符"
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Advanced"
 msgstr "高级"
 
 msgctxt "CsvPreview|"
 msgid "Load"
-msgstr ""
+msgstr "加载"
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Cancel"
 msgstr "取消"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Preferred language"
 msgstr "首选语言"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Choose language"
 msgstr "选择界面语言"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use thousands separators"
 msgstr "启用千位分隔符"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Disable to remove thousands separators from all numbers."
 msgstr "禁用以从所有数字中删除千位分隔符。"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr "以其他语言或区域的格式显示数字"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr "使用下面指定的区域设置来显示数字格式和货币。"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. language"
 msgstr "备选语言"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. territory"
 msgstr "备选区域"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Help us translate or improve JASP in your language"
 msgstr "协助我们翻译或改进 JASP 的语言本地化"
