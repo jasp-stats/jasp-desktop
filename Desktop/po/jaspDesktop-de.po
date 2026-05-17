@@ -1,9 +1,15 @@
 msgid ""
 msgstr ""
+"PO-Revision-Date: 2026-05-18 09:11+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 "X-Language: de_DE\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
@@ -6250,102 +6256,101 @@ msgctxt "PlotEditingReferenceLines|"
 msgid "Type"
 msgstr "Typ"
 
-#, fuzzy
 msgctxt "PlotEditingReferenceLines|"
 msgid "Text"
 msgstr "Text"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Hor."
-msgstr ""
+msgstr "Hor."
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vert."
-msgstr ""
+msgstr "Vert."
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Color"
-msgstr ""
+msgstr "Farbe"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Size"
-msgstr ""
+msgstr "Größe"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Style"
-msgstr ""
+msgstr "Stil"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Circle"
-msgstr ""
+msgstr "Kreis"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Square"
-msgstr ""
+msgstr "Quadrat"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Triangle"
-msgstr ""
+msgstr "Dreieck"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Diamond"
-msgstr ""
+msgstr "Diamant"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Cross"
-msgstr ""
+msgstr "Kreuz"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Star"
-msgstr ""
+msgstr "Stern"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Solid"
-msgstr ""
+msgstr "Durchgezogen"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dashed"
-msgstr ""
+msgstr "Gestrichelt"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dotted"
-msgstr ""
+msgstr "Gepunktet"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Dot-Dash"
-msgstr ""
+msgstr "Punkt-Strich"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Long Dash"
-msgstr ""
+msgstr "Langer Strich"
 
 msgctxt "PlotEditingReferenceLines|"
 msgid "Two Dash"
-msgstr ""
+msgstr "Zwei Striche"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP Enterprise"
-msgstr ""
+msgstr "Willkommen zu JASP Enterprise"
 
 msgctxt "WelcomePage|"
 msgid "Open-Source Support for Enterprise Success"
-msgstr ""
+msgstr "Quelloffene Unterstützung für Wirtschaftlichen Erfolg"
 
 msgctxt "WelcomePage|"
 msgid "Get started!"
-msgstr ""
+msgstr "Loslegen!"
 
 msgctxt "ColorPicker|"
 msgid "Click"
-msgstr ""
+msgstr "Klicken"
 
 msgctxt "ColorPicker|"
 msgid "Click to pick up a color"
-msgstr ""
+msgstr "Klicken, um eine Farbe zu wählen"
 
 msgctxt "ColorPicker|"
 msgid "Select the color"
-msgstr ""
+msgstr "Wählen Sie die Farbe"
 
 #, qt-format
 msgctxt "MainWindow|"
@@ -6362,85 +6367,86 @@ msgid ""
 "You can find out more about JASP Services BV at <a href=\"%3\">our website</"
 "a>."
 msgstr ""
+"<h3>Kontakt</h3>\n"
+"Über die folgenden Links gelangen Sie direkt zum Issue-Tracker Ihres eigenen "
+"Unternehmens.\n"
+"<ul><li><a href=\"%1\">Feature-Anfragen</a>, wenn Sie eine neue Funktion in "
+"JASP wünschen.</li><li><a href=\"%2\">Fehlermeldungen</a>, wenn eine "
+"Funktion in JASP nicht wie vorgesehen funktioniert. </li><li><a href=\"%3\">"
+"Absturzberichte</a>, für den unglücklichen Fall, dass JASP abstürzt.</li></"
+"ul>\n"
+"Dort stehen Sie in direktem Kontakt mit den JASP-Softwareentwicklern.\n"
+"\n"
+"Weitere Informationen zu JASP Services BV finden Sie auf <a href=\"%3\">"
+"unserer Website</a>."
 
 msgctxt "JASPControl|"
 msgid "Color Picker"
-msgstr ""
+msgstr "Farbauswahl"
 
 msgctxt "CsvPreview|"
 msgid "Data Preview"
-msgstr ""
+msgstr "Daten-Vorschau"
 
 msgctxt "CsvPreview|"
 msgid "Select Delimiter:"
-msgstr ""
+msgstr "Trennzeichen auswählen:"
 
 msgctxt "CsvPreview|"
 msgid "Space"
-msgstr ""
+msgstr "Leerzeichen"
 
 msgctxt "CsvPreview|"
 msgid "Tab"
-msgstr ""
+msgstr "Tabulator"
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Advanced"
 msgstr "Erweitert"
 
 msgctxt "CsvPreview|"
 msgid "Load"
-msgstr ""
+msgstr "Laden"
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Preferred language"
-msgstr "Spracheinstellung"
+msgstr "Bevorzugte Sprache"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Choose language"
 msgstr "Sprachauswahl"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use thousands separators"
 msgstr "Tausender-Trennzeichen verwenden"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Disable to remove thousands separators from all numbers."
 msgstr "Deaktivieren, um Tausender-Trennzeichen von allen Zahlen zu entfernen."
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr ""
 "Verwenden Sie eine andere Sprache und gebietsabhängige Anzeige für Zahlen"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr ""
 "Verwenden Sie die unten angegebene Sprachumgebung für die Anzeige von Zahlen "
 "und Währung."
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. language"
 msgstr "Andere Sprache"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Alt. territory"
 msgstr "Anderes Gebiet"
 
-#, fuzzy
 msgctxt "PrefsLanguage|"
 msgid "Help us translate or improve JASP in your language"
 msgstr "Helfen Sie uns, JASP in Ihre Sprache zu übersetzen oder zu verbessern"
