@@ -631,11 +631,10 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 	
 	if(determineWhetherOneWantsLabels)
 	{
-		if(prevSize == 0)
-			//Should we have labels?
-			for(int r=0; r<rows && allTheSame; r++)
-				if(valueLookup(r) != labelLookup(r) && labelLookup(r) != "")
-					allTheSame = false;
+		//Should we have labels?
+		for(int r=0; r<rows && allTheSame; r++)
+			if(valueLookup(r) != labelLookup(r) && labelLookup(r) != "")
+				allTheSame = false;
 	}
 	else
 	{
