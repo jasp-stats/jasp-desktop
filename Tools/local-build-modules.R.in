@@ -1,4 +1,4 @@
-options(repos='https://cran.r-project.org')
+options(repos="@R_REPOSITORY@")
 options(jaspRemoteCellarRedownload=FALSE)
 Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 

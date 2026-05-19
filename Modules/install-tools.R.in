@@ -1,12 +1,13 @@
 # Generated from install-tools.R.in
 #
 
-JASP_MODULE_BUNDLE_MANAGER_LIBRARY 	<- "@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@"
-RENV_LIBRARY                		    <- "@RENV_LIBRARY@"
-R_CPP_INCLUDES_LIBRARY              <- "@R_CPP_INCLUDES_LIBRARY@"
+JASP_MODULE_BUNDLE_MANAGER_LIBRARY <- "@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@"
+RENV_LIBRARY                       <- "@RENV_LIBRARY@"
+R_CPP_INCLUDES_LIBRARY             <- "@R_CPP_INCLUDES_LIBRARY@"
+CRAN_REPO                          <- "@R_REPOSITORY@"
 
-ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
-MODULES                <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
+ENGINE  <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
+MODULES <- file.path("@PROJECT_SOURCE_DIR@", "Modules")
 
 mkdir <- function(paths) {
   for (path in paths)
@@ -16,16 +17,27 @@ mkdir <- function(paths) {
 mkdir(c(R_CPP_INCLUDES_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
 
 .libPaths(RENV_LIBRARY)
-options(repos = c(CRAN = "https://packagemanager.posit.co/cran/latest"))
-options(INSTALL_opts = "--no-test-load")
-cat("Restoring Rcpp & RInside\n")
+options(repos = c(CRAN = CRAN_REPO), INSTALL_opts = "--no-test-load")
+
+if (as.logical(@USER_R_REPO@)) {
+  # If someone sets R_REPOSITORY in the build environment, that should get precedence over repos recorded in lockfiles.
+  options(renv.config.repos.override = CRAN_REPO)
+  message(
+    "Using R_REPOSITORY = '",
+    CRAN_REPO,
+    "' as defined in the build environment over any repositories defined in the renv lockfiles."
+  )
+}
+
+message("Restoring Rcpp & RInside\n")
+
 renv::restore(
   library  = R_CPP_INCLUDES_LIBRARY,
   lockfile = file.path(MODULES, "Rcpp_RInside.lock"),
   clean    = TRUE
 )
 
-cat("restoring jaspModuleBundleManager deps\n")
+message("restoring jaspModuleBundleManager deps\n")
 
 renv::restore(
     lockfile = file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager", "renv.lock"),
@@ -34,7 +46,7 @@ renv::restore(
     prompt   = FALSE
 )
 
-cat("installing jaspModuleBundleManager\n")
+message("installing jaspModuleBundleManager\n")
 
 install.packages(
     file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),

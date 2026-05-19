@@ -2,6 +2,7 @@
 #
 
 RENV_LIBRARY <- "@RENV_LIBRARY@"
+CRAN_REPO    <- "@R_REPOSITORY@"
 
 mkdir <- function(paths) {
   for (path in paths)
@@ -10,8 +11,6 @@ mkdir <- function(paths) {
 }
 mkdir(c(RENV_LIBRARY))
 
-repos <-  "https://packagemanager.posit.co/cran/latest"
-# alternative to 'http://cloud.r-project.org'
 if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
   if (@IS_FLATPAK_USED@) {
     cat("Installing renv from cellar\n")
@@ -20,11 +19,11 @@ if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
       lib          = RENV_LIBRARY,
       INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
   } else {
-    cat(paste0(c("Installing renv from '", paste(repos), "'\n")))
+    cat(paste0(c("Installing renv from '", paste(CRAN_REPO), "'\n")))
     install.packages(
       pkgs         = "renv",
       lib          = RENV_LIBRARY,
-      repos        = repos,
+      repos        = CRAN_REPO,
       INSTALL_opts ='--no-multiarch --no-docs --no-test-load') # --no-test-load is dubious here
   }
 } else {
