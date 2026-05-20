@@ -4,6 +4,7 @@
 #include <QUrl>
 #include <stack>
 #include <QObject>
+#include <QTimer>
 #include <json/json.h>
 #include "ploteditoraxismodel.h"
 #include "ploteditorcoordinates.h"
@@ -35,6 +36,7 @@ class PlotEditorModel : public QObject
 	Q_PROPERTY(AxisModel *				yAxis			READ yAxis									NOTIFY dummyAxisChanged			)
 	Q_PROPERTY(double					ppi				READ ppi									NOTIFY ppiChanged				)
 	Q_PROPERTY(bool						loading			READ loading		WRITE setLoading		NOTIFY loadingChanged			)
+	Q_PROPERTY(bool						updating		READ updating								NOTIFY updatingChanged			)
 	Q_PROPERTY(bool						undoEnabled		READ undoEnabled							NOTIFY unOrRedoEnabledChanged	)
 	Q_PROPERTY(bool						redoEnabled		READ redoEnabled							NOTIFY unOrRedoEnabledChanged	)
 	Q_PROPERTY(AxisModel *				currentAxis		READ currentAxis							NOTIFY currentAxisChanged		)
@@ -63,6 +65,8 @@ public:
 	AxisModel			*	yAxis()		const { return _yAxis;		}
 	double					ppi()		const {	return _ppi;		}
 	bool					loading()	const { return _loading;	}
+	bool					updating()	const { return _updating;	}
+	void					setUpdating(bool updating);
 	void					reset();
 
 	bool					undoEnabled()	const {	return _undo.size() > 0;	}
@@ -87,6 +91,7 @@ signals:
 	void ppiChanged();// TODO, refresh all
 	void resetPlotChanged(		bool		resetPlot		);
 	void loadingChanged(		bool		loading			);
+	void updatingChanged(		bool		updating			);
 	void unOrRedoEnabledChanged();
 	
 
@@ -120,6 +125,7 @@ public slots:
 	//QString clickHitsElement(double x, double y) const;
 
 	void addToUndoStack();
+	void applyPendingChanges();
 
 	void undoSomething(); //No need to do Q_INVOKABLE for slots, they are always available from QML
 	void redoSomething();
@@ -148,11 +154,14 @@ private:
 	bool						_visible		= false,
 								_goBlank		= false,
 								_loading		= false,
+								_updating		= false,
 								_validOptions	= false,
-								_blockChanges	= false;
+								_blockChanges	= false,
+								_debouncePending= false;
 	int							_width,
 								_height;
 	double						_ppi;
+	QTimer						_debounceTimer;
 
 	static int					_editRequest;
 

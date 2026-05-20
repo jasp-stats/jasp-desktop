@@ -386,6 +386,48 @@ Popup
 							{
 								src:			plotImg
 							}
+
+							// Overlay shown while the engine is re-rendering
+							Rectangle
+							{
+								id:						updatingOverlay
+								anchors.fill:			parent
+								color:					jaspTheme.white
+								opacity:				plotEditorModel.updating ? 0.85 : 0.0
+								visible:				plotEditorModel.updating
+								Behavior on opacity { NumberAnimation { duration: 150 } }
+
+								ColumnLayout
+								{
+									anchors.centerIn:	parent
+									spacing:			jaspTheme.generalAnchorMargin
+
+									Image
+									{
+										source:				jaspTheme.iconPath + "loading.svg"
+										sourceSize.width:	32 * preferencesModel.uiScale
+										sourceSize.height:	32 * preferencesModel.uiScale
+										Layout.alignment:	Qt.AlignHCenter
+
+										NumberAnimation on rotation
+										{
+											from:		0
+											to:			360
+											duration:	1200
+											loops:		Animation.Infinite
+											running:	plotEditorModel.updating
+										}
+									}
+
+									JASPC.Text
+									{
+										text:				qsTr("Rerendering\u2026")
+										font:				jaspTheme.fontLabel
+										color:				jaspTheme.textEnabled
+										Layout.alignment:	Qt.AlignHCenter
+									}
+								}
+							}
 						}
 					}
 				}
