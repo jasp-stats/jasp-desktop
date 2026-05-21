@@ -253,7 +253,7 @@ public:
 				QStringList					getColumnLabelsAsStringList(		size_t				columnIndex)				const;///< Has the same amount of levels as the data has rows!
 				stringvec					getColumnLabelsAsStrVec(			size_t				columnIndex)				const;///< Has the same amount of levels as the data has rows!
 				stringvec					getColumnLevelsAsStrVec(			size_t				columnIndex)				const;///< Has the same amount of levels as the labeleditor shows!
-				boolvec						getColumnFilterAllows(				size_t				columnIndex)				const; 
+				std::map<std::string, bool>	getColumnFilterAllows(				size_t				columnIndex)				const;
 				QList<QVariant>				getColumnValuesAsDoubleList(		size_t				columnIndex)				const; ///< Has the same amount of values as the data has rows!
 				Json::Value					serializeColumn(					const std::string & columnName)					const;
 				void						deserializeColumn(					const std::string & columnName, const Json::Value& col);

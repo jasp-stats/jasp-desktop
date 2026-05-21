@@ -566,22 +566,23 @@ QVariant DataSetPackage::data(const QModelIndex &index, int role) const
 	case dataSetBaseNodeType::label:
 	{
 		int			parRowCount = rowCount(index.parent());
-	//	Label	*	label		= dynamic_cast<Label*>(node);
 		Column	*	column		= dynamic_cast<Column*>(node->parent());
-		
 
 		if(!_dataSet || index.row() >= parRowCount)
 			return QVariant(); // if there is no data then it doesn't matter what role we play
 
-		const Labels & labels = column->labels();
-		
 		switch(role)
 		{
 		case int(specialRoles::nonFilteredNumericValuesCount):	return column->nonFilteredNumericsCount();
         case int(specialRoles::nonFilteredLevels):				return tq(column->nonFilteredLevels());
 		case int(specialRoles::valuesDblList):					return getColumnValuesAsDoubleList(getColumnIndex(column->name()));
-		case int(specialRoles::description):					return index.row() >= labels.size() ? "" : tq(labels[index.row()]->description());
-		case int(specialRoles::filter):							return index.row() >= labels.size() || labels[index.row()]->filterAllows();
+		case int(specialRoles::description):
+		case int(specialRoles::filter):
+		{
+			Label * label = dynamic_cast<Label*>(indexPointerToNode(index));
+			if (!label)	return QVariant();
+			return (role == int(specialRoles::description)) ? QVariant(tq(label->description())) : QVariant(label->filterAllows());
+		}
 		case int(specialRoles::value):							return tq(column->labelByIndexNonEmpty(index.row())->originalValueAsString());
 		case int(specialRoles::lines):							return getDataSetViewLines(index.row() == 0, index.column() == 0, true, true);
 		case int(specialRoles::label):							[[fallthrough]];
@@ -988,6 +989,9 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 	if(!column)
 		return false;
 
+	if (label->filterAllows() == newAllowValue) //Did not change!
+		return true;
+
 	bool atLeastOneRemains = newAllowValue;
 
 	QModelIndex parent	= index.parent();
@@ -1001,13 +1005,11 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 	if(!atLeastOneRemains) //Do not let the user uncheck every single one because that is useless, the user wants to uncheck row so lets see if there is another one left after that.
 		for(size_t i=0; i< labels.size(); i++)
 		{
-			if(i != row && labels[i]->filterAllows())
+			if(labels[i] != label && !labels[i]->isEmptyValue() && labels[i]->filterAllows())
 			{
 				atLeastOneRemains = true;
 				break;
 			}
-			else if(i == row && labels[i]->filterAllows() == newAllowValue) //Did not change!
-				return true;
 		}
 	
 	atLeastOneRemains = atLeastOneRemains || column->labelsNonEmptyCount() > labels.size();
@@ -1017,7 +1019,7 @@ bool DataSetPackage::setLabelAllowFilter(const QModelIndex & index, bool newAllo
 		int col = column->data()->columnIndex(column);
 
 		bool before = column->hasFilter();
-		labels[row]->setFilterAllows(newAllowValue);
+		label->setFilterAllows(newAllowValue);
 		
 		notifyColumnFilterStatusChanged(col); //basically resetModel now
 
@@ -1884,22 +1886,19 @@ QStringList DataSetPackage::getColumnLabelsAsStringList(size_t columnIndex)	cons
 }
 
 
-boolvec DataSetPackage::getColumnFilterAllows(size_t columnIndex) const 
+std::map<std::string, bool> DataSetPackage::getColumnFilterAllows(size_t columnIndex) const
 {
-	boolvec list;
+	std::map<std::string, bool> map;
 	if(columnIndex < 0 || columnIndex >= dataColumnCount()) 
-		return list;
+		return map;
 	
 	Column * column =_dataSet->columns()[columnIndex];
 	
 	for (const Label * label : column->labels())
 		if(!label->isEmptyValue())
-			list.push_back(label->filterAllows());
+			map[label->label()] = label->filterAllows();
 	
-	while(list.size() < column->labelsNonEmptyCount())
-		list.push_back(true);
-
-	return list;
+	return map;
 }
 
 stringvec DataSetPackage::getColumnLabelsAsStrVec(size_t columnIndex) const

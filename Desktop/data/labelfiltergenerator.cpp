@@ -68,16 +68,15 @@ std::string	labelFilterGenerator::generateLabelFilter(size_t col)
 	
 	DataSetPackage	*	pkg				= DataSetPackage::pkg();
 	std::string			columnName		= pkg->getColumnName(col);
-	boolvec				filterAllows	= pkg->getColumnFilterAllows(col);
-	stringvec			labels			= pkg->getColumnLevelsAsStrVec(col);
-	int					pos				= std::count_if(filterAllows.begin(), filterAllows.end(), [](bool f){ return f; }), 
+	std::map<std::string, bool>	filterAllows = pkg->getColumnFilterAllows(col);
+	int					pos				= std::count_if(filterAllows.begin(), filterAllows.end(), [](const auto f){ return f.second; }),
 						cnt				= 0;
 	bool				bePositive		= pos <= filterAllows.size() - pos;
 	std::stringstream	out;
 	
-	for(size_t row=0; row<filterAllows.size(); row++)
-		if(filterAllows[row] == bePositive) //Also make sure we use .nominal because otherwise we might be comparing to the value instead...
-			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << ".nominal" << (bePositive ? " == \"" : " != \"") << labels[row] << "\"";
+	for(const auto filterAllow : filterAllows)
+		if(filterAllow.second == bePositive) //Also make sure we use .nominal because otherwise we might be comparing to the value instead...
+			out << (cnt++ > 0 ? (bePositive ? " | " : " & ") : "") << columnName << ".nominal" << (bePositive ? " == \"" : " != \"") << filterAllow.first << "\"";
 	
 	return "(" + out.str() + ")";
 }
