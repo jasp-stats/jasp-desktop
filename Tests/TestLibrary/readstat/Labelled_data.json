@@ -1,0 +1,5757 @@
+{
+	"columns" : 
+	[
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"62",
+				"39",
+				"25",
+				"40",
+				"46",
+				"40",
+				"39",
+				"39",
+				"35",
+				"47",
+				"33",
+				"50",
+				"34",
+				"36",
+				"18",
+				"50",
+				"18",
+				"35",
+				"40",
+				"49",
+				"42",
+				"33",
+				"34",
+				"42",
+				"33",
+				"41",
+				"28",
+				"42",
+				"31",
+				"31",
+				"41",
+				"18",
+				"36",
+				"43",
+				"29",
+				"46",
+				"24",
+				"40",
+				"37",
+				"38",
+				"25",
+				"34",
+				"45",
+				"18",
+				"32",
+				"20",
+				"23",
+				"41",
+				"18",
+				"36",
+				"33",
+				"30",
+				"32",
+				"39",
+				"30",
+				"41",
+				"23",
+				"41",
+				"40",
+				"28",
+				"30",
+				"18",
+				"27",
+				"28",
+				"41",
+				"28",
+				"48",
+				"37",
+				"22",
+				"18",
+				"41",
+				"38",
+				"29",
+				"33",
+				"36",
+				"51",
+				"36",
+				"38",
+				"41",
+				"39",
+				"27",
+				"29",
+				"30",
+				"32",
+				"37",
+				"18",
+				"20",
+				"21",
+				"35",
+				"35",
+				"33",
+				"39",
+				"31",
+				"23",
+				"22",
+				"37",
+				"39",
+				"27",
+				"52",
+				"21",
+				"31",
+				"28",
+				"41",
+				"42",
+				"40",
+				"34",
+				"47",
+				"41",
+				"34",
+				"41",
+				"22",
+				"34",
+				"23",
+				"18",
+				"37",
+				"18",
+				"32",
+				"18",
+				"32",
+				"18",
+				"24",
+				"41",
+				"28",
+				"36",
+				"30",
+				"45",
+				"35",
+				"45",
+				"47",
+				"32",
+				"36",
+				"50",
+				"24",
+				"52",
+				"36",
+				"36",
+				"29",
+				"55",
+				"48",
+				"33",
+				"32",
+				"28",
+				"35",
+				"33",
+				"33",
+				"46",
+				"42",
+				"44",
+				"58",
+				"23",
+				"23",
+				"18",
+				"18",
+				"47",
+				"46",
+				"30",
+				"36",
+				"47",
+				"39",
+				"26",
+				"36",
+				"42",
+				"20",
+				"39",
+				"22",
+				"33",
+				"23",
+				"49",
+				"45",
+				"42",
+				"44",
+				"51",
+				"31",
+				"35",
+				"18",
+				"41",
+				"37",
+				"49",
+				"38",
+				"41"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "Eletkor",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"4",
+				"11",
+				"5",
+				"10",
+				"8",
+				"15",
+				"13",
+				"9",
+				"9",
+				"8",
+				"7",
+				"14",
+				"9",
+				"6",
+				"8",
+				"7",
+				"13",
+				"12",
+				"11",
+				"6",
+				"9",
+				"5",
+				"9",
+				"9",
+				"10",
+				"9",
+				"12",
+				"8",
+				"7",
+				"3",
+				"5",
+				"8",
+				"4",
+				"13",
+				"10",
+				"7",
+				"7",
+				"8",
+				"14",
+				"5",
+				"9",
+				"8",
+				"7",
+				"6",
+				"13",
+				"9",
+				"12",
+				"8",
+				"7",
+				"11",
+				"12",
+				"8",
+				"5",
+				"11",
+				"7",
+				"11",
+				"3",
+				"4",
+				"9",
+				"12",
+				"11",
+				"12",
+				"7",
+				"8",
+				"13",
+				"11",
+				"11",
+				"3",
+				"3",
+				"11",
+				"8",
+				"10",
+				"14",
+				"12",
+				"15",
+				"10",
+				"10",
+				"13",
+				"7",
+				"11",
+				"9",
+				"15",
+				"6",
+				"11",
+				"7",
+				"13",
+				"9",
+				"8",
+				"5",
+				"7",
+				"13",
+				"10",
+				"12",
+				"12",
+				"3",
+				"10",
+				"6",
+				"10",
+				"9",
+				"15",
+				"7",
+				"7",
+				"6",
+				"10",
+				"5",
+				"12",
+				"12",
+				"6",
+				"11",
+				"5",
+				"3",
+				"8",
+				"8",
+				"15",
+				"15",
+				"10",
+				"8",
+				"13",
+				"8",
+				"6",
+				"9",
+				"12",
+				"13",
+				"9",
+				"9",
+				"10",
+				"11",
+				"15",
+				"5",
+				"5",
+				"12",
+				"8",
+				"8",
+				"15",
+				"11",
+				"5",
+				"5",
+				"4",
+				"11",
+				"11",
+				"6",
+				"8",
+				"7",
+				"8",
+				"8",
+				"9",
+				"10",
+				"9",
+				"12",
+				"8",
+				"12",
+				"12",
+				"6",
+				"13",
+				"8",
+				"14",
+				"1",
+				"7",
+				"13",
+				"10",
+				"5",
+				"13",
+				"8",
+				"13",
+				"9",
+				"7",
+				"5",
+				"11",
+				"10",
+				"4",
+				"9",
+				"8",
+				"9",
+				"11",
+				"7",
+				"8",
+				"14",
+				"13",
+				"8",
+				"13"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "MHC_SF_Emo",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"12",
+				"16",
+				"8",
+				"25",
+				"20",
+				"20",
+				"18",
+				"13",
+				"21",
+				"14",
+				"17",
+				"18",
+				"15",
+				"12",
+				"15",
+				"11",
+				"15",
+				"19",
+				"15",
+				"13",
+				"18",
+				"13",
+				"11",
+				"15",
+				"13",
+				"18",
+				"23",
+				"19",
+				"11",
+				"9",
+				"18",
+				"12",
+				"10",
+				"18",
+				"16",
+				"14",
+				"15",
+				"20",
+				"22",
+				"15",
+				"15",
+				"8",
+				"13",
+				"10",
+				"20",
+				"11",
+				"17",
+				"13",
+				"16",
+				"19",
+				"14",
+				"14",
+				"14",
+				"17",
+				"18",
+				"16",
+				"6",
+				"13",
+				"18",
+				"20",
+				"15",
+				"10",
+				"10",
+				"12",
+				"12",
+				"22",
+				"18",
+				"17",
+				"7",
+				"18",
+				"18",
+				"17",
+				"21",
+				"7",
+				"21",
+				"18",
+				"15",
+				"13",
+				"15",
+				"19",
+				"12",
+				"16",
+				"12",
+				"7",
+				"14",
+				"19",
+				"20",
+				"17",
+				"10",
+				"12",
+				"18",
+				"22",
+				"13",
+				"19",
+				"8",
+				"17",
+				"14",
+				"12",
+				"15",
+				"25",
+				"11",
+				"9",
+				"12",
+				"11",
+				"7",
+				"16",
+				"18",
+				"9",
+				"18",
+				"13",
+				"7",
+				"12",
+				"16",
+				"19",
+				"21",
+				"11",
+				"12",
+				"21",
+				"21",
+				"13",
+				"10",
+				"19",
+				"17",
+				"12",
+				"7",
+				"18",
+				"14",
+				"16",
+				"14",
+				"15",
+				"21",
+				"17",
+				"17",
+				"19",
+				"17",
+				"11",
+				"12",
+				"19",
+				"20",
+				"14",
+				"14",
+				"8",
+				"15",
+				"16",
+				"14",
+				"22",
+				"16",
+				"11",
+				"14",
+				"16",
+				"24",
+				"16",
+				"7",
+				"19",
+				"16",
+				"20",
+				"4",
+				"18",
+				"17",
+				"20",
+				"16",
+				"11",
+				"11",
+				"16",
+				"17",
+				"7",
+				"13",
+				"20",
+				"15",
+				"7",
+				"19",
+				"14",
+				"13",
+				"21",
+				"10",
+				"13",
+				"17",
+				"14",
+				"18",
+				"22"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "MHC_SF_Szoc",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"19",
+				"20",
+				"10",
+				"20",
+				"11",
+				"24",
+				"25",
+				"10",
+				"19",
+				"26",
+				"14",
+				"26",
+				"23",
+				"10",
+				"15",
+				"17",
+				"21",
+				"23",
+				"19",
+				"17",
+				"23",
+				"13",
+				"19",
+				"24",
+				"14",
+				"21",
+				"21",
+				"22",
+				"15",
+				"13",
+				"13",
+				"15",
+				"20",
+				"25",
+				"12",
+				"20",
+				"17",
+				"18",
+				"19",
+				"11",
+				"22",
+				"19",
+				"17",
+				"10",
+				"20",
+				"17",
+				"30",
+				"16",
+				"20",
+				"22",
+				"20",
+				"17",
+				"18",
+				"20",
+				"19",
+				"29",
+				"6",
+				"11",
+				"13",
+				"24",
+				"21",
+				"19",
+				"20",
+				"15",
+				"19",
+				"20",
+				"16",
+				"13",
+				"10",
+				"27",
+				"15",
+				"21",
+				"30",
+				"26",
+				"27",
+				"21",
+				"23",
+				"21",
+				"22",
+				"23",
+				"12",
+				"27",
+				"11",
+				"17",
+				"19",
+				"23",
+				"16",
+				"11",
+				"15",
+				"18",
+				"16",
+				"22",
+				"27",
+				"24",
+				"11",
+				"21",
+				"18",
+				"22",
+				"21",
+				"30",
+				"17",
+				"14",
+				"17",
+				"21",
+				"13",
+				"20",
+				"19",
+				"9",
+				"19",
+				"15",
+				"12",
+				"20",
+				"15",
+				"25",
+				"26",
+				"17",
+				"10",
+				"28",
+				"24",
+				"16",
+				"13",
+				"21",
+				"21",
+				"26",
+				"20",
+				"18",
+				"15",
+				"26",
+				"17",
+				"18",
+				"27",
+				"18",
+				"17",
+				"26",
+				"16",
+				"13",
+				"19",
+				"12",
+				"16",
+				"14",
+				"12",
+				"11",
+				"15",
+				"14",
+				"15",
+				"17",
+				"18",
+				"18",
+				"20",
+				"18",
+				"25",
+				"24",
+				"10",
+				"20",
+				"16",
+				"22",
+				"8",
+				"20",
+				"21",
+				"19",
+				"5",
+				"30",
+				"17",
+				"21",
+				"25",
+				"15",
+				"10",
+				"30",
+				"24",
+				"11",
+				"24",
+				"23",
+				"16",
+				"20",
+				"19",
+				"13",
+				"25",
+				"19",
+				"20",
+				"20"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "MHC_SF_Pszi",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"25",
+				"14",
+				"25",
+				"23",
+				"33",
+				"7",
+				"9",
+				"24",
+				"19",
+				"12",
+				"24",
+				"15",
+				"16",
+				"34",
+				"19",
+				"19",
+				"14",
+				"15",
+				"18",
+				"18",
+				"20",
+				"21",
+				"17",
+				"11",
+				"31",
+				"24",
+				"13",
+				"14",
+				"17",
+				"25",
+				"19",
+				"19",
+				"21",
+				"11",
+				"13",
+				"13",
+				"33",
+				"22",
+				"9",
+				"29",
+				"12",
+				"18",
+				"20",
+				"27",
+				"19",
+				"26",
+				"21",
+				"20",
+				"19",
+				"13",
+				"22",
+				"21",
+				"21",
+				"20",
+				"24",
+				"14",
+				"34",
+				"30",
+				"24",
+				"19",
+				"14",
+				"31",
+				"24",
+				"20",
+				"18",
+				"11",
+				"15",
+				"25",
+				"21",
+				"18",
+				"28",
+				"27",
+				"12",
+				"24",
+				"20",
+				"20",
+				"10",
+				"19",
+				"9",
+				"19",
+				"29",
+				"15",
+				"29",
+				"20",
+				"15",
+				"19",
+				"24",
+				"24",
+				"25",
+				"19",
+				"20",
+				"12",
+				"11",
+				"23",
+				"22",
+				"17",
+				"20",
+				"17",
+				"2",
+				"7",
+				"18",
+				"23",
+				"29",
+				"12",
+				"23",
+				"17",
+				"18",
+				"31",
+				"24",
+				"33",
+				"24",
+				"17",
+				"19",
+				"20",
+				"7",
+				"27",
+				"24",
+				"16",
+				"19",
+				"19",
+				"17",
+				"19",
+				"20",
+				"19",
+				"20",
+				"23",
+				"21",
+				"23",
+				"14",
+				"22",
+				"6",
+				"25",
+				"26",
+				"11",
+				"27",
+				"22",
+				"28",
+				"22",
+				"19",
+				"18",
+				"32",
+				"25",
+				"18",
+				"19",
+				"23",
+				"22",
+				"23",
+				"17",
+				"21",
+				"25",
+				"15",
+				"16",
+				"22",
+				"17",
+				"14",
+				"15",
+				"32",
+				"21",
+				"17",
+				"14",
+				"27",
+				"20",
+				"20",
+				"11",
+				"14",
+				"23",
+				"27",
+				"20",
+				"18",
+				"31",
+				"10",
+				"12",
+				"18",
+				"14",
+				"20",
+				"16",
+				"15",
+				"16",
+				"17",
+				"26"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "PSS_10",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"20",
+				"12",
+				"23",
+				"14",
+				"25",
+				"4",
+				"8",
+				"19",
+				"17",
+				"13",
+				"23",
+				"9",
+				"17",
+				"21",
+				"21",
+				"18",
+				"12",
+				"10",
+				"27",
+				"18",
+				"15",
+				"18",
+				"7",
+				"12",
+				"15",
+				"18",
+				"14",
+				"5",
+				"7",
+				"25",
+				"18",
+				"13",
+				"19",
+				"10",
+				"10",
+				"8",
+				"32",
+				"21",
+				"12",
+				"20",
+				"12",
+				"21",
+				"13",
+				"23",
+				"11",
+				"15",
+				"20",
+				"12",
+				"13",
+				"12",
+				"16",
+				"12",
+				"14",
+				"25",
+				"22",
+				"15",
+				"27",
+				"31",
+				"6",
+				"9",
+				"14",
+				"24",
+				"18",
+				"23",
+				"19",
+				"12",
+				"5",
+				"23",
+				"13",
+				"15",
+				"26",
+				"23",
+				"5",
+				"9",
+				"19",
+				"18",
+				"7",
+				"2",
+				"13",
+				"11",
+				"25",
+				"9",
+				"23",
+				"26",
+				"16",
+				"16",
+				"22",
+				"22",
+				"23",
+				"15",
+				"17",
+				"9",
+				"12",
+				"16",
+				"16",
+				"11",
+				"21",
+				"18",
+				"5",
+				"11",
+				"15",
+				"11",
+				"28",
+				"13",
+				"20",
+				"9",
+				"9",
+				"25",
+				"18",
+				"27",
+				"13",
+				"18",
+				"9",
+				"15",
+				"0",
+				"31",
+				"23",
+				"12",
+				"13",
+				"14",
+				"9",
+				"23",
+				"17",
+				"16",
+				"18",
+				"22",
+				"21",
+				"16",
+				"8",
+				"19",
+				"4",
+				"14",
+				"17",
+				"10",
+				"16",
+				"24",
+				"27",
+				"20",
+				"14",
+				"20",
+				"24",
+				"21",
+				"8",
+				"16",
+				"14",
+				"21",
+				"20",
+				"14",
+				"7",
+				"21",
+				"5",
+				"16",
+				"15",
+				"16",
+				"12",
+				"9",
+				"19",
+				"17",
+				"8",
+				"12",
+				"22",
+				"15",
+				"20",
+				"12",
+				"16",
+				"17",
+				"12",
+				"22",
+				"17",
+				"19",
+				"5",
+				"7",
+				"18",
+				"7",
+				"14",
+				"11",
+				"13",
+				"18",
+				"14",
+				"24"
+			],
+			"description" : "",
+			"labels" : [],
+			"name" : "PSS_10_utokovetes",
+			"nonEmptyLabels" : [],
+			"rCode" : "",
+			"title" : "",
+			"type" : "scale"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"N\u0151",
+				"F\u00e9rfi",
+				"F\u00e9rfi"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "F\u00e9rfi",
+					"order" : 0,
+					"originalValue" : "F\u00e9rfi"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "N\u0151",
+					"order" : 1,
+					"originalValue" : "N\u0151"
+				}
+			],
+			"name" : "Szuletesi_nem",
+			"nonEmptyLabels" : 
+			[
+				"F\u00e9rfi",
+				"N\u0151"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Igen",
+					"order" : 0,
+					"originalValue" : "Igen"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Nem",
+					"order" : 1,
+					"originalValue" : "Nem"
+				}
+			],
+			"name" : "Kronikus",
+			"nonEmptyLabels" : 
+			[
+				"Igen",
+				"Nem"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Igen",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Nem",
+				"Igen",
+				"Nem",
+				"Igen",
+				"Nem"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Igen",
+					"order" : 0,
+					"originalValue" : "Igen"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Nem",
+					"order" : 1,
+					"originalValue" : "Nem"
+				}
+			],
+			"name" : "Dohanyzik",
+			"nonEmptyLabels" : 
+			[
+				"Igen",
+				"Nem"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"v" : "5"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"v" : "3"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"v" : "4"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Havonta vagy kevesebbszer",
+					"v" : "2"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				},
+				{
+					"l" : "Soha",
+					"v" : "1"
+				}
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Soha",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Havonta vagy kevesebbszer",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Havonta k\u00e9tszer-n\u00e9gyszer",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Hetente k\u00e9tszer-h\u00e1romszor",
+					"order" : 3,
+					"originalValue" : "4"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r",
+					"order" : 4,
+					"originalValue" : "5"
+				}
+			],
+			"name" : "AUDIT_gyakorisag",
+			"nonEmptyLabels" : 
+			[
+				"Soha",
+				"Havonta vagy kevesebbszer",
+				"Havonta k\u00e9tszer-n\u00e9gyszer",
+				"Hetente k\u00e9tszer-h\u00e1romszor",
+				"Hetente n\u00e9gyszer vagy t\u00f6bbsz\u00f6r"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "10+",
+					"v" : "5"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "1-2",
+					"v" : "1"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "3-4",
+					"v" : "2"
+				},
+				{
+					"l" : "7-9",
+					"v" : "4"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				},
+				{
+					"l" : "5-6",
+					"v" : "3"
+				}
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "1-2",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "3-4",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "5-6",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "7-9",
+					"order" : 3,
+					"originalValue" : "4"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "10+",
+					"order" : 4,
+					"originalValue" : "5"
+				}
+			],
+			"name" : "AUDIT_mennyis\u00e9g",
+			"nonEmptyLabels" : 
+			[
+				"1-2",
+				"3-4",
+				"5-6",
+				"7-9",
+				"10+"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				}
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Nem okozott gondot",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Kev\u00e9s gondot okozott",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Sok gondot okozott",
+					"order" : 2,
+					"originalValue" : "3"
+				}
+			],
+			"name" : "PHQ14_fejfajas",
+			"nonEmptyLabels" : 
+			[
+				"Nem okozott gondot",
+				"Kev\u00e9s gondot okozott",
+				"Sok gondot okozott"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Sok gondot okozott",
+					"v" : "3"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				},
+				{
+					"l" : "Kev\u00e9s gondot okozott",
+					"v" : "2"
+				},
+				{
+					"l" : "Nem okozott gondot",
+					"v" : "1"
+				}
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Nem okozott gondot",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Kev\u00e9s gondot okozott",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Sok gondot okozott",
+					"order" : 2,
+					"originalValue" : "3"
+				}
+			],
+			"name" : "PHQ14_szivveres",
+			"nonEmptyLabels" : 
+			[
+				"Nem okozott gondot",
+				"Kev\u00e9s gondot okozott",
+				"Sok gondot okozott"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : true,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"v" : "3"
+				},
+				{
+					"l" : "Majdnem minden nap",
+					"v" : "4"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "N\u00e9h\u00e1ny napig",
+					"v" : "2"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				},
+				{
+					"l" : "Egyszer sem",
+					"v" : "1"
+				}
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Egyszer sem",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "N\u00e9h\u00e1ny napig",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "A napok t\u00f6bb mint fel\u00e9ben",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Majdnem minden nap",
+					"order" : 3,
+					"originalValue" : "4"
+				}
+			],
+			"name" : "PHQ9_energia",
+			"nonEmptyLabels" : 
+			[
+				"Egyszer sem",
+				"N\u00e9h\u00e1ny napig",
+				"A napok t\u00f6bb mint fel\u00e9ben",
+				"Majdnem minden nap"
+			],
+			"rCode" : "",
+			"title" : "",
+			"type" : "nominal"
+		}
+	],
+	"customEmptyValues" : 
+	{
+		"custom" : true,
+		"strings" : 
+		[
+			".",
+			"Missing",
+			"NA",
+			"NaN",
+			"nan"
+		]
+	}
+}

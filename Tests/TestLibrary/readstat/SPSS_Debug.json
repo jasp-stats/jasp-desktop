@@ -92,31 +92,123 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericScaleWithIntegralLabel",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -132,31 +224,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericScaleWithDecimalLabels",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -172,31 +356,144 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1",
-				"2",
-				"3",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1",
-				"2",
-				"3",
-				"1.5",
-				"2.5",
-				"3.5",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
 				"",
 				""
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 1,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 2,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 3,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 4,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 5,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 6,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericScaleLabelsIntegralAndDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"OneHalf",
+				"Two",
+				"TwoHalf",
+				"Three",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -212,31 +509,144 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1",
-				"2",
-				"3",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1",
-				"2",
-				"3",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1",
-				"2",
-				"3",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
 				"",
 				""
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 1,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 2,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 3,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 4,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 5,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 6,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericScaleLabelsDecimalAndIntegral",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"OneHalf",
+				"Two",
+				"TwoHalf",
+				"Three",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -333,25 +743,79 @@
 			"data" : 
 			[
 				"",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
 			"labels" : 
@@ -359,31 +823,38 @@
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "One",
 					"order" : 0,
 					"originalValue" : "1"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Two",
 					"order" : 1,
 					"originalValue" : "2"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Three",
 					"order" : 2,
 					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
 				}
 			],
 			"name" : "NumericOrdinalWithIntegralLabels",
 			"nonEmptyLabels" : 
 			[
-				"1",
-				"2",
-				"3"
+				"One",
+				"Two",
+				"Three"
 			],
 			"rCode" : "",
 			"title" : "",
@@ -401,30 +872,119 @@
 			"data" : 
 			[
 				"",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericOrdinalWithDecimalLabels",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "ordinal"
@@ -520,31 +1080,123 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericNominalWithIntegralLabels",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -560,31 +1212,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "NumericNominalWithDecimalLabels",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -680,31 +1424,123 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "CommaScaleLabelsIntegral",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -720,31 +1556,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "CommaScaleLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -840,26 +1768,83 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
 			"labels" : 
@@ -867,31 +1852,38 @@
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "One",
 					"order" : 0,
 					"originalValue" : "1"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Two",
 					"order" : 1,
 					"originalValue" : "2"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Three",
 					"order" : 2,
 					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
 				}
 			],
 			"name" : "CommaOrdinalLabelsIntegral",
 			"nonEmptyLabels" : 
 			[
-				"1",
-				"2",
-				"3"
+				"One",
+				"Two",
+				"Three"
 			],
 			"rCode" : "",
 			"title" : "",
@@ -908,31 +1900,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "CommaOrdinalLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "ordinal"
@@ -1029,30 +2113,119 @@
 			"data" : 
 			[
 				"",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "CommaNominalLabelsIntegral",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -1069,30 +2242,119 @@
 			"data" : 
 			[
 				"",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "CommaNominalLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -1188,31 +2450,123 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "DotScaleLabelsIntegral",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -1228,31 +2582,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "DotScaleLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "scale"
@@ -1348,26 +2794,83 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
 			"labels" : 
@@ -1375,31 +2878,38 @@
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "One",
 					"order" : 0,
 					"originalValue" : "1"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Two",
 					"order" : 1,
 					"originalValue" : "2"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Three",
 					"order" : 2,
 					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
 				}
 			],
 			"name" : "DotOrdinalLabelsIntegral",
 			"nonEmptyLabels" : 
 			[
-				"1",
-				"2",
-				"3"
+				"One",
+				"Two",
+				"Three"
 			],
 			"rCode" : "",
 			"title" : "",
@@ -1416,31 +2926,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "DotOrdinalLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "ordinal"
@@ -1536,31 +3138,123 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"1",
-				"2"
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "One",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Two",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Three",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "DotNominalLabelsIntegral",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"One",
+				"Two",
+				"Three"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -1576,31 +3270,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
 				"",
-				"1.5",
-				"2.5"
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "DotNominalLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"
@@ -1696,26 +3482,83 @@
 			},
 			"data" : 
 			[
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
-				"3",
-				"1",
-				"2",
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				},
+				{
+					"l" : "Two",
+					"v" : "2"
+				},
 				"",
-				"3",
-				"1"
+				{
+					"l" : "Three",
+					"v" : "3"
+				},
+				{
+					"l" : "One",
+					"v" : "1"
+				}
 			],
 			"description" : "",
 			"labels" : 
@@ -1723,31 +3566,38 @@
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "One",
 					"order" : 0,
 					"originalValue" : "1"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Two",
 					"order" : 1,
 					"originalValue" : "2"
 				},
 				{
 					"description" : "",
 					"filterAllows" : true,
-					"label" : "",
+					"label" : "Three",
 					"order" : 2,
 					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
 				}
 			],
 			"name" : "StringOrdinalLabelsIntegral",
 			"nonEmptyLabels" : 
 			[
-				"1",
-				"2",
-				"3"
+				"One",
+				"Two",
+				"Three"
 			],
 			"rCode" : "",
 			"title" : "",
@@ -1764,31 +3614,123 @@
 			},
 			"data" : 
 			[
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"2.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
-				"2.5",
-				"3.5",
-				"1.5",
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
+				{
+					"l" : "TwoHalf",
+					"v" : "2.5"
+				},
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				},
 				"",
-				"3.5",
-				"1.5"
+				{
+					"l" : "ThreeHalf",
+					"v" : "3.5"
+				},
+				{
+					"l" : "OneHalf",
+					"v" : "1.5"
+				}
 			],
 			"description" : "",
-			"labels" : [],
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "OneHalf",
+					"order" : 0,
+					"originalValue" : "1.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "TwoHalf",
+					"order" : 1,
+					"originalValue" : "2.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "ThreeHalf",
+					"order" : 2,
+					"originalValue" : "3.5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "nan",
+					"order" : 3,
+					"originalValue" : ""
+				}
+			],
 			"name" : "StringNominalLabelsDecimal",
-			"nonEmptyLabels" : [],
+			"nonEmptyLabels" : 
+			[
+				"OneHalf",
+				"TwoHalf",
+				"ThreeHalf"
+			],
 			"rCode" : "",
 			"title" : "",
 			"type" : "nominal"

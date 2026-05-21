@@ -92,7 +92,7 @@ void TestAll::testDataImport()
 		if(folder == "rdata")		return new RDataImporter();
 		if(folder == "excel")		return new ExcelImporter();
 		if(folder == "ods")			return new ods::ODSImporter();
-		if(folder == "csv")			return new CSVImporter();
+		if(folder == "csv")			return new CSVImporter(false);
 
 		return nullptr;
 	};
@@ -148,9 +148,12 @@ void TestAll::testDataImport()
 	bool hardcodedIsSame = hardcoded == compareMe;
 
 	if(!hardcodedIsSame)
+	{
 		std::cerr << stringUtils::replaceBy(compareMe.toStyledString(), "\n", " ") << std::endl;
+		std::cerr << fq(dataFileAbsolutePath) + " Test fails" << std::endl;
+	}
 
-	QVERIFY2(hardcodedIsSame,			"Hardcoded json is different!");
+	QVERIFY2(hardcodedIsSame, "Hardcoded json is different!" );
 
 	
 	DataSet loadMe(dataSet->id());
@@ -289,6 +292,62 @@ void TestAll::testJaspDataImport()
 	
 	DataSet loadMe(dataSet->id());
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
+}
+
+// Regression test for https://github.com/jasp-stats/jasp-desktop/commit/0a90b9a34e9d754f55bc32ec1efd2f67940ef756
+// setDataSetSize() pre-allocates rows before initFromLookups() is called, causing rowCount() > 0
+// when setValues() checks allTheSame — which skipped the label-detection loop and silently dropped
+// all SPSS value labels.
+void TestAll::testSavLabels()
+{
+	if(_pkg)	delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new ReadStatImporter();
+
+	const QString savPath = _testLibrary().absoluteFilePath("readstat/Labelled_data.sav");
+	_importer->loadDataSet(fq(savPath), [](int){});
+
+	DataSet * dataSet = _pkg->dataSet();
+	QVERIFY2(dataSet, "No dataset!");
+
+	// These columns have SPSS value labels (e.g. 1->"Soha", 2->"Havonta vagy kevesebbszer", …)
+	// and must be imported as labelled (nominal/ordinal) columns.
+	const QStringList labelledColumns = {
+		"AUDIT_gyakorisag",
+		"AUDIT_mennyiség",
+		"PHQ14_fejfajas",
+		"PHQ14_szivveres",
+		"PHQ9_energia"
+	};
+
+	for(const QString & colName : labelledColumns)
+	{
+		Column * col = dataSet->column(fq(colName));
+		QVERIFY2(col,				qPrintable("Column not found: "	+ colName));
+		QVERIFY2(col->hasLabels(),			qPrintable("Column has no labels: "  + colName));
+		QVERIFY2(col->labels().size() > 0,	qPrintable("Label list is empty: "   + colName));
+	}
+
+	// Spot-check: AUDIT_gyakorisag label 1 should be "Soha"
+	Column * audit = dataSet->column("AUDIT_gyakorisag");
+	QVERIFY2(audit, "AUDIT_gyakorisag column not found");
+
+	bool foundSoha = false;
+	for(const Label * label : audit->labels())
+		if(label->labelDisplay() == "Soha") { foundSoha = true; break; }
+
+	QVERIFY2(foundSoha, "Expected label 'Soha' not found in AUDIT_gyakorisag");
+
+	// Scale columns must NOT have labels
+	const QStringList scaleColumns = { "Eletkor", "MHC_SF_Emo", "PSS_10" };
+	for(const QString & colName : scaleColumns)
+	{
+		Column * col = dataSet->column(fq(colName));
+		QVERIFY2(col, qPrintable("Column not found: " + colName));
+		QVERIFY2(!col->hasLabels(), qPrintable("Scale column should not have labels: " + colName));
+	}
 }
 
 QTEST_MAIN(TestAll)

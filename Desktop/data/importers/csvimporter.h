@@ -27,14 +27,16 @@ class CSVImporter : public Importer
 {
 	Q_DECLARE_TR_FUNCTIONS(CSVImporter)
 public:
-	CSVImporter();
+	CSVImporter(bool askForDelimeter = true);
 
-	bool importerDeliversLabels() const override { return false; } 
+	bool importerDeliversLabels() const override { return false; }
 	
 protected:
 	ImportDataSet* loadFile(const std::string &locator, std::function<void(int)> progressCallback) override;
 
 private:
+	bool _askForDelimeter = true;
+
 	JASPTIMER_CLASS(CSVImporter);
 };
 

@@ -24,7 +24,7 @@
 using namespace std;
 
 
-CSVImporter::CSVImporter() : Importer()
+CSVImporter::CSVImporter(bool askForDelimeter) : Importer(), _askForDelimeter{askForDelimeter}
 {
 }
 
@@ -41,7 +41,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 	char detectedDelimiter = csv.delimiter();
 	char delimiter = detectedDelimiter;
 
-	if (!_synching)
+	if (!_synching && _askForDelimeter)
 	{
 		try {
 			delimiter = DesktopCommunicator::singleton()->askCsvDelimiter(delimiter, QString::fromStdString(csv.firstRowsPlease()));
