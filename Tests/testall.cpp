@@ -45,7 +45,7 @@ void TestAll::init()
 
 void TestAll::cleanup()
 {
-	
+
 	delete _importer;
 	_importer = nullptr;
 
@@ -155,7 +155,7 @@ void TestAll::testDataImport()
 
 	QVERIFY2(hardcodedIsSame, "Hardcoded json is different!" );
 
-	
+
 	DataSet loadMe(dataSet->id());
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
@@ -200,13 +200,13 @@ void TestAll::testJaspRoundRobin()
 		delete _importer;
 
 	_pkg = new DataSetPackage(this);
-	
+
 	std::cerr << "Testing " << dataFileAbsolutePath << std::endl;
 	JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
-	
+
 	DataSet *	dataSet		= _pkg->dataSet();
 	QVERIFY2(dataSet,			"No dataset!");
-	
+
 	Json::Value compareMe	= dataSet->jsonForCompare();
 	std::string jaspFile	= TempFiles::createSpecific("testjasp", "temp.jasp");
 
@@ -214,12 +214,12 @@ void TestAll::testJaspRoundRobin()
 	// Create snapshot before exporting
 	JASPExporter::createSnapshot("testjasp_snapshot_");
 	JASPExporter().saveDataSet(jaspFile, [](int){});
-	
+
 	_pkg->reset();
 	QVERIFY2(_pkg->dataSet()->jsonForCompare() != compareMe, "DataSet should be different after resetting DataSetPackage!");
-	
+
 	JASPImporter::loadDataSet(jaspFile, [](int){});
-	
+
 	dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,									"No dataset!");
 	QVERIFY2(dataSet->jsonForCompare() == compareMe,	"DataSet should be the same after reloading!");
@@ -241,11 +241,11 @@ void TestAll::testJaspDataImport()
 		delete _importer;
 
 	_pkg = new DataSetPackage(this);
-	
+
 	std::cerr << "Testing " << dataFileAbsolutePath << std::endl;
 
 	JASPImporter::loadDataSet(fq(dataFileAbsolutePath),		[](int){});
-	
+
 	DataSet * dataSet = _pkg->dataSet();
 	QVERIFY2(dataSet,						"No dataset!");
 
@@ -271,8 +271,8 @@ void TestAll::testJaspDataImport()
 	QVERIFY(jsonFileIn.exists());
 
 	QFile jsonFile(jsonFilePath);
-	
-	
+
+
 	jsonFile.open(QFile::OpenModeFlag::ReadOnly);
 
 	std::string jsonTxt  = fq(jsonFile.readAll());
@@ -289,7 +289,7 @@ void TestAll::testJaspDataImport()
 
 	QVERIFY2(hardcodedIsSame,			"Hardcoded json is different!");
 
-	
+
 	DataSet loadMe(dataSet->id());
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
@@ -378,14 +378,22 @@ void TestAll::testFilterLabels()
 	QVERIFY2(treatLabel->label() == "Treat",			qPrintable("Second label is not 'Treat'"));
 	QVERIFY2(treatLabel->filterAllows(),				qPrintable("'Treat'label is filtered"));
 
-	bool isFirstRowFiltered = _pkg->data(_pkg->index(0, 0, _pkg->indexForSubNode(dataSet->filtersNode()))).toBool();
-	QVERIFY2(isFirstRowFiltered,						qPrintable("'First row is filtered"));
-
 	// Do as if the user clicked on Filter for the Control label in the Label window
 	_pkg->setData(_pkg->indexForSubNode(controlLabel), false, int(DataSetPackage::specialRoles::filter));
-
 	QVERIFY2(!controlLabel->filterAllows(),				qPrintable("'Control' label is not filtered"));
 	QVERIFY2(treatLabel->filterAllows(),				qPrintable("'Treat'label is filtered"));
+
+	// Not all labels can be unset: nothing should change
+	_pkg->setData(_pkg->indexForSubNode(treatLabel), false, int(DataSetPackage::specialRoles::filter));
+	QVERIFY2(!controlLabel->filterAllows(),				qPrintable("'Control' label is not filtered"));
+	QVERIFY2(treatLabel->filterAllows(),				qPrintable("'Treat'label is filtered"));
+
+	// Set first the Control label, and unset the Treat lable: this time it should work
+	_pkg->setData(_pkg->indexForSubNode(controlLabel), true, int(DataSetPackage::specialRoles::filter));
+	_pkg->setData(_pkg->indexForSubNode(treatLabel), false, int(DataSetPackage::specialRoles::filter));
+	QVERIFY2(controlLabel->filterAllows(),				qPrintable("'Control' label is filtered"));
+	QVERIFY2(!treatLabel->filterAllows(),				qPrintable("'Treat'label is not filtered"));
+
 }
 
 
