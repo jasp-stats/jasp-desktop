@@ -421,7 +421,7 @@ Popup
 
 									JASPC.Text
 									{
-										text:				qsTr("Rerendering\u2026")
+										text:				qsTr("Rerendering…")
 										font:				jaspTheme.fontLabel
 										color:				jaspTheme.textEnabled
 										Layout.alignment:	Qt.AlignHCenter
