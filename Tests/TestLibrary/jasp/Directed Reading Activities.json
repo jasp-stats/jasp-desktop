@@ -1,0 +1,920 @@
+{
+	"columns" : 
+	[
+		{
+			"autoSortByValue" : false,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"11",
+				"12",
+				"13",
+				"14",
+				"15",
+				"16",
+				"17",
+				"18",
+				"19",
+				"20",
+				"21",
+				"22",
+				"23",
+				"24",
+				"25",
+				"26",
+				"27",
+				"28",
+				"29",
+				"30",
+				"31",
+				"32",
+				"33",
+				"34",
+				"35",
+				"36",
+				"37",
+				"38",
+				"39",
+				"40",
+				"41",
+				"42",
+				"43",
+				"44"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 0,
+					"originalValue" : "1"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 1,
+					"originalValue" : "2"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 2,
+					"originalValue" : "3"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 3,
+					"originalValue" : "4"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 4,
+					"originalValue" : "5"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 5,
+					"originalValue" : "6"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 6,
+					"originalValue" : "7"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 7,
+					"originalValue" : "8"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 8,
+					"originalValue" : "9"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 9,
+					"originalValue" : "10"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 10,
+					"originalValue" : "11"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 11,
+					"originalValue" : "12"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 12,
+					"originalValue" : "13"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 13,
+					"originalValue" : "14"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 14,
+					"originalValue" : "15"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 15,
+					"originalValue" : "16"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 16,
+					"originalValue" : "17"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 17,
+					"originalValue" : "18"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 18,
+					"originalValue" : "19"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 19,
+					"originalValue" : "20"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 20,
+					"originalValue" : "21"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 21,
+					"originalValue" : "22"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 22,
+					"originalValue" : "23"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 23,
+					"originalValue" : "24"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 24,
+					"originalValue" : "25"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 25,
+					"originalValue" : "26"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 26,
+					"originalValue" : "27"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 27,
+					"originalValue" : "28"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 28,
+					"originalValue" : "29"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 29,
+					"originalValue" : "30"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 30,
+					"originalValue" : "31"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 31,
+					"originalValue" : "32"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 32,
+					"originalValue" : "33"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 33,
+					"originalValue" : "34"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 34,
+					"originalValue" : "35"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 35,
+					"originalValue" : "36"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 36,
+					"originalValue" : "37"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 37,
+					"originalValue" : "38"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 38,
+					"originalValue" : "39"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 39,
+					"originalValue" : "40"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 40,
+					"originalValue" : "41"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 41,
+					"originalValue" : "42"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 42,
+					"originalValue" : "43"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 43,
+					"originalValue" : "44"
+				}
+			],
+			"name" : "id",
+			"nonEmptyLabels" : 
+			[
+				"1",
+				"2",
+				"3",
+				"4",
+				"5",
+				"6",
+				"7",
+				"8",
+				"9",
+				"10",
+				"11",
+				"12",
+				"13",
+				"14",
+				"15",
+				"16",
+				"17",
+				"18",
+				"19",
+				"20",
+				"21",
+				"22",
+				"23",
+				"24",
+				"25",
+				"26",
+				"27",
+				"28",
+				"29",
+				"30",
+				"31",
+				"32",
+				"33",
+				"34",
+				"35",
+				"36",
+				"37",
+				"38",
+				"39",
+				"40",
+				"41",
+				"42",
+				"43",
+				"44"
+			],
+			"rCode" : "",
+			"title" : "id",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : false,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Treat",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control",
+				"Control"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : ".",
+					"order" : 0,
+					"originalValue" : "."
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Control",
+					"order" : 1,
+					"originalValue" : "Control"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "Treat",
+					"order" : 2,
+					"originalValue" : "Treat"
+				}
+			],
+			"name" : "group",
+			"nonEmptyLabels" : 
+			[
+				"Control",
+				"Treat"
+			],
+			"rCode" : "",
+			"title" : "group",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : false,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"0",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1",
+				"1"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 0,
+					"originalValue" : "0"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 1,
+					"originalValue" : "1"
+				}
+			],
+			"name" : "g",
+			"nonEmptyLabels" : 
+			[
+				"0",
+				"1"
+			],
+			"rCode" : "",
+			"title" : "g",
+			"type" : "nominal"
+		},
+		{
+			"autoSortByValue" : false,
+			"codeType" : "notComputed",
+			"constructorJson" : {},
+			"customEmptyValues" : 
+			{
+				"custom" : false,
+				"strings" : []
+			},
+			"data" : 
+			[
+				"24",
+				"56",
+				"43",
+				"59",
+				"58",
+				"52",
+				"71",
+				"62",
+				"43",
+				"54",
+				"49",
+				"57",
+				"61",
+				"33",
+				"44",
+				"46",
+				"67",
+				"43",
+				"49",
+				"57",
+				"53",
+				"42",
+				"46",
+				"43",
+				"10",
+				"55",
+				"17",
+				"26",
+				"60",
+				"62",
+				"53",
+				"37",
+				"42",
+				"33",
+				"37",
+				"41",
+				"42",
+				"19",
+				"55",
+				"54",
+				"28",
+				"20",
+				"48",
+				"85"
+			],
+			"description" : "",
+			"labels" : 
+			[
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 0,
+					"originalValue" : "10"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 1,
+					"originalValue" : "17"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 2,
+					"originalValue" : "19"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 3,
+					"originalValue" : "20"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 4,
+					"originalValue" : "24"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 5,
+					"originalValue" : "26"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 6,
+					"originalValue" : "28"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 7,
+					"originalValue" : "33"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 8,
+					"originalValue" : "37"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 9,
+					"originalValue" : "41"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 10,
+					"originalValue" : "42"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 11,
+					"originalValue" : "43"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 12,
+					"originalValue" : "44"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 13,
+					"originalValue" : "46"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 14,
+					"originalValue" : "48"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 15,
+					"originalValue" : "49"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 16,
+					"originalValue" : "52"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 17,
+					"originalValue" : "53"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 18,
+					"originalValue" : "54"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 19,
+					"originalValue" : "55"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 20,
+					"originalValue" : "56"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 21,
+					"originalValue" : "57"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 22,
+					"originalValue" : "58"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 23,
+					"originalValue" : "59"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 24,
+					"originalValue" : "60"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 25,
+					"originalValue" : "61"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 26,
+					"originalValue" : "62"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 27,
+					"originalValue" : "67"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 28,
+					"originalValue" : "71"
+				},
+				{
+					"description" : "",
+					"filterAllows" : true,
+					"label" : "",
+					"order" : 29,
+					"originalValue" : "85"
+				}
+			],
+			"name" : "drp",
+			"nonEmptyLabels" : 
+			[
+				"10",
+				"17",
+				"19",
+				"20",
+				"24",
+				"26",
+				"28",
+				"33",
+				"37",
+				"41",
+				"42",
+				"43",
+				"44",
+				"46",
+				"48",
+				"49",
+				"52",
+				"53",
+				"54",
+				"55",
+				"56",
+				"57",
+				"58",
+				"59",
+				"60",
+				"61",
+				"62",
+				"67",
+				"71",
+				"85"
+			],
+			"rCode" : "",
+			"title" : "drp",
+			"type" : "scale"
+		}
+	],
+	"customEmptyValues" : 
+	{
+		"custom" : true,
+		"strings" : 
+		[
+			".",
+			"NA",
+			"NaN",
+			"ddd",
+			"nan"
+		]
+	}
+}

@@ -350,4 +350,43 @@ void TestAll::testSavLabels()
 	}
 }
 
+// Regression test for https://github.com/jasp-stats/jasp-issues/issues/4293
+void TestAll::testFilterLabels()
+{
+	if(_pkg)	delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new ReadStatImporter();
+
+	const QString filePath = _testLibrary().absoluteFilePath("jasp/Directed Reading Activities.jasp");
+	JASPImporter::loadDataSet(fq(filePath),		[](int){});
+
+	DataSet * dataSet = _pkg->dataSet();
+	QVERIFY2(dataSet, "No dataset!");
+
+	std::string colName = "group";
+	Column * col = dataSet->column(colName);
+	QVERIFY2(col,										qPrintable("Group Column not found"));
+	QVERIFY2(col->hasLabels(),							qPrintable("Group has no labels"));
+	QVERIFY2(col->labelsNonEmptyCount() == 2,			qPrintable(tq("Number of labels is not 2: ")) + col->labelsNonEmptyCount());
+
+	Label * controlLabel = col->labelByIndexNonEmpty(0);
+	Label * treatLabel = col->labelByIndexNonEmpty(1);
+	QVERIFY2(controlLabel->label() == "Control",		qPrintable("First label is not 'Control'"));
+	QVERIFY2(controlLabel->filterAllows(),				qPrintable("'Control' label is filtered"));
+	QVERIFY2(treatLabel->label() == "Treat",			qPrintable("Second label is not 'Treat'"));
+	QVERIFY2(treatLabel->filterAllows(),				qPrintable("'Treat'label is filtered"));
+
+	bool isFirstRowFiltered = _pkg->data(_pkg->index(0, 0, _pkg->indexForSubNode(dataSet->filtersNode()))).toBool();
+	QVERIFY2(isFirstRowFiltered,						qPrintable("'First row is filtered"));
+
+	// Do as if the user clicked on Filter for the Control label in the Label window
+	_pkg->setData(_pkg->indexForSubNode(controlLabel), false, int(DataSetPackage::specialRoles::filter));
+
+	QVERIFY2(!controlLabel->filterAllows(),				qPrintable("'Control' label is not filtered"));
+	QVERIFY2(treatLabel->filterAllows(),				qPrintable("'Treat'label is filtered"));
+}
+
+
 QTEST_MAIN(TestAll)

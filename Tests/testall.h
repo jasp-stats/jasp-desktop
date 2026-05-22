@@ -18,6 +18,7 @@ private slots:
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
 	void	testSavLabels();
+	void	testFilterLabels();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

@@ -820,9 +820,6 @@ bool DataSetPackage::setData(const QModelIndex &index, const QVariant &value, in
 		if(!_dataSet || index.column() >= parColCount || index.row() >= parRowCount || index.column() < 0 || index.row() < 0)
 			return false;
 
-
-		const Labels	&	labels		= column->labels();
-		
 		switch(role)
 		{
 		case int(specialRoles::filter):
