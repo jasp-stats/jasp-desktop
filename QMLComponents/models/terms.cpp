@@ -684,8 +684,8 @@ void Terms::remove(size_t pos, size_t n)
 
 	for (; n > 0 && itr != _terms.end(); n--)
 	{
-		itr = _terms.erase(itr);
 		_valueMap.erase(itr->value());
+		itr = _terms.erase(itr);
 	}
 
 	for (; itr != _terms.end(); itr++)
