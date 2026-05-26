@@ -160,14 +160,26 @@ FocusScope
 						{
 							id:						delegateLoader
 							width:					analysesColumn.width
-							height:					item ? item.height : 0
+							clip:					true
 
 							// Mirror model roles as regular properties so Binding elements can reference them.
-							property int		rowIndex:		index
-							property bool		isGroupItem:	model.isGroup
-							property var		rowAnalysis:	isGroupItem ? null : model.analysis
-							property int		rowGroupId:		isGroupItem ? model.groupId    : -1
-							property string		rowGroupTitle:	isGroupItem ? model.groupTitle : ""
+							property int		rowIndex:			index
+							property bool		isGroupItem:		model.isGroup
+							property var		rowAnalysis:		isGroupItem ? null  : model.analysis
+							property int		rowGroupId:			isGroupItem ? model.groupId       : -1
+							property string		rowGroupTitle:		isGroupItem ? model.groupTitle    : ""
+							property bool		rowGroupCollapsed:	isGroupItem ? model.groupCollapsed : false
+							property bool		rowIsVisible:		isGroupItem || model.isVisibleInGroup
+
+							// Target height: full when visible, 0 when its group is collapsed.
+							property real		targetHeight:		rowIsVisible ? (item ? item.height : 0) : 0
+							height:				targetHeight
+
+							Behavior on height
+							{
+								enabled: preferencesModel.animationsOn
+								NumberAnimation { duration: 200; easing.type: Easing.OutQuad }
+							}
 
 							sourceComponent: isGroupItem ? groupHeaderComponent : analysisExpanderComponent
 
@@ -178,15 +190,17 @@ FocusScope
 									item.myAnalysis = rowAnalysis
 								else
 								{
-									item.myGroupId    = rowGroupId
-									item.myGroupTitle = rowGroupTitle
+									item.myGroupId        = rowGroupId
+									item.myGroupTitle     = rowGroupTitle
+									item.myGroupCollapsed = rowGroupCollapsed
 								}
 							}
 
 							// Keep properties in sync when model data or index changes.
-							Binding { target: delegateLoader.item; property: "myIndex";      value: delegateLoader.rowIndex;      when: delegateLoader.item !== null }
-							Binding { target: delegateLoader.item; property: "myGroupTitle"; value: delegateLoader.rowGroupTitle; when: delegateLoader.item !== null && delegateLoader.isGroupItem }
-							Binding { target: delegateLoader.item; property: "myGroupId";   value: delegateLoader.rowGroupId;   when: delegateLoader.item !== null && delegateLoader.isGroupItem }
+							Binding { target: delegateLoader.item; property: "myIndex";          value: delegateLoader.rowIndex;          when: delegateLoader.item !== null }
+							Binding { target: delegateLoader.item; property: "myGroupTitle";     value: delegateLoader.rowGroupTitle;     when: delegateLoader.item !== null && delegateLoader.isGroupItem }
+							Binding { target: delegateLoader.item; property: "myGroupId";        value: delegateLoader.rowGroupId;        when: delegateLoader.item !== null && delegateLoader.isGroupItem }
+							Binding { target: delegateLoader.item; property: "myGroupCollapsed"; value: delegateLoader.rowGroupCollapsed; when: delegateLoader.item !== null && delegateLoader.isGroupItem }
 
 							ALTNavigation.enabled:		true
 							ALTNavigation.index:		rowIndex

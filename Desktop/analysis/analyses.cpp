@@ -586,15 +586,26 @@ QVariant Analyses::data(const QModelIndex &index, int role) const
 		AnalysisGroup * group = _groupMap.at(item.id);
 		switch(role)
 		{
-		case isGroupRole:    return true;
-		case groupTitleRole: return tq(group->title());
-		case groupIdRole:    return int(group->id());
-		default:             return QVariant();
+		case isGroupRole:          return true;
+		case groupTitleRole:       return tq(group->title());
+		case groupIdRole:          return int(group->id());
+		case groupCollapsedRole:   return group->collapsed();
+		case isVisibleInGroupRole: return true; // group headers always visible
+		default:                   return QVariant();
 		}
 	}
 
 	if(!_analysisMap.count(item.id)) return QVariant();
 	Analysis * analysis = _analysisMap.at(item.id);
+
+	if(role == isVisibleInGroupRole)
+	{
+		// Scan backwards: if the nearest preceding group is collapsed, this analysis is hidden.
+		for(size_t i = size_t(index.row()); i > 0; i--)
+			if(_orderedItems[i-1].isGroup())
+				return !_groupMap.at(_orderedItems[i-1].id)->collapsed();
+		return true; // no preceding group → always visible
+	}
 
 	switch(role)
 	{
@@ -612,14 +623,16 @@ QVariant Analyses::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> Analyses::roleNames() const
 {
 	static const QHash<int, QByteArray> roles = {
-		{ formPathRole,		"formPath"		},
-		{ titleRole,		"displayText"	},
-		{ analysisRole,		"analysis"		},
-		{ nameRole,			"name"			},
-		{ idRole,			"analysisID"	},
-		{ isGroupRole,		"isGroup"		},
-		{ groupTitleRole,	"groupTitle"	},
-		{ groupIdRole,		"groupId"		} };
+		{ formPathRole,			"formPath"			},
+		{ titleRole,			"displayText"		},
+		{ analysisRole,			"analysis"			},
+		{ nameRole,				"name"				},
+		{ idRole,				"analysisID"		},
+		{ isGroupRole,			"isGroup"			},
+		{ groupTitleRole,		"groupTitle"		},
+		{ groupIdRole,			"groupId"			},
+		{ groupCollapsedRole,	"groupCollapsed"	},
+		{ isVisibleInGroupRole,	"isVisibleInGroup"	} };
 
 	return roles;
 }
@@ -986,7 +999,6 @@ void Analyses::setGroupTitle(int groupId, const QString & title)
 
 	_groupMap[gid]->setTitle(title.toStdString());
 
-	// Notify QML of the data change.
 	for(size_t i = 0; i < _orderedItems.size(); i++)
 		if(_orderedItems[i].isGroup() && _orderedItems[i].id == gid)
 		{
@@ -994,6 +1006,30 @@ void Analyses::setGroupTitle(int groupId, const QString & title)
 			emit dataChanged(idx, idx, {groupTitleRole});
 			break;
 		}
+
+	emit somethingModified();
+}
+
+void Analyses::toggleGroupCollapsed(int groupId)
+{
+	size_t gid = size_t(groupId);
+	if(!_groupMap.count(gid)) return;
+
+	AnalysisGroup * group = _groupMap[gid];
+	group->setCollapsed(!group->collapsed());
+
+	for(size_t i = 0; i < _orderedItems.size(); i++)
+	{
+		if(!(_orderedItems[i].isGroup() && _orderedItems[i].id == gid))
+			continue;
+
+		// Notify the header (arrow rotation) and every analysis it contains.
+		emit dataChanged(index(int(i)), index(int(i)), {groupCollapsedRole});
+		for(size_t j = i + 1; j < _orderedItems.size() && !_orderedItems[j].isGroup(); j++)
+			emit dataChanged(index(int(j)), index(int(j)), {isVisibleInGroupRole});
+
+		break;
+	}
 
 	emit somethingModified();
 }

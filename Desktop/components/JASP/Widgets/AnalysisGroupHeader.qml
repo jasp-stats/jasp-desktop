@@ -14,6 +14,7 @@ DropArea
 	property int		myIndex:			-1
 	property int		myGroupId:			-1
 	property string		myGroupTitle:		""
+	property bool		myGroupCollapsed:	false
 	property var		backgroundFlickable: null
 
 	onEntered: (drag) =>
@@ -137,8 +138,8 @@ DropArea
 				{
 					if (drag.active)
 					{
-						analysesModel.moving			= true
-						draggableGroup.droppedIndex		= -1
+						analysesModel.moving		= true
+						draggableGroup.droppedIndex	= -1
 					}
 					else
 					{
@@ -146,9 +147,37 @@ DropArea
 					}
 				}
 
+				onClicked: analysesModel.toggleGroupCollapsed(myGroupId)
+
 				anchors { fill: parent }
-				ToolTip.text:		qsTr("Drag to reorder")
-				ToolTip.visible:	containsMouse && !analysesModel.moving
+				ToolTip.text:	myGroupCollapsed ? qsTr("Click to expand, drag to reorder") : qsTr("Click to collapse, drag to reorder")
+				ToolTip.visible: containsMouse && !analysesModel.moving
+			}
+
+			// Collapse/expand arrow.
+			Image
+			{
+				id:				collapseArrow
+				source:			draggableGroup.activeFocus
+								? jaspTheme.iconPath + "large-arrow-right-selected.png"
+								: jaspTheme.iconPath + "large-arrow-right.png"
+				height:			jaspTheme.formExpanderHeaderHeight * 0.45
+				width:			height
+				rotation:		myGroupCollapsed ? 0 : 90
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		10 * preferencesModel.uiScale
+					verticalCenter:	parent.verticalCenter
+				}
+				sourceSize { width: collapseArrow.width * 2; height: collapseArrow.height * 2 }
+				fillMode: Image.PreserveAspectFit
+
+				Behavior on rotation
+				{
+					enabled: preferencesModel.animationsOn
+					RotationAnimation { duration: 200 }
+				}
 			}
 
 			// Folder icon.
@@ -156,12 +185,12 @@ DropArea
 			{
 				id:				folderIcon
 				source:			jaspTheme.iconPath + "folder.svg"
-				width:			jaspTheme.formExpanderHeaderHeight * 0.55
+				width:			jaspTheme.formExpanderHeaderHeight * 0.45
 				height:			width
 				anchors
 				{
-					left:			parent.left
-					leftMargin:		10 * preferencesModel.uiScale
+					left:			collapseArrow.right
+					leftMargin:		4 * preferencesModel.uiScale
 					verticalCenter:	parent.verticalCenter
 				}
 				sourceSize { width: folderIcon.width * 2; height: folderIcon.height * 2 }

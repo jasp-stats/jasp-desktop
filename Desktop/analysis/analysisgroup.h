@@ -29,10 +29,12 @@ class AnalysisGroup
 public:
 					AnalysisGroup(size_t id, const std::string & title = "Group");
 
-	size_t			id()	const	{ return _id;	}
-	std::string		title()	const	{ return _title;}
+	size_t			id()		const	{ return _id;		}
+	std::string		title()		const	{ return _title;	}
+	bool			collapsed()	const	{ return _collapsed;}
 
-	void			setTitle(const std::string & title) { _title = title; }
+	void			setTitle(const std::string & title)	{ _title = title;		}
+	void			setCollapsed(bool collapsed)		{ _collapsed = collapsed; }
 
 	Json::Value		asJson() const;
 	static AnalysisGroup * fromJson(const Json::Value & json);
@@ -40,6 +42,7 @@ public:
 private:
 	size_t			_id;
 	std::string		_title;
+	bool			_collapsed	= false;
 };
 
 #endif // ANALYSISGROUP_H

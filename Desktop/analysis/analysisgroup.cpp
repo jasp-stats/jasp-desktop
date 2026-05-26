@@ -27,6 +27,7 @@ Json::Value AnalysisGroup::asJson() const
 	Json::Value j	= Json::objectValue;
 	j["id"]			= int(_id);
 	j["title"]		= _title;
+	j["collapsed"]	= _collapsed;
 	return j;
 }
 
@@ -34,5 +35,9 @@ AnalysisGroup * AnalysisGroup::fromJson(const Json::Value & json)
 {
 	size_t		id		= size_t(json.get("id", 0).asInt());
 	std::string title	= json.get("title", "Group").asString();
-	return new AnalysisGroup(id, title);
+	bool collapsed		= json.get("collapsed", false).asBool();
+
+	AnalysisGroup * g = new AnalysisGroup(id, title);
+	g->setCollapsed(collapsed);
+	return g;
 }

@@ -59,7 +59,9 @@ public:
 					idRole,
 					isGroupRole,
 					groupTitleRole,
-					groupIdRole };
+					groupIdRole,
+					groupCollapsedRole,
+					isVisibleInGroupRole };
 
 	/// An entry in the flat ordered list exposed to QML: either an Analysis or a Group header.
 	struct OrderedItem
@@ -124,6 +126,7 @@ public slots:
 	Q_INVOKABLE void addGroup(const QString & title = "");
 	Q_INVOKABLE void removeGroup(int groupId);
 	Q_INVOKABLE void setGroupTitle(int groupId, const QString & title);
+	Q_INVOKABLE void toggleGroupCollapsed(int groupId);
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
