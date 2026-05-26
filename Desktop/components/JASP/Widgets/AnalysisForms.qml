@@ -156,24 +156,29 @@ FocusScope
 						id:			formRepeater
 						model:		analysesModel
 
-						delegate: Loader
+						// The delegate is a wrapper Item that clips and animates height.
+						// The Loader inside has NO explicit height so its item retains its
+						// natural height even while the wrapper is collapsed to 0.
+						// This avoids the deadlock where Loader.height:0 → item.height:0
+						// → targetHeight:0 → height stays 0 after re-opening.
+						delegate: Item
 						{
-							id:						delegateLoader
+							id:						delegateWrapper
 							width:					analysesColumn.width
 							clip:					true
 
-							// Mirror model roles as regular properties so Binding elements can reference them.
+							// Mirror model roles as regular properties.
 							property int		rowIndex:			index
 							property bool		isGroupItem:		model.isGroup
 							property var		rowAnalysis:		isGroupItem ? null  : model.analysis
-							property int		rowGroupId:			isGroupItem ? model.groupId       : -1
-							property string		rowGroupTitle:		isGroupItem ? model.groupTitle    : ""
+							property int		rowGroupId:			isGroupItem ? model.groupId        : -1
+							property string		rowGroupTitle:		isGroupItem ? model.groupTitle     : ""
 							property bool		rowGroupCollapsed:	isGroupItem ? model.groupCollapsed : false
 							property bool		rowIsVisible:		isGroupItem || model.isVisibleInGroup
 
-							// Target height: full when visible, 0 when its group is collapsed.
-							property real		targetHeight:		rowIsVisible ? (item ? item.height : 0) : 0
-							height:				targetHeight
+							// Animate height: the Loader is unconstrained, so innerLoader.item.height
+							// always reflects the item's natural size regardless of our own height.
+							height: rowIsVisible ? (innerLoader.item ? innerLoader.item.height : 0) : 0
 
 							Behavior on height
 							{
@@ -181,30 +186,37 @@ FocusScope
 								NumberAnimation { duration: 200; easing.type: Easing.OutQuad }
 							}
 
-							sourceComponent: isGroupItem ? groupHeaderComponent : analysisExpanderComponent
-
-							onLoaded:
+							Loader
 							{
-								item.backgroundFlickable = analysesFlickable
-								if (!isGroupItem)
-									item.myAnalysis = rowAnalysis
-								else
+								id:		innerLoader
+								width:	delegateWrapper.width
+								// height intentionally NOT set — item controls its own height.
+
+								sourceComponent: delegateWrapper.isGroupItem ? groupHeaderComponent : analysisExpanderComponent
+
+								onLoaded:
 								{
-									item.myGroupId        = rowGroupId
-									item.myGroupTitle     = rowGroupTitle
-									item.myGroupCollapsed = rowGroupCollapsed
+									item.backgroundFlickable = analysesFlickable
+									if (!delegateWrapper.isGroupItem)
+										item.myAnalysis = delegateWrapper.rowAnalysis
+									else
+									{
+										item.myGroupId        = delegateWrapper.rowGroupId
+										item.myGroupTitle     = delegateWrapper.rowGroupTitle
+										item.myGroupCollapsed = delegateWrapper.rowGroupCollapsed
+									}
 								}
 							}
 
-							// Keep properties in sync when model data or index changes.
-							Binding { target: delegateLoader.item; property: "myIndex";          value: delegateLoader.rowIndex;          when: delegateLoader.item !== null }
-							Binding { target: delegateLoader.item; property: "myGroupTitle";     value: delegateLoader.rowGroupTitle;     when: delegateLoader.item !== null && delegateLoader.isGroupItem }
-							Binding { target: delegateLoader.item; property: "myGroupId";        value: delegateLoader.rowGroupId;        when: delegateLoader.item !== null && delegateLoader.isGroupItem }
-							Binding { target: delegateLoader.item; property: "myGroupCollapsed"; value: delegateLoader.rowGroupCollapsed; when: delegateLoader.item !== null && delegateLoader.isGroupItem }
+							// Keep item properties in sync when model data or index changes.
+							Binding { target: innerLoader.item; property: "myIndex";          value: delegateWrapper.rowIndex;          when: innerLoader.item !== null }
+							Binding { target: innerLoader.item; property: "myGroupTitle";     value: delegateWrapper.rowGroupTitle;     when: innerLoader.item !== null && delegateWrapper.isGroupItem }
+							Binding { target: innerLoader.item; property: "myGroupId";        value: delegateWrapper.rowGroupId;        when: innerLoader.item !== null && delegateWrapper.isGroupItem }
+							Binding { target: innerLoader.item; property: "myGroupCollapsed"; value: delegateWrapper.rowGroupCollapsed; when: innerLoader.item !== null && delegateWrapper.isGroupItem }
 
 							ALTNavigation.enabled:		true
 							ALTNavigation.index:		rowIndex
-							ALTNavigation.onTagMatch:	{ if (!isGroupItem && item) item.expand(); }
+							ALTNavigation.onTagMatch:	{ if (!isGroupItem && innerLoader.item) innerLoader.item.expand(); }
 						}
 					}
 
