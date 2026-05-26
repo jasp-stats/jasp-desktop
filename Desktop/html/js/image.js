@@ -449,7 +449,7 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	_getHTMLImage: function (htmlImageFormatData, width, height, exportParams) {
 		var html = "";
 		if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.temporary)
-			html = '<img src="file://' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />';
+			html = '<img src="file:///' + htmlImageFormatData.temporary + '" style="width:' + width + 'px; height:' + height + 'px;" />';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.embedded)
 			html = '<div style="background-image : url(data:image/png;base64,' + htmlImageFormatData.embedded + '); background-size:' + width + 'px ' + height + 'px; width:' + width + 'px; height:' + height + 'px;"></div>';
 		else if (exportParams.htmlImageFormat === JASPWidgets.ExportProperties.htmlImageFormat.resource)
