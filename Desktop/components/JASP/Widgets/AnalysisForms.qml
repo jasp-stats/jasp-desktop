@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import JASP
 import JASP.Controls
 
@@ -20,6 +21,57 @@ FocusScope
 
 		property real singleButtonHeight: jaspTheme.formExpanderHeaderHeight + 2 * jaspTheme.formMargin + analysesColumn.spacing
 
+		// "New group" button sitting above the scrollable list.
+		Rectangle
+		{
+			id:				addGroupBar
+			anchors.top:	parent.top
+			anchors.left:	parent.left
+			anchors.right:	parent.right
+			height:			jaspTheme.formExpanderHeaderHeight * 0.75
+			color:			addGroupMouseArea.containsMouse ? jaspTheme.buttonColorHovered : "transparent"
+			z:				3
+
+			Image
+			{
+				id:				addGroupIcon
+				source:			jaspTheme.iconPath + "addition-sign-small.svg"
+				height:			parent.height * 0.55
+				width:			height
+				anchors { left: parent.left; leftMargin: 10 * preferencesModel.uiScale; verticalCenter: parent.verticalCenter }
+				sourceSize { width: addGroupIcon.width * 2; height: addGroupIcon.height * 2 }
+				fillMode:		Image.PreserveAspectFit
+			}
+
+			Text
+			{
+				text:	qsTr("New Group")
+				font:	jaspTheme.fontLabel
+				color:	jaspTheme.textEnabled
+				anchors { left: addGroupIcon.right; leftMargin: 6 * preferencesModel.uiScale; verticalCenter: parent.verticalCenter }
+			}
+
+			MouseArea
+			{
+				id:				addGroupMouseArea
+				anchors.fill:	parent
+				hoverEnabled:	true
+				cursorShape:	Qt.PointingHandCursor
+				onClicked:		analysesModel.addGroup()
+				ToolTip.text:	qsTr("Add a group to organise your analyses")
+				ToolTip.visible: containsMouse
+			}
+
+			Rectangle
+			{
+				anchors.bottom:	parent.bottom
+				anchors.left:	parent.left
+				height:			1
+				width:			parent.width
+				color:			jaspTheme.buttonBorderColor
+			}
+		}
+
 		Item
 		{
 			id:				scrollAnalyses
@@ -29,7 +81,7 @@ FocusScope
 
 			anchors
 			{
-				top:		parent.top
+				top:		addGroupBar.bottom
 				left:		parent.left
 				right:		parent.right
 				bottom:		parent.bottom
@@ -104,16 +156,54 @@ FocusScope
 						id:			formRepeater
 						model:		analysesModel
 
-						delegate: AnalysisFormExpander
+						delegate: Loader
 						{
-							myIndex:				index
-							myAnalysis:				model.analysis
-							backgroundFlickable:	analysesFlickable
+							id:						delegateLoader
+							width:					analysesColumn.width
+							height:					item ? item.height : 0
+
+							// Mirror model roles as regular properties so Binding elements can reference them.
+							property int		rowIndex:		index
+							property bool		isGroupItem:	model.isGroup
+							property var		rowAnalysis:	isGroupItem ? null : model.analysis
+							property int		rowGroupId:		isGroupItem ? model.groupId    : -1
+							property string		rowGroupTitle:	isGroupItem ? model.groupTitle : ""
+
+							sourceComponent: isGroupItem ? groupHeaderComponent : analysisExpanderComponent
+
+							onLoaded:
+							{
+								item.backgroundFlickable = analysesFlickable
+								if (!isGroupItem)
+									item.myAnalysis = rowAnalysis
+								else
+								{
+									item.myGroupId    = rowGroupId
+									item.myGroupTitle = rowGroupTitle
+								}
+							}
+
+							// Keep properties in sync when model data or index changes.
+							Binding { target: delegateLoader.item; property: "myIndex";      value: delegateLoader.rowIndex;      when: delegateLoader.item !== null }
+							Binding { target: delegateLoader.item; property: "myGroupTitle"; value: delegateLoader.rowGroupTitle; when: delegateLoader.item !== null && delegateLoader.isGroupItem }
+							Binding { target: delegateLoader.item; property: "myGroupId";   value: delegateLoader.rowGroupId;   when: delegateLoader.item !== null && delegateLoader.isGroupItem }
 
 							ALTNavigation.enabled:		true
-							ALTNavigation.index:		index
-							ALTNavigation.onTagMatch:	{ expand(); }
+							ALTNavigation.index:		rowIndex
+							ALTNavigation.onTagMatch:	{ if (!isGroupItem && item) item.expand(); }
 						}
+					}
+
+					Component
+					{
+						id: analysisExpanderComponent
+						AnalysisFormExpander {}
+					}
+
+					Component
+					{
+						id: groupHeaderComponent
+						AnalysisGroupHeader {}
 					}
 				}
 			}

@@ -17,6 +17,7 @@
 //
 
 #include "analyses.h"
+#include "analysisgroup.h"
 #include "tempfiles.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "modules/ribbonmodel.h"
@@ -127,11 +128,11 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 	if (id >= _nextId)
 		_nextId = id + 1;
 
-	int newRowNum = int(count());
+	int newRowNum = int(_orderedItems.size());
 
 	beginInsertRows(QModelIndex(), newRowNum, newRowNum);
 	_analysisMap[id] = analysis;
-	_orderedIds.push_back(id);
+	_orderedItems.push_back({OrderedItem::Type::Analysis, id});
 	endInsertRows();
 
 	emit countChanged();
@@ -139,7 +140,7 @@ void Analyses::storeAnalysis(Analysis* analysis, size_t id, bool notifyAll)
 	if(notifyAll)
 	{
 		emit analysisAdded(analysis);
-		setCurrentAnalysisIndex(_orderedIds.size() - 1);
+		setCurrentAnalysisIndex(int(_orderedItems.size()) - 1);
 		emit showAnalysisInResults(id);
 	}
 }
@@ -181,8 +182,11 @@ void Analyses::clear()
 	}
 
 	_analysisMap.clear();
-	_orderedIds.clear();
+	_orderedItems.clear();
 
+	for(auto & g : _groupMap) delete g.second;
+	_groupMap.clear();
+	_nextGroupId = 0;
 	_nextId = 0;
 	endResetModel();
 	emit countChanged();
@@ -191,8 +195,8 @@ void Analyses::clear()
 void Analyses::reload(Analysis *analysis, bool qmlFileNameChanged, bool logProblem)
 {
 
-	for (size_t i = 0; i < _orderedIds.size(); i++)
-		if (_analysisMap[_orderedIds[i]] == analysis)
+	for (size_t i = 0; i < _orderedItems.size(); i++)
+		if (_orderedItems[i].isAnalysis() && _analysisMap.count(_orderedItems[i].id) && _analysisMap[_orderedItems[i].id] == analysis)
 		{
 			int ind = int(i);
 			if(!qmlFileNameChanged)	Log::log() << "Analyses::reload(" << analysis << ") Force a reload of QML file '" << analysis->qmlFormPath() << "' for " << analysis->name() << "("<< analysis->id() << ")." << std::endl;
@@ -233,12 +237,33 @@ bool Analyses::allFinished() const
 Json::Value Analyses::asJson() const
 {
 	Json::Value analysesJson		= Json::objectValue,
-				analysesDataList	= Json::arrayValue;;
+				analysesDataList	= Json::arrayValue,
+				groupsDataList		= Json::arrayValue,
+				itemOrderList		= Json::arrayValue;
 
 	applyToAll([&analysesDataList](const Analysis * analysis)
 		{ analysesDataList.append(analysis->asJSON(true)); });
 
+	for(const auto & item : _orderedItems)
+	{
+		Json::Value entry = Json::objectValue;
+		entry["id"] = int(item.id);
+		if(item.isGroup())
+		{
+			entry["type"] = "group";
+			if(_groupMap.count(item.id))
+				groupsDataList.append(_groupMap.at(item.id)->asJson());
+		}
+		else
+		{
+			entry["type"] = "analysis";
+		}
+		itemOrderList.append(entry);
+	}
+
 	analysesJson["analyses"]	= analysesDataList;
+	analysesJson["groups"]		= groupsDataList;
+	analysesJson["itemOrder"]	= itemOrderList;
 	analysesJson["meta"]		= resultsMeta();
 
 	return analysesJson;
@@ -256,8 +281,11 @@ void Analyses::saveAnalysesJsonForReload()
 		delete idAnalysis.second;
 	
 	_analysisMap.clear();
-	_orderedIds.clear();
-	
+	_orderedItems.clear();
+	for(auto & g : _groupMap) delete g.second;
+	_groupMap.clear();
+	_nextGroupId = 0;
+
 	endResetModel();
 }
 
@@ -265,12 +293,13 @@ void Analyses::reloadSavedAnalysesJson()
 {
 	if(!_tempSave.isObject() || !_tempSave.isMember("analyses") || !_tempSave.isMember("meta"))
 		return;
-	
+
 	beginResetModel();
-	
+
 	bool errorFound;
 	std::stringstream errors;
-	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton());
+	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton(),
+		_tempSave.get("groups", Json::nullValue), _tempSave.get("itemOrder", Json::nullValue));
 	
 	//applyToAll([](Analysis * a){ a->setBeingTranslated(true); });
 	endResetModel();
@@ -285,8 +314,8 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	size_t id = analysis->id();
 
 	int indexAnalysis = -1;
-	for(size_t i=_orderedIds.size(); i>0; i--)
-		if(_orderedIds[i-1] == id)
+	for(size_t i = _orderedItems.size(); i > 0; i--)
+		if(_orderedItems[i-1].isAnalysis() && _orderedItems[i-1].id == id)
 		{
 			indexAnalysis = int(i) - 1;
 			break;
@@ -304,7 +333,7 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	beginRemoveRows(QModelIndex(), indexAnalysis, indexAnalysis);
 	analysis->remove();
 	_analysisMap.erase(id);
-	_orderedIds.erase(_orderedIds.begin() + indexAnalysis);
+	_orderedItems.erase(_orderedItems.begin() + indexAnalysis);
 	for (int requestId : toRemove)
 		_scriptIDMap.remove(requestId);
 	endRemoveRows();
@@ -445,18 +474,19 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 			}
 		}
 		
-		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel);
+		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel,
+			analysesData.get("groups", Json::nullValue), analysesData.get("itemOrder", Json::nullValue));
 	}
 }
 
-void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
+void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel, const Json::Value & groups, const Json::Value & itemOrder)
 {
 	int				corruptAnalyses = 0;
 	stringstream	corruptionStrings;
 
 	Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
-	
-	//There is no point trying to show progress here because qml is not updated while this function runs...
+
+	// Load analyses. storeAnalysis() adds them to _orderedItems; we may rearrange below.
 	for (const Json::Value & analysisData : analysesDataList)
 	{
 		try
@@ -465,84 +495,131 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 		}
 		catch (Modules::ModuleException modProb)
 		{
-			//Maybe show a nicer messagebox?
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
-			
 			Log::log() << "Caught module exception: " << modProb.what() << std::endl;
 		}
 		catch (runtime_error & e)
 		{
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-			
 			Log::log() << "Caught runtime_error exception: " << e.what() << std::endl;
 		}
 		catch (exception & e)
 		{
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-			
 			Log::log() << "Caught exception: " << e.what() << std::endl;
 		}
 	}
 
-	if (corruptAnalyses == 1)			errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
-	else if (corruptAnalyses > 1)		errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
-	else								Log::log() << "Loading analyses seems to have worked out fine." << std::endl;
+	// Restore groups and interleaved order when present (new-format .jasp files).
+	if(groups.isArray() && itemOrder.isArray())
+	{
+		// Load group definitions.
+		for(const Json::Value & g : groups)
+		{
+			AnalysisGroup * group = AnalysisGroup::fromJson(g);
+			_groupMap[group->id()] = group;
+			if(_nextGroupId <= group->id()) _nextGroupId = group->id() + 1;
+		}
+
+		// Reconstruct the interleaved order.
+		std::vector<OrderedItem> newOrder;
+		newOrder.reserve(_orderedItems.size() + groups.size());
+		for(const Json::Value & entry : itemOrder)
+		{
+			std::string type = entry.get("type", "analysis").asString();
+			size_t      id   = size_t(entry.get("id", 0).asInt());
+			if(type == "group" && _groupMap.count(id))
+				newOrder.push_back({OrderedItem::Type::Group, id});
+			else if(type == "analysis" && _analysisMap.count(id))
+				newOrder.push_back({OrderedItem::Type::Analysis, id});
+		}
+		// Any analyses not covered by itemOrder (e.g. corrupt-but-recovered) go at the end.
+		for(const auto & existing : _orderedItems)
+		{
+			bool found = false;
+			for(const auto & n : newOrder)
+				if(n.isAnalysis() && n.id == existing.id) { found = true; break; }
+			if(!found) newOrder.push_back(existing);
+		}
+		_orderedItems = std::move(newOrder);
+	}
+
+	if (corruptAnalyses == 1)		errorMsg << "An error was detected in an analysis. This analysis has been removed for the following reason:\n" << corruptionStrings.str();
+	else if (corruptAnalyses > 1)	errorMsg << "Errors were detected in " << corruptAnalyses << " analyses. These analyses have been removed for the following reasons:\n" << corruptionStrings.str();
+	else							Log::log() << "Loading analyses seems to have worked out fine." << std::endl;
 }
 
 void Analyses::applyToSome(std::function<bool(Analysis *analysis)> applyThis)
 {
-	for(size_t id : _orderedIds)
-		if(_analysisMap[id] != nullptr && !applyThis(_analysisMap[id]))
+	for(const auto & item : _orderedItems)
+		if(item.isAnalysis() && _analysisMap.count(item.id) && _analysisMap[item.id] != nullptr && !applyThis(_analysisMap[item.id]))
 			return;
 }
 
 void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis)
 {
-	for(size_t id : _orderedIds)
-		if(_analysisMap[id] != nullptr)
-			applyThis(_analysisMap[id]);
+	for(const auto & item : _orderedItems)
+		if(item.isAnalysis() && _analysisMap.count(item.id) && _analysisMap[item.id] != nullptr)
+			applyThis(_analysisMap[item.id]);
 }
 
 void Analyses::applyToAll(std::function<void(Analysis *analysis)> applyThis) const
 {
-	for(size_t id : _orderedIds)
-		if(_analysisMap.at(id) != nullptr)
-			applyThis(_analysisMap.at(id));
+	for(const auto & item : _orderedItems)
+		if(item.isAnalysis() && _analysisMap.count(item.id) && _analysisMap.at(item.id) != nullptr)
+			applyThis(_analysisMap.at(item.id));
 }
 
-QVariant Analyses::data(const QModelIndex &index, int role)	const
+QVariant Analyses::data(const QModelIndex &index, int role) const
 {
-	if(index.row() < 0 || index.row() > rowCount())
+	if(index.row() < 0 || index.row() >= rowCount())
 		return QVariant();
 
-	size_t	row = size_t(index.row()),
-			id  = _orderedIds[row];
+	const OrderedItem & item = _orderedItems[size_t(index.row())];
 
-	Analysis * analysis = _analysisMap.at(id);
+	if(item.isGroup())
+	{
+		if(!_groupMap.count(item.id)) return QVariant();
+		AnalysisGroup * group = _groupMap.at(item.id);
+		switch(role)
+		{
+		case isGroupRole:    return true;
+		case groupTitleRole: return tq(group->title());
+		case groupIdRole:    return int(group->id());
+		default:             return QVariant();
+		}
+	}
+
+	if(!_analysisMap.count(item.id)) return QVariant();
+	Analysis * analysis = _analysisMap.at(item.id);
 
 	switch(role)
 	{
-	case formPathRole:		return tq(analysis->qmlFormPath());
+	case isGroupRole:      return false;
+	case formPathRole:     return tq(analysis->qmlFormPath());
 	case Qt::DisplayRole:
-	case titleRole:			return tq(analysis->title());
-	case nameRole:			return tq(analysis->name());
-	case analysisRole:		return QVariant::fromValue(analysis);
-	case idRole:			return int(analysis->id());
-	default:				return QVariant();
+	case titleRole:        return tq(analysis->title());
+	case nameRole:         return tq(analysis->name());
+	case analysisRole:     return QVariant::fromValue(analysis);
+	case idRole:           return int(analysis->id());
+	default:               return QVariant();
 	}
 }
 
-QHash<int, QByteArray>	Analyses::roleNames() const
+QHash<int, QByteArray> Analyses::roleNames() const
 {
 	static const QHash<int, QByteArray> roles = {
 		{ formPathRole,		"formPath"		},
 		{ titleRole,		"displayText"	},
 		{ analysisRole,		"analysis"		},
 		{ nameRole,			"name"			},
-		{ idRole,			"analysisID"	} };
+		{ idRole,			"analysisID"	},
+		{ isGroupRole,		"isGroup"		},
+		{ groupTitleRole,	"groupTitle"	},
+		{ groupIdRole,		"groupId"		} };
 
 	return roles;
 }
@@ -604,8 +681,8 @@ void Analyses::sendFilterHandler(QString name, QString module)
 
 void Analyses::selectAnalysis(Analysis * analysis)
 {
-	for(size_t index=0; index<_orderedIds.size(); index++)
-		if(_analysisMap[_orderedIds[index]] == analysis)
+	for(size_t index = 0; index < _orderedItems.size(); index++)
+		if(_orderedItems[index].isAnalysis() && _analysisMap.count(_orderedItems[index].id) && _analysisMap[_orderedItems[index].id] == analysis)
 		{
 			setCurrentAnalysisIndex(int(index));
 			emit showAnalysisInResults(analysis->id());
@@ -621,7 +698,7 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 	_currentAnalysisIndex = currentAnalysisIndex;
 	emit currentAnalysisIndexChanged(_currentAnalysisIndex);
 
-	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < _orderedIds.size())
+	if(_currentAnalysisIndex > -1 && _currentAnalysisIndex < int(_orderedItems.size()))
 		setVisible(true);
 	else
 		emit analysesUnselected();
@@ -629,11 +706,11 @@ void Analyses::setCurrentAnalysisIndex(int currentAnalysisIndex)
 
 void Analyses::analysisIdSelectedInResults(int id)
 {
-	for(size_t i=0; i<_orderedIds.size(); i++)
-		if(_orderedIds[i] == id)
+	for(size_t i = 0; i < _orderedItems.size(); i++)
+		if(_orderedItems[i].isAnalysis() && _orderedItems[i].id == size_t(id))
 		{
 			setCurrentAnalysisIndex(int(i));
-			emit analysisSelectedIndexResults(int(i)); //Picked up in QML
+			emit analysisSelectedIndexResults(int(i));
 
 			if(!visible())
 				setVisible(true);
@@ -650,9 +727,10 @@ void Analyses::analysesUnselectedInResults()
 
 void Analyses::selectAnalysisAtRow(int row)
 {
+	if(row < 0 || row >= int(_orderedItems.size()) || _orderedItems[row].isGroup())
+		return;
 	setCurrentAnalysisIndex(row);
-	if(row > -1)
-		emit showAnalysisInResults(_orderedIds[row]);
+	emit showAnalysisInResults(_orderedItems[row].id);
 }
 
 void Analyses::unselectAnalysis()
@@ -695,14 +773,15 @@ void Analyses::setVisible(bool visible)
 	if(currentAnalysisIndex() != -1)
 	{
 		if(!_visible)		emit unselectAnalysisInResults();
-		else				emit showAnalysisInResults(_orderedIds[currentAnalysisIndex()]);
+		else if(currentAnalysisIndex() >= 0 && currentAnalysisIndex() < int(_orderedItems.size()) && _orderedItems[currentAnalysisIndex()].isAnalysis())
+						emit showAnalysisInResults(_orderedItems[currentAnalysisIndex()].id);
 	}
 }
 
-//Called from Enter in AnalysisFormExpander.qml
+//Called from drag in AnalysisFormExpander.qml and AnalysisGroupHeader.qml
 void Analyses::move(int fromIndex, int toIndex)
 {
-	int size = int(_orderedIds.size());
+	int size = int(_orderedItems.size());
 	if (fromIndex < 0 || toIndex < 0)
 	{
 		Log::log() << "Index in Analyses swaping negative!" << std::flush;
@@ -710,17 +789,17 @@ void Analyses::move(int fromIndex, int toIndex)
 	}
 	if (fromIndex >= size || toIndex >= size)
 	{
-		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedIds.size();
+		Log::log() << "Index in Analyses swaping too big: " << fromIndex << ", " << toIndex << ", size: " << _orderedItems.size();
 		return;
 	}
 	if (fromIndex == toIndex)
 		return;
 
-	size_t fromId = _orderedIds[size_t(fromIndex)];
+	OrderedItem fromItem = _orderedItems[size_t(fromIndex)];
 	if (beginMoveRows(QModelIndex(), fromIndex, fromIndex, QModelIndex(), toIndex > fromIndex ? (toIndex + 1) : toIndex))
 	{
-		_orderedIds.erase(_orderedIds.begin() + fromIndex);
-		_orderedIds.insert(_orderedIds.begin() + toIndex, fromId);
+		_orderedItems.erase(_orderedItems.begin() + fromIndex);
+		_orderedItems.insert(_orderedItems.begin() + toIndex, fromItem);
 		endMoveRows();
 	}
 }
@@ -733,7 +812,7 @@ void Analyses::setMoving(bool moving)
 	_moving = moving;
 
 	if (moving)
-		_orderedIdsBeforeMoving = _orderedIds;
+		_orderedItemsBeforeMoving = _orderedItems;
 
 	emit movingChanged(_moving);
 }
@@ -741,9 +820,12 @@ void Analyses::setMoving(bool moving)
 //Called after setting moving to false on end of drag in AnalysisFormExpander.qml
 Analysis* Analyses::getAnalysisBeforeMoving(size_t index)
 {
-	if (index < _orderedIdsBeforeMoving.size())
-		return _analysisMap.at(_orderedIdsBeforeMoving[index]);
-
+	if(index < _orderedItemsBeforeMoving.size())
+	{
+		const OrderedItem & item = _orderedItemsBeforeMoving[index];
+		if(item.isAnalysis() && _analysisMap.count(item.id))
+			return _analysisMap.at(item.id);
+	}
 	return nullptr;
 }
 
@@ -856,3 +938,63 @@ void Analyses::allUserDataChanged(QString json)
 	Json::Reader().parse(fq(json), _allUserData);
 	setAnalysesUserData(_allUserData);
 }
+
+void Analyses::addGroup(const QString & title)
+{
+	size_t id		= _nextGroupId++;
+	std::string t	= title.isEmpty() ? tr("Group").toStdString() : title.toStdString();
+
+	AnalysisGroup * group = new AnalysisGroup(id, t);
+	_groupMap[id] = group;
+
+	int newRow = int(_orderedItems.size());
+	beginInsertRows(QModelIndex(), newRow, newRow);
+	_orderedItems.push_back({OrderedItem::Type::Group, id});
+	endInsertRows();
+
+	emit somethingModified();
+}
+
+void Analyses::removeGroup(int groupId)
+{
+	size_t gid = size_t(groupId);
+	if(!_groupMap.count(gid)) return;
+
+	int row = -1;
+	for(size_t i = 0; i < _orderedItems.size(); i++)
+		if(_orderedItems[i].isGroup() && _orderedItems[i].id == gid)
+		{
+			row = int(i);
+			break;
+		}
+
+	if(row < 0) return;
+
+	beginRemoveRows(QModelIndex(), row, row);
+	_orderedItems.erase(_orderedItems.begin() + row);
+	delete _groupMap[gid];
+	_groupMap.erase(gid);
+	endRemoveRows();
+
+	emit somethingModified();
+}
+
+void Analyses::setGroupTitle(int groupId, const QString & title)
+{
+	size_t gid = size_t(groupId);
+	if(!_groupMap.count(gid)) return;
+
+	_groupMap[gid]->setTitle(title.toStdString());
+
+	// Notify QML of the data change.
+	for(size_t i = 0; i < _orderedItems.size(); i++)
+		if(_orderedItems[i].isGroup() && _orderedItems[i].id == gid)
+		{
+			QModelIndex idx = index(int(i));
+			emit dataChanged(idx, idx, {groupTitleRole});
+			break;
+		}
+
+	emit somethingModified();
+}
+
