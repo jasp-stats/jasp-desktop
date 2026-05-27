@@ -121,6 +121,30 @@ QString AppDirs::sandboxedDocuments()
 	return res.absolutePath();
 }
 
+QString AppDirs::clipboardDir()
+{
+	QString path;
+#ifdef _WIN32
+	path = sandboxedDocuments();
+	path += "/Clipboard/";
+#else
+	path = tq(Dirs::tempDir()) + "/clipboard/";
+#endif
+
+	QDir clipboard(path);
+
+	if(!clipboard.exists())
+		clipboard.mkpath(".");
+
+	return path;
+}
+
+void AppDirs::purgeClipboard()
+{
+	QDir clipboard(clipboardDir());
+	clipboard.removeRecursively();
+}
+
 QString AppDirs::logDir()	
 {
     QString path = sandboxedDocuments();

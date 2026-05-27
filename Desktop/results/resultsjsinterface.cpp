@@ -19,6 +19,8 @@
 #include "resultsjsinterface.h"
 
 #include <QClipboard>
+#include <QDir>
+#include <QFileInfo>
 
 #ifdef _WIN32
 #include <QPainter>
@@ -27,8 +29,8 @@
 #include "utilities/qutils.h"
 #include "gui/aboutmodel.h"
 #include "tempfiles.h"
+#include "utilities/appdirs.h"
 #include "data/datasetpackage.h"
-#include <functional>
 #include "utilities/settings.h"
 #include <QMimeData>
 #include <QAction>
@@ -110,7 +112,7 @@ void ResultsJsInterface::setScrollAtAll(bool scrollAtAll)
 
 void ResultsJsInterface::purgeClipboard()
 {
-	TempFiles::purgeClipboard();
+	AppDirs::purgeClipboard();
 }
 
 void ResultsJsInterface::setExactPValuesHandler(bool exact)
@@ -152,7 +154,8 @@ void ResultsJsInterface::saveTempImage(int id, QString path, QByteArray data)
 {
 	QByteArray byteArray = QByteArray::fromBase64(data);
 
-	QString fullpath = tq(TempFiles::createSpecific_clipboard(fq(path)));
+	QString fullpath = AppDirs::clipboardDir() + path;
+	QDir().mkpath(QFileInfo(fullpath).absolutePath());
 
 	QFile file(fullpath);
 	if(!file.open(QIODevice::WriteOnly))
