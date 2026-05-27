@@ -32,7 +32,6 @@ const long 				outOfDateDelta = 24 * 3600;
 long					TempFiles::_sessionId		= 0;
 std::string				TempFiles::_sessionDirName	= "";
 std::string				TempFiles::_statusFileName	= "";
-std::string				TempFiles::_clipboard		= "";
 int						TempFiles::_nextFileId		= 0;
 int						TempFiles::_nextTmpFolderId	= 0;
 
@@ -42,7 +41,6 @@ void TempFiles::init(long sessionId)
 	_nextFileId		= 0;
 	_sessionDirName	= Dirs::tempDir() + "/" + std::to_string(sessionId);
 	_statusFileName	= _sessionDirName +  "/status";
-	_clipboard		= Dirs::tempDir() + "/clipboard";
 	
 	createSessionDir();
 }
@@ -200,26 +198,6 @@ void TempFiles::deleteOrphans()
 void TempFiles::heartbeat()
 {
 	Utils::touch(_statusFileName);
-}
-
-void TempFiles::purgeClipboard()
-{
-	std::error_code error;
-	std::filesystem::remove_all(_clipboard, error);
-}
-
-string TempFiles::createSpecific_clipboard(const string &filename)
-{
-	std::error_code error;
-
-	string fullPath				= _clipboard + "/" + filename;
-	std::filesystem::path	path	= fullPath,
-						dirPath	= path.parent_path();
-
-	if (!std::filesystem::exists(dirPath, error) || error)
-		 std::filesystem::create_directories(dirPath, error);
-
-	return fullPath;
 }
 
 string TempFiles::createSpecific(const string &dir, const string &filename)

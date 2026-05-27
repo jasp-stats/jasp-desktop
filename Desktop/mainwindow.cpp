@@ -217,6 +217,7 @@ MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
 	
+	AppDirs::purgeClipboard();
 	_engineSync->killProcessTimer();
 
 	try

@@ -18,7 +18,7 @@
 
 //
 //	NOTICE:
-//		`appdirs.h` is generated from `appdirs.h.in` and you should edit 
+//		`appdirs.h` is generated from `appdirs.h.in` and you should edit
 //		that file instead if you want your changes to reflect in the app
 //
 
@@ -44,7 +44,9 @@ public:
 	static QString bundledModulesLibDir();
 	static QString documents();
 	static QString autoSaveDir();
- 	static QString sandboxedDocuments();
+	static QString sandboxedDocuments();
+	static QString clipboardDir();
+	static void    purgeClipboard();
 	static QString logDir();
 	static QString appData(bool roaming = true);
 	static QString RtmpDir();
@@ -57,14 +59,14 @@ public:
 	static QString devModulePatchDir();
 
 #endif
-	
+
 private:
 	static QString processPath(const QString & path);
 
 #ifdef linux
 	static QString rHomeDir() {
 		return QString("@R_HOME_PATH@");
-	} 
+	}
 #endif
 };
 

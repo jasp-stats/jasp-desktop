@@ -45,9 +45,6 @@ public:
 	static void			createSessionDir();
 	static void			clearSessionDir();
 
-	static std::string	createSpecific_clipboard(const std::string &filename);
-	static void			purgeClipboard();
-
 	static void			create(const std::string &extension, int id, std::string &root, std::string &relativePath);
 	static void			createSpecific(const std::string &name, int id, std::string &root, std::string &relativePath);
 	static std::string	createSpecific(const std::string &dir, const std::string &filename);
@@ -67,8 +64,7 @@ private:
 						TempFiles() {}
 	static long			_sessionId;
 	static std::string	_sessionDirName,
-						_statusFileName,
-						_clipboard;
+						_statusFileName;
 	static int			_nextFileId,
 						_nextTmpFolderId;
 };
