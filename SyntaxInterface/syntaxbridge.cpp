@@ -46,6 +46,9 @@
 
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <ostream>
+#include <streambuf>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -69,12 +72,18 @@ static int									gl_applicationArgc				= 0;
 static std::vector<std::string>				gl_applicationArgvStorage;
 static std::vector<char*>					gl_applicationArgv;
 
-static bool									gl_verbose						=
-#ifdef JASP_DEBUG
-	true;
-#else
-	false;
-#endif
+static bool									gl_verbose						= false;
+static bool									gl_logInitialized				= false;
+static bool									gl_qtMessageHandlerInstalled	= false;
+
+class NullBuffer : public std::streambuf
+{
+protected:
+	int_type overflow(int_type c) override { return traits_type::not_eof(c); }
+};
+
+static NullBuffer							gl_nullBuffer;
+static std::ostream							gl_nullStream(&gl_nullBuffer);
 
 static std::string							gl_param_resultFont				=
 #ifdef WIN32
@@ -136,6 +145,44 @@ static const char* statusResult(Json::Value status)
 	return result.c_str();
 }
 
+static bool envFlagEnabled(const char * name)
+{
+	const char * value = std::getenv(name);
+	if (!value)
+		return false;
+
+	std::string flag(value);
+	return flag == "1" || flag == "true" || flag == "TRUE" || flag == "yes" || flag == "YES";
+}
+
+static void syntaxBridgeQtMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & message)
+{
+	if (gl_verbose || type == QtFatalMsg)
+		Log::log() << fq(message) << std::endl;
+
+	if (type == QtFatalMsg)
+		std::abort();
+}
+
+static void configureLogging()
+{
+	if (!gl_logInitialized)
+	{
+		gl_verbose = envFlagEnabled("JASP_SYNTAX_VERBOSE");
+		Log::init(&gl_nullStream);
+		gl_logInitialized = true;
+	}
+
+	if (!gl_qtMessageHandlerInstalled)
+	{
+		qInstallMessageHandler(syntaxBridgeQtMessageHandler);
+		gl_qtMessageHandlerInstalled = true;
+	}
+
+	Log::setDefaultDestination(gl_verbose ? logType::cout : logType::null);
+	Log::setWhere(gl_verbose ? logType::cout : logType::null);
+}
+
 static Json::Value statusBase(const char * operation)
 {
 	Json::Value status(Json::objectValue);
@@ -148,6 +195,7 @@ static const char* statusError(Json::Value status, const std::string & error)
 {
 	status["ok"] = false;
 	status["error"] = error;
+	configureLogging();
 	Log::log() << error << std::endl;
 	return statusResult(status);
 }
@@ -303,6 +351,18 @@ void STDCALL syntaxBridgeClearNativeState()
 {
 	syntaxBridgeClearQmlState();
 	syntaxBridgeClearDataSetState();
+}
+
+void STDCALL syntaxBridgeSetVerbose(bool verbose)
+{
+	gl_verbose = verbose;
+	if (!gl_logInitialized)
+	{
+		Log::init(&gl_nullStream);
+		gl_logInitialized = true;
+	}
+	Log::setDefaultDestination(gl_verbose ? logType::cout : logType::null);
+	Log::setWhere(gl_verbose ? logType::cout : logType::null);
 }
 
 void STDCALL syntaxBridgeCleanup()
@@ -502,6 +562,8 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
 {
+	configureLogging();
+
 	static std::string result;
 	result = "";
 
@@ -519,6 +581,8 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePat
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
 {
+	configureLogging();
+
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
 	if (!status["ok"].asBool() && status.isMember("error"))
 		Log::log() << status["error"].asString() << std::endl;
@@ -681,6 +745,8 @@ void sendMessage(const char * msg)
 
 bool init(bool dbInMemory)
 {
+	configureLogging();
+
 	if (gl_initialized) return true;
 	gl_initialized = true;
 	gl_initializedDbInMemory = dbInMemory;
