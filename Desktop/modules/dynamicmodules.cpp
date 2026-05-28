@@ -450,7 +450,7 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 	throw Modules::ModuleException(moduleName,
 		"Module is not available, to load this JASP file properly you will need to install it first and then retry.\n"
 		"If you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or"
-		", if that doesn't help, you could try to contact the module's maintainer: \"" + jsonFromJaspFile.get("moduleMaintainer", "the JASP team").asString() + "\"."
+		", if that doesn't help, you could try our github issuetracker: https://github.com/jasp-stats/jasp-issues/issues."
 	);
 }
 
