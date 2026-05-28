@@ -91,7 +91,7 @@ QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 
 void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSet, int threshold, bool orderLabelsByValue)
 {
-
+	beginResetModel();
 	_dataSet->beginBatchedToDB();
 
 	int rowCount = 0;
@@ -119,7 +119,7 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 	_dataSet->endBatchedToDB([](float f) {});
 
 	ColumnEncoder::columnEncoder()->setCurrentNames(_dataSet->getColumnTypesMap());
-
+	endResetModel();
 }
 
 void DataSetProvider::closeDatabase()

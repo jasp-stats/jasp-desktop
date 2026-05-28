@@ -533,10 +533,6 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(status, "Cannot create QML form '" + qmlFileStr + "'.");
 
-	// Process pending Qt events so that any AvailableVariablesList updates
-	// queued by a preceding loadDataSet call are applied before parsing.
-	gl_application->processEvents();
-
 	Json::Value parsedOptions;
 	std::string errorMsg;
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
