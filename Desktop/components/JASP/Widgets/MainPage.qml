@@ -537,7 +537,7 @@ Item
 						"functionCall"	: functionCall
 					};
 
-					customMenu.toggle(resultsView, props, (optionsJSON['rXright'] + 10 ) * preferencesModel.uiScale, optionsJSON['rY'] );
+					customMenu.toggle(resultsView, props, (optionsJSON['rXright'] + 10 ) * preferencesModel.uiScale, optionsJSON['rY'] * preferencesModel.uiScale)
 
 					customMenu.scrollOri		= resultsView.scrollPosition;
 					customMenu.menuScroll.x		= Qt.binding(function() { return -1 * (resultsView.scrollPosition.x - customMenu.scrollOri.x) / resultsView.zoomFactor; });
