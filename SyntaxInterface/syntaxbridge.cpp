@@ -517,46 +517,48 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 	}
 }
 
-const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
 {
+	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
+
 	if (!init())
-	{
-		Log::log() << "Error during initialization" << std::endl;
-		return "";
-	}
+		return statusError(status, "SyntaxInterface initialization failed.");
 
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
 				analysisNameStr	= analysisName,
 				moduleNameStr	= moduleName;
 
-
 	AnalysisForm* form = getQmlForm(tq(qmlFileStr));
-
 	if (!form)
-	{
-		Log::log() << "Cannot create QML Form " << qmlFileStr << std::endl;
-		return "";
-	}
+		return statusError(status, "Cannot create QML form '" + qmlFileStr + "'.");
 
 	Json::Value parsedOptions;
 	std::string errorMsg;
-
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
-	{
-		Log::log() << "Error when parsing options: " << errorMsg << std::endl;
-		return "";
-	}
+		return statusError(status, errorMsg);
 
 	gl_extraEncodings->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
 	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
-
 	rbridge_setWantedCols(analysisColsTypes);
 
-	static std::string result;
-	result = parsedOptions.toStyledString();
+	status["ok"]		= true;
+	status["options"]	= parsedOptions;
+	return statusResult(status);
+}
 
+const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	const char* statusJson = syntaxBridgeLoadQmlAndParseOptionsStatus(moduleName, analysisName, qmlFile, options, version, preloadData);
+
+	Json::Value status;
+	Json::Reader reader;
+	if (!reader.parse(statusJson, status) || !status["ok"].asBool())
+		return "";
+
+	static std::string result;
+	result = status["options"].toStyledString();
 	return result.c_str();
 }
 

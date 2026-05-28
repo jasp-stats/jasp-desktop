@@ -64,6 +64,7 @@ SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataS
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateModuleWrappers(const char* name);
