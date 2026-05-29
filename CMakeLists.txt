@@ -111,8 +111,10 @@ include(Config)
 include(Conan)
 # Conan set the CMAKE_MSVC_RUNTIME_LIBRARY to MultiThreadedDLL (this adds the /MD flag, cf conan_toolchain.cmake)
 # But on debug mode it does not set it to the MultiThreadedDebugDLL (/MDd): this can lead to a crash if a library uses a Qt function in a static method, as in DynamicRuntimeInfo)
+# We use MultiThreaded$<$<CONFIG:Debug>:Debug>DLL so that Debug gets /MDd and all other
+# configs (Release, RelWithDebInfo, MinSizeRel) get /MD.
 if(WIN32 AND (CMAKE_MSVC_RUNTIME_LIBRARY STREQUAL "$<$<CONFIG:Debug>:MultiThreadedDLL>"))
-	set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<CONFIG:Debug>:MultiThreadedDebugDLL>")
+	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 	message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY is set to ${CMAKE_MSVC_RUNTIME_LIBRARY}")
 endif()
 
