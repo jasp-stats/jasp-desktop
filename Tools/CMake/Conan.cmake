@@ -45,6 +45,12 @@ build_type=${CMAKE_BUILD_TYPE}
     set(CONAN_FREEXL_BUILD_TYPE_ARGS "-s build_type=${CMAKE_BUILD_TYPE}")
   endif()
 
+  # Parse the args strings into CMake lists so each flag becomes a separate
+  # argument in execute_process(COMMAND ...). Without this, "-s build_type=X"
+  # is passed as a single combined argument and Conan rejects it.
+  separate_arguments(CONAN_INSTALL_BUILD_TYPE_ARGS NATIVE_COMMAND "${CONAN_INSTALL_BUILD_TYPE_ARGS}")
+  separate_arguments(CONAN_FREEXL_BUILD_TYPE_ARGS NATIVE_COMMAND "${CONAN_FREEXL_BUILD_TYPE_ARGS}")
+
   if(JASP_SYNTAX_INTERFACE_ONLY)
     set(CONAN_SYNTAX_OPTION "-o syntax_interface_only=True")
   else()
