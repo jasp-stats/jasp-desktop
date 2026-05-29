@@ -42,8 +42,8 @@ if(APPLE)
 	set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0 CACHE STRING "Minimum macOS version the build will be able to run on" FORCE)
     set(CONAN_ARCH "x86_64")
   endif()
-  
-  
+
+
   if("${CMAKE_OSX_SYSROOT}" STREQUAL "macosx" OR "${CMAKE_OSX_SYSROOT}" STREQUAL "")
 	  execute_process(COMMAND xcrun --sdk macosx --show-sdk-path
 		OUTPUT_VARIABLE SDKROOT
@@ -53,7 +53,7 @@ if(APPLE)
   else()
 	message(STATUS "CMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}")
   endif()
- 
+
 
 endif()
 
@@ -123,6 +123,13 @@ endif()
 include(Programs)
 
 # Looking for libraries, e.g., Boost, Qt
+# When dependencies are built in Release but the consumer is RelWithDebInfo,
+# CMake needs to know to fall back to Release properties on imported targets.
+if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+  set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release "")
+elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+  set(CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL Release "")
+endif()
 include(Libraries)
 
 # Preparing irregular dependencies, e.g., ReadStat
