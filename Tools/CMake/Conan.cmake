@@ -87,6 +87,13 @@ build_type=${CMAKE_BUILD_TYPE}
       endif()
     endif()
 
+    # Clean stale Conan-generated CMake files so CMakeDeps creates fresh find
+    # modules with correct paths for the resolved build types.
+    file(GLOB _CONAN_CMAKE_FILES "${CMAKE_BINARY_DIR}/_conan_build/*.cmake" "${CMAKE_BINARY_DIR}/_conan_build/conanbuild*")
+    if(_CONAN_CMAKE_FILES)
+      file(REMOVE ${_CONAN_CMAKE_FILES})
+    endif()
+
     execute_process(
       COMMAND_ECHO STDOUT
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
