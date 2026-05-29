@@ -448,10 +448,10 @@ Modules::AnalysisEntry* DynamicModules::retrieveCorrespondingAnalysisEntry(const
 		return _modules[moduleName]->retrieveCorrespondingAnalysisEntry(jsonFromJaspFile);
 
 	throw Modules::ModuleException(moduleName,
-		"Module is not available, to load this JASP file properly you will need to install it first and then retry.\n"
-		"If you do not have this module you can try the module's website: \""  + jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()	 +  "\" or"
+		fq(tr("Module is not available, to load this JASP file properly you will need to install it first and then retry.\n"
+		"If you do not have this module you can try our built-in module library, the module's website: \"%1\" or"
 		", if that doesn't help, you could try our github issuetracker: https://github.com/jasp-stats/jasp-issues/issues."
-	);
+	).arg(tq(jsonFromJaspFile.get("moduleWebsite", "jasp-stats.org").asString()))));
 }
 
 bool DynamicModules::isFileAnArchive(const QString &  filepath)
