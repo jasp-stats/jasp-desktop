@@ -11,7 +11,7 @@ FocusScope
 	id:			modulesMenu
 
 	width:		slidePart.width
-	height:		600
+	height:		parent.height
 	z:			1
 	visible:	slidePart.x < slidePart.width
 
@@ -194,7 +194,6 @@ FocusScope
 				top:				modulesFlick.top
 				right:				modulesFlick.left
 				bottom:				modulesFlick.bottom
-				margins:			jaspTheme.contentMargin
 			}
 
 			WebEngineView
