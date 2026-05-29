@@ -24,13 +24,25 @@ if(USE_CONAN)
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
   set(CONAN_COMPILER_RUNTIME "dynamic")
 
-  # When using RelWithDebInfo or MinSizeRel, force all dependencies to build
-  # in Release mode. This avoids slow/broken dependency builds while still
-  # generating debug symbols for our own code.
+  # When using RelWithDebInfo or MinSizeRel, generate a Conan profile that
+  # sets the consumer build type while forcing all dependencies to Release.
+  # This avoids slow/broken dependency builds and reuses cached Release binaries.
   if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-    set(CONAN_DEPS_BUILD_TYPE_OVERRIDE "-s *:build_type=Release")
+    set(CONAN_PROFILE_PATH "${CMAKE_BINARY_DIR}/_conan_build/relwithdebinfo_override.profile")
+    file(WRITE "${CONAN_PROFILE_PATH}"
+"include(default)
+
+[settings]
+build_type=${CMAKE_BUILD_TYPE}
+*:build_type=Release
+")
+    # For conan install: use profile so JASP builds as RelWithDebInfo, deps as Release
+    set(CONAN_INSTALL_BUILD_TYPE_ARGS "--profile=${CONAN_PROFILE_PATH}")
+    # For conan create (freexl): always build the dependency in Release
+    set(CONAN_FREEXL_BUILD_TYPE_ARGS "-s build_type=Release")
   else()
-    set(CONAN_DEPS_BUILD_TYPE_OVERRIDE "")
+    set(CONAN_INSTALL_BUILD_TYPE_ARGS "-s build_type=${CMAKE_BUILD_TYPE}")
+    set(CONAN_FREEXL_BUILD_TYPE_ARGS "-s build_type=${CMAKE_BUILD_TYPE}")
   endif()
 
   if(JASP_SYNTAX_INTERFACE_ONLY)
@@ -65,8 +77,7 @@ if(USE_CONAN)
             WORKING_DIRECTORY ${freexl_SOURCE_DIR}/freexl
             COMMAND
             conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION}
-            -s build_type=${CMAKE_BUILD_TYPE}
-            ${CONAN_DEPS_BUILD_TYPE_OVERRIDE}
+            ${CONAN_FREEXL_BUILD_TYPE_ARGS}
             -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
             -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
             --test-missing
@@ -81,8 +92,7 @@ if(USE_CONAN)
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       COMMAND
       conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/_conan_build
-      -s build_type=${CMAKE_BUILD_TYPE}
-      ${CONAN_DEPS_BUILD_TYPE_OVERRIDE}
+      ${CONAN_INSTALL_BUILD_TYPE_ARGS}
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
       ${CONAN_SYNTAX_OPTION})
