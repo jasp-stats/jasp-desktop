@@ -2,7 +2,7 @@ rem This file is generated from Tools/windows/msix/msix.cmd.in, if you want to c
 rem be aware that it will be overwritten. You can edit the template file, and rerun the CMake
 rem to see your changes here.
 rem
-rem You don't need to run this file manually, you can ask CMake to run it for you using 
+rem You don't need to run this file manually, you can ask CMake to run it for you using
 rem `cmake --build . --target msix`
 
 
@@ -28,14 +28,20 @@ makepri.exe createconfig /o /cf priconfig.xml /dq en-US
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
+rem Bundle PDB symbols with the Store MSIX into an .msixupload file
+powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\*.pdb' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\symbols.msixsym' -Force"
+powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix','@JASP_BINARY_DIR_NATIVE@\JASP\symbols.msixsym' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msixupload' -Force"
 
-rem Store Pack MSIX
+rem Store Beta Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store-beta.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
+rem Bundle PDB symbols with the Store Beta MSIX into an .msixupload file
+powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\*.pdb' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\symbols.msixsym' -Force"
+powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix','@JASP_BINARY_DIR_NATIVE@\JASP\symbols.msixsym' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msixupload' -Force"
 
 
 rem Standalone Pack MSIX
@@ -46,5 +52,5 @@ makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Standalone-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
 
-rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"  
+rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"
 popd

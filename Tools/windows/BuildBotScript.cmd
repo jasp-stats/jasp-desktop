@@ -1,7 +1,7 @@
 rem BuildBotScript.cmd is to be used in our buildbot machine, and it would not work on any
 rem other machine. It needs to know the path to the Qt folder, and the rest should all be
 rem handled by the CMake.
-rem 
+rem
 rem Todo:
 rem   - [ ] It would be nice if we find a way to consistently read these path variables, so
 rem         that we don't have to adjust the script for each VC, or Qt update.
@@ -28,7 +28,7 @@ cmake -E remove_directory build
 cmake -E make_directory build
 
 echo start build
-cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=%QTDIR%
+cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_PREFIX_PATH=%QTDIR%
 
 cmake --build build --target all
 

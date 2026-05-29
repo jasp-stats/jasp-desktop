@@ -24,6 +24,15 @@ if(USE_CONAN)
   message(STATUS "  ${CMAKE_BUILD_TYPE}")
   set(CONAN_COMPILER_RUNTIME "dynamic")
 
+  # When using RelWithDebInfo or MinSizeRel, force all dependencies to build
+  # in Release mode. This avoids slow/broken dependency builds while still
+  # generating debug symbols for our own code.
+  if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+    set(CONAN_DEPS_BUILD_TYPE_OVERRIDE "-s *:build_type=Release")
+  else()
+    set(CONAN_DEPS_BUILD_TYPE_OVERRIDE "")
+  endif()
+
   if(JASP_SYNTAX_INTERFACE_ONLY)
     set(CONAN_SYNTAX_OPTION "-o syntax_interface_only=True")
   else()
@@ -57,6 +66,7 @@ if(USE_CONAN)
             COMMAND
             conan create ${freexl_SOURCE_DIR}/freexl --version=${FREEXL_VERSION}
             -s build_type=${CMAKE_BUILD_TYPE}
+            ${CONAN_DEPS_BUILD_TYPE_OVERRIDE}
             -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
             -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
             --test-missing
@@ -72,6 +82,7 @@ if(USE_CONAN)
       COMMAND
       conan install ${CONAN_FILE_PATH} --output-folder=${CMAKE_BINARY_DIR}/_conan_build
       -s build_type=${CMAKE_BUILD_TYPE}
+      ${CONAN_DEPS_BUILD_TYPE_OVERRIDE}
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
       ${CONAN_SYNTAX_OPTION})
@@ -111,7 +122,7 @@ if(USE_CONAN)
   endif()
 
   include(${CMAKE_BINARY_DIR}/_conan_build/conan_toolchain.cmake)
-  
+
   set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES _deps)
 endif()
 
