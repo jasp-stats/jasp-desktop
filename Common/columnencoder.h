@@ -63,6 +63,8 @@ public:
 	
 	static	colVec				columnNames();
 	static	colVec				columnNamesEncoded();
+	static	colMap				decodingMapSnapshot();
+	static	std::string			decodeAllWithMapping(const std::string & text, const colMap & decodingMap);
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
@@ -87,7 +89,7 @@ public:
 	static	std::string			encodeAll(const std::string & text) { return replaceAll(text, encodingMap(), originalNames()); }
 
 			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
-	static	std::string			decodeAll(const std::string & text) { return replaceAll(text, decodingMap(), encodedNames());  }
+	static	std::string			decodeAll(const std::string & text) { columnEncoder(); return replaceAll(text, decodingMap(), encodedNames());  }
 
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
 	static	void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false);

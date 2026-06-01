@@ -43,9 +43,11 @@
 #include "modules/dynamicmodule.h"
 #include "archivereader.h"
 #include "databaseinterface.h"
+#include "columnencoder.h"
 
 #include <string>
 #include <vector>
+#include <stdexcept>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -150,6 +152,98 @@ static const char* statusError(Json::Value status, const std::string & error)
 	status["error"] = error;
 	Log::log() << error << std::endl;
 	return statusResult(status);
+}
+
+static Json::Value columnDecoderSnapshotJson()
+{
+	Json::Value snapshot(Json::objectValue);
+	Json::Value columns(Json::arrayValue);
+	const ColumnEncoder::colMap decodingMap = ColumnEncoder::decodingMapSnapshot();
+
+	for(const auto & keyVal : decodingMap)
+	{
+		Json::Value column(Json::objectValue);
+		column["encoded"] = keyVal.first;
+		column["decoded"] = keyVal.second;
+		columns.append(column);
+	}
+
+	snapshot["version"] = 1;
+	snapshot["columns"] = columns;
+	return snapshot;
+}
+
+struct ColumnDecoderSnapshot
+{
+	ColumnEncoder::colMap	decodingMap;
+	bool					supplied = false;
+};
+
+static ColumnDecoderSnapshot columnDecoderMapFromSnapshot(const Json::Value & snapshot)
+{
+	ColumnDecoderSnapshot snapshotState;
+	snapshotState.supplied = true;
+	const Json::Value & columns = snapshot["columns"];
+	if(!columns.isArray())
+		return snapshotState;
+
+	for(const Json::Value & column : columns)
+		if(column.isObject() && column["encoded"].isString() && column["decoded"].isString())
+			snapshotState.decodingMap[column["encoded"].asString()] = column["decoded"].asString();
+
+	return snapshotState;
+}
+
+static ColumnDecoderSnapshot columnDecoderMapFromSnapshotString(const char * snapshotJson)
+{
+	if(!snapshotJson || std::string(snapshotJson).empty())
+		return ColumnDecoderSnapshot();
+
+	Json::Value snapshot;
+	Json::Reader reader;
+	if(!reader.parse(snapshotJson, snapshot))
+		throw std::runtime_error("Could not parse column decoder snapshot JSON.");
+
+	return columnDecoderMapFromSnapshot(snapshot);
+}
+
+static Json::Value parseStringArrayJson(const char * valuesJson)
+{
+	if(!valuesJson)
+		throw std::runtime_error("Cannot decode column text from a null JSON payload.");
+
+	Json::Value values;
+	Json::Reader reader;
+	if(!reader.parse(valuesJson, values))
+		throw std::runtime_error("Could not parse column text JSON payload.");
+	if(!values.isArray())
+		throw std::runtime_error("Column text JSON payload must be an array.");
+
+	return values;
+}
+
+static Json::Value decodeColumnTextJson(const Json::Value & values, const ColumnDecoderSnapshot & snapshot)
+{
+	Json::Value decodedValues(Json::arrayValue);
+
+	for(const Json::Value & value : values)
+	{
+		if(value.isNull())
+		{
+			decodedValues.append(Json::Value());
+		}
+		else if(value.isString())
+		{
+			const std::string text = value.asString();
+			decodedValues.append(snapshot.supplied ? ColumnEncoder::decodeAllWithMapping(text, snapshot.decodingMap) : ColumnEncoder::decodeAll(text));
+		}
+		else
+		{
+			throw std::runtime_error("Column text JSON payload must contain only strings or null values.");
+		}
+	}
+
+	return decodedValues;
 }
 
 static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
@@ -459,11 +553,22 @@ const char* STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * fileP
 
 const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
 {
-	if (!init())
-	{
-		Log::log() << "Error during initialization" << std::endl;
+	Json::Value status;
+	Json::Reader reader;
+	if (!reader.parse(syntaxBridgeLoadQmlAndParseOptionsStatus(moduleName, analysisName, qmlFile, options, version, preloadData), status))
 		return "";
-	}
+	if (!status["ok"].asBool())
+		return "";
+
+	static std::string result;
+	result = status["options"].toStyledString();
+	return result.c_str();
+}
+
+const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData)
+{
+	if (!init())
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error during initialization.");
 
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
@@ -475,8 +580,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 
 	if (!form)
 	{
-		Log::log() << "Cannot create QML Form " << qmlFileStr << std::endl;
-		return "";
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 	}
 
 	Json::Value parsedOptions;
@@ -484,8 +588,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
 	{
-		Log::log() << "Error when parsing options: " << errorMsg << std::endl;
-		return "";
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 	}
 
 	gl_extraEncodings->setCurrentNamesFromOptionsMeta(parsedOptions);
@@ -494,10 +597,10 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptions(const char* moduleName, c
 
 	rbridge_setWantedCols(analysisColsTypes);
 
-	static std::string result;
-	result = parsedOptions.toStyledString();
-
-	return result.c_str();
+	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
+	status["ok"] = true;
+	status["options"] = parsedOptions;
+	return statusResult(status);
 }
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
@@ -653,6 +756,42 @@ const char* STDCALL syntaxBridgeGetVariableNames()
 
 	result = jsonNames.toStyledString();
 	return result.c_str();
+}
+
+void STDCALL syntaxBridgeSetVerbose(bool verbose)
+{
+	gl_verbose = verbose;
+	Log::setDefaultDestination(verbose ? logType::cout : logType::null);
+	Log::setWhere(verbose ? logType::cout : logType::null);
+}
+
+const char* STDCALL syntaxBridgeColumnDecoderSnapshot()
+{
+	static std::string result;
+
+	result = columnDecoderSnapshotJson().toStyledString();
+	return result.c_str();
+}
+
+const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* decoderSnapshotJson)
+{
+	static std::string result;
+
+	try
+	{
+		Json::Value values = parseStringArrayJson(valuesJson);
+		ColumnDecoderSnapshot snapshot = columnDecoderMapFromSnapshotString(decoderSnapshotJson);
+		result = decodeColumnTextJson(values, snapshot).toStyledString();
+		return result.c_str();
+	}
+	catch(const std::exception & exception)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeColumnText"), exception.what());
+	}
+	catch(...)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeColumnText"), "Unknown error while decoding column text.");
+	}
 }
 
 } // extern "C"

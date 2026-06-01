@@ -15,7 +15,19 @@
 
 std::ofstream Log::_logFile;// = bofstream();
 
-std::ostream* Log::_nullStream = &std::cout;
+namespace
+{
+	class NullLogBuffer : public std::streambuf
+	{
+	protected:
+		int overflow(int c) override { return traits_type::not_eof(c); }
+	};
+
+	NullLogBuffer	nullLogBuffer;
+	std::ostream	nullLogStream(&nullLogBuffer);
+}
+
+std::ostream* Log::_nullStream = &nullLogStream;
 
 std::string Log::logFileNameBase	= "";
 
