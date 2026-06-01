@@ -365,7 +365,7 @@ Item
 				smooth:				true
 			}
 
-			ToolTip.text:		"Update available"
+			ToolTip.text:		qsTr("Update available")
 			ToolTip.visible:	mouseBadge.containsMouse
 
 			MouseArea
