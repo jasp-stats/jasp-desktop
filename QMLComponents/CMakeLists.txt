@@ -53,8 +53,6 @@ target_include_directories(
 target_link_libraries(
 	QMLComponents
 	PUBLIC
-	Common
-	CommonData
 	Qt::Core
 	Qt::Gui
 	Qt::Widgets
@@ -65,6 +63,9 @@ target_link_libraries(
 	Qt::QuickControls2Impl
 	Qt::QuickWidgets
 	Qt::QuickTemplates2
+	PRIVATE
+	Common
+	CommonData
 )
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

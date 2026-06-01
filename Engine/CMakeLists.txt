@@ -33,6 +33,7 @@ target_link_libraries(
     QMLComponents
     CommonData
     Common
+	$<$<NOT:$<PLATFORM_ID:Windows>>:R-Interface>
 )
 
 if(IWYU_EXECUTABLE AND RUN_IWYU)
