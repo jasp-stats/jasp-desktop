@@ -213,7 +213,7 @@ FocusScope
 				}
 
 				function checkForUpdates() {
-					var js = "var updates=[];document.querySelectorAll('a').forEach(function(el){if(el.textContent.trim()==='Update Beta'){var m=el.href.match(/jasp-stats-modules\\/([^\\/]+)\\//);if(m)updates.push(m[1])}});JSON.stringify(updates);";
+					var js = "var updates=[];document.querySelectorAll('a').forEach(function(el){if(el.textContent.trim()==='Update'){var m=el.href.match(/jasp-stats-modules\\/([^\\/]+)\\//);if(m)updates.push(m[1])}});JSON.stringify(updates);";
 					runJavaScript(js, function(result) {
 						console.log("checkForUpdates result:", result);
 						if (result && result.length > 0) {
