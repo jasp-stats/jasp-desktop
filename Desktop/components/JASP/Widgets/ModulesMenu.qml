@@ -13,18 +13,18 @@ FocusScope
 	width:		slidePart.width
 	height:		600
 	z:			1
-	visible:	slidePart.x < slidePart.width
+	visible:	opened || slideAnimation.running
 
 	property bool opened: false //should be from some model
 	property int currentIndex: preferencesModel.developerMode ? -3 : -1  // -2, -3 denote install module and developer mode buttons
-	
+
 	onVisibleChanged: engineSync.activateUtilEngine = visible
 
 	onOpenedChanged: {
-		
+
 		if(!opened) ribbonModel.highlightedModuleIndex = -1; else forceActiveFocus();
-		
-		
+
+
 	}
 
 	Keys.onEscapePressed:	closeAndFocusRibbon();
@@ -80,13 +80,13 @@ FocusScope
 	{
 		id:				slidePart
 		x:				modulesMenu.opened ? 0 : width
-        width:			modulesFlick.width + vertScroller.width + moduleStoreContainer.width + 2 * jaspTheme.contentMargin
+		width:			modulesFlick.width + vertScroller.visibleBreadth + moduleStoreContainer.width + 2 * jaspTheme.contentMargin
 		height:			modulesMenu.height
 		color:			jaspTheme.fileMenuColorBackground
 		border.width:	1
 		border.color:	jaspTheme.uiBorder
 
-		Behavior on x { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
+		Behavior on x { enabled: preferencesModel.animationsOn; PropertyAnimation { id: slideAnimation; duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }
 
 
 		MouseArea
@@ -95,11 +95,11 @@ FocusScope
 			anchors.fill:	parent
 			z:				-6
 		}
-		
-		ScrollMoreIndicator 
+
+		ScrollMoreIndicator
 		{
 			id: 		scrollingGuideBottom
-			
+
 			anchors
 			{
 				left:			parent.left
@@ -107,12 +107,12 @@ FocusScope
 				bottom:			parent.bottom
 				bottomMargin:	slidePart.border.width
 			}
-			
+
 			extraSpace:		modulesFlick.contentHeight - (modulesFlick.contentY + modulesFlick.height)
 			visible:		!progressOverlay.visible
 		}
 
-		ScrollMoreIndicator 
+		ScrollMoreIndicator
 		{
 			id:				scrollingGuideTop
 			anchors
@@ -122,12 +122,12 @@ FocusScope
 				top:		parent.top
 				topMargin:	slidePart.border.width
 			}
-			
+
 			upsideDown:		true
 			extraSpace:		modulesFlick.contentY
 			visible:		!progressOverlay.visible
 		}
-		
+
 		WebEngineProfile {
 			id: moduleStoreProfile
 			downloadPath: jaspTmpDir
@@ -167,13 +167,13 @@ FocusScope
 					request.cancel()
 			}
 
-            onDownloadFinished: function(request) { //All Jasp Store module installs run via this code
+			onDownloadFinished: function(request) { //All Jasp Store module installs run via this code
 				moduleStore.downloadInProgress = false
 				moduleStore.currentDownloadRequest = null
 				if (request.state !== WebEngineDownloadRequest.DownloadCompleted) {
 					console.log("Download interrupted:", request.interruptReasonString)
-                    moduleStore.isInitiatingDownload = false; //failsafe
-                    moduleStore.triggerNextDownload()
+					moduleStore.isInitiatingDownload = false; //failsafe
+					moduleStore.triggerNextDownload()
 					return
 				}
 				console.log("Download finished:", request.downloadFileName)
@@ -188,7 +188,7 @@ FocusScope
 			id:						moduleStoreContainer
 			visible:                !ribbonModel.dataMode
 			clip:                   true
-			width:                  visible ? 500 * preferencesModel.uiScale : 0
+			width:                  !ribbonModel.dataMode ? 500 * preferencesModel.uiScale : 0
 			anchors
 			{
 				top:				modulesFlick.top
@@ -262,47 +262,47 @@ FocusScope
 				property int		downloadTotal;
 				property var		currentDownloadRequest: null;
 
-                property bool    isInitiatingDownload: false
-                property var     downloadQueue: []
-                property bool    isProcessingQueue: false
-                property int     batchTotal: 0
-                property int     batchCurrent: 0
-                property string  currentModuleName: ""
+				property bool    isInitiatingDownload: false
+				property var     downloadQueue: []
+				property bool    isProcessingQueue: false
+				property int     batchTotal: 0
+				property int     batchCurrent: 0
+				property string  currentModuleName: ""
 
-                function triggerNextDownload() {
-                    if (isInitiatingDownload || downloadInProgress || moduleLibrary.isInstalling) { //To many double triggers of signals to guard against
-                        return;
-                    }
+				function triggerNextDownload() {
+					if (isInitiatingDownload || downloadInProgress || moduleLibrary.isInstalling) { //To many double triggers of signals to guard against
+						return;
+					}
 
-                    if (downloadQueue.length > 0) {
-                        isProcessingQueue = true;
-                        isInitiatingDownload = true;
-                        batchCurrent++;
-                        let nextUrl = downloadQueue.shift();
-                        //little hack so we may process the downloads using the existing code path in WebEngineProfile
-                        let jsSnippet = "var a = document.createElement('a'); a.href = '" + nextUrl + "'; a.download = ''; document.body.appendChild(a); a.click(); document.body.removeChild(a);";
-                        runJavaScript(jsSnippet);
-                    } else {
-                        isProcessingQueue = false;
-                        isInitiatingDownload = false;
-                        batchTotal = 0;
-                        batchCurrent = 0;
-                        currentModuleName = "";
-                    }
-                }
+					if (downloadQueue.length > 0) {
+						isProcessingQueue = true;
+						isInitiatingDownload = true;
+						batchCurrent++;
+						let nextUrl = downloadQueue.shift();
+						//little hack so we may process the downloads using the existing code path in WebEngineProfile
+						let jsSnippet = "var a = document.createElement('a'); a.href = '" + nextUrl + "'; a.download = ''; document.body.appendChild(a); a.click(); document.body.removeChild(a);";
+						runJavaScript(jsSnippet);
+					} else {
+						isProcessingQueue = false;
+						isInitiatingDownload = false;
+						batchTotal = 0;
+						batchCurrent = 0;
+						currentModuleName = "";
+					}
+				}
 
-                Connections {
-                    target: moduleLibrary
-                    function onIsInstallingChanged() {
-                        if (!moduleLibrary.isInstalling && moduleStore.isProcessingQueue) {
-                            moduleStore.triggerNextDownload();
-                        }
-                    }
-                    function onRequestModulePageRefresh() {
-                        if (!moduleStore.isProcessingQueue && !moduleStore.downloadInProgress)
-                            moduleStore.reloadAndBypassCache();
-                    }
-                }
+				Connections {
+					target: moduleLibrary
+					function onIsInstallingChanged() {
+						if (!moduleLibrary.isInstalling && moduleStore.isProcessingQueue) {
+							moduleStore.triggerNextDownload();
+						}
+					}
+					function onRequestModulePageRefresh() {
+						if (!moduleStore.isProcessingQueue && !moduleStore.downloadInProgress)
+							moduleStore.reloadAndBypassCache();
+					}
+				}
 
 				webChannel.registeredObjects:	[ moduleStoreWebChannel ]
 
@@ -316,34 +316,34 @@ FocusScope
 
 					signal environmentInfoChanged(var environmentInfo)
 
-                    Component.onCompleted: {
-                        moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
-                    }
-                    Component.onDestruction: {
-                        moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
-                    }
+					Component.onCompleted: {
+						moduleLibrary.environmentInfoChanged.connect(moduleStoreWebChannel.environmentInfoChanged)
+					}
+					Component.onDestruction: {
+						moduleLibrary.environmentInfoChanged.disconnect(moduleStoreWebChannel.environmentInfoChanged)
+					}
 
 					function uninstall(moduleName) {
 						moduleLibrary.uninstallJASPModule(moduleName)
 					}
 
-                    function installMany(asset_urls) { //We fill a queue and trigger first download
-                        if (!asset_urls || asset_urls.length === 0) return;
-                        if (!moduleStore.isProcessingQueue && !moduleStore.downloadInProgress && !moduleLibrary.isInstalling) {
-                            moduleStore.batchTotal = asset_urls.length;
-                            moduleStore.batchCurrent = 0;
-                        }
+					function installMany(asset_urls) { //We fill a queue and trigger first download
+						if (!asset_urls || asset_urls.length === 0) return;
+						if (!moduleStore.isProcessingQueue && !moduleStore.downloadInProgress && !moduleLibrary.isInstalling) {
+							moduleStore.batchTotal = asset_urls.length;
+							moduleStore.batchCurrent = 0;
+						}
 
-                        for (let i = 0; i < asset_urls.length; i++) {
+						for (let i = 0; i < asset_urls.length; i++) {
 							if (moduleStore.downloadQueue.indexOf(asset_urls[i]) === -1) {
 								moduleStore.downloadQueue.push(asset_urls[i]);
 							}
-                        }
+						}
 
-                        if (!moduleStore.downloadInProgress && !moduleStore.isProcessingQueue) { //les go
-                            moduleStore.triggerNextDownload();
-                        }
-                    }
+						if (!moduleStore.downloadInProgress && !moduleStore.isProcessingQueue) { //les go
+							moduleStore.triggerNextDownload();
+						}
+					}
 				}
 			}
 
@@ -385,7 +385,7 @@ FocusScope
 				}
 			}
 		}
-		
+
 
 		Flickable
 		{
@@ -393,7 +393,7 @@ FocusScope
 			flickableDirection:		Flickable.VerticalFlick
 			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
 			contentWidth:			width
-			width:                  visible ? 340 * preferencesModel.uiScale : 0
+			width:                  340 * preferencesModel.uiScale
 			clip:					true
 
 			anchors
@@ -460,7 +460,7 @@ FocusScope
 					width:							parent.width - (jaspTheme.generalAnchorMargin * 2)
 					x:								jaspTheme.generalAnchorMargin
 					model:							workspaceModel
-                    resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
+					resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
 					showWorkspaceMissingValues:		false
 				}
 			}
@@ -473,22 +473,22 @@ FocusScope
 				visible:	!ribbonModel.dataMode
 				//anchors.right: parent.right //vertScroller.visible ? vertScroller.left : parent.right
 
-                property int buttonMargin:	3  * preferencesModel.uiScale
-                property int buttonWidth:	width - (buttonMargin * 2)
+				property int buttonMargin:	3  * preferencesModel.uiScale
+				property int buttonWidth:	width - (buttonMargin * 2)
 				property int buttonHeight:	40  * preferencesModel.uiScale
 
 				MenuButton
 				{
 					id:					addModuleButton
-                    text:				qsTr("Install Local Module")
+					text:				qsTr("Install Local Module")
 					width:				modules.buttonWidth
 					height:				modules.buttonHeight
 					anchors.leftMargin: modules.buttonMargin
-                    onClicked: 			moduleInstallerDialog.open()
-                    iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
+					onClicked: 			moduleInstallerDialog.open()
+					iconSource:			jaspTheme.iconPath + "/install_icon.png"  // icon from https://icons8.com/icon/set/install/cotton
 					showIconAndText:	true
 					iconLeft:			false
-                    toolTip:			qsTr("Install a local module")
+					toolTip:			qsTr("Install a local module")
 					visible:			preferencesModel.developerMode
 					focus:				currentIndex === -2
 					activeFocusOnTab:	false
@@ -517,7 +517,7 @@ FocusScope
 
 					readonly property bool folderSelected: preferencesModel.developerFolder != ""
 				}
-				
+
 				MenuButton
 				{
 					id:					addDeveloperModuleDirectButton
@@ -575,27 +575,27 @@ FocusScope
 							anchors
 							{
 								left			: parent.left
-                                right			: refreshButton.left
+								right			: refreshButton.left
 								verticalCenter	: parent.verticalCenter
 							}
 						}
 
 
-                        MenuButton
-                        {
-                            z:				1
+						MenuButton
+						{
+							z:				1
 							id:				refreshButton
-                            visible:		isDevMod
-                            iconSource:		jaspTheme.iconPath + "/redo.svg"
-                            width:			visible ? height : 0
-                            onClicked:		dynamicModules.refreshDeveloperModule();
-                            toolTip:		qsTr("Refresh developer module ") + displayText
-                            anchors
-                            {
-                                right			: minusButton.left
-                                verticalCenter	: parent.verticalCenter
-                            }
-                        }
+							visible:		isDevMod
+							iconSource:		jaspTheme.iconPath + "/redo.svg"
+							width:			visible ? height : 0
+							onClicked:		dynamicModules.refreshDeveloperModule();
+							toolTip:		qsTr("Refresh developer module ") + displayText
+							anchors
+							{
+								right			: minusButton.left
+								verticalCenter	: parent.verticalCenter
+							}
+						}
 
 						MenuButton
 						{
@@ -617,8 +617,8 @@ FocusScope
 			}
 
 
-            
-        }
+
+		}
 
 		JASPScrollBar
 		{
@@ -648,7 +648,7 @@ FocusScope
 				bottom:		moduleStoreContainer.bottom
 			}
 			color:			jaspTheme.fileMenuColorBackground
-            visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
+			visible:		moduleStore.downloadInProgress || moduleLibrary.isInstalling || moduleStore.batchTotal > 0
 			z:				10
 			clip:			true
 			property real	waveHeight:		86 * preferencesModel.uiScale
@@ -722,13 +722,13 @@ FocusScope
 				Text
 				{
 					id:					progressText
-                    text: {
-                        let name = moduleStore.currentModuleName !== "" ? moduleStore.currentModuleName : qsTr("module");
-                        let action = moduleStore.downloadInProgress ? qsTr("Downloading") : qsTr("Installing");
-                        let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
-                        return progress + " " + action + " " + name + " ...";
-                    }
-                    color:				jaspTheme.black
+					text: {
+						let name = moduleStore.currentModuleName !== "" ? moduleStore.currentModuleName : qsTr("module");
+						let action = moduleStore.downloadInProgress ? qsTr("Downloading") : qsTr("Installing");
+						let progress = moduleStore.batchTotal > 0 ? qsTr(" (%1/%2)").arg(moduleStore.batchCurrent).arg(moduleStore.batchTotal) : "";
+						return progress + " " + action + " " + name + " ...";
+					}
+					color:				jaspTheme.black
 					font.pixelSize:		16 * preferencesModel.uiScale
 					anchors.horizontalCenter: parent.horizontalCenter
 				}
