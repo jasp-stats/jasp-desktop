@@ -55,6 +55,7 @@ signals:
     void environmentInfoChanged(const QVariantMap &environmentInfo);
     void isInstallingChanged();
     void updatableModuleNamesChanged();
+    void requestModulePageRefresh();
 
 private:
     QVariantMap installedModulesInfo() const;

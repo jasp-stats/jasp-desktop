@@ -132,6 +132,12 @@ void ModuleLibrary::finishInstalling()
 {
     _isInstalling = false;
     cleanupTempDir();
+    if (!_updatableModuleNames.isEmpty())
+    {
+        _updatableModuleNames.clear();
+        emit updatableModuleNamesChanged();
+    }
+    emit requestModulePageRefresh();
     emit isInstallingChanged();
 }
 
