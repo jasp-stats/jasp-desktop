@@ -348,7 +348,7 @@ Item
 			width:				16 * preferencesModel.uiScale
 			height:				width
 			radius:				width / 2
-			color:				jaspTheme.blue
+			color:				"transparent"
 			visible:			moduleLibrary.updatableModuleNames.indexOf(ribbonButton.moduleName) >= 0
 			anchors
 			{
@@ -358,13 +358,11 @@ Item
 				leftMargin:		-4
 			}
 
-			Text
+			Image
 			{
-				anchors.centerIn:	parent
-				text:				"⤓"
-				color:				"white"
-				font.bold:			true
-				font.pixelSize:		11 * preferencesModel.uiScale
+				anchors.fill:		parent
+				source:				jaspTheme.iconPath + "updateIcon.svg"
+				smooth:				true
 			}
 
 			ToolTip.text:		"Update available"
