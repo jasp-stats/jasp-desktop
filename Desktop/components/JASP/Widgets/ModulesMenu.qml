@@ -212,15 +212,28 @@ FocusScope
 					request.accept();
 				}
 
+				property int _retryCount: 0
+
 				function checkForUpdates() {
 					var js = "var updates=[];document.querySelectorAll('a').forEach(function(el){if(el.textContent.trim()==='Update Beta'){var m=el.href.match(/jasp-stats-modules\\/([^\\/]+)\\//);if(m)updates.push(m[1])}});JSON.stringify(updates);";
 					runJavaScript(js, function(result) {
 						console.log("checkForUpdates result:", result);
 						if (result && result.length > 0) {
-							var names = JSON.parse(result);
+							var names;
+							try {
+								names = JSON.parse(result);
+							} catch(e) {
+								console.log("checkForUpdates: failed to parse result:", e);
+								if (_retryCount < 10) {
+									_retryCount++;
+									_retryTimer.start();
+								}
+								return;
+							}
 							console.log("checkForUpdates: updatable =", names);
 							moduleLibrary.updatableModuleNames = names;
-						} else {
+						} else if (_retryCount < 10) {
+							_retryCount++;
 							_retryTimer.start();
 						}
 					});
@@ -237,8 +250,10 @@ FocusScope
 
 				onLoadingChanged: (loadRequest) =>
 				{
-					if (loadRequest.status === WebEngineView.LoadSucceededStatus && url.toString() !== "about:blank")
+					if (loadRequest.status === WebEngineView.LoadSucceededStatus && url.toString() !== "about:blank") {
+						_retryCount = 0;
 						_retryTimer.start();
+					}
 				}
 
 				property bool	downloadInProgress: false;
