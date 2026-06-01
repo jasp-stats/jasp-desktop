@@ -212,6 +212,35 @@ FocusScope
 					request.accept();
 				}
 
+				function checkForUpdates() {
+					var js = "var updates=[];document.querySelectorAll('a').forEach(function(el){if(el.textContent.trim()==='Update Beta'){var m=el.href.match(/jasp-stats-modules\\/([^\\/]+)\\//);if(m)updates.push(m[1])}});JSON.stringify(updates);";
+					runJavaScript(js, function(result) {
+						console.log("checkForUpdates result:", result);
+						if (result && result.length > 0) {
+							var names = JSON.parse(result);
+							console.log("checkForUpdates: updatable =", names);
+							moduleLibrary.updatableModuleNames = names;
+						} else {
+							_retryTimer.start();
+						}
+					});
+				}
+
+				property Timer _retryTimer: Timer {
+					interval: 500
+					repeat: false
+				}
+
+				Component.onCompleted: {
+					_retryTimer.triggered.connect(checkForUpdates);
+				}
+
+				onLoadingChanged: (loadRequest) =>
+				{
+					if (loadRequest.status === WebEngineView.LoadSucceededStatus && url.toString() !== "about:blank")
+						_retryTimer.start();
+				}
+
 				property bool	downloadInProgress: false;
 				property bool	installInProgress: false;
 				property int		downloadProgress;

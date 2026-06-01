@@ -135,6 +135,15 @@ void ModuleLibrary::finishInstalling()
     emit isInstallingChanged();
 }
 
+void ModuleLibrary::setUpdatableModuleNames(const QStringList &names)
+{
+    if (_updatableModuleNames != names)
+    {
+        _updatableModuleNames = names;
+        emit updatableModuleNamesChanged();
+    }
+}
+
 void ModuleLibrary::cleanupTempDir()
 {
     QDir tempDir(tq(Dirs::tempDir()));
