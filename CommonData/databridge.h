@@ -21,6 +21,10 @@
 
 #include "dataset.h"
 
+#include <memory>
+
+class ColumnEncoder;
+
 class DataBridge
 {
 public:
@@ -44,6 +48,8 @@ public:
 	void					provideSpecificFileName(	const std::string & specificName,	std::string & root,	std::string & relativePath);
 	int						dataSetRowCount()		{ return static_cast<int>(provideAndUpdateDataSet()->rowCount()); }
 	void 					updateOptionsAccordingToMeta(Json::Value & options);
+	ColumnEncoder		*	extraEncodings()		{ return _extraEncodings.get(); }
+	const ColumnEncoder	*	extraEncodings() const	{ return _extraEncodings.get(); }
 
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
@@ -54,6 +60,10 @@ protected:
 	DatabaseInterface	*	_db				= nullptr;
 	int						_analysisId		= -1;
 	std::function<void()>	_datasetProvidedCallback;
+
+private:
+	static constexpr const char * ExtraOptionsPrefix = "JaspExtraOptions_";
+	std::unique_ptr<ColumnEncoder>	_extraEncodings;
 };
 
 #endif // DATABRIDGE_H

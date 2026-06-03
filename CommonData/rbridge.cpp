@@ -65,12 +65,12 @@ void rbridge_setDataBridge(DataBridge * dataBridge)
 {
 	data_bridge = dataBridge;
 	rbridge_dataSet = nullptr;
+	extraEncodings = dataBridge ? dataBridge->extraEncodings() : nullptr;
 }
 
 void rbridge_clearDataBridge()
 {
-	data_bridge = nullptr;
-	rbridge_dataSet = nullptr;
+	rbridge_setDataBridge(nullptr);
 }
 
 const std::string jaspBaseDistributionSamplersR =
@@ -102,14 +102,12 @@ const std::string jaspBaseTransformPowerR =
 		#include "jaspBase_transformPower.h"
 		;
 
-void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, ColumnEncoder * extraEncoder, const char * resultFont, bool insideJasp)
+void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, pollMessagesFuncDef pollMessagesFunction, const char * resultFont, bool insideJasp)
 {
 	JASPTIMER_SCOPE(rbridge_init);
 
+	Log::log() << "Setting DataBridge and extraEncodings." << std::endl;
 	rbridge_setDataBridge(dataBridge);
-	
-	Log::log() << "Setting extraEncodings." << std::endl;
-	extraEncodings = extraEncoder;
 
 	Log::log() << "Collecting RBridgeCallBacks." << std::endl;
 	RBridgeCallBacks callbacks = {

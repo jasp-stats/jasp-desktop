@@ -75,8 +75,6 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	JASPTIMER_SCOPE(Engine Constructor);
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
-
-	_extraEncodings = new ColumnEncoder(ColumnEncoder::extraOptionsPrefix());
 }
 
 void Engine::initialize()
@@ -88,7 +86,7 @@ void Engine::initialize()
 		std::string memoryName = "JASP-IPC-" + std::to_string(_parentPID);
 		_channel = new IPCChannel(memoryName, _engineNum, true);
 
-		rbridge_init(this, SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _extraEncodings, _resultFont.c_str());
+		rbridge_init(this, SendFunctionForJaspresults, PollMessagesFunctionForJaspResults, _resultFont.c_str());
 
 		Log::log() << "rbridge_init completed" << std::endl;
 		
@@ -679,7 +677,7 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		
 		Log::log(false) << _analysisTitle << " with ID " << _analysisId << std::endl;
 		
-		_extraEncodings->setCurrentNamesFromOptionsMeta(optionsEnc);
+		extraEncodings()->setCurrentNamesFromOptionsMeta(optionsEnc);
 		
 		_analysisOptions		= optionsEnc; //store unencoded
 	}

@@ -67,7 +67,6 @@ static bool									gl_jaspBaseInitialized			= false;
 static QGuiApplication			*			gl_application					= nullptr;
 static QQmlEngine				*			gl_qmlEngine					= nullptr;
 static DataBridge				*			gl_dataBridge					= nullptr;
-static ColumnEncoder			*			gl_extraEncodings				= nullptr;
 static QMap<QString, std::pair<QDateTime, AnalysisForm* > >	gl_qmlFormMap;
 static int									gl_applicationArgc				= 0;
 static std::vector<std::string>				gl_applicationArgvStorage;
@@ -182,12 +181,18 @@ static const char* statusError(Json::Value status, const std::string & error)
 	return statusResult(status);
 }
 
-static ColumnEncoder * ensureExtraColumnEncoder()
+static ColumnEncoder * extraColumnEncoder()
 {
-	if(!gl_extraEncodings)
-		gl_extraEncodings = new ColumnEncoder(ColumnEncoder::extraOptionsPrefix());
+	return gl_dataBridge ? gl_dataBridge->extraEncodings() : nullptr;
+}
 
-	return gl_extraEncodings;
+static ColumnEncoder & requireExtraColumnEncoder()
+{
+	ColumnEncoder * encoder = extraColumnEncoder();
+	if(!encoder)
+		throw std::runtime_error("Cannot access extra option encodings without an initialized DataBridge.");
+
+	return *encoder;
 }
 
 static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
@@ -198,9 +203,11 @@ static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
 
 static Json::Value columnEncoderContextJson()
 {
+	ColumnEncoder * extraEncoder = extraColumnEncoder();
+
 	return ColumnEncoderContext(
 		currentDatasetColumnTypes(),
-		gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap()
+		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap()
 	).toJson();
 }
 
@@ -254,8 +261,8 @@ static void clearRequestedDataState()
 	ColumnEncoder::colTypeMap noColumns;
 	ColumnEncoder::columnEncoder()->setCurrentNames(noColumns);
 
-	if (gl_extraEncodings)
-		gl_extraEncodings->setCurrentNames(noColumns);
+	if (ColumnEncoder * encoder = extraColumnEncoder())
+		encoder->setCurrentNames(noColumns);
 }
 
 static void clearDataBridgeState()
@@ -366,12 +373,6 @@ void STDCALL syntaxBridgeShutdown()
 {
 	syntaxBridgeClearQmlState();
 	clearDataBridgeState();
-
-	if (gl_extraEncodings)
-	{
-		delete gl_extraEncodings;
-		gl_extraEncodings = nullptr;
-	}
 
 	if (gl_initialized)
 	{
@@ -549,7 +550,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 	}
 
-	gl_extraEncodings->setCurrentNamesFromOptionsMeta(parsedOptions);
+	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
 	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
 
@@ -741,7 +742,7 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 	try
 	{
 		configureBridgeLogging(gl_verbose);
-		result = decodeColumnJson(valuesJson, encoderContextJson, *ensureExtraColumnEncoder()).toStyledString();
+		result = decodeColumnJson(valuesJson, encoderContextJson, requireExtraColumnEncoder()).toStyledString();
 		return result.c_str();
 	}
 	catch(const std::exception & exception)
@@ -822,9 +823,8 @@ bool init(bool dbInMemory)
 	QmlUtils::registerQmlModuleTypes();
 
 	createDataBridge(dbInMemory);
-	ensureExtraColumnEncoder();
 
-	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);
+	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_param_resultFont.c_str(), false);
 	gl_rBridgeInitialized = true;
 
 	return true;
@@ -835,7 +835,7 @@ void ensureRBridgeInitialized()
 	if (gl_rBridgeInitialized)
 		return;
 
-	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);
+	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_param_resultFont.c_str(), false);
 	gl_rBridgeInitialized = true;
 }
 

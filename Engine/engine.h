@@ -97,7 +97,6 @@ private: // Data:
 	const int						_engineNum;
 	const unsigned long				_parentPID;
 	IPCChannel					*	_channel				= nullptr;
-	ColumnEncoder				*	_extraEncodings			= nullptr;
 	engineState						_engineState			= engineState::initializing,
 									_lastRequest			= engineState::initializing;
 	Status							_analysisStatus			= Status::empty;

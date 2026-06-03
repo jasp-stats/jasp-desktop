@@ -23,6 +23,7 @@
 #include "timers.h"
 
 DataBridge::DataBridge(unsigned long sessionID, bool useMemory)
+	: _extraEncodings(new ColumnEncoder(ExtraOptionsPrefix))
 {
 	JASPTIMER_START(TempFiles Attach);
 	TempFiles::attach(sessionID);

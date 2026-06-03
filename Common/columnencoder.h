@@ -63,7 +63,6 @@ public:
 	
 	static	colVec				columnNames();
 	static	colVec				columnNamesEncoded();
-	static	const char*			extraOptionsPrefix()										{ return "JaspExtraOptions_"; }
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
