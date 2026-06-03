@@ -76,7 +76,7 @@ Engine::Engine(int slaveNo, unsigned long parentPID)
 	assert(_EngineInstance == NULL);
 	_EngineInstance = this;
 
-	_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
+	_extraEncodings = new ColumnEncoder(ColumnEncoder::extraOptionsPrefix());
 }
 
 void Engine::initialize()

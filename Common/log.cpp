@@ -17,6 +17,8 @@ std::ofstream Log::_logFile;// = bofstream();
 
 namespace
 {
+	// Used before Log::init() receives an application-owned null stream. The
+	// default logType::null destination must discard output, not write to cout.
 	class NullLogBuffer : public std::streambuf
 	{
 	protected:

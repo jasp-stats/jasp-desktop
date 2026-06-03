@@ -44,10 +44,10 @@
 #include "archivereader.h"
 #include "databaseinterface.h"
 #include "columnencoder.h"
+#include "columnencodercontext.h"
 
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -157,43 +157,9 @@ static const char* statusError(Json::Value status, const std::string & error)
 static ColumnEncoder * ensureExtraColumnEncoder()
 {
 	if(!gl_extraEncodings)
-		gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
+		gl_extraEncodings = new ColumnEncoder(ColumnEncoder::extraOptionsPrefix());
 
 	return gl_extraEncodings;
-}
-
-static Json::Value columnTypesToJson(const ColumnEncoder::colTypeMap & columnTypes)
-{
-	Json::Value columns(Json::arrayValue);
-	for(const auto & nameType : columnTypes)
-	{
-		Json::Value column(Json::objectValue);
-		column["name"] = nameType.first;
-		column["type"] = columnTypeToString(nameType.second);
-		columns.append(column);
-	}
-
-	return columns;
-}
-
-static ColumnEncoder::colTypeMap columnTypesFromJson(const Json::Value & columns, const char * fieldName)
-{
-	ColumnEncoder::colTypeMap columnTypes;
-
-	if(columns.isNull())
-		return columnTypes;
-	if(!columns.isArray())
-		throw std::runtime_error(std::string("Column encoder context field '") + fieldName + "' must be an array.");
-
-	for(const Json::Value & column : columns)
-	{
-		if(!column.isObject() || !column["name"].isString() || !column["type"].isString())
-			throw std::runtime_error(std::string("Column encoder context field '") + fieldName + "' must contain objects with string 'name' and 'type' fields.");
-
-		columnTypes[column["name"].asString()] = columnTypeFromString(column["type"].asString());
-	}
-
-	return columnTypes;
 }
 
 static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
@@ -204,121 +170,10 @@ static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
 
 static Json::Value columnEncoderContextJson()
 {
-	Json::Value context(Json::objectValue);
-	context["version"] = 1;
-	context["columns"] = columnTypesToJson(currentDatasetColumnTypes());
-	context["extra"] = columnTypesToJson(gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap());
-
-	return context;
-}
-
-struct ColumnEncoderContext
-{
-	ColumnEncoder::colTypeMap	columns;
-	ColumnEncoder::colTypeMap	extra;
-	bool						supplied = false;
-};
-
-static ColumnEncoderContext columnEncoderContextFromJson(const Json::Value & context)
-{
-	if(!context.isObject())
-		throw std::runtime_error("Column encoder context must be a JSON object.");
-
-	if(!context.isMember("version") || !context["version"].isInt())
-		throw std::runtime_error("Column encoder context must contain integer version 1.");
-	if(context["version"].asInt() != 1)
-		throw std::runtime_error("Unsupported column encoder context version.");
-
-	ColumnEncoderContext encoderContext;
-	encoderContext.supplied = true;
-	encoderContext.columns = columnTypesFromJson(context["columns"], "columns");
-	encoderContext.extra = columnTypesFromJson(context["extra"], "extra");
-
-	return encoderContext;
-}
-
-static ColumnEncoderContext columnEncoderContextFromString(const char * contextJson)
-{
-	if(!contextJson || std::string(contextJson).empty())
-		return ColumnEncoderContext();
-
-	Json::Value context;
-	Json::Reader reader;
-	if(!reader.parse(contextJson, context))
-		throw std::runtime_error("Could not parse column encoder context JSON.");
-
-	return columnEncoderContextFromJson(context);
-}
-
-class ScopedColumnEncoderContext
-{
-public:
-	ScopedColumnEncoderContext(const ColumnEncoderContext & context)
-		: _supplied(context.supplied)
-	{
-		if(!_supplied)
-			return;
-
-		_previousColumns = ColumnEncoder::columnEncoder()->currentNames();
-		_previousExtra = gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap();
-
-		ColumnEncoder::columnEncoder()->setCurrentNames(context.columns);
-		ensureExtraColumnEncoder()->setCurrentNames(context.extra);
-	}
-
-	~ScopedColumnEncoderContext()
-	{
-		if(!_supplied)
-			return;
-
-		ColumnEncoder::columnEncoder()->setCurrentNames(_previousColumns);
-		ensureExtraColumnEncoder()->setCurrentNames(_previousExtra);
-	}
-
-private:
-	bool						_supplied = false;
-	ColumnEncoder::colTypeMap	_previousColumns;
-	ColumnEncoder::colTypeMap	_previousExtra;
-};
-
-static Json::Value parseStringArrayJson(const char * valuesJson)
-{
-	if(!valuesJson)
-		throw std::runtime_error("Cannot decode column text from a null JSON payload.");
-
-	Json::Value values;
-	Json::Reader reader;
-	if(!reader.parse(valuesJson, values))
-		throw std::runtime_error("Could not parse column text JSON payload.");
-	if(!values.isArray())
-		throw std::runtime_error("Column text JSON payload must be an array.");
-
-	return values;
-}
-
-static Json::Value decodeColumnTextJson(const Json::Value & values, const ColumnEncoderContext & context)
-{
-	Json::Value decodedValues(Json::arrayValue);
-	ScopedColumnEncoderContext scopedContext(context);
-
-	for(const Json::Value & value : values)
-	{
-		if(value.isNull())
-		{
-			decodedValues.append(Json::Value());
-		}
-		else if(value.isString())
-		{
-			const std::string text = value.asString();
-			decodedValues.append(ColumnEncoder::decodeAll(text));
-		}
-		else
-		{
-			throw std::runtime_error("Column text JSON payload must contain only strings or null values.");
-		}
-	}
-
-	return decodedValues;
+	return ColumnEncoderContext(
+		currentDatasetColumnTypes(),
+		gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap()
+	).toJson();
 }
 
 static Json::Value analysisOptionsStatus(const char * filePath, int analysisNr)
@@ -854,9 +709,7 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 
 	try
 	{
-		Json::Value values = parseStringArrayJson(valuesJson);
-		ColumnEncoderContext context = columnEncoderContextFromString(encoderContextJson);
-		result = decodeColumnTextJson(values, context).toStyledString();
+		result = decodeColumnTextJson(valuesJson, encoderContextJson, *ensureExtraColumnEncoder()).toStyledString();
 		return result.c_str();
 	}
 	catch(const std::exception & exception)
