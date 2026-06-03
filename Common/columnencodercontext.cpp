@@ -53,19 +53,17 @@ static ColumnEncoder::colTypeMap columnTypesFromJson(const Json::Value & columns
 	return columnTypes;
 }
 
-static Json::Value parseStringArrayJson(const char * valuesJson)
+static Json::Value parsePayloadJson(const char * payloadJson)
 {
-	if(!valuesJson)
+	if(!payloadJson)
 		throw std::runtime_error("Cannot decode column text from a null JSON payload.");
 
-	Json::Value values;
+	Json::Value payload;
 	Json::Reader reader;
-	if(!reader.parse(valuesJson, values))
+	if(!reader.parse(payloadJson, payload))
 		throw std::runtime_error("Could not parse column text JSON payload.");
-	if(!values.isArray())
-		throw std::runtime_error("Column text JSON payload must be an array.");
 
-	return values;
+	return payload;
 }
 
 ColumnEncoderContext::ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra)
@@ -134,28 +132,13 @@ ScopedColumnEncoderContext::~ScopedColumnEncoderContext()
 	_extraEncoder.setCurrentNames(_previousExtra);
 }
 
-Json::Value decodeColumnTextJson(const char * valuesJson, const char * encoderContextJson, ColumnEncoder & extraEncoder)
+Json::Value decodeColumnJson(const char * payloadJson, const char * encoderContextJson, ColumnEncoder & extraEncoder, bool replaceNames)
 {
-	Json::Value values = parseStringArrayJson(valuesJson);
+	Json::Value payload = parsePayloadJson(payloadJson);
 	ColumnEncoderContext context = ColumnEncoderContext::fromJsonString(encoderContextJson);
-	Json::Value decodedValues(Json::arrayValue);
 	ScopedColumnEncoderContext scopedContext(context, extraEncoder);
 
-	for(const Json::Value & value : values)
-	{
-		if(value.isNull())
-		{
-			decodedValues.append(Json::Value());
-		}
-		else if(value.isString())
-		{
-			decodedValues.append(ColumnEncoder::decodeAll(value.asString()));
-		}
-		else
-		{
-			throw std::runtime_error("Column text JSON payload must contain only strings or null values.");
-		}
-	}
+	ColumnEncoder::decodeJson(payload, replaceNames);
 
-	return decodedValues;
+	return payload;
 }

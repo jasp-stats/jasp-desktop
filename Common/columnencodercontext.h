@@ -56,6 +56,6 @@ private:
 	ColumnEncoder::colTypeMap	_previousExtra;
 };
 
-Json::Value decodeColumnTextJson(const char * valuesJson, const char * encoderContextJson, ColumnEncoder & extraEncoder);
+Json::Value decodeColumnJson(const char * payloadJson, const char * encoderContextJson, ColumnEncoder & extraEncoder, bool replaceNames = true);
 
 #endif // COLUMNENCODERCONTEXT_H

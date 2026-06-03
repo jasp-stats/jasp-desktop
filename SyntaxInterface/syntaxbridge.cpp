@@ -46,6 +46,8 @@
 #include "columnencoder.h"
 #include "columnencodercontext.h"
 
+#include <ostream>
+#include <streambuf>
 #include <string>
 #include <vector>
 
@@ -86,6 +88,31 @@ static std::string							gl_param_resultFont				=
 #else
 	"freesans,sans-serif";
 #endif
+
+namespace
+{
+	class SyntaxBridgeNullBuffer : public std::streambuf
+	{
+	protected:
+		int overflow(int c) override { return traits_type::not_eof(c); }
+	};
+
+	SyntaxBridgeNullBuffer	gl_nullLogBuffer;
+	std::ostream			gl_nullLogStream(&gl_nullLogBuffer);
+	bool					gl_loggingInitialized = false;
+}
+
+static void configureBridgeLogging(bool verbose)
+{
+	if(!gl_loggingInitialized)
+	{
+		Log::init(&gl_nullLogStream);
+		gl_loggingInitialized = true;
+	}
+
+	Log::setDefaultDestination(verbose ? logType::cout : logType::null);
+	Log::setWhere(verbose ? logType::cout : logType::null);
+}
 
 static bool readJaspJsonEntry(Json::Value & root, const char * filePath, const char * entry, std::string * error = nullptr)
 {
@@ -150,6 +177,7 @@ static const char* statusError(Json::Value status, const std::string & error)
 {
 	status["ok"] = false;
 	status["error"] = error;
+	configureBridgeLogging(gl_verbose);
 	Log::log() << error << std::endl;
 	return statusResult(status);
 }
@@ -535,6 +563,8 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
 {
+	configureBridgeLogging(gl_verbose);
+
 	static std::string result;
 	result = "";
 
@@ -552,6 +582,8 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePat
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
 {
+	configureBridgeLogging(gl_verbose);
+
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
 	if (!status["ok"].asBool() && status.isMember("error"))
 		Log::log() << status["error"].asString() << std::endl;
@@ -691,8 +723,7 @@ const char* STDCALL syntaxBridgeGetVariableNames()
 void STDCALL syntaxBridgeSetVerbose(bool verbose)
 {
 	gl_verbose = verbose;
-	Log::setDefaultDestination(verbose ? logType::cout : logType::null);
-	Log::setWhere(verbose ? logType::cout : logType::null);
+	configureBridgeLogging(verbose);
 }
 
 const char* STDCALL syntaxBridgeColumnEncoderContext()
@@ -709,7 +740,8 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 
 	try
 	{
-		result = decodeColumnTextJson(valuesJson, encoderContextJson, *ensureExtraColumnEncoder()).toStyledString();
+		configureBridgeLogging(gl_verbose);
+		result = decodeColumnJson(valuesJson, encoderContextJson, *ensureExtraColumnEncoder()).toStyledString();
 		return result.c_str();
 	}
 	catch(const std::exception & exception)
@@ -748,6 +780,8 @@ void sendMessage(const char * msg)
 
 bool init(bool dbInMemory)
 {
+	configureBridgeLogging(gl_verbose);
+
 	if (gl_initialized) return true;
 	gl_initialized = true;
 	gl_initializedDbInMemory = dbInMemory;
