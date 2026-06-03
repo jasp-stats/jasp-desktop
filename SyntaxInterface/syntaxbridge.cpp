@@ -154,58 +154,132 @@ static const char* statusError(Json::Value status, const std::string & error)
 	return statusResult(status);
 }
 
-static Json::Value columnDecoderSnapshotJson()
+static ColumnEncoder * ensureExtraColumnEncoder()
 {
-	Json::Value snapshot(Json::objectValue);
-	Json::Value columns(Json::arrayValue);
-	const ColumnEncoder::colMap decodingMap = ColumnEncoder::decodingMapSnapshot();
+	if(!gl_extraEncodings)
+		gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
 
-	for(const auto & keyVal : decodingMap)
+	return gl_extraEncodings;
+}
+
+static Json::Value columnTypesToJson(const ColumnEncoder::colTypeMap & columnTypes)
+{
+	Json::Value columns(Json::arrayValue);
+	for(const auto & nameType : columnTypes)
 	{
 		Json::Value column(Json::objectValue);
-		column["encoded"] = keyVal.first;
-		column["decoded"] = keyVal.second;
+		column["name"] = nameType.first;
+		column["type"] = columnTypeToString(nameType.second);
 		columns.append(column);
 	}
 
-	snapshot["version"] = 1;
-	snapshot["columns"] = columns;
-	return snapshot;
+	return columns;
 }
 
-struct ColumnDecoderSnapshot
+static ColumnEncoder::colTypeMap columnTypesFromJson(const Json::Value & columns, const char * fieldName)
 {
-	ColumnEncoder::colMap	decodingMap;
-	bool					supplied = false;
-};
+	ColumnEncoder::colTypeMap columnTypes;
 
-static ColumnDecoderSnapshot columnDecoderMapFromSnapshot(const Json::Value & snapshot)
-{
-	ColumnDecoderSnapshot snapshotState;
-	snapshotState.supplied = true;
-	const Json::Value & columns = snapshot["columns"];
+	if(columns.isNull())
+		return columnTypes;
 	if(!columns.isArray())
-		return snapshotState;
+		throw std::runtime_error(std::string("Column encoder context field '") + fieldName + "' must be an array.");
 
 	for(const Json::Value & column : columns)
-		if(column.isObject() && column["encoded"].isString() && column["decoded"].isString())
-			snapshotState.decodingMap[column["encoded"].asString()] = column["decoded"].asString();
+	{
+		if(!column.isObject() || !column["name"].isString() || !column["type"].isString())
+			throw std::runtime_error(std::string("Column encoder context field '") + fieldName + "' must contain objects with string 'name' and 'type' fields.");
 
-	return snapshotState;
+		columnTypes[column["name"].asString()] = columnTypeFromString(column["type"].asString());
+	}
+
+	return columnTypes;
 }
 
-static ColumnDecoderSnapshot columnDecoderMapFromSnapshotString(const char * snapshotJson)
+static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
 {
-	if(!snapshotJson || std::string(snapshotJson).empty())
-		return ColumnDecoderSnapshot();
-
-	Json::Value snapshot;
-	Json::Reader reader;
-	if(!reader.parse(snapshotJson, snapshot))
-		throw std::runtime_error("Could not parse column decoder snapshot JSON.");
-
-	return columnDecoderMapFromSnapshot(snapshot);
+	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
+	return dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap();
 }
+
+static Json::Value columnEncoderContextJson()
+{
+	Json::Value context(Json::objectValue);
+	context["version"] = 1;
+	context["columns"] = columnTypesToJson(currentDatasetColumnTypes());
+	context["extra"] = columnTypesToJson(gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap());
+
+	return context;
+}
+
+struct ColumnEncoderContext
+{
+	ColumnEncoder::colTypeMap	columns;
+	ColumnEncoder::colTypeMap	extra;
+	bool						supplied = false;
+};
+
+static ColumnEncoderContext columnEncoderContextFromJson(const Json::Value & context)
+{
+	if(!context.isObject())
+		throw std::runtime_error("Column encoder context must be a JSON object.");
+
+	if(!context.isMember("version") || !context["version"].isInt())
+		throw std::runtime_error("Column encoder context must contain integer version 1.");
+	if(context["version"].asInt() != 1)
+		throw std::runtime_error("Unsupported column encoder context version.");
+
+	ColumnEncoderContext encoderContext;
+	encoderContext.supplied = true;
+	encoderContext.columns = columnTypesFromJson(context["columns"], "columns");
+	encoderContext.extra = columnTypesFromJson(context["extra"], "extra");
+
+	return encoderContext;
+}
+
+static ColumnEncoderContext columnEncoderContextFromString(const char * contextJson)
+{
+	if(!contextJson || std::string(contextJson).empty())
+		return ColumnEncoderContext();
+
+	Json::Value context;
+	Json::Reader reader;
+	if(!reader.parse(contextJson, context))
+		throw std::runtime_error("Could not parse column encoder context JSON.");
+
+	return columnEncoderContextFromJson(context);
+}
+
+class ScopedColumnEncoderContext
+{
+public:
+	ScopedColumnEncoderContext(const ColumnEncoderContext & context)
+		: _supplied(context.supplied)
+	{
+		if(!_supplied)
+			return;
+
+		_previousColumns = ColumnEncoder::columnEncoder()->currentNames();
+		_previousExtra = gl_extraEncodings ? gl_extraEncodings->currentNames() : ColumnEncoder::colTypeMap();
+
+		ColumnEncoder::columnEncoder()->setCurrentNames(context.columns);
+		ensureExtraColumnEncoder()->setCurrentNames(context.extra);
+	}
+
+	~ScopedColumnEncoderContext()
+	{
+		if(!_supplied)
+			return;
+
+		ColumnEncoder::columnEncoder()->setCurrentNames(_previousColumns);
+		ensureExtraColumnEncoder()->setCurrentNames(_previousExtra);
+	}
+
+private:
+	bool						_supplied = false;
+	ColumnEncoder::colTypeMap	_previousColumns;
+	ColumnEncoder::colTypeMap	_previousExtra;
+};
 
 static Json::Value parseStringArrayJson(const char * valuesJson)
 {
@@ -222,9 +296,10 @@ static Json::Value parseStringArrayJson(const char * valuesJson)
 	return values;
 }
 
-static Json::Value decodeColumnTextJson(const Json::Value & values, const ColumnDecoderSnapshot & snapshot)
+static Json::Value decodeColumnTextJson(const Json::Value & values, const ColumnEncoderContext & context)
 {
 	Json::Value decodedValues(Json::arrayValue);
+	ScopedColumnEncoderContext scopedContext(context);
 
 	for(const Json::Value & value : values)
 	{
@@ -235,7 +310,7 @@ static Json::Value decodeColumnTextJson(const Json::Value & values, const Column
 		else if(value.isString())
 		{
 			const std::string text = value.asString();
-			decodedValues.append(snapshot.supplied ? ColumnEncoder::decodeAllWithMapping(text, snapshot.decodingMap) : ColumnEncoder::decodeAll(text));
+			decodedValues.append(ColumnEncoder::decodeAll(text));
 		}
 		else
 		{
@@ -765,23 +840,23 @@ void STDCALL syntaxBridgeSetVerbose(bool verbose)
 	Log::setWhere(verbose ? logType::cout : logType::null);
 }
 
-const char* STDCALL syntaxBridgeColumnDecoderSnapshot()
+const char* STDCALL syntaxBridgeColumnEncoderContext()
 {
 	static std::string result;
 
-	result = columnDecoderSnapshotJson().toStyledString();
+	result = columnEncoderContextJson().toStyledString();
 	return result.c_str();
 }
 
-const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* decoderSnapshotJson)
+const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* encoderContextJson)
 {
 	static std::string result;
 
 	try
 	{
 		Json::Value values = parseStringArrayJson(valuesJson);
-		ColumnDecoderSnapshot snapshot = columnDecoderMapFromSnapshotString(decoderSnapshotJson);
-		result = decodeColumnTextJson(values, snapshot).toStyledString();
+		ColumnEncoderContext context = columnEncoderContextFromString(encoderContextJson);
+		result = decodeColumnTextJson(values, context).toStyledString();
 		return result.c_str();
 	}
 	catch(const std::exception & exception)
@@ -860,7 +935,7 @@ bool init(bool dbInMemory)
 	QmlUtils::registerQmlModuleTypes();
 
 	createDataBridge(dbInMemory);
-	gl_extraEncodings = new ColumnEncoder("JaspExtraOptions_");
+	ensureExtraColumnEncoder();
 
 	rbridge_init(gl_dataBridge, sendMessage, [](){ return false; }, gl_extraEncodings, gl_param_resultFont.c_str(), false);
 	gl_rBridgeInitialized = true;

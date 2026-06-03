@@ -63,12 +63,11 @@ public:
 	
 	static	colVec				columnNames();
 	static	colVec				columnNamesEncoded();
-	static	colMap				decodingMapSnapshot();
-	static	std::string			decodeAllWithMapping(const std::string & text, const colMap & decodingMap);
 
 			bool				shouldEncode(const std::string & in);
 			bool				shouldDecode(const std::string & in);
 			void				setCurrentNames(const colTypeMap & names);
+			const colTypeMap&	currentNames() const { return _dataSetTypes; }
 			void				updateColumnTypesOnly(const colTypeMap & names);
 			void				setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding=true);	///< Do not use! Deprecated
 			void				setCurrentColumnTypePerName(const colTypeMap & theMap);									///< Do not use! Deprecated

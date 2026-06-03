@@ -71,8 +71,8 @@ SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGenerateAnalysisWrapper(const 
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeParseDescription(const char* modulePath);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGetVariableNames();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeSetVerbose(bool verbose);
-SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeColumnDecoderSnapshot();
-SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* decoderSnapshotJson);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeColumnEncoderContext();
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* encoderContextJson);
 
 } // extern "C"
 

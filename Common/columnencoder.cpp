@@ -670,22 +670,6 @@ ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
 	return _columnEncoder ? _columnEncoder->_encodedNames : colVec();
 }
 
-ColumnEncoder::colMap ColumnEncoder::decodingMapSnapshot()
-{
-	columnEncoder();
-	return decodingMap();
-}
-
-std::string ColumnEncoder::decodeAllWithMapping(const std::string & text, const ColumnEncoder::colMap & decodingMap)
-{
-	ColumnEncoder::colVec encodedNames;
-	for(const auto & keyVal : decodingMap)
-		encodedNames.push_back(keyVal.first);
-
-	sortVectorBigToSmall(encodedNames);
-	return replaceAll(text, decodingMap, encodedNames);
-}
-
 void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes)
 {
 	std::string		optionKey	= options[optionName].isMember("optionKey") ? options[optionName]["optionKey"].asString() : "";
