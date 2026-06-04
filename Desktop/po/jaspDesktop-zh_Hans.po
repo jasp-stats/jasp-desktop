@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-01 08:01+0000\n"
+"PO-Revision-Date: 2026-06-05 00:31+0000\n"
 "Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/jasp/jaspdesktop/zh_Hans/>\n"
@@ -4379,11 +4379,11 @@ msgstr "因子"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
-msgstr "在前方插入构造函数列"
+msgstr "在前方插入计算列"
 
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
-msgstr "在后方插入构造函数列"
+msgstr "在后方插入计算列"
 
 msgctxt "DataTableView|"
 msgid "Insert R column before"
@@ -4428,11 +4428,11 @@ msgstr "将列 “%2” 的标签 “%1” 的原始值从 “%3” 设置为 �
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
-msgstr "在前方插入构造函数列"
+msgstr "在前方插入计算列"
 
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
-msgstr "在后方插入构造函数列"
+msgstr "在后方插入计算列"
 
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
