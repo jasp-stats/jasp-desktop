@@ -169,8 +169,6 @@ static const char* statusError(Json::Value status, const std::string & error)
 {
 	status["ok"] = false;
 	status["error"] = error;
-	configureBridgeLogging(gl_verbose);
-	Log::log() << error << std::endl;
 	return statusResult(status);
 }
 
@@ -557,18 +555,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePath, int analysisNr)
 {
-	configureBridgeLogging(gl_verbose);
-
 	static std::string result;
 	result = "";
 
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
 	if (!status["ok"].asBool())
-	{
-		if (status.isMember("error"))
-			Log::log() << status["error"].asString() << std::endl;
 		return result.c_str();
-	}
 
 	result = status["options"].toStyledString();
 	return result.c_str();
@@ -576,11 +568,7 @@ const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFile(const char * filePat
 
 const char* STDCALL syntaxBridgeAnalysisOptionsFromJaspFileStatus(const char * filePath, int analysisNr)
 {
-	configureBridgeLogging(gl_verbose);
-
 	Json::Value status = analysisOptionsStatus(filePath, analysisNr);
-	if (!status["ok"].asBool() && status.isMember("error"))
-		Log::log() << status["error"].asString() << std::endl;
 	return statusResult(status);
 }
 
@@ -717,7 +705,8 @@ const char* STDCALL syntaxBridgeGetVariableNames()
 void STDCALL syntaxBridgeSetVerbose(bool verbose)
 {
 	gl_verbose = verbose;
-	configureBridgeLogging(verbose);
+	if (gl_loggingInitialized)
+		configureBridgeLogging(verbose);
 }
 
 const char* STDCALL syntaxBridgeColumnEncoderContext()
@@ -734,7 +723,6 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 
 	try
 	{
-		configureBridgeLogging(gl_verbose);
 		result = decodeColumnJson(valuesJson, encoderContextJson, requireExtraColumnEncoder()).toStyledString();
 		return result.c_str();
 	}
