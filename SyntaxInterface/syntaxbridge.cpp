@@ -46,8 +46,8 @@
 #include "columnencoder.h"
 #include "columnencodercontext.h"
 
-#include <ostream>
-#include <streambuf>
+#include "boost/iostreams/stream.hpp"
+#include <boost/iostreams/device/null.hpp>
 #include <string>
 #include <vector>
 
@@ -90,15 +90,8 @@ static std::string							gl_param_resultFont				=
 
 namespace
 {
-	class SyntaxBridgeNullBuffer : public std::streambuf
-	{
-	protected:
-		int overflow(int c) override { return traits_type::not_eof(c); }
-	};
-
-	SyntaxBridgeNullBuffer	gl_nullLogBuffer;
-	std::ostream			gl_nullLogStream(&gl_nullLogBuffer);
-	bool					gl_loggingInitialized = false;
+	boost::iostreams::stream<boost::iostreams::null_sink>	gl_nullLogStream((boost::iostreams::null_sink()));
+	bool													gl_loggingInitialized = false;
 }
 
 static void configureBridgeLogging(bool verbose)
