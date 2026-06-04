@@ -209,12 +209,12 @@ extern "C" int STDCALL rbridge_decodeColumnType(const char * in)
 
 extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
 {
-	return ColumnEncoder::columnEncoder()->shouldEncode(in);
+	return (extraEncodings && extraEncodings->shouldEncode(in)) || ColumnEncoder::columnEncoder()->shouldEncode(in);
 }
 
 extern "C" bool STDCALL rbridge_shouldDecodeColumnName(const char * in)
 {
-	return ColumnEncoder::columnEncoder()->shouldDecode(in);
+	return (extraEncodings && extraEncodings->shouldDecode(in)) || ColumnEncoder::columnEncoder()->shouldDecode(in);
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
