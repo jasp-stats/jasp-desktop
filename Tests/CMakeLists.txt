@@ -46,12 +46,22 @@ qt_add_executable(
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
 
+qt_add_executable(
+  JASPTestColumnEncoderContext
+  ${SYSTEM_TYPE}
+  testcolumnencodercontext.h
+  testcolumnencodercontext.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
 
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
 add_dependencies(JASPQuickTest      JASPDesktopLib)
 add_dependencies(JASPTestCsvPrev    JASPDesktopLib)
+add_dependencies(JASPTestColumnEncoderContext Common)
 
 target_include_directories(
   JASPTest
@@ -84,6 +94,12 @@ target_include_directories(
   JASPTestCsvPrev
   PUBLIC
   JASPDesktopLib
+)
+
+target_include_directories(
+  JASPTestColumnEncoderContext
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/Common
 )
 
 target_link_libraries(
@@ -135,6 +151,13 @@ target_link_libraries(
   Qt::Test
 )
 
+target_link_libraries(
+  JASPTestColumnEncoderContext
+  PUBLIC
+  Common
+  Qt::Test
+)
+
 target_compile_definitions(
   JASPTest
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
@@ -171,6 +194,7 @@ add_test(NAME testCsvPreview  COMMAND JASPTestCsvPrev)
 add_test(NAME testDebugData   COMMAND JASPTestDebugData)
 add_test(NAME testEngine      COMMAND JASPTestEngine)
 add_test(NAME testQuick       COMMAND JASPQuickTest)
+add_test(NAME testColumnEncoderContext COMMAND JASPTestColumnEncoderContext)
 
 
 
