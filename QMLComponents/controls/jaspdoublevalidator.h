@@ -32,6 +32,7 @@ class JASPDoubleValidator : public QDoubleValidator
 	QML_ELEMENT
 
 	Q_PROPERTY(JASPControl::Inclusive inclusive READ inclusive	WRITE setInclusive	NOTIFY inclusiveChanged	)
+	Q_PROPERTY(bool relaxDecimals READ relaxDecimals WRITE setRelaxDecimals NOTIFY relaxDecimalsChanged)
 
 public:
 	JASPDoubleValidator (QObject* parent = nullptr) : QDoubleValidator(parent) {}
@@ -44,14 +45,19 @@ public:
 
 	JASPControl::Inclusive inclusive() { return _inclusive; }
 
+	bool relaxDecimals() const { return _relaxDecimals; }
+	void setRelaxDecimals(bool r) { if (_relaxDecimals != r) { _relaxDecimals = r; emit relaxDecimalsChanged(); } }
+
 signals:
 	void inclusiveChanged();
+	void relaxDecimalsChanged();
 
 protected:
 	JASPControl::Inclusive	_inclusive = JASPControl::Inclusive::MinMax;
 
 private:
 	bool	_isInf(double value);
+	bool	_relaxDecimals = true;
 };
 
 #endif // JASPDOUBLEVALIDATOR_H

@@ -53,6 +53,7 @@ public:
 
 	//Some non-static links to have QML handle it. Without figuring out how qmlRegisterSingletonType() works :p
 public slots:
+	bool		showYesNoQML(QString title, QString message, QString yesText = "", QString noText = "")	{ return showYesNo(title, message, yesText, noText); }
 	DialogResponse	showSaveDiscardCancelQML(QString title, QString message, QString saveTxt = "", QString discardText = "",	QString cancelText = "")	{ return showSaveDiscardCancel(title, message, saveTxt, discardText, cancelText); }
 	void			showWarningQML(QString title, QString message)																							{ showWarning(title, message); }
 	QString			browseOpenFileQML(QString caption, QString browsePath, QString filter, bool multiple = false)					{ return constrainToSandboxResult(browseOpenFile(caption, constrainToSandboxStartDir(browsePath), filter, multiple)); }

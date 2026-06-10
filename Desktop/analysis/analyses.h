@@ -61,6 +61,8 @@ public:
 						~Analyses()	{ _singleton = nullptr; }
 	static Analyses *	analyses()	{ return _singleton; }
 
+	static void			registerRpcHandlers();
+
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
 	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, const std::string & title = "", const Version & loadedVersion = "", const Json::Value & options = Json::nullValue);
@@ -187,6 +189,13 @@ private:
 	void bindAnalysisHandler(Analysis* analysis);
 	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);	
 	void _makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
+
+	// RPC handler helpers
+	static Analysis*	_rpcResolveAnalysis(int analysisId, Json::Value& errorResponse);
+	static void			_rpcWriteIdentity(Json::Value& response, Analysis* a);
+	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
+	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);
+	static void			_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId);
 
 
 private:

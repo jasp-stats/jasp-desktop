@@ -19,6 +19,7 @@
 #include "textinputbase.h"
 #include "analysisform.h"
 #include "columnutils.h"
+#include "jaspdoublevalidator.h"
 
 using namespace std;
 
@@ -201,9 +202,20 @@ void TextInputBase::setUp()
 	QQuickItem::connect(this, SIGNAL(editingFinished()), this, SLOT(valueChangedSlot()));
 
 	if (form())
+	{
 		// For unknown reason, when the language is changed, QML reset the default value.
 		// We have then to set back the value from the option
 		connect(form(), &AnalysisForm::languageChanged, this, &TextInputBase::setDisplayValue);
+
+		// Sync the form's relaxInputConstraints to the validator's relaxDecimals
+		auto* jdv = findChild<JASPDoubleValidator*>();
+		if (jdv)
+		{
+			jdv->setRelaxDecimals(form()->relaxInputConstraints());
+			connect(form(), &AnalysisForm::relaxInputConstraintsChanged,
+					jdv, &JASPDoubleValidator::setRelaxDecimals);
+		}
+	}
 
 	if (_value.isNull()) // If the value is not directly set, use the default value.
 		setValue(_defaultValue, false);
