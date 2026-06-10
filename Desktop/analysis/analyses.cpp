@@ -24,7 +24,15 @@
 #include "knownissues.h"
 #include <QTimer>
 #include <QFile>
+#include <QDir>
+#include <QFileInfo>
+#include <QSet>
+#include <QCoreApplication>
+#include <QEventLoop>
+#include <QRegularExpression>
+#include <json/value.h>
 #include "log.h"
+#include "rpc/jasprpcdispatcher.h"
 
 using namespace std;
 using Modules::Upgrader;
@@ -37,13 +45,15 @@ Analyses::Analyses()
 	if(_singleton) throw std::runtime_error("Can only instantiate single copy of Analyses!");
 	_singleton = this;
 
+	registerRpcHandlers();
+
 	new KnownIssues(this);
 }
 
-void Analyses::destroyAllForms() 
-{ 
+void Analyses::destroyAllForms()
+{
 	Log::log() << "Analyses::destroyAllForms()" << std::endl;
-	
+
 	//Destroy all existing forms *before* destroying the rest of QML, to avoid a massive slew of errors
 	applyToAll([](Analysis * a){ if(a->form()) a->destroyForm(); });
 }
@@ -52,7 +62,7 @@ void Analyses::destroyAllForms()
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
 	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
-	
+
 	Analysis::Status status		= Analysis::parseStatus(analysisData["status"].asString());
 	size_t id					= analysisData["id"].asUInt();
 
@@ -62,33 +72,33 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(_nextId <= id) _nextId = id + 1;
 
-	
+
 	Modules::UpgradeMsgs		msgs;
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
 	std::string					title			= analysisData.get("title", "").asString();
 	Modules::AnalysisEntry	*	analysisEntry	= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
 	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson);
-	
+
 	if(msgs.count(Modules::analysisLog))
 	{
 		QStringList msgAna = tq(msgs[Modules::analysisLog]);
 		analysis->setErrorInResults(fq(msgAna.join("\n")));
-	}	
+	}
 
 	if(wasUpgraded)
 		analysis->setUpgradeMsgs(msgs);
-	
+
 	if(!TempFiles::stateFileExists(id))
 		analysis->_storedWithoutState = true; //This will trigger the "you need a refresh" on resize
-	
+
 	for(const Json::Value & columnName : analysisData.get("columns", Json::arrayValue))
 	{
 		Column * col = DataSetPackage::pkg()->dataSet()->column(columnName.asString());
-		
-		if(		col 
-			&&	
-			(	col->codeType() == computedColumnType::analysisNotComputed 
+
+		if(		col
+			&&
+			(	col->codeType() == computedColumnType::analysisNotComputed
 			||	col->codeType() == computedColumnType::notComputed			)
 			&&	col->analysisId() == -1)
 			col->setAnalysisId(analysis->id());
@@ -107,13 +117,13 @@ Analysis* Analyses::create(const Json::Value & analysisData, Modules::AnalysisEn
 	Analysis *analysis = new Analysis(id, analysisEntry, title, optionsVersion, options);
 
 	analysis->checkDefaultTitleFromJASPFile(analysisData);
-	
+
 	storeAnalysis(analysis, id, notifyAll);
 	bindAnalysisHandler(analysis);
-	
+
 	if(!analysisData.isNull())	analysis->loadResultsUserdataAndRSourcesFromJASPFile(analysisData, status);
 	else						analysis->setResults(analysisEntry->getDefaultResults(), status);
-	
+
 
 
 	return analysis;
@@ -247,17 +257,17 @@ Json::Value Analyses::asJson() const
 void Analyses::saveAnalysesJsonForReload()
 {
 	beginResetModel();
-	
+
 	_tempSave = asJson();
-	
+
 	destroyAllForms();
-	
+
 	for(auto & idAnalysis : _analysisMap)
 		delete idAnalysis.second;
-	
+
 	_analysisMap.clear();
 	_orderedIds.clear();
-	
+
 	endResetModel();
 }
 
@@ -265,17 +275,17 @@ void Analyses::reloadSavedAnalysesJson()
 {
 	if(!_tempSave.isObject() || !_tempSave.isMember("analyses") || !_tempSave.isMember("meta"))
 		return;
-	
+
 	beginResetModel();
-	
+
 	bool errorFound;
 	std::stringstream errors;
 	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton());
-	
+
 	//applyToAll([](Analysis * a){ a->setBeingTranslated(true); });
 	endResetModel();
-	
-	_tempSave = Json::nullValue; 
+
+	_tempSave = Json::nullValue;
 }
 
 
@@ -423,14 +433,14 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 	if (DataSetPackage::pkg()->hasAnalyses())
 	{
 		Json::Value analysesData = DataSetPackage::pkg()->analysesData();
-		
+
 		if (analysesData.isNull())
 		{
 			errorFound = true;
 			errorMsg << "An error has been detected and analyses could not be loaded.";
 			return;
 		}
-		
+
 		Json::Value meta, analysesDataList;
 		if (!analysesData.isArray())
 		{
@@ -444,7 +454,7 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 				emit setResultsMeta(results);
 			}
 		}
-		
+
 		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel);
 	}
 }
@@ -455,7 +465,7 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 	stringstream	corruptionStrings;
 
 	Log::log() << "Loading analyses from jasp-file, entering loop." << std::endl;
-	
+
 	//There is no point trying to show progress here because qml is not updated while this function runs...
 	for (const Json::Value & analysisData : analysesDataList)
 	{
@@ -468,21 +478,21 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 			//Maybe show a nicer messagebox?
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << modProb.what();
-			
+
 			Log::log() << "Caught module exception: " << modProb.what() << std::endl;
 		}
 		catch (runtime_error & e)
 		{
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-			
+
 			Log::log() << "Caught runtime_error exception: " << e.what() << std::endl;
 		}
 		catch (exception & e)
 		{
 			errorFound = true;
 			corruptionStrings << "\n" << (++corruptAnalyses) << ": " << e.what();
-			
+
 			Log::log() << "Caught exception: " << e.what() << std::endl;
 		}
 	}
@@ -776,10 +786,10 @@ void Analyses::analysisTitleChangedInResults(int id, QString title)
 
 void Analyses::setChangedAnalysisTitle()
 {
-    Analysis * analysis = dynamic_cast<Analysis*>(QObject::sender());
+	Analysis * analysis = dynamic_cast<Analysis*>(QObject::sender());
 
-    if (analysis != nullptr)
-        emit analysisTitleChanged(analysis);
+	if (analysis != nullptr)
+		emit analysisTitleChanged(analysis);
 }
 
 void Analyses::duplicateAnalysis(size_t id)
@@ -815,10 +825,10 @@ void Analyses::analysisTitleChangedHandler(string moduleName, string oldTitle, s
 void Analyses::prepareForLanguageChange()
 {
 	applyToAll([&](Analysis * a)
-	{ 
+	{
 		a->setBeingTranslated(true);
-		a->setRefreshBlocked(true); 
-		
+		a->setRefreshBlocked(true);
+
 		if(!a->isFinished())
 			a->abort();
 	});
@@ -838,7 +848,7 @@ void Analyses::languageChangedHandler()
 
 void Analyses::dataModeChanged(bool dataMode)
 {
-	applyToAll([&](Analysis * a) 
+	applyToAll([&](Analysis * a)
 	{
 		if(dataMode && !a->isFinished())
 			a->refresh();
@@ -855,4 +865,511 @@ void Analyses::allUserDataChanged(QString json)
 {
 	Json::Reader().parse(fq(json), _allUserData);
 	setAnalysesUserData(_allUserData);
+}
+
+// ---- RPC handler helpers ----------------------------------------------------
+
+Analysis* Analyses::_rpcResolveAnalysis(int analysisId, Json::Value& errorResponse)
+{
+	Analysis* a = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+	if (!a)
+		errorResponse = JaspRpcDispatcher::errorResult(
+			"Analysis not found: " + std::to_string(analysisId));
+	return a;
+}
+
+void Analyses::_rpcWriteIdentity(Json::Value& response, Analysis* a)
+{
+	response["analysisId"] = static_cast<int>(a->id());
+	response["module"]     = a->module();
+	response["analysis"]   = a->name();
+}
+
+void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
+{
+	response["status"] = Analysis::statusToString(a->status());
+}
+
+void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc)
+{
+	response["options"]    = a->boundValues();
+	response["optionMeta"] = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
+}
+
+void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId)
+{
+	response["results"]       = a->results();
+	response["jaspResultsRds"] = TempFiles::analysisResourcePath(analysisId, "jaspResults.rds");
+}
+
+// ---- RPC method registrations ----------------------------------------------
+
+void Analyses::registerRpcHandlers()
+{
+	auto* disp = JaspRpcDispatcher::singleton();
+	if (!disp)
+		return;
+
+	// Looked up by name from the RPCSpec.json registry.
+	// Spec defines params & result schema — validated automatically.
+	disp->registerMethodByName("analysis_create", [](const Json::Value& params) -> Json::Value
+	{
+		QString module   = QString::fromStdString(params["module"].asString());
+		QString analysis = QString::fromStdString(params["analysis"].asString());
+
+		Analysis* a = Analyses::analyses()->createAnalysis(module, analysis);
+		if (!a)
+			return JaspRpcDispatcher::errorResult(
+				"Failed to create analysis: " + module.toStdString() +
+				"::" + analysis.toStdString());
+
+		// Mark AI-created analyses in the title
+		a->setTitle(a->title() + " (AI)");
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		// Status defaults to "success" from successResult()
+		_rpcWriteOptions(response, a, true);
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_run", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		AnalysisForm* form = a->form();
+		if (!form)
+			return JaspRpcDispatcher::errorResult(
+				"Analysis form not available for analysis " + std::to_string(analysisId));
+
+		if (params.isMember("relaxInputConstraints"))
+			form->setRelaxInputConstraints(params["relaxInputConstraints"].asBool());
+
+		Json::Value parsedOptions;
+		std::string errorMsg;
+		std::string rawOptions = Json::writeString(Json::StreamWriterBuilder(), params["options"]);
+
+		form->parseOptions(rawOptions, parsedOptions, errorMsg);
+
+		QString formErrors = form->errors();
+		if (!formErrors.isEmpty())
+		{
+			if (!errorMsg.empty()) errorMsg += ", ";
+			errorMsg += fq(formErrors);
+		}
+
+		if (!errorMsg.empty())
+			return JaspRpcDispatcher::errorResult(
+				"Validation errors on analysis options: " + errorMsg);
+
+		a->boundValueChangedHandler();
+
+		bool wait      = params.get("wait", true).asBool();
+		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+
+		// Fast path: results already ready
+		if (a->isFinished())
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			_rpcWriteIdentity(response, a);
+			_rpcWriteStatus(response, a);
+			_rpcWriteOptions(response, a, false);
+			_rpcWriteFinishedResults(response, a, analysisId);
+			return response;
+		}
+
+		// Not waiting: return immediately with running status
+		if (!wait)
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			_rpcWriteIdentity(response, a);
+			response["status"] = "running";
+			_rpcWriteOptions(response, a, false);
+			return response;
+		}
+
+		// Blocking wait for R engine to finish
+		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+			[&](QEventLoop& loop, QTimer&) {
+				QObject::connect(a, &Analysis::statusChanged, &loop,
+					[&loop](Analysis* analysis) {
+						if (analysis->isFinished())
+							loop.quit();
+					});
+			});
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		_rpcWriteStatus(response, a);
+		_rpcWriteOptions(response, a, false);
+		if (a->isFinished())
+			_rpcWriteFinishedResults(response, a, analysisId);
+
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_getOptions", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		bool includeDesc = params.get("includeDescriptions", true).asBool();
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		_rpcWriteOptions(response, a, includeDesc);
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_results", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		bool wait      = params["wait"].asBool();
+		int  timeoutMs = params["timeoutMs"].asInt();
+
+		// Fast path: results already ready — return immediately
+		if (a->isFinished())
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			_rpcWriteIdentity(response, a);
+			_rpcWriteStatus(response, a);
+			_rpcWriteFinishedResults(response, a, analysisId);
+			return response;
+		}
+
+		// Not waiting: return immediately with running status, no stale results
+		if (!wait)
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			_rpcWriteIdentity(response, a);
+			response["status"] = "running";
+			return response;
+		}
+
+		// Collect all form errors (control-level + form-level) and return
+		// immediately if any exist — results will never arrive.
+		if (a->form())
+		{
+			std::string formErrorMsg;
+			if (a->form()->hasError())
+				formErrorMsg = fq(a->form()->getError(true));
+			QString formErrors = a->form()->errors();
+			if (!formErrors.isEmpty())
+			{
+				if (!formErrorMsg.empty()) formErrorMsg += ", ";
+				formErrorMsg += fq(formErrors);
+			}
+			if (!formErrorMsg.empty())
+				return JaspRpcDispatcher::errorResult(
+					"Analysis has form validation errors: " + formErrorMsg);
+		}
+
+		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+			[&](QEventLoop& loop, QTimer&) {
+				QObject::connect(a, &Analysis::statusChanged, &loop,
+					[&loop](Analysis* analysis) {
+						if (analysis->isFinished())
+							loop.quit();
+					});
+			});
+
+		// Build response — may be finished or still running if timeout fired
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		_rpcWriteStatus(response, a);
+		if (a->isFinished())
+			_rpcWriteFinishedResults(response, a, analysisId);
+
+		return response;
+	});
+
+		// (analysis_setResults commented out — use analysis_composeResults instead)
+		/*
+		disp->registerMethodByName("analysis_setResults", [](const Json::Value& params) -> Json::Value
+		{
+			int analysisId = params["analysisId"].asInt();
+			Analysis* a = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+			if (!a)
+				return JaspRpcDispatcher::errorResult(
+					"Analysis not found: " + std::to_string(analysisId));
+
+			// 'results' is a JSON-encoded string — parse on our side
+			Json::Reader reader;
+			Json::Value results;
+			if (!reader.parse(params["results"].asString(), results))
+				return JaspRpcDispatcher::errorResult(
+					"Failed to parse results JSON: " + reader.getFormattedErrorMessages());
+
+			// Map the requested status string to Analysis::Status.
+			// Default is Complete; also accept fatalError.
+			Analysis::Status status = Analysis::Complete;
+			if (params.isMember("status") && params["status"].asString() == "fatalError")
+				status = Analysis::FatalError;
+
+			a->setResults(results, status);
+
+			Json::Value response = JaspRpcDispatcher::successResult();
+			response["analysisId"] = analysisId;
+			response["module"]     = a->module();
+			response["analysis"]   = a->name();
+			return response;
+		});
+		*/
+
+	disp->registerMethodByName("analysis_composeResults", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+		Analysis* a = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+		if (!a)
+			return JaspRpcDispatcher::errorResult(
+				"Analysis not found: " + std::to_string(analysisId));
+
+		const Json::Value& currentResults = a->results();
+		if (currentResults.isNull() || !currentResults.isMember(".meta"))
+			return JaspRpcDispatcher::errorResult(
+				"Analysis has no results with .meta — run the analysis first");
+
+		// --- Recursive helper: find an element by name in the results tree ---
+		// Returns a pair {metaEntry, data} for the named element, or Json::nullValue if not found.
+		// Searches the .meta array and nested collections.
+		std::function<Json::Value(const Json::Value& results, const std::string& targetName)> findElement;
+		findElement = [&findElement](const Json::Value& results, const std::string& targetName) -> Json::Value
+		{
+			if (!results.isMember(".meta"))
+				return Json::nullValue;
+
+			const Json::Value& meta = results[".meta"];
+			for (const auto& entry : meta)
+			{
+				std::string name = entry.get("name", "").asString();
+				if (name == targetName)
+				{
+					// Found at this level — return the meta entry and the data
+					Json::Value result(Json::objectValue);
+					result["meta"] = entry;
+					if (results.isMember(name))
+						result["data"] = results[name];
+					return result;
+				}
+
+				// If this is a collection, search inside its collection children
+				std::string type = entry.get("type", "").asString();
+				if (type == "collection" && results.isMember(name))
+				{
+					const Json::Value& collData = results[name];
+					if (collData.isMember("collection"))
+					{
+						// Build a pseudo-results for the collection's children.
+						// The collection's "collection" object has the child data;
+						// the collection's meta entry has the child .meta array.
+						Json::Value collResults = collData["collection"];
+						if (entry.isMember("meta"))
+							collResults[".meta"] = entry["meta"];
+						// Recurse into collection
+						Json::Value found = findElement(collResults, targetName);
+						if (!found.isNull())
+							return found;
+					}
+				}
+			}
+			return Json::nullValue;
+		};
+
+		// --- Build composed results ---
+		Json::Value composed(Json::objectValue);
+		Json::Value newMeta(Json::arrayValue);
+		int mdTextCounter = 0;
+
+		for (const auto& el : params["elements"])
+		{
+			if (el.isMember("md_text"))
+				{
+					// --- md_text block ---
+					std::string content = el.get("md_text", "").asString();
+
+					if (content.empty())
+						return JaspRpcDispatcher::errorResult(
+							"Each 'md_text' element requires a non-empty 'md_text' field with the Markdown/HTML content. "
+							"Example: { \"md_text\": \"# Summary\\n\\nThe groups do not differ significantly...\" }");
+
+					std::string mdName = "_md_text_" + std::to_string(mdTextCounter++);
+
+					// Meta entry
+					Json::Value mdMeta(Json::objectValue);
+					mdMeta["name"] = mdName;
+					mdMeta["type"] = "md_text";
+					newMeta.append(mdMeta);
+
+					// Data entry
+					Json::Value mdData(Json::objectValue);
+					mdData["name"]    = mdName;
+					mdData["content"] = content;
+					mdData["status"]  = "complete";
+					composed[mdName] = mdData;
+				}
+			else if (el.isMember("name"))
+			{
+				// --- Named result element ---
+				std::string name = el["name"].asString();
+				Json::Value found = findElement(currentResults, name);
+				if (found.isNull())
+					return JaspRpcDispatcher::errorResult(
+						"Element not found in results: '" + name + "'");
+
+				const Json::Value& metaEntry = found["meta"];
+				const Json::Value& data      = found["data"];
+
+				newMeta.append(metaEntry);
+				composed[name] = data;
+			}
+			else
+			{
+				return JaspRpcDispatcher::errorResult(
+					"Each element must have either 'name' (to reference an existing result element) or 'md_text' (to insert a Markdown block). "
+					"Examples: { \"name\": \"ttest\" } or { \"md_text\": \"# Summary\" }");
+			}
+		}
+
+		// --- Copy over any top-level keys that aren't element data ---
+		// (e.g. citation, name, ...)
+		for (const auto& key : currentResults.getMemberNames())
+		{
+			if (key == ".meta") continue;
+			if (!composed.isMember(key))
+				composed[key] = currentResults[key];
+		}
+
+		composed[".meta"] = newMeta;
+
+		// Map status
+		Analysis::Status status = Analysis::Complete;
+		if (params.isMember("status") && params["status"].asString() == "fatalError")
+			status = Analysis::FatalError;
+
+		a->setResults(composed, status);
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["analysisId"] = analysisId;
+		response["module"]     = a->module();
+		response["analysis"]   = a->name();
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_context", [](const Json::Value& params) -> Json::Value
+	{
+		QString module   = QString::fromStdString(params["module"].asString());
+		QString analysis = QString::fromStdString(params["analysis"].asString());
+
+		auto* dm = DynamicModules::dynMods();
+		if (!dm)
+			return JaspRpcDispatcher::errorResult("DynamicModules not available");
+
+		auto* mod = dm->dynamicModule(fq(module));
+		if (!mod)
+			return JaspRpcDispatcher::errorResult("Module not found: " + fq(module));
+
+		Modules::AnalysisEntry* entry = nullptr;
+		for (auto* e : mod->menu())
+			if (e->isAnalysis() && e->function() == fq(analysis))
+			{
+				entry = e;
+				break;
+			}
+
+		if (!entry)
+			return JaspRpcDispatcher::errorResult("Analysis not found: " + fq(module) + "::" + fq(analysis));
+
+		// Read help file if available (<moduleInstFolder>/help/<functionName>.md)
+		Json::Value help("");
+		QString helpPath = mod->helpFolderPath() + QString::fromStdString(fq(analysis)) + ".md";
+		QFile helpFile(helpPath);
+		if (helpFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			help = QString::fromUtf8(helpFile.readAll()).toStdString();
+			helpFile.close();
+		}
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["module"]   = module.toStdString();
+		response["analysis"] = analysis.toStdString();
+		response["help"]     = help;
+		return response;
+	});
+
+	disp->registerMethodByName("modules_list", [](const Json::Value&) -> Json::Value
+	{
+		auto* dm = DynamicModules::dynMods();
+		Json::Value modules(Json::arrayValue);
+
+		for (const auto& modName : dm->moduleNames())
+		{
+			if (auto* mod = dm->dynamicModule(modName))
+			{
+				Json::Value m;
+				m["name"]  = modName;
+				m["title"] = mod->title();
+
+				Json::Value analyses(Json::arrayValue);
+				for (const auto* entry : mod->menu())
+				{
+					if (!entry->isAnalysis() || entry->isSeparator())
+						continue;
+
+					Json::Value a;
+					a["name"]  = entry->function();
+					a["title"] = entry->title();
+					analyses.append(a);
+				}
+				m["analyses"] = analyses;
+				modules.append(m);
+			}
+		}
+
+		Json::Value result;
+		result["modules"] = modules;
+		return result;
+	});
+
+	disp->registerMethodByName("analyses_list", [](const Json::Value&) -> Json::Value
+	{
+		auto* ans = Analyses::analyses();
+		Json::Value analysesArr(Json::arrayValue);
+
+		ans->applyToAll([&analysesArr](Analysis* a)
+		{
+			Json::Value entry;
+			entry["id"]       = static_cast<int>(a->id());
+			entry["module"]   = a->module();
+			entry["analysis"] = a->name();
+			entry["title"]    = a->title();
+			analysesArr.append(entry);
+		});
+
+		// Resolve the active analysis: currentAnalysisIndex is a row index, not an ID.
+		int activeId = -1;
+		int curIdx   = ans->currentAnalysisIndex();
+		if (curIdx >= 0 && curIdx < ans->count())
+		{
+			Analysis* active = (*ans)[static_cast<size_t>(curIdx)];
+			if (active)
+				activeId = static_cast<int>(active->id());
+		}
+
+		Json::Value result;
+		result["analyses"]         = analysesArr;
+		result["activeAnalysisId"] = activeId;
+		return result;
+	});
 }

@@ -65,6 +65,9 @@
 #include "rsyntax/formulabase.h"
 #include "utilities/desktopcommunicator.h"
 
+#include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
+
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
 
@@ -97,6 +100,10 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	std::cout << "Going to construct the necessary models for JASP to function." << std::endl;
 
 	//The order of these constructors is deliberate (up to some extent anyway). If you change the order you might find that stuff explodes randomly (although most likely during startup)
+	_rpcDispatcher 		= new JaspRpcDispatcher();
+	_rpcServer 			= new JaspRpcServer(*_rpcDispatcher, this,
+		PreferencesModel::prefs()->rpcServerIp(),
+		PreferencesModel::prefs()->rpcServerPort());
 	_qml					= new QQmlApplicationEngine(this);
 	_languageModel			= new LanguageModel(application, _qml, this);
 	_loader					= new AsyncLoader(nullptr);
@@ -114,7 +121,9 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 	Log::log() << "JASP " << AppInfo::version.asString() << " from commit " << AppInfo::gitCommit << " and branch " << AppInfo::gitBranch << " is continuing initialization." << std::endl;
 
-	_resultsJsInterface		= new ResultsJsInterface();
+	_aiBridge				= new AiBridge(this);
+
+		_resultsJsInterface		= new ResultsJsInterface();
 	_odm					= new OnlineDataManager(this);
 	_labelFilterGenerator	= new labelFilterGenerator(_columnModel,		this);
 	_columnsModel			= new ColumnsModel(_dataSetModelVarInfo);			// We do not want filtered-out columns/levels to be selectable in other guis, see: https://github.com/jasp-stats/INTERNAL-jasp/issues/2322
@@ -178,6 +187,11 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
 	
+	registerRpcHandlers();
+
+	if (PreferencesModel::prefs()->rpcServerEnabled() && !_rpcServer->start())
+		Log::log() << "JASP-RPC server failed to start." << std::endl;
+	
 
 	JASPTIMER_FINISH(MainWindowConstructor);
 }
@@ -217,7 +231,10 @@ MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
 	
-	AppDirs::purgeClipboard();
+	delete _aiBridge;
+	delete _rpcServer;
+	delete _rpcDispatcher;
+
 	_engineSync->killProcessTimer();
 
 	try
@@ -580,7 +597,6 @@ void MainWindow::makeConnections()
 	connect(_preferences,			&PreferencesModel::useConfigurationFileChanged,		_jaspConfiguration,		&JASPConfiguration::processConfiguration					);
 	connect(_preferences,			&PreferencesModel::orderByValueByDefaultChanged,	[&](){	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault()); });
 
-
 	Column::setAutoSortByValuesByDefault(PreferencesModel::prefs()->orderByValueByDefault());
 	
 	auto * dCSingleton = DesktopCommunicator::singleton();
@@ -666,8 +682,10 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("dynamicModules",							_dynamicModules									);
 	_qml->rootContext()->setContextProperty("plotEditorModel",							_plotEditorModel								);
 	_qml->rootContext()->setContextProperty("preferencesModel",							_preferences									);
-	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface								);
-	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered							);
+	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface												);
+	_qml->rootContext()->setContextProperty("aiBridge",										_aiBridge											);
+	_qml->rootContext()->setContextProperty("messages",										_msgForwarder									);
+	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered										);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",					_computedColumnsModel							);
 	_qml->rootContext()->setContextProperty("windowsCodePagesHelper",					_windowsWorkaroundCPs							); //is nullptr on not-windows!
 	_qml->rootContext()->setContextProperty("ribbonModelUncommon",						_ribbonModelUncommon							);
@@ -743,7 +761,25 @@ void MainWindow::loadQML()
 
 	_fileMenu->refresh(); //Now that the theme is loaded we can determine the proper width for the buttons in the filemenu
 
-	Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
+
+    Log::log() << "Loading AIChatWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ChatWindow.qml"));
+
+	// Find the ChatWindow and track its active state for the toggle button
+	for (QObject* obj : _qml->rootObjects())
+	{
+		if (obj->objectName() == "chatWindow")
+		{
+			_chatWindow = qobject_cast<QWindow*>(obj);
+			if (_chatWindow)
+			{
+				connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+				Log::log() << "ChatWindow found and connected." << std::endl;
+			}
+			break;
+		}
+	}
+
+    Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
 	Log::log() << "Loading ContactWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading CommunityWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
@@ -795,6 +831,68 @@ void MainWindow::showEnginesWindow()
 void MainWindow::setDefaultWorkspaceEmptyValues()
 {
 	DataSetPackage::pkg()->setDefaultWorkspaceEmptyValues();
+}
+
+void MainWindow::toggleChat()
+{
+	if (!PreferencesModel::prefs()->aiEnabled()) return;
+	// Find the ChatWindow if not already cached (handles edge case of late load)
+	if (!_chatWindow)
+	{
+		for (QObject* obj : _qml->rootObjects())
+		{
+			if (obj->objectName() == "chatWindow")
+			{
+				_chatWindow = qobject_cast<QWindow*>(obj);
+				if (_chatWindow)
+					connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+				break;
+			}
+		}
+	}
+
+	if (!_chatWindow)
+	{
+		// Fallback: if chat window not found, just toggle visibility
+		setAiChatVisible(!_aiChatVisible);
+		return;
+	}
+
+	if (!_chatWindow->isVisible())
+	{
+		// Chat is hidden → show it and bring to front
+		setAiChatVisible(true);
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else if (_chatWindow->visibility() == QWindow::Minimized)
+	{
+		// Chat is minimized → restore and bring to front
+		_chatWindow->setVisibility(QWindow::Windowed);
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else if (!_chatWindow->isActive())
+	{
+		// Chat is visible but behind other windows → bring to front
+		_chatWindow->raise();
+		_chatWindow->requestActivate();
+	}
+	else
+	{
+		// Chat is visible and in front → hide it
+		setAiChatVisible(false);
+	}
+}
+
+void MainWindow::checkChatWindowActive()
+{
+	bool active = _chatWindow && _chatWindow->isActive();
+	if (_chatWindowActive != active)
+	{
+		_chatWindowActive = active;
+		emit chatWindowActiveChanged();
+	}
 }
 
 void MainWindow::setQmlImportPaths()
@@ -1259,6 +1357,248 @@ void MainWindow::connectFileEventCompleted(FileEvent * event)
 {
 	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
 }
+
+void MainWindow::registerRpcHandlers()
+{
+	auto* disp = JaspRpcDispatcher::singleton();
+	if (!disp)
+		return;
+
+	// Shared helper — builds the dataset metadata portion used by
+	// data_load (on success), data_load_status (on complete), and data_info.
+	auto buildDataInfo = [](DataSetPackage* pkg) -> Json::Value
+	{
+		Json::Value info;
+
+		if (!pkg->hasDataSet())
+		{
+			info["loaded"] = false;
+			return info;
+		}
+
+		info["loaded"]      = true;
+		info["path"]        = pkg->currentFile().toStdString();
+		info["rowCount"]    = static_cast<int>(pkg->dataRowCount());
+
+		auto colTypes = pkg->getColumnTypesMap();
+		info["columnCount"] = static_cast<int>(colTypes.size());
+
+		Json::Value columns(Json::arrayValue);
+		for (const auto& [name, type] : colTypes)
+		{
+			Json::Value col;
+			col["name"] = name;
+			col["type"] = columnTypeToString(type);
+
+			if (type == columnType::nominal || type == columnType::nominalText || type == columnType::ordinal)
+			{
+				Column * column = pkg->dataSet()->column(name);
+				if (column)
+					col["distinctCount"] = static_cast<int>(column->labelsNonEmptyCount());
+			}
+
+			columns.append(col);
+		}
+		info["columns"] = columns;
+
+		return info;
+	};
+
+	// --- data_load ---
+	disp->registerMethodByName("data_load", [this, buildDataInfo](const Json::Value& params) -> Json::Value
+	{
+		// Reject if a load is already in progress
+		for (const auto& [id, job] : _rpcJobs)
+			if (job.status == "running")
+				return JaspRpcDispatcher::errorResult(
+						"A data load is already in progress (job " + std::to_string(id) + ").");
+
+				bool wait      = params.get("wait", true).asBool();
+				int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+
+				// Set CSV delimiter before load to skip interactive preview popup
+				std::string delimStr = params.get("delimiter", ",").asString();
+				if (!delimStr.empty())
+					DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimStr[0]);
+
+				std::string path = params["path"].asString();
+
+		int jobId = _nextRpcJobId++;
+		_rpcJobs[jobId] = {"running", ""};
+
+		auto* event = new FileEvent(this, FileEvent::FileOpen);
+		event->setSilent(true);
+		event->setPath(QString::fromStdString(path));
+
+		connect(event, &FileEvent::completed, this,
+			[this, jobId](FileEvent* e)
+			{
+				auto& job = _rpcJobs[jobId];
+
+				if (e->isSuccessful())
+				{
+					DataSetPackage* pkg = DataSetPackage::pkg();
+					pkg->setCurrentFile(e->path());
+					emit pkg->newDataLoaded();
+
+					job.status = "complete";
+				}
+				else
+				{
+					job.status = "error";
+					job.error  = e->message().toStdString();
+				}
+
+				e->deleteLater();
+			},
+			Qt::QueuedConnection);
+
+		_loader->io(event);
+
+		// Fast path: non-blocking — return jobId immediately
+		if (!wait)
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			response["status"] = "accepted";
+			response["jobId"]  = jobId;
+			return response;
+		}
+
+		// Blocking wait — poll until complete, error, or timeout
+		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+			[&](QEventLoop& loop, QTimer&) {
+				auto* pollTimer = new QTimer(&loop);
+				QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+					auto it = _rpcJobs.find(jobId);
+					if (it == _rpcJobs.end() || it->second.status != "running")
+						loop.quit();
+				});
+				pollTimer->start(100);
+			});
+
+		// Build response based on final job state
+		auto it = _rpcJobs.find(jobId);
+		if (it == _rpcJobs.end())
+			return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+
+		const auto& job = it->second;
+
+		if (job.status == "error")
+		{
+			Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+			response["jobId"]  = jobId;
+			response["status"] = "error";
+			return response;
+		}
+
+		if (job.status == "running")
+		{
+			Json::Value response = JaspRpcDispatcher::successResult();
+			response["jobId"]  = jobId;
+			response["status"] = "running";
+			return response;
+		}
+
+		// job.status == "complete" — return full metadata
+		{
+			Json::Value response = buildDataInfo(DataSetPackage::pkg());
+			response["status"] = "success";
+			response["jobId"]  = jobId;
+			return response;
+		}
+		});
+
+		// --- data_load_status ---
+		disp->registerMethodByName("data_load_status", [this, buildDataInfo](const Json::Value& params) -> Json::Value
+		{
+			int jobId = params["jobId"].asInt();
+
+			auto it = _rpcJobs.find(jobId);
+			if (it == _rpcJobs.end())
+				return JaspRpcDispatcher::errorResult(
+					"Unknown jobId: " + std::to_string(jobId));
+
+			bool wait      = params.get("wait", true).asBool();
+			int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+
+			// Fast path: already done or not waiting
+			if (!wait || it->second.status != "running")
+			{
+				const auto& job = it->second;
+
+				if (job.status == "error")
+				{
+					Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+					response["jobId"]  = jobId;
+					response["status"] = "error";
+					return response;
+				}
+
+				if (job.status == "complete")
+				{
+					Json::Value response = buildDataInfo(DataSetPackage::pkg());
+					response["status"] = "complete";
+					response["jobId"]  = jobId;
+					return response;
+				}
+
+				Json::Value response = JaspRpcDispatcher::successResult();
+				response["jobId"]  = jobId;
+				response["status"] = "running";
+				return response;
+			}
+
+			// Blocking wait
+			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+				[&](QEventLoop& loop, QTimer&) {
+					auto* pollTimer = new QTimer(&loop);
+					QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+						auto it2 = _rpcJobs.find(jobId);
+						if (it2 == _rpcJobs.end() || it2->second.status != "running")
+							loop.quit();
+					});
+					pollTimer->start(100);
+				});
+
+			// Re-read after wait
+			it = _rpcJobs.find(jobId);
+			if (it == _rpcJobs.end())
+				return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+
+			const auto& job = it->second;
+
+			if (job.status == "error")
+			{
+				Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+				response["jobId"]  = jobId;
+				response["status"] = "error";
+				return response;
+			}
+
+			if (job.status == "complete")
+			{
+				Json::Value response = buildDataInfo(DataSetPackage::pkg());
+				response["status"] = "complete";
+				response["jobId"]  = jobId;
+				return response;
+			}
+
+			Json::Value response = JaspRpcDispatcher::successResult();
+			response["jobId"]  = jobId;
+			response["status"] = "running";
+			return response;
+		});
+
+		// --- data_info ---
+		disp->registerMethodByName("data_info", [buildDataInfo](const Json::Value&) -> Json::Value
+		{
+			Json::Value response = buildDataInfo(DataSetPackage::pkg());
+			response["status"] = "success";
+			return response;
+		});
+
+		Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
+	}
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
 {

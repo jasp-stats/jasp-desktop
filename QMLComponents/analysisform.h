@@ -58,10 +58,12 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
 	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
+
 	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions		WRITE setShowAllROptions		NOTIFY showAllROptionsChanged		)
-	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
+	Q_PROPERTY(bool			relaxInputConstraints	READ relaxInputConstraints	WRITE setRelaxInputConstraints	NOTIFY relaxInputConstraintsChanged)
+	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT											)
 	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
 
 public:
@@ -90,9 +92,11 @@ public:
 	bool					wasUpgraded()					const	{ return _analysis ? _analysis->wasUpgraded() : false;						}
 	bool					formCompleted()					const	{ return _formCompleted;	}
 	bool					showRButton()					const	{ return _showRButton;		}
+
 	bool					developerMode()					const	{ return _developerMode;	}
 	QString					rSyntaxText()					const;
 	bool					showAllROptions()				const;
+	bool					relaxInputConstraints()			const;
 
 public slots:
 	void					runScriptRequestDone(		const QString		&	result, const QString & requestId, bool hasError);
@@ -101,10 +105,13 @@ public slots:
 	void					setOptionNameConversion(	const QVariantList	&	conv);
 	void					setTitle(					QString					title);
 	void					setShowRButton(				bool					showRButton);
+
 	void					setDeveloperMode(			bool					developerMode);
 	void					setShowAllROptions(			bool					showAllROptions);
+	void					setRelaxInputConstraints(	bool					relax);
 	void					sendRSyntax(				QString					text);
 	void					toggleRSyntax();
+
 
 signals:
 	void					formChanged(				AnalysisBase	*	analysis);
@@ -125,9 +132,11 @@ signals:
 	void					optionNameConversionChanged();
 	void					titleChanged();
 	void					showRButtonChanged();
+
 	void					developerModeChanged();
 	void					rSyntaxTextChanged();
 	void					showAllROptionsChanged();
+	void					relaxInputConstraintsChanged(bool relax);
 	void					activeJASPControlChanged();
 		
 public:
@@ -149,9 +158,10 @@ public:
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QVariant	options()				const;
 	Q_INVOKABLE void		setOptions(const QVariantMap& options);
-	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
-	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
-	void					setAnalysis(AnalysisBase *	analysis);
+	QString				generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
+	bool				parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
+	Json::Value			optionMeta(bool includeDescriptions = true)	const;
+	void				setAnalysis(AnalysisBase *	analysis);
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void					clearControlError(JASPControl* control);
 	void					clearAllErrors();
@@ -246,7 +256,9 @@ private:
 	qstringset										_waitingFilters;
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRButton					= false,
-													_developerMode					= false;
+													_developerMode					= false,
+
+													_relaxInputConstraints			= true;
 	JASPControl*									_activeJASPControl				= nullptr;
 };
 

@@ -1,0 +1,797 @@
+{
+	"openrpc": "1.2.6",
+	"info": {
+		"title": "JASP RPC API",
+		"version": "1.0.0"
+	},
+	"methods": [
+		{
+			"name": "analysis_create",
+			"summary": "Create and start an analysis by module name and analysis name.",
+			"x-displayName": "Create Analysis",
+			"params": [
+				{
+					"name": "module",
+					"required": true,
+					"description": "JASP module name, e.g. 'jaspTTests'.",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "analysis",
+					"required": true,
+					"description": "Analysis name within the module, e.g. 'TTestIndependent'.",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_create_result",
+				"description": "Metadata about the created analysis, including its default options.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success' when the analysis was created."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "Unique integer identifier for the new analysis."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name, echoed back."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name, echoed back."
+						},
+						"options": {
+							"type": "object",
+							"description": "The current default analysis options. This is the same schema used by analysis_setOptions and analysis_getOptions."
+						},
+						"optionMeta": {
+							"type": "object",
+							"description": "Metadata describing each option: its kind (checkbox/combo/variables/number/string), valid choices for combos, allowed column types for variable lists, whether a variable list accepts single or multiple variables, and a shape example showing valid input."
+						}
+					},
+					"required": [
+						"status",
+						"analysisId",
+						"module",
+						"analysis",
+						"options",
+						"optionMeta"
+					]
+				}
+			}
+		},
+		{
+			"name": "analysis_run",
+			"summary": "Set options and run an analysis, blocking up to timeoutMs for the R engine to finish. Combines setOptions + results in one call. Use analysis_results to poll if the timeout fires.",
+			"x-displayName": "Run Analysis",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis to modify.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "options",
+					"required": true,
+					"description": "An object of option name/value pairs to set on the analysis.",
+					"schema": {
+						"type": "object"
+					}
+				},
+				{
+					"name": "wait",
+					"required": false,
+					"description": "If true, blocks the call until the analysis finishes or timeoutMs elapses. If false, returns immediately with status 'running' and no results.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait when wait=true.",
+					"schema": {
+						"type": "integer",
+						"default": 30000
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_run_result",
+				"description": "The results of the analysis after setting options. IMPORTANT: Only call analysis_results to poll if status is 'running' (timeout). If status is 'success' or 'error' the analysis is already done — do NOT re-poll with analysis_results.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' (finished with results), 'running' (timeout — still computing), or 'error' (options validation failed)."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis identifier."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"options": {
+							"type": "object",
+							"description": "The current analysis options (present on success and running)."
+						},
+						"optionMeta": {
+							"type": "object",
+							"description": "Metadata describing each option (present on success and running)."
+						},
+						"results": {
+							"type": "object",
+							"description": "The full results JSON. Only populated when the analysis reaches a terminal state (complete, validationError, or fatalError). Empty object otherwise."
+						},
+						"jaspResultsRds": {
+							"type": "string",
+							"description": "Absolute path to results in RDS format, only usable from R. Only available when JSON results are present too."
+						},
+						"message": {
+							"type": "string",
+							"description": "Error message (present when status is 'error')."
+						}
+					},
+					"required": ["status", "analysisId", "module", "analysis"]
+				}
+			}
+		},
+		{
+			"name": "analysis_getOptions",
+			"summary": "Retrieve the current analysis options by analysis ID.",
+			"x-displayName": "Get Analysis Options",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis to query.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "includeDescriptions",
+					"required": false,
+					"description": "Whether to include description and instruction text in optionMeta. Defaults to true.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_getOptions_result",
+				"description": "The current options of the analysis.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success' when the options were retrieved."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis identifier."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"options": {
+							"type": "object",
+							"description": "The current analysis options."
+						},
+						"optionMeta": {
+							"type": "object",
+							"description": "Metadata describing each option: its kind, valid choices, column types, etc."
+						}
+					},
+					"required": [
+						"status",
+						"analysisId",
+						"module",
+						"analysis",
+						"options",
+						"optionMeta"
+					]
+				}
+			}
+		},
+		{
+			"name": "analysis_results",
+			"summary": "Poll for results of an analysis, blocking up to timeoutMs. ONLY call this after analysis_run returned status 'running' (timeout). Do NOT call if analysis_run already returned 'success' or 'error' — the results are already final.",
+			"x-displayName": "Get Analysis Results",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis to query.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "wait",
+					"required": false,
+					"description": "If true, blocks the call until the analysis finishes or timeoutMs elapses. If false, returns immediately with status 'running' and no results.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait when wait=true.",
+					"schema": {
+						"type": "integer",
+						"default": 30000
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_results_result",
+				"description": "The current results of the analysis.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' or 'error'."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis identifier."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"results": {
+							"type": "object",
+							"description": "The full results JSON of the analysis. Returns an empty object when the analysis has not yet finished (i.e., status is still computing/aborting/etc.). Only populated once the analysis reaches a terminal state: complete, validationError, or fatalError."
+						},
+						"jaspResultsRds": {
+							"type": "string",
+							"description": "Absolute path to results in RDS format, only usable from R. Only available when JSON results are present too."
+						}
+					},
+					"required": ["status", "analysisId", "module", "analysis"]
+				}
+			}
+		},
+		{
+			"name": "analysis_context",
+			"summary": "Retrieve context for an analysis: help text and metadata. Intended for AI clients that need to understand what an analysis does and what options are available.",
+			"x-displayName": "Get Analysis Context",
+			"params": [
+				{
+					"name": "module",
+					"required": true,
+					"description": "JASP module name, e.g. 'jaspTTests'.",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "analysis",
+					"required": true,
+					"description": "Analysis name within the module, e.g. 'TTestIndependentSamples'.",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_context_result",
+				"description": "The analysis help text in Markdown format, if available.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' or 'error'."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"help": {
+							"type": "string",
+							"description": "The analysis help text in Markdown format, or empty string if no help file exists for this analysis."
+						}
+					},
+					"required": ["status", "module", "analysis", "help"]
+				}
+			}
+		},
+		{
+			"name": "modules_list",
+			"summary": "List all loaded modules and their available analyses.",
+			"x-displayName": "List Available Modules",
+			"params": [],
+			"result": {
+				"name": "modules_list_result",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"modules": {
+							"type": "array",
+							"description": "All currently loaded modules.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Module name, e.g. 'jaspTTests'."
+									},
+									"title": {
+										"type": "string",
+										"description": "Human-readable module title, e.g. 'T-Tests'."
+									},
+									"analyses": {
+										"type": "array",
+										"description": "Available analyses in this module.",
+										"items": {
+											"type": "object",
+											"properties": {
+												"name": {
+													"type": "string",
+													"description": "Analysis function name, e.g. 'TTestIndependentSamples'."
+												},
+												"title": {
+													"type": "string",
+													"description": "Human-readable analysis title, e.g. 'Independent Samples T-Test'."
+												}
+											},
+											"required": ["name", "title"]
+										}
+									}
+								},
+								"required": ["name", "title", "analyses"]
+							}
+						}
+					},
+					"required": ["modules"]
+				}
+			}
+		},
+		{
+			"name": "analyses_list",
+			"summary": "List all analyses currently in the workspace.",
+			"x-displayName": "List Active Analyses",
+			"params": [],
+			"result": {
+				"name": "analyses_list_result",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"activeAnalysisId": {
+							"type": "integer",
+							"description": "The ID of the currently selected analysis, or -1 if none is selected."
+						},
+						"analyses": {
+							"type": "array",
+							"description": "All analyses currently in the workspace.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": {
+										"type": "integer",
+										"description": "Unique analysis ID."
+									},
+									"module": {
+										"type": "string",
+										"description": "Module name, e.g. 'jaspTTests'."
+									},
+									"analysis": {
+										"type": "string",
+										"description": "Analysis function name, e.g. 'TTestIndependentSamples'."
+									},
+									"title": {
+										"type": "string",
+										"description": "Current (possibly user-edited) analysis title."
+									}
+								},
+								"required": [
+									"id",
+									"module",
+									"analysis",
+									"title"
+								]
+							}
+						}
+					},
+					"required": ["activeAnalysisId", "analyses"]
+				}
+			}
+		},
+		{
+			"name": "data_load",
+			"summary": "Load a data file into the workspace. Blocks up to timeoutMs when wait=true.",
+			"x-displayName": "Load Data",
+			"params": [
+				{
+					"name": "path",
+					"required": true,
+					"description": "Absolute path to the data file (CSV, SPSS, JASP, Excel, etc.).",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "wait",
+					"required": false,
+					"description": "If true, blocks until the load finishes or timeoutMs elapses. If false, returns immediately with a jobId for polling.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait when wait=true.",
+					"schema": {
+						"type": "integer",
+						"default": 30000
+					}
+				},
+				{
+					"name": "delimiter",
+					"required": false,
+					"description": "CSV delimiter character. Defaults to comma. Skips the interactive preview popup.",
+					"schema": {
+						"type": "string",
+						"default": ","
+					}
+				}
+			],
+			"result": {
+				"name": "data_load_result",
+				"description": "When wait=false returns 'accepted' with a jobId. When wait=true returns dataset metadata on success.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'accepted' (wait=false), 'success', 'error', or 'running' (timeout)."
+						},
+						"jobId": {
+							"type": "integer",
+							"description": "Unique job identifier for polling with data_load_status."
+						},
+						"path": {
+							"type": "string",
+							"description": "The path that was loaded (present on success)."
+						},
+						"rowCount": {
+							"type": "integer",
+							"description": "Number of data rows (present on success)."
+						},
+						"columnCount": {
+							"type": "integer",
+							"description": "Number of columns (present on success)."
+						},
+						"columns": {
+							"type": "array",
+							"description": "Column metadata (present on success).",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string",
+										"description": "Column name."
+									},
+									"type": {
+										"type": "string",
+										"description": "Column type: unknown, scale, ordinal, nominal, or nominalText."
+									},
+									"distinctCount": {
+										"type": "integer",
+										"description": "Number of distinct values (nominal/ordinal columns only)."
+									}
+								},
+								"required": ["name", "type"]
+							}
+						},
+						"message": {
+							"type": "string",
+							"description": "Error message (present when status is 'error')."
+						}
+					},
+					"required": ["status", "jobId"]
+				}
+			}
+		},
+		{
+			"name": "data_load_status",
+			"summary": "Poll or block for the status of an async data load job.",
+			"x-displayName": "Check Data Load Status",
+			"params": [
+				{
+					"name": "jobId",
+					"required": true,
+					"description": "The job identifier returned by data_load.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "wait",
+					"required": false,
+					"description": "If true, blocks until the load finishes or timeoutMs elapses. If false, returns immediately.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait when wait=true.",
+					"schema": {
+						"type": "integer",
+						"default": 30000
+					}
+				}
+			],
+			"result": {
+				"name": "data_load_status_result",
+				"description": "Job status plus dataset metadata when status is 'complete'. Same shape as data_info.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"jobId": {
+							"type": "integer",
+							"description": "The job identifier."
+						},
+						"status": {
+							"type": "string",
+							"description": "'running', 'complete', or 'error'."
+						},
+						"message": {
+							"type": "string",
+							"description": "Error message (present when status is 'error')."
+						},
+						"path": {
+							"type": "string",
+							"description": "Path to the loaded file (present on complete)."
+						},
+						"rowCount": {
+							"type": "integer",
+							"description": "Number of data rows (present on complete)."
+						},
+						"columnCount": {
+							"type": "integer",
+							"description": "Number of columns (present on complete)."
+						},
+						"columns": {
+							"type": "array",
+							"description": "Column metadata (present on complete).",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": { "type": "string" },
+									"type": { "type": "string" },
+									"distinctCount": {
+										"type": "integer",
+										"description": "Number of distinct values (nominal/ordinal only)."
+									}
+								},
+								"required": ["name", "type"]
+							}
+						}
+					},
+					"required": ["jobId", "status"]
+				}
+			}
+		},
+		{
+			"name": "data_info",
+			"summary": "Retrieve metadata about the currently loaded dataset. Same shape as data_load (on success) and data_load_status (on complete), but requires no jobId.",
+			"x-displayName": "Get Data Info",
+			"params": [],
+			"result": {
+				"name": "data_info_result",
+				"description": "Metadata about the loaded dataset, or loaded=false if none.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success'."
+						},
+						"loaded": {
+							"type": "boolean",
+							"description": "Whether a dataset is currently loaded."
+						},
+						"path": {
+							"type": "string",
+							"description": "Path to the currently loaded file."
+						},
+						"rowCount": {
+							"type": "integer",
+							"description": "Number of data rows."
+						},
+						"columnCount": {
+							"type": "integer",
+							"description": "Number of columns."
+						},
+						"columns": {
+							"type": "array",
+							"description": "Column metadata.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"type": {
+										"type": "string"
+									},
+									"distinctCount": {
+										"type": "integer",
+										"description": "Number of distinct values (nominal/ordinal columns only)."
+									}
+								},
+								"required": ["name", "type"]
+							}
+						}
+					},
+					"required": ["status", "loaded"]
+				}
+			}
+		},
+		{
+			"name": "analysis_composeResults",
+			"summary": "Reorder, slice, and annotate the results of an existing analysis.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result table/plot/collection by its .meta name\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block (use # for headings)\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
+			"x-displayName": "Compose Results",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis to compose.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "elements",
+					"required": true,
+					"description": "Ordered array of element specifications.\n\nEach element is EXACTLY ONE of:\n1. Reference:  { \"name\": \"<elementNameFromMeta>\" }\n2. Annotation: { \"md_text\": \"<Markdown/HTML>\" }\n\nExamples:\n  { \"name\": \"ttest\" }                              — re-inserts the t-test table\n  { \"md_text\": \"## Key Finding\\n\\nNo significant...\" } — inserts a markdown section",
+					"schema": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string",
+									"description": "The name of an existing result element from the .meta array (e.g. 'ttest', 'ttestDescriptives'). Mutually exclusive with 'md_text'."
+								},
+								"md_text": {
+									"type": "string",
+									"description": "The Markdown/HTML content to display. Required. Must be non-empty."
+								}
+							}
+						}
+					}
+				},
+				{
+					"name": "status",
+					"required": false,
+					"description": "Optional analysis status to apply. Defaults to 'complete'. Valid values: 'complete', 'fatalError'.",
+					"schema": {
+						"type": "string",
+						"default": "complete"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_composeResults_result",
+				"description": "Confirmation that the results were composed successfully.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' or 'error'."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis identifier."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"message": {
+							"type": "string",
+							"description": "Error message when status is 'error'."
+						}
+					},
+					"required": ["status", "analysisId", "module", "analysis"]
+				}
+			}
+		},
+		{
+			"name": "ping",
+			"summary": "Simple connectivity check. Always returns pong.",
+			"x-displayName": "Ping",
+			"params": [],
+			"result": {
+				"name": "ping.result",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"message": {
+							"type": "string",
+							"description": "Always 'pong'."
+						}
+					},
+					"required": ["message"]
+				}
+			}
+		},
+		{
+			"name": "rpc_discover",
+			"summary": "Schema discovery. Returns every registered method as an object. Methods with an OpenRPC spec include their full descriptor (summary, params, result); methods without a spec include at minimum their name.",
+			"x-displayName": "Discover RPC Methods",
+			"params": [],
+			"result": {
+				"name": "rpc_discover_result",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"methods": {
+							"type": "array",
+							"description": "List of registered methods, each represented as a method object.",
+							"items": {
+								"type": "object",
+								"description": "A method object. At minimum contains 'name'. Methods with an OpenRPC spec also include 'summary', 'params', and 'result'.",
+								"required": ["name"]
+							}
+						}
+					},
+					"required": ["methods"]
+				}
+			}
+		}
+	]
+}

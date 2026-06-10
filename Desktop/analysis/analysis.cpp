@@ -1273,3 +1273,5 @@ bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 
 	return col->analysisId() == id();
 }
+
+
