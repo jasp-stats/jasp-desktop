@@ -677,13 +677,13 @@
 		},
 		{
 			"name": "analysis_composeResults",
-			"summary": "Reorder, slice, and annotate the results of an existing analysis.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result table/plot/collection by its .meta name\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block (use # for headings)\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
+			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
 			"x-displayName": "Compose Results",
 			"params": [
 				{
 					"name": "analysisId",
 					"required": true,
-					"description": "The integer identifier of the analysis to compose.",
+					"description": "The integer identifier of the target analysis (where the composed results will appear). When an element does not specify its own sourceAnalysisId, it defaults to this value.",
 					"schema": {
 						"type": "integer"
 					}
@@ -691,7 +691,7 @@
 				{
 					"name": "elements",
 					"required": true,
-					"description": "Ordered array of element specifications.\n\nEach element is EXACTLY ONE of:\n1. Reference:  { \"name\": \"<elementNameFromMeta>\" }\n2. Annotation: { \"md_text\": \"<Markdown/HTML>\" }\n\nExamples:\n  { \"name\": \"ttest\" }                              — re-inserts the t-test table\n  { \"md_text\": \"## Key Finding\\n\\nNo significant...\" } — inserts a markdown section",
+					"description": "Ordered array of element specifications.\n\nEach element is EXACTLY ONE of:\n1. Reference:  { \"name\": \"<elementNameFromMeta>\"[, \"sourceAnalysisId\": <id>] }\n2. Annotation: { \"md_text\": \"<Markdown/HTML>\" }\n\nIf sourceAnalysisId is omitted on a reference, the target analysisId is used.\nExamples:\n  { \"name\": \"ttest\" }                              — re-inserts the t-test table from the target analysis\n  { \"name\": \"descriptives\", \"sourceAnalysisId\": 43 } — pulls a table from a different analysis\n  { \"md_text\": \"## Key Finding\\n\\nNo significant...\" } — inserts a markdown section",
 					"schema": {
 						"type": "array",
 						"items": {
@@ -700,6 +700,10 @@
 								"name": {
 									"type": "string",
 									"description": "The name of an existing result element from the .meta array (e.g. 'ttest', 'ttestDescriptives'). Mutually exclusive with 'md_text'."
+								},
+								"sourceAnalysisId": {
+									"type": "integer",
+									"description": "Optional. The analysis ID to pull the named element from. Defaults to the top-level analysisId (target). Use this to compose results from multiple analyses."
 								},
 								"md_text": {
 									"type": "string",
