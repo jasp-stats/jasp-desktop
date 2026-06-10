@@ -242,6 +242,7 @@ void Analysis::exportResults()
 
 void Analysis::run()
 {
+	if (_isReport) return;
 	Log::log() << "Analysis::run() for " << title() << "(" << id() << ")" << std::endl;
 	setStatus(Empty);
 }
@@ -386,6 +387,9 @@ void Analysis::createForm(QQuickItem* parentItem)
 		_analysisForm->setShowRButton(_moduleData->hasWrapper());
 		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
 
+		if (_formDisabled)
+			_analysisForm->setEnabled(false);
+
 		emit analysisInitialized();
 	}
 
@@ -478,6 +482,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["hasReport"]		= _hasReport;
+	analysisAsJson["isReport"]		= _isReport;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
@@ -511,6 +516,7 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 		_title = _titleDefault;
 
 	_preUpgraderVersion	= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
+	_isReport			= analysisData.get("isReport", false).asBool();
 }
 
 void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status)
@@ -1272,6 +1278,13 @@ bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 	Column * col = DataSetPackage::pkg()->getColumn(columnName.toStdString());
 
 	return col->analysisId() == id();
+}
+
+void Analysis::setFormDisabled(bool disabled)
+{
+	_formDisabled = disabled;
+	if (_analysisForm)
+		_analysisForm->setEnabled(!disabled);
 }
 
 

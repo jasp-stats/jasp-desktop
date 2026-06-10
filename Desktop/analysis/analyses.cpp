@@ -792,18 +792,22 @@ void Analyses::setChangedAnalysisTitle()
 		emit analysisTitleChanged(analysis);
 }
 
-void Analyses::duplicateAnalysis(size_t id)
+Analysis* Analyses::duplicateAnalysis(size_t id, bool isReport)
 {
-	if(!get(id)) return;
+	if(!get(id)) return nullptr;
 
 	Analysis	* original = get(id),
 				* analysis = new Analysis(++_nextId, original);
+
+	if (isReport)
+		analysis->setReport(true);
 
 	storeAnalysis(analysis, analysis->id(), true);
 	bindAnalysisHandler(analysis);
 	analysis->emitDuplicationSignals();
 
 	analysis->refresh();
+	return analysis;
 }
 
 void Analyses::showDependenciesInAnalysis(size_t analysis_id, QString optionName)
@@ -902,9 +906,9 @@ void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int 
 	response["jaspResultsRds"] = TempFiles::analysisResourcePath(analysisId, "jaspResults.rds");
 }
 
-// ---- composeJSON: reusable result composition ---------------------------------
+// ---- composeResultJSON: reusable result composition ---------------------------------
 
-Json::Value Analyses::composeJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut)
+Json::Value Analyses::composeResultJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut)
 {
 	// Validate the default source analysis exists and has results
 	Analysis* defaultSource = Analyses::analyses()->get(static_cast<size_t>(defaultSourceId));
@@ -1295,7 +1299,7 @@ void Analyses::registerRpcHandlers()
 				"Analysis not found: " + std::to_string(analysisId));
 
 		Json::Value error;
-		Json::Value composed = Analyses::composeJSON(params["elements"], analysisId, error);
+		Json::Value composed = Analyses::composeResultJSON(params["elements"], analysisId, error);
 		if (composed.isNull())
 			return error;
 
@@ -1309,6 +1313,63 @@ void Analyses::registerRpcHandlers()
 		response["analysisId"] = analysisId;
 		response["module"]     = a->module();
 		response["analysis"]   = a->name();
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_createAnnotation", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+		Analysis* original = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+		if (!original)
+			return JaspRpcDispatcher::errorResult(
+				"Analysis not found: " + std::to_string(analysisId));
+
+		Analysis* dup = Analyses::analyses()->duplicateAnalysis(analysisId, true);
+		if (!dup)
+			return JaspRpcDispatcher::errorResult("Failed to duplicate analysis");
+
+		// Generate annotation title: "Annotation [N ]of <Original Title>"
+		std::string origTitle = original->title();
+		std::string baseTitle = "Annotation of " + origTitle;
+		int annNum = 1;
+		Analyses* ans = Analyses::analyses();
+		for (size_t i = 0; i < ans->count(); i++)
+		{
+			Analysis* a = ans->operator[](i);
+			if (a && a->id() != dup->id())
+			{
+				std::string t = a->title();
+				if (t == baseTitle) annNum = std::max(annNum, 2);
+				else if (t.find("Annotation ") == 0 && t.find(" of " + origTitle) != std::string::npos)
+				{
+					// Parse "Annotation N of ..."
+					size_t end = t.find(" of ");
+					std::string numStr = t.substr(11, end - 11); // "Annotation ".length() == 11
+					try { int n = std::stoi(numStr); annNum = std::max(annNum, n + 1); } catch(...) {}
+				}
+			}
+		}
+		dup->setTitle(annNum > 1 ? "Annotation " + std::to_string(annNum) + " of " + origTitle : baseTitle);
+
+		// Disable the form on the duplicate
+		dup->setFormDisabled(true);
+
+		// Compose results into the duplicate
+		Json::Value error;
+		Json::Value elementList = params.isMember("elements") ? params["elements"] : Json::Value(Json::arrayValue);
+		Json::Value composed = Analyses::composeResultJSON(elementList, static_cast<int>(dup->id()), error);
+		if (composed.isNull())
+			return error;
+
+		Analysis::Status status = Analysis::Complete;
+		if (params.isMember("status") && params["status"].asString() == "fatalError")
+			status = Analysis::FatalError;
+
+		dup->setResults(composed, status);
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, dup);
+		_rpcWriteStatus(response, dup);
 		return response;
 	});
 

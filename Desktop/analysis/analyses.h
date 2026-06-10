@@ -133,7 +133,7 @@ public slots:
 	void analysisTitleChangedInResults(int id, QString title);
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
-	void duplicateAnalysis(size_t id);
+	Analysis*				duplicateAnalysis(size_t id, bool isReport = false);
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
 	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitlesendRScriptHandler);
 	void prepareForLanguageChange();
@@ -196,7 +196,7 @@ private:
 	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
 	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);
 	static void			_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId);
-	static Json::Value	composeJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut);
+	static Json::Value	composeResultJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut);
 
 
 private:
