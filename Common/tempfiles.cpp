@@ -53,7 +53,7 @@ void TempFiles::createSessionDir()
 
 	std::filesystem::path sessionPath = _sessionDirName;
 	
-	std::cout<< "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
+	Log::log() << "'" << sessionPath.string() << "' about to be (removed and re)created." << std::endl;
 
 	std::filesystem::remove_all(sessionPath, error);
 	std::filesystem::create_directories(sessionPath, error);
