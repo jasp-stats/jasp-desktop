@@ -676,6 +676,55 @@
 			}
 		},
 		{
+			"name": "analysis_createAnnotation",
+			"summary": "Duplicate an existing analysis and overlay composed results. The duplicate's form is disabled (read-only). Pull result elements from the original or other analyses via sourceAnalysisId.",
+			"x-displayName": "Create Annotation",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The analysis to duplicate as an annotation base.",
+					"schema": { "type": "integer" }
+				},
+				{
+					"name": "elements",
+					"required": false,
+					"description": "Ordered array of element specifications (same format as analysis_composeResults). If omitted, the duplicate keeps the original's results.",
+					"schema": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": { "type": "string" },
+								"sourceAnalysisId": { "type": "integer" },
+								"md_text": { "type": "string" }
+							}
+						}
+					}
+				},
+				{
+					"name": "status",
+					"required": false,
+					"description": "Optional analysis status. Defaults to 'complete'.",
+					"schema": { "type": "string", "default": "complete" }
+				}
+			],
+			"result": {
+				"name": "analysis_createAnnotation_result",
+				"description": "The created annotation analysis with its composed results.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": { "type": "string" },
+						"analysisId": { "type": "integer" },
+						"module": { "type": "string" },
+						"analysis": { "type": "string" }
+					},
+					"required": ["status", "analysisId", "module", "analysis"]
+				}
+			}
+		},
+		{
 			"name": "analysis_composeResults",
 			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
 			"x-displayName": "Compose Results",
