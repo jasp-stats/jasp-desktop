@@ -196,6 +196,7 @@ private:
 	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
 	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);
 	static void			_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId);
+	static Json::Value	composeJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut);
 
 
 private:

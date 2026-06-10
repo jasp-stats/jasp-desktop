@@ -902,6 +902,164 @@ void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int 
 	response["jaspResultsRds"] = TempFiles::analysisResourcePath(analysisId, "jaspResults.rds");
 }
 
+// ---- composeJSON: reusable result composition ---------------------------------
+
+Json::Value Analyses::composeJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut)
+{
+	// Validate the default source analysis exists and has results
+	Analysis* defaultSource = Analyses::analyses()->get(static_cast<size_t>(defaultSourceId));
+	if (!defaultSource)
+	{
+		errorOut = JaspRpcDispatcher::errorResult(
+			"Default source analysis not found: " + std::to_string(defaultSourceId));
+		return Json::nullValue;
+	}
+
+	const Json::Value& defaultResults = defaultSource->results();
+	if (defaultResults.isNull() || !defaultResults.isMember(".meta"))
+	{
+		errorOut = JaspRpcDispatcher::errorResult(
+			"Default source analysis " + std::to_string(defaultSourceId) +
+			" has no results — run it first");
+		return Json::nullValue;
+	}
+
+	// --- Recursive helper: find an element by name in the results tree ---
+	std::function<Json::Value(const Json::Value& results, const std::string& targetName)> findElement;
+	findElement = [&findElement](const Json::Value& results, const std::string& targetName) -> Json::Value
+	{
+		if (!results.isMember(".meta"))
+			return Json::nullValue;
+
+		const Json::Value& meta = results[".meta"];
+		for (const auto& entry : meta)
+		{
+			std::string name = entry.get("name", "").asString();
+			if (name == targetName)
+			{
+				Json::Value result(Json::objectValue);
+				result["meta"] = entry;
+				if (results.isMember(name))
+					result["data"] = results[name];
+				return result;
+			}
+
+			std::string type = entry.get("type", "").asString();
+			if (type == "collection" && results.isMember(name))
+			{
+				const Json::Value& collData = results[name];
+				if (collData.isMember("collection"))
+				{
+					Json::Value collResults = collData["collection"];
+					if (entry.isMember("meta"))
+						collResults[".meta"] = entry["meta"];
+					Json::Value found = findElement(collResults, targetName);
+					if (!found.isNull())
+						return found;
+				}
+			}
+		}
+		return Json::nullValue;
+	};
+
+	// --- Build composed results ---
+	Json::Value composed(Json::objectValue);
+	Json::Value newMeta(Json::arrayValue);
+	int mdTextCounter = 0;
+
+	for (const auto& el : elements)
+	{
+		if (el.isMember("md_text"))
+		{
+			std::string content = el.get("md_text", "").asString();
+			if (content.empty())
+			{
+				errorOut = JaspRpcDispatcher::errorResult(
+					"Each 'md_text' element requires a non-empty 'md_text' field with the "
+					"Markdown/HTML content. "
+					"Example: { \"md_text\": \"# Summary\\n\\nThe groups do not differ significantly...\" }");
+				return Json::nullValue;
+			}
+
+			std::string mdName = "_md_text_" + std::to_string(mdTextCounter++);
+			Json::Value mdMeta(Json::objectValue);
+			mdMeta["name"] = mdName;
+			mdMeta["type"] = "md_text";
+			newMeta.append(mdMeta);
+
+			Json::Value mdData(Json::objectValue);
+			mdData["name"]    = mdName;
+			mdData["content"] = content;
+			mdData["status"]  = "complete";
+			composed[mdName] = mdData;
+		}
+		else if (el.isMember("name"))
+		{
+			int sourceId = el.get("sourceAnalysisId", defaultSourceId).asInt();
+			const Json::Value* sourceResults = nullptr;
+			std::string sourceTag;
+
+			if (sourceId == defaultSourceId)
+			{
+				sourceResults = &defaultResults;
+				sourceTag = "analysis " + std::to_string(defaultSourceId);
+			}
+			else
+			{
+				Analysis* source = Analyses::analyses()->get(static_cast<size_t>(sourceId));
+				if (!source)
+				{
+					errorOut = JaspRpcDispatcher::errorResult(
+						"Source analysis not found for sourceAnalysisId: " +
+						std::to_string(sourceId));
+					return Json::nullValue;
+				}
+				const Json::Value& sr = source->results();
+				if (sr.isNull() || !sr.isMember(".meta"))
+				{
+					errorOut = JaspRpcDispatcher::errorResult(
+						"Source analysis " + std::to_string(sourceId) +
+						" has no results — run it first");
+					return Json::nullValue;
+				}
+				sourceResults = &sr;
+				sourceTag = "analysis " + std::to_string(sourceId);
+			}
+
+			std::string name = el["name"].asString();
+			Json::Value found = findElement(*sourceResults, name);
+			if (found.isNull())
+			{
+				errorOut = JaspRpcDispatcher::errorResult(
+					"Element not found in " + sourceTag + " results: '" + name + "'");
+				return Json::nullValue;
+			}
+
+			newMeta.append(found["meta"]);
+			composed[name] = found["data"];
+		}
+		else
+		{
+			errorOut = JaspRpcDispatcher::errorResult(
+				"Each element must have either 'name' (to reference an existing result element) "
+				"or 'md_text' (to insert a Markdown block). "
+				"Examples: { \"name\": \"ttest\" } or { \"md_text\": \"# Summary\" }");
+			return Json::nullValue;
+		}
+	}
+
+	// --- Copy over any top-level keys that aren't element data ---
+	for (const auto& key : defaultResults.getMemberNames())
+	{
+		if (key == ".meta") continue;
+		if (!composed.isMember(key))
+			composed[key] = defaultResults[key];
+	}
+
+	composed[".meta"] = newMeta;
+	return composed;
+}
+
 // ---- RPC method registrations ----------------------------------------------
 
 void Analyses::registerRpcHandlers()
@@ -1136,124 +1294,11 @@ void Analyses::registerRpcHandlers()
 			return JaspRpcDispatcher::errorResult(
 				"Analysis not found: " + std::to_string(analysisId));
 
-		const Json::Value& currentResults = a->results();
-		if (currentResults.isNull() || !currentResults.isMember(".meta"))
-			return JaspRpcDispatcher::errorResult(
-				"Analysis has no results with .meta — run the analysis first");
+		Json::Value error;
+		Json::Value composed = Analyses::composeJSON(params["elements"], analysisId, error);
+		if (composed.isNull())
+			return error;
 
-		// --- Recursive helper: find an element by name in the results tree ---
-		// Returns a pair {metaEntry, data} for the named element, or Json::nullValue if not found.
-		// Searches the .meta array and nested collections.
-		std::function<Json::Value(const Json::Value& results, const std::string& targetName)> findElement;
-		findElement = [&findElement](const Json::Value& results, const std::string& targetName) -> Json::Value
-		{
-			if (!results.isMember(".meta"))
-				return Json::nullValue;
-
-			const Json::Value& meta = results[".meta"];
-			for (const auto& entry : meta)
-			{
-				std::string name = entry.get("name", "").asString();
-				if (name == targetName)
-				{
-					// Found at this level — return the meta entry and the data
-					Json::Value result(Json::objectValue);
-					result["meta"] = entry;
-					if (results.isMember(name))
-						result["data"] = results[name];
-					return result;
-				}
-
-				// If this is a collection, search inside its collection children
-				std::string type = entry.get("type", "").asString();
-				if (type == "collection" && results.isMember(name))
-				{
-					const Json::Value& collData = results[name];
-					if (collData.isMember("collection"))
-					{
-						// Build a pseudo-results for the collection's children.
-						// The collection's "collection" object has the child data;
-						// the collection's meta entry has the child .meta array.
-						Json::Value collResults = collData["collection"];
-						if (entry.isMember("meta"))
-							collResults[".meta"] = entry["meta"];
-						// Recurse into collection
-						Json::Value found = findElement(collResults, targetName);
-						if (!found.isNull())
-							return found;
-					}
-				}
-			}
-			return Json::nullValue;
-		};
-
-		// --- Build composed results ---
-		Json::Value composed(Json::objectValue);
-		Json::Value newMeta(Json::arrayValue);
-		int mdTextCounter = 0;
-
-		for (const auto& el : params["elements"])
-		{
-			if (el.isMember("md_text"))
-				{
-					// --- md_text block ---
-					std::string content = el.get("md_text", "").asString();
-
-					if (content.empty())
-						return JaspRpcDispatcher::errorResult(
-							"Each 'md_text' element requires a non-empty 'md_text' field with the Markdown/HTML content. "
-							"Example: { \"md_text\": \"# Summary\\n\\nThe groups do not differ significantly...\" }");
-
-					std::string mdName = "_md_text_" + std::to_string(mdTextCounter++);
-
-					// Meta entry
-					Json::Value mdMeta(Json::objectValue);
-					mdMeta["name"] = mdName;
-					mdMeta["type"] = "md_text";
-					newMeta.append(mdMeta);
-
-					// Data entry
-					Json::Value mdData(Json::objectValue);
-					mdData["name"]    = mdName;
-					mdData["content"] = content;
-					mdData["status"]  = "complete";
-					composed[mdName] = mdData;
-				}
-			else if (el.isMember("name"))
-			{
-				// --- Named result element ---
-				std::string name = el["name"].asString();
-				Json::Value found = findElement(currentResults, name);
-				if (found.isNull())
-					return JaspRpcDispatcher::errorResult(
-						"Element not found in results: '" + name + "'");
-
-				const Json::Value& metaEntry = found["meta"];
-				const Json::Value& data      = found["data"];
-
-				newMeta.append(metaEntry);
-				composed[name] = data;
-			}
-			else
-			{
-				return JaspRpcDispatcher::errorResult(
-					"Each element must have either 'name' (to reference an existing result element) or 'md_text' (to insert a Markdown block). "
-					"Examples: { \"name\": \"ttest\" } or { \"md_text\": \"# Summary\" }");
-			}
-		}
-
-		// --- Copy over any top-level keys that aren't element data ---
-		// (e.g. citation, name, ...)
-		for (const auto& key : currentResults.getMemberNames())
-		{
-			if (key == ".meta") continue;
-			if (!composed.isMember(key))
-				composed[key] = currentResults[key];
-		}
-
-		composed[".meta"] = newMeta;
-
-		// Map status
 		Analysis::Status status = Analysis::Complete;
 		if (params.isMember("status") && params["status"].asString() == "fatalError")
 			status = Analysis::FatalError;
