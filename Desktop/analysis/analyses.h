@@ -107,6 +107,7 @@ public:
 	Json::Value				allUserData()												const			{ return _allUserData;			}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
 	Analysis*				createAnalysis(const QString& module, const QString& analysis);
+	Analysis*				createReport(const std::string& title);
 
 public slots:
 	void removeAnalysisById(size_t id);

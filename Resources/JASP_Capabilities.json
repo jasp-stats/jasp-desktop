@@ -17,7 +17,7 @@
 			"id": "write-reports",
 			"displayName": "Write Reports",
 			"description": "Create reports — compose results from multiple analyses interleaved with Markdown annotations.",
-			"methods": ["analysis_createAnnotation"]
+			"methods": ["write_report", "analysis_createAnnotation"]
 		},
 		{
 			"id": "inspect-analyses",

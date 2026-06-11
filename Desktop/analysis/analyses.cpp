@@ -77,7 +77,26 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
 	std::string					title			= analysisData.get("title", "").asString();
+
+	// Reports have no module — create via report constructor, no module resolution needed
+	if (analysisData.get("isReport", false).asBool())
+	{
+		Analysis *report = new Analysis(id, title);
+		report->checkDefaultTitleFromJASPFile(analysisData);
+		storeAnalysis(report, id, false);
+		bindAnalysisHandler(report);
+		report->loadResultsUserdataAndRSourcesFromJASPFile(analysisData, status);
+		return report;
+	}
+
 	Modules::AnalysisEntry	*	analysisEntry	= DynamicModules::dynMods()->retrieveCorrespondingAnalysisEntry(analysisData["dynamicModule"]);
+
+	if (!analysisEntry)
+	{
+		Log::log() << "Analyses::createFromJaspFileEntry: Could not resolve module for analysis '" << title << "' (id=" << id << ") — skipping." << std::endl;
+		return nullptr;
+	}
+
 	Analysis				*	analysis		= create(analysisData, analysisEntry, id, status, false, title, analysisData["dynamicModule"]["moduleVersion"].asString(), optionsJson);
 
 	if(msgs.count(Modules::analysisLog))
@@ -569,6 +588,16 @@ Analysis* Analyses::createAnalysis(const QString& module, const QString& analysi
 
 }
 
+Analysis* Analyses::createReport(const std::string& title)
+{
+	Analysis *analysis = new Analysis(_nextId++, title);
+
+	storeAnalysis(analysis, analysis->id(), true);
+	bindAnalysisHandler(analysis);
+
+	return analysis;
+}
+
 void Analyses::analysisClickedHandler(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module)
 {
 	createAnalysis(module, analysisFunction);
@@ -910,22 +939,28 @@ void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int 
 
 Json::Value Analyses::composeResultJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut)
 {
-	// Validate the default source analysis exists and has results
-	Analysis* defaultSource = Analyses::analyses()->get(static_cast<size_t>(defaultSourceId));
-	if (!defaultSource)
-	{
-		errorOut = JaspRpcDispatcher::errorResult(
-			"Default source analysis not found: " + std::to_string(defaultSourceId));
-		return Json::nullValue;
-	}
+	// Validate the default source analysis exists and has results (unless -1, meaning no default)
+	Json::Value defaultResults;
+	bool hasDefaultSource = (defaultSourceId >= 0);
 
-	const Json::Value& defaultResults = defaultSource->results();
-	if (defaultResults.isNull() || !defaultResults.isMember(".meta"))
+	if (hasDefaultSource)
 	{
-		errorOut = JaspRpcDispatcher::errorResult(
-			"Default source analysis " + std::to_string(defaultSourceId) +
-			" has no results — run it first");
-		return Json::nullValue;
+		Analysis* defaultSource = Analyses::analyses()->get(static_cast<size_t>(defaultSourceId));
+		if (!defaultSource)
+		{
+			errorOut = JaspRpcDispatcher::errorResult(
+				"Default source analysis not found: " + std::to_string(defaultSourceId));
+			return Json::nullValue;
+		}
+
+		defaultResults = defaultSource->results();
+		if (defaultResults.isNull() || !defaultResults.isMember(".meta"))
+		{
+			errorOut = JaspRpcDispatcher::errorResult(
+				"Default source analysis " + std::to_string(defaultSourceId) +
+				" has no results — run it first");
+			return Json::nullValue;
+		}
 	}
 
 	// --- Recursive helper: find an element by name in the results tree ---
@@ -1000,10 +1035,20 @@ Json::Value Analyses::composeResultJSON(const Json::Value& elements, int default
 		else if (el.isMember("name"))
 		{
 			int sourceId = el.get("sourceAnalysisId", defaultSourceId).asInt();
+
+			// If the element falls back to a default source that doesn't exist, require explicit sourceAnalysisId
+			if (sourceId == defaultSourceId && !hasDefaultSource)
+			{
+				errorOut = JaspRpcDispatcher::errorResult(
+					"Element '" + el["name"].asString() + "' has no sourceAnalysisId. "
+					"Reports have no default source — every named element must specify sourceAnalysisId.");
+				return Json::nullValue;
+			}
+
 			const Json::Value* sourceResults = nullptr;
 			std::string sourceTag;
 
-			if (sourceId == defaultSourceId)
+			if (sourceId == defaultSourceId && hasDefaultSource)
 			{
 				sourceResults = &defaultResults;
 				sourceTag = "analysis " + std::to_string(defaultSourceId);
@@ -1052,12 +1097,15 @@ Json::Value Analyses::composeResultJSON(const Json::Value& elements, int default
 		}
 	}
 
-	// --- Copy over any top-level keys that aren't element data ---
-	for (const auto& key : defaultResults.getMemberNames())
+	// --- Copy over any top-level keys that aren't element data (only when there is a default source)
+	if (hasDefaultSource)
 	{
-		if (key == ".meta") continue;
-		if (!composed.isMember(key))
-			composed[key] = defaultResults[key];
+		for (const auto& key : defaultResults.getMemberNames())
+		{
+			if (key == ".meta") continue;
+			if (!composed.isMember(key))
+				composed[key] = defaultResults[key];
+		}
 	}
 
 	composed[".meta"] = newMeta;
@@ -1354,18 +1402,26 @@ void Analyses::registerRpcHandlers()
 		// Disable the form on the duplicate
 		dup->setFormDisabled(true);
 
-		// Compose results into the duplicate
-		Json::Value error;
+		// Compose results into the duplicate (if elements provided; otherwise keep original's results)
 		Json::Value elementList = params.isMember("elements") ? params["elements"] : Json::Value(Json::arrayValue);
-		Json::Value composed = Analyses::composeResultJSON(elementList, static_cast<int>(dup->id()), error);
-		if (composed.isNull())
-			return error;
+		Json::Value composed;
+
+		if (elementList.size() > 0)
+		{
+			Json::Value error;
+			composed = Analyses::composeResultJSON(elementList, static_cast<int>(dup->id()), error);
+			if (composed.isNull())
+				return error;
+		}
 
 		Analysis::Status status = Analysis::Complete;
 		if (params.isMember("status") && params["status"].asString() == "fatalError")
 			status = Analysis::FatalError;
 
-		dup->setResults(composed, status);
+		if (elementList.size() > 0)
+			dup->setResults(composed, status);
+		else if (status == Analysis::FatalError)
+			dup->setResults(dup->results(), status); // apply status without changing content
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, dup);
@@ -1455,6 +1511,8 @@ void Analyses::registerRpcHandlers()
 
 		ans->applyToAll([&analysesArr](Analysis* a)
 		{
+			if (a->isReport()) return; // skip reports — they have no module to reference
+
 			Json::Value entry;
 			entry["id"]       = static_cast<int>(a->id());
 			entry["module"]   = a->module();
@@ -1477,5 +1535,96 @@ void Analyses::registerRpcHandlers()
 		result["analyses"]         = analysesArr;
 		result["activeAnalysisId"] = activeId;
 		return result;
+	});
+
+	disp->registerMethod("write_report", [](const Json::Value& params) -> Json::Value
+	{
+		Analyses* ans = Analyses::analyses();
+
+		// --- Resolve report: update existing or create new ---
+		Analysis* report = nullptr;
+		bool isNew = !params.isMember("reportId");
+
+		if (!isNew)
+		{
+			int reportId = params["reportId"].asInt();
+			report = ans->get(static_cast<size_t>(reportId));
+			if (!report || !report->isReport())
+				return JaspRpcDispatcher::errorResult(
+					"Report not found or is not a report: " + std::to_string(reportId));
+		}
+
+		// --- Title with duplication detection (only for new reports) ---
+		std::string userTitle = params.get("title", "").asString();
+		std::string title;
+
+		if (isNew)
+		{
+			std::string prefix = "Report" + (userTitle.empty() ? "" : ": " + userTitle);
+			std::string baseTitle = prefix;
+			int reportNum = 1;
+			for (size_t i = 0; i < ans->count(); i++)
+			{
+				Analysis* a = ans->operator[](i);
+				if (a)
+				{
+					std::string t = a->title();
+					if (t == baseTitle)
+						reportNum = std::max(reportNum, 2);
+					else if (t.rfind(prefix + " ", 0) == 0)
+					{
+						std::string suffix = t.substr(prefix.size() + 1);
+						try { int n = std::stoi(suffix); reportNum = std::max(reportNum, n + 1); }
+						catch(...) {}
+					}
+				}
+			}
+			title = reportNum > 1 ? prefix + " " + std::to_string(reportNum) : prefix;
+
+			report = ans->createReport(title);
+			if (!report)
+				return JaspRpcDispatcher::errorResult("Failed to create report");
+		}
+		else if (!userTitle.empty())
+		{
+			// Update title on existing report
+			title = "Report: " + userTitle;
+			report->setTitle(title);
+		}
+		else
+		{
+			title = report->title();
+		}
+
+		// --- Compose results (cross-analysis via sourceAnalysisId) ---
+		Json::Value elementList = params.isMember("elements") ? params["elements"] : Json::Value(Json::arrayValue);
+
+		if (elementList.size() == 0)
+		{
+			Json::Value defaultEl(Json::objectValue);
+			defaultEl["md_text"] = "# Hello World!\\n\\nLorem ipsum dolor sit amet, consectetur adipiscing elit. "
+				"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+				"quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\\n\\n"
+				"## Section 2\\n\\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore "
+				"eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui "
+				"officia deserunt mollit anim id est laborum.";
+			elementList.append(defaultEl);
+		}
+
+		Json::Value error;
+		Json::Value composed = Analyses::composeResultJSON(elementList, -1, error);
+		if (composed.isNull())
+			return error;
+
+		Analysis::Status analysisStatus = Analysis::Complete;
+		if (params.isMember("status") && params["status"].asString() == "fatalError")
+			analysisStatus = Analysis::FatalError;
+
+		report->setResults(composed, analysisStatus);
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["reportId"] = static_cast<int>(report->id());
+		response["title"]    = report->title();
+		return response;
 	});
 }

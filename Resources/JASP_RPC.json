@@ -677,7 +677,7 @@
 		},
 		{
 			"name": "analysis_createAnnotation",
-			"summary": "Duplicate an existing analysis and overlay composed results. The duplicate's form is disabled (read-only). Pull result elements from the original or other analyses via sourceAnalysisId.",
+			"summary": "Duplicate an existing analysis as a read-only annotation. Its form is disabled so the original settings are visible but frozen. Result elements default to the original analysis — this tool is for annotating a SINGLE analysis. For cross-analysis reports use write_report.",
 			"x-displayName": "Create Annotation",
 			"params": [
 				{
@@ -800,6 +800,75 @@
 						}
 					},
 					"required": ["status", "analysisId", "module", "analysis"]
+				}
+			}
+		},
+		{
+			"name": "write_report",
+			"summary": "Create a new standalone report with content composed from Markdown blocks and cross-analysis result elements. Reports appear in the results panel like analyses but do not run R code.\n\nIMPORTANT: Always prefer referencing existing JASP output elements (tables, plots, collections) via {\"name\": \"<element>\", \"sourceAnalysisId\": <id>} over rewriting them as markdown. Only use md_text for explanatory prose, headings, and narrative — never to recreate statistical results that already exist as proper JASP elements.",
+			"x-displayName": "Write Report",
+			"params": [
+				{
+					"name": "reportId",
+					"required": false,
+					"description": "If provided, updates an existing report instead of creating a new one. The report's title and results will be replaced.",
+					"schema": { "type": "integer" }
+				},
+				{
+					"name": "title",
+					"required": false,
+					"description": "Descriptive label for the report. The expander title will be formatted as 'Report: <title>' (or just 'Report' if omitted). Duplicate titles receive automatic suffixes: 'Report: My Findings', 'Report: My Findings 2', etc.",
+					"schema": { "type": "string" }
+				},
+				{
+					"name": "elements",
+					"required": false,
+					"description": "Ordered array of element specifications. Each element is either a Markdown block {\"md_text\": \"...\"} or a named reference {\"name\": \"...\", \"sourceAnalysisId\": <id>}. Reports have no default source — every named element MUST specify sourceAnalysisId. When omitted, a default welcome markdown block is used.",
+					"schema": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"name": {
+									"type": "string",
+									"description": "Name of an existing result element to pull from the source analysis."
+								},
+								"sourceAnalysisId": {
+									"type": "integer",
+									"description": "REQUIRED for named elements. The analysis ID to pull the element from."
+								},
+								"md_text": {
+									"type": "string",
+									"description": "Markdown/HTML content to display."
+								}
+							}
+						}
+					}
+				},
+				{
+					"name": "status",
+					"required": false,
+					"description": "Optional analysis status. Defaults to 'complete'.",
+					"schema": { "type": "string", "default": "complete" }
+				}
+			],
+			"result": {
+				"name": "write_report_result",
+				"description": "Metadata about the created or updated report.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": { "type": "string" },
+						"reportId": {
+							"type": "integer",
+							"description": "The report's ID. Use this to reference the report in subsequent write_report calls."
+						},
+						"title": {
+							"type": "string",
+							"description": "The report's full title as shown in the results panel."
+						}
+					},
+					"required": ["status", "reportId", "title"]
 				}
 			}
 		},

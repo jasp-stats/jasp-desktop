@@ -23,8 +23,8 @@ import QtQuick.Controls
 
 Window
 {
-	id:					mainWindowRoot
-	title:				mainWindow.windowTitle
+    id:					mainWindowRoot
+    title:				mainWindow.windowTitle
 	visible:			true
 	width:				1280
 	height:				720
