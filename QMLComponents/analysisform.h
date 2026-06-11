@@ -209,6 +209,7 @@ public:
 private:
 
 	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
+	Json::Value		_controlOptionMeta(JASPControl* ctrl, bool includeDescriptions) const;
 	void			_setUpControls();
 	void			_setUpModels();
 	void			_setUp();
