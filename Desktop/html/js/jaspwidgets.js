@@ -530,6 +530,9 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		if (this.options.hasInteractiveImg)
 			this.options['interactiveOptions'] = this.parent.interactiveOptions();
 
+		if (this.parent.model && this.parent.model.get('id') !== undefined)
+			this.options['_analysisId'] = this.parent.model.get('id');
+
 		this.parent.trigger('toolbar:showMenu', this.parent, this.options);
 
 		return true;
@@ -563,7 +566,7 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			hasLaTeXCode:			(parent.hasLaTeXCode	=== undefined || parent.hasLaTeXCode())	&& parent.latexCodeMenuClicked		!== undefined,
 			hasRemoveAllAnalyses:	parent.menuName			=== 'All',
 			hasRefreshAllAnalyses:	parent.menuName			=== 'All',
-			hasExportResults:		parent.menuName			=== 'All',
+			hasExportResults:		parent.menuName			=== 'All' || parent.menuName === 'Analysis',
 			hasShowRSyntax:			parent.menuName			=== 'All',
 
 			objectName:				parent.menuName

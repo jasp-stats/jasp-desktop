@@ -201,6 +201,24 @@ $(document).ready(function () {
 		})
 	}
 
+	window.exportAnalysisHTML = function (analysisId, filename) {
+
+		var analysisView = analyses.getAnalysis(analysisId);
+		if (!analysisView) return;
+
+		var exportParams				= new JASPWidgets.Exporter.params();
+		exportParams.format				= JASPWidgets.ExportProperties.format.formattedHTML;
+		exportParams.process			= JASPWidgets.ExportProperties.process.save;
+		exportParams.htmlImageFormat	= JASPWidgets.ExportProperties.htmlImageFormat.embedded;
+		exportParams.includeNotes		= true;
+
+		analysisView.exportBegin(exportParams, function (exportParams, exportContent) {
+
+			if (exportParams.process === JASPWidgets.ExportProperties.process.save)
+				jasp.saveTextToFile(filename, wrapHTML(exportContent.html, exportParams, true));
+		})
+	}
+
 	window.getAllUserData = function ()				{ jasp.setAllUserDataFromJavascript(JSON.stringify(analyses.getAllUserData()))	}
 	window.getResultsMeta = function ()				{ jasp.setResultsMetaFromJavascript(JSON.stringify(analyses.getResultsMeta()))	}
 	window.setResultsMeta = function (resultsMeta)	{ analyses.setResultsMeta(resultsMeta);											}
