@@ -59,6 +59,7 @@ public:
 
 						Analysis(size_t id, Analysis * duplicateMe);
 						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options);
+						Analysis(size_t id, const std::string & title); // report constructor — no module
 
 	virtual				~Analysis();
 
@@ -119,9 +120,9 @@ public:
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
 			bool				isReport()							const	{ return _isReport;								}
-			void				setReport(bool report)						{ _isReport = report;								}
-			void				setFormDisabled(bool disabled);
-			bool				isFormDisabled()							const	{ return _formDisabled;						}
+				void				setReport(bool report)				{ _isReport = report;								}
+				void				setFormDisabled(bool disabled);
+				bool				isFormDisabled()						const	{ return _formDisabled;						}
 			bool				beingTranslated()						{ return _beingTranslated; };
 			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}

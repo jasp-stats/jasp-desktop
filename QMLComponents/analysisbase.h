@@ -14,7 +14,7 @@ class AnalysisBase : public QObject
 	QML_ELEMENT
 
 	Q_PROPERTY(QQuickItem		*	formItem				READ formItem										NOTIFY formItemChanged			)
-	Q_PROPERTY(QString				qmlError				READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
+	Q_PROPERTY(QString			qmlError			READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
 
 public:
 	explicit AnalysisBase(QObject *parent = nullptr);

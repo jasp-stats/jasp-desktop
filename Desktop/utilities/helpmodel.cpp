@@ -68,7 +68,7 @@ void HelpModel::setMarkdown(QString markdown)
 	
 	_markdown = markdown;
 
-	if(_analysis != nullptr)
+	if(_analysis != nullptr && _analysis->dynamicModule())
 		_analysis->dynamicModule()->preprocessMarkdownHelp(_markdown);
 	
 	emit markdownChanged(_markdown);

@@ -771,10 +771,10 @@ void MainWindow::loadQML()
 		{
 			_chatWindow = qobject_cast<QWindow*>(obj);
 			if (_chatWindow)
-			{
-				connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
-				Log::log() << "ChatWindow found and connected." << std::endl;
-			}
+				{
+					connect(_chatWindow, &QWindow::activeChanged, this, &MainWindow::checkChatWindowActive);
+					Log::log() << "ChatWindow found and connected." << std::endl;
+				}
 			break;
 		}
 	}
