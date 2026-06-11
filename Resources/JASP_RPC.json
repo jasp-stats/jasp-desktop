@@ -111,13 +111,13 @@
 			],
 			"result": {
 				"name": "analysis_run_result",
-				"description": "The results of the analysis after setting options. IMPORTANT: Only call analysis_results to poll if status is 'running' (timeout). If status is 'success' or 'error' the analysis is already done — do NOT re-poll with analysis_results.",
+				"description": "The results of the analysis after setting options. IMPORTANT: Only call analysis_results to poll if status is 'running' (timeout). If status is 'success' or 'error' the analysis is already done \u2014 do NOT re-poll with analysis_results.",
 				"schema": {
 					"type": "object",
 					"properties": {
 						"status": {
 							"type": "string",
-							"description": "'success' (finished with results), 'running' (timeout — still computing), or 'error' (options validation failed)."
+							"description": "'success' (finished with results), 'running' (timeout \u2014 still computing), or 'error' (options validation failed)."
 						},
 						"analysisId": {
 							"type": "integer",
@@ -223,7 +223,7 @@
 		},
 		{
 			"name": "analysis_results",
-			"summary": "Poll for results of an analysis, blocking up to timeoutMs. ONLY call this after analysis_run returned status 'running' (timeout). Do NOT call if analysis_run already returned 'success' or 'error' — the results are already final.",
+			"summary": "Poll for results of an analysis, blocking up to timeoutMs. ONLY call this after analysis_run returned status 'running' (timeout). Do NOT call if analysis_run already returned 'success' or 'error' \u2014 the results are already final.",
 			"x-displayName": "Get Analysis Results",
 			"params": [
 				{
@@ -604,8 +604,12 @@
 							"items": {
 								"type": "object",
 								"properties": {
-									"name": { "type": "string" },
-									"type": { "type": "string" },
+									"name": {
+										"type": "string"
+									},
+									"type": {
+										"type": "string"
+									},
 									"distinctCount": {
 										"type": "integer",
 										"description": "Number of distinct values (nominal/ordinal only)."
@@ -677,27 +681,42 @@
 		},
 		{
 			"name": "analysis_createAnnotation",
-			"summary": "Duplicate an existing analysis as a read-only annotation. Its form is disabled so the original settings are visible but frozen. Result elements default to the original analysis — this tool is for annotating a SINGLE analysis. For cross-analysis reports use write_report.",
+			"summary": "Create an annotation analysis that combines result elements from an existing analysis with Markdown text blocks. The annotation keeps the original analysis's form (read-only) so settings are visible but frozen. Use this to add narrative, interpretation, conclusions, or highlight specific results alongside the original output.\n\nUse elements to specify what appears in the annotation and in what order. Each element is either:\n  {\"name\": \"tableName\"} \u2014 pull a result element (table/plot/collection) from the source analysis\n  {\"md_text\": \"Markdown/HTML\"} \u2014 insert a prose block (headings, interpretation, LaTeX math)\n\nIf elements is omitted, the annotation starts with a copy of the original analysis's results.\n\nFor cross-analysis reports (pulling elements from MULTIPLE analyses), use write_report instead.",
 			"x-displayName": "Create Annotation",
 			"params": [
 				{
 					"name": "analysisId",
 					"required": true,
-					"description": "The analysis to duplicate as an annotation base.",
-					"schema": { "type": "integer" }
+					"description": "The ID of the existing analysis to annotate. Its results become the default source for named elements that omit sourceAnalysisId.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "title",
+					"required": false,
+					"description": "Custom title for the annotation. Defaults to 'Annotation [N] of <original title>'.",
+					"schema": {
+						"type": "string"
+					}
 				},
 				{
 					"name": "elements",
 					"required": false,
-					"description": "Ordered array of element specifications (same format as analysis_composeResults). If omitted, the duplicate keeps the original's results.",
+					"description": "Ordered array of content elements. Each element is ONE OF:\n1. Reference: {\"name\": \"<elementName>\"} \u2014 pulls a result element (table, plot, collection) from the source analysis. The name must match a .meta entry in the analysis results (e.g. 'ttest', 'descriptives', 'assumptionChecks').\n2. Annotation: {\"md_text\": \"<markdown>\"} \u2014 inserts a Markdown/HTML block for headings, interpretation, conclusions, or LaTeX math.\n\nExamples:\n  {\"name\": \"ttest\"} \u2014 include the t-test table\n  {\"md_text\": \"## Key Finding\\n\\nThe t-test revealed a significant difference...\"} \u2014 add a section\n  {\"md_text\": \"The Bayes factor is $$BF_{10} = 3.42$$\"} \u2014 display LaTeX math\n\nIf omitted or empty, the annotation shows the original analysis results unchanged.",
 					"schema": {
 						"type": "array",
 						"items": {
 							"type": "object",
 							"properties": {
-								"name": { "type": "string" },
-								"sourceAnalysisId": { "type": "integer" },
-								"md_text": { "type": "string" }
+								"name": {
+									"type": "string",
+									"description": "Name of a result element from the source analysis's .meta array (e.g. 'ttest', 'descriptives', 'assumptionChecks'). Cannot be combined with md_text in the same element."
+								},
+								"md_text": {
+									"type": "string",
+									"description": "Markdown/HTML content. Use for headings (## Section), prose, bullet lists, and LaTeX math. Math is rendered via MathJax: use $$...$$ or \\[...\\] for display math, and $...$ or \\(...\\) for inline math.\n\nExamples:\n  ## Interpretation\n  The groups differ significantly.\n  $$P(H|D) = \\frac{P(D|H)P(H)}{P(D)}$$\n  The effect size was $d = 0.82$."
+								}
 							}
 						}
 					}
@@ -705,20 +724,39 @@
 				{
 					"name": "status",
 					"required": false,
-					"description": "Optional analysis status. Defaults to 'complete'.",
-					"schema": { "type": "string", "default": "complete" }
+					"description": "Optional status. Defaults to 'complete'.",
+					"schema": {
+						"type": "string",
+						"default": "complete"
+					}
 				}
 			],
 			"result": {
 				"name": "analysis_createAnnotation_result",
-				"description": "The created annotation analysis with its composed results.",
+				"description": "Metadata about the created annotation, including its ID, module, and analysis name.",
 				"schema": {
 					"type": "object",
 					"properties": {
-						"status": { "type": "string" },
-						"analysisId": { "type": "integer" },
-						"module": { "type": "string" },
-						"analysis": { "type": "string" }
+						"status": {
+							"type": "string",
+							"description": "'success' if created, 'error' on failure."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "Unique ID of the new annotation analysis."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name ('report')."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name ('annotation')."
+						},
+						"message": {
+							"type": "string",
+							"description": "Error description when status is 'error'."
+						}
 					},
 					"required": ["status", "analysisId", "module", "analysis"]
 				}
@@ -726,7 +764,7 @@
 		},
 		{
 			"name": "analysis_composeResults",
-			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
+			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        \u2014 include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } \u2014 insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
 			"x-displayName": "Compose Results",
 			"params": [
 				{
@@ -740,7 +778,7 @@
 				{
 					"name": "elements",
 					"required": true,
-					"description": "Ordered array of element specifications.\n\nEach element is EXACTLY ONE of:\n1. Reference:  { \"name\": \"<elementNameFromMeta>\"[, \"sourceAnalysisId\": <id>] }\n2. Annotation: { \"md_text\": \"<Markdown/HTML>\" }\n\nIf sourceAnalysisId is omitted on a reference, the target analysisId is used.\nExamples:\n  { \"name\": \"ttest\" }                              — re-inserts the t-test table from the target analysis\n  { \"name\": \"descriptives\", \"sourceAnalysisId\": 43 } — pulls a table from a different analysis\n  { \"md_text\": \"## Key Finding\\n\\nNo significant...\" } — inserts a markdown section",
+					"description": "Ordered array of element specifications.\n\nEach element is EXACTLY ONE of:\n1. Reference:  { \"name\": \"<elementNameFromMeta>\"[, \"sourceAnalysisId\": <id>] }\n2. Annotation: { \"md_text\": \"<Markdown/HTML>\" }\n\nIf sourceAnalysisId is omitted on a reference, the target analysisId is used.\nExamples:\n  { \"name\": \"ttest\" }                              \u2014 re-inserts the t-test table from the target analysis\n  { \"name\": \"descriptives\", \"sourceAnalysisId\": 43 } \u2014 pulls a table from a different analysis\n  { \"md_text\": \"## Key Finding\\n\\nNo significant...\" } \u2014 inserts a markdown section",
 					"schema": {
 						"type": "array",
 						"items": {
@@ -756,7 +794,7 @@
 								},
 								"md_text": {
 									"type": "string",
-									"description": "The Markdown/HTML content to display. Required. Must be non-empty."
+									"description": "The Markdown/HTML content to display. Required. Must be non-empty.\n\nLaTeX math is supported via MathJax. Use $$...$$ or \\[...\\] for display math, and $...$ or \\(...\\) for inline math. Examples: $$P(H|D) = \\frac{P(D|H)P(H)}{P(D)}$$ and $p = 0.032$."
 								}
 							}
 						}
@@ -805,25 +843,29 @@
 		},
 		{
 			"name": "write_report",
-			"summary": "Create a new standalone report with content composed from Markdown blocks and cross-analysis result elements. Reports appear in the results panel like analyses but do not run R code.\n\nIMPORTANT: Always prefer referencing existing JASP output elements (tables, plots, collections) via {\"name\": \"<element>\", \"sourceAnalysisId\": <id>} over rewriting them as markdown. Only use md_text for explanatory prose, headings, and narrative — never to recreate statistical results that already exist as proper JASP elements.",
+			"summary": "Create a new standalone report with content composed from Markdown blocks and cross-analysis result elements. Reports appear in the results panel like analyses but do not run R code.\n\nIMPORTANT: Always prefer referencing existing JASP output elements (tables, plots, collections) via {\"name\": \"<element>\", \"sourceAnalysisId\": <id>} over rewriting them as markdown. Only use md_text for explanatory prose, headings, and narrative \u2014 never to recreate statistical results that already exist as proper JASP elements.",
 			"x-displayName": "Write Report",
 			"params": [
 				{
 					"name": "reportId",
 					"required": false,
 					"description": "If provided, updates an existing report instead of creating a new one. The report's title and results will be replaced.",
-					"schema": { "type": "integer" }
+					"schema": {
+						"type": "integer"
+					}
 				},
 				{
 					"name": "title",
 					"required": false,
 					"description": "Descriptive label for the report. The expander title will be formatted as 'Report: <title>' (or just 'Report' if omitted). Duplicate titles receive automatic suffixes: 'Report: My Findings', 'Report: My Findings 2', etc.",
-					"schema": { "type": "string" }
+					"schema": {
+						"type": "string"
+					}
 				},
 				{
 					"name": "elements",
 					"required": false,
-					"description": "Ordered array of element specifications. Each element is either a Markdown block {\"md_text\": \"...\"} or a named reference {\"name\": \"...\", \"sourceAnalysisId\": <id>}. Reports have no default source — every named element MUST specify sourceAnalysisId. When omitted, a default welcome markdown block is used.",
+					"description": "Ordered array of element specifications. Each element is either a Markdown block {\"md_text\": \"...\"} or a named reference {\"name\": \"...\", \"sourceAnalysisId\": <id>}. Reports have no default source \u2014 every named element MUST specify sourceAnalysisId. When omitted, a default welcome markdown block is used.",
 					"schema": {
 						"type": "array",
 						"items": {
@@ -839,7 +881,7 @@
 								},
 								"md_text": {
 									"type": "string",
-									"description": "Markdown/HTML content to display."
+									"description": "Markdown/HTML content to display.\n\nLaTeX math is supported via MathJax. Use $$...$$ or \\[...\\] for display math, and $...$ or \\(...\\) for inline math. Examples: $$P(H|D) = \\frac{P(D|H)P(H)}{P(D)}$$ and $p = 0.032$."
 								}
 							}
 						}
@@ -849,7 +891,10 @@
 					"name": "status",
 					"required": false,
 					"description": "Optional analysis status. Defaults to 'complete'.",
-					"schema": { "type": "string", "default": "complete" }
+					"schema": {
+						"type": "string",
+						"default": "complete"
+					}
 				}
 			],
 			"result": {
@@ -858,7 +903,9 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"status": { "type": "string" },
+						"status": {
+							"type": "string"
+						},
 						"reportId": {
 							"type": "integer",
 							"description": "The report's ID. Use this to reference the report in subsequent write_report calls."

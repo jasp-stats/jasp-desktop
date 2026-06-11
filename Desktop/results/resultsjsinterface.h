@@ -66,6 +66,7 @@ public:
 	Q_INVOKABLE void unselect();
 	Q_INVOKABLE void purgeClipboard();
 	Q_INVOKABLE void analysisEditImage(int id, QString options);
+	Q_INVOKABLE void exportAnalysisHTML(int analysisId);
 	Q_INVOKABLE void runJavaScript(const QString & js);
 
 	//Callable from javascript through resultsJsInterfaceInterface...
