@@ -711,6 +711,9 @@ var wrapHTML = function (html, exportParams, doctype = false) {
   completehtml +=
     "			tbody tr:last-child th, tbody tr:last-child td {border-bottom:thin solid;}";
   completehtml += "			tbody tr td:first-child {text-align:left;}";
+  completehtml += "			td.text, th.text {text-align:left;}";
+  completehtml += "			td.number {text-align:right;}";
+  completehtml += "			tr.new-group td, tr.new-group th {padding-top:10.8px;}";
   completehtml +=
     "			tbody tr:nth-child(even) td, tbody tr:nth-child(even) th {background:#EBEBEB;}";
   completehtml += "		</style>";

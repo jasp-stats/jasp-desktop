@@ -19,6 +19,11 @@ JASPWidgets.md_textView = JASPWidgets.objectView.extend({
         ? marked.parse(raw)
         : raw.replace(/</g, "&lt;").replace(/\n/g, "<br>");
     this.$el.html(html);
+
+    if (typeof enhanceMarkdownTables === "function") {
+      enhanceMarkdownTables(this.$el[0]);
+    }
+
     return this;
   },
 
