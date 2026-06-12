@@ -44,48 +44,49 @@
         <deep-chat
             style="border-radius: 10px"
             auxiliaryStyle="
-                /* --- Markdown Tables (fit within chat, no overflow) --- */
+                /* --- Markdown Tables (match jasp.css look) --- */
                 table {
-                    width: 100%;
-                    table-layout: fixed;
+                    font-style: normal;
                     border-collapse: collapse;
-                    margin: 1em 0;
-                    font-size: 0.88em;
+                    margin-bottom: 2em;
+                    cursor: default;
                 }
-                thead tr th {
-                    border-bottom: 1.5px solid #aaa;
-                }
-                thead th {
-                    text-align: center;
-                    font-weight: 600;
-                    padding: 5px 8px;
-                    word-break: break-word;
-                    overflow-wrap: anywhere;
-                }
-                tbody th {
-                    text-align: left;
-                }
-                th, td {
-                    padding: 4px 8px;
+                th {
                     vertical-align: bottom;
-                    word-break: break-word;
-                    overflow-wrap: anywhere;
+                    font-weight: normal;
                 }
                 td {
                     text-align: right;
-                    padding-bottom: 0.3em;
+                    vertical-align: bottom;
+                    padding: 3px 12px;
+                }
+                thead th {
+                    text-align: center;
+                    padding: 3px 12px;
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                }
+                tbody th,
+                tbody tr td:first-child {
+                    text-align: left;
+                }
+                tbody th,
+                tbody td {
+                    border-bottom: none;
+                    border-top: none;
+                    word-break: break-word;
+                    overflow-wrap: anywhere;
+                }
+                thead tr th {
+                    border-bottom: thin solid;
                 }
                 tbody tr:last-child th,
                 tbody tr:last-child td {
-                    border-bottom: 1.5px solid #aaa;
+                    border-bottom: thin solid;
                 }
                 tbody tr:nth-child(even) td,
                 tbody tr:nth-child(even) th {
-                    background: rgba(128,128,128,0.08);
-                }
-                tbody tr:nth-child(odd) td,
-                tbody tr:nth-child(odd) th {
-                    background: rgba(128,128,128,0.02);
+                    background: #EBEBEB;
                 }
             "
             errorMessages='{"displayServiceErrorMessages": true}'
