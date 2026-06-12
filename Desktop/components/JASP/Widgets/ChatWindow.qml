@@ -13,8 +13,6 @@ Window
 
     visible: mainWindow.aiChatVisible
 
-    flags: Qt.Window | Qt.WindowStaysOnTopHint
-
 	Connections {
 		target: mainWindow
 		function onCloseWindows() { chatPanel.close() }
