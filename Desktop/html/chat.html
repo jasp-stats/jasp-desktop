@@ -27,6 +27,7 @@
         <script type="text/javascript" src="js/qwebchannel.js"></script>
         <script type="text/javascript" src="js/deepChat.bundle.js"></script>
         <script type="text/javascript" src="js/chat-bridge.js"></script>
+        <script type="text/javascript" src="js/md_table_enhance.js"></script>
     </head>
     <body>
         <span
@@ -70,6 +71,13 @@
                 tbody th,
                 tbody tr td:first-child {
                     text-align: left;
+                }
+                td.text, th.text { text-align: left; }
+                td.number { text-align: right; }
+                /* Group spacing (matching JASP new-group-row) */
+                tr.new-group td,
+                tr.new-group th {
+                    padding-top: 10.8px;
                 }
                 tbody th,
                 tbody td {

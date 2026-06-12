@@ -203,6 +203,18 @@ function setupDeepChat() {
 
   console.log("chat-bridge: deep-chat handler configured");
 
+  var enhanceInterval = setInterval(function () {
+    if (typeof enhanceMarkdownTables !== "function") return;
+    var sr = chat.shadowRoot;
+    if (!sr) return;
+    var tables = sr.querySelectorAll(
+      "table:not(.jasp-no-select):not(.jasp-table-enhanced)",
+    );
+    if (tables.length) {
+      enhanceMarkdownTables(sr);
+    }
+  }, 500);
+
   // Intercept link clicks inside deep-chat and open in external browser.
   // Uses capture phase + composedPath() to see through shadow DOM.
   document.addEventListener(
