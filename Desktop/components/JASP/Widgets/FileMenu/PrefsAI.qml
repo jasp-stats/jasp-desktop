@@ -479,7 +479,7 @@ PrefsScrollView
 
 			// --- Tools ---
 			Section {
-				title: qsTr("Enabled Capabilities")
+				title: qsTr("Persona Capabilities")
 
 				// ---- Capabilities ----
 				Item {
@@ -595,9 +595,9 @@ PrefsScrollView
 			onCheckedChanged:	preferencesModel.aiUseCompleteSchema = checked
 			toolTip:			qsTr(
 				"When enabled, each tool in the API request includes its full "
-				+ "parameter schema (with JSON types like integer/boolean). "
+				+ "parameter schema (with JSON types such as integer/Boolean). "
 				+ "This helps models that struggle with type-safety in tool "
-				+ "calls (e.g. Qwen). Uses more tokens. Leave off for DeepSeek."
+				+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
 			)
 		}
 

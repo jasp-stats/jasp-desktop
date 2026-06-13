@@ -323,6 +323,10 @@ Window
 		sourceSize.height:	height
 		fillMode:			Image.PreserveAspectFit
 
+		ToolTip.visible:	chatMouseArea.containsMouse
+		ToolTip.text:		qsTr("Toggle AI Chat (Ctrl+J)")
+		ToolTip.delay:		500
+
 		anchors
 		{
 			right:		parent.right
@@ -333,8 +337,10 @@ Window
 
 		MouseArea
 		{
+			id:				chatMouseArea
 			anchors.fill:	parent
 			cursorShape:	Qt.PointingHandCursor
+			hoverEnabled:	true
 			onClicked:		mainWindow.toggleChat()
 		}
 	}

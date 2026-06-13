@@ -68,7 +68,7 @@ Restores a modified system persona to its original shipped configuration. This b
 
 ---
 
-## Enabled Capabilities
+## Persona Capabilities
 
 The AI agent uses JASP tools to interact with JASP — for example, listing modules, running analyses, reading data, inspecting results, and composing annotated output. The availability of these tools is controlled through capabilities.
 
