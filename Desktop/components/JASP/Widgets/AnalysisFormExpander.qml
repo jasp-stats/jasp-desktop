@@ -79,7 +79,7 @@ DropArea
 					target:			draggableItem
 					parent:			backgroundFlickable
 				}
-				
+
 				AnchorChanges
 				{
 					target:			draggableItem
@@ -97,7 +97,7 @@ DropArea
 					}
 				}
 			},
-			
+
 			State
 			{
 				name:	"chilling"
@@ -168,9 +168,9 @@ DropArea
 			anchors.centerIn: draggableItem
 			width			: draggableItem.width
 			height			: draggableItem.height
-		
+
 			visible			: draggableItem.Drag.active
-			
+
 			color			: jaspTheme.grayDarker
 			blur			: 10
 			spread			: 3
@@ -316,21 +316,42 @@ DropArea
 
 					Behavior on rotation { enabled: preferencesModel.animationsOn; RotationAnimation { duration: 200 } }
 
-				}
-
-				Item
-				{
-					id:			analysisTitleItem
-					height:		analysisTitle.height
-
-					anchors
-					{
-						left:			expanderIcon.right
-						right:			rSyntaxButton.left
-						leftMargin:		expanderIcon.anchors.leftMargin
-						rightMargin:	2 * preferencesModel.uiScale
-						verticalCenter:	parent.verticalCenter
 					}
+
+					MenuButton
+					{
+						id:					annotateButton
+						width:				height
+						iconSource:			preferencesModel.aiPersonaModel.shippedPersonaImageUrl("Alfred.png")
+						enabled:			expanderButton.expanded && preferencesModel.aiEnabled
+						visible:			preferencesModel.aiEnabled
+						onClicked:			mainWindow.annotateAnalysis()
+						toolTip:			qsTr("Annotate this analysis using AI")
+						radius:				height
+						opacity:			enabled ? 1 : 0.1
+						anchors
+						{
+							right:			rSyntaxButton.left
+							top:			parent.top
+							bottom:			parent.bottom
+							topMargin:		editButton.anchors.topMargin
+							bottomMargin:	editButton.anchors.bottomMargin
+						}
+					}
+
+					Item
+					{
+						id:			analysisTitleItem
+						height:		analysisTitle.height
+
+						anchors
+						{
+							left:			expanderIcon.right
+							right:			annotateButton.left
+							leftMargin:		expanderIcon.anchors.leftMargin
+							rightMargin:	2 * preferencesModel.uiScale
+							verticalCenter:	parent.verticalCenter
+						}
 
 					Text
 					{
@@ -472,15 +493,15 @@ DropArea
 												helpModel.markdown = ""; //break binding
 												helpModel.analysis = null
 											}
-											
-												
+
+
 										}
 										else
 										{
 											helpModel.markdown = "";
 											helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
 										}
-										
+
 					toolTip:			qsTr("Show info for this analysis")
 					radius:				height
 					anchors
@@ -566,7 +587,7 @@ DropArea
 						verticalAlignment:	Text.AlignVCenter
 						text:				formParent.error
 						wrapMode:			Text.Wrap
-						
+
 						//onTextChanged:		messages.log("errorMessagesText text changed to '" + text + "'");
 					}
 				}

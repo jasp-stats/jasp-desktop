@@ -105,6 +105,18 @@ A JSON object merged into every API request body. Use this to pass provider-spec
 
 ---
 
+## Annotation
+
+These settings control the prompt sent when clicking the **Annotate Analysis** button (the AI icon) in an analysis header.
+
+### Use custom annotation prompt
+When checked, the custom prompt below is used instead of the default. When unchecked, the default annotation prompt is sent.
+
+### Annotation prompt
+The text sent to the AI chat when you click the Annotate Analysis button on an analysis. The AI will see this as a user message along with the full conversation history.
+
+---
+
 ## Per-Message Extra Fields
 
 A JSON object merged into every *message* in the API request (not the top-level body). Use this for per-message features like Anthropic-style explicit caching.

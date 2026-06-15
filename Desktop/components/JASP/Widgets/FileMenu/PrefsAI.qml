@@ -356,6 +356,50 @@ PrefsScrollView
 		}
 	}
 
+	PrefsGroupRect
+	{
+		title:				qsTr("Annotation")
+		visible:			preferencesModel.aiEnabled
+
+		CheckBox
+		{
+			id:					annotationUseCustom
+			label:				qsTr("Use custom annotation prompt")
+			checked:			preferencesModel.aiAnnotationUseCustom
+			onCheckedChanged:	preferencesModel.aiAnnotationUseCustom = checked
+			toolTip:			qsTr("When enabled, the custom prompt below is used when clicking the Annotate Analysis button instead of the default.")
+		}
+
+		TextArea
+		{
+			id:				aiAnnotationPromptInput
+			title:			qsTr("Annotation Prompt:")
+			height:			80 * preferencesModel.uiScale
+			text:			preferencesModel.aiAnnotationPrompt
+			isBound:		false
+			wrapMode:		TextEdit.Wrap
+			enabled:		annotationUseCustom.checked
+			onActiveFocusChanged: if (!activeFocus) preferencesModel.aiAnnotationPrompt = text
+			applyScriptInfo:""
+			useTabAsSpaces:	false
+		}
+	}
+
+	PrefsGroupRect
+	{
+		title:				qsTr("MCP")
+		visible:			preferencesModel.aiEnabled
+
+		CheckBox
+		{
+			id:					mcpEnabled
+			label:				qsTr("Enable MCP server (Model Context Protocol)")
+			checked:			preferencesModel.rpcServerEnabled
+			onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
+			toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
+		}
+	}
+
 	Section
 	{
 		title:		qsTr("Advanced")
@@ -432,13 +476,12 @@ PrefsScrollView
 				applyScriptInfo:""
 				useTabAsSpaces:	false
 				nextTabItem:	aiMessageExtraInput
+				}
 			}
-		}
 
-
-		PrefsGroupRect
-		{
-			title:				qsTr("Per-Message Extra Fields")
+			PrefsGroupRect
+			{
+				title:				qsTr("Per-Message Extra Fields")
 
 			Label
 			{
@@ -466,46 +509,39 @@ PrefsScrollView
 				nextTabItem:	mcpEnabled
 			}
 		}
-
-		Button
-		{
-			text:			qsTr("Reset all AI settings to defaults")
-			control.defaultColor:	jaspTheme.buttonColorHovered
-			toolTip:		qsTr("Restore endpoint, model, system prompt, and all other AI settings to their original defaults.")
-			onClicked:		preferencesModel.resetAiDefaults()
-		}
-
-		PrefsGroupRect
-		{
-			title:				qsTr("MCP")
-
-			CheckBox
-			{
-				id:					mcpEnabled
-				label:				qsTr("Enable MCP server (Model Context Protocol)")
-				checked:			preferencesModel.rpcServerEnabled
-				onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
-				toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
-			}
-		}
 	}
 
-	Button
+	PrefsGroupRect
 	{
-		text:					preferencesModel.aiEnabled ? qsTr("Disable AI Service") : qsTr("Enable AI Service")
-		toolTip:				qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
-		control.defaultColor:	jaspTheme.buttonColorHovered
+		title:				qsTr("AI Service")
 
-		onClicked: {
-			if (preferencesModel.aiEnabled) {
-				preferencesModel.aiEnabled = false
-			} else {
-				let agreed = messages.showYesNoQML(
-					qsTr("Before using JASP AI"),
-					qsTr("JASP AI can help you choose, conduct, interpret, and report statistical analyses. AI responses and actions may be incorrect, incomplete, or inappropriate for your data, so always verify important statistical decisions, results, assumptions, and conclusions independently.\n\nDuring use, JASP AI may add, change, or replace analyses in your current project. To avoid losing work, we recommend saving a backup copy of your JASP file, and where relevant your original data file, before using JASP AI.\n\nInformation from your data set, analyses, output, and chat messages may be processed by the AI service to answer your questions. Do not use sensitive, confidential, or restricted data unless you are allowed to share it."),
-					qsTr("I Agree"),
-					qsTr("Cancel"))
-				if (agreed) preferencesModel.aiEnabled = true
+		RectangularButton
+		{
+			visible:		preferencesModel.aiEnabled
+			text:			qsTr("Reset all AI settings to defaults")
+			toolTip:		qsTr("Restore endpoint, model, system prompt, and all other AI settings to their original defaults.")
+			onClicked:		preferencesModel.resetAiDefaults()
+			anchors.left:	parent.left
+		}
+
+		RectangularButton
+		{
+			id:				aiEnableBtn
+			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
+			toolTip:		qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
+			anchors.left:	parent.left
+
+			onClicked: {
+				if (preferencesModel.aiEnabled) {
+					preferencesModel.aiEnabled = false
+				} else {
+					var agreed = messages.showYesNoQML(
+						qsTr("Before using JASP AI"),
+						qsTr("JASP AI can help you choose, conduct, interpret, and report statistical analyses. AI responses and actions may be incorrect, incomplete, or inappropriate for your data, so always verify important statistical decisions, results, assumptions, and conclusions independently.\n\nDuring use, JASP AI may add, change, or replace analyses in your current project. To avoid losing work, we recommend saving a backup copy of your JASP file, and where relevant your original data file, before using JASP AI.\n\nInformation from your data set, analyses, output, and chat messages may be processed by the AI service to answer your questions. Do not use sensitive, confidential, or restricted data unless you are allowed to share it."),
+						qsTr("I Agree"),
+						qsTr("Cancel"))
+					if (agreed) preferencesModel.aiEnabled = true
+				}
 			}
 		}
 	}

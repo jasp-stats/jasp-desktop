@@ -99,6 +99,8 @@ class PreferencesModel : public PreferencesModelBase
 			Q_PROPERTY(int			aiChatLimit				READ aiChatLimit				WRITE setAiChatLimit			NOTIFY aiChatLimitChanged		)
 		Q_PROPERTY(bool			aiChatLimitActive			READ aiChatLimitActive			WRITE setAiChatLimitActive		NOTIFY aiChatLimitActiveChanged		)
 		Q_PROPERTY(bool			aiEnabled			READ aiEnabled			WRITE setAiEnabled			NOTIFY aiEnabledChanged		)
+	Q_PROPERTY(bool			aiAnnotationUseCustom	READ aiAnnotationUseCustom	WRITE setAiAnnotationUseCustom	NOTIFY aiAnnotationUseCustomChanged)
+	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt		WRITE setAiAnnotationPrompt		NOTIFY aiAnnotationPromptChanged)
 		Q_PROPERTY(QObject*		aiPersonaModel		READ aiPersonaModel												CONSTANT				)
 
 			Q_PROPERTY(bool			rpcServerEnabled	READ rpcServerEnabled		WRITE setRpcServerEnabled		NOTIFY rpcServerEnabledChanged	)
@@ -235,6 +237,12 @@ class PreferencesModel : public PreferencesModelBase
 
 			bool aiEnabled() const;
 			void setAiEnabled(bool newAiEnabled);
+
+			bool aiAnnotationUseCustom() const;
+			void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+
+			QString aiAnnotationPrompt() const;
+			void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
 
 			bool rpcServerEnabled() const;
 			void setRpcServerEnabled(bool v);
@@ -394,6 +402,8 @@ signals:
 			void aiChatLimitChanged(		int		aiChatLimit);
 			void aiChatLimitActiveChanged(	bool	aiChatLimitActive);
 			void aiEnabledChanged(			bool	aiEnabled);
+			void aiAnnotationUseCustomChanged(	bool	aiAnnotationUseCustom);
+			void aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
 
 			void rpcServerEnabledChanged(	bool	rpcServerEnabled);
 			void rpcServerIpChanged(		QString	rpcServerIp);

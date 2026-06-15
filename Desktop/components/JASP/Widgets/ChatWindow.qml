@@ -26,6 +26,22 @@ Window
         aiBridge.clearChat();
     }
 
+    function submitUserMessage(text)
+    {
+        // Ensure window is visible and focused
+        if (!visible) visible = true;
+        raise();
+        requestActivate();
+
+        // Use deep-chat's built-in submitUserMessage method to trigger the full normal flow
+        chatView.runJavaScript('
+            (function() {
+                var chat = document.querySelector("deep-chat");
+                if (chat) chat.submitUserMessage({text: ' + JSON.stringify(text) + '});
+            })();
+        ');
+    }
+
     WebEngineView {
         id: chatView
         anchors.fill: parent
