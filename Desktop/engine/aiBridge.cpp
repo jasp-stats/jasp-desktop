@@ -797,33 +797,49 @@ void AiBridge::flushToolCalls()
 		QString functionName = funcObj[QStringLiteral("name")].toString();
 		if (functionName.isEmpty()) continue;
 
-		Log::log() << "AiBridge: Dispatching tool [" << functionName.toStdString()
-					<< "] with args: " << argumentsStr.toStdString() << std::endl;
-
-		// Dispatch through JASP RPC
-		JaspRpcDispatcher *disp = JaspRpcDispatcher::singleton();
-		if (!disp) { Log::log() << "AiBridge: No RPC dispatcher!" << std::endl; emitError("RPC dispatcher not available"); return; }
-
-		QJsonParseError argParseError;
-		QJsonDocument argDoc = QJsonDocument::fromJson(argumentsStr.toUtf8(), &argParseError);
-		Json::Value params;
-		if (argParseError.error == QJsonParseError::NoError && argDoc.isObject()) {
-			std::string s = QJsonDocument(argDoc.object()).toJson(QJsonDocument::Compact).toStdString();
-			Json::Reader r; r.parse(s, params);
-		}
-
-		std::string requestJson = R"({"jsonrpc":"2.0","method":")" + functionName.toStdString() + R"(","params":)" +
-								  (params.isObject() ? params.toStyledString() : "{}") + "}";
-		std::string resultJson = disp->dispatch(requestJson);
-		Json::Value result; Json::Reader r; r.parse(resultJson, result);
-
+		// Security gate: refuse dispatch if the active persona doesn't allow this tool.
+		// The AI is only *shown* allowed tools via buildRequestBody(), but we check
+		// here as a defence-in-depth measure in case a model hallucinates or a provider
+		// misbehaves.
 		QString toolResultText;
-		if (result.isMember("result")) { Json::FastWriter w; toolResultText = QString::fromStdString(w.write(result["result"])); }
-		else if (result.isMember("error")) { toolResultText = QStringLiteral("Error: ") + QString::fromStdString(result["error"].toStyledString()); }
-		else { toolResultText = QString::fromStdString(resultJson); }
+		const QStringList allowedTools = effectiveToolsForActivePersona();
+		const QSet<QString> allowedSet(allowedTools.begin(), allowedTools.end());
+		if (!allowedSet.contains(functionName))
+		{
+			Log::log() << "AiBridge: BLOCKED tool [" << functionName.toStdString()
+					   << "] — not in active persona's allowed-tool set" << std::endl;
+			toolResultText = QStringLiteral("Error: Tool '") + functionName
+				+ QStringLiteral("' is not available for the current persona.");
+		}
+		else
+		{
+			Log::log() << "AiBridge: Dispatching tool [" << functionName.toStdString()
+						<< "] with args: " << argumentsStr.toStdString() << std::endl;
 
-		m_totalToolCallsDispatched++;
-		logToolCall(tc, toolResultText);
+			// Dispatch through JASP RPC
+			JaspRpcDispatcher *disp = JaspRpcDispatcher::singleton();
+			if (!disp) { Log::log() << "AiBridge: No RPC dispatcher!" << std::endl; emitError("RPC dispatcher not available"); return; }
+
+			QJsonParseError argParseError;
+			QJsonDocument argDoc = QJsonDocument::fromJson(argumentsStr.toUtf8(), &argParseError);
+			Json::Value params;
+			if (argParseError.error == QJsonParseError::NoError && argDoc.isObject()) {
+				std::string s = QJsonDocument(argDoc.object()).toJson(QJsonDocument::Compact).toStdString();
+				Json::Reader r; r.parse(s, params);
+			}
+
+			std::string requestJson = R"({"jsonrpc":"2.0","method":")" + functionName.toStdString() + R"(","params":)" +
+									  (params.isObject() ? params.toStyledString() : "{}") + "}";
+			std::string resultJson = disp->dispatch(requestJson);
+			Json::Value result; Json::Reader r; r.parse(resultJson, result);
+
+			if (result.isMember("result")) { Json::FastWriter w; toolResultText = QString::fromStdString(w.write(result["result"])); }
+			else if (result.isMember("error")) { toolResultText = QStringLiteral("Error: ") + QString::fromStdString(result["error"].toStyledString()); }
+			else { toolResultText = QString::fromStdString(resultJson); }
+
+			m_totalToolCallsDispatched++;
+			logToolCall(tc, toolResultText);
+		}
 
 		// Build the tool_call entry — copy ALL accumulated fields (reasoning_content etc)
 		QJsonObject tcObj = tc;
