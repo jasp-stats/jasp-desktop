@@ -56,6 +56,8 @@ QHash<int, QByteArray> ListModel::roleNames() const
 		roles[ColumnTypeIconRole]			= "columnTypeIcon";
 		roles[ColumnTypeDisabledIconRole]	= "columnTypeDisabledIcon";
 		roles[NameRole]						= "name";
+		roles[ValueRole]					= "value";
+		roles[IndexRole]					= "index";
 		roles[RowComponentRole]				= "rowComponent";
 		roles[VirtualRole]					= "virtual";
 		roles[DeletableRole]				= "deletable";
@@ -523,6 +525,8 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 	{
 	case Qt::DisplayRole:
 	case ListModel::NameRole:			return term.label();
+	case ListModel::ValueRole:			return term.value();
+	case ListModel::IndexRole:			return row;
 	case ListModel::InfoRole:			return term.info();
 	case ListModel::SelectableRole:		return !term.value().isEmpty() && term.isDraggable();
 	case ListModel::SelectedRole:		return _selectedItems.contains(row);

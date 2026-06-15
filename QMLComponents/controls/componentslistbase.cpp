@@ -37,6 +37,11 @@ void ComponentsListBase::setUpModel()
 	connect(this, &ComponentsListBase::removeItem,			this, &ComponentsListBase::removeItemHandler);
 	connect(this, &ComponentsListBase::initializedChanged,	this, &ComponentsListBase::resetDefaultValue);
 	connect(this, &ComponentsListBase::headerLabelsChanged,	this, &ComponentsListBase::controlNameXOffsetMapChanged);
+
+	// If the model is reset, it loses the currentIndex. So store the current index before the model is reset, and reset it afterwards.
+	// As the modelReset will remove all items, setting the currentIndex to -1, the resetCurrentIndex must be called afterwards, so that's why the connect must use QueuedConnection
+	connect(_termsModel, &ListModelTermsAssigned::modelAboutToBeReset,	this, &ComponentsListBase::storeCurrentIndex);
+	connect(_termsModel, &ListModelTermsAssigned::modelReset,			this, &ComponentsListBase::resetCurrentIndex, Qt::QueuedConnection);
 }
 
 void ComponentsListBase::bindTo(const Json::Value& value)
@@ -330,6 +335,15 @@ Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, c
 
 void ComponentsListBase::addItemHandler()
 {
+	if (!_sourceItems.empty())
+	{
+		// The source should be called to add an item.
+		// If a resetModel was already called, set the _storedCurrentIndex to the new item
+		if (_resetCount > 0)
+			_storedCurrentIndex = count();
+		return;
+	}
+
 	Terms newTerms;
 	QString newItemValue = _makeUnique(_newItemValue, _termsModel->terms().values());
 	QString newItemLabel = _makeUnique(_newItemLabel, _termsModel->terms().labels());
@@ -341,12 +355,12 @@ void ComponentsListBase::addItemHandler()
 		QMap<QString, Json::Value> jsonValues;
 		
 		const Json::Value	&	boundVal		= boundValue();
-		int						currentIndex	= property("currentIndex").toInt();
+		int						currentInd	= currentIndex();
 		const Terms			&	terms			= _termsModel->terms();
 		
-		if (boundVal.isArray() && int(terms.size()) >= currentIndex)
+		if (boundVal.isArray() && int(terms.size()) >= currentInd)
 		{
-			std::string keyString = fq(terms.at(size_t(currentIndex)).value());
+			std::string keyString = fq(terms.at(size_t(currentInd)).value());
 			
 			for (const Json::Value& jsonVal : boundVal)
 			{
@@ -366,18 +380,49 @@ void ComponentsListBase::addItemHandler()
 		rowValues[newItemValue] = jsonValues;
 	}
 	_termsModel->addTerms(newTerms, -1, rowValues);
-	setProperty("currentIndex", _termsModel->rowCount() - 1);
+	setCurrentIndex(_termsModel->rowCount() - 1);
+}
+
+int ComponentsListBase::currentIndex() const
+{
+	return property("currentIndex").toInt();
+}
+
+void ComponentsListBase::setCurrentIndex(int index)
+{
+	setProperty("currentIndex", index);
+}
+
+void ComponentsListBase::storeCurrentIndex()
+{
+	if (_resetCount == 0 && _storedCurrentIndex == -1)
+		_storedCurrentIndex = currentIndex();
+	_resetCount++;
+}
+
+void ComponentsListBase::resetCurrentIndex()
+{
+	if (_resetCount > 0)
+		_resetCount--;
+	if (_resetCount == 0 && _storedCurrentIndex >= 0)
+	{
+		setCurrentIndex(_storedCurrentIndex >= count() ? count() - 1 : _storedCurrentIndex);
+		_storedCurrentIndex = -1;
+	}
 }
 
 void ComponentsListBase::removeItemHandler(int index)
 {
+	if (!_sourceItems.empty())
+		return;
+
 	_termsModel->removeTerm(index);
-	setProperty("currentIndex", index >= _termsModel->rowCount() ? index - 1 : index);
+	setCurrentIndex(index >= _termsModel->rowCount() ? index - 1 : index);
 }
 
 void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 {
-	if (index < 0 || index >= _termsModel->rowCount())
+	if (!_sourceItems.empty() || index < 0 || index >= _termsModel->rowCount())
 		return;
 
 	Term term = _termsModel->terms().at(index);

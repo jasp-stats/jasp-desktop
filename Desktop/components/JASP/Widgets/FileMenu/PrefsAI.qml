@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as QTC
 import QtQuick.Dialogs as QTD
+import QtQuick.Layouts as QTL
 import JASP.Widgets
 import JASP.Controls
 
@@ -30,146 +31,53 @@ PrefsScrollView
 		}
 	}
 
-	Item
-	{
-		Connections
-		{
-			target:			preferencesModel.aiPersonaModel
-			function onCurrentPersonaIndexChanged() { personaTabBar.currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex }
-			function onCountChanged() {
-				if (preferencesModel.aiPersonaModel.count > 0 && personaTabBar.currentIndex >= preferencesModel.aiPersonaModel.count)
-					personaTabBar.currentIndex = 0
-			}
-		}
-	}
-
 	PrefsGroupRect
 	{
 		title:				qsTr("Connection")
 		visible:			preferencesModel.aiEnabled
 
-		// CheckBox
-		// {
-		// 	id:				customKeyCheck
-		// 	label:			qsTr("Use custom API key / endpoint")
-		// 	checked:		preferencesModel.aiUseCustomKey
-		// 	onCheckedChanged:	preferencesModel.aiUseCustomKey = checked
-		// 	visible:		false
-		// 	focus:			true
-		// 	KeyNavigation.tab:	aiEndpointInput
-		// }
-
-		Text
+		Group
 		{
-			id:				labelMeasure
-			text:			qsTr("Endpoint URL:")
-			font:			jaspTheme.font
-			visible:		false
-		}
-
-		Item
-		{
-			width:			parent.width
-			height:			aiEndpointInput.height
-
-			Label
-			{
-				id:					aiEndpointLabel
-				text:				qsTr("Endpoint URL:")
-				width:				labelMeasure.implicitWidth + jaspTheme.generalAnchorMargin
-
-				anchors
-				{
-					left:			parent.left
-					verticalCenter:	parent.verticalCenter
-				}
-			}
-
-			PrefsTextInput
+			id:			connectionId
+			columns:	1
+			width:		parent.width
+			TextField
 			{
 				id:					aiEndpointInput
-				text:				preferencesModel.aiEndpoint
-				onEditingFinished:	preferencesModel.aiEndpoint = text
-				nextEl:				aiApiKeyInput
+				label:				qsTr("Endpoint URL:")
+				value:				preferencesModel.aiEndpoint
+				onEditingFinished:	preferencesModel.aiEndpoint = displayValue
+				width:				connectionId.width
+				fillWidth:			true
+				fieldHeight:		25 * jaspTheme.uiScale
 				focus:				true
-
-				anchors
-				{
-					left:			aiEndpointLabel.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
-
 				KeyNavigation.tab:	aiApiKeyInput
 			}
-		}
 
-		Item
-		{
-			width:			parent.width
-			height:			aiApiKeyInput.height
-
-			Label
-			{
-				id:					aiApiKeyLabel
-				text:				qsTr("API Key:")
-				width:				labelMeasure.implicitWidth + jaspTheme.generalAnchorMargin
-
-				anchors
-				{
-					left:			parent.left
-					verticalCenter:	parent.verticalCenter
-				}
-			}
-
-			PrefsTextInput
+			TextField
 			{
 				id:					aiApiKeyInput
-				text:				preferencesModel.aiApiKey
-				onEditingFinished:	preferencesModel.aiApiKey = text
-				nextEl:				aiModelInput
-				textInput.echoMode:	TextInput.Password
-
-				anchors
-				{
-					left:			aiApiKeyLabel.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
-			}
-		}
-
-		Item
-		{
-			width:			parent.width
-			height:			aiModelInput.height
-
-			Label
-			{
-				id:					aiModelLabel
-				text:				qsTr("Model:")
-				width:				labelMeasure.implicitWidth + jaspTheme.generalAnchorMargin
-
-				anchors
-				{
-					left:			parent.left
-					verticalCenter:	parent.verticalCenter
-				}
+				label:				qsTr("API Key:")
+				value:				preferencesModel.aiApiKey
+				onEditingFinished:	preferencesModel.aiApiKey = displayValue
+				control.echoMode:	TextInput.Password
+				width:				connectionId.width
+				fillWidth:			true
+				fieldHeight:		25 * jaspTheme.uiScale
+				showEyeInside:		true
+				KeyNavigation.tab:	aiModelInput
 			}
 
-			PrefsTextInput
+			TextField
 			{
 				id:					aiModelInput
-				text:				preferencesModel.aiModel
-				onEditingFinished:	preferencesModel.aiModel = text
-				nextEl:				personaTabBar
-
-				anchors
-				{
-					left:			aiModelLabel.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
+				label:				qsTr("Model:")
+				value:				preferencesModel.aiModel
+				width:				connectionId.width
+				fillWidth:			true
+				fieldHeight:		25 * jaspTheme.uiScale
+				onEditingFinished:	preferencesModel.aiModel = displayValue
+				KeyNavigation.tab:	personaTabBar
 			}
 		}
 
@@ -178,11 +86,12 @@ PrefsScrollView
 			width:			parent.width
 			height:			testButton.height + testResultLabel.height + jaspTheme.generalAnchorMargin
 
-			RectangularButton
+			Button
 			{
 				id:				testButton
 				text:			qsTr("Test Connection")
 				toolTip:		qsTr("Send a minimal request to verify your endpoint and API key.")
+				control.defaultColor:	jaspTheme.buttonColorHovered
 				anchors.left:	parent.left
 				anchors.top:	parent.top
 				anchors.topMargin: jaspTheme.generalAnchorMargin
@@ -212,599 +121,393 @@ PrefsScrollView
 		}
 	}
 
-
 	PrefsGroupRect
 	{
-		title: qsTr("Personas")
-		visible: preferencesModel.aiEnabled
+		title:		qsTr("Personas")
+		visible:	preferencesModel.aiEnabled
 
-		// --- Tab bar ---
-		QTC.ScrollView
+		TabView
 		{
-			id: tabScrollView
-			width: parent.width
-			height: 36 * preferencesModel.uiScale
-			QTC.ScrollBar.horizontal.policy: QTC.ScrollBar.AlwaysOn
+			id:					personaTabBar
+			name:				"personas"
+			source:				[{model: preferencesModel.aiPersonaModel, "label": "personaDisplayName", "value": "personaName" }]
+			addItemManually:	true
+			tabButtonWidth:		140 * jaspTheme.uiScale
+			addTooltip:			qsTr("Add Persona")
+			removeTooltip:		qsTr("Remove Persona")
+			backgroundColor:	jaspTheme.fileMenuColorBackground
 
-			QTC.TabBar
-			{
-				id: personaTabBar
-				contentHeight: 32 * preferencesModel.uiScale
-
-			background: Rectangle { color: jaspTheme.uiBackground }
-
-			Repeater
-			{
-				model: preferencesModel.aiPersonaModel
-				QTC.TabButton
-				{
-					text: personaName
-					font: jaspTheme.font
-					width: Math.max(implicitWidth, 90 * preferencesModel.uiScale)
-
-					contentItem: Text
-					{
-						text: personaName
-						font: jaspTheme.font
-						color: jaspTheme.black
-						horizontalAlignment: Text.AlignHCenter
-						verticalAlignment: Text.AlignVCenter
-						elide: Text.ElideRight
-					}
-
-					background: Rectangle
-					{
-						color: checked ? jaspTheme.grayLighter : jaspTheme.uiBackground
-						border.color: checked ? jaspTheme.uiBorder : jaspTheme.borderColor
-						border.width: 1
-					}
-
-					Rectangle
-					{
-						anchors.right: parent.right
-						anchors.rightMargin: 4
-						anchors.verticalCenter: parent.verticalCenter
-						width:  8 * preferencesModel.uiScale
-						height: width
-						radius: width / 2
-						color: preferencesModel.aiPersonaModel.currentPersonaIndex === index
-						       ? jaspTheme.jaspGreen : "transparent"
-					}
-				}
-			}
-
-			QTC.TabButton
-			{
-				width: 32 * preferencesModel.uiScale
-
-				contentItem: Text
-				{
-					text: "+"
-					font: jaspTheme.font
-					color: jaspTheme.black
-					horizontalAlignment: Text.AlignHCenter
-					verticalAlignment: Text.AlignVCenter
-				}
-
-				background: Rectangle { color: jaspTheme.grayLighter; border.color: jaspTheme.borderColor; border.width: 1 }
-				onClicked: { preferencesModel.aiPersonaModel.addPersona(); personaTabBar.currentIndex = personaTabBar.count - 1; }
-			}
-
-			onCurrentIndexChanged: {
-				if (currentIndex >= 0 && currentIndex < preferencesModel.aiPersonaModel.count)
-					personaEditorColumn.refreshEditor()
-			}
-		}
-	}
-
-	// --- Editor panel ---
-		Column
-		{
-			id: personaEditorColumn
-			width: parent.width
-			visible: preferencesModel.aiPersonaModel.count > 0
-			spacing: jaspTheme.rowSpacing
+			onAddItem:			preferencesModel.aiPersonaModel.addPersona()
+			onRemoveItem:		(index) => preferencesModel.aiPersonaModel.removePersona(index)
+			onKeyValueChanged:	(index, value) => setModelData(index, value, nameRole)
 
 			// Role shortcuts (used throughout)
-			readonly property int nameR:   Qt.UserRole + 2
-			readonly property int promptR: Qt.UserRole + 3
-			readonly property int imageR:  Qt.UserRole + 4
-			readonly property int sysR:    Qt.UserRole + 5
-			readonly property int toolsR:  Qt.UserRole + 6
+			readonly property int nameRole:			preferencesModel.aiPersonaModel.getRole("personaName");
+			readonly property int promptRole:		preferencesModel.aiPersonaModel.getRole("personaPrompt");
+			readonly property int imageRole:		preferencesModel.aiPersonaModel.getRole("personaImagePath");
+			readonly property int isSystemRole:		preferencesModel.aiPersonaModel.getRole("personaIsSystem");
+			readonly property int toolsRole:		preferencesModel.aiPersonaModel.getRole("personaEnabledTools");
+			readonly property int capabilitiesRole:	preferencesModel.aiPersonaModel.getRole("personaEnabledCapabilities");
 
-			function modelData(role) {
-				var idx = personaTabBar.currentIndex
-				if (idx < 0 || idx >= preferencesModel.aiPersonaModel.count) return ""
-				return preferencesModel.aiPersonaModel.data(preferencesModel.aiPersonaModel.index(idx, 0), role)
+			function getModelData(index, role)
+			{
+				return preferencesModel.aiPersonaModel.data(preferencesModel.aiPersonaModel.index(index, 0), role)
 			}
 
-			function refreshEditor() {
-				personaNameField.text        = modelData(nameR)
-				personaNameField.enabled     = true
-				personaPromptInput.text     = modelData(promptR)
-				personaPromptInput.readOnly = false
-				personaImageBrowse.enabled   = true
-				personaDeleteBtn.visible     = !modelData(sysR)
-				personaResetBtn.visible      = modelData(sysR)
-				personaImagePreview.source   = preferencesModel.aiPersonaModel.resolvedImageUrl(modelData(imageR))
-
-				// Initial checkbox state (signal hasn't fired yet)
-				var enabled = modelData(toolsR)
-				var isDefault = (enabled.length === 0 || (enabled.length === 1 && (enabled[0] === '*' || enabled[0] === '_default_')))
-				var effective = isDefault ? preferencesModel.aiPersonaModel.effectiveEnabledTools(personaTabBar.currentIndex) : enabled
-				for (var i = 0; i < toolRepeater.count; i++) {
-					var cb = toolRepeater.itemAt(i)
-					if (cb) cb.checked = (effective.indexOf(cb.toolName) >= 0)
-				}
-
-				// Same for caps: set explicitly from model
-				var capIds = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex)
-				for (var c = 0; c < capRepeater.count; c++) {
-					var capCb = capRepeater.itemAt(c)
-					if (capCb) capCb.checked = (capIds.indexOf(capCb.capId) >= 0)
-				}
+			function setModelData(index, data, role)
+			{
+				preferencesModel.aiPersonaModel.setData(preferencesModel.aiPersonaModel.index(index, 0), data, role)
 			}
 
-			// Initial sync — no signal fires on load
-			Component.onCompleted: {
-				personaTabBar.currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex
-				personaEditorColumn.refreshEditor()
+			function isDefaultPersona(index)
+			{
+				return getModelData(index, isSystemRole)
 			}
 
-			// React to model-data changes
-			Connections {
-				target: preferencesModel.aiPersonaModel
-				function onPersonaNameChanged(index, name) {
-					if (index === personaTabBar.currentIndex) personaNameField.text = name
-				}
-				function onPersonaPromptChanged(index, prompt) {
-					if (index === personaTabBar.currentIndex) personaPromptInput.text = prompt
-				}
-				function onPersonaImagePathChanged(index, path) {
-					if (index === personaTabBar.currentIndex)
-						personaImagePreview.source = preferencesModel.aiPersonaModel.resolvedImageUrl(path)
-				}
-				function onPersonaEnabledToolsChanged(index, tools) {
-					var isDefault = (tools.length === 0 || (tools.length === 1 && (tools[0] === '*' || tools[0] === '_default_')))
-					var effective = isDefault ? preferencesModel.aiPersonaModel.effectiveEnabledTools(index) : tools
-					for (var i = 0; i < toolRepeater.count; i++) {
-						var cb = toolRepeater.itemAt(i)
-						if (cb) cb.checked = (effective.indexOf(cb.toolName) >= 0)
-					}
-				}
+			function isTabRemovable(index)
+			{
+				return !isDefaultPersona(index)
 			}
 
-			// --- Name ---
-			Item {
-				width: parent.width
-				height: personaNameField.height
+			Component.onCompleted: currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex
 
-				Label {
-					text: qsTr("Name:")
-					font: jaspTheme.font
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.left: parent.left
-					width: 80 * preferencesModel.uiScale
+			rowComponent: Item
+			{
+				id:					personaEditorEdit
+				x:					jaspTheme.contentMargin
+				height:				personaEditorColumn.implicitHeight + jaspTheme.contentMargin
+
+				function getData(role)
+				{
+					return personaTabBar.getModelData(rowIndex, role)
 				}
 
-				PrefsTextInput {
-					id: personaNameField
-					width: parent.width - x
-					anchors.leftMargin: 0
-					x: 80 * preferencesModel.uiScale
-					onEditingFinished: preferencesModel.aiPersonaModel.setData(
-						preferencesModel.aiPersonaModel.index(personaTabBar.currentIndex, 0),
-						text, personaEditorColumn.nameR)
-				}
-			}
-
-			// --- Avatar ---
-			Item {
-				width: parent.width
-				height: Math.max(personaImagePreview.height, personaImageBrowse.height)
-
-				Label {
-					text: qsTr("Avatar:")
-					font: jaspTheme.font
-					anchors.verticalCenter: parent.verticalCenter
-					anchors.left: parent.left
-					width: 80 * preferencesModel.uiScale
+				function setData(data, role)
+				{
+					personaTabBar.setModelData(rowIndex, data, role)
 				}
 
-				Image {
-					id: personaImagePreview
-					x: 80 * preferencesModel.uiScale
-					anchors.verticalCenter: parent.verticalCenter
-					width: 40 * preferencesModel.uiScale
-					height: width
-					fillMode: Image.PreserveAspectCrop
-					sourceSize.width: 80
-					sourceSize.height: 80
-				}
+				Column
+				{
+					id:					personaEditorColumn
+					spacing:			jaspTheme.columnGroupSpacing
+					width:				parent.width - 2 * jaspTheme.contentMargin
 
-				RectangularButton {
-					id: personaImageBrowse
-					text: qsTr("Browse")
-					x: personaImagePreview.x + personaImagePreview.width + jaspTheme.generalAnchorMargin
-					anchors.verticalCenter: parent.verticalCenter
-					enabled: true
-					onClicked: personaImageFileDialog.open()
-				}
-
-				QTD.FileDialog {
-					id: personaImageFileDialog
-					title: qsTr("Select Persona Image")
-					nameFilters: [qsTr("Images (*.png *.jpg *.jpeg *.gif *.svg)")]
-					onAccepted: {
-						var path = preferencesModel.aiPersonaModel.copyImageToPersonasDir(selectedFile)
-						if (path)
-							preferencesModel.aiPersonaModel.setData(
-								preferencesModel.aiPersonaModel.index(personaTabBar.currentIndex, 0),
-								path, personaEditorColumn.imageR)
-					}
-				}
-			}
-
-			// --- Persona Prompt ---
-			Label {
-				text: qsTr("Persona Prompt:")
-				font: jaspTheme.font
-				color: jaspTheme.textEnabled
-			}
-
-			Rectangle {
-				border.color: jaspTheme.borderColor
-				border.width: 1
-				radius: jaspTheme.borderRadius
-				color: jaspTheme.white
-				width: parent.width
-				height: 120 * preferencesModel.uiScale
-
-				QTC.ScrollView {
-					anchors.fill: parent
-					anchors.margins: 1
-
-					QTC.TextArea {
-						id: personaPromptInput
-						font: jaspTheme.font
-						color: jaspTheme.textEnabled
-						wrapMode: TextEdit.Wrap
-						selectByMouse: true
-						onEditingFinished: preferencesModel.aiPersonaModel.setData(
-							preferencesModel.aiPersonaModel.index(personaTabBar.currentIndex, 0),
-							text, personaEditorColumn.promptR)
-					}
-				}
-			}
-
-			// --- Tools ---
-			Section {
-				title: qsTr("Persona Capabilities")
-
-				Column {
-					width: parent.width
-					spacing: jaspTheme.rowGridSpacing
-
-					// ---- Capabilities ----
-					Item {
-						id: capsContainer
-						width: parent.width
-						height: capsGrid.height
-
-						property var capsData: preferencesModel.aiPersonaModel.capabilities()
-
-						Connections {
-							target: preferencesModel.aiPersonaModel
-							onPersonaEnabledCapabilitiesChanged: {
-								var ids = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex)
-								for (var c = 0; c < capRepeater.count; c++) {
-									var cb = capRepeater.itemAt(c)
-									if (cb) cb.checked = (ids.indexOf(cb.capId) >= 0)
-								}
-							}
+					// --- Avatar ---
+					QTL.RowLayout
+					{
+						y:									jaspTheme.contentMargin
+						spacing:							20 * jaspTheme.uiScale
+						Label
+						{
+							text:							qsTr("Avatar:")
+							QTL.Layout.alignment:			Qt.AlignHCenter
 						}
 
-						Grid {
-							id: capsGrid
-							width: parent.width
-							columns: 2
-							spacing: 4 * preferencesModel.uiScale
+						Image
+						{
+							id:								personaImagePreview
+							QTL.Layout.alignment:			Qt.AlignHCenter
+							width:							40 * preferencesModel.uiScale
+							height:							width
+							fillMode:						Image.PreserveAspectCrop
+							asynchronous:					true
+							source:							getData(personaTabBar.imageRole)
 
-							Repeater {
+							sourceSize.width:				width
+							sourceSize.height:				height
+						}
+
+						Button
+						{
+							id:								personaImageBrowse
+							text:							qsTr("Choose another image")
+							control.defaultColor:			jaspTheme.buttonColorHovered
+							QTL.Layout.alignment:			Qt.AlignHCenter
+							onClicked:						personaImageFileDialog.open()
+						}
+
+
+						QTD.FileDialog {
+							id:								personaImageFileDialog
+							title:							qsTr("Select Persona Image")
+							nameFilters:					[qsTr("Images") + "(*.png *.jpg *.jpeg *.gif *.svg)"]
+							onAccepted:
+							{
+								var path = preferencesModel.aiPersonaModel.copyImageToPersonasDir(selectedFile)
+								if (path)
+									setData(path, personaTabBar.imageRole)
+							}
+						}
+					}
+
+					// --- Persona Prompt ---
+					TextArea
+					{
+						id:					personaPromptInput
+						isBound:			false
+						title:				qsTr("Persona Prompt:")
+						width:				parent.width
+						height:				150 * preferencesModel.uiScale
+						wrapMode:			TextEdit.Wrap
+						text:				getData(personaTabBar.promptRole)
+						onActiveFocusChanged: if (!activeFocus) setData(text, personaTabBar.promptRole)
+						applyScriptInfo:	""
+						useTabAsSpaces:		false
+						nextTabItem:		capSection
+					}
+
+					// --- Capabilities  ---
+					Section
+					{
+						id:			capSection
+						title:		qsTr("Persona Capabilities")
+						columns:	1
+						property var allCapabilities: preferencesModel.aiPersonaModel.capabilities()
+						property var personaCapabilities: getData(personaTabBar.capabilitiesRole)
+
+						Group
+						{
+							columns: 3
+
+							Repeater
+							{
 								id: capRepeater
-								model: capsContainer.capsData
+								model: capSection.allCapabilities.length
 
-								CheckBox {
-									property string capId: modelData.id
-									label: modelData.displayName
-									enabled: modelData.methods.length > 0
-									width: capsGrid.width / 2 - capsGrid.spacing
+								CheckBox
+								{
+									isBound:						false
+									property var capabilityData:	capSection.allCapabilities[index]
+									property string capId:			capabilityData.id
+									label:							capabilityData.displayName
+									enabled:						capabilityData.methods.length > 0
+									checked:						capSection.personaCapabilities.indexOf(capId) >= 0
 
-									onClicked: {
-										preferencesModel.aiPersonaModel.toggleCapability(personaTabBar.currentIndex, capId)
-										checked = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex).indexOf(capId) >= 0
-									}
+									onClicked:						preferencesModel.aiPersonaModel.toggleCapability(rowIndex, capId)
 								}
 							}
 						}
 					}
 
 					// ---- Advanced (individual tools) ----
-					Section {
-						title: qsTr("Advanced")
-						expanded: false
 
-						Flow {
-							width: parent.width
-							spacing: 4 * preferencesModel.uiScale
+					Section
+					{
+						id:			toolsSection
+						title:		qsTr("Advanced")
+						columns:	1
+						property var allTools: preferencesModel.aiPersonaModel.allKnownToolNames()
+						property var personaTools: getData(personaTabBar.toolsRole)
 
-							Repeater {
+						Group
+						{
+							columns: 3
+							Repeater
+							{
 								id: toolRepeater
-								model: preferencesModel.aiPersonaModel.allKnownToolNames()
+								model: toolsSection.allTools
 
 								CheckBox {
-									property string toolName: modelData
-									label: preferencesModel.aiPersonaModel.toolDisplayName(modelData)
-
-									onClicked: preferencesModel.aiPersonaModel.toggleTool(personaTabBar.currentIndex, toolName)
+									isBound:					false
+									property string toolName:	modelData
+									label:						preferencesModel.aiPersonaModel.toolDisplayName(modelData)
+									checked:					toolsSection.personaTools.indexOf(toolName) >= 0
+									onClicked:					preferencesModel.aiPersonaModel.toggleTool(rowIndex, toolName)
 								}
 							}
 						}
 					}
-				}
-			}
+					// --- Actions ---
+					Row
+					{
+						id: personaActionsRow
+						spacing: jaspTheme.generalAnchorMargin
 
-			// --- Actions ---
-			Row {
-				id: personaActionsRow
-				spacing: jaspTheme.generalAnchorMargin
+						Button {
+							text:		qsTr("Set as Active")
+							control.defaultColor:	jaspTheme.buttonColorHovered
+							onClicked:	preferencesModel.aiPersonaModel.currentPersonaIndex = rowIndex
+							enabled:	preferencesModel.aiPersonaModel.currentPersonaIndex !== rowIndex
+						}
 
-				RectangularButton {
-					text: qsTr("Set as Active")
-					onClicked: preferencesModel.aiPersonaModel.currentPersonaIndex = personaTabBar.currentIndex
-					enabled: preferencesModel.aiPersonaModel.currentPersonaIndex !== personaTabBar.currentIndex
-				}
+						Button {
+							text:		qsTr("Duplicate")
+							control.defaultColor:	jaspTheme.buttonColorHovered
+							onClicked:	preferencesModel.aiPersonaModel.duplicatePersona(rowIndex)
+						}
 
-				RectangularButton {
-					text: qsTr("Duplicate")
-					onClicked: preferencesModel.aiPersonaModel.duplicatePersona(personaTabBar.currentIndex)
-				}
+						Button {
+							control.defaultColor:	jaspTheme.buttonColorHovered
+							text:		qsTr("Delete Persona")
+							visible:	!personaTabBar.isDefaultPersona(rowIndex)
+							onClicked:	preferencesModel.aiPersonaModel.removePersona(rowIndex)
+						}
 
-				RectangularButton {
-					id: personaDeleteBtn
-					text: qsTr("Delete Persona")
-					onClicked: preferencesModel.aiPersonaModel.removePersona(personaTabBar.currentIndex)
-				}
-
-				RectangularButton {
-					id: personaResetBtn
-					text: qsTr("Reset to Default")
-					visible: false
-					onClicked: preferencesModel.aiPersonaModel.resetSystemPersona(personaTabBar.currentIndex)
+						Button {
+							control.defaultColor:	jaspTheme.buttonColorHovered
+							text:		qsTr("Reset to Default")
+							visible:	personaTabBar.isDefaultPersona(rowIndex)
+							onClicked:	preferencesModel.aiPersonaModel.resetSystemPersona(rowIndex)
+						}
+					}
 				}
 			}
 		}
 	}
 
+	Section
+	{
+		title:		qsTr("Advanced")
+		visible:	preferencesModel.aiEnabled
+		columns:	1
 
 		PrefsGroupRect
-	{
-		title:				qsTr("Additional Parameters")
-		visible:			preferencesModel.aiEnabled
-
-		CheckBox
 		{
-			id:					completeSchemaCheck
-			label:				qsTr("Include full tool schemas in request")
-			checked:			preferencesModel.aiUseCompleteSchema
-			onCheckedChanged:	preferencesModel.aiUseCompleteSchema = checked
-			toolTip:			qsTr(
-				"When enabled, each tool in the API request includes its full "
-				+ "parameter schema (with JSON types such as integer/Boolean). "
-				+ "This helps models that struggle with type-safety in tool "
-				+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
-			)
-		}
+			title:				qsTr("Additional Parameters")
 
-		Label
-		{
-			text:			qsTr("Common System Prompt:")
-			font:			jaspTheme.font
-			color:			jaspTheme.textEnabled
-			wrapMode:		Text.WordWrap
-			width:			parent.width
-		}
-
-		Rectangle
-		{
-			border.color:	jaspTheme.borderColor
-			border.width:	1
-			radius:			jaspTheme.borderRadius
-			color:			jaspTheme.white
-			width:			parent.width
-			height:			80 * preferencesModel.uiScale
-
-			QTC.ScrollView
+			CheckBox
 			{
-				anchors.fill:		parent
-				anchors.margins:	1
-
-				QTC.TextArea
-				{
-					id:				aiCommonSystemPromptInput
-					text:			preferencesModel.aiCommonSystemPrompt
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-					wrapMode:		TextEdit.Wrap
-					selectByMouse:	true
-					placeholderText: qsTr("Common system prompt shared across all personas…")
-
-						onEditingFinished:	preferencesModel.aiCommonSystemPrompt = text
-					}
-				}
+				id:					completeSchemaCheck
+				label:				qsTr("Include full tool schemas in request")
+				checked:			preferencesModel.aiUseCompleteSchema
+				onCheckedChanged:	preferencesModel.aiUseCompleteSchema = checked
+				toolTip:			qsTr(
+					"When enabled, each tool in the API request includes its full "
+					+ "parameter schema (with JSON such as like integer/boolean). "
+					+ "This helps models that struggle with type-safety in tool "
+					+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
+				)
 			}
 
-			Item {
-				width: chatLimitCheck.width + 120 * preferencesModel.uiScale
-				height: chatLimitCheck.height
+			TextArea
+			{
+				id:				aiCommonSystemPromptInput
+				title:			qsTr("Common System Prompt:")
+				height:			120 * preferencesModel.uiScale
+				text:			preferencesModel.aiCommonSystemPrompt
+				isBound:		false
+				wrapMode:		TextEdit.Wrap
+				placeholderText: qsTr("Common system prompt shared across all personas…")
+				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
+				applyScriptInfo:""
+				useTabAsSpaces:	false
+				nextTabItem:	chatLimitCheck
+			}
 
-				CheckBox {
-					id: chatLimitCheck
-					label: qsTr("Single chat token limit:")
-					checked: preferencesModel.aiChatLimitActive
-					onCheckedChanged: preferencesModel.aiChatLimitActive = checked
-				}
+			CheckBox
+			{
+				id:					chatLimitCheck
+				label:				qsTr("Single chat token limit:")
+				childrenOnSameRow:	true
+				checked:			preferencesModel.aiChatLimitActive
+				onCheckedChanged:	preferencesModel.aiChatLimitActive = checked
 
-				IntegerField {
-					id: chatLimitField
-					value: preferencesModel.aiChatLimit
+				IntegerField
+				{
+					value:			preferencesModel.aiChatLimit
 					onValueChanged: preferencesModel.aiChatLimit = value
-					enabled: chatLimitCheck.checked
-					fieldWidth: 100 * preferencesModel.uiScale
-					toolTip: qsTr("~4 characters ≈ 1 token")
-
-					anchors {
-						left: chatLimitCheck.right
-						leftMargin: jaspTheme.generalAnchorMargin
-						verticalCenter: chatLimitCheck.verticalCenter
-					}
+					enabled:		chatLimitCheck.checked
+					fieldWidth:		100 * preferencesModel.uiScale
+					toolTip:		qsTr("~4 characters ≈ 1 token")
 				}
 			}
 
 			Label
 			{
 				text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
-			font:			jaspTheme.font
-			color:			jaspTheme.textEnabled
-			wrapMode:		Text.WordWrap
-			width:			parent.width
-		}
+				wrapMode:		Text.WordWrap
+				width:			parent.width
+			}
 
-		Rectangle
-		{
-			border.color:	jaspTheme.borderColor
-			border.width:	1
-			radius:			jaspTheme.borderRadius
-			color:			jaspTheme.white
-			width:			parent.width
-			height:			150 * preferencesModel.uiScale
-
-			QTC.ScrollView
+			TextArea
 			{
-				anchors.fill:		parent
-				anchors.margins:	1
-
-				QTC.TextArea
-				{
-					id:				aiExtraParamsInput
-					text:			preferencesModel.aiExtraParams
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-					wrapMode:		TextEdit.Wrap
-					selectByMouse:	true
-
-					onEditingFinished:	preferencesModel.aiExtraParams = text
-				}
+				id:				aiExtraParamsInput
+				text:			preferencesModel.aiExtraParams
+				height:			120 * preferencesModel.uiScale
+				isBound:		false
+				wrapMode:		TextEdit.Wrap
+				placeholderText: qsTr("Common system prompt shared across all personas…")
+				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiExtraParams = text
+				applyScriptInfo:""
+				useTabAsSpaces:	false
+				nextTabItem:	aiMessageExtraInput
 			}
 		}
-	}
 
 
-	PrefsGroupRect
-	{
-		title:				qsTr("Per-Message Extra Fields")
-		visible:			preferencesModel.aiEnabled
-
-		Label
+		PrefsGroupRect
 		{
-			text:			qsTr(
-				"Paste a JSON object to merge into every message of the API request.\n"
-				+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
-				+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
-			)
-			font:			jaspTheme.font
-			color:			jaspTheme.textEnabled
-			wrapMode:		Text.WordWrap
-			width:			parent.width
-		}
+			title:				qsTr("Per-Message Extra Fields")
 
-		Rectangle
-		{
-			border.color:	jaspTheme.borderColor
-			border.width:	1
-			radius:			jaspTheme.borderRadius
-			color:			jaspTheme.white
-			width:			parent.width
-			height:			120 * preferencesModel.uiScale
-
-			QTC.ScrollView
+			Label
 			{
-				anchors.fill:		parent
-				anchors.margins:	1
+				text:			qsTr(
+					"Paste a JSON object to merge into every message of the API request.\n"
+					+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
+					+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
+				)
+				wrapMode:		Text.WordWrap
+				width:			parent.width
+			}
 
-				QTC.TextArea
-				{
-					id:				aiMessageExtraInput
-					text:			preferencesModel.aiMessageExtra
-					font:			jaspTheme.font
-					color:			jaspTheme.textEnabled
-					wrapMode:		TextEdit.Wrap
-					selectByMouse:	true
-					placeholderText: qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
 
-					onEditingFinished:	preferencesModel.aiMessageExtra = text
-				}
+			TextArea
+			{
+				id:				aiMessageExtraInput
+				text:			preferencesModel.aiMessageExtra
+				height:			120 * preferencesModel.uiScale
+				isBound:		false
+				wrapMode:		TextEdit.Wrap
+				placeholderText: qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
+				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiMessageExtra = text
+				applyScriptInfo:""
+				useTabAsSpaces:	false
+				nextTabItem:	mcpEnabled
+			}
+		}
+
+		Button
+		{
+			text:			qsTr("Reset all AI settings to defaults")
+			control.defaultColor:	jaspTheme.buttonColorHovered
+			toolTip:		qsTr("Restore endpoint, model, system prompt, and all other AI settings to their original defaults.")
+			onClicked:		preferencesModel.resetAiDefaults()
+		}
+
+		PrefsGroupRect
+		{
+			title:				qsTr("MCP")
+
+			CheckBox
+			{
+				id:					mcpEnabled
+				label:				qsTr("Enable MCP server (Model Context Protocol)")
+				checked:			preferencesModel.rpcServerEnabled
+				onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
+				toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
 			}
 		}
 	}
 
-	RectangularButton
+	Button
 	{
-		visible:		preferencesModel.aiEnabled
-		text:			qsTr("Reset all AI settings to defaults")
-		toolTip:		qsTr("Restore endpoint, model, system prompt, and all other AI settings to their original defaults.")
-		onClicked:		preferencesModel.resetAiDefaults()
-		anchors.left:	parent.left
-	}
+		text:					preferencesModel.aiEnabled ? qsTr("Disable AI Service") : qsTr("Enable AI Service")
+		toolTip:				qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
+		control.defaultColor:	jaspTheme.buttonColorHovered
 
-	PrefsGroupRect
-	{
-		title:				qsTr("MCP")
-		visible:			preferencesModel.aiEnabled
-
-		CheckBox
-		{
-			id:					mcpEnabled
-			label:				qsTr("Enable MCP server (Model Context Protocol)")
-			checked:			preferencesModel.rpcServerEnabled
-			onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
-			toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
-		}
-	}
-
-	PrefsGroupRect
-	{
-		title:				qsTr("AI Service")
-
-		RectangularButton
-		{
-			id:				aiEnableBtn
-			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
-			toolTip:		qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
-			anchors.left:	parent.left
-
-			onClicked: {
-				if (preferencesModel.aiEnabled) {
-					preferencesModel.aiEnabled = false
-				} else {
-					var agreed = messages.showYesNoQML(
-						qsTr("Before using JASP AI"),
-						qsTr("JASP AI can help you choose, conduct, interpret, and report statistical analyses. AI responses and actions may be incorrect, incomplete, or inappropriate for your data, so always verify important statistical decisions, results, assumptions, and conclusions independently.\n\nDuring use, JASP AI may add, change, or replace analyses in your current project. To avoid losing work, we recommend saving a backup copy of your JASP file, and where relevant your original data file, before using JASP AI.\n\nInformation from your data set, analyses, output, and chat messages may be processed by the AI service to answer your questions. Do not use sensitive, confidential, or restricted data unless you are allowed to share it."),
-						qsTr("I Agree"),
-						qsTr("Cancel"))
-					if (agreed) preferencesModel.aiEnabled = true
-				}
+		onClicked: {
+			if (preferencesModel.aiEnabled) {
+				preferencesModel.aiEnabled = false
+			} else {
+				let agreed = messages.showYesNoQML(
+					qsTr("Before using JASP AI"),
+					qsTr("JASP AI can help you choose, conduct, interpret, and report statistical analyses. AI responses and actions may be incorrect, incomplete, or inappropriate for your data, so always verify important statistical decisions, results, assumptions, and conclusions independently.\n\nDuring use, JASP AI may add, change, or replace analyses in your current project. To avoid losing work, we recommend saving a backup copy of your JASP file, and where relevant your original data file, before using JASP AI.\n\nInformation from your data set, analyses, output, and chat messages may be processed by the AI service to answer your questions. Do not use sensitive, confidential, or restricted data unless you are allowed to share it."),
+					qsTr("I Agree"),
+					qsTr("Cancel"))
+				if (agreed) preferencesModel.aiEnabled = true
 			}
 		}
 	}
+	Item { height: 3; width: 3} // Add some space at the bottom.
 }

@@ -28,6 +28,7 @@
 const QString SourceItem::SourceValueLabel = "label";
 const QString SourceItem::SourceValueValue = "value";
 const QString SourceItem::SourceValueInfo = "info";
+const QString SourceItem::SourceValueType = "type";
 
 SourceItem::SourceItem(
 		  JASPListControl*							targetListControl
@@ -56,7 +57,10 @@ SourceItem::SourceItem(
 	_isDataSetVariables			= map.contains("isDataSetVariables")		? map["isDataSetVariables"].toBool()			: false;
 	_combineWithOtherModels		= map.contains("combineWithOtherModels")	? map["combineWithOtherModels"].toBool()		: false;
 	_noInteractions				= map.contains("noInteraction")				? map["noInteraction"].toBool()					: false;
-	_nativeModelRole			= map.contains("nativeModelRole")			? map["nativeModelRole"].toInt()				: Qt::DisplayRole;
+	_nativeModelDisplayRole		= map.contains("nativeModelDisplayRole")	? map["nativeModelDisplayRole"].toInt()			: Qt::DisplayRole;
+	_nativeModelValueRole		= map.contains("nativeModelValueRole")		? map["nativeModelValueRole"].toInt()			: Qt::DisplayRole;
+	_nativeModelInfoRole		= map.contains("nativeModelInfoRole")		? map["nativeModelInfoRole"].toInt()			: -1;
+	_nativeModelTypeRole		= map.contains("nativeModelTypeRole")		? map["nativeModelTypeRole"].toInt()			: -1;
 	_combineTerms				= map.contains("combineTerms")				? JASPControl::CombinationType(map["combineTerms"].toInt())	: JASPControl::CombinationType::NoCombination;
 	if (isInfoProviderModel(_sourceNativeModel))									_isDataSetVariables = true;
 	if (_sourceFilter.contains("levels"))											_targetListControl->setUseSourceLevels(true);
@@ -100,10 +104,7 @@ void SourceItem::_setUp()
 		// Add a ListModelTermsAvailable to contain the values given in the source
 		_sourceNativeModel = new ListModelTermsAvailable(_targetListControl, _values);
 	else if (_isDataSetVariables)
-	{
 		_sourceNativeModel	= infoProviderModel();
-		_nativeModelRole	= requestInfo(VariableInfo::NameRole).toInt();
-	}
 	else if (_targetListControl->form() && !_sourceName.isEmpty())
 	{
 		// If we are in a form and we have the name of the source, search for the source model in the form
@@ -390,23 +391,33 @@ QMap<QString, QVariant> SourceItem::_readSource(JASPListControl* listControl, co
 
 	if (nativeModel)
 	{
-		QString roleName = sourceUse.isEmpty() ? SourceItem::SourceValueLabel : sourceUse;
-		map["nativeModelRole"] = Qt::DisplayRole;
+		QString labelRoleName = sourceUse.isEmpty() ? SourceItem::SourceValueLabel : sourceUse;
+		QString valueRoleName = SourceItem::SourceValueValue;
+		QString infoRoleName = SourceItem::SourceValueInfo;
+		QString typeRoleName = SourceItem::SourceValueType;
 
-		if (!roleName.isEmpty())
+		if (map.contains(labelRoleName))	labelRoleName	= map[labelRoleName].toString();
+		if (map.contains(valueRoleName))	valueRoleName	= map[valueRoleName].toString();
+		if (map.contains(infoRoleName))		infoRoleName	= map[infoRoleName].toString();
+		if (map.contains(typeRoleName))		typeRoleName	= map[typeRoleName].toString();
+
+		QHashIterator<int, QByteArray> it(nativeModel->roleNames());
+
+		while (it.hasNext())
 		{
-			QHashIterator<int, QByteArray> it(nativeModel->roleNames());
-
-			while (it.hasNext())
-			{
-				it.next();
-				if (it.value() == roleName)
-				{
-					map["nativeModelRole"] = it.key();
-					break;
-				}
-			}
+			it.next();
+			if (it.value() == labelRoleName)		map["nativeModelDisplayRole"]	= it.key();
+			if (it.value() == valueRoleName)		map["nativeModelValueRole"]		= it.key();
+			if (it.value() == infoRoleName)			map["nativeModelInfoRole"]		= it.key();
+			if (it.value() == typeRoleName)			map["nativeModelTypeRole"]		= it.key();
 		}
+
+		// If only 1 of label and value role is given, copy the missing role
+		if (map.contains("nativeModelDisplayRole") && !map.contains("nativeModelValueRole"))
+			map["nativeModelValueRole"] = map["nativeModelDisplayRole"];
+		if (!map.contains("nativeModelDisplayRole") && map.contains("nativeModelValueRole"))
+			map["nativeModelDisplayRole"] = map["nativeModelValueRole"];
+
 	}
 	map["name"]				= sourceName;
 	map["rowControlName"]	= sourceControlName;
@@ -448,7 +459,11 @@ Terms SourceItem::_readValues(JASPListControl* listControl, const QVariant& valu
 					QString label = labelValueMap[SourceItem::SourceValueLabel].toString();
 					QString value = labelValueMap[SourceItem::SourceValueValue].toString();
 					QString info = labelValueMap[SourceItem::SourceValueInfo].toString();
-					result.add(Term(value, label, info));
+					QString typeStr = labelValueMap[SourceItem::SourceValueType].toString();
+					columnType type = columnType::unknown;
+					if (!typeStr.isEmpty() && columnTypeValidName(typeStr.toStdString()))
+						type = columnTypeFromQString(typeStr);
+					result.add(Term(value, label, info, type));
 				}
 			}
 		}
@@ -580,19 +595,26 @@ Terms SourceItem::_readAllTerms()
 	else if (_sourceNativeModel)
 	{
 		int nbRows = _sourceNativeModel->rowCount();
-		int nbCols = _sourceNativeModel->columnCount();
 		for (int i = 0; i < nbRows; i++)
 		{
-			QStringList row;
-			columnTypeVec types;
-			for (int j = 0; j < nbCols; j++)
+			QString label = _sourceNativeModel->data(_sourceNativeModel->index(i, 0), _nativeModelDisplayRole).toString();
+			QString value = _sourceNativeModel->data(_sourceNativeModel->index(i, 0), _nativeModelValueRole).toString();
+			columnType type = columnType::unknown;
+			QString info;
+			if (_nativeModelTypeRole >= 0)
 			{
-				QString name = _sourceNativeModel->data(_sourceNativeModel->index(i, j), _nativeModelRole).toString();
-				row.append(name);
-				types.push_back(columnType(requestInfo(VariableInfo::VariableType, name).toInt()));
+				QVariant typeVar = _sourceNativeModel->data(_sourceNativeModel->index(i, 0), _nativeModelTypeRole);
+				if (typeVar.typeId() == QMetaType::QString)
+				{
+					if (columnTypeValidName(typeVar.toString().toStdString()))
+						type = columnTypeFromQString(typeVar.toString());
+				}
+				else if (typeVar.typeId() == QMetaType::Int)
+					type = columnType(typeVar.toInt());
 			}
-			Term term(row, types);
-			terms.add(term, false);
+			if (_nativeModelInfoRole >= 0)
+				info = _sourceNativeModel->data(_sourceNativeModel->index(i, 0), _nativeModelInfoRole).toString();
+			terms.add(Term(value, label, info, type), false);
 		}
 		if (!_sourceFilter.empty())
 			terms = _targetListControl->model()->filterTerms(terms, _sourceFilter);
