@@ -70,7 +70,20 @@ public:
 	/// Copy an image file into the personas directory, return the absolute path.
 	Q_INVOKABLE QString copyImageToPersonasDir(const QUrl &sourceUrl);
 
-	QUrl resolvedImageUrl(const QString &imagePath) const;
+	/// Directory where persona images are stored.
+	Q_INVOKABLE QString personaImagesDir() const;
+
+	/// Default fallback image (qrc:///icons/jaspAI.png or similar).
+	Q_INVOKABLE QString defaultPersonaImagePath() const;
+
+	/// Get a file:// URL to a shipped persona image by filename (e.g. "Alfred.png").
+	Q_INVOKABLE QUrl shippedPersonaImageUrl(const QString &filename) const;
+
+	/// Find a persona's index by name. Returns -1 if not found.
+	Q_INVOKABLE int personaIndexForName(const QString &name) const;
+
+	/// Resolve an imagePath to a displayable URL (handles empty, missing files, etc).
+	Q_INVOKABLE QUrl resolvedImageUrl(const QString &imagePath) const;
 
 	// Accessors (for C++ consumers like AiBridge)
 	const PersonaEntry &activePersona() const;
@@ -120,7 +133,6 @@ private:
 	void			mergeLists();
 	void			insertPersona(int pos, const PersonaEntry &entry);
 	QString			resolveDefaultImage()	const;
-	QString			personaImagesDir()		const;
 	void			loadPersonaSettings();
 	void			loadCapabilities();
 	QStringList		resolveCapabilitiesToTools(const QJsonArray &capsArr)	const;

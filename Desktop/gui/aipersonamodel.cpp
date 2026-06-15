@@ -259,7 +259,28 @@ QUrl AIPersonaModel::resolvedImageUrl(const QString &imagePath) const
 	if (imagePath.isEmpty() || !QFile::exists(imagePath))
 		return QUrl(JaspTheme::currentIconPath() + "jaspAI.png");
 
-	return QUrl::fromLocalFile(imagePath);
+	if (QFile::exists(imagePath))
+		return QUrl::fromLocalFile(imagePath);
+
+	return QUrl(defaultPersonaImagePath());
+}
+
+QUrl AIPersonaModel::shippedPersonaImageUrl(const QString &filename) const
+{
+	QString path = tq(Dirs::resourcesDir()) + "PersonaImages/" + filename;
+	if (QFile::exists(path))
+		return QUrl::fromLocalFile(path);
+	return QUrl(defaultPersonaImagePath());
+}
+
+int AIPersonaModel::personaIndexForName(const QString &name) const
+{
+	for (int i = 0; i < m_personas.size(); ++i)
+	{
+		if (m_personas[i].name == name)
+			return i;
+	}
+	return -1;
 }
 
 // ============================================================================
@@ -659,6 +680,11 @@ void AIPersonaModel::mergeLists()
 QString AIPersonaModel::resolveDefaultImage() const
 {
 	return {};
+}
+
+QString AIPersonaModel::defaultPersonaImagePath() const
+{
+	return JaspTheme::currentIconPath() + "jaspAI.png";
 }
 
 // ============================================================================
