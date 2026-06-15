@@ -481,68 +481,73 @@ PrefsScrollView
 			Section {
 				title: qsTr("Persona Capabilities")
 
-				// ---- Capabilities ----
-				Item {
-					id: capsContainer
+				Column {
 					width: parent.width
-					height: capsGrid.height
+					spacing: jaspTheme.rowGridSpacing
 
-					property var capsData: preferencesModel.aiPersonaModel.capabilities()
+					// ---- Capabilities ----
+					Item {
+						id: capsContainer
+						width: parent.width
+						height: capsGrid.height
 
-					Connections {
-						target: preferencesModel.aiPersonaModel
-						onPersonaEnabledCapabilitiesChanged: {
-							var ids = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex)
-							for (var c = 0; c < capRepeater.count; c++) {
-								var cb = capRepeater.itemAt(c)
-								if (cb) cb.checked = (ids.indexOf(cb.capId) >= 0)
+						property var capsData: preferencesModel.aiPersonaModel.capabilities()
+
+						Connections {
+							target: preferencesModel.aiPersonaModel
+							onPersonaEnabledCapabilitiesChanged: {
+								var ids = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex)
+								for (var c = 0; c < capRepeater.count; c++) {
+									var cb = capRepeater.itemAt(c)
+									if (cb) cb.checked = (ids.indexOf(cb.capId) >= 0)
+								}
 							}
 						}
-					}
 
-					Grid {
-						id: capsGrid
-						width: parent.width
-						columns: 2
-						spacing: 4 * preferencesModel.uiScale
+						Grid {
+							id: capsGrid
+							width: parent.width
+							columns: 2
+							spacing: 4 * preferencesModel.uiScale
 
-						Repeater {
-							id: capRepeater
-							model: capsContainer.capsData
+							Repeater {
+								id: capRepeater
+								model: capsContainer.capsData
 
-							CheckBox {
-								property string capId: modelData.id
-								label: modelData.displayName
-								enabled: modelData.methods.length > 0
-								width: capsGrid.width / 2 - capsGrid.spacing
+								CheckBox {
+									property string capId: modelData.id
+									label: modelData.displayName
+									enabled: modelData.methods.length > 0
+									width: capsGrid.width / 2 - capsGrid.spacing
 
-								onClicked: {
-									preferencesModel.aiPersonaModel.toggleCapability(personaTabBar.currentIndex, capId)
-									checked = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex).indexOf(capId) >= 0
+									onClicked: {
+										preferencesModel.aiPersonaModel.toggleCapability(personaTabBar.currentIndex, capId)
+										checked = preferencesModel.aiPersonaModel.enabledCapabilityIds(personaTabBar.currentIndex).indexOf(capId) >= 0
+									}
 								}
 							}
 						}
 					}
-				}
 
-				// ---- Advanced (individual tools) ----
-				Section {
-					title: qsTr("Advanced")
-					expanded: false
+					// ---- Advanced (individual tools) ----
+					Section {
+						title: qsTr("Advanced")
+						expanded: false
 
-					Flow {
-						width: parent.width
-						spacing: 4 * preferencesModel.uiScale
+						Flow {
+							width: parent.width
+							spacing: 4 * preferencesModel.uiScale
 
-						Repeater {
-							id: toolRepeater
-							model: preferencesModel.aiPersonaModel.allKnownToolNames()
+							Repeater {
+								id: toolRepeater
+								model: preferencesModel.aiPersonaModel.allKnownToolNames()
 
-							CheckBox {
-								property string toolName: modelData
-								label: preferencesModel.aiPersonaModel.toolDisplayName(modelData)
+								CheckBox {
+									property string toolName: modelData
+									label: preferencesModel.aiPersonaModel.toolDisplayName(modelData)
 
-								onClicked: preferencesModel.aiPersonaModel.toggleTool(personaTabBar.currentIndex, toolName)
+									onClicked: preferencesModel.aiPersonaModel.toggleTool(personaTabBar.currentIndex, toolName)
+								}
 							}
 						}
 					}
