@@ -403,7 +403,7 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 
 	// 2. Persona Prompt
 	AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
-	if (pm && pm->count() > 0) {
+	if (pm && pm->rowCount() > 0) {
 		const PersonaEntry &p = pm->activePersona();
 		if (!p.personaPrompt.isEmpty()) {
 			sysContent += QStringLiteral("Persona Prompt:\n");
@@ -553,7 +553,7 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 QStringList AiBridge::effectiveToolsForActivePersona() const
 {
 	AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
-	if (!pm || pm->count() == 0)
+	if (!pm || pm->rowCount() == 0)
 		return pm ? pm->defaultToolSet() : QStringList();
 	return pm->effectiveEnabledTools(pm->currentPersonaIndex());
 }

@@ -60,6 +60,8 @@ public:
 	QList<QVariant>	headerLabels()						const			{ return _headerLabels;			}
 
 	Json::Value		getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm& termsWithComponentValues);
+	int				currentIndex()						const;
+	void			setCurrentIndex(int index);
 
 signals:
 	void			addItem();
@@ -91,6 +93,8 @@ protected slots:
 	void			removeItemHandler(int index);
 	void			keyValueChangedHandler(int index, QString displayValue);
 	void			resetDefaultValue();
+	void			storeCurrentIndex();
+	void			resetCurrentIndex();
 
 protected:
 	QString				_makeUnique(const QString& val, int index = -1)	const;
@@ -104,7 +108,9 @@ private:
 	bool						_addItemManually		= false,
 								_duplicateWhenAdding	= false;
 	int							_minimumItems			= 0,
-								_maximumItems			= -1;
+								_maximumItems			= -1,
+								_storedCurrentIndex = -1,
+								_resetCount				= 0;
 	QList<QVariant>				_defaultValues,
 								_headerLabels;
 };

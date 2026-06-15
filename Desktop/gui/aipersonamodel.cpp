@@ -18,8 +18,6 @@
 #include <QMimeDatabase>
 
 // Forward declarations — static helpers defined later in this file
-static QStringList resolveCapabilitiesToTools(const QJsonArray &capsArr);
-static QStringList resolveCaps(const QStringList &tools);
 static QJsonArray toJsonArr(const QStringList &ids);
 
 // ============================================================================
@@ -29,7 +27,8 @@ static QJsonArray toJsonArr(const QStringList &ids);
 AIPersonaModel::AIPersonaModel(QObject *parent)
 	: QAbstractListModel(parent)
 {
-	loadFromSettings();
+	loadCapabilities();
+	loadPersonaSettings();
 }
 
 // ============================================================================
@@ -48,14 +47,20 @@ QVariant AIPersonaModel::data(const QModelIndex &index, int role) const
 
 	const PersonaEntry &p = m_personas.at(index.row());
 	switch (role) {
-	case IdRole:             return p.id;
-	case NameRole:           return p.name;
-	case PersonaPromptRole:   return p.personaPrompt;
-	case ImagePathRole:      return p.imagePath;
-	case IsSystemRole:       return p.isSystem;
-	case EnabledToolsRole:   return p.enabledTools;
-	case EnabledCapabilitiesRole: return p.enabledCapabilities;
-	default:                 return {};
+	case IdRole:					return p.id;
+	case NameRole:					return p.name;
+	case NameDisplayRole:
+	case Qt::DisplayRole:
+	{
+		bool addBold = currentPersonaIndex() == index.row();
+		return (addBold ? "<b>" : "") + p.name + (addBold ? "</b>" : "");
+	}
+	case PersonaPromptRole:			return p.personaPrompt;
+	case ImagePathRole:				return resolvedImageUrl(p.imagePath);
+	case IsSystemRole:				return p.isSystem;
+	case EnabledToolsRole:			return p.enabledTools;
+	case EnabledCapabilitiesRole:	return p.enabledCapabilities;
+	default:						return {};
 	}
 }
 
@@ -94,32 +99,6 @@ bool AIPersonaModel::setData(const QModelIndex &index, const QVariant &value, in
 		if (index.row() == m_currentPersonaIndex)
 			emit activePersonaAvatarChanged();
 		break;
-	case EnabledToolsRole:
-	{
-		QStringList tools = value.toStringList();
-		tools.sort();
-		if (tools == it->enabledTools) return true;
-
-		// Store tools and derive caps
-		it->enabledTools = tools;
-		merged.enabledTools = tools;
-		it->enabledCapabilities = resolveCaps(tools);
-		merged.enabledCapabilities = it->enabledCapabilities;
-		break;
-	}
-	case EnabledCapabilitiesRole:
-	{
-		QStringList caps = value.toStringList();
-		caps.sort();
-		if (caps == it->enabledCapabilities) return true;
-		QStringList tools = resolveCapabilitiesToTools(toJsonArr(caps));
-		tools.sort();
-		it->enabledTools = tools;
-		it->enabledCapabilities = caps;
-		merged.enabledTools = tools;
-		merged.enabledCapabilities = caps;
-		break;
-	}
 	default:
 		return false;
 	}
@@ -127,27 +106,21 @@ bool AIPersonaModel::setData(const QModelIndex &index, const QVariant &value, in
 	saveToSettings();
 
 	emit dataChanged(index, index, {role});
-	switch (role) {
-	case NameRole:           emit personaNameChanged(index.row(), it->name); break;
-	case PersonaPromptRole:   emit personaPromptChanged(index.row(), it->personaPrompt); break;
-	case ImagePathRole:      emit personaImagePathChanged(index.row(), it->imagePath); break;
-	case EnabledToolsRole:   emit personaEnabledToolsChanged(index.row(), it->enabledTools);
-							emit personaEnabledCapabilitiesChanged(index.row(), it->enabledCapabilities); break;
-	default: break;
-	}
+
 	return true;
 }
 
 QHash<int, QByteArray> AIPersonaModel::roleNames() const
 {
 	return {
-		{ IdRole,             "personaId" },
-		{ NameRole,           "personaName" },
-		{ PersonaPromptRole,   "personaPrompt" },
-		{ ImagePathRole,      "personaImagePath" },
-		{ IsSystemRole,       "personaIsSystem" },
-		{ EnabledToolsRole,   "personaEnabledTools" },
-		{ EnabledCapabilitiesRole, "personaEnabledCapabilities" }
+		{ IdRole,					"personaId" },
+		{ NameRole,					"personaName" },
+		{ NameDisplayRole,			"personaDisplayName" },
+		{ PersonaPromptRole,		"personaPrompt" },
+		{ ImagePathRole,			"personaImagePath" },
+		{ IsSystemRole,				"personaIsSystem" },
+		{ EnabledToolsRole,			"personaEnabledTools" },
+		{ EnabledCapabilitiesRole,	"personaEnabledCapabilities" }
 	};
 }
 
@@ -207,6 +180,14 @@ void AIPersonaModel::duplicatePersona(int index)
 	saveToSettings();
 }
 
+int AIPersonaModel::getRole(QString name)
+{
+	for (const auto &[roleId, roleName] : roleNames().asKeyValueRange())
+		if (name == roleName)
+			return roleId;
+	return 0;
+}
+
 void AIPersonaModel::resetSystemPersona(int index)
 {
 	if (index < 0 || index >= m_personas.size()) return;
@@ -236,11 +217,6 @@ void AIPersonaModel::resetSystemPersona(int index)
 
 	saveToSettings();
 	emit dataChanged(this->index(index, 0), this->index(index, 0));
-	emit personaNameChanged(index, merged.name);
-	emit personaPromptChanged(index, merged.personaPrompt);
-	emit personaImagePathChanged(index, merged.imagePath);
-	emit personaEnabledToolsChanged(index, merged.enabledTools);
-	emit personaEnabledCapabilitiesChanged(index, merged.enabledCapabilities);
 }
 
 // ============================================================================
@@ -277,20 +253,13 @@ QString AIPersonaModel::copyImageToPersonasDir(const QUrl &sourceUrl)
 	return {};
 }
 
-QString AIPersonaModel::defaultPersonaImagePath() const
-{
-	return JaspTheme::currentIconPath() + "jaspAI.png";
-}
 
 QUrl AIPersonaModel::resolvedImageUrl(const QString &imagePath) const
 {
-	if (imagePath.isEmpty())
-		return QUrl(defaultPersonaImagePath());
+	if (imagePath.isEmpty() || !QFile::exists(imagePath))
+		return QUrl(JaspTheme::currentIconPath() + "jaspAI.png");
 
-	if (QFile::exists(imagePath))
-		return QUrl::fromLocalFile(imagePath);
-
-	return QUrl(defaultPersonaImagePath());
+	return QUrl::fromLocalFile(imagePath);
 }
 
 // ============================================================================
@@ -303,11 +272,6 @@ const PersonaEntry &AIPersonaModel::activePersona() const
 	if (m_currentPersonaIndex >= 0 && m_currentPersonaIndex < m_personas.size())
 		return m_personas.at(m_currentPersonaIndex);
 	return emptyEntry;
-}
-
-int AIPersonaModel::count() const
-{
-	return m_personas.size();
 }
 
 
@@ -342,19 +306,21 @@ QString AIPersonaModel::activePersonaAvatarWeb() const
 	return QStringLiteral("jaspPersona:///") + fi.fileName();
 }
 
-void AIPersonaModel::setCurrentPersonaIndex(int index)
+void AIPersonaModel::setCurrentPersonaIndex(int ind)
 {
-	if (index < 0) index = 0;
-	if (index >= m_personas.size()) index = m_personas.size() - 1;
-	if (index == m_currentPersonaIndex) return;
+	if (ind < 0) ind = 0;
+	if (ind >= m_personas.size()) ind = m_personas.size() - 1;
+	if (ind == m_currentPersonaIndex) return;
 
-	m_currentPersonaIndex = index;
+	emit dataChanged(index(m_currentPersonaIndex), index(m_currentPersonaIndex)); // In order to change the Tab Button text
+	m_currentPersonaIndex = ind;
+	emit dataChanged(index(m_currentPersonaIndex), index(m_currentPersonaIndex));
 	emit currentPersonaIndexChanged();
 	emit activePersonaAvatarChanged();
 
 	// Persist the active persona by UUID
-	if (index >= 0 && index < m_personas.size())
-		Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, m_personas.at(index).id);
+	if (ind >= 0 && ind < m_personas.size())
+		Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, m_personas.at(ind).id);
 	else
 		Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, QString());
 }
@@ -363,47 +329,35 @@ void AIPersonaModel::setCurrentPersonaIndex(int index)
 // Helper — resolve capability IDs to tool names
 // ============================================================================
 
-static QStringList resolveCapabilitiesToTools(const QJsonArray &capsArr)
+QStringList AIPersonaModel::resolveCapabilitiesToTools(const QJsonArray &capsArr) const
 {
 	// "*" means all capabilities → all tools
+	bool getAllMethods = false;
 	for (const QJsonValue &v : capsArr)
 		if (v.isString() && v.toString() == QStringLiteral("*"))
-			return {QStringLiteral("*")};
+			getAllMethods = true;
 
-	// Load JASP_Capabilities.json to map cap IDs → methods
-	std::string path = Dirs::resourcesDir() + "JASP_Capabilities.json";
-	QFile file(tq(path));
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return {};
-
-	QJsonParseError err;
-	QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &err);
-	file.close();
-	if (err.error != QJsonParseError::NoError || !doc.isObject())
-		return {};
-
-	// Build map: capability id → methods
-	QMap<QString, QStringList> capMap;
-	QJsonArray caps = doc.object().value(QStringLiteral("capabilities")).toArray();
-	for (const QJsonValue &cv : caps)
+	QStringList enabledCaps;
+	if (!getAllMethods)
 	{
-		if (!cv.isObject()) continue;
-		QJsonObject co = cv.toObject();
-		QStringList methods;
-		for (const QJsonValue &mv : co.value(QStringLiteral("methods")).toArray())
-			if (mv.isString()) methods.append(mv.toString());
-		capMap[co.value(QStringLiteral("id")).toString()] = methods;
+		for (const QJsonValue &v : capsArr)
+		{
+			if (!v.isString()) continue;
+			enabledCaps.append(v.toString());
+		}
 	}
 
 	// Collect methods for the requested capabilities
 	QSet<QString> resolved;
-	for (const QJsonValue &v : capsArr)
+	for (const auto capVar : m_capabilities)
 	{
-		if (!v.isString()) continue;
-		auto it = capMap.find(v.toString());
-		if (it != capMap.end())
-			for (const QString &m : *it)
-				resolved.insert(m);
+		QMap<QString, QVariant> cap = capVar.toMap();
+		if (getAllMethods || enabledCaps.contains(cap["id"].toString()))
+		{
+			QStringList methods = cap["methods"].toStringList();
+			for (const QString & method : methods)
+				resolved.insert(method);
+		}
 	}
 
 	return QStringList(resolved.begin(), resolved.end());
@@ -419,41 +373,28 @@ static QJsonArray toJsonArr(const QStringList &ids)
 }
 
 /// Given tools, compute which caps are fully covered (reads JASP_Capabilities.json)
-static QStringList resolveCaps(const QStringList &tools)
+QStringList AIPersonaModel::resolveCaps(const QStringList &tools) const
 {
 	if (tools.isEmpty()) return {};
 
-	std::string path = Dirs::resourcesDir() + "JASP_Capabilities.json";
-	QFile file(tq(path));
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return {};
-
-	QJsonParseError err;
-	QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &err);
-	file.close();
-	if (err.error != QJsonParseError::NoError || !doc.isObject())
-		return {};
-
 	QSet<QString> toolSet(tools.begin(), tools.end());
 	QStringList covered;
-	QJsonArray caps = doc.object().value(QStringLiteral("capabilities")).toArray();
-	for (const QJsonValue &cv : caps)
+	for (const auto capVar : m_capabilities)
 	{
-		if (!cv.isObject()) continue;
-		QJsonObject co = cv.toObject();
-		QJsonArray methods = co.value(QStringLiteral("methods")).toArray();
-		if (methods.isEmpty()) continue;
+		QMap<QString, QVariant> cap = capVar.toMap();
+		QStringList methods = cap["methods"].toStringList();
+		QString id = cap["id"].toString();
 
 		bool allPresent = true;
-		for (const QJsonValue &mv : methods)
+		for (const QString &mv : methods)
 		{
-			if (!mv.isString() || !toolSet.contains(mv.toString())) {
+			if (!toolSet.contains(mv)) {
 				allPresent = false;
 				break;
 			}
 		}
 		if (allPresent)
-			covered.append(co.value(QStringLiteral("id")).toString());
+			covered.append(id);
 	}
 	covered.sort();
 	return covered;
@@ -463,7 +404,7 @@ static QStringList resolveCaps(const QStringList &tools)
 // Persistence
 // ============================================================================
 
-void AIPersonaModel::loadFromSettings()
+void AIPersonaModel::loadPersonaSettings()
 {
 	if (m_loaded) return;
 	m_loaded = true;
@@ -499,8 +440,13 @@ void AIPersonaModel::loadFromSettings()
 				// Parse enabledCapabilities (explicit cap IDs take priority)
 				QJsonArray capsArr = obj.value(QStringLiteral("enabledCapabilities")).toArray();
 				if (!capsArr.isEmpty()) {
-					for (const QJsonValue &cv : capsArr)
-						if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+					if (capsArr.size() == 1 && capsArr[0].isString() && capsArr[0].toString() == "*")
+						entry.enabledCapabilities = getAllCapabilityIds();
+					else
+					{
+						for (const QJsonValue &cv : capsArr)
+							if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+					}
 					entry.enabledCapabilities.sort();
 				}
 
@@ -523,9 +469,9 @@ void AIPersonaModel::loadFromSettings()
 					entry.imagePath = resolveDefaultImage();
 
 				m_systemPersonas.append(entry);
-				}
 			}
-			else
+		}
+		else
 		{
 			Log::log() << "AIPersonaModel: defaultPersonas.json is not a valid JSON array." << std::endl;
 		}
@@ -581,10 +527,16 @@ void AIPersonaModel::loadFromSettings()
 				// Parse enabledCapabilities (new field)
 				QJsonArray capsArr = obj.value(QStringLiteral("enabledCapabilities")).toArray();
 				if (!capsArr.isEmpty()) {
-					for (const QJsonValue &cv : capsArr)
-						if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+					if (capsArr.size() == 1 && capsArr[0].isString() && capsArr[0].toString() == "*")
+						entry.enabledCapabilities = getAllCapabilityIds();
+					else
+					{
+						for (const QJsonValue &cv : capsArr)
+							if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+					}
 					entry.enabledCapabilities.sort();
 				}
+
 
 				// Migration: if caps not stored but tools are, derive caps from tools
 				if (entry.enabledCapabilities.isEmpty() && !entry.enabledTools.isEmpty())
@@ -614,11 +566,7 @@ void AIPersonaModel::loadFromSettings()
 
 		// Emit signals so QML refreshes even if TabBar index didn't change
 		const PersonaEntry &rp = m_personas.at(idx);
-		emit personaEnabledToolsChanged(idx, rp.enabledTools);
-		emit personaEnabledCapabilitiesChanged(idx, rp.enabledCapabilities);
 	}
-
-	emit countChanged();
 }
 
 void AIPersonaModel::saveToSettings()
@@ -659,7 +607,6 @@ void AIPersonaModel::resetAll()
 	Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, m_personas.at(0).id);
 
 	emit currentPersonaIndexChanged();
-	emit countChanged();
 }
 
 // ============================================================================
@@ -707,7 +654,6 @@ void AIPersonaModel::mergeLists()
 	}
 
 	endResetModel();
-	emit countChanged();
 }
 
 QString AIPersonaModel::resolveDefaultImage() const
@@ -784,19 +730,18 @@ QString AIPersonaModel::toolDisplayName(const QString &methodName) const
 	return dn.empty() ? methodName : QString::fromStdString(dn);
 }
 
-QVariantList AIPersonaModel::capabilities() const
+void AIPersonaModel::loadCapabilities()
 {
-	QVariantList result;
 	std::string path = Dirs::resourcesDir() + "JASP_Capabilities.json";
 	QFile file(tq(path));
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		return result;
+		return;
 
 	QJsonParseError err;
 	QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &err);
 	file.close();
 	if (err.error != QJsonParseError::NoError || !doc.isObject())
-		return result;
+		return;
 
 	QJsonArray caps = doc.object().value(QStringLiteral("capabilities")).toArray();
 	for (const QJsonValue &cv : caps)
@@ -814,36 +759,8 @@ QVariantList AIPersonaModel::capabilities() const
 			if (mv.isString()) methods.append(mv.toString());
 		cap[QStringLiteral("methods")] = methods;
 
-		result.append(cap);
+		m_capabilities.append(cap);
 	}
-
-	return result;
-}
-
-void AIPersonaModel::useDefaultToolSet(int index)
-{
-	if (index < 0 || index >= m_personas.size()) return;
-
-	// Use the resolved effective defaults as an explicit list
-	QStringList defaults = defaultToolSet();
-
-	PersonaEntry &merged = m_personas[index];
-	auto it = std::find_if(m_userPersonas.begin(), m_userPersonas.end(),
-		[&](const PersonaEntry &u) { return u.id == merged.id; });
-	if (it == m_userPersonas.end()) {
-		PersonaEntry entry = merged;
-		entry.isSystem = false;
-		m_userPersonas.append(entry);
-		it = m_userPersonas.end() - 1;
-	}
-
-	it->enabledTools = defaults;
-	merged.enabledTools = defaults;
-	it->enabledCapabilities = resolveCaps(defaults);
-	merged.enabledCapabilities = it->enabledCapabilities;
-	saveToSettings();
-	emit dataChanged(this->index(index, 0), this->index(index, 0), {EnabledToolsRole});
-	emit personaEnabledToolsChanged(index, merged.enabledTools);
 }
 
 void AIPersonaModel::toggleCapability(int personaIndex, const QString &capId)
@@ -896,8 +813,6 @@ void AIPersonaModel::toggleCapability(int personaIndex, const QString &capId)
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
-	emit personaEnabledToolsChanged(personaIndex, it->enabledTools);
-	emit personaEnabledCapabilitiesChanged(personaIndex, it->enabledCapabilities);
 }
 
 void AIPersonaModel::toggleTool(int personaIndex, const QString &toolName)
@@ -934,13 +849,10 @@ void AIPersonaModel::toggleTool(int personaIndex, const QString &toolName)
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
-	emit personaEnabledToolsChanged(personaIndex, it->enabledTools);
-	emit personaEnabledCapabilitiesChanged(personaIndex, it->enabledCapabilities);
 }
 
 QStringList AIPersonaModel::enabledCapabilityIds(int personaIndex)
 {
-	loadFromSettings();
 	if (personaIndex < 0 || personaIndex >= m_personas.size())
 		return {};
 	const QStringList &s = m_personas.at(personaIndex).enabledCapabilities;
@@ -949,4 +861,13 @@ QStringList AIPersonaModel::enabledCapabilityIds(int personaIndex)
 	for (const QVariant &cv : capabilities())
 		all.append(cv.toMap().value(QStringLiteral("id")).toString());
 	return all;
+}
+
+QStringList AIPersonaModel::getAllCapabilityIds() const
+{
+	QStringList result;
+	for (const auto c : m_capabilities)
+		result.append(c.toMap()["id"].toString());
+
+	return result;
 }

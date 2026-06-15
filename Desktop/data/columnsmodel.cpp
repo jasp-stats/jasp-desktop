@@ -170,7 +170,7 @@ QVariant ColumnsModel::provideInfo(VariableInfo::InfoType info, const QString& c
 		switch(info)
 		{
 		case VariableInfo::VariableType:				return					data(qColIndex, ColumnsModel::ColumnTypeRole).toInt();
-		case VariableInfo::NameRole:					return					data(qColIndex, ColumnsModel::NameRole);
+		case VariableInfo::NameRole:					return					ColumnsModel::NameRole;
 		
 		case VariableInfo::DoubleValues:				return	_tableModel->	data(tableCIndex,						int(DataSetPackage::specialRoles::valuesDblList));
 		case VariableInfo::TotalNumericValues:			return	_tableModel->	data(tableCIndex,						int(DataSetPackage::specialRoles::nonFilteredNumericValuesCount));

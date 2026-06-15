@@ -109,10 +109,17 @@ ComponentsListBase
 	property alias  content				: tabView.rowComponent
 	property alias	currentIndex		: itemTabBar.currentIndex
 	property var	buttonComponent		: defaultButtonButton
+	property color	backgroundColor		: jaspTheme.uiBackground
+	property color	tabButtonColor		: jaspTheme.grayLighter
 
 	property real	tabBarHeight		: 28 * preferencesModel.uiScale
 	property real	tabButtonRadius		: 5 * preferencesModel.uiScale
 	property real	tabButtonWidth		: 100 * preferencesModel.uiScale
+
+	function isTabRemovable(index)
+	{
+		return true
+	}
 
 	Text
 	{
@@ -133,9 +140,10 @@ ComponentsListBase
 		QtControls.TabButton
 		{
 			// In order to make rounded button, the tabbar height is set a bit higher, and the bottom line of the buttons with its rounded side is removed.
-			id		: tabButton
-			width	: Math.min(100 * jaspTheme.uiScale, (rectangleItem.width - itemRepeater.count - (tabView.showAddIcon ? addIconItem.width : 0)) / itemRepeater.count)
-			height	: itemTabBar.height
+			id				: tabButton
+			width			: Math.min(tabButtonWidth, (rectangleItem.width - itemRepeater.count - (tabView.showAddIcon ? addIconItem.width : 0)) / itemRepeater.count)
+			height			: itemTabBar.height
+			hoverEnabled	: true		// Without this, tabButton.hovered never becomes true and the ToolTip below never shows
 
 			contentItem: Item
 			{
@@ -143,6 +151,7 @@ ComponentsListBase
 				anchors.bottomMargin	: tabView.tabButtonRadius
 				Text
 				{
+					id					: tabButtonLabel
 					anchors.verticalCenter	: parent.verticalCenter
 					horizontalAlignment	: Text.AlignHCenter
 
@@ -153,6 +162,13 @@ ComponentsListBase
 					elide				: Text.ElideRight
 					width				: parent.width - jaspTheme.labelSpacing - (removeIconItem.visible ? removeIconItem.width  : 0)
 					visible				: !textFieldItem.visible
+
+					QtControls.ToolTip.visible	: tabButton.hovered && (tabButtonLabel.truncated || tabView.tabNameEditable)
+					QtControls.ToolTip.text		: (tabButtonLabel.truncated ? model.value : "")
+												+ (tabButtonLabel.truncated && tabView.tabNameEditable ? "\n" : "")
+												+ (tabView.tabNameEditable ? qsTr("Double click to edit") : "")
+
+
 				}
 
 				Image
@@ -162,7 +178,7 @@ ComponentsListBase
 					anchors.right			: parent.right
 					anchors.rightMargin		: 4 * preferencesModel.uiScale
 					anchors.verticalCenter	: parent.verticalCenter
-					visible					: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible
+					visible					: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
 					height					: jaspTheme.iconSize * preferencesModel.uiScale
 					width					: jaspTheme.iconSize * preferencesModel.uiScale
 
@@ -184,7 +200,7 @@ ComponentsListBase
 					isBound				: false
 					visible				: false
 					useExternalBorder	: false
-					value				: model.name
+					value				: model.value
 					fieldWidth			: parent.width
 					fieldHeight			: parent.height
 					onEditingFinished	: tabView.keyValueChanged(index, displayValue)
@@ -196,7 +212,7 @@ ComponentsListBase
 
 			background: Rectangle
 			{
-				color			: tabButton.checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
+				color			: tabButton.checked ? backgroundColor : tabButtonColor
 				radius			: tabView.tabButtonRadius
 				border.width	: 1
 				border.color	: checked ? jaspTheme.uiBorder : jaspTheme.borderColor
@@ -209,7 +225,7 @@ ComponentsListBase
 					anchors.leftMargin		: 1
 					height					: tabView.tabButtonRadius
 					width					: parent.width
-					color					: jaspTheme.uiBackground
+					color					: backgroundColor
 				}
 
 				Rectangle
@@ -226,11 +242,6 @@ ComponentsListBase
 				}
 			}
 
-			QtControls.ToolTip
-			{
-				text			: qsTr("Double click to edit this name")
-				visible			: tabView.tabNameEditable && tabButton.hovered
-			}
 
 			onDoubleClicked:
 			{
@@ -253,7 +264,7 @@ ComponentsListBase
 		height			: itemTabBar.height + itemStack.height + 2 * preferencesModel.uiScale
 		width			: parent.width
 
-		color			: "transparent"
+		color			: backgroundColor
 		radius			: jaspTheme.borderRadius
 
 		Rectangle
@@ -283,7 +294,7 @@ ComponentsListBase
 
 		background: Rectangle
 		{
-			color: jaspTheme.grayLighter
+			color: tabButtonColor
 		}
 
 		Repeater
