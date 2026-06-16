@@ -131,11 +131,13 @@ QHash<int, QByteArray> AIPersonaModel::roleNames() const
 int AIPersonaModel::addPersona()
 {
 	PersonaEntry p;
-	p.id          = QUuid::createUuid().toString(QUuid::WithoutBraces);
-	p.name        = QStringLiteral("New Persona");
+	p.id           = QUuid::createUuid().toString(QUuid::WithoutBraces);
+	p.name         = QStringLiteral("New Persona");
 	p.personaPrompt = QStringLiteral("");
-	p.imagePath   = QStringLiteral("");
-	p.isSystem    = false;
+	p.imagePath    = QStringLiteral("");
+	p.isSystem     = false;
+	p.enabledCapabilities = getAllCapabilityIds();  // new personas start with all caps
+	p.enabledTools = resolveCapabilitiesToTools(toJsonArr(p.enabledCapabilities));
 
 	m_userPersonas.append(p);
 	mergeLists();
@@ -707,8 +709,9 @@ QStringList AIPersonaModel::effectiveEnabledTools(int index) const
 				[&](const PersonaEntry &s) { return s.id == p.id; });
 			if (it != m_systemPersonas.end() && !it->enabledTools.isEmpty())
 				return it->enabledTools;
+			return defaultToolSet();
 		}
-		return defaultToolSet();
+		return {};  // user persona with empty tools → no tools
 	}
 
 	if (p.enabledTools.size() == 1 && p.enabledTools.first() == QStringLiteral("*"))
