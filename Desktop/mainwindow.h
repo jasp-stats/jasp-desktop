@@ -60,7 +60,7 @@
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "rpc/jasprpcdispatcher.h"
 #include "rpc/jasprpcserver.h"
-#include "engine/aiBridge.h"
+#include "ai/aiBridge.h"
 
 using namespace std;
 
