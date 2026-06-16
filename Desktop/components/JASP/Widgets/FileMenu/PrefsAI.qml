@@ -382,8 +382,23 @@ PrefsScrollView
 			onActiveFocusChanged: if (!activeFocus) preferencesModel.aiAnnotationPrompt = text
 			applyScriptInfo:""
 			useTabAsSpaces:	false
-			nextTabItem:	advancedSec.button
+			nextTabItem:	mcpEnabled
 
+		}
+	}
+
+	PrefsGroupRect
+	{
+		title:				qsTr("MCP")
+		visible:			preferencesModel.aiEnabled
+
+		CheckBox
+		{
+			id:					mcpEnabled
+			label:				qsTr("Enable MCP server (Model Context Protocol)")
+			checked:			preferencesModel.rpcServerEnabled
+			onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
+			toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
 		}
 	}
 
@@ -393,21 +408,6 @@ PrefsScrollView
 		title:		qsTr("Advanced")
 		visible:	preferencesModel.aiEnabled
 		columns:	1
-
-		PrefsGroupRect
-		{
-			title:				qsTr("MCP")
-			visible:			preferencesModel.aiEnabled
-
-			CheckBox
-			{
-				id:					mcpEnabled
-				label:				qsTr("Enable MCP server (Model Context Protocol)")
-				checked:			preferencesModel.rpcServerEnabled
-				onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
-				toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
-			}
-		}
 
 		PrefsGroupRect
 		{
