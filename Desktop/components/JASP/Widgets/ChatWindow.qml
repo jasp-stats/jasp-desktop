@@ -81,7 +81,7 @@ Window
 		// User avatar for the chat: converts stored path to jaspPersona:/// scheme
 		property string userIconPath: {
 			var stored = preferencesModel.aiUserAvatar
-			if (!stored) return ""  // deep-chat will use its default user icon
+			if (!stored) return "jaspPersona:///userPersona5.png"
 			var idx = Math.max(stored.lastIndexOf("/"), stored.lastIndexOf("\\"))
 			var filename = idx >= 0 ? stored.substring(idx + 1) : stored
 			return "jaspPersona:///" + filename
