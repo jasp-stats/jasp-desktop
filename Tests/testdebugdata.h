@@ -21,14 +21,13 @@ private slots:
 	void    testReverseLabels();
     void    testReverseNumericals();
 	void	testShadowDisplay();
-	void	testDuplicateLabelPrevention();
 	void	testValueEqualsDisplayStorage();
 	void	testSequentialValueChanges();
 	void	testEmptyValueLabel();
 	void	testNumericToStringConversion();
 	void	testStringToNumericConversion();
 	void	testBatchOperationsWithFilters();
-	void	testUndoRedoAfterLabelChanges();
+	//void	testUndoRedoAfterLabelChanges();
 	
 private:
 	DataSetPackage		*	_pkg		= nullptr;

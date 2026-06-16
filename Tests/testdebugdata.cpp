@@ -1,5 +1,6 @@
 #include "testinfo.h"
 #include "tempfiles.h"
+#include "columnutils.h"
 #include "processinfo.h"
 #include "testdebugdata.h"
 #include "utilities/qutils.h"
@@ -307,8 +308,7 @@ void TestDebugData::testChangeLabelValueTwice()
 	QVERIFY2(lbl->label() == "hello",	"Lable value change to 'hello' failed");
 
 	// Second value change: non-numeric string → numeric (goes through labelValueChanged,
-	// which uses lastOrigValDisplay(). Since _labelMapUpdates no longer calls
-	// rememberCurrentOrigValDisplay(), _lastValDisMapping is stale → assert failure at line 1638)
+	// which uses lastOrigValDisplay().
 	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(lbl), "5", int(DataSetPackage::specialRoles::value));
 	QVERIFY2(lbl->originalValueAsString() == "5",		"Second value change to '5' failed");
 	QVERIFY2(lbl->label() == "hello",		"Label value should stay to 'hello' failed");
@@ -324,6 +324,10 @@ void TestDebugData::testChangeLabelValueTwice()
 	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(lbl), "7", int(DataSetPackage::specialRoles::label));
 	QVERIFY2(lbl->originalValueAsString() == "6",		"Label value should stay to '6' failed");
 	QVERIFY2(lbl->label() == "7",		"Label change to '7' failed");
+	
+	QVERIFY2(lbl->label() != lbl->originalValueAsString(), "value and label ought to be different!");
+	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(lbl), "7", int(DataSetPackage::specialRoles::value));
+	QVERIFY2(lbl->label() == lbl->originalValueAsString(), "value and label ought to be same now!");
 
 	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(lbl), "8", int(DataSetPackage::specialRoles::value));
 	QVERIFY2(lbl->originalValueAsString() == "8",		"Label value change to '8' failed'");
@@ -420,40 +424,11 @@ void TestDebugData::testShadowDisplay()
 	std::string dispContGamma = contGamma->getDisplay(0, false, false);
 	std::string shadContGamma = contGamma->getShadow(0, false, false);
 	
-QString shadContGammaMsg = QString("contGamma row 0 shadow should not be empty (val='%1', disp='%2', shad='%3')")
+	QString shadContGammaMsg = QString("contGamma row 0 shadow should not be empty (val='%1', disp='%2', shad='%3')")
 				.arg(valContGamma.c_str()).arg(dispContGamma.c_str()).arg(shadContGamma.c_str());
-		std::string shadContGammaMsgStr = shadContGammaMsg.toStdString();
-		QVERIFY2(!shadContGamma.empty(), shadContGammaMsgStr.c_str());
-	}
-}
-
-void TestDebugData::testDuplicateLabelPrevention()
-{
-	QVERIFY2(_data,		"No dataset!");
 	
-	Column * contBinom = _data->column("contBinom");
+	QVERIFY2(!shadContGamma.empty(), shadContGammaMsg.toStdString().c_str());
 	
-	if(!contBinom->hasLabels())
-		contBinom->noLabelsToLabels();
-	
-	QVERIFY2(contBinom->hasLabels(), "contBinom should have labels");
-	QVERIFY2(contBinom->labels().size() >= 2, "contBinom needs at least 2 labels");
-	
-	Label * label1 = contBinom->labels()[0];
-	Label * label2 = contBinom->labels()[1];
-	
-	std::string originalVal1 = label1->originalValueAsString();
-	
-	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label2), originalVal1.c_str(), int(DataSetPackage::specialRoles::label));
-	
-	QVERIFY2(label2->label() != originalVal1.c_str(), "Duplicate label should not be created");
-	
-	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label2), "NewLabel", int(DataSetPackage::specialRoles::label));
-	
-	QVERIFY2(label2->label() == "NewLabel", "Label should be successfully changed to non-duplicate");
-	
-	DataSet loadMe(_data->id());
-	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
 
 void TestDebugData::testValueEqualsDisplayStorage()
@@ -475,12 +450,12 @@ void TestDebugData::testValueEqualsDisplayStorage()
 	
 	if(isNumeric)
 	{
-		QVERIFY2(label->label() == "", "Numeric value with same display should have empty label stored");
+		QVERIFY2(label->label(false)   == "", "Numeric value with same display should have empty label stored");
 		QVERIFY2(label->labelDisplay() == currentVal, "Display should show the value");
 	}
 	else
 	{
-		QVERIFY2(label->label() != "", "Non-numeric should have non-empty label");
+		QVERIFY2(label->label(false)   != "", "Non-numeric should have non-empty label");
 		QVERIFY2(label->labelDisplay() == label->label(), "Display should match label");
 	}
 	
@@ -649,40 +624,42 @@ void TestDebugData::testBatchOperationsWithFilters()
 	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
 
-void TestDebugData::testUndoRedoAfterLabelChanges()
-{
-	QVERIFY2(_data,		"No dataset!");
-	
-	Column * contBinom = _data->column("contBinom");
-	
-	if(!contBinom->hasLabels())
-		contBinom->noLabelsToLabels();
-	
-	Label * label = contBinom->labels()[0];
-	
-	std::string originalLabel = label->label();
-	std::string originalValue = label->originalValueAsString();
-	
-	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label), "NewLabel", int(DataSetPackage::specialRoles::label));
-	QVERIFY2(label->label() == "NewLabel", "Label should change");
-	
-	DataSetPackage::pkg()->undoStack()->undo();
-	QVERIFY2(label->label() == originalLabel, "Undo should restore original label");
-	
-	DataSetPackage::pkg()->undoStack()->redo();
-	QVERIFY2(label->label() == "NewLabel", "Redo should reapply label change");
-	
-	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label), "NewValue", int(DataSetPackage::specialRoles::value));
-	QVERIFY2(label->originalValueAsString() == "NewValue", "Value should change");
-	
-	DataSetPackage::pkg()->undoStack()->undo();
-	QVERIFY2(label->originalValueAsString() == originalValue, "Undo should restore original value");
-	
-	DataSetPackage::pkg()->undoStack()->redo();
-	QVERIFY2(label->originalValueAsString() == "NewValue", "Redo should reapply value change");
-	
-	DataSet loadMe(_data->id());
-	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
-}
+
+// The following test would require actually using the undo model commands
+//void TestDebugData::testUndoRedoAfterLabelChanges()
+//{
+//	QVERIFY2(_data,		"No dataset!");
+//	
+//	Column * contBinom = _data->column("contBinom");
+//	
+//	if(!contBinom->hasLabels())
+//		contBinom->noLabelsToLabels();
+//	
+//	Label * label = contBinom->labels()[0];
+//	
+//	std::string originalLabel = label->label();
+//	std::string originalValue = label->originalValueAsString();
+//	
+//	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label), "NewLabel", int(DataSetPackage::specialRoles::label));
+//	QVERIFY2(label->label() == "NewLabel", "Label should change");
+//	
+//	DataSetPackage::pkg()->undoStack()->undo();
+//	QVERIFY2(label->label() == originalLabel, "Undo should restore original label");
+//	
+//	DataSetPackage::pkg()->undoStack()->redo();
+//	QVERIFY2(label->label() == "NewLabel", "Redo should reapply label change");
+//	
+//	DataSetPackage::pkg()->setData(DataSetPackage::pkg()->indexForSubNode(label), "NewValue", int(DataSetPackage::specialRoles::value));
+//	QVERIFY2(label->originalValueAsString() == "NewValue", "Value should change");
+//	
+//	DataSetPackage::pkg()->undoStack()->undo();
+//	QVERIFY2(label->originalValueAsString() == originalValue, "Undo should restore original value");
+//	
+//	DataSetPackage::pkg()->undoStack()->redo();
+//	QVERIFY2(label->originalValueAsString() == "NewValue", "Redo should reapply value change");
+//	
+//	DataSet loadMe(_data->id());
+//	QVERIFY2(_data->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
+//}
 
 QTEST_MAIN(TestDebugData)

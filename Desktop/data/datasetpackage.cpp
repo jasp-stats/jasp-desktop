@@ -896,8 +896,8 @@ bool DataSetPackage::setLabelDisplay(const QModelIndex &index, const QString &ne
 		return false;
 	
 	beginSynchingData(false);
-	
-	if(label->setLabel(newLabel.toStdString()))
+		
+	if(label->setLabel(Label::processLabel(newLabel.toStdString(), label->originalValueAsString())))
 	{
 		aChange = true;
 		

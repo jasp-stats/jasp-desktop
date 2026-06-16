@@ -1624,8 +1624,6 @@ void Column::labelValueChanged(Label *label, const Json::Value & previousOrigina
 {
 	assert(_hasLabels);
 	
-	label->rememberCurrentOrigValDisplay();
-	
 	auto prevOrigV	= Label::originalValueAsString(this, previousOriginal);
 	auto oldValDis	= std::make_pair(prevOrigV, label->label());
 	bool merged		= _labelByValDis.count(label->origValDisplay()) != 0;
