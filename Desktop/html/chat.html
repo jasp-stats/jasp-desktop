@@ -30,20 +30,7 @@
         <script type="text/javascript" src="js/md_table_enhance.js"></script>
     </head>
     <body>
-        <span
-            id="token-counter"
-            style="
-                position: absolute;
-                bottom: 8px;
-                right: 16px;
-                font-size: 11px;
-                color: #999;
-                z-index: 10;
-                pointer-events: none;
-            "
-        ></span>
         <deep-chat
-            style="border-radius: 10px"
             auxiliaryStyle="
                 /* --- Markdown Tables (match jasp.css look) --- */
                 table {
@@ -165,44 +152,6 @@
                 }
             }'
             textInput='{"placeholder": {"text": "Ask anything..."}}'
-            introMessage='{"text": "This is a beta version of JASP AI.\nPlease monitor the costs and always question AI output.\nIntended for personal use. Contact [JASP Services BV](https://www.jasp-services.com/contact/) for enterprise / institutional support."}'
-            customButtons='[
-    		{
-    			"position": "outside-start",
-    			"tooltip": {"text": "Clear conversation"},
-    			"styles": {
-    				"button": {
-    					"default": {
-    						"container": {
-    							"default": {
-    								"backgroundColor": "transparent",
-    								"border": "none",
-    								"width": "2em",
-    								"height": "2em",
-    								"display": "flex",
-    								"justifyContent": "center",
-    								"alignItems": "center"
-    							},
-    							"hover": {
-    								"backgroundColor": "#f0f0f0",
-    								"borderRadius": "4px"
-    							}
-    						},
-    						"svg": {
-    							"content": "<?xml version=\"1.0\" encoding=\"utf-8\"?><svg width=\"100%\" height=\"100%\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 002 2h8a2 2 0 002-2l1-12M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3\" stroke=\"#888\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
-    							"styles": {
-    								"default": {
-    									"width": "2em",
-    									"height": "2em",
-    									"filter": "brightness(0) saturate(100%)"
-    								}
-    							}
-    						}
-    					}
-    				}
-    			}
-		}
-	]'
         ></deep-chat>
     </body>
 </html>
