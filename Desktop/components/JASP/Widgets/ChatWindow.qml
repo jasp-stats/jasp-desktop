@@ -4,12 +4,13 @@ import QtQuick.Dialogs
 import QtWebEngine
 import QtWebChannel
 import JASP
+import JASP.Controls
 
 Window
 {
     id: chatPanel
     objectName: "chatWindow"
-    title: qsTr("JASP Chat")
+    title: qsTr("JASP AI Chat \u2014 Beta Version")
     width: 600 * preferencesModel.uiScale
     height: 600 * preferencesModel.uiScale
 
@@ -128,60 +129,35 @@ Window
 
         Row {
             anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            anchors.rightMargin: 8
-            spacing: 6
-            layoutDirection: Qt.RightToLeft
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            spacing: 14 * preferencesModel.uiScale
 
-            // New conversation button
-            Rectangle {
-                width: newBtnText.implicitWidth + 16 * preferencesModel.uiScale
-                height: 28 * preferencesModel.uiScale
-                anchors.verticalCenter: parent.verticalCenter
-                radius: jaspTheme.borderRadius
-                color: newMouse.containsMouse ? jaspTheme.buttonColorHovered : "transparent"
-
-                Text {
-                    id: newBtnText
-                    anchors.centerIn: parent
-                    text: qsTr("New")
-                    font: jaspTheme.font
-                    color: jaspTheme.textEnabled
-                }
-
-                MouseArea {
-                    id: newMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: { aiBridgeInterface.clearChat() }
-                }
+            // Clear conversation button
+            RectangularButton {
+                width: 30 * preferencesModel.uiScale
+                height: 30 * preferencesModel.uiScale
+                buttonPadding: 4 * preferencesModel.uiScale
+                iconSource: jaspTheme.iconPath + "chat-clear.svg"
+                toolTip: qsTr("Reset conversation")
+                onClicked: { aiBridgeInterface.clearChat() }
             }
 
             // Save button
-            Rectangle {
-                width: saveBtnText.implicitWidth + 16 * preferencesModel.uiScale
-                height: 28 * preferencesModel.uiScale
-                anchors.verticalCenter: parent.verticalCenter
-                radius: jaspTheme.borderRadius
-                color: saveMouse.containsMouse ? jaspTheme.buttonColorHovered : "transparent"
-
-                Text {
-                    id: saveBtnText
-                    anchors.centerIn: parent
-                    text: qsTr("Save")
-                    font: jaspTheme.font
-                    color: jaspTheme.textEnabled
-                }
-
-                MouseArea {
-                    id: saveMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: { aiBridgeInterface.requestSave() }
-                }
+            RectangularButton {
+                width: 30 * preferencesModel.uiScale
+                height: 30 * preferencesModel.uiScale
+                buttonPadding: 4 * preferencesModel.uiScale
+                iconSource: jaspTheme.iconPath + "chat-save.svg"
+                toolTip: qsTr("Save conversation")
+                onClicked: { aiBridgeInterface.requestSave() }
             }
+        }
+
+        Row {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            anchors.rightMargin: 8
 
             // Token counter
             Item {
@@ -197,14 +173,8 @@ Window
                         var stats = JSON.parse(aiBridgeInterface.conversationStatsJson || "{}");
                         var ctx = stats.lastRequestTokens || 0;
                         var total = stats.totalTokens || 0;
-                        if (ctx === 0 && total === 0)
-                            return "";
-                        var s = formatTokens(ctx);
-                        if (ctx > 0 && total > 0 && ctx !== total)
-                            s += " / " + formatTokens(total);
-                        else if (ctx === 0 && total > 0)
-                            s = formatTokens(total);
-                        return s + " " + qsTr("tokens");
+                        var denom = total > 0 ? total : ctx;
+                        return formatTokens(ctx) + " / " + formatTokens(denom) + " " + qsTr("tokens");
                     }
                 }
 
@@ -248,7 +218,7 @@ Window
             id: disclaimerText
             anchors.centerIn: parent
             width: parent.width - 24 * preferencesModel.uiScale
-            text: qsTr("This is a beta version of JASP AI. Please monitor the costs and always question AI output.\nIntended for personal use. Contact %1 for enterprise / institutional support.")
+            text: qsTr("Please monitor the costs and always question AI output.<br>Intended for personal use. Contact %1 for enterprise / institutional support.")
                 .arg("<a href='https://www.jasp-services.com/contact/' style='color:#0091ea'>JASP Services BV</a>")
             font: jaspTheme.font
             color: jaspTheme.textEnabled
