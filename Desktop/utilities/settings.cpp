@@ -158,6 +158,7 @@ const Settings::Setting Settings::Values[] = {
 	{"aiChatLimitActive",		true},
 	{"aiAnnotationUseCustom",	false},
 	{"aiAnnotationPrompt",		"Annotate only the current analysis. Do not run new analyses or alter any options.\n\nUse the available tools to inspect the analysis output. Then write an annotation with this structure:\n\n- Abstract -- one sentence on what was done and why\n- Results -- annotate each output element (table, plot) with key statistics and interpretation\n- Conclusion -- synthesize findings, note limitations, suggest follow-ups\n\nDiscuss improvements and alterations with me after."},
+	{"aiUserAvatar",			""},
 	{"aiEnabled",			false},
 	{"rpcServerEnabled",		false},
 	{"rpcServerIp",			"127.0.0.1"},

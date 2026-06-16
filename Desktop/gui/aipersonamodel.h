@@ -79,6 +79,12 @@ public:
 	/// Get a file:// URL to a shipped persona image by filename (e.g. "Alfred.png").
 	Q_INVOKABLE QUrl shippedPersonaImageUrl(const QString &filename) const;
 
+	/// Get the absolute file path to a shipped persona image (for storage).
+	Q_INVOKABLE QString shippedPersonaImagePath(const QString &filename) const;
+
+	/// Get the directory containing shipped persona images.
+	Q_INVOKABLE QUrl shippedPersonaImagesDir() const;
+
 	/// Find a persona's index by name. Returns -1 if not found.
 	Q_INVOKABLE int personaIndexForName(const QString &name) const;
 

@@ -275,6 +275,20 @@ QUrl AIPersonaModel::shippedPersonaImageUrl(const QString &filename) const
 	return QUrl(defaultPersonaImagePath());
 }
 
+QString AIPersonaModel::shippedPersonaImagePath(const QString &filename) const
+{
+	QString path = tq(Dirs::resourcesDir()) + "PersonaImages/" + filename;
+	if (QFile::exists(path))
+		return QDir::toNativeSeparators(path);
+	return {};
+}
+
+QUrl AIPersonaModel::shippedPersonaImagesDir() const
+{
+	QString path = tq(Dirs::resourcesDir()) + "PersonaImages";
+	return QUrl::fromLocalFile(path);
+}
+
 int AIPersonaModel::personaIndexForName(const QString &name) const
 {
 	for (int i = 0; i < m_personas.size(); ++i)
