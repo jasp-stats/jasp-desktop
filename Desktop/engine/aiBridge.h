@@ -8,6 +8,8 @@
 // All configuration (endpoint, API key, model, system prompt, extra params)
 // is read directly from PreferencesModel at request time — no cached copies.
 //
+// Architecture docs: Docs/development/aiBridge/
+//
 // Exposed to JavaScript via QWebChannel as the "aiBridge" object.
 //
 

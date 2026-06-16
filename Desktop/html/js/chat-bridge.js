@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       aiBridge.onClearChat.connect(function () {
         console.log("chat-bridge: onClearChat — clearing deep-chat UI");
+        currentSignals = null;
         var chat = document.querySelector("deep-chat");
         if (chat) {
           chat.clearMessages();

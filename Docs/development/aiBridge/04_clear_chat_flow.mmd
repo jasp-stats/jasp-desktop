@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant User
+    participant DC as deep-chat
+    participant JS as chat-bridge.js
+    participant CPP as AiBridge (C++)
+
+    rect rgb(255, 255, 220)
+        Note over User,CPP: USER RESETS OR PERSONA SWITCHES
+        User->>DC: Clicks reset button
+        DC->>JS: aiBridgeInterface.clearChat()
+        JS->>CPP: aiBridge.clearChat()
+        CPP->>CPP: stopStream()
+        Note over CPP: abort active HTTP reply
+        CPP->>CPP: clearConversation()
+        Note over CPP: m_conversation = []
+        Note over CPP: m_assistantDelta = {}
+        Note over CPP: m_totalInputTokens = 0
+        CPP-->>JS: emit onClearChat()
+        JS->>JS: currentSignals = null
+        JS->>DC: clearMessages()
+        JS->>DC: addMessage("Starting up…")
+        CPP->>CPP: sendIntroMessage()
+        Note over CPP,DC: → triggers INTRO MESSAGE FLOW
+    end
