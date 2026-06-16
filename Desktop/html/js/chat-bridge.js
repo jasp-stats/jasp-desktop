@@ -71,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           window._introBuf = "";
         }
-        updateTokenCounter();
         // Keep currentSignals alive — tool-call loops may emit more onOpen/onClose
       });
 
@@ -124,17 +123,6 @@ function setupDeepChat() {
   if (!chat) {
     console.warn("chat-bridge: <deep-chat> element not found");
     return;
-  }
-
-  // Wire up the clear-conversation custom button (index 0)
-  // MUST be set BEFORE chat.connect, because setting connect
-  // schedules the render that creates button instances.
-  if (chat.customButtons && chat.customButtons[0]) {
-    chat.customButtons[0].onClick = function (state) {
-      console.log("chat-bridge: clear-conversation button clicked");
-      if (aiBridge) aiBridge.clearChat();
-      return "default";
-    };
   }
 
   chat.connect = {
@@ -246,22 +234,4 @@ function setupDeepChat() {
   setTimeout(function () {
     if (aiBridge) aiBridge.clearChat();
   }, 100);
-}
-
-function updateTokenCounter() {
-  if (!aiBridge) return;
-  try {
-    var raw = aiBridge.conversationStatsJson;
-    if (!raw) return;
-    var stats = JSON.parse(raw);
-    var total = stats.totalTokens || 0;
-    var el = document.getElementById("token-counter");
-    if (!el) return;
-    if (total >= 1e6) el.textContent = (total / 1e6).toFixed(1) + "M";
-    else if (total >= 1e3) el.textContent = (total / 1e3).toFixed(1) + "K";
-    else if (total > 0) el.textContent = total.toString();
-    else el.textContent = "";
-  } catch (e) {
-    console.warn("chat-bridge: updateTokenCounter failed:", e);
-  }
 }

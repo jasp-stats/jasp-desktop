@@ -10,7 +10,9 @@
 #include <QJsonArray>
 #include <QNetworkRequest>
 #include <QUrl>
+#include <QDateTime>
 #include <QFile>
+#include <QTextStream>
 
 #include "log.h"
 #include "dirs.h"
@@ -204,6 +206,9 @@ void AiBridge::clearConversation()
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
 	m_pendingToolCalls = QJsonArray();
+	m_totalInputTokens = 0;
+	m_totalOutputTokens = 0;
+	m_lastRequestTokens = 0;
 }
 
 void AiBridge::clearChat()
@@ -239,6 +244,7 @@ QString AiBridge::conversationStats() const
 	QJsonObject stats;
 	stats[QStringLiteral("messageCount")] = m_conversation.size();
 	stats[QStringLiteral("estimatedTokens")] = estimateTokens(m_conversation);
+	stats[QStringLiteral("lastRequestTokens")] = m_lastRequestTokens;
 	stats[QStringLiteral("toolCallsDispatched")] = m_totalToolCallsDispatched;
 	stats[QStringLiteral("requestsSent")] = m_totalRequestsSent;
 	stats[QStringLiteral("streamChunks")] = m_totalStreamChunks;
@@ -248,8 +254,85 @@ QString AiBridge::conversationStats() const
 	return QString::fromUtf8(QJsonDocument(stats).toJson(QJsonDocument::Compact));
 }
 
+void AiBridge::exportToMarkdownFile(const QString &filePath) const
+{
+	// FileDialog.selectedFile may arrive as a file:// URL; convert to local path.
+	QString path = filePath;
+	QUrl url(filePath);
+	if (url.isLocalFile())
+		path = url.toLocalFile();
+
+	QFile file(path);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		Log::log() << "AiBridge::exportToMarkdownFile — cannot open file: "
+				   << filePath.toStdString() << std::endl;
+		return;
+	}
+
+	QTextStream out(&file);
+
+	out << "# JASP AI Conversation\n\n";
+
+	QDateTime now = QDateTime::currentDateTime();
+	out << "Exported: " << now.toString(Qt::ISODate) << "\n\n";
+
+	for (const QJsonValue &v : m_conversation)
+	{
+		QJsonObject msg = v.toObject();
+		QString role = msg[QStringLiteral("role")].toString();
+		QString content = msg[QStringLiteral("content")].toString();
+
+		// deep-chat stores user messages with "text", not "content"
+		if (content.isEmpty())
+			content = msg[QStringLiteral("text")].toString();
+
+		// Skip system prompt (internal)
+		if (role == QStringLiteral("system"))
+			continue;
+
+		// Skip hidden intro message
+		if (role == QStringLiteral("user") && content == QStringLiteral("Give a short introduction."))
+			continue;
+
+		if (role == QStringLiteral("user"))
+		{
+			out << "### You\n\n" << content << "\n\n";
+		}
+		else if (role == QStringLiteral("assistant"))
+		{
+			out << "### JASP AI\n\n";
+			if (!content.isEmpty())
+				out << content << "\n\n";
+
+			if (msg.contains(QStringLiteral("tool_calls")))
+			{
+				QJsonDocument tcDoc(msg[QStringLiteral("tool_calls")].toArray());
+				out << "```json\n"
+					<< QString::fromUtf8(tcDoc.toJson(QJsonDocument::Indented))
+					<< "\n```\n\n";
+			}
+		}
+		else if (role == QStringLiteral("tool"))
+		{
+			out << "### Tool result\n\n";
+			QJsonParseError err;
+			QJsonDocument parsed = QJsonDocument::fromJson(content.toUtf8(), &err);
+			if (err.error == QJsonParseError::NoError)
+				out << "```json\n"
+					<< QString::fromUtf8(parsed.toJson(QJsonDocument::Indented))
+					<< "\n```\n\n";
+			else
+				out << "```\n" << content << "\n```\n\n";
+		}
+	}
+
+	Log::log() << "AiBridge::exportToMarkdownFile — wrote " << m_conversation.size()
+			   << " messages to " << filePath.toStdString() << std::endl;
+}
+
 // =============================================================================
-// HTTP request
+// HTTP request / SSE streaming
 // =============================================================================
 
 void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
@@ -363,6 +446,7 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 			toolsTokens = estimateTokens(bodyDoc.object()[QStringLiteral("tools")]);
 	}
 	m_totalInputTokens += bodyTokens;
+	m_lastRequestTokens = bodyTokens;
 
 	Log::log() << "AiBridge: POST #" << m_totalRequestsSent << " to " << ep.toStdString()
 	           << " | " << body.size() << " bytes"
@@ -929,6 +1013,9 @@ void AiBridge::onReplyFinished()
 				<< m_conversation.size() << " messages (~" << loopTokens << " tokens)"
 				<< std::endl;
 		m_pendingToolCalls = QJsonArray();
+	m_totalInputTokens = 0;
+	m_totalOutputTokens = 0;
+	m_lastRequestTokens = 0;
 		m_streaming = true;
 		emit onStreamOpen();
 		sendToAI(m_conversation);

@@ -84,6 +84,8 @@ public:
 	/// Send a hidden "Introduce yourself." message to prime the chat with a greeting.
 	void sendIntroMessage();
 
+	/// Export the full conversation to a Markdown file.
+	Q_INVOKABLE void exportToMarkdownFile(const QString &filePath) const;
 
 signals:
 	void onStreamOpen();
@@ -138,6 +140,7 @@ private:
 	int m_totalStreamChunks = 0;
 	int m_totalInputTokens = 0;
 	int m_totalOutputTokens = 0;
+	int m_lastRequestTokens = 0;
 
 	QMap<int, QJsonObject> m_toolCallAccum;
 	QJsonObject m_assistantDelta;
