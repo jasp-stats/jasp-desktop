@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant User
+    participant DC as deep-chat
+    participant JS as chat-bridge.js
+    participant CPP as AiBridge (C++)
+    participant API as LLM API
+
+    rect rgb(230, 255, 230)
+        Note over User,API: USER SENDS A MESSAGE
+        User->>DC: Types "Run a t-test", clicks send
+        DC->>JS: connect.handler(messages, signals)
+        JS->>JS: currentSignals = signals
+        JS->>CPP: aiBridge.startStream(json)
+        CPP->>CPP: append user messages
+        CPP-->>JS: emit onStreamOpen()
+        JS->>DC: signals.onOpen()
+        Note over DC: new AI message bubble
+        CPP->>API: POST /chat/completions (SSE)
+        Note over CPP,API: body: model, messages, tools
+        loop SSE streaming
+            API-->>CPP: delta: {"content":"Sure"}
+            CPP-->>JS: onStreamChunk("Sure")
+            JS->>DC: signals.onResponse({text:"Sure"})
+            API-->>CPP: delta: {"content":", running now"}
+            CPP-->>JS: onStreamChunk(", running now")
+            JS->>DC: signals.onResponse({text:", running now"})
+        end
+        API-->>CPP: data: [DONE]
+        CPP-->>JS: emit onStreamClose()
+        JS->>DC: signals.onClose()
+        CPP->>CPP: save assistant msg to m_conversation
+    end

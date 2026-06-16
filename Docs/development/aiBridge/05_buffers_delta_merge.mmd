@@ -1,0 +1,53 @@
+flowchart TD
+    NET["Network: TCP bytes arrive"]
+    SB["m_sseBuffer += bytes"]
+    SL["Slice by newline into lines"]
+    PSL["processSSELine(line)"]
+    TC{"line starts with 'data:'?"}
+    DONE{"data == '[DONE]'?"}
+    JSON["Parse JSON"]
+    DELTA["Extract delta = choices[0].delta"]
+    TCC{"delta.tool_calls?"}
+    PT["processToolCalls()\n→ accumulate in m_toolCallAccum"]
+    LOOP["Iterate ALL keys in delta"]
+    CONTENT{"key == 'content'?"}
+    EMIT["emit onStreamChunk(text)\n→ user sees text"]
+    STRING{"val is string\nand key exists?"}
+    CONCAT["concatenate to\nm_assistantDelta[key]"]
+    OVERWRITE["set m_assistantDelta[key] = val"]
+    NULL{"val is null?"}
+    SKIP["skip (don't clear)"]
+    MORE{"more lines?"}
+    STREAM_END["Stream ends → onReplyFinished()"]
+    SAVE["Save m_assistantDelta\nas assistant msg"]
+    TOOLS{"m_pendingToolCalls\nnot empty?"}
+    FLUSH["flushToolCalls()\n→ dispatch via RPC"]
+    CONTINUE["Append tool results\nto m_conversation"]
+    LOOPBACK["sendToAI() again"]
+
+    NET --> SB --> SL --> PSL --> TC
+    TC -->|no| SL
+    TC -->|yes| DONE
+    DONE -->|yes| STREAM_END
+    DONE -->|no| JSON --> DELTA --> TCC
+    TCC -->|yes| PT
+    TCC -->|no| LOOP
+    LOOP --> CONTENT
+    CONTENT -->|yes| EMIT
+    CONTENT -->|no| STRING
+    EMIT --> STRING
+    STRING -->|yes| CONCAT
+    STRING -->|no| NULL
+    NULL -->|yes| SKIP
+    NULL -->|no| OVERWRITE
+    CONCAT --> LOOP
+    SKIP --> LOOP
+    OVERWRITE --> LOOP
+    LOOP -->|more keys| LOOP
+    LOOP -->|done| MORE
+    MORE -->|yes| SL
+    MORE -->|no| NET
+    STREAM_END --> SAVE --> TOOLS
+    TOOLS -->|yes| FLUSH --> CONTINUE --> LOOPBACK
+    TOOLS -->|no| DONE_STATE(["Stream complete"])
+    LOOPBACK --> NET

@@ -2,6 +2,10 @@
 // AiBridge implementation — handles HTTP SSE streaming to AI providers
 // and orchestrates tool-call loops through the JaspRpcDispatcher.
 //
+// Architecture docs: Docs/development/aiBridge/
+//   Flow diagrams covering intro, user messages, tool-call loops, clear chat,
+//   buffer processing, delta merging, and the two-path currentSignals routing.
+//
 
 #include "aiBridge.h"
 

@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant API as LLM API
+    participant CPP as AiBridge (C++)
+    participant RPC as JaspRpcDispatcher
+    participant JS as chat-bridge.js
+    participant DC as deep-chat
+
+    rect rgb(255, 230, 230)
+        Note over API,DC: TOOL CALL LOOP
+        API-->>CPP: delta.tool_calls: [{function:{name:"createAnalysis"}}]
+        loop Fragment accumulation
+            CPP->>CPP: processToolCalls()
+            Note over CPP: accumulate by index in m_toolCallAccum
+            API-->>CPP: delta.tool_calls: [{function:{arguments:"..."}}]
+        end
+        API-->>CPP: data: [DONE]
+        CPP->>CPP: flushToolCalls()
+        CPP->>RPC: dispatch("createAnalysis", params)
+        RPC-->>CPP: result JSON
+        CPP->>CPP: append tool result to m_conversation
+        CPP-->>JS: emit onStreamOpen()
+        JS->>DC: signals.onOpen() (new bubble)
+        CPP->>API: POST /chat/completions (with tool results)
+        Note over API,CPP: Loop continues until no more tool calls
+        API-->>CPP: delta: {"content":"Done! Analysis created."}
+        CPP-->>JS: onStreamChunk("Done! Analysis created.")
+        JS->>DC: signals.onResponse({text:"Done!"})
+        API-->>CPP: data: [DONE]
+        CPP-->>JS: emit onStreamClose()
+        JS->>DC: signals.onClose()
+        CPP->>CPP: save assistant msg to m_conversation
+    end

@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant WC as QWebChannel
+    participant JS as chat-bridge.js
+    participant CPP as AiBridge (C++)
+    participant API as LLM API
+    participant DC as deep-chat
+
+    rect rgb(220, 235, 255)
+        Note over CPP,WC: INITIALIZATION (page load)
+        CPP->>CPP: connect(personaChanged → clearChat)
+        JS->>WC: DOMContentLoaded → create QWebChannel
+        WC-->>JS: expose aiBridge object
+        JS->>JS: setupDeepChat()
+        JS->>CPP: setTimeout: clearChat() [100ms]
+    end
+
+    rect rgb(255, 250, 230)
+        Note over CPP,DC: INTRO MESSAGE FLOW
+        CPP->>CPP: stopStream()
+        CPP->>CPP: clearConversation()
+        CPP-->>JS: emit onClearChat()
+        JS->>JS: currentSignals = null
+        JS->>DC: clearMessages()
+        JS->>DC: addMessage("Starting up…")
+        CPP->>CPP: sendIntroMessage()
+        CPP-->>JS: emit onStreamOpen()
+        JS->>JS: _introBuf = ""
+        CPP->>API: POST /chat/completions (SSE)
+        loop Each SSE chunk
+            API-->>CPP: delta: {"content":"Hi!"}
+            CPP-->>JS: emit onStreamChunk("Hi!")
+            JS->>JS: _introBuf += "Hi!"
+        end
+        API-->>CPP: data: [DONE]
+        CPP-->>JS: emit onStreamClose()
+        JS->>DC: clearMessages()
+        JS->>DC: addMessage(_introBuf)
+        Note over JS,DC: "Starting up…" replaced
+    end

@@ -1,0 +1,41 @@
+flowchart LR
+    subgraph QML["ChatWindow.qml"]
+        WV["WebEngineView"]
+        CB["Control Bar\n(reset, save, tokens)"]
+    end
+
+    subgraph HTML["chat.html"]
+        DC["deep-chat component"]
+    end
+
+    subgraph JS["chat-bridge.js"]
+        SIG["currentSignals\n(routing switch)"]
+        IBUF["_introBuf\n(intro accumulator)"]
+    end
+
+    subgraph CPP["aiBridge.cpp"]
+        CONV["m_conversation\n(history)"]
+        SSE["m_sseBuffer\n(raw bytes)"]
+        DELTA["m_assistantDelta\n(response acc)"]
+        TOOLS["m_toolCallAccum\n(tool fragments)"]
+    end
+
+    subgraph EXT["External"]
+        API["OpenAI-compatible API"]
+        RPC["JaspRpcDispatcher"]
+    end
+
+    WV -->|loads| HTML
+    CB -->|clearChat| CPP
+    DC -->|user message| SIG
+    DC -->|render| DC
+    SIG -->|startStream| CPP
+    CPP -->|onStreamChunk| SIG
+    CPP -->|onClearChat| SIG
+    CPP -->|onStreamClose| SIG
+    SIG -->|onResponse| DC
+    SIG -.->|null: intro path| IBUF
+    IBUF -->|addMessage| DC
+    CPP --> API
+    CPP --> RPC
+    CONV -->|buildRequestBody| API
