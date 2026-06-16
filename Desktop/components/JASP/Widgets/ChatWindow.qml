@@ -78,7 +78,17 @@ Window
 			return avatar ? avatar : jaspTheme.iconPath + "jaspAI.png"
 		}
 
+		// User avatar for the chat: converts stored path to jaspPersona:/// scheme
+		property string userIconPath: {
+			var stored = preferencesModel.aiUserAvatar
+			if (!stored) return ""  // deep-chat will use its default user icon
+			var idx = Math.max(stored.lastIndexOf("/"), stored.lastIndexOf("\\"))
+			var filename = idx >= 0 ? stored.substring(idx + 1) : stored
+			return "jaspPersona:///" + filename
+		}
+
 		onAiIconPathChanged: { aiBridgeInterface.personaAvatarUpdated(aiIconPath) }
+		onUserIconPathChanged: { aiBridgeInterface.userAvatarUpdated(userIconPath) }
 
 		property string conversationStatsJson: ""
 
@@ -89,6 +99,7 @@ Window
     	        signal onClearChat()
 	signal conversationStatsUpdated()
 	signal personaAvatarUpdated(string newPath)
+	signal userAvatarUpdated(string newPath)
 
             function startStream(messagesJson) { aiBridge.startStream(messagesJson) }
             function stopStream() { aiBridge.stopStream() }

@@ -371,8 +371,8 @@ PrefsScrollView
 		title:				qsTr("Annotation")
 		visible:			preferencesModel.aiEnabled
 
-		CheckBox
-		{
+			CheckBox
+			{
 			id:					annotationUseCustom
 			label:				qsTr("Use custom annotation prompt")
 			checked:			preferencesModel.aiAnnotationUseCustom
@@ -394,6 +394,76 @@ PrefsScrollView
 			useTabAsSpaces:	false
 			nextTabItem:	mcpEnabled
 
+		}
+	}
+
+	PrefsGroupRect
+	{
+		title:		qsTr("Chat Appearance")
+		visible:	preferencesModel.aiEnabled
+
+		QTL.RowLayout
+		{
+			spacing: 12 * jaspTheme.uiScale
+
+			Label
+			{
+				text:				qsTr("My icon:")
+				QTL.Layout.alignment:	Qt.AlignVCenter
+			}
+
+			Image
+			{
+				id:					userAvatarPreview
+				QTL.Layout.alignment:	Qt.AlignVCenter
+				width:				28 * preferencesModel.uiScale
+				height:				width
+				fillMode:			Image.PreserveAspectCrop
+				asynchronous:		true
+				sourceSize.width:	width
+				sourceSize.height:	height
+
+				function resolveSource() {
+					var stored = preferencesModel.aiUserAvatar
+					if (!stored) return preferencesModel.aiPersonaModel.shippedPersonaImageUrl("userPersona5.png")
+					return preferencesModel.aiPersonaModel.resolvedImageUrl(stored)
+				}
+				source: resolveSource()
+
+				Connections {
+					target: preferencesModel
+					function onAiUserAvatarChanged() { userAvatarPreview.source = userAvatarPreview.resolveSource() }
+				}
+			}
+
+			Button
+			{
+				text:				qsTr("Choose image…")
+				QTL.Layout.alignment:	Qt.AlignVCenter
+				onClicked:			userAvatarDialogLoader.active = true
+			}
+		}
+	}
+
+	// Component avoids Column.children type error with Qt 6 FileDialog
+	Loader {
+		id: userAvatarDialogLoader
+		active: false
+		width: 0; height: 0
+		sourceComponent: Component {
+			QTD.FileDialog {
+				id: userAvatarFileDialog
+				title: qsTr("Select Your Avatar")
+				nameFilters: [qsTr("Images") + "(*.png *.jpg *.jpeg *.gif *.svg)"]
+				currentFolder: preferencesModel.aiPersonaModel.shippedPersonaImagesDir()
+				onAccepted: {
+					var path = preferencesModel.aiPersonaModel.copyImageToPersonasDir(selectedFile)
+					if (path) preferencesModel.aiUserAvatar = path
+					userAvatarDialogLoader.active = false
+				}
+				onRejected: userAvatarDialogLoader.active = false
+				Component.onCompleted: open()
+			}
 		}
 	}
 

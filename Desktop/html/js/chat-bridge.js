@@ -189,6 +189,35 @@ function setupDeepChat() {
     chat.avatars = avatars;
   });
 
+  // React to user avatar changes
+  if (aiBridge.userIconPath) {
+    console.log("chat-bridge: userIconPath: " + aiBridge.userIconPath);
+    var avatars = chat.avatars || {};
+    avatars.user = {
+      src: aiBridge.userIconPath,
+      styles: {
+        avatar: { width: "30px", height: "30px", alignSelf: "center" },
+      },
+    };
+    chat.avatars = avatars;
+  }
+
+  aiBridge.userAvatarUpdated.connect(function (newPath) {
+    console.log("chat-bridge: userIconPath changed: " + newPath);
+    var avatars = chat.avatars || {};
+    if (newPath) {
+      avatars.user = {
+        src: newPath,
+        styles: {
+          avatar: { width: "30px", height: "30px", alignSelf: "center" },
+        },
+      };
+    } else {
+      delete avatars.user; // let deep-chat use its default
+    }
+    chat.avatars = avatars;
+  });
+
   console.log("chat-bridge: deep-chat handler configured");
 
   var enhanceInterval = setInterval(function () {

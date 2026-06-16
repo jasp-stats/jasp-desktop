@@ -214,8 +214,9 @@ GET_PREF_FUNC_STR(	aiMessageExtra,			Settings::AI_MESSAGE_EXTRA						)
 GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT						)
 GET_PREF_FUNC_INT(	aiChatLimit,				Settings::AI_CHAT_LIMIT							)
 GET_PREF_FUNC_BOOL(	aiChatLimitActive,		Settings::AI_CHAT_LIMIT_ACTIVE				)
-GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM				)
-GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT					)
+GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM			)
+GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT				)
+GET_PREF_FUNC_STR(	aiUserAvatar,			Settings::AI_USER_AVATAR						)
 GET_PREF_FUNC_BOOL(	aiEnabled,			Settings::AI_ENABLED						)
 
 GET_PREF_FUNC_BOOL(	rpcServerEnabled,	Settings::RPC_SERVER_ENABLED				)
@@ -444,7 +445,8 @@ SET_PREF_FUNCTION(				int,		setAiChatLimit,				aiChatLimit,				aiChatLimitChange
 SET_PREF_FUNCTION(				bool,		setAiChatLimitActive,		aiChatLimitActive,		aiChatLimitActiveChanged,		Settings::AI_CHAT_LIMIT_ACTIVE			)
 SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
 SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,		aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT				)
-SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED					)
+SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,			aiUserAvatarChanged,				Settings::AI_USER_AVATAR						)
+SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED						)
 
 SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,	rpcServerEnabled,	rpcServerEnabledChanged,	Settings::RPC_SERVER_ENABLED			)
 SET_PREF_FUNCTION(				QString,	setRpcServerIp,		rpcServerIp,		rpcServerIpChanged,			Settings::RPC_SERVER_IP					)
@@ -480,6 +482,7 @@ void PreferencesModel::resetAiDefaults()
 	setAiChatLimitActive(	Settings::defaultValue(Settings::AI_CHAT_LIMIT_ACTIVE).toBool());
 	setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
 	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
+	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
 	setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
 	setAiUseCustomKey(	Settings::defaultValue(Settings::AI_USE_CUSTOM_KEY).toBool());
 	setAiUseCompleteSchema(Settings::defaultValue(Settings::AI_USE_COMPLETE_SCHEMA).toBool());
