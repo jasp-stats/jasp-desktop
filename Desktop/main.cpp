@@ -398,6 +398,7 @@ void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
 		break;
 	case QtDebugMsg:
 	case QtInfoMsg:
+		Log::log() << msg << std::endl;
 		break;
 	}
 }

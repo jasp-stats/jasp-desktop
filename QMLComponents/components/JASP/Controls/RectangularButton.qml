@@ -86,7 +86,8 @@ Rectangle
 	property color	defaultColor:		!enabled ? jaspTheme.buttonColorDisabled
 												 : _pressed ? jaspTheme.buttonColorPressed
 															: (filterButtonRoot.hovered || filterButtonRoot.activeFocus)	? jaspTheme.buttonColorHovered
-																															: jaspTheme.buttonColor
+																															: (typeof jaspForm === 'undefined') ? jaspTheme.uiBackground
+																																								: jaspTheme.buttonColor
 	property color defaultBorderColor:	enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
 																							: jaspTheme.buttonBorderColor
 
@@ -121,8 +122,8 @@ Rectangle
 		acceptedButtons:			Qt.LeftButton
 		hoverEnabled:				true
 		cursorShape:				filterButtonRoot.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-		onClicked:					filterButtonRoot.clicked();
-		onDoubleClicked:			filterButtonRoot.doubleClicked();
+		onClicked:					{ parent.forceActiveFocus(); filterButtonRoot.clicked() }
+		onDoubleClicked:			{ parent.forceActiveFocus(); filterButtonRoot.doubleClicked() }
 		//visible:					filterButtonRoot.enabled
 		//propagateComposedEvents:	true
 	}
