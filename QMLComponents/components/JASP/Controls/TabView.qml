@@ -144,6 +144,7 @@ ComponentsListBase
 			width			: Math.min(tabButtonWidth, (rectangleItem.width - itemRepeater.count - (tabView.showAddIcon ? addIconItem.width : 0)) / itemRepeater.count)
 			height			: itemTabBar.height
 			hoverEnabled	: true		// Without this, tabButton.hovered never becomes true and the ToolTip below never shows
+			onClicked		: forceActiveFocus()
 
 			contentItem: Item
 			{

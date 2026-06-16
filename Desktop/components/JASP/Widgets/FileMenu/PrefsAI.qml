@@ -41,6 +41,8 @@ PrefsScrollView
 			id:			connectionId
 			columns:	1
 			width:		parent.width
+			focus:		true
+
 			TextField
 			{
 				id:					aiEndpointInput
@@ -91,7 +93,6 @@ PrefsScrollView
 				id:				testButton
 				text:			qsTr("Test Connection")
 				toolTip:		qsTr("Send a minimal request to verify your endpoint and API key.")
-				control.defaultColor:	jaspTheme.buttonColorHovered
 				anchors.left:	parent.left
 				anchors.top:	parent.top
 				anchors.topMargin: jaspTheme.generalAnchorMargin
@@ -222,9 +223,9 @@ PrefsScrollView
 						{
 							id:								personaImageBrowse
 							text:							qsTr("Choose another image")
-							control.defaultColor:			jaspTheme.buttonColorHovered
 							QTL.Layout.alignment:			Qt.AlignHCenter
 							onClicked:						personaImageFileDialog.open()
+							KeyNavigation.tab:				personaPromptInput
 						}
 
 
@@ -254,7 +255,7 @@ PrefsScrollView
 						onActiveFocusChanged: if (!activeFocus) setData(text, personaTabBar.promptRole)
 						applyScriptInfo:	""
 						useTabAsSpaces:		false
-						nextTabItem:		capSection
+						nextTabItem:		capSection.button
 					}
 
 					// --- Capabilities  ---
@@ -268,7 +269,8 @@ PrefsScrollView
 
 						Group
 						{
-							columns: 3
+							columns: 2
+							preferredWidth: capSection.width
 
 							Repeater
 							{
@@ -302,7 +304,9 @@ PrefsScrollView
 
 						Group
 						{
-							columns: 3
+							columns: 2
+							preferredWidth: toolsSection.width
+
 							Repeater
 							{
 								id: toolRepeater
@@ -326,26 +330,22 @@ PrefsScrollView
 
 						Button {
 							text:		qsTr("Set as Active")
-							control.defaultColor:	jaspTheme.buttonColorHovered
 							onClicked:	preferencesModel.aiPersonaModel.currentPersonaIndex = rowIndex
 							enabled:	preferencesModel.aiPersonaModel.currentPersonaIndex !== rowIndex
 						}
 
 						Button {
 							text:		qsTr("Duplicate")
-							control.defaultColor:	jaspTheme.buttonColorHovered
 							onClicked:	preferencesModel.aiPersonaModel.duplicatePersona(rowIndex)
 						}
 
 						Button {
-							control.defaultColor:	jaspTheme.buttonColorHovered
 							text:		qsTr("Delete Persona")
 							visible:	!personaTabBar.isDefaultPersona(rowIndex)
 							onClicked:	preferencesModel.aiPersonaModel.removePersona(rowIndex)
 						}
 
 						Button {
-							control.defaultColor:	jaspTheme.buttonColorHovered
 							text:		qsTr("Reset to Default")
 							visible:	personaTabBar.isDefaultPersona(rowIndex)
 							onClicked:	preferencesModel.aiPersonaModel.resetSystemPersona(rowIndex)
@@ -382,29 +382,32 @@ PrefsScrollView
 			onActiveFocusChanged: if (!activeFocus) preferencesModel.aiAnnotationPrompt = text
 			applyScriptInfo:""
 			useTabAsSpaces:	false
-		}
-	}
+			nextTabItem:	advancedSec.button
 
-	PrefsGroupRect
-	{
-		title:				qsTr("MCP")
-		visible:			preferencesModel.aiEnabled
-
-		CheckBox
-		{
-			id:					mcpEnabled
-			label:				qsTr("Enable MCP server (Model Context Protocol)")
-			checked:			preferencesModel.rpcServerEnabled
-			onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
-			toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
 		}
 	}
 
 	Section
 	{
+		id:			advancedSec
 		title:		qsTr("Advanced")
 		visible:	preferencesModel.aiEnabled
 		columns:	1
+
+		PrefsGroupRect
+		{
+			title:				qsTr("MCP")
+			visible:			preferencesModel.aiEnabled
+
+			CheckBox
+			{
+				id:					mcpEnabled
+				label:				qsTr("Enable MCP server (Model Context Protocol)")
+				checked:			preferencesModel.rpcServerEnabled
+				onCheckedChanged:	preferencesModel.rpcServerEnabled = checked
+				toolTip:			qsTr("Enable MCP server for AI model context protocol. To change the port or bind IP address, see Advanced > Remote control.")
+			}
+		}
 
 		PrefsGroupRect
 		{
@@ -515,21 +518,20 @@ PrefsScrollView
 	{
 		title:				qsTr("AI Service")
 
-		RectangularButton
+		Button
 		{
 			visible:		preferencesModel.aiEnabled
 			text:			qsTr("Reset all AI settings to defaults")
 			toolTip:		qsTr("Restore endpoint, model, system prompt, and all other AI settings to their original defaults.")
 			onClicked:		preferencesModel.resetAiDefaults()
-			anchors.left:	parent.left
 		}
 
-		RectangularButton
+		Button
 		{
 			id:				aiEnableBtn
 			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
 			toolTip:		qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
-			anchors.left:	parent.left
+			KeyNavigation.tab:	aiEndpointInput
 
 			onClicked: {
 				if (preferencesModel.aiEnabled) {
