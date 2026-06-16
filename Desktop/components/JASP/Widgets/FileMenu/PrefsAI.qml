@@ -140,7 +140,7 @@ PrefsScrollView
 
 			onAddItem:			preferencesModel.aiPersonaModel.addPersona()
 			onRemoveItem:		(index) => preferencesModel.aiPersonaModel.removePersona(index)
-			onKeyValueChanged:	(index, value) => setModelData(index, value, nameRole)
+			onKeyValueChanged:	(index, value) => { if (!isDefaultPersona(index)) setModelData(index, value, nameRole) }
 
 			// Role shortcuts (used throughout)
 			readonly property int nameRole:			preferencesModel.aiPersonaModel.getRole("personaName");
@@ -172,11 +172,18 @@ PrefsScrollView
 
 			Component.onCompleted: currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex
 
+			Connections {
+				target: preferencesModel.aiPersonaModel
+				function onCurrentPersonaIndexChanged() { Qt.callLater(function() { personaTabBar.currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex }) }
+			}
+
 			rowComponent: Item
 			{
 				id:					personaEditorEdit
 				x:					jaspTheme.contentMargin
 				height:				personaEditorColumn.implicitHeight + jaspTheme.contentMargin
+
+				readonly property bool isSystem: personaTabBar.isDefaultPersona(rowIndex)
 
 				function getData(role)
 				{
@@ -194,7 +201,7 @@ PrefsScrollView
 					spacing:			jaspTheme.columnGroupSpacing
 					width:				parent.width - 2 * jaspTheme.contentMargin
 
-					// --- Avatar ---
+				// --- Avatar ---
 					QTL.RowLayout
 					{
 						y:									jaspTheme.contentMargin
@@ -221,8 +228,9 @@ PrefsScrollView
 
 						Button
 						{
-							id:								personaImageBrowse
+							id:							personaImageBrowse
 							text:							qsTr("Choose another image")
+							enabled:						!isSystem
 							QTL.Layout.alignment:			Qt.AlignHCenter
 							onClicked:						personaImageFileDialog.open()
 							KeyNavigation.tab:				personaPromptInput
@@ -252,6 +260,7 @@ PrefsScrollView
 						height:				150 * preferencesModel.uiScale
 						wrapMode:			TextEdit.Wrap
 						text:				getData(personaTabBar.promptRole)
+						enabled:			!isSystem
 						onActiveFocusChanged: if (!activeFocus) setData(text, personaTabBar.promptRole)
 						applyScriptInfo:	""
 						useTabAsSpaces:		false
@@ -283,7 +292,7 @@ PrefsScrollView
 									property var capabilityData:	capSection.allCapabilities[index]
 									property string capId:			capabilityData.id
 									label:							capabilityData.displayName
-									enabled:						capabilityData.methods.length > 0
+									enabled:						capabilityData.methods.length > 0 && !isSystem
 									checked:						capSection.personaCapabilities.indexOf(capId) >= 0
 
 									onClicked:						preferencesModel.aiPersonaModel.toggleCapability(rowIndex, capId)
@@ -317,6 +326,7 @@ PrefsScrollView
 									property string toolName:	modelData
 									label:						preferencesModel.aiPersonaModel.toolDisplayName(modelData)
 									checked:					toolsSection.personaTools.indexOf(toolName) >= 0
+									enabled:					!isSystem
 									onClicked:					preferencesModel.aiPersonaModel.toggleTool(rowIndex, toolName)
 								}
 							}
@@ -347,7 +357,7 @@ PrefsScrollView
 
 						Button {
 							text:		qsTr("Reset to Default")
-							visible:	personaTabBar.isDefaultPersona(rowIndex)
+							visible:	false  // system personas can no longer be edited
 							onClicked:	preferencesModel.aiPersonaModel.resetSystemPersona(rowIndex)
 						}
 					}

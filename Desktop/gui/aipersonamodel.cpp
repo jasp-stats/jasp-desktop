@@ -648,25 +648,9 @@ void AIPersonaModel::mergeLists()
 	beginResetModel();
 	m_personas.clear();
 
-	// Build map of user overrides keyed by persona ID
-	QMap<QString, PersonaEntry> overrides;
-	for (const auto &p : m_userPersonas)
-		overrides.insert(p.id, p);
-
-	// System personas first, overlaid with any matching user edits
-	for (auto p : m_systemPersonas) {
-		auto it = overrides.find(p.id);
-		if (it != overrides.end()) {
-			// Apply user's overrides but keep system flag and original ID
-			p.name         = it->name;
-			p.personaPrompt = it->personaPrompt;
-			p.imagePath    = it->imagePath;
-			p.enabledTools = it->enabledTools;
-			p.enabledCapabilities = it->enabledCapabilities;
-			p.isSystem     = true;  // still a system persona, just edited
-		}
+	// System personas always loaded from defaults — never overridden by user edits.
+	for (const auto &p : m_systemPersonas)
 		m_personas.append(p);
-	}
 
 	// User-created personas (those without matching system ID)
 	for (const auto &p : m_userPersonas) {
