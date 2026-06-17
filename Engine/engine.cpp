@@ -577,7 +577,7 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 
 	if(moduleStatusFromString((moduleRequest)) == moduleStatus::loading) {
 		//Some jaspModules use jaspBase calls in their .onload so we first we need to prepare jaspbase
-		jaspRCPP_evalRCode((".libPaths( " + moduleLibPaths +  " );").c_str(), false);
+		jaspRCPP_evalRCode((".libPaths( " + moduleLibPaths +  " ); 'success'").c_str(), false);
 		jaspRCPP_init_jaspBase();
 	}
 
