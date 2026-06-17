@@ -662,13 +662,16 @@ Json::Value AnalysisForm::_controlOptionMeta(JASPControl* ctrl, bool includeDesc
 	if (defaultVal != Json::nullValue)
 		entry["default"] = defaultVal;
 
-	// If this is a combo and the default is empty (typical of addEmptyValue placeholder),
+	// If this is a combo and the default is empty or missing (typical of addEmptyValue placeholder),
 	// point the LLM at the first real choice instead of an empty string.
 	if (entry.isMember("kind") && entry["kind"] == "combo" && entry.isMember("choices") && entry["choices"].size() > 0)
 	{
-		std::string curDefault = entry.get("default", "").asString();
-		if (curDefault.empty())
+		if (!entry.isMember("default")
+			|| !entry["default"].isString()
+			|| entry["default"].asString().empty())
+		{
 			entry["default"] = entry["choices"][0]["value"];
+		}
 	}
 
 	return entry;
