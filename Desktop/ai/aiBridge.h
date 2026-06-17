@@ -24,6 +24,7 @@
 #include <QJsonDocument>
 #include <QTimer>
 #include <QMap>
+#include <QVector>
 
 class PreferencesModel;
 
@@ -144,7 +145,9 @@ private:
 	int m_totalOutputTokens = 0;
 	int m_lastRequestTokens = 0;
 
-	QMap<int, QJsonObject> m_toolCallAccum;
+	QMap<QString, QJsonObject> m_toolCallAccum;
+	QVector<QString>      m_toolCallOrder;    // UUIDs in arrival order — replaces index/_seq/sort
+	QString               m_lastToolCallId;   // active tool call receiving fragments
 	QJsonObject m_assistantDelta;
 
 	bool m_debugDumpEnabled = true;
