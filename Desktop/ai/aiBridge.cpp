@@ -173,6 +173,8 @@ void AiBridge::startStream(const QString &messagesJson)
 
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
+	m_toolCallOrder.clear();
+	m_lastToolCallId.clear();
 
 	int totalTokens = estimateTokens(m_conversation);
 	Log::log() << "AiBridge: Starting stream — conversation grew from " << prevSize
@@ -190,6 +192,8 @@ void AiBridge::stopStream()
 	m_streaming = false;
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
+	m_toolCallOrder.clear();
+	m_lastToolCallId.clear();
 	if (m_activeReply) {
 		// Disconnect before abort — abort() may emit finished synchronously,
 		// and onReplyFinished can start a new tool-call stream otherwise.
@@ -209,6 +213,8 @@ void AiBridge::clearConversation()
 	m_conversation = QJsonArray();
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
+	m_toolCallOrder.clear();
+	m_lastToolCallId.clear();
 	m_pendingToolCalls = QJsonArray();
 	m_totalInputTokens = 0;
 	m_totalOutputTokens = 0;
@@ -236,6 +242,8 @@ void AiBridge::sendIntroMessage()
 	m_streaming = true;
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
+	m_toolCallOrder.clear();
+	m_lastToolCallId.clear();
 
 	Log::log() << "AiBridge: sending intro message" << std::endl;
 
@@ -658,7 +666,20 @@ void AiBridge::onReadyRead()
 	int httpStatus = m_activeReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	if (httpStatus >= 400) return;
 
-	m_sseBuffer.append(m_activeReply->readAll());
+	QByteArray chunk = m_activeReply->readAll();
+
+	// Diagnostic: log raw chunks and Content-Type when debug dump is enabled
+	if (m_debugDumpEnabled) {
+		if (m_sseBuffer.isEmpty()) {
+			// First chunk — log Content-Type so we know what format the server is using
+			QString ct = m_activeReply->header(QNetworkRequest::ContentTypeHeader).toString();
+			Log::log() << "AiBridge: response Content-Type: " << ct.toStdString() << std::endl;
+		}
+		Log::log() << "AiBridge: RAW readyRead chunk (" << chunk.size() << " bytes):\n"
+		           << chunk.toStdString() << std::endl;
+	}
+
+	m_sseBuffer.append(chunk);
 
 	// Process complete SSE lines from the buffer
 	while (true) {
@@ -731,38 +752,32 @@ void AiBridge::processSSEData(const QString &eventType, const QByteArray &data)
 	// Check for tool calls (OpenAI/DeepSeek format)
 	QJsonArray choices = obj[QStringLiteral("choices")].toArray();
 	if (choices.isEmpty()) {
-		// Providers may send chunks without choices (usage metadata, etc.).
-		// Log other keys so we can see what's being sent.
-		QString keyList;
-		for (auto it = obj.begin(); it != obj.end(); ++it) {
-			if (!keyList.isEmpty()) keyList += QStringLiteral(", ");
-			keyList += it.key();
-		}
-		if (!keyList.isEmpty())
-			Log::log() << "AiBridge: SSE chunk with no choices — keys: " << keyList.toStdString() << std::endl;
-		else
-			Log::log() << "AiBridge: DISCARDED empty SSE data object (no choices, no keys)" << std::endl;
+		// Providers may send chunks without non-empty choices (usage metadata, [DONE] preamble, etc.).
+		// Log the full chunk JSON when debug dump is enabled so we can inspect usage/completion_tokens.
+		if (m_debugDumpEnabled)
+			Log::log() << "AiBridge: SSE chunk with no choices — " << QString::fromUtf8(data).toStdString() << std::endl;
 		return;
 	}
 
 	QJsonObject choice = choices.first().toObject();
 	QJsonObject delta = choice[QStringLiteral("delta")].toObject();
 
-	// --- Tool calls ---
-	if (delta.contains(QStringLiteral("tool_calls"))) {
-		QJsonArray toolCalls = delta[QStringLiteral("tool_calls")].toArray();
-		if (!toolCalls.isEmpty()) {
-			processToolCalls(toolCalls);
-		}
-		return;
-	}
-
 	// --- Generic delta merge: accumulate ALL fields the provider emits ---
 	// String fields are concatenated (they stream in fragments);
 	// non-string fields (role, etc.) overwrite. Nulls are skipped.
+	// Tool calls are dispatched to m_toolCallAccum and SKIPPED in the merge —
+	// flushToolCalls() builds the final tool_calls array from m_toolCallAccum.
 	for (auto it = delta.begin(); it != delta.end(); ++it) {
 		const QString key = it.key();
 		const QJsonValue val = it.value();
+
+		// Dispatch tool call fragments (non-empty arrays only)
+		if (key == QStringLiteral("tool_calls") && val.isArray()) {
+			QJsonArray arr = val.toArray();
+			if (!arr.isEmpty())
+				processToolCalls(arr);
+			continue; // don't accumulate tool_calls into m_assistantDelta
+		}
 
 		// Emit text content chunks to the frontend
 		if (key == QStringLiteral("content") && val.isString()) {
@@ -791,49 +806,37 @@ void AiBridge::processSSEData(const QString &eventType, const QByteArray &data)
 
 void AiBridge::processToolCalls(const QJsonArray &toolCalls)
 {
-	// Merge each delta into the accumulator keyed by index.
+	// Tool calls are never interleaved — a provider streams every fragment
+	// of call N before starting call N+1.  The first chunk always carries a
+	// unique id; subsequent argument-streaming chunks may null the id.
 	//
-	// NOTE: Gemini's OpenAI-compatible endpoint does NOT include an "index"
-	// field inside streaming tool_call delta chunks (confirmed bug as of
-	// Nov 2025).  We therefore fall back: first try to match an existing
-	// accumulator entry by "id", then fall back to the next available slot.
-	int nextAutoIdx = m_toolCallAccum.isEmpty() ? 0 : (m_toolCallAccum.lastKey() + 1);
+	// Accumulation keys by id, with a null-id fallback to the last-seen
+	// (active) tool call.  Ordering is recorded in m_toolCallOrder.
 
 	for (const QJsonValue &val : toolCalls) {
 		QJsonObject delta = val.toObject();
-		int idx = delta[QStringLiteral("index")].toInt(-1);
 
-		// --- Fallback for providers that omit "index" (Gemini, etc.) ---
-		if (idx < 0) {
-			QString fallbackId = delta[QStringLiteral("id")].toString();
-			if (!fallbackId.isEmpty()) {
-				// Try to find an existing accumulator entry with this id
-				bool found = false;
-				for (auto it = m_toolCallAccum.begin(); it != m_toolCallAccum.end(); ++it) {
-					if (it.value()[QStringLiteral("id")].toString() == fallbackId) {
-						idx = it.key();
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					idx = nextAutoIdx++;
-					Log::log() << "AiBridge: tool call missing 'index' — assigned #" << idx
-					           << " (id=" << fallbackId.toStdString() << ")" << std::endl;
-				}
-			} else {
-				// No id either — skip this fragment (shouldn't happen)
-				Log::log() << "AiBridge: DISCARDED tool call fragment missing both 'index' and 'id': "
+		QString callId = delta[QStringLiteral("id")].toString();
+		if (callId.isEmpty()) {
+			// id is null — fragment belongs to the currently active tool call.
+			callId = m_lastToolCallId;
+			if (callId.isEmpty()) {
+				// No active call yet (shouldn't happen per spec).
+				Log::log() << "AiBridge: DISCARDED tool call fragment — no active id: "
 				           << QJsonDocument(delta).toJson(QJsonDocument::Compact).toStdString() << std::endl;
 				continue;
 			}
+		} else if (!m_toolCallAccum.contains(callId)) {
+			// First time we see this id — record arrival order and make it active.
+			m_toolCallOrder.append(callId);
+			m_lastToolCallId = callId;
 		}
 
-		QJsonObject &acc = m_toolCallAccum[idx];
+		QJsonObject &acc = m_toolCallAccum[callId];
 
 		bool firstFragment = !acc.contains(QStringLiteral("id"));
 
-		// Shallow-merge: copy all keys from delta into accumulator
+		// Shallow-merge: copy all keys from delta into accumulator (skip nulls)
 		for (auto it = delta.begin(); it != delta.end(); ++it) {
 			if (it.key() == QStringLiteral("function")) {
 				// Deep-merge function object — concatenate arguments fragments
@@ -842,11 +845,11 @@ void AiBridge::processToolCalls(const QJsonArray &toolCalls)
 				for (auto fit = funcDelta.begin(); fit != funcDelta.end(); ++fit) {
 					if (fit.key() == QStringLiteral("arguments"))
 						funcAcc[fit.key()] = funcAcc[fit.key()].toString() + fit.value().toString();
-					else
+					else if (!fit.value().isNull())
 						funcAcc[fit.key()] = fit.value();
 				}
 				acc[QStringLiteral("function")] = funcAcc;
-			} else {
+			} else if (!it.value().isNull()) {
 				acc[it.key()] = it.value();
 			}
 		}
@@ -854,7 +857,7 @@ void AiBridge::processToolCalls(const QJsonArray &toolCalls)
 		// One-line log per tool call on first fragment only
 		if (firstFragment) {
 			QString funcName = acc[QStringLiteral("function")].toObject()[QStringLiteral("name")].toString();
-			Log::log() << "AiBridge: tool call #" << idx
+			Log::log() << "AiBridge: tool call " << callId.toStdString()
 			           << (funcName.isEmpty() ? "" : " — " + funcName.toStdString())
 			           << std::endl;
 		}
@@ -869,9 +872,15 @@ void AiBridge::flushToolCalls()
 {
 	if (m_toolCallAccum.isEmpty()) return;
 
+	// Dispatch tool calls in arrival order (m_toolCallOrder records it).
+	// No sorting needed — tool calls are never interleaved, so arrival
+	// order equals intended order for every provider.
+
 	QJsonArray tcArray;  // all tool calls for the assistant message
 
-	for (auto it = m_toolCallAccum.begin(); it != m_toolCallAccum.end(); ++it) {
+	for (const QString &callId : m_toolCallOrder) {
+		auto it = m_toolCallAccum.find(callId);
+		if (it == m_toolCallAccum.end()) continue;
 		QJsonObject tc = it.value();
 
 		// Normalize arguments
@@ -927,12 +936,9 @@ void AiBridge::flushToolCalls()
 
 			m_totalToolCallsDispatched++;
 			logToolCall(tc, toolResultText);
-		}
+			}
 
-		// Build the tool_call entry — copy ALL accumulated fields (reasoning_content etc)
-		QJsonObject tcObj = tc;
-		tcObj.remove(QStringLiteral("index"));
-		tcArray.append(tcObj);
+			tcArray.append(tc);
 
 		// Append the tool result message
 		QJsonObject toolMsg;
@@ -943,17 +949,27 @@ void AiBridge::flushToolCalls()
 		m_conversation.append(toolMsg);
 	}
 
-	// Prepend ONE assistant message with all tool_calls
+	// Prepend ONE assistant message with all tool_calls.
+	// Copy every accumulated field from the delta (reasoning_content,
+	// refusal, thinking — whatever the provider emits) except role
+	// (we set it explicitly) and empty-string content (causes 500s).
 	if (!tcArray.isEmpty()) {
+		// Count the model's output tokens before consuming m_assistantDelta
+		m_totalOutputTokens += estimateTokens(m_assistantDelta);
+
 		QJsonObject assistantMsg = m_assistantDelta;
 		assistantMsg[QStringLiteral("role")] = QStringLiteral("assistant");
 		assistantMsg[QStringLiteral("tool_calls")] = tcArray;
+		if (assistantMsg.value(QStringLiteral("content")).toString().isEmpty())
+			assistantMsg.remove(QStringLiteral("content"));
 		m_assistantDelta = QJsonObject();
 		int insertPos = m_conversation.size() - tcArray.size();
 		m_conversation.insert(insertPos, assistantMsg);
 	}
 
 	m_toolCallAccum.clear();
+	m_toolCallOrder.clear();
+	m_lastToolCallId.clear();
 }
 
 void AiBridge::continueWithToolResults(const QJsonArray &toolResults)
@@ -996,12 +1012,23 @@ void AiBridge::onReplyFinished()
 
 	// Process any remaining SSE data from the buffer + just-read body
 	m_sseBuffer.append(body);
+
+	// Diagnostic: log raw response when debug dump is enabled
+	if (m_debugDumpEnabled && !body.isEmpty())
+		Log::log() << "AiBridge: RAW response body (" << body.size() << " bytes from onReplyFinished):\n"
+		           << body.toStdString() << std::endl;
+
 	while (m_sseBuffer.contains('\n')) {
 		int idx = m_sseBuffer.indexOf('\n');
 		QByteArray line = m_sseBuffer.left(idx).trimmed();
 		m_sseBuffer.remove(0, idx + 1);
 		if (!line.isEmpty()) processSSELine(line);
 	}
+
+	// If there's leftover data that has no trailing newline, log it
+	if (m_debugDumpEnabled && !m_sseBuffer.isEmpty())
+		Log::log() << "AiBridge: UNPROCESSED leftover in SSE buffer (" << m_sseBuffer.size()
+		           << " bytes): " << m_sseBuffer.toStdString() << std::endl;
 
 	m_activeReply->deleteLater();
 	m_activeReply = nullptr;
@@ -1017,9 +1044,7 @@ void AiBridge::onReplyFinished()
 				<< m_conversation.size() << " messages (~" << loopTokens << " tokens)"
 				<< std::endl;
 		m_pendingToolCalls = QJsonArray();
-	m_totalInputTokens = 0;
-	m_totalOutputTokens = 0;
-	m_lastRequestTokens = 0;
+		m_lastRequestTokens = 0;
 		m_streaming = true;
 		emit onStreamOpen();
 		sendToAI(m_conversation);
