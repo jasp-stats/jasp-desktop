@@ -87,26 +87,26 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			storeStateEtc			READ storeStateEtc				WRITE setStoreStateEtc				NOTIFY storeStateEtcChanged				)
 	Q_PROPERTY(bool			showInteractiveDefault	READ showInteractiveDefault		WRITE setShowInteractiveDefault		NOTIFY showInteractiveDefaultChanged	)
 	Q_PROPERTY(int			autoSaveIntervalSec		READ autoSaveIntervalSec		WRITE setAutoSaveIntervalSec		NOTIFY autoSaveIntervalSecChanged		)
-	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll			WRITE setAutoSaveAtAll			NOTIFY autoSaveAtAllChanged				)
-		Q_PROPERTY(QString		aiEndpoint				READ aiEndpoint				WRITE setAiEndpoint				NOTIFY aiEndpointChanged				)
-		Q_PROPERTY(QString		aiApiKey				READ aiApiKey				WRITE setAiApiKey				NOTIFY aiApiKeyChanged				)
-		Q_PROPERTY(QString		aiModel					READ aiModel					WRITE setAiModel					NOTIFY aiModelChanged				)
-		Q_PROPERTY(QString		aiExtraParams			READ aiExtraParams			WRITE setAiExtraParams			NOTIFY aiExtraParamsChanged			)
-			Q_PROPERTY(bool			aiUseCustomKey			READ aiUseCustomKey			WRITE setAiUseCustomKey			NOTIFY aiUseCustomKeyChanged			)
-			Q_PROPERTY(bool			aiUseCompleteSchema		READ aiUseCompleteSchema		WRITE setAiUseCompleteSchema		NOTIFY aiUseCompleteSchemaChanged	)
-			Q_PROPERTY(QString		aiMessageExtra			READ aiMessageExtra			WRITE setAiMessageExtra			NOTIFY aiMessageExtraChanged		)
-		Q_PROPERTY(QString		aiCommonSystemPrompt		READ aiCommonSystemPrompt			WRITE setAiCommonSystemPrompt			NOTIFY aiCommonSystemPromptChanged		)
-			Q_PROPERTY(int			aiChatLimit				READ aiChatLimit				WRITE setAiChatLimit			NOTIFY aiChatLimitChanged		)
-		Q_PROPERTY(bool			aiChatLimitActive			READ aiChatLimitActive			WRITE setAiChatLimitActive		NOTIFY aiChatLimitActiveChanged		)
-		Q_PROPERTY(bool			aiEnabled			READ aiEnabled			WRITE setAiEnabled			NOTIFY aiEnabledChanged		)
-	Q_PROPERTY(bool		aiAnnotationUseCustom	READ aiAnnotationUseCustom	WRITE setAiAnnotationUseCustom	NOTIFY aiAnnotationUseCustomChanged)
-	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt		WRITE setAiAnnotationPrompt		NOTIFY aiAnnotationPromptChanged)
-		Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar			WRITE setAiUserAvatar			NOTIFY aiUserAvatarChanged)
-		Q_PROPERTY(QObject*		aiPersonaModel		READ aiPersonaModel												CONSTANT				)
+	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll				WRITE setAutoSaveAtAll				NOTIFY autoSaveAtAllChanged				)
+	Q_PROPERTY(QString		aiEndpoint				READ aiEndpoint					WRITE setAiEndpoint					NOTIFY aiEndpointChanged				)
+	Q_PROPERTY(QString		aiApiKey				READ aiApiKey					WRITE setAiApiKey					NOTIFY aiApiKeyChanged					)
+	Q_PROPERTY(QString		aiModel					READ aiModel					WRITE setAiModel					NOTIFY aiModelChanged					)
+	Q_PROPERTY(QString		aiExtraParams			READ aiExtraParams				WRITE setAiExtraParams				NOTIFY aiExtraParamsChanged				)
+	Q_PROPERTY(bool			aiUseCustomKey			READ aiUseCustomKey				WRITE setAiUseCustomKey				NOTIFY aiUseCustomKeyChanged			)
+	Q_PROPERTY(bool			aiUseCompleteSchema		READ aiUseCompleteSchema		WRITE setAiUseCompleteSchema		NOTIFY aiUseCompleteSchemaChanged		)
+	Q_PROPERTY(QString		aiMessageExtra			READ aiMessageExtra				WRITE setAiMessageExtra				NOTIFY aiMessageExtraChanged			)
+	Q_PROPERTY(QString		aiCommonSystemPrompt	READ aiCommonSystemPrompt		WRITE setAiCommonSystemPrompt		NOTIFY aiCommonSystemPromptChanged		)
+	Q_PROPERTY(int			aiChatLimit				READ aiChatLimit				WRITE setAiChatLimit				NOTIFY aiChatLimitChanged				)
+	Q_PROPERTY(bool			aiChatLimitActive		READ aiChatLimitActive			WRITE setAiChatLimitActive			NOTIFY aiChatLimitActiveChanged			)
+	Q_PROPERTY(bool			aiEnabled				READ aiEnabled					WRITE setAiEnabled					NOTIFY aiEnabledChanged					)
+	Q_PROPERTY(bool			aiAnnotationUseCustom	READ aiAnnotationUseCustom		WRITE setAiAnnotationUseCustom		NOTIFY aiAnnotationUseCustomChanged		)
+	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt			WRITE setAiAnnotationPrompt			NOTIFY aiAnnotationPromptChanged		)
+	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
+	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
 
-			Q_PROPERTY(bool			rpcServerEnabled	READ rpcServerEnabled		WRITE setRpcServerEnabled		NOTIFY rpcServerEnabledChanged	)
-			Q_PROPERTY(QString		rpcServerIp			READ rpcServerIp			WRITE setRpcServerIp			NOTIFY rpcServerIpChanged		)
-			Q_PROPERTY(int			rpcServerPort		READ rpcServerPort			WRITE setRpcServerPort			NOTIFY rpcServerPortChanged		)
+	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
+	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
+	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
 
 	
 
@@ -199,61 +199,61 @@ class PreferencesModel : public PreferencesModelBase
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
 	void			setCheckUpdates(		bool	newCheckUpdates);
 	void			setStartMaximized(		bool	newStartMaximized);
-	void setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
-		void setAutoSaveAtAll(		bool	newAutoSaveAtAll);
-		void setAiEndpoint(			QString	newAiEndpoint);
-		void setAiApiKey(			QString	newAiApiKey);
-		void setAiModel(			QString	newAiModel);
-		void setAiExtraParams(		QString	newAiExtraParams);
-			void setAiUseCustomKey(		bool	newAiUseCustomKey);
-			void setAiUseCompleteSchema(	bool	newAiUseCompleteSchema);
-			Q_INVOKABLE void resetAiDefaults();
+	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
+	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
+	void			setAiEndpoint(			QString	newAiEndpoint);
+	void			setAiApiKey(			QString	newAiApiKey);
+	void			setAiModel(				QString	newAiModel);
+	void			setAiExtraParams(		QString	newAiExtraParams);
+	void			setAiUseCustomKey(		bool	newAiUseCustomKey);
+	void			setAiUseCompleteSchema(	bool	newAiUseCompleteSchema);
+	Q_INVOKABLE void resetAiDefaults();
 	
 	bool storeStateEtc() const;
-		void setStoreStateEtc(bool newStoreStateEtc);
-	
-		bool showInteractiveDefault() const;
-		void setShowInteractiveDefault(bool newShowInteractiveDefault);
+	void setStoreStateEtc(bool newStoreStateEtc);
 
-		QString aiEndpoint() const;
-		QString aiApiKey() const;
-		QString aiModel() const;
-		QString aiExtraParams() const;
-			bool aiUseCustomKey() const;
-			bool aiUseCompleteSchema() const;
+	bool showInteractiveDefault() const;
+	void setShowInteractiveDefault(bool newShowInteractiveDefault);
 
-			AIPersonaModel* aiPersonaModel() const;
+	QString aiEndpoint() const;
+	QString aiApiKey() const;
+	QString aiModel() const;
+	QString aiExtraParams() const;
+	bool aiUseCustomKey() const;
+	bool aiUseCompleteSchema() const;
 
-			QString aiMessageExtra() const;
-			void setAiMessageExtra(QString newAiMessageExtra);
+	AIPersonaModel* aiPersonaModel() const;
 
-			QString aiCommonSystemPrompt() const;
-			void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+	QString aiMessageExtra() const;
+	void setAiMessageExtra(QString newAiMessageExtra);
 
-			int aiChatLimit() const;
-			void setAiChatLimit(int newAiChatLimit);
+	QString aiCommonSystemPrompt() const;
+	void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
 
-			bool aiChatLimitActive() const;
-			void setAiChatLimitActive(bool newAiChatLimitActive);
+	int aiChatLimit() const;
+	void setAiChatLimit(int newAiChatLimit);
 
-			bool aiEnabled() const;
-			void setAiEnabled(bool newAiEnabled);
+	bool aiChatLimitActive() const;
+	void setAiChatLimitActive(bool newAiChatLimitActive);
 
-			bool aiAnnotationUseCustom() const;
-			void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+	bool aiEnabled() const;
+	void setAiEnabled(bool newAiEnabled);
 
-			QString aiAnnotationPrompt() const;
-			void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
+	bool aiAnnotationUseCustom() const;
+	void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
 
-			QString aiUserAvatar() const;
-			void setAiUserAvatar(QString newAiUserAvatar);
+	QString aiAnnotationPrompt() const;
+	void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
 
-			bool rpcServerEnabled() const;
-			void setRpcServerEnabled(bool v);
-			QString rpcServerIp() const;
-			void setRpcServerIp(QString v);
-			int rpcServerPort() const;
-			void setRpcServerPort(int v);
+	QString aiUserAvatar() const;
+	void setAiUserAvatar(QString newAiUserAvatar);
+
+	bool rpcServerEnabled() const;
+	void setRpcServerEnabled(bool v);
+	QString rpcServerIp() const;
+	void setRpcServerIp(QString v);
+	int rpcServerPort() const;
+	void setRpcServerPort(int v);
 		
 	public slots:
 	bool engineSandbox()							const;

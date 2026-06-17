@@ -136,7 +136,7 @@ PrefsScrollView
 			tabButtonWidth:		140 * jaspTheme.uiScale
 			addTooltip:			qsTr("Add Persona")
 			removeTooltip:		qsTr("Remove Persona")
-			backgroundColor:	jaspTheme.fileMenuColorBackground
+			backgroundColor:	jaspTheme.uiBackground
 
 			onAddItem:			preferencesModel.aiPersonaModel.addPersona()
 			onRemoveItem:		(index) => preferencesModel.aiPersonaModel.removePersona(index)
@@ -172,11 +172,11 @@ PrefsScrollView
 
 			Component.onCompleted: currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex
 
-			Connections {
+			Connections
+			{
 				target: preferencesModel.aiPersonaModel
 				function onCurrentPersonaIndexChanged() { Qt.callLater(function() { personaTabBar.currentIndex = preferencesModel.aiPersonaModel.currentPersonaIndex }) }
 			}
-
 			rowComponent: Item
 			{
 				id:					personaEditorEdit
@@ -230,7 +230,7 @@ PrefsScrollView
 						{
 							id:							personaImageBrowse
 							text:							qsTr("Choose another image")
-							enabled:						!isSystem
+							visible:						!isSystem
 							QTL.Layout.alignment:			Qt.AlignHCenter
 							onClicked:						personaImageFileDialog.open()
 							KeyNavigation.tab:				personaPromptInput
@@ -241,12 +241,7 @@ PrefsScrollView
 							id:								personaImageFileDialog
 							title:							qsTr("Select Persona Image")
 							nameFilters:					[qsTr("Images") + "(*.png *.jpg *.jpeg *.gif *.svg)"]
-							onAccepted:
-							{
-								var path = preferencesModel.aiPersonaModel.copyImageToPersonasDir(selectedFile)
-								if (path)
-									setData(path, personaTabBar.imageRole)
-							}
+							onAccepted:						setData(selectedFile, personaTabBar.imageRole)
 						}
 					}
 
@@ -354,12 +349,6 @@ PrefsScrollView
 							visible:	!personaTabBar.isDefaultPersona(rowIndex)
 							onClicked:	preferencesModel.aiPersonaModel.removePersona(rowIndex)
 						}
-
-						Button {
-							text:		qsTr("Reset to Default")
-							visible:	false  // system personas can no longer be edited
-							onClicked:	preferencesModel.aiPersonaModel.resetSystemPersona(rowIndex)
-						}
 					}
 				}
 			}
@@ -392,7 +381,7 @@ PrefsScrollView
 			onActiveFocusChanged: if (!activeFocus) preferencesModel.aiAnnotationPrompt = text
 			applyScriptInfo:""
 			useTabAsSpaces:	false
-			nextTabItem:	mcpEnabled
+			nextTabItem:	userAvatarFileButton
 
 		}
 	}
@@ -408,7 +397,7 @@ PrefsScrollView
 
 			Label
 			{
-				text:				qsTr("My icon:")
+				text:					qsTr("My icon:")
 				QTL.Layout.alignment:	Qt.AlignVCenter
 			}
 
@@ -420,49 +409,27 @@ PrefsScrollView
 				height:				width
 				fillMode:			Image.PreserveAspectCrop
 				asynchronous:		true
+				source:				preferencesModel.aiPersonaModel.userAvatar
 				sourceSize.width:	width
 				sourceSize.height:	height
-
-				function resolveSource() {
-					var stored = preferencesModel.aiUserAvatar
-					if (!stored) return preferencesModel.aiPersonaModel.shippedPersonaImageUrl("userPersona5.png")
-					return preferencesModel.aiPersonaModel.resolvedImageUrl(stored)
-				}
-				source: resolveSource()
-
-				Connections {
-					target: preferencesModel
-					function onAiUserAvatarChanged() { userAvatarPreview.source = userAvatarPreview.resolveSource() }
-				}
 			}
 
 			Button
 			{
-				text:				qsTr("Choose image…")
+				id:						userAvatarFileButton
+				text:					qsTr("Choose image…")
 				QTL.Layout.alignment:	Qt.AlignVCenter
-				onClicked:			userAvatarDialogLoader.active = true
+				onClicked:				userAvatarFileDialog.open()
+				KeyNavigation.tab:		mcpEnabled
 			}
-		}
-	}
 
-	// Component avoids Column.children type error with Qt 6 FileDialog
-	Loader {
-		id: userAvatarDialogLoader
-		active: false
-		width: 0; height: 0
-		sourceComponent: Component {
-			QTD.FileDialog {
+			QTD.FileDialog
+			{
 				id: userAvatarFileDialog
 				title: qsTr("Select Your Avatar")
 				nameFilters: [qsTr("Images") + "(*.png *.jpg *.jpeg *.gif *.svg)"]
 				currentFolder: preferencesModel.aiPersonaModel.shippedPersonaImagesDir()
-				onAccepted: {
-					var path = preferencesModel.aiPersonaModel.copyImageToPersonasDir(selectedFile)
-					if (path) preferencesModel.aiUserAvatar = path
-					userAvatarDialogLoader.active = false
-				}
-				onRejected: userAvatarDialogLoader.active = false
-				Component.onCompleted: open()
+				onAccepted: preferencesModel.aiPersonaModel.userAvatar = selectedFile;
 			}
 		}
 	}
