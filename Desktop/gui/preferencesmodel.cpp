@@ -483,7 +483,7 @@ void PreferencesModel::resetAiDefaults()
 	setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
 	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
 	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
-	setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
+	//setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
 	setAiUseCustomKey(	Settings::defaultValue(Settings::AI_USE_CUSTOM_KEY).toBool());
 	setAiUseCompleteSchema(Settings::defaultValue(Settings::AI_USE_COMPLETE_SCHEMA).toBool());
 }

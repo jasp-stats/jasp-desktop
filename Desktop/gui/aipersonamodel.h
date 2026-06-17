@@ -37,6 +37,8 @@ class AIPersonaModel : public QAbstractListModel
 	Q_PROPERTY(int			currentPersonaIndex		READ currentPersonaIndex	WRITE setCurrentPersonaIndex	NOTIFY currentPersonaIndexChanged)
 	Q_PROPERTY(QString		activePersonaAvatar		READ activePersonaAvatar									NOTIFY activePersonaAvatarChanged)
 	Q_PROPERTY(QString		activePersonaAvatarWeb	READ activePersonaAvatarWeb									NOTIFY activePersonaAvatarChanged)
+	Q_PROPERTY(QString		userAvatar				READ userAvatar				WRITE setUserAvatar				NOTIFY userAvatarChanged)
+	Q_PROPERTY(QString		userAvatarWeb			READ userAvatarWeb											NOTIFY userAvatarChanged)
 
 public:
 	enum Roles {
@@ -64,15 +66,6 @@ public:
 	Q_INVOKABLE void	duplicatePersona(int index);
 	Q_INVOKABLE int		getRole(QString name);
 
-	/// Restore a system persona to its shipped defaults.
-	Q_INVOKABLE void resetSystemPersona(int index);
-
-	/// Copy an image file into the personas directory, return the absolute path.
-	Q_INVOKABLE QString copyImageToPersonasDir(const QUrl &sourceUrl);
-
-	/// Directory where persona images are stored.
-	Q_INVOKABLE QString personaImagesDir() const;
-
 	/// Default fallback image (qrc:///icons/jaspAI.png or similar).
 	Q_INVOKABLE QString defaultPersonaImagePath() const;
 
@@ -98,6 +91,11 @@ public:
 	QString activePersonaAvatar() const;
 	QString activePersonaAvatarWeb() const;
 
+	QString userAvatar()						const;
+	QString userAvatarWeb()						const;
+	void	setUserAvatar(QString path);
+	void	resetAll();             // clear user personas, reload system defaults
+
 	/// Return the default tool set (all known tools).
 	QStringList defaultToolSet() const;
 
@@ -118,38 +116,37 @@ public:
 	/// Toggle a single tool. Recalculates caps.
 	Q_INVOKABLE void toggleTool(int personaIndex, const QString &toolName);
 
-	/// Return the list of enabled capability IDs for a persona.
-	Q_INVOKABLE QStringList enabledCapabilityIds(int personaIndex);
-
 	Q_INVOKABLE QVariantList capabilities()	const { return m_capabilities; }
 
 public slots:
 	void setCurrentPersonaIndex(int index);
 
-	// Persistence
-	void saveToSettings();
-	void resetAll();             // clear user personas, reload system defaults
-
 signals:
 	void currentPersonaIndexChanged();
 	void activePersonaAvatarChanged();
+	void userAvatarChanged();
 
 private:
+	/// Copy an image file into the personas directory, return the absolute path.
+	QString			copyImageToPersonasDir(const QUrl &sourceUrl);
+	/// Directory where persona images are stored.
+	QString			personaImagesDir() const;
+	void			saveToSettings();
+
 	int				indexOfId(const QString &id) const;
-	void			mergeLists();
 	void			insertPersona(int pos, const PersonaEntry &entry);
 	QString			resolveDefaultImage()	const;
-	void			loadPersonaSettings();
+	void			loadPersonaSettings(bool onlySystem = false);
 	void			loadCapabilities();
 	QStringList		resolveCapabilitiesToTools(const QJsonArray &capsArr)	const;
 	QStringList		getAllCapabilityIds()									const;
 	QStringList		resolveCaps(const QStringList &tools)					const;
+	QString			makeWebPath(const QString& path)						const;
+	void			setUniqueName(PersonaEntry & persona, const QString & name);
 
-	QVector<PersonaEntry>	m_systemPersonas;
-	QVector<PersonaEntry>	m_userPersonas;
-	QVector<PersonaEntry>	m_personas;         // merged: system first, then user
+
+	QVector<PersonaEntry>	m_personas;
 	int						m_currentPersonaIndex	= 0;
-	bool					m_loaded				= false;
 	QVariantList			m_capabilities;
 };
 

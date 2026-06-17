@@ -16,6 +16,7 @@
 #include <QJsonObject>
 #include <QUrl>
 #include <QMimeDatabase>
+#include "preferencesmodel.h"
 
 // Forward declarations — static helpers defined later in this file
 static QJsonArray toJsonArr(const QStringList &ids);
@@ -52,8 +53,8 @@ QVariant AIPersonaModel::data(const QModelIndex &index, int role) const
 	case NameDisplayRole:
 	case Qt::DisplayRole:
 	{
-		bool addBold = currentPersonaIndex() == index.row();
-		return (addBold ? "<b>" : "") + p.name + (addBold ? "</b>" : "");
+		bool isActive = currentPersonaIndex() == index.row();
+		return (isActive ? "✓ " : "") + p.name;
 	}
 	case PersonaPromptRole:			return p.personaPrompt;
 	case ImagePathRole:				return resolvedImageUrl(p.imagePath);
@@ -69,33 +70,20 @@ bool AIPersonaModel::setData(const QModelIndex &index, const QVariant &value, in
 	if (!index.isValid() || index.row() < 0 || index.row() >= m_personas.size())
 		return false;
 
-	PersonaEntry &merged = m_personas[index.row()];
-
-	// Find or create the user-side entry (all edits go through m_userPersonas)
-	auto it = std::find_if(m_userPersonas.begin(), m_userPersonas.end(),
-		[&](const PersonaEntry &u) { return u.id == merged.id; });
-	if (it == m_userPersonas.end()) {
-		PersonaEntry entry = merged;
-		entry.isSystem = false;
-		m_userPersonas.append(entry);
-		it = m_userPersonas.end() - 1;
-	}
+	PersonaEntry &persona = m_personas[index.row()];
 
 	switch (role) {
 	case NameRole:
-		if (value.toString() == it->name) return true;
-		it->name = value.toString();
-		merged.name = it->name;
+		if (value.toString() == persona.name) return true;
+		setUniqueName(persona, value.toString());
 		break;
 	case PersonaPromptRole:
-		if (value.toString() == it->personaPrompt) return true;
-		it->personaPrompt = value.toString();
-		merged.personaPrompt = it->personaPrompt;
+		if (value.toString() == persona.personaPrompt) return true;
+		persona.personaPrompt = value.toString();
 		break;
 	case ImagePathRole:
-		if (value.toString() == it->imagePath) return true;
-		it->imagePath = value.toString();
-		merged.imagePath = it->imagePath;
+		if (value.toString().isEmpty()) return true;
+		persona.imagePath = copyImageToPersonasDir(value.toString());
 		if (index.row() == m_currentPersonaIndex)
 			emit activePersonaAvatarChanged();
 		break;
@@ -139,8 +127,10 @@ int AIPersonaModel::addPersona()
 	p.enabledCapabilities = getAllCapabilityIds();  // new personas start with all caps
 	p.enabledTools = resolveCapabilitiesToTools(toJsonArr(p.enabledCapabilities));
 
-	m_userPersonas.append(p);
-	mergeLists();
+	beginInsertRows(QModelIndex(), m_personas.size(), m_personas.size());
+	m_personas.append(p);
+	endInsertRows();
+
 	saveToSettings();
 
 	return indexOfId(p.id);
@@ -152,12 +142,13 @@ void AIPersonaModel::removePersona(int index)
 	const PersonaEntry &p = m_personas.at(index);
 	if (p.isSystem) return; // cannot delete system personas
 
-	m_userPersonas.erase(
-		std::remove_if(m_userPersonas.begin(), m_userPersonas.end(),
+	beginResetModel();
+	m_personas.erase(
+		std::remove_if(m_personas.begin(), m_personas.end(),
 			[&](const PersonaEntry &u) { return u.id == p.id; }),
-		m_userPersonas.end());
+		m_personas.end());
+	endResetModel();
 
-	mergeLists();
 
 	if (m_currentPersonaIndex >= m_personas.size())
 		setCurrentPersonaIndex(m_personas.size() - 1);
@@ -165,17 +156,18 @@ void AIPersonaModel::removePersona(int index)
 	saveToSettings();
 }
 
-void AIPersonaModel::duplicatePersona(int index)
+void AIPersonaModel::duplicatePersona(int ind)
 {
-	if (index < 0 || index >= m_personas.size()) return;
+	if (ind < 0 || ind >= m_personas.size()) return;
 
-	PersonaEntry p = m_personas.at(index);
+	PersonaEntry p = m_personas.at(ind);
 	p.id          = QUuid::createUuid().toString(QUuid::WithoutBraces);
-	p.name        = p.name + QStringLiteral(" (copy)");
+	setUniqueName(p, p.name + QStringLiteral(" (copy)"));
 	p.isSystem    = false;
 
-	m_userPersonas.append(p);
-	mergeLists();
+	beginInsertRows(QModelIndex(), m_personas.size(), m_personas.size());
+	m_personas.append(p);
+	endInsertRows();
 
 	int newIdx = indexOfId(p.id);
 	setCurrentPersonaIndex(newIdx);
@@ -188,37 +180,6 @@ int AIPersonaModel::getRole(QString name)
 		if (name == roleName)
 			return roleId;
 	return 0;
-}
-
-void AIPersonaModel::resetSystemPersona(int index)
-{
-	if (index < 0 || index >= m_personas.size()) return;
-	PersonaEntry &merged = m_personas[index];
-	if (!merged.isSystem) return;
-	QString personaId = merged.id;
-
-	// Remove any user-side override with matching ID
-	m_userPersonas.erase(
-		std::remove_if(m_userPersonas.begin(), m_userPersonas.end(),
-			[&](const PersonaEntry &u) { return u.id == personaId; }),
-		m_userPersonas.end());
-
-	// Restore from original system persona (no model reset)
-	auto it = std::find_if(m_systemPersonas.begin(), m_systemPersonas.end(),
-		[&](const PersonaEntry &s) { return s.id == personaId; });
-	if (it != m_systemPersonas.end()) {
-		merged.name = it->name;
-		merged.personaPrompt = it->personaPrompt;
-		merged.imagePath = it->imagePath;
-		merged.enabledTools = it->enabledTools;
-		merged.enabledCapabilities = it->enabledCapabilities;
-	} else {
-		merged.enabledTools.clear();
-		merged.enabledCapabilities.clear();
-	}
-
-	saveToSettings();
-	emit dataChanged(this->index(index, 0), this->index(index, 0));
 }
 
 // ============================================================================
@@ -330,17 +291,71 @@ QString AIPersonaModel::activePersonaAvatar() const
 	return QUrl::fromLocalFile(p.imagePath).toString();
 }
 
-QString AIPersonaModel::activePersonaAvatarWeb() const
+QString AIPersonaModel::makeWebPath(const QString& path) const
 {
-	const PersonaEntry &p = activePersona();
-	if (p.imagePath.isEmpty())
+	if (path.isEmpty())
 		return {};
 
-	QFileInfo fi(p.imagePath);
+	QFileInfo fi(path);
 	if (!fi.exists())
 		return {};
 
 	return QStringLiteral("jaspPersona:///") + fi.fileName();
+}
+
+void AIPersonaModel::setUniqueName(PersonaEntry & persona, const QString & name)
+{
+	bool isUnique = false;
+	int counter = 1;
+	QString uniqueName = name;
+
+	while (!isUnique)
+	{
+		isUnique = true;
+		for (const PersonaEntry &p : m_personas)
+			if (p != persona && p.name == uniqueName)
+				isUnique = false;
+		if (!isUnique)
+		{
+			counter++;
+			uniqueName = name + " " + QString::number(counter);
+		}
+	}
+	persona.name = uniqueName;
+}
+
+QString AIPersonaModel::activePersonaAvatarWeb() const
+{
+	const PersonaEntry &p = activePersona();
+	return makeWebPath(p.imagePath);
+}
+
+QString AIPersonaModel::userAvatar() const
+{
+	QString stored = PreferencesModel::prefs()->aiUserAvatar();
+	if (stored.isEmpty()) return shippedPersonaImageUrl("userPersona5.png").toString();
+	return resolvedImageUrl(stored).toString();
+}
+
+QString AIPersonaModel::userAvatarWeb() const
+{
+	QString stored = PreferencesModel::prefs()->aiUserAvatar();
+	if (stored.isEmpty()) return shippedPersonaImageUrl("userPersona5.png").toString();
+	return makeWebPath(stored);
+}
+
+void AIPersonaModel::setUserAvatar(QString path)
+{
+	if (path.isEmpty())
+		return;
+
+	QUrl urlPath = path;
+
+	path = copyImageToPersonasDir(urlPath.toString());
+	if (!path.isEmpty())
+		PreferencesModel::prefs()->setAiUserAvatar(path);
+
+	emit userAvatarChanged();
 }
 
 void AIPersonaModel::setCurrentPersonaIndex(int ind)
@@ -441,10 +456,9 @@ QStringList AIPersonaModel::resolveCaps(const QStringList &tools) const
 // Persistence
 // ============================================================================
 
-void AIPersonaModel::loadPersonaSettings()
+void AIPersonaModel::loadPersonaSettings(bool onlySystem)
 {
-	if (m_loaded) return;
-	m_loaded = true;
+	beginResetModel();
 
 	// 1. Load system personas from the shipped JSON file.
 	std::string sysFilePath = Dirs::resourcesDir() + "defaultPersonas.json";
@@ -505,7 +519,7 @@ void AIPersonaModel::loadPersonaSettings()
 				if (entry.imagePath.isEmpty())
 					entry.imagePath = resolveDefaultImage();
 
-				m_systemPersonas.append(entry);
+				m_personas.append(entry);
 			}
 		}
 		else
@@ -519,7 +533,7 @@ void AIPersonaModel::loadPersonaSettings()
 	}
 
 	// 2. If we couldn't load any system personas, inject a hardcoded fallback.
-	if (m_systemPersonas.isEmpty())
+	if (m_personas.isEmpty())
 	{
 		PersonaEntry fallback;
 		fallback.id           = QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -531,86 +545,88 @@ void AIPersonaModel::loadPersonaSettings()
 			"so you can give the user the best interpretations and advice.");
 		fallback.imagePath    = resolveDefaultImage();
 		fallback.isSystem     = true;
-		m_systemPersonas.append(fallback);
+		m_personas.append(fallback);
 	}
 
-	// 3. Load user personas from QSettings.
-	const QString userJson = Settings::value(Settings::AI_USER_PERSONAS).toString();
-	if (!userJson.isEmpty())
+	if (!onlySystem)
 	{
-		QJsonParseError parseError;
-		QJsonDocument doc = QJsonDocument::fromJson(userJson.toUtf8(), &parseError);
-		if (doc.isArray())
+		// 3. Load user personas from QSettings.
+		const QString userJson = Settings::value(Settings::AI_USER_PERSONAS).toString();
+		if (!userJson.isEmpty())
 		{
-			for (const QJsonValue &val : doc.array())
+			QJsonParseError parseError;
+			QJsonDocument doc = QJsonDocument::fromJson(userJson.toUtf8(), &parseError);
+			if (doc.isArray())
 			{
-				QJsonObject obj = val.toObject();
-				PersonaEntry entry;
-				entry.id           = obj.value(QStringLiteral("id")).toString();
-				entry.name         = obj.value(QStringLiteral("name")).toString();
-				entry.personaPrompt = obj.value(QStringLiteral("personaPrompt")).toString();
-				if (entry.personaPrompt.isEmpty())
-					entry.personaPrompt = obj.value(QStringLiteral("systemPrompt")).toString();
-				entry.imagePath    = obj.value(QStringLiteral("imagePath")).toString();
-				entry.isSystem     = false;
+				for (const QJsonValue &val : doc.array())
+				{
+					QJsonObject obj = val.toObject();
+					PersonaEntry entry;
+					entry.id           = obj.value(QStringLiteral("id")).toString();
+					entry.name         = obj.value(QStringLiteral("name")).toString();
+					entry.personaPrompt = obj.value(QStringLiteral("personaPrompt")).toString();
+					if (entry.personaPrompt.isEmpty())
+						entry.personaPrompt = obj.value(QStringLiteral("systemPrompt")).toString();
+					entry.imagePath    = obj.value(QStringLiteral("imagePath")).toString();
+					entry.isSystem     = false;
 
-				QJsonArray toolsArr = obj.value(QStringLiteral("enabledTools")).toArray();
-				if (!toolsArr.isEmpty()) {
-					for (const QJsonValue &tv : toolsArr)
-						if (tv.isString()) entry.enabledTools.append(tv.toString());
-					entry.enabledTools.sort();
-				}
-
-				// Parse enabledCapabilities (new field)
-				QJsonArray capsArr = obj.value(QStringLiteral("enabledCapabilities")).toArray();
-				if (!capsArr.isEmpty()) {
-					if (capsArr.size() == 1 && capsArr[0].isString() && capsArr[0].toString() == "*")
-						entry.enabledCapabilities = getAllCapabilityIds();
-					else
-					{
-						for (const QJsonValue &cv : capsArr)
-							if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+					QJsonArray toolsArr = obj.value(QStringLiteral("enabledTools")).toArray();
+					if (!toolsArr.isEmpty()) {
+						for (const QJsonValue &tv : toolsArr)
+							if (tv.isString()) entry.enabledTools.append(tv.toString());
+						entry.enabledTools.sort();
 					}
-					entry.enabledCapabilities.sort();
+
+					// Parse enabledCapabilities (new field)
+					QJsonArray capsArr = obj.value(QStringLiteral("enabledCapabilities")).toArray();
+					if (!capsArr.isEmpty()) {
+						if (capsArr.size() == 1 && capsArr[0].isString() && capsArr[0].toString() == "*")
+							entry.enabledCapabilities = getAllCapabilityIds();
+						else
+						{
+							for (const QJsonValue &cv : capsArr)
+								if (cv.isString()) entry.enabledCapabilities.append(cv.toString());
+						}
+						entry.enabledCapabilities.sort();
+					}
+
+
+					// Migration: if caps not stored but tools are, derive caps from tools
+					if (entry.enabledCapabilities.isEmpty() && !entry.enabledTools.isEmpty())
+						entry.enabledCapabilities = resolveCaps(entry.enabledTools);
+
+					if (entry.id.isEmpty())
+						entry.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+
+					m_personas.append(entry);
 				}
-
-
-				// Migration: if caps not stored but tools are, derive caps from tools
-				if (entry.enabledCapabilities.isEmpty() && !entry.enabledTools.isEmpty())
-					entry.enabledCapabilities = resolveCaps(entry.enabledTools);
-
-				if (entry.id.isEmpty())
-					entry.id = QUuid::createUuid().toString(QUuid::WithoutBraces);
-
-				m_userPersonas.append(entry);
 			}
 		}
 	}
 
-	// 4. Merge into flat list.
-	mergeLists();
+	endResetModel();
 
 	// 5. Restore the active persona.
 	QString activeId = Settings::value(Settings::AI_CURRENT_PERSONA_ID).toString();
 	int idx = indexOfId(activeId);
 	if (idx < 0 && !m_personas.isEmpty())
 		idx = 0;
+	if (idx >= m_personas.size())
+		idx = m_personas.size() - 1;
 
 	if (idx >= 0)
 	{
 		m_currentPersonaIndex = idx;
 		emit currentPersonaIndexChanged();
-
-		// Emit signals so QML refreshes even if TabBar index didn't change
-		const PersonaEntry &rp = m_personas.at(idx);
 	}
 }
 
 void AIPersonaModel::saveToSettings()
 {
 	QJsonArray arr;
-	for (const PersonaEntry &p : m_userPersonas)
+	for (const PersonaEntry &p : m_personas)
 	{
+		if (p.isSystem) continue;
 		QJsonObject obj;
 		obj[QStringLiteral("id")]           = p.id;
 		obj[QStringLiteral("name")]         = p.name;
@@ -637,12 +653,15 @@ void AIPersonaModel::saveToSettings()
 
 void AIPersonaModel::resetAll()
 {
-	m_userPersonas.clear();
-	mergeLists();
-	m_currentPersonaIndex = 0;
+	beginResetModel();
+	m_personas.clear();
+	loadPersonaSettings(true);
+	endResetModel();
+
 	Settings::setValue(Settings::AI_USER_PERSONAS, QStringLiteral("[]"));
 	Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, m_personas.at(0).id);
 
+	m_currentPersonaIndex = 0;
 	emit currentPersonaIndexChanged();
 }
 
@@ -657,24 +676,6 @@ int AIPersonaModel::indexOfId(const QString &id) const
 		if (m_personas.at(i).id == id)
 			return i;
 	return -1;
-}
-
-void AIPersonaModel::mergeLists()
-{
-	beginResetModel();
-	m_personas.clear();
-
-	// System personas always loaded from defaults — never overridden by user edits.
-	for (const auto &p : m_systemPersonas)
-		m_personas.append(p);
-
-	// User-created personas (those without matching system ID)
-	for (const auto &p : m_userPersonas) {
-		if (!m_systemPersonas.contains(p))
-			m_personas.append(p);
-	}
-
-	endResetModel();
 }
 
 QString AIPersonaModel::resolveDefaultImage() const
@@ -717,15 +718,11 @@ QStringList AIPersonaModel::effectiveEnabledTools(int index) const
 	const PersonaEntry &p = m_personas.at(index);
 
 	if (p.enabledTools.isEmpty() || (p.enabledTools.size() == 1 && p.enabledTools.first() == QStringLiteral("_default_"))) {
-		// System persona: check for per-persona override in defaultPersonas.json
-		if (p.isSystem) {
-			auto it = std::find_if(m_systemPersonas.begin(), m_systemPersonas.end(),
-				[&](const PersonaEntry &s) { return s.id == p.id; });
-			if (it != m_systemPersonas.end() && !it->enabledTools.isEmpty())
-				return it->enabledTools;
-			return defaultToolSet();
-		}
-		return {};  // user persona with empty tools → no tools
+		auto it = std::find_if(m_personas.begin(), m_personas.end(),
+			[&](const PersonaEntry &s) { return s.id == p.id; });
+		if (it != m_personas.end() && !it->enabledTools.isEmpty())
+			return it->enabledTools;
+		return defaultToolSet();
 	}
 
 	if (p.enabledTools.size() == 1 && p.enabledTools.first() == QStringLiteral("*"))
@@ -794,28 +791,17 @@ void AIPersonaModel::toggleCapability(int personaIndex, const QString &capId)
 {
 	if (personaIndex < 0 || personaIndex >= m_personas.size()) return;
 
-	PersonaEntry &merged = m_personas[personaIndex];
-	auto it = std::find_if(m_userPersonas.begin(), m_userPersonas.end(),
-		[&](const PersonaEntry &u) { return u.id == merged.id; });
-	if (it == m_userPersonas.end()) {
-		PersonaEntry entry = merged;
-		entry.isSystem = false;
-		m_userPersonas.append(entry);
-		it = m_userPersonas.end() - 1;
-	}
+	PersonaEntry &persona = m_personas[personaIndex];
 
 	// Init from effective tools if never stored
 	QStringList effective = effectiveEnabledTools(personaIndex);
 	QSet<QString> toolSet(effective.begin(), effective.end());
-	if (it->enabledCapabilities.isEmpty())
-		it->enabledCapabilities = resolveCaps(effective);
-	if (it->enabledTools.isEmpty())
-		it->enabledTools = effective;
+	if (persona.enabledCapabilities.isEmpty())
+		persona.enabledCapabilities = resolveCaps(effective);
+	if (persona.enabledTools.isEmpty())
+		persona.enabledTools = effective;
 
-	// Resolve "*" wildcard to actual cap IDs before toggling
-	QStringList storedCaps = it->enabledCapabilities;
-	if (storedCaps.contains(QStringLiteral("*")))
-		storedCaps = resolveCaps(effective);
+	QStringList storedCaps = persona.enabledCapabilities;
 
 	QStringList capTools = resolveCapabilitiesToTools(toJsonArr({capId}));
 	QSet<QString> capSet(storedCaps.begin(), storedCaps.end());
@@ -831,12 +817,10 @@ void AIPersonaModel::toggleCapability(int personaIndex, const QString &capId)
 		for (const QString &t : capTools) toolSet.insert(t);
 	}
 
-	it->enabledCapabilities = QStringList(capSet.begin(), capSet.end());
-	it->enabledTools = QStringList(toolSet.begin(), toolSet.end());
-	it->enabledTools.sort();
-	it->enabledCapabilities.sort();
-	merged.enabledTools = it->enabledTools;
-	merged.enabledCapabilities = it->enabledCapabilities;
+	persona.enabledCapabilities = QStringList(capSet.begin(), capSet.end());
+	persona.enabledTools = QStringList(toolSet.begin(), toolSet.end());
+	persona.enabledTools.sort();
+	persona.enabledCapabilities.sort();
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
@@ -846,48 +830,25 @@ void AIPersonaModel::toggleTool(int personaIndex, const QString &toolName)
 {
 	if (personaIndex < 0 || personaIndex >= m_personas.size()) return;
 
-	PersonaEntry &merged = m_personas[personaIndex];
-	auto it = std::find_if(m_userPersonas.begin(), m_userPersonas.end(),
-		[&](const PersonaEntry &u) { return u.id == merged.id; });
-	if (it == m_userPersonas.end()) {
-		PersonaEntry entry = merged;
-		entry.isSystem = false;
-		m_userPersonas.append(entry);
-		it = m_userPersonas.end() - 1;
-	}
+	PersonaEntry &persona = m_personas[personaIndex];
 
 	// Init from effective tools if never stored
 	QStringList effective = effectiveEnabledTools(personaIndex);
 	QSet<QString> toolSet(effective.begin(), effective.end());
-	if (it->enabledTools.isEmpty())
-		it->enabledTools = effective;
+	if (persona.enabledTools.isEmpty())
+		persona.enabledTools = effective;
 
 	if (toolSet.contains(toolName))
 		toolSet.remove(toolName);
 	else
 		toolSet.insert(toolName);
 
-	it->enabledTools = QStringList(toolSet.begin(), toolSet.end());
-	it->enabledTools.sort();
-	it->enabledCapabilities = resolveCaps(it->enabledTools);
-
-	merged.enabledTools = it->enabledTools;
-	merged.enabledCapabilities = it->enabledCapabilities;
+	persona.enabledTools = QStringList(toolSet.begin(), toolSet.end());
+	persona.enabledTools.sort();
+	persona.enabledCapabilities = resolveCaps(persona.enabledTools);
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
-}
-
-QStringList AIPersonaModel::enabledCapabilityIds(int personaIndex)
-{
-	if (personaIndex < 0 || personaIndex >= m_personas.size())
-		return {};
-	const QStringList &s = m_personas.at(personaIndex).enabledCapabilities;
-	if (!s.isEmpty() && !s.contains(QStringLiteral("*"))) return s;
-	QStringList all;
-	for (const QVariant &cv : capabilities())
-		all.append(cv.toMap().value(QStringLiteral("id")).toString());
-	return all;
 }
 
 QStringList AIPersonaModel::getAllCapabilityIds() const

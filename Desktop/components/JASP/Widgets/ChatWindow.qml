@@ -78,14 +78,7 @@ Window
 			return avatar ? avatar : jaspTheme.iconPath + "jaspAI.png"
 		}
 
-		// User avatar for the chat: converts stored path to jaspPersona:/// scheme
-		property string userIconPath: {
-			var stored = preferencesModel.aiUserAvatar
-			if (!stored) return "jaspPersona:///userPersona5.png"
-			var idx = Math.max(stored.lastIndexOf("/"), stored.lastIndexOf("\\"))
-			var filename = idx >= 0 ? stored.substring(idx + 1) : stored
-			return "jaspPersona:///" + filename
-		}
+        property string userIconPath: preferencesModel.aiPersonaModel.userAvatarWeb
 
 		onAiIconPathChanged: { aiBridgeInterface.personaAvatarUpdated(aiIconPath) }
 		onUserIconPathChanged: { aiBridgeInterface.userAvatarUpdated(userIconPath) }

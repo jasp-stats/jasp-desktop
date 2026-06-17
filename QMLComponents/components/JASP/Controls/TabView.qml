@@ -120,6 +120,10 @@ ComponentsListBase
 	{
 		return true
 	}
+	function isTabEditable(index)
+	{
+		return isTabRemovable(index)
+	}
 
 	Text
 	{
@@ -146,6 +150,9 @@ ComponentsListBase
 			hoverEnabled	: true		// Without this, tabButton.hovered never becomes true and the ToolTip below never shows
 			onClicked		: forceActiveFocus()
 
+			property bool isEditable: tabView.tabNameEditable && tabView.isTabEditable(model.index)
+			property bool isRemovable: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
+
 			contentItem: Item
 			{
 				anchors.fill			: parent
@@ -158,16 +165,16 @@ ComponentsListBase
 
 					leftPadding			: jaspTheme.labelSpacing
 					color				: jaspTheme.black
-					text				: model.name
+					text				: tabButton.activeFocus ? ("<b>" + model.name + "</b>") : model.name
 					font				: jaspTheme.font
 					elide				: Text.ElideRight
 					width				: parent.width - jaspTheme.labelSpacing - (removeIconItem.visible ? removeIconItem.width  : 0)
 					visible				: !textFieldItem.visible
 
-					QtControls.ToolTip.visible	: tabButton.hovered && (tabButtonLabel.truncated || tabView.tabNameEditable)
+					QtControls.ToolTip.visible	: tabButton.hovered && (tabButtonLabel.truncated || tabButton.isEditable)
 					QtControls.ToolTip.text		: (tabButtonLabel.truncated ? model.value : "")
-												+ (tabButtonLabel.truncated && tabView.tabNameEditable ? "\n" : "")
-												+ (tabView.tabNameEditable ? qsTr("Double click to edit") : "")
+												+ (tabButtonLabel.truncated && tabButton.isEditable ? "\n" : "")
+												+ (tabButton.isEditable ? qsTr("Double click to edit") : "")
 
 
 				}
@@ -179,7 +186,7 @@ ComponentsListBase
 					anchors.right			: parent.right
 					anchors.rightMargin		: 4 * preferencesModel.uiScale
 					anchors.verticalCenter	: parent.verticalCenter
-					visible					: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
+					visible					: tabButton.isRemovable
 					height					: jaspTheme.iconSize * preferencesModel.uiScale
 					width					: jaspTheme.iconSize * preferencesModel.uiScale
 
@@ -246,7 +253,7 @@ ComponentsListBase
 
 			onDoubleClicked:
 			{
-				if (tabView.tabNameEditable)
+				if (tabButton.isEditable)
 				{
 					textFieldItem.visible = true
 					textFieldItem.forceActiveFocus();
