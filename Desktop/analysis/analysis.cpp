@@ -23,7 +23,6 @@
 #include "analyses.h"
 #include "tempfiles.h"
 #include "analysisform.h"
-#include "columnencoder.h"
 #include "utilities/qutils.h"
 #include "utilities/reporter.h"
 #include "gui/preferencesmodel.h"
@@ -291,9 +290,6 @@ void Analysis::imageEdited(const Json::Value & results)
 			updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
 	}
 
-	// Convert interactiveJsonData file paths to actual JSON objects for the front-end
-	_imgResults = loadPlotlyJsonInResults(_imgResults);
-
 	setStatus(Analysis::Complete);
 
 	emit imageEditedSignal(this);
@@ -427,47 +423,6 @@ std::string Analysis::statusToString(Status status)
 	}
 }
 
-Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
-{
-	auto loadFile = [](const std::string & tempFileRelativePath)
-	{
-		QFile plotlyJsonFile(tq(TempFiles::sessionDirName() + "/" + tempFileRelativePath));
-
-		if(plotlyJsonFile.open(QFile::OpenModeFlag::ReadOnly))
-		{
-			Json::Value plotlyJson;
-			Json::Reader jsonReader;
-
-			jsonReader.parse(plotlyJsonFile.readAll().toStdString(),plotlyJson, false);
-
-			ColumnEncoder::decodeJson(plotlyJson);
-
-			return plotlyJson;
-		}
-		return Json::Value("");
-	};
-
-
-	std::function<void(Json::Value &)> recursiveFixer;
-
-	recursiveFixer = [&loadFile, &recursiveFixer](Json::Value & results)
-	{
-		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString() && QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + results["interactiveJsonData"].asString())))
-			results["interactiveJsonData"] = loadFile(results["interactiveJsonData"].asString());
-
-		if(results.isObject())
-			for(const std::string & member : results.getMemberNames())
-				recursiveFixer(results[member]);
-		else if(results.isArray())
-			for(int arrayIndex = 0; arrayIndex < results.size(); arrayIndex++)
-				recursiveFixer(results[arrayIndex]);
-	};
-
-	recursiveFixer(results);
-
-	return results;
-}
-
 Json::Value Analysis::asJSON(bool withRSource) const
 {
 	Json::Value analysisAsJson = Json::objectValue;
@@ -479,7 +434,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["hasReport"]		= _hasReport;
 	analysisAsJson["progress"]		= _progress;
-	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
+	analysisAsJson["results"]		= _results;
 	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
@@ -500,7 +455,6 @@ Json::Value Analysis::asJSON(bool withRSource) const
 
 	return analysisAsJson;
 }
-
 
 void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 {

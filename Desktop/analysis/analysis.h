@@ -217,7 +217,6 @@ private:
 	void					initAnalysis();
 	void					setAnalysisForm(AnalysisForm	* analysisForm);
 	bool					readyToCreateForm() const;
-	Json::Value				loadPlotlyJsonInResults(Json::Value results) const;
 
 protected:
 	Status						_status				= Empty;
