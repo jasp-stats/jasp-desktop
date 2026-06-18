@@ -177,6 +177,19 @@ function setupDeepChat() {
     chat.avatars = avatars;
   }
 
+  // Reassigning chat.avatars makes deep-chat rebuild its message view from the
+  // `history` property, which drops messages added at runtime (streaming / addMessage).
+  // Persist the live conversation into `history` first so it survives the rebuild.
+  function applyAvatars(newAvatars) {
+    try {
+      var msgs = chat.getMessages();
+      if (msgs && msgs.length) chat.history = msgs;
+    } catch (e) {
+      console.warn("chat-bridge: could not preserve messages:", e);
+    }
+    chat.avatars = newAvatars;
+  }
+
   // React to persona changes
   aiBridge.personaAvatarUpdated.connect(function (newPath) {
     console.log("chat-bridge: aiIconPath changed: " + newPath);
@@ -187,7 +200,7 @@ function setupDeepChat() {
         avatar: { width: "32px", height: "32px", alignSelf: "center" },
       },
     };
-    chat.avatars = avatars;
+    applyAvatars(avatars);
   });
 
   // React to user avatar changes
@@ -216,7 +229,7 @@ function setupDeepChat() {
     } else {
       delete avatars.user; // let deep-chat use its default
     }
-    chat.avatars = avatars;
+    applyAvatars(avatars);
   });
 
   console.log("chat-bridge: deep-chat handler configured");
