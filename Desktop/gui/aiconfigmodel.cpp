@@ -304,6 +304,7 @@ void AIConfigModel::emitAllDerivedSignals()
 	emit currentChatLimitActiveChanged();
 	emit currentChatLimitChanged();
 	emit currentMessageExtraChanged();
+	emit currentWarningChanged();
 }
 
 // ── Derived getters — read straight from m_providers ──────────
@@ -414,6 +415,13 @@ QString AIConfigModel::currentMessageExtra() const
 	if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].messageExtraSet)
 		return m_modelOverrides[m->id].messageExtra;
 	return {};
+}
+
+QString AIConfigModel::currentWarning() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return {};
+	return m->warning;
 }
 
 bool AIConfigModel::currentProviderIsUserEditable() const
@@ -669,6 +677,7 @@ void AIConfigModel::loadShippedProviders()
 			if (mobj.contains("extraParams") && mobj["extraParams"].isObject())
 				m.extraParams = mobj["extraParams"].toObject();
 			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+			m.warning             = mobj["warning"].toString();
 			m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
 			m.chatLimit         = mobj["chatLimit"].toInt(256000);
 			m.chatLimitActive   = mobj["chatLimitActive"].toBool(true);

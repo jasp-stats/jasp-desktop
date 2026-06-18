@@ -7,11 +7,27 @@
 			"defaultApiKey": "",
 			"models": [
 				{
-					"id": "f7a4b3c8-9b0c-1d2e-3456-0123456789f6",
-					"name": "GPT-5.4 Mini",
-					"model": "openai/gpt-5.4-mini",
-					"extraParams": {},
-					"systemPromptPostfix": "Don't shorten wait and timeout times. Don't ask questions for every step; be assertive and take actions. Check loaded data once at the beginning to understand variable references."
+					"id": "e0f7a6b1-2a3b-4c5d-6789-3456789012ef",
+					"name": "Claude Haiku 4.5",
+					"model": "anthropic/claude-haiku-4-5",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"max_tokens": 16000,
+						"cache_control": { "type": "ephemeral" }
+					},
+					"chatLimit": 200000,
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "d9e6f5a0-1f2a-3b4c-5678-2345678901de",
+					"name": "Claude Sonnet 4.6",
+					"model": "anthropic/claude-sonnet-4-6",
+					"extraParams": {
+						"reasoning_effort": "medium",
+						"max_tokens": 16000,
+						"cache_control": { "type": "ephemeral" }
+					},
+					"systemPromptPostfix": ""
 				}
 			]
 		},
@@ -92,7 +108,7 @@
 			"defaultApiKey": "",
 			"models": [
 				{
-					"id": "e0f7a6b1-2a3b-4c5d-6789-3456789012ef",
+					"id": "h0i1j2k3-4l5m-6n7o-8901-5678901234p8",
 					"name": "Claude Haiku 4.5",
 					"model": "claude-haiku-4-5",
 					"extraParams": {
@@ -100,16 +116,18 @@
 						"max_tokens": 16000
 					},
 					"chatLimit": 200000,
+					"warning": "Cost warning: prompt caching is not available for the Anthropic API endpoint. This may result in higher costs. We recommend using Anthropic models through OpenRouter for now.",
 					"systemPromptPostfix": ""
 				},
 				{
-					"id": "d9e6f5a0-1f2a-3b4c-5678-2345678901de",
+					"id": "q9r8s7t6-5u4v-3w2x-1098-7654321098y7",
 					"name": "Claude Sonnet 4.6",
 					"model": "claude-sonnet-4-6",
 					"extraParams": {
 						"reasoning_effort": "medium",
 						"max_tokens": 16000
 					},
+					"warning": "Cost warning: prompt caching is not available for the Anthropic API endpoint. This may result in higher costs. We recommend using Anthropic models through OpenRouter for now.",
 					"systemPromptPostfix": ""
 				}
 			]

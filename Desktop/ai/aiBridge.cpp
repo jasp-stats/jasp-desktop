@@ -401,7 +401,7 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 	m_totalRequestsSent++;
 
 	// --- Debug dump: readable structure, compact internals ---
-	if (m_debugDumpEnabled && PreferencesModel::prefs()->developerMode() && !Dirs::tempDir().empty()) {
+	if (m_debugDumpEnabled && !Dirs::tempDir().empty()) {
 		std::string path = Dirs::tempDir() + "/ai-request.json";
 		QFile file(QString::fromStdString(path));
 		if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -689,8 +689,8 @@ void AiBridge::onReadyRead()
 
 	QByteArray chunk = m_activeReply->readAll();
 
-	// Diagnostic: log raw chunks and Content-Type when debug dump is enabled
-	if (m_debugDumpEnabled) {
+	// Diagnostic: log raw chunks and Content-Type when verbose logging is on
+	if (m_verboseLogging) {
 		if (m_sseBuffer.isEmpty()) {
 			// First chunk — log Content-Type so we know what format the server is using
 			QString ct = m_activeReply->header(QNetworkRequest::ContentTypeHeader).toString();
@@ -775,7 +775,7 @@ void AiBridge::processSSEData(const QString &eventType, const QByteArray &data)
 	if (choices.isEmpty()) {
 		// Providers may send chunks without non-empty choices (usage metadata, [DONE] preamble, etc.).
 		// Log the full chunk JSON when debug dump is enabled so we can inspect usage/completion_tokens.
-		if (m_debugDumpEnabled)
+		if (m_verboseLogging)
 			Log::log() << "AiBridge: SSE chunk with no choices — " << QString::fromUtf8(data).toStdString() << std::endl;
 		return;
 	}
@@ -1035,7 +1035,7 @@ void AiBridge::onReplyFinished()
 	m_sseBuffer.append(body);
 
 	// Diagnostic: log raw response when debug dump is enabled
-	if (m_debugDumpEnabled && !body.isEmpty())
+	if (m_verboseLogging && !body.isEmpty())
 		Log::log() << "AiBridge: RAW response body (" << body.size() << " bytes from onReplyFinished):\n"
 		           << body.toStdString() << std::endl;
 
@@ -1047,7 +1047,7 @@ void AiBridge::onReplyFinished()
 	}
 
 	// If there's leftover data that has no trailing newline, log it
-	if (m_debugDumpEnabled && !m_sseBuffer.isEmpty())
+	if (m_verboseLogging && !m_sseBuffer.isEmpty())
 		Log::log() << "AiBridge: UNPROCESSED leftover in SSE buffer (" << m_sseBuffer.size()
 		           << " bytes): " << m_sseBuffer.toStdString() << std::endl;
 

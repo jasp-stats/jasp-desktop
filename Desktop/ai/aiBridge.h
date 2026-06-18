@@ -150,7 +150,8 @@ private:
 	QString               m_lastToolCallId;   // active tool call receiving fragments
 	QJsonObject m_assistantDelta;
 
-	bool m_debugDumpEnabled = false;
+	bool m_debugDumpEnabled = true;
+	bool m_verboseLogging    = false;
 	bool m_streaming = false;
 
 	static AiBridge *_singleton;

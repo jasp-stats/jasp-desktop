@@ -63,6 +63,34 @@ PrefsScrollView
 			}
 		}
 
+		// ── Warning banner ──
+		Rectangle
+		{
+			visible:			aiConfigModel.currentWarning !== ""
+			width:				parent.width
+			height:				warningLabel.implicitHeight + jaspTheme.contentMargin
+			color:				jaspTheme.redLighter
+			border.color:		jaspTheme.redDarker
+			border.width:		1
+			radius:				4 * jaspTheme.uiScale
+
+			Text
+			{
+				id:				warningLabel
+				text:			aiConfigModel.currentWarning
+				font:			jaspTheme.font
+				color:			jaspTheme.redDarker
+				wrapMode:		Text.WordWrap
+				anchors
+				{
+					left:		parent.left
+					right:		parent.right
+					top:		parent.top
+					margins:	jaspTheme.contentMargin / 2
+				}
+			}
+		}
+
 		// ── b) Connection ──
 		PrefsGroupRect
 		{
