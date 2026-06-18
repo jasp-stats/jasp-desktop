@@ -29,6 +29,7 @@ struct AIModelEntry
 	QString     model;                  // "deepseek-v4-flash"  (API string)
 	QJsonObject extraParams;            // per-model JSON merged into request
 	QString     systemPromptPostfix;    // appended after common+persona prompt
+	QString     warning;                // shown as red banner in UI; empty = hidden
 	bool        useCompleteSchema = true; // include full tool schemas
 	int         chatLimit         = 256000;
 	bool        chatLimitActive   = true;
@@ -146,6 +147,7 @@ public:
 	           WRITE setCurrentChatLimit             NOTIFY currentChatLimitChanged)
 	Q_PROPERTY(QString currentMessageExtra         READ currentMessageExtra
 	           WRITE setCurrentMessageExtra         NOTIFY currentMessageExtraChanged)
+	Q_PROPERTY(QString currentWarning              READ currentWarning              NOTIFY currentWarningChanged)
 
 	// ── Is current provider user-editable? ──────────────
 	Q_PROPERTY(bool currentProviderIsUserEditable
@@ -180,6 +182,7 @@ public:
 	void    setCurrentChatLimit(int v);
 	QString currentMessageExtra()          const;
 	void    setCurrentMessageExtra(const QString &v);
+	QString currentWarning()               const;
 	bool    currentProviderIsUserEditable() const;
 
 	// ── Reset ────────────────────────────────────────────
@@ -198,6 +201,7 @@ signals:
 	void currentChatLimitActiveChanged();
 	void currentChatLimitChanged();
 	void currentMessageExtraChanged();
+	void currentWarningChanged();
 	void currentProviderChanged();
 	void providerValuesChanged();
 	void modelValuesChanged();
