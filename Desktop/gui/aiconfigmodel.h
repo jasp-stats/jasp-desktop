@@ -30,6 +30,8 @@ struct AIModelEntry
 	QJsonObject extraParams;            // per-model JSON merged into request
 	QString     systemPromptPostfix;    // appended after common+persona prompt
 	bool        useCompleteSchema = true; // include full tool schemas
+	int         chatLimit         = 256000;
+	bool        chatLimitActive   = true;
 	bool        isSystem = true;        // from shipped JSON?
 };
 
