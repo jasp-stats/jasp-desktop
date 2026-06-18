@@ -377,7 +377,7 @@ bool AIConfigModel::currentUseCompleteSchema() const
 	if (!m) return true;
 	if (m_modelOverrides.contains(m->id))
 		return m_modelOverrides[m->id].useCompleteSchema;
-	return !m->extraParams.isEmpty(); // heuristically true if model has extra params
+	return m->useCompleteSchema;
 }
 
 QString AIConfigModel::currentSystemPromptPostfix() const
@@ -589,6 +589,7 @@ bool AIConfigModel::createProvider(const QString &name,
 						m.extraParams = mobj["extraParams"].toObject();
 					if (mobj.contains("systemPromptPostfix"))
 						m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+					m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
 					m.isSystem = false;
 					if (!m.name.isEmpty())
 						prov.models.append(m);
@@ -803,6 +804,7 @@ void AIConfigModel::loadShippedProviders()
 			if (mobj.contains("extraParams") && mobj["extraParams"].isObject())
 				m.extraParams = mobj["extraParams"].toObject();
 			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+			m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
 			m.isSystem = true;
 			prov.models.append(m);
 		}
@@ -910,6 +912,7 @@ void AIConfigModel::loadUserData()
 			if (mobj.contains("extraParams"))
 				m.extraParams = mobj["extraParams"].toObject();
 			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+			m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
 			m.isSystem = false;
 			prov.models.append(m);
 		}
@@ -1063,6 +1066,7 @@ void AIConfigModel::saveUserData()
 			if (!m.extraParams.isEmpty())
 				mo["extraParams"] = m.extraParams;
 			mo["systemPromptPostfix"] = m.systemPromptPostfix;
+			if (!m.useCompleteSchema) mo["useCompleteSchema"] = false;
 			marr.append(mo);
 		}
 		po["models"] = marr;
