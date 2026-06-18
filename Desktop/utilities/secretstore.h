@@ -10,9 +10,8 @@
 // any of the encrypt/decrypt/store logic.
 //
 // Usage:
-//   SecretStore::write("aiApiKey", "sk-abc", Settings::AI_API_KEY);
-//   QString key = SecretStore::read("aiApiKey", Settings::AI_API_KEY);
-//   SecretStore::remove("aiApiKey", Settings::AI_API_KEY);
+//   QString encrypted = SecretStore::encryptValue("sk-abc");
+//   QString decrypted = SecretStore::decryptValue(encrypted);
 //
 
 #ifndef SECRETSTORE_H

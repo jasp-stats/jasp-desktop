@@ -395,7 +395,7 @@ bool AIConfigModel::currentChatLimitActive() const
 	if (!m) return true;
 	if (m_modelOverrides.contains(m->id))
 		return m_modelOverrides[m->id].chatLimitActive;
-	return true;
+	return m->chatLimitActive;
 }
 
 int AIConfigModel::currentChatLimit() const
@@ -404,7 +404,7 @@ int AIConfigModel::currentChatLimit() const
 	if (!m) return 256000;
 	if (m_modelOverrides.contains(m->id))
 		return m_modelOverrides[m->id].chatLimit;
-	return 256000;
+	return m->chatLimit;
 }
 
 QString AIConfigModel::currentMessageExtra() const
@@ -633,6 +633,8 @@ void AIConfigModel::loadShippedProviders()
 				m.extraParams = mobj["extraParams"].toObject();
 			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
 			m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
+			m.chatLimit         = mobj["chatLimit"].toInt(256000);
+			m.chatLimitActive   = mobj["chatLimitActive"].toBool(true);
 			m.isSystem = true;
 			prov.models.append(m);
 		}
@@ -741,6 +743,8 @@ void AIConfigModel::loadUserData()
 				m.extraParams = mobj["extraParams"].toObject();
 			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
 			m.useCompleteSchema = mobj["useCompleteSchema"].toBool(true);
+			m.chatLimit         = mobj["chatLimit"].toInt(256000);
+			m.chatLimitActive   = mobj["chatLimitActive"].toBool(true);
 			m.isSystem = false;
 			prov.models.append(m);
 		}
@@ -895,6 +899,8 @@ void AIConfigModel::saveUserData()
 				mo["extraParams"] = m.extraParams;
 			mo["systemPromptPostfix"] = m.systemPromptPostfix;
 			if (!m.useCompleteSchema) mo["useCompleteSchema"] = false;
+			if (m.chatLimit != 256000) mo["chatLimit"] = m.chatLimit;
+			if (!m.chatLimitActive) mo["chatLimitActive"] = false;
 			marr.append(mo);
 		}
 		po["models"] = marr;

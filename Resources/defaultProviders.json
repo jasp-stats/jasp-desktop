@@ -25,7 +25,12 @@
 					"id": "e0f7a6b1-2a3b-4c5d-6789-3456789012ef",
 					"name": "Claude Haiku 4.5",
 					"model": "claude-haiku-4-5",
-					"extraParams": {},
+					"extraParams": {
+						"thinking": { "type": "adaptive" },
+						"output_config": { "effort": "high" },
+						"max_tokens": 16000
+					},
+					"chatLimit": 200000,
 					"systemPromptPostfix": ""
 				},
 				{
@@ -34,7 +39,7 @@
 					"model": "claude-sonnet-4-6",
 					"extraParams": {
 						"thinking": { "type": "adaptive" },
-						"output_config": { "effort": "high" },
+						"output_config": { "effort": "medium" },
 						"max_tokens": 16000
 					},
 					"systemPromptPostfix": ""
