@@ -50,7 +50,7 @@ PrefsScrollView
 				label:			qsTr("Provider:")
 				values:			aiConfigModel.providerValues
 				currentIndex:	aiConfigModel.currentProviderIndex
-				onActivated:	function(index) { aiConfigModel.currentProviderIndex = index }
+				onActivated:	function(index) { aiConfigModel.currentProviderIndex = index; aiBridge.clearChat() }
 				focus:			true
 			}
 
@@ -59,7 +59,7 @@ PrefsScrollView
 				label:			qsTr("Model:")
 				values:			aiConfigModel.modelValues
 				currentIndex:	aiConfigModel.currentModelIndex
-				onActivated:	function(index) { aiConfigModel.currentModelIndex = index }
+				onActivated:	function(index) { aiConfigModel.currentModelIndex = index; aiBridge.clearChat() }
 			}
 		}
 
@@ -245,6 +245,19 @@ PrefsScrollView
 				useTabAsSpaces:		false
 				nextTabItem:		personasGroup
 
+			}
+		}
+
+		// ── Reset ──
+		Row
+		{
+			spacing:		jaspTheme.generalAnchorMargin
+
+			Button
+			{
+				text:		qsTr("Reset Model")
+				toolTip:	qsTr("Reset the currently selected model's extra params, system prompt postfix, and advanced checkboxes back to their shipped defaults.")
+				onClicked:	aiConfigModel.resetCurrentModelToDefaults()
 			}
 		}
 	}

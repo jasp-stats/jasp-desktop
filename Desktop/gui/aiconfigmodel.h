@@ -184,6 +184,7 @@ public:
 
 	// ── Reset ────────────────────────────────────────────
 	Q_INVOKABLE void   resetToDefaults();
+	Q_INVOKABLE void   resetCurrentModelToDefaults();
 
 signals:
 	void currentProviderIndexChanged();
@@ -239,6 +240,13 @@ private:
 		int         chatLimit         = 256000;
 		bool        chatLimitActive   = true;
 		QString     messageExtra;
+
+		// Per-field tracking: was this field explicitly set by the user?
+		// Prevents accidentally-overwritten fields from masking shipped defaults.
+		bool extraParamsSet         = false;
+		bool systemPromptPostfixSet = false;
+		bool messageExtraSet        = false;
+
 		bool operator==(const ModelOverrides &o) const = default;
 	};
 

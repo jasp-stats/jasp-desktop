@@ -364,7 +364,7 @@ QString AIConfigModel::currentExtraParams() const
 	const auto *m = currentModelEntry();
 	if (!m) return {};
 	const auto *prov = currentProvider();
-	if (prov && m_modelOverrides.contains(m->id))
+	if (prov && m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].extraParamsSet)
 		return QString::fromUtf8(QJsonDocument(m_modelOverrides[m->id].extraParams).toJson(QJsonDocument::Compact));
 	if (!m->extraParams.isEmpty())
 		return QString::fromUtf8(QJsonDocument(m->extraParams).toJson(QJsonDocument::Compact));
@@ -384,7 +384,7 @@ QString AIConfigModel::currentSystemPromptPostfix() const
 {
 	const auto *m = currentModelEntry();
 	if (!m) return {};
-	if (m_modelOverrides.contains(m->id))
+	if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].systemPromptPostfixSet)
 		return m_modelOverrides[m->id].systemPromptPostfix;
 	return m->systemPromptPostfix;
 }
@@ -411,7 +411,7 @@ QString AIConfigModel::currentMessageExtra() const
 {
 	const auto *m = currentModelEntry();
 	if (!m) return {};
-	if (m_modelOverrides.contains(m->id))
+	if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].messageExtraSet)
 		return m_modelOverrides[m->id].messageExtra;
 	return {};
 }
@@ -463,11 +463,10 @@ void AIConfigModel::setCurrentExtraParams(const QString &v)
 	if (m_modelOverrides.contains(m->id))
 		ov = m_modelOverrides[m->id];
 
-	if (ov.extraParams == obj) return; // unchanged
+	if (ov.extraParams == obj && ov.extraParamsSet) return; // unchanged
 	ov.extraParams = obj;
+	ov.extraParamsSet = true;
 	m_modelOverrides[m->id] = ov;
-
-	emit currentExtraParamsChanged();
 	saveUserData();
 }
 
@@ -495,8 +494,9 @@ void AIConfigModel::setCurrentSystemPromptPostfix(const QString &v)
 	ModelOverrides ov;
 	if (m_modelOverrides.contains(m->id))
 		ov = m_modelOverrides[m->id];
-	if (ov.systemPromptPostfix == v) return;
+	if (ov.systemPromptPostfix == v && ov.systemPromptPostfixSet) return;
 	ov.systemPromptPostfix = v;
+	ov.systemPromptPostfixSet = true;
 	m_modelOverrides[m->id] = ov;
 
 	emit currentSystemPromptPostfixChanged();
@@ -543,8 +543,9 @@ void AIConfigModel::setCurrentMessageExtra(const QString &v)
 	ModelOverrides ov;
 	if (m_modelOverrides.contains(m->id))
 		ov = m_modelOverrides[m->id];
-	if (ov.messageExtra == v) return;
+	if (ov.messageExtra == v && ov.messageExtraSet) return;
 	ov.messageExtra = v;
+	ov.messageExtraSet = true;
 	m_modelOverrides[m->id] = ov;
 
 	emit currentMessageExtraChanged();
@@ -572,6 +573,42 @@ void AIConfigModel::resetToDefaults()
 
 	if (!m_providers.isEmpty())
 		setCurrentProviderIndex(0);
+}
+
+void AIConfigModel::resetCurrentModelToDefaults()
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	// Find the shipped pristine copy by model UUID
+	const AIModelEntry* shipped = nullptr;
+	for (const auto& sp : m_shipped)
+	{
+		for (const auto& sm : sp.models)
+		{
+			if (sm.id == m->id)
+			{
+				shipped = &sm;
+				break;
+			}
+		}
+		if (shipped) break;
+	}
+	if (!shipped) return;
+
+	// Remove any user overrides for this model
+	m_modelOverrides.remove(m->id);
+
+	// Restore shipped values into the active provider's model entry
+	auto* mutableEntry = const_cast<AIModelEntry*>(m);
+	mutableEntry->extraParams         = shipped->extraParams;
+	mutableEntry->systemPromptPostfix = shipped->systemPromptPostfix;
+	mutableEntry->useCompleteSchema   = shipped->useCompleteSchema;
+	mutableEntry->chatLimit           = shipped->chatLimit;
+	mutableEntry->chatLimitActive     = shipped->chatLimitActive;
+
+	emitAllDerivedSignals();
+	saveUserData();
 }
 
 // ── Init ──────────────────────────────────────────────────────
@@ -701,18 +738,24 @@ void AIConfigModel::loadUserData()
 	{
 		QJsonObject o = it.value().toObject();
 		ModelOverrides ov;
-		if (o.contains("extraParams"))
+		if (o.contains("extraParams")) {
 			ov.extraParams = o["extraParams"].toObject();
-		if (o.contains("systemPromptPostfix"))
+			ov.extraParamsSet = true;
+		}
+		if (o.contains("systemPromptPostfix")) {
 			ov.systemPromptPostfix = o["systemPromptPostfix"].toString();
+			ov.systemPromptPostfixSet = true;
+		}
 		if (o.contains("useCompleteSchema"))
 			ov.useCompleteSchema = o["useCompleteSchema"].toBool();
 		if (o.contains("chatLimit"))
 			ov.chatLimit = o["chatLimit"].toInt();
 		if (o.contains("chatLimitActive"))
 			ov.chatLimitActive = o["chatLimitActive"].toBool();
-		if (o.contains("messageExtra"))
+		if (o.contains("messageExtra")) {
 			ov.messageExtra = o["messageExtra"].toString();
+			ov.messageExtraSet = true;
+		}
 		m_modelOverrides[it.key()] = ov;
 	}
 
@@ -867,12 +910,12 @@ void AIConfigModel::saveUserData()
 	{
 		QJsonObject o;
 		const auto &ov = it.value();
-		if (!ov.extraParams.isEmpty())      o["extraParams"]          = ov.extraParams;
-		if (!ov.systemPromptPostfix.isEmpty()) o["systemPromptPostfix"] = ov.systemPromptPostfix;
+		if (ov.extraParamsSet)            o["extraParams"]          = ov.extraParams;
+		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
 		o["useCompleteSchema"] = ov.useCompleteSchema;
 		o["chatLimit"]         = ov.chatLimit;
 		o["chatLimitActive"]   = ov.chatLimitActive;
-		if (!ov.messageExtra.isEmpty())     o["messageExtra"]         = ov.messageExtra;
+		if (ov.messageExtraSet)           o["messageExtra"]         = ov.messageExtra;
 		movJson[it.key()] = o;
 	}
 	root["modelOverrides"] = movJson;
