@@ -29,6 +29,7 @@ struct AIModelEntry
 	QString     model;                  // "deepseek-v4-flash"  (API string)
 	QJsonObject extraParams;            // per-model JSON merged into request
 	QString     systemPromptPostfix;    // appended after common+persona prompt
+	bool        useCompleteSchema = true; // include full tool schemas
 	bool        isSystem = true;        // from shipped JSON?
 };
 

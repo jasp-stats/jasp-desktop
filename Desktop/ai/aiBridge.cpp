@@ -1146,9 +1146,13 @@ void AiBridge::testConnection()
 
 	// Build a minimal valid body — just enough to provoke a meaningful response
 	QJsonObject body;
-	body[QStringLiteral("model")] = model().isEmpty() ? QStringLiteral("gpt-3.5-turbo") : model();
+	QString m = model();
+	if (m.isEmpty()) {
+		emit testConnectionResult(false, QStringLiteral("No model selected. Please choose a model or type a model name."));
+		return;
+	}
+	body[QStringLiteral("model")] = m;
 	body[QStringLiteral("stream")] = false;
-	body[QStringLiteral("max_tokens")] = 1;
 	QJsonArray msgs;
 	QJsonObject msg;
 	msg[QStringLiteral("role")] = QStringLiteral("user");
@@ -1179,8 +1183,19 @@ void AiBridge::testConnection()
 		if (httpStatus == 200 || httpStatus == 201) {
 			msg = QStringLiteral("Connection successful (HTTP ") + QString::number(httpStatus) + QStringLiteral(").");
 		} else if (httpStatus >= 400 && httpStatus < 500) {
-			msg = QStringLiteral("Service reachable (HTTP ") + QString::number(httpStatus)
-				+ QStringLiteral(") — check your API key or model name.");
+			// Try to extract the API error message from the response body
+			QString detail = QString::fromUtf8(responseBody).trimmed();
+			if (!detail.isEmpty()) {
+				QJsonDocument errDoc = QJsonDocument::fromJson(responseBody);
+				if (errDoc.isObject() && errDoc.object().contains("error")) {
+					QJsonObject errObj = errDoc.object()["error"].toObject();
+					detail = errObj["message"].toString();
+				}
+				if (detail.length() > 200) detail = detail.left(200) + QStringLiteral("…");
+			}
+			msg = QStringLiteral("HTTP ") + QString::number(httpStatus)
+				+ (detail.isEmpty() ? QStringLiteral(" — check your API key or model name.")
+				                  : QStringLiteral(": ") + detail);
 		} else if (httpStatus >= 500) {
 			msg = QStringLiteral("Service reachable but returned server error (HTTP ")
 				+ QString::number(httpStatus) + QStringLiteral(").");
