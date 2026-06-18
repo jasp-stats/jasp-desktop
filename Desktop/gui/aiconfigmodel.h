@@ -180,13 +180,7 @@ public:
 	void    setCurrentMessageExtra(const QString &v);
 	bool    currentProviderIsUserEditable() const;
 
-	// ── CRUD ────────────────────────────────────────────
-	Q_INVOKABLE bool   createProvider(const QString &name,
-	                                  const QString &modelName = QString(),
-	                                  const QString &jsonSpec  = QString());
-	Q_INVOKABLE bool   removeProvider(int providerIndex);
-	Q_INVOKABLE bool   removeModel(int modelIndex);
-	Q_INVOKABLE void   removeAllModels();
+	// ── Reset ────────────────────────────────────────────
 	Q_INVOKABLE void   resetToDefaults();
 
 signals:
