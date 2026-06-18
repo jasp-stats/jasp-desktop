@@ -149,6 +149,19 @@ ComponentsListBase
 			height			: itemTabBar.height
 			hoverEnabled	: true		// Without this, tabButton.hovered never becomes true and the ToolTip below never shows
 			onClicked		: forceActiveFocus()
+			onActiveFocusChanged: if (activeFocus) itemTabBar.currentIndex = model.index
+
+			// Down arrow moves keyboard focus from the tab button down into the content of its tab
+			// (the matching tabViewWrapper in itemStack). Tab still cycles between the tab buttons.
+			Keys.onDownPressed: (event) =>
+			{
+				var wrapper = rep.itemAt(model.index)
+				if (wrapper)
+				{
+					wrapper.forceActiveFocus()
+					event.accepted = true
+				}
+			}
 
 			property bool isEditable: tabView.tabNameEditable && tabView.isTabEditable(model.index)
 			property bool isRemovable: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
@@ -232,7 +245,7 @@ ComponentsListBase
 					anchors.bottomMargin	: -1
 					anchors.leftMargin		: 1
 					height					: tabView.tabButtonRadius
-					width					: parent.width
+					width					: parent.width + 1
 					color					: backgroundColor
 				}
 
@@ -273,7 +286,7 @@ ComponentsListBase
 		width			: parent.width
 
 		color			: backgroundColor
-		radius			: jaspTheme.borderRadius
+		radius			: tabView.tabButtonRadius
 
 		Rectangle
 		{
@@ -283,7 +296,7 @@ ComponentsListBase
 				topMargin	: tabView.tabBarHeight
 			}
 			color			: "transparent"
-			radius			: jaspTheme.borderRadius
+			radius			: tabView.tabButtonRadius
 			border.color	: jaspTheme.uiBorder
 			border.width	: 1
 		}

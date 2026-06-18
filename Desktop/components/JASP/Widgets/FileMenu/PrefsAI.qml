@@ -46,10 +46,12 @@ PrefsScrollView
 
 			DropDown
 			{
+				id:				providersDropdown
 				label:			qsTr("Provider:")
 				values:			aiConfigModel.providerValues
 				currentIndex:	aiConfigModel.currentProviderIndex
 				onActivated:	function(index) { aiConfigModel.currentProviderIndex = index }
+				focus:			true
 			}
 
 			DropDown
@@ -152,97 +154,97 @@ PrefsScrollView
 			title:		qsTr("Advanced")
 			columns:	1
 
-			PrefsGroupRect
+			TextArea
 			{
-				title:				qsTr("Advanced")
+				id:					aiSystemPromptPostfixInput
+				title:				qsTr("System Prompt Postfix:")
+				height:				80 * preferencesModel.uiScale
+				text:				aiConfigModel.currentSystemPromptPostfix
+				isBound:			false
+				wrapMode:			TextEdit.Wrap
+				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentSystemPromptPostfix = text
+				applyScriptInfo:	""
+				useTabAsSpaces:		false
+				nextTabItem:		completeSchemaCheck
+			}
 
-				TextArea
+			CheckBox
+			{
+				id:					completeSchemaCheck
+				label:				qsTr("Include full tool schemas in request")
+				checked:			aiConfigModel.currentUseCompleteSchema
+				onClicked:			aiConfigModel.currentUseCompleteSchema = checked
+				toolTip:			qsTr(
+					"When enabled, each tool in the API request includes its full "
+					+ "parameter schema (with JSON such as like integer/boolean). "
+					+ "This helps models that struggle with type-safety in tool "
+					+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
+				)
+			}
+
+			Label
+			{
+				text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
+				wrapMode:		Text.WordWrap
+				width:			parent.width
+			}
+
+			TextArea
+			{
+				id:					aiExtraParamsInput
+				text:				aiConfigModel.currentExtraParams
+				height:				100 * preferencesModel.uiScale
+				isBound:			false
+				wrapMode:			TextEdit.Wrap
+				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentExtraParams = text
+				applyScriptInfo:	""
+				useTabAsSpaces:		false
+				nextTabItem:		chatLimitCheck
+
+			}
+
+			CheckBox
+			{
+				id:					chatLimitCheck
+				label:				qsTr("Single chat token limit:")
+				childrenOnSameRow:	true
+				checked:			aiConfigModel.currentChatLimitActive
+				onClicked:			aiConfigModel.currentChatLimitActive = checked
+
+				IntegerField
 				{
-					id:					aiSystemPromptPostfixInput
-					title:				qsTr("System Prompt Postfix:")
-					height:				80 * preferencesModel.uiScale
-					text:				aiConfigModel.currentSystemPromptPostfix
-					isBound:			false
-					wrapMode:			TextEdit.Wrap
-					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentSystemPromptPostfix = text
-					applyScriptInfo:	""
-					useTabAsSpaces:		false
+					value:			aiConfigModel.currentChatLimit
+					onEditingFinished:	aiConfigModel.currentChatLimit = value
+					enabled:		chatLimitCheck.checked
+					fieldWidth:		100 * preferencesModel.uiScale
+					toolTip:		qsTr("~4 characters ≈ 1 token")
 				}
+			}
 
-				CheckBox
-				{
-					id:					completeSchemaCheck
-					label:				qsTr("Include full tool schemas in request")
-					checked:			aiConfigModel.currentUseCompleteSchema
-					onClicked:			aiConfigModel.currentUseCompleteSchema = checked
-					toolTip:			qsTr(
-						"When enabled, each tool in the API request includes its full "
-						+ "parameter schema (with JSON such as like integer/boolean). "
-						+ "This helps models that struggle with type-safety in tool "
-						+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
-					)
-				}
+			Label
+			{
+				text:			qsTr(
+					"Paste a JSON object to merge into every message of the API request.\n"
+					+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
+					+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
+				)
+				wrapMode:		Text.WordWrap
+				width:			parent.width
+			}
 
-				Label
-				{
-					text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
-					wrapMode:		Text.WordWrap
-					width:			parent.width
-				}
+			TextArea
+			{
+				id:					aiMessageExtraInput
+				text:				aiConfigModel.currentMessageExtra
+				height:				100 * preferencesModel.uiScale
+				isBound:			false
+				wrapMode:			TextEdit.Wrap
+				placeholderText:	qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
+				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
+				applyScriptInfo:	""
+				useTabAsSpaces:		false
+				nextTabItem:		personasGroup
 
-				TextArea
-				{
-					id:					aiExtraParamsInput
-					text:				aiConfigModel.currentExtraParams
-					height:				100 * preferencesModel.uiScale
-					isBound:			false
-					wrapMode:			TextEdit.Wrap
-					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentExtraParams = text
-					applyScriptInfo:	""
-					useTabAsSpaces:		false
-				}
-
-				CheckBox
-				{
-					id:					chatLimitCheck
-					label:				qsTr("Single chat token limit:")
-					childrenOnSameRow:	true
-					checked:			aiConfigModel.currentChatLimitActive
-					onClicked:			aiConfigModel.currentChatLimitActive = checked
-
-					IntegerField
-					{
-						value:			aiConfigModel.currentChatLimit
-						onEditingFinished:	aiConfigModel.currentChatLimit = value
-						enabled:		chatLimitCheck.checked
-						fieldWidth:		100 * preferencesModel.uiScale
-						toolTip:		qsTr("~4 characters ≈ 1 token")
-					}
-				}
-
-				Label
-				{
-					text:			qsTr(
-						"Paste a JSON object to merge into every message of the API request.\n"
-						+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
-						+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
-					)
-					wrapMode:		Text.WordWrap
-					width:			parent.width
-				}
-
-				TextArea
-				{
-					id:					aiMessageExtraInput
-					text:				aiConfigModel.currentMessageExtra
-					height:				100 * preferencesModel.uiScale
-					isBound:			false
-					wrapMode:			TextEdit.Wrap
-					placeholderText:	qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
-					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
-					applyScriptInfo:	""
-					useTabAsSpaces:		false
-				}
 			}
 		}
 	}
@@ -252,6 +254,7 @@ PrefsScrollView
 	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
+		id:			personasGroup
 		title:		qsTr("Personas")
 		visible:	preferencesModel.aiEnabled
 
@@ -362,6 +365,7 @@ PrefsScrollView
 							QTL.Layout.alignment:			Qt.AlignHCenter
 							onClicked:						personaImageFileDialog.open()
 							KeyNavigation.tab:				personaPromptInput
+							focus:							!isSystem
 						}
 
 
@@ -465,6 +469,7 @@ PrefsScrollView
 							text:		qsTr("Set as Active")
 							onClicked:	preferencesModel.aiPersonaModel.currentPersonaIndex = rowIndex
 							enabled:	preferencesModel.aiPersonaModel.currentPersonaIndex !== rowIndex
+							focus:		isSystem
 						}
 
 						Button {
@@ -495,6 +500,8 @@ PrefsScrollView
 			onActiveFocusChanged:	if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
 			applyScriptInfo:	""
 			useTabAsSpaces:		false
+			nextTabItem:		annotationUseCustom
+
 		}
 	}
 
@@ -506,8 +513,8 @@ PrefsScrollView
 		title:				qsTr("Annotation")
 		visible:			preferencesModel.aiEnabled
 
-			CheckBox
-			{
+		CheckBox
+		{
 			id:					annotationUseCustom
 			label:				qsTr("Use custom annotation prompt")
 			checked:			preferencesModel.aiAnnotationUseCustom
@@ -621,7 +628,7 @@ PrefsScrollView
 			id:				aiEnableBtn
 			text:			preferencesModel.aiEnabled ? qsTr("Disable") : qsTr("Enable")
 			toolTip:		qsTr("Toggle AI functionality. A confirmation dialog will appear when enabling.")
-			KeyNavigation.tab:	aiEndpointInput
+			KeyNavigation.tab:	providersDropdown
 
 			onClicked: {
 				if (preferencesModel.aiEnabled) {
