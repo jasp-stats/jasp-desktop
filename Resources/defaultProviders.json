@@ -153,6 +153,23 @@
 					"systemPromptPostfix": "Only make an annotation (tool call) when asked to annotate explicitly."
 				}
 			]
+		},
+		{
+			"id": "e5f6a7b8-9c0d-1e2f-3456-7890123456e5",
+			"name": "xAI",
+			"endpoint": "https://api.x.ai/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "g5h6i7j8-9k0l-1m2n-3456-9012345678d5",
+					"name": "Grok 4.3",
+					"model": "grok-4.3",
+					"extraParams": {
+						"reasoning_effort": "medium"
+					},
+					"systemPromptPostfix": ""
+				}
+			]
 		}
 	]
 }
