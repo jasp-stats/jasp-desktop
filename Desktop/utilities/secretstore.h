@@ -35,6 +35,15 @@ public:
 	/// Remove a secret from Settings.
 	static void remove(const QString &logicalKey, Settings::Type setting);
 
+	/// Encrypt a value and return it as a base64 string suitable for embedding
+	/// in any JSON or text blob (no QSettings involvement).
+	/// Returns the plaintext as-is if encryption is unavailable.
+	static QString encryptValue(const QString &plaintext);
+
+	/// Decrypt a value previously produced by encryptValue().
+	/// Returns the plaintext as-is if decryption fails or encryption is unavailable.
+	static QString decryptValue(const QString &ciphertextBase64);
+
 private:
 	// --- master key -------------------------------------------------------
 	//

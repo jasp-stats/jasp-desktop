@@ -108,6 +108,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_languageModel			= new LanguageModel(application, _qml, this);
 	_loader					= new AsyncLoader(nullptr);
 	_preferences			= new PreferencesModel(this);
+	_aiConfigModel			= new AIConfigModel(this);
 	_package				= new DataSetPackage(this);
 	_dynamicModules			= new DynamicModules(this);
 	_upgrader				= new Upgrader(this);
@@ -684,6 +685,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("preferencesModel",							_preferences									);
 	_qml->rootContext()->setContextProperty("resultsJsInterface",						_resultsJsInterface												);
 	_qml->rootContext()->setContextProperty("aiBridge",										_aiBridge											);
+	_qml->rootContext()->setContextProperty("aiConfigModel",								_aiConfigModel										);
 	_qml->rootContext()->setContextProperty("messages",										_msgForwarder									);
 	_qml->rootContext()->setContextProperty("ribbonModelFiltered",						_ribbonModelFiltered										);
 	_qml->rootContext()->setContextProperty("computedColumnsInterface",					_computedColumnsModel							);

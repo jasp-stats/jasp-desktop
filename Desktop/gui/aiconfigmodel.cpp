@@ -1,0 +1,1075 @@
+#include "aiconfigmodel.h"
+#include "utilities/settings.h"
+#include "utilities/secretstore.h"
+#include "utilities/qutils.h"
+#include "log.h"
+#include "dirs.h"
+
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QUuid>
+
+// ═══════════════════════════════════════════════════════════════
+// AIProviderListModel
+// ═══════════════════════════════════════════════════════════════
+
+AIProviderListModel::AIProviderListModel(QObject *parent)
+	: QAbstractListModel(parent)
+{}
+
+void AIProviderListModel::setProviders(const QVector<AIProviderEntry> &providers)
+{
+	beginResetModel();
+	m_providers = providers;
+	endResetModel();
+}
+
+int AIProviderListModel::indexOfId(const QString &id) const
+{
+	for (int i = 0; i < m_providers.size(); ++i)
+		if (m_providers[i].id == id)
+			return i;
+	return -1;
+}
+
+int AIProviderListModel::rowCount(const QModelIndex &) const
+{
+	return m_providers.size();
+}
+
+QVariant AIProviderListModel::data(const QModelIndex &index, int role) const
+{
+	if (!index.isValid() || index.row() >= m_providers.size())
+		return {};
+
+	const auto &p = m_providers[index.row()];
+	switch (role) {
+	case IdRole:         return p.id;
+	case NameRole:       return p.name;
+	case EndpointRole:   return p.endpoint;
+	case IsSystemRole:   return p.isSystem;
+	case ModelCountRole: return p.models.size();
+	default:             return {};
+	}
+}
+
+QHash<int, QByteArray> AIProviderListModel::roleNames() const
+{
+	return {
+		{ IdRole,         "providerId" },
+		{ NameRole,       "providerName" },
+		{ EndpointRole,   "providerEndpoint" },
+		{ IsSystemRole,   "providerIsSystem" },
+		{ ModelCountRole, "providerModelCount" }
+	};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AIModelListModel
+// ═══════════════════════════════════════════════════════════════
+
+AIModelListModel::AIModelListModel(QObject *parent)
+	: QAbstractListModel(parent)
+{}
+
+void AIModelListModel::setModels(const QVector<AIModelEntry> &models)
+{
+	beginResetModel();
+	m_models = models;
+	endResetModel();
+}
+
+void AIModelListModel::clear()
+{
+	beginResetModel();
+	m_models.clear();
+	endResetModel();
+}
+
+int AIModelListModel::indexOfId(const QString &id) const
+{
+	for (int i = 0; i < m_models.size(); ++i)
+		if (m_models[i].id == id)
+			return i;
+	return -1;
+}
+
+int AIModelListModel::rowCount(const QModelIndex &) const
+{
+	return m_models.size();
+}
+
+QVariant AIModelListModel::data(const QModelIndex &index, int role) const
+{
+	if (!index.isValid() || index.row() >= m_models.size())
+		return {};
+
+	const auto &m = m_models[index.row()];
+	switch (role) {
+	case IdRole:          return m.id;
+	case NameRole:        return m.name;
+	case ModelStringRole: return m.model;
+
+	case ExtraParamsRole:
+		return QString::fromUtf8(QJsonDocument(m.extraParams).toJson(QJsonDocument::Compact));
+
+	case PostfixRole:  return m.systemPromptPostfix;
+	case IsSystemRole: return m.isSystem;
+	default:           return {};
+	}
+}
+
+QHash<int, QByteArray> AIModelListModel::roleNames() const
+{
+	return {
+		{ IdRole,          "modelId" },
+		{ NameRole,        "modelName" },
+		{ ModelStringRole, "modelString" },
+		{ ExtraParamsRole, "modelExtraParams" },
+		{ PostfixRole,     "modelPostfix" },
+		{ IsSystemRole,    "modelIsSystem" }
+	};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AIConfigModel — singleton
+// ═══════════════════════════════════════════════════════════════
+
+AIConfigModel* AIConfigModel::s_singleton = nullptr;
+
+AIConfigModel::AIConfigModel(QObject *parent)
+	: QObject(parent)
+{
+	s_singleton = this;
+
+	m_providerListModel = new AIProviderListModel(this);
+	m_modelListModel    = new AIModelListModel(this);
+
+	loadShippedProviders();
+
+	// Always prepend a synthetic "Custom Provider" — replaces the old
+	// "Generic Provider" JSON entry. Users select it for ad-hoc connections.
+	addCustomProvider();
+
+	loadUserData();
+
+	// Feed list models (loadUserData may have returned early with no saved data)
+	m_providerListModel->setProviders(m_providers);
+
+	// Ensure something is selected on first launch
+	if (m_currentProviderIndex < 0 && !m_providers.isEmpty())
+		setCurrentProviderIndex(0);
+}
+
+AIConfigModel::~AIConfigModel()
+{
+	if (s_singleton == this)
+		s_singleton = nullptr;
+}
+
+// ── List model accessors ──────────────────────────────────────
+
+QObject* AIConfigModel::providerListModel() { return m_providerListModel; }
+QObject* AIConfigModel::modelListModel()    { return m_modelListModel; }
+
+QVariantList AIConfigModel::providerValues() const
+{
+	QVariantList list;
+	for (const auto &p : m_providers)
+	{
+		QVariantMap item;
+		item[QStringLiteral("label")] = p.name;
+		item[QStringLiteral("value")] = p.id;
+		list.append(item);
+	}
+	return list;
+}
+
+QVariantList AIConfigModel::modelValues() const
+{
+	QVariantList list;
+
+	// Virtual entry: "Custom" — no model preset, user types model name manually
+	{
+		QVariantMap item;
+		item[QStringLiteral("label")] = QStringLiteral("Custom (No Model Preset)");
+		item[QStringLiteral("value")] = QString(); // empty id = custom
+		list.append(item);
+	}
+
+	const auto *prov = currentProvider();
+	if (prov)
+	{
+		for (const auto &m : prov->models)
+		{
+			QVariantMap item;
+			item[QStringLiteral("label")] = m.name;
+			item[QStringLiteral("value")] = m.id;
+			list.append(item);
+		}
+	}
+	return list;
+}
+
+// ── Provider entry access ─────────────────────────────────────
+
+const AIProviderEntry* AIConfigModel::currentProvider() const
+{
+	if (m_currentProviderIndex < 0 || m_currentProviderIndex >= m_providers.size())
+		return nullptr;
+	return &m_providers[m_currentProviderIndex];
+}
+
+const AIModelEntry* AIConfigModel::currentModelEntry() const
+{
+	// m_currentModelIndex is the dropdown index: 0 = custom, 1+ = real model at [i-1]
+	if (m_currentModelIndex <= 0) return nullptr;
+	const auto *prov = currentProvider();
+	int realIdx = m_currentModelIndex - 1;
+	if (!prov || realIdx >= prov->models.size())
+		return nullptr;
+	return &prov->models[realIdx];
+}
+
+// ── Current selection ─────────────────────────────────────────
+
+int AIConfigModel::currentProviderIndex() const { return m_currentProviderIndex; }
+int AIConfigModel::currentModelIndex()    const { return m_currentModelIndex;    }
+
+void AIConfigModel::setCurrentProviderIndex(int i)
+{
+	if (i < 0 || i >= m_providers.size() || i == m_currentProviderIndex)
+		return;
+
+	m_currentProviderIndex = i;
+	m_modelListModel->setModels(m_providers[i].models);
+	emit currentProviderIndexChanged();
+	emit currentProviderChanged();
+	emit modelValuesChanged();
+
+	// Restore last-used model for this provider. 0 = custom, 1+ = real model.
+	const auto &prov = m_providers[i];
+	int modelIdx = prov.models.isEmpty() ? 0 : 1; // custom if provider has no models
+	if (m_providerOverrides.contains(prov.id))
+	{
+		const auto &ov = m_providerOverrides[prov.id];
+		if (ov.currentModelId.isEmpty())
+			modelIdx = 0; // saved as custom mode
+		else
+		{
+			int found = m_modelListModel->indexOfId(ov.currentModelId);
+			if (found >= 0)
+				modelIdx = found + 1; // offset for virtual "Custom" entry
+		}
+	}
+	setCurrentModelIndex(modelIdx);
+
+	// Always fire derived signals on provider switch — even if the model
+	// index happens to be the same number, the actual model is different.
+	emitAllDerivedSignals();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentModelIndex(int i)
+{
+	// i is the dropdown index: 0 = custom, 1+ = real model
+	const auto *prov = currentProvider();
+	if (!prov) return;
+
+	// Provider has no models — only custom mode (0) is valid
+	if (prov->models.isEmpty())
+		i = 0;
+
+	// Valid range: 0 (custom) through prov->models.size() (last real model)
+	int maxIndex = prov->models.size();
+	if (i < 0 || i > maxIndex) return;
+	if (i == m_currentModelIndex) return;
+
+	m_currentModelIndex = i;
+	emit currentModelIndexChanged();
+	emitAllDerivedSignals();
+
+	saveUserData();
+}
+
+void AIConfigModel::emitAllDerivedSignals()
+{
+	emit currentEndpointChanged();
+	emit currentApiKeyChanged();
+	emit currentModelChanged();
+	emit currentExtraParamsChanged();
+	emit currentUseCompleteSchemaChanged();
+	emit currentSystemPromptPostfixChanged();
+	emit currentChatLimitActiveChanged();
+	emit currentChatLimitChanged();
+	emit currentMessageExtraChanged();
+}
+
+// ── Derived getters — read straight from m_providers ──────────
+
+QString AIConfigModel::currentEndpoint() const
+{
+	const auto *prov = currentProvider();
+	return prov ? prov->endpoint : QString();
+}
+
+QString AIConfigModel::currentApiKey() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].apiKey.isEmpty())
+		return SecretStore::decryptValue(m_providerOverrides[prov->id].apiKey);
+	return prov->defaultApiKey;
+}
+
+QString AIConfigModel::currentModel() const
+{
+	const auto *m = currentModelEntry();
+	if (m) return m->model;
+
+	// Custom mode: return the user-typed model string from overrides
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id))
+		return m_providerOverrides[prov->id].customModel;
+	return {};
+}
+
+void AIConfigModel::setCurrentModel(const QString &v)
+{
+	auto *m = const_cast<AIModelEntry*>(currentModelEntry());
+	if (m)
+	{
+		if (m->model == v) return;
+		m->model = v;
+	}
+	else
+	{
+		// Custom mode: store the user-typed model in ProviderOverrides.customModel
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		if (ov.customModel == v) return;
+		ov.customModel = v;
+		m_providerOverrides[prov->id] = ov;
+	}
+	emit currentModelChanged();
+	saveUserData();
+}
+
+QString AIConfigModel::currentExtraParams() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return {};
+	const auto *prov = currentProvider();
+	if (prov && m_modelOverrides.contains(m->id))
+		return QString::fromUtf8(QJsonDocument(m_modelOverrides[m->id].extraParams).toJson(QJsonDocument::Compact));
+	if (!m->extraParams.isEmpty())
+		return QString::fromUtf8(QJsonDocument(m->extraParams).toJson(QJsonDocument::Compact));
+	return {};
+}
+
+bool AIConfigModel::currentUseCompleteSchema() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return true;
+	if (m_modelOverrides.contains(m->id))
+		return m_modelOverrides[m->id].useCompleteSchema;
+	return !m->extraParams.isEmpty(); // heuristically true if model has extra params
+}
+
+QString AIConfigModel::currentSystemPromptPostfix() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return {};
+	if (m_modelOverrides.contains(m->id))
+		return m_modelOverrides[m->id].systemPromptPostfix;
+	return m->systemPromptPostfix;
+}
+
+bool AIConfigModel::currentChatLimitActive() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return true;
+	if (m_modelOverrides.contains(m->id))
+		return m_modelOverrides[m->id].chatLimitActive;
+	return true;
+}
+
+int AIConfigModel::currentChatLimit() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return 256000;
+	if (m_modelOverrides.contains(m->id))
+		return m_modelOverrides[m->id].chatLimit;
+	return 256000;
+}
+
+QString AIConfigModel::currentMessageExtra() const
+{
+	const auto *m = currentModelEntry();
+	if (!m) return {};
+	if (m_modelOverrides.contains(m->id))
+		return m_modelOverrides[m->id].messageExtra;
+	return {};
+}
+
+bool AIConfigModel::currentProviderIsUserEditable() const
+{
+	const auto *prov = currentProvider();
+	return prov && !prov->isSystem;
+}
+
+// ── Derived setters — write to m_providers, save diff ─────────
+
+void AIConfigModel::setCurrentEndpoint(const QString &v)
+{
+	auto *prov = const_cast<AIProviderEntry*>(currentProvider());
+	if (!prov || prov->endpoint == v) return;
+	prov->endpoint = v;
+	emit currentEndpointChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentApiKey(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+
+	QString cur = currentApiKey();
+	if (cur == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.apiKey = v.isEmpty() ? QString() : SecretStore::encryptValue(v);
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentApiKeyChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentExtraParams(const QString &v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	QJsonDocument doc = QJsonDocument::fromJson(v.toUtf8());
+	QJsonObject obj = doc.isObject() ? doc.object() : QJsonObject();
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+
+	if (ov.extraParams == obj) return; // unchanged
+	ov.extraParams = obj;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentExtraParamsChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentUseCompleteSchema(bool v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+	if (ov.useCompleteSchema == v) return;
+	ov.useCompleteSchema = v;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentUseCompleteSchemaChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentSystemPromptPostfix(const QString &v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+	if (ov.systemPromptPostfix == v) return;
+	ov.systemPromptPostfix = v;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentSystemPromptPostfixChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentChatLimitActive(bool v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+	if (ov.chatLimitActive == v) return;
+	ov.chatLimitActive = v;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentChatLimitActiveChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentChatLimit(int v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+	if (ov.chatLimit == v) return;
+	ov.chatLimit = v;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentChatLimitChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentMessageExtra(const QString &v)
+{
+	const auto *m = currentModelEntry();
+	if (!m) return;
+
+	ModelOverrides ov;
+	if (m_modelOverrides.contains(m->id))
+		ov = m_modelOverrides[m->id];
+	if (ov.messageExtra == v) return;
+	ov.messageExtra = v;
+	m_modelOverrides[m->id] = ov;
+
+	emit currentMessageExtraChanged();
+	saveUserData();
+}
+
+// ── CRUD ──────────────────────────────────────────────────────
+
+bool AIConfigModel::createProvider(const QString &name,
+                                    const QString &modelName,
+                                    const QString &jsonSpec)
+{
+	if (name.trimmed().isEmpty())
+		return false;
+
+	AIProviderEntry prov;
+	prov.id       = QUuid::createUuid().toString(QUuid::WithoutBraces);
+	prov.name     = name.trimmed();
+	prov.isSystem = false;
+
+	// Parse optional JSON spec
+	if (!jsonSpec.trimmed().isEmpty())
+	{
+		QJsonDocument doc = QJsonDocument::fromJson(jsonSpec.toUtf8());
+		if (doc.isObject())
+		{
+			QJsonObject obj = doc.object();
+			if (obj.contains("endpoint"))
+				prov.endpoint = obj["endpoint"].toString();
+			if (obj.contains("models") && obj["models"].isArray())
+			{
+				const QJsonArray arr = obj["models"].toArray();
+				for (const auto &val : arr)
+				{
+					if (!val.isObject()) continue;
+					QJsonObject mobj = val.toObject();
+					AIModelEntry m;
+					m.id    = QUuid::createUuid().toString(QUuid::WithoutBraces); // always fresh
+					m.name  = mobj["name"].toString();
+					m.model = mobj["model"].toString();
+					if (mobj.contains("extraParams") && mobj["extraParams"].isObject())
+						m.extraParams = mobj["extraParams"].toObject();
+					if (mobj.contains("systemPromptPostfix"))
+						m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+					m.isSystem = false;
+					if (!m.name.isEmpty())
+						prov.models.append(m);
+				}
+			}
+		}
+	}
+
+	// If no models from JSON, create one
+	if (prov.models.isEmpty())
+	{
+		AIModelEntry m;
+		m.id       = QUuid::createUuid().toString(QUuid::WithoutBraces);
+		m.name     = modelName.trimmed().isEmpty() ? QStringLiteral("Default") : modelName.trimmed();
+		m.isSystem = false;
+		prov.models.append(m);
+	}
+	// If modelName given and JSON already provided models, rename the first one
+	else if (!modelName.trimmed().isEmpty())
+	{
+		prov.models[0].name = modelName.trimmed();
+	}
+
+	m_providers.append(prov);
+	m_providerListModel->setProviders(m_providers);
+	emit providerValuesChanged();
+
+	int idx = m_providers.size() - 1;
+	setCurrentProviderIndex(idx);
+
+	saveUserData();
+	return true;
+}
+
+bool AIConfigModel::removeProvider(int providerIndex)
+{
+	if (providerIndex < 0 || providerIndex >= m_providers.size())
+		return false;
+
+	const auto &prov = m_providers[providerIndex];
+	if (prov.isSystem)
+		return false; // can't delete shipped providers
+
+	// Can't delete if it's the only provider left
+	if (m_providers.size() <= 1)
+		return false;
+
+	// Clean up overrides
+	m_providerOverrides.remove(prov.id);
+	for (const auto &m : prov.models)
+		m_modelOverrides.remove(m.id);
+
+	m_providers.removeAt(providerIndex);
+	m_providerListModel->setProviders(m_providers);
+	emit providerValuesChanged();
+
+	// Adjust current selection
+	if (m_currentProviderIndex >= m_providers.size())
+		setCurrentProviderIndex(m_providers.size() - 1);
+	else if (m_currentProviderIndex == providerIndex)
+		setCurrentProviderIndex(qMax(0, providerIndex - 1));
+	else if (m_currentProviderIndex > providerIndex)
+	{
+		// Index shifted, re-emit
+		--m_currentProviderIndex;
+		emit currentProviderIndexChanged();
+	}
+
+	saveUserData();
+	return true;
+}
+
+bool AIConfigModel::removeModel(int dropdownIndex)
+{
+	// dropdownIndex 0 = virtual "Custom" entry (cannot be removed)
+	if (dropdownIndex <= 0) return false;
+
+	int realIdx = dropdownIndex - 1;
+	const auto *prov = currentProvider();
+	if (!prov || realIdx >= prov->models.size())
+		return false;
+
+	if (prov->models.size() <= 1)
+		return false; // must have at least one model
+
+	auto *provMut = &m_providers[m_currentProviderIndex];
+
+	// Clean up overrides
+	m_modelOverrides.remove(provMut->models[realIdx].id);
+
+	provMut->models.removeAt(realIdx);
+	m_modelListModel->setModels(provMut->models);
+	emit modelValuesChanged();
+
+	// Adjust current model selection (m_currentModelIndex is dropdown index)
+	if (m_currentModelIndex > provMut->models.size())
+		setCurrentModelIndex(provMut->models.size()); // past end -> last real model
+	else if (m_currentModelIndex == dropdownIndex)
+		setCurrentModelIndex(qMax(1, dropdownIndex - 1)); // removing selected -> previous
+	else if (m_currentModelIndex > dropdownIndex)
+	{
+		--m_currentModelIndex;
+		emit currentModelIndexChanged();
+	}
+
+	saveUserData();
+	return true;
+}
+
+void AIConfigModel::removeAllModels()
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+
+	auto *provMut = &m_providers[m_currentProviderIndex];
+
+	// Clean up overrides for all models
+	for (const auto &m : provMut->models)
+		m_modelOverrides.remove(m.id);
+
+	// Replace with a single blank model
+	provMut->models.clear();
+	AIModelEntry m;
+	m.id       = QUuid::createUuid().toString(QUuid::WithoutBraces);
+	m.name     = QStringLiteral("Default");
+	m.isSystem = false;
+	provMut->models.append(m);
+
+	m_modelListModel->setModels(provMut->models);
+	emit modelValuesChanged();
+	setCurrentModelIndex(1); // select the new Default model (index 1 in dropdown, 0 is custom)
+
+	saveUserData();
+}
+
+void AIConfigModel::resetToDefaults()
+{
+	// Reload shipped providers from scratch
+	m_providers.clear();
+	m_providerOverrides.clear();
+	m_modelOverrides.clear();
+
+	loadShippedProviders();
+	addCustomProvider();
+
+	m_providerListModel->setProviders(m_providers);
+	emit providerValuesChanged();
+	m_modelListModel->clear();
+	emit modelValuesChanged();
+
+	saveUserData();
+
+	if (!m_providers.isEmpty())
+		setCurrentProviderIndex(0);
+}
+
+// ── Init ──────────────────────────────────────────────────────
+
+void AIConfigModel::addCustomProvider()
+{
+	AIProviderEntry cp;
+	cp.id        = QStringLiteral("00000000-0000-0000-0000-000000000001");
+	cp.name      = QStringLiteral("Custom Provider");
+	cp.isSystem  = true;
+	// No models — the virtual "Custom (No Model Preset)" entry
+	// in modelValues() provides the ad-hoc model field.
+	m_providers.prepend(cp);
+	m_shipped.prepend(cp);
+}
+
+void AIConfigModel::loadShippedProviders()
+{
+	std::string path = Dirs::resourcesDir() + "defaultProviders.json";
+	QFile f(tq(path));
+	if (!f.open(QIODevice::ReadOnly))
+	{
+		Log::log() << "AIConfigModel: could not open defaultProviders.json" << std::endl;
+		return; // custom provider will be prepended by constructor
+	}
+
+	QJsonDocument doc = QJsonDocument::fromJson(f.readAll());
+	f.close();
+
+	if (!doc.isObject())
+	{
+		Log::log() << "AIConfigModel: defaultProviders.json is not a valid JSON object" << std::endl;
+		return;
+	}
+
+	const QJsonArray arr = doc.object()["providers"].toArray();
+	for (const auto &pval : arr)
+	{
+		if (!pval.isObject()) continue;
+		QJsonObject pobj = pval.toObject();
+
+		AIProviderEntry prov;
+		prov.id           = pobj["id"].toString();
+		prov.name         = pobj["name"].toString();
+		prov.endpoint     = pobj["endpoint"].toString();
+		prov.defaultApiKey = pobj["defaultApiKey"].toString();
+		prov.isSystem     = true;
+
+		const QJsonArray marr = pobj["models"].toArray();
+		for (const auto &mval : marr)
+		{
+			if (!mval.isObject()) continue;
+			QJsonObject mobj = mval.toObject();
+			AIModelEntry m;
+			m.id       = mobj["id"].toString();
+			m.name     = mobj["name"].toString();
+			m.model    = mobj["model"].toString();
+			if (mobj.contains("extraParams") && mobj["extraParams"].isObject())
+				m.extraParams = mobj["extraParams"].toObject();
+			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+			m.isSystem = true;
+			prov.models.append(m);
+		}
+
+		if (prov.models.isEmpty())
+		{
+			AIModelEntry m;
+			m.id       = QUuid::createUuid().toString(QUuid::WithoutBraces);
+			m.name     = QStringLiteral("Default");
+			m.isSystem = true;
+			prov.models.append(m);
+		}
+
+		m_providers.append(prov);
+	}
+
+	// Save pristine copy for diffing
+	m_shipped = m_providers;
+}
+
+void AIConfigModel::loadUserData()
+{
+	QString json = Settings::value(Settings::AI_USER_PROVIDERS).toString();
+	if (json.isEmpty())
+		return;
+
+	QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	if (!doc.isObject())
+		return;
+
+	QJsonObject root = doc.object();
+
+	// ── Restore current selection ──────────────────────
+	QString savedProviderId = root["currentProviderId"].toString();
+	QString savedModelId    = root["currentModelId"].toString();
+
+	// ── Apply provider overrides ────────────────────────
+	const QJsonObject pov = root["providerOverrides"].toObject();
+	for (auto it = pov.begin(); it != pov.end(); ++it)
+	{
+		QJsonObject o = it.value().toObject();
+		ProviderOverrides ov;
+		ov.endpoint      = o["endpoint"].toString();
+		ov.apiKey        = o["apiKey"].toString();
+		ov.currentModelId = o["currentModelId"].toString();
+		ov.customModel    = o["customModel"].toString();
+		m_providerOverrides[it.key()] = ov;
+
+		// Apply to m_providers
+		for (auto &prov : m_providers)
+		{
+			if (prov.id == it.key())
+			{
+				if (!ov.endpoint.isEmpty())
+					prov.endpoint = ov.endpoint;
+				break;
+			}
+		}
+	}
+
+	// ── Apply model overrides ───────────────────────────
+	const QJsonObject mov = root["modelOverrides"].toObject();
+	for (auto it = mov.begin(); it != mov.end(); ++it)
+	{
+		QJsonObject o = it.value().toObject();
+		ModelOverrides ov;
+		if (o.contains("extraParams"))
+			ov.extraParams = o["extraParams"].toObject();
+		if (o.contains("systemPromptPostfix"))
+			ov.systemPromptPostfix = o["systemPromptPostfix"].toString();
+		if (o.contains("useCompleteSchema"))
+			ov.useCompleteSchema = o["useCompleteSchema"].toBool();
+		if (o.contains("chatLimit"))
+			ov.chatLimit = o["chatLimit"].toInt();
+		if (o.contains("chatLimitActive"))
+			ov.chatLimitActive = o["chatLimitActive"].toBool();
+		if (o.contains("messageExtra"))
+			ov.messageExtra = o["messageExtra"].toString();
+		m_modelOverrides[it.key()] = ov;
+	}
+
+	// ── Add user-created providers ──────────────────────
+	const QJsonArray uprov = root["userProviders"].toArray();
+	for (const auto &val : uprov)
+	{
+		if (!val.isObject()) continue;
+		QJsonObject pobj = val.toObject();
+
+		AIProviderEntry prov;
+		prov.id       = pobj["id"].toString();
+		prov.name     = pobj["name"].toString();
+		prov.endpoint = pobj["endpoint"].toString();
+		prov.defaultApiKey = pobj["defaultApiKey"].toString();
+		prov.isSystem  = false;
+
+		const QJsonArray marr = pobj["models"].toArray();
+		for (const auto &mval : marr)
+		{
+			if (!mval.isObject()) continue;
+			QJsonObject mobj = mval.toObject();
+			AIModelEntry m;
+			m.id    = mobj["id"].toString();
+			m.name  = mobj["name"].toString();
+			m.model = mobj["model"].toString();
+			if (mobj.contains("extraParams"))
+				m.extraParams = mobj["extraParams"].toObject();
+			m.systemPromptPostfix = mobj["systemPromptPostfix"].toString();
+			m.isSystem = false;
+			prov.models.append(m);
+		}
+
+		if (prov.models.isEmpty())
+		{
+			AIModelEntry m;
+			m.id   = QUuid::createUuid().toString(QUuid::WithoutBraces);
+			m.name = QStringLiteral("Default");
+			m.isSystem = false;
+			prov.models.append(m);
+		}
+
+		m_providers.append(prov);
+	}
+
+	// ── Restore selection ───────────────────────────────
+	if (!savedProviderId.isEmpty())
+	{
+		for (int i = 0; i < m_providers.size(); ++i)
+		{
+			if (m_providers[i].id == savedProviderId)
+			{
+				m_currentProviderIndex = i;
+				m_modelListModel->setModels(m_providers[i].models);
+				break;
+			}
+		}
+	}
+
+	if (m_currentProviderIndex >= 0)
+	{
+		// root contains "currentModelId" only if saved (always written by saveUserData)
+		if (root.contains("currentModelId"))
+		{
+			if (savedModelId.isEmpty())
+				m_currentModelIndex = 0; // explicit custom mode
+			else
+			{
+				int mi = m_modelListModel->indexOfId(savedModelId);
+				m_currentModelIndex = (mi >= 0) ? mi + 1 : 1; // dropdown index
+			}
+		}
+		else
+		{
+			m_currentModelIndex = 1; // fresh start: first real model
+		}
+
+		// Clamp: if provider has no real models, only custom mode (0) is valid
+		if (m_providers[m_currentProviderIndex].models.isEmpty())
+			m_currentModelIndex = 0;
+	}
+
+	// Feed list models
+	m_providerListModel->setProviders(m_providers);
+}
+
+void AIConfigModel::saveUserData()
+{
+	QJsonObject root;
+
+	// ── Current selection ───────────────────────────────
+	const auto *prov = currentProvider();
+	const auto *mod  = currentModelEntry();
+	if (prov)
+	{
+		root["currentProviderId"] = prov->id;
+		// Always write currentModelId (empty = custom mode)
+		root["currentModelId"] = mod ? mod->id : QString();
+		// Update the last-used model for this provider
+		ProviderOverrides pov;
+		if (m_providerOverrides.contains(prov->id))
+			pov = m_providerOverrides[prov->id];
+		pov.currentModelId = mod ? mod->id : QString();
+		if (pov.endpoint.isEmpty() && pov.apiKey.isEmpty() && pov.customModel.isEmpty())
+			m_providerOverrides.remove(prov->id);
+		else
+			m_providerOverrides[prov->id] = pov;
+	}
+
+	// ── Provider overrides (diff against shipped) ───────
+	QJsonObject povJson;
+	for (auto it = m_providerOverrides.begin(); it != m_providerOverrides.end(); ++it)
+	{
+		QJsonObject o;
+		// Diff: only store if differs from shipped
+		bool hasShipped = false;
+		for (const auto &sp : m_shipped)
+		{
+			if (sp.id == it.key()) { hasShipped = true; break; }
+		}
+		const auto &ov = it.value();
+		if (hasShipped)
+		{
+			// For shipped providers, store only overrides
+			if (!ov.endpoint.isEmpty())
+			{
+				// Check if differs from shipped
+				bool differs = false;
+				for (const auto &sp : m_shipped)
+					if (sp.id == it.key() && sp.endpoint != ov.endpoint) { differs = true; break; }
+				if (differs) o["endpoint"] = ov.endpoint;
+			}
+		}
+		else
+		{
+			// User-created: store all
+			if (!ov.endpoint.isEmpty()) o["endpoint"] = ov.endpoint;
+		}
+		if (!ov.apiKey.isEmpty())        o["apiKey"]        = ov.apiKey;
+		if (!ov.currentModelId.isEmpty()) o["currentModelId"] = ov.currentModelId;
+		if (!ov.customModel.isEmpty())    o["customModel"]    = ov.customModel;
+		if (!o.isEmpty()) povJson[it.key()] = o;
+	}
+	root["providerOverrides"] = povJson;
+
+	// ── Model overrides ─────────────────────────────────
+	QJsonObject movJson;
+	for (auto it = m_modelOverrides.begin(); it != m_modelOverrides.end(); ++it)
+	{
+		QJsonObject o;
+		const auto &ov = it.value();
+		if (!ov.extraParams.isEmpty())      o["extraParams"]          = ov.extraParams;
+		if (!ov.systemPromptPostfix.isEmpty()) o["systemPromptPostfix"] = ov.systemPromptPostfix;
+		o["useCompleteSchema"] = ov.useCompleteSchema;
+		o["chatLimit"]         = ov.chatLimit;
+		o["chatLimitActive"]   = ov.chatLimitActive;
+		if (!ov.messageExtra.isEmpty())     o["messageExtra"]         = ov.messageExtra;
+		movJson[it.key()] = o;
+	}
+	root["modelOverrides"] = movJson;
+
+	// ── User-created providers (full entries) ────────────
+	QJsonArray uprov;
+	for (const auto &prov : m_providers)
+	{
+		if (prov.isSystem) continue; // shipped, not user-created
+		QJsonObject po;
+		po["id"]            = prov.id;
+		po["name"]          = prov.name;
+		po["endpoint"]      = prov.endpoint;
+		po["defaultApiKey"] = prov.defaultApiKey;
+
+		QJsonArray marr;
+		for (const auto &m : prov.models)
+		{
+			QJsonObject mo;
+			mo["id"]                 = m.id;
+			mo["name"]               = m.name;
+			mo["model"]              = m.model;
+			if (!m.extraParams.isEmpty())
+				mo["extraParams"] = m.extraParams;
+			mo["systemPromptPostfix"] = m.systemPromptPostfix;
+			marr.append(mo);
+		}
+		po["models"] = marr;
+		uprov.append(po);
+	}
+	root["userProviders"] = uprov;
+
+	QString json = QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Compact));
+	Settings::setValue(Settings::AI_USER_PROVIDERS, json);
+}
