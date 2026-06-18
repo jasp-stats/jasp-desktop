@@ -272,3 +272,31 @@ void SecretStore::remove(const QString & /*logicalKey*/, Settings::Type setting)
 {
 	deleteSetting(setting);
 }
+
+QString SecretStore::encryptValue(const QString &plaintext)
+{
+	const QByteArray key = masterKey();
+	if (key.isEmpty())
+		return plaintext;
+
+	const QByteArray encrypted = encrypt(plaintext.toUtf8(), key);
+	if (encrypted.isEmpty())
+		return plaintext;
+
+	return QString::fromLatin1(encrypted.toBase64());
+}
+
+QString SecretStore::decryptValue(const QString &ciphertextBase64)
+{
+	const QByteArray key = masterKey();
+	if (key.isEmpty())
+		return ciphertextBase64;
+
+	const QByteArray blob = QByteArray::fromBase64(ciphertextBase64.toLatin1());
+	const QByteArray plain = decrypt(blob, key);
+
+	if (plain.isEmpty() && !ciphertextBase64.isEmpty())
+		return ciphertextBase64; // might be legacy plaintext
+
+	return QString::fromUtf8(plain);
+}

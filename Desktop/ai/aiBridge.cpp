@@ -23,6 +23,7 @@
 #include "rpc/jasprpcdispatcher.h"
 #include "gui/preferencesmodel.h"
 #include "gui/aipersonamodel.h"
+#include "gui/aiconfigmodel.h"
 
 // =============================================================================
 // Singleton
@@ -65,17 +66,17 @@ AiBridge::~AiBridge()
 
 QString AiBridge::endpoint() const
 {
-	return PreferencesModel::prefs()->aiEndpoint();
+	return AIConfigModel::config()->currentEndpoint();
 }
 
 QString AiBridge::authToken() const
 {
-	return PreferencesModel::prefs()->aiApiKey();
+	return AIConfigModel::config()->currentApiKey();
 }
 
 QString AiBridge::model() const
 {
-	return PreferencesModel::prefs()->aiModel();
+	return AIConfigModel::config()->currentModel();
 }
 
 QStringList AiBridge::personaNames() const
@@ -111,7 +112,7 @@ void AiBridge::setExtraParams(const QString &json)
 			return;
 		}
 	}
-	PreferencesModel::prefs()->setAiExtraParams(json);
+	AIConfigModel::config()->setCurrentExtraParams(json);
 }
 
 void AiBridge::setDebugDumpEnabled(bool enabled)
@@ -370,8 +371,8 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 	QByteArray body = buildRequestBody(messages, withTools);
 
 	// Check token limit against the full request body (system prompt + tools + messages)
-	if (PreferencesModel::prefs()->aiChatLimitActive()) {
-		int limit = PreferencesModel::prefs()->aiChatLimit();
+	if (AIConfigModel::config()->currentChatLimitActive()) {
+		int limit = AIConfigModel::config()->currentChatLimit();
 		int bodyTokens = estimateTokens(QString::fromUtf8(body));
 		if (limit > 0 && bodyTokens > limit) {
 			Log::log() << "AiBridge: request exceeds token limit (" << bodyTokens << " > " << limit << "), rejecting" << std::endl;
@@ -507,10 +508,15 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 			sysContent += QStringLiteral("  ") + QString(p.personaPrompt).trimmed().replace(QStringLiteral("\n"), QStringLiteral("\n  ")) + QStringLiteral("\n");
 		}
 	} else if (sysContent.isEmpty()) {
-		sysContent = QStringLiteral("You are JASP AI, a helpful assistant.");
-	}
+			sysContent = QStringLiteral("You are JASP AI, a helpful assistant.");
+		}
 
-	if (!sysContent.isEmpty()) {
+		// 3. Model-specific system prompt postfix (from AIConfigModel)
+		QString postfix = AIConfigModel::config()->currentSystemPromptPostfix();
+		if (!postfix.isEmpty())
+			sysContent += QStringLiteral("\n") + postfix.trimmed();
+
+		if (!sysContent.isEmpty()) {
 		QJsonObject sysMsg;
 		sysMsg[QStringLiteral("role")] = QStringLiteral("system");
 		sysMsg[QStringLiteral("content")] = sysContent.trimmed();
@@ -520,7 +526,7 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 	// Build full tool definitions (skipped for intro/lightweight requests)
 	if (withTools)
 	{
-		bool useCompleteSchema = PreferencesModel::prefs()->aiUseCompleteSchema();
+		bool useCompleteSchema = AIConfigModel::config()->currentUseCompleteSchema();
 		QJsonArray toolDefs;
 		QJsonArray toolStubs;
 		{
@@ -601,7 +607,7 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 
 	// Merge per-message extra fields (e.g. Anthropic cache_control) into every message.
 	// Protected fields (role, content, text) cannot be overridden.
-	QString msgExtra = PreferencesModel::prefs()->aiMessageExtra();
+	QString msgExtra = AIConfigModel::config()->currentMessageExtra();
 	if (!msgExtra.isEmpty()) {
 		QJsonParseError parseError;
 		QJsonDocument msgExtraDoc = QJsonDocument::fromJson(msgExtra.toUtf8(), &parseError);
@@ -625,7 +631,7 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 	}
 
 		// Merge user-specified extra parameters (e.g. max_tokens, thinking, etc.)
-		QString extra = PreferencesModel::prefs()->aiExtraParams();
+		QString extra = AIConfigModel::config()->currentExtraParams();
 		if (!extra.isEmpty()) {
 			QJsonDocument extraDoc = QJsonDocument::fromJson(extra.toUtf8());
 			if (extraDoc.isObject()) {

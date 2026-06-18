@@ -31,97 +31,322 @@ PrefsScrollView
 		}
 	}
 
+	// ──────────────────────────────────────────────
+	// 1. Provider & Model
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
-		title:				qsTr("Connection")
+		title:				qsTr("Provider & Model")
 		visible:			preferencesModel.aiEnabled
 
-		Group
+		// ── a) Provider / Model dropdowns ──
+		Row
 		{
-			id:			connectionId
-			columns:	1
-			width:		parent.width
-			focus:		true
+			spacing:		jaspTheme.generalAnchorMargin
 
-			TextField
+			DropDown
 			{
-				id:					aiEndpointInput
-				label:				qsTr("Endpoint URL:")
-				value:				preferencesModel.aiEndpoint
-				onEditingFinished:	preferencesModel.aiEndpoint = displayValue
-				width:				connectionId.width
-				fillWidth:			true
-				fieldHeight:		25 * jaspTheme.uiScale
-				focus:				true
-				KeyNavigation.tab:	aiApiKeyInput
+				label:			qsTr("Provider:")
+				values:			aiConfigModel.providerValues
+				currentIndex:	aiConfigModel.currentProviderIndex
+				onActivated:	function(index) { aiConfigModel.currentProviderIndex = index }
 			}
 
-			TextField
+			DropDown
 			{
-				id:					aiApiKeyInput
-				label:				qsTr("API Key:")
-				value:				preferencesModel.aiApiKey
-				onEditingFinished:	preferencesModel.aiApiKey = displayValue
-				control.echoMode:	TextInput.Password
-				width:				connectionId.width
-				fillWidth:			true
-				fieldHeight:		25 * jaspTheme.uiScale
-				showEyeInside:		true
-				KeyNavigation.tab:	aiModelInput
-			}
-
-			TextField
-			{
-				id:					aiModelInput
-				label:				qsTr("Model:")
-				value:				preferencesModel.aiModel
-				width:				connectionId.width
-				fillWidth:			true
-				fieldHeight:		25 * jaspTheme.uiScale
-				onEditingFinished:	preferencesModel.aiModel = displayValue
-				KeyNavigation.tab:	personaTabBar
+				label:			qsTr("Model:")
+				values:			aiConfigModel.modelValues
+				currentIndex:	aiConfigModel.currentModelIndex
+				onActivated:	function(index) { aiConfigModel.currentModelIndex = index }
 			}
 		}
 
-		Item
+		// ── b) Connection ──
+		PrefsGroupRect
 		{
-			width:			parent.width
-			height:			testButton.height + testResultLabel.height + jaspTheme.generalAnchorMargin
+			title:				qsTr("Connection")
 
-			Button
+			Group
 			{
-				id:				testButton
-				text:			qsTr("Test Connection")
-				toolTip:		qsTr("Send a minimal request to verify your endpoint and API key.")
-				anchors.left:	parent.left
-				anchors.top:	parent.top
-				anchors.topMargin: jaspTheme.generalAnchorMargin
+				id:			connectionGroup
+				columns:	1
+				width:		parent.width
 
-				onClicked:		{
-					testResultLabel.text = qsTr("Testing…")
-					testResultLabel.color = jaspTheme.textEnabled
-					aiBridge.testConnection()
+				TextField
+				{
+					id:					aiEndpointInput
+					label:				qsTr("Endpoint URL:")
+					value:				aiConfigModel.currentEndpoint
+					onEditingFinished:	aiConfigModel.currentEndpoint = displayValue
+					width:				connectionGroup.width
+					fillWidth:			true
+					fieldHeight:		25 * jaspTheme.uiScale
+				}
+
+				TextField
+				{
+					label:				qsTr("API Key:")
+					value:				aiConfigModel.currentApiKey
+					onEditingFinished:	aiConfigModel.currentApiKey = displayValue
+					control.echoMode:	TextInput.Password
+					showEyeInside:		true
+					width:				connectionGroup.width
+					fillWidth:			true
+					fieldHeight:		25 * jaspTheme.uiScale
+				}
+
+				TextField
+				{
+					id:					aiModelInput
+					label:				qsTr("Model:")
+					value:				aiConfigModel.currentModel
+					onEditingFinished:	aiConfigModel.currentModel = displayValue
+					width:				connectionGroup.width
+					fillWidth:			true
+					fieldHeight:		25 * jaspTheme.uiScale
 				}
 			}
 
-			Text
+			Item
 			{
-				id:				testResultLabel
-				text:			""
-				font:			jaspTheme.font
-				color:			jaspTheme.textEnabled
-				wrapMode:		Text.WordWrap
-				anchors
+				width:			parent.width
+				height:			testButton.height + testResultLabel.height + jaspTheme.generalAnchorMargin
+
+				Button
 				{
-					left:		testButton.right
-					right:		parent.right
-					verticalCenter: testButton.verticalCenter
-					leftMargin:	jaspTheme.generalAnchorMargin
+					id:				testButton
+					text:			qsTr("Test Connection")
+					toolTip:		qsTr("Send a minimal request to verify your endpoint and API key.")
+					anchors.left:	parent.left
+					anchors.top:	parent.top
+					anchors.topMargin: jaspTheme.generalAnchorMargin
+
+					onClicked:		{
+						testResultLabel.text = qsTr("Testing…")
+						testResultLabel.color = jaspTheme.textEnabled
+						aiBridge.testConnection()
+					}
+				}
+
+				Text
+				{
+					id:				testResultLabel
+					text:			""
+					font:			jaspTheme.font
+					color:			jaspTheme.textEnabled
+					wrapMode:		Text.WordWrap
+					anchors
+					{
+						left:		testButton.right
+						right:		parent.right
+						verticalCenter: testButton.verticalCenter
+						leftMargin:	jaspTheme.generalAnchorMargin
+					}
+				}
+			}
+		}
+
+		// ── c) Advanced ──
+		Section
+		{
+			title:		qsTr("Advanced")
+			columns:	1
+
+			PrefsGroupRect
+			{
+				title:				qsTr("Advanced")
+
+				TextArea
+				{
+					id:					aiSystemPromptPostfixInput
+					title:				qsTr("System Prompt Postfix:")
+					height:				80 * preferencesModel.uiScale
+					text:				aiConfigModel.currentSystemPromptPostfix
+					isBound:			false
+					wrapMode:			TextEdit.Wrap
+					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentSystemPromptPostfix = text
+					applyScriptInfo:	""
+					useTabAsSpaces:		false
+				}
+
+				CheckBox
+				{
+					id:					completeSchemaCheck
+					label:				qsTr("Include full tool schemas in request")
+					checked:			aiConfigModel.currentUseCompleteSchema
+					onClicked:			aiConfigModel.currentUseCompleteSchema = checked
+					toolTip:			qsTr(
+						"When enabled, each tool in the API request includes its full "
+						+ "parameter schema (with JSON such as like integer/boolean). "
+						+ "This helps models that struggle with type-safety in tool "
+						+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
+					)
+				}
+
+				Label
+				{
+					text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
+					wrapMode:		Text.WordWrap
+					width:			parent.width
+				}
+
+				TextArea
+				{
+					id:					aiExtraParamsInput
+					text:				aiConfigModel.currentExtraParams
+					height:				100 * preferencesModel.uiScale
+					isBound:			false
+					wrapMode:			TextEdit.Wrap
+					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentExtraParams = text
+					applyScriptInfo:	""
+					useTabAsSpaces:		false
+				}
+
+				CheckBox
+				{
+					id:					chatLimitCheck
+					label:				qsTr("Single chat token limit:")
+					childrenOnSameRow:	true
+					checked:			aiConfigModel.currentChatLimitActive
+					onClicked:			aiConfigModel.currentChatLimitActive = checked
+
+					IntegerField
+					{
+						value:			aiConfigModel.currentChatLimit
+						onValueChanged:	aiConfigModel.currentChatLimit = value
+						enabled:		chatLimitCheck.checked
+						fieldWidth:		100 * preferencesModel.uiScale
+						toolTip:		qsTr("~4 characters ≈ 1 token")
+					}
+				}
+
+				Label
+				{
+					text:			qsTr(
+						"Paste a JSON object to merge into every message of the API request.\n"
+						+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
+						+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
+					)
+					wrapMode:		Text.WordWrap
+					width:			parent.width
+				}
+
+				TextArea
+				{
+					id:					aiMessageExtraInput
+					text:				aiConfigModel.currentMessageExtra
+					height:				100 * preferencesModel.uiScale
+					isBound:			false
+					wrapMode:			TextEdit.Wrap
+					placeholderText:	qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
+					onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
+					applyScriptInfo:	""
+					useTabAsSpaces:		false
+				}
+			}
+		}
+
+		// ── d) Create / Remove ──
+		Section
+		{
+			title:		qsTr("Create / Remove")
+			columns:	1
+
+			PrefsGroupRect
+			{
+				title:				qsTr("Remove")
+
+				Row
+				{
+					spacing:		jaspTheme.generalAnchorMargin
+
+					DropDown
+					{
+						id:			providerRemoveDropdown
+						label:		qsTr("Provider:")
+						values:		aiConfigModel.providerValues
+					}
+
+					Button
+					{
+						text:		qsTr("Delete Provider")
+						onClicked:	aiConfigModel.removeProvider(providerRemoveDropdown.currentIndex)
+					}
+				}
+
+				Row
+				{
+					spacing:		jaspTheme.generalAnchorMargin
+
+					DropDown
+					{
+						id:			modelRemoveDropdown
+						label:		qsTr("Model:")
+						values:		aiConfigModel.modelValues
+					}
+
+					Button
+					{
+						text:		qsTr("Delete Model")
+						onClicked:	aiConfigModel.removeModel(modelRemoveDropdown.currentIndex)
+					}
+
+					Button
+					{
+						text:		qsTr("Delete All Models")
+						onClicked:	aiConfigModel.removeAllModels()
+					}
+				}
+			}
+
+			PrefsGroupRect
+			{
+				title:				qsTr("Create")
+
+				TextField
+				{
+					id:					providerNameField
+					label:				qsTr("Provider name:")
+					width:				parent.width
+					fillWidth:			true
+					fieldHeight:		25 * jaspTheme.uiScale
+				}
+
+				TextField
+				{
+					id:					modelNameField
+					label:				qsTr("Model name (optional):")
+					width:				parent.width
+					fillWidth:			true
+					fieldHeight:		25 * jaspTheme.uiScale
+				}
+
+				TextArea
+				{
+					id:					jsonSpecArea
+					title:				qsTr("JSON spec (optional):")
+					height:				100 * preferencesModel.uiScale
+					isBound:			false
+					wrapMode:			TextEdit.Wrap
+					applyScriptInfo:	""
+					useTabAsSpaces:		false
+				}
+
+				Button
+				{
+					text:		qsTr("Create")
+					onClicked:	aiConfigModel.createProvider(
+									providerNameField.displayValue,
+									modelNameField.displayValue,
+									jsonSpecArea.text)
 				}
 			}
 		}
 	}
 
+	// ──────────────────────────────────────────────
+	// 2. Personas
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
 		title:		qsTr("Personas")
@@ -353,8 +578,26 @@ PrefsScrollView
 				}
 			}
 		}
+
+		// ── Common System Prompt ──
+		TextArea
+		{
+			id:					aiCommonSystemPromptInput
+			title:				qsTr("Common System Prompt:")
+			height:				120 * preferencesModel.uiScale
+			text:				preferencesModel.aiCommonSystemPrompt
+			isBound:			false
+			wrapMode:			TextEdit.Wrap
+			placeholderText:	qsTr("Common system prompt shared across all personas…")
+			onActiveFocusChanged:	if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
+			applyScriptInfo:	""
+			useTabAsSpaces:		false
+		}
 	}
 
+	// ──────────────────────────────────────────────
+	// 3. Annotation
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
 		title:				qsTr("Annotation")
@@ -386,6 +629,9 @@ PrefsScrollView
 		}
 	}
 
+	// ──────────────────────────────────────────────
+	// 4. Chat Appearance
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
 		title:		qsTr("Chat Appearance")
@@ -434,6 +680,9 @@ PrefsScrollView
 		}
 	}
 
+	// ──────────────────────────────────────────────
+	// 5. MCP
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
 		title:				qsTr("MCP")
@@ -449,118 +698,9 @@ PrefsScrollView
 		}
 	}
 
-	Section
-	{
-		id:			advancedSec
-		title:		qsTr("Advanced")
-		visible:	preferencesModel.aiEnabled
-		columns:	1
-
-		PrefsGroupRect
-		{
-			title:				qsTr("Additional Parameters")
-
-			CheckBox
-			{
-				id:					completeSchemaCheck
-				label:				qsTr("Include full tool schemas in request")
-				checked:			preferencesModel.aiUseCompleteSchema
-				onCheckedChanged:	preferencesModel.aiUseCompleteSchema = checked
-				toolTip:			qsTr(
-					"When enabled, each tool in the API request includes its full "
-					+ "parameter schema (with JSON such as like integer/boolean). "
-					+ "This helps models that struggle with type-safety in tool "
-					+ "calls (e.g., Qwen). Uses more tokens. Leave unticked for DeepSeek."
-				)
-			}
-
-			TextArea
-			{
-				id:				aiCommonSystemPromptInput
-				title:			qsTr("Common System Prompt:")
-				height:			120 * preferencesModel.uiScale
-				text:			preferencesModel.aiCommonSystemPrompt
-				isBound:		false
-				wrapMode:		TextEdit.Wrap
-				placeholderText: qsTr("Common system prompt shared across all personas…")
-				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
-				applyScriptInfo:""
-				useTabAsSpaces:	false
-				nextTabItem:	chatLimitCheck
-			}
-
-			CheckBox
-			{
-				id:					chatLimitCheck
-				label:				qsTr("Single chat token limit:")
-				childrenOnSameRow:	true
-				checked:			preferencesModel.aiChatLimitActive
-				onCheckedChanged:	preferencesModel.aiChatLimitActive = checked
-
-				IntegerField
-				{
-					value:			preferencesModel.aiChatLimit
-					onValueChanged: preferencesModel.aiChatLimit = value
-					enabled:		chatLimitCheck.checked
-					fieldWidth:		100 * preferencesModel.uiScale
-					toolTip:		qsTr("~4 characters ≈ 1 token")
-				}
-			}
-
-			Label
-			{
-				text:			qsTr("Paste a JSON object with extra parameters to include in every API request.\nExamples: { \"max_tokens\": 4096, \"thinking\": { \"type\": \"enabled\" } }\nFields \"model\", \"stream\", \"messages\", \"tools\", and \"text\" are protected and will be ignored.")
-				wrapMode:		Text.WordWrap
-				width:			parent.width
-			}
-
-			TextArea
-			{
-				id:				aiExtraParamsInput
-				text:			preferencesModel.aiExtraParams
-				height:			120 * preferencesModel.uiScale
-				isBound:		false
-				wrapMode:		TextEdit.Wrap
-				placeholderText: qsTr("Common system prompt shared across all personas…")
-				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiExtraParams = text
-				applyScriptInfo:""
-				useTabAsSpaces:	false
-				nextTabItem:	aiMessageExtraInput
-				}
-			}
-
-			PrefsGroupRect
-			{
-				title:				qsTr("Per-Message Extra Fields")
-
-			Label
-			{
-				text:			qsTr(
-					"Paste a JSON object to merge into every message of the API request.\n"
-					+ "Use this for per-message features like explicit caching: { \"cache_control\": { \"type\": \"ephemeral\" } }\n"
-					+ "Fields \"role\", \"content\", and \"text\" are protected and will be ignored."
-				)
-				wrapMode:		Text.WordWrap
-				width:			parent.width
-			}
-
-
-			TextArea
-			{
-				id:				aiMessageExtraInput
-				text:			preferencesModel.aiMessageExtra
-				height:			120 * preferencesModel.uiScale
-				isBound:		false
-				wrapMode:		TextEdit.Wrap
-				placeholderText: qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
-				onActiveFocusChanged: if (!activeFocus) preferencesModel.aiMessageExtra = text
-				applyScriptInfo:""
-				useTabAsSpaces:	false
-				nextTabItem:	mcpEnabled
-			}
-		}
-	}
-
+	// ──────────────────────────────────────────────
+	// 6. AI Service
+	// ──────────────────────────────────────────────
 	PrefsGroupRect
 	{
 		title:				qsTr("AI Service")

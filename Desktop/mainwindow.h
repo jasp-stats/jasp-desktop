@@ -61,6 +61,7 @@
 #include "rpc/jasprpcdispatcher.h"
 #include "rpc/jasprpcserver.h"
 #include "ai/aiBridge.h"
+#include "gui/aiconfigmodel.h"
 
 using namespace std;
 
@@ -397,6 +398,7 @@ private:
 	JaspRpcDispatcher*  _rpcDispatcher  = nullptr;
 	JaspRpcServer*      _rpcServer      = nullptr;
 	AiBridge				*	_aiBridge				= nullptr;
+	AIConfigModel			*	_aiConfigModel			= nullptr;
 
 	// RPC async data-load job tracking
 	struct RpcLoadJob

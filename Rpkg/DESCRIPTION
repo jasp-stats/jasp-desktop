@@ -1,0 +1,23 @@
+Package: jasprpc
+Title: R Client for the JASP JSON-RPC API
+Version: 0.1.0
+Authors@R: c(
+    person("JASP", "Team", role = c("aut", "cre"),
+           email = "info@jasp-stats.org")
+    )
+Description: An R client for communicating with a running JASP desktop
+    instance via its JSON-RPC 2.0 HTTP API.  Provides functions to create and
+    run statistical analyses, load and inspect datasets, list available modules
+    and analyses, and compose results.  All 13 RPC methods from the JASP
+    OpenRPC specification are exposed as idiomatic R functions.
+License: GPL (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.0
+Imports:
+    httr2,
+    jsonlite,
+    rlang
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
