@@ -52,6 +52,21 @@ AiBridge *AiBridge::_singleton = nullptr;
 		AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
 		if (pm)
 			connect(pm, &AIPersonaModel::currentPersonaIndexChanged, this, &AiBridge::clearChat);
+
+		// Clear chat whenever the AI provider/model config changes — old responses
+		// were generated under a different configuration and shouldn't carry forward.
+		AIConfigModel *acm = AIConfigModel::config();
+		connect(acm, &AIConfigModel::currentProviderIndexChanged,    this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentModelIndexChanged,       this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentEndpointChanged,         this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentApiKeyChanged,           this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentModelChanged,            this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentExtraParamsChanged,      this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentUseCompleteSchemaChanged, this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentSystemPromptPostfixChanged, this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,  this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentChatLimitChanged,        this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentMessageExtraChanged,     this, &AiBridge::clearChat);
 	}
 
 AiBridge::~AiBridge()
