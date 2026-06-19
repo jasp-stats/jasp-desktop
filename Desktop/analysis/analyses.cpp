@@ -929,6 +929,97 @@ void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool include
 	response["optionMeta"] = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 }
 
+/// Iterative diff: collect flat (path, value) pairs then reconstruct the tree.
+/// Avoids stack overflow on deeply nested schemas.
+/// Deleted keys are signalled with a null value in the delta.
+/// Returns Json::nullValue when there are no changes.
+static Json::Value _diffOptionMeta(const Json::Value& oldMeta, const Json::Value& newMeta)
+{
+	// Either side isn't an object (null, etc.) → wholesale replacement
+	if (!oldMeta.isObject() || !newMeta.isObject())
+		return newMeta;
+
+	// ---- Pass 1: DFS with explicit stack → collect flat (path, value) pairs ----
+	struct Diff { std::vector<std::string> path; Json::Value value; };
+	std::vector<Diff> diffs;
+
+	struct Frame { std::vector<std::string> path; const Json::Value* oldVal; const Json::Value* newVal; };
+	std::vector<Frame> stack;
+	stack.push_back({{}, &oldMeta, &newMeta});
+
+	while (!stack.empty())
+	{
+		Frame f = std::move(stack.back());
+		stack.pop_back();
+
+		const Json::Value& ov = *f.oldVal;
+		const Json::Value& nv = *f.newVal;
+
+		// Keys in new but not old → addition
+		// Keys in both objects → push frame to recurse
+		// Keys changed (leaf) → diff
+		for (const auto& key : nv.getMemberNames())
+		{
+			auto childPath = f.path;  childPath.push_back(key);
+
+			if (!ov.isMember(key))
+				diffs.push_back({std::move(childPath), nv[key]});              // added
+			else if (nv[key].isObject() && ov[key].isObject())
+				stack.push_back({std::move(childPath), &ov[key], &nv[key]});  // recurse
+			else if (nv[key] != ov[key])
+				diffs.push_back({std::move(childPath), nv[key]});              // changed
+		}
+
+		// Keys in old but not new → deletion, signal with null
+		for (const auto& key : ov.getMemberNames())
+			if (!nv.isMember(key))
+			{
+				auto childPath = f.path;  childPath.push_back(key);
+				diffs.push_back({std::move(childPath), Json::nullValue});      // deleted
+			}
+	}
+
+	if (diffs.empty()) return Json::nullValue;
+
+	// ---- Pass 2: reconstruct tree from flat paths ----
+	Json::Value delta(Json::objectValue);
+	for (auto& d : diffs)
+	{
+		Json::Value* node = &delta;
+		for (size_t i = 0; i + 1 < d.path.size(); i++)
+		{
+			const std::string& seg = d.path[i];
+			if (!node->isMember(seg))
+				(*node)[seg] = Json::Value(Json::objectValue);
+			node = &(*node)[seg];
+		}
+		(*node)[d.path.back()] = std::move(d.value);
+	}
+
+	return delta;
+}
+
+void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool includeDesc, bool forceFull)
+{
+	response["options"] = a->boundValues();
+
+	Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
+
+	if (forceFull)
+	{
+		response["optionMeta"] = fullMeta;
+		a->_lastSentMeta        = fullMeta;
+		return;
+	}
+
+	Json::Value delta = _diffOptionMeta(a->_lastSentMeta, fullMeta);
+	a->_lastSentMeta = fullMeta;
+
+	if (!delta.isNull())
+		response["optionMetaDelta"] = delta;
+	// else: nothing changed, omit entirely
+}
+
 void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId)
 {
 	response["results"]       = a->results();
@@ -1140,6 +1231,9 @@ void Analyses::registerRpcHandlers()
 		_rpcWriteIdentity(response, a);
 		// Status defaults to "success" from successResult()
 		_rpcWriteOptions(response, a, true);
+		// Seed the delta baseline with the stripped version (no descriptions)
+		// so the very first analysis_run only sends actual shape changes.
+		a->_lastSentMeta = a->form() ? a->form()->optionMeta(false) : Json::Value(Json::objectValue);
 		return response;
 	});
 
@@ -1176,18 +1270,18 @@ void Analyses::registerRpcHandlers()
 			return JaspRpcDispatcher::errorResult(
 				"Validation errors on analysis options: " + errorMsg);
 
-		a->boundValueChangedHandler();
 
 		bool wait      = params.get("wait", true).asBool();
 		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
 
+		bool useDelta  = params.get("optionMetaDelta", true).asBool();
 		// Fast path: results already ready
 		if (a->isFinished())
 		{
 			Json::Value response = JaspRpcDispatcher::successResult();
 			_rpcWriteIdentity(response, a);
 			_rpcWriteStatus(response, a);
-			_rpcWriteOptions(response, a, false);
+			_rpcWriteOptionsDelta(response, a, false, !useDelta);
 			_rpcWriteFinishedResults(response, a, analysisId);
 			return response;
 		}
@@ -1198,7 +1292,7 @@ void Analyses::registerRpcHandlers()
 			Json::Value response = JaspRpcDispatcher::successResult();
 			_rpcWriteIdentity(response, a);
 			response["status"] = "running";
-			_rpcWriteOptions(response, a, false);
+			_rpcWriteOptionsDelta(response, a, false, !useDelta);
 			return response;
 		}
 
@@ -1215,7 +1309,7 @@ void Analyses::registerRpcHandlers()
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
 		_rpcWriteStatus(response, a);
-		_rpcWriteOptions(response, a, false);
+		_rpcWriteOptionsDelta(response, a, false, !useDelta);
 		if (a->isFinished())
 			_rpcWriteFinishedResults(response, a, analysisId);
 

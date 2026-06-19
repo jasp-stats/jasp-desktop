@@ -257,6 +257,7 @@ private:
 								_hasReport					= false,
 								_beingTranslated			= false,
 								_isReport				= false;
+	Json::Value					_lastSentMeta				= Json::nullValue;
 	int							_revision						= 0;
 
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;

@@ -107,6 +107,15 @@
 						"type": "integer",
 						"default": 30000
 					}
+				},
+				{
+					"name": "optionMetaDelta",
+					"required": false,
+					"description": "If true (default), the response carries an optionMetaDelta field containing only the parts of optionMeta that changed since the last analysis_run (or since analysis_create if this is the first run). When nothing has changed optionMetaDelta is omitted entirely. This dramatically reduces response size on repeated calls. Set to false to receive the full optionMeta field instead.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
 				}
 			],
 			"result": {
@@ -137,7 +146,11 @@
 						},
 						"optionMeta": {
 							"type": "object",
-							"description": "Metadata describing each option (present on success and running)."
+							"description": "Full metadata describing each option (present on success and running when optionMetaDelta is false or omitted)."
+						},
+						"optionMetaDelta": {
+							"type": "object",
+							"description": "Delta of optionMeta: only the branches that changed since the last analysis_run (or since analysis_create for the first call). Missing keys in the client cache are left unchanged; keys with a value of null signal deletion. Merge this recursively into your cached optionMeta. Omitted entirely when nothing has changed. Only present when optionMetaDelta=true. Note: analysis_create always returns the full optionMeta to seed the cache."
 						},
 						"results": {
 							"type": "object",
