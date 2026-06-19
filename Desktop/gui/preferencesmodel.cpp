@@ -54,12 +54,11 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	dataLabelNAChangedSlot(dataLabelNA());
 
 	_aiPersonaModel = new AIPersonaModel(this);
-	_aiConfigModel = new AIConfigModel(this);
 }
 
 AIPersonaModel* PreferencesModel::aiPersonaModel() const { return _aiPersonaModel; }
 
-AIConfigModel* PreferencesModel::aiConfigModel() const { return _aiConfigModel; }
+AIConfigModel* PreferencesModel::aiConfigModel() const { return AIConfigModel::config(); }
 
 void PreferencesModel::browseSpreadsheetEditor()
 {
@@ -441,14 +440,14 @@ SET_PREF_FUNCTION(				int,		setRpcServerPort,		rpcServerPort,		rpcServerPortChan
 
 void PreferencesModel::resetAiDefaults()
 {
-	// Each setter emits its own changed signal, so the QML UI updates automatically.
-	// Values are read from Settings::defaultValue() — the single source of truth in settings.cpp.
-	_aiConfigModel->resetToDefaults();
+	AIConfigModel::config()->resetToDefaults();
 	_aiPersonaModel->resetAll();
 	setAiCommonSystemPrompt(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT).toString());
 	setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
 	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
 	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
+	setRpcServerEnabled(Settings::defaultValue(Settings::RPC_SERVER_ENABLED).toBool());
+	setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
 }
 
 void PreferencesModel::setGithubPatCustom(QString newPat)

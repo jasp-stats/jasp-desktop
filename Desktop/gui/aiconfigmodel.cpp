@@ -564,7 +564,6 @@ void AIConfigModel::setCurrentMessageExtra(const QString &v)
 
 void AIConfigModel::resetToDefaults()
 {
-	// Reload shipped providers from scratch
 	m_providers.clear();
 	m_providerOverrides.clear();
 	m_modelOverrides.clear();
@@ -577,8 +576,10 @@ void AIConfigModel::resetToDefaults()
 	m_modelListModel->clear();
 	emit modelValuesChanged();
 
-	saveUserData();
-
+	// Invalidate indices so setCurrentProviderIndex fires the full
+	// signal cascade even when the target happens to be index 0.
+	m_currentProviderIndex = -1;
+	m_currentModelIndex = -1;
 	if (!m_providers.isEmpty())
 		setCurrentProviderIndex(0);
 }

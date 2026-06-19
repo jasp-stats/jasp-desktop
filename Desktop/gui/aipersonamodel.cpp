@@ -666,9 +666,12 @@ void AIPersonaModel::resetAll()
 
 	Settings::setValue(Settings::AI_USER_PERSONAS, QStringLiteral("[]"));
 	Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, m_personas.at(0).id);
+	Settings::setValue(Settings::AI_USER_AVATAR, QString());
 
 	m_currentPersonaIndex = 0;
 	emit currentPersonaIndexChanged();
+	emit activePersonaAvatarChanged();
+	emit userAvatarChanged();
 }
 
 // ============================================================================
