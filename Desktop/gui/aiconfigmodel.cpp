@@ -757,6 +757,7 @@ void AIConfigModel::resetCurrentModelToDefaults()
 	auto* mutableEntry = const_cast<AIModelEntry*>(m);
 	mutableEntry->extraParams         = shipped->extraParams;
 	mutableEntry->systemPromptPostfix = shipped->systemPromptPostfix;
+	mutableEntry->model               = shipped->model;
 	mutableEntry->useCompleteSchema   = shipped->useCompleteSchema;
 	mutableEntry->chatLimit           = shipped->chatLimit;
 	mutableEntry->chatLimitActive     = shipped->chatLimitActive;
