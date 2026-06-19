@@ -207,11 +207,49 @@ signals:
 	void modelValuesChanged();
 
 private:
+	// ── Override helpers ────────────────────────────────
+	struct ProviderOverrides {
+		QString endpoint;
+		QString apiKey;
+		QString currentModelId;
+		QString customModel;
+
+		QString     systemPromptPostfix;
+		bool        systemPromptPostfixSet = false;
+		QJsonObject extraParams;
+		bool        extraParamsSet         = false;
+		bool        useCompleteSchema      = true;
+		int         chatLimit              = 256000;
+		bool        chatLimitActive        = true;
+		QString     messageExtra;
+		bool        messageExtraSet        = false;
+
+		bool operator==(const ProviderOverrides &o) const = default;
+	};
+
+	struct ModelOverrides {
+		QJsonObject extraParams;
+		QString     systemPromptPostfix;
+		bool        useCompleteSchema = true;
+		int         chatLimit         = 256000;
+		bool        chatLimitActive   = true;
+		QString     messageExtra;
+		QString     modelName;
+
+		bool extraParamsSet         = false;
+		bool systemPromptPostfixSet = false;
+		bool messageExtraSet        = false;
+		bool modelNameSet           = false;
+
+		bool operator==(const ModelOverrides &o) const = default;
+	};
+
 	// ── Init ────────────────────────────────────────────
 	void addCustomProvider();
 	void loadShippedProviders();
 	void loadUserData();
 	void saveUserData();
+	ModelOverrides freshModelOverrides(const AIModelEntry *m) const;
 
 	// ── Values array getters ────────────────────────────
 	QVariantList providerValues() const;
@@ -225,38 +263,9 @@ private:
 	const AIProviderEntry* currentProvider() const;
 	const AIModelEntry*    currentModelEntry() const;
 
-	// ── Override helpers ────────────────────────────────
-	// When saving, we diff m_providers against the shipped definitions
-	// and store only the differences in QSettings.
-
-	struct ProviderOverrides {
-		QString endpoint;
-		QString apiKey;    // encrypted via SecretStore::encryptValue
-		QString currentModelId;
-		QString customModel;  // model string when "Custom" is selected (no model entry)
-		bool operator==(const ProviderOverrides &o) const = default;
-	};
-
-	struct ModelOverrides {
-		QJsonObject extraParams;
-		QString     systemPromptPostfix;
-		bool        useCompleteSchema = true;
-		int         chatLimit         = 256000;
-		bool        chatLimitActive   = true;
-		QString     messageExtra;
-
-		// Per-field tracking: was this field explicitly set by the user?
-		// Prevents accidentally-overwritten fields from masking shipped defaults.
-		bool extraParamsSet         = false;
-		bool systemPromptPostfixSet = false;
-		bool messageExtraSet        = false;
-
-		bool operator==(const ModelOverrides &o) const = default;
-	};
-
 	// ── Members ─────────────────────────────────────────
 	QVector<AIProviderEntry>          m_providers;
-	QVector<AIProviderEntry>          m_shipped;  // pristine copy for diffing on save
+	QVector<AIProviderEntry>          m_shipped;
 	QMap<QString, ProviderOverrides>  m_providerOverrides;
 	QMap<QString, ModelOverrides>     m_modelOverrides;
 

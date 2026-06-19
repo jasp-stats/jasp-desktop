@@ -312,7 +312,10 @@ void AIConfigModel::emitAllDerivedSignals()
 QString AIConfigModel::currentEndpoint() const
 {
 	const auto *prov = currentProvider();
-	return prov ? prov->endpoint : QString();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].endpoint.isEmpty())
+		return m_providerOverrides[prov->id].endpoint;
+	return prov->endpoint;
 }
 
 QString AIConfigModel::currentApiKey() const
@@ -327,7 +330,12 @@ QString AIConfigModel::currentApiKey() const
 QString AIConfigModel::currentModel() const
 {
 	const auto *m = currentModelEntry();
-	if (m) return m->model;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].modelNameSet)
+			return m_modelOverrides[m->id].modelName;
+		return m->model;
+	}
 
 	// Custom mode: return the user-typed model string from overrides
 	const auto *prov = currentProvider();
@@ -341,7 +349,15 @@ void AIConfigModel::setCurrentModel(const QString &v)
 	auto *m = const_cast<AIModelEntry*>(currentModelEntry());
 	if (m)
 	{
-		if (m->model == v) return;
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		if (ov.modelName == v && ov.modelNameSet) return;
+		ov.modelName = v;
+		ov.modelNameSet = true;
+		m_modelOverrides[m->id] = ov;
 		m->model = v;
 	}
 	else
@@ -363,57 +379,92 @@ void AIConfigModel::setCurrentModel(const QString &v)
 QString AIConfigModel::currentExtraParams() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return {};
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].extraParamsSet)
+			return QString::fromUtf8(QJsonDocument(m_modelOverrides[m->id].extraParams).toJson(QJsonDocument::Compact));
+		if (!m->extraParams.isEmpty())
+			return QString::fromUtf8(QJsonDocument(m->extraParams).toJson(QJsonDocument::Compact));
+		return {};
+	}
 	const auto *prov = currentProvider();
-	if (prov && m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].extraParamsSet)
-		return QString::fromUtf8(QJsonDocument(m_modelOverrides[m->id].extraParams).toJson(QJsonDocument::Compact));
-	if (!m->extraParams.isEmpty())
-		return QString::fromUtf8(QJsonDocument(m->extraParams).toJson(QJsonDocument::Compact));
+	if (prov && m_providerOverrides.contains(prov->id) && m_providerOverrides[prov->id].extraParamsSet)
+		return QString::fromUtf8(QJsonDocument(m_providerOverrides[prov->id].extraParams).toJson(QJsonDocument::Compact));
 	return {};
 }
 
 bool AIConfigModel::currentUseCompleteSchema() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return true;
-	if (m_modelOverrides.contains(m->id))
-		return m_modelOverrides[m->id].useCompleteSchema;
-	return m->useCompleteSchema;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id))
+			return m_modelOverrides[m->id].useCompleteSchema;
+		return m->useCompleteSchema;
+	}
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id))
+		return m_providerOverrides[prov->id].useCompleteSchema;
+	return true;
 }
 
 QString AIConfigModel::currentSystemPromptPostfix() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return {};
-	if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].systemPromptPostfixSet)
-		return m_modelOverrides[m->id].systemPromptPostfix;
-	return m->systemPromptPostfix;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].systemPromptPostfixSet)
+			return m_modelOverrides[m->id].systemPromptPostfix;
+		return m->systemPromptPostfix;
+	}
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id) && m_providerOverrides[prov->id].systemPromptPostfixSet)
+		return m_providerOverrides[prov->id].systemPromptPostfix;
+	return {};
 }
 
 bool AIConfigModel::currentChatLimitActive() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return true;
-	if (m_modelOverrides.contains(m->id))
-		return m_modelOverrides[m->id].chatLimitActive;
-	return m->chatLimitActive;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id))
+			return m_modelOverrides[m->id].chatLimitActive;
+		return m->chatLimitActive;
+	}
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id))
+		return m_providerOverrides[prov->id].chatLimitActive;
+	return true;
 }
 
 int AIConfigModel::currentChatLimit() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return 256000;
-	if (m_modelOverrides.contains(m->id))
-		return m_modelOverrides[m->id].chatLimit;
-	return m->chatLimit;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id))
+			return m_modelOverrides[m->id].chatLimit;
+		return m->chatLimit;
+	}
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id))
+		return m_providerOverrides[prov->id].chatLimit;
+	return 256000;
 }
 
 QString AIConfigModel::currentMessageExtra() const
 {
 	const auto *m = currentModelEntry();
-	if (!m) return {};
-	if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].messageExtraSet)
-		return m_modelOverrides[m->id].messageExtra;
+	if (m)
+	{
+		if (m_modelOverrides.contains(m->id) && m_modelOverrides[m->id].messageExtraSet)
+			return m_modelOverrides[m->id].messageExtra;
+		return {};
+	}
+	const auto *prov = currentProvider();
+	if (prov && m_providerOverrides.contains(prov->id) && m_providerOverrides[prov->id].messageExtraSet)
+		return m_providerOverrides[prov->id].messageExtra;
 	return {};
 }
 
@@ -434,9 +485,21 @@ bool AIConfigModel::currentProviderIsUserEditable() const
 
 void AIConfigModel::setCurrentEndpoint(const QString &v)
 {
-	auto *prov = const_cast<AIProviderEntry*>(currentProvider());
-	if (!prov || prov->endpoint == v) return;
-	prov->endpoint = v;
+	const auto *prov = currentProvider();
+	if (!prov) return;
+
+	QString cur = currentEndpoint();
+	if (cur == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.endpoint = v;
+	m_providerOverrides[prov->id] = ov;
+
+	auto *mutableProv = const_cast<AIProviderEntry*>(prov);
+	mutableProv->endpoint = v;
+
 	emit currentEndpointChanged();
 	saveUserData();
 }
@@ -461,35 +524,63 @@ void AIConfigModel::setCurrentApiKey(const QString &v)
 
 void AIConfigModel::setCurrentExtraParams(const QString &v)
 {
-	const auto *m = currentModelEntry();
-	if (!m) return;
-
 	QJsonDocument doc = QJsonDocument::fromJson(v.toUtf8());
 	QJsonObject obj = doc.isObject() ? doc.object() : QJsonObject();
 
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-
-	if (ov.extraParams == obj && ov.extraParamsSet) return; // unchanged
-	ov.extraParams = obj;
-	ov.extraParamsSet = true;
-	m_modelOverrides[m->id] = ov;
+	const auto *m = currentModelEntry();
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		if (ov.extraParams == obj && ov.extraParamsSet) return;
+		ov.extraParams = obj;
+		ov.extraParamsSet = true;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		if (ov.extraParams == obj && ov.extraParamsSet) return;
+		ov.extraParams = obj;
+		ov.extraParamsSet = true;
+		m_providerOverrides[prov->id] = ov;
+	}
+	emit currentExtraParamsChanged();
 	saveUserData();
 }
 
 void AIConfigModel::setCurrentUseCompleteSchema(bool v)
 {
+	if (currentUseCompleteSchema() == v) return;
+
 	const auto *m = currentModelEntry();
-	if (!m) return;
-
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-	if (ov.useCompleteSchema == v) return;
-	ov.useCompleteSchema = v;
-	m_modelOverrides[m->id] = ov;
-
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		ov.useCompleteSchema = v;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		ov.useCompleteSchema = v;
+		m_providerOverrides[prov->id] = ov;
+	}
 	emit currentUseCompleteSchemaChanged();
 	saveUserData();
 }
@@ -497,48 +588,88 @@ void AIConfigModel::setCurrentUseCompleteSchema(bool v)
 void AIConfigModel::setCurrentSystemPromptPostfix(const QString &v)
 {
 	const auto *m = currentModelEntry();
-	if (!m) return;
-
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-	if (ov.systemPromptPostfix == v && ov.systemPromptPostfixSet) return;
-	ov.systemPromptPostfix = v;
-	ov.systemPromptPostfixSet = true;
-	m_modelOverrides[m->id] = ov;
-
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		if (ov.systemPromptPostfix == v && ov.systemPromptPostfixSet) return;
+		ov.systemPromptPostfix = v;
+		ov.systemPromptPostfixSet = true;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		if (ov.systemPromptPostfix == v && ov.systemPromptPostfixSet) return;
+		ov.systemPromptPostfix = v;
+		ov.systemPromptPostfixSet = true;
+		m_providerOverrides[prov->id] = ov;
+	}
 	emit currentSystemPromptPostfixChanged();
 	saveUserData();
 }
 
 void AIConfigModel::setCurrentChatLimitActive(bool v)
 {
+	if (currentChatLimitActive() == v) return;
+
 	const auto *m = currentModelEntry();
-	if (!m) return;
-
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-	if (ov.chatLimitActive == v) return;
-	ov.chatLimitActive = v;
-	m_modelOverrides[m->id] = ov;
-
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		ov.chatLimitActive = v;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		ov.chatLimitActive = v;
+		m_providerOverrides[prov->id] = ov;
+	}
 	emit currentChatLimitActiveChanged();
 	saveUserData();
 }
 
 void AIConfigModel::setCurrentChatLimit(int v)
 {
+	if (currentChatLimit() == v) return;
+
 	const auto *m = currentModelEntry();
-	if (!m) return;
-
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-	if (ov.chatLimit == v) return;
-	ov.chatLimit = v;
-	m_modelOverrides[m->id] = ov;
-
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		ov.chatLimit = v;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		ov.chatLimit = v;
+		m_providerOverrides[prov->id] = ov;
+	}
 	emit currentChatLimitChanged();
 	saveUserData();
 }
@@ -546,16 +677,30 @@ void AIConfigModel::setCurrentChatLimit(int v)
 void AIConfigModel::setCurrentMessageExtra(const QString &v)
 {
 	const auto *m = currentModelEntry();
-	if (!m) return;
-
-	ModelOverrides ov;
-	if (m_modelOverrides.contains(m->id))
-		ov = m_modelOverrides[m->id];
-	if (ov.messageExtra == v && ov.messageExtraSet) return;
-	ov.messageExtra = v;
-	ov.messageExtraSet = true;
-	m_modelOverrides[m->id] = ov;
-
+	if (m)
+	{
+		ModelOverrides ov;
+		if (m_modelOverrides.contains(m->id))
+			ov = m_modelOverrides[m->id];
+		else
+			ov = freshModelOverrides(m);
+		if (ov.messageExtra == v && ov.messageExtraSet) return;
+		ov.messageExtra = v;
+		ov.messageExtraSet = true;
+		m_modelOverrides[m->id] = ov;
+	}
+	else
+	{
+		const auto *prov = currentProvider();
+		if (!prov) return;
+		ProviderOverrides ov;
+		if (m_providerOverrides.contains(prov->id))
+			ov = m_providerOverrides[prov->id];
+		if (ov.messageExtra == v && ov.messageExtraSet) return;
+		ov.messageExtra = v;
+		ov.messageExtraSet = true;
+		m_providerOverrides[prov->id] = ov;
+	}
 	emit currentMessageExtraChanged();
 	saveUserData();
 }
@@ -728,6 +873,12 @@ void AIConfigModel::loadUserData()
 		ov.apiKey        = o["apiKey"].toString();
 		ov.currentModelId = o["currentModelId"].toString();
 		ov.customModel    = o["customModel"].toString();
+		if (o.contains("systemPromptPostfix")) { ov.systemPromptPostfix = o["systemPromptPostfix"].toString(); ov.systemPromptPostfixSet = true; }
+		if (o.contains("extraParams"))         { ov.extraParams = o["extraParams"].toObject(); ov.extraParamsSet = true; }
+		if (o.contains("useCompleteSchema"))    ov.useCompleteSchema = o["useCompleteSchema"].toBool();
+		if (o.contains("chatLimit"))            ov.chatLimit = o["chatLimit"].toInt();
+		if (o.contains("chatLimitActive"))      ov.chatLimitActive = o["chatLimitActive"].toBool();
+		if (o.contains("messageExtra"))         { ov.messageExtra = o["messageExtra"].toString(); ov.messageExtraSet = true; }
 		m_providerOverrides[it.key()] = ov;
 
 		// Apply to m_providers
@@ -765,6 +916,10 @@ void AIConfigModel::loadUserData()
 		if (o.contains("messageExtra")) {
 			ov.messageExtra = o["messageExtra"].toString();
 			ov.messageExtraSet = true;
+		}
+		if (o.contains("modelName")) {
+			ov.modelName = o["modelName"].toString();
+			ov.modelNameSet = true;
 		}
 		m_modelOverrides[it.key()] = ov;
 	}
@@ -910,6 +1065,13 @@ void AIConfigModel::saveUserData()
 		if (!ov.apiKey.isEmpty())        o["apiKey"]        = ov.apiKey;
 		if (!ov.currentModelId.isEmpty()) o["currentModelId"] = ov.currentModelId;
 		if (!ov.customModel.isEmpty())    o["customModel"]    = ov.customModel;
+		// Per-provider custom-mode fields
+		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
+		if (ov.extraParamsSet)            o["extraParams"]         = ov.extraParams;
+		if (!ov.useCompleteSchema)        o["useCompleteSchema"]   = false;
+		if (ov.chatLimit != 256000)       o["chatLimit"]           = ov.chatLimit;
+		if (!ov.chatLimitActive)          o["chatLimitActive"]     = false;
+		if (ov.messageExtraSet)           o["messageExtra"]        = ov.messageExtra;
 		if (!o.isEmpty()) povJson[it.key()] = o;
 	}
 	root["providerOverrides"] = povJson;
@@ -920,12 +1082,26 @@ void AIConfigModel::saveUserData()
 	{
 		QJsonObject o;
 		const auto &ov = it.value();
+
+		// Find the shipped model to diff boolean/int fields against
+		const AIModelEntry* shipped = nullptr;
+		for (const auto &sp : m_shipped)
+			for (const auto &sm : sp.models)
+				if (sm.id == it.key()) { shipped = &sm; break; }
+
 		if (ov.extraParamsSet)            o["extraParams"]          = ov.extraParams;
 		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
-		o["useCompleteSchema"] = ov.useCompleteSchema;
-		o["chatLimit"]         = ov.chatLimit;
-		o["chatLimitActive"]   = ov.chatLimitActive;
+		// Only write these when they differ from the shipped model —
+		// otherwise the override's default would overwrite the
+		// shipped value on first save of an unrelated field.
+		if (!shipped || ov.useCompleteSchema != shipped->useCompleteSchema)
+			o["useCompleteSchema"] = ov.useCompleteSchema;
+		if (!shipped || ov.chatLimit != shipped->chatLimit)
+			o["chatLimit"] = ov.chatLimit;
+		if (!shipped || ov.chatLimitActive != shipped->chatLimitActive)
+			o["chatLimitActive"] = ov.chatLimitActive;
 		if (ov.messageExtraSet)           o["messageExtra"]         = ov.messageExtra;
+		if (ov.modelNameSet)               o["modelName"]            = ov.modelName;
 		movJson[it.key()] = o;
 	}
 	root["modelOverrides"] = movJson;
@@ -963,4 +1139,16 @@ void AIConfigModel::saveUserData()
 
 	QString json = QString::fromUtf8(QJsonDocument(root).toJson(QJsonDocument::Compact));
 	Settings::setValue(Settings::AI_USER_PROVIDERS, json);
+}
+
+AIConfigModel::ModelOverrides AIConfigModel::freshModelOverrides(const AIModelEntry *m) const
+{
+	ModelOverrides ov;
+	if (m)
+	{
+		ov.useCompleteSchema = m->useCompleteSchema;
+		ov.chatLimit         = m->chatLimit;
+		ov.chatLimitActive   = m->chatLimitActive;
+	}
+	return ov;
 }
