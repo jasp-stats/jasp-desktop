@@ -234,17 +234,50 @@ function setupDeepChat() {
 
   console.log("chat-bridge: deep-chat handler configured");
 
-  var enhanceInterval = setInterval(function () {
-    if (typeof enhanceMarkdownTables !== "function") return;
-    var sr = chat.shadowRoot;
-    if (!sr) return;
-    var tables = sr.querySelectorAll(
-      "table:not(.jasp-no-select):not(.jasp-table-enhanced)",
-    );
-    if (tables.length) {
-      enhanceMarkdownTables(sr);
+  // Use MutationObserver instead of polling to avoid reflow-induced flickering
+  // of graphs and other content during streaming.
+  if (typeof MutationObserver !== "undefined") {
+    var _enhanceDebounce = null;
+
+    function _enhanceTables() {
+      var sr = chat.shadowRoot;
+      if (!sr || typeof enhanceMarkdownTables !== "function") return;
+      var tables = sr.querySelectorAll(
+        "table:not(.jasp-no-select):not(.jasp-table-enhanced)",
+      );
+      if (tables.length) enhanceMarkdownTables(sr);
     }
-  }, 500);
+
+    var _tableObserver = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].addedNodes.length) {
+          if (_enhanceDebounce) clearTimeout(_enhanceDebounce);
+          _enhanceDebounce = setTimeout(_enhanceTables, 200);
+          return;
+        }
+      }
+    });
+
+    if (chat.shadowRoot) {
+      _tableObserver.observe(chat.shadowRoot, {
+        childList: true,
+        subtree: true,
+      });
+      _enhanceTables();
+    } else {
+      // Shadow root not ready yet — poll briefly
+      var _srPoll = setInterval(function () {
+        if (chat.shadowRoot) {
+          clearInterval(_srPoll);
+          _tableObserver.observe(chat.shadowRoot, {
+            childList: true,
+            subtree: true,
+          });
+          _enhanceTables();
+        }
+      }, 50);
+    }
+  }
 
   // Intercept link clicks inside deep-chat and open in external browser.
   // Uses capture phase + composedPath() to see through shadow DOM.
