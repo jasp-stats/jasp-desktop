@@ -242,7 +242,7 @@ PrefsScrollView
 				IntegerField
 				{
 					value:			aiConfigModel.currentChatLimit
-					onEditingFinished:	aiConfigModel.currentChatLimit = value
+					onEditingFinished:	aiConfigModel.currentChatLimit = displayValue
 					enabled:		chatLimitCheck.checked
 					fieldWidth:		100 * preferencesModel.uiScale
 					toolTip:		qsTr("~4 characters ≈ 1 token")
