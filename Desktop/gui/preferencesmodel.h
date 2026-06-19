@@ -392,7 +392,6 @@ private:
 					_autoSaveIntervalSec,
 					_autoSaveAtAll;
 	AIPersonaModel*	_aiPersonaModel = nullptr;
-	AIConfigModel*	_aiConfigModel = nullptr;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;
 	QStringList		_splitValues(const QString& values)				const;
