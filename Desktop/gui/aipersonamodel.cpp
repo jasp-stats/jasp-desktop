@@ -340,7 +340,13 @@ QString AIPersonaModel::userAvatar() const
 QString AIPersonaModel::userAvatarWeb() const
 {
 	QString stored = PreferencesModel::prefs()->aiUserAvatar();
-	if (stored.isEmpty()) return shippedPersonaImageUrl("userPersona5.png").toString();
+	if (stored.isEmpty())
+	{
+		QString path = shippedPersonaImagePath("userPersona5.png");
+		if (!path.isEmpty())
+			return makeWebPath(path);
+		return {};
+	}
 	return makeWebPath(stored);
 }
 
