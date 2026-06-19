@@ -1270,6 +1270,13 @@ void Analyses::registerRpcHandlers()
 			return JaspRpcDispatcher::errorResult(
 				"Validation errors on analysis options: " + errorMsg);
 
+		// If the analysis was already running or completed with stale
+		// options (e.g. EngineSync picked up the default/empty options
+		// before analysis_run arrived), reset to Empty so it re-runs
+		// with the options just set by parseOptions.  Bump revision
+		// so any in-flight reply from the old run is rejected as stale.
+		a->incrementRevision();
+		a->run();
 
 		bool wait      = params.get("wait", true).asBool();
 		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
