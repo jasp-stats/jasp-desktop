@@ -407,8 +407,8 @@ void Analysis::createForm(QQuickItem* parentItem)
 		_analysisForm->setShowRButton(_moduleData ? _moduleData->hasWrapper() : false);
 		_analysisForm->setDeveloperMode(_dynamicModule ? _dynamicModule->isDevMod() : false);
 
-		if (_formDisabled)
-			_analysisForm->setEnabled(false);
+		if (isAnnotated())
+			_analysisForm->setIsAnnotated();
 
 		emit analysisInitialized();
 	}
@@ -1303,13 +1303,6 @@ bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 	Column * col = DataSetPackage::pkg()->getColumn(columnName.toStdString());
 
 	return col->analysisId() == id();
-}
-
-void Analysis::setFormDisabled(bool disabled)
-{
-	_formDisabled = disabled;
-	if (_analysisForm)
-		_analysisForm->setEnabled(!disabled);
 }
 
 

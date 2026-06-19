@@ -901,6 +901,10 @@ void MainWindow::annotateAnalysis()
 {
 	if (!PreferencesModel::prefs()->aiEnabled()) return;
 
+	AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
+	if (!pm->activePersonaAllowAnnotation())
+		return;
+
 	// Find the ChatWindow if not already cached
 	if (!_chatWindow)
 	{
@@ -928,11 +932,6 @@ void MainWindow::annotateAnalysis()
 	// Always use the stored annotation prompt (default or custom)
 	QString prompt = PreferencesModel::prefs()->aiAnnotationPrompt();
 
-	// Switch to the Alfred persona
-	AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
-	int alfredIdx = pm->personaIndexForName(QStringLiteral("Alfred the Assistant"));
-	if (alfredIdx >= 0)
-		pm->setCurrentPersonaIndex(alfredIdx);
 
 	// Delegate to the QML ChatWindow's submit function
 	QMetaObject::invokeMethod(_chatWindow.data(), "submitUserMessage",

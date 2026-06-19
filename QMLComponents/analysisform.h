@@ -58,13 +58,13 @@ class AnalysisForm : public QQuickItem
 	Q_PROPERTY(QVariant		analysis				READ analysis												NOTIFY analysisChanged				)
 	Q_PROPERTY(QVariantList	optionNameConversion	READ optionNameConversion	WRITE setOptionNameConversion	NOTIFY optionNameConversionChanged	)
 	Q_PROPERTY(bool			showRButton				READ showRButton											NOTIFY showRButtonChanged			)
-
 	Q_PROPERTY(bool			developerMode			READ developerMode											NOTIFY developerModeChanged			)
 	Q_PROPERTY(QString		rSyntaxText				READ rSyntaxText											NOTIFY rSyntaxTextChanged			)
 	Q_PROPERTY(bool			showAllROptions			READ showAllROptions		WRITE setShowAllROptions		NOTIFY showAllROptionsChanged		)
 	Q_PROPERTY(bool			relaxInputConstraints	READ relaxInputConstraints	WRITE setRelaxInputConstraints	NOTIFY relaxInputConstraintsChanged)
-	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT											)
+	Q_PROPERTY(QString		rSyntaxControlName		MEMBER rSyntaxControlName	CONSTANT															)
 	Q_PROPERTY(JASPControl*	activeJASPControl		READ getActiveJASPControl									NOTIFY activeJASPControlChanged		)
+	Q_PROPERTY(bool			isAnnotated				READ isAnnotated											NOTIFY isAnnotatedChanged			)
 
 public:
 	explicit				AnalysisForm(QQuickItem * = nullptr);
@@ -138,6 +138,7 @@ signals:
 	void					showAllROptionsChanged();
 	void					relaxInputConstraintsChanged(bool relax);
 	void					activeJASPControlChanged();
+	void					isAnnotatedChanged();
 		
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
@@ -158,10 +159,10 @@ public:
 	Q_INVOKABLE bool		initialized()			const	{ return _initialized; }
 	Q_INVOKABLE QVariant	options()				const;
 	Q_INVOKABLE void		setOptions(const QVariantMap& options);
-	QString				generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
-	bool				parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
-	Json::Value			optionMeta(bool includeDescriptions = true)	const;
-	void				setAnalysis(AnalysisBase *	analysis);
+	QString					generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData);
+	bool					parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg);
+	Json::Value				optionMeta(bool includeDescriptions = true)	const;
+	void					setAnalysis(AnalysisBase *	analysis);
 	void					addControlError(JASPControl* control, QString message, bool temporary = false, bool warning = false, bool closeable = true);
 	void					clearControlError(JASPControl* control);
 	void					clearAllErrors();
@@ -200,6 +201,8 @@ public:
 	void					setHasVolatileNotes(bool hasVolatileNotes);
 	void					setActiveJASPControl(JASPControl* control, bool hasActiveFocus);
 	JASPControl*			getActiveJASPControl()	{ return _activeJASPControl; }
+	bool					isAnnotated() const;
+	void					setIsAnnotated(bool isAnnotated = true);
 
 	static const QString	rSyntaxControlName;
 		
@@ -223,6 +226,7 @@ private:
 	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 	QString			msgsListToString(const QStringList & list) const;
 	void			lockOptions();
+	void			_disableControls(QQuickItem * root, bool disable);
 
 private slots:
 	   void			formCompletedHandler();

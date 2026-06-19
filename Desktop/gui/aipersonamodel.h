@@ -39,6 +39,7 @@ class AIPersonaModel : public QAbstractListModel
 	Q_PROPERTY(QString		activePersonaAvatarWeb	READ activePersonaAvatarWeb									NOTIFY activePersonaAvatarChanged)
 	Q_PROPERTY(QString		userAvatar				READ userAvatar				WRITE setUserAvatar				NOTIFY userAvatarChanged)
 	Q_PROPERTY(QString		userAvatarWeb			READ userAvatarWeb											NOTIFY userAvatarChanged)
+	Q_PROPERTY(bool			activePersonaAllowAnnotation	READ activePersonaAllowAnnotation					NOTIFY activePersonaAllowAnnotationChanged)
 
 public:
 	enum Roles {
@@ -95,6 +96,7 @@ public:
 	QString userAvatarWeb()						const;
 	void	setUserAvatar(QString path);
 	void	resetAll();             // clear user personas, reload system defaults
+	bool	activePersonaAllowAnnotation();
 
 	/// Return the default tool set (all known tools).
 	QStringList defaultToolSet() const;
@@ -125,6 +127,7 @@ signals:
 	void currentPersonaIndexChanged();
 	void activePersonaAvatarChanged();
 	void userAvatarChanged();
+	void activePersonaAllowAnnotationChanged();
 
 private:
 	/// Copy an image file into the personas directory, return the absolute path.
