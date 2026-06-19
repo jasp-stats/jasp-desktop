@@ -178,6 +178,20 @@ FocusScope
 					}
 				}
 			}
+
+			MenuButton
+			{
+				id:					helpButton
+				height:				33 * jaspTheme.uiScale
+				width:				columnModel.compactMode ? height : 0
+				radius:				height
+				iconSource:			jaspTheme.iconPath + "info-button.png"
+				onClicked:			helpModel.showOrTogglePage("other/variableslabeleditorhelp");
+				toolTip:			qsTr("Open Documentation")
+				anchors.right:		closeButton.left
+				anchors.top:		tabView.top
+				anchors.topMargin:	jaspTheme.generalAnchorMargin * -0.5
+			}
 			
 			MenuButton
 			{
@@ -342,7 +356,7 @@ FocusScope
 				ColumnBasicInfo
 				{
 					id:				tabInfo
-					closeIcon:		false
+					showIcons:		false
 				}
 			}
 		}
