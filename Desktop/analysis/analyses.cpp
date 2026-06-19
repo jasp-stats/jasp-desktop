@@ -1400,7 +1400,7 @@ void Analyses::registerRpcHandlers()
 		dup->setTitle(annNum > 1 ? "Annotation " + std::to_string(annNum) + " of " + origTitle : baseTitle);
 
 		// Disable the form on the duplicate
-		dup->setFormDisabled(true);
+		dup->setIsAnnotated(true);
 
 		// Compose results into the duplicate (if elements provided; otherwise keep original's results)
 		Json::Value elementList = params.isMember("elements") ? params["elements"] : Json::Value(Json::arrayValue);

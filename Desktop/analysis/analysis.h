@@ -119,12 +119,10 @@ public:
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
 			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
-			bool				isReport()							const	{ return _isReport;								}
-				void				setReport(bool report)				{ _isReport = report;								}
-				void				setFormDisabled(bool disabled);
-				bool				isFormDisabled()						const	{ return _formDisabled;						}
-			bool				beingTranslated()						{ return _beingTranslated; };
-			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
+			bool				isReport()			const				{ return _isReport;						}
+			void				setReport(bool report)					{ _isReport = report;							}
+			bool				beingTranslated()						{ return _beingTranslated;					};
+			void				setBeingTranslated(bool value)			{ _beingTranslated = value;					};
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -258,7 +256,6 @@ private:
 
 								_hasReport					= false,
 								_beingTranslated			= false,
-								_formDisabled			= false,
 								_isReport				= false;
 	int							_revision						= 0;
 

@@ -1429,6 +1429,30 @@ bool AnalysisForm::relaxInputConstraints() const
 	return _relaxInputConstraints;
 }
 
+void AnalysisForm::_disableControls(QQuickItem * root, bool disable)
+{
+	QList<JASPControl*> controls = JASPControl::getChildJASPControls(root, false);
+
+	for(JASPControl * control : controls)
+	{
+		// Do not disable the expanders (Section), because the user cannot open it, but disable the children of the expander
+		if (control->controlType() == JASPControl::ControlType::Expander)
+		{
+			ExpanderButtonBase* expander = dynamic_cast<ExpanderButtonBase*>(control);
+			_disableControls(expander->childControlsArea(), disable);
+		}
+		else if (control->name() != rSyntaxControlName)
+			control->setEnabled(!disable);
+	}
+}
+
+void AnalysisForm::setIsAnnotated(bool isAnnotated)
+{
+	_disableControls(this, isAnnotated);
+
+	emit isAnnotatedChanged();
+}
+
 void AnalysisForm::setRelaxInputConstraints(bool relax)
 {
 	if (_relaxInputConstraints != relax)
@@ -1460,4 +1484,9 @@ void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocu
 
 	if (emitSignal)
 		emit activeJASPControlChanged();
+}
+
+bool AnalysisForm::isAnnotated() const
+{
+	return _analysis ? _analysis->isAnnotated() : false;
 }

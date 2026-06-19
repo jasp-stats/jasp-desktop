@@ -375,6 +375,7 @@ void AIPersonaModel::setCurrentPersonaIndex(int ind)
 	emit dataChanged(index(m_currentPersonaIndex), index(m_currentPersonaIndex));
 	emit currentPersonaIndexChanged();
 	emit activePersonaAvatarChanged();
+	emit activePersonaAllowAnnotationChanged();
 
 	// Persist the active persona by UUID
 	if (ind >= 0 && ind < m_personas.size())
@@ -382,6 +383,17 @@ void AIPersonaModel::setCurrentPersonaIndex(int ind)
 	else
 		Settings::setValue(Settings::AI_CURRENT_PERSONA_ID, QString());
 }
+
+bool AIPersonaModel::activePersonaAllowAnnotation()
+{
+	const PersonaEntry &p = activePersona();
+
+	if (p.enabledCapabilities.contains("base") && p.enabledCapabilities.contains("write-reports") && p.enabledCapabilities.contains("inspect-analyses"))
+		return true;
+
+	return false;
+}
+
 
 // ============================================================================
 // Helper — resolve capability IDs to tool names
@@ -833,6 +845,9 @@ void AIPersonaModel::toggleCapability(int personaIndex, const QString &capId)
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
+
+	if (persona == activePersona())
+		emit activePersonaAllowAnnotationChanged();
 }
 
 void AIPersonaModel::toggleTool(int personaIndex, const QString &toolName)
@@ -858,6 +873,9 @@ void AIPersonaModel::toggleTool(int personaIndex, const QString &toolName)
 
 	saveToSettings();
 	emit dataChanged(this->index(personaIndex, 0), this->index(personaIndex, 0), {EnabledToolsRole, EnabledCapabilitiesRole});
+
+	if (persona == activePersona())
+		emit activePersonaAllowAnnotationChanged();
 }
 
 QStringList AIPersonaModel::getAllCapabilityIds() const

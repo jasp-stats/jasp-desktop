@@ -316,42 +316,21 @@ DropArea
 
 					Behavior on rotation { enabled: preferencesModel.animationsOn; RotationAnimation { duration: 200 } }
 
-					}
+				}
 
-					MenuButton
+				Item
+				{
+					id:			analysisTitleItem
+					height:		analysisTitle.height
+
+					anchors
 					{
-						id:					annotateButton
-						width:				height
-						iconSource:			preferencesModel.aiPersonaModel.shippedPersonaImageUrl("Alfred.png")
-						enabled:			expanderButton.expanded && preferencesModel.aiEnabled
-						visible:			preferencesModel.aiEnabled
-						onClicked:			mainWindow.annotateAnalysis()
-						toolTip:			qsTr("Annotate this analysis using AI")
-						radius:				height
-						opacity:			enabled ? 1 : 0.1
-						anchors
-						{
-							right:			rSyntaxButton.left
-							top:			parent.top
-							bottom:			parent.bottom
-							topMargin:		editButton.anchors.topMargin
-							bottomMargin:	editButton.anchors.bottomMargin
-						}
+						left:			expanderIcon.right
+						right:			buttons.left
+						leftMargin:		expanderIcon.anchors.leftMargin
+						rightMargin:	2 * preferencesModel.uiScale
+						verticalCenter:	parent.verticalCenter
 					}
-
-					Item
-					{
-						id:			analysisTitleItem
-						height:		analysisTitle.height
-
-						anchors
-						{
-							left:			expanderIcon.right
-							right:			annotateButton.left
-							leftMargin:		expanderIcon.anchors.leftMargin
-							rightMargin:	2 * preferencesModel.uiScale
-							verticalCenter:	parent.verticalCenter
-						}
 
 					Text
 					{
@@ -410,129 +389,113 @@ DropArea
 					}
 				}
 
-				MenuButton
+				Row
 				{
-					id:					rSyntaxButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
-					enabled:			expanderButton.expanded
-					onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
-					toolTip:			preferencesModel.showRSyntax ? qsTr("Hide R Syntax") : qsTr("Show R syntax")
-					radius:				height
-					opacity:			editButton.opacity
-					visible:            formParent.myForm && formParent.myForm.showRButton
+					id: buttons
 					anchors
 					{
+						right:			parent.right
 						top:			parent.top
-						right:			editButton.left
 						bottom:			parent.bottom
 						topMargin:		editButton.anchors.topMargin
 						bottomMargin:	editButton.anchors.bottomMargin
 					}
-				}
 
-				MenuButton
-				{
-					id:					editButton
-					width:				height
-					iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
-					enabled:			expanderButton.expanded
-					onClicked:			analysisTitleInput.startEditing();
-					toolTip:			qsTr("Edit the title of this analysis")
-					radius:				height
-					opacity:			enabled ? 1 : 0.1
-					anchors
+					MenuButton
 					{
-						top:			parent.top
-						right:			copyButton.left
-						bottom:			parent.bottom
-						topMargin:		4 * preferencesModel.uiScale
-						bottomMargin:	4 * preferencesModel.uiScale
+						id:					annotateButton
+						width:				height
+						iconSource:			preferencesModel.aiPersonaModel.activePersonaAvatar
+						enabled:			expanderButton.expanded && preferencesModel.aiEnabled && preferencesModel.aiPersonaModel.activePersonaAllowAnnotation
+						visible:			preferencesModel.aiEnabled && (myForm ? !myForm.isAnnotated : false)
+						onClicked:			mainWindow.annotateAnalysis()
+						toolTip:			preferencesModel.aiPersonaModel.activePersonaAllowAnnotation ? qsTr("Annotate this analysis using AI") : qsTr("The chosen persona does not have the capabilities to annotate analysis")
+						radius:				height
+						opacity:			enabled ? 1 : 0.1
 					}
-				}
 
-				MenuButton
-				{
-					id:					copyButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.svg" : jaspTheme.iconPath + "/duplicate_disabled.svg"
-					enabled:			expanderButton.expanded
-					onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
-					toolTip:			qsTr("Duplicate this analysis")
-					radius:				height
-					opacity:			editButton.opacity
-					anchors
+
+					MenuButton
 					{
-						top:			parent.top
-						right:			helpButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
+						id:					rSyntaxButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
+						enabled:			expanderButton.expanded
+						onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
+						toolTip:			preferencesModel.showRSyntax ? qsTr("Hide R Syntax") : qsTr("Show R syntax")
+						radius:				height
+						opacity:			editButton.opacity
+						visible:            formParent.myForm && formParent.myForm.showRButton
 					}
-				}
 
-				MenuButton
-				{
-					id:					helpButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
-					opacity:			editButton.opacity
-					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
-					enabled:			expanderButton.expanded
-					onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
-										{
-											if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+					MenuButton
+					{
+						id:					editButton
+						width:				height
+						iconSource:			jaspTheme.iconPath + "/edit-pencil.png" // Icon made by Chanut from https://www.flaticon.com/
+						enabled:			expanderButton.expanded
+						onClicked:			analysisTitleInput.startEditing();
+						toolTip:			qsTr("Edit the title of this analysis")
+						radius:				height
+						opacity:			enabled ? 1 : 0.1
+					}
+
+					MenuButton
+					{
+						id:					copyButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "/duplicate.svg" : jaspTheme.iconPath + "/duplicate_disabled.svg"
+						enabled:			expanderButton.expanded
+						onClicked:			analysisFormExpander.myAnalysis.duplicateMe()
+						toolTip:			qsTr("Duplicate this analysis")
+						radius:				height
+						opacity:			editButton.opacity
+					}
+
+					MenuButton
+					{
+						id:					helpButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "info-button.png" : jaspTheme.iconPath + "info-button-black.png" // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+						opacity:			editButton.opacity
+						enabled:			expanderButton.expanded
+						onClicked:			if(preferencesModel.generateMarkdown || !helpModel.pageExists(formParent.myAnalysis.helpFile()))
 											{
-												helpModel.visible  = true;
-												helpModel.analysis	= formParent.myAnalysis;
-												helpModel.markdown  = Qt.binding(function(){ return formParent.myForm ? formParent.myForm.helpMD : ""; });
+												if(formParent.myForm && helpModel.markdown !== formParent.myForm.helpMD)
+												{
+													helpModel.visible  = true;
+													helpModel.analysis	= formParent.myAnalysis;
+													helpModel.markdown  = Qt.binding(function(){ return formParent.myForm ? formParent.myForm.helpMD : ""; });
+												}
+												else
+												{
+													helpModel.visible  = false;
+													helpModel.markdown = ""; //break binding
+													helpModel.analysis = null
+												}
+
+
 											}
 											else
 											{
-												helpModel.visible  = false;
-												helpModel.markdown = ""; //break binding
-												helpModel.analysis = null
+												helpModel.markdown = "";
+												helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
 											}
 
-
-										}
-										else
-										{
-											helpModel.markdown = "";
-											helpModel.showOrTogglePageForAnalysis(formParent.myAnalysis)
-										}
-
-					toolTip:			qsTr("Show info for this analysis")
-					radius:				height
-					anchors
-					{
-						top:			parent.top
-						right:			closeButton.left
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
+						toolTip:			qsTr("Show info for this analysis")
+						radius:				height
 					}
-				}
 
-				MenuButton
-				{
-					id:					closeButton
-					width:				height
-					iconSource:			enabled ? jaspTheme.iconPath + "close-button.png" : jaspTheme.iconPath + "close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
-					opacity:			editButton.opacity
-					//visible:			expanderButton.expanded || hovered || mouseArea.containsMouse
-					enabled:			expanderButton.expanded
-					onClicked:			analysesModel.removeAnalysis(formParent.myAnalysis)
-					toolTip:			qsTr("Remove this analysis")
-					radius:				height
-					anchors
+					MenuButton
 					{
-						top:			parent.top
-						right:			parent.right
-						bottom:			parent.bottom
-						topMargin:		editButton.anchors.topMargin
-						bottomMargin:	editButton.anchors.bottomMargin
-						rightMargin:	4 * preferencesModel.uiScale
+						id:					closeButton
+						width:				height
+						iconSource:			enabled ? jaspTheme.iconPath + "close-button.png" : jaspTheme.iconPath + "close-button-black.png" // {close-button, close-button-grey}.png Icons made by Smashicons from https://www.flaticon.com/
+						opacity:			editButton.opacity
+						enabled:			expanderButton.expanded
+						onClicked:			analysesModel.removeAnalysis(formParent.myAnalysis)
+						toolTip:			qsTr("Remove this analysis")
+						radius:				height
 					}
 				}
 			}
