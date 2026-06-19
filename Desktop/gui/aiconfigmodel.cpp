@@ -734,33 +734,49 @@ void AIConfigModel::resetCurrentModelToDefaults()
 	const auto *m = currentModelEntry();
 	if (!m) return;
 
-	// Find the shipped pristine copy by model UUID
-	const AIModelEntry* shipped = nullptr;
+	const auto *prov = currentProvider();
+
+	// Find the shipped pristine copies by model UUID
+	const AIModelEntry*  shippedModel = nullptr;
+	const AIProviderEntry* shippedProv = nullptr;
 	for (const auto& sp : m_shipped)
 	{
 		for (const auto& sm : sp.models)
 		{
 			if (sm.id == m->id)
 			{
-				shipped = &sm;
+				shippedModel = &sm;
+				shippedProv  = &sp;
 				break;
 			}
 		}
-		if (shipped) break;
+		if (shippedModel) break;
 	}
-	if (!shipped) return;
+	if (!shippedModel) return;
 
 	// Remove any user overrides for this model
 	m_modelOverrides.remove(m->id);
 
 	// Restore shipped values into the active provider's model entry
 	auto* mutableEntry = const_cast<AIModelEntry*>(m);
-	mutableEntry->extraParams         = shipped->extraParams;
-	mutableEntry->systemPromptPostfix = shipped->systemPromptPostfix;
-	mutableEntry->model               = shipped->model;
-	mutableEntry->useCompleteSchema   = shipped->useCompleteSchema;
-	mutableEntry->chatLimit           = shipped->chatLimit;
-	mutableEntry->chatLimitActive     = shipped->chatLimitActive;
+	mutableEntry->extraParams         = shippedModel->extraParams;
+	mutableEntry->systemPromptPostfix = shippedModel->systemPromptPostfix;
+	mutableEntry->model               = shippedModel->model;
+	mutableEntry->useCompleteSchema   = shippedModel->useCompleteSchema;
+	mutableEntry->chatLimit           = shippedModel->chatLimit;
+	mutableEntry->chatLimitActive     = shippedModel->chatLimitActive;
+
+	// Restore endpoint to the shipped provider value
+	if (prov && shippedProv)
+	{
+		auto* mutableProv = const_cast<AIProviderEntry*>(prov);
+		mutableProv->endpoint = shippedProv->endpoint;
+		if (m_providerOverrides.contains(prov->id))
+		{
+			auto &ov = m_providerOverrides[prov->id];
+			ov.endpoint.clear();
+		}
+	}
 
 	emitAllDerivedSignals();
 	saveUserData();
