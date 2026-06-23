@@ -151,14 +151,11 @@ void AiBridge::startStream(const QString &messagesJson)
 	// Re-entrancy guard: if a dispatched RPC handler is still on the
 	// call stack (e.g. analysis_results with wait=true is in a nested
 	// QEventLoop), reject new messages to prevent AiBridge state
-	// corruption.  The guard is centralized in JaspRpcDispatcher.
-	{
-		auto* disp = JaspRpcDispatcher::singleton();
-		if (disp && disp->inFlight()) {
-			Log::log() << "AiBridge: startStream rejected — RPC dispatch in flight" << std::endl;
-			emit onStreamError("A tool call is still executing. Please wait for it to finish.");
-			return;
-		}
+	// corruption.
+	if (isBusy()) {
+		Log::log() << "AiBridge: startStream rejected — AiBridge is busy" << std::endl;
+		emit onStreamError("A tool call is still executing. Please wait for it to finish.");
+		return;
 	}
 
 	if (endpoint().isEmpty()) {
@@ -168,8 +165,28 @@ void AiBridge::startStream(const QString &messagesJson)
 	}
 
 	if (m_streaming) {
-		Log::log() << "AiBridge: Stream already active, stopping previous." << std::endl;
-		stopStream();
+		// If the active stream is the intro greeting (not a user
+		// conversation), kill it silently and clear its state before
+		// starting the new request.  The intro is not critical.
+		if (m_isIntroStream) {
+			Log::log() << "AiBridge: killing intro stream for new request" << std::endl;
+			// Abort the network reply quietly — don't emit onStreamClose
+			// because the JS side has currentSignals==null (intro mode)
+			// and would misinterpret the signal.
+			if (m_activeReply) {
+				m_activeReply->disconnect(this);
+				m_activeReply->abort();
+				m_activeReply->deleteLater();
+				m_activeReply = nullptr;
+			}
+			m_sseBuffer.clear();
+			m_streaming = false;
+			m_isIntroStream = false;
+			clearConversation();
+		} else {
+			Log::log() << "AiBridge: Stream already active, stopping previous." << std::endl;
+			stopStream();
+		}
 	}
 
 	QJsonParseError parseError;
@@ -239,6 +256,7 @@ void AiBridge::stopStream()
 {
 	Log::log() << "AiBridge::stopStream called" << std::endl;
 	m_streaming = false;
+	m_isIntroStream = false;
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
 	m_toolCallOrder.clear();
@@ -260,6 +278,7 @@ void AiBridge::clearConversation()
 	Log::log() << "AiBridge::clearConversation — clearing " << m_conversation.size()
 	           << " messages (~" << estimateTokens(m_conversation) << " tokens)" << std::endl;
 	m_conversation = QJsonArray();
+	m_isIntroStream = false;
 	m_assistantDelta = QJsonObject();
 	m_toolCallAccum.clear();
 	m_toolCallOrder.clear();
@@ -278,6 +297,20 @@ void AiBridge::clearConversation()
 void AiBridge::clearChat()
 {
 	Log::log() << "AiBridge::clearChat — full reset requested" << std::endl;
+
+	// If a reply is being processed or an RPC dispatch is in flight
+	// (possibly inside a nested event loop), defer the whole operation.
+	// Performing stopStream/clearConversation now would corrupt
+	// m_conversation while the tool-call loop is still appending
+	// results, and sendIntroMessage would start a competing network
+	// request on the same AiBridge state.
+	if (isBusy())
+	{
+		Log::log() << "AiBridge: deferring clearChat — AiBridge is busy" << std::endl;
+		m_deferredClearChat = true;
+		return;
+	}
+
 	stopStream();
 	clearConversation();
 	emit onClearChat();
@@ -287,6 +320,17 @@ void AiBridge::clearChat()
 void AiBridge::sendIntroMessage()
 {
 	if (endpoint().isEmpty()) return;
+
+	// Guard: if a reply is being processed or an RPC dispatch is in
+	// flight (possibly inside a nested event loop), defer until the
+	// cycle completes to avoid concurrent network requests and state
+	// corruption.
+	if (isBusy())
+	{
+		Log::log() << "AiBridge: deferring intro — AiBridge is busy" << std::endl;
+		m_deferredClearChat = true;
+		return;
+	}
 
 	QJsonObject introMsg;
 	introMsg[QStringLiteral("role")] = QStringLiteral("user");
@@ -298,6 +342,7 @@ void AiBridge::sendIntroMessage()
 	m_toolCallAccum.clear();
 	m_toolCallOrder.clear();
 	m_lastToolCallId.clear();
+	m_isIntroStream = true;
 
 	Log::log() << "AiBridge: sending intro message" << std::endl;
 
@@ -1045,6 +1090,11 @@ void AiBridge::onReplyFinished()
 {
 	if (!m_activeReply) return;
 
+	// Set processing flag so that clearChat() / sendIntroMessage() can
+	// detect they are being called from within a nested event loop (e.g.
+	// an RPC handler inside flushToolCalls) and defer their work.
+	m_processingReply = true;
+
 	int httpStatus = m_activeReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	QByteArray body = m_activeReply->readAll();
 
@@ -1054,6 +1104,7 @@ void AiBridge::onReplyFinished()
 		m_activeReply->deleteLater();
 		m_activeReply = nullptr;
 		m_streaming = false;
+		m_processingReply = false;
 		emit onStreamClose();
 		return;
 	}
@@ -1065,6 +1116,7 @@ void AiBridge::onReplyFinished()
 		m_activeReply->deleteLater();
 		m_activeReply = nullptr;
 		m_streaming = false;
+		m_processingReply = false;
 		emit onStreamClose();
 		return;
 	}
@@ -1097,6 +1149,19 @@ void AiBridge::onReplyFinished()
 
 	// If tool calls arrived during this stream, continue the loop
 	if (!m_pendingToolCalls.isEmpty()) {
+		// If clearChat() was deferred, abort the loop — the user wants a
+		// fresh start.  Clear everything and send the intro instead.
+		if (m_deferredClearChat) {
+			Log::log() << "AiBridge: aborting tool-call loop — deferred clearChat" << std::endl;
+			m_deferredClearChat = false;
+			m_pendingToolCalls = QJsonArray();
+			m_processingReply = false;
+			clearConversation();
+			emit onClearChat();
+			sendIntroMessage();
+			return;
+		}
+
 		int loopTokens = estimateTokens(m_conversation);
 		Log::log() << "AiBridge: Stream ended with " << m_pendingToolCalls.size()
 				<< " tool call(s), continuing loop — conversation now "
@@ -1105,6 +1170,7 @@ void AiBridge::onReplyFinished()
 		m_pendingToolCalls = QJsonArray();
 		m_lastRequestTokens = 0;
 		m_streaming = true;
+		m_processingReply = false;
 		emit onStreamOpen();
 		sendToAI(m_conversation);
 		return;
@@ -1121,6 +1187,19 @@ void AiBridge::onReplyFinished()
 		m_assistantDelta = QJsonObject();
 	}
 	m_streaming = false;
+
+	// Process a deferred clearChat that arrived during flushToolCalls.
+	if (m_deferredClearChat) {
+		m_deferredClearChat = false;
+		m_processingReply = false;
+		clearConversation();
+		emit onClearChat();
+		sendIntroMessage();
+		return;
+	}
+
+	m_isIntroStream = false;
+	m_processingReply = false;
 	emit onStreamClose();
 
 	Log::log() << "AiBridge: Stream finished — " << m_totalStreamChunks << " chunks this session" << std::endl;
@@ -1177,6 +1256,20 @@ void AiBridge::emitError(const QString &message)
 {
 	Log::log() << "AiBridge ERROR: " << message.toStdString() << std::endl;
 	emit onStreamError(message);
+}
+
+bool AiBridge::isBusy() const
+{
+	// A reply is still being processed (onReplyFinished is on the stack).
+	if (m_processingReply) return true;
+
+	// An RPC handler is currently executing — may be inside a nested
+	// event loop (e.g. analysis_run with wait=true) where the user can
+	// interact with the GUI and trigger new AiBridge operations.
+	auto* disp = JaspRpcDispatcher::singleton();
+	if (disp && disp->inFlight()) return true;
+
+	return false;
 }
 
 void AiBridge::testConnection()

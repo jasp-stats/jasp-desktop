@@ -114,6 +114,10 @@ private:
 	QByteArray buildRequestBody(const QJsonArray &messages, bool withTools = true);
 	void emitError(const QString &message);
 
+	/// True when new work must not be started — a reply is being processed or
+	/// an RPC dispatch is in-flight (possibly inside a nested event loop).
+	bool isBusy() const;
+
 	/// Map a QNetworkReply::NetworkError to a user-friendly string.
 	/// Falls back to reply->errorString() for unrecognised codes.
 	static QString networkErrorToString(QNetworkReply::NetworkError error,
@@ -153,6 +157,9 @@ private:
 	bool m_debugDumpEnabled = true;
 	bool m_verboseLogging    = false;
 	bool m_streaming = false;
+	bool m_processingReply = false;   // true while inside onReplyFinished()
+	bool m_deferredClearChat = false; // set when clearChat() is called during busy
+	bool m_isIntroStream = false;     // true while the intro greeting is streaming
 
 	static AiBridge *_singleton;
 };

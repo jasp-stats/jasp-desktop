@@ -28,6 +28,16 @@
 						"cache_control": { "type": "ephemeral" }
 					},
 					"systemPromptPostfix": ""
+				},
+				{
+					"id": "f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c",
+					"name": "Mistral Small 4",
+					"model": "mistralai/mistral-small-2603",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"temperature": 0.7
+					},
+					"systemPromptPostfix": "If there is an error related to a list option, remove the list element in order to fix it. If an error remains, don't retry too often and inform the user of the nature of the error."
 				}
 			]
 		},
@@ -146,7 +156,7 @@
 						"reasoning_effort": "high",
 						"temperature": 0.7
 					},
-					"systemPromptPostfix": ""
+					"systemPromptPostfix": "If there is an error related to a list option, remove the list element in order to fix it. If an error remains, don't retry too often and inform the user of the nature of the error."
 				}
 			]
 		},
