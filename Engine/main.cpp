@@ -21,11 +21,27 @@
 #include <iostream>
 #include <fstream>
 #include <codecvt>
+#include <streambuf>
 #include "otoolstuff.h"
 #include "dirs.h"
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
 #include "rbridge.h"
+
+namespace
+{
+class NullBuffer : public std::streambuf
+{
+protected:
+	int_type overflow(int_type ch) override { return traits_type::not_eof(ch); }
+	std::streamsize xsputn(const char *, std::streamsize count) override { return count; }
+};
+
+std::ostream & nullOutputStream()
+{
+	static NullBuffer buffer;
+	static std::ostream stream(&buffer);
+	return stream;
+}
+}
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -78,7 +94,7 @@ int main(int argc, char *argv[])
             Dirs::setReportingDir(argv[5]);
 
 #endif
-		static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
+		std::ostream & nullstream = nullOutputStream();
 		Log::logFileNameBase = logFileBase;
 		Log::init(&nullstream);
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
