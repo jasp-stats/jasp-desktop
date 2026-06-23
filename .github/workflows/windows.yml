@@ -9,7 +9,7 @@ jobs:
       
    build-jasp:
    
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
        JASP_R_VERSION: '4.5.3'
@@ -88,6 +88,38 @@ jobs:
              & "$env:IQTA_TOOLS\CMake_64\bin\cmake.exe" --build jasp-build --target all
         env: 
             VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/"
+
+      - name: Check R-Interface DLL dependencies
+        shell: pwsh
+        run: |
+            $objdump = "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\objdump.exe"
+            $dlls = @(
+                "jasp-build\R-Interface\libR-Interface.dll",
+                "jasp-build\R-Interface\libR-InterfaceNoRInside.dll"
+            )
+
+            foreach ($dll in $dlls) {
+                Write-Host "Imports for $dll"
+                if (-not (Test-Path $dll)) {
+                    Write-Error "Missing DLL: $dll"
+                    exit 1
+                }
+
+                $objdumpOutput = & $objdump -p $dll
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "objdump failed for $dll"
+                    exit $LASTEXITCODE
+                }
+
+                $imports = $objdumpOutput | Select-String -Pattern "DLL Name"
+                $imports
+
+                $forbidden = $imports | Select-String -Pattern "libgcc|libstdc\+\+|libwinpthread"
+                if ($forbidden) {
+                    Write-Error "Unexpected MinGW runtime dependency in $dll"
+                    exit 1
+                }
+            }
 
       - name: Run Tests
         shell: pwsh

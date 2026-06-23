@@ -206,16 +206,21 @@ else()
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a
         COMMAND
-      ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
-      ${CMAKE_BINARY_DIR}/R-Interface "-DRTOOLS_PATH:PATH=${RTOOLS_PATH}"
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} -G "${RTOOLS_R_INTERFACE_GENERATOR}" -S . -B
+      ${CMAKE_BINARY_DIR}/R-Interface
       "-DCMAKE_C_COMPILER:PATH=${RTOOLS_C_COMPILER}"
       "-DCMAKE_CXX_COMPILER:PATH=${RTOOLS_CXX_COMPILER}"
       "-DCMAKE_MAKE_PROGRAM:PATH=${RTOOLS_MAKE_PROGRAM}"
       "-DJASP_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
       "-DR_VERSION:STRING=${R_VERSION}"
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
-    USES_TERMINAL
+    COMMAND
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    VERBATIM
     COMMENT "------ Configuring and Building the libR-Interface")
 
   add_dependencies(SyntaxInterface R-Interface)
