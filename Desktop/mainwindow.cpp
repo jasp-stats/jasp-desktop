@@ -67,6 +67,7 @@
 
 #include "rpc/jasprpcdispatcher.h"
 #include "rpc/jasprpcserver.h"
+#include "ai/agentstatetracker.h"
 
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
@@ -187,7 +188,11 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_languageModel->setDefaultLocaleFromCurrent(); //Make sure (Q)ColumnUtils knows whats up
 
 	Log::log() << "JASP Desktop started and Engines initalized." << std::endl;
-	
+
+	// Ensure the agent state tracker is initialized (also done by AiBridge,
+	// but this covers the case where the AI feature is not yet active).
+	AgentStateTracker::init();
+
 	registerRpcHandlers();
 
 	if (PreferencesModel::prefs()->rpcServerEnabled() && !_rpcServer->start())
@@ -1547,6 +1552,10 @@ void MainWindow::registerRpcHandlers()
 			Json::Value response = buildDataInfo(DataSetPackage::pkg());
 			response["status"] = "success";
 			response["jobId"]  = jobId;
+
+			// Agent just loaded new data — clear data dirty flags
+			AgentStateTracker::notifyDataObserved();
+
 			return response;
 		}
 		});
@@ -1582,16 +1591,17 @@ void MainWindow::registerRpcHandlers()
 					Json::Value response = buildDataInfo(DataSetPackage::pkg());
 					response["status"] = "complete";
 					response["jobId"]  = jobId;
+					AgentStateTracker::notifyDataObserved();
 					return response;
 				}
 
 				Json::Value response = JaspRpcDispatcher::successResult();
-				response["jobId"]  = jobId;
-				response["status"] = "running";
-				return response;
-			}
+					response["jobId"]  = jobId;
+					response["status"] = "running";
+					return response;
+				}
 
-			// Blocking wait
+				// Blocking wait
 			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
 				[&](QEventLoop& loop, QTimer&) {
 					auto* pollTimer = new QTimer(&loop);
@@ -1623,20 +1633,25 @@ void MainWindow::registerRpcHandlers()
 				Json::Value response = buildDataInfo(DataSetPackage::pkg());
 				response["status"] = "complete";
 				response["jobId"]  = jobId;
+				AgentStateTracker::notifyDataObserved();
 				return response;
 			}
 
 			Json::Value response = JaspRpcDispatcher::successResult();
-			response["jobId"]  = jobId;
-			response["status"] = "running";
-			return response;
-		});
+				response["jobId"]  = jobId;
+				response["status"] = "running";
+				return response;
+			});
 
 		// --- data_info ---
 		disp->registerMethodByName("data_info", [buildDataInfo](const Json::Value&) -> Json::Value
 		{
 			Json::Value response = buildDataInfo(DataSetPackage::pkg());
 			response["status"] = "success";
+
+			// Agent just observed the dataset — clear data dirty flags
+			AgentStateTracker::notifyDataObserved();
+
 			return response;
 		});
 

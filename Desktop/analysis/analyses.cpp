@@ -33,6 +33,7 @@
 #include <json/value.h>
 #include "log.h"
 #include "rpc/jasprpcdispatcher.h"
+#include "ai/agentstatetracker.h"
 
 using namespace std;
 using Modules::Upgrader;
@@ -1234,6 +1235,10 @@ void Analyses::registerRpcHandlers()
 		// Seed the delta baseline with the stripped version (no descriptions)
 		// so the very first analysis_run only sends actual shape changes.
 		a->_lastSentMeta = a->form() ? a->form()->optionMeta(false) : Json::Value(Json::objectValue);
+
+		// Agent just observed this analysis's full state — clear dirty flags
+		AgentStateTracker::notifyAnalysisObserved(a->id());
+
 		return response;
 	});
 
@@ -1282,6 +1287,7 @@ void Analyses::registerRpcHandlers()
 		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
 
 		bool useDelta  = params.get("optionMetaDelta", true).asBool();
+
 		// Fast path: results already ready
 		if (a->isFinished())
 		{
@@ -1290,6 +1296,7 @@ void Analyses::registerRpcHandlers()
 			_rpcWriteStatus(response, a);
 			_rpcWriteOptionsDelta(response, a, false, !useDelta);
 			_rpcWriteFinishedResults(response, a, analysisId);
+			AgentStateTracker::notifyAnalysisObserved(a->id());
 			return response;
 		}
 
@@ -1300,6 +1307,7 @@ void Analyses::registerRpcHandlers()
 			_rpcWriteIdentity(response, a);
 			response["status"] = "running";
 			_rpcWriteOptionsDelta(response, a, false, !useDelta);
+			AgentStateTracker::notifyAnalysisObserved(a->id());
 			return response;
 		}
 
@@ -1320,22 +1328,86 @@ void Analyses::registerRpcHandlers()
 		if (a->isFinished())
 			_rpcWriteFinishedResults(response, a, analysisId);
 
+		AgentStateTracker::notifyAnalysisObserved(a->id());
 		return response;
 	});
 
-	disp->registerMethodByName("analysis_getOptions", [](const Json::Value& params) -> Json::Value
+	disp->registerMethodByName("get_analyses_state", [](const Json::Value& params) -> Json::Value
 	{
-		int analysisId = params["analysisId"].asInt();
+		bool includeOptions  = params.get("include_options",   true).asBool();
+		bool metaDiff        = params.get("options_meta_diff", true).asBool();
+		bool includeResults  = params.get("include_results",  false).asBool();
+		bool includeDesc     = params.get("include_descriptions", false).asBool();
 
-		Json::Value error;
-		Analysis* a = _rpcResolveAnalysis(analysisId, error);
-		if (!a) return error;
+		Json::Value analysesArr(Json::arrayValue);
+		Json::Value missing(Json::arrayValue);
 
-		bool includeDesc = params.get("includeDescriptions", true).asBool();
+		for (const auto & idVal : params["analysisIds"])
+		{
+			int analysisId = idVal.asInt();
+
+			Json::Value error;
+			Analysis* a = _rpcResolveAnalysis(analysisId, error);
+			if (!a)
+			{
+				missing.append(analysisId);
+				continue;
+			}
+
+			Json::Value entry;
+			entry["id"]            = analysisId;
+			entry["module"]        = a->module();
+			entry["analysis"]      = a->name();
+			entry["title"]         = a->title();
+			entry["analysisStatus"] = Analysis::statusToString(a->status());
+
+			if (includeOptions)
+			{
+				entry["options"] = a->boundValues();
+
+				Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
+
+				if (metaDiff)
+				{
+					Json::Value delta = _diffOptionMeta(a->_lastSentMeta, fullMeta);
+					a->_lastSentMeta = fullMeta;
+					if (!delta.isNull())
+						entry["optionMetaDiff"] = delta;
+				}
+				else
+				{
+					entry["optionMeta"] = fullMeta;
+					a->_lastSentMeta   = fullMeta;
+				}
+			}
+
+			if (includeResults && a->isFinished())
+			{
+				entry["results"] = a->results();
+			}
+
+			analysesArr.append(entry);
+
+			// Clear dirty flags now that the agent has observed this analysis
+			AgentStateTracker::notifyAnalysisObserved(static_cast<size_t>(analysisId));
+		}
 
 		Json::Value response = JaspRpcDispatcher::successResult();
-		_rpcWriteIdentity(response, a);
-		_rpcWriteOptions(response, a, includeDesc);
+		response["analyses"] = analysesArr;
+		if (!missing.empty())
+			response["missing"] = missing;
+		return response;
+	});
+
+	disp->registerMethodByName("poll_state_change", [](const Json::Value&) -> Json::Value
+	{
+		Json::Value response = JaspRpcDispatcher::successResult();
+		if (auto* t = AgentStateTracker::tracker())
+		{
+			Json::Value block = t->buildStatusBlock();
+			for (const auto & key : block.getMemberNames())
+				response[key] = block[key];
+		}
 		return response;
 	});
 
@@ -1357,6 +1429,7 @@ void Analyses::registerRpcHandlers()
 			_rpcWriteIdentity(response, a);
 			_rpcWriteStatus(response, a);
 			_rpcWriteFinishedResults(response, a, analysisId);
+			AgentStateTracker::notifyAnalysisObserved(a->id());
 			return response;
 		}
 
@@ -1366,6 +1439,7 @@ void Analyses::registerRpcHandlers()
 			Json::Value response = JaspRpcDispatcher::successResult();
 			_rpcWriteIdentity(response, a);
 			response["status"] = "running";
+			AgentStateTracker::notifyAnalysisObserved(a->id());
 			return response;
 		}
 
@@ -1403,6 +1477,7 @@ void Analyses::registerRpcHandlers()
 		if (a->isFinished())
 			_rpcWriteFinishedResults(response, a, analysisId);
 
+		AgentStateTracker::notifyAnalysisObserved(a->id());
 		return response;
 	});
 
