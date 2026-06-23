@@ -21,6 +21,7 @@
 #include "log.h"
 #include "dirs.h"
 #include "rpc/jasprpcdispatcher.h"
+#include "agentstatetracker.h"
 #include "gui/preferencesmodel.h"
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
@@ -47,6 +48,9 @@ AiBridge *AiBridge::_singleton = nullptr;
 		m_totalStreamChunks = 0;
 
 		Log::log() << "AiBridge initialized" << std::endl;
+
+		// Initialize the agent state tracker for workspace-change notifications
+		AgentStateTracker::init();
 
 		// Clear chat when persona changes so the new persona takes effect from a clean slate
 		AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
@@ -183,8 +187,37 @@ void AiBridge::startStream(const QString &messagesJson)
 
 	// Append new messages to conversation (don't replace)
 	int prevSize = m_conversation.size();
-	for (const QJsonValue &v : doc.array())
+	QJsonArray incoming = doc.array();
+	for (const QJsonValue &v : incoming)
 		m_conversation.append(v);
+
+	// Inject workspace status as a postfix on the latest user message.
+	// The status-augmented message is stored permanently in m_conversation
+	// (immutable, cache-safe).  deep-chat shows the clean text because it
+	// captured the user's keystrokes before this point.
+	if (!m_conversation.isEmpty())
+	{
+		QJsonObject lastMsg = m_conversation.last().toObject();
+		if (lastMsg.value(QStringLiteral("role")).toString() == QStringLiteral("user"))
+		{
+			if (auto* t = AgentStateTracker::tracker())
+			{
+				QString status = t->buildStatusText();
+				if (!status.isEmpty())
+				{
+					// Normalize to "content" (deep-chat uses "text")
+					QString key = lastMsg.contains(QStringLiteral("content"))
+						? QStringLiteral("content")
+						: QStringLiteral("text");
+					lastMsg[key] = lastMsg.value(key).toString()
+					             + QStringLiteral("\n\n") + status;
+					// QJsonArray::last() returns by value — must use replace() to write back
+					m_conversation.replace(m_conversation.size() - 1, lastMsg);
+				}
+			}
+		}
+	}
+
 	m_streaming = true;
 
 	m_assistantDelta = QJsonObject();
@@ -235,6 +268,11 @@ void AiBridge::clearConversation()
 	m_totalInputTokens = 0;
 	m_totalOutputTokens = 0;
 	m_lastRequestTokens = 0;
+
+	// Reset the state tracker baseline so the next user message doesn't
+	// report stale changes from before the conversation was cleared.
+	if (auto* t = AgentStateTracker::tracker())
+		t->clearAll();
 }
 
 void AiBridge::clearChat()

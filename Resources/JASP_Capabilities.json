@@ -11,7 +11,7 @@
 			"id": "run-analyses",
 			"displayName": "Run Analyses",
 			"description": "Create, run, inspect, and compose statistical analyses. Full analysis lifecycle.",
-			"methods": ["analysis_create", "analysis_run"]
+			"methods": ["analysis_create", "analysis_run", "get_analyses_state"]
 		},
 		{
 			"id": "write-reports",
@@ -25,7 +25,7 @@
 			"description": "View analysis options and results for existing analyses. Read-only — cannot create or run.",
 			"methods": [
 				"analyses_list",
-				"analysis_getOptions",
+				"get_analyses_state",
 				"analysis_results",
 				"analysis_context"
 			]

@@ -51,7 +51,7 @@
 						},
 						"options": {
 							"type": "object",
-							"description": "The current default analysis options. This is the same schema used by analysis_setOptions and analysis_getOptions."
+							"description": "The current default analysis options. This is the same schema used by analysis_run and get_analyses_state."
 						},
 						"optionMeta": {
 							"type": "object",
@@ -170,67 +170,113 @@
 			}
 		},
 		{
-			"name": "analysis_getOptions",
-			"summary": "Retrieve the current analysis options by analysis ID.",
-			"x-displayName": "Get Analysis Options",
+			"name": "get_analyses_state",
+			"summary": "Retrieve current state for one or more analyses: options, option metadata, and optionally results. Replaces the deprecated analysis_getOptions.",
+			"x-displayName": "Get Analyses State",
 			"params": [
 				{
-					"name": "analysisId",
+					"name": "analysisIds",
 					"required": true,
-					"description": "The integer identifier of the analysis to query.",
+					"description": "Array of analysis IDs to query.",
 					"schema": {
-						"type": "integer"
+						"type": "array",
+						"items": { "type": "integer" }
 					}
 				},
 				{
-					"name": "includeDescriptions",
+					"name": "include_options",
 					"required": false,
-					"description": "Whether to include description and instruction text in optionMeta. Defaults to true.",
+					"description": "If true (default), include the current bound options and optionMeta/optionMetaDiff for each analysis.",
 					"schema": {
 						"type": "boolean",
 						"default": true
 					}
+				},
+				{
+					"name": "options_meta_diff",
+					"required": false,
+					"description": "If true (default), return only the changed keys in optionMeta (a diff against the last baseline). On the first call for an analysis the full meta is returned and the baseline is seeded. If false, the full optionMeta is always returned.",
+					"schema": {
+						"type": "boolean",
+						"default": true
+					}
+				},
+				{
+					"name": "include_results",
+					"required": false,
+					"description": "If true, include the full results JSON for each finished analysis. Defaults to false because results can be large — use analysis_results for blocking polls.",
+					"schema": {
+						"type": "boolean",
+						"default": false
+					}
+				},
+				{
+					"name": "include_descriptions",
+					"required": false,
+					"description": "If true, include human-readable description/instruction text in optionMeta. Defaults to false to save tokens.",
+					"schema": {
+						"type": "boolean",
+						"default": false
+					}
 				}
 			],
 			"result": {
-				"name": "analysis_getOptions_result",
-				"description": "The current options of the analysis.",
+				"name": "get_analyses_state_result",
+				"description": "Current state for the requested analyses.",
 				"schema": {
 					"type": "object",
 					"properties": {
 						"status": {
 							"type": "string",
-							"description": "Always 'success' when the options were retrieved."
+							"description": "Always 'success' on valid input."
 						},
-						"analysisId": {
-							"type": "integer",
-							"description": "The analysis identifier."
+						"analyses": {
+							"type": "array",
+							"description": "One entry per requested analysis ID, in request order.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": { "type": "integer" },
+									"module": { "type": "string" },
+									"analysis": { "type": "string" },
+									"title": { "type": "string" },
+									"analysisStatus": {
+										"type": "string",
+										"description": "Analysis::Status string: empty, running, complete, validationError, fatalError, aborted, etc."
+									},
+									"options": {
+										"type": "object",
+										"description": "Current bound options. Present when include_options is true."
+									},
+									"optionMeta": {
+										"type": "object",
+										"description": "Full option metadata. Present when include_options is true and options_meta_diff is false."
+									},
+									"optionMetaDiff": {
+										"type": "object",
+										"description": "Changed keys only (null signals a deletion). Present when include_options is true and options_meta_diff is true."
+									},
+									"results": {
+										"type": "object",
+										"description": "Full results JSON. Present when include_results is true and the analysis is finished."
+									}
+								},
+								"required": [
+									"id",
+									"module",
+									"analysis",
+									"title",
+									"analysisStatus"
+								]
+							}
 						},
-						"module": {
-							"type": "string",
-							"description": "The module name."
-						},
-						"analysis": {
-							"type": "string",
-							"description": "The analysis name."
-						},
-						"options": {
-							"type": "object",
-							"description": "The current analysis options."
-						},
-						"optionMeta": {
-							"type": "object",
-							"description": "Metadata describing each option: its kind, valid choices, column types, etc."
+						"missing": {
+							"type": "array",
+							"items": { "type": "integer" },
+							"description": "Requested IDs that no longer exist."
 						}
 					},
-					"required": [
-						"status",
-						"analysisId",
-						"module",
-						"analysis",
-						"options",
-						"optionMeta"
-					]
+					"required": ["status", "analyses"]
 				}
 			}
 		},
@@ -448,6 +494,81 @@
 						}
 					},
 					"required": ["activeAnalysisId", "analyses"]
+				}
+			}
+		},
+		{
+			"name": "poll_state_change",
+			"summary": "Check what has changed in the workspace since the agent last observed it. Returns dirty flags for analyses and data columns. This is a read-only query — it does NOT clear the baseline. The baseline is cleared when the agent fetches actual state via get_analyses_state, analysis_run, analysis_results, or analysis_create. For the embedded AiBridge, the same data is injected automatically as a <jasp_status> block on the latest user message; this RPC method exists for external MCP agents.",
+			"x-displayName": "Poll State Change",
+			"params": [],
+			"result": {
+				"name": "poll_state_change_result",
+				"description": "Structured diff of workspace changes. Returns an empty object (only status=success) when nothing changed.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success'."
+						},
+						"data": {
+							"type": "object",
+							"description": "Present only when dataset columns changed.",
+							"properties": {
+								"added": {
+									"type": "array",
+									"items": { "type": "string" }
+								},
+								"removed": {
+									"type": "array",
+									"items": { "type": "string" }
+								},
+								"changed": {
+									"type": "array",
+									"items": { "type": "string" },
+									"description": "Columns whose type or values changed."
+								},
+								"renamed": {
+									"type": "object",
+									"description": "Map of old name → new name."
+								}
+							}
+						},
+						"analyses": {
+							"type": "array",
+							"description": "One entry per changed analysis.",
+							"items": {
+								"type": "object",
+								"properties": {
+									"id": { "type": "integer" },
+									"changed": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"enum": [
+												"options",
+												"status",
+												"results",
+												"added",
+												"removed"
+											]
+										}
+									},
+									"status": {
+										"type": "string",
+										"description": "Current Analysis::Status string. Omitted for removed analyses."
+									}
+								},
+								"required": ["id", "changed"]
+							}
+						},
+						"activeAnalysisId": {
+							"type": "integer",
+							"description": "The ID of the currently selected analysis, or omitted if none."
+						}
+					},
+					"required": ["status"]
 				}
 			}
 		},
