@@ -4,6 +4,19 @@ var aiBridge = null;
 var currentSignals = null;
 var streamHasContent = false;
 
+// Table enhancement is deferred until stream ends to avoid flickering
+// and autoscroll disruption during partial table rendering.
+var _isStreaming = false;
+var _enhanceTablesFn = null;
+var _enhanceDebounceModule = null;
+
+function _scheduleEnhance() {
+  if (_enhanceDebounceModule) clearTimeout(_enhanceDebounceModule);
+  _enhanceDebounceModule = setTimeout(function () {
+    if (_enhanceTablesFn && !_isStreaming) _enhanceTablesFn();
+  }, 150);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // IMPORTANT: use window.qt, not bare qt — deepChat.bundle.js declares
   // `const qt="Authorization header"` at top level, which creates a global
@@ -33,6 +46,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       aiBridge.onStreamOpen.connect(function () {
         console.log("chat-bridge: onStreamOpen");
+        _isStreaming = true;
+        // Cancel any pending post-stream table enhancement — a new
+        // stream is starting (possibly tool-call loop).
+        if (_enhanceDebounceModule) {
+          clearTimeout(_enhanceDebounceModule);
+          _enhanceDebounceModule = null;
+        }
         if (currentSignals) {
           currentSignals.onOpen();
           if (streamHasContent) currentSignals._needNewline = true;
@@ -59,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       aiBridge.onStreamClose.connect(function () {
         console.log("chat-bridge: onStreamClose");
+        _isStreaming = false;
         if (currentSignals) {
           currentSignals.onClose();
         } else {
@@ -71,11 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           window._introBuf = "";
         }
-        // Keep currentSignals alive — tool-call loops may emit more onOpen/onClose
+        // Keep currentSignals alive — tool-call loops may emit more onOpen/onClose.
+        // Run table enhancement now that the stream is fully complete.
+        _scheduleEnhance();
       });
 
       aiBridge.onStreamError.connect(function (errorMsg) {
         console.log("chat-bridge: onStreamError: " + errorMsg);
+        _isStreaming = false;
         if (currentSignals) {
           try {
             currentSignals.onOpen();
@@ -98,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
           window._introBuf = "";
         }
         currentSignals = null;
+        _scheduleEnhance();
       });
 
       aiBridge.onClearChat.connect(function () {
@@ -245,10 +270,22 @@ function setupDeepChat() {
       var tables = sr.querySelectorAll(
         "table:not(.jasp-no-select):not(.jasp-table-enhanced)",
       );
-      if (tables.length) enhanceMarkdownTables(sr);
+      if (tables.length) {
+        enhanceMarkdownTables(sr);
+        // Table enhancement can shrink content height (e.g. combined cells
+        // collapse from repeated text to a single &nbsp;). Scroll back to
+        // bottom so the user still sees the latest message.
+        if (typeof chat.scrollToBottom === "function") chat.scrollToBottom();
+      }
     }
 
+    _enhanceTablesFn = _enhanceTables;
+
     var _tableObserver = new MutationObserver(function (mutations) {
+      // Defer table enhancement until the stream is fully complete.
+      // Enhancing during streaming causes flickering (repeated class
+      // toggles, cell merging) and disrupts autoscroll anchoring.
+      if (_isStreaming) return;
       for (var i = 0; i < mutations.length; i++) {
         if (mutations[i].addedNodes.length) {
           if (_enhanceDebounce) clearTimeout(_enhanceDebounce);
