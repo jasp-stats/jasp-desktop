@@ -105,7 +105,7 @@ if(APPLE)
       "JASP.app" 130 270 --background "${CPACK_DMG_BACKGROUND_IMAGE}"
       --window-size 527 454 --window-pos 200 200 --app-drop-link 430 270
       ${MACOS_JENKINS_SKIPPER}
-      --disk-image-size 4000 "${CPACK_DMG_VOLUME_NAME}" "Install/"
+      --disk-image-size 5000 "${CPACK_DMG_VOLUME_NAME}" "Install/"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy "${CPACK_DMG_VOLUME_NAME}"
             ${CMAKE_BINARY_DIR}/JASP/
