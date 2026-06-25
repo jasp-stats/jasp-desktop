@@ -34,6 +34,7 @@
 #include "log.h"
 #include "rpc/jasprpcdispatcher.h"
 #include "ai/agentstatetracker.h"
+#include <vector>
 
 using namespace std;
 using Modules::Upgrader;
@@ -1021,10 +1022,41 @@ void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool in
 	// else: nothing changed, omit entirely
 }
 
+void Analyses::writeOptionsDelta(Json::Value& entry, Analysis* a, bool includeDesc, bool useDelta)
+{
+	_rpcWriteOptionsDelta(entry, a, includeDesc, !useDelta);
+}
+
 void Analyses::_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId)
 {
-	response["results"]       = a->results();
+	Json::Value results = a->results();
+	stripResults(results);
+	response["results"]       = results;
 	response["jaspResultsRds"] = TempFiles::analysisResourcePath(analysisId, "jaspResults.rds");
+}
+
+void Analyses::stripResults(Json::Value& val)
+{
+	std::vector<Json::Value*> stack;
+	stack.push_back(&val);
+
+	while (!stack.empty())
+	{
+		Json::Value* node = stack.back();
+		stack.pop_back();
+
+		if (node->isObject())
+		{
+			node->removeMember("editOptions");
+			for (auto& member : node->getMemberNames())
+				stack.push_back(&(*node)[member]);
+		}
+		else if (node->isArray())
+		{
+			for (auto& entry : *node)
+				stack.push_back(&entry);
+		}
+	}
 }
 
 // ---- composeResultJSON: reusable result composition ---------------------------------
@@ -1334,80 +1366,29 @@ void Analyses::registerRpcHandlers()
 
 	disp->registerMethodByName("get_analyses_state", [](const Json::Value& params) -> Json::Value
 	{
-		bool includeOptions  = params.get("include_options",   true).asBool();
-		bool metaDiff        = params.get("options_meta_diff", true).asBool();
-		bool includeResults  = params.get("include_results",  false).asBool();
+		bool includeOptions  = params.get("include_options",    true).asBool();
+		bool metaDiff        = params.get("options_meta_diff",  true).asBool();
+		bool includeResults  = params.get("include_results",   false).asBool();
 		bool includeDesc     = params.get("include_descriptions", false).asBool();
 
-		Json::Value analysesArr(Json::arrayValue);
-		Json::Value missing(Json::arrayValue);
-
-		for (const auto & idVal : params["analysisIds"])
-		{
-			int analysisId = idVal.asInt();
-
-			Json::Value error;
-			Analysis* a = _rpcResolveAnalysis(analysisId, error);
-			if (!a)
-			{
-				missing.append(analysisId);
-				continue;
-			}
-
-			Json::Value entry;
-			entry["id"]            = analysisId;
-			entry["module"]        = a->module();
-			entry["analysis"]      = a->name();
-			entry["title"]         = a->title();
-			entry["analysisStatus"] = Analysis::statusToString(a->status());
-
-			if (includeOptions)
-			{
-				entry["options"] = a->boundValues();
-
-				Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
-
-				if (metaDiff)
-				{
-					Json::Value delta = _diffOptionMeta(a->_lastSentMeta, fullMeta);
-					a->_lastSentMeta = fullMeta;
-					if (!delta.isNull())
-						entry["optionMetaDiff"] = delta;
-				}
-				else
-				{
-					entry["optionMeta"] = fullMeta;
-					a->_lastSentMeta   = fullMeta;
-				}
-			}
-
-			if (includeResults && a->isFinished())
-			{
-				entry["results"] = a->results();
-			}
-
-			analysesArr.append(entry);
-
-			// Clear dirty flags now that the agent has observed this analysis
-			AgentStateTracker::notifyAnalysisObserved(static_cast<size_t>(analysisId));
-		}
+		std::vector<int> ids;
+		for (const auto & v : params["analysisIds"])
+			ids.push_back(v.asInt());
 
 		Json::Value response = JaspRpcDispatcher::successResult();
-		response["analyses"] = analysesArr;
-		if (!missing.empty())
-			response["missing"] = missing;
-		return response;
-	});
 
-	disp->registerMethodByName("poll_state_change", [](const Json::Value&) -> Json::Value
-	{
-		Json::Value response = JaspRpcDispatcher::successResult();
-		if (auto* t = AgentStateTracker::tracker())
+		if (auto * t = AgentStateTracker::tracker())
 		{
-			Json::Value block = t->buildStatusBlock();
-			for (const auto & key : block.getMemberNames())
-				response[key] = block[key];
+			Json::Value snapshot = t->buildAnalysesSnapshot(
+				ids, includeOptions, includeResults, includeDesc, metaDiff);
+			for (const auto & key : snapshot.getMemberNames())
+				response[key] = snapshot[key];
+
+			// Clear dirty flags for the analyses the agent just observed
+			for (int id : ids)
+				AgentStateTracker::notifyAnalysisObserved(static_cast<size_t>(id));
 		}
+
 		return response;
 	});
 

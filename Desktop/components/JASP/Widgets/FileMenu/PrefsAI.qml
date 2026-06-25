@@ -529,6 +529,15 @@ PrefsScrollView
 		}
 
 		// ── Common System Prompt ──
+		CheckBox
+		{
+			id:					commonSystemPromptUseCustom
+			label:				qsTr("Use custom system prompt")
+			checked:			preferencesModel.aiCommonSystemPromptUseCustom
+			onCheckedChanged:	preferencesModel.aiCommonSystemPromptUseCustom = checked
+			toolTip:			qsTr("When enabled, the custom prompt below is used as the system prompt instead of the default.")
+		}
+
 		TextArea
 		{
 			id:					aiCommonSystemPromptInput
@@ -537,7 +546,8 @@ PrefsScrollView
 			text:				preferencesModel.aiCommonSystemPrompt
 			isBound:			false
 			wrapMode:			TextEdit.Wrap
-			placeholderText:	qsTr("Common system prompt shared across all personas…")
+			enabled:			commonSystemPromptUseCustom.checked
+			placeholderText:		qsTr("Common system prompt shared across all personas…")
 			onActiveFocusChanged:	if (!activeFocus) preferencesModel.aiCommonSystemPrompt = text
 			applyScriptInfo:	""
 			useTabAsSpaces:		false
