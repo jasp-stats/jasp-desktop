@@ -63,6 +63,10 @@ public:
 
 	static void			registerRpcHandlers();
 
+	/// Strip internal-only keys (e.g. "editOptions") from results before
+	/// sending them over RPC. Add more keys here as needed.
+	static void			stripResults(Json::Value& val);
+
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
 	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, const std::string & title = "", const Version & loadedVersion = "", const Json::Value & options = Json::nullValue);
@@ -181,6 +185,18 @@ signals:
 	bool				requestComputedColumnDestruction(	const std::string & columnName, Analysis *source);
 
 	void currentFormPrevHChanged(double currentFormPrevH);
+
+public:
+	// ---- Public RPC helpers (callable from AgentStateTracker) ---------------
+
+	/// Write options + optionMeta delta (or full meta) into a JSON entry.
+	/// @param entry        target JSON object
+	/// @param a            analysis to read from
+	/// @param includeDesc  include human-readable descriptions in meta
+	/// @param useDelta     if true, compute diff against _lastSentMeta and write
+	///                      optionMetaDelta; if false, write full optionMeta.
+	static void writeOptionsDelta(Json::Value& entry, Analysis* a,
+								 bool includeDesc, bool useDelta);
 
 private slots:
 	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion, QString module);

@@ -9,6 +9,8 @@
 
 #include "aiBridge.h"
 
+#include "utilities/settings.h"
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -208,33 +210,6 @@ void AiBridge::startStream(const QString &messagesJson)
 	for (const QJsonValue &v : incoming)
 		m_conversation.append(v);
 
-	// Inject workspace status as a postfix on the latest user message.
-	// The status-augmented message is stored permanently in m_conversation
-	// (immutable, cache-safe).  deep-chat shows the clean text because it
-	// captured the user's keystrokes before this point.
-	if (!m_conversation.isEmpty())
-	{
-		QJsonObject lastMsg = m_conversation.last().toObject();
-		if (lastMsg.value(QStringLiteral("role")).toString() == QStringLiteral("user"))
-		{
-			if (auto* t = AgentStateTracker::tracker())
-			{
-				QString status = t->buildStatusText();
-				if (!status.isEmpty())
-				{
-					// Normalize to "content" (deep-chat uses "text")
-					QString key = lastMsg.contains(QStringLiteral("content"))
-						? QStringLiteral("content")
-						: QStringLiteral("text");
-					lastMsg[key] = lastMsg.value(key).toString()
-					             + QStringLiteral("\n\n") + status;
-					// QJsonArray::last() returns by value — must use replace() to write back
-					m_conversation.replace(m_conversation.size() - 1, lastMsg);
-				}
-			}
-		}
-	}
-
 	m_streaming = true;
 
 	m_assistantDelta = QJsonObject();
@@ -288,8 +263,8 @@ void AiBridge::clearConversation()
 	m_totalOutputTokens = 0;
 	m_lastRequestTokens = 0;
 
-	// Reset the state tracker baseline so the next user message doesn't
-	// report stale changes from before the conversation was cleared.
+	// Reset the state tracker baseline so stale changes from before the
+	// conversation was cleared don't appear in the next _stateUpdate.
 	if (auto* t = AgentStateTracker::tracker())
 		t->clearAll();
 }
@@ -363,6 +338,70 @@ QString AiBridge::conversationStats() const
 	stats[QStringLiteral("totalOutputTokens")] = m_totalOutputTokens;
 	stats[QStringLiteral("totalTokens")] = m_totalInputTokens + m_totalOutputTokens;
 	return QString::fromUtf8(QJsonDocument(stats).toJson(QJsonDocument::Compact));
+}
+
+void AiBridge::dumpConversationDump(const QJsonDocument &bodyDoc) const
+{
+	if (!m_debugDumpEnabled || Dirs::tempDir().empty()) return;
+
+	std::string path = Dirs::tempDir() + "/ai-request.json";
+	QFile file(QString::fromStdString(path));
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
+
+	if (bodyDoc.isObject()) {
+		QJsonObject obj = bodyDoc.object();
+		file.write("{\n");
+		file.write(QStringLiteral("  \"model\": \"%1\",\n").arg(obj[QStringLiteral("model")].toString()).toUtf8());
+		file.write(QStringLiteral("  \"stream\": %1,\n").arg(obj[QStringLiteral("stream")].toBool() ? QStringLiteral("true") : QStringLiteral("false")).toUtf8());
+
+		// messages array
+		file.write("  \"messages\": [\n");
+		const QJsonArray msgs = obj[QStringLiteral("messages")].toArray();
+		for (int i = 0; i < msgs.size(); ++i) {
+			file.write("    ");
+			file.write(QJsonDocument(msgs[i].toObject()).toJson(QJsonDocument::Compact));
+			bool hasMore = (i < msgs.size() - 1) || obj.contains(QStringLiteral("tools"));
+			if (!hasMore) {
+				for (auto it = obj.begin(); it != obj.end(); ++it) {
+					if (it.key() != QLatin1String("model") && it.key() != QLatin1String("stream") &&
+						it.key() != QLatin1String("messages") && it.key() != QLatin1String("tools"))
+						{ hasMore = true; break; }
+				}
+			}
+			if (hasMore) file.write(",");
+			file.write("\n");
+		}
+		file.write("  ]");
+
+		// tools array
+		if (obj.contains(QStringLiteral("tools"))) {
+			file.write(",\n  \"tools\": [\n");
+			const QJsonArray tools = obj[QStringLiteral("tools")].toArray();
+			for (int i = 0; i < tools.size(); ++i) {
+				file.write("    ");
+				file.write(QJsonDocument(tools[i].toObject()).toJson(QJsonDocument::Compact));
+				if (i < tools.size() - 1) file.write(",");
+				file.write("\n");
+			}
+			file.write("  ]");
+		}
+
+		// Any extra keys merged from extraParams (max_tokens, thinking, etc.)
+		for (auto it = obj.begin(); it != obj.end(); ++it) {
+			const auto &k = it.key();
+			if (k == QLatin1String("model") || k == QLatin1String("stream") ||
+				k == QLatin1String("messages") || k == QLatin1String("tools"))
+				continue;
+			file.write(",\n  ");
+			QByteArray pair = QJsonDocument(QJsonObject{{it.key(), it.value()}}).toJson(QJsonDocument::Compact);
+			file.write(QString::fromUtf8(pair).mid(1).chopped(1).toUtf8());
+		}
+
+		file.write("\n}\n");
+	} else {
+		file.write(bodyDoc.toJson(QJsonDocument::Compact));
+	}
+	file.close();
 }
 
 void AiBridge::exportToMarkdownFile(const QString &filePath) const
@@ -484,68 +523,7 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 	m_totalRequestsSent++;
 
 	// --- Debug dump: readable structure, compact internals ---
-	if (m_debugDumpEnabled && !Dirs::tempDir().empty()) {
-		std::string path = Dirs::tempDir() + "/ai-request.json";
-		QFile file(QString::fromStdString(path));
-		if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-			QJsonDocument bodyDoc = QJsonDocument::fromJson(body);
-			if (bodyDoc.isObject()) {
-				QJsonObject obj = bodyDoc.object();
-				file.write("{\n");
-				file.write(QStringLiteral("  \"model\": \"%1\",\n").arg(obj[QStringLiteral("model")].toString()).toUtf8());
-				file.write(QStringLiteral("  \"stream\": %1,\n").arg(obj[QStringLiteral("stream")].toBool() ? QStringLiteral("true") : QStringLiteral("false")).toUtf8());
-
-				// messages array
-				file.write("  \"messages\": [\n");
-				const QJsonArray msgs = obj[QStringLiteral("messages")].toArray();
-				for (int i = 0; i < msgs.size(); ++i) {
-					file.write("    ");
-					file.write(QJsonDocument(msgs[i].toObject()).toJson(QJsonDocument::Compact));
-					bool hasMore = (i < msgs.size() - 1) || obj.contains(QStringLiteral("tools"));
-					if (!hasMore) {
-						for (auto it = obj.begin(); it != obj.end(); ++it) {
-							if (it.key() != QLatin1String("model") && it.key() != QLatin1String("stream") &&
-								it.key() != QLatin1String("messages") && it.key() != QLatin1String("tools"))
-								{ hasMore = true; break; }
-						}
-					}
-					if (hasMore) file.write(",");
-					file.write("\n");
-				}
-				file.write("  ]");
-
-				// tools array
-				if (obj.contains(QStringLiteral("tools"))) {
-					file.write(",\n  \"tools\": [\n");
-					const QJsonArray tools = obj[QStringLiteral("tools")].toArray();
-					for (int i = 0; i < tools.size(); ++i) {
-						file.write("    ");
-						file.write(QJsonDocument(tools[i].toObject()).toJson(QJsonDocument::Compact));
-						if (i < tools.size() - 1) file.write(",");
-						file.write("\n");
-					}
-					file.write("  ]");
-				}
-
-				// Any extra keys merged from extraParams (max_tokens, thinking, etc.)
-				for (auto it = obj.begin(); it != obj.end(); ++it) {
-					const auto &k = it.key();
-					if (k == QLatin1String("model") || k == QLatin1String("stream") ||
-						k == QLatin1String("messages") || k == QLatin1String("tools"))
-						continue;
-					file.write(",\n  ");
-					// Write just the key:value pair (strip the outer { } from the compact JSON)
-					QByteArray pair = QJsonDocument(QJsonObject{{it.key(), it.value()}}).toJson(QJsonDocument::Compact);
-					file.write(QString::fromUtf8(pair).mid(1).chopped(1).toUtf8());
-				}
-
-				file.write("\n}\n");
-			} else {
-				file.write(body);
-			}
-			file.close();
-		}
-	}
+	dumpConversationDump(QJsonDocument::fromJson(body));
 
 	// --- Token monitoring ---
 	int bodyTokens = estimateTokens(QString::fromUtf8(body));
@@ -592,7 +570,12 @@ QByteArray AiBridge::buildRequestBody(const QJsonArray &messages, bool withTools
 	QString sysContent;
 
 	// 1. Common System Prompt
-	QString commonPrompt = PreferencesModel::prefs()->aiCommonSystemPrompt();
+	QString commonPrompt;
+	if (PreferencesModel::prefs()->aiCommonSystemPromptUseCustom())
+		commonPrompt = PreferencesModel::prefs()->aiCommonSystemPrompt();
+	else
+		commonPrompt = Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT).toString();
+
 	if (!commonPrompt.isEmpty())
 		sysContent = commonPrompt.trimmed() + QStringLiteral("\n\n");
 
@@ -1035,7 +1018,7 @@ void AiBridge::flushToolCalls()
 			Json::Value result; Json::Reader r; r.parse(resultJson, result);
 
 			if (result.isMember("result")) { Json::FastWriter w; toolResultText = QString::fromStdString(w.write(result["result"])); }
-			else if (result.isMember("error")) { toolResultText = QStringLiteral("Error: ") + QString::fromStdString(result["error"].toStyledString()); }
+			else if (result.isMember("error")) { Json::FastWriter w; toolResultText = QStringLiteral("Error: ") + QString::fromStdString(w.write(result["error"])); }
 			else { toolResultText = QString::fromStdString(resultJson); }
 
 			m_totalToolCallsDispatched++;
@@ -1185,6 +1168,14 @@ void AiBridge::onReplyFinished()
 		asst[QStringLiteral("role")] = QStringLiteral("assistant");
 		m_conversation.append(asst);
 		m_assistantDelta = QJsonObject();
+
+		// Dump complete conversation so ai-request.json reflects the full turn.
+		{
+			QJsonObject body;
+			body[QStringLiteral("model")] = model();
+			body[QStringLiteral("messages")] = m_conversation;
+			dumpConversationDump(QJsonDocument(body));
+		}
 	}
 	m_streaming = false;
 

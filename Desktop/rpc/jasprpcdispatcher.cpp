@@ -14,6 +14,7 @@
 
 #include "dirs.h"
 #include "log.h"
+#include "ai/agentstatetracker.h"
 
 // =========================================================================
 //  Internal helpers (not exposed)
@@ -490,14 +491,28 @@ void JaspRpcDispatcher::registerBuiltins()
 // =========================================================================
 
 Json::Value JaspRpcDispatcher::makeError(int code,
-										 const std::string& message,
-										 const Json::Value& id)
+									 const std::string& message,
+									 const Json::Value& id)
 {
 	Json::Value err;
 	err["jsonrpc"] = "2.0";
 	err["id"]      = id;
 	err["error"]["code"]    = code;
 	err["error"]["message"] = message;
+	return err;
+}
+
+Json::Value JaspRpcDispatcher::makeError(int code,
+									 const std::string& message,
+									 const Json::Value& data,
+									 const Json::Value& id)
+{
+	Json::Value err;
+	err["jsonrpc"] = "2.0";
+	err["id"]      = id;
+	err["error"]["code"]    = code;
+	err["error"]["message"] = message;
+	err["error"]["data"]    = data;
 	return err;
 }
 
@@ -545,7 +560,30 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 	if (it == _handlers.end())
 		return makeError(-32601, "Method not found: '" + method + "'", id);
 
+	// Look up the spec to check x-failOnStateDiverged.
+	bool failOnDiverged = false;
+	auto specIt = _specs.find(method);
+	if (specIt != _specs.end())
+		failOnDiverged = specIt->second.failOnStateDiverged;
+
 	Json::Value params = request.get("params", Json::objectValue);
+
+	// --- Mutation methods: fail if workspace state diverged -------------
+	// Only USER-INDUCED changes (options, data, add/remove) block mutations.
+	// Background evolution (status transitions, results completing) does not —
+	// those are reported via _stateUpdate on read calls.
+	if (failOnDiverged)
+	{
+		if (auto * t = AgentStateTracker::tracker(); t && t->isUserDiverged())
+		{
+			Json::Value snapshot = t->buildWorkspaceSnapshot();
+			t->markClean();
+			return makeError(-32001,
+				"Workspace state diverged since your last observation. "
+				"Current state included in data. Review it and retry your call.",
+				snapshot, id);
+		}
+	}
 
 	m_inFlight = true;
 	try
@@ -559,6 +597,30 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 		{
 			return makeError(result["code"].asInt(),
 							 result["message"].asString(), id);
+		}
+
+		// --- Read methods: attach _stateUpdate if workspace is dirty ------
+		// The snapshot piggybacks on the normal result.  After delivery the
+		// baseline advances so the snapshot only appears when something
+		// actually changed.
+		if (!failOnDiverged)
+		{
+			if (auto * t = AgentStateTracker::tracker(); t && t->isDirty())
+			{
+				result["_stateUpdate"] = t->buildWorkspaceSnapshot();
+				t->markClean();
+			}
+		}
+		else
+		{
+			// --- Mutation methods: clear dirty flags from our own actions ---
+			// A successful mutation means the workspace was clean when it
+			// started.  Any dirty flags now set were caused by the mutation
+			// itself (analysisAdded signal from creating a report, status
+			// changes from analysis_run, etc.).  Clear them so the next
+			// mutation isn't blocked by its own predecessor's side effects.
+			if (auto * t = AgentStateTracker::tracker())
+				t->markClean();
 		}
 
 		return makeResponse(result, id);

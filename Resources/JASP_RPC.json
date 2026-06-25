@@ -9,6 +9,7 @@
 			"name": "analysis_create",
 			"summary": "Create and start an analysis by module name and analysis name.",
 			"x-displayName": "Create Analysis",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "module",
@@ -73,6 +74,7 @@
 			"name": "analysis_run",
 			"summary": "Set options and run an analysis, blocking up to timeoutMs for the R engine to finish. Combines setOptions + results in one call. Use analysis_results to poll if the timeout fires.",
 			"x-displayName": "Run Analysis",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "analysisId",
@@ -171,8 +173,9 @@
 		},
 		{
 			"name": "get_analyses_state",
-			"summary": "Retrieve current state for one or more analyses: options, option metadata, and optionally results. Replaces the deprecated analysis_getOptions.",
+			"summary": "Retrieve current state for one or more analyses: options and optionally results. Use this to observe the current workspace state before mutating it, or whenever you need a complete snapshot of specific analyses.",
 			"x-displayName": "Get Analyses State",
+			"x-failOnStateDiverged": false,
 			"params": [
 				{
 					"name": "analysisIds",
@@ -186,7 +189,7 @@
 				{
 					"name": "include_options",
 					"required": false,
-					"description": "If true (default), include the current bound options and optionMeta/optionMetaDiff for each analysis.",
+					"description": "If true (default), include the current bound options and optionMeta for each analysis.",
 					"schema": {
 						"type": "boolean",
 						"default": true
@@ -204,7 +207,7 @@
 				{
 					"name": "include_results",
 					"required": false,
-					"description": "If true, include the full results JSON for each finished analysis. Defaults to false because results can be large — use analysis_results for blocking polls.",
+					"description": "If true, include the full results JSON for each finished analysis. Defaults to false because results can be large.",
 					"schema": {
 						"type": "boolean",
 						"default": false
@@ -213,7 +216,7 @@
 				{
 					"name": "include_descriptions",
 					"required": false,
-					"description": "If true, include human-readable description/instruction text in optionMeta. Defaults to false to save tokens.",
+					"description": "If true, include human-readable description text in optionMeta. Defaults to false to save tokens.",
 					"schema": {
 						"type": "boolean",
 						"default": false
@@ -237,12 +240,11 @@
 								"type": "object",
 								"properties": {
 									"id": { "type": "integer" },
+									"name": { "type": "string" },
 									"module": { "type": "string" },
-									"analysis": { "type": "string" },
-									"title": { "type": "string" },
-									"analysisStatus": {
+									"status": {
 										"type": "string",
-										"description": "Analysis::Status string: empty, running, complete, validationError, fatalError, aborted, etc."
+										"description": "Analysis lifecycle: empty, running, complete, validationError, fatalError, aborted, etc."
 									},
 									"options": {
 										"type": "object",
@@ -252,22 +254,16 @@
 										"type": "object",
 										"description": "Full option metadata. Present when include_options is true and options_meta_diff is false."
 									},
-									"optionMetaDiff": {
+									"optionMetaDelta": {
 										"type": "object",
-										"description": "Changed keys only (null signals a deletion). Present when include_options is true and options_meta_diff is true."
+										"description": "Changed keys only (null signals a deletion). Present when include_options is true and options_meta_diff is true. Omitted entirely when nothing changed."
 									},
 									"results": {
 										"type": "object",
-										"description": "Full results JSON. Present when include_results is true and the analysis is finished."
+										"description": "Full results JSON. Present when include_results is true and the analysis is finished; null otherwise."
 									}
 								},
-								"required": [
-									"id",
-									"module",
-									"analysis",
-									"title",
-									"analysisStatus"
-								]
+								"required": ["id", "name", "module", "status"]
 							}
 						},
 						"missing": {
@@ -498,84 +494,10 @@
 			}
 		},
 		{
-			"name": "poll_state_change",
-			"summary": "Check what has changed in the workspace since the agent last observed it. Returns dirty flags for analyses and data columns. This is a read-only query — it does NOT clear the baseline. The baseline is cleared when the agent fetches actual state via get_analyses_state, analysis_run, analysis_results, or analysis_create. For the embedded AiBridge, the same data is injected automatically as a <jasp_status> block on the latest user message; this RPC method exists for external MCP agents.",
-			"x-displayName": "Poll State Change",
-			"params": [],
-			"result": {
-				"name": "poll_state_change_result",
-				"description": "Structured diff of workspace changes. Returns an empty object (only status=success) when nothing changed.",
-				"schema": {
-					"type": "object",
-					"properties": {
-						"status": {
-							"type": "string",
-							"description": "Always 'success'."
-						},
-						"data": {
-							"type": "object",
-							"description": "Present only when dataset columns changed.",
-							"properties": {
-								"added": {
-									"type": "array",
-									"items": { "type": "string" }
-								},
-								"removed": {
-									"type": "array",
-									"items": { "type": "string" }
-								},
-								"changed": {
-									"type": "array",
-									"items": { "type": "string" },
-									"description": "Columns whose type or values changed."
-								},
-								"renamed": {
-									"type": "object",
-									"description": "Map of old name → new name."
-								}
-							}
-						},
-						"analyses": {
-							"type": "array",
-							"description": "One entry per changed analysis.",
-							"items": {
-								"type": "object",
-								"properties": {
-									"id": { "type": "integer" },
-									"changed": {
-										"type": "array",
-										"items": {
-											"type": "string",
-											"enum": [
-												"options",
-												"status",
-												"results",
-												"added",
-												"removed"
-											]
-										}
-									},
-									"status": {
-										"type": "string",
-										"description": "Current Analysis::Status string. Omitted for removed analyses."
-									}
-								},
-								"required": ["id", "changed"]
-							}
-						},
-						"activeAnalysisId": {
-							"type": "integer",
-							"description": "The ID of the currently selected analysis, or omitted if none."
-						}
-					},
-					"required": ["status"]
-				}
-			}
-		},
-		{
 			"name": "data_load",
 			"summary": "Load a data file into the workspace. Blocks up to timeoutMs when wait=true.",
 			"x-displayName": "Load Data",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "path",
@@ -815,8 +737,9 @@
 		},
 		{
 			"name": "analysis_createAnnotation",
-			"summary": "Create an annotation analysis that combines result elements from an existing analysis with Markdown text blocks. The annotation keeps the original analysis's form (read-only) so settings are visible but frozen. Use this to add narrative, interpretation, conclusions, or highlight specific results alongside the original output.\n\nUse elements to specify what appears in the annotation and in what order. Each element is either:\n  {\"name\": \"tableName\"} \u2014 pull a result element (table/plot/collection) from the source analysis\n  {\"md_text\": \"Markdown/HTML\"} \u2014 insert a prose block (headings, interpretation, LaTeX math)\n\nIf elements is omitted, the annotation starts with a copy of the original analysis's results.\n\nFor cross-analysis reports (pulling elements from MULTIPLE analyses), use write_report instead.",
+			"summary": "Create an annotation analysis that combines result elements from an existing analysis with Markdown text blocks. The annotation keeps the original analysis's form (read-only) so settings are visible but frozen. Use this to add narrative, interpretation, conclusions, or highlight specific results alongside the original output.\n\nUse elements to specify what appears in the annotation and in what order. Each element is either:\n  {\"name\": \"tableName\"} — pull a result element (table/plot/collection) from the source analysis\n  {\"md_text\": \"Markdown/HTML\"} — insert a prose block (headings, interpretation, LaTeX math)\n\nIf elements is omitted, the annotation starts with a copy of the original analysis's results.\n\nFor cross-analysis reports (pulling elements from MULTIPLE analyses), use write_report instead.",
 			"x-displayName": "Create Annotation",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "analysisId",
@@ -898,8 +821,9 @@
 		},
 		{
 			"name": "analysis_composeResults",
-			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        \u2014 include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } \u2014 insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
+			"summary": "Reorder, slice, and annotate the results of one or more analyses.\n\nEach element in the 'elements' array is exactly one of:\n  { \"name\": \"tableName\" }        — include an existing result element by its .meta name (optionally specify sourceAnalysisId to pull from a different analysis)\n  { \"md_text\": \"Markdown/HTML\" } — insert a Markdown annotation block\n\nThe returned results will contain only the elements you specify, in the order you specify them.",
 			"x-displayName": "Compose Results",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "analysisId",
@@ -977,8 +901,9 @@
 		},
 		{
 			"name": "write_report",
-			"summary": "Create a new standalone report with content composed from Markdown blocks and cross-analysis result elements. Reports appear in the results panel like analyses but do not run R code.\n\nIMPORTANT: Always prefer referencing existing JASP output elements (tables, plots, collections) via {\"name\": \"<element>\", \"sourceAnalysisId\": <id>} over rewriting them as markdown. Only use md_text for explanatory prose, headings, and narrative \u2014 never to recreate statistical results that already exist as proper JASP elements.",
+			"summary": "Create a new standalone report with content composed from Markdown blocks and cross-analysis result elements. Reports appear in the results panel like analyses but do not run R code.\n\nIMPORTANT: Always prefer referencing existing JASP output elements (tables, plots, collections) via {\"name\": \"<element>\", \"sourceAnalysisId\": <id>} over rewriting them as markdown. Only use md_text for explanatory prose, headings, and narrative — never to recreate statistical results that already exist as proper JASP elements.",
 			"x-displayName": "Write Report",
+			"x-failOnStateDiverged": true,
 			"params": [
 				{
 					"name": "reportId",

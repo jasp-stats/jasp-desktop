@@ -207,8 +207,9 @@ GET_PREF_FUNC_BOOL(	showInteractiveDefault,		Settings::SHOW_INTERACTIVE_DEFAULT	
 
 GET_PREF_FUNC_BOOL(	autoSaveAtAll,				Settings::AUTOSAVE_ON								)
 GET_PREF_FUNC_INT(	autoSaveIntervalSec,		Settings::AUTOSAVE_INTERVAL_SEC						)
-GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT						)
-	GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM			)
+GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT					)
+	GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+	GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM		)
 	GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT				)
 	GET_PREF_FUNC_STR(	aiUserAvatar,			Settings::AI_USER_AVATAR						)
 	GET_PREF_FUNC_BOOL(	aiEnabled,			Settings::AI_ENABLED						)
@@ -428,7 +429,8 @@ SET_PREF_FUNCTION(				bool,   	setShowInteractiveDefault,	showInteractiveDefault
 SET_PREF_FUNCTION(				bool,   	setAutoSaveAtAll,			autoSaveAtAll,				autoSaveAtAllChanged,			Settings::AUTOSAVE_ON			  					)
 SET_PREF_FUNCTION(				int,		setAutoSaveIntervalSec,		autoSaveIntervalSec,		autoSaveIntervalSecChanged,		Settings::AUTOSAVE_INTERVAL_SEC	  					)
 SET_PREF_FUNCTION(				QString,	setAiCommonSystemPrompt,		aiCommonSystemPrompt,		aiCommonSystemPromptChanged,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-	SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
+	SET_PREF_FUNCTION(				bool,		setAiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustomChanged,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+		SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
 	SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,		aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT				)
 	SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,			aiUserAvatarChanged,				Settings::AI_USER_AVATAR						)
 	SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED						)
@@ -443,6 +445,7 @@ void PreferencesModel::resetAiDefaults()
 	AIConfigModel::config()->resetToDefaults();
 	_aiPersonaModel->resetAll();
 	setAiCommonSystemPrompt(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT).toString());
+	setAiCommonSystemPromptUseCustom(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM).toBool());
 	setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
 	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
 	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());

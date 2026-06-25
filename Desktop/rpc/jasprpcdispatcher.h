@@ -211,7 +211,10 @@ private:
 	void registerBuiltins();
 
 	static Json::Value makeError(int code, const std::string& message,
-								 const Json::Value& id);
+							 const Json::Value& id);
+	static Json::Value makeError(int code, const std::string& message,
+							 const Json::Value& data,
+							 const Json::Value& id);
 	static Json::Value makeResponse(const Json::Value& result,
 									const Json::Value& id);
 

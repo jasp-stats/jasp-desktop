@@ -134,6 +134,7 @@ RpcMethodSpec RpcMethodSpec::fromJson(const Json::Value& json)
 	// ---- summary ------------------------------------------------------
 	spec.summary    = json.get("summary", "").asString();
 	spec.displayName = json.get("x-displayName", "").asString();
+	spec.failOnStateDiverged = json.get("x-failOnStateDiverged", false).asBool();
 
 	// ---- params -------------------------------------------------------
 	if (!json.isMember("params") || !json["params"].isArray())

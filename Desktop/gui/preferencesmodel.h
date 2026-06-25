@@ -90,6 +90,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(int			autoSaveIntervalSec		READ autoSaveIntervalSec		WRITE setAutoSaveIntervalSec		NOTIFY autoSaveIntervalSecChanged		)
 	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll				WRITE setAutoSaveAtAll				NOTIFY autoSaveAtAllChanged				)
 	Q_PROPERTY(QString		aiCommonSystemPrompt	READ aiCommonSystemPrompt		WRITE setAiCommonSystemPrompt		NOTIFY aiCommonSystemPromptChanged		)
+	Q_PROPERTY(bool			aiCommonSystemPromptUseCustom	READ aiCommonSystemPromptUseCustom		WRITE setAiCommonSystemPromptUseCustom		NOTIFY aiCommonSystemPromptUseCustomChanged		)
 	Q_PROPERTY(bool			aiEnabled				READ aiEnabled					WRITE setAiEnabled					NOTIFY aiEnabledChanged					)
 	Q_PROPERTY(bool			aiAnnotationUseCustom	READ aiAnnotationUseCustom		WRITE setAiAnnotationUseCustom		NOTIFY aiAnnotationUseCustomChanged		)
 	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt			WRITE setAiAnnotationPrompt			NOTIFY aiAnnotationPromptChanged		)
@@ -207,6 +208,9 @@ class PreferencesModel : public PreferencesModelBase
 
 	QString aiCommonSystemPrompt() const;
 	void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+
+	bool aiCommonSystemPromptUseCustom() const;
+	void setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
 
 	bool aiEnabled() const;
 	void setAiEnabled(bool newAiEnabled);
@@ -368,7 +372,8 @@ signals:
 	void autoSaveIntervalSecChanged(	int		interval);
 		void autoSaveAtAllChanged(			bool		autoSave);
 			void aiCommonSystemPromptChanged(		QString	aiCommonSystemPrompt);
-			void aiEnabledChanged(			bool	aiEnabled);
+				void aiCommonSystemPromptUseCustomChanged(	bool	aiCommonSystemPromptUseCustom);
+				void aiEnabledChanged(			bool	aiEnabled);
 			void aiAnnotationUseCustomChanged(bool	aiAnnotationUseCustom);
 			void aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
 			void aiUserAvatarChanged(		QString	aiUserAvatar);

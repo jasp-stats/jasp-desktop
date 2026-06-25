@@ -109,6 +109,7 @@ struct RpcMethodSpec
 	std::string               name;
 	std::string               summary;
 	std::string               displayName;  // x-displayName from OpenRPC extension
+	bool                      failOnStateDiverged = false; // x-failOnStateDiverged
 	std::vector<RpcParamSpec> params;
 	RpcResultSpec             result;
 

@@ -6,26 +6,25 @@
 // analysis option in the UI, when a column is added/removed/renamed, when an
 // analysis completes or is deleted.
 //
-// This singleton hooks into Analyses and DataSetPackage signals, accumulates
-// "dirty" flags, and exposes two query styles:
+// This singleton hooks into Analyses and DataSetPackage signals and
+// accumulates granular "dirty" flags per analysis (Options / Status / Results
+// / Added / Removed) and for data columns (added / removed / changed / renamed).
 //
-//   - buildStatusText():  compact semi-structured text for AiBridge to inject
-//                         as a <jasp_status> postfix on the latest user message.
-//   - buildStatusBlock(): structured JSON for the poll_state_change RPC method
-//                         (external MCP agents).
-//
+// The dispatcher queries isDirty() on every RPC response.  When dirty, it
+// calls buildWorkspaceSnapshot() to produce a full current-state snapshot
+// (all analyses' options + results + status, plus the data column schema),
+// attaches it as `_stateUpdate` on read-method results or as `data` on a
+// `-32001` divergence error for mutation methods, then calls markClean() to
+// advance the baseline.
 //
 // Baseline semantics:
-//   Ephemeral notifications (Added, Removed, data column changes) are cleared
-//   automatically after appearing in ONE status block delivery.  They are
-//   one-time events — once the agent has been told, it knows.
+//   Dirty flags are set when user/background changes happen and cleared when
+//   the agent observes state — either by receiving a snapshot (dispatcher
+//   calls markClean) or by calling get_analyses_state / analysis_run /
+//   analysis_results / analysis_create (handlers call notifyAnalysisObserved
+//   / notifyDataObserved).
 //
-//   Persistent flags (Options, Status, Results) survive until the agent
-//   actually fetches current state via get_analyses_state, analysis_run,
-//   analysis_results, or analysis_create — at which point
-//   afterAnalysisObserved(id) clears them.
-//
-// Singleton lifetime: created in AiBridge or MainWindow, hooks signals lazily.
+// Singleton lifetime: created in MainWindow (always) and AiBridge.
 //
 
 #ifndef AGENTSTATETRACKER_H
@@ -35,11 +34,10 @@
 #include <QString>
 #include <QStringList>
 #include <QMap>
-#include <QSet>
-#include <QRegularExpression>
 
 #include <set>
 #include <map>
+#include <vector>
 
 #include <json/json.h>
 
@@ -56,8 +54,8 @@ public:
 		Options,   ///< User modified options (userModifiedSomething fired)
 		Status,    ///< Analysis status changed (running, complete, error, …)
 		Results,   ///< Results JSON changed (re-run, image edit, …)
-		Added,     ///< New analysis appeared (ephemeral)
-		Removed    ///< Analysis was deleted (ephemeral)
+		Added,     ///< New analysis appeared
+		Removed    ///< Analysis was deleted
 	};
 
 	static AgentStateTracker * tracker() { return _singleton; }
@@ -100,43 +98,57 @@ public:
 	void afterAnalysisObserved(size_t analysisId);
 	void afterDataObserved();
 
-	/// Clear all dirty flags without the agent having to observe each one.
-	/// Used on clearChat / conversation reset.
+	/// Clear all dirty flags (analysis + data).
 	void clearAll();
 
 	// ------------------------------------------------------------------
-	// Query — builds the status block and clears ephemeral flags.
+	// Dirty query + snapshot building
 	// ------------------------------------------------------------------
 
 	/// True if any analysis or data dirty flags are set.
-	bool hasPendingChanges() const;
+	bool isDirty() const;
 
-	/// Structured JSON diff for the poll_state_change RPC method.
-	/// Returns an empty object when nothing changed.
-	/// Clears ephemeral flags (Added, Removed, data changes) after building.
-	Json::Value buildStatusBlock();
+	/// True if any USER-INDUCED dirty flags are set (Options, Added, Removed,
+	/// or Data changes).  Excludes background evolution (Status, Results) which
+	/// should be reported via _stateUpdate but should NOT block mutations.
+	bool isUserDiverged() const;
 
-	/// Compact semi-structured text for AiBridge's <jasp_status> postfix.
-	/// Returns an empty string when nothing changed.
-	/// Clears ephemeral flags (Added, Removed, data changes) after building.
-	QString buildStatusText();
+	/// Clear all dirty flags without building a snapshot.
+	/// Called by the dispatcher after it attaches a `_stateUpdate` to a
+	/// response, or after a divergence error is delivered.
+	void markClean();
 
-	// ------------------------------------------------------------------
-	// Display helper
-	// ------------------------------------------------------------------
+	/// Full workspace snapshot: every analysis (options + results + status)
+	/// plus the complete data column schema.
+	/// @param includeResults  if false, `results` is set to null for each
+	///                         analysis (useful when only options matter).
+	Json::Value buildWorkspaceSnapshot(bool includeResults = true) const;
 
-	/// Strip a <jasp_status>…</jasp_status> block (and surrounding whitespace)
-	/// from a user message.  Used when pushing message content to deep-chat.
-	static QString stripStatusBlock(const QString & text);
+	/// Filtered snapshot for get_analyses_state: only the requested analyses.
+	/// @param useDelta  if true (default), optionMeta is sent as a diff against
+	///                  the last baseline; if false, the full optionMeta is sent.
+	Json::Value buildAnalysesSnapshot(const std::vector<int> & analysisIds,
+	                                  bool includeOptions,
+	                                  bool includeResults,
+	                                  bool includeDescriptions,
+	                                  bool useDelta = true) const;
+
+	/// Current dataset column schema (name + type per column).
+	Json::Value buildDataSnapshot() const;
 
 private:
 	explicit AgentStateTracker(QObject * parent = nullptr);
 
 	void connectHooks();
 
-	/// Clear ephemeral flags: Added, Removed (analyses) and all data changes.
-	/// Called by buildStatusText / buildStatusBlock after a successful delivery.
-	void clearEphemeralFlags();
+	/// Build a single analysis entry.  Shared by buildWorkspaceSnapshot and
+	/// buildAnalysesSnapshot.
+	/// @param useDelta  if true, optionMeta is diffed; if false, full meta is sent.
+	Json::Value buildSingleAnalysis(int analysisId,
+	                                bool includeOptions,
+	                                bool includeResults,
+	                                bool includeDescriptions,
+	                                bool useDelta = true) const;
 
 	struct AnalysisState
 	{

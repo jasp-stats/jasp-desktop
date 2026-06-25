@@ -129,6 +129,7 @@ private:
 	static int estimateTokens(const QJsonValue &val);
 	void logConversationStats(const char *context) const;
 	void logToolCall(const QJsonObject &toolCall, const QString &resultText) const;
+	void dumpConversationDump(const QJsonDocument &bodyDoc) const;
 
 	/// Return the set of RPC tool names enabled for the currently active persona.
 	QStringList effectiveToolsForActivePersona() const;

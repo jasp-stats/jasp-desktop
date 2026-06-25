@@ -144,8 +144,6 @@ void AgentStateTracker::markAnalysisStatusChanged(size_t analysisId)
 
 void AgentStateTracker::markAnalysisResultsChanged(size_t analysisId)
 {
-	// Results changes are a separate category from Status — the agent needs
-	// to know whether to re-fetch results (e.g. analysis completed, image edited).
 	_analysisStates[analysisId].dirtyFlags.insert(AnalysisChange::Results);
 }
 
@@ -170,7 +168,7 @@ void AgentStateTracker::markDataChanged(const QStringList & added,
 {
 	_dataState.dirty = true;
 
-	// Apply renames to names we're already tracking, so the status block
+	// Apply renames to names we're already tracking, so the snapshot
 	// always shows current names (e.g. "Column 32" → "age").
 	for (auto it = renamed.begin(); it != renamed.end(); ++it)
 	{
@@ -190,9 +188,6 @@ void AgentStateTracker::markDataChanged(const QStringList & added,
 	for (const auto & s : changed)  _dataState.changed.append(s);
 
 	// Track renames for columns that already existed (not newly added).
-	// If the old name was in `added`, it's already updated above and we
-	// don't report a separate rename — the column just appears in `added`
-	// with its real name.
 	for (auto it = renamed.begin(); it != renamed.end(); ++it)
 	{
 		if (!_dataState.added.contains(it.value()))
@@ -229,29 +224,19 @@ void AgentStateTracker::clearAll()
 	afterDataObserved();
 }
 
-void AgentStateTracker::clearEphemeralFlags()
+void AgentStateTracker::markClean()
 {
-	// Clear Added/Removed from all analysis entries; remove entries that
-	// become empty (only had ephemeral flags).
-	for (auto it = _analysisStates.begin(); it != _analysisStates.end(); )
-	{
-		it->second.dirtyFlags.erase(AnalysisChange::Added);
-		it->second.dirtyFlags.erase(AnalysisChange::Removed);
-		if (it->second.dirtyFlags.empty())
-			it = _analysisStates.erase(it);
-		else
-			++it;
-	}
-
-	// Clear all data changes
+	// The full snapshot has been delivered — clear all dirty flags so the
+	// baseline advances.  Everything the agent hasn't seen yet is now seen.
+	_analysisStates.clear();
 	afterDataObserved();
 }
 
 // ------------------------------------------------------------------
-// Query
+// Dirty query
 // ------------------------------------------------------------------
 
-bool AgentStateTracker::hasPendingChanges() const
+bool AgentStateTracker::isDirty() const
 {
 	if (_dataState.dirty) return true;
 
@@ -262,89 +247,111 @@ bool AgentStateTracker::hasPendingChanges() const
 	return false;
 }
 
-Json::Value AgentStateTracker::buildStatusBlock()
+bool AgentStateTracker::isUserDiverged() const
 {
-	Json::Value result(Json::objectValue);
+	if (_dataState.dirty) return true;
 
-	// --- Data ---
-	if (_dataState.dirty)
+	for (const auto & [id, state] : _analysisStates)
 	{
-		Json::Value data(Json::objectValue);
-
-		if (!_dataState.added.isEmpty())
-		{
-			Json::Value arr(Json::arrayValue);
-			for (const auto & s : _dataState.added) arr.append(s.toStdString());
-			data["added"] = arr;
-		}
-		if (!_dataState.removed.isEmpty())
-		{
-			Json::Value arr(Json::arrayValue);
-			for (const auto & s : _dataState.removed) arr.append(s.toStdString());
-			data["removed"] = arr;
-		}
-		if (!_dataState.changed.isEmpty())
-		{
-			Json::Value arr(Json::arrayValue);
-			for (const auto & s : _dataState.changed) arr.append(s.toStdString());
-			data["changed"] = arr;
-		}
-		if (!_dataState.renamed.isEmpty())
-		{
-			Json::Value obj(Json::objectValue);
-			for (auto it = _dataState.renamed.begin(); it != _dataState.renamed.end(); ++it)
-				obj[it.key().toStdString()] = it.value().toStdString();
-			data["renamed"] = obj;
-		}
-
-		result["data"] = data;
+		if (state.dirtyFlags.count(AnalysisChange::Options) ||
+		    state.dirtyFlags.count(AnalysisChange::Added)   ||
+		    state.dirtyFlags.count(AnalysisChange::Removed))
+			return true;
 	}
 
-	// --- Analyses ---
+	return false;
+}
+
+// ------------------------------------------------------------------
+// Snapshot building
+// ------------------------------------------------------------------
+
+Json::Value AgentStateTracker::buildDataSnapshot() const
+{
+	Json::Value data(Json::objectValue);
+
+	auto * pkg = DataSetPackage::pkg();
+	if (!pkg || !pkg->hasDataSet())
+	{
+		data["loaded"] = false;
+		return data;
+	}
+
+	data["loaded"]   = true;
+	data["rowCount"] = static_cast<int>(pkg->dataRowCount());
+
+	Json::Value columns(Json::arrayValue);
+	auto colTypes = pkg->getColumnTypesMap();
+	for (const auto & [name, type] : colTypes)
+	{
+		Json::Value col;
+		col["name"] = name;
+		col["type"] = columnTypeToString(type);
+		columns.append(col);
+	}
+	data["columns"] = columns;
+
+	return data;
+}
+
+Json::Value AgentStateTracker::buildSingleAnalysis(int analysisId,
+                                                    bool includeOptions,
+                                                    bool includeResults,
+                                                    bool includeDescriptions,
+                                                    bool useDelta) const
+{
+	Json::Value entry(Json::objectValue);
+
+	Analysis * a = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+	if (!a)
+	{
+		entry["id"]     = analysisId;
+		entry["status"] = "removed";
+		return entry;
+	}
+
+	entry["id"]     = analysisId;
+	entry["name"]   = a->name();
+	entry["module"] = a->module();
+	entry["status"] = Analysis::statusToString(a->status());
+
+	if (includeOptions)
+		// writeOptionsDelta writes both "options" and the optionMeta delta/full.
+		Analyses::writeOptionsDelta(entry, a, includeDescriptions, useDelta);
+
+	if (includeResults && a->isFinished())
+	{
+		Json::Value results = a->results();
+		Analyses::stripResults(results);
+		entry["results"] = results;
+	}
+	else
+		entry["results"] = Json::nullValue;
+
+	return entry;
+}
+
+Json::Value AgentStateTracker::buildWorkspaceSnapshot(bool includeResults) const
+{
+	Json::Value snapshot(Json::objectValue);
+
+	// --- Data ---
+	snapshot["data"] = buildDataSnapshot();
+
+	// --- Analyses (all) ---
 	Json::Value analyses(Json::arrayValue);
-	for (const auto & [id, state] : _analysisStates)
+	if (auto * ans = Analyses::analyses())
 	{
-		if (state.dirtyFlags.empty())
-			continue;
-
-		bool isRemoved = state.dirtyFlags.count(AnalysisChange::Removed);
-
-		// Skip stale dirty flags for analyses that no longer exist
-		if (!isRemoved && !Analyses::analyses()->get(id))
-			continue;
-
-		Json::Value entry(Json::objectValue);
-		entry["id"] = static_cast<int>(id);
-
-		Json::Value flags(Json::arrayValue);
-
-		for (auto flag : state.dirtyFlags)
+		ans->applyToAll([&](Analysis * a)
 		{
-			std::string name;
-			switch (flag)
-			{
-				case AnalysisChange::Options: name = "options"; break;
-				case AnalysisChange::Status:   name = "status";  break;
-				case AnalysisChange::Results:  name = "results"; break;
-				case AnalysisChange::Added:    name = "added";   break;
-				case AnalysisChange::Removed:  name = "removed"; break;
-			}
-			flags.append(name);
-		}
-
-		// Include current status for analyses that still exist
-		if (!isRemoved)
-		{
-			if (auto * a = Analyses::analyses()->get(id))
-				entry["status"] = Analysis::statusToString(a->status());
-		}
-
-		entry["changed"] = flags;
-		analyses.append(entry);
+			analyses.append(buildSingleAnalysis(
+				static_cast<int>(a->id()),
+				true,   // includeOptions
+				includeResults,
+				false)); // includeDescriptions — not needed for snapshots
+		});
 	}
-
-	if (!analyses.empty())
-		result["analyses"] = analyses;
+	snapshot["analyses"] = analyses;
 
 	// --- Active analysis ---
 	if (auto * ans = Analyses::analyses())
@@ -353,111 +360,39 @@ Json::Value AgentStateTracker::buildStatusBlock()
 		if (curIdx >= 0 && curIdx < ans->count())
 		{
 			if (Analysis * active = (*ans)[static_cast<size_t>(curIdx)])
-				result["activeAnalysisId"] = static_cast<int>(active->id());
+				snapshot["activeAnalysisId"] = static_cast<int>(active->id());
 		}
 	}
 
-	clearEphemeralFlags();
-
-	return result;
+	return snapshot;
 }
 
-QString AgentStateTracker::buildStatusText()
+Json::Value AgentStateTracker::buildAnalysesSnapshot(const std::vector<int> & analysisIds,
+                                                      bool includeOptions,
+                                                      bool includeResults,
+                                                      bool includeDescriptions,
+                                                      bool useDelta) const
 {
-	QStringList lines;
+	Json::Value snapshot(Json::objectValue);
 
-	// --- Data ---
-	if (_dataState.dirty)
+	Json::Value analyses(Json::arrayValue);
+	Json::Value missing(Json::arrayValue);
+
+	for (int id : analysisIds)
 	{
-		QStringList parts;
-
-		if (!_dataState.added.isEmpty())
-			parts << QStringLiteral("added=[") + _dataState.added.join(QStringLiteral(", ")) + QStringLiteral("]");
-
-		if (!_dataState.removed.isEmpty())
-			parts << QStringLiteral("removed=[") + _dataState.removed.join(QStringLiteral(", ")) + QStringLiteral("]");
-
-		if (!_dataState.changed.isEmpty())
-			parts << QStringLiteral("changed=[") + _dataState.changed.join(QStringLiteral(", ")) + QStringLiteral("]");
-
-		if (!_dataState.renamed.isEmpty())
+		Analysis * a = Analyses::analyses()->get(static_cast<size_t>(id));
+		if (!a)
 		{
-			QStringList renames;
-			for (auto it = _dataState.renamed.begin(); it != _dataState.renamed.end(); ++it)
-				renames << it.key() + QStringLiteral("→") + it.value();
-			parts << QStringLiteral("renamed=[") + renames.join(QStringLiteral(", ")) + QStringLiteral("]");
-		}
-
-		if (!parts.isEmpty())
-			lines << QStringLiteral("data: ") + parts.join(QStringLiteral(", "));
-	}
-
-	// --- Analyses ---
-	for (const auto & [id, state] : _analysisStates)
-	{
-		if (state.dirtyFlags.empty())
+			missing.append(id);
 			continue;
-
-		bool isRemoved = state.dirtyFlags.count(AnalysisChange::Removed);
-
-		// Skip stale dirty flags for analyses that no longer exist
-		if (!isRemoved && !Analyses::analyses()->get(id))
-			continue;
-
-		// Build "Changed:" label from change categories
-		QStringList changed;
-		if (state.dirtyFlags.count(AnalysisChange::Added))    changed << QStringLiteral("added");
-		if (state.dirtyFlags.count(AnalysisChange::Removed))  changed << QStringLiteral("removed");
-		if (state.dirtyFlags.count(AnalysisChange::Options))  changed << QStringLiteral("options");
-		if (state.dirtyFlags.count(AnalysisChange::Results))  changed << QStringLiteral("results");
-		if (state.dirtyFlags.count(AnalysisChange::Status))   changed << QStringLiteral("status");
-
-		QStringList parts;
-		if (!changed.isEmpty())
-			parts << QStringLiteral("Changed: ") + changed.join(QStringLiteral(", "));
-
-		// Current status for existing analyses
-		if (!isRemoved)
-		{
-			if (auto * a = Analyses::analyses()->get(id))
-				parts << QStringLiteral("Status: ") + QString::fromStdString(Analysis::statusToString(a->status()));
 		}
 
-		lines << QStringLiteral("analysis ") + QString::number(static_cast<int>(id))
-		        + QStringLiteral(": ") + parts.join(QStringLiteral(", "));
+		analyses.append(buildSingleAnalysis(id, includeOptions, includeResults, includeDescriptions, useDelta));
 	}
 
-	// --- Active analysis ---
-	if (auto * ans = Analyses::analyses())
-	{
-		int curIdx = ans->currentAnalysisIndex();
-		if (curIdx >= 0 && curIdx < ans->count())
-		{
-			if (Analysis * active = (*ans)[static_cast<size_t>(curIdx)])
-				lines << QStringLiteral("active: ") + QString::number(static_cast<int>(active->id()));
-		}
-	}
+	snapshot["analyses"] = analyses;
+	if (!missing.empty())
+		snapshot["missing"] = missing;
 
-	if (lines.isEmpty())
-		return QString();
-
-	clearEphemeralFlags();
-
-	return QStringLiteral("<jasp_status>\n") + lines.join(QStringLiteral("\n"))
-	     + QStringLiteral("\n</jasp_status>");
-}
-
-// ------------------------------------------------------------------
-// Display helper
-// ------------------------------------------------------------------
-
-QString AgentStateTracker::stripStatusBlock(const QString & text)
-{
-	static const QRegularExpression rx(
-		QStringLiteral("\\s*<jasp_status>.*?</jasp_status>\\s*"),
-		QRegularExpression::DotMatchesEverythingOption);
-
-	QString result = text;
-	result.remove(rx);
-	return result.trimmed();
+	return snapshot;
 }
