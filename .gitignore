@@ -91,3 +91,8 @@ Modules/local
 
 # User configurations
 .qmlls.ini
+
+# AllHelp class
+Desktop/utilities/allhelp.cpp
+Desktop/utilities/allhelp.h
+

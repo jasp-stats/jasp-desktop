@@ -38,7 +38,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("User Interface Options")
-		helpfile:		"preferences/PrefsUI"
+		helpMD:			allHelp.PrefsUI
 		addMargin:		false
 
 		Connections
@@ -179,7 +179,7 @@ PrefsScrollView
 				onCheckedChanged:	if (checked) preferencesModel.currentThemeName  =  "darkTheme"
 				toolTip:			qsTr("Switches to a dark theme, makes JASP a lot easier on the eyes for those night owls out there.")
 
-				KeyNavigation.tab:		languages
+				KeyNavigation.tab:		languageGroup
 			}
 		}
 	}
