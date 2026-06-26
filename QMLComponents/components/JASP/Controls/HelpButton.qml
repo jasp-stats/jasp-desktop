@@ -64,5 +64,5 @@ MenuButton
 						else if (helpMD)
 							helpModel.showOrToggleMarkdown(helpMD)
 
-	onHelpMDChanged: if (helpModel.visible) helpModel.showOrToggleMarkdown(helpMD)
+	onHelpMDChanged: if (helpModel.visible) helpModel.markdown = helpMD
 }
