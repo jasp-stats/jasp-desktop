@@ -2,10 +2,11 @@
 
 This menu allows you to manage how your data is structured, labeled, and interpreted by JASP. The sections below explain each setting and how to use it effectively.
 
-### **Long Name & Description**
+### **Name, Long Name & Description**
 
-* **Long Name:** Designed for clean, publication-ready reporting. *Note: Full integration into all output tables is a work in progress. In future updates, this feature will allow JASP to automatically display clean, descriptive titles in your final APA output tables without cluttering your active working spreadsheet.*
-* **Description:** A dedicated space for your personal notes, hypotheses, or codebook definitions.
+* **Name:** A short name of the variable which will be shown in tables and along the axis of graphs.
+* **Long Name:** Designed for reporting. *Note: Integration into output tables is a work in progress. In the future, this will allow JASP to automatically display long names in your output without cluttering your data view / spreadsheet.*
+* **Description:** Space for notes, hypotheses, codebook definitions etc.
 
 ### **Types / Levels of Measurement**
 
@@ -15,11 +16,11 @@ This menu allows you to manage how your data is structured, labeled, and interpr
 
 ### **Missing Values**
 
-When a data cell is empty—whether because a measurement instrument failed or a participant skipped a question—it is treated as a **missing value**.
+When a data cell is empty — whether because a measurement instrument failed or a participant skipped a question — it is treated as a **missing value**.
 
 * By default, JASP recognizes empty cells as missing data if they contain:  
   NaN (not available number), NA, nan, . (period), blank space
-* If your dataset uses a specific numeric code for missing data (such as \-99 or 999), you can add that code to the **Missing Values** list. JASP will then treat those entries as missing and exclude them from statistical calculations.
+* If your dataset uses a specific numeric code for missing data (such as \-99 or 999), you can add that code to the **Missing Values** list by activating **Use custom values**, entering them next to the +button and clicking the +button. JASP will then treat those entries as missing and exclude them from statistical calculations.
 
 ### **How JASP Imports Data**
 
@@ -40,7 +41,7 @@ Some of these import settings can be customized via: ‘File → Preferences →
 
 ### **Manually Changing Variable Types**
 
-Automatic type assignments can be changed manually by clicking the variable type icon at the top of a column or within an analysis variable box.
+Types can be changed by clicking the variable type icon at most places in JASP. To do this for multiple variables at once, mark multiple columns in data edit view and change type once.
 
 JASP will attempt to convert the variable to the selected type whenever possible. For example, if a variable is changed to **Scale** but contains non-numeric values, those values will be converted to missing values.
 
@@ -55,23 +56,24 @@ If a column was created using the Computed Column (+) formula builder, its editi
 
 ### **Level Manipulation & Ordering**
 
-For Nominal and Ordinal variables, you can precisely control the order of your data levels. Below the **Eye button** (which toggles variable visibility in your spreadsheet and menus), you will find five powerful ordering tools:
+You can precisely control and order your data levels:
 
+* **Use labels:** When working with massive datasets (tens of thousands of rows), rendering custom text labels can slow down performance. Toggling this off forces JASP to display raw numbers instead, significantly speeding up the interface. The **Use labels** toggle is disabled by default when importing data that contains no labels, or when creating a dataset from scratch. Enable it if you want to create, view, change, or sort labels.
+* **Eye button:** Closed - Drops levels you have filtered or newly created from your result tables and graphs. Open - Includes filtered and newly created levels:
 * **Automatically order labels by their value** *(1 to N arrow down button)*: Forces the labels to align strictly in ascending order based on their underlying numeric values.
 * **Reverse order of all numerical values** *(1 to N circular arrows button)*: Inverts the numeric values assigned to your labels. (e.g., turns a scale of 1 \= Low, 3 \= High into 3 \= Low, 1 \= High).
 * **Reverse order of all labels** *(Up/Down arrow button)*: Flips the text label order. *Note: If automatic ordering is enabled, it will be disabled automatically when this option is used.*
 * **Move labels up manually** *(Up arrow button)*: Moves the selected label one position higher in the list. *(Turns off automatic ordering).*
 * **Move labels down manually** *(Down arrow button)*: Moves the selected label one position lower in the list. *(Turns off automatic ordering).*
+* **Reset all filter checkmarks** *(Erasor button)*: Only visible if you have filtered data in this column. Removes all filters from this variable if you have set them with the checkmark toggle.
 
 💡 **Statistical Tip (Changing the Baseline):** The order of your levels matters deeply for advanced statistics like Regression or GLM. JASP uses the **very top level** in this list as the reference/baseline group for dummy coding. Dragging or moving a level to the top changes your model's statistical baseline\!
 
-### **Filter, Remove, Add Levels**
+### **Filter, Value, Label, Remove, Add new level**
 
-* **Filter (Check / Uncheck):** Unchecking a level temporarily excludes all cases with that value from analyses. This provides a quick way to include or exclude groups without modifying the dataset itself.
+* **Filter (Check / Uncheck):** In this column, unchecking a level temporarily excludes all cases with that value from analyses. This provides a quick way to include or exclude groups without modifying the dataset itself.
+* **Value:** This column shows a database of all different values within your raw data. The raw data and thus the values are used to compute the statistics, tables and graphs for the analyses you choose. If you change a value this replaces all values within that column with the new one you have set. This essentially is a "find and replace" functionality. You probably want to make a backup of your data (e.g. by copy pasting the column to a backup column next to it) befory you manipulate your data this way.
+* **Label:** This column shows labels of your data values. They are used to make the axis of your graphs and also your tables more easily readable. They do not have an influence on the actual computations that produce your statistical results.
 * **Remove (X / Delete):** Removes the selected value from this variable only and converts it to a missing value. All other data for that participant or case remain unchanged.
 * **Add New Level (+):** Creates a category that does not currently appear in the data.
   * *Use Case:* Suppose a survey uses a response scale from 1 (*Strongly Disagree*) to 5 (*Strongly Agree*), but nobody selected 5 in the current sample. Because that level does not occur in the data, JASP will not display it automatically. Adding the level manually ensures that plots and summary tables show the complete intended response scale.
-
-### **Big Data Performance Tip**
-
-* **Disable Labels:** When working with massive datasets (tens of thousands of rows), rendering custom text labels can slow down performance. Toggling this off forces JASP to display raw numbers instead, significantly speeding up the interface. The **Display Labels toggle** is disabled by default when importing data that contains no labels, or when creating a dataset from scratch. Enable it if you want to create or view custom labels.
