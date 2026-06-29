@@ -2,11 +2,136 @@ name: 'Windows'
 
 on:
    pull_request:
-     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', 'windows.yml']
+     paths: ['**.cpp', '**.h', '**.R', '**.cmake', '**.txt', '**.in', '.github/workflows/windows.yml']
    workflow_dispatch:
-   
+
 jobs:
-      
+
+   check-r-interface-static:
+
+    runs-on: windows-2022
+    env:
+       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+       JASP_R_VERSION: '4.5.3'
+
+    name: check R-Interface static toolchain on Windows
+
+    steps:
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: ${{ env.JASP_R_VERSION }}
+          windows-path-include-rtools: false
+          windows-path-include-mingw: true
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4
+        with:
+            version: 6.10.*
+            aqtversion: '==3.1.*'
+            host: 'windows'
+            target: 'desktop'
+            arch: 'win64_msvc2022_64'
+            cache: 'false'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qt5compat qtshadertools'
+            tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+        with:
+          audit_token: ${{ secrets.CONAN_AUDIT_TOKEN }}
+          cache_packages: true
+
+      - name: Configure CMake Generator
+        shell: pwsh
+        run: |
+           #make a global conan config file.
+           $conanConfigHome = (conan config home).Trim()
+           $globalConfPath = Join-Path $conanConfigHome "global.conf"
+           New-Item -ItemType Directory -Force -Path $conanConfigHome | Out-Null
+           "tools.cmake.cmaketoolchain:generator=Ninja`ntools.build:skip_test=true" | Set-Content -Path $globalConfPath -Encoding utf8
+           Get-Content $globalConfPath
+           conan config show *
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: actions/checkout@v4
+
+      - name: Verify Rtools static toolchain
+        shell: pwsh
+        run: |
+            $required = @(
+                "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\gcc.exe",
+                "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\g++.exe",
+                "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\objdump.exe",
+                "C:\rtools45\usr\bin\make.exe"
+            )
+
+            foreach ($path in $required) {
+                if (-not (Test-Path $path)) {
+                    Write-Error "Missing required Rtools file: $path"
+                    exit 1
+                }
+            }
+
+      - name: Configure R-Interface check
+        run: |
+            git submodule update --init
+            cmake -S . -B r-interface-build `
+            -DCMAKE_GENERATOR="Ninja" `
+            -DCMAKE_BUILD_TYPE="Release" `
+            -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" `
+            -DJASP_SYNTAX_INTERFACE_ONLY=ON `
+            -DINSTALL_R_MODULES=OFF `
+            -DBUILD_TESTS=OFF `
+            -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC" `
+            -DRTOOLS_PATH="C:/rtools45/ucrt64"
+        env:
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC"
+
+      - name: Build R-Interface
+        run: |
+             & "$env:IQTA_TOOLS\CMake_64\bin\cmake.exe" --build r-interface-build --target R-Interface
+        env:
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/"
+
+      - name: Check R-Interface DLL dependencies
+        shell: pwsh
+        run: |
+            $objdump = "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\objdump.exe"
+            if (-not (Test-Path $objdump)) {
+                Write-Error "Missing objdump: $objdump"
+                exit 1
+            }
+
+            $dlls = @(
+                "r-interface-build\R-Interface\libR-Interface.dll",
+                "r-interface-build\R-Interface\libR-InterfaceNoRInside.dll"
+            )
+
+            foreach ($dll in $dlls) {
+                Write-Host "Imports for $dll"
+                if (-not (Test-Path $dll)) {
+                    Write-Error "Missing DLL: $dll"
+                    exit 1
+                }
+
+                $objdumpOutput = & $objdump -p $dll
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "objdump failed for $dll"
+                    exit $LASTEXITCODE
+                }
+
+                $imports = $objdumpOutput | Select-String -Pattern "DLL Name"
+                $imports
+
+                $forbidden = $imports | Select-String -Pattern "libgcc|libstdc\+\+|libwinpthread|libatomic|libgomp|libquadmath|libssp"
+                if ($forbidden) {
+                    Write-Error "Unexpected MinGW runtime dependency in $dll"
+                    exit 1
+                }
+            }
+
    build-jasp:
    
     runs-on: windows-2022
@@ -36,15 +161,30 @@ jobs:
             modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtlanguageserver qtquickeffectmaker qtwebsockets debug_info qt5compat qtshadertools'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
 
-      - name: dependencies for rtools
+      - name: Install Rtools source build tools
+        shell: pwsh
         run: |
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --noconfirm mingw-w64-ucrt-x86_64-toolchain make autoconf automake wget git cmake mingw-w64-ucrt-x86_64-libiconv libtool zlib-devel mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-boost mingw-w64-ucrt-x86_64-readstat"
-      
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --needed --noconfirm make autoconf-wrapper automake-wrapper git libtool"
+
+      - name: Download and build ReadStat
+        shell: pwsh
+        run: |
+             Invoke-WebRequest -Uri "https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz" -OutFile "readstat-1.1.9.tar.gz"
+             $expectedHash = "3a232b9e852d10173e2f25da9155afe2e129a30d1fc6c9aac142cdc5cbfe527e"
+             $actualHash = (Get-FileHash "readstat-1.1.9.tar.gz" -Algorithm SHA256).Hash.ToLowerInvariant()
+             if ($actualHash -ne $expectedHash) {
+                 Write-Error "Unexpected ReadStat SHA256: $actualHash"
+                 exit 1
+             }
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'tar -xzf readstat-1.1.9.tar.gz'
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX && make -j2 CFLAGS="-Wno-error=use-after-free" CXXFLAGS="-Wno-error=use-after-free" && make install'
+
       - name: Download and build rdata
+        shell: pwsh
         run: |
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "git clone https://github.com/WizardMac/librdata.git"
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./autogen.sh"
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./configure --host=$MINGW_CHOST --build=$MINGW_CHOST && make && make install"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'git clone https://github.com/WizardMac/librdata.git && cd librdata && git -c advice.detachedHead=false checkout 33bd276ecb0bbcd8997ccc71a544149b3da0d940'
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd librdata && ./autogen.sh'
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd librdata && ./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX && make -j2 && make install'
       
       - name: Install Conan
         uses: conan-io/setup-conan@v1
@@ -93,6 +233,11 @@ jobs:
         shell: pwsh
         run: |
             $objdump = "C:\rtools45\x86_64-w64-mingw32.static.posix\bin\objdump.exe"
+            if (-not (Test-Path $objdump)) {
+                Write-Error "Missing objdump: $objdump"
+                exit 1
+            }
+
             $dlls = @(
                 "jasp-build\R-Interface\libR-Interface.dll",
                 "jasp-build\R-Interface\libR-InterfaceNoRInside.dll"
@@ -114,7 +259,7 @@ jobs:
                 $imports = $objdumpOutput | Select-String -Pattern "DLL Name"
                 $imports
 
-                $forbidden = $imports | Select-String -Pattern "libgcc|libstdc\+\+|libwinpthread"
+                $forbidden = $imports | Select-String -Pattern "libgcc|libstdc\+\+|libwinpthread|libatomic|libgomp|libquadmath|libssp"
                 if ($forbidden) {
                     Write-Error "Unexpected MinGW runtime dependency in $dll"
                     exit 1
@@ -127,11 +272,16 @@ jobs:
             cd jasp-build
             ls
             $env:QT_QPA_PLATFORM = "offscreen"
-            & ".\JASPTest.exe"
-            & ".\JASPQuickTest.exe"
-            & ".\JASPTestDebugData.exe"
-            & ".\JASPTestEngine.exe"
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host "Tests failed with exit code $LASTEXITCODE"
-                exit $LASTEXITCODE
+            $tests = @(
+                ".\JASPTest.exe",
+                ".\JASPQuickTest.exe",
+                ".\JASPTestDebugData.exe",
+                ".\JASPTestEngine.exe"
+            )
+            foreach ($test in $tests) {
+                & $test
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host "$test failed with exit code $LASTEXITCODE"
+                    exit $LASTEXITCODE
+                }
             }

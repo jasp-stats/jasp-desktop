@@ -21,7 +21,7 @@ macro(find_rtools_dll_path dllPath dllFilename)
 endmacro()
 
 
-macro(copy_rtools_header headerVar headerName headerDestination)
+macro(find_rtools_header_path headerVar headerName)
 	message(CHECK_START "Looking for ${headerName} for ${headerVar}")
 	find_file(
 		${headerVar}
@@ -31,8 +31,7 @@ macro(copy_rtools_header headerVar headerName headerDestination)
 
 	if(EXISTS ${${headerVar}})
 		message(CHECK_PASS "found")
-	  message(STATUS "Now copy ${${headerVar}} to ${headerDestination}.")
-	  configure_file("${${headerVar}}" "${headerDestination}" COPYONLY)
+	  message(STATUS "  ${${headerVar}}")
 
     else()
 		message(CHECK_FAIL "not found")

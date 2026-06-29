@@ -273,8 +273,10 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   find_package(freexl 2.0.99 REQUIRED)
   find_package(libsodium 1.0.20 REQUIRED)
 
-  copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
-  copy_rtools_header(RTOOLS_LIBRDATA_H		rdata.h			${CMAKE_SOURCE_DIR}/Desktop/data/importers/rdata/rdata.h)
+  find_rtools_header_path(RTOOLS_LIBREADSTAT_H	readstat.h)
+  find_rtools_header_path(RTOOLS_LIBRDATA_H		rdata.h)
+  get_filename_component(LIBREADSTAT_INCLUDE_DIRS "${RTOOLS_LIBREADSTAT_H}" DIRECTORY)
+  get_filename_component(LIBRDATA_INCLUDE_DIRS "${RTOOLS_LIBRDATA_H}" DIRECTORY)
 
   find_rtools_dll_path(RTOOLS_ZLIB_DLL            "zlib1.dll")
   find_rtools_dll_path(RTOOLS_MSYS_DLL            "msys-2.0.dll")
