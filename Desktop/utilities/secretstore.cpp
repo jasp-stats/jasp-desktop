@@ -23,6 +23,18 @@
 #include "log.h"
 
 // =============================================================================
+// Master-key seed — defined here so it stays out of every translation unit
+// that includes secretstore.h.
+// =============================================================================
+
+const unsigned char SecretStore::kMasterKeySeed[32] = {
+	0x7e, 0x3a, 0x91, 0x4c, 0xd2, 0x6f, 0x88, 0x15,
+	0x3b, 0xae, 0x72, 0x59, 0xc1, 0x4d, 0x0f, 0xe8,
+	0x66, 0x2d, 0x97, 0x53, 0xa4, 0x1b, 0x38, 0xcc,
+	0xfd, 0x09, 0x85, 0x7b, 0x12, 0x4e, 0x6a, 0xd0
+};
+
+// =============================================================================
 // Master key — derived once, cached forever
 // =============================================================================
 
