@@ -227,7 +227,7 @@ else()
 
 endif()
 
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   add_subdirectory(Engine)
   add_subdirectory(Desktop)
 endif()
@@ -241,12 +241,12 @@ endif()
 include(Modules)
 
 # Install logic, usually staging a deploy-able JASP in Build/Install/ folder
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   include(Install)
 endif()
 
 # Packs and creates installer executable for Windows, and macOS
-if(NOT LINUX)
+if(NOT LINUX AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   if("${NIGHTLY_BUILD}" STREQUAL "ON")
     SET(MACOS_JENKINS_SKIPPER "--skip-jenkins")
   else()
