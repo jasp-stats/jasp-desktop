@@ -164,7 +164,7 @@ jobs:
       - name: Install Rtools source build tools
         shell: pwsh
         run: |
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --needed --noconfirm make autoconf-wrapper automake-wrapper git libtool"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "pacman -S --needed --noconfirm make autoconf-wrapper automake-wrapper git libtool mingw-w64-ucrt-x86_64-gcc"
 
       - name: Download and build ReadStat
         shell: pwsh
