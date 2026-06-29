@@ -26,12 +26,7 @@ Window
     }
 
     onClosing: {
-        // Stop any active stream and clear conversation state.
-        // We do NOT call clearChat() here because sendIntroMessage()
-        // would fire a network request that may complete after AiBridge
-        // is destroyed, causing a crash.
-        aiBridge.stopStream();
-        aiBridge.clearConversation();
+        aiBridge.clearChat();
     }
 
     function submitUserMessage(text)
