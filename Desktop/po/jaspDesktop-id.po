@@ -1107,27 +1107,27 @@ msgstr "Alihkan ke filter R"
 
 msgctxt "FilterWindow|"
 msgid "Hide rows that were filtered out."
-msgstr ""
+msgstr "Sembunyikan baris yang telah difilter."
 
 msgctxt "FilterWindow|"
 msgid "Show rows that were filtered out."
-msgstr ""
+msgstr "Tampilkan baris yang telah difilter."
 
 msgctxt "FilterWindow|"
 msgid "Apply pass-through filter"
-msgstr ""
+msgstr "Terapkan filter penembusan"
 
 msgctxt "FilterWindow|"
 msgid "Filter applied"
-msgstr ""
+msgstr "Filter diterapkan"
 
 msgctxt "FilterWindow|"
 msgid "Click to apply filter"
-msgstr ""
+msgstr "Klik untuk menerapkan filter"
 
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
-msgstr ""
+msgstr "Filter sudah diterapkan"
 
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
@@ -1139,31 +1139,31 @@ msgstr "Sembunyikan saringan"
 
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
-msgstr ""
+msgstr "Atur ulang semua tanda centang pada semua label"
 
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
-msgstr ""
+msgstr "Alihkan ke filter seret dan lepas"
 
 msgctxt "FilterWindow|"
 msgid "Reset to default filter"
-msgstr ""
+msgstr "Atur ulang ke filter bawaan"
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "Bantuan JASP"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
-msgstr ""
+msgstr "Cari untuk:"
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "Tambahkan Data"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "Hapus Data"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
@@ -1171,11 +1171,11 @@ msgstr "Atur ulang"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "Sembunyikan data"
 
 msgctxt "MainPage|"
 msgid "Show data"
-msgstr ""
+msgstr "Tampilkan data"
 
 msgctxt "MainPage|"
 msgid "Resize data/results"
@@ -1187,109 +1187,109 @@ msgstr "Seret untuk menampilkan data"
 
 msgctxt "MainPage|"
 msgid "Results"
-msgstr ""
+msgstr "Hasil"
 
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
-msgstr ""
+msgstr "Pasang Modul Pengembang"
 
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
-msgstr ""
+msgstr "Memasang Modul Pengembang"
 
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
-msgstr ""
+msgstr "Pilih Modul Pengembang"
 
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
-msgstr ""
+msgstr "Pasang modul pengembang terpilih"
 
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
-msgstr ""
+msgstr "Memasang modul pengembang sekarang"
 
 msgctxt "ModulesMenu|"
 msgid "Ready"
-msgstr ""
+msgstr "Siap"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
-msgstr ""
+msgstr "Memasang: %1\n"
 
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
-msgstr ""
+msgstr "Memuat: %1\n"
 
 msgctxt "ModulesMenu|"
 msgid "Loaded and ready for use!"
-msgstr ""
+msgstr "Dimuat dan siap untuk digunakan!"
 
 msgctxt "ModulesMenu|"
 msgid "Error occurred!"
-msgstr ""
+msgstr "Terjadi galat!"
 
 msgctxt "ModulesMenu|"
 msgid "Not ready for use?"
-msgstr ""
+msgstr "Tidak siap untuk digunakan?"
 
 msgctxt "ModulesMenu|"
 msgid "Uninstall module "
-msgstr ""
+msgstr "Copot pasang modul "
 
 msgctxt "RCommanderWindow|"
 msgid "R in JASP"
-msgstr ""
+msgstr "R dalam JASP"
 
 msgctxt "RCommanderWindow|"
 msgid "Welcome to R in JASP!"
-msgstr ""
+msgstr "Selamat datang di R dalam JASP!"
 
 msgctxt "RCommanderWindow|"
 msgid "Run code"
-msgstr ""
+msgstr "Jalankan kode"
 
 msgctxt "RCommanderWindow|"
 msgid "Pressing Ctrl+Enter or F5 will also run the code"
-msgstr ""
+msgstr "Menekan Ctrl+Enter atau F5 juga akan menjalankan kode"
 
 msgctxt "RCommanderWindow|"
 msgid "Clear output"
-msgstr ""
+msgstr "Bersihkan luaran"
 
 msgctxt "RCommanderWindow|"
 msgid "Cleared..."
-msgstr ""
+msgstr "Dibersihkan..."
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Changes were made"
-msgstr ""
+msgstr "Perubahan telah dibuat"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "There are unapplied changes; what would you like to do?"
-msgstr ""
+msgstr "Ada perubahan yang tidak diterapkan; apa yang Anda ingin lakukan?"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Apply"
-msgstr ""
+msgstr "Terapkan"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Discard"
-msgstr ""
+msgstr "Buang"
 
 msgctxt "SaveDiscardCancelDialog|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "SetSeed|"
 msgid "Repeatability"
-msgstr ""
+msgstr "Perulangan"
 
 msgctxt "SetSeed|"
 msgid "Set seed:"
-msgstr ""
+msgstr "Atur benih:"
 
 msgctxt "SimpleTableView|"
 msgid "Add Column"
@@ -1305,83 +1305,83 @@ msgstr "Atur ulang"
 
 msgctxt "SortMenuButton|"
 msgid "Sort the items"
-msgstr ""
+msgstr "Sortir item"
 
 msgctxt "SubjectivePriors|"
 msgid "Prior"
-msgstr ""
+msgstr "Priori"
 
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
-msgstr ""
+msgstr "Ukuran efek terstandardisasi"
 
 msgctxt "SubjectivePriors|"
 msgid "Default"
-msgstr ""
+msgstr "Bawaan"
 
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
-msgstr ""
+msgstr "Cauchy"
 
 msgctxt "SubjectivePriors|"
 msgid "scale"
-msgstr ""
+msgstr "skala"
 
 msgctxt "SubjectivePriors|"
 msgid "Informed"
-msgstr ""
+msgstr "Berinform"
 
 msgctxt "SubjectivePriors|"
 msgid "location:"
-msgstr ""
+msgstr "lokasi:"
 
 msgctxt "SubjectivePriors|"
 msgid "scale:"
-msgstr ""
+msgstr "skala:"
 
 msgctxt "SubjectivePriors|"
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 msgctxt "SubjectivePriors|"
 msgid "mean:"
-msgstr ""
+msgstr "rerata:"
 
 msgctxt "SubjectivePriors|"
 msgid "std:"
-msgstr ""
+msgstr "std:"
 
 msgctxt "SubjectivePriors|"
 msgid "t"
-msgstr ""
+msgstr "t"
 
 msgctxt "SubjectivePriors|"
 msgid "df:"
-msgstr ""
+msgstr "df:"
 
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
-msgstr ""
+msgstr "Ukuran efek mentah (Dienes)"
 
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
-msgstr ""
+msgstr "Keseragaman"
 
 msgctxt "SubjectivePriors|"
 msgid "lower bound:"
-msgstr ""
+msgstr "batas bawah:"
 
 msgctxt "SubjectivePriors|"
 msgid "upper bound:"
-msgstr ""
+msgstr "batas atas:"
 
 msgctxt "SubjectivePriors|"
 msgid "Half-normal"
-msgstr ""
+msgstr "Setengah-normal"
 
 msgctxt "WelcomePage|"
 msgid "Welcome to JASP"
-msgstr ""
+msgstr "Selamat datang di JASP"
 
 msgctxt "WelcomePage|"
 msgid "A Fresh Way to Do Statistics: Free, Friendly, and Flexible"
@@ -1702,9 +1702,10 @@ msgctxt "MessageForwarder|"
 msgid "No"
 msgstr ""
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "MessageForwarder|"
 msgid "Save"
@@ -2210,7 +2211,6 @@ msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr ""
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recent Files"
 msgstr "Berkas Terbaru"
@@ -2235,9 +2235,10 @@ msgctxt "ResourceButtons|"
 msgid "Data"
 msgstr ""
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Results"
-msgstr ""
+msgstr "Hasil"
 
 msgctxt "ResourceButtons|"
 msgid "Interface"
@@ -2649,9 +2650,10 @@ msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
 msgstr ""
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
@@ -2743,9 +2745,10 @@ msgctxt "PlotEditor|"
 msgid "OK"
 msgstr ""
 
+#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "PlotEditor|"
 msgid "Reset defaults"
@@ -5412,9 +5415,10 @@ msgctxt "ModulesMenu|"
 msgid "Install a local module"
 msgstr ""
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "ModulesMenu|"
 msgid "Cancel download"
@@ -5694,9 +5698,10 @@ msgctxt "EncryptionSettingsWindow|"
 msgid "Submit"
 msgstr ""
 
+#, fuzzy
 msgctxt "EncryptionSettingsWindow|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "VariablesWindow|"
 msgid "Use labels"
@@ -5727,7 +5732,6 @@ msgctxt "PlotEditingReferenceLines|"
 msgid "Type"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditingReferenceLines|"
 msgid "Text"
 msgstr "Teks"
@@ -5868,9 +5872,10 @@ msgctxt "CsvPreview|"
 msgid "Load"
 msgstr ""
 
+#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Cancel"
-msgstr ""
+msgstr "Batalkan"
 
 msgctxt "PrefsLanguage|"
 msgid "Preferred language"
@@ -5929,4 +5934,8 @@ msgstr ""
 
 msgctxt "RibbonButton|"
 msgid "Update available"
+msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Enterprise Support"
 msgstr ""

@@ -9402,3 +9402,7 @@ msgstr ""
 #~ "ne contenant aucune étiquette, ou lors de la création d'un jeu de données "
 #~ "à partir de zéro. Activez-la si vous voulez créer ou voir des étiquettes "
 #~ "personnalisées.\n"
+
+msgctxt "WelcomePage|"
+msgid "Enterprise Support"
+msgstr ""

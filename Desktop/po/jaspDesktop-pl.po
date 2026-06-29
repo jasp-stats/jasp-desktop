@@ -6353,3 +6353,7 @@ msgstr ""
 msgctxt "RibbonButton|"
 msgid "Update available"
 msgstr ""
+
+msgctxt "WelcomePage|"
+msgid "Enterprise Support"
+msgstr ""

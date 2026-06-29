@@ -559,8 +559,9 @@ FocusScope
 			anchors
 			{
 				right:				parent.right
-				bottom:				parent.bottom
+				bottom:				PRO ? parent.bottom : jaspUrlBv.top
 				margins:			10 * welcomeRoot.scaler
+				bottomMargin:		(PRO ? 10 : 4) * welcomeRoot.scaler
 			}
 			
 			JASPMouseAreaToolTipped
@@ -572,6 +573,40 @@ FocusScope
 				anchors.fill:				parent
 				cursorShape:				Qt.PointingHandCursor
 				toolTipText:				websiteUrl
+			}
+		}
+		
+		Text
+		{
+			id:						jaspUrlBv
+			text:					qsTr("Enterprise Support")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			jaspUrlBug.font.pixelSize
+			font.weight:			Font.Normal
+			font.underline:			jaspStatsMouseArea2.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+			visible:				!PRO	
+
+			anchors
+			{
+				right:				parent.right
+				bottom:				parent.bottom
+				margins:			10 * welcomeRoot.scaler
+			}
+			
+			JASPMouseAreaToolTipped
+			{
+				id:							jaspStatsMouseArea2
+				hoverEnabled:				true
+				property url websiteUrl:	"https://www.jasp-services.com"
+				onClicked:					Qt.openUrlExternally(websiteUrl);
+				anchors.fill:				parent
+				cursorShape:				Qt.PointingHandCursor
+				toolTipText:				websiteUrl
+				visible:					!PRO
 			}
 		}
 		
