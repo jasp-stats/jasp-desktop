@@ -283,7 +283,7 @@ msgstr "aufteilen Ihrer Daten in numBreaks Stufen"
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "Ersetzen Sie alle fehlenden Werte (NA) in der Spalte durch den Wert in replaceWith"
 "ersetze jeden fehlenden Wert (NA) in der Spalte durch den Wert in replaceWith"
 
 msgctxt "ComputeColumnWindow|"
@@ -362,13 +362,13 @@ msgstr "erzeugt Daten aus einer Uniformverteilung zwischen Min und Max"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
+msgstr "erzeugt Daten aus einer Gamma-Verteilung mit angegebener Form und Skalierung"
 "erzeugt Daten aus einer Gammaverteilung mit eingestelltem Form- und "
 "Skalenparameter"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
+msgstr "erzeugt Daten aus einer Exponentialverteilung mit angegebener Rate"
 "erzeugt Daten aus einer Exponentialverteilung mit eingegebenem Ratenparameter"
 
 msgctxt "ComputeColumnWindow|"
@@ -667,7 +667,7 @@ msgstr "In Datei protokollieren"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr ""
+msgstr "Aktivieren Sie dieses Kästchen, um Debug-Protokolle von JASP in einer Datei zu speichern."
 "Um Debug-Protokolle von JASP in einer Datei zu speichern, aktiviere diese "
 "Checkbox."
 
@@ -847,7 +847,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr ""
+msgstr "Animationen wurden bereits deaktiviert, da der \"Abgesicherte Grafikmodus\" aktiviert ist"
 "Animationen sind bereits ausgeschaltet weil \"Sicherer Grafikmodus\" "
 "eingeschaltet ist"
 
@@ -921,7 +921,7 @@ msgstr "Modulo: ergibt den Rest einer ganzzahligen Division. 3%2 ergibt 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
-msgstr ""
+msgstr "gibt logische Werte zurück und kann die Wurzel einer Filterformel sein"
 "liefert Wahrheitswerte und kann als Ausgangspunkt einer Formel für einen "
 "Filter dienen"
 
@@ -1110,7 +1110,7 @@ msgstr "Filter geändert"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
+msgstr "Es gibt nicht übernommene Änderungen an Ihrem Filter. Was möchten Sie tun?"
 "Es gibt ungespeicherte Änderungen an Ihrem Filter; was möchten Sie tun?"
 
 msgctxt "FilterWindow|"
@@ -1435,7 +1435,7 @@ msgstr "Klicke hier, um die neueste Version zu bekommen"
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr ""
+msgstr "Die Bearbeitungsoptionen für Plot %1 konnten nicht gefunden werden, daher funktioniert die Plotbearbeitung nicht..."
 "Konnte keine Bearbeitungsoptionen für Abb. %1 finden, also wird Bearbeiten "
 "der Abbildung nicht funktionieren..."
 
@@ -2223,12 +2223,12 @@ msgstr "Datendatei"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr ""
+msgstr "Benutzername und/oder Passwort sind nicht korrekt. Bitte versuchen Sie es erneut."
 "Benutzername und/oder Passwort sind nicht korrekt. Bitte nochmal probieren."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr ""
+msgstr "OSF-Dienst nicht verfügbar. Bitte überprüfen Sie Ihre Internetverbindung."
 "OSF-Service ist nicht erreichbar. Bitte prüfen Sie Ihre Internetverbindung."
 
 msgctxt "OSF|"
@@ -2285,7 +2285,7 @@ msgstr "Fehler beim Öffnen der Datei von OSF"
 
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
-msgstr ""
+msgstr "Es ist ein Fehler aufgetreten und der Ordner konnte nicht erstellt werden."
 "Ein Fehler ist aufgetreten und das Verzeichnis konnte nicht angelegt werden."
 
 msgctxt "OSF|"
@@ -2308,7 +2308,7 @@ msgstr ""
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr ""
+msgstr "Ein neuer Ordner kann aus unbekanntem Grund nicht zu '%1' hinzugefügt werden."
 "Eine neues Verzeichnis kann aus unbekanntem Grund nicht zu '%1' hinzugefügt "
 "werden."
 
@@ -2516,7 +2516,7 @@ msgstr "Standardisiert die Variable"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "gibt true zurück, wenn die Zeichenkette die Teilzeichenkette mindestens einmal enthält"
 "liefert wahr, wenn Zeichenfolge mindestens einmal eine Teilzeichenfolge "
 "enthält"
 
@@ -2526,7 +2526,7 @@ msgstr "Standardisiert die Variable"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr ""
+msgstr "gibt true zurück, wenn die Zeichenkette die Teilzeichenkette mindestens einmal enthält"
 "liefert wahr, wenn Zeichenfolge mindestens einmal eine Teilzeichenfolge "
 "enthält"
 
@@ -2810,7 +2810,7 @@ msgstr "Führe R-Code in einer Konsole aus"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr ""
+msgstr "In einem VariablesForm kann nur 1 Liste verfügbarer Variablen festgelegt werden"
 "Pro VariablesForm kann nur 1 Liste mit Available Variables eingestellt werden"
 
 msgctxt "VariablesFormBase|"
@@ -3102,7 +3102,7 @@ msgstr "Abfrage war keine SELECT-ähnliche Anweisung und gab nichts zurück."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr ""
+msgstr "Kein aktives Ergebnis gefunden. Möglicherweise stimmt etwas mit Ihrer Abfrage nicht?"
 "Kein aktives Ergebnis gefunden, vielleicht stimmt etwas mit Ihrer Abfrage "
 "nicht?"
 
@@ -3134,7 +3134,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr ""
+msgstr "Es konnte keine Verbindung zur Datenbank hergestellt werden, daher wird die Synchronisierung deaktiviert."
 "Es konnte keine Verbindung zur Datenbank hergestellt werden, daher wird die "
 "Synchronisierung deaktiviert."
 
@@ -3339,7 +3339,7 @@ msgstr "Keine Quelle in Formel randomEffects gefunden"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr ""
+msgstr "randomEffects in Formel kann nur mit einem ComponentsList-Element verwendet werden"
 "randomEffects in Formel kann nur mit einem ComponentsList-Element verwendet "
 "werden"
 
@@ -3478,12 +3478,12 @@ msgstr "hat ausgewähltes Modul "
 
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr ""
+msgstr "Klicken Sie auf die unten stehende Datei, um sie zu synchronisieren oder zu verwenden"
 "Klicken Sie auf die Datei unten, um sie zu synchronisieren oder zu verwenden "
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "CSV als ausgewählte Codepage annehmen, wenn kein BOM angegeben ist."
 "Annehmen, dass CSV die ausgewählte Zeichensatztabelle ist, wenn kein BOM "
 "angegeben ist."
 
@@ -4158,12 +4158,12 @@ msgstr "Den aktuellen Arbeitsbereich mit diesen Werten einstellen"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr ""
+msgstr "Legen Sie die fehlenden Werte des aktuellen Arbeitsbereichs mit diesen Werten fest"
 "Die fehlenden Werte des aktuellen Arbeitsbereichs auf diese Werte einstellen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "Bearbeiten Sie hier die Beschriftungen oder wählen Sie, welche Werte herausgefiltert werden sollen."
 "Bearbeiten Sie hier die Beschriftungen oder wählen Sie aus, welche Werte "
 "herausgefiltert werden sollen."
 
@@ -4224,7 +4224,6 @@ msgctxt "RibbonBar|"
 msgid "Show workspace settings"
 msgstr "Arbeitsbereich-Einstellungen anzeigen"
 
-#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
@@ -4235,7 +4234,7 @@ msgstr "Benutzerdefinierte Werte verwenden"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr ""
+msgstr "Fehlende Werte mit den in Ihrem Arbeitsbereich festgelegten zurücksetzen"
 "Fehlende Werte zurücksetzen, auf die Einstellungen Ihres Arbeitsbereichs"
 
 msgctxt "QObject|"
@@ -4532,7 +4531,6 @@ msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "Faktor"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
 msgstr "Baukasten-Spalte davor einfügen"
@@ -4575,14 +4573,14 @@ msgstr "Hier klicken, um ausgewählte Variable zu ändern"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "Klicken Sie hier, um die Zeile auszuwählen. Halten Sie die Umschalttaste für Mehrfachauswahl."
 "Hier klicken um die Zeile auszuwählen; Umschalttaste gedrückt halten, um "
 "mehrere auszuwählen."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr ""
+msgstr "Ursprünglichen Wert von '%3' auf '%4' für Beschriftung '%1' der Spalte '%2' setzen"
 "Set ursprünglichen Wert von '%3' auf '%4' für Bezeichnung '%1' von Spalte "
 "'%2'"
 
@@ -4621,7 +4619,7 @@ msgstr "Spaltentyp-Änderung fehlgeschlagen"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "Die Spalte '%1' wird von einer Analyse generiert und ihr Typ ist fest."
 "Die Spalte \"%1\" wird durch eine Analyse erzeugt und deren Typ ist fixiert."
 
 #, qt-format
@@ -4629,7 +4627,7 @@ msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
 msgstr "Typ auf '%1' für Spalte(n) '%2' setzen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
 msgstr "Werte von Spalte(n) '%1' umdrehen"
@@ -4690,12 +4688,10 @@ msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
 msgstr "Benutzerdefinierte Kontraste-Tabelle"
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
 msgstr "Gefilterte Dateneingabe-Tabelle"
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Grid Table"
 msgstr "Gitter-Tabelle"
@@ -4819,10 +4815,10 @@ msgctxt "WelcomePage|"
 msgid "Visit the website"
 msgstr "Die Webseite besuchen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
-msgstr ""
+msgstr "Automatische Sortierung der Beschriftungen nach Werten für Spalte(n) '%1' umschalten"
 "Umschalten Auto-Sortieren von Beschriftungen nach Werten für Spalte(n) '%1'"
 
 msgctxt "RibbonModel|"
@@ -4871,7 +4867,7 @@ msgstr ""
 "*in der Analyse* angezeigt, dass es etwas gibt, das Sie berücksichtigen "
 "sollten. Glücklicherweise brauchen wir dies fast nie zu benutzen."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels, of which %2 have a numeric value.\n"
@@ -4887,7 +4883,7 @@ msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
 msgstr "Implizit fehlende Werte: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels.\n"
@@ -4958,7 +4954,7 @@ msgstr "<Füllen Sie erst den Spaltennamen ein>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "Maximal zulässige Stufen für Skala bei Verwendung als nominal/ordinal"
 "Maximal erlaubte Stufen für Metrisch bei Verwendung als Nominal/Ordinal"
 
 msgctxt "PrefsData|"
@@ -5089,7 +5085,6 @@ msgstr ""
 "Klicken Sie auf das (i)-Symbol in der unteren rechten Ecke für weitere "
 "Hilfe.\n"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Feld Spaltenname-ist-frei"
@@ -5097,7 +5092,7 @@ msgstr "Feld Spaltenname-ist-frei"
 #, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
-msgstr ""
+msgstr "Spalte '%1' existiert bereits und wird nicht von dieser Analyse erstellt."
 "Spalte '%1' existiert bereits und wird nicht von dieser Analyse angelegt."
 
 #, qt-format
@@ -5173,7 +5168,7 @@ msgstr "Quellen-Verzeichnis:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
-msgstr ""
+msgstr "Wählen Sie die R-Bibliothek, in der Sie das Entwicklungsmodul installiert haben"
 "Wählen Sie die R-Bibliothek, wo Sie das Entwicklungsmodul installiert haben"
 
 msgctxt "PrefsAdvanced|"
@@ -5182,12 +5177,12 @@ msgstr "Modulname:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr ""
+msgstr "Geben Sie den (Paket-)Namen des Entwicklungsmoduls ein, das Sie laden möchten"
 "Geben Sie den (Paket-)Namen des Entwicklungsmoduls ein, das Sie laden möchten"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "Wählen Sie ein Entwicklermodul aus, indem Sie die entsprechenden Einstellungen ausfüllen"
 "Wählen Sie ein Entwicklungsmodul aus, indem Sie die entsprechenden "
 "Präferenzen ausfüllen"
 
@@ -5197,7 +5192,7 @@ msgstr "Entwicklungsmodul neu laden "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "0 gültige Spalten wurden aus der Datei gelesen, bitte überprüfen Sie Ihre Datendatei."
 "Aus der Datei wurden 0 gültige Spalten gelesen, bitte überprüfen Sie ihre "
 "Datendatei."
 
@@ -5279,19 +5274,19 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr ""
+msgstr "Automatische Sortierung ausschalten, um die Reihenfolge aller Beschriftungen umzukehren"
 "Automatisches Sortieren ausstellen, um die Reihenfolge aller Beschriftungen "
 "umzudrehen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr ""
+msgstr "Automatische Sortierung ausschalten, um Beschriftungen manuell nach oben zu verschieben"
 "Automatisches Sortieren ausstellen, um Beschriftungen manuell nach oben zu "
 "bewegen"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr ""
+msgstr "Automatische Sortierung ausschalten, um Beschriftungen manuell nach unten zu verschieben"
 "Automatisches Sortieren ausstellen, um Beschriftungen manuell nach unten zu "
 "bewegen"
 
@@ -5303,12 +5298,12 @@ msgctxt "QObject|"
 msgid "Use filter"
 msgstr "Filter verwenden"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
 msgstr "Ändern des Berechnungsfilters von Spalte '%1' von '%2' auf '%3'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
 msgstr "Ändern der Stufen-Auslassung von Spalte '%1' von '%2' auf '%3'"
@@ -5329,7 +5324,7 @@ msgstr "Engines sandboxen"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
-msgstr ""
+msgstr "Erhöhen Sie die Sicherheit unter Windows, indem Sie Engines, die R-Code ausführen, isolieren"
 "Stärken der Sicherheit unter Windows durch Isolierung der Engines zur "
 "Ausführung von R-Code"
 
@@ -5445,7 +5440,7 @@ msgstr "Verwendung einer Remote-Konfigurationsdatei."
 
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
-msgstr ""
+msgstr "Die durch die URL angegebene Remote-Konfigurationsdatei verwenden"
 "Verwendung der Remote-Konfigurationsdatei, auf die von URL verwiesen wird"
 
 msgctxt "PrefsAdvanced|"
@@ -5555,7 +5550,7 @@ msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
 msgstr "Mögliche Werte sind: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
 msgstr "Ursprünglich importiert in %1 auf %2"
@@ -5566,7 +5561,7 @@ msgstr "Lade R-Datendatei"
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "0 gültige Spalten wurden aus der Datei gelesen, bitte überprüfen Sie Ihre Datendatei."
 "Aus der Datei wurden 0 gültige Spalten gelesen, bitte überprüfen Sie ihre "
 "Datendatei."
 
@@ -5742,7 +5737,7 @@ msgstr "Gespeichert unter %1"
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
-msgstr ""
+msgstr "Vor %1 Sekunden gespeichert, könnte noch in einer anderen JASP-Instanz geladen sein."
 "Gespeichert vor %1 Sekunden, könnte noch in einem anderen JASP geladen "
 "werden."
 
@@ -5802,7 +5797,6 @@ msgstr ""
 "'movingRange'. Die Suche nach optimalem Lambda wird begrenzt in \"untere\" "
 "und \"obere\" Grenzen."
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Two-parameter power transform (scale-invariant Box-Box; transforms values "
@@ -5848,7 +5842,7 @@ msgstr "URL Modulbibliothek: "
 
 msgctxt "ModulesMenu|"
 msgid "Not allowed to show the module library to install modules"
-msgstr ""
+msgstr "Das Anzeigen der Modulbibliothek zum Installieren von Modulen ist nicht erlaubt"
 "Nicht erlaubt, die Modulbibliothek zu zeigen, um Module zu installieren"
 
 msgctxt "ModulesMenu|"
@@ -5885,7 +5879,6 @@ msgctxt "tst_formulaField|"
 msgid "Dummy"
 msgstr "Platzhalter"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading Minitab Data Workbook File"
 msgstr "Lade Minitab Daten-Arbeitsbuch-Datei"
@@ -5980,7 +5973,7 @@ msgstr ""
 #, qt-format
 msgctxt "DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr ""
+msgstr "Beim Laden des Moduls %1 ist ein Fehler aufgetreten. Der Fehler war: '%2'"
 "Beim Versuch, Modul %1 zu laden trat ein Fehler auf; der Fehler war: '%2'"
 
 #, qt-format
@@ -6179,7 +6172,7 @@ msgstr "JASP-Team Einsendung."
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Click here if you want the JASP Team be able to open the file"
-msgstr ""
+msgstr "Klicken Sie hier, wenn das JASP-Team die Datei öffnen können soll"
 "Hier klicken, wenn Sie möchten dass das JASP-Team die Datei öffnen können "
 "soll"
 
@@ -6406,12 +6399,12 @@ msgstr "Deaktivieren, um Tausender-Trennzeichen von allen Zahlen zu entfernen."
 
 msgctxt "PrefsLanguage|"
 msgid "Use an alternative language and territory dependent display for numbers"
-msgstr ""
+msgstr "Alternative sprach- und gebietsabhängige Anzeige für Zahlen verwenden"
 "Verwenden Sie eine andere Sprache und gebietsabhängige Anzeige für Zahlen"
 
 msgctxt "PrefsLanguage|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr ""
+msgstr "Verwenden Sie die unten angegebene Locale für die Anzeige von Zahlen und Währung."
 "Verwenden Sie die unten angegebene Sprachumgebung für die Anzeige von Zahlen "
 "und Währung."
 
@@ -6460,7 +6453,6 @@ msgctxt "RibbonButton|"
 msgid "Update available"
 msgstr "Update verfügbar"
 
-#, fuzzy
 msgctxt "HelpButton|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
@@ -9330,6 +9322,7 @@ msgstr ""
 #~ "ohne Beschriftungen importiert werden oder wenn ein Datensatz von Grund "
 #~ "auf neu erstellt wird. Aktivieren Sie ihn, wenn Sie benutzerdefinierte "
 #~ "Beschriftungen erstellen oder anzeigen möchten.\n"
+
 msgctxt "WelcomePage|"
 msgid "Enterprise Support"
-msgstr ""
+msgstr "Enterprise-Support"

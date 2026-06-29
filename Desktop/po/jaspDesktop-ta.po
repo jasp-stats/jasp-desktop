@@ -283,7 +283,7 @@ msgstr "numBreaks நிலைகளில் உங்கள் தரவை �
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
+msgstr "நிரலில் விடுபட்ட எந்த மதிப்புகளையும் (NA) replaceWith இல் உள்ள மதிப்பால் மாற்றவும்"
 "நெடுவரிசையில் ஏதேனும் விடுபட்ட மதிப்புகளை (NA) ReplaceWith இல் உள்ள மதிப்பால் மாற்றவும்"
 
 msgctxt "ComputeColumnWindow|"
@@ -355,7 +355,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
-msgstr ""
+msgstr "குறைந்தபட்சம் மற்றும் அதிகபட்சம் இடையே ஒரு சீரான பரவலில் இருந்து தரவை உருவாக்குகிறது"
 "மணித்துளி மற்றும் அதிகபட்சம் இடையே ஒரு சீரான விநியோகத்திலிருந்து தரவை உருவாக்குகிறது"
 
 msgctxt "ComputeColumnWindow|"
@@ -447,7 +447,7 @@ msgstr "பெயர்:"
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
-msgstr ""
+msgstr "நிரல் பெயர் ஏற்கனவே பயன்பாட்டில் உள்ளது. வேறொன்றைத் தேர்வு செய்யவும்."
 "நெடுவரிசைப் பெயர் ஏற்கனவே பயன்படுத்தப்பட்டுள்ளது, தயவுசெய்து வேறு ஒன்றைத் தேர்ந்தெடுக்கவும்."
 
 msgctxt "CreateComputeColumnDialog|"
@@ -660,7 +660,7 @@ msgstr "கோப்பில் உள்நுழைக"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr ""
+msgstr "JASP இன் பிழைதிருத்தப் பதிவுகளை ஒரு கோப்பில் சேமிக்க, இந்தப் பெட்டியைத் தேர்வு செய்யவும்."
 "JASP இன் பிழைத்திருத்தப் பதிவுகளை ஒரு கோப்பில் சேமிக்க, இந்தப் பெட்டியைத் தேர்வு செய்யவும்."
 
 msgctxt "PrefsAdvanced|"
@@ -836,7 +836,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr ""
+msgstr "\"பாதுகாப்பான வரைகலை பயன்முறை\" இயக்கத்தில் இருப்பதால் அசைவூட்டங்கள் ஏற்கனவே முடக்கப்பட்டுள்ளன"
 "\"பாதுகாப்பான கிராபிக்ச் பயன்முறை\" இயக்கத்தில் இருப்பதால் ஏற்கனவே அனிமேசன்கள் "
 "முடக்கப்பட்டுள்ளன"
 
@@ -864,7 +864,7 @@ msgstr "கணக்கிடப்பட்ட நெடுவரிசைக�
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
+msgstr "அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்."
 "அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்."
 
 msgctxt "ComputedColumnsConstructor|"
@@ -877,7 +877,7 @@ msgstr "டிராக் அண்ட் டிராப் கம்ப்ய
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr ""
+msgstr "தேவையற்ற துணுக்குகளை இங்கே இடவும். அனைத்தையும் அழிக்க இருமுறை கிளிக் செய்யவும்."
 "தேவையற்ற துணுக்குகளை இங்கே கொட்டவும்; முழு ச்லேட்டையும் அழிக்க இருமுறை சொடுக்கு செய்யவும்"
 
 msgctxt "OperatorSelector|"
@@ -1098,7 +1098,7 @@ msgstr "வடிகட்டி மாற்றப்பட்டது"
 
 msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
-msgstr ""
+msgstr "உங்கள் வடிகட்டியில் பயன்படுத்தப்படாத மாற்றங்கள் உள்ளன. நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?"
 "உங்கள் வடிகட்டியில் பயன்படுத்தப்படாத மாற்றங்கள் உள்ளன; நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?"
 
 msgctxt "FilterWindow|"
@@ -1431,7 +1431,7 @@ msgstr "அண்மைக் கால பதிப்பைப் பெற �
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr ""
+msgstr "வரைவு %1 இன் திருத்த விருப்பங்களைக் கண்டுபிடிக்க முடியவில்லை, எனவே வரைவு திருத்தம் செயல்படாது..."
 "ப்ளாட் %1 இன் திருத்து ஆப்சன்களை கண்டுபிடிக்க முடியவில்லை அதனால் ப்ளாட் திருத்துதல் வேலை "
 "செய்யாது..."
 
@@ -3305,7 +3305,7 @@ msgstr "வினவல் ஒரு தேர்ந்தெடு போன்
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr ""
+msgstr "செயலில் உள்ள முடிவு எதுவும் கிடைக்கவில்லை. உங்கள் வினவலில் ஏதேனும் சிக்கல் உள்ளதா?"
 "செயலில் முடிவு எதுவும் கிடைக்கவில்லை, ஒருவேளை உங்கள் வினவலில் ஏதேனும் தவறு உள்ளதா?"
 
 msgctxt "DataSetPackage|"
@@ -3551,7 +3551,7 @@ msgstr "ஃபார்முலா randomEffects இல் எந்த ஆத�
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr ""
+msgstr "Formula இல் randomEffects ஐ ComponentsList உருப்படியுடன் மட்டுமே பயன்படுத்த முடியும்"
 "பார்முலாவில் உள்ள randomEffects ஒரு ComponentsList உருப்படியுடன் மட்டுமே "
 "பயன்படுத்தப்படும்"
 
@@ -3704,7 +3704,7 @@ msgstr "இந்த மாறிகள் அகற்றப்பட்டன,
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr ""
+msgstr "BOM குறிப்பிடப்படாதபோது, CSV தேர்ந்தெடுக்கப்பட்ட குறியீட்டுப் பக்கமாகக் கருதவும்."
 "BOM எதுவும் குறிப்பிடப்படாதபோது, CSV என்பது தேர்ந்தெடுக்கப்பட்ட குறியீட்டுப்பக்கம் என்று "
 "வைத்துக்கொள்வோம்."
 
@@ -4400,7 +4400,7 @@ msgstr "தற்போதைய பணியிடத்தில் விட�
 
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr ""
+msgstr "இங்கே சிட்டைகளைத் திருத்தவும் அல்லது எந்த மதிப்புகள் வடிகட்டப்பட வேண்டும் என்பதைத் தேர்வு செய்யவும்."
 "இங்கே லேபிள்களைத் திருத்தவும் அல்லது எந்த மதிப்புகளை வடிகட்ட வேண்டும் என்பதைத் "
 "தேர்ந்தெடுக்கவும்."
 
@@ -4434,7 +4434,7 @@ msgstr "இந்த நெடுவரிசைக்கான அனைத்�
 
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
-msgstr ""
+msgstr "அனைத்து நிரல்களுக்கும் அனைத்து வடிகட்டி சரிபார்ப்புக் குறிகளையும் மீட்டமைக்கவும்"
 "அனைத்து நெடுவரிசைகளுக்கும் அனைத்து வடிகட்டி சரிபார்ப்பு அடையாளங்களையும் மீட்டமைக்கவும்"
 
 msgctxt "MainPage|"
@@ -4456,7 +4456,7 @@ msgstr "விளக்கம்: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr ""
+msgstr "தரவு விருப்பத்தேர்வுகளில் அமைக்கப்பட்டவற்றுடன் விடுபட்ட மதிப்புகளை மீட்டமைக்கவும்"
 "தரவு விருப்பத்தேர்வுகளில் அமைக்கப்பட்ட மதிப்புகளுடன் விடுபட்ட மதிப்புகளை மீட்டமைக்கவும்"
 
 msgctxt "RibbonBar|"
@@ -4799,14 +4799,14 @@ msgstr "தேர்ந்தெடுக்கப்பட்ட மாறி�
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr ""
+msgstr "வரிசையைத் தேர்ந்தெடுக்க இங்கே கிளிக் செய்யவும். பலவற்றைத் தேர்ந்தெடுக்க Shift ஐ அழுத்திப் பிடிக்கவும்."
 "வரிசையைத் தேர்ந்தெடுக்க இங்கே சொடுக்கு செய்யவும், பலவற்றைத் தேர்ந்தெடுக்க சிப்ட் அழுத்திப் "
 "பிடிக்கவும்."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr ""
+msgstr "நிரல் '%2' இன் சிட்டை '%1' க்கான அசல் மதிப்பை '%3' இலிருந்து '%4' ஆக அமைக்கவும்"
 "'%2' நெடுவரிசையின் '%1' லேபிளுக்கு அசல் மதிப்பை '%3' இலிருந்து '%4' ஆக அமைக்கவும்"
 
 msgctxt "RibbonModel|"
@@ -4844,7 +4844,7 @@ msgstr "நெடுவரிசை வகையை மாற்ற முடி
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
-msgstr ""
+msgstr "நிரல் '%1' ஒரு பகுப்பாய்வால் உருவாக்கப்பட்டது மற்றும் அதன் வகை நிலையானது."
 "நெடுவரிசை '%1' ஒரு பகுப்பாய்வின் மூலம் உருவாக்கப்பட்டு அதன் வகை சரி செய்யப்பட்டது."
 
 #, qt-format
@@ -5174,7 +5174,7 @@ msgstr "<நெடுவரிசையின் பெயரை முதலி
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr ""
+msgstr "பெயரளவு/வரிசைமுறையாகப் பயன்படுத்தும்போது அளவுகோலுக்கான அதிகபட்ச அனுமதிக்கப்பட்ட நிலைகள்"
 "பெயரளவு/ஆர்டினல் எனப் பயன்படுத்தப்படும் போது, அளவிற்கான அதிகபட்ச அனுமதிக்கப்பட்ட நிலைகள்"
 
 msgctxt "PrefsData|"
@@ -5268,7 +5268,7 @@ msgstr "வடிகட்டி பயன்படுத்தப்பட்�
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr ""
+msgstr "அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்.\\n"
 "அனைத்து வாதங்களையும் உள்ளிடவும் - சிவப்பு நிறத்தில் குறிக்கப்பட்ட புலங்களைப் பார்க்கவும்.\n"
 
 msgctxt "FilterConstructor|"
@@ -5398,7 +5398,7 @@ msgstr "நீங்கள் ஏற்ற விரும்பும் டெ
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr ""
+msgstr "தொடர்புடைய விருப்பத்தேர்வுகளை நிரப்புவதன் மூலம் மேம்பாட்டு தொகுதியைத் தேர்ந்தெடுக்கவும்"
 "தொடர்புடைய விருப்பங்களை நிரப்புவதன் மூலம் உருவாக்குபவர் தொகுதியைத் தேர்ந்தெடுக்கவும்"
 
 msgctxt "ModulesMenu|"
@@ -5407,7 +5407,7 @@ msgstr "உருவாக்குபவர் தொகுதியைப் �
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "கோப்பிலிருந்து 0 சரியான நிரல்கள் படிக்கப்பட்டன. உங்கள் தரவுக் கோப்பைச் சரிபார்க்கவும்."
 "0 செல்லுபடியாகும் நெடுவரிசைகள் கோப்பிலிருந்து படிக்கப்பட்டன, தயவுசெய்து உங்கள் தரவுக் "
 "கோப்பைச் சரிபார்க்கவும்."
 
@@ -5560,7 +5560,7 @@ msgstr "சாண்ட்பாக்ச் இயந்திரங்கள�
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
-msgstr ""
+msgstr "R-குறியீட்டை இயக்கும் என்ஜின்களைத் தனிமைப்படுத்துவதன் மூலம் Windows இல் பாதுகாப்பை வலுப்படுத்தவும்"
 "ஆர்-கோட் இயங்கும் என்சின்களை தனிமைப்படுத்துவதன் மூலம் சாளரங்களில் பாதுகாப்பை பலப்படுத்தவும்"
 
 msgctxt "PrefsUI|"
@@ -5812,7 +5812,7 @@ msgstr "ஆர் தரவு கோப்பை ஏற்றுகிறது
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr ""
+msgstr "கோப்பிலிருந்து 0 சரியான நிரல்கள் படிக்கப்பட்டன. உங்கள் தரவுக் கோப்பைச் சரிபார்க்கவும்."
 "0 செல்லுபடியாகும் நெடுவரிசைகள் கோப்பிலிருந்து படிக்கப்பட்டன, தயவுசெய்து உங்கள் தரவுக் "
 "கோப்பைச் சரிபார்க்கவும்."
 
@@ -5986,7 +5986,7 @@ msgstr "%1 இல் சேமிக்கப்பட்டது"
 #, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
-msgstr ""
+msgstr "%1 வினாடிகளுக்கு முன் சேமிக்கப்பட்டது. வேறொரு JASP இல் இன்னும் ஏற்றப்பட்டிருக்கலாம்."
 "%1 வினாடிகளுக்கு முன்பு சேமிக்கப்பட்டது, இன்னும் மற்றொரு JASP இல் ஏற்றப்பட்டிருக்கலாம்."
 
 msgctxt "ResourceButtons|"

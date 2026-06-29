@@ -36,7 +36,7 @@ QMap<QString, bool> LanguageModel::LanguageInfo::_allowedLanguages =
 	{ "eu"		,	true	},
 	{ "id"		,	false	},
 	{ "ru"		,	false	},
-	{ "it"		,	false	}
+	{ "it"		,	false	},{ "hu"		,	false	},{ "ar"		,	false	}
 };
 
 QString LanguageModel::LanguageInfo::_incompleteFlag = "(incomplete)";

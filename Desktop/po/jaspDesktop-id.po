@@ -1702,7 +1702,6 @@ msgctxt "MessageForwarder|"
 msgid "No"
 msgstr ""
 
-#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Cancel"
 msgstr "Batalkan"
@@ -2235,7 +2234,6 @@ msgctxt "ResourceButtons|"
 msgid "Data"
 msgstr ""
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Results"
 msgstr "Hasil"
@@ -2650,7 +2648,6 @@ msgctxt "MainWindow|"
 msgid "Generate Data File as CSV"
 msgstr ""
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Cancel"
 msgstr "Batalkan"
@@ -2745,7 +2742,6 @@ msgctxt "PlotEditor|"
 msgid "OK"
 msgstr ""
 
-#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Cancel"
 msgstr "Batalkan"
@@ -5415,7 +5411,6 @@ msgctxt "ModulesMenu|"
 msgid "Install a local module"
 msgstr ""
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Cancel"
 msgstr "Batalkan"
@@ -5698,7 +5693,6 @@ msgctxt "EncryptionSettingsWindow|"
 msgid "Submit"
 msgstr ""
 
-#, fuzzy
 msgctxt "EncryptionSettingsWindow|"
 msgid "Cancel"
 msgstr "Batalkan"
@@ -5872,7 +5866,6 @@ msgctxt "CsvPreview|"
 msgid "Load"
 msgstr ""
 
-#, fuzzy
 msgctxt "CsvPreview|"
 msgid "Cancel"
 msgstr "Batalkan"
