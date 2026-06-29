@@ -11,22 +11,34 @@ sequenceDiagram
         DC->>JS: connect.handler(messages, signals)
         JS->>JS: currentSignals = signals
         JS->>CPP: aiBridge.startStream(json)
-        CPP->>CPP: append user messages
+
+        Note over CPP: startStream()
+        CPP->>CPP: isBusy()? reject with error if yes
+        CPP->>CPP: is m_isIntroStream? kill intro silently
+        CPP->>CPP: else if m_streaming? stopStream()
+        CPP->>CPP: append new msgs to m_conversation
+        CPP->>CPP: clear delta, toolCallAccum, toolCallOrder
+        CPP->>CPP: check token limit (reject if exceeded)
         CPP-->>JS: emit onStreamOpen()
         JS->>DC: signals.onOpen()
-        Note over DC: new AI message bubble
-        CPP->>API: POST /chat/completions (SSE)
-        Note over CPP,API: body: model, messages, tools
+        Note over DC: new AI message bubble appears
+        CPP->>API: POST /chat/completions (SSE, with tools)
+        Note over CPP,API: body: model, stream, messages, tools, extraParams
         loop SSE streaming
-            API-->>CPP: delta: {"content":"Sure"}
+            API-->>CPP: delta: content "Sure"
+            CPP->>CPP: merge into m_assistantDelta
             CPP-->>JS: onStreamChunk("Sure")
-            JS->>DC: signals.onResponse({text:"Sure"})
-            API-->>CPP: delta: {"content":", running now"}
+            JS->>DC: signals.onResponse
+            API-->>CPP: delta: content ", running now"
             CPP-->>JS: onStreamChunk(", running now")
-            JS->>DC: signals.onResponse({text:", running now"})
+            JS->>DC: signals.onResponse
         end
-        API-->>CPP: data: [DONE]
+        API-->>CPP: stream done
+        Note over CPP: onReplyFinished()
+        CPP->>CPP: process remaining SSE buffer
+        Note over CPP: no tool calls: save asst msg to m_conversation
+        Note over CPP: m_processingReply=false, m_streaming=false
         CPP-->>JS: emit onStreamClose()
         JS->>DC: signals.onClose()
-        CPP->>CPP: save assistant msg to m_conversation
+        Note over CPP: if deferredClearChat: execute now
     end
