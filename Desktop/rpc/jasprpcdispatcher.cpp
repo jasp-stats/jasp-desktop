@@ -603,8 +603,15 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 		// The snapshot piggybacks on the normal result.  After delivery the
 		// baseline advances so the snapshot only appears when something
 		// actually changed.
+		//
+		// Data dirty flags are cleared unconditionally on every read — the
+		// agent is observing the workspace, so data changes are implicitly
+		// seen.  This prevents a stale _dataState.dirty from triggering an
+		// unnecessary _stateUpdate or a spurious divergence on the next call.
 		if (!failOnDiverged)
 		{
+			AgentStateTracker::notifyDataObserved();
+
 			if (auto * t = AgentStateTracker::tracker(); t && t->isDirty())
 			{
 				result["_stateUpdate"] = t->buildWorkspaceSnapshot();
