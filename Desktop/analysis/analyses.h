@@ -20,6 +20,7 @@
 #define ANALYSES_H
 
 #include "analysis.h"
+#include "analysisgroup.h"
 #include "appinfo.h"
 #include "data/datasetpackage.h"
 #include "modules/upgrader/upgrader.h"
@@ -55,7 +56,22 @@ public:
 					analysisRole,
 					titleRole,
 					nameRole,
-					idRole};
+					idRole,
+					isGroupRole,
+					groupTitleRole,
+					groupIdRole,
+					groupCollapsedRole,
+					isVisibleInGroupRole };
+
+	/// An entry in the flat ordered list exposed to QML: either an Analysis or a Group header.
+	struct OrderedItem
+	{
+		enum class Type { Analysis, Group } type;
+		size_t id;
+
+		bool isAnalysis() const { return type == Type::Analysis; }
+		bool isGroup()    const { return type == Type::Group;    }
+	};
 
 						Analyses();
 						~Analyses()	{ _singleton = nullptr; }
@@ -67,7 +83,7 @@ public:
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(Json::nullValue, analysisEntry, _nextId++);						}
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, const Json::Value & options);
 
-	Analysis	*	operator[](size_t index)	{ return _analysisMap[_orderedIds[index]]; }
+	Analysis	*	operator[](size_t index)	{ return index < _orderedItems.size() && _orderedItems[index].isAnalysis() ? _analysisMap[_orderedItems[index].id] : nullptr; }
 	Analysis	*	get(size_t id) const		{ return _analysisMap.count(id) > 0 ? _analysisMap.at(id) : nullptr;	}
 
 	void			clear();
@@ -78,7 +94,7 @@ public:
 	bool			allFinished()	const;
 	void			setAnalysesUserData(Json::Value userData);
 	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
-	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
+	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, const Json::Value & groups = Json::nullValue, const Json::Value & itemOrder = Json::nullValue);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);
@@ -87,13 +103,13 @@ public:
 	void		applyToAll(std::function<void(Analysis *analysis)> applyThis);
 	void		applyToAll(std::function<void(Analysis *analysis)> applyThis) const;
 
-	int			count() const	{ assert(_analysisMap.size() == _orderedIds.size()); return _analysisMap.size(); }
+	int			count() const	{ return int(_analysisMap.size()); }
 
 	Json::Value asJson() const;
 
 	void		selectAnalysis(Analysis * analysis);
 	
-	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(count()); }
+	int						rowCount(const QModelIndex & = QModelIndex())				const override	{ return int(_orderedItems.size()); }
 	QVariant				data(const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()													const override;
 	int						currentAnalysisIndex()										const			{ return _currentAnalysisIndex;	}
@@ -107,6 +123,10 @@ public:
 	Analysis*				createAnalysis(const QString& module, const QString& analysis);
 
 public slots:
+	Q_INVOKABLE void addGroup(const QString & title = "");
+	Q_INVOKABLE void removeGroup(int groupId);
+	Q_INVOKABLE void setGroupTitle(int groupId, const QString & title);
+	Q_INVOKABLE void toggleGroupCollapsed(int groupId);
 	void removeAnalysisById(size_t id);
 	void removeAnalysis(Analysis *analysis);
 	void refreshAllAnalyses();
@@ -197,10 +217,12 @@ private:
 									_tempSave;    //For when modules need to be reloaded
 
 	std::map<size_t, Analysis*>		_analysisMap;
-	std::vector<size_t>				_orderedIds;
-	std::vector<size_t>				_orderedIdsBeforeMoving;
+	std::map<size_t, AnalysisGroup*> _groupMap;
+	std::vector<OrderedItem>		_orderedItems;
+	std::vector<OrderedItem>		_orderedItemsBeforeMoving;
 
 	size_t							_nextId					= 0;
+	size_t							_nextGroupId			= 0;
 	int								_currentAnalysisIndex	= -1;
 	double							_currentFormHeight		= 0,
 									_currentFormPrevH		= -1;
