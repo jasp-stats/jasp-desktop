@@ -176,15 +176,15 @@ jobs:
                  Write-Error "Unexpected ReadStat SHA256: $actualHash"
                  exit 1
              }
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'tar -xzf readstat-1.1.9.tar.gz'
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX && make -j2 CFLAGS="-Wno-error=use-after-free" CXXFLAGS="-Wno-error=use-after-free" && make install'
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "tar -xzf readstat-1.1.9.tar.gz"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=`$MINGW_CHOST --build=`$MINGW_CHOST --prefix=`$MINGW_PREFIX && make -j2 CFLAGS=-Wno-error=use-after-free CXXFLAGS=-Wno-error=use-after-free && make install"
 
       - name: Download and build rdata
         shell: pwsh
         run: |
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'git clone https://github.com/WizardMac/librdata.git && cd librdata && git -c advice.detachedHead=false checkout 33bd276ecb0bbcd8997ccc71a544149b3da0d940'
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd librdata && ./autogen.sh'
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc 'cd librdata && ./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX && make -j2 && make install'
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "git clone https://github.com/WizardMac/librdata.git && cd librdata && git -c advice.detachedHead=false checkout 33bd276ecb0bbcd8997ccc71a544149b3da0d940"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./autogen.sh"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd librdata && ./configure --disable-dependency-tracking --host=`$MINGW_CHOST --build=`$MINGW_CHOST --prefix=`$MINGW_PREFIX && make -j2 && make install"
       
       - name: Install Conan
         uses: conan-io/setup-conan@v1
