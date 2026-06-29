@@ -26,7 +26,9 @@ Window
     }
 
     onClosing: {
-        aiBridge.clearChat();
+        // Stop any in-flight stream but preserve conversation history
+        // so the chat is intact when the user reopens the window.
+        aiBridge.stopStream();
     }
 
     function submitUserMessage(text)
