@@ -192,8 +192,8 @@ if(LINUX)
 
     # ---- libsodium ----
     message(CHECK_START "Looking for `libsodium`")
-      set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
-      set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+    set(libsodium_INCLUDE_DIR /usr/include /app/lib64/)
+    set(LIBSODIUM_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
 
     message(CHECK_START "Looking for libsodium.so")
     find_library(libsodium_LIBRARIES libsodium.so
@@ -212,8 +212,8 @@ if(LINUX)
 
     # ---- FreeXL ----
     message(CHECK_START "Looking for `libfreexl`")
-      set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
-      set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
+    set(LIBFREEXL_INCLUDE_DIRS /usr/include /app/lib64/)
+    set(LIBFREEXL_LIBRARY_DIRS /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu /app/include/)
 
     message(CHECK_START "Looking for libfreexl.so")
     find_library(LIBFREEXL_LIBRARIES libfreexl.so
@@ -232,8 +232,8 @@ if(LINUX)
 
     # ---- librdata ----
     message(CHECK_START "Looking for `librdata`")
-      set(LIBRDATA_INCLUDE_DIRS /usr/include/ /usr/include/rdata /usr/local/include /usr/local/include/rdata /app/include)
-      set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
+    set(LIBRDATA_INCLUDE_DIRS /usr/include/ /usr/include/rdata /usr/local/include /usr/local/include/rdata /app/include)
+    set(LIBRDATA_LIBRARY_DIRS /usr/local/lib /usr/lib /app/lib64 /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu)
 
     message(CHECK_START "Looking for librdata.so")
     find_library(LIBRDATA_LIBRARIES librdata.so
@@ -290,6 +290,16 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   find_rtools_dll_path(RTOOLS_LIBGCC_S_SEH_DLL    "libgcc_s_seh-1.dll")
   find_rtools_dll_path(RTOOLS_LIBREADSTAT_DLL_A   "libreadstat.dll.a")
   find_rtools_dll_path(RTOOLS_LIBWINPTHREAD_DLL   "libwinpthread-1.dll")
+
+  # ICU DLL: needed by Qt 6.1+ on Windows Server 2019 (build < 18362)
+  find_file(SYSTEM_ICU_DLL
+    NAMES icu.dll
+    PATHS "C:/Windows/System32"
+    DOC "Combined ICU DLL for older Windows systems"
+  )
+  if(NOT SYSTEM_ICU_DLL)
+    message(WARNING "icu.dll not found — JASP may fail to start on Windows Server 2019")
+  endif()
 
 endif()
 
