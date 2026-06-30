@@ -55,6 +55,8 @@ public:
 	QString	defaultValue()	const	{ return _defaultValue; }
 	void	setDefaultValue(const QString& defaultValue);
 
+	QList<RadioButtonBase*> buttons() const { return _buttons.values(); }
+
 public slots:
 	Q_INVOKABLE void unregisterAll();
 
@@ -67,7 +69,6 @@ signals:
 protected:
 
 	RadioButtonBase* checkedButton() { return _selectedButton; }
-	QList<RadioButtonBase*> buttons() { return _buttons.values(); }
 
 	void _setCheckedButtonHandler();
 	void _setCheckedButton(RadioButtonBase* button);

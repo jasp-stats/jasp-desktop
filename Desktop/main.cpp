@@ -29,6 +29,7 @@
 #include <QMessageBox>
 #include "utilities/plotschemehandler.h"
 #include "utilities/imgschemehandler.h"
+#include "utilities/personaschemehandler.h"
 #include <json/json.h>
 #include "utilities/appdirs.h"
 
@@ -397,6 +398,7 @@ void qtMessageHandler(QtMsgType type, const QMessageLogContext &context, const Q
 		break;
 	case QtDebugMsg:
 	case QtInfoMsg:
+		Log::log() << msg << std::endl;
 		break;
 	}
 }
@@ -476,6 +478,7 @@ int main(int argc, char *argv[])
 
 			PlotSchemeHandler::createUrlScheme(); //Needs to be done *before* creating PlotSchemeHandler instance and also before QApplication is instantiated
 			ImgSchemeHandler::createUrlScheme();
+			PersonaSchemeHandler::createUrlScheme();
 
 			QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 			QCoreApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false); //To avoid weird splitterbehaviour with QML and a touchscreen
@@ -522,6 +525,9 @@ int main(int argc, char *argv[])
 
 			PlotSchemeHandler plotSchemeHandler; //Makes sure plots can still be loaded in webengine with Qt6
 			ImgSchemeHandler  imgSchemeHandler;
+			PersonaSchemeHandler personaSchemeHandler;
+			personaSchemeHandler.setPersonasDir(AppDirs::appData() + "/personas");
+			personaSchemeHandler.setResourcesPersonasDir(QString::fromStdString(Dirs::resourcesDir()) + "/PersonaImages");
 
 #ifdef _WIN32
 			auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();

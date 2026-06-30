@@ -58,6 +58,10 @@
 #include "data/workspacemodel.h"
 #include "utilities/languagemodel.h"
 #include "gui/jaspConfiguration/jaspconfiguration.h"
+#include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
+#include "ai/aiBridge.h"
+#include "gui/aiconfigmodel.h"
 
 using namespace std;
 
@@ -86,6 +90,8 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
 	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
+    Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
+	Q_PROPERTY(bool			chatWindowActive READ chatWindowActive											NOTIFY chatWindowActiveChanged	)
 	Q_PROPERTY(QString		commUrl				READ commUrl												CONSTANT							)
 	Q_PROPERTY(QString		commGold			READ commGold												CONSTANT							)
 	Q_PROPERTY(QString		commSilver			READ commSilver												CONSTANT							)
@@ -124,6 +130,8 @@ public:
 	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
 	bool				contactVisible()		const;
 	bool				communityVisible()		const;
+    bool            aiChatVisible()     const   {return _aiChatVisible; }
+	bool			chatWindowActive()	const	{ return _chatWindowActive; }
 	QString				downloadNewJASPUrl()	const	{ return _downloadNewJASPUrl;	}
 	const QStringList & commThankYou()			const;
 	const QString &		commGold()				const;
@@ -153,6 +161,7 @@ public slots:
 	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
 	void setDefaultWorkspaceEmptyValues();
+    void setAiChatVisible(bool visible) { if(_aiChatVisible != visible) { _aiChatVisible = visible; emit aiChatVisibleChanged(); } }
 
 	void showRCommander();
 
@@ -189,6 +198,9 @@ public slots:
 	void	setDownloadNewJASPUrl(QString downloadNewJASPUrl);
 
 	void	showEnginesWindow(); //For debugging
+	void	toggleChat();
+	Q_INVOKABLE void	annotateAnalysis();
+	void	checkChatWindowActive();
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
 	void	reloadResults() const;
@@ -236,6 +248,7 @@ private:
 	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 	void checkEmptyWorkspace();
+	void registerRpcHandlers();
 
 signals:
 	void saveJaspFile();
@@ -262,6 +275,8 @@ signals:
 	void contactTextChanged();
 	void resizeData(int row, int col);
 	void qmlLoadedChanged();
+    void aiChatVisibleChanged();
+	void chatWindowActiveChanged();
 
 	void hadFatalErrorChanged();
 	
@@ -375,9 +390,25 @@ private:
 									_checkAutomaticSync		= false,
 									_contactVisible			= false,
 									_communityVisible		= false,
-									_hadFatalError			= false;
+                                    _hadFatalError			= false,
+                                     _aiChatVisible           = false,
+									_chatWindowActive		= false;
 	QFont							_defaultFont;
+	QPointer<QWindow>				_chatWindow				= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;
+	JaspRpcDispatcher*  _rpcDispatcher  = nullptr;
+	JaspRpcServer*      _rpcServer      = nullptr;
+	AiBridge				*	_aiBridge				= nullptr;
+	AIConfigModel			*	_aiConfigModel			= nullptr;
+
+	// RPC async data-load job tracking
+	struct RpcLoadJob
+	{
+		std::string	status;	// "running", "complete", "error"
+		std::string	error;
+	};
+	std::unordered_map<int, RpcLoadJob>	_rpcJobs;
+	int									_nextRpcJobId = 1;
 };
 
 #endif // MAINWIDGET_H

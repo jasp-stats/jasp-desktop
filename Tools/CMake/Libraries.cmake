@@ -99,6 +99,7 @@ if(NOT FLATPAK_USED)
                WebChannel
                Svg
                Network
+               HttpServer
                Xml
                Sql
                DBus
@@ -121,6 +122,7 @@ else()
                Svg
                Sql
                Network
+               HttpServer
                Xml
                DBus
                QuickTemplates2

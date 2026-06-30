@@ -23,8 +23,8 @@ import QtQuick.Controls
 
 Window
 {
-	id:					mainWindowRoot
-	title:				mainWindow.windowTitle
+    id:					mainWindowRoot
+    title:				mainWindow.windowTitle
 	visible:			true
 	width:				1280
 	height:				720
@@ -42,6 +42,8 @@ Window
 		}
 
 	property real devicePixelRatio: Screen.devicePixelRatio
+
+	readonly property string personaAvatar: preferencesModel.aiPersonaModel.activePersonaAvatar
 
 	onDevicePixelRatioChanged: if(devicePixelRatio > 0) mainWindow.screenPPI = devicePixelRatio * 96
 
@@ -120,6 +122,7 @@ Window
 		Shortcut { onActivated: mainWindow.refreshKeyPressed();					sequences: ["Ctrl+R", Qt.Key_Refresh];							context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindowRoot.close();							sequences: ["Ctrl+Q", Qt.Key_Close];							context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: fileMenuModel.close();							sequences: ["Ctrl+W"];											}
+		Shortcut { onActivated: mainWindow.toggleChat();								sequences: ["Ctrl+J"];									enabled: preferencesModel.aiEnabled }
 		Shortcut { onActivated: mainWindowRoot.toggleFullScreen();				sequences: ["Ctrl+M", Qt.Key_F11];								context: Qt.ApplicationShortcut; }
 		Shortcut { onActivated: mainWindowRoot.changeFocusToFileMenu();			sequences: ["Home",   Qt.Key_Home, Qt.Key_Menu];				}
 		Shortcut { onActivated: mainWindow.setLanguage(0);						sequences: ["Ctrl+1"];											context: Qt.ApplicationShortcut; }
@@ -304,6 +307,42 @@ Window
 		color:			"#000000"
 		opacity:		0.25
 		anchors.fill:	parent
+	}
+
+
+	Image
+	{
+		id:					chatToggleButton
+		z:					99
+		visible:			preferencesModel.aiEnabled
+		width:				45 * preferencesModel.uiScale
+		height:				45 * preferencesModel.uiScale
+		opacity:			mainWindow.aiChatVisible && mainWindow.chatWindowActive ? 1.0 : 0.55
+		source:				personaAvatar ? personaAvatar : jaspTheme.iconPath + "jaspAI.png"
+		sourceSize.width:	width
+		sourceSize.height:	height
+		fillMode:			Image.PreserveAspectFit
+
+		ToolTip.visible:	chatMouseArea.containsMouse
+		ToolTip.text:		qsTr("Toggle AI Chat (Ctrl+J)")
+		ToolTip.delay:		500
+
+		anchors
+		{
+			right:		parent.right
+			bottom:		parent.bottom
+			rightMargin:	jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
+			bottomMargin:	mainWindow.welcomePageVisible ? 85 * preferencesModel.uiScale : jaspTheme.scrollbarBoxWidthBig + 3 * preferencesModel.uiScale
+		}
+
+		MouseArea
+		{
+			id:				chatMouseArea
+			anchors.fill:	parent
+			cursorShape:	Qt.PointingHandCursor
+			hoverEnabled:	true
+			onClicked:		mainWindow.toggleChat()
+		}
 	}
 
 }

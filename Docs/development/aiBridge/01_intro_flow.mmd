@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant WC as QWebChannel
+    participant JS as chat-bridge.js
+    participant CPP as AiBridge (C++)
+    participant API as LLM API
+    participant DC as deep-chat
+
+    rect rgb(220, 235, 255)
+        Note over CPP,WC: INITIALIZATION (page load)
+        CPP->>CPP: connect(personaChanged → clearChat)
+        CPP->>CPP: connect(provider/model/endpoint/apiKey/extraParams/… → clearChat)
+        JS->>WC: DOMContentLoaded → create QWebChannel
+        WC-->>JS: expose aiBridge object
+        JS->>JS: setupDeepChat()
+        JS->>CPP: setTimeout(100ms): clearChat()
+    end
+
+    rect rgb(255, 250, 230)
+        Note over CPP,DC: INTRO MESSAGE FLOW
+        CPP->>CPP: isBusy()? → if yes, set m_deferredClearChat and return
+        CPP->>CPP: stopStream()
+        CPP->>CPP: clearConversation() (also resets AgentStateTracker baseline)
+        CPP-->>JS: emit onClearChat()
+        JS->>JS: currentSignals = null
+        JS->>DC: clearMessages()
+        JS->>DC: addMessage("Starting up…")
+        CPP->>CPP: sendIntroMessage()
+        Note over CPP: m_conversation.append({role:"user", content:"Give a short introduction."})
+        Note over CPP: m_isIntroStream = true
+        CPP-->>JS: emit onStreamOpen()
+        JS->>JS: _introBuf = ""  (currentSignals is null → intro path)
+        CPP->>API: POST /chat/completions (SSE, without tools)
+        loop Each SSE chunk
+            API-->>CPP: delta: {"content":"Hi!"}
+            Note over CPP: processSSEData → merge into m_assistantDelta
+            CPP-->>JS: emit onStreamChunk("Hi!")
+            JS->>JS: _introBuf += "Hi!"
+        end
+        API-->>CPP: data: [DONE]
+        Note over CPP: onReplyFinished → save assistant msg to m_conversation
+        CPP-->>JS: emit onStreamClose()
+        JS->>DC: clearMessages()
+        JS->>DC: addMessage(_introBuf)
+        Note over JS,DC: "Starting up…" replaced with intro text
+    end

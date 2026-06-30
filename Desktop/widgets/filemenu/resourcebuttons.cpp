@@ -25,7 +25,8 @@ void ResourceButtons::loadButtonData()
 		{ButtonType::PrefsData,		tr("Data"),			false,	"./PrefsData.qml"		, true},
 		{ButtonType::PrefsResults,	tr("Results"),		false,	"./PrefsResults.qml"	, true},
 		{ButtonType::PrefsUI,		tr("Interface"),	false,	"./PrefsUI.qml"			, true},
-		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true}
+		{ButtonType::PrefsAdvanced,	tr("Advanced"),		false,	"./PrefsAdvanced.qml"	, true},
+				{ButtonType::PrefsAI,		tr("AI"),			false,	"./PrefsAI.qml"		, true}
 	};
 }
 

@@ -42,7 +42,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_titleDefault(	analysisEntry->title()),
 		_title(			title == "" ? _titleDefault : title),
 		_moduleData(		analysisEntry),
-		_dynamicModule(	_moduleData->dynamicModule())
+		_dynamicModule(	_moduleData ? _moduleData->dynamicModule() : nullptr)
 {
 	// If the optionsVersion parameter is given, this is the version this analysis was stored with (in a JASP file).
 	// This version might be not the same as the current module version: in this case, the analysis will have to be refreshed.
@@ -53,7 +53,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		setBoundValues(options); //Same story as other constructor
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
-	_helpFile						= dynamicModule()->helpFolderPath() + tq(analysisEntry->function());
+	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
 
 	initAnalysis();
 }
@@ -73,12 +73,29 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _titleDefault(					duplicateMe->_titleDefault						)
 	, _title(fq(tr("Copy of %1").arg(tq(duplicateMe->_title)))							)
 	, _rfile(							duplicateMe->_rfile								)
-	, _isDuplicate(						true											)
+	, _isDuplicate(						true										)
+	, _isReport(						duplicateMe->_isReport							)
 	, _moduleData(						duplicateMe->_moduleData						)
 	, _dynamicModule(					duplicateMe->_dynamicModule						)
 	, _codedReferenceToAnalysisEntry(	duplicateMe->_codedReferenceToAnalysisEntry		)
 	, _helpFile(						duplicateMe->_helpFile							)
 	, _rSources(						duplicateMe->_rSources							)
+{
+	initAnalysis();
+}
+
+Analysis::Analysis(size_t id, const std::string & title)
+	: AnalysisBase(Analyses::analyses()),
+	  _id(id),
+	  _name("__report__"),
+	  _qml(""),
+	  _titleDefault(title),
+	  _title(title),
+	  _moduleData(nullptr),
+	  _dynamicModule(nullptr),
+	  _codedReferenceToAnalysisEntry(""),
+	  _helpFile(tq(Dirs::resourcesDir() + "report/help")),
+	  _isReport(true)
 {
 	initAnalysis();
 }
@@ -134,8 +151,11 @@ bool Analysis::checkAnalysisEntry()
 
 	try
 	{
-		if(_codedReferenceToAnalysisEntry == "" || !_dynamicModule)
-			Modules::ModuleException("???", "No coded reference stored or _dynamicModule == nullptr...");
+		if(!_dynamicModule)
+			return _isReport; // reports have no module — that's by design
+
+		if(_codedReferenceToAnalysisEntry == "")
+			Modules::ModuleException("???", "No coded reference stored...");
 
 		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
 
@@ -242,6 +262,7 @@ void Analysis::exportResults()
 
 void Analysis::run()
 {
+	if (_isReport) return;
 	Log::log() << "Analysis::run() for " << title() << "(" << id() << ")" << std::endl;
 	setStatus(Empty);
 }
@@ -383,8 +404,11 @@ void Analysis::createForm(QQuickItem* parentItem)
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::needsRefreshChanged			);
 		connect(this,					&Analysis::needsRefreshChanged,		_analysisForm,	&AnalysisForm::rSyntaxTextChanged			);
 
-		_analysisForm->setShowRButton(_moduleData->hasWrapper());
-		_analysisForm->setDeveloperMode(_dynamicModule->isDevMod());
+		_analysisForm->setShowRButton(_moduleData ? _moduleData->hasWrapper() : false);
+		_analysisForm->setDeveloperMode(_dynamicModule ? _dynamicModule->isDevMod() : false);
+
+		if (isAnnotated())
+			_analysisForm->setIsAnnotated();
 
 		emit analysisInitialized();
 	}
@@ -478,13 +502,14 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["titleDef"]		= _titleDefault;
 	analysisAsJson["rfile"]			= _rfile;
 	analysisAsJson["hasReport"]		= _hasReport;
+	analysisAsJson["isReport"]		= _isReport;
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
-	analysisAsJson["dynamicModule"] = _moduleData->asJsonForJaspFile();
-	analysisAsJson["saveState"]		= _dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default";
+	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;
+	analysisAsJson["saveState"]     = (_dynamicModule && _dynamicModule->descriptionQml()) ? (_dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default") : "default";
 
 	if (withRSource)
 		analysisAsJson["rSources"]	= rSources();
@@ -511,6 +536,7 @@ void Analysis::checkDefaultTitleFromJASPFile(const Json::Value & analysisData)
 		_title = _titleDefault;
 
 	_preUpgraderVersion	= analysisData.get("preUpgradeVersion", _results.get("version", AppInfo::version.asString())).asString();
+	_isReport			= analysisData.get("isReport", false).asBool();
 }
 
 void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status)
@@ -677,7 +703,7 @@ void Analysis::emitDuplicationSignals()
 
 QString	Analysis::fullHelpPath(QString helpFileName)
 {
-	return dynamicModule()->helpFolderPath() + helpFileName;
+	return _dynamicModule ? _dynamicModule->helpFolderPath() + helpFileName : QString();
 }
 
 void Analysis::duplicateMe()
@@ -687,6 +713,7 @@ void Analysis::duplicateMe()
 
 QString Analysis::generateWrapper()
 {
+	if (!_analysisForm || !_moduleData) return QString();
 	return _analysisForm->generateWrapper(
 					tq(_moduleData->dynamicModule()->name()),
 					tq(_name),
@@ -1065,7 +1092,7 @@ bool Analysis::needsRefresh() const
 bool Analysis::isWaitingForModule()
 {
 	//if moduleData == nullptr we might still be waiting for the module to be reloaded after replacement. Because it doesnt know which Analyses it contains yet.
-	return !dynamicModule()->readyForUse();
+	return _dynamicModule ? !_dynamicModule->readyForUse() : false;
 }
 
 
@@ -1147,7 +1174,7 @@ void Analysis::analysisQMLFileChanged()
 
 void Analysis::setRSyntaxTextInResult(bool show)
 {
-	if (!form() || !_moduleData->hasWrapper() || !form()->initialized()) return;
+	if (!form() || !_moduleData || !_moduleData->hasWrapper() || !form()->initialized()) return;
 
 	ResultsJsInterface::singleton()->setRSyntax(id(), show ? form()->generateRSyntax(true) : "");
 }
@@ -1256,12 +1283,16 @@ void Analysis::clearRSources()
 
 std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) const
 {
-	if(!ignoreReadyForUse && !dynamicModule()->readyForUse())
+	// Module-less reports use a generic report form
+	if (_isReport && !_moduleData && !_dynamicModule)
+		return (addFileProtocol ? "file:" : "") + Dirs::resourcesDir() + "report/ReportForm.qml";
+
+	if(!ignoreReadyForUse && _dynamicModule && !_dynamicModule->readyForUse())
 		return "";
 
 	return (addFileProtocol ? "file:" : "") + (_moduleData != nullptr	?
 				_moduleData->qmlFilePath()	:
-				Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml());
+				(_dynamicModule ? Dirs::resourcesDir() + "/" + module() + "/qml/"  + qml() : ""));
 }
 
 bool Analysis::isColumnFreeOrMine(const QString & columnName) const
@@ -1273,3 +1304,5 @@ bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 
 	return col->analysisId() == id();
 }
+
+

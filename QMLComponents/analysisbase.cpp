@@ -116,6 +116,16 @@ void AnalysisBase::setQmlError(const QString &newQmlError)
 	emit qmlErrorChanged();
 }
 
+void AnalysisBase::setIsAnnotated(bool isAnnotated)
+{
+	if (!_analysisForm || _isAnnotated == isAnnotated)
+		return;
+
+	_isAnnotated = isAnnotated;
+
+	_analysisForm->setIsAnnotated(isAnnotated);
+}
+
 // This method tries to find the parent keys in _boundValues Json object
 // If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
 Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)

@@ -109,10 +109,21 @@ ComponentsListBase
 	property alias  content				: tabView.rowComponent
 	property alias	currentIndex		: itemTabBar.currentIndex
 	property var	buttonComponent		: defaultButtonButton
+	property color	backgroundColor		: jaspTheme.uiBackground
+	property color	tabButtonColor		: jaspTheme.grayLighter
 
 	property real	tabBarHeight		: 28 * preferencesModel.uiScale
 	property real	tabButtonRadius		: 5 * preferencesModel.uiScale
 	property real	tabButtonWidth		: 100 * preferencesModel.uiScale
+
+	function isTabRemovable(index)
+	{
+		return true
+	}
+	function isTabEditable(index)
+	{
+		return isTabRemovable(index)
+	}
 
 	Text
 	{
@@ -133,9 +144,27 @@ ComponentsListBase
 		QtControls.TabButton
 		{
 			// In order to make rounded button, the tabbar height is set a bit higher, and the bottom line of the buttons with its rounded side is removed.
-			id		: tabButton
-			width	: Math.min(100 * jaspTheme.uiScale, (rectangleItem.width - itemRepeater.count - (tabView.showAddIcon ? addIconItem.width : 0)) / itemRepeater.count)
-			height	: itemTabBar.height
+			id				: tabButton
+			width			: Math.min(tabButtonWidth, (rectangleItem.width - itemRepeater.count - (tabView.showAddIcon ? addIconItem.width : 0)) / itemRepeater.count)
+			height			: itemTabBar.height
+			hoverEnabled	: true		// Without this, tabButton.hovered never becomes true and the ToolTip below never shows
+			onClicked		: forceActiveFocus()
+			onActiveFocusChanged: if (activeFocus) itemTabBar.currentIndex = model.index
+
+			// Down arrow moves keyboard focus from the tab button down into the content of its tab
+			// (the matching tabViewWrapper in itemStack). Tab still cycles between the tab buttons.
+			Keys.onDownPressed: (event) =>
+			{
+				var wrapper = rep.itemAt(model.index)
+				if (wrapper)
+				{
+					wrapper.forceActiveFocus()
+					event.accepted = true
+				}
+			}
+
+			property bool isEditable: tabView.tabNameEditable && tabView.isTabEditable(model.index)
+			property bool isRemovable: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
 
 			contentItem: Item
 			{
@@ -143,16 +172,24 @@ ComponentsListBase
 				anchors.bottomMargin	: tabView.tabButtonRadius
 				Text
 				{
+					id					: tabButtonLabel
 					anchors.verticalCenter	: parent.verticalCenter
 					horizontalAlignment	: Text.AlignHCenter
 
 					leftPadding			: jaspTheme.labelSpacing
 					color				: jaspTheme.black
-					text				: model.name
+					text				: tabButton.activeFocus ? ("<b>" + model.name + "</b>") : model.name
 					font				: jaspTheme.font
 					elide				: Text.ElideRight
 					width				: parent.width - jaspTheme.labelSpacing - (removeIconItem.visible ? removeIconItem.width  : 0)
 					visible				: !textFieldItem.visible
+
+					QtControls.ToolTip.visible	: tabButton.hovered && (tabButtonLabel.truncated || tabButton.isEditable)
+					QtControls.ToolTip.text		: (tabButtonLabel.truncated ? model.value : "")
+												+ (tabButtonLabel.truncated && tabButton.isEditable ? "\n" : "")
+												+ (tabButton.isEditable ? qsTr("Double click to edit") : "")
+
+
 				}
 
 				Image
@@ -162,7 +199,7 @@ ComponentsListBase
 					anchors.right			: parent.right
 					anchors.rightMargin		: 4 * preferencesModel.uiScale
 					anchors.verticalCenter	: parent.verticalCenter
-					visible					: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible
+					visible					: tabButton.isRemovable
 					height					: jaspTheme.iconSize * preferencesModel.uiScale
 					width					: jaspTheme.iconSize * preferencesModel.uiScale
 
@@ -184,7 +221,7 @@ ComponentsListBase
 					isBound				: false
 					visible				: false
 					useExternalBorder	: false
-					value				: model.name
+					value				: model.value
 					fieldWidth			: parent.width
 					fieldHeight			: parent.height
 					onEditingFinished	: tabView.keyValueChanged(index, displayValue)
@@ -196,7 +233,7 @@ ComponentsListBase
 
 			background: Rectangle
 			{
-				color			: tabButton.checked ? jaspTheme.uiBackground : jaspTheme.grayLighter
+				color			: tabButton.checked ? backgroundColor : tabButtonColor
 				radius			: tabView.tabButtonRadius
 				border.width	: 1
 				border.color	: checked ? jaspTheme.uiBorder : jaspTheme.borderColor
@@ -208,8 +245,8 @@ ComponentsListBase
 					anchors.bottomMargin	: -1
 					anchors.leftMargin		: 1
 					height					: tabView.tabButtonRadius
-					width					: parent.width
-					color					: jaspTheme.uiBackground
+					width					: parent.width + 1
+					color					: backgroundColor
 				}
 
 				Rectangle
@@ -226,15 +263,10 @@ ComponentsListBase
 				}
 			}
 
-			QtControls.ToolTip
-			{
-				text			: qsTr("Double click to edit this name")
-				visible			: tabView.tabNameEditable && tabButton.hovered
-			}
 
 			onDoubleClicked:
 			{
-				if (tabView.tabNameEditable)
+				if (tabButton.isEditable)
 				{
 					textFieldItem.visible = true
 					textFieldItem.forceActiveFocus();
@@ -253,8 +285,8 @@ ComponentsListBase
 		height			: itemTabBar.height + itemStack.height + 2 * preferencesModel.uiScale
 		width			: parent.width
 
-		color			: "transparent"
-		radius			: jaspTheme.borderRadius
+		color			: backgroundColor
+		radius			: tabView.tabButtonRadius
 
 		Rectangle
 		{
@@ -264,7 +296,7 @@ ComponentsListBase
 				topMargin	: tabView.tabBarHeight
 			}
 			color			: "transparent"
-			radius			: jaspTheme.borderRadius
+			radius			: tabView.tabButtonRadius
 			border.color	: jaspTheme.uiBorder
 			border.width	: 1
 		}
@@ -283,7 +315,7 @@ ComponentsListBase
 
 		background: Rectangle
 		{
-			color: jaspTheme.grayLighter
+			color: tabButtonColor
 		}
 
 		Repeater

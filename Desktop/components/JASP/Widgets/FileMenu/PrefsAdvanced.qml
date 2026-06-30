@@ -545,10 +545,91 @@ PrefsScrollView
 
 		RoundedButton
 		{
-			id:					showEnginesWindow
-			text:				qsTr("Show engines")
+			id:				showEnginesWindow
+			text:			qsTr("Show engines")
 			onClicked:			mainWindow.showEnginesWindow()
-			activeFocusOnTab:		true
+			activeFocusOnTab:	true
+		}
+	}
+
+	PrefsGroupRect
+	{
+		title: qsTr("Remote control")
+
+		CheckBox
+		{
+			id:					rpcServerEnabled
+			label:				qsTr("Enable JASP-RPC server")
+			checked:			preferencesModel.rpcServerEnabled
+			onCheckedChanged:		preferencesModel.rpcServerEnabled = checked
+			toolTip:			qsTr("Allow external applications to control JASP via HTTP RPC.")
+			KeyNavigation.tab:		rpcServerIp
+		}
+
+		Item
+		{
+			width:				parent.width
+			height:				rpcServerIp.height
+			enabled:			preferencesModel.rpcServerEnabled
+
+			Label
+			{
+				text:			qsTr("IP address:")
+				anchors
+				{
+					left:			parent.left
+					verticalCenter:	parent.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
+
+			PrefsTextInput
+			{
+				id:					rpcServerIp
+				text:				preferencesModel.rpcServerIp
+				onEditingFinished:		preferencesModel.rpcServerIp = text
+				nextEl:				rpcServerPort
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		80 * preferencesModel.uiScale
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+				KeyNavigation.tab:	rpcServerPort
+			}
+		}
+
+		Item
+		{
+			width:				parent.width
+			height:				rpcServerPort.height
+			enabled:			preferencesModel.rpcServerEnabled
+
+			Label
+			{
+				text:			qsTr("Port:")
+				anchors
+				{
+					left:			parent.left
+					verticalCenter:	parent.verticalCenter
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
+
+			PrefsTextInput
+			{
+				id:					rpcServerPort
+				text:				preferencesModel.rpcServerPort
+				onEditingFinished:		preferencesModel.rpcServerPort = parseInt(text)
+				anchors
+				{
+					left:			parent.left
+					leftMargin:		80 * preferencesModel.uiScale
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
 		}
 	}
 }

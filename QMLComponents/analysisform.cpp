@@ -18,13 +18,22 @@
 
 #include "analysisform.h"
 #include "knownissues.h"
+#include <cmath>
 #include "boundcontrols/boundcontrol.h"
 #include "utilities/qutils.h"
 #include "controls/jasplistcontrol.h"
 #include "controls/expanderbuttonbase.h"
+#include "controls/radiobuttonsgroupbase.h"
+#include "controls/radiobuttonbase.h"
+#include "controls/comboboxbase.h"
+#include "controls/textinputbase.h"
+#include "controls/componentslistbase.h"
+#include "controls/rowcontrols.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
 #include "rsyntax/rsyntax.h"
+#include "variableinfo.h"
+#include "dataset.h"
 
 #include <QQmlProperty>
 #include <QQmlContext>
@@ -298,6 +307,11 @@ void AnalysisForm::setHasVolatileNotes(bool hasVolatileNotes)
 
 void AnalysisForm::clearAllErrors()
 {
+	_formErrors.clear();
+	_formWarnings.clear();
+	emit errorsChanged();
+	emit warningsChanged();
+
 	for (QQuickItem* item : _controlErrorMessageCache)
 	{
 		JASPControl* control = item->property("control").value<JASPControl*>();
@@ -331,6 +345,336 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 	}
 
 	return true;
+}
+
+
+Json::Value AnalysisForm::optionMeta(bool includeDescriptions) const
+{
+	Json::Value meta(Json::objectValue);
+
+	for (JASPControl* ctrl : _dependsOrderedCtrls)
+	{
+		Json::Value entry = _controlOptionMeta(ctrl, includeDescriptions);
+		if (entry.isNull()) continue;
+		meta[ctrl->name().toStdString()] = entry;
+	}
+
+	return meta;
+}
+
+Json::Value AnalysisForm::_controlOptionMeta(JASPControl* ctrl, bool includeDescriptions) const
+{
+	if (!ctrl->isBound() || !ctrl->boundControl())
+		return Json::nullValue;
+
+	Json::Value entry(Json::objectValue);
+	QString title = ctrl->humanFriendlyLabel();
+	if (!title.isEmpty())
+		entry["title"] = title.toStdString();
+
+	if (includeDescriptions)
+	{
+		QString desc = ctrl->info();
+		if (!desc.isEmpty())
+			entry["description"] = desc.toStdString();
+	}
+
+	switch (ctrl->controlType())
+	{
+	case JASPControl::ControlType::CheckBox:
+	case JASPControl::ControlType::Switch:
+		entry["kind"] = "checkbox";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to true or false.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		break;
+
+	case JASPControl::ControlType::RadioButtonGroup:
+	{
+		entry["kind"] = "combo";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to the exact string from one of the choices' 'value' fields (match case precisely).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		auto* group = qobject_cast<RadioButtonsGroupBase*>(ctrl);
+		if (group)
+		{
+			Json::Value choices(Json::arrayValue);
+			for (auto* button : group->buttons())
+			{
+				if (button->name().isEmpty()) continue;
+				Json::Value choice(Json::objectValue);
+				choice["value"] = button->name().toStdString();
+				if (!button->title().isEmpty())
+					choice["label"] = button->title().toStdString();
+				if (includeDescriptions && !button->info().isEmpty())
+					choice["info"] = button->info().toStdString();
+				choices.append(choice);
+			}
+			entry["choices"] = choices;
+		}
+		break;
+	}
+
+	case JASPControl::ControlType::ComboBox:
+	{
+		entry["kind"] = "combo";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to the exact string from one of the choices' 'value' fields (match case precisely).";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		auto* combo = qobject_cast<ComboBoxBase*>(ctrl);
+		if (combo && combo->model())
+		{
+			Json::Value choices(Json::arrayValue);
+			for (const Term& term : combo->model()->terms())
+			{
+				if (term.value().isEmpty()) continue; // skip addEmptyValue placeholder
+				Json::Value choice(Json::objectValue);
+				choice["value"] = term.value().toStdString();
+				if (!term.label().isEmpty())
+					choice["label"] = term.label().toStdString();
+				choices.append(choice);
+			}
+			if (choices.size() > 0)
+				entry["choices"] = choices;
+		}
+		break;
+	}
+
+	case JASPControl::ControlType::VariablesListView:
+	{
+		entry["kind"] = "variables";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an object with types and value. types must be an array of strings from allowedTypes (e.g. [\"scale\",\"scale\"]), not the variable\'s actual column type. value is a variable name, or an array of names if single is false. Pick variables from the variables map that plausibly match allowedTypes; the system will coerce them.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		auto* listCtrl = qobject_cast<JASPListControl*>(ctrl);
+		if (listCtrl)
+		{
+			Json::Value allowedTypes(Json::arrayValue);
+			for (const QString& col : listCtrl->allowedColumns())
+				allowedTypes.append(col.toStdString());
+			entry["allowedTypes"] = allowedTypes;
+			entry["single"] = listCtrl->maxRows() == 1;
+
+			DataSet* ds = VariableInfo::info()->dataSet();
+			if (ds)
+			{
+				Json::Value vars(Json::objectValue);
+				for (int i = 0; i < ds->columnCount(); i++)
+				{
+					Column* col = ds->column(size_t(i));
+					if (col)
+						vars[col->name()] = columnTypeToString(col->type());
+				}
+				entry["variables"] = vars;
+			}
+		}
+		break;
+	}
+
+	case JASPControl::ControlType::Slider:
+		entry["kind"] = "number";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to a number.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		break;
+
+	case JASPControl::ControlType::TextField:
+	{
+		entry["kind"] = "string";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to a string.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		auto* textInput = qobject_cast<TextInputBase*>(ctrl);
+		if (textInput)
+		{
+			switch (textInput->inputType())
+			{
+			case TextInputBase::IntegerInputType:
+			{
+				entry["kind"] = "integer";
+
+				double min		= ctrl->property("min").toDouble();
+				double max		= ctrl->property("max").toDouble();
+				int inclusive	= ctrl->property("inclusive").toInt();
+
+				// IntegerField sentinels: min = 0 or -2147483647, max = 2147483647
+				static const double intSentinel = 2147483647.0;
+				if (min > -intSentinel)
+					entry["min"] = int(min);
+				if (max < intSentinel)
+					entry["max"] = int(max);
+
+				if (inclusive == int(JASPControl::Inclusive::MinMax) || inclusive == int(JASPControl::Inclusive::MinOnly))
+					entry["inclusiveMin"] = true;
+				if (inclusive == int(JASPControl::Inclusive::MinMax) || inclusive == int(JASPControl::Inclusive::MaxOnly))
+					entry["inclusiveMax"] = true;
+
+				if (includeDescriptions)
+				{
+					QString instr = tr("Set to an integer");
+					if (entry.isMember("min") || entry.isMember("max"))
+					{
+						instr += " ";
+						instr += entry.get("inclusiveMin", false).asBool() ? "[" : "(";
+						instr += entry.isMember("min") ? QString::number(int(min)) : QString::fromUtf8("-\u221E");
+						instr += ", ";
+						instr += entry.isMember("max") ? QString::number(int(max)) : QString::fromUtf8("+\u221E");
+						instr += entry.get("inclusiveMax", false).asBool() ? "]" : ")";
+					}
+					instr += ".";
+					entry["instruction"] = instr.toStdString();
+				}
+				break;
+			}
+			case TextInputBase::NumberInputType:
+			{
+				entry["kind"] = "number";
+
+				double min		= ctrl->property("min").toDouble();
+				double max		= ctrl->property("max").toDouble();
+				int inclusive	= ctrl->property("inclusive").toInt();
+
+				if (!std::isinf(min))
+					entry["min"] = min;
+				if (!std::isinf(max))
+					entry["max"] = max;
+
+				if (inclusive == int(JASPControl::Inclusive::MinMax) || inclusive == int(JASPControl::Inclusive::MinOnly))
+					entry["inclusiveMin"] = true;
+				if (inclusive == int(JASPControl::Inclusive::MinMax) || inclusive == int(JASPControl::Inclusive::MaxOnly))
+					entry["inclusiveMax"] = true;
+
+				if (includeDescriptions)
+				{
+					QString instr = tr("Set to a number");
+					if (entry.isMember("min") || entry.isMember("max"))
+					{
+						instr += " ";
+						instr += entry.get("inclusiveMin", false).asBool() ? "[" : "(";
+						instr += entry.isMember("min") ? QString::number(min) : QString::fromUtf8("-\u221E");
+						instr += ", ";
+						instr += entry.isMember("max") ? QString::number(max) : QString::fromUtf8("+\u221E");
+						instr += entry.get("inclusiveMax", false).asBool() ? "]" : ")";
+					}
+					instr += ".";
+					entry["instruction"] = instr.toStdString();
+				}
+				break;
+			}
+			case TextInputBase::PercentIntputType:
+			{
+				entry["kind"] = "percent";
+
+				// The bound value is divided by 100 (e.g. user enters 50 → 0.5 on the wire).
+				// Reflect this in min/max so the LLM knows the wire format.
+				double uiMin = ctrl->property("min").toDouble();
+				double uiMax = ctrl->property("max").toDouble();
+
+				entry["min"]			= uiMin / 100.0;
+				entry["max"]			= uiMax / 100.0;
+				entry["inclusiveMin"]	= true;
+				entry["inclusiveMax"]	= true;
+
+				if (includeDescriptions)
+				{
+					QString instr = tr("Set to a proportion between %1 and %2").arg(entry["min"].asDouble(), 0, 'f', 2).arg(entry["max"].asDouble(), 0, 'f', 2);
+					instr += ".";
+					entry["instruction"] = instr.toStdString();
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		break;
+	}
+
+	case JASPControl::ControlType::TextArea:
+		entry["kind"] = "string";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to a string.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+		break;
+
+	case JASPControl::ControlType::ComponentsList:
+	{
+		entry["kind"] = "array";
+		if (includeDescriptions)
+			entry["instruction"] = "Set to an array of objects. Each object requires a 'value' field (a unique row identifier, e.g. [\"Exponential\"]). Additional properties per object are described in rowControls. If value is missing or empty, the row is silently dropped.";
+		entry["shape"] = ctrl->boundControl()->createJson();
+
+		auto* compList = qobject_cast<ComponentsListBase*>(ctrl);
+		if (compList && compList->model())
+		{
+			const auto& allRowControls = compList->model()->getAllRowControls();
+			if (!allRowControls.isEmpty())
+			{
+				Json::Value rowControls(Json::objectValue);
+				Json::Value exampleRow(Json::objectValue);
+				const RowControls* firstRow = allRowControls.cbegin().value();
+				const auto& nestedMap = firstRow->getJASPControlsMap();
+				for (auto it = nestedMap.begin(); it != nestedMap.end(); ++it)
+				{
+					JASPControl* rowCtrl = it.value();
+					Json::Value rowEntry = _controlOptionMeta(rowCtrl, includeDescriptions);
+					if (!rowEntry.isNull())
+					{
+						rowControls[rowCtrl->name().toStdString()] = rowEntry;
+
+						// Pick a concrete example value for the shape
+						if (rowEntry.isMember("choices") && rowEntry["choices"].size() > 0)
+							exampleRow[rowCtrl->name().toStdString()] = rowEntry["choices"][0]["value"];
+						else if (rowEntry.isMember("default"))
+							exampleRow[rowCtrl->name().toStdString()] = rowEntry["default"];
+					}
+				}
+				if (rowControls.size() > 0)
+				{
+					entry["rowControls"] = rowControls;
+
+					// Rewrite shape with real example values instead of '#' placeholders
+					if (exampleRow.size() > 0)
+					{
+						// Include the row-identifier key (defaults to "value")
+						std::string rowKey = compList->optionKeyValue().toStdString();
+						if (!rowKey.empty() && !exampleRow.isMember(rowKey))
+						{
+							// Use the first nested control's value as an example row id
+							const auto& firstEntry = exampleRow.begin();
+							exampleRow[rowKey] = firstEntry != exampleRow.end() ? *firstEntry : Json::Value("example");
+						}
+						Json::Value shaped(Json::arrayValue);
+						shaped.append(exampleRow);
+						entry["shape"] = shaped;
+					}
+				}
+			}
+		}
+		break;
+	}
+
+	default:
+		return Json::nullValue; // Skip structural controls (Expander, GroupBox, etc.)
+	}
+
+	Json::Value defaultVal = ctrl->boundControl()->defaultBoundValue();
+	if (defaultVal != Json::nullValue)
+		entry["default"] = defaultVal;
+
+	// If this is a combo and the default is empty or missing (typical of addEmptyValue placeholder),
+	// point the LLM at the first real choice instead of an empty string.
+	if (entry.isMember("kind") && entry["kind"] == "combo" && entry.isMember("choices") && entry["choices"].size() > 0)
+	{
+		if (!entry.isMember("default")
+			|| !entry["default"].isString()
+			|| entry["default"].asString().empty())
+		{
+			entry["default"] = entry["choices"][0]["value"];
+		}
+	}
+
+	return entry;
 }
 
 void AnalysisForm::_setUp()
@@ -1080,6 +1424,44 @@ void AnalysisForm::setShowAllROptions(bool showAllROptions)
 	PreferencesModelBase::preferences()->setShowAllROptions(showAllROptions);
 }
 
+bool AnalysisForm::relaxInputConstraints() const
+{
+	return _relaxInputConstraints;
+}
+
+void AnalysisForm::_disableControls(QQuickItem * root, bool disable)
+{
+	QList<JASPControl*> controls = JASPControl::getChildJASPControls(root, false);
+
+	for(JASPControl * control : controls)
+	{
+		// Do not disable the expanders (Section), because the user cannot open it, but disable the children of the expander
+		if (control->controlType() == JASPControl::ControlType::Expander)
+		{
+			ExpanderButtonBase* expander = dynamic_cast<ExpanderButtonBase*>(control);
+			_disableControls(expander->childControlsArea(), disable);
+		}
+		else if (control->name() != rSyntaxControlName)
+			control->setEnabled(!disable);
+	}
+}
+
+void AnalysisForm::setIsAnnotated(bool isAnnotated)
+{
+	_disableControls(this, isAnnotated);
+
+	emit isAnnotatedChanged();
+}
+
+void AnalysisForm::setRelaxInputConstraints(bool relax)
+{
+	if (_relaxInputConstraints != relax)
+	{
+		_relaxInputConstraints = relax;
+		emit relaxInputConstraintsChanged(_relaxInputConstraints);
+	}
+}
+
 void AnalysisForm::toggleRSyntax()
 {
 	PreferencesModelBase* pref = PreferencesModelBase::preferences();
@@ -1102,4 +1484,9 @@ void AnalysisForm::setActiveJASPControl(JASPControl* control, bool hasActiveFocu
 
 	if (emitSignal)
 		emit activeJASPControlChanged();
+}
+
+bool AnalysisForm::isAnnotated() const
+{
+	return _analysis ? _analysis->isAnnotated() : false;
 }

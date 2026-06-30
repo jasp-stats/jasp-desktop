@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="48" height="48">
+  <!-- Blue Circular Background -->
+  <circle cx="12" cy="12" r="11" fill="#3bb4f2" />
+  
+  <!-- White Download Arrow and Tray -->
+  <path d="M10.5 6h3v5h2.5L12 15l-4-4h2.5V6zM8 16h8v2H8v-2z" fill="#ffffff" />
+</svg>

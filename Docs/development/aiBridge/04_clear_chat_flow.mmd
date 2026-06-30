@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant User
+    participant DC as deep-chat
+    participant JS as chat-bridge.js
+    participant CPP as AiBridge (C++)
+    participant AST as AgentStateTracker
+
+    rect rgb(255, 255, 220)
+        Note over User,CPP: USER RESETS OR CONFIG CHANGES
+        User->>DC: Clicks reset button (or persona/model/provider/API key changes)
+        DC->>JS: aiBridgeInterface.clearChat()
+        JS->>CPP: aiBridge.clearChat()
+
+        alt AiBridge is busy (reply in flight or RPC dispatch active)
+            CPP->>CPP: set m_deferredClearChat = true
+            Note over CPP: Deferred — will execute when onReplyFinished() completes
+        else AiBridge is idle
+            CPP->>CPP: stopStream()
+            Note over CPP: disconnect + abort active HTTP reply
+            CPP->>CPP: clearConversation()
+            Note over CPP: m_conversation = []<br/>m_assistantDelta = {}<br/>m_toolCallAccum.clear()<br/>m_totalInputTokens = 0<br/>m_totalOutputTokens = 0
+            CPP->>AST: clearAll() (reset workspace-change baseline)
+            CPP-->>JS: emit onClearChat()
+            JS->>JS: currentSignals = null
+            JS->>DC: clearMessages()
+            JS->>DC: addMessage("Starting up…")
+            CPP->>CPP: sendIntroMessage()
+            Note over CPP,DC: → triggers INTRO MESSAGE FLOW (see 01_intro_flow)
+        end
+    end
+
+    rect rgb(240, 240, 255)
+        Note over User,CPP: DEFERRED CLEAR (happens at end of onReplyFinished)
+        Note over CPP: After tool-call loop completes or stream finishes:
+        CPP->>CPP: check m_deferredClearChat
+        CPP->>CPP: stopStream() + clearConversation() + emit onClearChat + sendIntroMessage
+        Note over CPP: If tool calls were pending, they're discarded
+    end

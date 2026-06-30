@@ -1,0 +1,54 @@
+sequenceDiagram
+    participant API as LLM API
+    participant CPP as AiBridge (C++)
+    participant RPC as JaspRpcDispatcher
+    participant AST as AgentStateTracker
+    participant JS as chat-bridge.js
+    participant DC as deep-chat
+
+    rect rgb(255, 230, 230)
+        Note over API,DC: TOOL CALL LOOP (full cycle)
+        API-->>CPP: delta.tool_calls: [{id:"call_1", function:{name:"analysis_create"}}]
+        loop Fragment accumulation
+            CPP->>CPP: processToolCalls()
+            Note over CPP: accumulate by call id in m_toolCallAccum<br/>record order in m_toolCallOrder<br/>null-id fragments → m_lastToolCallId fallback
+            API-->>CPP: delta.tool_calls: [{id:null, function:{arguments:"..."}}]
+            Note over CPP: arguments concatenated into accumulated call
+        end
+        API-->>CPP: data: [DONE]
+        Note over CPP: onReplyFinished() → flushToolCalls()
+        Note over CPP: m_processingReply = true (blocks re-entrant clearChat/startStream)
+        CPP->>CPP: build assistant message from m_assistantDelta + tool_calls array
+        CPP->>CPP: insert assistant msg at correct position in m_conversation
+        loop For each tool call (in m_toolCallOrder arrival order)
+            CPP->>CPP: security gate: effectiveToolsForActivePersona() check
+            alt Tool NOT allowed by persona
+                CPP->>CPP: block dispatch, return error message
+            else Tool allowed
+                CPP->>RPC: dispatch("analysis_create", {module:"jaspTTests", analysis:"TTestIndependent"})
+                Note over RPC: validates params against OpenRPC schema
+                Note over RPC: checks AgentStateTracker::isUserDiverged()
+                RPC->>AST: markClean() after building _stateUpdate
+                RPC-->>CPP: result JSON (with _stateUpdate if workspace changed)
+            end
+            CPP->>CPP: append tool result to m_conversation as {role:"tool", tool_call_id:"call_1", content:"…"}
+            CPP->>CPP: add to m_pendingToolCalls
+        end
+        Note over CPP: m_pendingToolCalls not empty → continue loop
+        alt m_deferredClearChat is set
+            CPP->>CPP: abort loop — clearConversation, onClearChat, sendIntroMessage
+        else Normal continuation
+            CPP-->>JS: emit onStreamOpen()
+            JS->>DC: signals.onOpen() (new bubble in same message group)
+            CPP->>API: POST /chat/completions (with tool results in conversation)
+            Note over API,CPP: Loop continues until API returns content without tool_calls
+            API-->>CPP: delta: {"content":"Done! The t-test analysis has been created."}
+            CPP-->>JS: onStreamChunk("Done! The t-test…")
+            JS->>DC: signals.onResponse({text:"Done! The t-test…"})
+            API-->>CPP: data: [DONE]
+            Note over CPP: onReplyFinished → no tool calls → save assistant msg
+            Note over CPP: if m_deferredClearChat → execute now
+            CPP-->>JS: emit onStreamClose()
+            JS->>DC: signals.onClose()
+        end
+    end

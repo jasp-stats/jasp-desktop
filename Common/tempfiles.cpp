@@ -228,9 +228,16 @@ void TempFiles::createSpecific(const string &name, int id, string &root, string 
 bool TempFiles::stateFileExists(int id)
 {
 	std::filesystem::path stateFilePath = (id >= 0) ? (std::filesystem::path(_sessionDirName) / "resources" / std::to_string(id) / "state") : (std::filesystem::path(_sessionDirName) / "resources" / "state");
-	
+		
 	std::error_code error;
 	return std::filesystem::exists(stateFilePath, error) && !error;
+}
+
+std::string TempFiles::analysisResourcePath(int id, const std::string &filename)
+{
+	return id >= 0
+		? _sessionDirName + "/resources/" + std::to_string(id) + "/" + filename
+		: _sessionDirName + "/resources/" + filename;
 }
 
 void TempFiles::create(const string &extension, int id, string &root, string &relativePath)
