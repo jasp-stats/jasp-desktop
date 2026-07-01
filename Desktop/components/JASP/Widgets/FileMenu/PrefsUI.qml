@@ -38,7 +38,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("User Interface Options")
-		helpMD:			allHelp.PrefsUI
+		helpfile:		"preferences/PrefsUI"
 		addMargin:		false
 
 		Connections

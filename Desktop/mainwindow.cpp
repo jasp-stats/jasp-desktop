@@ -60,7 +60,6 @@
 #include "utilities/settings.h"
 #include "utilities/qmlutils.h"
 #include "utilities/reporter.h"
-#include "utilities/allhelp.h"
 
 #include "widgets/filemenu/filemenu.h"
 #include "rsyntax/formulabase.h"
@@ -138,7 +137,6 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	_ribbonModelUncommon	= new RibbonModelUncommon(this, _ribbonModel);
 	_fileMenu				= new FileMenu(this);
 	_helpModel				= new HelpModel(this);
-	_allHelp				= new AllHelp(this);
 	_aboutModel				= new AboutModel(this);
 	_encryptionModel		= new EncryptionSettingsModel(this);
 	_resultMenuModel		= new ResultMenuModel(this);
@@ -528,7 +526,6 @@ void MainWindow::makeConnections()
 			
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_columnModel,			&ColumnModel::languageChangedHandler,						Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLocaleChanged,				_resultsJsInterface,	&ResultsJsInterface::setLocale,								Qt::QueuedConnection);
-	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_allHelp,				&AllHelp::helpChanged,										Qt::QueuedConnection);
 
 	connect(_resultsJsInterface,	&ResultsJsInterface::packageModified,				this,					&MainWindow::setPackageModified								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisChangedDownstream,		this,					&MainWindow::analysisChangedDownstreamHandler				);
@@ -706,7 +703,6 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("ribbonModel",								_ribbonModel									);
 	_qml->rootContext()->setContextProperty("engineSync",								_engineSync										);
 	_qml->rootContext()->setContextProperty("helpModel",								_helpModel										);
-	_qml->rootContext()->setContextProperty("allHelp",									_allHelp										);
 	_qml->rootContext()->setContextProperty("jaspTheme",								nullptr											); //Will be set from jaspThemeChanged()!
 	_qml->rootContext()->setContextProperty("qmlUtils",									new QmlUtils(this)								);
 

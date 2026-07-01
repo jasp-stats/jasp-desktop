@@ -1,0 +1,45 @@
+<h1>Uitleg van het R-Filter</h1>
+
+<p>
+	Met behulp van het R-filter kunt u specifieke filters voor uw gegevens definiëren.
+	U kunt dit eenvoudig combineren met de resultaten van andere filters, dat wil zeggen die welke zijn geselecteerd in het variabele venster of die zijn gemaakt met het Easy-Filter.
+	U kunt dan simpelweg de code zien die wordt gegenereerd door die andere filters in het bovenste alleen-lezen tekstvak dat begint met <span class="code">generatedFilter &lt;-</span>.
+</p>
+
+<p>
+	Om naar uw gegevens te verwijzen, voert u eenvoudig de kolomnaam in het codevenster in, JASP zorgt ervoor dat deze naar de juiste gegevens verwijst.
+	Als uw kolomnaam spaties bevat, moet u deze ook invoeren.
+</p>
+
+<p>
+	Enkele voorbeelden ter verduidelijking (die natuurlijk alleen werken als uw gegevens deze kolommen bevatten):
+	<ul>
+			<li>
+					<b>Het tegenovergestelde filteren van het Easy-Filter en label-selectie</b>
+					<p class="code">!generatedFilter</p>
+			</li>
+			<li>
+					<b>Filteren op Geslacht en Testscore </b>
+					<p class="code">Geslacht == "Vrouw" & TestScore > 5</p>
+			</li>
+
+			<li>
+					<b>Filteren op Geslacht en Testscore terwijl men rekening houdt met het Easy-Filter en label-selectie</b>
+					<p class="code">generatedFilter & Geslacht == "Vrouw" & TestScore > 5</p>
+			</li>
+
+			<li>
+				<b>Filteren op leeftijd rekening houdend met geslacht</b>
+				<p class="code">(mean(Leeftijd) > Leeftijd) %|% Sex</p>
+				<p>
+					De operator %|% is een JASP-specifieke R-operator die ervoor zorgt dat de code links ervan afzonderlijk wordt uitgevoerd voor elke voorwaarde aan de rechterkant.
+					Dit geval betekent dat het filter alle rijen doorgeeft waarop de leeftijd lager is dan de gemiddelde leeftijd voor dat specifieke geslacht.
+					Zorg ervoor dat u de haakjes rond de exacte uitdrukking plaatst die u wilt laten uitvoeren, het volgende zal waarschijnlijk niet werken zoals verwacht: <span class="code">mean(Leeftijd) &gt; Leeftijd %|% Sex</span>.
+					Dit zou slechts leeftijd naar geslacht bepalen, terwijl de gemiddelde (Leeftijd) voor de hele kolom moet worden berekend.
+				</p>
+
+			</li>
+	</ul>
+</p>
+
+

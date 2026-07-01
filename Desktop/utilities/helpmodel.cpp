@@ -7,7 +7,6 @@
 #include "gui/preferencesmodel.h"
 #include "log.h"
 
-
 HelpModel::HelpModel(QObject * parent) : QObject(parent)
 {
 	setPagePath("index");
@@ -90,7 +89,7 @@ void HelpModel::generateJavascript()
 {
 	if(markdown() != "")
 	{
-		loadMarkdown();
+		loadMarkdown(markdown());
 		return;
 	}
 
@@ -184,20 +183,6 @@ void HelpModel::showOrToggleParticularPageForAnalysis(Analysis * analysis, QStri
 	}
 }
 
-void HelpModel::showOrToggleMarkdown(QString markdown)
-{
-	if (markdown == _markdown)
-	{
-		setVisible(false);
-		setMarkdown("");
-	}
-	else
-	{
-		setMarkdown(markdown);
-		setVisible(true);
-	}
-}
-
 
 void HelpModel::reloadPage()
 {
@@ -285,10 +270,12 @@ bool HelpModel::loadHelpContent(const QString & pagePath, bool ignorelanguage, Q
 	return found;
 }
 
-void HelpModel::loadMarkdown()
+void HelpModel::loadMarkdown(QString md)
 {
+	//Log::log() << "loadMarkdown got:\n" << md << std::endl;
+
 	setVisible(true);
-	runJavaScript("window.render", _markdown);
+	runJavaScript("window.render", md);
 }
 
 void HelpModel::setAnalysis(Analysis *newAnalysis)

@@ -178,19 +178,6 @@ FocusScope
 					}
 				}
 			}
-
-			HelpButton
-			{
-				id:					helpButton
-				height:				columnModel.compactMode ? 33 * jaspTheme.uiScale : 0
-				width:				height
-				buttonPadding:		6 * preferencesModel.uiScale
-				toolTip:			qsTr("Open Documentation")
-				helpMD:				allHelp.variableslabeleditorhelp
-				anchors.right:		closeButton.left
-				anchors.top:		tabView.top
-				anchors.topMargin:	jaspTheme.generalAnchorMargin * -0.5
-			}
 			
 			MenuButton
 			{
@@ -355,7 +342,7 @@ FocusScope
 				ColumnBasicInfo
 				{
 					id:				tabInfo
-					showIcons:		false
+					closeIcon:		false
 				}
 			}
 		}

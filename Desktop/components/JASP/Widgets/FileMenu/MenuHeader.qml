@@ -10,7 +10,6 @@ Item
 	property bool	toolseparator:	true
 	property string headertext:		""
 	property string helpfile:		""
-	property alias	helpMD:			idHelpButton.helpMD
 	property bool	addMargin:		true
 
 	function showHelp()
@@ -37,14 +36,17 @@ Item
 		color:				jaspTheme.black
 	}
 
-	HelpButton
+	MenuButton
 	{
 		id:					idHelpButton
+		visible:			helpfile !== ""
 		height:				parent.height - (jaspTheme.generalAnchorMargin * 2)
 		width:				height
-		buttonPadding:		6 * preferencesModel.uiScale
+		iconSource:			jaspTheme.iconPath + "info-button.png"  // {info-button, info-button-grey}.png Icons made by Freepik from https://www.flaticon.com/
+		onClicked:			helpModel.showOrTogglePage(helpfile)
 		toolTip:			qsTr("Show info about these preferences")
-		helpPage:			helpfile
+		radius:				height / 2
+		activeFocusOnTab:	true
 
 		anchors
 		{

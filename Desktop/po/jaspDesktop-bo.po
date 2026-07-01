@@ -20,6 +20,7 @@ msgctxt "ComponentsList|"
 msgid "Remove a row"
 msgstr "ཐིག་ཕྲེང་འདོར་བ།"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Save file to:"
 msgstr "ཡིག་ཆ་ཉར་ཚགས་བྱེད་ས།:"
@@ -32,6 +33,7 @@ msgctxt "FileSelector|"
 msgid "Select file to save"
 msgstr "ཉར་ཚགས་བྱེད་རྒྱུའི་ཡིག་ཆ་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "FileSelector|"
 msgid "Select file to load"
 msgstr "ཁ་འབྱེད་རྒྱུའི་ཡིག་ཆ་འདེམས་པ།"
@@ -50,6 +52,7 @@ msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
 msgstr "། ཡང་བསྐྱར་དབྱེ་ཞིབ་བྱས་ན་གྲུབ་འབྲས་ཅུང་མི་འདྲ་བ་འབྱུང་སྲིད།"
 
+#, fuzzy
 msgctxt "Form|"
 msgid ""
 ", to keep your notes where they are it is highly recommended to first "
@@ -85,7 +88,7 @@ msgctxt "TextArea|"
 msgid "Ctrl + Enter to apply"
 msgstr "Ctrl + Enter མནན་ནས་ལག་ལེན་བྱེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
 msgstr "ཉེ་མཐར་ཐེངས་སྔོན་གྱི་ཡང་དག་པའི་རིན་ཐང་ %1 སླར་གསོ་བྱེད་བཞིན་པ།"
@@ -102,6 +105,7 @@ msgctxt "AboutWindow|"
 msgid "Built on:"
 msgstr "བཟོ་སྐྲུན་དུས་ཚོད:"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Source:"
 msgstr "འབྱུང་ཁུངས:"
@@ -142,6 +146,7 @@ msgctxt "AnalysisFormExpander|"
 msgid "Duplicate this analysis"
 msgstr "དབྱེ་ཞིབ་འདི་ངོ་བཤུས་བྱེད།"
 
+#, fuzzy
 msgctxt "AnalysisFormExpander|"
 msgid "Show info for this analysis"
 msgstr "དབྱེ་ཞིབ་འདིའི་གནས་ཚུལ་སྟོན་པ།"
@@ -162,10 +167,12 @@ msgctxt "BasicThreeButtonTableView|"
 msgid "Reset"
 msgstr "བསྐྱར་སྒྲིག"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid "Bayes Factor"
 msgstr "བྷེ་ཡེ་སིའི་བསྡུར་ཚད།"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the alternative hypothesis relative to "
@@ -174,6 +181,7 @@ msgstr ""
 "མེད་པའི་ཚོད་དཔག་ (Null Hypothesis) ལ་ལྟོས་པའི་གཞན་པའི་ཚོད་དཔག་ (Alternative "
 "Hypothesis) གི་བདེན་དཔང་ཚད་འཇལ་བྱེད་པའི་བྷེ་ཡེ་སིའི་བསྡུར་ཚད།"
 
+#, fuzzy
 msgctxt "BayesFactorType|"
 msgid ""
 "Bayes factor to quantify evidence for the null hypothesis relative to the "
@@ -206,14 +214,17 @@ msgctxt "ComputeColumnWindow|"
 msgid "standard deviation"
 msgstr "ཚད་ཐུབ་འབྱོལ་ཐང།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "variance"
 msgstr "འགྱུར་ཚད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "summation"
 msgstr "བསྡོམས་ཐོབ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "product of values"
 msgstr "བསྒྱུར་ཐོབ།"
@@ -234,6 +245,7 @@ msgctxt "ComputeColumnWindow|"
 msgid "rounds y to n decimals"
 msgstr "y དེ་གྲངས་ཆུང་གནས་ n ལ་བསྒྲིལ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns number of elements in y"
 msgstr "y ནང་གི་གྲངས་ཀའི་བོངས་ཚད་སྟོན་པ།"
@@ -246,18 +258,22 @@ msgctxt "ComputeColumnWindow|"
 msgid "natural logarithm"
 msgstr "རང་བྱུང་གི་ལོ་གྷ་རི་ཐམ། (natural logarithm)"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 2 logarithm"
 msgstr "རྨང་གྲངས་ 2 ཀྱི་ལོག་རྩིས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "base 10 logarithm"
 msgstr "རྨང་གྲངས་ 10 ཀྱི་ལོག་རྩིས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "logarithm of y in 'base'"
 msgstr "'base' རྨང་གྲངས་ཡིན་པའི་ y ཀྱི་ལོག་རྩིས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "exponential"
 msgstr "སྟོབས་འགྱུར།"
@@ -282,10 +298,12 @@ msgctxt "ComputeColumnWindow|"
 msgid "break your data up in numBreaks levels"
 msgstr "གཞི་གྲངས་རྣམས་ numBreaks རིམ་པར་དབྱེ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
 msgstr "ཀ་ཐིག་ནང་གི་ཆད་པའི་རིན་ཐང་ (NA) རྣམས་ replaceWith ཡི་རིན་ཐང་གིས་བརྗེ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "if-else statement"
 msgstr "གལ་ཏེ་-གཞན་ (if-else) བརྗོད་པ།"
@@ -297,6 +315,7 @@ msgid ""
 msgstr ""
 "ཆ་སྙོམས་དང་ཚད་ལྡན་ཁྱད་བྲལ་ sd ངེས་ཅན་ཡོད་པའི་ གྷོ་སི་ (Gaussian) ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from t distribution with degrees of freedom df and non-"
@@ -304,6 +323,7 @@ msgid ""
 msgstr ""
 "རང་དབང་གི་ཚད་ df དང་དབུས་མ་ཡིན་པའི་ཚད་གཞི་ ncp ཡོད་པའི་ ཊི་(t) ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a chi-squared distribution with degrees of freedom df "
@@ -311,6 +331,7 @@ msgid ""
 msgstr ""
 "རང་དབང་གི་ཚད་ df དང་དབུས་མ་ཡིན་པའི་ཚད་གཞི་ ncp ཡོད་པའི་ χ² ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from an F distribution with specified degrees of freedoms "
@@ -319,6 +340,7 @@ msgstr ""
 "རང་དབང་གི་ཚད་ df1, df2 དང་དབུས་མ་ཡིན་པའི་ཚད་གཞི་ ncp ཡོད་པའི་ ཨེཕ་(F) ཁྱབ་ཚུལ་ལས་གཞི་གྲངས"
 "་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a binomial distribution with specified trials and "
@@ -326,6 +348,7 @@ msgid ""
 msgstr ""
 "ཚོད་ལྟ་དང་སྲིད་ཕྱོད་ prob ངེས་ཅན་ཡོད་པའི་ཉིས་ཚན་ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a negative binomial distribution with specified trials "
@@ -333,32 +356,39 @@ msgid ""
 msgstr ""
 "ཚོད་ལྟ་དང་སྲིད་ཕྱོད་ prob ངེས་ཅན་ཡོད་པའི་མོ་ཉིས་ཚན་ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a geometric distribution with specified probability prob"
 msgstr "སྲིད་ཕྱོད་ prob ངེས་ཅན་ཡོད་པའི་ geometric ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a Poisson distribution with specified rate lambda"
 msgstr "ཚད་གཞི་ lambda ངེས་ཅན་ཡོད་པའི་ Poisson ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a beta distribution with specified shapes alpha and beta"
 msgstr "དབྱིབས་ alpha དང་ beta ངེས་ཅན་ཡོད་པའི་ beta ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a uniform distribution between min and max"
 msgstr "ཆུང་ཤོས་དང་ཆེ་ཤོས་བར་གྱི་ uniform ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
 msgstr "དབྱིབས་དང་ཚད་གཞི་ངེས་ཅན་ཡོད་པའི་ gamma ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from an exponential distribution with specified rate"
 msgstr "ཚད་གཞི་ངེས་ཅན་ཡོད་པའི་ exponential ཁྱབ་ཚུལ་ལས་གཞི་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a log-normal distribution with specified logarithmic "
@@ -367,6 +397,7 @@ msgstr ""
 "ལོག་གི་ཆ་སྙོམས་ meanLog དང་ཚད་ལྡན་ཁྱད་བྲལ་ sdLog ངེས་ཅན་ཡོད་པའི་ log-normal ཁྱབ་ཚུལ་ལས་གཞི"
 "་གྲངས་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "generates data from a Weibull distribution with specified shape and scale"
@@ -396,10 +427,12 @@ msgctxt "ContrastsList|"
 msgid "deviation"
 msgstr "འབྱོལ་ཐང་།"
 
+#, fuzzy
 msgctxt "ContrastsList|"
 msgid "simple"
 msgstr "སྟབས་བདེ།"
 
+#, fuzzy
 msgctxt "ContrastsList|"
 msgid "difference"
 msgstr "ཁྱད་པར།"
@@ -412,6 +445,7 @@ msgctxt "ContrastsList|"
 msgid "repeated"
 msgstr "ཡང་བསྐྱར།"
 
+#, fuzzy
 msgctxt "ContrastsList|"
 msgid "polynomial"
 msgstr "མང་ཚན། (polynomial)"
@@ -424,7 +458,7 @@ msgctxt "ContrastsList|"
 msgid "Factors"
 msgstr "བགོད་གྲངས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ContrastsList|"
 msgid "Custom for %1"
 msgstr "%1 གི་རང་བཟོ།"
@@ -441,6 +475,7 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Column name is already used, please choose a different one."
 msgstr "ཀ་ཐིག་གི་མིང་འདི་བེད་སྤྱོད་ཟིན་འདུག མིང་གཞན་ཞིག་འདེམས་རོགས།"
 
+#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Define column through R code"
 msgstr "R སྐད་ཡིག་གི་ཨང་རྟགས་བཀོལ་ནས་ཀ་ཐིག་མཚན་ཉིད་འཇོག་དགོས།"
@@ -480,17 +515,20 @@ msgstr "ཁྱེད་ཀྱི་རྩིས་རྒྱག་བྱས་པ
 
 msgctxt "CreateComputeColumnDialog|"
 msgid "Enter a valid (unused) name for computed column"
-msgstr "རྩིས་ཕབ་ཐིག་ཕྲེང་གི་ཆེད་དུ་ནུས་པ་ལྡན་པའི་(བེད་སྤྱོད་མ་བྱས་པའི་)མིང་ཞིག་འཇུག་རོགས།"
+msgstr ""
 "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ལ་འོས་པ་དང་སྔོན་ནས་མ་བེད་སྤྱོད་པའི་མིང་ཡང་དག་ཅིག་འཇུག་རོགས།"
 
+#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Close without creating a computed column"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་གསར་བཟོ་མི་བྱེད་པར་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "CustomContrastsTableView|"
 msgid "Add Contrast"
 msgstr "Contrast ཁ་སྣོན།"
 
+#, fuzzy
 msgctxt "CustomContrastsTableView|"
 msgid "Delete Contrast"
 msgstr "Contrast སུབ་པ།"
@@ -560,6 +598,7 @@ msgctxt "OSF|"
 msgid "Open Science Framework"
 msgstr "ཚན་རིག་སྒྲོམ་གཞི་དྭངས་བ། (Open Science Framework)"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Logout"
 msgstr "ཐོ་འབུད།"
@@ -584,18 +623,22 @@ msgctxt "OSFLogin|"
 msgid "OSF"
 msgstr "OSF"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Sign in with your OSF account to continue"
 msgstr "མུ་མཐུད་པར་ཁྱེད་ཀྱི་ OSF ཐོ་ཁོངས་ནས་ནང་འཇུག་བྱེད།"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Sign in"
 msgstr "འབྱོར་ཐོ་འགོད་པ།"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "Remember me"
 msgstr "ང་དྲན་པར་གྱིས།"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid "About the OSF"
 msgstr "OSF སྐོར།"
@@ -636,11 +679,13 @@ msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
 msgstr "རོགས་རམ་ཆེད་ markdown ཡིག་ཆ་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Enabling this will generate markdown helpfile from the info at qml options."
 msgstr "འདི་སྤྱད་ན་ qml འདེམས་ཀ་ནས་ markdown རོགས་རམ་ཡིག་ཆ་བཟོ་ངེས།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Logging options"
 msgstr "ཟིན་ཐོ་འདེམས་ཀ"
@@ -649,6 +694,7 @@ msgctxt "PrefsAdvanced|"
 msgid "Log to file"
 msgstr "ཡིག་ཆའི་ནང་ཟིན་ཐོ་འགོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
 msgstr "JASP ཡི་ debug-logs རྣམས་ཡིག་ཆའི་ནང་ཉར་བར་འདི་འདེམས།"
@@ -661,10 +707,12 @@ msgctxt "PrefsAdvanced|"
 msgid "Show logs"
 msgstr "ཟིན་ཐོ་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Engine options"
 msgstr "འཕྲུལ་ཆས་འདེམས་ཀ"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Data Preferences"
 msgstr "གཞི་གྲངས་ཀྱི་སྒྲིག་འཛུགས།"
@@ -677,10 +725,12 @@ msgctxt "PrefsData|"
 msgid "Select custom editor"
 msgstr "རང་བཟོས་རྩོམ་སྒྲིག་ཆས་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
 msgstr "ཆད་པའི་རིན་ཐང་གི་ཐོ་གཞུང་།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
 msgstr "ཆད་པའི་རིན་ཐང་འདོར་བ།"
@@ -689,35 +739,42 @@ msgctxt "PrefsMissingValues|"
 msgid "Reset"
 msgstr "བསྐྱར་སྒྲིག"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Results Preferences"
 msgstr "གྲུབ་འབྲས་འདེམས་སྒྲིག"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Table options"
 msgstr "རེའུ་མིག་འདེམས་ཀ"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
 msgstr "P-རིན་ཐང་ཏག་ཏག་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Fix the number of decimals"
 msgstr "གྲངས་ཆུང་གནས་གྲངས་གཏན་འཁེལ་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Plot options"
 msgstr "དཔེ་རིས་འདེམས་ཀ"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Use PPI of screen in plots: "
 msgstr "དཔེ་རིས་ནང་འཆར་ཤེལ་གྱི་དབྱིང་ཚུན་རེ་རེའི་པིག་ཚེག་གྲངས་སྤྱོད་པ: "
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr "ཁྱེད་ཀྱི་བརྙན་ངོས་ཀྱི་ཨང་རྟགས་རེ་རེའི་ཚོན་རྡུལ་བེད་སྤྱོད་བྱས་ནས་རིས་མོ་བཏབས།"
+msgstr ""
 "དཔེ་རིས་འདོན་པར་འཆར་ཤེལ་གྱི་དབྱིང་ཚུན་རེ་རེར་ཡོད་པའི་པིག་ཚེག་གྲངས་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Custom PPI: "
 msgstr "རང་བཟོས་ PPI: "
@@ -763,16 +820,19 @@ msgctxt "PrefsUI|"
 msgid "default: %1"
 msgstr "སྔོན་བཀོད: %1"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Themes"
 msgstr "མཐོང་རྣམ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a light theme, this is the default and original flavour of JASP."
 msgstr ""
 "འོད་གསལ་གྱི་མཐོང་རྣམ་ལ་སྒྱུར་བ། འདི་ནི་ JASP ཡི་སྔོན་བཀོད་དང་ཐོག་མའི་ཉམས་འགྱུར་ཡིན།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Switches to a dark theme, makes JASP a lot easier on the eyes for those "
@@ -780,6 +840,7 @@ msgid ""
 msgstr ""
 "མུན་ནག་གི་མཐོང་རྣམ་ལ་སྒྱུར་བ། འདིས་མཚན་མོར་ལས་ཀ་བྱེད་མཁན་ཚོའི་མིག་ལ་ཕན་པ་ཡོད།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Miscellaneous options"
 msgstr "ཙག་ཙིག་གི་འདེམས་ཀ།"
@@ -798,6 +859,7 @@ msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
 msgstr "ཤོག་བཤུད་མྱུར་ཚད་ (pix/s): "
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
@@ -825,7 +887,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "\"ཉེན་མེད་རིས་མོའི་ཐབས་ལམ།\" མཐུད་ཡོད་པས་མྱུར་མདངས་རིས་མོ་སྔར་བཞིན་མཐུད་མི་འཇུག"
+msgstr ""
 "\"རིས་དབྱིབས་བརྟན་པའི་ཐབས་ལམ\" སྤྱོད་བཞིན་པས་འགུལ་རིས་སྔ་ས་ནས་སྒོ་བརྒྱབ་ཟིན།"
 
 msgctxt "PrefsUI|"
@@ -849,11 +911,13 @@ msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་གི་ཨང་རྟགས་སྤྱད་ཟིན།"
 
+#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "སྒྲོམ་གཞི་ཡོངས་རྫོགས་བཀོད་རོགས། - དམར་པོས་མཚན་འཁོད་བྱས་པའི་ས་ཆ་ལ་གཟིགས།"
+msgstr ""
 "ཞུགས་གནས་ཆ་ཚང་ནང་འཇུག་བྱེད་རོགས། དམར་རྟགས་བརྒྱབ་པའི་ས་ཁོངས་རྣམས་ལ་གཟིགས་དང་།"
 
+#, fuzzy
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་རེར་སྤྱི་འགྲོས་རེ་ལས་མི་ཆོག"
@@ -890,16 +954,17 @@ msgctxt "OperatorSelector|"
 msgid "Square root"
 msgstr "ཉིས་སྒྱུར་རྩ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr "Modulo: བགོ་རྩིས་ཀྱི་ལྷག་མ་སྟོན་པ། 3%2 ལས་ 1 འབྱུང་།"
 
+#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr "གཏན་ཚིགས་སྟོན་པ་དང་འཚག་ཆས་སྤྱི་འགྲོས་ཀྱི་རྩ་བ་བྱེད་ཆོག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
 msgstr "མཚུངས་པ: %1"
@@ -939,11 +1004,12 @@ msgctxt "OperatorSelector|"
 msgid "Or: %1"
 msgstr "ཡང་ན: %1"
 
+#, fuzzy
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
 msgstr "ཁ་འབྱེད་པ: ཚོགས་ཆུང་རེ་རེར་ཟུར་དུ་འཚག་ཆས་སྤྱོད་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
 msgstr "མིན: %1"
@@ -972,21 +1038,22 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
 msgstr "ཉིས་སྒྱུར་རྩ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr "Modulo: བགོ་རྩིས་ཀྱི་ལྷག་མ་སྟོན་པ། 3%2 ལས་ 1 འབྱུང་།"
 
+#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
 msgstr "གཏན་ཚིགས་སྟོན་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
 msgstr "མཚུངས་པ: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
 msgstr "མི་མཚུངས་པ: %1"
@@ -1021,11 +1088,12 @@ msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
 msgstr "ཡང་ན: %1"
 
+#, fuzzy
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
 msgstr "《ཁ་འབྱེད་པ》: ཚོགས་ཆུང་རེ་རེར་ཟུར་དུ་འཚག་ཆས་སྤྱོད་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
 msgstr "མིན: %1"
@@ -1038,14 +1106,17 @@ msgctxt "FilterWindow|"
 msgid "standard deviation"
 msgstr "ཚད་ཐུབ་འབྱོལ་ཐང།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "variance"
 msgstr "འགྱུར་ཚད།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
 msgstr "བསྡོམས་ཐོབ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "product of values"
 msgstr "བསྒྱུར་ཐོབ།"
@@ -1066,6 +1137,7 @@ msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
 msgstr "y དེ་གྲངས་ཆུང་གནས་ n ལ་བསྒྲིལ་བ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
 msgstr "y ནང་གི་གྲངས་ཀའི་བོངས་ཚད་སྟོན་པ།"
@@ -1074,6 +1146,7 @@ msgctxt "FilterWindow|"
 msgid "median"
 msgstr "དཀྱིལ་གྲངས།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "if-else statement"
 msgstr "གལ་ཏེ་-གཞན་ (if-else) བརྗོད་པ།"
@@ -1086,6 +1159,7 @@ msgctxt "FilterWindow|"
 msgid "There are unapplied changes to your filter; what would you like to do?"
 msgstr "ཁྱེད་ཀྱི་འཚག་ཆས་ལ་མ་སྤྱད་པའི་འགྱུར་བ་འདུག ཁྱེད་ཀྱིས་ག་རེ་བྱེད་འདོད་དམ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Switch to the R filter"
 msgstr "R འཚག་ཆས་སུ་སྒྱུར་བ།"
@@ -1110,6 +1184,7 @@ msgctxt "FilterWindow|"
 msgid "Click to apply filter"
 msgstr "འཚག་ཆས་སྤྱོད་པར་མནན།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr "འཚག་ཆས་སྔ་ས་ནས་སྤྱད་ཟིན།"
@@ -1122,10 +1197,12 @@ msgctxt "FilterWindow|"
 msgid "Hide filter"
 msgstr "འཚག་ཆས་སྦེད་པ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Reset all checkmarks on all labels"
 msgstr "ཁ་བྱང་ཚང་མའི་སྟེང་གི་འདེམས་རྟགས་ཚང་མ་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Switch to the drag and drop filter"
 msgstr "འདྲུད་འཐེན་འཚག་ཆས་སུ་སྒྱུར་བ།"
@@ -1138,6 +1215,7 @@ msgctxt "HelpWindow|"
 msgid "JASP Help"
 msgstr "JASP རོགས་རམ།"
 
+#, fuzzy
 msgctxt "HelpWindow|"
 msgid "Search for:"
 msgstr "འཚོལ་ཞིབ:"
@@ -1162,6 +1240,7 @@ msgctxt "MainPage|"
 msgid "Show data"
 msgstr "གཞི་གྲངས་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Resize data/results"
 msgstr "གཞི་གྲངས་/གྲུབ་འབྲས་ཀྱི་ཆེ་ཆུང་བཟོ་བ།"
@@ -1182,22 +1261,27 @@ msgctxt "ModulesMenu|"
 msgid "Install a module"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ཤིག་སྒྲིག་འཇུག་བྱེད།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install Developer Module"
 msgstr "གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Installing Developer Module"
 msgstr "གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག་བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Select a Developer Module"
 msgstr "གསར་སྤེལ་མོ་ཌུལ་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Install selected developer module"
 msgstr "བདམས་པའི་གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག་བྱེད།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Installing developer module now"
 msgstr "ད་ལྟ་གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག་བྱེད་བཞིན་པ།"
@@ -1211,7 +1295,7 @@ msgctxt "ModulesMenu|"
 msgid "Installing: %1\n"
 msgstr "སྒྲིག་འཇུག་བྱེད་བཞིན་པ: %1\n"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ModulesMenu|"
 msgid "Loading: %1\n"
 msgstr "འདོན་བཞིན་པ: %1\n"
@@ -1280,6 +1364,7 @@ msgctxt "SetSeed|"
 msgid "Repeatability"
 msgstr "བསྐྱར་ཟློས་རུང་བའི་རང་བཞིན།"
 
+#, fuzzy
 msgctxt "SetSeed|"
 msgid "Set seed:"
 msgstr "Seed སྒྲིག་པ:"
@@ -1304,6 +1389,7 @@ msgctxt "SubjectivePriors|"
 msgid "Prior"
 msgstr "སྔོན་ཚུད།"
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Standardized effect size"
 msgstr "ཚད་ལྡན་དུ་བཏང་བའི་ཕན་ནུས་ཆེ་ཆུང་།"
@@ -1312,6 +1398,7 @@ msgctxt "SubjectivePriors|"
 msgid "Default"
 msgstr "སྔོན་བཀོད།"
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Cauchy"
 msgstr "Cauchy"
@@ -1352,10 +1439,12 @@ msgctxt "SubjectivePriors|"
 msgid "df:"
 msgstr "df:"
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Raw effect size (Dienes)"
 msgstr "ཕན་ནུས་ཆེ་ཆུང་རྗེན་པ། (Dienes)"
 
+#, fuzzy
 msgctxt "SubjectivePriors|"
 msgid "Uniform"
 msgstr "Uniform"
@@ -1416,7 +1505,7 @@ msgstr "ཐོན་རིམ་གསར་ཤོས་ལེན་པར་ག
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "རིས་མོ་ %1 གི་སྒྲིག་བཅོས་གདམ་ཚན་མ་རྙེད་པས་རིས་མོ་སྒྲིག་བཅོས་ལས་མི་འགྲུབ་ངེས།..."
+msgstr ""
 "དཔེ་རིས་ %1 གི་རྩོམ་སྒྲིག་འདེམས་ཀ་མ་རྙེད་པས་དཔེ་རིས་རྩོམ་སྒྲིག་གིས་ལས་ཀ་མི་བྱེད..."
 
 #, qt-format
@@ -1482,6 +1571,7 @@ msgctxt "AnalysisForm|"
 msgid "Plot"
 msgstr "དཔེ་རིས།"
 
+#, fuzzy
 msgctxt "AnalysisForm|"
 msgid "Collection"
 msgstr "ཚོགས།"
@@ -1506,6 +1596,7 @@ msgctxt "JASPControl|"
 msgid "CheckBox"
 msgstr "མང་འདེམས་སྒྲོམ།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Switch"
 msgstr "མཐུད་འཁོར།"
@@ -1514,18 +1605,22 @@ msgctxt "JASPControl|"
 msgid "Entry Field"
 msgstr "ཡིག་ཐོག་གི་ནང་འཇུག།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Button"
 msgstr "གཅིག་འདེམས་མཐེབ"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Radio Buttons"
 msgstr "གཅིག་འདེམས་མཐེབ"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Input ListView"
 msgstr "Input ListView"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "TableView"
 msgstr "མདུན་ཅོག ལྟ་བ།"
@@ -1542,6 +1637,7 @@ msgctxt "JASPControl|"
 msgid "Button"
 msgstr "མཐེབ་གཅུས།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factors Form"
 msgstr "རྐྱེན་སྒེའུ་སྒྲོམ།"
@@ -1550,6 +1646,7 @@ msgctxt "JASPControl|"
 msgid "List of Components"
 msgstr "ཆ་ཤས་ཀྱི་ཐོ་གཞུང་།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Group Box"
 msgstr "Group Box"
@@ -1582,6 +1679,7 @@ msgctxt "JASPDoubleValidator|"
 msgid "&lt; %1"
 msgstr "&lt; %1"
 
+#, fuzzy
 msgctxt "JASPDoubleValidator|"
 msgid "No validation error"
 msgstr "ནུས་ལྡན་བརྟག་དཔྱད་ཀྱི་ནོར་འཁྲུལ་མེད།"
@@ -1606,14 +1704,17 @@ msgctxt "AsyncLoader|"
 msgid "Exporting Data Set"
 msgstr "གཞི་གྲངས་ཚོགས་པ་ཕྱིར་འདྲེན་བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
 msgstr "གཞི་གྲངས་ཚོགས་པ་མཉམ་འགུལ་བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "The '"
 msgstr "'"
 
+#, fuzzy
 msgctxt "ColumnsModel|"
 msgid "'-column "
 msgstr "'ཀ་ཐིག་ "
@@ -1655,6 +1756,7 @@ msgctxt "FileEvent|"
 msgid "Exporting Data"
 msgstr "གཞི་གྲངས་ཕྱིར་འདྲེན་བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
 msgstr "གཞི་གྲངས་མཉམ་འགུལ་བྱེད་བཞིན་པ།"
@@ -1820,6 +1922,7 @@ msgctxt "MainWindow|"
 msgid "Do you have a GitHub account?"
 msgstr "ཁྱེད་ལ་ GitHub ཐོ་ཁོངས་ཡོད་དམ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "To be able to report the bug you need to have a GitHub account, do you have "
@@ -1831,6 +1934,7 @@ msgctxt "MainWindow|"
 msgid "Join GitHub"
 msgstr "GitHub ལ་ཞུགས།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "We will open two pages for you in your webbrowser.\n"
@@ -1848,10 +1952,12 @@ msgstr ""
 "\n"
 "དེར་ཆད་པའི་གནས་ཚུལ་ཚང་མ་སྐོང་རོགས།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "GitHub couldn't be openend for you"
 msgstr "ཁྱེད་ཀྱི་ཆེད་དུ་ GitHub ཁ་ཕྱེ་མ་ཐུབ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Something went wrong with leading you to GitHub..\n"
@@ -1919,6 +2025,7 @@ msgctxt "MainWindow|"
 msgid "Start Spreadsheet Editor"
 msgstr "རེའུ་མིག་རྩོམ་སྒྲིག་ཆས་འགོ་འཛུགས་པ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Generate Data File"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་བཟོ་བ།"
@@ -1957,12 +2064,12 @@ msgctxt "MainWindow|"
 msgid "Do you really want to remove all analyses?"
 msgstr "ཁྱེད་ཀྱིས་དངོས་ནས་དབྱེ་ཞིབ་ཚང་མ་འདོར་འདོད་དམ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid "Loading bundled module %1 failed"
 msgstr "ཆུད་སྒྲིག་ཁ་སྣོན་ཆ་ཤས་ %1 འདོན་པར་ཕམ་ཉེས་བྱུང་སོང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid ""
 "Loading of the bundled module %1 failed with the following error:\n"
@@ -1973,6 +2080,7 @@ msgstr ""
 "\n"
 "%2"
 
+#, fuzzy
 msgctxt "Modules::Upgrader|"
 msgid "Error Loading Upgrades"
 msgstr "རིམ་སྤོར་འདོན་པར་ནོར་འཁྲུལ།"
@@ -2001,6 +2109,7 @@ msgctxt "OnlineDataManager|"
 msgid "File Changed"
 msgstr "ཡིག་ཆར་འགྱུར་བ་ཕྱིན་སོང་།"
 
+#, fuzzy
 msgctxt "OnlineDataManager|"
 msgid ""
 "The online copy of this file has changed since it was opened.\n"
@@ -2027,39 +2136,47 @@ msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating making new folder "
 msgstr "ཡིག་སྣོད་གསར་པ་བཟོ་འགོ་འཛུགས་བཞིན་པ: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Initiating osf action "
 msgstr "osf བྱ་བ་འགོ་འཛུགས་བཞིན་པ: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Upload of "
 msgstr "ཡར་འཇུག: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Download of "
 msgstr "ཕབ་ལེན: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new file "
 msgstr "ཡིག་ཆ་གསར་པ་བཟོ་བཞིན་པ: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Creating new folder "
 msgstr "ཡིག་སྣོད་གསར་པ་བཟོ་བཞིན་པ: "
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid "Osf action "
 msgstr "Osf བྱ་བ: "
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OnlineDataNodeOSF|"
 msgid "%1 %2 failed because %3"
 msgstr "%1 %2 ཕམ་ཉེས་བྱུང་སོང་། གང་ཡིན་ཟེར་ན %3"
 
+#, fuzzy
 msgctxt "OnlineDataNodeOSF|"
 msgid " in progress"
 msgstr " བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Collapse"
 msgstr "སྡུད་པ།"
@@ -2072,6 +2189,7 @@ msgctxt "ResultMenuModel|"
 msgid "Copy"
 msgstr "བཤུ་འབྲི།"
 
+#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Copy LaTeX"
 msgstr "LaTeX བཤུ་འབྲི་བྱེད།"
@@ -2108,6 +2226,7 @@ msgctxt "ResultMenuModel|"
 msgid "Refresh All"
 msgstr "ཚང་མ་གསར་བཅོས་བྱེད།"
 
+#, fuzzy
 msgctxt "ResultMenuModel|"
 msgid "Show Dependencies"
 msgstr "རྟེན་འབྲེལ་རྣམས་སྟོན་པ།"
@@ -2140,7 +2259,7 @@ msgctxt "QObject|"
 msgid "valid R code"
 msgstr "ནུས་ལྡན་ R ཨང་རྟགས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Unknown option %1 in DropDown %2"
 msgstr "DropDown %2 ནང་ངོ་མི་ཤེས་པའི་འདེམས་ཀ་ %1"
@@ -2153,6 +2272,7 @@ msgctxt "ActionButtons|"
 msgid "Save"
 msgstr "ཉར་ཚགས།"
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Save As"
 msgstr "གཞན་དུ་ཉར་ཚགས།"
@@ -2165,6 +2285,7 @@ msgctxt "ActionButtons|"
 msgid "Export Data"
 msgstr "གཞི་གྲངས་ཕྱིར་འདྲེན་བྱེད།"
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Sync Data"
 msgstr "གཞི་གྲངས་མཉམ་འགུལ་བྱེད།"
@@ -2197,6 +2318,7 @@ msgctxt "FileMenu|"
 msgid "No associated data file"
 msgstr "འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་མེད།"
 
+#, fuzzy
 msgctxt "FileMenu|"
 msgid ""
 "JASP has no associated data file to be synchronized with.\n"
@@ -2225,7 +2347,7 @@ msgstr "OSF ཞབས་ཞུ་མི་འདུག ཁྱེད་ཀྱི�
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr "མཐུད་ལམ་དུས་ཚོད་འཛོལ་བ། ཁྱེད་ཀྱི་དྲ་རྒྱའི་མཐུད་ལམ་ཞིབ་བཤེར་གནང་རོགས།"
+msgstr ""
 "མཐུད་ལམ་དུས་ཡོལ་གྱི་ནོར་འཁྲུལ། ཁྱེད་ཀྱི་དྲ་རྒྱའི་མཐུད་ལམ་ལ་ཞིབ་བཤེར་བྱེད་རོགས།"
 
 msgctxt "OSF|"
@@ -2236,6 +2358,7 @@ msgctxt "OSF|"
 msgid "Projects"
 msgstr "ལས་འཆར།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "Files cannot be added to the projects list.\n"
@@ -2246,10 +2369,12 @@ msgstr ""
 "\n"
 "ལས་འཆར་གསར་པ་ཁ་སྣོན་བྱེད་པར་དྲ་ཐོག་ OSF ཞབས་ཞུ་སྤྱོད་རོགས།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Data Providers"
 msgstr "གཞི་གྲངས་མཁོ་སྤྲོད་པ།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "Files cannot be added to a projects data providers list.\n"
@@ -2262,7 +2387,7 @@ msgstr ""
 "གཞི་གྲངས་མཁོ་སྤྲོད་པ་གསར་པ་ (དཔེར་ན་ google drive) ཁ་སྣོན་བྱེད་པར་དྲ་ཐོག་ OSF ཞབས་ཞུ་སྤྱོད་རོགས"
 "།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OSF|"
 msgid "Files cannot be added to '%1' for an unknown reason."
 msgstr "རྒྱུ་མཚན་མི་ཤེས་པའི་རྐྱེན་གྱིས་ '%1' ནང་ཡིག་ཆ་ཁ་སྣོན་བྱེད་མི་ཐུབ།"
@@ -2271,14 +2396,17 @@ msgctxt "OSF|"
 msgid "File Types"
 msgstr "ཡིག་ཆའི་རིགས།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Failed to open file from OSF"
 msgstr "OSF ནས་ཡིག་ཆ་ཁ་ཕྱེ་མ་ཐུབ།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "An error occured and the folder could not be created."
 msgstr "ནོར་འཁྲུལ་ཞིག་བྱུང་ནས་ཡིག་སྣོད་གསར་བཟོ་བྱེད་མ་ཐུབ།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to the projects list.<br>To add a new project "
@@ -2287,6 +2415,7 @@ msgstr ""
 "ལས་འཆར་ཐོ་གཞུང་ནང་ཡིག་སྣོད་གསར་པ་ཁ་སྣོན་བྱེད་མི་ཐུབ།<br>ལས་འཆར་གསར་པ་ཁ་སྣོན་བྱེད་པར་དྲ་ཐོག་ "
 "OSF ཞབས་ཞུ་སྤྱོད་རོགས།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid ""
 "A new folder cannot be added to a projects data providers list.<br>To add a "
@@ -2295,29 +2424,33 @@ msgstr ""
 "ལས་འཆར་གྱི་གཞི་གྲངས་མཁོ་སྤྲོད་པའི་ཐོ་གཞུང་ནང་ཡིག་སྣོད་གསར་པ་ཁ་སྣོན་བྱེད་མི་ཐུབ།<br>གཞི་གྲངས་མཁོ་སྤྲོད་པ"
 "་གསར་པ་ (དཔེར་ན་ google drive) ཁ་སྣོན་བྱེད་པར་དྲ་ཐོག་ OSF ཞབས་ཞུ་སྤྱོད་རོགས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr "'%1' ལ་རྒྱུ་མཚན་མ་ཤེས་པ་ཞིག་གིས་སྣོད་ཐོ་གསར་པ་ཁ་སྣོན་བྱེད་མི་ཐུབ།"
+msgstr ""
 "རྒྱུ་མཚན་མི་ཤེས་པའི་རྐྱེན་གྱིས་ '%1' ནང་ཡིག་སྣོད་གསར་པ་ཁ་སྣོན་བྱེད་མི་ཐུབ།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Folder"
 msgstr "ཡིག་སྣོད།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Login"
 msgstr "ནང་འཇུག"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "User or password cannot be empty."
 msgstr "བེད་སྤྱོད་པའི་མིང་ངམ་གསང་གྲངས་སྟོང་པ་འཇོག་མི་རུང་།"
 
+#, fuzzy
 msgctxt "OSF|"
 msgid "Entry name cannot be empty."
 msgstr "འཇུག་སའི་མིང་སྟོང་པ་འཇོག་མི་རུང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "OSF|"
 msgid "%1 name can only contain the following characters A-Z a-z 0-9 _ %2"
 msgstr "%1 གི་མིང་ནང་ཡིག་རྟགས་ A-Z a-z 0-9 _ %2 འདི་དག་ལས་མེད།"
@@ -2358,7 +2491,7 @@ msgctxt "ResourceButtons|"
 msgid "Advanced"
 msgstr "མཐོ་རིམ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ListModelCustomContrasts|"
 msgid "Contrast %1"
 msgstr "Contrast %1"
@@ -2368,24 +2501,24 @@ msgctxt "ListModelLayersAssigned|"
 msgid "Layer %1"
 msgstr "བང་རིམ་ %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid ""
 "A RadioButton inside RadioButtonGroup element (name: %1) does not have any "
 "name"
 msgstr "RadioButtonGroup ཆ་ཤས་ (མིང་: %1) ནང་གི་ RadioButton ལ་མིང་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RadioButtonsGroupBase|"
 msgid "No radio button corresponding to name %1"
 msgstr "མིང་ %1 དང་མཐུན་པའི་ radio button མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RowControls|"
 msgid "A row component in %1 does not have a name"
 msgstr "%1 ནང་གི་ཐིག་ཕྲེང་ཆ་ཤས་ཤིག་ལ་མིང་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RowControls|"
 msgid "2 row components in %1 have the same name"
 msgstr "%1 ནང་གི་ཐིག་ཕྲེང་ཆ་ཤས་ 2 ལ་མིང་གཅིག་འདུག"
@@ -2418,98 +2551,112 @@ msgctxt "SortMenuModel|"
 msgid "Sort by size"
 msgstr "ཆེ་ཆུང་ལྟར་རིམ་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "SortMenuModel|"
 msgid "SortMenuModel not called with a sortable parent"
 msgstr "SortMenuModel དེ་རིམ་སྒྲིག་རུང་བའི་མ་རྒྱུད་དང་མཉམ་དུ་བོས་མི་འདུག"
 
+#, fuzzy
 msgctxt "TextAreaBase|"
 msgid "Model applied"
 msgstr "དཔེ་དབྱིབས་སྤྱད་ཟིན།"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "The expression did not return a number."
 msgstr "མཚོན་ཚུལ་འདིས་གྲངས་ཀ་ཞིག་སྟོན་མ་སོང་།"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Integer Field"
 msgstr "ཧྲིལ་གྲངས་ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Percentage Field"
 msgstr "བརྒྱ་ཆའི་ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Doubles Field"
 msgstr "Doubles ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Column Field"
 msgstr "ཀ་ཐིག་ཁ་སྣོན་ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Add Computed Column Field"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ཁ་སྣོན་ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Formula Field"
 msgstr "སྤྱི་འགྲོས་ས་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Text Field"
 msgstr "ཡི་གེའི་ས་མིག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
 msgstr "རིན་ཐང་ (%1) དེ་ངེས་པར་དུ་ %2 ཡིན་དགོས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "VariablesListBase|"
 msgid "Source model of %1 must be from a Factor List"
 msgstr "%1 གི་འབྱུང་ཁུངས་དཔེ་དབྱིབས་དེ་ Factor List ནས་ཡིན་དགོས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of source for VariableList %1"
 msgstr "VariableList %1 ལ་འབྱུང་ཁུངས་ཀྱི་རིགས་ནོར་བ་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "VariablesListBase|"
 msgid "No related list found for VariablesList %1"
 msgstr "VariablesList %1 ལ་འབྲེལ་ཡོད་ཐོ་གཞུང་མ་རྙེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
 msgstr "VariablesList %2 ལ་འབྲེལ་ཡོད་ཐོ་གཞུང་གི་རིགས་ནོར་བ་ (%1) རྙེད་སོང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "No name given for the source of %1"
 msgstr "%1 གི་འབྱུང་ཁུངས་ལ་མིང་བཏགས་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "No source given for %1"
 msgstr "%1 ལ་འབྱུང་ཁུངས་བཏང་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
 msgstr "%2 གི་འབྱུང་ཁུངས་ལ་ཆ་ཤས་ %1 འཚོལ་མ་རྙེད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Standardizes the variable"
 msgstr "འགྱུར་ཚད་ཚད་ལྡན་དུ་གཏོང་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr "གལ་ཏེ་ཡིག་ཕྲེང་ནང་ཡིག་ཕྲེང་ཆུང་བ་ཉུང་མཐར་ཐེངས་གཅིག་ཡོད་ན་ true སྟོན་པ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Standardizes the variable"
 msgstr "འགྱུར་ཚད་ཚད་ལྡན་དུ་གཏོང་བ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
 msgstr "གལ་ཏེ་ཡིག་ཕྲེང་ནང་ཡིག་ཕྲེང་ཆུང་བ་ཉུང་མཐར་ཐེངས་གཅིག་ཡོད་ན་ true སྟོན་པ།"
@@ -2530,6 +2677,7 @@ msgctxt "PlotEditingAxis|"
 msgid "to"
 msgstr "བར།"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "steps"
 msgstr "གོམ་གྲངས།"
@@ -2538,6 +2686,7 @@ msgctxt "PlotEditingAxis|"
 msgid "Based on data"
 msgstr "གཞི་གྲངས་ལ་གཞི་བཅོལ་བ།"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Based on ticks"
 msgstr "རྟགས་ལ་གཞི་བཅོལ་བ།"
@@ -2546,10 +2695,12 @@ msgctxt "PlotEditingAxis|"
 msgid "Set manually"
 msgstr "ལག་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Lower limit"
 msgstr "མཚམས་དམའ་བ།"
 
+#, fuzzy
 msgctxt "PlotEditingAxis|"
 msgid "Upper limit"
 msgstr "མཚམས་མཐོ་བ།"
@@ -2586,7 +2737,7 @@ msgctxt "Modules::DynamicModule|"
 msgid "Loading upgrades for module %1 failed"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ %1 ལ་རིམ་སྤོར་འདོན་པར་ཕམ་ཉེས་བྱུང་སོང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "An error occured trying to initialize a module from dir %1, the error was: %2"
@@ -2596,10 +2747,10 @@ msgstr ""
 #, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "An error occured trying to load module %1, the error was: '%2'"
-msgstr "སྡེ་ཚན་ %1 འདྲེན་པར་འཛོལ་བ་བྱུང་། འཛོལ་བ་དེ་ནི། '%2'"
+msgstr ""
 "ཁ་སྣོན་ཆ་ཤས་ %1 འདོན་ཐབས་བྱེད་སྐབས་ནོར་འཁྲུལ་བྱུང་སོང་། ནོར་འཁྲུལ་ནི: '%2'"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Something went wrong removing files for module %1 at path '%2' and the error "
@@ -2620,6 +2771,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Select a folder"
 msgstr "ཡིག་སྣོད་ཅིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select the folder you want to "
@@ -2632,6 +2784,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Problem initializing module"
 msgstr "ཁ་སྣོན་ཆ་ཤས་འགོ་འཛུགས་པར་དཀའ་ངལ།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "There was a problem loading the developer module:\n"
@@ -2664,6 +2817,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
 msgstr "ཁྱེད་ཀྱི་འདེམས་ཀའི་རེའུ་མིག་ཡོད་པའི་ inst/qml ཡིག་སྣོད་ཅིག་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "Create a inst/icons directory containing the icons for your ribbonbuttons."
@@ -2674,7 +2828,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Missing %1"
 msgstr "ཆད་པ %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 from your development module directory. Without "
@@ -2684,7 +2838,7 @@ msgstr ""
 "ཁྱེད་ཀྱིས་གསར་སྤེལ་མོ་ཌུལ་ཡིག་སྣོད་ནས་ %1 བསུབས་པ་འདྲ། དེ་མེད་ན་ཁྱེད་ཀྱི་ཁ་སྣོན་ཆ་ཤས་ཀྱིས་ལས་ཀ་མི་བྱེད"
 "། དེ་ཕྱིར་འཇོག་རྒྱུ་གལ་ཆེ། ད་ལྟའི་ཆར་ཁྱེད་ཀྱི་ཡིག་ཆ་རྙིང་པ་ %2 ཉར་ཚགས་བྱེད་རྒྱུ་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had a %1 in your development module directory. "
@@ -2696,12 +2850,12 @@ msgstr ""
 "་མི་བྱེད། གཅིག་བཟོ་རྒྱུ་གལ་ཆེ། ཁྱེད་ཀྱིས་ཇི་ལྟར་སྒྲིག་འཇུག་བྱས་པ་དེ་ཅུང་གསལ་པོ་མེད་པས་གསར་སྤེལ་མོ་ཌུལ་དེ་ད"
 "་ལྟ་ཕྱིར་འདོན་བྱེད་རྒྱུ་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "%1 was removed!"
 msgstr "%1 བསུབས་ཟིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed %1 but this file is required for your module to "
@@ -2710,12 +2864,12 @@ msgstr ""
 "ཁྱེད་ཀྱིས་ %1 བསུབས་པ་འདྲ། འོན་ཀྱང་ཡིག་ཆ་འདི་ཁྱེད་ཀྱི་ཁ་སྣོན་ཆ་ཤས་ལས་ཀ་བྱེད་པར་མཁོ་ངེས་ཡིན། གསར་སྤེལ"
 "་མོ་ཌུལ་དེ་ད་ལྟ་ཕྱིར་འདོན་བྱེད་རྒྱུ་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "Missing folder %1"
 msgstr "ཆད་པའི་ཡིག་སྣོད %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have removed the folder %1 from your development module "
@@ -2725,7 +2879,7 @@ msgstr ""
 "ཁྱེད་ཀྱིས་གསར་སྤེལ་མོ་ཌུལ་ཡིག་སྣོད་ནས་ཡིག་སྣོད་ %1 བསུབས་པ་འདྲ། དེ་མེད་ན་ཁྱེད་ཀྱི་ཁ་སྣོན་ཆ་ཤས་ཀྱིས་ལས་ཀ"
 "་མི་བྱེད། དེ་ཕྱིར་འཇོག་རྒྱུ་གལ་ཆེ། ད་ལྟའི་ཆར་ཁྱེད་ཀྱི་ཡིག་སྣོད་རྙིང་པ་དེ་ཉར་ཚགས་བྱེད་རྒྱུ་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "You seem to have never had the folder %1 in your development module "
@@ -2737,16 +2891,17 @@ msgstr ""
 "ཀྱིས་ལས་ཀ་མི་བྱེད། གཅིག་བཟོ་རྒྱུ་གལ་ཆེ། ཁྱེད་ཀྱིས་ཇི་ལྟར་སྒྲིག་འཇུག་བྱས་པ་དེ་ཅུང་གསལ་པོ་མེད་པས་གསར་སྤེལ་མོ"
 "་ཌུལ་དེ་ད་ལྟ་ཕྱིར་འདོན་བྱེད་རྒྱུ་ཡིན།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Loading module description encountered a problem"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ཀྱི་འགྲེལ་བརྗོད་འདོན་སྐབས་དཀའ་ངལ་འཕྲད་སོང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "<i>ཡིག་ཚགས་ནང་གི་ཁ་སྣོན་ཆ་ཤས་ཀྱི་འགྲེལ་བརྗོད་འདོན་མ་ཐུབ: '%1'</i>"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
@@ -2762,7 +2917,7 @@ msgctxt "ListModelTableViewBase|"
 msgid "Column number in source is bigger than the number of columns of %1"
 msgstr "འབྱུང་ཁུངས་ནང་གི་ཀ་ཐིག་ཨང་གྲངས་དེ་ %1 གི་ཀ་ཐིག་གྲངས་ལས་ཆེ་བ་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for function '%1' but this upgrade "
@@ -2770,7 +2925,7 @@ msgid ""
 msgstr ""
 "རིམ་སྤོར་ནོར་བ་སྤྱོད་བཞིན་འདུག ལས་འགན་ '%1' འཚོལ་བཞིན་ཡོད་ཀྱང་རིམ་སྤོར་འདི་ '%2' གི་ཆེད་དུ་རེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Wrong Upgrade being applied, was looking for version '%1' but this upgrade "
@@ -2779,7 +2934,7 @@ msgstr ""
 "རིམ་སྤོར་ནོར་བ་སྤྱོད་བཞིན་འདུག ཐོན་རིམ་ '%1' འཚོལ་བཞིན་ཡོད་ཀྱང་རིམ་སྤོར་འདི་ '%2' ཡང་ན་དེ་ལས་དམའ་"
 "བའི་ཆེད་དུ་རེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::Upgrade|"
 msgid ""
 "Aborting upgrade because a loop was detected!\n"
@@ -2795,14 +2950,17 @@ msgstr ""
 "\n"
 "འདི་འདྲ་རྩ་བ་ནས་འབྱུང་མི་རུང་། ཕལ་ཆེར་ཁ་སྣོན་ཆ་ཤས་ '%2' གི་རྩོམ་པ་པོས་རོགས་རམ་བྱེད་ཐུབ་སྲིད།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Factor Level List"
 msgstr "རྐྱེན་ཆའི་རིམ་པའི་ཐོ་གཞུང་།"
 
+#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
 msgstr "VariablesForm ནང་ Available Variables ཐོ་གཞུང་ 1 ལས་སྒྲིག་མི་ཐུབ།"
 
+#, fuzzy
 msgctxt "VariablesFormBase|"
 msgid "There is no Available List in the Variables Form"
 msgstr "Variables Form ནང་ Available List མི་འདུག"
@@ -2811,14 +2969,17 @@ msgctxt "FactorLevelList|"
 msgid "Factor"
 msgstr "བགོད་གྲངས།"
 
+#, fuzzy
 msgctxt "FactorLevelList|"
 msgid "Level"
 msgstr "རིམ་པ།"
 
+#, fuzzy
 msgctxt "FactorLevelList|"
 msgid "New Factor"
 msgstr "རྐྱེན་ཆ་གསར་པ།"
 
+#, fuzzy
 msgctxt "FactorLevelList|"
 msgid "New Level"
 msgstr "རིམ་པ་གསར་པ།"
@@ -2827,10 +2988,12 @@ msgctxt "PrefsAdvanced|"
 msgid "Remember enabled modules"
 msgstr "ཁ་སྣོན་ཆ་ཤས་རྣམས་ཀྱི་སྤྱོད་ཚུལ་ཉར།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use default PAT for Github"
 msgstr "Github ལ་སྔོན་བཀོད་ PAT སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Either use the bundled GITHUB_PAT or, if available, use the one set in "
@@ -2838,14 +3001,17 @@ msgid ""
 msgstr ""
 "ཆུད་སྒྲིག་ GITHUB_PAT སྤྱོད་པའམ། ཡང་ན་ཡོད་ཚེ་ཁོར་ཡུག་འགྱུར་ཚད་ནང་སྒྲིག་པའི་དེ་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Private GITHUB_PAT:"
 msgstr "སྒེར་གྱི་ GITHUB_PAT:"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "R, JAGS, or lavaan code:"
 msgstr "R, JAGS, ཡང་ན་ lavaan ཨང་རྟགས:"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Result & help:"
 msgstr "གྲུབ་འབྲས་དང་རོགས་རམ:"
@@ -2870,6 +3036,7 @@ msgctxt "PrefsUI|"
 msgid "Disable animations"
 msgstr "འགུལ་རིས་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "རང་གི་ཡིག་ཆའི་སྒེའུ་ཁུང་སྤྱོད་པ།"
@@ -2886,26 +3053,32 @@ msgctxt "RibbonBar|"
 msgid "Show modules menu"
 msgstr "ཁ་སྣོན་ཆ་ཤས་དཀར་ཆག་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "A nice grouping of elements"
 msgstr "ཆ་ཤས་ཀྱི་ཚོགས་པ་ཡག་པོ་ཞིག"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "You can enter an integer here: "
 msgstr "ཁྱེད་ཀྱིས་འདིར་ཧྲིལ་གྲངས་ཤིག་འཇུག་ཐུབ: "
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "This is an incredibly useful tooltip right?"
 msgstr "འདི་ནི་ཧ་ཅང་ཕན་ཐོགས་ཆེ་བའི་ལག་ཆའི་མཛུབ་སྟོན་ཞིག་མ་རེད་དམ།"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The first checkbox"
 msgstr "འདེམས་སྒྲོམ་དང་པོ།"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The second checkbox"
 msgstr "འདེམས་སྒྲོམ་གཉིས་པ།"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "The last checkbox"
 msgstr "འདེམས་སྒྲོམ་མཐའ་མ།"
@@ -2914,10 +3087,12 @@ msgctxt "jasp-qml-style-example|"
 msgid "Variables"
 msgstr "འགྱུར་གྲངས།"
 
+#, fuzzy
 msgctxt "jasp-qml-style-example|"
 msgid "Split"
 msgstr "ཁ་འབྱེད་པ།"
 
+#, fuzzy
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem downloading the known issues for this version, it "
@@ -2928,6 +3103,7 @@ msgstr ""
 "ལ་མཐུད་མ་ཐུབ་པ་འདྲ། སེམས་ཁྲལ་མ་བྱེད། JASP ཡིས་ལས་ཀ་ཡག་པོ་བྱེད་ངེས་ཀྱང་། ཤེས་ཟིན་པའི་སྐྱོན་ཆ་ཆུང་ངུ"
 "་ཁ་ཤས་བརྡ་ལན་མི་སྤྲོད་སྲིད།"
 
+#, fuzzy
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem loading the known issues for this version, this "
@@ -2937,7 +3113,7 @@ msgstr ""
 "JASP ཡིས་ཐོན་རིམ་འདིའི་ཤེས་ཟིན་པའི་སྐྱོན་ཆ་འདོན་སྐབས་དཀའ་ངལ་འཕྲད་སོང་། འདི་ངེས་པར་དུ་དཀའ་ངལ་ཞིག་"
 "མིན་ཀྱང་། གལ་ཏེ་མུ་མཐུད་ནས་བྱུང་ན་ཁྱེད་ཀྱིས་ JASP ཚོགས་པར་རོགས་རམ་ཞུ་ཆོག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "KnownIssues|"
 msgid ""
 "JASP ran into a problem ('%1') loading the known issues for this version, "
@@ -2989,6 +3165,7 @@ msgctxt "Modules::DynamicModules|"
 msgid "Initializing module %1 failed"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ %1 འགོ་འཛུགས་པར་ཕམ་ཉེས་བྱུང་སོང་།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Execute R code in a console"
 msgstr "console ནང་ R ཨང་རྟགས་སྤྱོད་པ།"
@@ -3005,10 +3182,12 @@ msgctxt "TableView|"
 msgid "Delete"
 msgstr "སུབ་པ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
 msgstr "རིན་ཐང་གི་རྟགས་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
@@ -3020,6 +3199,7 @@ msgctxt "PrefsAdvanced|"
 msgid "Clear installed modules and packages"
 msgstr "སྒྲིག་འཇུག་བྱས་པའི་ཁ་སྣོན་ཆ་ཤས་དང་ཐུམ་སྒྲིལ་གཙང་སེལ་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Windows workaround"
 msgstr "Windows གནས་སྐབས་ཀྱི་ཐབས།"
@@ -3032,6 +3212,7 @@ msgctxt "PrefsUI|"
 msgid "User Interface Options"
 msgstr "བེད་སྤྱོད་པའི་མཐུད་ངོས་འདེམས་ཀ"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
 msgstr "རིན་ཐང་གི་རྟགས་སྟོན་པ།"
@@ -3076,9 +3257,10 @@ msgctxt "MainWindow|"
 msgid "Clean"
 msgstr "གཙང་སེལ།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr "<i>ལི་ནཀསི་(Linux) ཐོག་སྤྱིར་བཀོལ་གྱི་ཐིག་ཁྲམ་རྩོམ་སྒྲིག་ཆས་རྟག་ཏུ་བེད་སྤྱོད་བྱེད་ཀྱི་ཡོད།</i>"
+msgstr ""
 "<i>Linux ཐོག་སྔོན་བཀོད་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས་དེ་རྟག་ཏུ་སྤྱོད་ཀྱི་ཡོད།</i>"
 
 msgctxt "PlotEditor|"
@@ -3158,7 +3340,7 @@ msgstr "འབྱུང་ཁུངས་དྭངས་བའི་ཆ་ཤས
 
 msgctxt "PrefsUI|"
 msgid "Help us translate or improve JASP in your language"
-msgstr "ཁྱེད་ཀྱི་སྐད་ཡིག་ནང་ JASP བསྒྱུར་བཅོས་དང་ལེགས་སྒྲུབ་བྱེད་པར་ང་ཚོར་རོགས་རམ་གནང་རོགས།"
+msgstr ""
 "ཁྱེད་ཀྱི་སྐད་ཡིག་ནང་ JASP ཡིག་སྒྱུར་རམ་ལེགས་བཅོས་བྱེད་པར་ང་ཚོར་རོགས་རམ་གནང་རོགས།"
 
 msgctxt "ErrorMessage|"
@@ -3169,6 +3351,7 @@ msgctxt "Database|"
 msgid "Database"
 msgstr "གཞི་གྲངས་མཛོད།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid ""
 "<i>Warning!</i>\n"
@@ -3203,14 +3386,17 @@ msgstr ""
 "ས་གནས་ཀྱི་ཡང་ན་ཚོད་ལྟའི་གཞི་གྲངས་མཛོད་ལ་མཚོན་ན་འདི་ཧ་ཅང་མང་དྲགས་པ་ཡིན་སྲིད་ཀྱང་། ཁྱེད་རང་གི་བསམ"
 "་བློ་སྤྱོད་རོགས།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Hostname"
 msgstr "མགྲོན་འཁོར་མིང་།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Port"
 msgstr "སྒོ་ཁང་།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Name"
 msgstr "མིང་།"
@@ -3219,42 +3405,52 @@ msgctxt "Database|"
 msgid "Browse"
 msgstr "བཤར་ལྟ།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Username"
 msgstr "བེད་སྤྱོད་པའི་མིང་།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Password"
 msgstr "གསང་གྲངས།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Remember me"
 msgstr "ང་དྲན་པར་གྱིས།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Connect to database"
 msgstr "གཞི་གྲངས་མཛོད་ལ་མཐུད་པ།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Query"
 msgstr "འདྲི་རྩད།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Execute"
 msgstr "ལག་བསྟར་བྱེད།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Preview data"
 msgstr "གཞི་གྲངས་སྔོན་ལྟ།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Load into JASP"
 msgstr "JASP ནང་འདོན་པ།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
 msgstr "སྐར་མ་ནང་གི་མཉམ་འགུལ་བར་མཚམས། "
 
+#, fuzzy
 msgctxt "Database|"
 msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
@@ -3263,43 +3459,49 @@ msgstr ""
 "0 ཞེས་པ་ནི་རང་འགུལ་མཉམ་འགུལ་མེད་པ་དང་། འོན་ཀྱང་ཁྱེད་ཀྱིས་ Ctrl/Cmd+Y མནན་ནས་ལག་སྒྲིག་མཉམ་"
 "འགུལ་བྱེད་ཐུབ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid ""
 "JASP thinks it's connected to the database but the QSqlDatabase isn't "
 "opened..."
 msgstr "JASP ཡིས་གཞི་གྲངས་མཛོད་ལ་མཐུད་ཡོད་བསམ་ཡང་ QSqlDatabase ཁ་ཕྱེ་མི་འདུག..."
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Query failed with: '%1'"
 msgstr "འདྲི་རྩད་ཕམ་ཉེས་བྱུང་སོང་། '%1'"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Query wasn't a SELECT-like statement and returned nothing."
 msgstr "འདྲི་རྩད་དེ་ SELECT ལྟ་བུའི་བརྗོད་པ་ཞིག་མིན་པས་གང་ཡང་སྟོན་མ་སོང་།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
 msgstr "གྲུབ་འབྲས་གསལ་པོ་མ་རྙེད། ཁྱེད་ཀྱི་འདྲི་རྩད་ལ་སྐྱོན་ཞིག་ཡོད་སྲིད།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Database Password"
 msgstr "གཞི་གྲངས་མཛོད་ཀྱི་གསང་གྲངས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
 msgstr "གཞི་གྲངས་མཛོད་ཀྱི་མཐུད་ལམ་ལ་བེད་སྤྱོད་པ་ '%1' ཆེད་དུ་གསང་གྲངས་དགོས།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password"
 msgstr "གཞི་གྲངས་མཛོད་ཀྱི་མཐུད་ལམ་ལ་གསང་གྲངས་དགོས།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Connection failed"
 msgstr "མཐུད་ལམ་ཕམ་ཉེས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "Could not connect to database because of '%1', want to try a different "
@@ -3307,11 +3509,12 @@ msgid ""
 msgstr ""
 "གཞི་གྲངས་མཛོད་ལ་མཐུད་མ་ཐུབ་པའི་རྒྱུ་མཚན་ནི་ '%1' ཡིན། གསང་གྲངས་གཞན་ཞིག་ཚོད་ལྟ་བྱེད་འདོད་དམ།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
 msgstr "གཞི་གྲངས་མཛོད་ལ་མཐུད་མ་ཐུབ་པས་མཉམ་འགུལ་བྱེད་མི་ཐུབ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DatabaseImporter|"
 msgid ""
 "Failed to connect to database %1 at %2 with user %3, last error was: '%4'"
@@ -3319,34 +3522,42 @@ msgstr ""
 "བེད་སྤྱོད་པ་ %3 དང་མཉམ་དུ་གཞི་གྲངས་མཛོད་ %1 དེ་ %2 ལ་མཐུད་མ་ཐུབ། ནོར་འཁྲུལ་མཐའ་མ་ནི་ '%4' ཡིན"
 "།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "Choose a database driver..."
 msgstr "གཞི་གྲངས་མཛོད་ཀྱི་ཁ་ལོ་བ་ཞིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "IBM DB2"
 msgstr "IBM DB2"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "MySQL Driver"
 msgstr "MySQL ཁ་ལོ་བ།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "Oracle Call Interface Driver"
 msgstr "Oracle Call Interface ཁ་ལོ་བ།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "ODBC Driver (includes Microsoft SQL Server)"
 msgstr "ODBC ཁ་ལོ་བ་ (Microsoft SQL Server ཚུད་པ།)"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "PostgreSQL Driver"
 msgstr "PostgreSQL ཁ་ལོ་བ།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "SQLite version 3 or above"
 msgstr "SQLite ཐོན་རིམ་ 3 ཡང་ན་དེ་ལས་མཐོ་བ།"
 
+#, fuzzy
 msgctxt "DatabaseFileMenu|"
 msgid "Not connected to database!"
 msgstr "གཞི་གྲངས་མཛོད་ལ་མཐུད་མི་འདུག"
@@ -3355,6 +3566,7 @@ msgctxt "ResourceButtons|"
 msgid "Database"
 msgstr "གཞི་གྲངས་མཛོད།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Use exponent notation"
 msgstr "སྟོན་གྲངས་རྟགས་མཚན་སྤྱོད་པ།"
@@ -3381,6 +3593,7 @@ msgstr ""
 "དེ་ནི་མཚུངས་མིན་བསྡུར་བར་ཁོ་ན་སྤྱོད་ཆོག ཆེ་ཆུང་བསྡུར་བ་དང་རྩིས་རིག་བྱེད་སྒོར་མི་ཆོག དེ་ལྟར་བྱེད་པར་ཐོག་མར་"
 "དེ་རིམ་ལྡན་འགྱུར་ཆོས་སམ་མུ་འབྲེལ་འགྱུར་ཆོས་སུ་བསྒྱུར་རོགས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Logit transform (i.e., the inverse of the standard logit function, or log-"
@@ -3389,6 +3602,7 @@ msgstr ""
 "Logit བསྒྱུར་བ་ (དཔེར་ན་ཚད་ལྡན་ logit ལས་འགན་གྱི་ལྡོག་ཕྱོགས་སམ་ log-odds བསྒྱུར་བ་) ཡིས་ 0 "
 "དང་ 1 བར་གྱི་གྲངས་ཀ་རྣམས་གྲངས་ཐིག་དངོས་སུ་སྒྱུར་བ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Inverse logit transform (i.e., the standard logit function) converts numbers "
@@ -3410,6 +3624,7 @@ msgctxt "ComputeColumnWindow|"
 msgid "Inverse two-parameter Box-Cox transform."
 msgstr "གཞི་རྒྱུ་གཉིས་ཀྱི་ Box-Cox བསྒྱུར་བའི་ལྡོག་ཕྱོགས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) to stabilize variance and "
@@ -3426,26 +3641,32 @@ msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
 msgstr "གལ་ཏེ་འདི་སྤྱོད་མཚམས་བཞག་ན་ཡིག་གེ་འདོན་སྟངས་དེ་ native ལ་སྒྱུར་ངེས།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "Select database"
 msgstr "གཞི་གྲངས་མཛོད་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "Database|"
 msgid "DB driver"
 msgstr "DB ཁ་ལོ་བ།"
 
+#, fuzzy
 msgctxt "EnginesWindow|"
 msgid "Engines Overview"
 msgstr "འཕྲུལ་ཆས་ཀྱི་སྤྱི་མཐོང་།"
 
+#, fuzzy
 msgctxt "EnginesWindow|"
 msgid "Right and middle mouse button to kill an engine."
 msgstr "འཕྲུལ་ཆས་ཤིག་མེད་པར་བཟོ་བར་གཡས་དང་དཀྱིལ་གྱི་ཙིག་མདའ་གནོན།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Maximum number of engines: "
 msgstr "འཕྲུལ་ཆས་ཀྱི་གྲངས་མང་ཤོས། "
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Show engines"
 msgstr "འཕྲུལ་ཆས་སྟོན་པ།"
@@ -3523,7 +3744,7 @@ msgstr "སྤྱི་འགྲོས་ཀྱི་ randomEffects ནང་འ
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr "སྙན་ཞུའི་ནང་གི་ randomEffects ཆ་ཤས་ཐོ་གཞུང་གི་རྣམ་གྲངས་ཁག་དང་མཉམ་དུ་བེད་སྤྱོད་བྱེད་ཆོག"
+msgstr ""
 "སྤྱི་འགྲོས་ནང་གི་ randomEffects དེ་ ComponentsList ཆ་ཤས་དང་མཉམ་དུ་ཁོ་ན་སྤྱོད་ཆོག"
 
 msgctxt "FormulaSource|"
@@ -3534,6 +3755,7 @@ msgctxt "PrefsUI|"
 msgid "Reporting mode"
 msgstr "སྙན་ཞུའི་ཐབས་ལམ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Whether JASP should run in reporting mode or not."
 msgstr "JASP སྙན་ཞུའི་ཐབས་ལམ་ནང་སྤྱོད་དགོས་མིན་གྱི་གནས་སྟངས།"
@@ -3542,6 +3764,7 @@ msgctxt "Reporter|"
 msgid "No datafile"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་མེད།"
 
+#, fuzzy
 msgctxt "Reporter|"
 msgid ""
 "JASP was started in reporting mode, but the jasp file is not coupled to a "
@@ -3563,36 +3786,37 @@ msgctxt "FormulaSource|"
 msgid "No name given in Formula description"
 msgstr "སྤྱི་འགྲོས་ཀྱི་འགྲེལ་བརྗོད་ནང་མིང་མ་བཏགས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPControl|"
 msgid "Control with label '%1' has no name"
 msgstr "ཁ་བྱང་ '%1' ཡོད་པའི་ཚོད་འཛིན་ཆས་ལ་མིང་མི་འདུག"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "A control has no name"
 msgstr "ཚོད་འཛིན་ཆས་ཤིག་ལ་མིང་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPControl|"
 msgid "Option name '%1' is a reserved word"
 msgstr "འདེམས་ཀའི་མིང་ '%1' ནི་ཉར་ཚགས་བྱས་པའི་ཚིག་ཅིག་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPControl|"
 msgid "2 controls have the same name: %1"
 msgstr "ཚོད་འཛིན་ཆས་ 2 ལ་མིང་གཅིག་འདུག: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPControl|"
 msgid "A control and a formula have the same name '%1'"
 msgstr "ཚོད་འཛིན་ཆས་དང་སྤྱི་འགྲོས་ཤིག་ལ་མིང་གཅིག་འདུག '%1'"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RSyntax|"
 msgid "Formula with name '%1' is defined twice"
 msgstr "མིང་ '%1' ཡོད་པའི་སྤྱི་འགྲོས་དེ་ཐེངས་གཉིས་བཀོད་འདུག།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RSyntax|"
 msgid "A control and a formula have the same name '%1'"
 msgstr "ཚོད་འཛིན་ཆས་དང་སྤྱི་འགྲོས་ཤིག་ལ་མིང་གཅིག་འདུག '%1'"
@@ -3601,15 +3825,17 @@ msgctxt "RCommander|"
 msgid "Analysis not found"
 msgstr "དབྱེ་ཞིབ་མ་རྙེད།"
 
+#, fuzzy
 msgctxt "RCommander|"
 msgid "Not an analysis function: <module name>::<analysis name>(...)"
 msgstr "དབྱེ་ཞིབ་ལས་འགན་མིན།: <module name>::<analysis name>(...)"
 
+#, fuzzy
 msgctxt "RCommander|"
 msgid "R is (re)starting"
 msgstr "R འགོ་བསྐྱར་དུ་འཛུགས་བཞིན་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RCommander|"
 msgid "R is installing or loading a module %1"
 msgstr "R ཡིས་ཁ་སྣོན་ཆ་ཤས་ %1 སྒྲིག་འཇུག་གམ་འདོན་བཞིན་པ།"
@@ -3618,6 +3844,7 @@ msgctxt "RCommander|"
 msgid "R stopped"
 msgstr "R མཚམས་བཞག"
 
+#, fuzzy
 msgctxt "RCommander|"
 msgid "R awaits commands"
 msgstr "R བཀའ་བསྒུག་བཞིན་པ།"
@@ -3634,6 +3861,7 @@ msgctxt "JASPControl|"
 msgid "Tab View"
 msgstr "བྱང་བུའི་མཐོང་སྣང་།"
 
+#, fuzzy
 msgctxt "JASPControl|"
 msgid "Variables Form"
 msgstr "འགྱུར་ཚད་ཀྱི་རེའུ་མིག"
@@ -3642,6 +3870,7 @@ msgctxt "Form|"
 msgid "Show all options"
 msgstr "འདེམས་ཀ་ཚང་མ་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "R console"
 msgstr "R console"
@@ -3650,14 +3879,17 @@ msgctxt "RCommander|"
 msgid " and "
 msgstr " དང་ "
 
+#, fuzzy
 msgctxt "RCommander|"
 msgid "has unselected module"
 msgstr "ཁ་སྣོན་ཆ་ཤས་མ་བདམས།"
 
+#, fuzzy
 msgctxt "RCommander|"
 msgid "has selected module "
 msgstr "ཁ་སྣོན་ཆ་ཤས་བདམས་ཟིན། "
 
+#, fuzzy
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
 msgstr "མཉམ་འགུལ་བྱེད་པའམ་སྤྱོད་པར་གཤམ་གྱི་ཡིག་ཆར་མནན། "
@@ -3729,15 +3961,17 @@ msgctxt "Computer|"
 msgid "Data Files"
 msgstr "གཞི་གྲངས་ཡིག་ཆ།"
 
+#, fuzzy
 msgctxt "JASPListControl|"
 msgid "<no choice>"
 msgstr "<འདེམས་ཀ་མེད>"
 
+#, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
 msgstr "རིན་ཐང་གསར་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ListModelTableViewBase|"
 msgid "Row %1"
 msgstr "ཐིག་ཕྲེང་ %1"
@@ -3764,13 +3998,14 @@ msgstr "R བརྡ་སྤྲོད་སྦེད་པ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Would you like to save your changes to the Computed Column?"
-msgstr "རྩིས་ཕབ་ཐིག་ཕྲེང་ལ་བཅོས་བསྒྱུར་བྱས་པ་ཉར་ཚགས་བྱེད་འདོད་ཡོད་དམ།"
+msgstr ""
 "ཁྱེད་ཀྱིས་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ལ་བྱས་པའི་བཟོ་བཅོས་ཉར་ཚགས་བྱེད་འདོད་དམ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "གལ་ཏེ་ཁྱེད་ཀྱིས་ཉར་ཚགས་མ་བྱས་ན་ཁྱེད་ཀྱི་བཟོ་བཅོས་རྣམས་བརླག་འགྲོ་ངེས།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Would you like to save your changes to the Filter?"
 msgstr "ཁྱེད་ཀྱིས་འཚག་ཆས་ལ་བྱས་པའི་བཟོ་བཅོས་ཉར་ཚགས་བྱེད་འདོད་དམ།"
@@ -3779,7 +4014,7 @@ msgctxt "FilterWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "གལ་ཏེ་ཁྱེད་ཀྱིས་ཉར་ཚགས་མ་བྱས་ན་ཁྱེད་ཀྱི་བཟོ་བཅོས་རྣམས་བརླག་འགྲོ་ངེས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid "Would you like to save your changes to %1 file?"
 msgstr "ཁྱེད་ཀྱིས་ཡིག་ཆ་ %1 ལ་བྱས་པའི་བཟོ་བཅོས་ཉར་ཚགས་བྱེད་འདོད་དམ།"
@@ -3788,6 +4023,7 @@ msgctxt "MainWindow|"
 msgid "Your changes will be lost if you don't save them."
 msgstr "གལ་ཏེ་ཁྱེད་ཀྱིས་ཉར་ཚགས་མ་བྱས་ན་ཁྱེད་ཀྱི་བཟོ་བཅོས་རྣམས་བརླག་འགྲོ་ངེས།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Use Qt's text rendering"
 msgstr "Qt ཡི་ཡི་གེ་འདོན་སྟངས་སྤྱོད་པ།"
@@ -3852,76 +4088,92 @@ msgctxt "MainPage|"
 msgid "Superscript"
 msgstr "སྟེང་ཡིག།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Blockquote"
 msgstr "ལུང་འདྲེན་དུམ་བུ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Add Indent"
 msgstr "ནང་འཐེན་ཁ་སྣོན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Remove Indent"
 msgstr "ནང་འཐེན་འདོར་བ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Font Size"
 msgstr "ཡིག་གཟུགས་ཆེ་ཆུང་།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Clear Formatting"
 msgstr "རྣམ་བཞག་གཙང་སེལ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Click here to add text"
 msgstr "ཡི་གེ་ཁ་སྣོན་བྱེད་པར་འདིར་མནན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
 msgstr "འབྲི་པང་དུ་བཤུས་ཟིན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
 msgstr "ལུང་འདྲེན་རྣམས་འབྲི་པང་དུ་བཤུས་ཟིན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
 msgstr "LaTeX ཨང་རྟགས་འབྲི་པང་དུ་བཤུས་ཟིན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Introduction:"
 msgstr "ངོ་སྤྲོད:"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Conclusion:"
 msgstr "མཇུག་བསྡོམས:"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Change to data editing mode"
 msgstr "གཞི་གྲངས་རྩོམ་སྒྲིག་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Cmd"
 msgstr "Cmd"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "ཚང་མ་འདེམས་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
 msgstr "%1+A"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Cut"
 msgstr "གཏུབ་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
 msgstr "%1+X"
@@ -3930,56 +4182,62 @@ msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "བཤུ་འབྲི།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
 msgstr "%1+C"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Paste"
 msgstr "སྦྱར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+V"
 msgstr "%1+V"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Clear cells"
 msgstr "སෛལ་གཙང་སེལ་བྱེད།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Del"
 msgstr "Del"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "Undo: %1"
 msgstr "ཕྱིར་བསྒྱུར: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
 msgstr "%1+Z"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
 msgstr "བསྐྱར་བྱེད: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
 msgstr "%1+Shift+Z"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select column"
 msgstr "ཀ་ཐིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert column before"
 msgstr "སྔོན་དུ་ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert column after"
 msgstr "རྗེས་སུ་ཀ་ཐིག་འཇུག་པ།"
@@ -3988,130 +4246,142 @@ msgctxt "DataTableView|"
 msgid "Delete column"
 msgstr "ཀ་ཐིག་སུབ་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select row"
 msgstr "ཐིག་ཕྲེང་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Delete row"
 msgstr "ཐིག་ཕྲེང་སུབ་པ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Close filter window"
 msgstr "འཚག་ཆས་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
 msgstr "ཀ་ཐིག་མིང་བརྗེ་བ།"
 
+#, fuzzy
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
 msgstr "མིང་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
 msgstr "ཀ་ཐིག་ %1 གི་མིང་ %2 ལ་བརྗེ་བ།"
 
+#, fuzzy
 msgctxt "RenameColumnDialog|"
 msgid "Close without renaming column"
 msgstr "ཀ་ཐིག་མིང་མ་བརྗེ་བར་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "འགྱུར་ཚད་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
 msgstr "རིན་ཐང་།"
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "ཁ་བྱང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "Column %1"
 msgstr "ཀ་ཐིག་ %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
 msgstr "ཐིག་ཕྲེང་ %2 ཀ་ཐིག་ '%3' ནང་རིན་ཐང་ '%1' ལ་སྒྲིག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ '%1' འཇུག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
 msgstr "ཀ་ཐིག་ '%1' འཇུག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
 msgstr "ཀ་ཐིག་ '%1' འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
 msgstr "ཐིག་ཕྲེང་ %1 འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
 msgstr "ཀ་ཐིག་ '%2' ནང་གི་རིན་ཐང་ '%1' གི་ཁ་བྱང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
 msgstr "ཀ་ཐིག་ '%2' ནང་ཁ་བྱང་ '%1' ཡོད་པའི་ཐིག་ཕྲེང་འཚག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
 msgstr "ཀ་ཐིག་ '%2' ནང་ཁ་བྱང་ '%1' ཡོད་པའི་ཐིག་ཕྲེང་གི་འཚག་ཆས་འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' གོང་དུ་སྤོ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' འོག་ཏུ་སྤོ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རྣམས་གོང་དུ་སྤོ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རྣམས་འོག་ཏུ་སྤོ་བ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Change drag and drop filter"
 msgstr "འདྲུད་འཐེན་འཚག་ཆས་བརྗེ་བ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Change R filter"
 msgstr "R འཚག་ཆས་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
 msgstr "མིང་ '%1' ཡོད་པའི་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ཅིག་བཟོ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set code to computed column with name '%1'"
 msgstr "མིང་ '%1' ཡོད་པའི་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ལ་ཨང་རྟགས་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP has an associated data file, but you edited it. Would you like to "
@@ -4120,19 +4390,22 @@ msgstr ""
 "JASP ལ་འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་ཞིག་ཡོད་ཀྱང་ཁྱེད་ཀྱིས་དེ་བཅོས་སྒྲིག་བྱས་འདུག ཁྱེད་ཀྱིས་འབྲེལ་ཡོད་གཞི་གྲངས་"
 "ནས་བསྐྱར་འདོན་བྱེད་པའམ་ཡིག་ཆ་གསར་པ་བཟོ་འདོད་དམ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Reload Data File"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་བསྐྱར་འདོན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Waiting for initialization (of the engine) of module: %1"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ཀྱི་འཕྲུལ་ཆས་འགོ་འཛུགས་པར་སྒུག་བཞིན་པ: %1"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column before"
 msgstr "སྔོན་དུ་ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert column after"
 msgstr "རྗེས་སུ་ཀ་ཐིག་འཇུག་པ།"
@@ -4141,198 +4414,237 @@ msgctxt "RibbonModel|"
 msgid "Delete column"
 msgstr "ཀ་ཐིག་སུབ་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete row"
 msgstr "ཐིག་ཕྲེང་སུབ་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Clear cells"
 msgstr "སෛལ་གཙང་སེལ་བྱེད།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Undo"
 msgstr "ཕྱིར་བསྒྱུར།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Redo"
 msgstr "བསྐྱར་བྱེད།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Analyses"
 msgstr "དབྱེ་ཞིབ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
 msgstr "JASP དབྱེ་ཞིབ་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Edit Data"
 msgstr "གཞི་གྲངས་རྩོམ་སྒྲིག"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
 msgstr "JASP གཞི་གྲངས་རྩོམ་སྒྲིག་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "New Data"
 msgstr "གཞི་གྲངས་གསར་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
 msgstr "གཞི་གྲངས་མེད་པའི་ལས་གནས་ཤིག་ཁ་ཕྱེ་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert"
 msgstr "འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr "ཀ་ཐིག་གམ་ཐིག་ཕྲེང་སྟོང་པ་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "འདོར་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
 msgstr "ཀ་ཐིག་གམ་ཐིག་ཕྲེང་འདོར་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
 msgstr "མཉམ་འགུལ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
 msgstr "ཕྱི་རོལ་གཞི་གྲངས་མཉམ་འགུལ་སྒོ་ཕྱེ་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
 msgstr "ཕྱི་རོལ་གཞི་གྲངས་མཉམ་འགུལ་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert row above"
 msgstr "གོང་དུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert row below"
 msgstr "འོག་ཏུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Color palette"
 msgstr "ཚོན་མདོག་མཐུན་སྦྱོར།"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind"
 msgstr "ཚོན་ལོང་།"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
 msgstr "ཚོན་ལོང་ #2"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
 msgstr "ཚོན་ལོང་ #3"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Viridis"
 msgstr "Viridis"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Gray"
 msgstr "ཐལ་མདོག"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Blue"
 msgstr "སྔོན་པོ།"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Sports teams: NBA"
 msgstr "ལུས་རྩལ་རུ་ཁག: NBA"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Grand Budapest"
 msgstr "Grand Budapest"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert row above"
 msgstr "གོང་དུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert row below"
 msgstr "འོག་ཏུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
 msgstr "བཟོ་བཅོས་ཕྱིར་བསྒྱུར། %1+Z"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
 msgstr "བཟོ་བཅོས་བསྐྱར་བྱེད། %1+shift+Z ཡང་ན་ %1+Y"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
 msgstr "ཕྱིར་བསྒྱུར %2 (%1+Z)"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
 msgstr "བསྐྱར་བྱེད %2 (%1+shift+Z ཡང་ན་ %1+Y)"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
 msgstr "སྔོན་བཀོད་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས་ཀྱིས་གཞི་གྲངས་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
 msgstr "'%2' ནས་ཀ་ཐིག་ %1 འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
 msgstr "ཐིག་ཕྲེང་ %1 ནས་ %2 བར་འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
 msgstr "ཀ་ཐིག་ '%1' དེ་ '%2' ལ་བཤུ་འབྲི་བྱེད།"
 
+#, fuzzy
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
 msgstr "JASP ལ་འབྲེལ་གཏུག་བྱེད།"
 
+#, fuzzy
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
 msgstr "JASP ལ་གཤམ་གསལ་སྒྲིག་འཛུགས་ཁག་གིས་རྒྱབ་སྐྱོར་གནང་གི་ཡོད:"
 
+#, fuzzy
 msgctxt "Supporters|"
 msgid "Suggest your institution join the JASP Community"
 msgstr "ཁྱེད་ཀྱི་སྒྲིག་འཛུགས་ JASP ཚོགས་པར་ཞུགས་རྒྱུའི་གྲོས་འགོ་འདོན།"
 
+#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "JASP ངོ་སྤྲོད།"
 
+#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "སྒོ་རྒྱག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
 msgstr "ཀ་ཐིག་ '%1' དེ་ཀ་ཐིག་ཨང་ '%2' ནང་བཤུ་འབྲི་བྱེད།"
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Contact"
 msgstr "འབྲེལ་གཏུག"
 
+#, fuzzy
 msgctxt "AboutModel|"
 msgid ""
 "This program is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE "
@@ -4341,63 +4653,77 @@ msgstr ""
 "ལས་རིམ་འདི་ནི་གང་ཡོད་རང་འཇགས་སུ་མཁོ་སྤྲོད་བྱས་པ་ཞིག་ཡིན་ལ། བཟོ་བཀོད་དང་། ཚོང་འགྲེམས་རུང་བའི་རང་"
 "བཞིན། དམིགས་བསལ་དགོས་དོན་ལ་འཚམ་མིན་བཅས་ཀྱི་འགན་ལེན་ཚུད་པའི་འགན་ལེན་གང་ཡང་མེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
 msgstr "དང་ %1"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
 msgstr "ཚད་ལྡན་རིན་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
 msgstr "ཆད་པའི་རིན་ཐང་རྣམས་ཚད་ལྡན་ JASP ཆད་པའི་རིན་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
 msgstr "ཆད་པའི་རིན་ཐང་ཞིག་ཁ་སྣོན་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
 msgstr "ད་ལྟའི་ལས་གནས་འདི་རིན་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
 msgstr "ད་ལྟའི་ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་རྣམས་རིན་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
 msgstr "འདིར་ཁ་བྱང་རྩོམ་སྒྲིག་བྱེད་པའམ་ཡང་ན་རིན་ཐང་གང་དག་བཙགས་དགོས་པ་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "འཚག་ཆས།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
 msgstr "རིན་ཐང་།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "ཁ་བྱང་།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels up"
 msgstr "བདམས་པའི་ཁ་བྱང་རྣམས་གོང་དུ་སྤོ་བ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Move selected labels down"
 msgstr "བདམས་པའི་ཁ་བྱང་རྣམས་འོག་ཏུ་སྤོ་བ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all labels"
 msgstr "ཁ་བྱང་ཚང་མའི་གོ་རིམ་ཕྱིར་ལོག་བྱེད།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for this column"
 msgstr "ཀ་ཐིག་འདིའི་འཚག་ཆས་འདེམས་རྟགས་ཚང་མ་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reset all filter checkmarks for all columns"
 msgstr "ཀ་ཐིག་ཚང་མའི་འཚག་ཆས་འདེམས་རྟགས་ཚང་མ་བསྐྱར་སྒྲིག་བྱེད།"
@@ -4406,53 +4732,64 @@ msgctxt "MainPage|"
 msgid "Image"
 msgstr "དཔེ་རིས།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
 msgstr "ལས་གནས་སྒྲིག་བཟོ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
 msgstr "མིང་: %1"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "འགྲེལ་བརྗོད: "
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr "གཞི་གྲངས་དགོས་མཁོའི་རིན་ཐང་ཚོར་གཞི་གྲངས་གདམ་ཚན་ནང་བཀོད་པ་ལྟར་སླར་གསོ་བྱེད།"
+msgstr ""
 "ཆད་པའི་རིན་ཐང་རྣམས་གཞི་གྲངས་འདེམས་སྒྲིག་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
 msgstr "ལས་གནས་སྒྲིག་བཟོ་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
 msgstr "རང་བཟོས་རིན་ཐང་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr "ལས་ཁུལ་ནང་བཀོད་པའི་གཞི་གྲངས་ཆད་པ་སླར་གསོ་བྱེད།"
+msgstr ""
 "ཆད་པའི་རིན་ཐང་རྣམས་ཁྱེད་ཀྱི་ལས་གནས་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Not computed"
 msgstr "རྩིས་མ་བརྒྱབ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Computed with R code"
 msgstr "R ཨང་རྟགས་ཀྱིས་རྩིས་བརྒྱབ་པ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Computed with drag-and-drop"
 msgstr "འདྲུད་འཐེན་གྱིས་རྩིས་བརྒྱབ་པ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Column generated by analysis"
 msgstr "དབྱེ་ཞིབ་ཀྱིས་བཟོས་པའི་ཀ་ཐིག"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Column added by analysis"
 msgstr "དབྱེ་ཞིབ་ཀྱིས་ཁ་སྣོན་བྱས་པའི་ཀ་ཐིག"
@@ -4469,82 +4806,92 @@ msgctxt "QObject|"
 msgid "Nominal"
 msgstr "སྡེ་ཚན་འགྱུར་ཆོས།"
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Computed column definition"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་གི་ངེས་ཚིག"
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label editor"
 msgstr "ཁ་བྱང་རྩོམ་སྒྲིག་ཆས།"
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Missing values"
 msgstr "ཆད་པའི་རིན་ཐང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column name of '%1' from '%2' to '%3'"
 msgstr "ཀ་ཐིག་ '%1' གི་མིང་ '%2' ནས་ '%3' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column title of '%1' from '%2' to '%3'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་ '%2' ནས་ '%3' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column description of '%1' from '%2' to '%3'"
 msgstr "ཀ་ཐིག་ '%1' གི་འགྲེལ་བརྗོད་ '%2' ནས་ '%3' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set computed type of '%1' from '%2' to '%3'"
 msgstr "'%1' གི་རྩིས་རྒྱག་རིགས་ '%2' ནས་ '%3' ལ་སྒྲིག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
 msgstr "ལས་གནས་ཀྱི་འགྲེལ་བརྗོད་ '%1' ནས་ '%2' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
 msgstr "ཀ་ཐིག་ '%1' ལ་རང་བཟོས་སྟོང་པའི་རིན་ཐང་སྤྱོད་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
 msgstr "ཀ་ཐིག་ '%1' ལ་སྔོན་བཀོད་སྟོང་པའི་རིན་ཐང་སྤྱོད་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
 msgstr "ཀ་ཐིག་ '%1' ལ་སྟོང་པའི་རིན་ཐང་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Set workspace empty values"
 msgstr "ལས་གནས་ཀྱི་སྟོང་པའི་རིན་ཐང་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
 msgstr "ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
 msgstr "ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་གི་སྒྲིག་བཟོ་ཁ་ཕྱེ་བ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Embed web video"
 msgstr "དྲ་ཐོག་བརྙན་འཕྲིན་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Unsupported video services"
 msgstr "རྒྱབ་སྐྱོར་མེད་པའི་བརྙན་འཕྲིན་ཞབས་ཞུ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "JASP only allows the following videoservices:"
 msgstr "JASP ཡིས་གཤམ་གསལ་བརྙན་འཕྲིན་ཞབས་ཞུ་ཁོ་ན་ཆོག་མཆན་སྤྲོད་ཀྱི་ཡོད:"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid ""
 "Contact the JASP team to request adding another videoservice to the list."
@@ -4552,11 +4899,12 @@ msgstr ""
 "བརྙན་འཕྲིན་ཞབས་ཞུ་གཞན་ཞིག་ཐོ་གཞུང་ནང་ཁ་སྣོན་བྱེད་པའི་རེ་བ་ཞུ་བར་ JASP ཚོགས་པར་འབྲེལ་གཏུག་བྱེད་རོགས"
 "།"
 
+#, fuzzy
 msgctxt "CommunityWindow|"
 msgid "JASP Community"
 msgstr "JASP ཚོགས་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid ""
 "<h3>Contact</h3>\n"
@@ -4592,50 +4940,62 @@ msgstr ""
 "\n"
 "སྒེར་གྱི་ཞལ་འདེབས་འབུལ་བར། <a href=\"%8\">JASP དྲ་ཚིགས་</a>སུ་ཕེབས་རོགས།\n"
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "ཚོགས་པ།"
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "མིང་: "
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Column type: "
 msgstr "ཀ་ཐིག་གི་རིགས: "
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Computed type: "
 msgstr "རྩིས་རྒྱག་རིགས: "
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Show parent analysis"
 msgstr "མ་རྒྱུད་དབྱེ་ཞིབ་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Long name: "
 msgstr "མིང་རིང་པོ: "
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<Fill in a more descriptive name of the column>"
 msgstr "<ཀ་ཐིག་གི་མིང་ཞིབ་ཕྲ་ཞིག་སྐོང་རོགས>"
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
 msgstr "འགྱུར་ཚད་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "འགྲེལ་བརྗོད: "
 
+#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr "ཀ་ཐིག་གི་ངེས་ཚིག"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
 msgstr "y ནང་གི་ཆད་པའི་རིན་ཐང་རེ་རེར་ TRUE ཡོད་པའི་ boolean vector ཞིག་སྟོན་པ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
@@ -4644,19 +5004,22 @@ msgstr ""
 "ཀ་ཐིག་ཅིག་གི་ཆད་པའི་རིན་ཐང་ (NA) ཡོད་པའི་ཐིག་ཕྲེང་རྣམས་བཙགས་པར་ not-operator དང་མཉམ་དུ་སྤྱོད"
 "་པ།"
 
+#, fuzzy
 msgctxt "FilterModel|"
 msgid "No data loaded!"
 msgstr "གཞི་གྲངས་བཏོན་མི་འདུག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "FilterModel|"
 msgid "Data has %1 rows, %2 (%3%4%) passed through filter"
 msgstr "གཞི་གྲངས་ལ་ཐིག་ཕྲེང་ %1 ཡོད་པ་ལས། %2 (%3%4%) འཚག་ཆས་བརྒྱུད་ནས་ཐར་སོང་།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
 msgstr "ཕྱི་རོལ་གྱི་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས། (གཞི་གྲངས་མཉམ་འགུལ་ཆེད་དུ)"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4665,56 +5028,67 @@ msgstr ""
 "གལ་ཏེ་འགྱུར་ཚད་ཅིག་ལ་འདི་ལས་མང་བའི་ཧྲིལ་གྲངས་རིན་ཐང་མི་འདྲ་བ་ཡོད་ན། དེ་ཚད་གཞི་རུ་འགྲེལ་བརྗོད་བྱེད་"
 "ངེས།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Reset types of loaded variables"
 msgstr "བཏོན་པའི་འགྱུར་ཚད་ཀྱི་རིགས་བསྐྱར་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Missing values setting"
 msgstr "ཆད་པའི་རིན་ཐང་སྒྲིག་བཟོ།"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
 msgstr "འབྲི་པང་དུ་བཤུས་ཟིན།"
 
+#, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copy debug information"
 msgstr "debug གནས་ཚུལ་བཤུ་འབྲི་བྱེད།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Search in results:"
 msgstr "གྲུབ་འབྲས་ནང་འཚོལ་ཞིབ:"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Close search bar"
 msgstr "འཚོལ་ཞིབ་ཚང་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Font Color"
 msgstr "ཡིག་གཟུགས་མདོག"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Input LaTeX here:"
 msgstr "འདིར་ LaTeX འཇུག་པ:"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Press `Cmd/Ctrl + Enter` to apply;"
 msgstr "སྤྱོད་པར་ `Cmd/Ctrl + Enter` མནན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Click to apply formula"
 msgstr "སྤྱི་འགྲོས་སྤྱོད་པར་མནན།"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Click to edit this formula"
 msgstr "སྤྱི་འགྲོས་འདི་རྩོམ་སྒྲིག་བྱེད་པར་མནན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "FactorsForm|"
 msgid "Add a %1"
 msgstr "%1 ཞིག་ཁ་སྣོན་བྱེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "FactorsForm|"
 msgid "Remove last %1"
 msgstr "མཐའ་མའི་ %1 འདོར་བ།"
@@ -4723,22 +5097,27 @@ msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "བགོད་གྲངས།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
 msgstr "སྔོན་དུ་ constructor ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert constructor column after"
 msgstr "རྗེས་སུ་ constructor ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert R column before"
 msgstr "སྔོན་དུ་ R ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert R column after"
 msgstr "རྗེས་སུ་ R ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change column type"
 msgstr "ཀ་ཐིག་གི་རིགས་བརྗེ་བར་འདིར་མནན།"
@@ -4747,87 +5126,102 @@ msgctxt "DataTableViewColumnHeader|"
 msgid "Add column"
 msgstr "ཀ་ཐིག་ཁ་སྣོན།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed by an analysis"
 msgstr "དབྱེ་ཞིབ་ཀྱིས་རྩིས་བརྒྱབ་པ།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to change variable settings"
 msgstr "འགྱུར་ཚད་སྒྲིག་བཟོ་བརྗེ་བར་འདིར་ཐེངས་གཉིས་མནན།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Doubleclick here to close variable window"
 msgstr "འགྱུར་ཚད་སྒེའུ་ཁུང་སྒོ་རྒྱག་པར་འདིར་ཐེངས་གཉིས་མནན།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Click here to change selected variable"
 msgstr "བདམས་པའི་འགྱུར་ཚད་བརྗེ་བར་འདིར་མནན།"
 
+#, fuzzy
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
 msgstr "ཐིག་ཕྲེང་འདེམས་པར་འདིར་མནན། མང་པོ་འདེམས་པར་ shift མནན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' གི་ཐོག་མའི་རིན་ཐང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert constructor column before"
 msgstr "སྔོན་དུ་ constructor ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert constructor column after"
 msgstr "རྗེས་སུ་ constructor ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert R column before"
 msgstr "སྔོན་དུ་ R ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert R column after"
 msgstr "རྗེས་སུ་ R ཀ་ཐིག་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Reverse values"
 msgstr "རིན་ཐང་ཕྱིར་ལོག་བྱེད།"
 
+#, fuzzy
 msgctxt "DataTableViewColumnHeader|"
 msgid "Computed column has error:<br>"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ལ་ནོར་འཁྲུལ་འདུག:<br>"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
 msgstr "གྲངས་ཀའི་རིན་ཐང་ཚང་མའི་གོ་རིམ་ཕྱིར་ལོག་བྱེད།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Changing column type failed"
 msgstr "ཀ་ཐིག་གི་རིགས་བརྗེ་བར་ཕམ་ཉེས་བྱུང་སོང་།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "The column '%1' is generated by an analysis and its type is fixed."
 msgstr "ཀ་ཐིག་ '%1' དེ་དབྱེ་ཞིབ་ཀྱིས་བཟོས་པ་ཞིག་ཡིན་པས་དེའི་རིགས་གཏན་འཁེལ་ཡིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་རིགས་ '%1' ལ་སྒྲིག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་རིན་ཐང་ཕྱིར་ལོག་བྱེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Reverse labels of column '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་ཕྱིར་ལོག་བྱེད།"
 
+#, fuzzy
 msgctxt "DataTableView|"
 msgid "Order labels by values"
 msgstr "རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid ""
 "JASP is an open-source project with structural support from the <a "
@@ -4836,49 +5230,57 @@ msgstr ""
 "JASP ནི་འབྱུང་ཁུངས་དྭངས་བའི་ལས་འཆར་ཞིག་ཡིན་ལ། <a href=\"dummyLink\">Amsterdam སློབ་གྲྭ་ཆེན"
 "་མོ་དང་གཞན་དག་</a>གིས་སྒྲོམ་གཞིའི་རྒྱབ་སྐྱོར་གནང་གི་ཡོད།"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Report bugs"
 msgstr "སྐྱོན་ཆ་སྙན་སེང་ཞུ།"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Request features"
 msgstr "ཁྱད་ཆོས་རེ་ཞུ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 cols at %1"
 msgstr "%1 ལ་ཀ་ཐིག་ %2 འཇུག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Insert %2 rows at %1"
 msgstr "%1 ལ་ཐིག་ཕྲེང་ %2 འཇུག་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
 msgstr "ཐིག་ཕྲེང་ '%1' ཀ་ཐིག་ '%2' ལ་རིན་ཐང་སྦྱར་བ།"
 
+#, fuzzy
 msgctxt "DataSetView|"
 msgid "Cutting all data"
 msgstr "གཞི་གྲངས་ཚང་མ་གཏུབ་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Mutinomial Chi2 Table"
 msgstr "Mutinomial Chi2 རེའུ་མིག"
 
+#, fuzzy
 msgctxt "TableViewBase|"
 msgid "JAGS Table"
 msgstr "JAGS རེའུ་མིག"
 
+#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
 msgstr "རང་བཟོས་ Contrasts རེའུ་མིག"
 
+#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
 msgstr "བཙགས་ཟིན་པའི་གཞི་གྲངས་འཇུག་སའི་རེའུ་མིག"
 
+#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Grid Table"
 msgstr "དྲ་མིག་རེའུ་མིག"
@@ -4887,14 +5289,17 @@ msgctxt "TableViewBase|"
 msgid "Table"
 msgstr "རེའུ་མིག"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Double Field"
 msgstr "Double ས་མིག"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Import settings"
 msgstr "ནང་འཇུག་སྒྲིག་བཟོ།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "This might incur a slowdown while loading very large datasets with lots of "
@@ -4905,21 +5310,22 @@ msgstr ""
 "ཆུང་གནས་གྲངས་རང་འདོད་ཀྱི་ཐིག་ཕྲེང་ས་ཡ་ 1 ལྷག་ཡོད་པ་ལྟ་བུ།\n"
 "གལ་ཏེ་ཁྱེད་ཀྱིས་དེ་འདྲའི་ཡིག་ཆ་འདོན་པར་དལ་བ་རྙེད་ན། འདེམས་ཀ་འདི་སྤྱོད་མི་དགོས།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Threshold for Scale"
 msgstr "ཚད་གཞིའི་འགག་ཐོ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 rows"
 msgstr "ཐིག་ཕྲེང་ %1 འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ExpandDataProxyModel|"
 msgid "Remove %1 columns"
 msgstr "ཀ་ཐིག་ %1 འདོར་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "CommunityWindow|"
 msgid ""
 "<h3>Community</h3>\n"
@@ -4963,68 +5369,82 @@ msgstr ""
 "\n"
 "<a href=\"%6\">ད་ལྟའི་སློབ་གསོ་བ་རྣམས་ཀྱི་ཐོ་གཞུང་ལ་འདིར་མནན།</a>\n"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
 msgstr "སྔོན་བཀོད་ཏུ་རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Resize Data"
 msgstr "གཞི་གྲངས་ཆེ་ཆུང་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Columns"
 msgstr "ཀ་ཐིག"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Rows"
 msgstr "ཐིག་ཕྲེང་།"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Resize"
 msgstr "ཆེ་ཆུང་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
 msgstr "རིན་ཐང་སྒྲིག་པར་གཞི་གྲངས་ཆེ་ཆུང་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Close without resizing data"
 msgstr "གཞི་གྲངས་ཆེ་ཆུང་མ་བཟོས་པར་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Ask a question"
 msgstr "དྲི་བ་འདྲི་བ།"
 
+#, fuzzy
 msgctxt "WelcomePage|"
 msgid "Visit the website"
 msgstr "དྲ་ཚིགས་སུ་ཕེབས་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རིན་ཐང་ལྟར་རང་འགུལ་རིམ་སྒྲིག་བྱེད་མིན་སྒྱུར་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Resize Data"
 msgstr "གཞི་གྲངས་ཆེ་ཆུང་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Resize your dataset"
 msgstr "ཁྱེད་ཀྱི་གཞི་གྲངས་ཚོགས་པའི་ཆེ་ཆུང་བཟོ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetView|"
 msgid "Resize data to %1 rows and %2 columns"
 msgstr "གཞི་གྲངས་དེ་ཐིག་ཕྲེང་ %1 དང་ཀ་ཐིག་ %2 ལ་ཆེ་ཆུང་བཟོ་བ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Check for updates"
 msgstr "གསར་བཅོས་ལ་ཞིབ་བཤེར་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
 msgstr "ཉིན་ལྟར་རང་འགུལ་གྱིས་གསར་བཅོས་དང་ཤེས་ཟིན་པའི་སྐྱོན་ཆར་ཞིབ་བཤེར་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid ""
 "JASP doesn't share any of your data when it gets updates, not even which "
@@ -5048,7 +5468,7 @@ msgstr ""
 "་ཚོས་དབྱེ་ཞིབ་ཅིག་ནང་ནོར་འཁྲུལ་ཚབས་ཆེན་ཞིག་ཤོར་བ་ཤེས་ན། འདིས་ཁྱེད་ལ་ *དབྱེ་ཞིབ་ནང་* ཁྱེད་ཀྱིས་བསམ་བློ"
 "་གཏོང་དགོས་པའི་གནད་དོན་ཞིག་ཡོད་པ་སྟོན་ངེས། བསོད་བདེ་ཞིག་ལ་ང་ཚོས་དེ་ཧ་ལམ་སྤྱོད་མི་དགོས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels, of which %2 have a numeric value.\n"
@@ -5059,12 +5479,12 @@ msgstr ""
 "'%3' ཞིག་གི་ཚུལ་དུ་འདི་ལྟར་སྣང་: %4\n"
 "%5"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
 msgstr "གོ་ཐོས་ཆད་པའི་རིན་ཐང་: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels.\n"
@@ -5073,10 +5493,12 @@ msgstr ""
 "ཁྱོན་བསྡོམས་རིམ་པ་ %1 ཡོད།\n"
 "'%2' ཞིག་གི་ཚུལ་དུ་འདི་ལྟར་སྣང་: %3"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Check for updates"
 msgstr "གསར་བཅོས་ལ་ཞིབ་བཤེར་བྱེད།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "Should JASP check for updates at our server and let you know if there is a "
@@ -5107,7 +5529,7 @@ msgctxt "MainWindow|"
 msgid "No"
 msgstr "མ་རེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ListModelTermsAssigned|"
 msgid "Only %1 variables are allowed"
 msgstr "འགྱུར་ཚད་ %1 ཁོ་ན་ཆོག་མཆན་ཡོད།"
@@ -5124,19 +5546,23 @@ msgctxt "VariableInfo|"
 msgid "Nominal"
 msgstr "སྡེ་ཚན་འགྱུར་ཆོས།"
 
+#, fuzzy
 msgctxt "VariableInfo|"
 msgid "Unknown"
 msgstr "མི་ཤེས་པ།"
 
+#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "<First fill in the column name>"
 msgstr "<ཐོག་མར་ཀ་ཐིག་གི་མིང་སྐོང་རོགས>"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr "རྣམ་གྲངས་/རིམ་སྒྲིག་ལྟར་བེད་སྤྱོད་བྱེད་སྐབས་སྐེལ་ཚད་ཀྱི་རིམ་པའི་མང་ཤོས།"
+msgstr ""
 "མིང་གི་རྣམ་པ/གོ་རིམ་ལྡན་པར་སྤྱོད་སྐབས་ཚད་གཞིའི་ཆོག་མཆན་ཡོད་པའི་རིམ་པ་མང་ཤོས།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "For analysis accepting only nominal or ordinal for some variables, if a "
@@ -5147,90 +5573,103 @@ msgstr ""
 "གཞིའི་འགྱུར་ཚད་ཅིག་སྤྱད་ན། JASP ཡིས་འགྱུར་ཚད་འདིའི་རིམ་པའི་གྲངས་ཀ་དེ་མང་ཤོས་ལས་བརྒལ་ཡོད་མེད་ཞིབ་"
 "བཤེར་བྱེད་ཀྱི་ཡོད།"
 
+#, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
 msgstr "གཞི་གྲངས་ཚོགས་པ་གསར་པ་འདོན་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "ActionButtons|"
 msgid "New"
 msgstr "གསར་པ།"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Importing Excel File"
 msgstr "Excel ཡིག་ཆ་ནང་འཇུག་བྱེད་བཞིན་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "All Data Sets %1"
 msgstr "གཞི་གྲངས་ཚོགས་པ་ཚང་མ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "JASP Files %1"
 msgstr "JASP ཡིག་ཆ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "CSV Text Files %1"
 msgstr "CSV ཡིག་ཆ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "Spreadsheet Files %1"
 msgstr "རེའུ་མིག་ཡིག་ཆ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "SPSS Files %1"
 msgstr "SPSS ཡིག་ཆ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "Stata Files %1"
 msgstr "Stata ཡིག་ཆ། %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "SAS Files %1"
 msgstr "SAS ཡིག་ཆ། %1"
 
+#, fuzzy
 msgctxt "ColorPalette|"
 msgid "JASP"
 msgstr "JASP"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
 msgstr "PDF སྒྲིག་བཟོ།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Orientation"
 msgstr "ཁ་ཕྱོགས།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Portrait"
 msgstr "གཞུང་ཕྱོགས།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Landscape"
 msgstr "འཕྲེད་ཕྱོགས།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr "ཤོག་བུའི་ཆེ་ཆུང་།"
 
+#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Filter cleared\n"
 msgstr "འཚག་ཆས་གཙང་སེལ་བྱས་ཟིན།\n"
 
+#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Filter applied\n"
 msgstr "འཚག་ཆས་སྤྱད་ཟིན།\n"
 
+#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr "སྒྲོམ་གཞི་ཡོངས་རྫོགས་བཀོད་རོགས། - དམར་པོས་མཚན་འཁོད་བྱས་པའི་ས་ཆ་ལ་གཟིགས།\\n"
+msgstr ""
 "ཞུགས་གནས་ཆ་ཚང་ནང་འཇུག་བྱེད་རོགས། དམར་རྟགས་བརྒྱབ་པའི་ས་ཁོངས་རྣམས་ལ་གཟིགས་དང་།\n"
 
+#, fuzzy
 msgctxt "FilterConstructor|"
 msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
@@ -5238,14 +5677,17 @@ msgid ""
 msgstr ""
 "སྤྱི་འགྲོས་འདིས་གཏན་ཚིགས་ཀྱི་རིན་ཐང་ཚོགས་པ་ཞིག་སྟོན་མི་འདུག དེར་བརྟེན་འཚག་ཆས་ནང་སྤྱོད་མི་ཐུབ།\n"
 
+#, fuzzy
 msgctxt "FilterConstructor|"
 msgid "Welcome to the drag and drop filter!\n"
 msgstr "འདྲུད་འཐེན་འཚག་ཆས་སུ་དགའ་བསུ་ཞུ།\n"
 
+#, fuzzy
 msgctxt "JASPColumn|"
 msgid "Click icon to change column type"
 msgstr "ཀ་ཐིག་གི་རིགས་བརྗེ་བར་རྟགས་ལ་མནན།"
 
+#, fuzzy
 msgctxt "FilterModel|"
 msgid ""
 "Above you see the code that JASP generates for both value filtering and the "
@@ -5264,35 +5706,37 @@ msgstr ""
 "perhapsAnotherFilter'\n"
 "རོགས་རམ་མང་བ་དགོས་ན་གཡས་འོག་གི་ (i) རྟགས་ལ་མནན།\n"
 
+#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "ཀ་ཐིག་གི་མིང་རང་དབང་ས་མིག"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "TextInputBase|"
 msgid "Column '%1' already exists and is not created by this analysis."
 msgstr "ཀ་ཐིག་ '%1' སྔ་ས་ནས་ཡོད་པ་དང་དབྱེ་ཞིབ་འདིས་བཟོས་པ་མིན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ListModelFilteredDataEntry|"
 msgid "Filter had error '%1'"
 msgstr "འཚག་ཆས་ལ་ནོར་འཁྲུལ་ '%1' འདུག"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
 msgstr "རང་འགུལ་གྱིས་རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPListControl|"
 msgid "Minimum number of levels is %1. Variable %2 has only %3 levels"
 msgstr "རིམ་པའི་གྲངས་ཉུང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་རིམ་པ་ %3 ལས་མེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPListControl|"
 msgid "Maximum number of levels is %1. Variable %2 has %3 levels."
 msgstr "རིམ་པའི་གྲངས་མང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་རིམ་པ་ %3 ཡོད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Attempt to transform scale variable %1 into a %2 variable, but its number of "
@@ -5304,7 +5748,7 @@ msgstr ""
 "ལས་བརྒལ་འདུག གལ་ཏེ་ཁྱེད་ཀྱིས་ད་དུང་འགྱུར་ཚད་འདི་སྤྱོད་འདོད་ན། དེའི་རིགས་བརྗེ་བའམ་ཡང་ན་ "
 "Preferences / Data དཀར་ཆག་ནང་གི་ 'Maximum allowed levels for scale' བརྗེ་རོགས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
@@ -5312,7 +5756,7 @@ msgid ""
 msgstr ""
 "གྲངས་ཀའི་རིན་ཐང་གི་གྲངས་ཉུང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་རིན་ཐང་མི་འདྲ་བ་ %3 ལས་མེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "JASPListControl|"
 msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
@@ -5320,14 +5764,17 @@ msgid ""
 msgstr ""
 "གྲངས་ཀའི་རིན་ཐང་གི་གྲངས་མང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་རིན་ཐང་མི་འདྲ་བ་ %3 ཡོད།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Developer mode"
 msgstr "གསར་བཟོ་བའི་ཐབས་ལམ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Development module"
 msgstr "གསར་སྤེལ་མོ་ཌུལ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "Load modules from a binary in an R-library instead of installing it from "
@@ -5335,80 +5782,98 @@ msgid ""
 msgstr ""
 "འབྱུང་ཁུངས་ནས་སྒྲིག་འཇུག་བྱེད་པའི་ཚབ་ཏུ་ R-library ནང་གི་ binary ནས་ཁ་སྣོན་ཆ་ཤས་འདོན་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Source folder:"
 msgstr "འབྱུང་ཁུངས་ཡིག་སྣོད:"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Choose the R library where you installed the development module"
 msgstr "ཁྱེད་ཀྱིས་གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག་བྱས་པའི་ R library འདེམས་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Module name:"
 msgstr "ཁ་སྣོན་ཆ་ཤས་ཀྱི་མིང་:"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
 msgstr "ཁྱེད་ཀྱིས་འདོན་འདོད་པའི་གསར་སྤེལ་མོ་ཌུལ་ཀྱི་ (package) མིང་འཇུག་པ།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
 msgstr "འབྲེལ་ཡོད་འདེམས་སྒྲིག་སྐོང་ནས་གསར་སྤེལ་མོ་ཌུལ་ཤིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Refresh developer module "
 msgstr "གསར་སྤེལ་མོ་ཌུལ་གསར་བཅོས་བྱེད། "
 
+#, fuzzy
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr "ཡིག་ཆ་ནས་དཀྲུགས་ཏེ་བེད་སྤྱོད་བྱེད་རུང་བའི་ཐིག་ཕྲེང་ ༠ བཀླགས་པ་རེད། ཁྱེད་ཀྱི་གཞི་གྲངས་ཡིག་ཆ་ཞིབ་བཤེར་གནང་རོགས།"
+msgstr ""
 "ཡིག་ཆ་ནས་ནུས་ལྡན་ཀ་ཐིག་ 0 ཀློག་སོང་། ཁྱེད་ཀྱི་གཞི་གྲངས་ཡིག་ཆར་ཞིབ་བཤེར་བྱེད་རོགས།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Ribbon scale (%): "
 msgstr "Ribbon ཆེ་ཆུང་ (%): "
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "Ribbon གྱི་མཐོ་ཚད་ཀྱི་ཆེ་ཆུང་སྒྲིག་པ།"
 
+#, fuzzy
 msgctxt "TabView|"
 msgid "Double click to edit this name"
 msgstr "མིང་འདི་རྩོམ་སྒྲིག་བྱེད་པར་ཐེངས་གཉིས་མནན།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Choose language"
 msgstr "སྐད་ཡིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Use an alternative language and territory dependent display for numbers"
 msgstr "གྲངས་ཀ་སྟོན་པར་སྐད་ཡིག་དང་ས་ཁོངས་ལ་རྟེན་པའི་འདོན་སྟངས་གཞན་ཞིག་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
 msgstr "གྲངས་ཀ་དང་དངུལ་ལོར་སྟོན་པར་གཤམ་དུ་བཀོད་པའི་ locale སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Alt. language"
 msgstr "སྐད་ཡིག་གཞན།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Alt. territory"
 msgstr "ས་ཁོངས་གཞན།"
 
+#, fuzzy
 msgctxt "JASPColumn|"
 msgid "Column description: "
 msgstr "ཀ་ཐིག་གི་འགྲེལ་བརྗོད: "
 
+#, fuzzy
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
 msgstr "ཀ་ཐིག་གི་རིགས་བརྗེ་བར་རྟགས་ལ་མནན།"
 
+#, fuzzy
 msgctxt "VariablesList|"
 msgid "Column description: "
 msgstr "ཀ་ཐིག་གི་འགྲེལ་བརྗོད: "
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Modules::DynamicModules|"
 msgid ""
 "To install a development module you need to select and existing folder, you "
@@ -5417,10 +5882,12 @@ msgstr ""
 "གསར་སྤེལ་མོ་ཌུལ་སྒྲིག་འཇུག་བྱེད་པར་ཁྱེད་ཀྱིས་ཡོད་པའི་ཡིག་སྣོད་ཅིག་འདེམས་དགོས། ཁྱེད་ཀྱིས་ '%1' བདམས་ཀྱང་དེ"
 "་མི་འདུག"
 
+#, fuzzy
 msgctxt "MainPage|"
 msgid "Remove this note"
 msgstr "ཟིན་བྲིས་འདི་འདོར་བ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "No log files are available. To get more information, please turn logging on. "
@@ -5431,26 +5898,32 @@ msgstr ""
 "་ (གཡོན་སྟེང་གི་ hamburger མཐེབ་གནོན་སྔོན་པོ) ཁ་ཕྱེ་ནས། Advanced Preferences ལ་སྐྱོད་དེ་ "
 "'Log to file' འདེམས་སྒྲོམ་ལ་རྟགས་རྒྱག"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
 msgstr "ཟིན་ཐོ་ཡིག་ཆ་འདི་དག་དཀའ་ངལ་འདིའི་ནང་འདྲུད་འཐེན་བྱེད་རོགས: "
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་འདིར་སྤྱོད་རྒྱུའི་འཚག་ཆས་ཤིག་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "འདོར་བ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Add new level:"
 msgstr "རིམ་པ་གསར་པ་ཁ་སྣོན:"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Add a level that's missing from the data"
 msgstr "གཞི་གྲངས་ནང་ཆད་པའི་རིམ་པ་ཞིག་ཁ་སྣོན་བྱེད།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Keeping levels, so all levels are passed to the analysis, both filtered out "
@@ -5459,6 +5932,7 @@ msgstr ""
 "རིམ་པ་རྣམས་ཉར་ཚགས་བྱེད་པ། དེས་ན་རིམ་པ་ཚང་མ་དབྱེ་ཞིབ་ལ་བརྒྱུད་སྤྲོད་བྱེད་ཀྱི་ཡོད། བཙགས་ཟིན་པ་དང་རྗེས་"
 "སུ་ལག་སྒྲིག་གིས་ཁ་སྣོན་བྱས་པ་གཉིས་ཀ"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid ""
 "Dropping levels, so only those levels in the (possibly filtered) data get "
@@ -5467,79 +5941,93 @@ msgstr ""
 "རིམ་པ་རྣམས་འདོར་བ། དེས་ན་ (ཕལ་ཆེར་བཙགས་ཟིན་པའི་) གཞི་གྲངས་ནང་གི་རིམ་པ་དེ་དག་ཁོ་ན་དབྱེ་ཞིབ་ལ་"
 "བསྐུར་གྱི་ཡོད།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
 msgstr "ཁ་བྱང་ཚང་མའི་གོ་རིམ་ཕྱིར་ལོག་བྱེད་པར་རང་འགུལ་རིམ་སྒྲིག་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
 msgstr "ཁ་བྱང་རྣམས་ལག་སྒྲིག་གིས་གོང་དུ་སྤོ་བར་རང་འགུལ་རིམ་སྒྲིག་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
 msgstr "ཁ་བྱང་རྣམས་ལག་སྒྲིག་གིས་འོག་ཏུ་སྤོ་བར་རང་འགུལ་རིམ་སྒྲིག་སྒོ་རྒྱག་པ།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "No filter"
 msgstr "འཚག་ཆས་མེད།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Use filter"
 msgstr "འཚག་ཆས་སྤྱོད་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
 msgstr "ཀ་ཐིག་ '%1' གི་རྩིས་རྒྱག་འཚག་ཆས་ '%2' ནས་ '%3' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
 msgstr "ཀ་ཐིག་ '%1' གི་རིམ་པ་འདོར་བ་ '%2' ནས་ '%3' ལ་བརྗེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Delete label %1 of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ %1 སུབ་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
 msgstr "ཀ་ཐིག་ '%3' ལ་རིན་ཐང་ + ཁ་བྱང་ '%1' + '%2' ཁ་སྣོན་བྱེད་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Sandbox engines"
 msgstr "Sandbox འཕྲུལ་ཆས།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
-msgstr "R-ཨང་རྟགས་སྒུལ་བཞིན་པའི་འཕྲུལ་འཁོར་ལོགས་སུ་བཞག་སྟེ་ཝིན་ཌོསི་(Windows)ཐོག་བདེ་འཇགས་ཤུགས་ཆེ་རུ་གཏོང་བ།"
+msgstr ""
 "Windows ཐོག་ R-code སྤྱོད་པའི་ Engines ཟུར་འདོན་བྱས་ནས་བདེ་འཇགས་ཤུགས་སྣོན་བྱེད་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Use thousands separators"
 msgstr "སྟོང་གི་དབྱེ་རྟགས་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Disable to remove thousands separators from all numbers."
 msgstr "གྲངས་ཀ་ཚང་མ་ནས་སྟོང་གི་དབྱེ་རྟགས་འདོར་བར་སྤྱོད་མི་དགོས།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a file..."
 msgstr "ཡིག་ཆ་ཞིག་འདེམས་པ།..."
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a folder..."
 msgstr "ཡིག་སྣོད་ཅིག་འདེམས་པ།..."
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Select a R-library..."
 msgstr "R-library ཞིག་འདེམས་པ།..."
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Safe Graphics mode changed"
 msgstr "རིས་དབྱིབས་བརྟན་པའི་ཐབས་ལམ་ལ་འགྱུར་བ་ཕྱིན་སོང་།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid ""
 "You've changed the Safe Graphics mode of JASP, for this option to take "
@@ -5548,10 +6036,12 @@ msgstr ""
 "ཁྱེད་ཀྱིས་ JASP ཡི་རིས་དབྱིབས་བརྟན་པའི་ཐབས་ལམ་ལ་འགྱུར་བ་བཏང་འདུག འདེམས་ཀ་འདི་ནུས་པ་ཐོན་པར་ཁྱེད་"
 "ཀྱིས་ JASP ཡང་བསྐྱར་འགོ་འཛུགས་དགོས།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Text rendering setting changed"
 msgstr "ཡི་གེ་འདོན་སྟངས་ཀྱི་སྒྲིག་བཟོ་ལ་འགྱུར་བ་ཕྱིན་སོང་།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid ""
 "The textrendering setting has been changed, this will only take full effect "
@@ -5560,10 +6050,12 @@ msgstr ""
 "ཡི་གེ་འདོན་སྟངས་ཀྱི་སྒྲིག་བཟོ་ལ་འགྱུར་བ་ཕྱིན་འདུག འདི་ JASP ཡང་བསྐྱར་འགོ་བཙུགས་རྗེས་ཁོ་ན་ནུས་པ་ཆ་ཚང་"
 "ཐོན་ངེས།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid "Engine Sandbox setting changed"
 msgstr "Engine Sandbox སྒྲིག་བཟོ་ལ་འགྱུར་བ་ཕྱིན་སོང་།"
 
+#, fuzzy
 msgctxt "PreferencesModel|"
 msgid ""
 "The Engine Sandbox setting has been changed, this will only take full effect "
@@ -5572,10 +6064,12 @@ msgstr ""
 "Engine Sandbox སྒྲིག་བཟོ་ལ་འགྱུར་བ་ཕྱིན་འདུག འདི་ JASP ཡང་བསྐྱར་འགོ་བཙུགས་རྗེས་ཁོ་ན་ནུས་པ་ཆ་ཚང་"
 "ཐོན་ངེས།"
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid "Sandbox warning"
 msgstr "Sandbox ཉེན་བརྡ།"
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to save a file outside of the sandbox directory! We will correct "
@@ -5584,6 +6078,7 @@ msgstr ""
 "ཁྱེད་ཀྱིས་ sandbox ཡིག་སྣོད་ཀྱི་ཕྱི་རོལ་དུ་ཡིག་ཆ་ཉར་ཚགས་བྱེད་འདོད་འདུག ང་ཚོས་ལམ་དེ་འདི་ལྟར་བཅོས་རྒྱུ་"
 "ཡིན: "
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid ""
 "You want to load a file outside of the sandbox directory! This will fail "
@@ -5592,96 +6087,119 @@ msgstr ""
 "ཁྱེད་ཀྱིས་ sandbox ཡིག་སྣོད་ཀྱི་ཕྱི་རོལ་ནས་ཡིག་ཆ་འདོན་འདོད་འདུག འདི་ཕམ་ཉེས་འབྱུང་ངེས་པས་ཡིག་ཆ་དེ་འདིར"
 "་སྤོ་རོགས: "
 
+#, fuzzy
 msgctxt "MessageForwarder|"
 msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr ""
 "jasp འཕྲུལ་ཆས་དེ་བདེ་འཇགས་ sandbox ཐབས་ལམ་ནང་སྤྱོད་བཞིན་ཡོད་ལ། འདི་ལ་ཁོ་ན་འཛུལ་སྤྱོད་ཡོད: "
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise mean"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆ་སྙོམས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise sum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་བསྡོམས་ཐོབ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise standard deviation"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཚད་ལྡན་ཁྱད་བྲལ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise variance"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་འགྱུར་ཚད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise median"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་དཀྱིལ་གྲངས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise minimum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆུང་ཤོས།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Rowwise maximum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆེ་ཤོས།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr "སྒྲིག་བཟོ་ཡིག་ཆ་ཞིག་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use remote configuration file."
 msgstr "ཐག་རིང་སྒྲིག་བཟོ་ཡིག་ཆ་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Use the remote configuration file pointed to by URL"
 msgstr "URL གྱིས་སྟོན་པའི་ཐག་རིང་སྒྲིག་བཟོ་ཡིག་ཆ་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Configuration URL: "
 msgstr "སྒྲིག་བཟོ་ URL: "
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file"
 msgstr "སྒྲིག་བཟོ་ཡིག་ཆ་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "སྒྲིག་བཟོ་ཡིག་ཆ་འདེམས་པ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise mean"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆ་སྙོམས།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise sum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་བསྡོམས་ཐོབ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise standard deviation"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཚད་ལྡན་ཁྱད་བྲལ།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise variance"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་འགྱུར་ཚད།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise median"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་དཀྱིལ་གྲངས།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise minimum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆུང་ཤོས།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Rowwise maximum"
 msgstr "ཐིག་ཕྲེང་ལྟར་གྱི་ཆེ་ཤོས།"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
 msgstr "JASP འགོ་འཛུགས་སྐབས་དེའི་སྒེའུ་ཁུང་ཆེ་ཤོས་སུ་ཁ་ཕྱེ་དགོས་སམ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid ""
 "This will erase the 'renv', 'Modules' and development Module folders in the "
@@ -5689,22 +6207,27 @@ msgid ""
 msgstr ""
 "འདིས་ appdata ནང་གི་ 'renv', 'Modules' དང་གསར་བཟོ་བའི་ Module ཡིག་སྣོད་རྣམས་སུབ་ངེས།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Enable renv mode"
 msgstr "renv ཐབས་ལམ་སྤྱོད་པ།"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Project library:"
 msgstr "ལས་འཆར་དཔེ་མཛོད:"
 
+#, fuzzy
 msgctxt "PrefsAdvanced|"
 msgid "Configuration file options"
 msgstr "སྒྲིག་བཟོ་ཡིག་ཆའི་འདེམས་ཀ"
 
+#, fuzzy
 msgctxt "PrefsUI|"
 msgid "Start maximized"
 msgstr "ཆེ་ཤོས་སུ་འགོ་འཛུགས་པ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "JASP had a serious error and cannot calculate anymore.\n"
@@ -5715,22 +6238,27 @@ msgstr ""
 "\n"
 "ཁྱེད་ཀྱིས་ནོར་འཁྲུལ་འདི་ JASP ཚོགས་པར་སྙན་སེང་ཞུས་ན་ང་ཚོ་ཐུགས་རྗེ་ཆེ་ཞུ་རྒྱུ་ཡིན།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Salvage"
 msgstr "སྐྱོབ་པ།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Install complete"
 msgstr "སྒྲིག་འཇུག་ཚར་སོང་།"
 
+#, fuzzy
 msgctxt "Modules::DynamicModules|"
 msgid "Completed installation of Bundles: "
 msgstr "Bundles སྒྲིག་འཇུག་ཚར་སོང་: "
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Security Sandbox Failure"
 msgstr "བདེ་འཇགས་ Sandbox ཕམ་ཉེས།"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid ""
 "Failed to activate Security Sandbox. Your system does not allow security "
@@ -5739,6 +6267,7 @@ msgstr ""
 "བདེ་འཇགས་ Sandbox སྤྱོད་པར་ཕམ་ཉེས་བྱུང་སོང་། ཁྱེད་ཀྱི་མ་ལག་གིས་བདེ་འཇགས་ sandboxing ཆོག་མཆན་"
 "མི་སྤྲོད། ཁྱེད་ཀྱིས་དེ་མེད་པར་མུ་མཐུད་འདོད་དམ། (ཕལ་ཆེར་འགྲིག་གི་རེད)"
 
+#, fuzzy
 msgctxt "QObject|"
 msgid "Continue"
 msgstr "མུ་མཐུད།"
@@ -5747,29 +6276,33 @@ msgctxt "QObject|"
 msgid "Exit"
 msgstr "ཕྱིར་འཐེན།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
 msgstr "ཡིན་སྲིད་པའི་རིན་ཐང་ནི: %1"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
 msgstr "ཐོག་མར་ %2 ཉིན་ %1 ནང་ནང་འདྲེན་བྱས།"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading R Data File"
 msgstr "R གཞི་གྲངས་ཡིག་ཆ་འདོན་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr "ཡིག་ཆ་ནས་དཀྲུགས་ཏེ་བེད་སྤྱོད་བྱེད་རུང་བའི་ཐིག་ཕྲེང་ ༠ བཀླགས་པ་རེད། ཁྱེད་ཀྱི་གཞི་གྲངས་ཡིག་ཆ་ཞིབ་བཤེར་གནང་རོགས།"
+msgstr ""
 "ཡིག་ཆ་ནས་ནུས་ལྡན་ཀ་ཐིག་ 0 ཀློག་སོང་། ཁྱེད་ཀྱི་གཞི་གྲངས་ཡིག་ཆར་ཞིབ་བཤེར་བྱེད་རོགས།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Salvaging"
 msgstr "སྐྱོབ་བཞིན་པ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "We're very sorry JASP has had a fatal error.\n"
@@ -5790,15 +6323,17 @@ msgstr ""
 "\n"
 "དབྱེ་ཞིབ་བམ་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་སོགས་ཁྱེད་ཀྱིས་ JASP ཡང་བསྐྱར་འགོ་མ་བཙུགས་བར་ལས་ཀ་བྱེད་མི་ཐུབ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
 msgstr "R གཞི་གྲངས་ཡིག་ཆ། %1"
 
+#, fuzzy
 msgctxt "ModelTermsList|"
 msgid "Model Terms"
 msgstr "དཔེ་དབྱིབས་ཀྱི་ཚིག"
 
+#, fuzzy
 msgctxt "ModelTermsList|"
 msgid "Add to null model"
 msgstr "མེད་པའི་དཔེ་དབྱིབས་སུ་ཁ་སྣོན་བྱེད།"
@@ -5807,25 +6342,27 @@ msgctxt "MainWindow|"
 msgid "Open file"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
 msgstr "ཡིག་ཆ་ %1 ལ་འཛུལ་སྤྱོད་བྱེད་མི་ཐུབ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
 msgstr "ཡིག་ཆ་ %1 མ་རྙེད།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
 msgstr "JASP ཡིས་ཡིག་ཆའི་རིགས་ %1 ལ་རྒྱབ་སྐྱོར་མི་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
 msgstr "དབྱེ་ཞིབ་ཀྱི་གནས་སྟངས་དང་དཔེ་རིས་ jasp-files ནང་ཉར་ཚགས་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
@@ -5833,10 +6370,12 @@ msgid ""
 msgstr ""
 "འདི་སྤྱད་ན་ jaspfiles ཡི་ཡིག་ཆའི་ཆེ་ཆུང་ཆེ་རུ་འགྲོ་སྲིད། སྐབས་རེ་ཧ་ཅང་ཆེན་པོ་འགྲོ་སྲིད།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Stored without state"
 msgstr "གནས་སྟངས་མེད་པར་ཉར་ཚགས་བྱས།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "This analysis was saved without state, to save the image it must be "
@@ -5849,6 +6388,7 @@ msgstr ""
 "\n"
 "དབྱེ་ཞིབ་གསར་བཅོས་བྱེད་དམ།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid ""
 "This analysis was stored without state, to resize the image it must be "
@@ -5861,26 +6401,32 @@ msgstr ""
 "\n"
 "དབྱེ་ཞིབ་གསར་བཅོས་བྱེད་དམ།"
 
+#, fuzzy
 msgctxt "AutoSaves|"
 msgid "Recovery"
 msgstr "སླར་གསོ།"
 
+#, fuzzy
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
 msgstr "སླར་གསོའི་ཡིག་ཆ་མ་རྙེད།"
 
+#, fuzzy
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
 msgstr "སླར་གསོའི་ཡིག་ཆ་རྣམས་ཟླ་བ་གཅིག་གི་རྗེས་སུ་སུབ་ཀྱི་ཡོད།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Save settings"
 msgstr "སྒྲིག་བཟོ་ཉར་ཚགས།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
 msgstr "རང་འགུལ་གྱིས་ཁྱེད་ཀྱི་ལས་གནས་ཀྱི་ངོ་བཤུས་ཉར་ཚགས་བྱེད།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "When enabled this will save a copy of your workspace in a folder next to the "
@@ -5891,68 +6437,78 @@ msgstr ""
 "JASP འགས་གཏོར་ཕྱིན་ནས་མ་ཉར་བའི་འགྱུར་བ་ཡོད་ན། ངོ་བཤུས་འདིས་ཁྱེད་ཀྱི་ལས་ཀ་ཚང་མ་བརླག་མི་འགྲོ་བ་"
 "འགན་ལེན་བྱེད་ཐུབ།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Autosave interval in minutes"
 msgstr "སྐར་མ་ནང་གི་རང་འགུལ་ཉར་ཚགས་བར་མཚམས།"
 
+#, fuzzy
 msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
 msgstr "རང་འགུལ་ཉར་ཚགས་བར་གྱི་སྐར་མའི་བར་མཚམས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
 msgstr "%1 རང་འགུལ་ཉར་ཚགས་བྱས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
 msgstr "ལམ་ཆ་ཚང་: %1"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace"
 msgstr "མ་ཉར་བའི་ལས་གནས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་ %1 གི་མ་ཉར་བའི་ལས་གནས།"
 
+#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Autosave"
 msgstr "རང་འགུལ་ཉར་ཚགས།"
 
+#, fuzzy
 msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
 msgstr "རང་འགུལ་ཉར་ཚགས་ JASP ཡིག་ཆ་ཉར་ཚགས་བྱེད་བཞིན་པ།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
 msgstr "%1 ལ་ཉར་ཚགས་བྱས།"
 
-#, qt-format
+#, fuzzy, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved %1 seconds ago, might still be loaded in another JASP."
-msgstr "སྐར་ཆ་ %1 སྔོན་ལ་ཉར་ཚགས་བྱས། ད་དུང་ JASP གཞན་ཞིག་ནང་བེད་སྤྱོད་བྱེད་བཞིན་ཡོད་སྲིད།"
+msgstr ""
 "སྐར་ཆ་ %1 གི་སྔོན་དུ་ཉར་ཚགས་བྱས། JASP གཞན་ཞིག་ནང་ད་དུང་འདོན་བཞིན་ཡོད་སྲིད།"
 
+#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recovery"
 msgstr "སླར་གསོ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Test"
 msgstr "ཚོད་ལྟ།"
 
+#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Run tests"
 msgstr "ཚོད་ལྟ་བྱེད་པ།"
 
+#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Stored without state"
 msgstr "གནས་སྟངས་མེད་པར་ཉར་ཚགས་བྱས།"
 
+#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid ""
 "This analysis was stored without state, to edit the plot it must be "
@@ -5969,6 +6525,7 @@ msgctxt "PlotEditor::PlotEditorModel|"
 msgid "Version incompatibility"
 msgstr "ཐོན་རིམ་མི་མཐུན་པ།"
 
+#, fuzzy
 msgctxt "PlotEditor::PlotEditorModel|"
 msgid ""
 "This analysis was created in an older version of JASP, to edit the plot it "
@@ -5981,6 +6538,7 @@ msgstr ""
 "\n"
 "དབྱེ་ཞིབ་གསར་བཅོས་བྱེད་དམ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Two-parameter Box-Cox transform with an automatic determination of the shape "
@@ -5992,6 +6550,7 @@ msgstr ""
 "'movingRange' ཐབས་ལམ་གསུམ་ལས་གཅིག་ལྟར་རང་འགུལ་གྱིས་གཏན་འཁེལ་བྱེད་པ། ལེགས་ཤོས་ཀྱི་ lambda "
 "འཚོལ་བ་དེ་ 'lower' དང་ 'upper' མཐའ་ནང་ཚུད་ཡོད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Two-parameter power transform (scale-invariant Box-Box; transforms values "
@@ -6001,6 +6560,7 @@ msgstr ""
 "གཞི་རྒྱུ་གཉིས་ཀྱི་ power བསྒྱུར་བ་ (scale-invariant Box-Box; རིན་ཐང་ -shift ལས་ཆེ་བ་བསྒྱུར་བ"
 "་) ཡིས་འགྱུར་ཚད་བརྟན་པོ་བཟོ་བ་དང་གཞི་གྲངས་དེ་ normal ཁྱབ་ཚུལ་དང་འདྲ་བར་བཟོ་ཐབས་བྱེད་པ།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Two-parameter power transform with an automatic determination of the shape "
@@ -6010,6 +6570,7 @@ msgstr ""
 "གཞི་རྒྱུ་གཉིས་ཀྱི་ power བསྒྱུར་བ་དང་། དབྱིབས་ཀྱི་གཞི་རྒྱུ་ lambda རང་འགུལ་གྱིས་གཏན་འཁེལ་བྱེད་པ། ལེགས་"
 "ཤོས་ཀྱི་ lambda འཚོལ་བ་དེ་ 'lower' དང་ 'upper' མཐའ་ནང་ཚུད་ཡོད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Yeo-Johnson transform (transforms any real values) with an automatic "
@@ -6019,6 +6580,7 @@ msgstr ""
 "Yeo-Johnson བསྒྱུར་བ་ (གྲངས་ཀ་དངོས་གང་རུང་བསྒྱུར་བ་) དང་། དབྱིབས་ཀྱི་གཞི་རྒྱུ་ lambda རང་འགུལ་"
 "གྱིས་གཏན་འཁེལ་བྱེད་པ། ལེགས་ཤོས་ཀྱི་ lambda འཚོལ་བ་དེ་ 'lower' དང་ 'upper' མཐའ་ནང་ཚུད་ཡོད།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Johnson transform (transforms any real values). The search for optimal "
@@ -6027,6 +6589,7 @@ msgstr ""
 "Johnson བསྒྱུར་བ་ (གྲངས་ཀ་དངོས་གང་རུང་བསྒྱུར་བ་)། ལེགས་ཤོས་ཀྱི་གཞི་རྒྱུ་འཚོལ་བ་དེ་ 'lower' དང་ "
 "'upper' མཐའ་ནང་ཚུད་ཡོད།"
 
+#, fuzzy
 msgctxt "tst_tabViewManual|"
 msgid "H"
 msgstr "H"

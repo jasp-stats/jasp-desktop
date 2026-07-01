@@ -669,7 +669,7 @@ msgstr "Пријавите се у датотеку"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "Da biste sačuvali debug-logove JASP-a u datoteku, označite ovo polje."
+msgstr ""
 "Да бисте сачували евиденције за отклањање грешака у датотеци, штиклирајте "
 "ово поље."
 
@@ -885,7 +885,7 @@ msgstr "Добро дошли у креатор колона са превуци
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "Ostavite neželjene isečke ovde. Dvaput kliknite da obrišete sve."
+msgstr ""
 "Овде можете обрисати нежељене делове; дуплим кликом бришете сав садржај"
 
 msgctxt "OperatorSelector|"
@@ -1454,7 +1454,7 @@ msgstr "Кликните да бисте добили најновију вер�
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "Nije moguće pronaći opcije za uređivanje grafikona %1, tako da uređivanje grafikona neće raditi..."
+msgstr ""
 "Нису пронађене опције уређивања за графикон %1 ако да измене неће бити "
 "могуће..."
 
@@ -3424,7 +3424,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr "Nije moguće povezati se sa bazom podataka, pa će sinhronizacija biti onemogućena."
+msgstr ""
 "Није могуће успоставити везу са базом података, па ће синхронизација бити "
 "онемогућена."
 
@@ -3478,7 +3478,7 @@ msgstr "Користите запис експонента"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
-msgstr "koja se može koristiti u numeričkim poređenjima i matematičkim operacijama."
+msgstr ""
 "који се може користити у нумеричким поређењима и математичким операцијама."
 
 msgctxt "ColumnsModel|"
@@ -3653,7 +3653,7 @@ msgstr "Није пронађен извор у формули randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr "randomEffects u formuli može se koristiti samo sa ComponentsList stavkom"
+msgstr ""
 "randomEffects у формули може се користити само са ставком ComponentsList"
 
 msgctxt "FormulaSource|"
@@ -3805,7 +3805,7 @@ msgstr "Ове варијабле су уклоњене јер нису дозв
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr "Pretpostavi da je CSV izabrana kodna stranica kada BOM nije naveden."
+msgstr ""
 "Подразумева се да је CSV изабрани кодни страница, када није наведен BOM."
 
 msgctxt "PrefsData|"
@@ -4484,7 +4484,7 @@ msgstr "Ресетујте са стандардним вредностима"
 
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr "Resetuj nedostajuće vrednosti sa standardnim JASP nedostajućim vrednostima"
+msgstr ""
 "Ресетујте недостајуће вредности помоћу стандардних JASP вредности које "
 "недостају"
 
@@ -4498,7 +4498,7 @@ msgstr "Подесите тренутни радни простор са ови�
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr "Postavi nedostajuće vrednosti trenutnog radnog prostora sa ovim vrednostima"
+msgstr ""
 "Подесите вредности које недостају тренутном радном простору са овим "
 "вредностима"
 
@@ -4557,7 +4557,7 @@ msgstr "Опис: "
 
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
-msgstr "Resetuj nedostajuće vrednosti sa vrednostima podešenim u Podešavanjima podataka"
+msgstr ""
 "Ресетуј недостајуће вредности са онимa постављеним у Подешавањима података"
 
 msgctxt "RibbonBar|"
@@ -4570,7 +4570,7 @@ msgstr "Користите прилагођене вредности"
 
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
-msgstr "Resetuj nedostajuće vrednosti sa vrednostima podešenim u vašem radnom prostoru"
+msgstr ""
 "Ресетујте недостајуће вредности помоћу оних постављених у вашем радном "
 "простору"
 
@@ -4907,7 +4907,7 @@ msgstr "Кликните овде да изаберете ред, држите s
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr "Postavi originalnu vrednost sa '%3' na '%4' za oznaku '%1' kolone '%2'"
+msgstr ""
 "Поставите оригиналну вредност  са '%3' на '%4' за ознаку '%1' колоне '%2'"
 
 msgctxt "RibbonModel|"
@@ -5141,7 +5141,7 @@ msgstr "Посетите веб сајт"
 #, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
-msgstr "Uključi/isključi automatsko sortiranje oznaka po vrednostima za kolonu(e) '%1'"
+msgstr ""
 "Укључи/искључи аутоматско сортирање ознака према вредностима за колону '%1'"
 
 msgctxt "RibbonModel|"
@@ -5275,7 +5275,7 @@ msgstr "<Најпре унесите назив колоне>"
 
 msgctxt "PrefsData|"
 msgid "Maximum allowed levels for scale when used as nominal/ordinal"
-msgstr "Maksimalni dozvoljeni nivoi za skalu kada se koristi kao nominalna/ordinalna"
+msgstr ""
 "Максимално дозвољени нивои за скалу када се користи као номинална/ординална"
 
 msgctxt "PrefsData|"
@@ -5514,7 +5514,7 @@ msgstr "Освежите модул за програмере "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr "0 validnih kolona je pročitano iz datoteke. Molimo proverite vašu datoteku sa podacima."
+msgstr ""
 "0 важећих колона је прочитано из датотеке, молимо проверите ваш фајл са "
 "подацима."
 
@@ -5540,7 +5540,7 @@ msgstr "Користи алтернативни приказ бројева за
 
 msgctxt "PrefsUI|"
 msgid "Use the locale specified below for display of numbers and currency."
-msgstr "Koristite lokalne postavke navedene ispod za prikaz brojeva i valute."
+msgstr ""
 "Користите локална подешавања наведена испод за приказ бројева и валуте."
 
 msgctxt "PrefsUI|"

@@ -10,7 +10,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("Advanced Preferences")
-		helpMD:			allHelp.PrefsAdvanced
+		helpfile:		"preferences/PrefsAdvanced"
 		addMargin:		false
 	}
 

@@ -40,9 +40,9 @@ QC.ScrollView
 
         MenuHeader
         {
-            id:             menuHeader
-            headertext:     qsTr("Database")
-            helpMD:         allHelp.Database
+            id				: menuHeader
+			headertext		: qsTr("Database")
+            helpfile:		"filemenu/Database"
             addMargin:      false
             width:			scrollDB.width - (2 * jaspTheme.generalMenuMargin)
             x:				jaspTheme.generalMenuMargin

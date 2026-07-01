@@ -600,7 +600,7 @@ msgstr "Preferencias Avanzadas"
 
 msgctxt "PrefsAdvanced|"
 msgid "To store debug-logs of JASP in a file, check this box."
-msgstr "Para gardar os rexistros de depuración de JASP nun ficheiro, marque esta caixa."
+msgstr ""
 "Para gardar os rexistros de depuración de JASP nun ficheiro, marca esta "
 "caixiña."
 
@@ -649,7 +649,7 @@ msgstr "Opcións dos módulos"
 
 msgctxt "OSF|"
 msgid "Username and/or password are not correct. Please try again."
-msgstr "O nome de usuario e/ou contrasinal non son correctos. Inténteo de novo."
+msgstr ""
 "O nome de usuario e/ou o contrasinal son incorrectos. Pregámosche que o "
 "intentes de novo."
 
@@ -664,7 +664,7 @@ msgstr "Iniciar sesión"
 #, qt-format
 msgctxt "OSF|"
 msgid "A new folder cannot be added to '%1' for an unknown reason."
-msgstr "Non se pode engadir un novo cartafol a '%1' por un motivo descoñecido."
+msgstr ""
 "Non se pode engadir un novo cartafol a '%1' por unha razón descoñecida."
 
 msgctxt "OSF|"
@@ -707,7 +707,7 @@ msgstr "Tipos de Ficheiros"
 
 msgctxt "OSF|"
 msgid "Connection Timeout error. Please check your internet connection."
-msgstr "Erro de tempo de espera da conexión. Comprobe a súa conexión a Internet."
+msgstr ""
 "Fallo no tempo de espera da conexión. Por favor, comproba a túa conexión a "
 "Internet."
 
@@ -759,7 +759,7 @@ msgstr "O nome da entrada non pode estar baleiro."
 
 msgctxt "OSF|"
 msgid "OSF service not available. Please check your internet connection."
-msgstr "Servizo OSF non dispoñible. Comprobe a súa conexión a Internet."
+msgstr ""
 "O servizo OSF non está dispoñible. Por favor, comproba a túa conexión a "
 "Internet."
 
@@ -875,7 +875,7 @@ msgstr ""
 
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "substitúe calquera valor perdido (NA) na columna polo valor en replaceWith"
+msgstr ""
 "Substitúe calquera valor ausente (NA) da columna polo valor de replaceWith"
 
 msgctxt "ComputeColumnWindow|"
@@ -903,7 +903,7 @@ msgstr "Varianza"
 
 msgctxt "ComputeColumnWindow|"
 msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr "xera datos a partir dunha distribución gamma con forma e escala especificadas"
+msgstr ""
 "Xera datos dunha distribución Gamma cos parámetros (de forma e escala) "
 "indicados"
 
@@ -1333,7 +1333,7 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
-msgstr "As animacións xa están desactivadas porque o \"Modo de gráficos seguros\" está activado"
+msgstr ""
 "Animacións xa inhabilitadas porque o \"Modo Gráfico Seguro\" está activado"
 
 msgctxt "PrefsUI|"
@@ -1546,7 +1546,7 @@ msgstr "Opcións de gráficas"
 
 msgctxt "PrefsResults|"
 msgid "Use the Pixels Per Inch of your screen to render your plots."
-msgstr "Usar os píxeles por polgada da súa pantalla para renderizar os gráficos."
+msgstr ""
 "Utilizar os Pixels Por Polgada (PPI) da túa pantalla para representar as "
 "túas gráficas."
 
@@ -1886,12 +1886,12 @@ msgstr "Só se permite unha fórmula por columna calculada."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "Benvido ao construtor de columnas calculadas por arrastrar e soltar!"
+msgstr ""
 "Benvido ao configurador de columnas calculadas mediante Arrastrar e Soltar!"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
-msgstr "Introduza todos os argumentos - vexa os campos marcados en vermello."
+msgstr ""
 "Por favor, introduce todos os argumentos (observar os campos marcados en "
 "vermello)."
 
@@ -1943,7 +1943,7 @@ msgstr ""
 #, qt-format
 msgctxt "Analysis|"
 msgid "Could not find edit options of plot %1 so plot editing will not work..."
-msgstr "Non se atoparon as opcións de edición do gráfico %1, polo que a edición do gráfico non funcionará..."
+msgstr ""
 "Non se poden atopar as opcións de edición da gráfica %1, entón a edición de "
 "gráficas non funcionará..."
 
@@ -1969,7 +1969,7 @@ msgstr ""
 
 msgctxt "Form|"
 msgid ", refreshing could give a slightly different result."
-msgstr ", actualizar podería dar un resultado lixeiramente diferente."
+msgstr ""
 ", unha actualización pode proporcionar un resultado lixeiramente diferente."
 
 msgctxt "ResultsJsInterface|"
@@ -2022,7 +2022,7 @@ msgstr "Categorías"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "Arrastre aquí os fragmentos non desexados. Prema dúas veces para borrar todo."
+msgstr ""
 "Verte aquí os anacos non desexados; fai clic dúas veces para eliminar todo"
 
 #, qt-format
@@ -2156,7 +2156,7 @@ msgstr "Enunciado se-entón"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr "devolve verdadeiro se a cadea contén a subcadea polo menos unha vez"
+msgstr ""
 "Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
 
 msgctxt "ComputeColumnWindow|"
@@ -2354,7 +2354,7 @@ msgstr "Devolve o signo dos valores"
 
 msgctxt "FilterWindow|"
 msgid "returns true if string contains substring at least once"
-msgstr "devolve verdadeiro se a cadea contén a subcadea polo menos unha vez"
+msgstr ""
 "Devolve verdadeiro se a cadea contén unha subcadea, cando menos unha vez"
 
 msgctxt "FilterWindow|"
@@ -2830,7 +2830,7 @@ msgstr "O valor (%1) debe ser %2"
 
 msgctxt "VariablesFormBase|"
 msgid "Only 1 Available Variables list can be set in a VariablesForm"
-msgstr "Só se pode establecer 1 lista de Variables Dispoñibles nun VariablesForm"
+msgstr ""
 "Só podes establecer 1 lista de Variables Dispoñibles no Formulario de "
 "Variables"
 
@@ -2856,7 +2856,7 @@ msgstr "Non se atopou unha lista relacionada para VariablesList %1"
 #, qt-format
 msgctxt "VariablesListBase|"
 msgid "Wrong kind of related list (%1) found for VariablesList %2"
-msgstr "Atopouse un tipo incorrecto de lista relacionada (%1) para VariablesList %2"
+msgstr ""
 "Atopouse un tipo incorrecto de lista relacionada (%1) para VariablesList %2"
 
 msgctxt "PrefsUI|"
@@ -2897,7 +2897,7 @@ msgstr "Separar"
 
 msgctxt "PrefsData|"
 msgid "<i>On Linux the default spreadsheet editor is always used.</i>"
-msgstr "<i>En Linux úsase sempre o editor de follas de cálculo predeterminado.</i>"
+msgstr ""
 "<i>En Linux utilízase sempre o editor de follas de cálculo predeterminado.</"
 "i>"
 
@@ -3097,7 +3097,7 @@ msgstr "A consulta non era un enunciado de tipo SELECT e non devolveu nada."
 
 msgctxt "QObject|"
 msgid "No active result found, maybe there is something wrong with your query?"
-msgstr "Non se atopou ningún resultado activo. Quizais haxa algún problema coa súa consulta?"
+msgstr ""
 "Non se atopou un resultado activo; se cadra hai algo mal na túa consulta?"
 
 msgctxt "DataSetPackage|"
@@ -3107,7 +3107,7 @@ msgstr "Contasinal do Banco de Datos"
 #, qt-format
 msgctxt "DataSetPackage|"
 msgid "The databaseconnection needs a password for user '%1'"
-msgstr "A conexión á base de datos necesita un contrasinal para o usuario '%1'"
+msgstr ""
 "A conexión co banco de datos necesita un contrasinal para o usuario '%1'"
 
 msgctxt "DataSetPackage|"
@@ -3129,7 +3129,7 @@ msgstr ""
 
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr "Non se puido conectar á base de datos, polo que a sincronización desactivarase."
+msgstr ""
 "Non se puido conectar co banco de datos polo que se inhabilitará a "
 "sincronización."
 
@@ -3183,7 +3183,7 @@ msgstr "Utiliza notación exponencial"
 
 msgctxt "ColumnsModel|"
 msgid "which can be used in numerical comparisons and mathematical operations."
-msgstr "que se pode usar en comparacións numéricas e operacións matemáticas."
+msgstr ""
 "que pode utilizarse en comparacións numéricas e en operacións matemáticas."
 
 msgctxt "ColumnsModel|"
@@ -3334,7 +3334,7 @@ msgstr "Non se atopou a fonte na Fórmula de randomEffects"
 
 msgctxt "FormulaSource|"
 msgid "randomEffects in Formula can be used only with a ComponentsList item"
-msgstr "randomEffects en Fórmula só se pode usar cun elemento ComponentsList"
+msgstr ""
 "Os randomEffects na Fórmula só poden usarse cun elemento de ComponentsList"
 
 msgctxt "FormulaSource|"
@@ -3480,7 +3480,7 @@ msgstr "Fai clic no ficheiro de abaixo para sincronizar ou usar "
 
 msgctxt "PrefsData|"
 msgid "Assume CSV is the selected codepage, when no BOM is specified."
-msgstr "Asumir que CSV é a páxina de códigos seleccionada cando non se especifica BOM."
+msgstr ""
 "Asumir que CSV é o código de páxina elixido, cando non se especifica "
 "ningunha MOB (BOM)."
 
@@ -4081,7 +4081,7 @@ msgstr "Refacer %2 (%1+shift+Z ou %1+Y)"
 
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
-msgstr "Abrir ficheiro de datos co editor de follas de cálculo predeterminado"
+msgstr ""
 "Abrir o ficheiro de datos co editor predeterminado de follas de cálculo"
 
 #, qt-format
@@ -4156,7 +4156,7 @@ msgstr "Fixar área de traballo vixente cos valores"
 
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr "Establecer os valores perdidos do espazo de traballo actual con estes valores"
+msgstr ""
 "Fixar os valores ausentes da área de traballo vixente con estes valores"
 
 msgctxt "LabelEditorWindow|"
@@ -4564,14 +4564,14 @@ msgstr "Preme clic aquí para cambiar a variable elixida"
 
 msgctxt "DataTableViewRowHeader|"
 msgid "Click here to select the row, hold shift for selecting multiple."
-msgstr "Prema aquí para seleccionar a fila. Manteña Shift para seleccionar varias."
+msgstr ""
 "Preme clic aquí para elixir a fila, pulsando 'Maiús' para unha selección "
 "múltiple."
 
 #, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr "Establecer valor orixinal de '%3' a '%4' para a etiqueta '%1' da columna '%2'"
+msgstr ""
 "Establecer o valor orixinal de '%3' a '%4' para a etiqueta '%1' da columna "
 "'%2'"
 
@@ -4830,7 +4830,7 @@ msgstr "Comprobar actualizacións"
 
 msgctxt "PrefsUI|"
 msgid "Daily automatic check for updates & known issues"
-msgstr "Verificación automática diaria de actualizacións e problemas coñecidos"
+msgstr ""
 "Comprobación automática diaria de actualizacións e incidencias coñecidas"
 
 msgctxt "PrefsUI|"
@@ -5036,7 +5036,7 @@ msgstr "Filtro aplicado\n"
 
 msgctxt "FilterConstructor|"
 msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr "Introduza todos os argumentos - vexa os campos marcados en vermello.\\n"
+msgstr ""
 "Por favor, introduza tódolos argumentos (mira os campos marcados en "
 "vermello).\n"
 
@@ -5163,12 +5163,12 @@ msgstr "Nome do módulo:"
 
 msgctxt "PrefsAdvanced|"
 msgid "Enter the (package)name of the development module you want to load"
-msgstr "Introduza o nome (do paquete) do módulo de desenvolvemento que quere cargar"
+msgstr ""
 "Introduce o nome (de paquete) do Módulo de Desenvolvemento que queres cargar"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by filling in the relevant preferences"
-msgstr "Seleccione un módulo de desenvolvemento completando as preferencias correspondentes"
+msgstr ""
 "Seleccionar un Módulo de Desenvolvemento completando as preferencias "
 "pertinentes"
 
@@ -5178,7 +5178,7 @@ msgstr "Actualizar o Módulo de Desenvolvedor "
 
 msgctxt "ExcelImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr "Leronse 0 columnas válidas do ficheiro. Comprobe o ficheiro de datos."
+msgstr ""
 "Léronse 0 columnas válidas do ficheiro; por favor, comproba teu ficheiro de "
 "datos."
 
@@ -5223,7 +5223,7 @@ msgstr ""
 
 msgctxt "MainWindow|"
 msgid "Please drag and drop these log files into this issue: "
-msgstr "Arrastre e solte estes ficheiros de rexistro neste problema:"
+msgstr ""
 "Por favor, arrastra e solta estes ficheiros de rexistro nesta cuestión: "
 
 msgctxt "ComputeColumnWindow|"
@@ -5260,18 +5260,18 @@ msgstr ""
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to reverse order of all labels"
-msgstr "Desactive a ordenación automática para inverter a orde de todas as etiquetas"
+msgstr ""
 "Desactivar a ordenación automática para a ordenación inversa de tódalas "
 "etiquetas"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels up manually"
-msgstr "Desactive a ordenación automática para mover etiquetas cara arriba manualmente"
+msgstr ""
 "Desactivar a ordenación automática para mover arriba as etiquetas manualmente"
 
 msgctxt "LabelEditorWindow|"
 msgid "Turn automatically ordering off to move labels down manually"
-msgstr "Desactive a ordenación automática para mover etiquetas cara abaixo manualmente"
+msgstr ""
 "Desactivar a ordenación automática para mover abaixo as etiquetas manualmente"
 
 msgctxt "QObject|"
@@ -5308,7 +5308,7 @@ msgstr "Facer un contorno seguro para Motores"
 
 msgctxt "PrefsAdvanced|"
 msgid "Strengthen security on Windows by isolating Engines running R-code"
-msgstr "Reforzar a seguridade en Windows illando os motores que executan código R"
+msgstr ""
 "Reforzar a seguridade en Windows illando os Motores que executan código R"
 
 msgctxt "PreferencesModel|"
@@ -5546,7 +5546,7 @@ msgstr "Cargando ficheiro de datos de R"
 
 msgctxt "RDataImporter|"
 msgid "0 valid columns were read from the file, please check your data file."
-msgstr "Leronse 0 columnas válidas do ficheiro. Comprobe o ficheiro de datos."
+msgstr ""
 "Léronse 0 columnas válidas do ficheiro; por favor, comproba teu ficheiro de "
 "datos."
 
@@ -6031,7 +6031,7 @@ msgstr "Crear un directorio de R que conteña o teu código de análise."
 
 msgctxt "DynamicModules|"
 msgid "Create a inst/qml directory containing your optionsforms."
-msgstr "Cree un directorio inst/qml que conteña os seus optionsforms."
+msgstr ""
 "Crear un directorio inst/qml que conteña os teus formularios de opción."
 
 msgctxt "DynamicModules|"
@@ -6147,7 +6147,7 @@ msgstr "Proposta do Equipo de JASP."
 
 msgctxt "EncryptionSettingsWindow|"
 msgid "Click here if you want the JASP Team be able to open the file"
-msgstr "Prema aquí se quere que o equipo de JASP poida abrir o ficheiro"
+msgstr ""
 "Fai clic aquí se queres que o Equipo de JASP sexa capaz de abrir o ficheiro"
 
 msgctxt "EncryptionSettingsWindow|"
@@ -6374,7 +6374,7 @@ msgstr "Inhabilitar eliminar os separadores de millares para tódolos números."
 
 msgctxt "PrefsLanguage|"
 msgid "Use an alternative language and territory dependent display for numbers"
-msgstr "Usar unha visualización de números alternativa dependente do idioma e territorio"
+msgstr ""
 "Usar idioma alternativo e presentación segundo o territorio para os números"
 
 msgctxt "PrefsLanguage|"
@@ -6428,4 +6428,4 @@ msgstr "Actualización dispoñible"
 
 msgctxt "WelcomePage|"
 msgid "Enterprise Support"
-msgstr "Soporte Enterprise"
+msgstr ""

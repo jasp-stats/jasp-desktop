@@ -1,0 +1,93 @@
+<h1>Uitleg van het Easy-Filter</h1>
+
+<p>De volgende voorbeelden laten zien hoe u op een (relatief) eenvoudige manier uw eigen filters kunt maken: </p>
+
+
+<details>
+	<summary><b>Een continue kolom filteren</b></summary>
+	<p>
+	Dit voorbeeld laat zien hoe u het Easy-Filter kunt gebruiken om te controleren op gelijkwaardigheid of groter/kleiner dan en dergelijke.
+	We gebruiken de meegeleverde dataset "Kitchen Rolls" en filteren op de 'ParticipantNumber' kolom.
+	De stappen worden in de video hieronder beschreven.
+	</p>
+	<img src="other/FilteringParticipant.gif"/>
+	<ul>
+		<li>Eerst klikken we eenmaal op de gewenste kolom (ParticipantNumber) om deze toe te voegen aan het overzicht.</li>
+		<li>Vervolgens selecteren we '=' of gelijkwaardigheid, die wordt toegevoegd aan of eerder geselecteerde kolom.</li>
+		<li>De lege ruimte rechts van de het = teken kan worden opgevuld door verschillende andere operatoren of kolommen te slepen, maar voor nu klikken we erop en typen vervolgens het nummer '2'.</li>
+		<li>Nu passen we het filter toe door op de betreffende knop te drukken en we zullen zien dat nu alleen de rij waar ParticipantNumber 2 actief is.</li>
+		<li>Daarna selecteren we opnieuw de '2' om deze opnieuw te kunnen bewerken. Door het volledig te wissen, konden we het verwijderen, maar voor nu veranderen we het gewoon in '3'.</li>
+		<li>Opnieuw passen we ons doorlaat filter toe en opnieuw is alleen de bijbehorende rij actief.</li>
+		<li>Om meer dan één rij te selecteren, kunnen we gebruik maken van de minder dan-operator of '&lt;' en dus verwijderen we onze geconstrueerde formule en creëren we een nieuwe.</li>
+		<li>We voegen de kolom ParticipantNumber opnieuw toe </li>
+		<li>voeg dan '&lt;'toe en vul '5' in aan de rechter kant.</li>
+		<li>Door het filter toe te passen is het resultaat direct zichtbaar.</li>
+		<li>Vervolgens wissen we alles en wordt de animatie herhaald.</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>Een of meer categorieën filteren</b></summary>
+	<p>Dit voorbeeld laat zien hoe u een bepaalde categorische variabele alleen en in combinatie met een andere filtert. We zullen dit doen via zowel het variabele venster als het Easy-Filter</p>
+	<img src="other/FilteringSex.gif"/>
+	<ul>
+		<li>Eerst openen we het variabelenvenster voor de kolom 'Sex' door op de koptekst te klikken.</li>
+		<li>Hier schakelen we de 'M'-waarde uit, we zien meteen dat alle bijbehorende rijen inactief zijn.</li>
+		<li>Door 'M' weer aan te vinken en 'F' uit te schakelen, krijgen we de tegenovergestelde situatie.</li>
+		<li>Vervolgens kijken we naar een andere categorie, nadat we ervoor hebben gezorgd dat zowel 'M' als 'F' actief zijn, openen we het venster met variabelen voor 'Student'.</li>
+		<li>Hier vinken we 'N' uit en zien we dat de enige zichtbare rij die dit bevat inactief is gemaakt.</li>
+		<li>Dit combineren we met het uitvinken van 'M' in 'Sex' en zien dat nu de rijen die overeenkomen met 'M' of 'N' beide inactief zijn.</li>
+		<li>Om dit te doen met de Easy-Filter constructor is het ook mogelijk en om dit te laten zien ruimen we eerst de huidige selectie op door te kiezen voor "alles wissen".</li>
+		<li>Vervolgens openen we het Easy-Filter en voeren we 'Sex' in, gevolgd door '=' en voeren we de tekst 'F' in aan de lege rechterkant.</li>
+		<li>Om dit te combineren met het andere categorische, voeren we hieronder een nieuwe formule in door 'Student', '=' te selecteren en 'N' in te voeren.</li>
+		<li>Na het kiezen van 'Pas-door-filter toepassen' zien we slechts één rij actief waar deze waarden overeenkomen.</li>
+		<li>Om het tegenovergestelde te laten zien, verwijderen we de laatste formule en vervangen deze door een formule die 'Student' ongelijk maakt aan 'N'.</li>
+		<li>Na het toepassen zien we nu dat alleen de ene rij die eerder actief was nu de enige inactieve is, zoals verwacht.</li>
+		<li>Vervolgens wissen we alles en wordt de animatie herhaald.</li>
+	</ul>
+</details>
+
+<details>
+	<summary><b>Filteren op standaarddeviatie</b></summary>
+	<p>Dit voorbeeld laat zien hoe u kunt filteren op basis van groter zijn dan de eigen standaarddeviatie.</p>
+	<img src="other/FilteringStandardDeviation.gif"/>
+	<ul>
+		<li>We filteren 'mean_NEO', dus we voeren het in als basis voor onze eerste formule.</li>
+		<li>Klikken op het '>' symbool voegt het toe aan de formule.</li>
+		<li>Omdat we willen controleren op de standaarddeviatie klikken we op het overeenkomstige &sigma; symbool in het functieoverzicht aan de rechterkant.</li>
+		<li>We laten dan een andere kopie van 'mean_NEO' hierin vallen en passen ons filter toe.</li>
+		<li>Nu zien we dat alleen rijen 4 en 5 inactief zijn.</li>
+		<li>Om het contrast met een grotere waarde te zien, vermenigvuldigen we de standaarddeviatie door toe te voegen '*' en typ 2 aan de rechterkant.</li>
+		<li>Na het kiezen van toepassen zien we nu dat alleen rij 2 actief blijft.</li>
+		<li>Daarna wordt het filter gewist en wordt de animatie herhaald.</li>
+	</ul>
+	<p>Natuurlijk kunt u ook de andere functies in de lijst aan de rechterkant gebruiken in combinatie met de bovenstaande operatoren om te controleren op veel gewenste waarden.</p>
+</details>
+
+<details>
+		<summary><b>Geconditioneerde filtering - eenvoudig voorbeeld </b></summary>
+		<p>Dit is een eenvoudig voorbeeld om te laten zien hoe u voorwaardelijke filtering kunt gebruiken. In dit geval willen we alleen de rijen die de maximale leeftijd weergeven.</p>
+		<img src="other/FilteringAgeConditional.gif"/>
+		<ul>
+			<li>We filteren 'Age', dus we voeren het in als basis van onze eerste formule.</li>
+			<li>Klikken op het '=' symbool voegt het toe aan de formule.</li>
+			<li>Vervolgens voegen we 'max(Age)' toe en passen deze toe.</li>
+			<li>We zien nu dat er één actieve rij is met een 51-jarige vrouw.</li>
+			<li>Om de maximale leeftijd per geslacht te krijgen, voegen we de 'condition on'-operator of' | 'toe gevolgd door 'Sex'.</li>
+			<li>Na toepassing zien we dat er naast de vrouw nu ook een actieve rij is met een 38 jarige man.</li>
+		</ul>
+</details>
+
+<details>
+		<summary><b>Geconditioneerde filtering - uitschieters per groep</b></summary>
+		<p>Dit is een eenvoudig voorbeeld om te laten zien hoe u uitschieters per groep kunt filteren met voorwaardelijke filtering.</p>
+		<img src="other/FilteringExtraConditional.gif"/>
+		<ul>
+			<li>We filteren de absolute waarde van 'extra'.</li>
+			<li>Hieraan wordt '>' en toegevoegd &sigma; voor de standaarddeviatie</li>
+			<li>'extra' wordt binnen geplaatst &sigma;() en het resultaat vermenigvuldigd met 2.</li>
+			<li>Na toepassing zien we dat er 3 actieve rijen zijn die dit criterium doorstaan, allemaal in groep '2'</li>
+			<li>Om de uitschieters per groep te krijgen voegen we de 'condition on'-operator of' | 'toe gevolgd door 'groep'.</li>
+			<li>Na toepassing zien we dat er nog een actieve rij is, dit keer uit groep '1'.</li>
+		</ul>
+</details>

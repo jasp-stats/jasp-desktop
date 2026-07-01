@@ -27,7 +27,7 @@ Item
 	id:							common
 	implicitHeight:				Math.max(leftColumn.childrenRect.height, rightColumn.childrenRect.height) + 2 * jaspTheme.generalAnchorMargin
 	height:						implicitHeight
-	property bool showIcons:	true
+	property bool closeIcon:	true
 	property alias columnNameValue:			columnNameVariablesWindow.value
 	property alias columnTitleValue:		columnTitleVariablesWindow.value
 	property alias columnDescriptionValue:	columnDescriptionVariablesWindow.text
@@ -159,7 +159,7 @@ Item
 				id:					columnTitleVariablesWindow
 				label:				qsTr("Long name: ");
 				placeholderText:	qsTr("<Fill in a more descriptive name of the column>")
-				fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width + helpButton.width)
+				fieldWidth:			longNameRow.width - ( rightColumn.labelWidth + closeButton.width )
 				value:				columnModel.columnTitle
 				onEditingFinished:	if(columnModel.columnTitle !== displayValue) columnModel.columnTitle = displayValue
 				undoModel:			columnModel
@@ -167,29 +167,16 @@ Item
 				enabled:			!columnModel.isVirtual
 			}
 
-			Row
+			MenuButton
 			{
-				HelpButton
-				{
-					id:					helpButton
-					height:				common.showIcons ? 33 * jaspTheme.uiScale : 0
-					width:				height
-					visible:			common.showIcons
-					helpMD:				allHelp.variableslabeleditorhelp
-					buttonPadding:		6 * preferencesModel.uiScale
-				}
-
-				MenuButton
-				{
-					id:					closeButton
-					height:				33 * jaspTheme.uiScale
-					width:				common.showIcons ? height : 0
-					iconSource:			jaspTheme.iconPath + "collapse.png"
-					onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
-					toolTip:			qsTr("Close variable window")
-					radius:				height
-					visible:			common.showIcons
-				}
+				id:					closeButton
+				height:				33 * jaspTheme.uiScale
+				width:				common.closeIcon? height : 0
+				iconSource:			jaspTheme.iconPath + "collapse.png"
+				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+				toolTip:			qsTr("Close variable window")
+				radius:				height
+				visible:			common.closeIcon
 			}
 		}
 

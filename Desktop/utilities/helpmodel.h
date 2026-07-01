@@ -37,14 +37,13 @@ public slots:
 	void	showOrTogglePage(QString pagePath);
 	void	showOrTogglePageForAnalysis(Analysis * analysis)	{ showOrToggleParticularPageForAnalysis(analysis, ""); }
 	void	showOrToggleParticularPageForAnalysis(Analysis * analysis, QString helpPage);
-	void	showOrToggleMarkdown(QString markdown);
 	QString	indexURL();
 	void	reloadPage();
 	void	setThemeCss(QString themeName);
 	void	setFont();
 	void	loadingSucceeded();
 	void	setMarkdown(QString markdown);
-	void	loadMarkdown();
+	void	loadMarkdown(QString md);
 	bool	pageExists(QString pagePath);
 
 signals:
