@@ -12,15 +12,6 @@ echo Transfering module folders to renv-cache (we should get rid of this in the 
 
 pushd .
 
-rem Nightly Pack MSIX
-cd "@JASP_INSTALL_DIR_NATIVE@"
-copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-nightly.xml .\AppxManifest.xml
-makepri.exe createconfig /o /cf priconfig.xml /dq en-US
-makepri.exe new /o /pr . /cf .\priconfig.xml
-cd "@JASP_BINARY_DIR_NATIVE@"
-MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-nightly.msix"
-if exist @MSIX_SIGN_CERT_PATH@ SignTool sign /fd SHA256 /a /f "@MSIX_SIGN_CERT_PATH@" /p "@MSIX_SIGN_CERT_PASSWORD@" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-nightly.msix"
-
 rem Store Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store.xml .\AppxManifest.xml
@@ -34,27 +25,6 @@ ren "@JASP_BINARY_DIR_NATIVE@\JASP\symbols.zip" symbols.appxsym
 powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix','@JASP_BINARY_DIR_NATIVE@\JASP\symbols.appxsym' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.zip' -Force"
 ren "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.zip" JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msixupload
 
-rem Store Beta Pack MSIX
-cd "@JASP_INSTALL_DIR_NATIVE@"
-copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store-beta.xml .\AppxManifest.xml
-makepri.exe createconfig /o /cf priconfig.xml /dq en-US
-makepri.exe new /o /pr . /cf .\priconfig.xml
-cd "@JASP_BINARY_DIR_NATIVE@"
-MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
-rem Bundle PDB symbols with the Store Beta MSIX into an .msixupload file
-powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\*.pdb' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\symbols.zip' -Force"
-ren "@JASP_BINARY_DIR_NATIVE@\JASP\symbols.zip" symbols.appxsym
-powershell -Command "Compress-Archive -Path '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix','@JASP_BINARY_DIR_NATIVE@\JASP\symbols.appxsym' -DestinationPath '@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.zip' -Force"
-ren "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.zip" JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msixupload
-
-
-rem Standalone Pack MSIX
-cd "@JASP_INSTALL_DIR_NATIVE@"
-copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-standalone.xml .\AppxManifest.xml
-makepri.exe createconfig /o /cf priconfig.xml /dq en-US
-makepri.exe new /o /pr . /cf .\priconfig.xml
-cd "@JASP_BINARY_DIR_NATIVE@"
-MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Standalone-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
 
 rem You could now sign this msix with: SignTool sign /fd SHA256 /a /f "<path to key>" /p <password> "<path to msix>"
 popd
