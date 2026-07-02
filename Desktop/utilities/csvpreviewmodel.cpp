@@ -56,6 +56,37 @@ void CsvPreviewModel::updateLocale()
 	updateInternalStructure();
 }
 
+// Split a single row into fields on the delimiter, but treat text enclosed in
+// double quotes as a single field: if a field starts with a double quote and does not end
+// with a double quote, it will merge with the next field until it finds a field ending with
+// a double quote.
+static QStringList splitRowRespectingQuotes(const QString &row, QChar delimiter)
+{
+	QStringList rawFields = row.split(delimiter);
+	QStringList	fields;
+
+	for (int i = 0; i < rawFields.size(); ++i)
+	{
+		const QString& field = rawFields.at(i);
+		if (field.startsWith('"') && !field.endsWith('"'))
+		{
+			QString realField = field;
+			for (++i; i < rawFields.size(); ++i)
+			{
+				const QString& extraField = rawFields.at(i);
+				realField += delimiter + extraField;
+				if (extraField.endsWith('"'))
+					break;
+			}
+			fields.push_back(realField);
+		}
+		else
+			fields.push_back(field);
+	}
+
+	return fields;
+}
+
 void CsvPreviewModel::updateInternalStructure()
 {
 	// Prepare the model for a complete reset
@@ -69,15 +100,15 @@ void CsvPreviewModel::updateInternalStructure()
 
 	// Split data into rows (assuming newlines separate rows)
 	QStringList rows = _rawData.split('\n', Qt::SkipEmptyParts);
-	
+
 	for (const QString &rowString : rows) {
-		// Split each row by the chosen delimiter
-		QStringList columns = rowString.split(_delimiter);
+		// Split each row by the chosen delimiter, keeping quoted fields intact
+		QStringList columns = splitRowRespectingQuotes(rowString, _delimiter);
 		_grid.append(columns);
 	}
 
 	endResetModel();
-	
+
 	clearTableForResize();
 }
 
@@ -126,7 +157,7 @@ QVariant CsvPreviewModel::data(const QModelIndex &index, int role) const
 			return QVariant(QColumnUtils::doubleToString(dblVal));
 
 		// Add quotes to signify that this will be considered as a string
-		return QVariant("\"" + val + "\"");
+		return (val.startsWith('"') && val.endsWith('"')) ? val : QVariant("\"" + val + "\"");
 	}
 
 	return QVariant();
