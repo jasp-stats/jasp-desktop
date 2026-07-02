@@ -12,7 +12,11 @@ Window
 	minimumWidth:		200 * preferencesModel.uiScale
 	minimumHeight:		minimumWidth
 	visible:			helpModel.visible
-	onVisibleChanged:	helpModel.visible = visible
+	onVisibleChanged:
+	{
+		helpModel.visible = visible
+		if (visible) raise()
+	}
 	title:				qsTr("JASP Help")
 	color:				jaspTheme.uiBackground
 

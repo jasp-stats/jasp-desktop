@@ -335,14 +335,16 @@ FocusScope
 				control.height:		applyComputedColumnButton.height
 			}
 
-			JaspControls.RectangularButton
+			JaspControls.HelpButton
 			{
 				id:				helpButton
-				iconSource:		jaspTheme.iconPath + "info-button.png"
 				anchors.right:	parent.right
 				anchors.bottom: parent.bottom
-				onClicked:		helpModel.showOrTogglePage("other/computedcolumns");
+				helpMD:			allHelp.computedcolumns
 				toolTip:		qsTr("Open Documentation")
+				height:			33 * jaspTheme.uiScale
+				width:			height
+				buttonPadding:  6 * preferencesModel.uiScale
 			}
 		}
 

@@ -14,7 +14,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("AI Settings")
-		helpfile:		"preferences/PrefsAI"
+		helpMD:			allHelp.PrefsAI
 		addMargin:		false
 	}
 
@@ -69,7 +69,7 @@ PrefsScrollView
 			visible:			aiConfigModel.currentWarning !== ""
 			width:				parent.width
 			height:				warningLabel.implicitHeight + jaspTheme.contentMargin
-			color:				jaspTheme.redLighter
+			color:				jaspTheme.red
 			border.color:		jaspTheme.redDarker
 			border.width:		1
 			radius:				4 * jaspTheme.uiScale

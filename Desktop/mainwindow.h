@@ -70,7 +70,7 @@ using Modules::Upgrader;
 
 
 class Application;
-
+class AllHelp;
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -345,6 +345,7 @@ private:
 	Application					*	_application 			= nullptr;
 	FileMenu					*	_fileMenu				= nullptr;
 	HelpModel					*	_helpModel				= nullptr;
+	AllHelp						*	_allHelp				= nullptr;
 	AboutModel					*	_aboutModel				= nullptr;
 	EncryptionSettingsModel		*	_encryptionModel		= nullptr;
 	PreferencesModel			*	_preferences			= nullptr;

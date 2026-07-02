@@ -331,13 +331,13 @@ Popup
 				}
 			}
 
-			JaspControls.RoundedButton
+			JaspControls.HelpButton
 			{
 				id:						helpButton
-				iconSource:				jaspTheme.iconPath + "info-button.png"
 				width:					height
 				height:					createButton.height
-				onClicked:				helpModel.showOrTogglePage("other/computedcolumns");
+				helpMD:					allHelp.computedcolumns
+				buttonPadding:			6 * preferencesModel.uiScale
 				toolTip:				qsTr("Open Documentation")
 				KeyNavigation.right:	createButton
 				anchors

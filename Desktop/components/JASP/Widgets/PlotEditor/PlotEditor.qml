@@ -213,13 +213,12 @@ Popup
 						Component.onCompleted:		setCurrentIndex(0);
 					}
 					
-					JASPC.MenuButton
+					JASPC.HelpButton
 					{
 						id:				helpButton
-						iconSource:		jaspTheme.iconPath + "info-button.png"
 						width:			height
-						radius:			height
-						onClicked:		helpModel.showOrTogglePage("other/plotediting");
+						helpMD:			allHelp.plotediting
+						buttonPadding:  6 * preferencesModel.uiScale
 						toolTip:		qsTr("Open Documentation")
 						anchors
 						{

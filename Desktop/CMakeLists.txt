@@ -28,6 +28,9 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/gui/githubpat.h.in
                ${CMAKE_CURRENT_LIST_DIR}/gui/githubpat.h)
 message(STATUS "githubpat.h is successfully generated...")
 
+set(MD_FOLDER "${CMAKE_CURRENT_LIST_DIR}/resources/help")
+set(ALLHELP_FOLDER "${CMAKE_CURRENT_LIST_DIR}/utilities")
+include(HelpGenerator)
 
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
