@@ -9,7 +9,7 @@ jobs:
       
    build-jasp:
    
-    runs-on: windows-latest
+    runs-on: windows-2022
     env:
        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
        JASP_R_VERSION: '4.5.3'

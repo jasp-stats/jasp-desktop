@@ -37,7 +37,7 @@ jobs:
             target: 'desktop'
             arch: 'linux_gcc_64'
             cache: 'true'
-            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qtwaylandcompositor'
+            modules: 'qtpositioning qtwebchannel qtwebengine qtwebsockets qtwebview debug_info qt5compat qtshadertools qthttpserver qtwaylandcompositor'
             tools: 'tools_qtcreator,qt.tools.qtcreator tools_cmake tools_ninja'
             # act can not use ../ (the default) as dir, so be explicit
             dir: '${{ github.workspace }}/qtinstall'
