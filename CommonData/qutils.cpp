@@ -322,8 +322,8 @@ QVariant jsonToQVariant(const Json::Value & jsonValue)
 {
 	switch(jsonValue.type())
 	{
-	case Json::intValue:		return jsonValue.asInt();
-	case Json::uintValue:		return jsonValue.asUInt();
+	case Json::intValue:		return jsonValue.asInt64();
+	case Json::uintValue:		return jsonValue.asUInt64();
 	case Json::realValue:		return jsonValue.asDouble();
 	case Json::stringValue:		return tq(jsonValue.asString());
 	case Json::booleanValue:	return jsonValue.asBool();

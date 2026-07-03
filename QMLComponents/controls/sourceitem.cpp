@@ -686,8 +686,8 @@ Terms SourceItem::filterTermsWithCondition(ListModel* model, const Terms& terms,
 						switch (jsonValue.type())
 						{
 						case Json::booleanValue:		value = jsonValue.asBool();			break;
-						case Json::uintValue:			value = jsonValue.asUInt();			break;
-						case Json::intValue:			value = jsonValue.asInt();			break;
+						case Json::uintValue:			value = static_cast<double>(jsonValue.asUInt64());	break; // Replace asUInt() to prevent out-of-bounds risks.
+						case Json::intValue:			value = static_cast<double>(jsonValue.asInt64());	break;
 						case Json::realValue:			value = jsonValue.asDouble();		break;
 						case Json::stringValue:			value = tq(jsonValue.asString());	break;
 						default:						addValue = false;					break;

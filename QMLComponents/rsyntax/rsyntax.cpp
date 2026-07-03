@@ -405,10 +405,10 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 			result = "\"" + tq(json.asString()) + "\"";
 		break;
 		case Json::intValue:
-			result = QString::number(json.asInt());
+			result = QString::number(json.asInt64());
 		break;
 		case Json::uintValue:
-			result = QString::number(json.asUInt());
+			result = QString::number(json.asUInt64());
 		break;
 		case Json::realValue:
 			result = QString::number(json.asDouble()); //This is not taking locale into account, but as its going to R this is ok I guess?

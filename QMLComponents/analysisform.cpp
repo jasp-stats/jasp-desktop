@@ -883,7 +883,7 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	auto getValueFromJson = [](const Json::Value& jsonValue) -> std::vector<std::string>
 	{
 		if (jsonValue.isString())			return {jsonValue.asString()};
-		else if (jsonValue.isIntegral())	return {std::to_string(jsonValue.asInt())};
+		else if (jsonValue.isIntegral())	return {std::to_string(jsonValue.asInt64())};
 		else if (jsonValue.isNumeric())		return {std::to_string(jsonValue.asDouble())};
 		else if (jsonValue.isArray())
 		{
@@ -891,7 +891,7 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 			for (const Json::Value& oneValue: jsonValue)
 			{
 				if (oneValue.isString())	values.push_back(oneValue.asString());
-				if (oneValue.isIntegral())	values.push_back(std::to_string(oneValue.asInt()));
+				if (oneValue.isIntegral())	values.push_back(std::to_string(oneValue.asInt64()));
 				if (oneValue.isNumeric())	values.push_back(std::to_string(oneValue.asDouble()));
 			}
 			return values;
