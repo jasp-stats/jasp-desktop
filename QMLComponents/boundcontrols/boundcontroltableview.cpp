@@ -77,8 +77,8 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 		for (const Json::Value& value : row["values"])
 		{
 			QVariant val;
-			if (value.isIntegral())		val = QVariant::fromValue(static_cast<qint64>(value.asInt64())); // Safe and compatible with all integers
-			else if (value.isNumeric())	val = value.asDouble(); // All remaining Numeric values ​​are assigned to Double
+			if (value.isInt())			val = value.asInt();
+			else if (value.isDouble())	val = value.asDouble();
 			else if (value.isString())	val = tq(value.asString());
 			tableTerms.values[tableTerms.values.size() - 1].push_back(val);
 		}

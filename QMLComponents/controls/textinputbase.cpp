@@ -51,8 +51,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 	case TextInputType::IntegerInputType:
 		int intVal;
 		if (value.isNumeric())
-			_value = QVariant::fromValue(static_cast<qint64>(value.asInt64()));
-
+			_value = value.asInt();
 		else if (value.isString() && QColumnUtils::getIntValue(tq(value.asString()), intVal))
 			_value = intVal;
 
@@ -151,7 +150,7 @@ void TextInputBase::bindTo(const Json::Value& value)
 		if (value.isString())
 			_value = tq(value.asString());
 		else if (value.isInt())
-			_value = QVariant::fromValue(static_cast<qint64>(value.asInt64()));
+			_value = value.asInt();
 		else if (value.isDouble())
 			_value = value.asDouble();
 		break;
