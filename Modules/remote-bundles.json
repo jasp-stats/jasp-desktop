@@ -65,8 +65,8 @@
 			"checksum": "f21707cf04402c4bab202c62e7a97e4845a36db4be2c321a83b607ffff973172"
 		},
 		{
-			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnBayes_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
-			"checksum": "a7a79ae19729bac38858a288728dc80107aaa17d7d5bb82513e430037e44f1c0"
+			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspLearnBayes_0.96.5-release.0_Windows_x86-64_R-4-5-2.JASPModule",
+			"checksum": "44b60ad0d7471e960b4a4aea5f09c755d77d682ded1896a70464c1532331f891"
 		},
 		{
 			"url": "https://github.com/jasp-stats-modules/jaspLearnStats/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnStats_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
@@ -211,8 +211,8 @@
 			"checksum": "263fffa60dcd46118513e7308bf1fc17630e3d884e3f6f2ef796791b9495fb5f"
 		},
 		{
-			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnBayes_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
-			"checksum": "a949ff03a927f21c0bc62aecbb4582843f155953a429262773dc0c16de2c58a8"
+			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspLearnBayes_0.96.5-release.0_MacOS_arm64_R-4-5-2.JASPModule",
+			"checksum": "08f6f15aae2c04ae05cd8b0ed58c108f23945691ba10761dffe7cec4f1c42d6a"
 		},
 		{
 			"url": "https://github.com/jasp-stats-modules/jaspLearnStats/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnStats_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
@@ -357,8 +357,8 @@
 			"checksum": "48ce3d9ae5c74896fb9544cf642ef32ff8403451098425a3a44ecbf68ce03a18"
 		},
 		{
-			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnBayes_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
-			"checksum": "14020dfcd875f9dee2ce4e15e0444beaf249c725b32ffa4a86bf46290fb03fca"
+			"url": "https://github.com/jasp-stats-modules/jaspLearnBayes/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspLearnBayes_0.96.5-release.0_MacOS_x86_64_R-4-5-2.JASPModule",
+			"checksum": "eb787507c10ff5e6ff02689fe3098308f622a0a0468ed3dc8b54ac8fb6d47ff6"
 		},
 		{
 			"url": "https://github.com/jasp-stats-modules/jaspLearnStats/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspLearnStats_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
