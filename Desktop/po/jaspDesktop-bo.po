@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-25 21:06+0000\n"
+"PO-Revision-Date: 2026-07-08 04:01+0000\n"
 "Last-Translator: Zev Oster <zevelijah@gmail.com>\n"
 "Language-Team: Tibetan <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
 "bo/>\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -62,7 +62,7 @@ msgstr ""
 
 msgctxt "InputListView|"
 msgid "New Value"
-msgstr "རིན་ཐང་གསར་པ།"
+msgstr "གྲངས་ཐང་གསར་པ།"
 
 msgctxt "TableView|"
 msgid "Row #"
@@ -91,7 +91,7 @@ msgstr "Ctrl + Enter མནན་ནས་ལག་ལེན་བྱེད།"
 #, fuzzy, qt-format
 msgctxt "TextField|"
 msgid "Restoring last correct value: %1"
-msgstr "ཉེ་མཐར་ཐེངས་སྔོན་གྱི་ཡང་དག་པའི་རིན་ཐང་ %1 སླར་གསོ་བྱེད་བཞིན་པ།"
+msgstr "ཉེ་མཐར་ཐེངས་སྔོན་གྱི་ཡང་དག་པའི་གྲངས་ཐང་ %1 སླར་གསོ་བྱེད་བཞིན་པ།"
 
 msgctxt "AboutWindow|"
 msgid "About JASP"
@@ -231,11 +231,11 @@ msgstr "བསྒྱུར་ཐོབ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns minimum of values"
-msgstr "རིན་ཐང་ཆུང་ཤོས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་ཆུང་ཤོས་སྟོན་པ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "returns maximum of values"
-msgstr "རིན་ཐང་ཆེ་ཤོས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་ཆེ་ཤོས་སྟོན་པ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "mean"
@@ -301,7 +301,8 @@ msgstr "གཞི་གྲངས་རྣམས་ numBreaks རིམ་པར�
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "ཀ་ཐིག་ནང་གི་ཆད་པའི་རིན་ཐང་ (NA) རྣམས་ replaceWith ཡི་རིན་ཐང་གིས་བརྗེ་བ།"
+msgstr ""
+"ཀ་ཐིག་ནང་གི་ཆད་པའི་གྲངས་ཐང་ (NA) རྣམས་ replaceWith ཡི་གྲངས་ཐང་གིས་བརྗེ་བ།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
@@ -415,6 +416,7 @@ msgctxt "ComputeColumnWindow|"
 msgid "Click to compute column"
 msgstr "ཀ་ཐིག་རྩིས་རྒྱག་པར་མནན།"
 
+#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "Open Documentation"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
@@ -500,6 +502,7 @@ msgctxt "CreateComputeColumnDialog|"
 msgid "Text"
 msgstr "ཡི་གེ།"
 
+#, fuzzy
 msgctxt "CreateComputeColumnDialog|"
 msgid "Open Documentation"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
@@ -568,7 +571,7 @@ msgstr "བཤར་ལྟ།"
 
 msgctxt "CurrentFile|"
 msgid "Current data file for synchronization"
-msgstr "མཉམ་འགུལ་བྱེད་རྒྱུའི་ད་ལྟའི་གཞི་གྲངས་ཡིག་ཆ།"
+msgstr "གོམ་མཉམ་བྱེད་རྒྱུའི་ད་ལྟའི་གཞི་གྲངས་ཡིག་ཆ།"
 
 msgctxt "DataLibrary|"
 msgid "Data Library"
@@ -728,12 +731,12 @@ msgstr "རང་བཟོས་རྩོམ་སྒྲིག་ཆས་འད
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Missing Value List"
-msgstr "ཆད་པའི་རིན་ཐང་གི་ཐོ་གཞུང་།"
+msgstr "ཆད་པའི་གྲངས་ཐང་གི་ཐོ་གཞུང་།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Remove missing value"
-msgstr "ཆད་པའི་རིན་ཐང་འདོར་བ།"
+msgstr "ཆད་པའི་གྲངས་ཐང་འདོར་བ།"
 
 msgctxt "PrefsMissingValues|"
 msgid "Reset"
@@ -752,7 +755,7 @@ msgstr "རེའུ་མིག་འདེམས་ཀ"
 #, fuzzy
 msgctxt "PrefsResults|"
 msgid "Display exact p-values"
-msgstr "P-རིན་ཐང་ཏག་ཏག་སྟོན་པ།"
+msgstr "P-གྲངས་ཐང་ཏག་ཏག་སྟོན་པ།"
 
 #, fuzzy
 msgctxt "PrefsResults|"
@@ -1123,11 +1126,11 @@ msgstr "བསྒྱུར་ཐོབ།"
 
 msgctxt "FilterWindow|"
 msgid "returns minimum of values"
-msgstr "རིན་ཐང་ཆུང་ཤོས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་ཆུང་ཤོས་སྟོན་པ།"
 
 msgctxt "FilterWindow|"
 msgid "returns maximum of values"
-msgstr "རིན་ཐང་ཆེ་ཤོས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་ཆེ་ཤོས་སྟོན་པ།"
 
 msgctxt "FilterWindow|"
 msgid "mean"
@@ -1189,6 +1192,7 @@ msgctxt "FilterWindow|"
 msgid "Filter is already applied"
 msgstr "འཚག་ཆས་སྔ་ས་ནས་སྤྱད་ཟིན།"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "Open Documentation"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
@@ -1528,8 +1532,8 @@ msgid ""
 "Component %1 was loaded with the wrong type of value and has been reset to "
 "its default value."
 msgstr ""
-"ཆ་ཤས་ %1 འདི་རིན་ཐང་གི་རིགས་ནོར་བ་ཞིག་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་རིན་ཐང་ལ་བསྐྱར་སྒྲིག་བྱས"
-"་ཟིན།"
+"ཆ་ཤས་ %1 འདི་གྲངས་ཐང་གི་རིགས་ནོར་བ་ཞིག་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་གྲངས་ཐང་ལ་བསྐྱར་སྒྲིག་"
+"བྱས་ཟིན།"
 
 #, qt-format
 msgctxt "AnalysisForm|"
@@ -1537,7 +1541,7 @@ msgid ""
 "These components were loaded with the wrong type of value and have been "
 "reset to their default values:%1"
 msgstr ""
-"ཆ་ཤས་འདི་དག་རིན་ཐང་གི་རིགས་ནོར་བ་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་རིན་ཐང་ལ་བསྐྱར་སྒྲིག་བྱས་"
+"ཆ་ཤས་འདི་དག་གྲངས་ཐང་གི་རིགས་ནོར་བ་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་གྲངས་ཐང་ལ་བསྐྱར་སྒྲིག་བྱས་"
 "ཟིན:%1"
 
 msgctxt "AnalysisForm|"
@@ -1545,8 +1549,8 @@ msgid ""
 "Many components were loaded with the wrong type of value and have been reset "
 "to their default values."
 msgstr ""
-"ཆ་ཤས་མང་པོ་ཞིག་རིན་ཐང་གི་རིགས་ནོར་བ་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་རིན་ཐང་ལ་བསྐྱར་སྒྲིག་བྱས་"
-"ཟིན།"
+"ཆ་ཤས་མང་པོ་ཞིག་གྲངས་ཐང་གི་རིགས་ནོར་བ་དང་མཉམ་དུ་བཏོན་འདུག་པས་ སྔོན་བཀོད་གྲངས་ཐང་ལ་བསྐྱར་སྒྲིག་བྱས"
+"་ཟིན།"
 
 msgctxt "AnalysisForm|"
 msgid "The file probably comes from an older version of JASP."
@@ -1653,7 +1657,7 @@ msgstr "Group Box"
 
 msgctxt "JASPDoubleValidator|"
 msgid "The value must be "
-msgstr "རིན་ཐང་དེ་ངེས་པར་དུ་ "
+msgstr "གྲངས་ཐང་དེ་ངེས་པར་དུ་ "
 
 #, qt-format
 msgctxt "JASPDoubleValidator|"
@@ -1707,7 +1711,7 @@ msgstr "གཞི་གྲངས་ཚོགས་པ་ཕྱིར་འདྲ
 #, fuzzy
 msgctxt "AsyncLoader|"
 msgid "Sync Data Set"
-msgstr "གཞི་གྲངས་ཚོགས་པ་མཉམ་འགུལ་བྱེད་བཞིན་པ།"
+msgstr "གཞི་གྲངས་ཚོགས་པ་གོམ་མཉམ་བྱེད་བཞིན་པ།"
 
 #, fuzzy
 msgctxt "ColumnsModel|"
@@ -1759,7 +1763,7 @@ msgstr "གཞི་གྲངས་ཕྱིར་འདྲེན་བྱེད
 #, fuzzy
 msgctxt "FileEvent|"
 msgid "Synchronizing Data"
-msgstr "གཞི་གྲངས་མཉམ་འགུལ་བྱེད་བཞིན་པ།"
+msgstr "གཞི་གྲངས་གོམ་མཉམ་བྱེད་བཞིན་པ།"
 
 msgctxt "FileEvent|"
 msgid "Processing File"
@@ -1998,8 +2002,8 @@ msgid ""
 msgstr ""
 "JASP འདི་འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་ (csv, sav ཡང་ན་ ods ཡིག་ཆ་) མེད་པར་འགོ་བཙུགས་འདུག འོན་"
 "ཀྱང་གཞི་གྲངས་རྩོམ་སྒྲིག་བྱེད་པར། JASP ཡིས་ཡིག་ཆ་འདིར་གཞི་བཅོལ་བའི་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས་ཤིག་འགོ་འཛུགས་པ"
-"་དང་ཡིག་ཆ་ཉར་ཚགས་བྱེད་སྐབས་གཞི་གྲངས་མཉམ་འགུལ་བྱེད་ཀྱི་ཡོད། གཞི་གྲངས་ཡིག་ཆ་འདི་སྔ་ས་ནས་ཡོད་དམ། "
-"ཡང་ན་ཁྱེད་ཀྱིས་གསར་བཟོ་བྱེད་འདོད་དམ།"
+"་དང་ཡིག་ཆ་ཉར་ཚགས་བྱེད་སྐབས་གཞི་གྲངས་གོམ་མཉམ་བྱེད་ཀྱི་ཡོད། གཞི་གྲངས་ཡིག་ཆ་འདི་སྔ་ས་ནས་ཡོད་དམ། ཡང"
+"་ན་ཁྱེད་ཀྱིས་གསར་བཟོ་བྱེད་འདོད་དམ།"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -2288,7 +2292,7 @@ msgstr "གཞི་གྲངས་ཕྱིར་འདྲེན་བྱེད
 #, fuzzy
 msgctxt "ActionButtons|"
 msgid "Sync Data"
-msgstr "གཞི་གྲངས་མཉམ་འགུལ་བྱེད།"
+msgstr "གཞི་གྲངས་གོམ་མཉམ་བྱེད།"
 
 msgctxt "ActionButtons|"
 msgid "Close"
@@ -2325,7 +2329,7 @@ msgid ""
 "Do you want to search for such a data file on your computer?\n"
 "NB: You can also set this data file via menu File/Sync Data."
 msgstr ""
-"JASP ལ་མཉམ་འགུལ་བྱེད་རྒྱུའི་འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་མེད།\n"
+"JASP ལ་གོམ་མཉམ་བྱེད་རྒྱུའི་འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་མེད།\n"
 "ཁྱེད་ཀྱིས་གློག་ཀླད་ནང་དེ་འདྲའི་གཞི་གྲངས་ཡིག་ཆ་འཚོལ་འདོད་དམ།\n"
 "དྲན་སྐུལ། ཁྱེད་ཀྱིས་ File/Sync Data དཀར་ཆག་བརྒྱུད་ནས་ཀྱང་གཞི་གྲངས་ཡིག་ཆ་འདི་སྒྲིག་ཆོག"
 
@@ -2604,7 +2608,7 @@ msgstr "ཡི་གེའི་ས་མིག"
 #, fuzzy, qt-format
 msgctxt "TextInputBase|"
 msgid "The value (%1) must be %2"
-msgstr "རིན་ཐང་ (%1) དེ་ངེས་པར་དུ་ %2 ཡིན་དགོས།"
+msgstr "གྲངས་ཐང་ (%1) དེ་ངེས་པར་དུ་ %2 ཡིན་དགོས།"
 
 #, fuzzy, qt-format
 msgctxt "VariablesListBase|"
@@ -3185,7 +3189,7 @@ msgstr "སུབ་པ།"
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns the sign of values"
-msgstr "རིན་ཐང་གི་རྟགས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་གི་རྟགས་སྟོན་པ།"
 
 #, fuzzy
 msgctxt "OSFLogin|"
@@ -3215,7 +3219,7 @@ msgstr "བེད་སྤྱོད་པའི་མཐུད་ངོས་འ
 #, fuzzy
 msgctxt "FilterWindow|"
 msgid "returns the sign of values"
-msgstr "རིན་ཐང་གི་རྟགས་སྟོན་པ།"
+msgstr "གྲངས་ཐང་གི་རྟགས་སྟོན་པ།"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
@@ -3330,6 +3334,7 @@ msgctxt "EngineRepresentation|"
 msgid "Error editing plot"
 msgstr "དཔེ་རིས་རྩོམ་སྒྲིག་བྱེད་པར་ནོར་འཁྲུལ།"
 
+#, fuzzy
 msgctxt "PlotEditor|"
 msgid "Open Documentation"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
@@ -3448,7 +3453,7 @@ msgstr "JASP ནང་འདོན་པ།"
 #, fuzzy
 msgctxt "Database|"
 msgid "Synching interval in minutes: "
-msgstr "སྐར་མ་ནང་གི་མཉམ་འགུལ་བར་མཚམས། "
+msgstr "སྐར་མ་ནང་གི་གོམ་མཉམ་བར་མཚམས། "
 
 #, fuzzy
 msgctxt "Database|"
@@ -3456,8 +3461,8 @@ msgid ""
 "0 means no automatic synching, but you can still synch manually by pressing "
 "Ctrl/Cmd+Y"
 msgstr ""
-"0 ཞེས་པ་ནི་རང་འགུལ་མཉམ་འགུལ་མེད་པ་དང་། འོན་ཀྱང་ཁྱེད་ཀྱིས་ Ctrl/Cmd+Y མནན་ནས་ལག་སྒྲིག་མཉམ་"
-"འགུལ་བྱེད་ཐུབ།"
+"0 ཞེས་པ་ནི་རང་འགུལ་གོམ་མཉམ་མེད་པ་དང་། འོན་ཀྱང་ཁྱེད་ཀྱིས་ Ctrl/Cmd+Y མནན་ནས་ལག་སྒྲིག་གོམ་མཉམ་"
+"བྱེད་ཐུབ།"
 
 #, fuzzy
 msgctxt "QObject|"
@@ -3512,7 +3517,7 @@ msgstr ""
 #, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Could not connect to the database so synchronizing will be disabled."
-msgstr "གཞི་གྲངས་མཛོད་ལ་མཐུད་མ་ཐུབ་པས་མཉམ་འགུལ་བྱེད་མི་ཐུབ།"
+msgstr "གཞི་གྲངས་མཛོད་ལ་མཐུད་མ་ཐུབ་པས་གོམ་མཉམ་བྱེད་མི་ཐུབ།"
 
 #, fuzzy, qt-format
 msgctxt "DatabaseImporter|"
@@ -3617,8 +3622,8 @@ msgid ""
 "stabilize variance and attempt to make the data more normal distribution-"
 "like."
 msgstr ""
-"གཞི་རྒྱུ་གཉིས་ཀྱི་ Box-Cox བསྒྱུར་བ་ (རིན་ཐང་ -shift ལས་ཆེ་བ་བསྒྱུར་བ་) ཡིས་འགྱུར་ཚད་བརྟན་པོ་བཟོ་བ"
-"་དང་གཞི་གྲངས་དེ་ normal ཁྱབ་ཚུལ་དང་འདྲ་བར་བཟོ་ཐབས་བྱེད་པ།"
+"གཞི་རྒྱུ་གཉིས་ཀྱི་ Box-Cox བསྒྱུར་བ་ (གྲངས་ཐང་ -shift ལས་ཆེ་བ་བསྒྱུར་བ་) ཡིས་འགྱུར་ཚད་བརྟན་པོ་བཟོ་"
+"བ་དང་གཞི་གྲངས་དེ་ normal ཁྱབ་ཚུལ་དང་འདྲ་བར་བཟོ་ཐབས་བྱེད་པ།"
 
 msgctxt "ComputeColumnWindow|"
 msgid "Inverse two-parameter Box-Cox transform."
@@ -3635,7 +3640,7 @@ msgstr ""
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
-msgstr "ཆད་པའི་རིན་ཐང་འདི་ལྟར་སྟོན་པ།: "
+msgstr "ཆད་པའི་གྲངས་ཐང་འདི་ལྟར་སྟོན་པ།: "
 
 msgctxt "PrefsUI|"
 msgid "If disabled will switch the textrendering to native."
@@ -3892,7 +3897,7 @@ msgstr "ཁ་སྣོན་ཆ་ཤས་བདམས་ཟིན། "
 #, fuzzy
 msgctxt "CurrentDataFile|"
 msgid "Click on the file below to synchronize or use "
-msgstr "མཉམ་འགུལ་བྱེད་པའམ་སྤྱོད་པར་གཤམ་གྱི་ཡིག་ཆར་མནན། "
+msgstr "གོམ་མཉམ་བྱེད་པའམ་སྤྱོད་པར་གཤམ་གྱི་ཡིག་ཆར་མནན། "
 
 #, qt-format
 msgctxt "ListModelAssignedInterface|"
@@ -3955,7 +3960,7 @@ msgstr "CSV ཡིག་ཆ།"
 
 msgctxt "Computer|"
 msgid "Sync Data"
-msgstr "གཞི་གྲངས་མཉམ་འགུལ་བྱེད།"
+msgstr "གཞི་གྲངས་གོམ་མཉམ་བྱེད།"
 
 msgctxt "Computer|"
 msgid "Data Files"
@@ -3969,7 +3974,7 @@ msgstr "<འདེམས་ཀ་མེད>"
 #, fuzzy
 msgctxt "ListModelInputValue|"
 msgid "New Value"
-msgstr "རིན་ཐང་གསར་པ།"
+msgstr "གྲངས་ཐང་གསར་པ།"
 
 #, fuzzy, qt-format
 msgctxt "ListModelTableViewBase|"
@@ -4103,42 +4108,34 @@ msgctxt "MainPage|"
 msgid "Remove Indent"
 msgstr "ནང་འཐེན་འདོར་བ།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Font Size"
 msgstr "ཡིག་གཟུགས་ཆེ་ཆུང་།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Clear Formatting"
 msgstr "རྣམ་བཞག་གཙང་སེལ།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Click here to add text"
 msgstr "ཡི་གེ་ཁ་སྣོན་བྱེད་པར་འདིར་མནན།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Copied to clipboard"
-msgstr "འབྲི་པང་དུ་བཤུས་ཟིན།"
+msgstr "དྲས་སྦྱར་པང་དུ་བཤུས་ཟིན།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Citations copied to clipboard"
-msgstr "ལུང་འདྲེན་རྣམས་འབྲི་པང་དུ་བཤུས་ཟིན།"
+msgstr "ལུང་འདྲེན་རྣམས་དྲས་སྦྱར་པང་དུ་བཤུས་ཟིན།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "LaTeX code copied to clipboard"
-msgstr "LaTeX ཨང་རྟགས་འབྲི་པང་དུ་བཤུས་ཟིན།"
+msgstr "LaTeX ཨང་རྟགས་དྲས་སྦྱར་པང་དུ་བཤུས་ཟིན།"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Introduction:"
 msgstr "ངོ་སྤྲོད:"
 
-#, fuzzy
 msgctxt "MainPage|"
 msgid "Conclusion:"
 msgstr "མཇུག་བསྡོམས:"
@@ -4148,22 +4145,19 @@ msgctxt "DataTableView|"
 msgid "Change to data editing mode"
 msgstr "གཞི་གྲངས་རྩོམ་སྒྲིག་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Cmd"
 msgstr "Cmd"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Ctrl"
 msgstr "Ctrl"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select All"
 msgstr "ཚང་མ་འདེམས་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "%1+A"
 msgstr "%1+A"
@@ -4173,7 +4167,7 @@ msgctxt "DataTableView|"
 msgid "Cut"
 msgstr "གཏུབ་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "%1+X"
 msgstr "%1+X"
@@ -4182,7 +4176,7 @@ msgctxt "DataTableView|"
 msgid "Copy"
 msgstr "བཤུ་འབྲི།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "%1+C"
 msgstr "%1+C"
@@ -4202,7 +4196,6 @@ msgctxt "DataTableView|"
 msgid "Clear cells"
 msgstr "སෛལ་གཙང་སེལ་བྱེད།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Del"
 msgstr "Del"
@@ -4212,32 +4205,29 @@ msgctxt "DataTableView|"
 msgid "Undo: %1"
 msgstr "ཕྱིར་བསྒྱུར: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Z"
 msgstr "%1+Z"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "Redo: %1"
 msgstr "བསྐྱར་བྱེད: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataTableView|"
 msgid "%1+Shift+Z"
 msgstr "%1+Shift+Z"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select column"
 msgstr "ཀ་ཐིག་འདེམས་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert column before"
 msgstr "སྔོན་དུ་ཀ་ཐིག་འཇུག་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert column after"
 msgstr "རྗེས་སུ་ཀ་ཐིག་འཇུག་པ།"
@@ -4246,12 +4236,10 @@ msgctxt "DataTableView|"
 msgid "Delete column"
 msgstr "ཀ་ཐིག་སུབ་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Select row"
 msgstr "ཐིག་ཕྲེང་འདེམས་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Delete row"
 msgstr "ཐིག་ཕྲེང་སུབ་པ།"
@@ -4261,20 +4249,18 @@ msgctxt "FilterWindow|"
 msgid "Close filter window"
 msgstr "འཚག་ཆས་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
-#, fuzzy
 msgctxt "RenameColumnDialog|"
 msgid "Rename column"
 msgstr "ཀ་ཐིག་མིང་བརྗེ་བ།"
 
-#, fuzzy
 msgctxt "RenameColumnDialog|"
 msgid "Rename"
 msgstr "མིང་བརྗེ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RenameColumnDialog|"
 msgid "Rename column %1 to %2"
-msgstr "ཀ་ཐིག་ %1 གི་མིང་ %2 ལ་བརྗེ་བ།"
+msgstr "ཀ་ཐིག་ %1 གི་མིང་ %2 ལ་མིང་བརྗེ་བ།"
 
 #, fuzzy
 msgctxt "RenameColumnDialog|"
@@ -4286,12 +4272,10 @@ msgctxt "VariablesWindow|"
 msgid "Close variable window"
 msgstr "འགྱུར་ཚད་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Value"
-msgstr "རིན་ཐང་།"
+msgstr "ཐང་གཞི།"
 
-#, fuzzy
 msgctxt "ColumnModel|"
 msgid "Label"
 msgstr "ཁ་བྱང་།"
@@ -4304,59 +4288,59 @@ msgstr "ཀ་ཐིག་ %1"
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set value to '%1' at row %2 column '%3'"
-msgstr "ཐིག་ཕྲེང་ %2 ཀ་ཐིག་ '%3' ནང་རིན་ཐང་ '%1' ལ་སྒྲིག་པ།"
+msgstr "ཐིག་ཕྲེང་ %2 ཀ་ཐིག་ '%3' ནང་གྲངས་ཐང་ '%1' ལ་སྒྲིག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Insert computed column '%1'"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ '%1' འཇུག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Insert column '%1'"
 msgstr "ཀ་ཐིག་ '%1' འཇུག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Remove column '%1'"
 msgstr "ཀ་ཐིག་ '%1' འདོར་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Remove row %1"
 msgstr "ཐིག་ཕྲེང་ %1 འདོར་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Set label for value '%1' of column '%2' from '%3' to '%4'"
-msgstr "ཀ་ཐིག་ '%2' ནང་གི་རིན་ཐང་ '%1' གི་ཁ་བྱང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
+msgstr "ཀ་ཐིག་ '%2' ནང་གི་གྲངས་ཐང་ '%1' གི་ཁ་བྱང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Filter rows having label '%1' in column '%2'"
 msgstr "ཀ་ཐིག་ '%2' ནང་ཁ་བྱང་ '%1' ཡོད་པའི་ཐིག་ཕྲེང་འཚག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Remove filter for rows having label '%1' in column '%2'"
 msgstr "ཀ་ཐིག་ '%2' ནང་ཁ་བྱང་ '%1' ཡོད་པའི་ཐིག་ཕྲེང་གི་འཚག་ཆས་འདོར་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Move up label '%1' of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' གོང་དུ་སྤོ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Move down label '%1' of column '%2'"
 msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' འོག་ཏུ་སྤོ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Move up labels of column '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རྣམས་གོང་དུ་སྤོ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Move down labels of column '%1'"
 msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རྣམས་འོག་ཏུ་སྤོ་བ།"
@@ -4366,12 +4350,11 @@ msgctxt "QObject|"
 msgid "Change drag and drop filter"
 msgstr "འདྲུད་འཐེན་འཚག་ཆས་བརྗེ་བ།"
 
-#, fuzzy
 msgctxt "QObject|"
 msgid "Change R filter"
 msgstr "R འཚག་ཆས་བརྗེ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Create a computed column with name '%1'"
 msgstr "མིང་ '%1' ཡོད་པའི་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་ཅིག་བཟོ་བ།"
@@ -4390,7 +4373,6 @@ msgstr ""
 "JASP ལ་འབྲེལ་ཡོད་གཞི་གྲངས་ཡིག་ཆ་ཞིག་ཡོད་ཀྱང་ཁྱེད་ཀྱིས་དེ་བཅོས་སྒྲིག་བྱས་འདུག ཁྱེད་ཀྱིས་འབྲེལ་ཡོད་གཞི་གྲངས་"
 "ནས་བསྐྱར་འདོན་བྱེད་པའམ་ཡིག་ཆ་གསར་པ་བཟོ་འདོད་དམ།"
 
-#, fuzzy
 msgctxt "MainWindow|"
 msgid "Reload Data File"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་བསྐྱར་འདོན།"
@@ -4414,7 +4396,6 @@ msgctxt "RibbonModel|"
 msgid "Delete column"
 msgstr "ཀ་ཐིག་སུབ་པ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Delete row"
 msgstr "ཐིག་ཕྲེང་སུབ་པ།"
@@ -4434,97 +4415,80 @@ msgctxt "RibbonModel|"
 msgid "Redo"
 msgstr "བསྐྱར་བྱེད།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Analyses"
 msgstr "དབྱེ་ཞིབ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Switch JASP to analyses mode"
 msgstr "JASP དབྱེ་ཞིབ་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Edit Data"
 msgstr "གཞི་གྲངས་རྩོམ་སྒྲིག"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Switch JASP to data editing mode"
 msgstr "JASP གཞི་གྲངས་རྩོམ་སྒྲིག་ཐབས་ལམ་དུ་སྒྱུར་བ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "New Data"
 msgstr "གཞི་གྲངས་གསར་པ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Open a workspace without data"
-msgstr "གཞི་གྲངས་མེད་པའི་ལས་གནས་ཤིག་ཁ་ཕྱེ་བ།"
+msgstr "གཞི་གྲངས་མེད་པའི་ལས་ཁུལ་ཤིག་ཁ་ཕྱེ་བ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert"
 msgstr "འཇུག་པ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Insert empty columns or rows"
 msgstr "ཀ་ཐིག་གམ་ཐིག་ཕྲེང་སྟོང་པ་འཇུག་པ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove"
 msgstr "འདོར་བ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Remove columns or rows"
 msgstr "ཀ་ཐིག་གམ་ཐིག་ཕྲེང་འདོར་བ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Synchronisation"
-msgstr "མཉམ་འགུལ།"
+msgstr "གོམ་མཉམ།"
 
 #, fuzzy
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation on"
-msgstr "ཕྱི་རོལ་གཞི་གྲངས་མཉམ་འགུལ་སྒོ་ཕྱེ་བ།"
+msgstr "ཕྱི་རོལ་གཞི་གྲངས་གོམ་མཉམ་སྒོ་ཕྱེ་བ།"
 
 #, fuzzy
 msgctxt "RibbonModel|"
 msgid "Turn external data synchronisation off"
-msgstr "ཕྱི་རོལ་གཞི་གྲངས་མཉམ་འགུལ་སྒོ་རྒྱག་པ།"
+msgstr "ཕྱི་རོལ་གཞི་གྲངས་གོམ་མཉམ་སྒོ་རྒྱག་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert row above"
 msgstr "གོང་དུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert row below"
 msgstr "འོག་ཏུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Color palette"
-msgstr "ཚོན་མདོག་མཐུན་སྦྱོར།"
+msgstr "ཚོས་སྡེབ་ཇུས་གཞི།"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind"
 msgstr "ཚོན་ལོང་།"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind #2"
 msgstr "ཚོན་ལོང་ #2"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Colorblind #3"
 msgstr "ཚོན་ལོང་ #3"
@@ -4534,17 +4498,14 @@ msgctxt "ColorPalette|"
 msgid "Viridis"
 msgstr "Viridis"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "ggplot2"
 msgstr "ggplot2"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Gray"
 msgstr "ཐལ་མདོག"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "Blue"
 msgstr "སྔོན་པོ།"
@@ -4569,52 +4530,49 @@ msgctxt "RibbonModel|"
 msgid "Insert row below"
 msgstr "འོག་ཏུ་ཐིག་ཕྲེང་འཇུག་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo changes, %1+Z"
 msgstr "བཟོ་བཅོས་ཕྱིར་བསྒྱུར། %1+Z"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo changes, %1+shift+Z or %1+Y"
 msgstr "བཟོ་བཅོས་བསྐྱར་བྱེད། %1+shift+Z ཡང་ན་ %1+Y"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid "Undo %2 (%1+Z)"
 msgstr "ཕྱིར་བསྒྱུར %2 (%1+Z)"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "RibbonModel|"
 msgid "Redo %2 (%1+shift+Z or %1+Y)"
 msgstr "བསྐྱར་བྱེད %2 (%1+shift+Z ཡང་ན་ %1+Y)"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Open datafile with default spreadsheet editor"
 msgstr "སྔོན་བཀོད་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས་ཀྱིས་གཞི་གྲངས་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Remove %1 columns from '%2'"
 msgstr "'%2' ནས་ཀ་ཐིག་ %1 འདོར་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Remove rows %1 to %2"
 msgstr "ཐིག་ཕྲེང་ %1 ནས་ %2 བར་འདོར་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Copy columns '%1' to '%2'"
 msgstr "ཀ་ཐིག་ '%1' དེ་ '%2' ལ་བཤུ་འབྲི་བྱེད།"
 
-#, fuzzy
 msgctxt "ContactWindow|"
 msgid "Contact JASP"
 msgstr "JASP ལ་འབྲེལ་གཏུག་བྱེད།"
 
-#, fuzzy
 msgctxt "Supporters|"
 msgid "JASP is supported by the following institutions:"
 msgstr "JASP ལ་གཤམ་གསལ་སྒྲིག་འཛུགས་ཁག་གིས་རྒྱབ་སྐྱོར་གནང་གི་ཡོད:"
@@ -4624,12 +4582,10 @@ msgctxt "Supporters|"
 msgid "Suggest your institution join the JASP Community"
 msgstr "ཁྱེད་ཀྱི་སྒྲིག་འཛུགས་ JASP ཚོགས་པར་ཞུགས་རྒྱུའི་གྲོས་འགོ་འདོན།"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "About JASP"
 msgstr "JASP ངོ་སྤྲོད།"
 
-#, fuzzy
 msgctxt "WavyWindow|"
 msgid "Close"
 msgstr "སྒོ་རྒྱག་པ།"
@@ -4639,7 +4595,6 @@ msgctxt "QObject|"
 msgid "Copy column '%1' into column number '%2'"
 msgstr "ཀ་ཐིག་ '%1' དེ་ཀ་ཐིག་ཨང་ '%2' ནང་བཤུ་འབྲི་བྱེད།"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "Contact"
 msgstr "འབྲེལ་གཏུག"
@@ -4653,52 +4608,48 @@ msgstr ""
 "ལས་རིམ་འདི་ནི་གང་ཡོད་རང་འཇགས་སུ་མཁོ་སྤྲོད་བྱས་པ་ཞིག་ཡིན་ལ། བཟོ་བཀོད་དང་། ཚོང་འགྲེམས་རུང་བའི་རང་"
 "བཞིན། དམིགས་བསལ་དགོས་དོན་ལ་འཚམ་མིན་བཅས་ཀྱི་འགན་ལེན་ཚུད་པའི་འགན་ལེན་གང་ཡང་མེད།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid "and %1"
 msgstr "དང་ %1"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Reset with standard values"
-msgstr "ཚད་ལྡན་རིན་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
+msgstr "ཚད་ལྡན་གྲངས་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
 #, fuzzy
 msgctxt "PrefsData|"
 msgid "Reset missing values with the standard JASP missing values"
-msgstr "ཆད་པའི་རིན་ཐང་རྣམས་ཚད་ལྡན་ JASP ཆད་པའི་རིན་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
+msgstr "ཆད་པའི་གྲངས་ཐང་རྣམས་ཚད་ལྡན་ JASP ཆད་པའི་གྲངས་ཐང་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Add a missing value"
-msgstr "ཆད་པའི་རིན་ཐང་ཞིག་ཁ་སྣོན་བྱེད།"
+msgstr "ཆད་པའི་གྲངས་ཐང་ཞིག་ཁ་སྣོན་བྱེད།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Set current workspace with these values"
-msgstr "ད་ལྟའི་ལས་གནས་འདི་རིན་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
+msgstr "ད་ལྟའི་ལས་ཁུལ་འདི་གྲངས་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Set the current workspace missing values with these values"
-msgstr "ད་ལྟའི་ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་རྣམས་རིན་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
+msgstr "ད་ལྟའི་ལས་ཁུལ་ཀྱི་ཆད་པའི་གྲངས་ཐང་རྣམས་གྲངས་ཐང་འདི་དག་གིས་སྒྲིག་པ།"
 
 #, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Edit the labels here or choose which values should be filtered out."
-msgstr "འདིར་ཁ་བྱང་རྩོམ་སྒྲིག་བྱེད་པའམ་ཡང་ན་རིན་ཐང་གང་དག་བཙགས་དགོས་པ་འདེམས་པ།"
+msgstr "འདིར་ཁ་བྱང་རྩོམ་སྒྲིག་བྱེད་པའམ་ཡང་ན་གྲངས་ཐང་གང་དག་བཙགས་དགོས་པ་འདེམས་པ།"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Filter"
 msgstr "འཚག་ཆས།"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Value"
-msgstr "རིན་ཐང་།"
+msgstr "ཐང་གཞི།"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Label"
 msgstr "ཁ་བྱང་།"
@@ -4732,17 +4683,15 @@ msgctxt "MainPage|"
 msgid "Image"
 msgstr "དཔེ་རིས།"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Workspace settings"
-msgstr "ལས་གནས་སྒྲིག་བཟོ།"
+msgstr "ལས་ཁུལ་སྒྲིག་བཟོ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ModulesMenu|"
 msgid "Name: %1"
 msgstr "མིང་: %1"
 
-#, fuzzy
 msgctxt "ModulesMenu|"
 msgid "Description: "
 msgstr "འགྲེལ་བརྗོད: "
@@ -4751,23 +4700,22 @@ msgstr "འགྲེལ་བརྗོད: "
 msgctxt "ModulesMenu|"
 msgid "Reset missing values with the ones set in Data Preferences"
 msgstr ""
-"ཆད་པའི་རིན་ཐང་རྣམས་གཞི་གྲངས་འདེམས་སྒྲིག་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
+"ཆད་པའི་གྲངས་ཐང་རྣམས་གཞི་གྲངས་འདེམས་སྒྲིག་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
-#, fuzzy
 msgctxt "RibbonBar|"
 msgid "Show workspace settings"
-msgstr "ལས་གནས་སྒྲིག་བཟོ་སྟོན་པ།"
+msgstr "ལས་ཁུལ་སྒྲིག་བཟོ་སྟོན་པ།"
 
 #, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Use custom values"
-msgstr "རང་བཟོས་རིན་ཐང་སྤྱོད་པ།"
+msgstr "རང་བཟོས་གྲངས་ཐང་སྤྱོད་པ།"
 
 #, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Reset missing values with the ones set in your workspace"
 msgstr ""
-"ཆད་པའི་རིན་ཐང་རྣམས་ཁྱེད་ཀྱི་ལས་གནས་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
+"ཆད་པའི་གྲངས་ཐང་རྣམས་ཁྱེད་ཀྱི་ལས་ཁུལ་ནང་སྒྲིག་པ་དེ་དག་གིས་བསྐྱར་སྒྲིག་བྱེད།"
 
 #, fuzzy
 msgctxt "QObject|"
@@ -4819,7 +4767,7 @@ msgstr "ཁ་བྱང་རྩོམ་སྒྲིག་ཆས།"
 #, fuzzy
 msgctxt "ColumnModel|"
 msgid "Missing values"
-msgstr "ཆད་པའི་རིན་ཐང་།"
+msgstr "ཆད་པའི་ཐང་གཞི།"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
@@ -4844,37 +4792,37 @@ msgstr "'%1' གི་རྩིས་རྒྱག་རིགས་ '%2' ནས�
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Change workspace description from '%1' to '%2'"
-msgstr "ལས་གནས་ཀྱི་འགྲེལ་བརྗོད་ '%1' ནས་ '%2' ལ་བརྗེ་བ།"
+msgstr "ལས་ཁུལ་ཀྱི་འགྲེལ་བརྗོད་ '%1' ནས་ '%2' ལ་བརྗེ་བ།"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Use custom empty values for column '%1'"
-msgstr "ཀ་ཐིག་ '%1' ལ་རང་བཟོས་སྟོང་པའི་རིན་ཐང་སྤྱོད་པ།"
+msgstr "ཀ་ཐིག་ '%1' ལ་རང་བཟོས་སྟོང་པའི་གྲངས་ཐང་སྤྱོད་པ།"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Use default empty values for column '%1'"
-msgstr "ཀ་ཐིག་ '%1' ལ་སྔོན་བཀོད་སྟོང་པའི་རིན་ཐང་སྤྱོད་པ།"
+msgstr "ཀ་ཐིག་ '%1' ལ་སྔོན་བཀོད་སྟོང་པའི་གྲངས་ཐང་སྤྱོད་པ།"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set empty values for column '%1'"
-msgstr "ཀ་ཐིག་ '%1' ལ་སྟོང་པའི་རིན་ཐང་སྒྲིག་པ།"
+msgstr "ཀ་ཐིག་ '%1' ལ་སྟོང་པའི་གྲངས་ཐང་སྒྲིག་པ།"
 
 #, fuzzy
 msgctxt "QObject|"
 msgid "Set workspace empty values"
-msgstr "ལས་གནས་ཀྱི་སྟོང་པའི་རིན་ཐང་སྒྲིག་པ།"
+msgstr "ལས་ཁུལ་ཀྱི་སྟོང་པའི་གྲངས་ཐང་སྒྲིག་པ།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Show workspace missing values"
-msgstr "ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་སྟོན་པ།"
+msgstr "ལས་ཁུལ་ཀྱི་ཆད་པའི་གྲངས་ཐང་སྟོན་པ།"
 
 #, fuzzy
 msgctxt "PrefsMissingValues|"
 msgid "Opens the settings for workspace missing values"
-msgstr "ལས་གནས་ཀྱི་ཆད་པའི་རིན་ཐང་གི་སྒྲིག་བཟོ་ཁ་ཕྱེ་བ།"
+msgstr "ལས་ཁུལ་ཀྱི་ཆད་པའི་གྲངས་ཐང་གི་སྒྲིག་བཟོ་ཁ་ཕྱེ་བ།"
 
 #, fuzzy
 msgctxt "MainPage|"
@@ -4945,7 +4893,6 @@ msgctxt "ActionButtons|"
 msgid "Community"
 msgstr "ཚོགས་པ།"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Name: "
 msgstr "མིང་: "
@@ -4980,7 +4927,6 @@ msgctxt "ColumnBasicInfo|"
 msgid "Close variable window"
 msgstr "འགྱུར་ཚད་སྒེའུ་ཁུང་སྒོ་རྒྱག་པ།"
 
-#, fuzzy
 msgctxt "ColumnBasicInfo|"
 msgid "Description: "
 msgstr "འགྲེལ་བརྗོད: "
@@ -4993,7 +4939,7 @@ msgstr "ཀ་ཐིག་གི་ངེས་ཚིག"
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr "y ནང་གི་ཆད་པའི་རིན་ཐང་རེ་རེར་ TRUE ཡོད་པའི་ boolean vector ཞིག་སྟོན་པ།"
+msgstr "y ནང་གི་ཆད་པའི་གྲངས་ཐང་རེ་རེར་ TRUE ཡོད་པའི་ boolean vector ཞིག་སྟོན་པ།"
 
 #, fuzzy
 msgctxt "FilterWindow|"
@@ -5001,8 +4947,8 @@ msgid ""
 "Combine with not-operator to filter out rows with missing values (NA) for a "
 "column."
 msgstr ""
-"ཀ་ཐིག་ཅིག་གི་ཆད་པའི་རིན་ཐང་ (NA) ཡོད་པའི་ཐིག་ཕྲེང་རྣམས་བཙགས་པར་ not-operator དང་མཉམ་དུ་སྤྱོད"
-"་པ།"
+"ཀ་ཐིག་ཅིག་གི་ཆད་པའི་གྲངས་ཐང་ (NA) ཡོད་པའི་ཐིག་ཕྲེང་རྣམས་བཙགས་པར་ not-operator དང་མཉམ་དུ་"
+"སྤྱོད་པ།"
 
 #, fuzzy
 msgctxt "FilterModel|"
@@ -5017,7 +4963,7 @@ msgstr "གཞི་གྲངས་ལ་ཐིག་ཕྲེང་ %1 ཡོ�
 #, fuzzy
 msgctxt "PrefsData|"
 msgid "External spreadsheet editor (for data synchronization)"
-msgstr "ཕྱི་རོལ་གྱི་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས། (གཞི་གྲངས་མཉམ་འགུལ་ཆེད་དུ)"
+msgstr "ཕྱི་རོལ་གྱི་རེའུ་མིག་རྩོམ་སྒྲིག་ཆས། (གཞི་གྲངས་གོམ་མཉམ་ཆེད་དུ)"
 
 #, fuzzy
 msgctxt "PrefsData|"
@@ -5025,7 +4971,7 @@ msgid ""
 "If a variable has more distinct integer values than this it will be "
 "interpreted as scale."
 msgstr ""
-"གལ་ཏེ་འགྱུར་ཚད་ཅིག་ལ་འདི་ལས་མང་བའི་ཧྲིལ་གྲངས་རིན་ཐང་མི་འདྲ་བ་ཡོད་ན། དེ་ཚད་གཞི་རུ་འགྲེལ་བརྗོད་བྱེད་"
+"གལ་ཏེ་འགྱུར་ཚད་ཅིག་ལ་འདི་ལས་མང་བའི་ཧྲིལ་གྲངས་གྲངས་ཐང་མི་འདྲ་བ་ཡོད་ན། དེ་ཚད་གཞི་རུ་འགྲེལ་བརྗོད་བྱེད་"
 "ངེས།"
 
 #, fuzzy
@@ -5036,12 +4982,12 @@ msgstr "བཏོན་པའི་འགྱུར་ཚད་ཀྱི་རི
 #, fuzzy
 msgctxt "PrefsData|"
 msgid "Missing values setting"
-msgstr "ཆད་པའི་རིན་ཐང་སྒྲིག་བཟོ།"
+msgstr "ཆད་པའི་གྲངས་ཐང་སྒྲིག་བཟོ།"
 
 #, fuzzy
 msgctxt "AboutWindow|"
 msgid "Copied to clipboard"
-msgstr "འབྲི་པང་དུ་བཤུས་ཟིན།"
+msgstr "དྲས་སྦྱར་པང་དུ་བཤུས་ཟིན།"
 
 #, fuzzy
 msgctxt "AboutWindow|"
@@ -5154,7 +5100,7 @@ msgstr "ཐིག་ཕྲེང་འདེམས་པར་འདིར་མ
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Set original value  from '%3' to '%4' for label '%1' of column '%2'"
-msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' གི་ཐོག་མའི་རིན་ཐང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
+msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ '%1' གི་ཐོག་མའི་གྲངས་ཐང་ '%3' ནས་ '%4' ལ་སྒྲིག་པ།"
 
 #, fuzzy
 msgctxt "RibbonModel|"
@@ -5179,7 +5125,7 @@ msgstr "རྗེས་སུ་ R ཀ་ཐིག་འཇུག་པ།"
 #, fuzzy
 msgctxt "DataTableView|"
 msgid "Reverse values"
-msgstr "རིན་ཐང་ཕྱིར་ལོག་བྱེད།"
+msgstr "གྲངས་ཐང་ཕྱིར་ལོག་བྱེད།"
 
 #, fuzzy
 msgctxt "DataTableViewColumnHeader|"
@@ -5189,7 +5135,7 @@ msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་
 #, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Reverse order of all numerical values"
-msgstr "གྲངས་ཀའི་རིན་ཐང་ཚང་མའི་གོ་རིམ་ཕྱིར་ལོག་བྱེད།"
+msgstr "གྲངས་ཀའི་གྲངས་ཐང་ཚང་མའི་གོ་རིམ་ཕྱིར་ལོག་བྱེད།"
 
 #, fuzzy
 msgctxt "DataSetPackage|"
@@ -5209,7 +5155,7 @@ msgstr "ཀ་ཐིག་ '%2' གི་རིགས་ '%1' ལ་སྒྲི
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
-msgstr "ཀ་ཐིག་ '%1' གི་རིན་ཐང་ཕྱིར་ལོག་བྱེད།"
+msgstr "ཀ་ཐིག་ '%1' གི་གྲངས་ཐང་ཕྱིར་ལོག་བྱེད།"
 
 #, fuzzy, qt-format
 msgctxt "QObject|"
@@ -5219,7 +5165,7 @@ msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་ཕྱིར་ལོ
 #, fuzzy
 msgctxt "DataTableView|"
 msgid "Order labels by values"
-msgstr "རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
+msgstr "གྲངས་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
 #, fuzzy
 msgctxt "WelcomePage|"
@@ -5253,7 +5199,7 @@ msgstr "%1 ལ་ཐིག་ཕྲེང་ %2 འཇུག་པ།"
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Paste values at row '%1' column '%2'"
-msgstr "ཐིག་ཕྲེང་ '%1' ཀ་ཐིག་ '%2' ལ་རིན་ཐང་སྦྱར་བ།"
+msgstr "ཐིག་ཕྲེང་ '%1' ཀ་ཐིག་ '%2' ལ་གྲངས་ཐང་སྦྱར་བ།"
 
 #, fuzzy
 msgctxt "DataSetView|"
@@ -5351,7 +5297,7 @@ msgid ""
 msgstr ""
 "<h3>ཚོགས་པ།</h3>\n"
 "JASP ཚོགས་པར་ཞུགས་པའི་མཐོ་རིམ་སློབ་གསོའི་སྒྲིག་འཛུགས་ཁག་གིས་ JASP ཡི་བདག་གཉེར་དང་གོང་འཕེལ་ལ་མཉམ"
-"་དུ་རྒྱབ་སྐྱོར་བྱེད་ཀྱི་ཡོད། དེར་བརྟེན་རང་གི་སློབ་མ་དང་འཛམ་གླིང་ཡོངས་ཀྱི་སྒྲིག་འཛུགས་གཞན་གྱི་སློབ་མ་ཚོར་རིན་"
+"་དུ་རྒྱབ་སྐྱོར་བྱེད་ཀྱི་ཡོད། དེར་བརྟེན་རང་གི་སློབ་མ་དང་འཛམ་གླིང་ཡོངས་ཀྱི་སྒྲིག་འཛུགས་གཞན་གྱི་སློབ་མ་ཚོར་གྲངས་"
 "ཐང་བྲལ་བའི་སློབ་གསོའི་ཞབས་ཞུ་མཁོ་སྤྲོད་བྱེད་ཀྱི་ཡོད།\n"
 "\n"
 "གལ་ཏེ་ཁྱེད་ཀྱི་སྒྲིག་འཛུགས་ད་དུང་ JASP ཚོགས་པའི་ཆ་ཤས་ཤིག་མིན་ན། ཁྱེད་ཀྱིས་ <a href=\"%1\">ཁོང་ཚོ་"
@@ -5372,7 +5318,7 @@ msgstr ""
 #, fuzzy
 msgctxt "PrefsData|"
 msgid "Order labels by value by default"
-msgstr "སྔོན་བཀོད་ཏུ་རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
+msgstr "སྔོན་བཀོད་ཏུ་གྲངས་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
 #, fuzzy
 msgctxt "ResizeDataDialog|"
@@ -5397,7 +5343,7 @@ msgstr "ཆེ་ཆུང་བཟོ་བ།"
 #, fuzzy
 msgctxt "ResizeDataDialog|"
 msgid "Resize data to set values"
-msgstr "རིན་ཐང་སྒྲིག་པར་གཞི་གྲངས་ཆེ་ཆུང་བཟོ་བ།"
+msgstr "གྲངས་ཐང་སྒྲིག་པར་གཞི་གྲངས་ཆེ་ཆུང་བཟོ་བ།"
 
 #, fuzzy
 msgctxt "ResizeDataDialog|"
@@ -5417,7 +5363,7 @@ msgstr "དྲ་ཚིགས་སུ་ཕེབས་པ།"
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
-msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་རིན་ཐང་ལྟར་རང་འགུལ་རིམ་སྒྲིག་བྱེད་མིན་སྒྱུར་བ།"
+msgstr "ཀ་ཐིག་ '%1' གི་ཁ་བྱང་གྲངས་ཐང་ལྟར་རང་འགུལ་རིམ་སྒྲིག་བྱེད་མིན་སྒྱུར་བ།"
 
 #, fuzzy
 msgctxt "RibbonModel|"
@@ -5475,14 +5421,14 @@ msgid ""
 "As a '%3' it looks like: %4\n"
 "%5"
 msgstr ""
-"ཁྱོན་བསྡོམས་རིམ་པ་ %1 ཡོད་པ་ལས། %2 ལ་གྲངས་ཀའི་རིན་ཐང་ཡོད།\n"
+"ཁྱོན་བསྡོམས་རིམ་པ་ %1 ཡོད་པ་ལས། %2 ལ་གྲངས་ཀའི་གྲངས་ཐང་ཡོད།\n"
 "'%3' ཞིག་གི་ཚུལ་དུ་འདི་ལྟར་སྣང་: %4\n"
 "%5"
 
 #, fuzzy, qt-format
 msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
-msgstr "གོ་ཐོས་ཆད་པའི་རིན་ཐང་: %1"
+msgstr "གོ་ཐོས་ཆད་པའི་གྲངས་ཐང་: %1"
 
 #, fuzzy, qt-format
 msgctxt "DataSetPackage|"
@@ -5578,7 +5524,6 @@ msgctxt "AsyncLoader|"
 msgid "Loading New Data Set"
 msgstr "གཞི་གྲངས་ཚོགས་པ་གསར་པ་འདོན་བཞིན་པ།"
 
-#, fuzzy
 msgctxt "ActionButtons|"
 msgid "New"
 msgstr "གསར་པ།"
@@ -5623,12 +5568,10 @@ msgctxt "Computer|"
 msgid "SAS Files %1"
 msgstr "SAS ཡིག་ཆ། %1"
 
-#, fuzzy
 msgctxt "ColorPalette|"
 msgid "JASP"
 msgstr "JASP"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
 msgstr "PDF སྒྲིག་བཟོ།"
@@ -5675,7 +5618,7 @@ msgid ""
 "Formula does not return a set of logical values, and therefore cannot be "
 "used in the filter.\n"
 msgstr ""
-"སྤྱི་འགྲོས་འདིས་གཏན་ཚིགས་ཀྱི་རིན་ཐང་ཚོགས་པ་ཞིག་སྟོན་མི་འདུག དེར་བརྟེན་འཚག་ཆས་ནང་སྤྱོད་མི་ཐུབ།\n"
+"སྤྱི་འགྲོས་འདིས་གཏན་ཚིགས་ཀྱི་གྲངས་ཐང་ཚོགས་པ་ཞིག་སྟོན་མི་འདུག དེར་བརྟེན་འཚག་ཆས་ནང་སྤྱོད་མི་ཐུབ།\n"
 
 #, fuzzy
 msgctxt "FilterConstructor|"
@@ -5698,8 +5641,8 @@ msgid ""
 "& perhapsAnotherFilter'\n"
 "Click the (i) icon in the lower right corner for further help.\n"
 msgstr ""
-"གོང་དུ་ཁྱེད་ཀྱིས་ JASP ཡིས་རིན་ཐང་འཚག་པ་དང་འདྲུད་འཐེན་འཚག་ཆས་གཉིས་ཀར་བཟོས་པའི་ཨང་རྟགས་མཐོང་ཐུབ"
-"།\n"
+"གོང་དུ་ཁྱེད་ཀྱིས་ JASP ཡིས་གྲངས་ཐང་འཚག་པ་དང་འདྲུད་འཐེན་འཚག་ཆས་གཉིས་ཀར་བཟོས་པའི་ཨང་རྟགས་མཐོང་"
+"ཐུབ།\n"
 "སྔོན་བཀོད་གི་གྲུབ་འབྲས་འདི་ 'generatedFilter' ནང་ཉར་ཚགས་བྱས་ཡོད་ལ། དེ་རང་བཟོས་འཚག་ཆས་ཀྱིས་"
 "བརྗེ་བའམ་མཉམ་སྦྲེལ་བྱེད་ཆོག\n"
 "མཉམ་སྦྲེལ་བྱེད་པར་ '&' སྤྱད་ནས་ཚིག་དུམ་ཁ་སྣོན་བྱེད་ཆོག: 'generatedFilter & customFilter & "
@@ -5724,7 +5667,7 @@ msgstr "འཚག་ཆས་ལ་ནོར་འཁྲུལ་ '%1' འདུ
 #, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Automatically order labels by their value"
-msgstr "རང་འགུལ་གྱིས་རིན་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
+msgstr "རང་འགུལ་གྱིས་གྲངས་ཐང་ལྟར་ཁ་བྱང་རིམ་སྒྲིག་བྱེད།"
 
 #, fuzzy, qt-format
 msgctxt "JASPListControl|"
@@ -5754,7 +5697,8 @@ msgid ""
 "Minimum number of numeric values is %1. Variable %2 has only %3 different "
 "numeric values"
 msgstr ""
-"གྲངས་ཀའི་རིན་ཐང་གི་གྲངས་ཉུང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་རིན་ཐང་མི་འདྲ་བ་ %3 ལས་མེད།"
+"གྲངས་ཀའི་གྲངས་ཐང་གི་གྲངས་ཉུང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་གྲངས་ཐང་མི་འདྲ་བ་ %3 ལས་མེད"
+"།"
 
 #, fuzzy, qt-format
 msgctxt "JASPListControl|"
@@ -5762,7 +5706,7 @@ msgid ""
 "Maximum number of numeric values is %1. Variable %2 has %3 different numeric "
 "values"
 msgstr ""
-"གྲངས་ཀའི་རིན་ཐང་གི་གྲངས་མང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་རིན་ཐང་མི་འདྲ་བ་ %3 ཡོད།"
+"གྲངས་ཀའི་གྲངས་ཐང་གི་གྲངས་མང་ཤོས་ %1 ཡིན། འགྱུར་ཚད་ %2 ལ་གྲངས་ཀའི་གྲངས་ཐང་མི་འདྲ་བ་ %3 ཡོད།"
 
 #, fuzzy
 msgctxt "PrefsAdvanced|"
@@ -5908,7 +5852,6 @@ msgctxt "ComputeColumnWindow|"
 msgid "Select a filter to use for this computed column"
 msgstr "རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་འདིར་སྤྱོད་རྒྱུའི་འཚག་ཆས་ཤིག་འདེམས་པ།"
 
-#, fuzzy
 msgctxt "LabelEditorWindow|"
 msgid "Remove"
 msgstr "འདོར་བ།"
@@ -5984,7 +5927,7 @@ msgstr "ཀ་ཐིག་ '%2' གི་ཁ་བྱང་ %1 སུབ་པ�
 #, fuzzy, qt-format
 msgctxt "QObject|"
 msgid "Adding value + label '%1' + '%2' to column '%3'"
-msgstr "ཀ་ཐིག་ '%3' ལ་རིན་ཐང་ + ཁ་བྱང་ '%1' + '%2' ཁ་སྣོན་བྱེད་བཞིན་པ།"
+msgstr "ཀ་ཐིག་ '%3' ལ་གྲངས་ཐང་ + ཁ་བྱང་ '%1' + '%2' ཁ་སྣོན་བྱེད་བཞིན་པ།"
 
 #, fuzzy
 msgctxt "PrefsAdvanced|"
@@ -6279,7 +6222,7 @@ msgstr "ཕྱིར་འཐེན།"
 #, fuzzy, qt-format
 msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
-msgstr "ཡིན་སྲིད་པའི་རིན་ཐང་ནི: %1"
+msgstr "ཡིན་སྲིད་པའི་གྲངས་ཐང་ནི: %1"
 
 #, fuzzy, qt-format
 msgctxt "ImportDataSet|"
@@ -6318,12 +6261,12 @@ msgstr ""
 "JASP ལ་ནོར་འཁྲུལ་ཚབས་ཆེན་ཞིག་བྱུང་བར་ང་ཚོ་དགོངས་དག་ཞུ་རྒྱུ་ཡིན།\n"
 "དཀའ་ངལ་འདི་ལས་གང་ཞིག་སྐྱོབ་པའམ་སླར་གསོ་བྱེད་པར་ JASP ཆ་ཤས་ཙམ་ལས་ཀ་བྱེད་རྒྱུ་རེད།\n"
 "\n"
-"དཔེར་ན་ཁྱེད་ཀྱིས་ད་ལྟའི་ལས་གནས་ཉར་ཚགས་བྱེད་པའམ། ཡང་ན་ཐེངས་རྗེས་མར་དཀའ་ངལ་འདི་འབྱུང་མི་སྲིད་པའི་"
-"ཆེད་དུ་སྒྲིག་བཟོ་ཞིག་བརྗེ་ཐབས་བྱེད་ཆོག\n"
+"དཔེར་ན་ཁྱེད་ཀྱིས་ད་ལྟའི་ལས་ཁུལ་ཉར་ཚགས་བྱེད་པའམ། ཡང་ན་ཐེངས་རྗེས་མར་དཀའ་ངལ་འདི་འབྱུང་མི་སྲིད་པའི་ཆེད"
+"་དུ་སྒྲིག་བཟོ་ཞིག་བརྗེ་ཐབས་བྱེད་ཆོག\n"
 "\n"
 "དབྱེ་ཞིབ་བམ་རྩིས་རྒྱག་བྱས་པའི་ཀ་ཐིག་སོགས་ཁྱེད་ཀྱིས་ JASP ཡང་བསྐྱར་འགོ་མ་བཙུགས་བར་ལས་ཀ་བྱེད་མི་ཐུབ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "Computer|"
 msgid "R Data files %1"
 msgstr "R གཞི་གྲངས་ཡིག་ཆ། %1"
@@ -6338,31 +6281,30 @@ msgctxt "ModelTermsList|"
 msgid "Add to null model"
 msgstr "མེད་པའི་དཔེ་དབྱིབས་སུ་ཁ་སྣོན་བྱེད།"
 
+#, fuzzy
 msgctxt "MainWindow|"
 msgid "Open file"
 msgstr "ལག་བསྟར་ཡིག་ཆ་ཁ་ཕྱེ་བ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid "Cannot access file %1"
 msgstr "ཡིག་ཆ་ %1 ལ་འཛུལ་སྤྱོད་བྱེད་མི་ཐུབ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid "File %1 is not found."
 msgstr "ཡིག་ཆ་ %1 མ་རྙེད།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "MainWindow|"
 msgid "JASP does not support this file type %1."
 msgstr "JASP ཡིས་ཡིག་ཆའི་རིགས་ %1 ལ་རྒྱབ་སྐྱོར་མི་བྱེད།"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid "Store analysis state and plot in jasp-files"
 msgstr "དབྱེ་ཞིབ་ཀྱི་གནས་སྟངས་དང་དཔེ་རིས་ jasp-files ནང་ཉར་ཚགས་བྱེད།"
 
-#, fuzzy
 msgctxt "PrefsResults|"
 msgid ""
 "Enabling this can cause filesize of jaspfiles to increase, sometimes by a "
@@ -6401,17 +6343,14 @@ msgstr ""
 "\n"
 "དབྱེ་ཞིབ་གསར་བཅོས་བྱེད་དམ།"
 
-#, fuzzy
 msgctxt "AutoSaves|"
 msgid "Recovery"
 msgstr "སླར་གསོ།"
 
-#, fuzzy
 msgctxt "AutoSaves|"
 msgid "No recovery files found"
 msgstr "སླར་གསོའི་ཡིག་ཆ་མ་རྙེད།"
 
-#, fuzzy
 msgctxt "AutoSaves|"
 msgid "Recovery files are deleted after a month"
 msgstr "སླར་གསོའི་ཡིག་ཆ་རྣམས་ཟླ་བ་གཅིག་གི་རྗེས་སུ་སུབ་ཀྱི་ཡོད།"
@@ -6421,19 +6360,17 @@ msgctxt "PrefsData|"
 msgid "Save settings"
 msgstr "སྒྲིག་བཟོ་ཉར་ཚགས།"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid "Automatically save a backup of your workspace"
-msgstr "རང་འགུལ་གྱིས་ཁྱེད་ཀྱི་ལས་གནས་ཀྱི་ངོ་བཤུས་ཉར་ཚགས་བྱེད།"
+msgstr "རང་འགུལ་གྱིས་ཁྱེད་ཀྱི་ལས་ཁུལ་ཀྱི་ངོ་བཤུས་ཉར་ཚགས་བྱེད།"
 
-#, fuzzy
 msgctxt "PrefsData|"
 msgid ""
 "When enabled this will save a copy of your workspace in a folder next to the "
 "logs. If JASP crashes with otherwise unsaved changes this backup will make "
 "sure you don't lose all your work."
 msgstr ""
-"འདི་སྤྱད་ན་ཁྱེད་ཀྱི་ལས་གནས་ཀྱི་ངོ་བཤུས་དེ་ logs གི་འགྲམ་གྱི་ཡིག་སྣོད་ཅིག་ནང་ཉར་ཚགས་བྱེད་ངེས། གལ་ཏེ་ "
+"འདི་སྤྱད་ན་ཁྱེད་ཀྱི་ལས་ཁུལ་ཀྱི་ངོ་བཤུས་དེ་ logs གི་འགྲམ་གྱི་ཡིག་སྣོད་ཅིག་ནང་ཉར་ཚགས་བྱེད་ངེས། གལ་ཏེ་ "
 "JASP འགས་གཏོར་ཕྱིན་ནས་མ་ཉར་བའི་འགྱུར་བ་ཡོད་ན། ངོ་བཤུས་འདིས་ཁྱེད་ཀྱི་ལས་ཀ་ཚང་མ་བརླག་མི་འགྲོ་བ་"
 "འགན་ལེན་བྱེད་ཐུབ།"
 
@@ -6447,12 +6384,12 @@ msgctxt "PrefsData|"
 msgid "Interval in minutes between autosaves."
 msgstr "རང་འགུལ་ཉར་ཚགས་བར་གྱི་སྐར་མའི་བར་མཚམས།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid "%1 autosaved"
 msgstr "%1 རང་འགུལ་ཉར་ཚགས་བྱས།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid "Full path: %1"
 msgstr "ལམ་ཆ་ཚང་: %1"
@@ -6467,7 +6404,6 @@ msgctxt "DataSetPackage|"
 msgid "Unsaved workspace of datafile %1"
 msgstr "གཞི་གྲངས་ཡིག་ཆ་ %1 གི་མ་ཉར་བའི་ལས་གནས།"
 
-#, fuzzy
 msgctxt "DataSetPackage|"
 msgid "Autosave"
 msgstr "རང་འགུལ་ཉར་ཚགས།"
@@ -6477,7 +6413,7 @@ msgctxt "FileEvent|"
 msgid "Saving autosave JASP File"
 msgstr "རང་འགུལ་ཉར་ཚགས་ JASP ཡིག་ཆ་ཉར་ཚགས་བྱེད་བཞིན་པ།"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "AutoSaveFileSystem|"
 msgid "Saved at %1"
 msgstr "%1 ལ་ཉར་ཚགས་བྱས།"
@@ -6488,17 +6424,14 @@ msgid "Saved %1 seconds ago, might still be loaded in another JASP."
 msgstr ""
 "སྐར་ཆ་ %1 གི་སྔོན་དུ་ཉར་ཚགས་བྱས། JASP གཞན་ཞིག་ནང་ད་དུང་འདོན་བཞིན་ཡོད་སྲིད།"
 
-#, fuzzy
 msgctxt "ResourceButtons|"
 msgid "Recovery"
 msgstr "སླར་གསོ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Test"
 msgstr "ཚོད་ལྟ།"
 
-#, fuzzy
 msgctxt "RibbonModel|"
 msgid "Run tests"
 msgstr "ཚོད་ལྟ་བྱེད་པ།"
@@ -6557,8 +6490,8 @@ msgid ""
 "greater than -shift) to stabilize variance and attempt to make the data more "
 "normal distribution-like."
 msgstr ""
-"གཞི་རྒྱུ་གཉིས་ཀྱི་ power བསྒྱུར་བ་ (scale-invariant Box-Box; རིན་ཐང་ -shift ལས་ཆེ་བ་བསྒྱུར་བ"
-"་) ཡིས་འགྱུར་ཚད་བརྟན་པོ་བཟོ་བ་དང་གཞི་གྲངས་དེ་ normal ཁྱབ་ཚུལ་དང་འདྲ་བར་བཟོ་ཐབས་བྱེད་པ།"
+"གཞི་རྒྱུ་གཉིས་ཀྱི་ power བསྒྱུར་བ་ (scale-invariant Box-Box; གྲངས་ཐང་ -shift ལས་ཆེ་བ་བསྒྱུར་"
+"བ་) ཡིས་འགྱུར་ཚད་བརྟན་པོ་བཟོ་བ་དང་གཞི་གྲངས་དེ་ normal ཁྱབ་ཚུལ་དང་འདྲ་བར་བཟོ་ཐབས་བྱེད་པ།"
 
 #, fuzzy
 msgctxt "ComputeColumnWindow|"
