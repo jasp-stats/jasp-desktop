@@ -6,6 +6,12 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Language: zh_Hans\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-07-10 02:01+0000\n"
+"Last-Translator: Shun Wang <shuonwang@gmail.com>\n"
+"Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
+"projects/jasp/jaspdesktop/zh_Hans/>\n"
+"Language: zh_Hans\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -4069,7 +4075,6 @@ msgctxt "RibbonBar|"
 msgid "Show workspace settings"
 msgstr "显示工作空间设置"
 
-#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Open Documentation"
 msgstr "打开文档"
@@ -6159,7 +6164,6 @@ msgctxt "RibbonButton|"
 msgid "Update available"
 msgstr "有可用更新"
 
-#, fuzzy
 msgctxt "HelpButton|"
 msgid "Open Documentation"
 msgstr "打开文档"
@@ -8950,31 +8954,31 @@ msgstr "企业支持"
 
 msgctxt "AnalysisFormExpander|"
 msgid "Annotate this analysis using AI"
-msgstr ""
+msgstr "使用 AI 为分析添加注释"
 
 msgctxt "AnalysisFormExpander|"
 msgid "The chosen persona does not have the capabilities to annotate analysis"
-msgstr ""
+msgstr "所选AI角色不具备标注分析的能力"
 
 msgctxt "ChatWindow|"
 msgid "JASP AI Chat — Beta Version"
-msgstr ""
+msgstr "JASP AI 对话 — Beta 版"
 
 msgctxt "ChatWindow|"
 msgid "Reset conversation"
-msgstr ""
+msgstr "重置对话"
 
 msgctxt "ChatWindow|"
 msgid "Save conversation"
-msgstr ""
+msgstr "保存对话"
 
 msgctxt "ChatWindow|"
 msgid "tokens"
-msgstr ""
+msgstr "tokens"
 
 msgctxt "ChatWindow|"
 msgid "Context window tokens / Total session tokens"
-msgstr ""
+msgstr "上下文窗口tokens / 会话总tokens数"
 
 #, qt-format
 msgctxt "ChatWindow|"
@@ -9154,7 +9158,6 @@ msgctxt "PrefsAI|"
 msgid "Set as Active"
 msgstr ""
 
-#, fuzzy
 msgctxt "PrefsAI|"
 msgid "Duplicate"
 msgstr "复制副本"
@@ -9308,7 +9311,7 @@ msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "AI"
-msgstr ""
+msgstr "AI"
 
 msgctxt "AnalysisForm|"
 msgid "Set to an integer"
