@@ -3,10 +3,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Language: de_DE\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-07-12 16:01+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -4287,7 +4293,6 @@ msgctxt "RibbonBar|"
 msgid "Show workspace settings"
 msgstr "Arbeitsbereich-Einstellungen anzeigen"
 
-#, fuzzy
 msgctxt "VariablesWindow|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
@@ -6523,7 +6528,6 @@ msgctxt "WelcomePage|"
 msgid "Enterprise Support"
 msgstr "Enterprise-Support"
 
-#, fuzzy
 msgctxt "HelpButton|"
 msgid "Open Documentation"
 msgstr "Dokumentation öffnen"
@@ -6612,7 +6616,6 @@ msgctxt "PrefsAI|"
 msgid "Testing…"
 msgstr "Teste …"
 
-#, fuzzy
 msgctxt "PrefsAI|"
 msgid "Advanced"
 msgstr "Erweitert"
@@ -6730,7 +6733,6 @@ msgctxt "PrefsAI|"
 msgid "Set as Active"
 msgstr "Als aktiv setzen"
 
-#, fuzzy
 msgctxt "PrefsAI|"
 msgid "Duplicate"
 msgstr "Duplizieren"
@@ -6883,7 +6885,6 @@ msgctxt "PrefsAI|"
 msgid "I Agree"
 msgstr "Ich stimme zu"
 
-#, fuzzy
 msgctxt "PrefsAI|"
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -10068,12 +10069,12 @@ msgstr ""
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr ""
+msgstr "Faktor mit Messwiederholung"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "RM Factor"
-msgstr ""
+msgstr "MW-Faktor"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr ""
+msgstr "Zellen mit Messwiederholung"
