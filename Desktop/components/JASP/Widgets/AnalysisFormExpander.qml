@@ -414,6 +414,19 @@ DropArea
 						opacity:			enabled ? 1 : 0.1
 					}
 
+					MenuButton
+					{
+						id:					roboreportButton
+						width:				height
+						iconSource:			jaspTheme.iconPath + "/roboreport.svg"
+						enabled:			expanderButton.expanded
+						visible:			myForm ? !myForm.isAnnotated : false
+						onClicked:			mainWindow.roboreportAnalysis(formParent.myAnalysis.id)
+						toolTip:			qsTr("Generate a RoboReport")
+						radius:				height
+						opacity:			editButton.opacity
+					}
+
 
 					MenuButton
 					{

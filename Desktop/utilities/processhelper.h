@@ -26,7 +26,14 @@
 class ProcessHelper
 {
 public:
-	
+
+    /// When set ("1"), jaspBase strips bulky attributes and plot objects from
+    /// the RDS saved by saveResults(), keeping the file small for consumers
+    /// like RoboReport that only need tabular data. When unset, the RDS
+    /// contains the full toRObject() tree (live ggplot objects, XPtr
+    /// environments, etc.) for interactive/debugging use outside JASP.
+    static constexpr const char* kRdsStripEnvVar	= "JASP_RDS_STRIP";
+
     static QProcessEnvironment	getProcessEnvironmentForJaspEngine();
 #ifdef _WIN32 
 	static void					fixPATHForWindows(QProcessEnvironment & env);

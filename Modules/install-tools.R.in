@@ -2,7 +2,8 @@
 #
 
 JASP_MODULE_BUNDLE_MANAGER_LIBRARY 	<- "@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@"
-RENV_LIBRARY                		    <- "@RENV_LIBRARY@"
+JASP_ROBOREPORT_LIBRARY            	<- "@JASP_ROBOREPORT_LIBRARY@"
+RENV_LIBRARY               		    <- "@RENV_LIBRARY@"
 R_CPP_INCLUDES_LIBRARY              <- "@R_CPP_INCLUDES_LIBRARY@"
 
 ENGINE                 <- file.path("@PROJECT_SOURCE_DIR@", "Engine")
@@ -13,7 +14,7 @@ mkdir <- function(paths) {
     if (!dir.exists(path))
       dir.create(path, recursive = TRUE)
 }
-mkdir(c(R_CPP_INCLUDES_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
+mkdir(c(R_CPP_INCLUDES_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY, JASP_ROBOREPORT_LIBRARY))
 
 .libPaths(RENV_LIBRARY)
 options(repos = c(CRAN = "https://packagemanager.posit.co/cran/latest"))
@@ -39,6 +40,24 @@ cat("installing jaspModuleBundleManager\n")
 install.packages(
     file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspModuleBundleManager"),
     lib   = JASP_MODULE_BUNDLE_MANAGER_LIBRARY,
+    repos = NULL,
+    type  = "source"
+)
+
+cat("restoring jaspRoboReport deps\n")
+
+renv::restore(
+    lockfile = file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspRoboReport", "renv.lock"),
+    library  = JASP_ROBOREPORT_LIBRARY,
+    clean    = TRUE,
+    prompt   = FALSE
+)
+
+cat("installing jaspRoboReport\n")
+
+install.packages(
+    file.path("@PROJECT_SOURCE_DIR@", "Engine", "jaspRoboReport"),
+    lib   = JASP_ROBOREPORT_LIBRARY,
     repos = NULL,
     type  = "source"
 )

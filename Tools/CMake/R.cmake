@@ -852,15 +852,18 @@ endif()
 set(RENV_LIBRARY                        "${CMAKE_BINARY_DIR}/_cache/R/renv_library")
 set(R_CPP_INCLUDES_LIBRARY              "${CMAKE_BINARY_DIR}/Modules/Tools/R_cpp_includes_library")
 set(JASP_MODULE_BUNDLE_MANAGER_LIBRARY  "${CMAKE_BINARY_DIR}/Modules/Tools/jaspModuleBundleManager_library")
+set(JASP_ROBOREPORT_LIBRARY             "${CMAKE_BINARY_DIR}/Modules/Tools/jaspRoboReport_library")
 
 SET(RENV_SANDBOX                "${CMAKE_BINARY_DIR}/_cache/R/renv_sandbox")
 file(MAKE_DIRECTORY ${RENV_SANDBOX})
 # TODO: it could be nice to ship the sandbox so it can be used to install dynamic modules
 # also, the sandbox paths may need to be adjusted on windows (they are symlinks)
 
-message(STATUS "Setting up renv, Rcpp, RInside, and jaspModuleBundleManager, etc")
-message(STATUS "RENV_LIBRARY           = ${RENV_LIBRARY}")
-message(STATUS "R_CPP_INCLUDES_LIBRARY = ${R_CPP_INCLUDES_LIBRARY}")
+message(STATUS "Setting up renv, Rcpp, RInside, jaspModuleBundleManager, jaspRoboReport, etc")
+message(STATUS "RENV_LIBRARY                       = ${RENV_LIBRARY}")
+message(STATUS "R_CPP_INCLUDES_LIBRARY             = ${R_CPP_INCLUDES_LIBRARY}")
+message(STATUS "JASP_MODULE_BUNDLE_MANAGER_LIBRARY = ${JASP_MODULE_BUNDLE_MANAGER_LIBRARY}")
+message(STATUS "JASP_ROBOREPORT_LIBRARY            = ${JASP_ROBOREPORT_LIBRARY}")
 
 
 if(FLATPAK_USED)

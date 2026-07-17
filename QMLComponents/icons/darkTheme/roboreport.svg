@@ -1,0 +1,19 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+	<circle cx="32" cy="32" r="32" fill="#3a9bc0" mask="url(#doc)" />
+	<mask id="doc">
+		<circle cx="32" cy="32" r="32" fill="#fff" />
+		<g transform="translate(22, 16)" fill="#fff">
+			<!-- document body -->
+			<rect x="0" y="0" width="20" height="26" rx="3" fill="#fff" stroke="#000" stroke-width="4"/>
+			<!-- folded corner -->
+			<path d="M14 0 L20 6 L14 6 Z" fill="#000"/>
+			<!-- text lines -->
+			<rect x="4" y="11" width="12" height="2.5" rx="1" fill="#000"/>
+			<rect x="4" y="16" width="12" height="2.5" rx="1" fill="#000"/>
+			<!-- mini bar chart -->
+			<rect x="4"  y="22" width="3" height="4"   fill="#000"/>
+			<rect x="8.5" y="20" width="3" height="6" fill="#000"/>
+			<rect x="13" y="22" width="3" height="4"  fill="#000"/>
+		</g>
+	</mask>
+</svg>

@@ -1,0 +1,26 @@
+Package: jaspRoboReport
+Type: Package
+Title: JASP RoboReport
+Version: 0.1.0
+Date: 2026-07-17
+Authors@R: person("JASP Team", role = c("aut", "cre"))
+Author: JASP Team
+Maintainer: JASP Team <info@jasp-stats.org>
+Description: Deterministic R scripting layer for generating annotated
+    reports via the JASP JSON-RPC toolset. Provides ergonomic wrappers
+    around the JASP RPC methods (analysis_run, analysis_results,
+    analysis_createAnnotation, write_report, etc.) and a report
+    composition DSL for interleaving prose with references to existing
+    JASP result elements.
+License: GPL2+
+Encoding: UTF-8
+LazyData: true
+Imports:
+    httr2,
+    jsonlite,
+    glue
+RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

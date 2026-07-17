@@ -1,0 +1,8 @@
+^jaspRoboReport\.Rproj$
+^\.Rproj\.user$
+^renv\.lock$
+^README\.Rmd$
+^.*\.Rproj$
+^docs$
+^pkgdown$
+^\.github$

@@ -112,6 +112,9 @@ public:
 
 	static MainWindow * singleton() { return _singleton; }
 
+		/// Accessor used by RoboReportManager to ensure the RPC server is listening.
+		JaspRpcServer* rpcServer() { return _rpcServer; }
+
 	void				showNewData();
 	void				open(QString filepath);
 	void				open(const Json::Value & dbJson);
@@ -200,6 +203,7 @@ public slots:
 	void	showEnginesWindow(); //For debugging
 	void	toggleChat();
 	Q_INVOKABLE void	annotateAnalysis();
+	Q_INVOKABLE void	roboreportAnalysis(int analysisId);
 	void	checkChatWindowActive();
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;

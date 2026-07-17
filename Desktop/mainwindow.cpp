@@ -69,6 +69,7 @@
 #include "rpc/jasprpcdispatcher.h"
 #include "rpc/jasprpcserver.h"
 #include "ai/agentstatetracker.h"
+#include "roboreport/roboreportmanager.h"
 
 #include "boost/iostreams/stream.hpp"
 #include <boost/iostreams/device/null.hpp>
@@ -194,6 +195,9 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	// Ensure the agent state tracker is initialized (also done by AiBridge,
 	// but this covers the case where the AI feature is not yet active).
 	AgentStateTracker::init();
+
+	// Initialize the RoboReport manager (deterministic R-script reports).
+	RoboReportManager::init(this);
 
 	registerRpcHandlers();
 
@@ -945,6 +949,14 @@ void MainWindow::annotateAnalysis()
 	// Delegate to the QML ChatWindow's submit function
 	QMetaObject::invokeMethod(_chatWindow.data(), "submitUserMessage",
 		Qt::QueuedConnection, Q_ARG(QVariant, QVariant(prompt)));
+}
+
+void MainWindow::roboreportAnalysis(int analysisId)
+{
+	// Thin passthrough to the RoboReportManager singleton.
+	// The manager handles script resolution, engine lifecycle, and error
+	// reporting. It is null-safe.
+	RoboReportManager::runForAnalysis(analysisId);
 }
 
 void MainWindow::setQmlImportPaths()
