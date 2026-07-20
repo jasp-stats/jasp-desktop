@@ -14,6 +14,7 @@
 
 #include "log.h"
 #include "dirs.h"
+#include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
 
 #include <QString>
@@ -42,6 +43,15 @@ bool RoboReportManager::hasScript(const std::string& module, const std::string& 
 		return false;
 
 	return !_singleton->_resolveScriptPath(module, analysis).isEmpty();
+}
+
+bool RoboReportManager::hasScriptForAnalysis(int analysisId)
+{
+	Analysis* a = Analyses::analyses()->get(static_cast<size_t>(analysisId));
+	if (!a)
+		return false;
+
+	return hasScript(a->module(), a->name());
 }
 
 void RoboReportManager::runForAnalysis(int analysisId)
@@ -139,7 +149,15 @@ QString RoboReportManager::_resolveScriptPath(const std::string& module, const s
 {
 	QString analysisFile = QString::fromStdString(analysis + ".R");
 
-	// 1. Preferred: module package's scripts/roboreport/ folder.
+	// 1. Highest priority: user override in the app-data roboreport folder.
+	//    <appData>/roboreport/<module>/<AnalysisName>.R — lets a user (or a
+	//    developer testing a script) override the copy shipped with a module.
+	QString userPath = AppDirs::roboreportDir()
+	                 + QString::fromStdString(module) + "/" + analysisFile;
+	if (QFile::exists(userPath))
+		return userPath;
+
+	// 2. Module package's scripts/roboreport/ folder.
 	//    This lives in inst/scripts/roboreport/ in the module source and
 	//    becomes <module_library>/<module>/scripts/roboreport/ after install.
 	if (DynamicModules::dynMods())
@@ -153,12 +171,6 @@ QString RoboReportManager::_resolveScriptPath(const std::string& module, const s
 				return path;
 		}
 	}
-
-	// 2. Fallback: Resources/roboreport/<module>/<AnalysisName>.R (dev/test).
-	QString fallback = QString::fromStdString(
-		Dirs::resourcesDir() + "roboreport/" + module + "/" + analysis + ".R");
-	if (QFile::exists(fallback))
-		return fallback;
 
 	return {};
 }
@@ -241,9 +253,10 @@ void RoboReportManager::_ensureEngine()
 		// code finishes — see EngineRepresentation::processRCodeReply():
 		//   if(runsRCmd()) emit rCodeReturnedLog(...)  else emit rCodeReturned(...)
 		//
-		// Error handling: the engine captures R errors via jaspRCPP_getLastErrorMsg()
-		// and reports them through hasError=true with the error message in `log`.
-		// Script authors signal failure by calling stop("message").
+		// The RCmdEngine wraps R code in withCallingHandlers that prints
+		// "Error: <msg>" to the log but does NOT set hasError. So we detect
+		// script failures by scanning the log for that sentinel. The engine's
+		// hasError flag only fires for engine-level failures (crashes, etc).
 		connect(_engine, &EngineRepresentation::rCodeReturnedLog, this,
 			[this](const QString& log, bool hasError)
 			{
@@ -255,13 +268,22 @@ void RoboReportManager::_ensureEngine()
 				int finishedId = _activeId;
 				_activeId = -1;
 
-				if (hasError)
+				// Detect R-level errors: the engine's withCallingHandlers prints
+				// "Error: <message>" but keeps hasError=false.
+				int errIdx = log.indexOf("Error: ");
+				bool scriptError = (errIdx >= 0);
+
+				if (hasError || scriptError)
 				{
+					QString msg = log.trimmed();
+					if (scriptError)
+						msg = log.mid(errIdx + 7).trimmed(); // skip "Error: "
+
 					Log::log() << "[RoboReport] Script failed for analysis " << finishedId
-					          << ": " << log.toStdString() << std::endl;
+					          << ": " << msg.toStdString() << std::endl;
 					MessageForwarder::showWarning(tr("RoboReport failed"),
-						tr("The RoboReport script failed with the following error:\n\n%1").arg(log.trimmed()));
-					emit scriptFinished(finishedId, false, log.trimmed());
+						tr("The RoboReport script failed with the following error:\n\n%1").arg(msg));
+					emit scriptFinished(finishedId, false, msg);
 				}
 				else
 				{

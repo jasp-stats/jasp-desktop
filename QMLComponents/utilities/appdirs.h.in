@@ -54,6 +54,7 @@ public:
 	static QDir    programDir();
 	static QString renvRootLocation();
 	static QString renvCacheLocations();
+	static QString roboreportDir();
 
 #ifdef __APPLE__
 	static QString devModulePatchDir();

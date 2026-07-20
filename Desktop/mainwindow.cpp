@@ -732,6 +732,7 @@ void MainWindow::loadQML()
 	_qml->rootContext()->setContextProperty("computedColumnTypeAnalysisNotComputed",	int(computedColumnType::analysisNotComputed)	);
 	_qml->rootContext()->setContextProperty("moduleLibrary",							_moduleLibrary									);
 	_qml->rootContext()->setContextProperty("csvPreviewModel",							_csvPreviewModel								);
+	_qml->rootContext()->setContextProperty("roboreportManager",						RoboReportManager::manager()							);
 
 	_qml->setOutputWarningsToStandardError(true);
 
@@ -949,14 +950,6 @@ void MainWindow::annotateAnalysis()
 	// Delegate to the QML ChatWindow's submit function
 	QMetaObject::invokeMethod(_chatWindow.data(), "submitUserMessage",
 		Qt::QueuedConnection, Q_ARG(QVariant, QVariant(prompt)));
-}
-
-void MainWindow::roboreportAnalysis(int analysisId)
-{
-	// Thin passthrough to the RoboReportManager singleton.
-	// The manager handles script resolution, engine lifecycle, and error
-	// reporting. It is null-safe.
-	RoboReportManager::runForAnalysis(analysisId);
 }
 
 void MainWindow::setQmlImportPaths()

@@ -6,8 +6,8 @@
 // reports.
 //
 // Script resolution order (first match wins):
-//   1. <module package>/scripts/roboreport/<AnalysisName>.R   (preferred)
-//   2. Resources/roboreport/<module>/<AnalysisName>.R          (fallback)
+//   1. <appData>/roboreport/<module>/<AnalysisName>.R        (user override)
+//   2. <module package>/scripts/roboreport/<AnalysisName>.R  (shipped with module)
 //
 // Each script defines `roboreport_main(analysisId)` and is executed by
 // `jaspRoboReport::run_script()` inside the shared RCmdEngine.
@@ -53,6 +53,14 @@ public:
 	/// True if a RoboReport script exists for (module, analysis).
 	static bool hasScript(const std::string& module, const std::string& analysis);
 
+	/// QML entry point: run the report for the analysis with this id.
+	/// Thin instance wrapper over the null-safe static runForAnalysis().
+	Q_INVOKABLE void runAnalysis(int analysisId) { runForAnalysis(analysisId); }
+
+	/// QML entry point: true if a RoboReport script exists for the analysis
+	/// with this id. Lets the button bind its visibility to script presence.
+	Q_INVOKABLE bool hasScriptForAnalysis(int analysisId);
+
 signals:
 	/// Emitted when a script begins executing for the given analysis.
 	void scriptStarted(int analysisId);
@@ -71,8 +79,8 @@ private:
 	void _runForAnalysis(int analysisId);
 
 	/// Resolve the script path for (module, analysis).
-	/// Tries module package scripts/ folder first, then Resources/ fallback.
-	/// Returns empty string if not found.
+	/// Tries the user app-data roboreport folder first, then the module
+	/// package scripts/ folder. Returns empty string if not found.
 	QString _resolveScriptPath(const std::string& module, const std::string& analysis) const;
 
 	/// Parse metadata from the script header (Name, Target, Version, Description).

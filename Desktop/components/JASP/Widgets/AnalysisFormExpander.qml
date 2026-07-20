@@ -15,6 +15,7 @@ DropArea
 	property alias		myAnalysis:				formParent.myAnalysis
 	property alias		myForm:					formParent.myForm
 	property alias		backgroundFlickable:	formParent.backgroundFlickable
+	property int		myAnalysisId:			-1	///< From the analysesModel analysisID role; myAnalysis exposes no id to QML
 
 	onEntered: (drag)=>
 	{
@@ -420,8 +421,8 @@ DropArea
 						width:				height
 						iconSource:			jaspTheme.iconPath + "/roboreport.svg"
 						enabled:			expanderButton.expanded
-						visible:			myForm ? !myForm.isAnnotated : false
-						onClicked:			mainWindow.roboreportAnalysis(formParent.myAnalysis.id)
+						visible:			myForm && myAnalysisId >= 0 ? (!myForm.isAnnotated && roboreportManager.hasScriptForAnalysis(myAnalysisId)) : false
+						onClicked:			roboreportManager.runAnalysis(myAnalysisId)
 						toolTip:			qsTr("Generate a RoboReport")
 						radius:				height
 						opacity:			editButton.opacity

@@ -108,6 +108,7 @@ FocusScope
 						{
 							myIndex:				index
 							myAnalysis:				model.analysis
+							myAnalysisId:			model.analysisID
 							backgroundFlickable:	analysesFlickable
 
 							ALTNavigation.enabled:		true

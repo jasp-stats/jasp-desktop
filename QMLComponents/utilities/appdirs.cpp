@@ -286,6 +286,14 @@ QString AppDirs::renvCacheLocations()
 	
 }
 
+QString AppDirs::roboreportDir()
+{
+	QString path = appData() + "/roboreport/";
+	QDir dir(path);
+	dir.mkpath(".");
+	return path;
+}
+
 #ifdef __APPLE__
 QString AppDirs::devModulePatchDir()
 {

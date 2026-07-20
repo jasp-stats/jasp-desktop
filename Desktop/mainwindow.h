@@ -203,7 +203,6 @@ public slots:
 	void	showEnginesWindow(); //For debugging
 	void	toggleChat();
 	Q_INVOKABLE void	annotateAnalysis();
-	Q_INVOKABLE void	roboreportAnalysis(int analysisId);
 	void	checkChatWindowActive();
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
