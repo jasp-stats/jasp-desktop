@@ -267,7 +267,7 @@ PrefsScrollView
 				height:				100 * preferencesModel.uiScale
 				isBound:			false
 				wrapMode:			TextEdit.Wrap
-				placeholderText:	qsTr("{ \"cache_control\": { \"type\": \"ephemeral\" } }")
+				placeholderText:	"{ \"cache_control\": { \"type\": \"ephemeral\" } }"
 				onActiveFocusChanged:	if (!activeFocus) aiConfigModel.currentMessageExtra = text
 				applyScriptInfo:	""
 				useTabAsSpaces:		false
