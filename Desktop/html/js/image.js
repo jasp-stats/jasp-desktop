@@ -61,10 +61,13 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		
 		this.model.set("interactive",		!isCurrentlyInteractive);
 		this.model.set("userInteractive",	true);
-
+		
 		// Clear the current content and re-render
 		// this.myView.$el.empty();
 		this.myView.reRender();
+		
+		if (!this.settingUserData)
+			this.$el.trigger("changed:userData", [this.userDataDetails, [{ key: 'collapsed', value: this.isCollapsed() }]]);
 
 		return true;
 	},
@@ -95,6 +98,35 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		this.views.push(imagePrimitive);
 
 		self.myView = imagePrimitive
+	},
+														  
+	setUserData: function (details, data) {
+		this.userDataDetails = details;
+		this.settingUserData = true;
+		
+		if (data !== null) {
+			if (data.collapsed !== undefined)
+				this.model.set("collapsed", data.collapsed);
+			
+			if(data.userInteractive !== undefined)
+			{
+				this.model.set("userInteractive",	data.userInteractive)
+				this.model.set("interactive",		data.interactive)
+			}
+		}
+		
+		this.settingUserData = false;
+	},
+														  
+	getLocalUserData: function () 
+	{
+		if(!useInteractivePlots || !this.model.get("userInteractive"))
+			return null;
+		
+		return	{
+					userInteractive:	this.model.get("userInteractive"),
+					interactive:		this.model.get("interactive")
+				}
 	},
 });
 
