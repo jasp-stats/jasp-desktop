@@ -134,40 +134,24 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 		this.settingUserData = false;
 	},
 
-	getLocalUserData: function () {
-
-		var hasData = false;
-
+	getLocalUserData: function () 
+	{
 		var userData = {};
 
-		if (this.$el.hasClass('jasp-collapsed')) {
+		if (this.$el.hasClass('jasp-collapsed'))
 			userData.collapsed = true;
-			hasData = true;
-		}
 
-		if (this.noteBox && this.noteBox.visible) {
+		if (this.noteBox && this.noteBox.visible)
+			userData[this.noteBoxLocalKey] = 
+			{
+				text			: this.noteBox.isTextboxEmpty() ? '' : this.noteBox.model.get('text'),
+				format			: 'html',
+				visible			: this.noteBox.visible,
+				delta			: this.noteBox.model.get('delta'),
+				deltaAvailable	: this.noteBox.model.get('deltaAvailable')
+			}
 
-			var noteData = {};
-
-			if (this.noteBox.isTextboxEmpty())
-				noteData.text = '';
-			else
-				noteData.text = this.noteBox.model.get('text');
-
-			noteData.format = 'html';
-			noteData.visible = this.noteBox.visible;
-			noteData.delta = this.noteBox.model.get('delta');
-			noteData.deltaAvailable = this.noteBox.model.get('deltaAvailable')
-
-			userData[this.noteBoxLocalKey] = noteData;
-
-			hasData = true;
-		}
-
-		if (hasData)
-			return userData;
-		else
-			return null;
+		return userData !== {} ? userData : null
 	},
 
 	notesMenuClicked: function (noteType, visibility) {

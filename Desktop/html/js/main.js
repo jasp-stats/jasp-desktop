@@ -111,7 +111,7 @@ $(document).ready(function () {
     analyses.setTitle(newTitle);
   };
 
-  window.setInteractivePlots = function (interactive) {
+  window.setUseInteractivePlots = function (interactive) {
     useInteractivePlots = interactive;
   };
   window.setAppVersion = function (version) {

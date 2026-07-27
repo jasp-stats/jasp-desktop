@@ -195,11 +195,11 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 	},
 
 	getAllUserData: function () {
-		var notes = [];
+		var userData = [];
 		for (var i = 0; i < this.analyses.length; i++) {
-			notes.push(this.analyses[i].getAllUserData());
+			userData.push(this.analyses[i].getAllUserData());
 		}
-		return notes;
+		return userData;
 	},
 
 	getResultsMeta: function () {

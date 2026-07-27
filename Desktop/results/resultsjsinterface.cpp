@@ -87,7 +87,7 @@ void ResultsJsInterface::setResultsLoaded(bool resultsLoaded)
 
 		runJavaScript("window.setAppVersion('" + version + "')");
 #ifdef INTERACTIVE_PLOTS
-		runJavaScript("window.setInteractivePlots(true)");
+		runJavaScript("window.setUseInteractivePlots(true)");
 #endif
 
 		setGlobalJsValues();

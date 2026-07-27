@@ -74,7 +74,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 
 	if(_nextId <= id) _nextId = id + 1;
 
-
 	Modules::UpgradeMsgs		msgs;
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];

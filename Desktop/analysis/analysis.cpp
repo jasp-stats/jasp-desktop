@@ -1112,13 +1112,15 @@ void Analysis::setUserData(Json::Value userData)
 		return false;
 	};
 
-	if (_analysisForm) _analysisForm->setHasVolatileNotes(checkForVolatileNotes(_userData));
+	if (_analysisForm) 
+		_analysisForm->setHasVolatileNotes(checkForVolatileNotes(_userData));
 }
 
 void Analysis::setRSources(const Json::Value &rSources)
 {
 	_rSources.clear();
-	if (rSources.isNull() || !rSources.isObject()) return;
+	if (rSources.isNull() || !rSources.isObject()) 
+		return;
 
 	for (const std::string &sourceName : rSources.getMemberNames())
 		_rSources[sourceName] = rSources[sourceName];
