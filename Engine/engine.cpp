@@ -802,12 +802,6 @@ void Engine::editImage()
 	std::string optionsJson	= _imageOptions.toStyledString(),
 				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _analysisId);
 
-	//Log::log() << "Engine::editImage: optionsJson=" << optionsJson.substr(0, std::min(optionsJson.size(), size_t(200))) << std::endl;
-	//{
-	//	std::string truncated = result.substr(0, std::min(result.size(), size_t(500)));
-	//	Log::log() << "Engine::editImage: raw R result (first 500 chars)=" << truncated << std::endl;
-	//}
-
 	// JSONCPP_STRING          err;
 	// Json::CharReaderBuilder jsonReaderBuilder;
 	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());

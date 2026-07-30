@@ -234,10 +234,6 @@ private:
 	// user-edit queue (editImage) and from applyPlotReEdits (batch re-edits).
 	void					_dispatchEditImage(const Json::Value &options);
 	
-	// Magic request ID sent with re-edits so the engine doesn't treat this
-	// as a fresh user edit. -1 ensures no collision with normal request IDs
-	// (which are always >= 0 from the JSON RPC layer).
-	static constexpr int	RE_EDIT_REQUEST_ID = -1;
 	void					checkForRSources();
 	void					clearRSources();
 	void					initAnalysis();

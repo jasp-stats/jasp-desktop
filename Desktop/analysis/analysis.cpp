@@ -375,10 +375,8 @@ void Analysis::imageEdited(const Json::Value & results)
 		// Note: deepOverwrite is a recursive struct-merge, not a full deep merge —
 		// arrays are replaced wholesale, not merged element-by-element.
 		//
-		// The old request-ID mismatch retry was removed: user edits never set a
-		// "request" field, the engine defaults to -1, and re-edits also use -1
-		// (RE_EDIT_REQUEST_ID). All requests share the same ID, so the retry
-		// was dead code. Queue serialization now prevents concurrent edits.
+		// The old request-ID mismatch retry was removed: queue serialization
+		// now prevents concurrent edits and the retry was dead code.
 		Json::Value mergedEditOptions = results["editOptions"];
 
 		// Guard against engine returning a non-object editOptions (e.g. null, array,
@@ -387,7 +385,8 @@ void Analysis::imageEdited(const Json::Value & results)
 		if (!mergedEditOptions.isObject())
 			mergedEditOptions = Json::objectValue;
 
-		std::function<void(Json::Value &, const Json::Value &)> deepOverwrite = [&deepOverwrite](Json::Value & target, const Json::Value & source)
+		std::function<void(Json::Value &, const Json::Value &)> deepOverwrite;
+		deepOverwrite = [&deepOverwrite](Json::Value & target, const Json::Value & source)
 		{
 			if (!source.isObject() || !target.isObject()) return;
 			for (const std::string & key : source.getMemberNames())
@@ -582,15 +581,10 @@ std::set<std::string> Analysis::applyPlotEdits()
 
 void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
 {
-	// Re-edits are a batch operation triggered after an engine re-run, not user-initiated
-	// serialised edits. Clear any stale queue entries from a prior chain that may have been
-	// abandoned (e.g. engine re-ran before all queued edits completed; shouldn't happen normally).
-	//
-	// Two separate edit flows coexist: the user-edit queue (_editQueue, serialised by editImage)
-	// and the batch re-edit flow (this method). Re-edits are not user-initiated — they restore
-	// previously-saved edits to freshly re-run engine output. Clearing the user queue here
-	// prevents stale user edits (from a now-obsolete engine state) from executing on new results.
-	_editQueue.clear();
+	// Batch re-edits triggered after an engine re-run restore previously-saved
+	// edits to freshly re-run engine output. They coexist with the user-edit
+	// queue (_editQueue) — queued user edits are independent and will complete
+	// naturally via the queue drain in imageEdited.
 	_pendingReEdits.clear();
 
 	for (const std::string & uniqueName : plotNames)
@@ -603,9 +597,8 @@ void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
 			continue;
 
 		Json::Value imgOpts;
-		imgOpts["name"]        = uniqueName;
-		imgOpts["type"]        = "interactive";
-		imgOpts["request"]     = RE_EDIT_REQUEST_ID;
+		imgOpts["name"] = uniqueName;
+		imgOpts["type"] = "interactive";
 		if (edit.isMember("editOptions"))
 			imgOpts["editOptions"] = edit["editOptions"];
 		if (edit.isMember("width") && edit.isMember("height"))
@@ -1127,6 +1120,11 @@ bool Analysis::_getPlotDimensions(const Json::Value & results, const std::string
 	{
 		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
 		{
+			// Prefer originalWidth/originalHeight (engine-computed native size
+			// captured before we stamp the user's stored dimensions into width/height).
+			// Fall back to width/height for bootstrapping: on the very first run
+			// before applyPlotEdits has written originalWidth, width still holds
+			// the engine's native size.
 			width  = results.get("originalWidth",  results.get("width",  -1).asInt()).asInt();
 			height = results.get("originalHeight", results.get("height", -1).asInt()).asInt();
 			
