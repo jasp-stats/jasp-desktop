@@ -59,13 +59,13 @@ $(document).ready(function () {
     if (analysis === undefined) return;
 
     if (imageEditResults.error && imageEditResults.resized)
-      analysis.undoImageResize();
+      analysis.undoImageResize(imageEditResults.name);
     else analysis.insertNewImage(imageEditResults);
   };
 
-  window.cancelImageEdit = function (id) {
+  window.cancelImageEdit = function (id, name) {
     var analysis = analyses.getAnalysis(id);
-    if (analysis !== undefined) analysis.undoImageResize();
+    if (analysis !== undefined) analysis.undoImageResize(name);
   };
 
   window.select = function (id, fromQML) {
@@ -646,7 +646,9 @@ $(document).ready(function () {
         jasp.showAnalysesMenu(JSON.stringify(options));
         window.menuObject = obj;
       });
-    } else jaspWidget.model.set(analysis);
+    } else {
+      jaspWidget.model.set(analysis);
+    }
 
     jaspWidget.setHasReport(analysis.hasReport);
 

@@ -33,6 +33,7 @@
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include <QAccessible>
 #include <QScopeGuard>
+#include <functional> // for std::function in deepOverwrite lambda
 
 Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options) :
 	  AnalysisBase(Analyses::analyses()),
@@ -65,6 +66,9 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 	, _resultsMeta(						_results.get(".meta", Json::arrayValue)			)
 	, _imgResults(						duplicateMe->_imgResults						)
 	, _userData(						duplicateMe->_userData							)
+	, _plotEdits(						duplicateMe->_plotEdits							)
+	// _pendingReEdits and _editQueue are not copied; the duplicate starts
+	// with a clean edit pipeline.
 	, _imgOptions(						duplicateMe->_imgOptions						)
 	, _progress(						duplicateMe->_progress							)
 	, _id(								id												)
@@ -240,7 +244,20 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 	_resultsMeta	= _results.get(".meta", Json::arrayValue);
 	_hasReport		= !PreferencesModel::prefs()->reportingMode() ? false : Reporter::reporter()->analysisHasReportNeeded(this);
 
+	// Two-phase plot-edit restoration after an engine re-run:
+	// Phase 1: applyPlotEdits — injects saved editOptions and sizes into the
+	//   fresh results tree, collecting names of plots whose stored dimensions
+	//   differ from what the engine produced (these need a re-render).
+	// Phase 2: applyPlotReEdits — dispatches re-edit requests to the engine for
+	//   dimension-mismatched plots so they render at the correct stored size.
+	// This avoids engine roundtrips when only editOptions changed (no dimension
+	// change), since those are already fully applied to the results tree.
+	std::set<std::string> reEditNames = applyPlotEdits();
+
 	setStatus(status);
+
+	if (status == Analysis::Complete && !reEditNames.empty())
+		applyPlotReEdits(reEditNames);
 
 	emit resultsChangedSignal(this);
 
@@ -295,8 +312,43 @@ void Analysis::imageSaved(const Json::Value & results)
 
 void Analysis::editImage(const Json::Value &options)
 {
+	// Serialise edits through a queue: only one image-edit RPC may be
+	// in flight at a time. If the analysis is already in EditImg state,
+	// queue the request and return — it will be dispatched when the
+	// current edit completes (from imageEdited's queue drain).
+	// If the last queued entry is a resize-only request for the same plot,
+	// replace it instead of appending — avoids wasted engine roundtrips.
+	if (!options.isMember("editOptions") && !_editQueue.empty())
+	{
+		Json::Value & last = _editQueue.back();
+		if (!last.isMember("editOptions") && last.get("name", "").asString() == options.get("name", "").asString())
+		{
+			last = options;
+			return;
+		}
+	}
+
+	_editQueue.push_back(options);
+
+	if (_status == EditImg)
+	{
+		Log::log() << "editImage: queued (edit in flight, queue size="
+				   << _editQueue.size() << ")" << std::endl;
+		return;
+	}
+
+	_dispatchEditImage(_editQueue.front());
+}
+
+void Analysis::_dispatchEditImage(const Json::Value &options)
+{
 	setStatus(Analysis::EditImg);
 	_imgOptions = options;
+	// Snapshot the user's original editOptions separately from _imgOptions.
+	// _imgOptionsUserEdit is only set when the request contains "editOptions"
+	// (i.e. a user-initiated edit, not a size-only re-edit). It serves as the
+	// highest-priority overlay during the deepOverwrite in imageEdited.
+	_imgOptionsUserEdit = options.isMember("editOptions") ? options : Json::nullValue;
 }
 
 void Analysis::imageEdited(const Json::Value & results)
@@ -306,11 +358,114 @@ void Analysis::imageEdited(const Json::Value & results)
 
 	if (name != "")
 	{
-		setEditOptionsOfPlot(name, results["editOptions"]);
+		Log::log() << "imageEdited: name='" << name << "'" << std::endl;
 
-		if (_imgResults.get("resized", false).asBool() && !_imgResults.get("error", true).asBool())
-			updatePlotSize(_imgOptions["name"].asString(), _imgResults.get("width", -1).asInt(), _imgResults.get("height", -1).asInt(), _results);
+		// Start with the engine's editOptions as base, then deep-overwrite with the
+		// user's stored editOptions. User edits win over whatever the engine returns.
+		//
+		// Why: the engine may return the original unedited plot state for operations
+		// that are not true "edits" (e.g. resize). Without merging user edits back in,
+		// the user's customizations would be silently lost on every resize.
+		//
+		// Priority: the just-submitted user edit (_imgOptionsUserEdit, now stored as
+		// the raw editOptions subtree) takes top priority over persistently stored
+		// edits (_plotEdits[name]), since the in-flight edit represents the user's
+		// most recent intent.
+		// Note: deepOverwrite is a recursive struct-merge, not a full deep merge —
+		// arrays are replaced wholesale, not merged element-by-element.
+		//
+		// The old request-ID mismatch retry was removed: user edits never set a
+		// "request" field, the engine defaults to -1, and re-edits also use -1
+		// (RE_EDIT_REQUEST_ID). All requests share the same ID, so the retry
+		// was dead code. Queue serialization now prevents concurrent edits.
+		Json::Value mergedEditOptions = results["editOptions"];
+
+		// Guard against engine returning a non-object editOptions (e.g. null, array,
+		// empty string). In that case start with an empty object so the user's
+		// stored editOptions can be deep-merged in without being lost.
+		if (!mergedEditOptions.isObject())
+			mergedEditOptions = Json::objectValue;
+
+		std::function<void(Json::Value &, const Json::Value &)> deepOverwrite = [&deepOverwrite](Json::Value & target, const Json::Value & source)
+		{
+			if (!source.isObject() || !target.isObject()) return;
+			for (const std::string & key : source.getMemberNames())
+			{
+				if (!target.isMember(key))
+					target[key] = source[key];
+				else if (target[key].isObject() && source[key].isObject())
+					deepOverwrite(target[key], source[key]);
+				else
+					target[key] = source[key];
+			}
+		};
+		if (_imgOptionsUserEdit.isMember("editOptions"))
+			deepOverwrite(mergedEditOptions, _imgOptionsUserEdit["editOptions"]);
+		else if (_plotEdits.isMember(name) && _plotEdits[name].isMember("editOptions"))
+			deepOverwrite(mergedEditOptions, _plotEdits[name]["editOptions"]);
+
+		Log::log() << "imageEdited: merged engine response (base) with user editOptions (overlay)" << std::endl;
+
+		setEditOptionsOfPlot(name, mergedEditOptions);
+
+		if (results.isMember("revision"))
+			_updatePlotField(_results, name, "revision", results["revision"]);
+
+		if (results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString())
+			_updatePlotField(_results, name, "interactiveJsonData", results["interactiveJsonData"]);
+
+		if (results.isMember("data"))
+			_updatePlotField(_results, name, "data", results["data"]);
+
+		// Determine whether this was a user-initiated resize (type "resize",
+		// no editOptions, has width/height) vs a plot-editor edit (has editOptions).
+		// Only store dimensions when the user explicitly resized; edit operations
+		// send the current model width/height which are not the user's intent.
+		bool wasResize = !_imgOptions.isMember("editOptions")
+				&& _imgOptions.isMember("width") && _imgOptions.isMember("height");
+
+		if (wasResize)
+		{
+			int w = _imgResults.get("width", -1).asInt(),
+				h = _imgResults.get("height", -1).asInt();
+			if (w > 0 && h > 0)
+			{
+				_updatePlotField(_results, name, "width",  w);
+				_updatePlotField(_results, name, "height", h);
+			}
+		}
+
+		bool wasReEdit = _pendingReEdits.erase(name) > 0;
+		if (!wasReEdit)
+		{
+			Json::Value & plotEdits = _plotEdits[name];
+			plotEdits["editOptions"] = mergedEditOptions;
+			// Only persist dimensions from user-initiated resize operations.
+			// Edit operations carry the model's current width/height which
+			// are not the user's explicit size intent and must not overwrite
+			// previously stored resize dimensions.
+			if (wasResize)
+			{
+				int w = _imgOptions["width"].asInt(),
+					h = _imgOptions["height"].asInt();
+				if (w > 0 && h > 0)
+				{
+					plotEdits["width"]  = w;
+					plotEdits["height"] = h;
+				}
+			}
+			Log::log() << "imageEdited: stored _plotEdits for '" << name << "' (" << plotEdits.getMemberNames().size() << " keys)" << std::endl;
+		}
+		else
+			Log::log() << "imageEdited: re-edit for '" << name << "' completed, not updating _plotEdits" << std::endl;
 	}
+
+	// Inject the plot name into _imgResults so JS can identify which image
+	// to update via findImagePrimitive(name). The R engine returns name=null
+	// because our imgOpts json has no "data" field (the engine relies on that
+	// field for name resolution). Without this injection, insertNewImage in JS
+	// cannot locate the correct image view in the volatile views tree.
+	_imgResults["name"] = name;
 
 	// Convert interactiveJsonData file paths to actual JSON objects for the front-end
 	_imgResults = loadPlotlyJsonInResults(_imgResults);
@@ -320,35 +475,113 @@ void Analysis::imageEdited(const Json::Value & results)
 	emit imageEditedSignal(this);
 	emit imageChanged();
 
-	//Maybe this is the wrong request, because it took a while and the user kept changing stuff in the ploteditor
-	if(_imgOptions.isMember("request") && _imgResults.isMember("request") && _imgOptions["request"].asInt() != _imgResults["request"].asInt())
-		editImage(_imgOptions);
+	// Drain the user-edit serialisation queue: pop the just-completed entry, dispatch next if any.
+	if (!_editQueue.empty())
+		_editQueue.pop_front();
+
+	if (!_editQueue.empty())
+	{
+		Log::log() << "imageEdited: draining queue — dispatching next ("
+				   << _editQueue.size() << " remaining)" << std::endl;
+		_dispatchEditImage(_editQueue.front());
+	}
 }
 
-bool Analysis::updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root)
+// Applies saved plot edits to the fresh engine results after a re-run.
+// Returns names of plots needing engine re-render (dimension mismatches).
+//
+// Three things happen per stored edit entry:
+// 1. editOptions are stamped into the results tree (avoids engine roundtrip).
+// 2. Stored dimensions (width/height) are written into the results tree.
+// 3. Plots whose stored dimensions differ from engine-computed ones AND have
+//    no editOptions (pure size changes) are collected for re-edit.
+//
+// Plots with editOptions are always flagged for re-edit, since the engine
+// needs to re-render the plot at the user's edited state.
+std::set<std::string> Analysis::applyPlotEdits()
 {
-	if(root.isNull()) return false;
+	std::set<std::string> reEditNames;
 
-	if(root.isArray())
-		for(Json::Value & entry: root)
-			if(updatePlotSize(plotName, width, height, entry))
-				return true;
-
-	if(root.isObject())
+	if (_plotEdits.isNull())
 	{
-		if(root.isMember(plotName))
-		{
-			root[plotName]["width"]  = width;
-			root[plotName]["height"] = height;
-			return true;
-		}
-		else
-			for(const std::string & memName : root.getMemberNames())
-				if(updatePlotSize(plotName, width, height, root[memName]))
-					return true;
+		Log::log() << "applyPlotEdits: _plotEdits is null, nothing to apply" << std::endl;
+		return reEditNames;
 	}
 
-	return false;
+	Log::log() << "applyPlotEdits: _plotEdits has " << _plotEdits.getMemberNames().size() << " entries" << std::endl;
+
+	for (const std::string & uniqueName : _plotEdits.getMemberNames())
+	{
+		const Json::Value & edit = _plotEdits[uniqueName];
+
+		if (edit.isMember("editOptions"))
+		{
+			bool found = _setEditOptionsOfPlot(_results, uniqueName, edit["editOptions"]);
+			if (found) reEditNames.insert(uniqueName);
+		}
+
+		if (edit.isMember("width") && edit.isMember("height"))
+		{
+			int storedW = edit["width"].asInt(),
+				storedH = edit["height"].asInt();
+
+			if (storedW > 0 && storedH > 0)
+			{
+				int engineW = -1, engineH = -1;
+				_getPlotDimensions(_results, uniqueName, engineW, engineH);
+
+				_updatePlotField(_results, uniqueName, "width",  storedW);
+				_updatePlotField(_results, uniqueName, "height", storedH);
+
+				if (!edit.isMember("editOptions")
+					&& (storedW != engineW || storedH != engineH))
+					reEditNames.insert(uniqueName);
+			}
+		}
+	}
+
+	return reEditNames;
+}
+
+void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
+{
+	// Re-edits are a batch operation triggered after an engine re-run, not user-initiated
+	// serialised edits. Clear any stale queue entries from a prior chain that may have been
+	// abandoned (e.g. engine re-ran before all queued edits completed; shouldn't happen normally).
+	//
+	// Two separate edit flows coexist: the user-edit queue (_editQueue, serialised by editImage)
+	// and the batch re-edit flow (this method). Re-edits are not user-initiated — they restore
+	// previously-saved edits to freshly re-run engine output. Clearing the user queue here
+	// prevents stale user edits (from a now-obsolete engine state) from executing on new results.
+	_editQueue.clear();
+	_pendingReEdits.clear();
+
+	for (const std::string & uniqueName : plotNames)
+	{
+		if (_plotEdits.isNull() || !_plotEdits.isMember(uniqueName))
+			continue;
+
+		const Json::Value & edit = _plotEdits[uniqueName];
+		if (!edit.isMember("editOptions") && !edit.isMember("width"))
+			continue;
+
+		Json::Value imgOpts;
+		imgOpts["name"]        = uniqueName;
+		imgOpts["type"]        = "interactive";
+		imgOpts["request"]     = RE_EDIT_REQUEST_ID;
+		if (edit.isMember("editOptions"))
+			imgOpts["editOptions"] = edit["editOptions"];
+		if (edit.isMember("width") && edit.isMember("height"))
+		{
+			imgOpts["width"]  = edit["width"];
+			imgOpts["height"] = edit["height"];
+		}
+
+		_pendingReEdits.insert(uniqueName);
+
+		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=interactive" << std::endl;
+		editImage(imgOpts);
+	}
 }
 
 void Analysis::rewriteImages()
@@ -461,14 +694,19 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 		{
 			Json::Value plotlyJson;
 			Json::Reader jsonReader;
+			QByteArray fileData = plotlyJsonFile.readAll();
 
-			jsonReader.parse(plotlyJsonFile.readAll().toStdString(),plotlyJson, false);
+			jsonReader.parse(fileData.toStdString(), plotlyJson, false);
+
+			if (fileData.size() > 0 && plotlyJson.isNull())
+				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
 
 			ColumnEncoder::decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
-		return Json::Value("");
+		Log::log() << "loadPlotlyJsonInResults: FAILED to open file '" << tempFileRelativePath << "'" << std::endl;
+		return Json::Value();
 	};
 
 
@@ -476,8 +714,16 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 
 	recursiveFixer = [&loadFile, &recursiveFixer](Json::Value & results)
 	{
-		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString() && QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + results["interactiveJsonData"].asString())))
-			results["interactiveJsonData"] = loadFile(results["interactiveJsonData"].asString());
+		if(results.isObject() && results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString())
+		{
+			std::string relPath = results["interactiveJsonData"].asString();
+			if (QFileInfo::exists(tq(TempFiles::sessionDirName() + "/" + relPath)))
+			{
+				Json::Value loaded = loadFile(relPath);
+				if (!loaded.isNull())
+					results["interactiveJsonData"] = loaded;
+			}
+		}
 
 		if(results.isObject())
 			for(const std::string & member : results.getMemberNames())
@@ -508,6 +754,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["status"]		= statusToString(_status);
 	analysisAsJson["options"]		= boundValues();
 	analysisAsJson["userdata"]		= userData();
+	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;
 	analysisAsJson["saveState"]     = (_dynamicModule && _dynamicModule->descriptionQml()) ? (_dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default") : "default";
 
@@ -543,6 +790,32 @@ void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & an
 {
 	Log::log() << "Now loading userdata results and R Sources for analysis " << _name << " from file." << std::endl;
 	setUserData(analysisData["userdata"]);
+	if (analysisData.isMember("plotEdits") && !analysisData["plotEdits"].isNull())
+	{
+		_plotEdits = analysisData["plotEdits"];
+		Log::log() << "loadResultsUserdata: restored _plotEdits with " << _plotEdits.getMemberNames().size() << " entries" << std::endl;
+
+		// Backwards-compatibility: JASP files saved before plot-edit persistence
+		// may have editOptions without width/height. Scavenge dimensions from the
+		// saved results tree so future resize-re-edits work correctly.
+		if (analysisData.isMember("results") && !analysisData["results"].isNull())
+		{
+			for (const std::string & plotName : _plotEdits.getMemberNames())
+			{
+				if (!_plotEdits[plotName].isMember("width") || !_plotEdits[plotName].isMember("height"))
+				{
+					int w = -1, h = -1;
+					if (_getPlotDimensions(analysisData["results"], plotName, w, h) && w > 0 && h > 0)
+					{
+						_plotEdits[plotName]["width"]  = w;
+						_plotEdits[plotName]["height"] = h;
+					}
+				}
+			}
+		}
+	}
+	else
+		Log::log() << "loadResultsUserdata: no plotEdits key in saved data (or null)" << std::endl;
 	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
 
@@ -805,13 +1078,37 @@ bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string
 		{
 			editOptions = results["editOptions"];
 
-			Log::log() << "Found editOptions of " << uniqueName << " and they are:\n" << editOptions.toStyledString() << std::endl;
+			Log::log() << "Found editOptions of " << uniqueName << " (" << editOptions.getMemberNames().size() << " keys)" << std::endl;
 
 			return true;
 		}
 
 		for(const std::string & member : results.getMemberNames())
 			if(_editOptionsOfPlot(results[member], uniqueName, editOptions))
+				return true;
+	}
+
+	return false;
+}
+
+bool Analysis::_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const
+{
+	if(results.isArray())
+		for(const Json::Value & entry : results)
+			if(_getPlotDimensions(entry, uniqueName, width, height))
+				return true;
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+		{
+			width  = results.get("width",  -1).asInt();
+			height = results.get("height", -1).asInt();
+			return true;
+		}
+
+		for(const std::string & member : results.getMemberNames())
+			if(_getPlotDimensions(results[member], uniqueName, width, height))
 				return true;
 	}
 
@@ -835,13 +1132,37 @@ bool Analysis::_setEditOptionsOfPlot(Json::Value & results, const std::string & 
 	{
 		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
 		{
-			Log::log() << "Replacing editOptions of " << uniqueName << ", old:\n" << results["editOptions"].toStyledString() << "\nnew:\n" << editOptions.toStyledString() << std::endl;
+			Log::log() << "_setEditOptionsOfPlot: found '" << uniqueName << "' replacing editOptions (old keys: " << results["editOptions"].getMemberNames().size() << " new keys: " << editOptions.getMemberNames().size() << ")" << std::endl;
 			results["editOptions"] = editOptions;
 			return true;
 		}
 
 		for(const std::string & member : results.getMemberNames())
 			if(_setEditOptionsOfPlot(results[member], uniqueName, editOptions))
+				return true;
+	}
+
+	return false;
+}
+
+bool Analysis::_updatePlotField(Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value)
+{
+	if(results.isArray())
+		for(Json::Value & entry : results)
+			if(_updatePlotField(entry, uniqueName, fieldName, value))
+				return true;
+
+	if(results.isObject())
+	{
+		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
+		{
+			Log::log() << "_updatePlotField: found '" << uniqueName << "' setting field='" << fieldName << "'" << std::endl;
+			results[fieldName] = value;
+			return true;
+		}
+
+		for(const std::string & member : results.getMemberNames())
+			if(_updatePlotField(results[member], uniqueName, fieldName, value))
 				return true;
 	}
 

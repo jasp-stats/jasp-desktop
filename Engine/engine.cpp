@@ -802,6 +802,12 @@ void Engine::editImage()
 	std::string optionsJson	= _imageOptions.toStyledString(),
 				result		= jaspRCPP_editImage(_analysisName.c_str(), optionsJson.c_str(), _analysisId);
 
+	//Log::log() << "Engine::editImage: optionsJson=" << optionsJson.substr(0, std::min(optionsJson.size(), size_t(200))) << std::endl;
+	//{
+	//	std::string truncated = result.substr(0, std::min(result.size(), size_t(500)));
+	//	Log::log() << "Engine::editImage: raw R result (first 500 chars)=" << truncated << std::endl;
+	//}
+
 	// JSONCPP_STRING          err;
 	// Json::CharReaderBuilder jsonReaderBuilder;
 	// std::unique_ptr<Json::CharReader> const jsonReader(jsonReaderBuilder.newCharReader());
@@ -811,7 +817,17 @@ void Engine::editImage()
 	Json::Reader().parse(result, _analysisResults, false);
 
 	if(_analysisResults.isMember("results"))
+	{
 		_analysisResults["results"]["request"] = _imageOptions.get("request", -1);
+		// When pngFile is present (jaspBase ≥ <next>), the true PNG path is
+		// provided by R and the hack is unnecessary. Older jaspBase builds won't
+		// have pngFile, so fall back to injecting the plot name as data so the
+		// C++/JS pipeline can still identify which image to update.
+		if (_analysisResults["results"].isMember("name")
+			&& !_analysisResults["results"].isMember("data")
+			&& !_analysisResults["results"].isMember("pngFile"))
+			_analysisResults["results"]["data"] = _analysisResults["results"]["name"];
+	}
 
 	_analysisStatus			= Status::complete;
 

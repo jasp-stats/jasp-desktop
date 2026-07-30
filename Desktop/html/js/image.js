@@ -48,7 +48,12 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	hasInteractive:				function() {	
 		if(!useInteractivePlots) 
 			return false; 
-		return this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;	},
+		var ij = this.model.get("interactiveJsonData");
+		// Check for empty string: the engine serialises null JSON paths as "",
+		// which is not valid interactive data. Without this check, plots with
+		// no interactiveJsonData would spuriously show the "Interactive plot"
+		// toggle option.
+		return ij !== null && ij !== undefined && ij !== "";	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	interactiveImageClicked:	function() {
@@ -65,9 +70,18 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		// Clear the current content and re-render
 		// this.myView.$el.empty();
 		this.myView.reRender();
-		
+
+		// Persist the interactive/static toggle state through the userdata
+		// system. The changed:userData event bubbles to analysis.onUserDataChanged,
+		// which calls setData -> jasp.setUserData() via QWebChannel, eventually
+		// reaching C++ Analysis::setUserData. On next render, the state is
+		// restored from the model's userdata.
 		if (!this.settingUserData)
-			this.$el.trigger("changed:userData", [this.userDataDetails, [{ key: 'collapsed', value: this.isCollapsed() }]]);
+			this.$el.trigger("changed:userData", [this.userDataDetails, [
+				{ key: 'collapsed', value: this.isCollapsed() },
+				{ key: 'userInteractive', value: this.model.get('userInteractive') },
+				{ key: 'interactive', value: this.model.get('interactive') }
+			]]);
 
 		return true;
 	},
@@ -100,6 +114,11 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		self.myView = imagePrimitive
 	},
 														  
+	// Overrides objectView.setUserData to handle image-specific properties
+	// (userInteractive, interactive) in addition to the standard collapsed
+	// state. This is necessary because the interactive/static toggle state
+	// lives on model properties that have no generic ancestor handling in
+	// objectView.
 	setUserData: function (details, data) {
 		this.userDataDetails = details;
 		this.settingUserData = true;
@@ -118,6 +137,9 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 		this.settingUserData = false;
 	},
 														  
+	// Complements objectView.getLocalUserData (which handles collapsed state
+	// and notes) with image-specific interactive toggle state. Called by
+	// analysis.getAllUserData during the userdata persistence walk.
 	getLocalUserData: function () 
 	{
 		if(!useInteractivePlots || !this.model.get("userInteractive"))
@@ -249,11 +271,10 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	render: function () {//interactive = false) {
 
 		var hasInteractiveError = this.model.get("interactiveConvertError") != ""
-		var hasInteractive		= !hasInteractiveError && this.model.get("interactiveJsonData") != "";
+		var hasInteractive		= !hasInteractiveError && this.model.get("interactiveJsonData") !== "";
 		
 		if (useInteractivePlots && hasInteractive && ((this.model.get("userInteractive") && this.model.get("interactive")) || (!this.model.get("userInteractive") && window.globSet.showInteractiveDefault))) {
 
-			console.log("image.js: this is where the post step to run the json happens!");
 			this.preRenderPlotly();
 
 			// Only call jQuery if there's no error

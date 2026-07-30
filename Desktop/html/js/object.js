@@ -151,7 +151,7 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 				deltaAvailable	: this.noteBox.model.get('deltaAvailable')
 			}
 
-		return userData !== {} ? userData : null
+		return Object.keys(userData).length > 0 ? userData : null
 	},
 
 	notesMenuClicked: function (noteType, visibility) {

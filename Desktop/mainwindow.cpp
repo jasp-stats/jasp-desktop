@@ -469,8 +469,8 @@ Q_DECLARE_METATYPE(columnType)
 void MainWindow::makeConnections()
 {
 	connect(this,					&MainWindow::saveJaspFile,							this,					&MainWindow::saveJaspFileHandler,							Qt::QueuedConnection);
-	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::editImageCancelled,					_resultsJsInterface,	&ResultsJsInterface::cancelImageEdit						);
+	connect(this,					&MainWindow::screenPPIChanged,						_preferences,			&PreferencesModel::setDefaultPPI							);
 	connect(this,					&MainWindow::dataAvailableChanged,					_dynamicModules,		&DynamicModules::setDataLoaded								);
 	connect(this,					&MainWindow::dataAvailableChanged,					_ribbonModel,			&RibbonModel::dataLoadedChanged								);
 	connect(this,					&MainWindow::dataAvailableChanged,					this,					&MainWindow::checkEmptyWorkspace							);
@@ -1391,7 +1391,11 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		)
 			analysis->refresh();
 		else
-			emit editImageCancelled(id);
+		{
+			Json::Value opts;
+			Json::Reader().parse(fq(options), opts);
+			emit editImageCancelled(id, tq(opts.get("name", "").asString()));
+		}
 	}
 	else
 	{

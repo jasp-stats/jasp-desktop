@@ -252,7 +252,7 @@ private:
 
 signals:
 	void saveJaspFile();
-	void editImageCancelled(		int			id);
+	void editImageCancelled(		int			id, QString name);
 	void updateAnalysesUserData(	QString		userData);
 	void runButtonTextChanged(		QString		runButtonText);
 	void runButtonEnabledChanged(	bool		runButtonEnabled);
