@@ -415,7 +415,7 @@ void Analysis::imageEdited(const Json::Value & results)
 		if (results.isMember("interactiveJsonData") && results["interactiveJsonData"].isString())
 			_updatePlotField(_results, name, "interactiveJsonData", results["interactiveJsonData"]);
 
-		if (results.isMember("data"))
+		if (results.isMember("data") && !results["data"].isNull())
 			_updatePlotField(_results, name, "data", results["data"]);
 
 		// Determine whether this was a user-initiated resize (type "resize",
