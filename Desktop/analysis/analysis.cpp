@@ -565,9 +565,13 @@ std::set<std::string> Analysis::applyPlotEdits()
 			{
 				int engineW = -1, engineH = -1;
 				_getPlotDimensions(_results, uniqueName, engineW, engineH);
+				
+				_updatePlotField(_results, uniqueName, "width",				storedW);
+				_updatePlotField(_results, uniqueName, "height",			storedH);
+				_updatePlotField(_results, uniqueName, "originalWidth",		engineW);
+				_updatePlotField(_results, uniqueName, "originalHeight",	engineH);
 
-				if (!edit.isMember("editOptions")
-					&& (storedW != engineW || storedH != engineH))
+				if (!edit.isMember("editOptions") && (storedW != engineW || storedH != engineH))
 					reEditNames.insert(uniqueName);
 			}
 		}
@@ -796,7 +800,7 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	
 	
 	analysisAsJson["columns"]		= Json::arrayValue;
-	
+
 	for(Column * column : DataSetPackage::pkg()->dataSet()->columns())
 		if(column->analysisId() == _id)
 			analysisAsJson["columns"].append(column->name());
@@ -1123,8 +1127,9 @@ bool Analysis::_getPlotDimensions(const Json::Value & results, const std::string
 	{
 		if(results.isMember("name") && results["name"].asString() == uniqueName && results.isMember("editOptions"))
 		{
-			width  = results.get("width",  -1).asInt();
-			height = results.get("height", -1).asInt();
+			width  = results.get("originalWidth",  results.get("width",  -1).asInt()).asInt();
+			height = results.get("originalHeight", results.get("height", -1).asInt()).asInt();
+			
 			return true;
 		}
 
