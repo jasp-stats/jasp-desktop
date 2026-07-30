@@ -1076,11 +1076,11 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emi
 	return editOptions;
 }
 
-Json::Value Analysis::editOptionsOfPlotFromEdits(const std::string & uniqueName) const
+Json::Value Analysis::editOptionsOfPlotFromEdits(const std::string & uniqueName)
 {
 	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptions"))
 		return _plotEdits[uniqueName]["editOptions"];
-	return Json::objectValue;
+	return editOptionsOfPlot(uniqueName, false);
 }
 
 bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions)
