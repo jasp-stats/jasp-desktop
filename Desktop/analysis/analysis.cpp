@@ -551,8 +551,8 @@ std::set<std::string> Analysis::applyPlotEdits()
 				for (const std::string & key : engineEditOpts.getMemberNames())
 					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
 						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
+				reEditNames.insert(uniqueName);
 			}
-			reEditNames.insert(uniqueName);
 		}
 
 		if (edit.isMember("width") && edit.isMember("height"))
@@ -563,15 +563,16 @@ std::set<std::string> Analysis::applyPlotEdits()
 			if (storedW > 0 && storedH > 0)
 			{
 				int engineW = -1, engineH = -1;
-				_getPlotDimensions(_results, uniqueName, engineW, engineH);
-				
-				_updatePlotField(_results, uniqueName, "width",				storedW);
-				_updatePlotField(_results, uniqueName, "height",			storedH);
-				_updatePlotField(_results, uniqueName, "originalWidth",		engineW);
-				_updatePlotField(_results, uniqueName, "originalHeight",	engineH);
+				if (_getPlotDimensions(_results, uniqueName, engineW, engineH))
+				{
+					_updatePlotField(_results, uniqueName, "width",				storedW);
+					_updatePlotField(_results, uniqueName, "height",			storedH);
+					_updatePlotField(_results, uniqueName, "originalWidth",		engineW);
+					_updatePlotField(_results, uniqueName, "originalHeight",	engineH);
 
-				if (!edit.isMember("editOptions") && (storedW != engineW || storedH != engineH))
-					reEditNames.insert(uniqueName);
+					if (!edit.isMember("editOptions") && (storedW != engineW || storedH != engineH))
+						reEditNames.insert(uniqueName);
+				}
 			}
 		}
 	}
