@@ -93,6 +93,7 @@ public:
 	void				setErrorInResults(const std::string	& msg);
 
 	Json::Value			editOptionsOfPlot(		const std::string & uniqueName, bool emitError = true);
+	Json::Value			editOptionsOfPlotFromEdits(const std::string & uniqueName)		const;
 	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
 	bool				checkAnalysisEntry();
 
