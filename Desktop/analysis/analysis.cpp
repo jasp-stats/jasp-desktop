@@ -458,7 +458,31 @@ void Analysis::imageEdited(const Json::Value & results)
 			Log::log() << "imageEdited: stored _plotEdits for '" << name << "' (" << plotEdits.getMemberNames().size() << " keys)" << std::endl;
 		}
 		else
+		{
 			Log::log() << "imageEdited: re-edit for '" << name << "' completed, not updating _plotEdits" << std::endl;
+
+			// Interactive re-edits echo back the requested size but the
+			// engine renders at its own default dimensions. If the actual
+			// plot dimensions in _results differ from what _plotEdits
+			// expects, queue a resize to get a properly-sized PNG.
+			int actualW = -1, actualH = -1;
+			if (_getPlotDimensions(_results, name, actualW, actualH))
+			{
+				int storedW = _plotEdits.isMember(name) ? _plotEdits[name].get("width", -1).asInt() : -1;
+				int storedH = _plotEdits.isMember(name) ? _plotEdits[name].get("height", -1).asInt() : -1;
+
+				if (storedW > 0 && storedH > 0 && (actualW != storedW || actualH != storedH))
+				{
+					Log::log() << "imageEdited: dimensions mismatch (actual=" << actualW << "x" << actualH << " stored=" << storedW << "x" << storedH << "), queuing resize" << std::endl;
+					Json::Value resizeOpts;
+					resizeOpts["name"]   = name;
+					resizeOpts["type"]   = "resize";
+					resizeOpts["width"]  = storedW;
+					resizeOpts["height"] = storedH;
+					editImage(resizeOpts);
+				}
+			}
+		}
 	}
 
 	// Inject the plot name into _imgResults so JS can identify which image
@@ -488,17 +512,17 @@ void Analysis::imageEdited(const Json::Value & results)
 	}
 }
 
-// Applies saved plot edits to the fresh engine results after a re-run.
-// Returns names of plots needing engine re-render (dimension mismatches).
+// Applies saved plot edits after an engine re-run.
+// Returns names of plots needing engine re-render.
 //
-// Three things happen per stored edit entry:
-// 1. editOptions are stamped into the results tree (avoids engine roundtrip).
-// 2. Stored dimensions (width/height) are written into the results tree.
-// 3. Plots whose stored dimensions differ from engine-computed ones AND have
-//    no editOptions (pure size changes) are collected for re-edit.
-//
-// Plots with editOptions are always flagged for re-edit, since the engine
-// needs to re-render the plot at the user's edited state.
+// _results is kept pure — engine output is never modified.
+// _plotEdits is the sole authority for user edits:
+//   - New engine editOptions keys are deep-merged into _plotEdits
+//     (filling gaps without overwriting user-set values).
+//   - Plots with editOptions are always flagged for interactive re-edit.
+//   - Plots with only dimension changes are flagged for re-edit
+//     if stored dimensions differ from engine-computed ones.
+//   - Width/height are never stamped into _results.
 std::set<std::string> Analysis::applyPlotEdits()
 {
 	std::set<std::string> reEditNames;
@@ -517,8 +541,19 @@ std::set<std::string> Analysis::applyPlotEdits()
 
 		if (edit.isMember("editOptions"))
 		{
-			bool found = _setEditOptionsOfPlot(_results, uniqueName, edit["editOptions"]);
-			if (found) reEditNames.insert(uniqueName);
+			// _plotEdits is now the sole authority for editOptions.
+			// _results stays pure engine output — never patched by us.
+			// Merge new top-level keys from the engine's fresh editOptions
+			// into _plotEdits so it stays complete without overwriting
+			// user-set values.
+			Json::Value engineEditOpts;
+			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
+			{
+				for (const std::string & key : engineEditOpts.getMemberNames())
+					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
+						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
+			}
+			reEditNames.insert(uniqueName);
 		}
 
 		if (edit.isMember("width") && edit.isMember("height"))
@@ -530,9 +565,6 @@ std::set<std::string> Analysis::applyPlotEdits()
 			{
 				int engineW = -1, engineH = -1;
 				_getPlotDimensions(_results, uniqueName, engineW, engineH);
-
-				_updatePlotField(_results, uniqueName, "width",  storedW);
-				_updatePlotField(_results, uniqueName, "height", storedH);
 
 				if (!edit.isMember("editOptions")
 					&& (storedW != engineW || storedH != engineH))
@@ -1045,6 +1077,13 @@ Json::Value Analysis::editOptionsOfPlot(const std::string & uniqueName, bool emi
 	}
 
 	return editOptions;
+}
+
+Json::Value Analysis::editOptionsOfPlotFromEdits(const std::string & uniqueName) const
+{
+	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptions"))
+		return _plotEdits[uniqueName]["editOptions"];
+	return Json::objectValue;
 }
 
 bool Analysis::_editOptionsOfPlot(const Json::Value & results, const std::string & uniqueName, Json::Value & editOptions)
