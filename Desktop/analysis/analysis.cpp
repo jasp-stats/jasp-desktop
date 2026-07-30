@@ -355,6 +355,7 @@ void Analysis::imageEdited(const Json::Value & results)
 {
 	std::string name = _imgOptions.get("name", "").asString();
 	_imgResults = results;
+	Log::log() << "imageEdited: engine response w=" << _imgResults.get("width", -1).asInt() << " h=" << _imgResults.get("height", -1).asInt() << " hasData=" << results.isMember("data") << " hasInteractiveJson=" << results.isMember("interactiveJsonData") << std::endl;
 
 	if (name != "")
 	{
@@ -579,7 +580,7 @@ void Analysis::applyPlotReEdits(const std::set<std::string> & plotNames)
 
 		_pendingReEdits.insert(uniqueName);
 
-		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=interactive" << std::endl;
+		Log::log() << "applyPlotReEdits: re-edit '" << uniqueName << "' type=interactive w=" << imgOpts.get("width", -1).asInt() << " h=" << imgOpts.get("height", -1).asInt() << " hasEditOpts=" << imgOpts.isMember("editOptions") << std::endl;
 		editImage(imgOpts);
 	}
 }
@@ -794,25 +795,6 @@ void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & an
 	{
 		_plotEdits = analysisData["plotEdits"];
 		Log::log() << "loadResultsUserdata: restored _plotEdits with " << _plotEdits.getMemberNames().size() << " entries" << std::endl;
-
-		// Backwards-compatibility: JASP files saved before plot-edit persistence
-		// may have editOptions without width/height. Scavenge dimensions from the
-		// saved results tree so future resize-re-edits work correctly.
-		if (analysisData.isMember("results") && !analysisData["results"].isNull())
-		{
-			for (const std::string & plotName : _plotEdits.getMemberNames())
-			{
-				if (!_plotEdits[plotName].isMember("width") || !_plotEdits[plotName].isMember("height"))
-				{
-					int w = -1, h = -1;
-					if (_getPlotDimensions(analysisData["results"], plotName, w, h) && w > 0 && h > 0)
-					{
-						_plotEdits[plotName]["width"]  = w;
-						_plotEdits[plotName]["height"] = h;
-					}
-				}
-			}
-		}
 	}
 	else
 		Log::log() << "loadResultsUserdata: no plotEdits key in saved data (or null)" << std::endl;

@@ -158,17 +158,20 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 			targetImage = this.findImagePrimitive(imageEditResults.name);
 		}
 		if (targetImage !== null) {
-			jasp.jsLog("insertNewImage: found, applying edit results");
+			jasp.jsLog("insertNewImage: found, applying edit results. Incoming: w=" + imageEditResults.width + " h=" + imageEditResults.height + " hasData=" + (!!imageEditResults.data) + " hasInteractive=" + (!!imageEditResults.interactiveJsonData));
+			var model = targetImage.model;
+			jasp.jsLog("insertNewImage: BEFORE model w=" + model.get("width") + " h=" + model.get("height") + " interactive=" + model.get("interactive") + " userInteractive=" + model.get("userInteractive"));
 			if ("revision" in imageEditResults)
 				targetImage.setRevision(imageEditResults["revision"]);
 			if ("interactiveJsonData" in imageEditResults && imageEditResults["interactiveJsonData"] !== null)
-				targetImage.model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
+				model.set("interactiveJsonData", imageEditResults["interactiveJsonData"]);
 			if (imageEditResults.data)
-				targetImage.model.set("data", imageEditResults.data);
+				model.set("data", imageEditResults.data);
 			if (imageEditResults.width)
-				targetImage.model.set("width", imageEditResults.width);
+				model.set("width", imageEditResults.width);
 			if (imageEditResults.height)
-				targetImage.model.set("height", imageEditResults.height);
+				model.set("height", imageEditResults.height);
+			jasp.jsLog("insertNewImage: AFTER model w=" + model.get("width") + " h=" + model.get("height") + " interactive=" + model.get("interactive") + " userInteractive=" + model.get("userInteractive") + " — calling reRender");
 			targetImage.reRender();
 		} else {
 			jasp.jsLog("insertNewImage: SKIPPED — not found for '" + (imageEditResults ? imageEditResults.name : "null") + "'");
