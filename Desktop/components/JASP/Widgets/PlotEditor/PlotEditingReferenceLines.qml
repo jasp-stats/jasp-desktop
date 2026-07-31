@@ -49,7 +49,7 @@ ComponentsList
 		TextField
 		{
 			name: "lineText"
-			fieldWidth: 250 * jaspTheme.uiScale
+			fieldWidth: 150 * jaspTheme.uiScale
 			defaultValue: rowId.getData(1)
 			onValueChanged: rowId.setData(1, value)
 		}
