@@ -79,8 +79,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
 	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
-	Q_PROPERTY(bool			engineSandbox			READ engineSandbox			WRITE setEngineSandbox			NOTIFY engineSandboxChanged			)
-	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir		WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
+	Q_PROPERTY(bool			engineSandbox			READ engineSandbox				WRITE setEngineSandbox				NOTIFY engineSandboxChanged				)
+	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir			WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
 	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
@@ -98,14 +98,16 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
 	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
 	Q_PROPERTY(QObject*		aiConfigModel			READ aiConfigModel													CONSTANT								)
+	Q_PROPERTY(bool         onboardingCompleted     READ onboardingCompleted		WRITE setOnboardingCompleted        NOTIFY onboardingCompletedChanged       )
+	Q_PROPERTY(int          onboardingStep			READ onboardingStep				WRITE setOnboardingStep             NOTIFY onboardingStepChanged            )
 
 	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
 
-	
 
-	public:
+
+public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
@@ -172,7 +174,7 @@ class PreferencesModel : public PreferencesModelBase
 	bool			developerMode()							const override;
 	QString			developerModeName()						const override;
 	bool			ALTNavModeActive()						const override;
-    bool			orderByValueByDefault()					const;
+	bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;
 	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int				pdfPageSize()							const;
@@ -180,7 +182,7 @@ class PreferencesModel : public PreferencesModelBase
 	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
-	
+
 	QString			localConfigurationPATH()				const;
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
@@ -190,206 +192,211 @@ class PreferencesModel : public PreferencesModelBase
 	int				autoSaveIntervalSec()					const;
 	bool			autoSaveAtAll()							const;
 	bool			checkUpdatesAskUser()					const;
-	
+	bool			onboardingCompleted()					const;
+	int				onboardingStep()						const;
+
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
 	void			setCheckUpdates(		bool	newCheckUpdates);
 	void			setStartMaximized(		bool	newStartMaximized);
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
 	Q_INVOKABLE void resetAiDefaults();
-	
-	bool storeStateEtc() const;
-	void setStoreStateEtc(bool newStoreStateEtc);
 
-	bool showInteractiveDefault() const;
-	void setShowInteractiveDefault(bool newShowInteractiveDefault);
+	bool	storeStateEtc() const;
+	void	setStoreStateEtc(bool newStoreStateEtc);
+
+	bool	showInteractiveDefault() const;
+	void	setShowInteractiveDefault(bool newShowInteractiveDefault);
 
 	AIPersonaModel* aiPersonaModel() const;
 	AIConfigModel* aiConfigModel() const;
 
 	QString aiCommonSystemPrompt() const;
-	void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+	void	setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
 
-	bool aiCommonSystemPromptUseCustom() const;
-	void setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
+	bool	aiCommonSystemPromptUseCustom() const;
+	void	setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
 
-	bool aiEnabled() const;
-	void setAiEnabled(bool newAiEnabled);
+	bool	aiEnabled() const;
+	void	setAiEnabled(bool newAiEnabled);
 
-	bool aiAnnotationUseCustom() const;
-	void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+	bool	aiAnnotationUseCustom() const;
+	void	setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
 
 	QString aiAnnotationPrompt() const;
-	void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
+	void	setAiAnnotationPrompt(QString newAiAnnotationPrompt);
 
-	QString aiUserAvatar() const;
-	void setAiUserAvatar(QString newAiUserAvatar);
+	QString	aiUserAvatar() const;
+	void	setAiUserAvatar(QString newAiUserAvatar);
 
-	bool rpcServerEnabled() const;
-	void setRpcServerEnabled(bool v);
+	bool	rpcServerEnabled() const;
+	void	setRpcServerEnabled(bool v);
 	QString rpcServerIp() const;
-	void setRpcServerIp(QString v);
-	int rpcServerPort() const;
-	void setRpcServerPort(int v);
-		
-	public slots:
-	bool engineSandbox()								const;
-	QString		engineSandboxDir()						const;
-	bool useNativeFileDialog()						const;
-	void setUiScale(					double		uiScale);
-	void setCustomPPI(					int			customPPI);
-	void setDefaultPPI(					int			defaultPPI);
-	void setNumDecimals(				int			numDecimals);
-	void setExactPValues(				bool		exactPValues);
-	void setNormalizedNotation(			bool		normalizedNotation);
-	void setRibbonBarHeightScale(		float		ribbonBarHeightScale);
-	void setCustomEditor(				QString		customEditor);
-	void setFixedDecimals(				bool		fixedDecimals);
-	void setUseDefaultPPI(				bool		useDefaultPPI);
-	void setDeveloperMode(				bool		developerMode)					override;
-	void setWhiteBackground(			bool		whiteBackground);
-	void setPlotBackground(				QString		plotBackground);
-	void setDeveloperFolder(			QString		developerFolder);
-	void setUseDefaultEditor(			bool		useDefaultEditor);
-	void browseSpreadsheetEditor();
-	void browseDeveloperFolder();
-	void browseDeveloperLibPathFolder();
-	void browseEngineSandboxDir();
-	void browseConfigurationFile();
-	void removeEmptyValue(				QString		value);
-	void addEmptyValue(					QString		value);
-	void resetEmptyValues();
-	void setThresholdScale(				int			thresholdScale);
-	void setLogToFile(					bool		logToFile);
-	void setLogFilesMax(				int			logFilesMax);
-	void setMaxFlickVelocity(			int			maxFlickVelocity);
-	void setModulesRemember(			bool		modulesRemember);
-	void setModulesRemembered(			QStringList modulesRemembered);
-	void setSafeGraphics(				bool		safeGraphics);
-	void setCranRepoURL(				QString		cranRepoURL);
-	void setModuleLibraryURL(			QString		moduleLibraryURL);
-	void setGithubPatUseDefault(		bool		useDefault);
-	void setGithubPatCustom(			QString		pat);
-	void moduleEnabledChanged(			QString		moduleName, bool enabled);
-	void onUseDefaultPPIChanged(		bool		useDefault);
-	void onCustomPPIChanged(			int);
-	void onDefaultPPIChanged(			int);
-	void setCurrentThemeName(			QString		currentThemeName)				override;
-	void setInterfaceFont(				QString		interfaceFont);
-	void setCodeFont(					QString		codeFont);
-	void setResultFont(					QString		resultFont);
-	void setUseNativeFileDialog(		bool		useNativeFileDialog);
-	void setDisableAnimations(			bool		disableAnimations);
-	void setGenerateMarkdown(			bool		generateMarkdown);
-	void resetRememberedModules(		bool		clear);
-	void setMaxEngines(					int			maxEngines);
-	void setWindowsNoBomNative(			bool		windowsNoBomNative);
-	void setWindowsChosenCodePage(		int			windowsChosenCodePage);
-	void setDbShowWarning(				bool		dbShowWarning);
-	void setDataLabelNA(				QString		dataLabelNA);
-	void setGuiQtTextRender(			bool		newGuiQtTextRender);
-	void onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
-	void setReportingMode(				bool		reportingMode);
-	void setShowRSyntax(				bool		showRSyntax)					override;
-	void setShowAllROptions(			bool		showAllROptions)				override;
-	void setShowRSyntaxInResults(		bool		showRSyntax);
-	void currentThemeNameHandler();
-	void setALTNavModeActive(			bool		ALTNavModeActive);
-	void setOrderByValueByDefault(		bool		orderByValueByDefault);
-	void setMaxScaleLevels(				int			maxScaleLevels);
-	void setPdfPageSize(				int			pdfPageSize);
-	void setPdfLandscape(				bool		pdfLandscape);
-	void setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
-	void setDirectLibpathFolder(		QString		libpath);
-	void setDirectDevModName(			QString		 name);
-	void setEngineSandbox(				bool		engineSandbox);
-	void setEngineSandboxDir(			QString		dir);
-	void setLocalConfigurationPATH(		QString		path);
-	void setRemoteConfiguration(		bool		enabled);
-	void setRemoteConfigurationURL(		QString		URL);
-	void setUseConfigurationFile(		bool		newUseConfigurationFile);
+	void	setRpcServerIp(QString v);
+	int		rpcServerPort() const;
+	void	setRpcServerPort(int v);
+
+public slots:
+	bool	engineSandbox()							const;
+	QString	engineSandboxDir()						const;
+	bool	useNativeFileDialog()						const;
+	void	setUiScale(					double		uiScale);
+	void	setCustomPPI(					int			customPPI);
+	void	setDefaultPPI(					int			defaultPPI);
+	void	setNumDecimals(				int			numDecimals);
+	void	setExactPValues(				bool		exactPValues);
+	void	setNormalizedNotation(			bool		normalizedNotation);
+	void	setRibbonBarHeightScale(		float		ribbonBarHeightScale);
+	void	setCustomEditor(				QString		customEditor);
+	void	setFixedDecimals(				bool		fixedDecimals);
+	void	setUseDefaultPPI(				bool		useDefaultPPI);
+	void	setDeveloperMode(				bool		developerMode)					override;
+	void	setWhiteBackground(			bool		whiteBackground);
+	void	setPlotBackground(				QString		plotBackground);
+	void	setDeveloperFolder(			QString		developerFolder);
+	void	setUseDefaultEditor(			bool		useDefaultEditor);
+	void	browseSpreadsheetEditor();
+	void	browseDeveloperFolder();
+	void	browseDeveloperLibPathFolder();
+	void	browseEngineSandboxDir();
+	void	browseConfigurationFile();
+	void	removeEmptyValue(				QString		value);
+	void	addEmptyValue(					QString		value);
+	void	resetEmptyValues();
+	void	setThresholdScale(				int			thresholdScale);
+	void	setLogToFile(					bool		logToFile);
+	void	setLogFilesMax(				int			logFilesMax);
+	void	setMaxFlickVelocity(			int			maxFlickVelocity);
+	void	setModulesRemember(			bool		modulesRemember);
+	void	setModulesRemembered(			QStringList modulesRemembered);
+	void	setSafeGraphics(				bool		safeGraphics);
+	void	setCranRepoURL(				QString		cranRepoURL);
+	void	setModuleLibraryURL(			QString		moduleLibraryURL);
+	void	setGithubPatUseDefault(		bool		useDefault);
+	void	setGithubPatCustom(			QString		pat);
+	void	moduleEnabledChanged(			QString		moduleName, bool enabled);
+	void	onUseDefaultPPIChanged(		bool		useDefault);
+	void	onCustomPPIChanged(			int);
+	void	onDefaultPPIChanged(			int);
+	void	setCurrentThemeName(			QString		currentThemeName)				override;
+	void	setInterfaceFont(				QString		interfaceFont);
+	void	setCodeFont(					QString		codeFont);
+	void	setResultFont(					QString		resultFont);
+	void	setUseNativeFileDialog(		bool		useNativeFileDialog);
+	void	setDisableAnimations(			bool		disableAnimations);
+	void	setGenerateMarkdown(			bool		generateMarkdown);
+	void	resetRememberedModules(		bool		clear);
+	void	setMaxEngines(					int			maxEngines);
+	void	setWindowsNoBomNative(			bool		windowsNoBomNative);
+	void	setWindowsChosenCodePage(		int			windowsChosenCodePage);
+	void	setDbShowWarning(				bool		dbShowWarning);
+	void	setDataLabelNA(				QString		dataLabelNA);
+	void	setGuiQtTextRender(			bool		newGuiQtTextRender);
+	void	onGuiQtTextRenderChanged(		bool		newGuiQtTextRenderSetting);
+	void	setReportingMode(				bool		reportingMode);
+	void	setShowRSyntax(				bool		showRSyntax)					override;
+	void	setShowAllROptions(			bool		showAllROptions)				override;
+	void	setShowRSyntaxInResults(		bool		showRSyntax);
+	void	currentThemeNameHandler();
+	void	setALTNavModeActive(			bool		ALTNavModeActive);
+	void	setOrderByValueByDefault(		bool		orderByValueByDefault);
+	void	setMaxScaleLevels(				int			maxScaleLevels);
+	void	setPdfPageSize(				int			pdfPageSize);
+	void	setPdfLandscape(				bool		pdfLandscape);
+	void	setDirectLibpathEnabled(		bool		setDirectLibpathEnabled);
+	void	setDirectLibpathFolder(		QString		libpath);
+	void	setDirectDevModName(			QString		 name);
+	void	setEngineSandbox(				bool		engineSandbox);
+	void	setEngineSandboxDir(			QString		dir);
+	void	setLocalConfigurationPATH(		QString		path);
+	void	setRemoteConfiguration(		bool		enabled);
+	void	setRemoteConfigurationURL(		QString		URL);
+	void	setUseConfigurationFile(		bool		newUseConfigurationFile);
+	void	setOnboardingCompleted(        bool        newOnboardingCompleted);
+	void	setOnboardingStep(             int         newOnboardingStep);
 
 
-	
+
 signals:
-	void fixedDecimalsChanged(			bool		fixedDecimals);
-	void fixedDecimalsChangedString(	QString		fixedDecimals);
-	void numDecimalsChanged(			int			numDecimals);
-	void exactPValuesChanged(			bool		exactPValues);
-	void normalizedNotationChanged(		bool		normalizedNotation);
-	void useDefaultEditorChanged(		bool		useDefaultEditor);
-	void customEditorChanged(			QString		customEditor);
-	void useDefaultPPIChanged(			bool		useDefaultPPI);
-	void whiteBackgroundChanged();
-	void customPPIChanged(				int			customPPI);
-	void defaultPPIChanged(				int			defaultPPI);
-	void emptyValuesChanged();
-	void developerFolderChanged(		QString		developerFolder);
-	void plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
-	void plotBackgroundChanged(			QString		plotBackground);
-	void thresholdScaleChanged(			int			thresholdScale);
-	void logToFileChanged(				bool		logToFile);
-	void logFilesMaxChanged(			int			logFilesMax);
-	void modulesRememberChanged(		bool		modulesRemember);
-	void modulesRememberedChanged();
-	void safeGraphicsChanged(			bool		safeGraphics);
-	void cranRepoURLChanged(			QString		cranRepoURL);
-	void moduleLibraryURLChanged(		QString		moduleLibraryURL);
-	void githubPatUseDefaultChanged(	bool		githubPatUseDefault);
-	void githubPatCustomChanged();
-	void codeFontChanged(				QString		codeFont);
-	void resultFontChanged(				QString		resultFont);
-	void currentThemeNameChanged(		QString		currentThemeName);
-	void plotPPIPropChanged();
-	void useNativeFileDialogChanged(	bool		useNativeFileDialog);
-	void disableAnimationsChanged(		bool		disableAnimations);
-	void generateMarkdownChanged(		bool		generateMarkdown);
-	void lcCtypeChanged();
-	void restartAllEngines();
-	void maxEnginesChanged(				int			maxEngines);
-	void windowsNoBomNativeChanged(		bool		windowsNoBomNative);
-	void windowsChosenCodePageChanged(	int			windowsChosenCodePage);
-	void dbShowWarningChanged(			bool		dbShowWarning);
-	void maxEnginesAdminChanged();
-	void dataLabelNAChanged(			QString		dataLabelNA);
-	void guiQtTextRenderChanged(		bool		guiQtTextRender);
-	void reportingModeChanged(			bool		reportingMode);
-	void showRSyntaxInResultsChanged(	bool		showRSyntax);
-	void aboutToChangeEmptyValues(		QStringList newValues);
-	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
-	void checkUpdatesAskUserChanged(	bool		checkAsk);
-	void checkUpdatesChanged(			bool		check);
-	void maxScaleLevelsChanged(			int			maxScaleLevels);
-	void pdfPageSizeChanged(			int			pdfPageSize);
-	void pdfLandscapeChanged(			bool		pdfLandscape);
-	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
-	void directLibpathFolderChanged();
-	void directDevModNameChanged(		QString name);
-	void engineSandboxChanged(			bool		engineSandbox);
-	void engineSandboxDirChanged(		QString		dir);
-	void localConfigurationPATHChanged(	QString		path);
-	void remoteConfigurationChanged(	bool		enabled);
-	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
-	void useConfigurationFileChanged(	bool		enabled);
-	void startMaximizedChanged(			bool		startMaximized);
-	void storeStateEtcChanged(			bool		state);
-	void showInteractiveDefaultChanged(	bool		interactive);
-	void autoSaveIntervalSecChanged(	int		interval);
-		void autoSaveAtAllChanged(			bool		autoSave);
-			void aiCommonSystemPromptChanged(		QString	aiCommonSystemPrompt);
-				void aiCommonSystemPromptUseCustomChanged(	bool	aiCommonSystemPromptUseCustom);
-				void aiEnabledChanged(			bool	aiEnabled);
-			void aiAnnotationUseCustomChanged(bool	aiAnnotationUseCustom);
-			void aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
-			void aiUserAvatarChanged(		QString	aiUserAvatar);
+	void	fixedDecimalsChanged(			bool		fixedDecimals);
+	void	fixedDecimalsChangedString(	QString		fixedDecimals);
+	void	numDecimalsChanged(			int			numDecimals);
+	void	exactPValuesChanged(			bool		exactPValues);
+	void	normalizedNotationChanged(		bool		normalizedNotation);
+	void	useDefaultEditorChanged(		bool		useDefaultEditor);
+	void	customEditorChanged(			QString		customEditor);
+	void	useDefaultPPIChanged(			bool		useDefaultPPI);
+	void	whiteBackgroundChanged();
+	void	customPPIChanged(				int			customPPI);
+	void	defaultPPIChanged(				int			defaultPPI);
+	void	emptyValuesChanged();
+	void	developerFolderChanged(		QString		developerFolder);
+	void	plotPPIChanged(				int			ppiForPlot,			bool	wasUserAction);
+	void	plotBackgroundChanged(			QString		plotBackground);
+	void	thresholdScaleChanged(			int			thresholdScale);
+	void	logToFileChanged(				bool		logToFile);
+	void	logFilesMaxChanged(			int			logFilesMax);
+	void	modulesRememberChanged(		bool		modulesRemember);
+	void	modulesRememberedChanged();
+	void	safeGraphicsChanged(			bool		safeGraphics);
+	void	cranRepoURLChanged(			QString		cranRepoURL);
+	void	moduleLibraryURLChanged(		QString		moduleLibraryURL);
+	void	githubPatUseDefaultChanged(	bool		githubPatUseDefault);
+	void	githubPatCustomChanged();
+	void	codeFontChanged(				QString		codeFont);
+	void	resultFontChanged(				QString		resultFont);
+	void	currentThemeNameChanged(		QString		currentThemeName);
+	void	plotPPIPropChanged();
+	void	useNativeFileDialogChanged(	bool		useNativeFileDialog);
+	void	disableAnimationsChanged(		bool		disableAnimations);
+	void	generateMarkdownChanged(		bool		generateMarkdown);
+	void	lcCtypeChanged();
+	void	restartAllEngines();
+	void	maxEnginesChanged(				int			maxEngines);
+	void	windowsNoBomNativeChanged(		bool		windowsNoBomNative);
+	void	windowsChosenCodePageChanged(	int			windowsChosenCodePage);
+	void	dbShowWarningChanged(			bool		dbShowWarning);
+	void	maxEnginesAdminChanged();
+	void	dataLabelNAChanged(			QString		dataLabelNA);
+	void	guiQtTextRenderChanged(		bool		guiQtTextRender);
+	void	reportingModeChanged(			bool		reportingMode);
+	void	showRSyntaxInResultsChanged(	bool		showRSyntax);
+	void	aboutToChangeEmptyValues(		QStringList newValues);
+	void	orderByValueByDefaultChanged(	bool		orderByValueByDefault);
+	void	checkUpdatesAskUserChanged(	bool		checkAsk);
+	void	checkUpdatesChanged(			bool		check);
+	void	maxScaleLevelsChanged(			int			maxScaleLevels);
+	void	pdfPageSizeChanged(			int			pdfPageSize);
+	void	pdfLandscapeChanged(			bool		pdfLandscape);
+	void	directLibpathEnabledChanged(	bool		directLibpathEnabled);
+	void	directLibpathFolderChanged();
+	void	directDevModNameChanged(		QString name);
+	void	engineSandboxChanged(			bool		engineSandbox);
+	void	localConfigurationPATHChanged(	QString		path);
+	void	remoteConfigurationChanged(	bool		enabled);
+	void	remoteConfigurationURLChanged(	QString		remoteConfigurationURL);
+	void	engineSandboxDirChanged(		QString		dir);
+	void	useConfigurationFileChanged(	bool		enabled);
+	void	startMaximizedChanged(			bool		startMaximized);
+	void	storeStateEtcChanged(			bool		state);
+	void	showInteractiveDefaultChanged(	bool		interactive);
+	void	autoSaveIntervalSecChanged(	int		interval);
+	void	autoSaveAtAllChanged(			bool		autoSave);
+	void	aiCommonSystemPromptChanged(		QString	aiCommonSystemPrompt);
+	void	aiCommonSystemPromptUseCustomChanged(	bool	aiCommonSystemPromptUseCustom);
+	void	aiEnabledChanged(			bool	aiEnabled);
+	void	aiAnnotationUseCustomChanged(bool	aiAnnotationUseCustom);
+	void	aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
+	void	aiUserAvatarChanged(		QString	aiUserAvatar);	
+	void	rpcServerEnabledChanged(	bool	rpcServerEnabled);
+	void	rpcServerIpChanged(		QString	rpcServerIp);
+	void	rpcServerPortChanged(		int		rpcServerPort);
+	void	onboardingCompletedChanged(	bool	onboardingCompleted);
+	void	onboardingStepChanged(		int		onboardingStep);
 
-			void rpcServerEnabledChanged(	bool	rpcServerEnabled);
-			void rpcServerIpChanged(		QString	rpcServerIp);
-			void rpcServerPortChanged(		int		rpcServerPort);
+private slots:
+	void	dataLabelNAChangedSlot(QString label);
 
-	private slots:
-	void dataLabelNAChangedSlot(QString label);
-	
 private:
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
