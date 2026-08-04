@@ -349,7 +349,7 @@ Item
 			height:				width
 			radius:				width / 2
 			color:				"transparent"
-			visible:			moduleLibrary.updatableModuleNames.indexOf(ribbonButton.moduleName) >= 0
+			visible:			false
 			anchors
 			{
 				top:			backgroundImage.top
