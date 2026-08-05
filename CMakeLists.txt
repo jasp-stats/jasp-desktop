@@ -68,7 +68,7 @@ project(
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP     TRUE)
 set(PRO               TRUE       CACHE BOOL   "Are we building the pro-version?")
-set(PRO_COMPANY_NAME  "SCG"  CACHE STRING "What company is this for?")
+set(PRO_COMPANY_NAME  "SCG-Chemicals/SCG_Chemicals_Public_Company_Limited"  CACHE STRING "What company is this for?")
 
 
 if(PRO)
