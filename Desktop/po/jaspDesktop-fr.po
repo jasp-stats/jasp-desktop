@@ -10203,12 +10203,12 @@ msgstr ""
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr ""
+msgstr "Facteurs des mesures répétées"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "RM Factor"
-msgstr ""
+msgstr "Facteur MR"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr ""
+msgstr "Cellules des mesures répétées"
