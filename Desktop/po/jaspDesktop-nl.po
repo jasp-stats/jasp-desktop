@@ -10007,7 +10007,7 @@ msgstr "Factoren van herhaalde metingen"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "RM Factor"
-msgstr "Herhaalde-metingenfactor"
+msgstr "HM Factor"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Cells"
