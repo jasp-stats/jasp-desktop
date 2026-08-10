@@ -10003,12 +10003,12 @@ msgstr ""
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Factors"
-msgstr ""
+msgstr "Factoren van herhaalde metingen"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "RM Factor"
-msgstr ""
+msgstr "Factor herhaalde metingen"
 
 msgctxt "tst_repeatedMeasures|"
 msgid "Repeated Measures Cells"
-msgstr ""
+msgstr "Cellen van herhaalde metingen"
