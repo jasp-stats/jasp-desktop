@@ -36,6 +36,15 @@
 set(JASP_STATIC_IS_DOWN_AGAIN OFF CACHE BOOL "Turn ON to try to get R from CRAN instead")
 set(STATIC_DEVELOPMENT_REPOSITORY "https://static.jasp-stats.org/development/")
 
+if(NOT DEFINED R_REPOSITORY)
+  set(R_REPOSITORY "https://packagemanager.posit.co/cran/latest")
+  set(USER_R_REPO "FALSE")
+else()
+  set(USER_R_REPO "TRUE")
+endif()
+
+message(STATUS "Using R_REPOSITORY = ${R_REPOSITORY} as the CRAN mirror for R packages.")
+
 if(APPLE)
     set(XQUARTZ_VERSION "2.8.5")
 endif()
@@ -870,6 +879,7 @@ execute_process(
 )
 
 else()
+
 ##################
 # renv bootstrap  
 configure_file(${PROJECT_SOURCE_DIR}/Modules/install-renv.R.in
