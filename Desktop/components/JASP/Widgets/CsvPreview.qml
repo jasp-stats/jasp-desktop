@@ -31,6 +31,9 @@ Window
 	modality:               Qt.ApplicationModal
 	color:                  jaspTheme.white
 
+	Accessible.role:		Accessible.Window
+	Accessible.name:		title
+
 	property real windowPadding: 20 * jaspTheme.uiScale
 
 	onVisibleChanged:

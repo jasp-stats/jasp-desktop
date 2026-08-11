@@ -53,7 +53,7 @@ MenuButton
 	implicitHeight:     visible ? 22 * preferencesModel.uiScale : 0
 	implicitWidth:      implicitHeight
 	Layout.alignment: 	Qt.AlignRight
-	activeFocusOnTab:	true
+activeFocusOnTab:	true
 	visible:			helpMD || helpPage
 	toolTip:			qsTr("Open Documentation")
 
@@ -65,4 +65,9 @@ MenuButton
 							helpModel.showOrToggleMarkdown(helpMD)
 
 	onHelpMDChanged: if (helpModel.visible) helpModel.markdown = helpMD
+
+	Accessible.role:			Accessible.Button
+	Accessible.name:			text
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Helpbutton %1").arg(title) : info
+	Accessible.onPressAction:	clicked()
 }

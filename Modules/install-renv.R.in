@@ -10,7 +10,7 @@ mkdir <- function(paths) {
 }
 mkdir(c(RENV_LIBRARY))
 
-repos <-  "https://packagemanager.posit.co/cran/latest"
+repos <-  "https://cloud.r-project.org"
 # alternative to 'http://cloud.r-project.org'
 if (!dir.exists(file.path(RENV_LIBRARY, "renv"))) {
   if (@IS_FLATPAK_USED@) {

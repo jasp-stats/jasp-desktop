@@ -91,4 +91,6 @@ TextField
 					inputType:			"number"
 					validator:			JASPDoubleValidator { id: doubleValidator; bottom: min; top: max ; decimals: doubleField.decimals; notation: DoubleValidator.StandardNotation }
 					fieldWidth:			jaspTheme.numericFieldWidth
+
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Double entry field %1").arg(title) : info
 }

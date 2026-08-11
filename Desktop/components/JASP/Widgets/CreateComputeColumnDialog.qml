@@ -8,6 +8,9 @@ Popup
 	id:			popupCreateComputedColumn;
 	modal:		true;
 
+	Accessible.role:		Accessible.Dialog
+	Accessible.name:		qsTr("Create computed column dialog")
+
 	y:			(parent.height / 2) - (height / 2)
 	x:			(parent.width / 2) - (width / 2)
 	width:		popupLoader.width
@@ -144,6 +147,10 @@ Popup
 							color:					columnNameInUse ? jaspTheme.red : jaspTheme.black
 							width:					Math.max(implicitWidth, nameBox.width)
 							selectByMouse:			true
+
+							Accessible.role:		Accessible.EditableText
+							Accessible.name:		qsTr("Computed column name")
+							Accessible.description:	qsTr("Enter a name for the new computed column")
 	
 							ToolTip.visible:		columnNameInUse
 							ToolTip.text:			qsTr("Column name is already used, please choose a different one.")

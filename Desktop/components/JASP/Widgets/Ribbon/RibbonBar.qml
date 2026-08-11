@@ -24,6 +24,10 @@ import JASP.Controls
 FocusScope
 {
 	id		: ribbonBar
+
+	Accessible.role:	Accessible.ToolBar
+	Accessible.name:	qsTr("Ribbon Bar")
+
 	height	: ribbonMenu.height
 
 	// This property is required to show filemenu button press in KeyNavigation

@@ -89,4 +89,6 @@ TextField
 	property bool	parseDefaultValue:	true
 					inputType:			"formula"
 					fieldWidth:			jaspTheme.textFieldWidth / 2
+					
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("R Formula field %1").arg(title) : info
 }

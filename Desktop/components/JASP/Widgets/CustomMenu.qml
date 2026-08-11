@@ -26,7 +26,10 @@ FocusScope
 	id							: menu
 	width						: menuRectangle.width
 	height						: menuRectangle.height
-	visible						: showMe && (activeFocus || (hasSubMenus && customSubMenu.activeFocus))
+	visible						: showMe
+	Accessible.role				: Accessible.Menu
+	Accessible.name				: menuTitle
+	Accessible.ignored			: !showMe
 	x							: Math.min(sourcePos.x + realOffsetX, sceneWidth - (width  + 2) ) // Move the custom menu to the right if there is not enough space
 	y							: sourcePos.y + realOffsetY
 	property var	props		: undefined
@@ -44,10 +47,24 @@ FocusScope
 	property bool	menuMinIsMin: false // If set to true, this prevents the CustomMenu from going out of the scene by having a negative offset
 	property point	scrollOri	: "0,0" //Just for other qmls to use as a general storage of the origin of their scrolling
 	property bool	isSubMenu	: false
+	property string menuTitle	: "Analysis menu"
 
 	property int	currentIndex: -1
 
+	property bool _hadFocus: false
+
 	onSourceItemChanged: { menu.currentIndex = -1; }
+
+	onActiveFocusChanged:
+	{
+		if (activeFocus)
+			_hadFocus = true
+		else if (_hadFocus && showMe && !isSubMenu)
+		{
+			_hadFocus = false
+			closeMenu()
+		}
+	}
 
 	Connections
 	{
@@ -103,6 +120,7 @@ FocusScope
 	{
 		hasIcons	= (menu.props === undefined || "undefined" === typeof(menu.props["hasIcons"]))		? true	: menu.props["hasIcons"]
 		hasSubMenus = (menu.props === undefined || "undefined" === typeof(menu.props["hasSubMenus"]))	? false : menu.props["hasSubMenus"]
+		menuTitle	= (menu.props === undefined || "undefined" === typeof(menu.props["menuTitle"]))		? "Analysis menu" : menu.props["menuTitle"]
 
 		if (menu.props === undefined || menu.props["model"] !== resultMenuModel)
 			resultsJsInterface.runJavaScript("window.setSelection(false);")
@@ -179,9 +197,9 @@ FocusScope
 
 	function callMenuAction(index)
 	{
+		menu.props['functionCall'](index)
 		if (menu.sourceItem !== null)
 			menu.sourceItem.forceActiveFocus()
-		menu.props['functionCall'](index)
 	}
 
 	function currentMenuItem(index)
@@ -341,6 +359,10 @@ FocusScope
 
 									property bool itemEnabled	: menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
 
+									Accessible.role		: Accessible.MenuItem
+									Accessible.name		: (model.modelData !== undefined ? model.modelData : displayText)
+									Accessible.onPressAction: { if (menuItem.itemEnabled) callMenuAction(index) }
+
 									Image
 									{
 										id						: menuItemImage
@@ -424,6 +446,10 @@ FocusScope
 
 									property bool itemEnabled :	menu.props.hasOwnProperty("enabled") ? menu.props["enabled"][index] : (model.modelData !== undefined || model.isEnabled)
 
+									Accessible.role		: Accessible.MenuItem
+									Accessible.name		: (model.modelData !== undefined ? model.modelData.substring(3) : displayText)
+									Accessible.onPressAction: { if (menuItem.itemEnabled) callMenuAction(index) }
+
 									Image
 									{
 										id					: menuItemImage
@@ -496,7 +522,12 @@ FocusScope
 							Component
 							{
 								id	: menuSeparator
-								ToolSeparator { orientation	: Qt.Horizontal; width: column.columnWidth }
+								ToolSeparator { 
+									orientation	: Qt.Horizontal; 
+									width: column.columnWidth
+									Accessible.role		: Accessible.Separator
+									Accessible.name		: "Separator"
+								}
 							}
 						}
 					}

@@ -86,6 +86,7 @@ TextInputBase
 	title:				text
 	mouseAreaZone:		(control.tooLongText && label !== "") ? beforeLabelRect : textField
 	
+
 	property alias	control:			control
 	property alias	text:				textField.label
 	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
@@ -260,6 +261,10 @@ TextInputBase
 		QTC.ToolTip.text		: control.text
 		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus) && control.echoMode != TextInput.Password
 
+		Accessible.role:			Accessible.EditableText
+		Accessible.name:			text
+		Accessible.description:		textField.info === undefined || textField.info == "" ? qsTr("Textfield %1").arg(textField.title) : textField.info
+		
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),
 		// so the checkValue is called with addErrorIfNotFocussed set to true: it should not display an error if in focus.

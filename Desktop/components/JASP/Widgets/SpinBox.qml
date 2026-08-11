@@ -38,6 +38,8 @@ Item
 	property double	stepSize:				1
 	property alias	text:					label.text
 	property string toolTip:				""
+	property string info:					""
+	property string title:					""
 	property alias	implicitWidthLabel:		label.implicitWidth
 	property alias	widthLabel:				label.width
 
@@ -50,6 +52,15 @@ Item
 					Keys.onReturnPressed: 	(event)=> {	valueField.focus = !valueField.focus;	}
 
 					activeFocusOnTab:		true
+					
+					Accessible.role:				Accessible.SpinBox
+					Accessible.name:				text
+					Accessible.description:			info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Spinbox %1").arg(title) : info
+					Accessible.onIncreaseAction:	plus.clicked()
+					Accessible.onDecreaseAction:	minus.clicked()
+					
+				
+					
 
 	signal editingFinished()
 	

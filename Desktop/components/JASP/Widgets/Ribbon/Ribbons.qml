@@ -24,6 +24,10 @@ import JASP
 Item
 {
 	id:				jaspRibbons
+
+	Accessible.role:	Accessible.List
+	Accessible.name:	qsTr("Module ribbons")
+
 	objectName:		"jaspRibbon"
 	width:			500
 	height:			jaspTheme.ribbonButtonHeight * preferencesModel.ribbonBarHeightScale

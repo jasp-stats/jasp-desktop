@@ -88,6 +88,7 @@ FocusScope
 	Keys.onPressed: (event)=>
 	{
 		var controlPressed	= Boolean(event.modifiers & Qt.ControlModifier);
+		messages.log("JASPDataView KEYS: key=" + event.key + " text='" + event.text + "'")
 
 		if(controlPressed)
 			switch(event.key)

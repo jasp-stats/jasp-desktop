@@ -8,6 +8,9 @@ FocusScope
 {
 	id:							filterContainer
 
+	Accessible.role:			Accessible.Pane
+	Accessible.name:			qsTr("Filter Window")
+
 
 	function close()
 	{

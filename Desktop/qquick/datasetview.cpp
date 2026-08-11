@@ -501,3 +501,5 @@ void DataSetView::resizeData(int rows, int columns)
 	// Argument row and column of the resize method are indices
 	_expandedModel->resize(rows - 1, columns - 1, false, tr("Resize data to %1 rows and %2 columns").arg(rows).arg(columns));
 }
+
+

@@ -6,6 +6,10 @@ import JASP.Controls
 FocusScope
 {
 	id:				analysisFormsFocusScope
+
+	Accessible.role:	Accessible.Pane
+	Accessible.name:	qsTr("Analysis Forms")
+
 	implicitWidth:	analysesModel.visible ? jaspTheme.formWidth + 1 + (2 * formsBackground.border.width) + verticalScrollbar.visibleBreadth : 0
 
 	Behavior on width { enabled: preferencesModel.animationsOn; PropertyAnimation { duration: jaspTheme.fileMenuSlideDuration; easing.type: Easing.OutCubic  } }

@@ -29,6 +29,10 @@ import "./FileMenu"
 FocusScope
 {
 	id:			variablesContainer
+
+	Accessible.role:	Accessible.Pane
+	Accessible.name:	qsTr("Variables Window")
+
 	visible:	columnModel.visible
 
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
@@ -143,6 +147,11 @@ FocusScope
 						width:		labelText.implicitWidth + 20 * preferencesModel.uiScale
 						
 						required property int index
+
+						Accessible.role:			Accessible.PageTab
+						Accessible.name:			columnModel.tabs[index].title
+						Accessible.description:		qsTr("Switch to %1 tab").arg(columnModel.tabs[index].title)
+						Accessible.onPressAction:	{ tabbar.currentIndex = index; }
 
 						onCheckedChanged:	if (checked)
 												tabView.currentTabButton				= tabButton;

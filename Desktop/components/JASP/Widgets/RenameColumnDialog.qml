@@ -7,6 +7,10 @@ Popup
 	id:			popupRenameColumnDialog;
 	modal:		true;
 
+	Accessible.role:		Accessible.Dialog
+	Accessible.name:		qsTr("Rename column dialog")
+	Accessible.description:	qsTr("Rename column to a new name")
+
 	y:			(parent.height / 2) - (height / 2)
 	x:			(parent.width / 2)  - (width / 2)
 	width:		popupLoader.width
@@ -74,6 +78,10 @@ Popup
 				color:					jaspTheme.textEnabled
 				font:					jaspTheme.fontGroupTitle
 				selectByMouse:			true
+
+				Accessible.role:		Accessible.EditableText
+				Accessible.name:		qsTr("New column name")
+				Accessible.description:	qsTr("Enter a new name for the column")
 				anchors
 				{
 					top:				title.bottom

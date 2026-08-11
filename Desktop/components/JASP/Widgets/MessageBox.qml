@@ -8,6 +8,9 @@ QtC.Popup
 {
 	id: messageRoot
 
+	Accessible.role:	Accessible.Dialog
+	Accessible.name:	title.text
+
 	x: (mainWindowRoot.width - width) / 2
 	y: (mainWindowRoot.height - height) / 2
 

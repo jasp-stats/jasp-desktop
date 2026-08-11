@@ -547,11 +547,14 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		var chunks = []
 
+		var tableId = 'table-' + Math.random().toString(36).substr(2, 9);
+		var tableTitle = optTitle ? optTitle : (optError ? optError.errorMessage : 'Table');
+
 		if (optError) {
-			chunks.push('<table class="error-state jasp-no-select">')
+			chunks.push('<table class="error-state jasp-no-select" role="table" aria-label="' + escapeHTML(tableTitle) + '" aria-describedby="' + tableId + '-description" tabindex="0">')
 		}
 		else {
-			chunks.push('<table class="jasp-no-select">')
+			chunks.push('<table class="jasp-no-select" role="table" aria-label="' + escapeHTML(tableTitle) + '" id="' + tableId + '" tabindex="0">')
 		}
 
 		chunks.push('<thead>')
@@ -560,10 +563,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		if (optError && optError.errorMessage) {
 
-			chunks.push('<div  class="error-message-positioner">')
-			chunks.push('<div  class="error-message-box ui-state-error">')
-			chunks.push('<span class="error-message-symbol ui-icon ui-icon-alert"></span>')
-			chunks.push('<div  class="error-message-message">' + optError.errorMessage + '</div>')
+			chunks.push('<div  class="error-message-positioner" role="alert" aria-live="assertive" aria-atomic="true">')
+			chunks.push('<div  class="error-message-box ui-state-error" role="alertdialog" aria-labelledby="' + tableId + '-error-title">')
+			chunks.push('<span class="error-message-symbol ui-icon ui-icon-alert" aria-hidden="true"></span>')
+			chunks.push('<div  class="error-message-message" id="' + tableId + '-error-title">' + optError.errorMessage + '</div>')
 			chunks.push('</div>')
 			chunks.push('</div>')
 		}
@@ -604,9 +607,9 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			if (hasOvertitles) {
 
 				if (hasAdjacentOvertitles)
-					chunks.push('<tr class="over-title-space">')
+					chunks.push('<tr class="over-title-space" role="row">')
 				else
-					chunks.push('<tr class="over-title">')
+					chunks.push('<tr class="over-title" role="row">')
 
 
 				var span = 1;
@@ -627,28 +630,27 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 					}
 					else {
 						if (hasAdjacentOvertitles)
-							chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + oldTitle + '</div></th>');
+							chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + escapeHTML(oldTitle) + '</div></th>');
 						else
-							chunks.push('<th colspan="' + span + '">' + oldTitle + '</th>');
+							chunks.push('<th colspan="' + span + '">' + escapeHTML(oldTitle) + '</th>');
 
 						oldTitle = newTitle
 						span = 1
 					}
 				}
 
-				if (newTitle == oldTitle) {
+if (newTitle == oldTitle) {
 					if (hasAdjacentOvertitles)
-						chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + newTitle + '</div></th>')
+						chunks.push('<th colspan="' + span + '"><div class="over-title-space">' + escapeHTML(newTitle) + '</div></th>')
 					else
-						chunks.push('<th colspan="' + span + '">' + newTitle + '</th>')
+						chunks.push('<th colspan="' + span + '">' + escapeHTML(newTitle) + '</th>')
 				}
-
 
 				chunks.push('</tr>')
 			}
 		}
 
-		chunks.push('<tr>')
+		chunks.push('<tr role="row">')
 
 
 		for (var colNo = 0; colNo < columnHeaders.length; colNo++) {
@@ -663,7 +665,10 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 				span = 1
 
 			if (span) {
-				chunks.push('<th colspan="' + span + '" class="' + cell.type + '">' + cell.content)
+				var headerId = 'header-' + colNo;
+				var headerRole = (cell.type === 'row-header' || cell.header) ? 'rowheader' : 'columnheader';
+				var ariaLabel = cell.content ? 'aria-label="' + escapeHTML(cell.content) + '"' : '';
+				chunks.push('<th role="' + headerRole + '" colspan="' + span + '" class="' + cell.type + '" id="' + headerId + '" ' + ariaLabel + '>')
 				if (cell.footnotes)
 					chunks.push(cell.footnotes.join(' '))
 				chunks.push('</th>')
@@ -683,7 +688,12 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 
 		for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 
-			chunks.push('<tr>')
+			var rowAriaLabel = 'Row ' + (rowNo + 1);
+			if (optTitle) {
+				rowAriaLabel = optTitle + ' row ' + (rowNo + 1);
+			}
+			
+			chunks.push('<tr role="row" aria-label="' + escapeHTML(rowAriaLabel) + '">')
 
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 
@@ -699,16 +709,32 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 					cellClass += (cell.isEndOfGroup ? " last-group-row" : "")
 					cellClass += (cell.span > 1 ? " row-span" : "")
 
-					cellHtml += (cell.header ? '<th' : '<td')
+					var isHeader = cell.header;
+					var cellTag = isHeader ? 'th' : 'td';
+					var cellRole = isHeader ? 'rowheader' : 'gridcell';
+					var cellId = 'cell-' + rowNo + '-' + colNo;
+					
+					var ariaLabel = '';
+					if (cell.content) {
+						ariaLabel = ' aria-label="' + escapeHTML(cell.content) + '"';
+					}
+					
+					var headersAttr = ' headers="header-' + colNo + '"';
+
+					cellHtml += '<' + cellTag
+					cellHtml += ' role="' + cellRole + '"'
+					cellHtml += ' id="' + cellId + '"'
 					cellHtml += ' class="' + cellClass + '"' 
 					cellHtml += (cell.span ? ' rowspan="' + cell.span + '"' : '')
+					cellHtml += ariaLabel
+					cellHtml += headersAttr
 					cellHtml += '>'
 					cellHtml += (typeof cell.content != "undefined" ? cell.content : '')
 
 					if (typeof cell.footnotes != "undefined")
 						cellHtml += cell.footnotes.join(' ')
 
-					cellHtml += (cell.header ? '</th>' : '</td>')
+					cellHtml += (isHeader ? '</th>' : '</td>')
 
 					tableProgress[colNo].from += 1
 
@@ -728,46 +754,43 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			}
 
 			if (rowNo == 0) // squashes the table to the left
-				chunks.push('<td class="squash-left" rowspan="' + rowCount + '"></td>')
+				chunks.push('<td class="squash-left" rowspan="' + rowCount + '" aria-hidden="true"></td>')
 
 			chunks.push('</tr>')
 		}
 
 		chunks.push('</tbody>')
 
-		if (optFootnotes) {
+if (optFootnotes) {
 
-			chunks.push('<tfoot>')
+			chunks.push('<tfoot role="rowgroup">')
 
 			for (var i = 0; i < optFootnotes.length; i++)
 				if(optFootnotes[i].text !== "")
 				{
 
-					chunks.push('<tr><td colspan="' + columnCount + '">')
+					chunks.push('<tr role="row">')
 
 					var footnote = optFootnotes[i]
 
 					if (_.isString(footnote)) {
-					  chunks.push(symbol(i) + '&nbsp;')
-					  chunks.push(footnote)
+					  chunks.push('<td colspan="' + columnCount + '" role="gridcell">' + symbol(i) + '&nbsp;' + escapeHTML(footnote) + '</td>')
 					}
 
 					if (_.has(footnote, "symbol")) {
 					  if (_.isNumber(footnote.symbol))
-						chunks.push(symbol(footnote.symbol) + '&nbsp;')
+						chunks.push('<td colspan="' + columnCount + '" role="gridcell">' + symbol(footnote.symbol) + '&nbsp;' + escapeHTML(footnote.text) + '</td>')
 					  else
-						chunks.push(footnote.symbol + '&nbsp;')
-
-						chunks.push(footnote.text)
+						chunks.push('<td colspan="' + columnCount + '" role="gridcell">' + footnote.symbol + '&nbsp;' + escapeHTML(footnote.text) + '</td>')
 					}
 
-					chunks.push('</td></tr>')
+					chunks.push('</tr>')
 				}
 
 			chunks.push('</tfoot>');
 		}
 
-		chunks.push('</table>');
+chunks.push('</table>');
 
 
 		var html = chunks.join("");
@@ -906,3 +929,14 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 			pushHTMLToClipboard(exportContent, exportParams);
 	},
 });
+
+function escapeHTML(str) {
+	if (!str) return '';
+	return String(str)
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/\n/g, ' ');
+}

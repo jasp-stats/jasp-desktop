@@ -7,6 +7,9 @@ import JASP.Controls
 Window
 {
 	id:					enginesWindow
+
+	Accessible.name:	title
+
 	width:				400 * jaspTheme.uiScale
 	height:				Screen.height
 	minimumWidth:		200 * preferencesModel.uiScale

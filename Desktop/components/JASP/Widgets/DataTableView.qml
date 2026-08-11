@@ -8,6 +8,24 @@ FocusScope
 {
 	id: __myRoot
 
+	Accessible.role:	Accessible.Table
+	Accessible.name:	qsTr("Data Table View")
+
+	Accessible.onPressAction:	{ focusAndEdit(); }
+
+	JaspControls.ALTNavigation.enabled:				true
+	JaspControls.ALTNavigation.requestedPostfix:	"V"
+	JaspControls.ALTNavigation.onTagMatch:			{ focusAndEdit(); }
+
+	function focusAndEdit()
+	{
+		__myRoot.forceActiveFocus();
+		var col = dataTableView.view.selectionMin.x >= 0 ? dataTableView.view.selectionMin.x : 0;
+		var row = dataTableView.view.selectionMin.y >= 0 ? dataTableView.view.selectionMin.y : 0;
+		dataTableView.view.select(row, col, false, false);
+		dataTableView.view.edit(row, col);
+	}
+
 	signal doubleClicked()
 	
 	property alias isMainDataViewer: dataTableView.isMainDataViewer
@@ -162,6 +180,7 @@ FocusScope
 					"icons":		menuIcons,
 					"shortcut":		menuShortcuts,
 					"enabled":		menuEnabled,
+					"menuTitle":	qsTr("Context menu"),
 					"functionCall": function (index)
 					{
 						menuFunctions[index]();

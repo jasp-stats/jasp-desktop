@@ -66,8 +66,12 @@ JASPControl
 	innerControl:		control
 	focusIndicator:		focusIndicator
 	title:				text
-
 	
+	Accessible.role:			Accessible.Button
+	Accessible.name:			text
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Button %1").arg(title) : info
+	Accessible.onPressAction:	clicked()
+
 	readonly	property alias control:		control
 				property alias text:		control.text
 				property alias label:		control.text

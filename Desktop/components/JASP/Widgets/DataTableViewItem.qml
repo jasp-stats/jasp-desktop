@@ -7,6 +7,15 @@ Item
 {
 					id:			itemDelegateItem
 	property bool	showShadow:	itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
+
+	Accessible.role:		Accessible.Cell
+	Accessible.name:		qsTr("Row %1, Col %2: %3")
+								.arg(rowIndex + 1)
+								.arg(columnName || columnIndex + 1)
+								.arg(itemText || "")
+	Accessible.description:	qsTr("Data cell at row %1, column %2")
+								.arg(rowIndex + 1)
+								.arg(columnName || columnIndex + 1)
 	
 	TextMetrics
 	{

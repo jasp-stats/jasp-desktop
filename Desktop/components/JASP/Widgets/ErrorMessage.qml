@@ -24,6 +24,10 @@ import JASP.Controls
 Rectangle
 {
 	id				: errorMsg
+
+	Accessible.role:	Accessible.StaticText
+	Accessible.name:	text
+
 	color			: warning ? jaspTheme.controlWarningBackgroundColor : jaspTheme.controlErrorBackgroundColor
 	visible			: opacity > 0 && text != ""
 	opacity			: 1

@@ -110,6 +110,10 @@ FocusScope
 						textDocument:		computeColumnEdit.textDocument
 					}
 					
+					Accessible.role:		Accessible.EditableText
+					Accessible.name:		qsTr("R code editor")
+					Accessible.description:	qsTr("Enter R code for the computed column")
+					
 
 					anchors.top:			parent.top
 					anchors.left:			parent.left

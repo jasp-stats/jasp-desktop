@@ -16,7 +16,7 @@ mkdir <- function(paths) {
 mkdir(c(R_CPP_INCLUDES_LIBRARY, JASP_MODULE_BUNDLE_MANAGER_LIBRARY))
 
 .libPaths(RENV_LIBRARY)
-options(repos = c(CRAN = "https://packagemanager.posit.co/cran/latest"))
+options(repos = c(CRAN = "https://cloud.r-project.org"))
 options(INSTALL_opts = "--no-test-load")
 cat("Restoring Rcpp & RInside\n")
 renv::restore(

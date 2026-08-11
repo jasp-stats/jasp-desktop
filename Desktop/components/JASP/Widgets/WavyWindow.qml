@@ -10,6 +10,9 @@ Window
 {
 	id:				aboutWindow
 
+	Accessible.role:	Accessible.Window
+	Accessible.name:	title
+
 	width:			1200 * preferencesModel.uiScale
 	height:			600 * preferencesModel.uiScale
 
@@ -153,6 +156,9 @@ Window
 			Keys.onEnterPressed:	(event) => { closeModel() }
 			Keys.onReturnPressed:	(event) => { closeModel() }
 			Keys.onEscapePressed:	(event) => { closeModel() }
+
+			Accessible.role:		Accessible.Button
+			Accessible.name:		qsTr("Close")
 		}
 	}
 

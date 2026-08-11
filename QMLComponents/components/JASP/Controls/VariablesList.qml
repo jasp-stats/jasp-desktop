@@ -104,6 +104,10 @@ VariablesListBase
 	allowAnalysisOwnComputedColumns	: true
 	minNumericLevels				: allowedColumns.length === 1 && allowedColumns[0] === 'scale' ? 1 : -1
 	sourceWithoutDefaultInteraction	: ["randomFactors", "covariates"]
+	
+	Accessible.role					: Accessible.List
+	Accessible.name					: label
+	Accessible.description			: info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("A button %1").arg(title) : info
 
 	property alias	label							: variablesList.title
 	property alias	itemGridView					: itemGridView

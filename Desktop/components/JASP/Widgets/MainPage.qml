@@ -27,6 +27,9 @@ Item
 {
 	id: splitViewContainer
 
+	Accessible.role:	Accessible.Pane
+	Accessible.name:	qsTr("Main Page")
+
 	// The MainPage has 3 panels: Data, Analyses form and Results.
 	// There are 3 configurations: only data, only analyses with results or all 3 panels.
 	// Between these 3 panels, there are 2 handles: handleBetweenDataAndAnalyses & handleBetweenAnalysesAndResults: if there are only data
@@ -52,6 +55,12 @@ Item
 	function maximizeDataPanel()
 	{
 		handleDataAnalyses.x = splitViewContainer.width - (hasAnalysis ? handleAnalysesResults.width : 0)
+	}
+
+	function changeFocusToDataViewer()
+	{
+		maximizeDataPanel();
+		dataPanel.focusDataTableView();
 	}
 
 	Connections
@@ -315,6 +324,11 @@ Item
 			clip:                   true
 			anchors.fill:			parent
 			anchors.leftMargin:		1
+			
+			Accessible.role:			Accessible.WebDocument
+			Accessible.name:			qsTr("Results")
+			Accessible.description:		qsTr("Results")
+			
 
 			url:					resultsJsInterface.resultsPageUrl
 

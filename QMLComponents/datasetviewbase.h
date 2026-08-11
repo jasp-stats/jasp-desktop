@@ -213,7 +213,7 @@ public slots:
 	bool		isRowHeader			(const QPoint& p)		{ return p.x() == -1	&& p.y() >= 0;	}
 	bool		isCell				(const QPoint& p)		{ return p.x() >= 0	&& p.y() >= 0;	}
 
-	void		select(						int row, int column,	bool shiftPressed,			bool ctrlCmdPressed);
+	    Q_INVOKABLE void        select(						int row, int column,	bool shiftPressed,			bool ctrlCmdPressed);
 	void		selectionClear();
 	void		selectHover(				int row, int column);
 

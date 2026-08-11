@@ -16,14 +16,18 @@ void InstalledModules::parseModuleInfo(const std::string& path, InstalledModules
 
 	std::ifstream in(path);
 	Json::Value root;
-	Json::Reader().parse(in, root);
+	Json::Reader reader;
+	bool parseOk = reader.parse(in, root);
+	
+	if(!parseOk)
+		throw std::runtime_error("Failed to parse manifest JSON: " + reader.getFormattedErrorMessages());
 
 	std::string strVersion = "";
 	if(root.isMember("version")) {
 		if(root["version"].isString()) {
 			strVersion = root["version"].asString();
 		}
-		else if(root["version"].isMember("Version")) {
+		else if(root["version"].isObject() && root["version"].isMember("Version")) {
 			strVersion = root["version"]["Version"].asString();
 		}
 		else {

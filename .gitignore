@@ -91,3 +91,7 @@ Modules/local
 
 # User configurations
 .qmlls.ini
+
+# Generated during build
+Desktop/modules/activemodules.h
+Tests/__pycache__/

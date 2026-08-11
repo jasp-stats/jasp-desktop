@@ -84,4 +84,6 @@ DoubleField
 
 	afterLabel:			showPercent ? "%" : ""
 	cursorShape:		Qt.IBeamCursor	
+	
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Percentage field %1").arg(title) : info
 }

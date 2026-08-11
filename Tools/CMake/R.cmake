@@ -201,8 +201,8 @@ set(R_BINARY_HASHES
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 # dont forget check and upgrande Rtools version if major_minor version changed.
-set(R_VERSION "4.5.2")
-set(R_VERSION_MAJOR_MINOR "4.5")
+set(R_VERSION "4.6.0")
+set(R_VERSION_MAJOR_MINOR "4.6")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")

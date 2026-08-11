@@ -636,3 +636,44 @@ iframe.ql-video {
     transform: translateX(0);
   }
 }
+
+/* Accessibility enhancements */
+/* Ensure table headers are properly labeled */
+th[role="columnheader"],
+th[role="rowheader"] {
+  font-weight: bold;
+}
+
+/* Focus indicators for keyboard navigation on ARIA-interactive results */
+[role="table"]:focus,
+[role="tablist"]:focus,
+[role="tab"]:focus,
+[role="button"]:focus,
+[role="menuitem"]:focus,
+[role="link"]:focus,
+[role="gridcell"]:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* High contrast focus indicators */
+@media (prefers-contrast: high) {
+  [role="button"]:focus,
+  [role="menuitem"]:focus,
+  [role="tab"]:focus {
+    outline: 3px solid #000;
+    outline-offset: 2px;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

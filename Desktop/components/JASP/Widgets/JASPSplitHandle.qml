@@ -8,6 +8,9 @@ Rectangle
 {
 	id:				handleRoot
 
+	Accessible.role:	Accessible.Slider
+	Accessible.name:	qsTr("Split handle")
+
 	signal arrowClicked
 	signal handleDragging(bool active, var mouseArea)
 	property bool pointingLeft: true

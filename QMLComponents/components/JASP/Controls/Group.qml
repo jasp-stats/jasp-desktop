@@ -75,6 +75,12 @@ GroupBoxBase
 
 	ALTNavigation.enabled:		true
 	ALTNavigation.onTagMatch:	{ contentArea.nextItemInFocusChain().forceActiveFocus(); }
+	
+	Accessible.role:			Accessible.Section
+	Accessible.name:			label.text
+	Accessible.description:		qsTr("A section of an analysis")
+	
+	
 
 	default property alias	content:			contentArea.children
 			property int	rowSpacing:			jaspTheme.rowGroupSpacing

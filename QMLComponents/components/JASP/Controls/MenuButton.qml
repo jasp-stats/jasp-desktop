@@ -48,6 +48,12 @@ RoundedButton
 	border.width:		0
 	centerText:			false
 	activeFocusOnTab:	true
+	
+	Accessible.role:			Accessible.Button
+	Accessible.name:			text
+	Accessible.description:		toolTip != "" ? toolTip : qsTr("A menubutton %1").arg(text)
+	Accessible.onPressAction:	clicked()
+	
 
 	signal hoverClicked();
 	onHoverClicked:			forceActiveFocus();

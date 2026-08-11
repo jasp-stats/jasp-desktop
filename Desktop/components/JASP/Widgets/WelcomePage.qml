@@ -25,6 +25,9 @@ FocusScope
 {
 	id:		welcomeRoot
 
+	Accessible.role:	Accessible.Client
+	Accessible.name:	qsTr("Welcome Page")
+
 	property real scaler: Math.max(0.85, Math.min(2, 0.85 * Math.min(welcomeRoot.width / info.baseWidth, welcomeRoot.height / info.baseHeight)))
 
 	Rectangle

@@ -5,6 +5,8 @@ Window
 {
     id:	encryptWindow
 
+	Accessible.name:	title
+
     minimumWidth:           Math.max(passwordInput.minWidth, jaspSubmission.implicitWidth, showAdvancedCheckbox.implicitWidth) + windowPadding * 2 + 150 * jaspTheme.uiScale 
     minimumHeight:          contentColumn.implicitHeight + (advancedSettings.visible ? advancedSettings.implicitHeight + jaspTheme.groupContentPadding : 0) + buttons.height + windowPadding * 3
     visible:                encryptionModel.visible

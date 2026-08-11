@@ -23,8 +23,11 @@ import QtQuick.Controls
 
 Window
 {
-    id:					mainWindowRoot
-    title:				mainWindow.windowTitle
+	id:					mainWindowRoot
+	
+	Accessible.name:	mainWindow.windowTitle
+
+	title:				mainWindow.windowTitle
 	visible:			true
 	width:				1280
 	height:				720
@@ -82,6 +85,11 @@ Window
 	{
 		ribbon.forceActiveFocus();
 		ribbon.showFileMenuPressed();
+	}
+
+	function changeFocusToDataViewer()
+	{
+		mainpage.changeFocusToDataViewer();
 	}
 
 	function mod (a, n)

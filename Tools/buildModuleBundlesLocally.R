@@ -16,10 +16,10 @@ dir.create(userLibrary, recursive = TRUE)
 
 print("Installingen required packages")
 .libPaths(new=userLibrary)
-install.packages('devtools', lib=userLibrary)
+install.packages('remotes', lib=userLibrary)
 library("devtools")
 
-install_github('jasp-stats/jaspModuleTools', force=TRUE)
+remotes::install_github('jasp-stats/jaspModuleTools', force=TRUE)
 library("jaspModuleTools")
 
 print("Make bundles")

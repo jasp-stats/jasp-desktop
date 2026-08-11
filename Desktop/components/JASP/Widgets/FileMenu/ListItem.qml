@@ -7,6 +7,8 @@ FocusScope
 
 	width:			300 //Should be set from ListView
 	height:			rectTitle.height + rectDescription.height + 3
+	
+	readonly property int folderModelType:		3
 
 	property alias color:  rectTitleBackground.color
 	property alias border: rectTitleBackground.border
@@ -33,17 +35,18 @@ FocusScope
 
 	onAllHoveredChanged:	if(allHovered) { ListView.currentIndex = index; forceActiveFocus(); }
 
-	Keys.onEnterPressed:									openStuff(model);
-	Keys.onReturnPressed: (event)=>									openStuff(model);
-	Keys.onSpacePressed:									openStuff(model);
-	Keys.onRightPressed:			if(model.type === 3)	openStuff(model);
+	Keys.onEnterPressed:												openStuff(model);
+	Keys.onReturnPressed:												openStuff(model);
+	Keys.onSpacePressed:												openStuff(model);
+	Keys.onRightPressed:			if(model.type === folderModelType)	openStuff(model);
+	
 
 	function openStuff(model)
 	{
 		if (!rectTitleAndDescripton.cppModel.mayOpen())	return;
 
-		if (model.type === 3)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
-		else					rectTitleAndDescripton.cppModel.openFile(model.path)
+		if (model.type === folderModelType)	rectTitleAndDescripton.cppModel.changePath(model.name, model.path); //Folder type
+		else								rectTitleAndDescripton.cppModel.openFile(model.path)
 	}
 
 	Rectangle
@@ -57,6 +60,11 @@ FocusScope
 		anchors.margins:	1
 		radius:				jaspTheme.borderRadius
 
+		Accessible.role:			Accessible.Button
+		Accessible.name:			(model.type == folderModelType ? qsTr("Folder %1") : qsTr("File %1")).arg(model.name)
+		Accessible.description:		Accessible.name
+		Accessible.onPressAction:	openStuff(model)
+
 		color:				rectTitleAndDescripton.allPressed || (rectTitleAndDescripton.activeFocus && !datafileMouseArea.containsMouse && !rectTitleAndDataFile.activeFocus) ?
 								jaspTheme.buttonColorPressed :
 								rectTitleAndDescripton.allHovered
@@ -66,11 +74,11 @@ FocusScope
 		{
 			id :				firstFileOrFolderImage
 
-			height:					model.type==3 ? 0.75 * rectTitle.height : 0.95 * rectTitle.height  //Tune folder image to file image (wtih topmargin in svg)
+			height:					model.type==folderModelType ? 0.75 * rectTitle.height : 0.95 * rectTitle.height  //Tune folder image to file image (wtih topmargin in svg)
 			width:					height
 			anchors.left:			rectTitle.left
 			anchors.verticalCenter: parent.verticalCenter
-			anchors.leftMargin:		model.type==3 ? 5 * preferencesModel.uiScale : 0
+			anchors.leftMargin:		model.type==folderModelType ? 5 * preferencesModel.uiScale : 0
 
 			fillMode:	Image.PreserveAspectFit
 			source:		model.iconsource
@@ -123,6 +131,13 @@ FocusScope
 			Keys.onSpacePressed: (event) => { openDataFile(event); }
 
 			onActiveFocusChanged: if (!activeFocus) focus = false;
+			
+			Accessible.role:			Accessible.Button
+			Accessible.name:			qsTr("Datafile %1").arg(model.name)
+			Accessible.description:		qsTr("Datafile %1").arg(model.name)
+			Accessible.onPressAction:	if(hasDataFile) openDataFile();
+			Accessible.ignored:			!hasDatafile
+			
 
 			function openDataFile(event)
 			{

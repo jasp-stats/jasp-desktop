@@ -231,6 +231,9 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		var self = this;
 		this.closeButton.actionTargetElement = function () {
 			self.closeButton.$el.attr("title", i18n("Remove this note"))
+					.attr("role", "button")
+					.attr("tabindex", "0")
+					.attr("aria-label", i18n("Remove this note"))
 					.tooltip({position: {my:"center bottom-15", at:"center top"}});
 			return self.$el;
 		};
@@ -298,11 +301,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.setVisibility(this.visible)
 
 		var html = this.model.get("text");
+		var noteId = 'note-' + Math.random().toString(36).substr(2, 9);
 
 		this.closeButton.render();
 
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
-        this.$el.append(`<div id="editor"></div>`)
+        this.$el.attr('role', 'region').attr('aria-label', i18n('Note')).attr('id', noteId)
+        this.$el.append(`<div id="editor" role="textbox" aria-multiline="true" aria-label="${i18n('Note content')}" aria-describedby="${noteId}-instructions">`)
                 .append(`<div class="jasp-latex-container jasp-hide">
                             <textarea class="jasp-latex-input" rows="5" cols="25" placeholder='${i18n("Input LaTeX here:")}
 								&bull; ${i18n("Press `Cmd/Ctrl + Enter` to apply;")}'>

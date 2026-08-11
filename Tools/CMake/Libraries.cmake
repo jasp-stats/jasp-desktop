@@ -186,7 +186,7 @@ if(LINUX)
       message(CHECK_FAIL "not found")
       message(
         FATAL_ERROR
-          "ReadStat is required for building on Windows, please follow the build instruction before you continue."
+          "ReadStat is required for building on Linux, please follow the build instruction before you continue."
       )
     endif()
 

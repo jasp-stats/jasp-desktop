@@ -42,6 +42,12 @@ Item
 	property var	menu		: []
 	property bool	myMenuOpen	: false
 	property bool	showPressed	: ribbonButton.activeFocus || myMenuOpen
+	
+	Accessible.role:			Accessible.Button
+	Accessible.name:			text
+	Accessible.description:		toolTip
+	Accessible.onPressAction:	startOrShowMenu()
+	
 
 	onMyMenuOpenChanged: if(!myMenuOpen) myMenuOpen = false; //Break the binding
 
@@ -174,7 +180,8 @@ Item
 			"hasIcons"				: ribbonButton.menu.hasIcons(),
 			"hasSubMenus"			: ribbonButton.menu.hasSubMenus(),
 			"navigateFunc"			: navigateFunc,
-			"parentNavigateFunc"	: parentNavigateFunc
+			"parentNavigateFunc"	: parentNavigateFunc,
+			"menuTitle"				: ribbonButton.text + " menu"
 		};
 
 		customMenu.toggle(ribbonButton, props);

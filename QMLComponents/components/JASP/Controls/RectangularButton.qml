@@ -90,6 +90,12 @@ Rectangle
 																																								: jaspTheme.buttonColor
 	property color defaultBorderColor:	enabled && (filterButtonRoot.hovered || selected)	? jaspTheme.buttonBorderColorHovered
 																							: jaspTheme.buttonBorderColor
+	
+	
+	Accessible.role:			Accessible.Button
+	Accessible.name:			text
+	Accessible.description:		qsTr("A button")
+	Accessible.onPressAction:	clicked()
 
 	//on_ScaledDimChanged: console.log("Button " + text + ": " + _scaledDim + ", text height: " + buttonText.height + ", content height: " + buttonText.contentHeight + ", padding: " + buttonPadding)
 

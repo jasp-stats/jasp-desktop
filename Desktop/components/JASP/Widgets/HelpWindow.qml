@@ -37,6 +37,7 @@ Window
 	WebEngineView
 	{
 		id:						helpView
+		Accessible.name:		qsTr("JASP Help")
 		url:					helpModel.indexURL()
 		anchors.fill:			parent
 		anchors.bottomMargin:	searchBar.height + (jaspTheme.generalAnchorMargin * 2)

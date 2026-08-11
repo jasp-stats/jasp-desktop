@@ -106,6 +106,10 @@ ComboBoxBase
 	id:					comboBox
 	height:				implicitHeight
 	width:				implicitWidth
+
+	Accessible.role:		Accessible.ComboBox
+	Accessible.name:		label || qsTr("Dropdown")
+	Accessible.description:	toolTip || label || qsTr("Select an option from the dropdown list")
 	implicitHeight:		control.height + ((controlLabel.visible && setLabelAbove) ? rectangleLabel.height : 0)
 	implicitWidth:		controlLabel.visible
 							? (setLabelAbove ? Math.max(control.width, rectangleLabel.width) : (rectangleLabel.width + jaspTheme.labelSpacing + control.width))
@@ -361,6 +365,11 @@ ComboBoxBase
 			implicitHeight:							jaspTheme.comboBoxHeight
 			implicitWidth:							popupView.width
 			enabled:								comboBox.enabledOptions.length == 0 || comboBox.enabledOptions.length <= index || comboBox.enabledOptions[index]
+
+			Accessible.role:		Accessible.MenuItem
+			Accessible.name:		itemRectangle.isEmptyValue ? comboBox.placeholderText
+										: (model && model.name ? model.name : (typeof modelData !== 'undefined' ? modelData : ""))
+			Accessible.onPressAction: { if (enabled) { control.currentIndex = index; control.popup.close(); } }
 
 			contentItem: Rectangle
 			{

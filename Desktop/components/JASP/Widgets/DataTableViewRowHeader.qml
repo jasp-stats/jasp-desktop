@@ -9,6 +9,11 @@ Rectangle
 	color:	ribbonModel.dataMode && (dataTableView.view.selectionMin.y <= rowIndex && dataTableView.view.selectionMax.y >= rowIndex) 
 			? jaspTheme.itemSelectedNoFocusColor 
 			: jaspTheme.buttonColor
+
+	Accessible.role:		Accessible.RowHeader
+	Accessible.name:		qsTr("Row %1").arg(rowNumber + 1)
+	Accessible.description:	qsTr("Row header for row %1. Click to select, shift for multi-select.")
+								.arg(rowNumber + 1)
 	Text
 	{
 		text:				rowNumber

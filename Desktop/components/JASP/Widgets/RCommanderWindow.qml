@@ -25,6 +25,9 @@ import JASP.Controls		as JC
 Window
 {
 	id:						rcmdRoot
+
+	Accessible.name:		title
+
 	title:					qsTr("R in JASP")
 	visible:				true
 	width:					800 * preferencesModel.uiScale

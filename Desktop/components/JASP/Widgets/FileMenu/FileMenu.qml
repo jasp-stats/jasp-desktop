@@ -10,6 +10,9 @@ FocusScope
 {
 	id: fileMenu
 
+	Accessible.role:	Accessible.Pane
+	Accessible.name:	qsTr("File menu")
+
 	Keys.onEscapePressed:
 	{
 		ribbon.focus			 = true;

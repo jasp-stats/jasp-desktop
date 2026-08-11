@@ -95,6 +95,12 @@ RadioButtonBase
 	childControlsArea:		childControlsArea
 	innerControl:			control
 	title:					label.text
+	
+	Accessible.role:			Accessible.RadioButton
+	Accessible.name:			text
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("A radiobutton %1").arg(title) : info
+	Accessible.onToggleAction:	control.toggle()
+	Accessible.onPressAction:	click()
 
 	property alias	control:				control
 	default property alias	content:		childControlsArea.children

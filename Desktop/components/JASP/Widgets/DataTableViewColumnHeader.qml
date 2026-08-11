@@ -13,6 +13,13 @@ Rectangle
 				? jaspTheme.itemSelectedNoFocusColor 
 				: jaspTheme.buttonColor
 
+	signal headerClicked()
+
+	Accessible.role:		Accessible.ColumnHeader
+	Accessible.name:		qsTr("Column: %1").arg(headerText)
+	Accessible.description:	columnDescription || ""
+	Accessible.onPressAction:	{ headerRoot.headerClicked(); }
+
 	readonly	property int	__iconDim:			baseBlockDim * preferencesModel.uiScale
 
 	function getColumnTypeIcon(type)
@@ -66,34 +73,42 @@ Rectangle
 			dataTableView.view.setColumnType(columnIndex, newColumnType)
 		}
 
+		function openTypeMenu()
+		{
+			var functionCall      = function (index)
+			{
+				colIcon.setColumnType(columnTypesModel.getType(index));
+				customMenu.hideMenus()
+			}
+
+			var props = {
+				"model":		columnTypesModel,
+				"functionCall": functionCall,
+				"menuTitle":	qsTr("Column type menu for %1").arg(headerText)
+			};
+
+			customMenu.scrollOri.x	= dataTableView.contentX;
+			customMenu.scrollOri.y	= 0;
+
+			customMenu.toggle(headerRoot, props);
+
+			customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
+			customMenu.menuScroll.y	= 0;
+			customMenu.menuMinIsMin	= true
+			customMenu.sceneWidth	= Qt.binding(function() { return dataTableView.width + dataTableView.x })
+		}
+
 
 		MouseArea
 		{
 			enabled:			!virtual && computedColumnType !== computedColumnTypeAnalysis
 			anchors.fill:		parent
-			onClicked:
-			{
-				var functionCall      = function (index)
-				{
-					colIcon.setColumnType(columnTypesModel.getType(index));
-					customMenu.hideMenus()
-				}
+			onClicked:			colIcon.openTypeMenu()
 
-				var props = {
-					"model":		columnTypesModel,
-					"functionCall": functionCall
-				};
-
-				customMenu.scrollOri.x	= dataTableView.contentX;
-				customMenu.scrollOri.y	= 0;
-
-				customMenu.toggle(headerRoot, props);
-
-				customMenu.menuScroll.x	= Qt.binding(function() { return -1 * (dataTableView.contentX - customMenu.scrollOri.x); });
-				customMenu.menuScroll.y	= 0;
-				customMenu.menuMinIsMin	= true
-				customMenu.sceneWidth		= Qt.binding(function() { return dataTableView.width + dataTableView.x })
-			}
+			Accessible.role:			Accessible.PushButton
+			Accessible.name:			qsTr("Change column type: %1").arg(headerText)
+			Accessible.description:		qsTr("Open menu to change type for column %1").arg(headerText)
+			Accessible.onPressAction:	{ if (enabled) colIcon.openTypeMenu(); }
 
 			hoverEnabled:		true
 			ToolTip.visible:	containsMouse
@@ -199,6 +214,7 @@ Rectangle
 			if(columnIndex >= 0)
 			{
 				headerRoot.forceActiveFocus()
+				headerRoot.headerClicked()
 
 				if(mouseEvent.button === Qt.LeftButton)
 				{

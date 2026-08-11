@@ -49,6 +49,10 @@ Rectangle
 	readonly property bool showArrow:	buttonType == MenuArrowButton.ButtonType.LeftArrow || buttonType == MenuArrowButton.ButtonType.RightArrow 
 	readonly property bool isTools:		buttonType == MenuArrowButton.ButtonType.Tools
 
+	Accessible.role:			Accessible.Button
+	Accessible.name:			hamburger ? qsTr("Main menu") : !isTools ? qsTr("Modules menu") : qsTr("Workspace tools")
+	Accessible.description:		toolTip != "" ? toolTip : Accessible.name
+	Accessible.onPressAction:	clicked()
 
 	ToolTip.text:				toolTip
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
@@ -59,7 +63,7 @@ Rectangle
 	{
 		id:					hamburgerArrow
 		anchors.centerIn:	parent
-		width:				hamburgerArrow.barWidth//parent.width	- (2 * jaspTheme.ribbonButtonPadding)
+		width:				hamburgerArrow.barWidth
 		height:				baseHeight - 20
 		scale:				baseScale * (mice.containsMouse && !ribbonButton.pressed ? jaspTheme.ribbonScaleHovered : 1)
 

@@ -10,6 +10,9 @@ FocusScope
 {
 	id:			modulesMenu
 
+	Accessible.role:	Accessible.Pane
+	Accessible.name:	qsTr("Modules menu")
+
 	width:		slidePart.width
 	height:		600
 	z:			1

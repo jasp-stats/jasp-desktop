@@ -67,4 +67,6 @@ import JASP.Controls
 TextField
 {
 	inputType:			"computedColumn"
+	
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("Add a computed column textfield %1").arg(title) : info
 }

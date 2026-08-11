@@ -126,6 +126,11 @@ ComponentsListBase
 	Layout.columnSpan		: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
 	preferredWidth			: parent.width
 	preferredHeight			: implicitHeight
+	
+	Accessible.role:			Accessible.List
+	Accessible.name:			itemTitle.text
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("A list of other components %1").arg(title) : info
+	
 
 	property alias	label				: componentsList.title
 	property alias	columns				: itemGrid.columns

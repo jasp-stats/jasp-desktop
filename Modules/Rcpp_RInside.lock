@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://packagemanager.posit.co/cran/2026-03-31"
+        "URL": "https://cloud.r-project.org"
       }
     ]
   },
@@ -16,7 +16,7 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.1.1",
+      "Version": "1.1.2",
       "Source": "Repository"
     }
   }

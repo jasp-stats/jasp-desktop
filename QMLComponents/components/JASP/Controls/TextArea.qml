@@ -84,6 +84,12 @@ TextAreaBase
 	property bool   showLineNumber      : false
     
 	Component.onCompleted: control.editingFinished.connect(editingFinished)
+	
+	Accessible.role:			Accessible.EditableText
+	Accessible.name:			title
+	Accessible.description:		info === undefined || info == "" ? toolTip !== undefined && toolTip != "" ? toolTip :  qsTr("A text area %1").arg(title) : info
+
+	
     
 	function userEnteredInput() {
 		if (textArea.trim)

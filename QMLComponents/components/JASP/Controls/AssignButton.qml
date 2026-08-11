@@ -50,6 +50,9 @@ Button
 	readonly	property string iconToLeft:		jaspTheme.iconPath + "arrow-left.png"
 	readonly	property string iconToRight:	jaspTheme.iconPath + "arrow-right.png"
 	
+	Accessible.name:			leftToRight ? qsTr("Assignbutton for variable list %1").arg(!leftSource ? "?" : leftSource.title) : qsTr("Unassignbutton for variablelist %1").arg(!rightSource ? "?" : rightSource.title)
+	Accessible.description:		info === "" ? Accessible.name : info
+	
 	text:			""
 	visible:		sourceM && targetM && sourceM.visible && targetM.visible
 

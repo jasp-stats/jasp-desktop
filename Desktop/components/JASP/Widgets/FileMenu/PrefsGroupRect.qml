@@ -7,6 +7,9 @@ import JASP
 
 Rectangle
 {
+	Accessible.role:	Accessible.Section
+	Accessible.name:	title
+
 	color:			"transparent"
 	border.color:	jaspTheme.fileMenuLightBorder
 	border.width:	1
