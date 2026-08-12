@@ -4594,7 +4594,6 @@ msgctxt "FactorsFormBase|"
 msgid "Factor"
 msgstr "Faktor"
 
-#, fuzzy
 msgctxt "DataTableView|"
 msgid "Insert constructor column before"
 msgstr "Baukasten-Spalte davor einfügen"
@@ -4691,7 +4690,7 @@ msgctxt "QObject|"
 msgid "Set type to '%1' for column(s) '%2'"
 msgstr "Typ auf '%1' für Spalte(n) '%2' setzen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Reverse values of column(s) '%1'"
 msgstr "Werte von Spalte(n) '%1' umdrehen"
@@ -4752,12 +4751,10 @@ msgctxt "TableViewBase|"
 msgid "Custom Contrasts Table"
 msgstr "Benutzerdefinierte Kontraste-Tabelle"
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Filterd Data Entry Table"
 msgstr "Gefilterte Dateneingabe-Tabelle"
 
-#, fuzzy
 msgctxt "TableViewBase|"
 msgid "Grid Table"
 msgstr "Gitter-Tabelle"
@@ -4881,7 +4878,7 @@ msgctxt "WelcomePage|"
 msgid "Visit the website"
 msgstr "Die Webseite besuchen"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Toggle autosorting labels by values for column(s) '%1'"
 msgstr ""
@@ -4933,7 +4930,7 @@ msgstr ""
 "*in der Analyse* angezeigt, dass es etwas gibt, das Sie berücksichtigen "
 "sollten. Glücklicherweise brauchen wir dies fast nie zu benutzen."
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels, of which %2 have a numeric value.\n"
@@ -4949,7 +4946,7 @@ msgctxt "DataSetPackage|"
 msgid "Implicit missing values: %1"
 msgstr "Implizit fehlende Werte: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DataSetPackage|"
 msgid ""
 "There are %1 total levels.\n"
@@ -5151,7 +5148,6 @@ msgstr ""
 "Klicken Sie auf das (i)-Symbol in der unteren rechten Ecke für weitere "
 "Hilfe.\n"
 
-#, fuzzy
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Feld Spaltenname-ist-frei"
@@ -5361,12 +5357,12 @@ msgctxt "QObject|"
 msgid "Use filter"
 msgstr "Filter verwenden"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Change column compute filter of '%1' from '%2' to '%3'"
 msgstr "Ändern des Berechnungsfilters von Spalte '%1' von '%2' auf '%3'"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "QObject|"
 msgid "Change column drop levels of '%1' from '%2' to '%3'"
 msgstr "Ändern der Stufen-Auslassung von Spalte '%1' von '%2' auf '%3'"
@@ -5613,7 +5609,7 @@ msgctxt "ComboBoxBase|"
 msgid "Possible values are: %1"
 msgstr "Mögliche Werte sind: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ImportDataSet|"
 msgid "Originally imported into %1 on %2"
 msgstr "Ursprünglich importiert in %1 auf %2"
@@ -5860,7 +5856,6 @@ msgstr ""
 "'movingRange'. Die Suche nach optimalem Lambda wird begrenzt in \"untere\" "
 "und \"obere\" Grenzen."
 
-#, fuzzy
 msgctxt "ComputeColumnWindow|"
 msgid ""
 "Two-parameter power transform (scale-invariant Box-Box; transforms values "
@@ -5943,7 +5938,6 @@ msgctxt "tst_formulaField|"
 msgid "Dummy"
 msgstr "Platzhalter"
 
-#, fuzzy
 msgctxt "FileEvent|"
 msgid "Loading Minitab Data Workbook File"
 msgstr "Lade Minitab Daten-Arbeitsbuch-Datei"

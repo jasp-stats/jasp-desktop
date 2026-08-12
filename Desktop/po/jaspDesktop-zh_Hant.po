@@ -4813,7 +4813,7 @@ msgstr "SAS 檔案 %1"
 
 msgctxt "ColorPalette|"
 msgid "JASP"
-msgstr ""
+msgstr "JASP 主題"
 
 msgctxt "PrefsResults|"
 msgid "PDF Settings"
@@ -5628,7 +5628,7 @@ msgstr "正在安裝"
 #, qt-format
 msgctxt "ModulesMenu|"
 msgid " (%1/%2)"
-msgstr ""
+msgstr " (%1/%2)"
 
 msgctxt "PrefsResults|"
 msgid "Show interactive plots by default, where possible."
@@ -5846,7 +5846,7 @@ msgctxt "DynamicModules|"
 msgid "<i>Could not load the description of the module in archive: '%1'</i>"
 msgstr "<i>無法從存檔中加載模組描述檔: '%1'</i>"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "DynamicModules|"
 msgid ""
 "<h3>%1</h3><i>Version %2</i><br><p>%3</p><br><br><i>Created by %4 and "
@@ -6059,7 +6059,7 @@ msgstr "空白"
 
 msgctxt "CsvPreview|"
 msgid "Tab"
-msgstr ""
+msgstr "制表符"
 
 msgctxt "CsvPreview|"
 msgid "Advanced"
@@ -6362,10 +6362,9 @@ msgctxt "PrefsAI|"
 msgid "Set as Active"
 msgstr "設為啟用"
 
-#, fuzzy
 msgctxt "PrefsAI|"
 msgid "Duplicate"
-msgstr "複製報表模組"
+msgstr "複製副本"
 
 msgctxt "PrefsAI|"
 msgid "Delete Persona"
@@ -9285,7 +9284,7 @@ msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "AI"
-msgstr ""
+msgstr "AI"
 
 msgctxt "AnalysisForm|"
 msgid "Set to an integer"
