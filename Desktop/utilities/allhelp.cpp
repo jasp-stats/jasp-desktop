@@ -718,23 +718,20 @@ QString AllHelp::easyfilterconstructor()
 
 <p>The following examples will show you how you can create your own filters in a (relatively) simple manner: </p>
 
-<p>A new feature missing from the rather old help gifs is the changing of a columntype within the constructor. 
-	Just click the icon and choose the type you want, the tooltip will show an example of the data.
-</p>
+A new feature missing from the rather old help gifs is the changing of a columntype within the constructor. 
+Just click the icon and choose the type you want, the tooltip will show an example of the data.
 
-<p>
-	Another feature missing in the gifs is:
-	
-	Keeping or dropping levels is about whether each level (a value and label) of a column is passed to the analysis, levels are inspectable via the "Label editor". 
-	Keeping levels means that all levels defined on the column are passed to the analysis.
-	Dropping levels means that only those levels that occur on rows that pass the filter are in the end end communicated to the analysis.
-	As an example, suppose you have a column <code>contBinom</code> with two values/labels "0" and "1", and we filter all the "1"es out whereafter the analysis would get:
-	<ul>
-		<li>When keeping levels: "0", "1"</li>
-		<li>When dropping levels: "0"</li>
-	</ul>
-	One caveat is that when the filter is set to drop levels, yet doesn't actually filter anything, it won't drop levels.
-</p>
+Another feature missing in the gifs is:
+
+Keeping or dropping levels is about whether each level (a value and label) of a column is passed to the analysis, levels are inspectable via the "Label editor". 
+Keeping levels means that all levels defined on the column are passed to the analysis.
+Dropping levels means that only those levels that occur on rows that pass the filter are in the end end communicated to the analysis.
+As an example, suppose you have a column <code>contBinom</code> with two values/labels "0" and "1", and we filter all the "1"es out whereafter the analysis would get:
+<ul>
+	<li>When keeping levels: "0", "1"</li>
+	<li>When dropping levels: "0"</li>
+</ul>
+One caveat is that when the filter is set to drop levels, yet doesn't actually filter anything, it won't drop levels.
 
 <details>
 	<summary><b>Filtering a continuous column</b></summary>
