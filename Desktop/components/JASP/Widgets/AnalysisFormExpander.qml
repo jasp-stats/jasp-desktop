@@ -419,7 +419,8 @@ DropArea
 					{
 						id:					rSyntaxButton
 						width:				height
-						iconSource:			enabled ? jaspTheme.iconPath + "/R-roundbutton.svg" :  jaspTheme.iconPath + "/R-roundbutton-disabled.svg"
+						buttonPadding:		4 * preferencesModel.uiScale
+						iconSource:			jaspTheme.iconPath + "/R.png"
 						enabled:			expanderButton.expanded
 						onClicked:			if (formParent.myForm) formParent.myForm.toggleRSyntax();
 						toolTip:			preferencesModel.showRSyntax ? qsTr("Hide R Syntax") : qsTr("Show R syntax")

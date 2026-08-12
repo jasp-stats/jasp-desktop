@@ -311,6 +311,36 @@ FocusScope
 							anchors.margins:		1
 
 						}
+
+						JaspControls.HelpButton
+						{
+							id:					helpButton
+							height:				33 * jaspTheme.uiScale
+							width:				height
+							buttonPadding:		6 * preferencesModel.uiScale
+							anchors.right:		closeRectangularButton.left
+							anchors.top:		closeRectangularButton.top
+							helpMD:				allHelp.rfilterconstructor
+							toolTip:			qsTr("Open Documentation")
+						}
+
+						JaspControls.MenuButton
+						{
+							id:					closeRectangularButton
+							height:				33 * jaspTheme.uiScale
+							width:				height
+							radius:				height
+							iconSource:			jaspTheme.iconPath + "collapse.png"
+							onClicked:			filterEditRectangle.askIfChanged(function (){ filterWindow.close() })
+							toolTip:			qsTr("Hide filter")
+							anchors
+							{
+								top:			parent.top
+								right:			parent.right
+								rightMargin:	jaspTheme.generalAnchorMargin
+							}
+						}
+
 					}
 
 					Item
@@ -495,39 +525,13 @@ FocusScope
 
 					text:			qsTr("Apply pass-through filter")
 					anchors.left:	clearRectangularButton.right
-					anchors.right:	helpButton.left
+					anchors.right:	parent.right
 					anchors.bottom:	parent.bottom
 					anchors.top:	closeRectangularButton.top
 
 					onClicked:		{ forceActiveFocus(); filterWindow.applyAndSendFilter(filterEdit.text) }
 
 					toolTip:		qsTr("Click to apply filter")
-				}
-
-				JaspControls.HelpButton
-				{
-					id:				helpButton
-					height:			33 * jaspTheme.uiScale
-					width:			height
-					buttonPadding:	6 * preferencesModel.uiScale
-
-					anchors.right:	closeRectangularButton.left
-					anchors.bottom: parent.bottom
-					anchors.top:	closeRectangularButton.top
-					helpMD:			allHelp.rfilterconstructor
-					toolTip:		qsTr("Open Documentation")
-				}
-
-
-				JaspControls.RectangularButton
-				{
-					id:				closeRectangularButton
-					iconSource:		jaspTheme.iconPath + "cross.png"
-					anchors.right:	parent.right
-					anchors.bottom: parent.bottom
-
-					onClicked:		filterEditRectangle.askIfChanged(function (){ filterWindow.close() })
-					toolTip:		qsTr("Hide filter")
 				}
 			}
 		}
