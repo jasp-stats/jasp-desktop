@@ -45,10 +45,11 @@ JASPWidgets.imageView = JASPWidgets.objectView.extend({
 	isEditable:					function() {	return this.model.get("error") === null;						},
 	isConvertible:				function() {	return this.model.get("error") === null && this.model.get("convertible") ===  true;	},
 	hasCollapse:				function() {	return this.$el.hasClass('jasp-collection-item')	=== false;	},
-	hasInteractive:				function() {	
+	hasInteractive:				function() {
 		if(!useInteractivePlots) 
 			return false; 
-		return this.model.get("interactiveJsonData") !== null && this.model.get("interactiveJsonData") !== undefined;	},
+		const interactiveJsonData = this.model.get("interactiveJsonData");
+		return interactiveJsonData !== null && interactiveJsonData !== undefined && interactiveJsonData !== "";	},
 	saveImageClicked:			function() {	this.model.trigger("SaveImage:clicked",							{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name")							});	},
 	editImageClicked:			function() {	this.model.trigger("EditImage:clicked",			this.myView,	{ data: this.model.get("data"), width: this.model.get("width"), height: this.model.get("height"), name: this.model.get("name"), title: this.model.get("title"), type: "interactive"		});	},
 	interactiveImageClicked:	function() {
@@ -317,28 +318,29 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		console.log("Plotly render attempt - ID:", this.plotlyId, "Element found:", !!targetEl, "Visible:", targetEl ? $(targetEl).is(':visible') : false, "Retry count:", this.plotlyRetryCount || 0);
 
 		if (targetEl && $(targetEl).is(':visible')) {
-			const payload = this.model.get("interactiveJsonData");
-			console.log("Rendering Plotly with payload:", payload);
+			this.loadInteractiveJsonData()
+				.then((payload) => {
+					console.log("Rendering Plotly with payload:", payload);
 
-			// Clear any existing plot first
-			Plotly.purge(targetEl);
-			targetEl._plotlyInitialized = false;
+					// Clear any existing plot first
+					Plotly.purge(targetEl);
+					targetEl._plotlyInitialized = false;
 
-			// Then create new plot
-			Plotly.newPlot(targetEl, payload.data, payload.layout)
-				.then(() => {
-					console.log("Plotly chart rendered successfully");
-					// Mark the element as having a valid Plotly chart
-					targetEl._plotlyInitialized = true;
+					// Then create new plot
+					return Plotly.newPlot(targetEl, payload.data, payload.layout)
+						.then(() => {
+							console.log("Plotly chart rendered successfully");
+							// Mark the element as having a valid Plotly chart
+							targetEl._plotlyInitialized = true;
+
+							if (payload.hasRangeFrame)
+								this.addPlotlyRangeRameHooks(targetEl);
+						});
 				})
 				.catch((err) => {
 					console.error("Plotly rendering failed:", err);
 					targetEl._plotlyInitialized = false;
 				});
-
-			if (payload.hasRangeFrame)
-				this.addPlotlyRangeRameHooks(targetEl);
-
 
 		} else {
 			// Limit retries to prevent infinite loops
@@ -350,6 +352,28 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 				console.error("Failed to render Plotly after 100 attempts - giving up");
 			}
 		}
+	},
+
+	loadInteractiveJsonData: function () {
+		const interactiveJsonData = this.model.get("interactiveJsonData");
+
+		if (typeof interactiveJsonData !== "string")
+			return Promise.resolve(interactiveJsonData);
+
+		const revision = this.model.get("revision");
+		const url = (insideJASP ? "plot://" + interactiveJsonData : interactiveJsonData) + "?rev=" + revision;
+
+		return fetch(url)
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Could not load interactive plot data from " + url);
+
+				return response.json();
+			})
+			.then((payload) => {
+				this.model.set("interactiveJsonData", payload);
+				return payload;
+			});
 	},
 
 
