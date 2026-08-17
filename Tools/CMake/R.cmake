@@ -267,7 +267,7 @@ cmake_print_variables(MODULES_RENV_CACHE_PATH)
 if(APPLE)
 
   set(R_FRAMEWORK_PATH	"${CMAKE_BINARY_DIR}/Frameworks")
-  set(R_HOME_PATH		"${R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources")
+  set(R_HOME_PATH		"${R_FRAMEWORK_PATH}/R.framework/Versions/${R_DIR_NAME}/Resources")
   set(R_LIBRARY_PATH	"${R_HOME_PATH}/library")
   set(R_OPT_PATH		"${R_HOME_PATH}/opt")
   set(R_EXECUTABLE		"${R_HOME_PATH}/bin/R")
