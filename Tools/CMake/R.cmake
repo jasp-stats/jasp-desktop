@@ -205,12 +205,6 @@ set(R_BINARY_HASHES
   "fc9f4ada15589e8e037b9bf05563d21e97181635"
   "b6d12d5494ded0f65d06e6edbf54ab8288a4a27b"
 )
-  # 4.6.1
-  "8d3c9e7a71dcba7602aaaf948b574e2e9d29844e"
-  "8d3c9e7a71dcba7602aaaf948b574e2e9d29844e"
-  "fc9f4ada15589e8e037b9bf05563d21e97181635"
-  "b6d12d5494ded0f65d06e6edbf54ab8288a4a27b"
-)
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
@@ -220,10 +214,18 @@ set(R_VERSION "4.6.1")
 set(R_VERSION_MAJOR_MINOR "4.6")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
-if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
-  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
+if(R_VERSION VERSION_GREATER_EQUAL "4.6.0")
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}")
+  else()
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-x86_64")
+  endif()
 else()
-  set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-x86_64")
+  if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-arm64")
+  else()
+    set(R_DIR_NAME "${R_VERSION_MAJOR_MINOR}-x86_64")
+  endif()
 endif()
 
 if(WIN32)
@@ -265,7 +267,7 @@ cmake_print_variables(MODULES_RENV_CACHE_PATH)
 if(APPLE)
 
   set(R_FRAMEWORK_PATH	"${CMAKE_BINARY_DIR}/Frameworks")
-  set(R_HOME_PATH		"${R_FRAMEWORK_PATH}/R.framework/Versions/${R_DIR_NAME}/Resources")
+  set(R_HOME_PATH		"${R_FRAMEWORK_PATH}/R.framework/Versions/${R_VERSION_MAJOR_MINOR}/Resources")
   set(R_LIBRARY_PATH	"${R_HOME_PATH}/library")
   set(R_OPT_PATH		"${R_HOME_PATH}/opt")
   set(R_EXECUTABLE		"${R_HOME_PATH}/bin/R")
