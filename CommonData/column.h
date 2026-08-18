@@ -85,7 +85,7 @@ public:
 
 			bool					initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue);
 			bool					overwriteDataAndType(	stringvec		data, columnType colType, bool computed);
-			void					labelsToNoLabels();
+			void					labelsToNoLabels(bool signalOthers = true);
 			void					noLabelsToLabels();
 			
 			bool					allLabelsPassFilter()	const;

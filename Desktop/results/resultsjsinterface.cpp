@@ -38,6 +38,7 @@
 #include <QApplication>
 #include "gui/preferencesmodel.h"
 #include <QThread>
+#include <QFileDialog>
 #include "log.h"
 
 ResultsJsInterface * ResultsJsInterface::_singleton = nullptr;
@@ -296,6 +297,20 @@ void ResultsJsInterface::showAnalysis(int id)
 void ResultsJsInterface::exportSelected(const QString &filename)
 {
 	runJavaScript("window.exportHTML('" + filename + "');");
+}
+
+void ResultsJsInterface::exportAnalysisHTML(int analysisId)
+{
+	QString defaultName = QString("analysis_%1.html").arg(analysisId);
+	QString filename = QFileDialog::getSaveFileName(
+		nullptr, tr("Export Analysis"), defaultName,
+		tr("HTML files (*.html)"));
+
+	if (filename.isEmpty()) return;
+
+	runJavaScript(QString("window.exportAnalysisHTML(%1, '%2');")
+		.arg(analysisId)
+		.arg(escapeJavascriptString(filename)));
 }
 
 void ResultsJsInterface::analysisChanged(Analysis *analysis)

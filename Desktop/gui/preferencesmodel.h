@@ -6,6 +6,8 @@
 #include <QVariantList>
 #include "preferencesmodelbase.h"
 #include "pdfdefinition.h"
+#include "gui/aipersonamodel.h"
+#include "gui/aiconfigmodel.h"
 
 class JaspTheme;
 
@@ -87,10 +89,22 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			showInteractiveDefault	READ showInteractiveDefault		WRITE setShowInteractiveDefault		NOTIFY showInteractiveDefaultChanged	)
 	Q_PROPERTY(int			autoSaveIntervalSec		READ autoSaveIntervalSec		WRITE setAutoSaveIntervalSec		NOTIFY autoSaveIntervalSecChanged		)
 	Q_PROPERTY(bool			autoSaveAtAll			READ autoSaveAtAll				WRITE setAutoSaveAtAll				NOTIFY autoSaveAtAllChanged				)
+	Q_PROPERTY(QString		aiCommonSystemPrompt	READ aiCommonSystemPrompt		WRITE setAiCommonSystemPrompt		NOTIFY aiCommonSystemPromptChanged		)
+	Q_PROPERTY(bool			aiCommonSystemPromptUseCustom	READ aiCommonSystemPromptUseCustom		WRITE setAiCommonSystemPromptUseCustom		NOTIFY aiCommonSystemPromptUseCustomChanged		)
+	Q_PROPERTY(bool			aiEnabled				READ aiEnabled					WRITE setAiEnabled					NOTIFY aiEnabledChanged					)
+	Q_PROPERTY(bool			aiAnnotationUseCustom	READ aiAnnotationUseCustom		WRITE setAiAnnotationUseCustom		NOTIFY aiAnnotationUseCustomChanged		)
+	Q_PROPERTY(QString		aiAnnotationPrompt		READ aiAnnotationPrompt			WRITE setAiAnnotationPrompt			NOTIFY aiAnnotationPromptChanged		)
+	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
+	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
+	Q_PROPERTY(QObject*		aiConfigModel			READ aiConfigModel													CONSTANT								)
+
+	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
+	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
+	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
+
 	
 
-
-public:
+	public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
@@ -181,14 +195,43 @@ public:
 	void			setStartMaximized(		bool	newStartMaximized);
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
+	Q_INVOKABLE void resetAiDefaults();
 	
 	bool storeStateEtc() const;
 	void setStoreStateEtc(bool newStoreStateEtc);
-	
+
 	bool showInteractiveDefault() const;
 	void setShowInteractiveDefault(bool newShowInteractiveDefault);
-	
-public slots:
+
+	AIPersonaModel* aiPersonaModel() const;
+	AIConfigModel* aiConfigModel() const;
+
+	QString aiCommonSystemPrompt() const;
+	void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+
+	bool aiCommonSystemPromptUseCustom() const;
+	void setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
+
+	bool aiEnabled() const;
+	void setAiEnabled(bool newAiEnabled);
+
+	bool aiAnnotationUseCustom() const;
+	void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+
+	QString aiAnnotationPrompt() const;
+	void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
+
+	QString aiUserAvatar() const;
+	void setAiUserAvatar(QString newAiUserAvatar);
+
+	bool rpcServerEnabled() const;
+	void setRpcServerEnabled(bool v);
+	QString rpcServerIp() const;
+	void setRpcServerIp(QString v);
+	int rpcServerPort() const;
+	void setRpcServerPort(int v);
+		
+	public slots:
 	bool engineSandbox()							const;
 	bool useNativeFileDialog()						const;
 	void setUiScale(					double		uiScale);
@@ -326,10 +369,20 @@ signals:
 	void startMaximizedChanged(			bool		startMaximized);
 	void storeStateEtcChanged(			bool		state);
 	void showInteractiveDefaultChanged(	bool		interactive);
-	void autoSaveIntervalSecChanged(	int			interval);
-	void autoSaveAtAllChanged(			bool		autoSave);
-	
-private slots:
+	void autoSaveIntervalSecChanged(	int		interval);
+		void autoSaveAtAllChanged(			bool		autoSave);
+			void aiCommonSystemPromptChanged(		QString	aiCommonSystemPrompt);
+				void aiCommonSystemPromptUseCustomChanged(	bool	aiCommonSystemPromptUseCustom);
+				void aiEnabledChanged(			bool	aiEnabled);
+			void aiAnnotationUseCustomChanged(bool	aiAnnotationUseCustom);
+			void aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
+			void aiUserAvatarChanged(		QString	aiUserAvatar);
+
+			void rpcServerEnabledChanged(	bool	rpcServerEnabled);
+			void rpcServerIpChanged(		QString	rpcServerIp);
+			void rpcServerPortChanged(		int		rpcServerPort);
+
+	private slots:
 	void dataLabelNAChangedSlot(QString label);
 	
 private:
@@ -343,6 +396,7 @@ private:
 	bool			_githubPatCustom, //Should be initialized on prefs construction
 					_autoSaveIntervalSec,
 					_autoSaveAtAll;
+	AIPersonaModel*	_aiPersonaModel = nullptr;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;
 	QStringList		_splitValues(const QString& values)				const;

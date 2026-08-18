@@ -56,6 +56,8 @@ qt_add_executable(
 )
 
 
+
+
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
@@ -189,12 +191,12 @@ target_compile_definitions(
 
 enable_testing(true)
 
-add_test(NAME testDataImport  COMMAND JASPTest)
-add_test(NAME testCsvPreview  COMMAND JASPTestCsvPrev)
-add_test(NAME testDebugData   COMMAND JASPTestDebugData)
-add_test(NAME testEngine      COMMAND JASPTestEngine)
-add_test(NAME testQuick       COMMAND JASPQuickTest)
-add_test(NAME testColumnEncoderContext COMMAND JASPTestColumnEncoderContext)
+add_test(NAME testDataImport               COMMAND JASPTest)
+add_test(NAME testCsvPreview               COMMAND JASPTestCsvPrev)
+add_test(NAME testDebugData                COMMAND JASPTestDebugData)
+add_test(NAME testEngine                   COMMAND JASPTestEngine)
+add_test(NAME testQuick                    COMMAND JASPQuickTest)
+add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
 
 
 

@@ -44,6 +44,8 @@ RibbonButton::RibbonButton(QObject *parent, DynamicModule * module)  : QObject(p
 	setIsCommon(		_module->isCommon()					);
 	setModuleName(		_module->name()						);
 	setIconSource(tq(	_module->iconFilePath())			);
+	
+	connect(_module, &DynamicModule::isCommonChanged,	this, &RibbonButton::setIsCommon);
 
 	bindYourself();
 }
@@ -145,7 +147,7 @@ void RibbonButton::setReady(bool ready)
 	_ready = ready;
 	emit readyChanged(_ready);
 	
-	if(_ready && dynamicModule() && dynamicModule()->isDevMod())
+	if(_ready && module() && module()->isDevMod())
 		setEnabled(true); 
 }
 
@@ -242,9 +244,6 @@ void RibbonButton::setIsCommon(bool isCommon)
 
 	_isCommonModule = isCommon;
 	emit isCommonChanged();
-
-	if(!_enabled && _isCommonModule)
-		_enabled = true;
 }
 
 void RibbonButton::setModuleName(std::string moduleName)
@@ -256,7 +255,7 @@ void RibbonButton::setModuleName(std::string moduleName)
 	emit moduleNameChanged();
 }
 
-DynamicModule * RibbonButton::dynamicModule()
+DynamicModule * RibbonButton::module()
 {
 	return _module;
 }

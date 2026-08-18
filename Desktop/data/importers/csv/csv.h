@@ -23,6 +23,7 @@
 #include <string>
 #include <stdint.h>
 #include <fstream>
+#include "csvparser.h"
 
 ///
 /// This files is used to read CSV files
@@ -30,7 +31,7 @@
 /// And otherwise it just looks at the characters and sees if any of the codes for multiple bytes etc are present.
 /// It also tries to determine the delimiter by looking at the first line and trying some fun heuristics.
 /// If it finds nothing (one column for instance, or something crazy) it defaults to comma
-class CSV
+class CSV : public CSVParser
 {
 public:
 	CSV(const std::string &path);
@@ -49,12 +50,15 @@ public:
 
 	Status status();
 	char delimiter() { return _delim; }
-	void setDelimiter(char d) { _delim = d; }
+	void setDelimiter(char d) { 
+		CSVParser::setDelimiter(d); 
+		_delim = d; 
+	}
 	
 private:
 
 	int64_t _fileSize,
-		 	_filePosition;
+ 			_filePosition;
 
 	enum Encoding { Unknown = -1, UTF8 = 0, UTF16BE = 1, UTF16LE = 2, UTF32LE = 3, UTF32BE = 4, Native };
 

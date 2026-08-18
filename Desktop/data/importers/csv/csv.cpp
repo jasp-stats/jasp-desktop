@@ -30,6 +30,7 @@ using namespace std;
 using boost::algorithm::trim;
 
 CSV::CSV(const string &path)
+	: CSVParser(',', true)
 {
 	_encoding = UTF8;
 	_delim = ',';
@@ -440,108 +441,81 @@ bool CSV::readLine(vector<string> &items)
 
 	if (_utf8BufferEndPos == _utf8BufferStartPos)
 	{
-		bool success = readUtf8();
-		if ( ! success)
+		if (!readUtf8())
+		{
+			_eof = true;
 			return false;
+		}
 	}
 
-	bool inQuote = false;
+	// Process characters through the parser until row is complete
+	size_t startPos = _utf8BufferStartPos;
+	size_t i = startPos;
 
-	int i = _utf8BufferStartPos;
-
-	while (true)
+	while (i < _utf8BufferEndPos)
 	{
 		char ch = _utf8Buffer[i];
 
-		if ((unsigned char)ch >= 0xF8)  // illegal utf-8
-		{
-			ch = '.';
-			_utf8Buffer[i] = '.';
-		}
+	// Replace illegal UTF-8 bytes with '.' (same as original logic)
+	if ((unsigned char)ch >= 0xF8)
+		ch = '.';
 
-		if (ch == '"')
+	if (processChar(ch))
+	{
+		// Same char should be re-processed - don't increment i
+		if (hasRow())
 		{
-			if (inQuote && i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '"')
-				i++;
-			else
-				inQuote = !inQuote;
-		}
-
-		if (inQuote)
-		{
-			// do nothing
-		}
-		else if (ch == _delim)
-		{
-			string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-			trim(token);
-
-			items.push_back(token);
+			items = extractRow();
 			_utf8BufferStartPos = i + 1;
+			reset();
+			return !items.empty();
 		}
-		else if (ch == '\r')
-		{
-			if (items.size() > 0 || i > _utf8BufferStartPos) {
-				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-				trim(token);
-				items.push_back(token);
-			}
+		_utf8BufferStartPos = i; // Same char will be re-processed
+		continue;
+	}
 
-			if (i + 1 < _utf8BufferEndPos && _utf8Buffer[i + 1] == '\n')
-				_utf8BufferStartPos = i + 2;
-			else
-				_utf8BufferStartPos = i + 1;
-
-			if (items.size() > 0)
-				break;
-		}
-		else if (ch == '\n')
-		{
-			if (items.size() > 0 || i > _utf8BufferStartPos) {
-				string token(&_utf8Buffer[_utf8BufferStartPos], i - _utf8BufferStartPos);
-				trim(token);
-				items.push_back(token);
-			}
-
-			_utf8BufferStartPos = i + 1;
-
-			if (items.size() > 0)
-				break;
-		}
-
-		if (i >= _utf8BufferEndPos - 1)
-		{
-			bool success = readUtf8();
-			if (success)
-			{
-				i = -1;
-				inQuote = false;
-			}
-			else // eof
-			{
-				if (items.size() > 0 || _utf8BufferEndPos > _utf8BufferStartPos) {
-					string token(&_utf8Buffer[_utf8BufferStartPos], _utf8BufferEndPos - _utf8BufferStartPos);
-					trim(token);
-					items.push_back(token);
-				}
-				_eof = true;
-				break;
-			}
-		}
+	if (hasRow())
+	{
+		// Row complete - extract it
+		items = extractRow();
+		_utf8BufferStartPos = i + 1;
+		reset();
+		return !items.empty();
+	}
 
 		i++;
+
+		// If we reached the end of buffer, try to load more
+		if (i >= _utf8BufferEndPos)
+		{
+			_utf8BufferStartPos = i; // Only unprocessed bytes from here
+			if (!readUtf8())
+			{
+				// EOF - process remaining data
+				while (i < _utf8BufferEndPos)
+				{
+					char ch = _utf8Buffer[i];
+					if ((unsigned char)ch >= 0xF8)
+						ch = '.';
+					processChar(ch);
+					i++;
+				}
+
+				items = extractRow();
+				_utf8BufferStartPos = i;
+				reset();
+				
+				_eof = true;
+				return !items.empty();
+			}
+			i = 0;
+		}
 	}
 
-	for (size_t index = 0; index < items.size(); index++)
-	{
-		string item = items.at(index);
-		boost::algorithm::replace_all(item, "\n", " "); // so we should not allow newlines in values right?
-		if (item.size() >= 2 && item[0] == '"' && item[item.size()-1] == '"')
-			item = item.substr(1, item.size()-2);
-		items[index] = item;
-	}
-
-	return true;
+	// Shouldn't reach here normally, but just in case
+	_eof = true;
+	items.clear();
+	return false;
 }
 
 int64_t CSV::pos()

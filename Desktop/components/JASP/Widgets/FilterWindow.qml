@@ -130,14 +130,13 @@ FocusScope
 				}
 			}
 
-			JaspControls.MenuButton
+			JaspControls.HelpButton
 			{
 				id:					helpEasyRectangularButton
 				height:				33 * jaspTheme.uiScale
 				width:				height
-				radius:				height
-				iconSource:			jaspTheme.iconPath + "info-button.png"
-				onClicked:			helpModel.showOrTogglePage("other/easyfilterconstructor");
+				buttonPadding:		6 * preferencesModel.uiScale
+				helpMD:				allHelp.easyfilterconstructor;
 				toolTip:			qsTr("Open Documentation")
 				anchors
 				{
@@ -505,15 +504,17 @@ FocusScope
 					toolTip:		qsTr("Click to apply filter")
 				}
 
-				JaspControls.RectangularButton
+				JaspControls.HelpButton
 				{
 					id:				helpButton
-					iconSource:		jaspTheme.iconPath + "info-button.png"
+					height:			33 * jaspTheme.uiScale
+					width:			height
+					buttonPadding:	6 * preferencesModel.uiScale
+
 					anchors.right:	closeRectangularButton.left
 					anchors.bottom: parent.bottom
 					anchors.top:	closeRectangularButton.top
-
-					onClicked:		helpModel.showOrTogglePage("other/rfilterconstructor");
+					helpMD:			allHelp.rfilterconstructor
 					toolTip:		qsTr("Open Documentation")
 				}
 

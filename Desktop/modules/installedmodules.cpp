@@ -5,9 +5,11 @@
 #include <json/json.h>
 #include <fstream>
 #include "gui/preferencesmodel.h"
+#include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "log.h"
 #include "resultstesting/compareresults.h"
-
+#include "jsonutilities.h"
+#include "utilities/qutils.h"
 
 const std::string InstalledModules::settingsPath = "modules-settings.json";
 
@@ -90,27 +92,42 @@ std::vector<InstalledModules::ModuleInfo> InstalledModules::getModules() {
 	std::string settings = AppDirs::bundledModulesDir().toStdString() + settingsPath;
 	std::ifstream in(settings);
 	Json::Value root;
-	Json::Reader().parse(in, root);
-	Json::Value commonNamesJson = root.get("common", Json::arrayValue),
-				extraNamesJson	= root.get("extra", Json::arrayValue);
-	if(!commonNamesJson.isArray())	commonNamesJson = Json::arrayValue;
-	if(!extraNamesJson.isArray())	extraNamesJson = Json::arrayValue;
-
-
+ 	Json::Reader().parse(in, root);
+ 	Json::Value						commonNamesJson = root.get("common", Json::arrayValue),
+ 									extraNamesJson	= root.get("extra", Json::arrayValue);
+ 	if(!commonNamesJson.isArray())	commonNamesJson = Json::arrayValue;
+ 	if(!extraNamesJson.isArray())	extraNamesJson	= Json::arrayValue;
+ 	
+ 	// Check if OverrideCommon is specified in configuration from toml
+ 	QStringList overrideCommonList = [&](const QStringList * ql) { return ql ? *ql : QStringList(); }(JASPConfiguration::getInstance()->getOverrideCommon());
+	
+	if(!overrideCommonList.isEmpty())
+	{
+		QStringList all		= tq(JsonUtilities::jsonStringArrayToVec(commonNamesJson));	
+		all.append(tq(JsonUtilities::jsonStringArrayToVec(extraNamesJson)));
+		all.sort();
+				
+		commonNamesJson.clear();
+		extraNamesJson.clear();
+		
+		commonNamesJson = JsonUtilities::vecToJsonArray(fq(overrideCommonList));
+		for(QString & n : all)
+			extraNamesJson.append(fq(n));
+	}
+	
 	std::vector<InstalledModules::ModuleInfo> orderedModules = {};
-	for(auto & name : commonNamesJson) {
+	for(auto & name : commonNamesJson) 
 		if(modules.find(name.asString()) != modules.end()) {
 			modules[name.asString()].common = true;
-			orderedModules.push_back(modules[name.asString()]);
-			modules.erase(name.asString());
+			orderedModules	.push_back(modules[name.asString()]);
+			modules			.erase(name.asString());
 		}
-	}
-	for(auto & name : extraNamesJson) {
+	
+	for(auto & name : extraNamesJson)
 		if(modules.find(name.asString()) != modules.end()) {
-			orderedModules.push_back(modules[name.asString()]);
-			modules.erase(name.asString());
+			orderedModules	.push_back(modules[name.asString()]);
+			modules			.erase(name.asString());
 		}
-	}
 
 	//insert leftover modules
 	for(auto& module : modules)

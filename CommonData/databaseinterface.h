@@ -190,6 +190,7 @@ public:
 	void		labelLoad(		int id,	int & columnId,	int & value,	 std::string & label, bool & filterAllows,		std::string & description,				std::string & originalValueJson,	int & order, bool & userAdded);
 	void		labelSetOrder(	int id, int order);
 	bool		labelExists(	int	columnId, int intsId);
+	intset		labelsExisting(	int columnId);
 	void		labelsLoad(			Column  * column);
 	void		labelsLoad(	const	Columns & columns);//, std::function<void(float)> progressCallback);
 	void		labelsWrite(const	Columns & columns, std::function<void(float)> progressCallback);
@@ -214,6 +215,7 @@ public:
 	void		close();					///< Closes the loaded database and disconnects
 	void		load();						///< Loads a sqlite database from sessiondir (after loading a jaspfile)
 
+	
 	
 private:
 	sqlite3	*	_db();

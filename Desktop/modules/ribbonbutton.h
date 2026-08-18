@@ -66,10 +66,10 @@ public:
 	std::string					title()														const			{ return _titleF ? _titleF() : _title;						}
 	QString						titleQ()													const			{ return QString::fromStdString(title());					}
 	QString						iconSource()												const			{ return _iconSource;										}
-	bool						enabled()													const			{ return _enabled;											}
+	bool						enabled()													const			{ return _isCommonModule || _enabled;						}
 	std::string					name()														const			{ return _name;												}
 	QString						nameQ()														const			{ return QString::fromStdString(_name);						}
-	Modules::DynamicModule	*	dynamicModule();
+	Modules::DynamicModule	*	module();
 	Modules::AnalysisEntry	*	getEntry(const std::string& name);
 	QVariant					menu()														const			{ return QVariant::fromValue(_menuModel);					}
 	stringvec					getAllEntries()												const;

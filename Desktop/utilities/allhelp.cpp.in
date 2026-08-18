@@ -1,0 +1,3 @@
+#include "allhelp.h"
+
+@ALLHELP_VARS@

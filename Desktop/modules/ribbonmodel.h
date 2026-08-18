@@ -76,13 +76,14 @@ public:
 	Q_INVOKABLE void			showStatistics()	{ setCurrentRow(int(RowType::Analyses));	}
 
 	void						removeRibbonButtonModel(std::string moduleName);
-
+	
 
 	bool						isModuleName(std::string name)						const	{ return _buttonModelsByName.count(name) > 0; }
-	QString						moduleName(size_t index)							const	{ return QString::fromStdString(_buttonNames[_currentRow][index]);}
-	RibbonButton*				ribbonButtonModelAt(size_t index)					const	{ return ribbonButtonModel(		_buttonNames[_currentRow][index]); }
+	QString						moduleName(size_t index)							const;
+	RibbonButton*				ribbonButtonModelAt(size_t index)					const;
 	RibbonButton*				ribbonButtonModel(std::string moduleName)			const;
 	int							ribbonButtonModelIndex(RibbonButton * model)		const;
+	void						setCommonOrder(QStringList order);
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
@@ -133,7 +134,7 @@ public slots:
 	void setHighlightedModuleIndex(int highlightedModuleIndex);
 	void analysisClicked(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 	void setCurrentRow(int currentRow);
-	void refreshButtons();
+	void refresh();
 
 private slots:
 	void dynamicModuleChanged(	Modules::DynamicModule * module);

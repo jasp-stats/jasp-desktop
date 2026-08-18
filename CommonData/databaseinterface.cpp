@@ -1537,6 +1537,19 @@ bool DatabaseInterface::labelExists(int	columnId, int intsId)
 	});
 }
 
+intset DatabaseInterface::labelsExisting(int columnId)
+{
+	JASPTIMER_SCOPE(DatabaseInterface::labelsExisting);
+	intset ints;
+			
+	runStatements(
+				"SELECT value FROM Labels WHERE columnId = ?;", 
+				[&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, columnId); },
+				[&](size_t row, sqlite3_stmt * stmt){ ints.insert( sqlite3_column_int(stmt, 0)); });
+	
+	return ints;
+}
+
 int DatabaseInterface::labelAdd(int columnId, int value, const std::string & label, bool filterAllows, const	std::string & description, const std::string & originalValueJson)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelAdd);

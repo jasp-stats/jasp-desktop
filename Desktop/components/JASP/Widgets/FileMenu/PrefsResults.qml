@@ -11,7 +11,7 @@ PrefsScrollView
 	{
 		id:				menuHeader
 		headertext:		qsTr("Results Preferences")
-		helpfile:		"preferences/PrefsResults"
+		helpMD:			allHelp.PrefsResults
 		addMargin:		false
 	}
 

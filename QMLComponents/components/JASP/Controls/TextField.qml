@@ -91,7 +91,7 @@ TextInputBase
 	property alias	displayValue:		control.text	///< In onEditingFinished this contains the "value" entered by the user
 	property int	textFormat:			Text.AutoText
 	property var	lastValidValue:		defaultValue
-	property int	fieldWidth:			jaspTheme.textFieldWidth
+	property int	fieldWidth:			fillWidth ? (width - control.x) : jaspTheme.textFieldWidth
 	property int	fieldHeight:		0
 	property bool	useExternalBorder:	!parentListView
 	property bool	showBorder:			true
@@ -105,6 +105,7 @@ TextInputBase
 	property bool	useLastValidValue:	true
 	property bool	editable:			true
 	property var	undoModel
+	property bool	fillWidth:			false
 
 	property alias showEyeInside: control.showEyeInside
 
@@ -220,10 +221,10 @@ TextInputBase
 		z:						20
 		source:					control.echoMode === TextInput.Password ? jaspTheme.iconPath + "/eyeOpen.png" : jaspTheme.iconPath + "/eyeClosed.png"
 		anchors.right:			control.right
-		anchors.rightMargin:	4
+		anchors.rightMargin:	4 * jaspTheme.uiScale
 		anchors.verticalCenter:	control.verticalCenter
-		width:					control.height
-		height:					control.height
+		width:					control.height - 4 * jaspTheme.uiScale
+		height:					width
 		
 		MouseArea 
 		{
@@ -257,7 +258,7 @@ TextInputBase
 		property bool showEyeInside: false
 
 		QTC.ToolTip.text		: control.text
-		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus) && control.echoMode != QTC.TextInput.Password
+		QTC.ToolTip.visible		: tooLongText && (hovered || control.activeFocus) && control.echoMode != TextInput.Password
 
 		// The acceptableInput is checked even if the user is still typing in the TextField.
 		// In this case, the error should not appear immediately (only when the user is pressing the return key, or going out of focus),

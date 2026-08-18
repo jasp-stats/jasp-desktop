@@ -30,7 +30,7 @@ void ActionButtons::loadButtonData()
 		{FileOperation::ExportData,		tr("Export Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF }																								},
 		{FileOperation::SyncData,		tr("Sync Data"),		false,	{ResourceButtons::Computer, ResourceButtons::OSF, ResourceButtons::Database, ResourceButtons::CurrentFile}										},
 		{FileOperation::Close,			tr("Close"),			false,	{}																																				},
-		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced}							},
+		{FileOperation::Preferences,	tr("Preferences"),		true,	{ResourceButtons::PrefsData, ResourceButtons::PrefsResults, ResourceButtons::PrefsUI, ResourceButtons::PrefsAdvanced, ResourceButtons::PrefsAI}							},
 		{FileOperation::Contact,		tr("Contact"),			true,	{}																																				},
 #ifndef PRO		
 		{FileOperation::Community,		tr("Community"),		true,	{}																																				},

@@ -93,33 +93,48 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows()));
 	}
 
-	unsigned long long progress;
 	unsigned long long lastProgress = -1;
 
-	size_t columnCount = colNames.size();
+	size_t columnCount = importColumns.size();
 
 	stringvec line;
-	bool success = csv.readLine(line);
-
-	while (success)
+	while (csv.readLine(line))
 	{
-		progress = 50 * csv.pos() / csv.size();
+		unsigned long long progress = 50 * csv.pos() / csv.size();
 		if (progress != lastProgress)
 		{
 			progressCallback(progress);
 			lastProgress = progress;
 		}
 
-		if (line.size() != 0) //ignore empty lines
-			for(size_t i = 0; i<columnCount; i++)
-				importColumns.at(i)->addValue(i < line.size() ? line[i] : ""); //add components and add empty vals for missing columns
+		if (line.empty()) continue;
+
+		if (line.size() > columnCount)
+		{
+			size_t currentRowCount = importColumns.empty() ? 0 : importColumns[0]->size();
+
+			for (size_t i = columnCount; i < line.size(); ++i)
+			{
+				string newColName = "V" + std::to_string(i + 1);
+
+				CSVImportColumn* newColumn = new CSVImportColumn(result, newColName, csv.numRows());
+
+				for (size_t row = 0; row < currentRowCount; ++row)
+					newColumn->addValue("");
+
+				importColumns.push_back(newColumn);
+			}
+			columnCount = line.size();
+		}
+
+		for (size_t i = 0; i < columnCount; ++i)
+			importColumns[i]->addValue(i < line.size() ? line[i] : "");
 
 		line.clear();
-		success = csv.readLine(line);
 	}
 
-	for (vector<CSVImportColumn *>::iterator it = importColumns.begin(); it != importColumns.end(); ++it)
-		result->addColumn(*it);
+	for (auto* col : importColumns)
+		result->addColumn(col);
 
 	// Build dictionary for sync.
 	result->buildDictionary();

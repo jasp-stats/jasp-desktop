@@ -61,6 +61,12 @@ public:
 						~Analyses()	{ _singleton = nullptr; }
 	static Analyses *	analyses()	{ return _singleton; }
 
+	static void			registerRpcHandlers();
+
+	/// Strip internal-only keys (e.g. "editOptions") from results before
+	/// sending them over RPC. Add more keys here as needed.
+	static void			stripResults(Json::Value& val);
+
 	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
 
 	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, const std::string & title = "", const Version & loadedVersion = "", const Json::Value & options = Json::nullValue);
@@ -105,6 +111,7 @@ public:
 	Json::Value				allUserData()												const			{ return _allUserData;			}
 	Analysis*				getAnalysisBeforeMoving(size_t index);
 	Analysis*				createAnalysis(const QString& module, const QString& analysis);
+	Analysis*				createReport(const std::string& title);
 
 public slots:
 	void removeAnalysisById(size_t id);
@@ -131,7 +138,7 @@ public slots:
 	void analysisTitleChangedInResults(int id, QString title);
 	void setCurrentFormPrevH(double currentFormPrevH);
 	void move(int fromIndex, int toIndex);
-	void duplicateAnalysis(size_t id);
+	Analysis*				duplicateAnalysis(size_t id, bool isReport = false);
 	void showDependenciesInAnalysis(size_t analysis_id, QString optionName);
 	void analysisTitleChangedHandler(std::string moduleName, std::string oldTitle, std::string newTitlesendRScriptHandler);
 	void prepareForLanguageChange();
@@ -179,6 +186,18 @@ signals:
 
 	void currentFormPrevHChanged(double currentFormPrevH);
 
+public:
+	// ---- Public RPC helpers (callable from AgentStateTracker) ---------------
+
+	/// Write options + optionMeta delta (or full meta) into a JSON entry.
+	/// @param entry        target JSON object
+	/// @param a            analysis to read from
+	/// @param includeDesc  include human-readable descriptions in meta
+	/// @param useDelta     if true, compute diff against _lastSentMeta and write
+	///                      optionMetaDelta; if false, write full optionMeta.
+	static void writeOptionsDelta(Json::Value& entry, Analysis* a,
+								 bool includeDesc, bool useDelta);
+
 private slots:
 	void sendRScriptHandler(QString script, QString controlName, bool whiteListedVersion, QString module);
 	void sendFilterHandler(QString name, QString module);
@@ -187,6 +206,15 @@ private:
 	void bindAnalysisHandler(Analysis* analysis);
 	void storeAnalysis(Analysis* analysis, size_t id, bool notifyAll);	
 	void _makeBackwardCompatible(RibbonModel* ribbonModel, Version& version, Json::Value& analysisData);
+
+	// RPC handler helpers
+	static Analysis*	_rpcResolveAnalysis(int analysisId, Json::Value& errorResponse);
+	static void			_rpcWriteIdentity(Json::Value& response, Analysis* a);
+	static void			_rpcWriteStatus(Json::Value& response, Analysis* a);
+	static void			_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc);
+	static void			_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool includeDesc, bool forceFull);
+	static void			_rpcWriteFinishedResults(Json::Value& response, Analysis* a, int analysisId);
+	static Json::Value	composeResultJSON(const Json::Value& elements, int defaultSourceId, Json::Value& errorOut);
 
 
 private:

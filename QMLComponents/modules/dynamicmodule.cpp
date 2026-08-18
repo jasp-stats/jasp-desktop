@@ -444,6 +444,16 @@ std::string DynamicModule::getLibPathsToUse() const
 	return "c('" + moduleRLibrary().toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
 }
 
+void DynamicModule::setIsCommon(bool common)
+{
+	if(_isCommon == common)
+		return;
+	
+	_isCommon = common;
+	
+	emit isCommonChanged(_isCommon);
+}
+
 
 std::string DynamicModule::generateModuleLoadingR(bool shouldReturnSucces)
 {

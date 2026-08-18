@@ -213,13 +213,12 @@ Popup
 						Component.onCompleted:		setCurrentIndex(0);
 					}
 					
-					JASPC.MenuButton
+					JASPC.HelpButton
 					{
 						id:				helpButton
-						iconSource:		jaspTheme.iconPath + "info-button.png"
 						width:			height
-						radius:			height
-						onClicked:		helpModel.showOrTogglePage("other/plotediting");
+						helpMD:			allHelp.plotediting
+						buttonPadding:  6 * preferencesModel.uiScale
 						toolTip:		qsTr("Open Documentation")
 						anchors
 						{
@@ -385,6 +384,48 @@ Popup
 							JASPW.ImageInverter
 							{
 								src:			plotImg
+							}
+
+							// Overlay shown while the engine is re-rendering
+							Rectangle
+							{
+								id:						updatingOverlay
+								anchors.fill:			parent
+								color:					jaspTheme.white
+								opacity:				plotEditorModel.updating ? 0.85 : 0.0
+								visible:				plotEditorModel.updating
+								Behavior on opacity { NumberAnimation { duration: 150 } }
+
+								ColumnLayout
+								{
+									anchors.centerIn:	parent
+									spacing:			jaspTheme.generalAnchorMargin
+
+									Image
+									{
+										source:				jaspTheme.iconPath + "loading.svg"
+										sourceSize.width:	32 * preferencesModel.uiScale
+										sourceSize.height:	32 * preferencesModel.uiScale
+										Layout.alignment:	Qt.AlignHCenter
+
+										NumberAnimation on rotation
+										{
+											from:		0
+											to:			360
+											duration:	1200
+											loops:		Animation.Infinite
+											running:	plotEditorModel.updating
+										}
+									}
+
+									JASPC.Text
+									{
+										text:				qsTr("Rerendering…")
+										font:				jaspTheme.fontLabel
+										color:				jaspTheme.textEnabled
+										Layout.alignment:	Qt.AlignHCenter
+									}
+								}
 							}
 						}
 					}

@@ -39,7 +39,7 @@ public:
 	Term(const std::string				&	component,	const columnTypeVec	&	type);
 	Term(const QStringList				&	components, const columnTypeVec	&	types	= { columnType::unknown }	);
 	Term(const QString					&	component,	const columnType		type	= columnType::unknown		);
-	Term(const QString					&	value,		const QString		&	label,		const QString		& info = QString());
+	Term(const QString					&	value,		const QString		&	label,		const QString		& info = QString(),		const columnType type = columnType::unknown);
 	Term(const Json::Value				&	json,		const std::string	&	keyValue,	const std::string	& keyLabel, const columnTypeVec& types);
 
 	const QStringList		&	components()			const;

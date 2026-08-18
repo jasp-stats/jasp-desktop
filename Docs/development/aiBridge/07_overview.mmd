@@ -1,0 +1,56 @@
+flowchart LR
+    subgraph QML["ChatWindow.qml"]
+        WV["WebEngineView"]
+        CB["Control Bar<br/>(reset, save, tokens)"]
+        AI_INT["aiBridgeInterface<br/>(WebChannel bridge object)"]
+    end
+
+    subgraph HTML["chat.html"]
+        DC["deep-chat component<br/>(message bubbles, input, streaming)"]
+    end
+
+    subgraph JS["chat-bridge.js"]
+        SIG["currentSignals<br/>(two-path routing switch)"]
+        IBUF["_introBuf<br/>(intro accumulator)"]
+        TBL["_enhanceTablesFn<br/>(MutationObserver<br/>deferred table enhancement)"]
+    end
+
+    subgraph CPP["AiBridge (C++)"]
+        CONV["m_conversation<br/>(full chat history)"]
+        SSE["m_sseBuffer<br/>(raw SSE bytes)"]
+        DELTA["m_assistantDelta<br/>(response accumulator<br/>all provider fields)"]
+        TOOLS["m_toolCallAccum / m_toolCallOrder<br/>(tool call fragments by id)"]
+        FLAGS["m_isIntroStream / m_processingReply<br/>m_deferredClearChat / m_pendingToolCalls"]
+    end
+
+    subgraph INFRA["Infrastructure"]
+        RPC["JaspRpcDispatcher<br/>(validated JSON-RPC 2.0 dispatch<br/>OpenRPC schema from JASP_RPC.json)"]
+        SERVER["JaspRpcServer<br/>(HTTP POST /rpc on 127.0.0.1:48164<br/>for external clients, MCP)"]
+        AST["AgentStateTracker<br/>(workspace change detection<br/>_stateUpdate deltas)"]
+        CFG["AIConfigModel + AIPersonaModel<br/>(provider/model/persona config<br/>API keys via SecretStore)"]
+    end
+
+    subgraph EXT["External"]
+        API["OpenAI-compatible API<br/>(SSE streaming)"]
+    end
+
+    WV -->|loads URL| HTML
+    CB -->|clearChat| CPP
+    DC -->|user message| SIG
+    SIG -->|startStream| CPP
+    CPP -->|onStreamChunk| SIG
+    CPP -->|onClearChat| SIG
+    CPP -->|onStreamClose| SIG
+    CPP -->|onStreamError| SIG
+    SIG -->|onResponse| DC
+    SIG -.->|null: intro path| IBUF
+    IBUF -->|addMessage| DC
+    TBL -->|enhanceMarkdownTables| DC
+    CPP --> API
+    CPP --> RPC
+    CPP -->|read config| CFG
+    RPC -->|query workspace state| AST
+    RPC -->|expose HTTP endpoint| SERVER
+    SERVER -->|forward to| RPC
+    CONV -->|buildRequestBody| API
+    DT["[DONE]"] -.->|trigger| CPP

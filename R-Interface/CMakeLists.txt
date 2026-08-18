@@ -195,9 +195,9 @@ else()
   target_link_libraries(R-Interface					PUBLIC ${R_INTERFACE_LIBS} ${_LIB_RINSIDE})
   target_link_libraries(R-InterfaceNoRInside		PUBLIC ${R_INTERFACE_LIBS})
 
-  target_compile_definitions(R-Interface			PUBLIC	RCPP_NO_SUGAR
+  target_compile_definitions(R-Interface			PUBLIC	RCPP_NO_SUGAR ENABLE_LEGACY_NONAPI
 															$<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>)
-  target_compile_definitions(R-InterfaceNoRInside	PUBLIC	RCPP_NO_SUGAR
+  target_compile_definitions(R-InterfaceNoRInside	PUBLIC	RCPP_NO_SUGAR ENABLE_LEGACY_NONAPI
 															  $<$<BOOL:${PRINT_ENGINE_MESSAGES}>:PRINT_ENGINE_MESSAGES>
 															  JASP_NO_RINSIDE)
 

@@ -21,6 +21,7 @@
 #include <QAbstractTableModel>
 #include <QStringList>
 #include <QChar>
+#include "data/importers/csv/csvparser.h"
 
 class CsvPreviewModel : public QAbstractTableModel
 {
@@ -31,13 +32,13 @@ class CsvPreviewModel : public QAbstractTableModel
 
 public:
 	explicit CsvPreviewModel(QObject *parent = nullptr);
+	~CsvPreviewModel();
 
 	int						rowCount(	const QModelIndex &parent = QModelIndex())				const override;
 	int						columnCount(const QModelIndex &parent = QModelIndex())				const override;
 	QVariant				data(		const QModelIndex &index, int role = Qt::DisplayRole)	const override;
 	QHash<int, QByteArray>	roleNames()															const override;
 
-	
 	QString					rawData() const { return _rawData; }
 	void					setRawData(const QString &data);
 
@@ -60,10 +61,11 @@ signals:
 	
 private:
 	void					updateInternalStructure();
-
+	
 	QString					_rawData;
 	QChar					_delimiter = ','; // Default comma
-	QList<QList<QString>>	_grid; // The parsed data
+	CSVParser*				_parser;  // The parser for CSV parsing
+	CSVParser::Grid			_grid; // The parsed data
 	bool					_visible = false;
 };
 

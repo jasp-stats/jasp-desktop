@@ -47,7 +47,7 @@ public:
 		ConditionVariable() {}
 	};
 
-	static const QString SourceValueLabel, SourceValueValue, SourceValueInfo;
+	static const QString SourceValueLabel, SourceValueValue, SourceValueInfo, SourceValueType;
 
 	SourceItem(
 			  JASPListControl* targetListControl
@@ -117,7 +117,10 @@ private:
 	bool							_isRSource					= false;
 	ListModel			*			_sourceListModel			= nullptr;
 	QAbstractItemModel	*			_sourceNativeModel			= nullptr;
-	int								_nativeModelRole			= Qt::DisplayRole;
+	int								_nativeModelDisplayRole		= Qt::DisplayRole,
+									_nativeModelValueRole		= Qt::DisplayRole,
+									_nativeModelTypeRole		= -1,
+									_nativeModelInfoRole		= -1;
 	bool							_isDataSetVariables			= false,
 									_combineWithOtherModels		= false,
 									_noInteractions				= false;

@@ -28,6 +28,9 @@ PlotEditorModel::PlotEditorModel()
 	connect(_xAxis,			&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
 	connect(_yAxis,			&AxisModel::addToUndoStack,		this,	&PlotEditorModel::addToUndoStack);
 
+	_debounceTimer.setSingleShot(true);
+	connect(&_debounceTimer, &QTimer::timeout, this, &PlotEditorModel::applyPendingChanges);
+
 }
 
 void PlotEditorModel::showPlotEditor(int id, QString options)
@@ -121,6 +124,10 @@ void PlotEditorModel::reset()
 	_undo = std::stack<undoRedoData>();
 	_redo = std::stack<undoRedoData>();
 	emit unOrRedoEnabledChanged();
+
+	_debounceTimer.stop();
+	_debouncePending = false;
+	setUpdating(false);
 }
 
 
@@ -146,6 +153,8 @@ void PlotEditorModel::updatePlot(Json::Value& imageOptions)
 	_editedImgsMap[_editRequest] = imageOptions["editOptions"];
 	_editRequest++;
 	_analysis->editImage(imageOptions);
+
+	setUpdating(true);
 }
 
 void PlotEditorModel::updateOptions(Analysis *analysis)
@@ -177,6 +186,19 @@ void PlotEditorModel::updateOptions(Analysis *analysis)
 	}
 
 	_editedImgsMap.erase(request);
+
+	// If a debounced update is already queued, sync the request ID in _imgOptions
+	// to the just-processed response so that Analysis::imageEdited() does not
+	// trigger a redundant re-send. The debounce timer will handle sending the
+	// latest changes when it fires.
+	if (_debouncePending)
+	{
+		if (_analysis->imgResults().isMember("request"))
+			_imgOptions["request"] = _analysis->imgResults()["request"];
+		// Keep _updating = true since the debounce will send another request shortly
+	}
+	else
+		setUpdating(false);
 }
 
 void PlotEditorModel::somethingChanged()
@@ -188,8 +210,19 @@ void PlotEditorModel::somethingChanged()
 	if(newImgOptions != _imgOptions)
 	{
 		_imgOptions = newImgOptions;
-		updatePlot(_imgOptions);
+
+		// Debounce: wait for a pause in changes before sending to the engine.
+		// This prevents flooding the engine during rapid slider dragging, etc.
+		_debouncePending = true;
+		_debounceTimer.start(250);
 	}
+}
+
+void PlotEditorModel::applyPendingChanges()
+{
+	_debouncePending = false;
+	_imgOptions["intermediate"] = true;
+	updatePlot(_imgOptions);
 }
 
 
@@ -368,6 +401,15 @@ void PlotEditorModel::setLoading(bool loading)
 	
 	_loading = loading;
 	emit loadingChanged(_loading);
+}
+
+void PlotEditorModel::setUpdating(bool updating)
+{
+	if (_updating == updating)
+		return;
+
+	_updating = updating;
+	emit updatingChanged(_updating);
 }
 
 References *PlotEditorModel::references() const

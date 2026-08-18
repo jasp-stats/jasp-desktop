@@ -1,0 +1,203 @@
+{
+	"providers": [
+		{
+			"id": "d5e2f1a6-7f8a-9b0c-1234-8901234567d4",
+			"name": "OpenRouter",
+			"endpoint": "https://openrouter.ai/api/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "e0f7a6b1-2a3b-4c5d-6789-3456789012ef",
+					"name": "Claude Haiku 4.5",
+					"model": "anthropic/claude-haiku-4-5",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"max_tokens": 16000,
+						"cache_control": { "type": "ephemeral" }
+					},
+					"chatLimit": 200000,
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "d9e6f5a0-1f2a-3b4c-5678-2345678901de",
+					"name": "Claude Sonnet 4.6",
+					"model": "anthropic/claude-sonnet-4-6",
+					"extraParams": {
+						"reasoning_effort": "medium",
+						"max_tokens": 16000,
+						"cache_control": { "type": "ephemeral" }
+					},
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "f1a2b3c4-5d6e-7f8a-9b0c-1d2e3f4a5b6c",
+					"name": "Mistral Small 4",
+					"model": "mistralai/mistral-small-2603",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"temperature": 0.7
+					},
+					"systemPromptPostfix": "If there is an error related to a list option, remove the list element in order to fix it. If an error remains, don't retry too often and inform the user of the nature of the error."
+				}
+			]
+		},
+		{
+			"id": "b1c8f7a2-3d4e-5f6a-7890-abcdef123456",
+			"name": "DeepSeek",
+			"endpoint": "https://api.deepseek.com/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "c2d9e8f3-4e5f-6a7b-8901-bcdef1234567",
+					"name": "DeepSeek V4 Flash",
+					"model": "deepseek-v4-flash",
+					"extraParams": {},
+					"useCompleteSchema": false,
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "d3e0f9a4-5f6a-7b8c-9012-cdef12345678",
+					"name": "DeepSeek V4 Pro",
+					"model": "deepseek-v4-pro",
+					"extraParams": {},
+					"useCompleteSchema": false,
+					"systemPromptPostfix": ""
+				}
+			]
+		},
+		{
+			"id": "f1a8b7c2-3b4c-5d6e-7890-4567890123f0",
+			"name": "Google Gemini",
+			"endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "c4d1e0a5-6e7f-8a9b-0123-7890123456c3",
+					"name": "Gemini 3.1 Flash-Lite",
+					"model": "gemini-3.1-flash-lite",
+					"extraParams": {
+						"reasoning_effort": "high"
+					},
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "a2b9c8d3-4c5d-6e7f-8901-5678901234a1",
+					"name": "Gemini 3 Flash Preview",
+					"model": "gemini-3-flash-preview",
+					"extraParams": {},
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "b3c0d9e4-5d6e-7f8a-9012-6789012345b2",
+					"name": "Gemini 3.5 Flash",
+					"model": "gemini-3.5-flash",
+					"extraParams": {},
+					"systemPromptPostfix": ""
+				}
+			]
+		},
+		{
+			"id": "e4f1a0b5-6a7b-8c9d-0123-def123456789",
+			"name": "OpenAI",
+			"endpoint": "https://api.openai.com/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "a6b3c2d7-8c9d-0e1f-2345-f123456789ab",
+					"name": "GPT-5.4 Mini",
+					"model": "gpt-5.4-mini",
+					"extraParams": {},
+					"systemPromptPostfix": "Don't shorten wait and timeout times. Don't ask questions for every step; be assertive and take actions. Check loaded data once at the beginning to understand variable references."
+				}
+			]
+		},
+		{
+			"id": "b7c4d3e8-9d0e-1f2a-3456-0123456789bc",
+			"name": "Anthropic",
+			"endpoint": "https://api.anthropic.com/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "h0i1j2k3-4l5m-6n7o-8901-5678901234p8",
+					"name": "Claude Haiku 4.5",
+					"model": "claude-haiku-4-5",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"max_tokens": 16000
+					},
+					"chatLimit": 200000,
+					"warning": "Cost warning: prompt caching is not available for the Anthropic API endpoint. This may result in higher costs. We recommend using Anthropic models through OpenRouter for now.",
+					"systemPromptPostfix": ""
+				},
+				{
+					"id": "q9r8s7t6-5u4v-3w2x-1098-7654321098y7",
+					"name": "Claude Sonnet 4.6",
+					"model": "claude-sonnet-4-6",
+					"extraParams": {
+						"reasoning_effort": "medium",
+						"max_tokens": 16000
+					},
+					"warning": "Cost warning: prompt caching is not available for the Anthropic API endpoint. This may result in higher costs. We recommend using Anthropic models through OpenRouter for now.",
+					"systemPromptPostfix": ""
+				}
+			]
+		},
+		{
+			"id": "a7b4c3d8-9e0f-1a2b-3456-0123456789bc",
+			"name": "Mistral",
+			"endpoint": "https://api.mistral.ai/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "c9d6e5f0-1a2b-3c4d-5678-2345678901de",
+					"name": "Mistral Small 4",
+					"model": "mistral-small-latest",
+					"extraParams": {
+						"reasoning_effort": "high",
+						"temperature": 0.7
+					},
+					"systemPromptPostfix": "If there is an error related to a list option, remove the list element in order to fix it. If an error remains, don't retry too often and inform the user of the nature of the error."
+				}
+			]
+		},
+		{
+			"id": "c0d7e6f1-2e3f-4a5b-6789-3456789012c9",
+			"name": "Xiaomi",
+			"endpoint": "https://api.xiaomimimo.com/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "e2f9a8b3-4a5b-6c7d-8901-5678901234e1",
+					"name": "MiMo V2.5",
+					"model": "mimo-v2.5",
+					"extraParams": {},
+					"systemPromptPostfix": "Only make an annotation (tool call) when asked to annotate explicitly."
+				},
+				{
+					"id": "d1e8f7a2-3f4a-5b6c-7890-4567890123d0",
+					"name": "MiMo V2.5 Pro",
+					"model": "mimo-v2.5-pro",
+					"extraParams": {},
+					"systemPromptPostfix": "Only make an annotation (tool call) when asked to annotate explicitly."
+				}
+			]
+		},
+		{
+			"id": "e5f6a7b8-9c0d-1e2f-3456-7890123456e5",
+			"name": "xAI",
+			"endpoint": "https://api.x.ai/v1/chat/completions",
+			"defaultApiKey": "",
+			"models": [
+				{
+					"id": "g5h6i7j8-9k0l-1m2n-3456-9012345678d5",
+					"name": "Grok 4.3",
+					"model": "grok-4.3",
+					"extraParams": {
+						"reasoning_effort": "medium"
+					},
+					"systemPromptPostfix": ""
+				}
+			]
+		}
+	]
+}

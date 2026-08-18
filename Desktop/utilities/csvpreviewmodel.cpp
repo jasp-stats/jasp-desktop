@@ -21,6 +21,12 @@
 
 CsvPreviewModel::CsvPreviewModel(QObject *parent) : QAbstractTableModel(parent)
 {
+	_parser = new CSVParser(',', true);
+}
+
+CsvPreviewModel::~CsvPreviewModel()
+{
+	// CSVParser is a QObject with parent-child relationship, automatic cleanup
 }
 
 void CsvPreviewModel::setRawData(const QString &data)
@@ -35,6 +41,7 @@ void CsvPreviewModel::setDelimiter(QChar delim)
 {
 	if (_delimiter == delim) return;
 	_delimiter = delim;
+	_parser->setDelimiter(delim.toLatin1());
 	emit delimiterChanged();
 	updateInternalStructure();
 }
@@ -46,8 +53,8 @@ void CsvPreviewModel::setDelimiterFromChar(char delim)
 
 void CsvPreviewModel::preparePreview(const QString &data, char delimiter)
 {
-	setRawData(data);
 	setDelimiter(QChar(delimiter));
+	setRawData(data);
 	setVisible(true);
 }
 
@@ -58,37 +65,30 @@ void CsvPreviewModel::updateLocale()
 
 void CsvPreviewModel::updateInternalStructure()
 {
-	// Prepare the model for a complete reset
 	beginResetModel();
 
-	_grid.clear();
-	if (_rawData.isEmpty()) {
+	if (_rawData.isEmpty()) 
+	{
+		_grid.clear();
 		endResetModel();
 		return;
 	}
 
-	// Split data into rows (assuming newlines separate rows)
-	QStringList rows = _rawData.split('\n', Qt::SkipEmptyParts);
-	
-	for (const QString &rowString : rows) {
-		// Split each row by the chosen delimiter
-		QStringList columns = rowString.split(_delimiter);
-		_grid.append(columns);
-	}
+	// Parse using CSVParser
+	_grid = _parser->parse(_rawData.toStdString());
 
 	endResetModel();
-	
-	clearTableForResize();
+	emit clearTableForResize();
 }
 
 int CsvPreviewModel::rowCount(const QModelIndex &) const
 {
-	return _grid.count();
+	return _grid.size();
 }
 
 int CsvPreviewModel::columnCount(const QModelIndex &) const
 {
-	if (_grid.isEmpty()) 
+	if (_grid.empty()) 
 		return 0;
 	
 	// Find the max number of columns across all rows to ensure a rectangular grid
@@ -110,7 +110,7 @@ QVariant CsvPreviewModel::data(const QModelIndex &index, int role) const
 
 	// Check if the row exists and if this row has a column at this index
 	if (r < _grid.size() && c < _grid[r].size()) {
-		QString val = _grid[r][c];
+		QString val = QString::fromStdString(_grid[r][c]);
 
 		if (val.isEmpty()) {
 			if (r == 0)
@@ -155,3 +155,5 @@ void CsvPreviewModel::setVisible(bool newVisible)
 	if(!_visible)
 		DesktopCommunicator::singleton()->delimiterChosen(_delimiter.toLatin1());
 }
+
+

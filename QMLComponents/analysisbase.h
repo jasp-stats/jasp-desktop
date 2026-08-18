@@ -13,8 +13,8 @@ class AnalysisBase : public QObject
 	Q_OBJECT
 	QML_ELEMENT
 
-	Q_PROPERTY(QQuickItem		*	formItem				READ formItem										NOTIFY formItemChanged			)
-	Q_PROPERTY(QString				qmlError				READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
+	Q_PROPERTY(QQuickItem	*	formItem			READ formItem										NOTIFY formItemChanged			)
+	Q_PROPERTY(QString			qmlError			READ qmlError			WRITE setQmlError			NOTIFY qmlErrorChanged			)
 
 public:
 	explicit AnalysisBase(QObject *parent = nullptr);
@@ -35,6 +35,7 @@ public:
 	virtual				void				setTitle(const std::string& titel)									{}
 	virtual				void				preprocessMarkdownHelp(const QString& md)					const	{}
 	virtual				QString				helpFile()															{ return "";				}
+
 	virtual				const stringvec   & upgradeMsgsForOption(const std::string& name)				const	{ return emptyStringVec;	}
 	virtual				const Json::Value & resultsMeta()												const 	{ return Json::Value::null;	}
 	virtual				const Json::Value & getRSource(const std::string& name)							const 	{ return Json::Value::null;	}
@@ -68,6 +69,8 @@ public:
 						void				sendRScript(const QString & script, const QString & controlName, bool whiteListedVersion)		{ emit sendRScriptSignal(script, controlName, whiteListedVersion, tq(module())); }
 						void				sendFilter(	const QString & name)																{ emit sendFilterSignal(name, tq(module())); }
 
+						bool				isAnnotated()		const	{ return _isAnnotated; }
+						void				setIsAnnotated(bool isAnnotated);
 
 public slots:
 	virtual void	boundValueChangedHandler()																	{}
@@ -93,6 +96,8 @@ protected:
 	AnalysisForm*	_analysisForm		= nullptr;
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
+	bool			_isAnnotated		= false;
+
 
 private:
 	Json::Value		_boundValues		= Json::objectValue;

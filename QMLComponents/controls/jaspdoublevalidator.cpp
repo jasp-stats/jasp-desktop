@@ -37,16 +37,19 @@ QValidator::State JASPDoubleValidator::validate(QString& s, int& pos) const
 	bool isNumber	= QColumnUtils::getDoubleValue(	s, value);
 	
 	// check length of decimal places
-	int indexPoint = s.indexOf(QColumnUtils::decimalPoint());
-
-	if (indexPoint != -1)
+	if (!_relaxDecimals)
 	{
-		if (decimals() == 0)
-			return QValidator::Invalid;
-		
-		int lengthDecimals = s.length() - indexPoint - 1;
-		if (lengthDecimals > decimals())
-			return QValidator::Invalid;
+		int indexPoint = s.indexOf(QColumnUtils::decimalPoint());
+
+		if (indexPoint != -1)
+		{
+			if (decimals() == 0)
+				return QValidator::Invalid;
+			
+			int lengthDecimals = s.length() - indexPoint - 1;
+			if (lengthDecimals > decimals())
+				return QValidator::Invalid;
+		}
 	}
 	
 

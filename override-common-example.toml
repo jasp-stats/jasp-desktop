@@ -1,0 +1,43 @@
+# Example configuration file showing how to use OverrideCommon
+# 
+# OverrideCommon allows you to specify which modules should be Common (visible on the ribbon)
+# and automatically moves all other modules (including originally Common ones not in this list) to Extra.
+#
+# When OverrideCommon is specified, the order in the list determines the order of Common modules on the ribbon.
+
+# Example 1: Override with a subset of modules (keeping some in Common, moving others to Extra)
+# OverrideCommon = [
+#     "jaspDescriptives",
+#     "jaspTTests",
+#     "jaspRegression"
+# ]
+# In this case: jaspDescriptives, jaspTTests, and jaspRegression will be Common
+#               All other modules (including jaspAnova, jaspFrequencies, etc.) will be Extra
+
+# Example 2: Override with a completely different set (reordering and changing Common modules)
+# OverrideCommon = [
+#     "jaspFrequencies",
+#     "jaspFactor",
+#     "jaspDescriptives"
+# ]
+# In this case: The order of Common modules will be: Frequencies, Factor, Descriptives
+#               All other modules will be Extra
+
+# Example 3: Combine with EnabledModules
+# EnabledModules = [
+#     "jaspDescriptives",
+#     "jaspTTests",
+#     "jaspRegression"
+# ]
+# OverrideCommon = [
+#     "jaspDescriptives",
+#     "jaspRegression"
+# ]
+# In this case: jaspDescriptives and jaspRegression will be Common (on ribbon)
+#               jaspTTests will be Extra but enabled
+#               All other modules will be Extra (and disabled unless in EnabledModules)
+
+
+
+# Uncomment and modify the line below to enable OverrideCommon in this file
+# OverrideCommon = []

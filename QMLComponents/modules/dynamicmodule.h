@@ -23,7 +23,6 @@
 #include <set>
 #include <QDir>
 #include <QFile>
-#include <sstream>
 #include <QObject>
 #include "version.h"
 #include <QFileInfo>
@@ -65,6 +64,7 @@ class DynamicModule : public QObject
 	Q_PROPERTY(bool			installing			READ installing			WRITE setInstalling			NOTIFY installingChanged		)
 	Q_PROPERTY(bool			initialized			READ initialized		WRITE setInitialized		NOTIFY initializedChanged		)
 	Q_PROPERTY(bool			isBundled			READ isBundled			WRITE setBundled			NOTIFY bundledChanged			)
+	Q_PROPERTY(bool			isCommon			READ isCommon			WRITE setIsCommon			NOTIFY isCommonChanged			)
 	Q_PROPERTY(bool			isDevMod			READ isDevMod										CONSTANT						)
 	Q_PROPERTY(bool			readyForUse			READ readyForUse									NOTIFY readyForUseChanged		)
 	Q_PROPERTY(QStringList	importsR			READ importsRQ										NOTIFY importsRChanged			)
@@ -130,7 +130,7 @@ public:
 	QStringList			importsRQ()			const { return tql(_importsR);					}
 	
 	std::string			getLibPathsToUse()	const;
-	void				setIsCommon(bool common) { _isCommon = common;}
+	void				setIsCommon(bool common);
 
 	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }
 
@@ -232,7 +232,8 @@ signals:
 	void		errorChanged(bool error);
 	void		readyChanged(bool ready);	
 	void		titleChanged();
-
+	void		isCommonChanged(bool);
+	
 private:
 	QFileInfo			_moduleFolder;
 	moduleStatus		_status				= moduleStatus::initializing;

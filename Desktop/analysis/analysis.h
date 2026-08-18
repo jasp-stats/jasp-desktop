@@ -59,6 +59,7 @@ public:
 
 						Analysis(size_t id, Analysis * duplicateMe);
 						Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std::string & title, const Version & optionsVersion, const Json::Value & options);
+						Analysis(size_t id, const std::string & title); // report constructor — no module
 
 	virtual				~Analysis();
 
@@ -73,6 +74,7 @@ public:
 	void				setResults(			const Json::Value & results, analysisResultStatus	status, const Json::Value & progress = Json::nullValue) { setResults(results, analysisResultsStatusToAnalysisStatus(status), progress); }
 	void				setResults(			const Json::Value & results, Status					status, const Json::Value & progress = Json::nullValue);
 	void				imageSaved(			const Json::Value & results);
+
 	void				saveImage(			const Json::Value & options);
 	void				editImage(			const Json::Value & options);
 	void				imageEdited(		const Json::Value & results);
@@ -116,9 +118,11 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form();	}
-			bool				beingTranslated()						{ return _beingTranslated; };
-			void				setBeingTranslated(bool value)			{ _beingTranslated = value; };
+			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
+			bool				isReport()			const				{ return _isReport;						}
+			void				setReport(bool report)					{ _isReport = report;							}
+			bool				beingTranslated()						{ return _beingTranslated;					};
+			void				setBeingTranslated(bool value)			{ _beingTranslated = value;					};
 	const	Json::Value		&	resultsMeta()		const	override	{ return _resultsMeta;						}
 			void				setTitle(const std::string& title)	override;
 			void				run()						override;
@@ -249,8 +253,11 @@ private:
 								_optionsFromDifferentVersion	= false,
 								_storedWithoutState				= false,
 								_tryToFixNotes					= false,
-								_hasReport						= false,
-								_beingTranslated				= false;
+
+								_hasReport					= false,
+								_beingTranslated			= false,
+								_isReport				= false;
+	Json::Value					_lastSentMeta				= Json::nullValue;
 	int							_revision						= 0;
 
 	Modules::AnalysisEntry	*	_moduleData						= nullptr;

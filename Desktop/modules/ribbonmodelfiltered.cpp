@@ -16,13 +16,17 @@ void RibbonModelFiltered::setRibbonModel(RibbonModel * ribbonModel)
 	setSourceModel(_ribbonModel);
 
 	connect(ribbonModel, &RibbonModel::highlightedModuleIndexChanged, this, &RibbonModelFiltered::highlightedModuleIndexChanged);
+	
+	connect(ribbonModel, &QAbstractListModel::modelReset, this, &QSortFilterProxyModel::invalidate);
 }
 
 bool RibbonModelFiltered::filterAcceptsRow(int source_row, const QModelIndex &) const
 {
 	if(source_row < 0) return false;
+	
+	RibbonButton * button = _ribbonModel != nullptr ? _ribbonModel->ribbonButtonModelAt(size_t(source_row)) : nullptr;
 
-	return  _ribbonModel != nullptr && _ribbonModel->ribbonButtonModelAt(size_t(source_row))->enabled();
+	return button && button->enabled();
 }
 
 int RibbonModelFiltered::filteredRowToOriginal(int filteredRow) const

@@ -16,7 +16,7 @@ class ResourceButtons : public QAbstractListModel
 
 public:
 	//["Recent Files", "Current File", "Computer", "OSF", "Data Library"]
-	enum ButtonType {None, RecentFiles, CurrentFile, Computer, AutoSaves, OSF, Database, DataLibrary, PrefsData, PrefsResults, PrefsUI, PrefsAdvanced};
+	enum ButtonType {None, RecentFiles, CurrentFile, Computer, AutoSaves, OSF, Database, DataLibrary, PrefsData, PrefsResults, PrefsUI, PrefsAdvanced, PrefsAI};
 	Q_ENUM(ButtonType)
 
 	struct DataRow { ButtonType button; QString name; bool visible; QString qml; bool enabled; };

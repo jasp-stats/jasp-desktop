@@ -30,10 +30,11 @@
 
 /**
  * @brief 		A minimal class for reporting the list active modules, to be used by `loadModules`.
- *
- * @details 	Reads all available shipped and installed modules and divides them into two groups common (on ribbon) and extra (selectable)
- *				The order equals the order in the Modules/modules.json which specifies these groups
- */
+  *
+  * @details 	Reads all available shipped and installed modules and divides them into two groups common (on ribbon) and extra (selectable)
+  *				The order equals the order in the modules-settings.json which specifies these groups
+  *				If OverrideCommon is specified in config.toml, it will override the common modules list
+  */
 class InstalledModules {
 public:
 
