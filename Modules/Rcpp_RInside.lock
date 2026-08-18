@@ -3,8 +3,12 @@
     "Version": "4.6.1",
     "Repositories": [
       {
-        "Name": "CRAN",
+        "Name": "p3m",
         "URL": "https://p3m.dev/cran/2026-08-15"
+      },
+      {
+        "Name": "CRAN",
+        "URL": "https://cloud.r-project.org"
       }
     ]
   },
