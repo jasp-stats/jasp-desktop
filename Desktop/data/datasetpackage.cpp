@@ -30,6 +30,7 @@
 #include "databaseconnectioninfo.h"
 #include "utilities/settings.h"
 #include "modules/ribbonmodel.h"
+#include "modules/dynamicmodules.h"
 #include "filtermodel.h"
 #include <ranges>
 #include "variableinfo.h"
@@ -2531,8 +2532,20 @@ bool DataSetPackage::currentJaspFileIsNonSaveable() const
 bool DataSetPackage::filePathIsNonSaveable(const QString & path) const
 {
 	QFileInfo fileDir(path);
+	const QString absPath = fileDir.dir().absolutePath();
 
-	return fileDir.dir().absolutePath().startsWith(AppDirs::examples()) || fileDir.dir() == QDir(AppDirs::autoSaveDir());
+	if (absPath.startsWith(AppDirs::examples()) || fileDir.dir() == QDir(AppDirs::autoSaveDir()))
+		return true;
+
+	if (DynamicModules::dynMods())
+		for (auto & [name, mod] : DynamicModules::dynMods()->modules())
+		{
+			const std::string examplesFolder = mod->examplesFolder();
+			if (!examplesFolder.empty() && absPath.startsWith(tq(examplesFolder)))
+				return true;
+		}
+
+	return false;
 }
 
 void DataSetPackage::setAnalysesData(const Json::Value &analysesData)

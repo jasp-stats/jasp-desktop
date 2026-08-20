@@ -18,213 +18,143 @@
 
 #include "datalibraryfilesystem.h"
 
-#include <QFile>
 #include <QDir>
-#include <QJsonDocument>
-#include <QJsonParseError>
-#include <QJsonArray>
-#include <QJsonObject>
+#include <QFile>
+#include <QUrl>
+#include <QFileInfo>
+#include <QQmlContext>
 
 #include "utilities/appdirs.h"
 #include "utilities/qutils.h"
+#include "utilities/qmlutils.h"
+#include "mainwindow.h"
+#include "modules/dynamicmodules.h"
 #include "log.h"
-#include "utilities/languagemodel.h"
-
 
 const QString DataLibraryFileSystem::rootelementname = "Categories";
 
-DataLibraryFileSystem::DataLibraryFileSystem(QObject *parent, QString root)	: FileSystem(parent)
+DataLibraryFileSystem::DataLibraryFileSystem(QObject * parent, QString root) : FileSystem(parent)
 {
 	_rootPath = _path = root;
-	_dataLibraryRootPath = "";
-	_doc = NULL;
-
-}
-
-DataLibraryFileSystem::~DataLibraryFileSystem()
-{
-	if (_doc)
-		delete _doc;
 }
 
 void DataLibraryFileSystem::refresh()
 {
-
-	if (_doc != NULL) delete _doc;  //When language is changed;
-
-	_doc = getJsonDocument();
-
+	_folderIndex.clear();
 	emit processingEntries();
-
 	_entries.clear();
 
 	if (_path == DataLibraryFileSystem::rootelementname)
 		loadRootElements();
 	else
 		loadFilesAndFolders(_path);
+}
 
+void DataLibraryFileSystem::tryLoadBuiltIn()
+{
+	if (Modules::DataLibraryDescription::builtIn())
+		return;
+
+	if (!MainWindow::singleton())
+		return;
+
+	QQmlContext * context = MainWindow::singleton()->giveRootQmlContext();
+	if (!context)
+		return;
+
+	const QString qmlPath = AppDirs::examples() + "/DataLibrary.qml";
+	if (!QFileInfo(qmlPath).exists())
+	{
+		Log::log() << "DataLibraryFileSystem: " << qmlPath << " not found." << std::endl;
+		return;
+	}
+
+	auto * desc = qobject_cast<Modules::DataLibraryDescription *>(
+		instantiateQml(QUrl::fromLocalFile(qmlPath), "BuiltIn", context));
+
+	if (!desc)
+	{
+		Log::log() << "DataLibraryFileSystem: DataLibrary.qml root must be a DataLibrary item." << std::endl;
+		return;
+	}
+
+	Modules::DataLibraryDescription::setBuiltIn(desc);
+
+	connect(desc, &Modules::DataLibraryDescription::iShouldBeUpdated,
+	        this, [this](Modules::DataLibraryDescription *) { refresh(); });
 }
 
 void DataLibraryFileSystem::loadRootElements()
 {
+	tryLoadBuiltIn();
 
-	if (_doc == NULL)
-		return;
-
-	QJsonObject jsonroot = _doc->object();
-	QJsonArray children = jsonroot.value("children").toArray();
-	
-	if (_dataLibraryRootPath == "")
-		_dataLibraryRootPath = AppDirs::examples() +  QDir::separator()  + jsonroot["path"].toString() + QDir::separator(); 
-
-	_entries.clear();
-
-	//Loop over different children
-	for(const QJsonValue & value : children)
+	// Built-in library: each top-level child becomes a root entry
+	if (auto * builtIn = Modules::DataLibraryDescription::builtIn())
 	{
-		QJsonObject file_or_folder = value.toObject();
-
-		QString path		= file_or_folder["path"].toString(),
-				name		= file_or_folder["name"].toString(),
-				description = file_or_folder["description"].toString(),
-				type		= file_or_folder["kind"].toString(),
-				debug		= file_or_folder["debug"].toString();
-#ifndef JASP_DEBUG
-		if (debug.toLower() == "true") continue;		
-#endif	
-		QString associated_datafile = file_or_folder["associated_datafile"].toString();
-		if (isFolder(type))
-		{
-			path = _path + QDir::separator()  + path;
-			_entries.append(createEntry(path, name, description, FileSystemEntry::Folder, associated_datafile));
-		}
-		else
-		{
-			path = _dataLibraryRootPath  + path;
-			if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + associated_datafile;
-			_entries.append(createEntry(path, name, description, FileSystemEntry::getEntryTypeFromPath(path), associated_datafile));
-		}
+		const QString builtInRoot = AppDirs::examples() + "/Data Library/";
+		addEntriesFromContainer(builtIn->entries(), _path, builtInRoot);
 	}
+
+	// Module libraries: each module with a DataLibrary.qml gets a top-level folder
+	if (DynamicModules::dynMods())
+		for (auto & [name, mod] : DynamicModules::dynMods()->modules())
+			if (mod && mod->dataLibraryDescription())
+			{
+				const Modules::DataLibraryDescription * desc = mod->dataLibraryDescription();
+				const QString modTitle   = desc->moduleTitle().isEmpty() ? mod->titleQ() : desc->moduleTitle();
+				const QString modPath    = _path + QDir::separator() + modTitle;
+				const QString modRoot    = tq(mod->examplesFolder());
+
+				_folderIndex[modPath] = { const_cast<Modules::DataLibraryDescription *>(desc), modRoot };
+				_entries.append(createEntry(modPath, modTitle, "", FileSystemEntry::Folder, ""));
+			}
 
 	emit entriesChanged();
-
 }
 
-void DataLibraryFileSystem::loadFilesAndFolders(const QString &docpath)
+void DataLibraryFileSystem::loadFilesAndFolders(const QString & path)
 {
-
-	bool found = false;
-	QString relpath = "";
-
-	if (_doc == NULL)
-		return;
-
-	QJsonObject jsonroot = _doc->object();
-	QJsonArray folder = jsonroot.value("children").toArray();
-
-    QStringList list = docpath.split(QChar( QDir::separator() ), Qt::SkipEmptyParts);
-
-	for(QString itm : list)
+	auto it = _folderIndex.find(path);
+	if (it != _folderIndex.end())
 	{
-		if (itm == _rootPath)
-			continue;
-
-		relpath += itm + QDir::separator();
-
-		found = false;
-
-		for(const QJsonValue & value : folder)
-		{
-			QJsonObject file_or_folder = value.toObject();
-			QString path = file_or_folder["path"].toString();
-			if (path == itm)
-			{
-				found = true;
-				folder = file_or_folder.value("children").toArray();
-				break;
-			}
-		}
-	}
-
-	if (found)
-	{
+		const FolderInfo & info = it.value();
 		_entries.clear();
 
-		//Loop over different children
-		for(const QJsonValue & value : folder)
-		{
-			QJsonObject file_or_folder = value.toObject();
+		QList<Modules::DataLibraryEntry *> children;
+		if (auto * desc = qobject_cast<Modules::DataLibraryDescription *>(info.container.data()))
+			children = desc->entries();
+		else if (auto * folder = qobject_cast<Modules::DataFolder *>(info.container.data()))
+			children = folder->children();
 
-			QString path = file_or_folder["path"].toString();
-			QString name = file_or_folder["name"].toString();
-			QString description = file_or_folder["description"].toString();
-			QString type = file_or_folder["kind"].toString();
-			QString associated_datafile = file_or_folder["associated_datafile"].toString();
-			QString debug =  file_or_folder["debug"].toString();
-#ifndef JASP_DEBUG
-			if (debug.toLower() == "true") continue;		
-#endif		
-			if (isFolder(type))
-			{
-				path = _path + QDir::separator()  + path;
-				_entries.append(createEntry(path, name, description, FileSystemEntry::Folder, ""));
-			}
-			else
-			{
-				path = _dataLibraryRootPath + relpath +  QDir::separator() + path;
-				if (associated_datafile != "") associated_datafile = _dataLibraryRootPath + relpath + associated_datafile;
-				_entries.append(createEntry(path, name, description, FileSystemEntry::getEntryTypeFromPath(path), associated_datafile));
-			}
-		}
+		addEntriesFromContainer(children, path, info.rootPath);
 	}
 
 	emit entriesChanged();
-
 }
 
-QJsonDocument *DataLibraryFileSystem::getJsonDocument()
+void DataLibraryFileSystem::addEntriesFromContainer(
+        const QList<Modules::DataLibraryEntry *> & children,
+        const QString & currentPath,
+        const QString & rootPath)
 {
-	QFile index(AppDirs::examples() + QDir::separator() + "index" + LanguageModel::currentTranslationSuffix() + ".json");
-	
-	bool exists = index.exists();
-	
-	if (!exists)
+	for (Modules::DataLibraryEntry * entry : children)
 	{
-		index.setFileName(AppDirs::examples() + QDir::separator() + "index.json");
-		exists = index.exists();
+		if (!entry) continue;
+
+		const QString entryPath = currentPath + QDir::separator() + entry->name();
+
+		if (auto * folder = qobject_cast<Modules::DataFolder *>(entry))
+		{
+			_folderIndex[entryPath] = { folder, rootPath };
+			_entries.append(createEntry(entryPath, entry->name(), entry->description(),
+			                            FileSystemEntry::Folder, ""));
+		}
+		else if (auto * file = qobject_cast<Modules::DataFile *>(entry))
+		{
+			const QString filePath     = rootPath + file->path();
+			const QString dataFilePath = file->dataFile().isEmpty() ? "" : rootPath + file->dataFile();
+			_entries.append(createEntry(filePath, file->name(), file->description(),
+			                            FileSystemEntry::getEntryTypeFromPath(filePath), dataFilePath));
+		}
 	}
-	
-	if (!exists)
-	{		
-		Log::log()  << "BackStageForm::loadExamples();  index not found" << std::endl;
-		return nullptr;
-	}
-
-	if (!index.open(QFile::ReadOnly))
-	{
-		Log::log()  << "BackStageForm::loadExamples();  index could not be opened" << std::endl;
-		return nullptr;
-	}
-
-
-	QByteArray bytes = index.readAll();
-	QJsonParseError error;
-	QJsonDocument doc = QJsonDocument::fromJson(bytes, &error);
-
-	if (error.error != QJsonParseError::NoError)
-	{
-		Log::log()  << "BackStageForm::loadExamples(" << index.fileName() << ");  JSON parse error (" << error.offset << ") : " << error.errorString().toStdString()  << std::endl;
-		return nullptr;
-	}
-
-	QJsonDocument *d = new QJsonDocument;
-	*d = doc;
-	return  d;
-
 }
-
-bool DataLibraryFileSystem::isFolder(const QString &kind)
-{
-	return (kind.toLower() == "folder" ? true : false);
-}
-

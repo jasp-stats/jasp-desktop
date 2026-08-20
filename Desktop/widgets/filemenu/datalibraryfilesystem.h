@@ -19,29 +19,40 @@
 #ifndef FSBMDATALIBRARY_H
 #define FSBMDATALIBRARY_H
 
+#include <QMap>
+#include <QPointer>
 #include "filesystem.h"
 #include "common.h"
+#include "modules/datalibrary/datalibrarydescription.h"
+#include "modules/datalibrary/datafolder.h"
+#include "modules/datalibrary/datafile.h"
 
 class DataLibraryFileSystem : public FileSystem
 {
 	Q_OBJECT
 
 public:
-	DataLibraryFileSystem(QObject *parent = NULL, QString root = "");
-	~DataLibraryFileSystem();
+	DataLibraryFileSystem(QObject * parent = nullptr, QString root = "");
 	void refresh() OVERRIDE;
-	static const QString rootelementname; //Root element in index.json
-	
-private:
-	void			loadRootElements();
-	void			loadFilesAndFolders(const QString &path);
-	QJsonDocument*	getJsonDocument();
-	bool			isFolder(const QString &kind);
 
-	QJsonDocument	*_doc;
-	QString			_dataLibraryRootPath;
-	
-	
+	static const QString rootelementname;
+
+private:
+	struct FolderInfo
+	{
+		QPointer<QObject> container;  ///< DataLibraryDescription* or DataFolder*
+		QString           rootPath;   ///< Absolute base path for files in this subtree
+	};
+
+	void tryLoadBuiltIn();
+	void loadRootElements();
+	void loadFilesAndFolders(const QString & path);
+
+	void addEntriesFromContainer(const QList<Modules::DataLibraryEntry *> & children,
+	                             const QString & currentPath,
+	                             const QString & rootPath);
+
+	QMap<QString, FolderInfo>  _folderIndex;
 };
 
 #endif // FSBMDATALIBRARY_H

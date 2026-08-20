@@ -24,6 +24,9 @@
 #include "modules/upgrader/changeincompatible.h"
 #include "modules/description/description.h"
 #include "modules/description/entrybase.h"
+#include "modules/datalibrary/datalibrarydescription.h"
+#include "modules/datalibrary/datafolder.h"
+#include "modules/datalibrary/datafile.h"
 
 #ifdef linux
 #include <QtGlobal>
@@ -277,6 +280,11 @@ void QmlUtils::registerQmlModuleTypes()
 	qmlRegisterUncreatableType<Modules::EntryBase>				("JASP.Module", 1, 0, "EntryBase",						"Superclass for menu entries, shouldn't be instantiated manually");
 	qmlRegisterUncreatableType<Modules::DynamicModule>			("JASP.Module", 1, 0, "DynamicModule",					"Can only be instantiated by JASP");
 	qmlRegisterUncreatableType<Modules::DescriptionChildBase>	("JASP.Module", 1, 0, "DescriptionChildBase",			"Superclass for Description info, shouldn't be instantiated manually");
+
+	qmlRegisterType<Modules::DataLibraryDescription>			("JASP.Module", 1, 0, "DataLibrary"						);
+	qmlRegisterType<Modules::DataFolder>						("JASP.Module", 1, 0, "DataFolder"						);
+	qmlRegisterType<Modules::DataFile>							("JASP.Module", 1, 0, "DataFile"						);
+	qmlRegisterUncreatableType<Modules::DataLibraryEntry>		("JASP.Module", 1, 0, "DataLibraryEntry",				"Base class for data library items, shouldn't be instantiated manually");
 }
 
 void QmlUtils::setupQMLEngine(QQmlEngine *engine)

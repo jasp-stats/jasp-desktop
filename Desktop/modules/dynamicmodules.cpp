@@ -110,9 +110,10 @@ bool DynamicModules::initializeModule(Modules::DynamicModule * module)
 		
 		if(!module->initialized())
 		{
-			connect(module, &Modules::DynamicModule::readyForUseChanged,			this,	&DynamicModules::loadedModulesChanged			);
+			connect(module, &Modules::DynamicModule::readyForUseChanged,				this,	&DynamicModules::loadedModulesChanged			);
 			connect(module, &Modules::DynamicModule::titleChanged,					this,	&DynamicModules::loadedModulesChanged			);
 			connect(module, &Modules::DynamicModule::descriptionReloaded,			this,	&DynamicModules::descriptionReloaded			);
+			connect(module, &Modules::DynamicModule::dataLibraryDescriptionChanged,	this,	&DynamicModules::loadedModulesChanged			);
 			connect(module, &Modules::DynamicModule::statusChanged,					module,	[this, module, moduleName]()
 			{
 				if(module->status() == moduleStatus::error)

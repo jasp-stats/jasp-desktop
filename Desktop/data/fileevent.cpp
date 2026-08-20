@@ -26,6 +26,8 @@
 #include "fileevent.h"
 #include "processinfo.h"
 #include "utilities/appdirs.h"
+#include "utilities/qutils.h"
+#include "modules/dynamicmodules.h"
 #include "exporters/dataexporter.h"
 #include "exporters/jaspexporter.h"
 #include "exporters/resultexporter.h"
@@ -117,7 +119,19 @@ void FileEvent::chain(FileEvent *event)
 
 bool FileEvent::isExample() const
 {
-	return path().startsWith(AppDirs::examples());
+	if (path().startsWith(AppDirs::examples()))
+		return true;
+
+	// Also treat files from any module's examples folder as read-only examples
+	if (DynamicModules::dynMods())
+		for (auto & [name, mod] : DynamicModules::dynMods()->modules())
+		{
+			const std::string examplesFolder = mod->examplesFolder();
+			if (!examplesFolder.empty() && path().startsWith(tq(examplesFolder)))
+				return true;
+		}
+
+	return false;
 }
 
 bool FileEvent::autoSaveExists()

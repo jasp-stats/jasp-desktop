@@ -30,6 +30,7 @@
 #include "utilities/appdirs.h"
 #include "utilities/messageforwarder.h"
 #include "description/description.h"
+#include "datalibrary/datalibrarydescription.h"
 #include "utilities/qmlutils.h"
 #include "utilities/qutils.h"
 #include "preferencesmodelbase.h"
@@ -234,6 +235,8 @@ void DynamicModule::initialize(QQmlContext * context)
 	QString txt = DESCRIPTION.readAll();
 	loadDESCRIPTION(txt);
 	loadRequiredModulesFromDESCRIPTIONTxt(txt);
+
+	loadDataLibraryQml(context);
 }
 
 void DynamicModule::loadDescriptionFromFolder(QQmlContext * context, const std::string & folderPath, bool onlyIfNotLoadedYet)
@@ -542,6 +545,47 @@ std::string	DynamicModule::iconFilePath(std::string whichIcon)	const
 QString DynamicModule::helpFolderPath() const
 {
 	return tq(moduleInstFolder() + "/help/");
+}
+
+std::string DynamicModule::examplesFolder() const
+{
+	return moduleInstFolder() + "/examples/";
+}
+
+void DynamicModule::loadDataLibraryQml(QQmlContext * context)
+{
+	const std::string qmlPath = examplesFolder() + "DataLibrary.qml";
+
+	QFileInfo qmlInfo(tq(qmlPath));
+	if (!qmlInfo.exists())
+		return;
+
+	QFile qmlFile(qmlInfo.absoluteFilePath());
+	if (!qmlFile.open(QFile::ReadOnly))
+	{
+		Log::log() << "DynamicModule: cannot open " << qmlPath << std::endl;
+		return;
+	}
+
+	const QString  qmlTxt = qmlFile.readAll();
+	const QUrl     url    = QUrl::fromLocalFile(qmlInfo.absoluteFilePath());
+
+	DataLibraryDescription * desc = qobject_cast<DataLibraryDescription *>(
+		instantiateQml(qmlTxt, url, _name, "DataLibrary", "DataLibrary.qml", context));
+
+	if (!desc)
+	{
+		Log::log() << "DynamicModule: DataLibrary.qml for " << _name << " must have DataLibrary as root item." << std::endl;
+		return;
+	}
+
+	desc->setModuleTitle(tq(_title));
+	connect(desc, &DataLibraryDescription::iShouldBeUpdated, this, &DynamicModule::dataLibraryDescriptionChanged);
+
+	if (_dataLibraryDescription && _dataLibraryDescription != desc)
+		delete _dataLibraryDescription;
+
+	_dataLibraryDescription = desc;
 }
 
 
