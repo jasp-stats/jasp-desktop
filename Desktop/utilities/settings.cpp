@@ -134,6 +134,7 @@ const Settings::Setting Settings::Values[] = {
 #else
     {"engineSandbox",				false	},
 #endif
+	{"engineSandboxDir",				""		}, //Empty means the default sandbox-location is used: <home>/JASP_Sandbox
 	{"remoteConfiguration",			false   },
 	
 	{"remoteConfigurationURL",		""		},
