@@ -18,9 +18,9 @@ Item
 	signal skipped()
 
 	anchors.fill:	parent
-	z:				10000
-	visible:		active && currentStep && currentStep.target
-					&& currentStep.target.width > 0 && currentStep.target.height > 0
+	z:				1000
+	visible:		active && currentStep && currentStep.target && currentStep.target.width > 0 && currentStep.target.height > 0
+
 
 	function start(fromStep)
 	{
@@ -214,6 +214,16 @@ Item
 			anchors.fill:		parent
 			anchors.margins:	12
 			spacing:			8
+
+			Text
+			{
+				width:			parent.width
+				text:			qsTr("Getting Started")
+				font.bold:		true
+				font.pixelSize:	16
+				color:			jaspTheme.textEnabled
+				wrapMode:		Text.WordWrap
+			}
 
 			Text
 			{
