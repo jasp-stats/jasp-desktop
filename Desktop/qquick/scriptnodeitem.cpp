@@ -665,7 +665,7 @@ void ScriptNodeItem::rebuild()
 			{
 				head->setParentItem(this);
 				head->setProperty("source", theme->iconPath() + "/rootHead.png");
-				head->setProperty("fillMode", 1); // Image.PreserveAspectFit
+				head->setProperty("fillMode", 0); // Image.Stretch (fill the box so the head's right edge is exact)
 				head->setWidth(block);
 				head->setHeight(block);
 				addLeaf(head);
