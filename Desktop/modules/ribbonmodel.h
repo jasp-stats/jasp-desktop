@@ -82,8 +82,10 @@ public:
 	QString						moduleName(size_t index)							const;
 	RibbonButton*				ribbonButtonModelAt(size_t index)					const;
 	RibbonButton*				ribbonButtonModel(std::string moduleName)			const;
-	int							ribbonButtonModelIndex(RibbonButton * model)		const;
-	void						setCommonOrder(QStringList order);
+	int								ribbonButtonModelIndex(RibbonButton * model)		const;
+	QStringList					getModuleOrder()												const;
+	void					setModuleOrder(QStringList order);
+	Q_INVOKABLE void			moveModule(int from, int to);
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);

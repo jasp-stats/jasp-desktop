@@ -62,11 +62,12 @@ public:
 
 
 	bool						requiresData()												const			{ return _requiresData;										}
-	bool						isCommon()													const			{ return _isCommonModule;									}
+	///Whether a module is common does not force it to be enabled; being common only serves as the initial default state. Users may (de)select any module.
+	bool						isCommon()								const			{ return _isCommonModule;									}
 	std::string					title()														const			{ return _titleF ? _titleF() : _title;						}
 	QString						titleQ()													const			{ return QString::fromStdString(title());					}
 	QString						iconSource()												const			{ return _iconSource;										}
-	bool						enabled()													const			{ return _isCommonModule || _enabled;						}
+	bool						enabled()								const			{ return _enabled;												}
 	std::string					name()														const			{ return _name;												}
 	QString						nameQ()														const			{ return QString::fromStdString(_name);						}
 	Modules::DynamicModule	*	module();

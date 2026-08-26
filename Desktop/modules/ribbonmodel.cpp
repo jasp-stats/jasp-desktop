@@ -19,6 +19,7 @@
 
 #include "ribbonmodel.h"
 #include "utilities/messageforwarder.h"
+#include "utilities/settings.h"
 #include "log.h"
 #include "qquick/datasetview.h"
 #include "mainwindow.h"
@@ -73,18 +74,38 @@ void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesT
 
 	addSpecialRibbonButtonsLate();
 
-	if(PreferencesModel::prefs()->modulesRemember())
+	//All modules, common (core) ones included, can be (de)selected by the user in the modules-menu.
+	//The common-modules are merely the initial default set of enabled modules (possibly overridden by an admin through OverrideCommon, which is likewise only an initial state).
+	//If the user chose to remember enabled modules and ever stored a selection then that list is leading, otherwise we start out with the common modules enabled.
+	QStringList		enabledModules	= PreferencesModel::prefs()->modulesRemembered();
+	bool		selectionStored	= PreferencesModel::prefs()->modulesRemember() && Settings::isSet(Settings::MODULES_REMEMBERED);
+
+	if(selectionStored && !Settings::isSet(Settings::MODULES_SELECTION_MIGRATED))
 	{
-		QStringList enabledModules = PreferencesModel::prefs()->modulesRemembered();
+		//One-time migration for selections stored before all modules became (de)selectable:
+		//those lists never contained the common modules (those were force-enabled and so never stored), so add them to prevent the core modules disappearing from the ribbon upon upgrading.
+		//The enabled-true-calls below store the added modules in the selection automatically.
+		for(auto & nameButton : _buttonModelsByName)
+			if(nameButton.second->remember() && nameButton.second->isCommon() && !enabledModules.contains(nameButton.second->nameQ()))
+				enabledModules.append(nameButton.second->nameQ());
 
-		for(const QString & enabledModule : enabledModules)
-		{
-			std::string mod = enabledModule.toStdString();
-
-			if(_buttonModelsByName.count(mod) > 0 && _buttonModelsByName[mod]->remember())
-				_buttonModelsByName[mod]->setEnabled(true);
-		}
+		Settings::setValue(Settings::MODULES_SELECTION_MIGRATED, true);
 	}
+
+	for(auto & nameButton : _buttonModelsByName)
+	{
+		RibbonButton * button = nameButton.second;
+
+		if(!button->remember())
+			continue;
+
+		button->setEnabled(selectionStored ? enabledModules.contains(button->nameQ()) : button->isCommon());
+	}
+
+	//Apply any stored module-order last: order is independent of enabled-state and disabled modules simply keep their position, so they reappear where they were.
+	QStringList storedOrder = Settings::value(Settings::MODULES_ORDER).toString().split("|", Qt::SkipEmptyParts);
+	if(!storedOrder.isEmpty())
+		setModuleOrder(storedOrder);
 }
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
@@ -380,7 +401,7 @@ QStringList RibbonModel::getModulesEnabled() const
 	QStringList list;
 	
 	for(auto & nameButton : _buttonModelsByName)
-		if(nameButton.second->enabled())
+		if(nameButton.second->remember() && nameButton.second->enabled()) //Only selection-participants (modules and R-console) belong in the remembered selection
 			list.append(nameButton.second->nameQ());
 	
 	return list;
@@ -442,40 +463,103 @@ int RibbonModel::ribbonButtonModelIndex(RibbonButton * model)	const
 	return -1;
 }
 
-void RibbonModel::setCommonOrder(QStringList order)
+QStringList RibbonModel::getModuleOrder() const
 {
-	beginResetModel();
-	
-	stringvec	currentNames	= _buttonNames[0],
-				newCommon		= fq(order),
-				newExtra;
-	
-	std::map<std::string,RibbonButton*>		buttons;
-	
-	for(const auto & naam : currentNames)	
-	{ 
-		buttons[naam] = ribbonButtonModel(naam); 
-		
-		if(buttons[naam]->module() && !order.contains(tq(naam)))
-			newExtra.push_back(naam);
-	};
-	
-	std::sort(newExtra.begin(), newExtra.end());
-	
-	stringvec newNames = newCommon;
-	
-	for(const auto & extra : newExtra)
-		newNames.push_back(extra);
-	
-	
-	auto firstModuleButton = std::find_if(_buttonNames[0].begin(), _buttonNames[0].end(), [&](auto & name){ return buttons[name]->module() != nullptr; }); 
-	std::swap_ranges(newNames.begin(), newNames.end(), firstModuleButton); //Swap out exactly the module buttons
+	QStringList order;
 
-	assert(currentNames.size() == _buttonNames[0].size());
-	
+	for(const auto & name : _buttonNames[size_t(RowType::Analyses)])
+	{
+		RibbonButton * button = ribbonButtonModel(name);
+		if(button && button->module())
+			order.append(tq(name));
+	}
+
+	return order;
+}
+
+void RibbonModel::setModuleOrder(QStringList order)
+{
+	stringvec & rowNames = _buttonNames[size_t(RowType::Analyses)];
+
+	//Collect the anchored prefix (Test/Data/New-data/separator), the current module segment and the anchored suffix (R-console).
+	//The rebuild also normalizes the layout: modules become contiguous, so a module appended after the R-console (runtime install) slots back into the segment.
+	stringvec	prefix,
+				currentModules,
+				suffix;
+	bool seenModule = false;
+
+	for(const auto & name : rowNames)
+	{
+		RibbonButton * button = ribbonButtonModel(name);
+		if(button && button->module())
+		{
+			seenModule = true;
+			currentModules.push_back(name);
+		}
+		else if(seenModule)	suffix.push_back(name);
+		else				prefix.push_back(name);
+	}
+
+	std::set<std::string>	current(currentModules.begin(), currentModules.end()),
+							ordered;
+	stringvec			newModules;
+
+	for(const QString & qName : order)
+	{
+		std::string name = fq(qName);
+		if(current.count(name) && !ordered.count(name))
+		{
+			ordered.insert(name);
+			newModules.push_back(name);
+		}
+	}
+
+	for(const auto & name : currentModules) //Modules not mentioned (newly installed, or first run) are appended in their current relative order
+		if(!ordered.count(name))
+			newModules.push_back(name);
+
+	if(newModules == currentModules)
+		return;
+
+	beginResetModel();
+
+	rowNames = prefix;
+	rowNames.insert(rowNames.end(), newModules.begin(), newModules.end());
+	rowNames.insert(rowNames.end(), suffix.begin(), suffix.end());
+
 	endResetModel();
 }
 
+void RibbonModel::moveModule(int from, int to)
+{
+	if(_currentRow != size_t(RowType::Analyses) || from == to || from < 0 || to < 0)
+		return;
+
+	stringvec & rowNames = _buttonNames[size_t(RowType::Analyses)];
+
+	if(size_t(from) >= rowNames.size() || size_t(to) >= rowNames.size())
+		return;
+
+	RibbonButton *	fromButton	= ribbonButtonModel(rowNames[size_t(from)]),
+				*	toButton	= ribbonButtonModel(rowNames[size_t(to)]);
+
+	//Only actual modules can be reordered; special buttons (Data, separator, R-console, ...) stay anchored
+	if(!fromButton || !fromButton->module() || !toButton || !toButton->module())
+		return;
+
+	int destination = to > from ? to + 1 : to;
+
+	if(!beginMoveRows(QModelIndex(), from, from, QModelIndex(), destination))
+		return;
+
+	std::string moved = rowNames[size_t(from)];
+	rowNames.erase(rowNames.begin() + from);
+	rowNames.insert(rowNames.begin() + to, moved);
+
+	endMoveRows();
+
+	Settings::setValue(Settings::MODULES_ORDER, getModuleOrder().join('|'));
+}
 
 void RibbonModel::ribbonButtonModelChanged(RibbonButton* model)
 {

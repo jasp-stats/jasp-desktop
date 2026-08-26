@@ -625,7 +625,12 @@ void DynamicModules::refreshCommonModules(const QStringList& overrideCommon)
 			dynamicModule(modStr)->setIsCommon(true);
 		}
 	
-	RibbonModel::singleton()->setCommonOrder(overrideCommon);
+	//The admin-configuration merely seeds the initial module-order; once the user has stored an order of their own it is leading and must not be clobbered (OverrideCommon is an initial state, not an enforcement).
+	if(!Settings::isSet(Settings::MODULES_ORDER) && RibbonModel::singleton())
+	{
+		RibbonModel::singleton()->setModuleOrder(overrideCommon);
+		Settings::setValue(Settings::MODULES_ORDER, RibbonModel::singleton()->getModuleOrder().join('|'));
+	}
 }
 
 ///This function says it's copying something, and maybe it did that before, but it doesn't seem to be doing so now.

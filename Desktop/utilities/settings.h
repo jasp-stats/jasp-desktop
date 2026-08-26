@@ -38,6 +38,8 @@ public:
 		QML_MAX_FLICK_VELOCITY,
 		MODULES_REMEMBER,
 		MODULES_REMEMBERED,
+		MODULES_SELECTION_MIGRATED,
+		MODULES_ORDER,
 		SAFE_GRAPHICS_MODE,
 		CRAN_REPO_URL,
 		MODULE_LIBRARY_URL,
@@ -117,6 +119,7 @@ public:
 	static QVariant value(Settings::Type key);
 	static QVariant defaultValue(Settings::Type key);
 	static void setValue(Settings::Type key, const QVariant &value);
+	static bool isSet(Settings::Type key); //Whether the user (or an admin) ever stored a value for this setting, regardless of what the (default) value is
 	static void sync();
 	static void remove(Settings::Type key);
 	static QSettings* getSettings();

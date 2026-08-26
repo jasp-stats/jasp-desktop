@@ -565,18 +565,67 @@ FocusScope
 							forwardKeys:		true
 							Keys.forwardTo:		[modulesMenu]
 
-							toolTip:			isSpecial									? qsTr("Ready") //Always ready!
-												: dynamicModule.installing					? qsTr("Installing: %1\n").arg(dynamicModule.installLog)
-												: dynamicModule.loading						? qsTr("Loading: %1\n").arg(dynamicModule.loadLog)
-												: dynamicModule.status === "readyForUse"	? qsTr("Loaded and ready for use!")
-												: dynamicModule.status === "error"			? qsTr("Error occurred!")
-																							: qsTr("Not ready for use?")
+							toolTip:			isSpecial										? qsTr("Ready") //Always ready!
+											: dynamicModule.installing						? qsTr("Installing: %1\n").arg(dynamicModule.installLog)
+											: dynamicModule.loading							? qsTr("Loading: %1\n").arg(dynamicModule.loadLog)
+											: dynamicModule.status === "readyForUse"	? qsTr("Loaded and ready for use!")
+											: dynamicModule.status === "error"				? qsTr("Error occurred!")
+																													: qsTr("Not ready for use?")
 
 							anchors
 							{
-								left			: parent.left
-								right			: refreshButton.left
+								left		: parent.left
+								right		: refreshButton.left
 								verticalCenter	: parent.verticalCenter
+							}
+						}
+
+						Item
+						{
+							id:				reorderButtons
+							visible:	!isSpecial
+							width:			visible ? 2 * height + 4 * preferencesModel.uiScale : 0
+							height:			parent.height * 2 / 3 //A third smaller than the row itself, so the arrows don't dominate it
+							anchors
+							{
+								right:			parent.right
+								verticalCenter:	parent.verticalCenter
+							}
+
+							MenuButton
+							{
+								id:					moveUpButton
+								width:				height //Square because the icon is square
+								iconSource:			jaspTheme.iconPath + "/arrow-up.png"
+								toolTip:				qsTr("Move this module up in the ribbon")
+								enabled:			index > 0
+								activeFocusOnTab:	false
+								onClicked:			ribbonModelUncommon.moveModule(index, index - 1)
+
+								anchors
+								{
+									left:	parent.left
+									top:	parent.top
+									bottom:	parent.bottom
+								}
+							}
+
+							MenuButton
+							{
+								id:					moveDownButton
+								width:				height //Square because the icon is square
+								iconSource:			jaspTheme.iconPath + "/arrow-down.png"
+								toolTip:				qsTr("Move this module down in the ribbon")
+								enabled:			index < repeater.count - 1
+								activeFocusOnTab:	false
+								onClicked:			ribbonModelUncommon.moveModule(index, index + 1)
+
+								anchors
+								{
+									right:	parent.right
+									top:	parent.top
+									bottom:	parent.bottom
+								}
 							}
 						}
 
@@ -603,13 +652,13 @@ FocusScope
 							id:				minusButton
 							visible:		!isBundled && !isSpecial
 							iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
-							width:			visible ? height : 0
-							onClicked:		dynamicModules.uninstallJASPModule(moduleName)
-							toolTip:		qsTr("Uninstall module ") + displayText
+							width:				visible ? height : 0
+							onClicked: 			dynamicModules.uninstallJASPModule(moduleName)
+							toolTip:			qsTr("Uninstall module ") + displayText
 							anchors
 							{
-								right			: parent.right
-								verticalCenter	: parent.verticalCenter
+								right:			reorderButtons.left
+								verticalCenter:	parent.verticalCenter
 							}
 						}
 					}

@@ -276,7 +276,7 @@ QStringList PreferencesModel::emptyValues()		const
 
 QStringList PreferencesModel::modulesRemembered()	const
 {
-	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|");
+	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|", Qt::SkipEmptyParts);
 
 	return items;
 }
