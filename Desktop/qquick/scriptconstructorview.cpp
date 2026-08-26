@@ -53,6 +53,8 @@ void ScriptConstructorView::setModeInt(int m)
 	if(_rCodeDisplay)
 		_rCodeDisplay->setVisible(_showGeneratedRCode && mode != ScriptConstructorMode::Filter);
 
+	updateBackgroundDecoration();
+
 	emit modeChanged();
 
 	if(_chromeBuilt)
@@ -372,6 +374,16 @@ void ScriptConstructorView::buildChrome()
 		_background->setProperty("color", theme ? theme->white() : QColor("white"));
 	}
 
+	// Faint centred decoration distinguishing a filter from a computed-column constructor.
+	_backgroundDecoration = newLeaf(imageComponent());
+	if(_backgroundDecoration)
+	{
+		_backgroundDecoration->setParentItem(this);
+		_backgroundDecoration->setZ(-2);
+		_backgroundDecoration->setProperty("fillMode", 1); // Image.PreserveAspectFit
+	}
+	updateBackgroundDecoration();
+
 	_operatorBar = new QQuickItem(this);
 	_operatorBar->setParentItem(this);
 	_operatorBar->setZ(3);
@@ -521,6 +533,22 @@ void ScriptConstructorView::layoutAll()
 		_background->setHeight(h);
 	}
 
+	if(_backgroundDecoration)
+	{
+		const qreal iw = _backgroundDecoration->property("implicitWidth").toReal();
+		const qreal ih = _backgroundDecoration->property("implicitHeight").toReal();
+		if(iw > 0 && ih > 0)
+		{
+			// Fit within half the view, centred (matches the old fadeCollector watermark).
+			const qreal ratio = std::min(std::min(w / iw, h / ih), qreal(1.0)) * 0.5;
+			const qreal dw = iw * ratio, dh = ih * ratio;
+			_backgroundDecoration->setWidth(dw);
+			_backgroundDecoration->setHeight(dh);
+			_backgroundDecoration->setX((w - dw) / 2);
+			_backgroundDecoration->setY((h - dh) / 2);
+		}
+	}
+
 	if(_operatorBar)
 	{
 		_operatorBar->setX(0);
@@ -657,6 +685,17 @@ QString ScriptConstructorView::defaultHintText() const
 	return _model.mode() == ScriptConstructorMode::Filter
 		? tr("Welcome to the drag and drop filter!")
 		: tr("Welcome to the drag and drop computed column constructor!");
+}
+
+void ScriptConstructorView::updateBackgroundDecoration()
+{
+	if(!_backgroundDecoration) return;
+
+	const QString file = _model.mode() == ScriptConstructorMode::Filter
+		? QString("filterConstructorBackground.png")
+		: QString("columnConstructorBackground.png");
+
+	_backgroundDecoration->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + file);
 }
 
 // =====================================================================================

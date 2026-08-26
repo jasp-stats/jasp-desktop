@@ -419,6 +419,7 @@ void ScriptNodeItem::clearLeaves()
 
 	if(_openParen)	{ _openParen->deleteLater();	_openParen	= nullptr; }
 	if(_closeParen)	{ _closeParen->deleteLater();	_closeParen	= nullptr; }
+	if(_overline)	{ _overline->deleteLater();		_overline	= nullptr; }
 }
 
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
@@ -452,6 +453,10 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 	qreal dim = _view->blockDim();
 	item->setWidth(dim);
 	item->setHeight(dim);
+	// Also pin the implicit size, otherwise the Image reports its source image's (huge)
+	// intrinsic dimensions and blows up the layout.
+	item->setImplicitWidth(dim);
+	item->setImplicitHeight(dim);
 
 	addLeaf(item);
 	return item;
@@ -650,8 +655,33 @@ void ScriptNodeItem::rebuild()
 		auto * func = static_cast<ScriptNodeFunction*>(_node);
 		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
 		const bool hasImage = funcDef && !funcDef->image.empty();
+		const bool isSqrt = func->functionName() == "sqrt";
 
-		if(hasImage)
+		if(isSqrt && _acceptsDrops)
+		{
+			// Radical: a √ head (drawn tall) with an overline layered above the argument in layout().
+			QQuickItem * head = _view->newLeaf(_view->imageComponent());
+			if(head)
+			{
+				head->setParentItem(this);
+				head->setProperty("source", theme->iconPath() + "/rootHead.png");
+				head->setProperty("fillMode", 1); // Image.PreserveAspectFit
+				head->setWidth(block);
+				head->setHeight(block);
+				addLeaf(head);
+			}
+
+			_overline = _view->newLeaf(_view->rectangleComponent());
+			if(_overline)
+			{
+				_overline->setParentItem(this);
+				_overline->setProperty("color", theme->textEnabled());
+				_overline->setVisible(false);
+			}
+		}
+		else if(isSqrt) // operator bar: plain square-root symbol
+			makeImage(QString("sqrtSelector.png"));
+		else if(hasImage)
 			makeImage(tq(funcDef->image));
 		else
 		{
@@ -747,7 +777,52 @@ void ScriptNodeItem::layout()
 	// For a robust visual order we re-derive from the node structure:
 	ScriptNode::Type t = _node->type();
 
-	if(t == ScriptNode::Type::Operator || t == ScriptNode::Type::OperatorVertical)
+	if(t == ScriptNode::Type::Function && _acceptsDrops
+		&& static_cast<ScriptNodeFunction*>(_node)->functionName() == "sqrt")
+	{
+		// Radical: √ head on the left, an overline above the argument, the argument below it.
+		QQuickItem * head = _leaves.isEmpty() ? nullptr : _leaves.first();
+		ScriptDropSpot * arg = _dropSpots.isEmpty() ? nullptr : _dropSpots.first();
+
+		const qreal overlineH = std::max(qreal(2.0), block * 0.15);
+
+		qreal argW = 0, argH = block;
+		if(arg)
+		{
+			arg->layout();
+			argW = arg->width();
+			argH = arg->height();
+		}
+
+		const qreal totalH = std::max(block, overlineH + argH);
+
+		if(head)
+		{
+			head->setX(0);
+			head->setY(0);
+			head->setWidth(block);
+			head->setHeight(totalH);
+		}
+
+		if(_overline)
+		{
+			_overline->setVisible(true);
+			_overline->setX(block);
+			_overline->setY(0);
+			_overline->setWidth(argW);
+			_overline->setHeight(overlineH);
+		}
+
+		if(arg)
+		{
+			arg->setX(block);
+			arg->setY(overlineH);
+		}
+
+		x = block + argW;
+		maxH = totalH;
+	}
+	else if(t == ScriptNode::Type::Operator || t == ScriptNode::Type::OperatorVertical)
 	{
 		auto * op = static_cast<ScriptNodeOperator*>(_node);
 		ScriptDropSpot * left = _dropSpots.size() > 0 ? _dropSpots[0] : nullptr;
