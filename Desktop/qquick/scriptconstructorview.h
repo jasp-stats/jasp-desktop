@@ -86,6 +86,7 @@ public:
 	QQmlComponent	*	textInputComponent();
 	QQmlComponent	*	checkBoxComponent();
 	QQmlComponent	*	rectangleComponent();
+	QQmlComponent	*	tooltipAreaComponent();
 
 	qreal				blockDim() const;
 	qreal				fontPixelSize() const;
@@ -167,7 +168,8 @@ private:
 											_imageComp,
 											_textInputComp,
 											_checkBoxComp,
-											_rectComp;
+											_rectComp,
+											_tooltipAreaComp;
 
 	QAbstractItemModel				*		_columnsModel = nullptr;
 

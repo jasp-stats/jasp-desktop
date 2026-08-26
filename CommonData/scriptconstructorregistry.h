@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <QObject>
+#include <QString>
 #include "utils.h"
 
 enum class ScriptConstructorMode { Filter, ComputedColumn, ComputedDataSet };
@@ -21,33 +23,39 @@ struct ScriptFunctionDef
 {
 	std::string						name;
 	std::string						friendlyName;
-	std::string						toolTip;
+	QString							toolTip;
 	std::string						image;
 	std::vector<ScriptParamDef>		params;
 	bool							variadic		= false;
 	bool							isRowFunction	= false;
 	bool							operatorBarOnly	= false;
+	bool							logicalSuffix	= false;
 
 	stringvec						dragKeys() const;
 	bool							addsNaRm() const;
+	QString							toolTipForMode(ScriptConstructorMode mode) const;
 };
 
 struct ScriptOperatorDef
 {
 	std::string		op;
-	std::string		toolTip;
+	QString			toolTip;
 	std::string		image;
-	bool			vertical = false;
+	bool			vertical		= false;
+	bool			logicalSuffix	= false;
 
 	stringvec		dropKeysLeft(	ScriptConstructorMode mode) const;
 	stringvec		dropKeysRight(	ScriptConstructorMode mode) const;
 	bool			mirrorKeys() const;
 	bool			returnsBoolean(	ScriptConstructorMode mode) const;
 	stringvec		dragKeys(		ScriptConstructorMode mode) const;
+	QString			toolTipForMode(	ScriptConstructorMode mode) const;
 };
 
-class ScriptConstructorRegistry
+class ScriptConstructorRegistry : public QObject
 {
+	Q_OBJECT
+
 public:
 	static const ScriptConstructorRegistry & instance();
 

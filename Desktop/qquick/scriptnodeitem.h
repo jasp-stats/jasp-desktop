@@ -63,6 +63,8 @@ class ScriptNodeItem : public QQuickItem
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString toolTip READ toolTip WRITE setToolTip NOTIFY toolTipChanged)
+
 public:
 	explicit ScriptNodeItem(ScriptConstructorView * view, ScriptNode * node, QQuickItem * parent = nullptr);
 	~ScriptNodeItem() override;
@@ -82,6 +84,12 @@ public:
 	bool			acceptsDrops() const { return _acceptsDrops; }
 
 	void			setNested(bool nested);
+
+	QString			toolTip() const { return _toolTip; }
+	void			setToolTip(const QString & toolTip);
+
+signals:
+	void			toolTipChanged();
 
 protected:
 	void			mousePressEvent(QMouseEvent * event) override;
@@ -117,6 +125,7 @@ private:
 	bool						_acceptsDrops		= true,
 								_nested				= false,
 								_showParens			= false;
+	QString						_toolTip;
 };
 
 ///

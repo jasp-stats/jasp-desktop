@@ -34,7 +34,7 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 
 ScriptConstructorView::~ScriptConstructorView()
 {
-	for(auto & comp : {_textComp, _imageComp, _textInputComp, _checkBoxComp, _rectComp})
+	for(auto & comp : {_textComp, _imageComp, _textInputComp, _checkBoxComp, _rectComp, _tooltipAreaComp})
 		delete comp.data();
 }
 
@@ -317,6 +317,28 @@ QQmlComponent * ScriptConstructorView::rectangleComponent()
 	return _rectComp;
 }
 
+QQmlComponent * ScriptConstructorView::tooltipAreaComponent()
+{
+	if(!_tooltipAreaComp)
+	{
+		_tooltipAreaComp = new QQmlComponent(qmlEngine(this));
+		_tooltipAreaComp->setData(
+			"import QtQuick\n"
+			"import QtQuick.Controls\n"
+			"MouseArea {\n"
+			"  anchors.fill: parent\n"
+			"  z: 5\n"
+			"  acceptedButtons: Qt.NoButton\n"
+			"  hoverEnabled: true\n"
+			"  ToolTip.delay: 500\n"
+			"  ToolTip.text: parent.toolTip\n"
+			"  ToolTip.visible: ToolTip.text !== '' && containsMouse\n"
+			"  ToolTip.toolTip.background: Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }\n"
+			"}\n", QUrl("ScriptConstructorToolTipArea"));
+	}
+	return _tooltipAreaComp;
+}
+
 QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp)
 {
 	if(!comp || comp->isError())
@@ -412,6 +434,11 @@ void ScriptConstructorView::buildChrome()
 		_trash->setProperty("border.width", 1);
 		_trash->setProperty("radius", 6.0);
 		_trash->setZ(10);
+
+		// Hover tooltip (mirrors the old DropTrash.qml).
+		_trash->setProperty("toolTip", tr("Dump unwanted snippets here; double-click to erase the entire slate"));
+		if(QQuickItem * overlay = newLeaf(tooltipAreaComponent()))
+			overlay->setParentItem(_trash);
 
 		// Trash icon centred inside the drop zone.
 		QQuickItem * icon = newLeaf(imageComponent());

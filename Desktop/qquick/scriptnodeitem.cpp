@@ -2,6 +2,7 @@
 #include "scriptconstructorview.h"
 #include "jasptheme.h"
 #include "qutils.h"
+#include "data/columnsmodel.h"
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
@@ -393,6 +394,26 @@ ScriptNodeItem::ScriptNodeItem(ScriptConstructorView * view, ScriptNode * node, 
 	, _node(node)
 {
 	setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
+
+	// Transparent tooltip overlay: a MouseArea that only reports hover (acceptedButtons:
+	// Qt.NoButton) so a QtQuick ToolTip can show on hover without breaking drag & drop.
+	if(view)
+	{
+		QQuickItem * overlay = view->newLeaf(view->tooltipAreaComponent());
+		if(overlay)
+		{
+			overlay->setParentItem(this);
+			overlay->setZ(5);
+		}
+	}
+}
+
+void ScriptNodeItem::setToolTip(const QString & toolTip)
+{
+	if(_toolTip == toolTip)
+		return;
+	_toolTip = toolTip;
+	emit toolTipChanged();
 }
 
 ScriptNodeItem::~ScriptNodeItem()
@@ -740,6 +761,66 @@ void ScriptNodeItem::rebuild()
 		break;
 	}
 	}
+
+	// Compute the hover tooltip for this element.
+	QString tip;
+
+	switch(_node->type())
+	{
+	case ScriptNode::Type::Operator:
+	case ScriptNode::Type::OperatorVertical:
+	{
+		const std::string & op = static_cast<ScriptNodeOperator*>(_node)->op();
+		if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::Function:
+	{
+		const std::string & fn = static_cast<ScriptNodeFunction*>(_node)->functionName();
+		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::RowFunction:
+	{
+		const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node)->functionName();
+		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::Column:
+	{
+		auto * col = static_cast<ScriptNodeColumn*>(_node);
+
+		const int actual		= _view->columnType(col->columnName());
+		const int effective		= col->effectiveColumnType(actual);
+
+		QStringList parts;
+		parts << tr("Click icon to change column type");
+
+		if(ColumnsModel * cols = ColumnsModel::singleton())
+		{
+			const QString description = cols->getColumnDescription(tq(col->columnName()));
+			if(!description.isEmpty())
+				parts << tr("Column description: ") + description;
+
+			if(effective != actual)
+			{
+				const QString preview = cols->getColumnTransformedToolTip(tq(col->columnName()), col->columnTypeUser());
+				if(!preview.isEmpty())
+					parts << preview;
+			}
+		}
+
+		tip = parts.join("\n\n");
+		break;
+	}
+	default:
+		break;
+	}
+
+	setToolTip(tip);
 
 	layout();
 }
