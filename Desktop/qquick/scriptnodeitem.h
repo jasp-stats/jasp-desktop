@@ -33,15 +33,24 @@ public:
 
 	void				layout();
 
+protected:
+	void				mousePressEvent(QMouseEvent * event) override;
+
+private slots:
+	void				onInputEditingFinished();
+
 private:
 	QQuickItem	*	ensurePlaceholder();
 	QQuickItem	*	ensureMarker();
+	QQuickItem	*	ensureInput();
+	void			parseAndCreateLiteral();
 
 	ScriptConstructorView	*	_view		= nullptr;
 	DropTarget					_target;
 	QPointer<ScriptNodeItem>	_filled;
 	QPointer<QQuickItem>		_placeholder;
 	QPointer<QQuickItem>		_marker;
+	QPointer<QQuickItem>		_input;
 	QString						_defaultText	= "...";
 	bool						_acceptsDrops	= true;
 };
@@ -101,6 +110,36 @@ private:
 								_preferredHeight	= 0;
 	bool						_acceptsDrops		= true,
 								_nested				= false;
+};
+
+///
+/// Scrollable container for palette items (columns/functions/operators).
+/// Supports mouse-wheel scrolling and drag-to-scroll on empty background areas.
+class ScriptPalette : public QQuickItem
+{
+	Q_OBJECT
+
+public:
+	explicit ScriptPalette(QQuickItem * parent = nullptr);
+
+	QQuickItem	*	content() const { return _content; }
+	void			setContentHeight(qreal height);
+
+protected:
+	void			wheelEvent(QWheelEvent * event) override;
+	void			mousePressEvent(QMouseEvent * event) override;
+	void			mouseMoveEvent(QMouseEvent * event) override;
+	void			mouseReleaseEvent(QMouseEvent * event) override;
+	void			geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
+
+private:
+	void			clampScroll();
+
+	QQuickItem	*	_content = nullptr;
+	qreal			_scrollY = 0;
+	bool			_dragScrolling = false;
+	qreal			_dragStartY = 0,
+					_dragStartScroll = 0;
 };
 
 #endif // SCRIPTNODEITEM_H

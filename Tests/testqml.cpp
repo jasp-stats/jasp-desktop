@@ -5,6 +5,7 @@
 #include "datasetprovider.h"
 #include "utilities/qmlutils.h"
 #include "utilities/settings.h"
+#include "qquick/scriptconstructorview.h"
 
 TestQml::TestQml(QObject *parent)
 	: QObject{parent}
@@ -35,6 +36,7 @@ void TestQml::qmlEngineAvailable(QQmlEngine *engine)
 	// Initialization requiring the QQmlEngine to be constructed
 	QmlUtils::setupQMLEngine(engine);
 
+	qmlRegisterType<ScriptConstructorView>("JASP", 1, 0, "ScriptConstructor");
 }
 
 void TestQml::cleanupTestCase()

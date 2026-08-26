@@ -230,9 +230,73 @@ void ScriptConstructorModel::placeAt(ScriptNode * node, const DropTarget & targe
 	case DropTarget::Kind::None:
 		break;
 	}
+
+	if(auto * col = dynamic_cast<ScriptNodeColumn*>(node))
+		resolveColumnTypeDrop(col, target.dropKeys);
+}
+
+void ScriptConstructorModel::resolveColumnTypeDrop(ScriptNodeColumn * col, const stringvec & slotKeys)
+{
+	// Mirrors the old JASPColumn.qml dropHandler.onWasDroppedOn():
+	// prefer the user-selected type if the slot accepts it, then the actual
+	// column type, then scale/ordinal/nominal in order.
+	col->setColumnTypeDrop(-1);
+
+	if(slotKeys.empty())
+		return;
+
+	auto accepts = [&slotKeys](int colType)
+	{
+		return keysOverlap(ScriptConstructorRegistry::dropKeysForColumnType(colType), slotKeys);
+	};
+
+	int userType = col->columnTypeUser();
+	if(userType != -1 && accepts(userType))
+	{
+		col->setColumnTypeDrop(userType);
+		return;
+	}
+
+	int actualType = _typeProvider ? _typeProvider->columnType(col->columnName()) : 1;
+	if(accepts(actualType))
+	{
+		col->setColumnTypeDrop(actualType);
+		return;
+	}
+
+	for(int t : {1, 2, 3}) // scale, ordinal, nominal
+	{
+		if(accepts(t))
+		{
+			col->setColumnTypeDrop(t);
+			return;
+		}
+	}
 }
 
 // --- right-most empty / filled drop spot helpers ---
+
+static stringvec containingSlotKeys(ScriptNode * node)
+{
+	ScriptNode * par = node ? node->parent() : nullptr;
+	if(!par) return {};
+
+	if(auto * op = dynamic_cast<ScriptNodeOperator*>(par))
+		return op->leftChild() == node ? op->dropKeysLeft() : op->dropKeysRight();
+
+	if(auto * func = dynamic_cast<ScriptNodeFunction*>(par))
+	{
+		for(int i = 0; i < func->childCount(); i++)
+			if(func->childAt(i) == node)
+				return func->arguments()[i].dropKeys;
+		return {};
+	}
+
+	if(dynamic_cast<ScriptNodeRowFunction*>(par))
+		return {"number"};
+
+	return {};
+}
 
 static DropTarget makeSlotTarget(ScriptNode * parent, DropTarget::Kind kind, int index, const stringvec & keys)
 {
@@ -432,6 +496,9 @@ void ScriptConstructorModel::setColumnTypeUser(ScriptNodeColumn * node, int colu
 	if(!node) return;
 	beginEdit();
 	node->setColumnTypeUser(columnType);
+	// Re-resolve the drop-time type, like the old JASPColumn.qml did when the
+	// user clicked the type icon while the column was inside a drop spot.
+	resolveColumnTypeDrop(node, containingSlotKeys(node));
 	endEdit(tr("Change column type"));
 }
 

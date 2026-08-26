@@ -8,6 +8,7 @@
 
 class ScriptNodeItem;
 class ScriptDropSpot;
+class ScriptPalette;
 class QQmlComponent;
 class QAbstractItemModel;
 
@@ -18,7 +19,7 @@ class QAbstractItemModel;
 /// code) and renders it as a tree of QQuickItems. All formula logic lives in the model; this
 /// class only renders, lays out, and forwards user gestures (drag/drop, inline editing, column
 /// type changes) to the model.
-class ScriptConstructorView : public QQuickItem
+class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 {
 	Q_OBJECT
 
@@ -30,6 +31,7 @@ class ScriptConstructorView : public QQuickItem
 	Q_PROPERTY( bool				isColumnConstructor		READ isColumnConstructor							NOTIFY modeChanged				)
 	Q_PROPERTY( bool				showGeneratedRCode		READ showGeneratedRCode	WRITE setShowGeneratedRCode	NOTIFY showGeneratedRCodeChanged)
 	Q_PROPERTY( QAbstractItemModel* columnsModel			READ columnsModel		WRITE setColumnsModel		NOTIFY columnsModelChanged		)
+	Q_PROPERTY( QString				filterErrorMsg			READ filterErrorMsg		WRITE setFilterErrorMsg		NOTIFY filterErrorMsgChanged	)
 
 public:
 	enum Mode { Filter = 0, ComputedColumn = 1, ComputedDataSet = 2 };
@@ -60,8 +62,14 @@ public:
 	QAbstractItemModel*	columnsModel() const { return _columnsModel; }
 	void				setColumnsModel(QAbstractItemModel * m);
 
+	QString				filterErrorMsg() const { return _filterErrorMsg; }
+	void				setFilterErrorMsg(const QString & msg);
+
 	void				setColumnTypeProvider(const ScriptColumnTypeProvider * p) { _model.setColumnTypeProvider(p); }
 	void				setUndoStack(QUndoStack * s) { _model.setUndoStack(s); }
+
+	// ScriptColumnTypeProvider: resolve a column's actual type from the columns model.
+	int					columnType(const std::string & columnName) const override;
 
 	// --- QML-callable API mirroring the old constructors ---
 	Q_INVOKABLE bool	checkAndApply();
@@ -84,6 +92,8 @@ public:
 	QQuickItem		*	newLeaf(QQmlComponent * comp);
 
 	void				nodeEdited();
+	void				refresh() { rebuildFormulaItems(); }
+	ScriptNodeItem	*	makeNodeItem(ScriptNode * node, QQuickItem * parent);
 
 	// --- drag & drop orchestration (called by ScriptNodeItem / palette items) ---
 	void				startDragExisting(ScriptNodeItem * item, const QPointF & scenePos);
@@ -91,7 +101,7 @@ public:
 	void				spawnFromPrototype(ScriptNode * proto, const QPointF & scenePos);
 	void				dragMove(const QPointF & scenePos);
 	void				endDrag(const QPointF & scenePos);
-	ScriptDropSpot	*	dropSpotAt(const QPointF & scenePos) const;
+	ScriptDropSpot	*	dropSpotAt(const QPointF & scenePos, ScriptNodeItem * dragged = nullptr) const;
 	void				collectDropSpots(QList<ScriptDropSpot*> & out) const;
 
 signals:
@@ -102,6 +112,7 @@ signals:
 	void				lastCheckPassedChanged();
 	void				showGeneratedRCodeChanged();
 	void				columnsModelChanged();
+	void				filterErrorMsgChanged();
 
 	/// Emitted when the user applies a valid formula. The surrounding window persists it
 	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
@@ -119,23 +130,25 @@ private:
 	void				buildFunctionPalette();
 	void				rebuildFormulaItems();
 	void				clearFormulaItems();
+	void				_clearPaletteChildren(QQuickItem * palette);
 	void				layoutAll();
 	void				layoutScriptArea();
 	void				refreshHint();
+	void				setHintText(const QString & text);
+	QString				defaultHintText() const;
 
-	ScriptNodeItem	*	makeNodeItem(ScriptNode * node, QQuickItem * parent);
 	void				clearHover();
 
 	ScriptConstructorModel					_model;
 
 	QPointer<QQuickItem>					_background,
 											_operatorBar,
-											_columnPalette,
-											_functionPalette,
 											_scriptArea,
 											_scriptColumn,
 											_trash,
 											_hint;
+	QPointer<ScriptPalette>					_columnPalette,
+											_functionPalette;
 	std::map<ScriptNode*, ScriptNodeItem*>	_nodeItems;
 	QList<ScriptNodeItem*>					_rootItems;
 
@@ -159,6 +172,8 @@ private:
 											_showGeneratedRCode	= false,
 											_chromeBuilt			= false;
 	QString									_lastAppliedJson;
+	QString									_filterErrorMsg;
+	QString									_hintText;
 };
 
 #endif // SCRIPTCONSTRUCTORVIEW_H

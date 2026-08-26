@@ -7,6 +7,99 @@
 #include <QQmlEngine>
 #include <QFontMetricsF>
 #include <QMouseEvent>
+#include <QWheelEvent>
+#include <algorithm>
+
+// =====================================================================================
+// ScriptPalette
+// =====================================================================================
+
+ScriptPalette::ScriptPalette(QQuickItem * parent)
+	: QQuickItem(parent)
+{
+	setClip(true);
+	setAcceptedMouseButtons(Qt::LeftButton);
+	_content = new QQuickItem(this);
+	_content->setParentItem(this);
+	_content->setX(0);
+	_content->setY(0);
+}
+
+void ScriptPalette::setContentHeight(qreal height)
+{
+	if(_content)
+		_content->setHeight(height);
+	clampScroll();
+}
+
+void ScriptPalette::clampScroll()
+{
+	if(!_content) return;
+
+	qreal maxScroll = std::max(qreal(0), _content->height() - height());
+	if(_scrollY < 0) _scrollY = 0;
+	if(_scrollY > maxScroll) _scrollY = maxScroll;
+	_content->setY(-_scrollY);
+}
+
+void ScriptPalette::wheelEvent(QWheelEvent * event)
+{
+	qreal step = event->angleDelta().y() / 120.0;
+	_scrollY -= step * 3.0 * 20.0; // a few lines per notch
+	clampScroll();
+	event->accept();
+}
+
+void ScriptPalette::mousePressEvent(QMouseEvent * event)
+{
+	// Only reached when the press lands on empty palette background (child
+	// prototype items accept their own presses to start drags).
+	if(event->button() == Qt::LeftButton)
+	{
+		_dragScrolling = true;
+		_dragStartY = event->scenePosition().y();
+		_dragStartScroll = _scrollY;
+		grabMouse();
+		event->accept();
+	}
+	else
+		event->ignore();
+}
+
+void ScriptPalette::mouseMoveEvent(QMouseEvent * event)
+{
+	if(_dragScrolling)
+	{
+		_scrollY = _dragStartScroll - (event->scenePosition().y() - _dragStartY);
+		clampScroll();
+		event->accept();
+	}
+	else
+		event->ignore();
+}
+
+void ScriptPalette::mouseReleaseEvent(QMouseEvent * event)
+{
+	if(_dragScrolling)
+	{
+		_dragScrolling = false;
+		ungrabMouse();
+		event->accept();
+	}
+	else
+		event->ignore();
+}
+
+void ScriptPalette::geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry)
+{
+	QQuickItem::geometryChange(newGeometry, oldGeometry);
+	if(newGeometry.size() != oldGeometry.size())
+	{
+		if(_content)
+			_content->setWidth(newGeometry.width());
+		clampScroll();
+	}
+}
 
 // =====================================================================================
 // ScriptDropSpot
@@ -18,6 +111,7 @@ ScriptDropSpot::ScriptDropSpot(ScriptConstructorView * view, QQuickItem * parent
 {
 	setImplicitWidth(_view ? _view->blockDim() * 3 : 60);
 	setImplicitHeight(_view ? _view->blockDim() : 20);
+	setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 void ScriptDropSpot::setTarget(const DropTarget & target)
@@ -34,7 +128,15 @@ QQuickItem * ScriptDropSpot::ensurePlaceholder()
 	if(_placeholder)
 	{
 		_placeholder->setParentItem(this);
-		_placeholder->setProperty("verticalAlignment", 0); // Text.AlignVCenter? set below via anchors
+		_placeholder->setProperty("verticalAlignment", 128); // Text.AlignVCenter
+		JaspTheme * theme = JaspTheme::currentTheme();
+		QFont f = theme->font();
+		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+		_placeholder->setProperty("font", f);
+		_placeholder->setProperty("color", theme->textDisabled());
+		_placeholder->setProperty("text", _defaultText);
+		_placeholder->setX(0);
+		_placeholder->setY(0);
 	}
 	return _placeholder;
 }
@@ -61,6 +163,8 @@ QQuickItem * ScriptDropSpot::ensureMarker()
 void ScriptDropSpot::setDefaultText(const QString & text)
 {
 	_defaultText = text;
+	if(_acceptsDrops)
+		ensurePlaceholder();
 	if(_placeholder)
 		_placeholder->setProperty("text", _defaultText);
 }
@@ -79,8 +183,11 @@ void ScriptDropSpot::setFilledItem(ScriptNodeItem * item)
 		item->setX(0);
 		item->setY(0);
 		if(_placeholder) _placeholder->setVisible(false);
+		if(_input) _input->setVisible(false);
 		setImplicitWidth(item->preferredWidth());
 		setImplicitHeight(item->preferredHeight());
+		setWidth(item->preferredWidth());
+		setHeight(item->preferredHeight());
 	}
 }
 
@@ -88,8 +195,12 @@ void ScriptDropSpot::clearFilled()
 {
 	_filled = nullptr;
 	if(_placeholder) _placeholder->setVisible(_acceptsDrops);
-	setImplicitWidth(_view ? _view->blockDim() * 3 : 60);
-	setImplicitHeight(_view ? _view->blockDim() : 20);
+	qreal w = _view ? _view->blockDim() * 3 : 60;
+	qreal h = _view ? _view->blockDim() : 20;
+	setImplicitWidth(w);
+	setImplicitHeight(h);
+	setWidth(w);
+	setHeight(h);
 }
 
 void ScriptDropSpot::setHoverState(bool hovered, bool accepted)
@@ -125,26 +236,150 @@ void ScriptDropSpot::setError(bool error)
 
 void ScriptDropSpot::layout()
 {
-	if(_marker)
-	{
-		_marker->setWidth(width());
-		_marker->setHeight(height());
-	}
+	qreal w, h;
 
 	if(_filled)
 	{
 		_filled->layout();
-		setImplicitWidth(_filled->preferredWidth());
-		setImplicitHeight(_filled->preferredHeight());
+		w = _filled->preferredWidth();
+		h = _filled->preferredHeight();
 	}
-	else if(_placeholder)
+	else
 	{
-		_placeholder->setProperty("text", _defaultText);
-		qreal w = _placeholder->property("implicitWidth").toReal();
+		if(_placeholder)
+			_placeholder->setProperty("text", _defaultText);
+		qreal pw = _placeholder ? _placeholder->property("implicitWidth").toReal() : 0;
 		qreal minW = _acceptsDrops && _view ? _view->blockDim() * 3 : 0;
-		setImplicitWidth(std::max(w, minW));
-		setImplicitHeight(_view ? _view->blockDim() : 20);
+		w = std::max(pw, minW);
+		h = _view ? _view->blockDim() : 20;
 	}
+
+	setImplicitWidth(w);
+	setImplicitHeight(h);
+	setWidth(w);
+	setHeight(h);
+
+	if(_marker)
+	{
+		_marker->setWidth(w);
+		_marker->setHeight(h);
+	}
+	if(_placeholder)
+	{
+		_placeholder->setWidth(w);
+		_placeholder->setHeight(h);
+	}
+	if(_input)
+	{
+		_input->setWidth(w);
+		_input->setHeight(h);
+	}
+}
+
+QQuickItem * ScriptDropSpot::ensureInput()
+{
+	if(_input)
+		return _input;
+
+	_input = _view->newLeaf(_view->textInputComponent());
+	if(_input)
+	{
+		_input->setParentItem(this);
+		_input->setProperty("text", _defaultText);
+		JaspTheme * theme = JaspTheme::currentTheme();
+		QFont f = theme->font();
+		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+		_input->setProperty("font", f);
+		_input->setProperty("color", theme->textEnabled());
+		_input->setX(0);
+		_input->setY(0);
+		_input->setVisible(false);
+		connect(_input, SIGNAL(editingFinished()), this, SLOT(onInputEditingFinished()));
+	}
+	return _input;
+}
+
+void ScriptDropSpot::mousePressEvent(QMouseEvent * event)
+{
+	// Clicking an empty drop spot lets the user type a literal value directly.
+	if(event->button() == Qt::LeftButton && _acceptsDrops && !_filled)
+	{
+		QQuickItem * input = ensureInput();
+		if(input)
+		{
+			input->setProperty("text", "");
+			if(_placeholder) _placeholder->setVisible(false);
+			input->setVisible(true);
+			input->forceActiveFocus();
+			event->accept();
+			return;
+		}
+	}
+	event->ignore();
+}
+
+void ScriptDropSpot::onInputEditingFinished()
+{
+	parseAndCreateLiteral();
+
+	if(_input)
+	{
+		_input->setVisible(false);
+		_input->setFocus(false);
+	}
+	if(_placeholder && !_filled) _placeholder->setVisible(true);
+}
+
+void ScriptDropSpot::parseAndCreateLiteral()
+{
+	QString text = _input ? _input->property("text").toString().trimmed() : QString();
+
+	bool isNum = false;
+	double numVal = text.toDouble(&isNum);
+
+	const stringvec & keys = _target.dropKeys;
+	auto has = [&keys](const char * k) { return std::find(keys.begin(), keys.end(), std::string(k)) != keys.end(); };
+
+	ScriptNodeLiteral * lit = nullptr;
+
+	// match the old DropSpot.tryConvertToObject order: number, then string, then boolean
+	if(isNum && has("number"))
+	{
+		lit = new ScriptNodeLiteral(ScriptNode::Type::Number);
+		lit->setNumberValue(numVal);
+	}
+	else if(has("string") && !text.isEmpty())
+	{
+		lit = new ScriptNodeLiteral(ScriptNode::Type::String);
+		lit->setStringValue(fq(text));
+	}
+	else if(has("boolean"))
+	{
+		if(isNum)
+		{
+			lit = new ScriptNodeLiteral(ScriptNode::Type::Boolean);
+			lit->setBoolValue(numVal != 0);
+		}
+		else if(text.compare("true", Qt::CaseInsensitive) == 0)
+		{
+			lit = new ScriptNodeLiteral(ScriptNode::Type::Boolean);
+			lit->setBoolValue(true);
+		}
+		else if(text.compare("false", Qt::CaseInsensitive) == 0)
+		{
+			lit = new ScriptNodeLiteral(ScriptNode::Type::Boolean);
+			lit->setBoolValue(false);
+		}
+	}
+
+	if(lit)
+	{
+		_view->model()->insertNode(lit, _target);
+		_view->nodeEdited();
+		_view->refresh();
+	}
+	else if(_input)
+		_input->setProperty("text", _defaultText);
 }
 
 // =====================================================================================
@@ -217,8 +452,8 @@ ScriptDropSpot * ScriptNodeItem::makeDropSpot(const DropTarget & target, const Q
 {
 	ScriptDropSpot * spot = new ScriptDropSpot(_view, this);
 	spot->setTarget(target);
-	spot->setDefaultText(placeholder);
 	spot->setAcceptsDrops(_acceptsDrops);
+	spot->setDefaultText(placeholder);
 	_dropSpots.append(spot);
 	return spot;
 }
@@ -263,6 +498,15 @@ void ScriptNodeItem::rebuild()
 
 	JaspTheme * theme = JaspTheme::currentTheme();
 	qreal block = _view->blockDim();
+
+	// Create a child item for an existing model child and place it into the drop spot.
+	auto fillSpot = [&](ScriptDropSpot * spot, ScriptNode * child)
+	{
+		if(!child) return;
+		ScriptNodeItem * childItem = _view->makeNodeItem(child, spot);
+		childItem->setNested(true);
+		spot->setFilledItem(childItem);
+	};
 
 	switch(_node->type())
 	{
@@ -332,14 +576,17 @@ void ScriptNodeItem::rebuild()
 		auto * op = static_cast<ScriptNodeOperator*>(_node);
 		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op());
 
-		makeDropSpot(DropTarget{op->isVertical() ? DropTarget::Kind::OperatorLeft : DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft()}, "...");
+		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft()}, "...");
 
 		if(def && !def->image.empty())
 			makeImage(tq(def->image));
 		else
 			makeText(QString::fromStdString(op->op()), true);
 
-		makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight()}, "...");
+		ScriptDropSpot * rightSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight()}, "...");
+
+		fillSpot(leftSpot, op->leftChild());
+		fillSpot(rightSpot, op->rightChild());
 		break;
 	}
 	case ScriptNode::Type::Function:
@@ -350,7 +597,8 @@ void ScriptNodeItem::rebuild()
 		for(int i = 0; i < func->childCount(); i++)
 		{
 			const auto & arg = func->arguments()[i];
-			makeDropSpot(DropTarget{DropTarget::Kind::FunctionArg, func, i, arg.dropKeys}, QString::fromStdString(arg.name));
+			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::FunctionArg, func, i, arg.dropKeys, arg.optional}, QString::fromStdString(arg.name));
+			fillSpot(spot, arg.value);
 		}
 		break;
 	}
@@ -360,7 +608,10 @@ void ScriptNodeItem::rebuild()
 		makeText(QString::fromStdString(rowFunc->functionName()));
 
 		for(int i = 0; i < rowFunc->childCount(); i++)
-			makeDropSpot(DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, i, {"number"}}, "...");
+		{
+			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, i, {"number"}, true}, "...");
+			fillSpot(spot, rowFunc->childAt(i));
+		}
 		break;
 	}
 	}
