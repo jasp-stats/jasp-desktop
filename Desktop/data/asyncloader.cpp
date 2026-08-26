@@ -73,7 +73,7 @@ void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, con
 	}
 
 	FileEvent * event = new FileEvent(this, FileEvent::FileSyncData);
-	event->setSyncDataSet(dataSet);
+	event->setDataSet(dataSet);
 	event->setPath(locator);
 	if(!databaseJson.isEmpty())
 	{
@@ -280,15 +280,15 @@ void AsyncLoader::loadPackage(QString id)
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 			{
 				Log::log() << "[AsyncLoader::loadPackage] FileSyncData operation detected" << std::endl;
-				syncTargetDataSet = _currentEvent->syncDataSet(); //QPointer; null if the dataset was destroyed meanwhile
+				syncTargetDataSet = _currentEvent->dataSet(); //QPointer; null if the dataset was destroyed meanwhile
 				if(!syncTargetDataSet)
 				{
-					Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL after _currentEvent->syncDataSet()" << std::endl;
+					Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL after _currentEvent->dataSet()" << std::endl;
 					_currentEvent->setComplete(false, "No dataset found for sync");
 
 					//Release the syncer guard exactly once, like every other exit of this branch.
 					Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted with success=false (no dataset)" << std::endl;
-					emit syncCompleted(_currentEvent->syncDataSetId(), false);
+					emit syncCompleted(_currentEvent->dataSetId(), false);
 					return;
 				}
 				Log::log() << "[AsyncLoader::loadPackage] Calling syncPackage for datasetId=" << syncTargetDataSet->id() << std::endl;
@@ -341,8 +341,8 @@ void AsyncLoader::loadPackage(QString id)
 			//syncer's re-entrancy guard (_isSyncing) is released exactly once.
 			if(syncTargetDataSet)
 			{
-				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->syncDataSetId() << ", success=" << _currentEvent->isSuccessful() << std::endl;
-				emit syncCompleted(_currentEvent->syncDataSetId(), _currentEvent->isSuccessful());
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=" << _currentEvent->isSuccessful() << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), _currentEvent->isSuccessful());
 			}
 			else
 			{
@@ -363,8 +363,8 @@ void AsyncLoader::loadPackage(QString id)
 			//still run; the dataset stays alive on the GUI thread.
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 			{
-				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->syncDataSetId() << ", success=false (exception)" << std::endl;
-				emit syncCompleted(_currentEvent->syncDataSetId(), false);
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=false (exception)" << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), false);
 			}
 			else
 				DataSetPackage::pkg()->deleteWorkspace(false); //Make sure we dont keep failed stuff in memory
@@ -379,8 +379,8 @@ void AsyncLoader::loadPackage(QString id)
 
 			if (_currentEvent->operation() == FileEvent::FileSyncData)
 			{
-				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->syncDataSetId() << ", success=false (exception)" << std::endl;
-				emit syncCompleted(_currentEvent->syncDataSetId(), false);
+				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=false (exception)" << std::endl;
+				emit syncCompleted(_currentEvent->dataSetId(), false);
 			}
 			else
 				DataSetPackage::pkg()->deleteWorkspace(true); //Make sure we dont keep failed stuff in memory

@@ -22,6 +22,7 @@
 #include "exporters/resultexporter.h"
 #include "exporters/jaspexporter.h"
 #include "dataset.h"
+#include "datasetpackage.h"
 #include "log.h"
 
 #include <QTimer>
@@ -34,16 +35,16 @@
 #include "widgets/filemenu/filemenu.h"
 #include "log.h"
 
-void FileEvent::setSyncDataSet(DataSet * ds)			
+void FileEvent::setDataSet(DataSet * ds)
 { 
-	_syncDataSet = ds;
-	_syncDataSetId = ds ? ds->id() : -1; //snapshot now, while ds is still alive
-	Log::log() << "[FileEvent::setSyncDataSet] Set syncDataSet to: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl; 
+	_dataSet = ds;
+	_dataSetId = ds ? ds->id() : -1; //snapshot now, while ds is still alive
+	Log::log() << "[FileEvent::setDataSet] Set dataSet to: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl;
 }
 
-DataSet * FileEvent::syncDataSet() const
+DataSet * FileEvent::dataSet() const
 {
-	return _syncDataSet;
+	return _dataSet;
 }
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
@@ -161,7 +162,7 @@ void FileEvent::cleanUp()
 }
 
 
-void FileEvent::chain(FileEvent *event)
+void FileEvent::chain(FileEvent *event, bool resetDataSet)
 {
 	if (isStarted())
 	{
@@ -171,9 +172,13 @@ void FileEvent::chain(FileEvent *event)
 			connect(event, &FileEvent::finalized, this, [this, event]() { setComplete(event->isSuccessful(), event->message()); });
 	}
 	else
-		connect(event, &FileEvent::finalized, this, [this, event]() {
+		connect(event, &FileEvent::finalized, this, [this, event, resetDataSet]() {
 			if (event->isSuccessful())
+			{
+				if (resetDataSet && DataSetPackage::pkg()->hasDataSet())
+					setDataSet(DataSetPackage::pkg()->dataSet());
 				starts();
+			}
 			else
 				setComplete(false, event->message(), event->isCancelled());
 		} );

@@ -497,7 +497,7 @@ void FileMenu::setSyncRequest(const QString& path, bool waitForExistence)
 
 	FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 	event->setPath(path);
-	event->setSyncDataSet(DataSetPackage::pkg()->dataSet());
+	event->setDataSet(DataSetPackage::pkg()->dataSet());
 	event->starts();
 }
 

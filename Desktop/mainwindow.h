@@ -249,7 +249,6 @@ private:
 	void pauseEngines();
 	void resumeEngines();
 
-	void _openFile();
 	void _openDbJson();
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 	void checkEmptyWorkspace();

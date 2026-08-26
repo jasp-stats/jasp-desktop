@@ -326,7 +326,12 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	{
 		if (PreferencesModel::prefs()->keepMissingColsWhenSyncing())
 		{
+			//getColumnIndex() gives the column's position in the full dataset, which can exceed
+			//newColumnOrder's size (it holds the imported columns plus any missing ones already re-inserted
+			//here). Clamp to [0, size] so the insert iterator stays valid; out of range means append.
 			int i = dataSet->getColumnIndex(oldCol->name());
+			if (i < 0 || i > int(newColumnOrder.size()))
+				i = int(newColumnOrder.size());
 			stringvec emptyvalues(dataSet->rowCount());
 			oldCol->overwriteDataAndType(emptyvalues, oldCol->type(), false);
 			newColumnOrder.insert(newColumnOrder.begin() + i, oldCol->name());
