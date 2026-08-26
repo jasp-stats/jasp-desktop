@@ -39,7 +39,7 @@ signals:
 	bool					askYesNo(int dataSetId, QString title, QString message);
 	void					showWarning(int dataSetId, QString title, QString message);
 
-	void					syncRequired(int dataSetId, DataSet * dataSet, QString locator, QString extension, QString databaseJson);
+	void					syncRequired(DataSet * dataSet, QString locator, QString extension, QString databaseJson);
 
 private slots:
 	void					fileChanged(const QString & path);

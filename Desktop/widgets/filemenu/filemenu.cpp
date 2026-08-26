@@ -27,8 +27,13 @@
 #include "utilities/appdirs.h"
 #include "data/jaspencryptiondata.h"
 
+FileMenu* FileMenu::_singleton = nullptr;
+
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
-{	
+{
+	assert(_singleton == nullptr);
+	_singleton = this;
+
 	_mainWindow				= qobject_cast<MainWindow*>(parent);
 	_recentFiles			= new RecentFiles			(this);
 	_currentDataFile		= new CurrentDataFile		(this);
@@ -40,10 +45,7 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons			= new ActionButtons			(this);
 	_resourceButtons		= new ResourceButtons		(this);
 	_resourceButtonsVisible	= new ResourceButtonsVisible(this, _resourceButtons);
-
 	
-
-	//connect(&_watcher,			&QFileSystemWatcher::fileChanged,			this,			&FileMenu::dataFileModifiedHandler	);
 	connect(_actionButtons,		&ActionButtons::buttonClicked,				this,			&FileMenu::actionButtonClicked		);
 	connect(_actionButtons,		&ActionButtons::selectedActionChanged,		this,			&FileMenu::setFileoperation			);
 	connect(_resourceButtons,	&ResourceButtons::selectedButtonChanged,	this,			&FileMenu::resourceButtonClicked	);
@@ -81,6 +83,7 @@ void FileMenu::setResourceButtonsVisibleFor(ActionButtons::FileOperation fo)
 	_resourceButtons->setOnlyTheseButtonsVisible(_actionButtons->resourceButtonsForButton(fo));
 }
 
+
 void FileMenu::setMode(FileEvent::FileMode mode)
 {
 	_mode = mode;
@@ -99,7 +102,7 @@ FileEvent *FileMenu::open(const QString &path)
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setPath(path);
-	dataSetIORequestHandler(event);
+	event->starts();
 
 	return event;
 }
@@ -109,7 +112,7 @@ FileEvent *FileMenu::open(const Json::Value & dbJson)
 	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
 	event->setDatabase(dbJson);
 	event->setFileType(Utils::FileType::database);
-	dataSetIORequestHandler(event);
+	event->starts();
 
 	return event;
 }
@@ -124,7 +127,7 @@ FileEvent *FileMenu::newData()
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileNew);
 
-	dataSetIORequestHandler(event);
+	event->starts();
 
 	return event;
 }
@@ -139,10 +142,9 @@ FileEvent *FileMenu::save()
 	{
 		MessageForwarder::showWarning(tr("File Types"), event->getLastError());
 		event->setComplete(false, tr("Failed to open file from OSF"));
-		return event;
 	}
-
-	dataSetIORequestHandler(event);
+	else
+		event->starts();
 
 	return event;
 }
@@ -178,7 +180,7 @@ void FileMenu::sync()
 void FileMenu::close()
 {
 	FileEvent *event = new FileEvent(this, FileEvent::FileClose);
-	dataSetIORequestHandler(event);
+	event->starts();
 
 	setMode(FileEvent::FileOpen);
 	_actionButtons->setSelectedAction(ActionButtons::FileOperation::Open);
@@ -286,9 +288,22 @@ void FileMenu::buttonsForEmptyWorkspace()
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 }
 
-void FileMenu::dataSetIOCompleted(FileEvent *event)
+void FileMenu::startFileEvent()
 {
+	FileEvent* event = qobject_cast<FileEvent*>(sender());
 	Log::log() << "[FileMenu::dataSetIOCompleted] START: event->operation()=" << event->operation() << ", event->isSuccessful()=" << event->isSuccessful() << std::endl;
+
+	_mainWindow->fileEventRequestHandler(event);
+
+}
+
+void FileMenu::finalizeFileEvent()
+{
+	FileEvent* event = qobject_cast<FileEvent*>(sender());
+
+	if(event->operation() != FileEvent::FileClose)
+		setVisible(false); //If we just did something we are now done with the filemenu right? Except if we just closed a file
+
 	if (event->operation() == FileEvent::FileSave || event->operation() == FileEvent::FileOpen)
 	{
 		if (event->isSuccessful() && !event->isTmp())
@@ -361,6 +376,10 @@ void FileMenu::dataSetIOCompleted(FileEvent *event)
 		}
 	}
 	Log::log() << "[FileMenu::dataSetIOCompleted] END" << std::endl;
+
+	_mainWindow->fileEventRequestFinalize(event);
+
+	event->cleanUp();
 }
 
 void FileMenu::refresh()
@@ -368,22 +387,6 @@ void FileMenu::refresh()
 	_resourceButtons->refresh();
 	_actionButtons->refresh();
 	_dataLibrary->refres();
-}
-
-void FileMenu::dataFileModifiedHandler(QString path)
-{
-	_mainWindow->setCheckAutomaticSync(false);
-	//syncDataFile(path, true);
-}
-
-void FileMenu::dataSetIORequestHandler(FileEvent *event)
-{
-	connect(event, &FileEvent::completed,		this, &FileMenu::dataSetIOCompleted			);
-
-	emit dataSetIORequest(event);
-
-	if(event->operation() != FileEvent::FileClose)
-		setVisible(false); //If we just did something we are now done with the filemenu right? Except if we just closed a file
 }
 
 void FileMenu::analysisAdded(Analysis *analysis)
@@ -429,7 +432,7 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 	case ActionButtons::FileOperation::SaveAs:				setMode(FileEvent::FileSave);			break;
 	case ActionButtons::FileOperation::ExportResults:		setMode(FileEvent::FileExportResults);	break;
 	case ActionButtons::FileOperation::ExportData:  		setMode(FileEvent::FileExportData);		break;
-case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
+	case ActionButtons::FileOperation::SyncData:			setMode(FileEvent::FileSyncData);		break;
 	case ActionButtons::FileOperation::Close:				close();								break;
 	case ActionButtons::FileOperation::Save:
 		if (getCurrentFileType() == Utils::FileType::jasp && !DataSetPackage::pkg()->currentJaspFileIsNonSaveable())
@@ -489,18 +492,13 @@ void FileMenu::showContactRequest()
 
 void FileMenu::setSyncRequest(const QString& path, bool waitForExistence)
 {
-	if (path.isEmpty())
+	if (path.isEmpty() || !DataSetPackage::pkg()->hasDataSet() || !checkSyncFileExists(path, waitForExistence))
 		return;
 
-	if (checkSyncFileExists(path, waitForExistence))
-	{
-		FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
-		event->setPath(path);
-		if(DataSet * ds = DataSetPackage::pkg()->dataSet())
-			event->setSyncDataSetId(ds->id());
-
-		dataSetIORequestHandler(event);
-	}
+	FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
+	event->setPath(path);
+	event->setSyncDataSet(DataSetPackage::pkg()->dataSet());
+	event->starts();
 }
 
 bool FileMenu::checkSyncFileExists(const QString &path, bool waitForExistence)

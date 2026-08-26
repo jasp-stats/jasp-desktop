@@ -31,19 +31,19 @@
 #include "exporters/dataexporter.h"
 #include "exporters/jaspexporter.h"
 #include "exporters/resultexporter.h"
-
+#include "widgets/filemenu/filemenu.h"
+#include "log.h"
 
 void FileEvent::setSyncDataSet(DataSet * ds)			
 { 
-	_syncDataSet = ds; 
+	_syncDataSet = ds;
+	_syncDataSetId = ds ? ds->id() : -1; //snapshot now, while ds is still alive
 	Log::log() << "[FileEvent::setSyncDataSet] Set syncDataSet to: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl; 
 }
 
 DataSet * FileEvent::syncDataSet() const
 {
-	DataSet * result = _syncDataSet ? static_cast<DataSet*>(_syncDataSet.data()) : nullptr;
-	Log::log() << "[FileEvent::syncDataSet] Returning: " << (result ? QString::number(result->id()) : "NULL") << std::endl;
-	return result;
+	return _syncDataSet;
 }
 
 FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
@@ -57,6 +57,11 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	case FileEvent::FileSave:			_exporter = new JASPExporter();			break;
 	default:							_exporter = nullptr;					break;
 	}
+
+	// The FileMenu handles the started & completed signals
+	connect(this, &FileEvent::started,		FileMenu::singleton(), &FileMenu::startFileEvent);
+	connect(this, &FileEvent::completed,	FileMenu::singleton(), &FileMenu::finalizeFileEvent, Qt::QueuedConnection);
+
 }
 
 FileEvent::~FileEvent()
@@ -115,27 +120,73 @@ bool FileEvent::setPath(const QString & path)
 
 }
 
+void FileEvent::starts()
+{
+	Log::log() << "File Event Starts: " << getProgressMsg().toStdString() << std::endl;
+
+	if (isStarted())
+	{
+		Log::log() << "Try to start event '" << getProgressMsg().toStdString() << "', but it was already started!" << std::endl;
+		return;
+	}
+
+	_status = EventStatus::EventStarted;
+
+	emit started();
+}
+
 void FileEvent::setComplete(bool success, const QString & message, bool cancelled)
 {
-	_completed	= true;
+	Log::log() << "File Event Completed: " << getProgressMsg().toStdString() << std::endl;
+
+	if (isCompleted())
+	{
+		Log::log() << "Try to set complete event '" << getProgressMsg().toStdString() << "', but it was already completed!" << std::endl;
+		return;
+	}
+	_status     = EventStatus::EventCompleted;
 	_success	= success;
-	_message	= message;
 	_cancelled	= cancelled;
+	_message	= message;
 
 	Log::log() << "[FileEvent::setComplete] operation=" << _operation << ", success=" << success << ", message=" << message.toStdString() << std::endl;
 
-	emit completed(this);
+	emit completed();
 }
+
+void FileEvent::cleanUp()
+{
+	emit finalized();
+	deleteLater();
+}
+
 
 void FileEvent::chain(FileEvent *event)
 {
-	_chainedTo = event;
-	connect(event, &FileEvent::completed, this, &FileEvent::chainedComplete);
+	if (isStarted())
+	{
+		if (isCompleted())
+			Log::log() << "Event " << getProgressMsg().toStdString() << " is completed before Event " << event->getProgressMsg().toStdString() << " was completed" << std::endl;
+		else // The `this` event is already started, but it should wait for `event`to be finalized before being set to be completed
+			connect(event, &FileEvent::finalized, this, [this, event]() { setComplete(event->isSuccessful(), event->message()); });
+	}
+	else
+		connect(event, &FileEvent::finalized, this, [this, event]() {
+			if (event->isSuccessful())
+				starts();
+			else
+				setComplete(false, event->message(), event->isCancelled());
+		} );
 }
 
 bool FileEvent::isExample() const
 {
 	return path().startsWith(AppDirs::examples());
+}
+
+void FileEvent::setSilent(bool newSilent)
+{
+	_cancelled = newSilent;
 }
 
 bool FileEvent::autoSaveExists()
@@ -227,9 +278,3 @@ QString FileEvent::getProgressMsg() const
 
 	return tr("Processing File"); //This will never show up on screen right?
 }
-
-void FileEvent::setSilent(bool newSilent)
-{
-	_cancelled = newSilent;
-}
-

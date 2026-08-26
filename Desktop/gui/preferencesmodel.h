@@ -103,7 +103,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
 
-	
+	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
+
 
 	public:
 	explicit	 PreferencesModel(QObject *parent = 0);
@@ -190,6 +191,7 @@ class PreferencesModel : public PreferencesModelBase
 	int				autoSaveIntervalSec()					const;
 	bool			autoSaveAtAll()							const;
 	bool			checkUpdatesAskUser()					const;
+	bool			keepMissingColsWhenSyncing()			const { return _keepMissingColsWhenSyncing; }
 	
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
 	void			setCheckUpdates(		bool	newCheckUpdates);
@@ -231,6 +233,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setRpcServerIp(QString v);
 	int rpcServerPort() const;
 	void setRpcServerPort(int v);
+
+	bool syncDroppedDatafile() const;
 		
 	public slots:
 	bool engineSandbox()								const;
@@ -308,8 +312,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
 	void setUseConfigurationFile(		bool		newUseConfigurationFile);
-
-
+	void setKeepMissingColsWhenSyncing(	bool		keepMissingColsWhenSyncing) { _keepMissingColsWhenSyncing = keepMissingColsWhenSyncing; }
+	void setSyncDroppedDatafile(		bool		syncDroppedDatafile);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -364,7 +368,7 @@ signals:
 	void pdfLandscapeChanged(			bool		pdfLandscape);
 	void directLibpathEnabledChanged(	bool		directLibpathEnabled);
 	void directLibpathFolderChanged();
-	void directDevModNameChanged(		QString name);
+	void directDevModNameChanged(		QString		name);
 	void engineSandboxChanged(			bool		engineSandbox);
 	void engineSandboxDirChanged(		QString		dir);
 	void localConfigurationPATHChanged(	QString		path);
@@ -374,18 +378,20 @@ signals:
 	void startMaximizedChanged(			bool		startMaximized);
 	void storeStateEtcChanged(			bool		state);
 	void showInteractiveDefaultChanged(	bool		interactive);
-	void autoSaveIntervalSecChanged(	int		interval);
-		void autoSaveAtAllChanged(			bool		autoSave);
-			void aiCommonSystemPromptChanged(		QString	aiCommonSystemPrompt);
-				void aiCommonSystemPromptUseCustomChanged(	bool	aiCommonSystemPromptUseCustom);
-				void aiEnabledChanged(			bool	aiEnabled);
-			void aiAnnotationUseCustomChanged(bool	aiAnnotationUseCustom);
-			void aiAnnotationPromptChanged(		QString	aiAnnotationPrompt);
-			void aiUserAvatarChanged(		QString	aiUserAvatar);
+	void autoSaveIntervalSecChanged(	int			interval);
+	void autoSaveAtAllChanged(			bool		autoSave);
+	void aiCommonSystemPromptChanged(	QString		aiCommonSystemPrompt);
+	void aiCommonSystemPromptUseCustomChanged(bool	aiCommonSystemPromptUseCustom);
+	void aiEnabledChanged(				bool		aiEnabled);
+	void aiAnnotationUseCustomChanged(	bool		aiAnnotationUseCustom);
+	void aiAnnotationPromptChanged(		QString		aiAnnotationPrompt);
+	void aiUserAvatarChanged(			QString		aiUserAvatar);
 
-			void rpcServerEnabledChanged(	bool	rpcServerEnabled);
-			void rpcServerIpChanged(		QString	rpcServerIp);
-			void rpcServerPortChanged(		int		rpcServerPort);
+	void rpcServerEnabledChanged(		bool		rpcServerEnabled);
+	void rpcServerIpChanged(			QString		rpcServerIp);
+	void rpcServerPortChanged(			int			rpcServerPort);
+
+	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
 
 	private slots:
 	void dataLabelNAChangedSlot(QString label);
@@ -400,7 +406,8 @@ private:
 	QVariantList	_pdfPageSizeModel;
 	bool			_githubPatCustom, //Should be initialized on prefs construction
 					_autoSaveIntervalSec,
-					_autoSaveAtAll;
+					_autoSaveAtAll,
+					_keepMissingColsWhenSyncing;
 	AIPersonaModel*	_aiPersonaModel = nullptr;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;

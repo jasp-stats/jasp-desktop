@@ -6,9 +6,9 @@
 #include "jasptheme.h"
 #include "utilities/appdirs.h"
 
-FileMenuBasicListModel::FileMenuBasicListModel(QObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
+FileMenuBasicListModel::FileMenuBasicListModel(FileMenuObject *parent, FileSystem * model) : QAbstractListModel(parent), _model(model)
 {
-
+	connect(this, &FileMenuBasicListModel::openFileEvent, parent, &FileMenuObject::openFile);
 }
 
 int FileMenuBasicListModel::rowCount(const QModelIndex &parent) const
@@ -119,7 +119,10 @@ void FileMenuBasicListModel::changePathCrumbIndex(const int& index)
 
 void FileMenuBasicListModel::openFile(const QString& path)
 {
-	assert(false);
+	if (path.isEmpty())
+		return;
+
+	emit openFileEvent(path);
 }
 
 void FileMenuBasicListModel::saveFile(const QString& path)

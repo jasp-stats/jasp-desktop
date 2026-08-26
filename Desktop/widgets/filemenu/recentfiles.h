@@ -28,15 +28,13 @@ class RecentFiles : public FileMenuObject
 	Q_PROPERTY(RecentFilesListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit RecentFiles(FileMenu *parent = nullptr);
+	explicit RecentFiles(FileMenu *parent);
 
 	void pushRecentFilePath(const QString & newrecent);
 
 	RecentFilesListModel * listModel() const { return _recentFilesListModel; }
 
-public slots:
-	void openFile(FileEvent *event);
-	
+public slots:	
 	void setListModel(RecentFilesListModel * listModel);
 
 signals:

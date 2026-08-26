@@ -61,12 +61,10 @@ if (mode() == FileEvent::FileSyncData)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
-		emit dataSetIORequest(event);
+		event->starts();
 	}
 	else
-	{
-		event->setComplete(false);
-	}
+		event->setComplete(false, "", true);	// the user cancelled the dialog: mark as cancelled, not failed
 
 	return event;
 }
@@ -134,10 +132,10 @@ case FileEvent::FileSyncData:
 			JaspEncryptionData::getInstance()->setEncryptionActive(false);
 
         event->setPath(finalPath);
-		emit dataSetIORequest(event);
+		event->starts();
 	}
 	else
-		event->setComplete(false);
+		event->setComplete(false, "", true);	// the user cancelled the dialog: mark as cancelled, not failed
 
 	return event;
 

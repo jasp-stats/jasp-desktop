@@ -69,7 +69,7 @@ public slots:
 	///Carries the DataSet (not just its id) so the loader never has to reach into the GUI-owned
 	///workspace map from its worker thread. The id is kept only for the syncCompleted completion
 	///routing, which runs back on the GUI thread.
-	void onSyncRequired(int dataSetId, DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson);
+	void onSyncRequired(DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson);
 
 private slots:
 	void loadTask(FileEvent *event);

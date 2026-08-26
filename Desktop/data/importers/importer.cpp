@@ -24,6 +24,7 @@
 #include <QThreadPool>
 #include <queue>
 #include "data/asyncloader.h"
+#include "gui/preferencesmodel.h"
 
 Importer::Importer() 
 {
@@ -323,10 +324,20 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 
 	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
 	{
-		Log::log() << "Column deleted " << oldCol->name() << std::endl;
+		if (PreferencesModel::prefs()->keepMissingColsWhenSyncing())
+		{
+			int i = dataSet->getColumnIndex(oldCol->name());
+			stringvec emptyvalues(dataSet->rowCount());
+			oldCol->overwriteDataAndType(emptyvalues, oldCol->type(), false);
+			newColumnOrder.insert(newColumnOrder.begin() + i, oldCol->name());
+		}
+		else
+		{
+			Log::log() << "Column deleted " << oldCol->name() << std::endl;
 
-		missingColumns.push_back(oldCol->name());
-		dataSet->removeColumn(oldCol->name());
+			missingColumns.push_back(oldCol->name());
+			dataSet->removeColumn(oldCol->name());
+		}
 	}
 	
 	emit dataSet->datasetChanged(dataSet->id(), tq(changedColumns), tq(missingColumns), tq(changeNameColumns), rowCountChanged, newColumns.size() > 0);
