@@ -143,9 +143,12 @@ private:
 
 	void				clearHover();
 
+	void				updateBackgroundDecoration();
+
 	ScriptConstructorModel					_model;
 
 	QPointer<QQuickItem>					_background,
+											_backgroundDecoration,
 											_operatorBar,
 											_operatorBarContent,
 											_scriptArea,

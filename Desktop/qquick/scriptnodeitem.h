@@ -110,7 +110,8 @@ private:
 	QList<QQuickItem*>			_argumentCommas;
 	QList<ScriptDropSpot*>		_dropSpots;
 	QPointer<QQuickItem>		_openParen,
-								_closeParen;
+								_closeParen,
+								_overline;
 	qreal						_preferredWidth		= 0,
 								_preferredHeight	= 0;
 	bool						_acceptsDrops		= true,
