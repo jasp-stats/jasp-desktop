@@ -805,7 +805,10 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 	if(event->button() == Qt::RightButton)
 	{
 		// Right-click deletes the node (matches old DragGeneric behaviour).
+		// Remove the node from the model and rebuild the view so no item keeps a dangling
+		// ScriptNode pointer (the model deletes the node subtree immediately).
 		_view->model()->removeNode(_node);
+		_view->refresh();
 		_view->nodeEdited();
 		event->accept();
 		return;
@@ -821,8 +824,8 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 			int next = (cur < 1 || cur >= 3) ? 1 : cur + 1;
 
 			_view->model()->setColumnTypeUser(col, next);
+			_view->refresh();
 			_view->nodeEdited();
-			rebuild();
 			event->accept();
 			return;
 		}
