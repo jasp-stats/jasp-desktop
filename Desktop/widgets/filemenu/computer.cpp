@@ -22,6 +22,7 @@
 #include "utilities/desktopcommunicator.h"
 #include "log.h"
 #include "data/jaspencryptiondata.h"
+#include "data/datasetpackage.h"
 
 Computer::Computer(FileMenu *parent): FileMenuObject(parent)
 {
@@ -50,7 +51,7 @@ FileEvent *Computer::browseOpen(const QString &path)
 					+ tr("SAS Files %1").arg("(*.sas7bdat *.sas7bcat *.xpt);;")
 					+ tr("R Data files %1").arg("(*.rdata *.rds);;")
 					+ tr("Minitab Workbook files %1").arg("(*.mwx *.mpx)");
-if (mode() == FileEvent::FileSyncData)
+	if (mode() == FileEvent::FileSyncData)
 		filter = "Data Sets (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx)";
 	Log::log() << "Now calling MessageForwarder::browseOpenFile(\"Open\", \"" << browsePath.toStdString() << "\", \"" << filter.toStdString() << "\")" << std::endl;
 	QString finalPath = MessageForwarder::browseOpenFile("Open", browsePath, filter);
@@ -61,6 +62,8 @@ if (mode() == FileEvent::FileSyncData)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
+		if (mode() == FileEvent::FileSyncData && DataSetPackage::pkg()->hasDataSet())
+			event->setDataSet(DataSetPackage::pkg()->dataSet());
 		event->starts();
 	}
 	else

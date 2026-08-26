@@ -16,13 +16,7 @@ public:
 	void						setCurrentFilePath(const QString &newcurrent);
 	
 signals:
-	void syncCurrentFile(const QString& currentFile);
-
-#ifdef NOT_IGNORING_SYNCHING
-public slots:
-	void openFile(const QString& path) override;
-#endif
-	
+	void syncCurrentFile(const QString& currentFile);	
 	
 private:
 	CurrentFileFileSystem			*_fsbmCurrentFile;
