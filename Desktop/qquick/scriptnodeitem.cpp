@@ -407,6 +407,11 @@ void ScriptNodeItem::clearLeaves()
 			leaf->deleteLater();
 	_leaves.clear();
 
+	for(QQuickItem * comma : _argumentCommas)
+		if(comma)
+			comma->deleteLater();
+	_argumentCommas.clear();
+
 	for(ScriptDropSpot * spot : _dropSpots)
 		if(spot)
 			spot->deleteLater();
@@ -465,8 +470,27 @@ QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 	item->setProperty("font", f);
 	item->setProperty("color", theme->textEnabled());
-	item->setVisible(false); // shown only when the node is nested
+	item->setVisible(false); // visibility controlled in layout()
 
+	return item;
+}
+
+QQuickItem * ScriptNodeItem::makeComma()
+{
+	// Argument separator text (", ") — rendered between function/row-function arguments.
+	QQuickItem * item = _view->newLeaf(_view->textComponent());
+	if(!item) return nullptr;
+
+	item->setParentItem(this);
+	item->setProperty("text", ", ");
+
+	JaspTheme * theme = JaspTheme::currentTheme();
+	QFont f = theme->font();
+	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+	item->setProperty("font", f);
+	item->setProperty("color", theme->textEnabled());
+
+	_argumentCommas.append(item);
 	return item;
 }
 
@@ -625,8 +649,9 @@ void ScriptNodeItem::rebuild()
 	{
 		auto * func = static_cast<ScriptNodeFunction*>(_node);
 		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
+		const bool hasImage = funcDef && !funcDef->image.empty();
 
-		if(funcDef && !funcDef->image.empty())
+		if(hasImage)
 			makeImage(tq(funcDef->image));
 		else
 		{
@@ -637,22 +662,32 @@ void ScriptNodeItem::rebuild()
 		// Single-argument (non-abs) functions wrap their child in parentheses.
 		bool nest = (func->childCount() == 1 && func->functionName() != "abs");
 
+		// Functions show parentheses around their arguments unless they are a single-argument
+		// math symbol rendered as an image (e.g. sum -> Σ).
+		_showParens = (func->childCount() > 1) || !hasImage;
+
 		for(int i = 0; i < func->childCount(); i++)
 		{
 			const auto & arg = func->arguments()[i];
 			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::FunctionArg, func, i, arg.dropKeys, arg.optional, nest}, QString::fromStdString(arg.name));
 			fillSpot(spot, arg.value);
 		}
+
+		_openParen	= makeParenText("(");
+		_closeParen	= makeParenText(")");
+		for(int i = 0; i + 1 < func->childCount(); i++)
+			makeComma();
 		break;
 	}
 	case ScriptNode::Type::RowFunction:
 	{
 		auto * rowFunc = static_cast<ScriptNodeRowFunction*>(_node);
 		const ScriptFunctionDef * rowDef = ScriptConstructorRegistry::instance().rowFunctionDef(rowFunc->functionName());
+		const bool hasImage = rowDef && !rowDef->image.empty();
 
 		// Row functions with a math-symbol image render as "row" + the symbol (e.g. rowSum -> row Σ).
 		// Others render their name as text.
-		if(rowDef && !rowDef->image.empty())
+		if(hasImage)
 		{
 			makeText("row");
 			makeImage(tq(rowDef->image));
@@ -660,11 +695,18 @@ void ScriptNodeItem::rebuild()
 		else
 			makeText(QString::fromStdString(rowFunc->functionName()));
 
+		_showParens = (rowFunc->childCount() > 1) || !hasImage;
+
 		for(int i = 0; i < rowFunc->childCount(); i++)
 		{
 			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, i, {"number"}, true}, "...");
 			fillSpot(spot, rowFunc->childAt(i));
 		}
+
+		_openParen	= makeParenText("(");
+		_closeParen	= makeParenText(")");
+		for(int i = 0; i + 1 < rowFunc->childCount(); i++)
+			makeComma();
 		break;
 	}
 	}
@@ -754,17 +796,22 @@ void ScriptNodeItem::layout()
 			maxH = std::max(maxH, h);
 		}
 
-		// opening paren
-		x += 2;
+		if(_openParen)	_openParen->setVisible(_showParens);
+		if(_closeParen)	_closeParen->setVisible(_showParens);
+
+		if(_showParens) placeNext(_openParen);
 
 		for(int i = 0; i < _dropSpots.size(); i++)
 		{
 			ScriptDropSpot * spot = _dropSpots[i];
 			spot->layout();
 			placeNext(spot);
+
+			if(i + 1 < _dropSpots.size() && i < _argumentCommas.size())
+				placeNext(_argumentCommas[i]);
 		}
 
-		x += 2; // closing paren
+		if(_showParens) placeNext(_closeParen);
 	}
 	else
 	{
@@ -844,7 +891,7 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 
 				// Non-modal, transient tooltip near the clicked icon (translatable via tr()).
 				const QString message = tr("Only %1 allowed in this context.").arg(names.join(tr("/")));
-				QToolTip::showText(event->globalPosition().toPoint(), message, nullptr, QRect(), 3000);
+				QToolTip::showText(event->globalPosition().toPoint(), message, nullptr, QRect(), 30000);
 
 				event->accept();
 				return;

@@ -147,6 +147,7 @@ private:
 
 	QPointer<QQuickItem>					_background,
 											_operatorBar,
+											_operatorBarContent,
 											_scriptArea,
 											_scriptColumn,
 											_trash,
@@ -156,6 +157,8 @@ private:
 											_functionPalette;
 	std::map<ScriptNode*, ScriptNodeItem*>	_nodeItems;
 	QList<ScriptNodeItem*>					_rootItems;
+	qreal									_columnPaletteContentWidth	= 0,
+											_functionPaletteContentWidth = 0;
 
 	QPointer<QQmlComponent>					_textComp,
 											_imageComp,
