@@ -47,6 +47,8 @@ RibbonModel::RibbonModel() : QAbstractListModel(DynamicModules::dynMods())
 
 void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesToLoad)
 {
+	_loadingModules = true;
+
 	addSpecialRibbonButtonsEarly();
 	
 	std::set<std::string> commonNames = {};
@@ -106,11 +108,45 @@ void RibbonModel::loadModules(std::vector<InstalledModules::ModuleInfo> modulesT
 	QStringList storedOrder = Settings::value(Settings::MODULES_ORDER).toString().split("|", Qt::SkipEmptyParts);
 	if(!storedOrder.isEmpty())
 		setModuleOrder(storedOrder);
+
+	_loadingModules = false;
 }
 
 void RibbonModel::addRibbonButtonModelFromDynamicModule(Modules::DynamicModule * module)
 {
-	addRibbonButtonModel(new RibbonButton(this, module), size_t(RowType::Analyses));
+	RibbonButton *	button	= new RibbonButton(this, module);
+	size_t			row		= size_t(RowType::Analyses);
+
+	if(isModuleName(button->name()))
+		removeRibbonButtonModel(button->name());
+
+	//Insert at the end of the module-segment, so modules installed while running land before the anchored trailing specials (the R-console)
+	//and thus get working reorder-arrows in the modules-menu. If the row contains no modules yet (startup) we simply append.
+	size_t insertAt = _buttonNames[row].size();
+	for(size_t i = _buttonNames[row].size(); i > 0; --i)
+	{
+		RibbonButton * previous = ribbonButtonModel(_buttonNames[row][i - 1]);
+		if(previous && previous->module())
+		{
+			insertAt = i; //Right after the last module-button
+			break;
+		}
+	}
+
+	if(_currentRow == row)
+		beginInsertRows(QModelIndex(), int(insertAt), int(insertAt));
+
+	_buttonNames[row].insert(_buttonNames[row].begin() + insertAt, button->name());
+	_buttonModelsByName[button->name()] = button;
+
+	if(_currentRow == row)
+		endInsertRows();
+
+	connect(button, &RibbonButton::iChanged, this, &RibbonModel::ribbonButtonModelChanged);
+
+	//During startup loadModules() applies the (stored) selection and order; modules added later (installation at runtime) are enabled by default.
+	if(!_loadingModules)
+		button->setEnabled(true);
 }
 
 void RibbonModel::addSpecialRibbonButtonsEarly()

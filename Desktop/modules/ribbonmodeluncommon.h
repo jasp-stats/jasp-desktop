@@ -22,6 +22,7 @@ public:
 
 	Q_INVOKABLE void setModuleEnabled(int filteredRow, bool checked);
 	Q_INVOKABLE void moveModule(int from, int to); //Takes filtered rows and forwards them as source rows to RibbonModel::moveModule
+	Q_INVOKABLE bool isModule(int filteredRow); //Whether the row is an actual (reorderable) module rather than a special button such as the R-console
 
 private:
 	RibbonModel		*_ribbonModel			= nullptr;

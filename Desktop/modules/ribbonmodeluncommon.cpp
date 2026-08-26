@@ -45,3 +45,15 @@ void RibbonModelUncommon::moveModule(int from, int to)
 
 	_ribbonModel->moveModule(mapToSource(fromIndex).row(), mapToSource(toIndex).row());
 }
+
+bool RibbonModelUncommon::isModule(int filteredRow)
+{
+	QModelIndex filteredIndex = index(filteredRow, 0);
+
+	if(!filteredIndex.isValid())
+		return false;
+
+	RibbonButton * button = _ribbonModel->ribbonButtonModelAt(size_t(mapToSource(filteredIndex).row()));
+
+	return button && button->module();
+}

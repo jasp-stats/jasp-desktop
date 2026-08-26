@@ -598,7 +598,7 @@ FocusScope
 								width:				height //Square because the icon is square
 								iconSource:			jaspTheme.iconPath + "/arrow-up.png"
 								toolTip:				qsTr("Move this module up in the ribbon")
-								enabled:			index > 0
+								enabled:				ribbonModelUncommon.isModule(index - 1)
 								activeFocusOnTab:	false
 								onClicked:			ribbonModelUncommon.moveModule(index, index - 1)
 
@@ -616,7 +616,7 @@ FocusScope
 								width:				height //Square because the icon is square
 								iconSource:			jaspTheme.iconPath + "/arrow-down.png"
 								toolTip:				qsTr("Move this module down in the ribbon")
-								enabled:			index < repeater.count - 1
+								enabled:				ribbonModelUncommon.isModule(index + 1)
 								activeFocusOnTab:	false
 								onClicked:			ribbonModelUncommon.moveModule(index, index + 1)
 

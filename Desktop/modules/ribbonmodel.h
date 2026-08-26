@@ -152,7 +152,8 @@ private: // fields
 	std::vector<stringvec>					_buttonNames; //Can be multiple rows, originally [ { Analyses }, { Data Mode } ]
 	int										_highlightedModuleIndex = -1;
 	stringvec								_commonModulesToLoad;
-	size_t									_currentRow				= size_t(RowType::Analyses);
+	size_t								_currentRow				= size_t(RowType::Analyses);
+	bool								_loadingModules			= false; //Whether loadModules() is running: modules added then get their enabled-state from the (stored) selection, modules added afterwards (installation at runtime) are enabled by default
 	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
 										*	_entriesDelete			= nullptr,
 										*	_entriesSynchOn			= nullptr;
