@@ -26,6 +26,7 @@ struct ScriptFunctionDef
 	std::vector<ScriptParamDef>		params;
 	bool							variadic		= false;
 	bool							isRowFunction	= false;
+	bool							operatorBarOnly	= false;
 
 	stringvec						dragKeys() const;
 	bool							addsNaRm() const;

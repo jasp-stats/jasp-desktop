@@ -25,6 +25,9 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	connect(&_model, &ScriptConstructorModel::changed,	this, [this](){
 		setSomethingChanged(true);
 		emit rCodeChanged(rCode());
+		// Keep the generated-R display (computed-column mode) in sync with the model.
+		if(_rCodeDisplay && _showGeneratedRCode)
+			_rCodeDisplay->setProperty("text", rCode());
 	});
 }
 
@@ -44,7 +47,15 @@ void ScriptConstructorView::setModeInt(int m)
 	if(mode == _model.mode()) return;
 
 	_model.setMode(mode);
+
+	// The generated-R display only makes sense for computed columns.
+	if(_rCodeDisplay)
+		_rCodeDisplay->setVisible(_showGeneratedRCode && mode != ScriptConstructorMode::Filter);
+
 	emit modeChanged();
+
+	if(_chromeBuilt)
+		layoutAll();
 }
 
 QString ScriptConstructorView::constructorJson() const
@@ -79,7 +90,17 @@ void ScriptConstructorView::setShowGeneratedRCode(bool v)
 {
 	if(v == _showGeneratedRCode) return;
 	_showGeneratedRCode = v;
+
+	if(_rCodeDisplay)
+	{
+		_rCodeDisplay->setProperty("text", rCode());
+		_rCodeDisplay->setVisible(v && _model.mode() != ScriptConstructorMode::Filter);
+	}
+
 	emit showGeneratedRCodeChanged();
+
+	if(_chromeBuilt)
+		layoutAll();
 }
 
 void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
@@ -231,6 +252,12 @@ qreal ScriptConstructorView::fontPixelSize() const
 qreal ScriptConstructorView::spacing() const
 {
 	return 2.0 * (JaspTheme::currentTheme() ? JaspTheme::currentTheme()->uiScale() : 1.0);
+}
+
+qreal ScriptConstructorView::desiredMinimumHeight() const
+{
+	// Operator bar + hint line + a little breathing room (mirrors the old constructors).
+	return blockDim() * 1.75 + fontPixelSize() * 2 + blockDim() * 3;
 }
 
 // -------------------------------------------------------------------------------------
@@ -398,6 +425,19 @@ void ScriptConstructorView::buildChrome()
 		_hint->setZ(5);
 	}
 
+	// Generated R code display (computed-column mode, toggled via showGeneratedRCode).
+	_rCodeDisplay = newLeaf(textComponent());
+	if(_rCodeDisplay)
+	{
+		_rCodeDisplay->setParentItem(this);
+		_rCodeDisplay->setProperty("wrapMode", 4);		// Text.WordWrap
+		_rCodeDisplay->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
+		QFont rf = theme ? theme->fontRCode() : QFont();
+		_rCodeDisplay->setProperty("font", rf);
+		_rCodeDisplay->setVisible(false);
+		_rCodeDisplay->setZ(5);
+	}
+
 	buildOperatorBar();
 	buildColumnPalette();
 	buildFunctionPalette();
@@ -461,6 +501,10 @@ void ScriptConstructorView::layoutAll()
 	qreal paletteW = blockDim() * 6;
 	qreal hintH = _hint ? fontPixelSize() + 2 * spacing() : 0;
 
+	// Reserve space at the bottom for the generated-R display (computed columns only).
+	bool showRCode = _showGeneratedRCode && _model.mode() != ScriptConstructorMode::Filter;
+	qreal rCodeH = (showRCode && _rCodeDisplay) ? fontPixelSize() * 2 + spacing() * 2 : 0;
+
 	if(_background)
 	{
 		_background->setWidth(w);
@@ -480,7 +524,7 @@ void ScriptConstructorView::layoutAll()
 		_columnPalette->setX(0);
 		_columnPalette->setY(barH);
 		_columnPalette->setWidth(paletteW);
-		_columnPalette->setHeight(h - barH - hintH);
+		_columnPalette->setHeight(h - barH - hintH - rCodeH);
 	}
 
 	if(_functionPalette)
@@ -488,7 +532,7 @@ void ScriptConstructorView::layoutAll()
 		_functionPalette->setX(w - paletteW);
 		_functionPalette->setY(barH);
 		_functionPalette->setWidth(paletteW);
-		_functionPalette->setHeight(h - barH - hintH);
+		_functionPalette->setHeight(h - barH - hintH - rCodeH);
 	}
 
 	if(_scriptArea)
@@ -496,15 +540,24 @@ void ScriptConstructorView::layoutAll()
 		_scriptArea->setX(paletteW);
 		_scriptArea->setY(barH);
 		_scriptArea->setWidth(w - 2 * paletteW);
-		_scriptArea->setHeight(h - barH - hintH);
+		_scriptArea->setHeight(h - barH - hintH - rCodeH);
 	}
 
 	if(_hint)
 	{
 		_hint->setX(paletteW);
-		_hint->setY(h - hintH);
+		_hint->setY(h - hintH - rCodeH);
 		_hint->setWidth(w - 2 * paletteW);
 		_hint->setHeight(hintH);
+	}
+
+	if(_rCodeDisplay)
+	{
+		_rCodeDisplay->setVisible(showRCode);
+		_rCodeDisplay->setX(paletteW);
+		_rCodeDisplay->setY(h - rCodeH);
+		_rCodeDisplay->setWidth(w - 2 * paletteW);
+		_rCodeDisplay->setHeight(rCodeH);
 	}
 
 	if(_trash)
@@ -597,8 +650,7 @@ void ScriptConstructorView::buildOperatorBar()
 {
 	if(!_operatorBar) return;
 
-	qreal x = spacing();
-	for(const ScriptOperatorDef & def : ScriptConstructorRegistry::instance().operatorsForMode(_model.mode()))
+	auto placeOperator = [this](qreal & x, const ScriptOperatorDef & def)
 	{
 		ScriptNode * proto = new ScriptNodeOperator(def.op, def.vertical);
 		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBar);
@@ -607,7 +659,30 @@ void ScriptConstructorView::buildOperatorBar()
 		item->setX(x);
 		item->setY(0);
 		x += item->preferredWidth() + spacing() * 2;
+	};
+
+	// sqrt and ! are functions interspersed among the operators (they belong only in the bar).
+	auto placeFunction = [this](qreal & x, const std::string & name)
+	{
+		ScriptNode * proto = new ScriptNodeFunction(name);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBar);
+		item->setAcceptsDrops(false);
+		item->rebuild();
+		item->setX(x);
+		item->setY(0);
+		x += item->preferredWidth() + spacing() * 2;
+	};
+
+	const ScriptConstructorRegistry & registry = ScriptConstructorRegistry::instance();
+
+	qreal x = spacing();
+	for(const ScriptOperatorDef & def : registry.operatorsForMode(_model.mode()))
+	{
+		placeOperator(x, def);
+		if(def.op == "^")
+			placeFunction(x, "sqrt");
 	}
+	placeFunction(x, "!");
 
 	_operatorBar->setWidth(x);
 	_operatorBar->setHeight(blockDim());
@@ -886,9 +961,13 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 	}
 	else
 	{
-		// No valid spot: drop at root (model resolves a reasonable insertion point).
+		// No specific spot under the cursor.
 		if(_dragIsNew)
-			_model.insertNode(node, DropTarget::root());
+		{
+			// A brand-new node resolves a reasonable insertion point and, for operators
+			// with a free left slot, absorbs ("gobbles") the preceding formula.
+			_model.insertNode(node, DropTarget::none());
+		}
 		else
 			_model.moveNode(node, DropTarget::root());
 	}

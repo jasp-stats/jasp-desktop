@@ -96,6 +96,7 @@ private slots:
 private:
 	QQuickItem	*	makeText(const QString & text, bool bold = false);
 	QQuickItem	*	makeImage(const QString & iconFile);
+	QQuickItem	*	makeParenText(const QString & text);
 	ScriptDropSpot* makeDropSpot(const DropTarget & target, const QString & placeholder);
 	void			clearLeaves();
 	void			addLeaf(QQuickItem * leaf);
@@ -106,6 +107,8 @@ private:
 	ScriptNode				*	_node = nullptr;
 	QList<QQuickItem*>			_leaves;
 	QList<ScriptDropSpot*>		_dropSpots;
+	QPointer<QQuickItem>		_openParen,
+								_closeParen;
 	qreal						_preferredWidth		= 0,
 								_preferredHeight	= 0;
 	bool						_acceptsDrops		= true,
