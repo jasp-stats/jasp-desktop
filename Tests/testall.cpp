@@ -1872,6 +1872,12 @@ void TestAll::testScriptConstructorGoldenR()
 
 	// %|% conditional operator in filter mode
 	checkR(formulas({opNode("%|%", opNode(">", colNode("contNormal"), numNode(0)), colNode("group"))}), "((contNormal.scale > 0) %|% group.nominal)\n");
+
+	// sqrt (operator-bar-only function) wraps a single number argument
+	checkR(formulas({funcNode("sqrt", {funcArg("value(s)", {"number"}, colNode("contNormal"))})}), "sqrt(contNormal.scale)\n");
+
+	// ! (operator-bar-only function) wraps a single boolean argument
+	checkR(formulas({funcNode("!", {funcArg("logical(s)", {"boolean"}, boolNode(true))})}), "!(TRUE)\n");
 }
 
 void TestAll::testScriptConstructorCompleteness()
@@ -2056,6 +2062,41 @@ void TestAll::testScriptConstructorUndo()
 
 	stack.undo();
 	QCOMPARE(model.formulaCount(), 1);
+}
+
+void TestAll::testScriptConstructorGobble()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Start with a single column formula at the root: contNormal
+	model.fromJson(formulas({colNode("contNormal")}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Drop a ">" operator with no specific target. It should absorb ("gobble")
+	// the existing column as its left operand, leaving the right slot empty.
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+
+	QCOMPARE(model.formulaCount(), 1);
+
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QCOMPARE(rootOp->op(), std::string(">"));
+
+	auto * leftCol = dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild());
+	QVERIFY(leftCol != nullptr);
+	QCOMPARE(leftCol->columnName(), std::string("contNormal"));
+	QVERIFY(rootOp->rightChild() == nullptr);
+
+	// R code reflects the gobble: (contNormal.scale > null)
+	QCOMPARE(model.toR(), std::string("(contNormal.scale > null)\n"));
 }
 
 

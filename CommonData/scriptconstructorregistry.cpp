@@ -113,10 +113,10 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addOp("|",	"Or: returns logicals",					"or.png");
 	addOp("%|%", "Split: applies filter separately to each subgroup",	"ConditionBy.png");
 
-	auto addFunc = [this](const std::string & name, const std::string & friendlyName, const std::string & toolTip, const std::vector<ScriptParamDef> & params, const std::string & image = "")
+	auto addFunc = [this](const std::string & name, const std::string & friendlyName, const std::string & toolTip, const std::vector<ScriptParamDef> & params, const std::string & image = "", bool operatorBarOnly = false)
 	{
 		_functionIndex[name] = _functions.size();
-		_functions.push_back({name, friendlyName, toolTip, image, params, false, false});
+		_functions.push_back({name, friendlyName, toolTip, image, params, false, false, operatorBarOnly});
 	};
 
 	auto P = [](const std::string & name, const stringvec & keys) { return ScriptParamDef::fromRaw(name, keys); };
@@ -129,10 +129,10 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 							strBoolNum	= {"string", "boolean", "number"};
 
 	addFunc("abs",		"", "absolute value",					{P("values", numKeys)});
-	addFunc("sd",		"", "standard deviation",				{P("values", numKeys)});
-	addFunc("var",		"", "variance",						{P("values", numKeys)});
-	addFunc("sum",		"", "summation",						{P("values", numKeys)});
-	addFunc("prod",		"", "product of values",				{P("values", numKeys)});
+	addFunc("sd",		"", "standard deviation",				{P("values", numKeys)},	"sigma.png");
+	addFunc("var",		"", "variance",						{P("values", numKeys)},	"variance.png");
+	addFunc("sum",		"", "summation",						{P("values", numKeys)},	"sum.png");
+	addFunc("prod",		"", "product of values",				{P("values", numKeys)},	"product.png");
 	addFunc("zScores",	"", "Standardizes the variable",		{P("values", numKeys)});
 	addFunc("min",		"", "returns minimum of values",		{P("values", numKeys)});
 	addFunc("max",		"", "returns maximum of values",		{P("values", numKeys)});
@@ -144,6 +144,11 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addFunc("ifelse",	"", "if-else statement",				{P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)});
 	addFunc("hasSubstring", "", "returns true if string contains substring at least once", {P("string", strKeys), P("substring", strKeys)});
 	addFunc("is.na",	"", "Combine with not-operator to filter out rows with missing values (NA) for a column.", {P("y", strBoolNum)});
+
+	// sqrt and ! live only in the operator bar (interspersed with the operators), not in the
+	// right-hand function palette.
+	addFunc("sqrt",		"", "Square root",						{P("value(s)", numKeys)},	"rootHead.png", true);
+	addFunc("!",		"", "Not",								{P("logical(s)", boolKeys)},	"negative.png", true);
 
 	addFunc("log",		"", "natural logarithm",				{P("y", numKeys)});
 	addFunc("log2",		"log\u2082", "base 2 logarithm",		{P("y", numKeys)});
@@ -182,16 +187,16 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addFunc("logNormDist",	"", "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog", {P("meanLog", numKeys), P("sdLog", numKeys)});
 	addFunc("weibullDist",	"", "generates data from a Weibull distribution with specified shape and scale", {P("shape", numKeys), P("scale", numKeys)});
 
-	auto addRowFunc = [this](const std::string & name, const std::string & toolTip)
+	auto addRowFunc = [this](const std::string & name, const std::string & toolTip, const std::string & image = "")
 	{
 		_rowFunctionIndex[name] = _rowFunctions.size();
-		_rowFunctions.push_back({name, name, toolTip, "", {}, true, true});
+		_rowFunctions.push_back({name, name, toolTip, image, {}, true, true, false});
 	};
 
 	addRowFunc("rowMean",		"Rowwise mean");
-	addRowFunc("rowSum",		"Rowwise sum");
-	addRowFunc("rowSD",			"Rowwise standard deviation");
-	addRowFunc("rowVariance",	"Rowwise variance");
+	addRowFunc("rowSum",		"Rowwise sum",					"sum.png");
+	addRowFunc("rowSD",			"Rowwise standard deviation",	"sigma.png");
+	addRowFunc("rowVariance",	"Rowwise variance",				"variance.png");
 	addRowFunc("rowMedian",		"Rowwise median");
 	addRowFunc("rowMin",		"Rowwise minimum");
 	addRowFunc("rowMax",		"Rowwise maximum");
@@ -232,6 +237,7 @@ std::vector<ScriptFunctionDef> ScriptConstructorRegistry::functionsForMode(Scrip
 
 	for(const ScriptFunctionDef & def : _functions)
 	{
+		if(def.operatorBarOnly)												continue;
 		if(mode == ScriptConstructorMode::Filter && def.name == "ifElse")	continue;
 		if(mode != ScriptConstructorMode::Filter && filterOnlyFunctions.count(def.name))	continue;
 

@@ -91,6 +91,7 @@ private slots:
 	void	testScriptConstructorGoldenR();
 	void	testScriptConstructorCompleteness();
 	void	testScriptConstructorUndo();
+	void	testScriptConstructorGobble();
 	void	testScriptConstructorDefaultFilterJson();
 
 private:

@@ -20,6 +20,7 @@ struct DropTarget
 	int				index		= -1;		///< Formula index for Root, argument index for Function/RowFunction
 	stringvec		dropKeys;				///< Keys accepted at this spot
 	bool			optional	= false;	///< Empty spot does not fail completeness checks
+	bool			dropsNested	= false;	///< Content dropped here renders nested (e.g. operators get parentheses)
 
 	bool isValid() const { return kind != Kind::None; }
 	bool isRoot() const { return kind == Kind::Root; }

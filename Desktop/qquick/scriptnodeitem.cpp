@@ -410,6 +410,9 @@ void ScriptNodeItem::clearLeaves()
 		if(spot)
 			spot->deleteLater();
 	_dropSpots.clear();
+
+	if(_openParen)	{ _openParen->deleteLater();	_openParen	= nullptr; }
+	if(_closeParen)	{ _closeParen->deleteLater();	_closeParen	= nullptr; }
 }
 
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
@@ -445,6 +448,24 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 	item->setHeight(dim);
 
 	addLeaf(item);
+	return item;
+}
+
+QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
+{
+	QQuickItem * item = _view->newLeaf(_view->textComponent());
+	if(!item) return nullptr;
+
+	item->setParentItem(this);
+	item->setProperty("text", text);
+
+	JaspTheme * theme = JaspTheme::currentTheme();
+	QFont f = theme->font();
+	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+	item->setProperty("font", f);
+	item->setProperty("color", theme->textEnabled());
+	item->setVisible(false); // shown only when the node is nested
+
 	return item;
 }
 
@@ -504,7 +525,7 @@ void ScriptNodeItem::rebuild()
 	{
 		if(!child) return;
 		ScriptNodeItem * childItem = _view->makeNodeItem(child, spot);
-		childItem->setNested(true);
+		childItem->setNested(spot->target().dropsNested);
 		spot->setFilledItem(childItem);
 	};
 
@@ -576,14 +597,21 @@ void ScriptNodeItem::rebuild()
 		auto * op = static_cast<ScriptNodeOperator*>(_node);
 		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op());
 
-		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft()}, "...");
+		// Horizontal operators wrap their children in parentheses; vertical (division) does not.
+		bool nest = !op->isVertical();
+
+		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft(), false, nest}, "...");
 
 		if(def && !def->image.empty())
 			makeImage(tq(def->image));
 		else
 			makeText(QString::fromStdString(op->op()), true);
 
-		ScriptDropSpot * rightSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight()}, "...");
+		ScriptDropSpot * rightSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight(), false, nest}, "...");
+
+		// Parentheses shown when this operator is nested inside another node's drop spot.
+		_openParen	= makeParenText("(");
+		_closeParen	= makeParenText(")");
 
 		fillSpot(leftSpot, op->leftChild());
 		fillSpot(rightSpot, op->rightChild());
@@ -592,12 +620,23 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Function:
 	{
 		auto * func = static_cast<ScriptNodeFunction*>(_node);
-		makeText(QString::fromStdString(func->functionName()));
+		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
+
+		if(funcDef && !funcDef->image.empty())
+			makeImage(tq(funcDef->image));
+		else
+		{
+			QString displayName = (funcDef && !funcDef->friendlyName.empty()) ? tq(funcDef->friendlyName) : QString::fromStdString(func->functionName());
+			makeText(displayName);
+		}
+
+		// Single-argument (non-abs) functions wrap their child in parentheses.
+		bool nest = (func->childCount() == 1 && func->functionName() != "abs");
 
 		for(int i = 0; i < func->childCount(); i++)
 		{
 			const auto & arg = func->arguments()[i];
-			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::FunctionArg, func, i, arg.dropKeys, arg.optional}, QString::fromStdString(arg.name));
+			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::FunctionArg, func, i, arg.dropKeys, arg.optional, nest}, QString::fromStdString(arg.name));
 			fillSpot(spot, arg.value);
 		}
 		break;
@@ -605,7 +644,17 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::RowFunction:
 	{
 		auto * rowFunc = static_cast<ScriptNodeRowFunction*>(_node);
-		makeText(QString::fromStdString(rowFunc->functionName()));
+		const ScriptFunctionDef * rowDef = ScriptConstructorRegistry::instance().rowFunctionDef(rowFunc->functionName());
+
+		// Row functions with a math-symbol image render as "row" + the symbol (e.g. rowSum -> row Σ).
+		// Others render their name as text.
+		if(rowDef && !rowDef->image.empty())
+		{
+			makeText("row");
+			makeImage(tq(rowDef->image));
+		}
+		else
+			makeText(QString::fromStdString(rowFunc->functionName()));
 
 		for(int i = 0; i < rowFunc->childCount(); i++)
 		{
@@ -658,6 +707,12 @@ void ScriptNodeItem::layout()
 		ScriptDropSpot * left = _dropSpots.size() > 0 ? _dropSpots[0] : nullptr;
 		ScriptDropSpot * right = _dropSpots.size() > 1 ? _dropSpots[1] : nullptr;
 
+		bool showParens = _nested && _openParen && _closeParen;
+		if(_openParen)	_openParen->setVisible(showParens);
+		if(_closeParen)	_closeParen->setVisible(showParens);
+
+		if(showParens) placeNext(_openParen);
+
 		if(left) { left->layout(); placeNext(left); }
 
 		QQuickItem * opVisual = _leaves.isEmpty() ? nullptr : _leaves.first();
@@ -672,6 +727,8 @@ void ScriptNodeItem::layout()
 		}
 
 		if(right) { right->layout(); placeNext(right); }
+
+		if(showParens) placeNext(_closeParen);
 		(void)op;
 	}
 	else if(t == ScriptNode::Type::Function || t == ScriptNode::Type::RowFunction)

@@ -32,6 +32,7 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( bool				showGeneratedRCode		READ showGeneratedRCode	WRITE setShowGeneratedRCode	NOTIFY showGeneratedRCodeChanged)
 	Q_PROPERTY( QAbstractItemModel* columnsModel			READ columnsModel		WRITE setColumnsModel		NOTIFY columnsModelChanged		)
 	Q_PROPERTY( QString				filterErrorMsg			READ filterErrorMsg		WRITE setFilterErrorMsg		NOTIFY filterErrorMsgChanged	)
+	Q_PROPERTY( qreal				desiredMinimumHeight	READ desiredMinimumHeight	NOTIFY desiredMinimumHeightChanged	)
 
 public:
 	enum Mode { Filter = 0, ComputedColumn = 1, ComputedDataSet = 2 };
@@ -64,6 +65,8 @@ public:
 
 	QString				filterErrorMsg() const { return _filterErrorMsg; }
 	void				setFilterErrorMsg(const QString & msg);
+
+	qreal				desiredMinimumHeight() const;
 
 	void				setColumnTypeProvider(const ScriptColumnTypeProvider * p) { _model.setColumnTypeProvider(p); }
 	void				setUndoStack(QUndoStack * s) { _model.setUndoStack(s); }
@@ -113,6 +116,7 @@ signals:
 	void				showGeneratedRCodeChanged();
 	void				columnsModelChanged();
 	void				filterErrorMsgChanged();
+	void				desiredMinimumHeightChanged();
 
 	/// Emitted when the user applies a valid formula. The surrounding window persists it
 	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
@@ -146,7 +150,8 @@ private:
 											_scriptArea,
 											_scriptColumn,
 											_trash,
-											_hint;
+											_hint,
+											_rCodeDisplay;
 	QPointer<ScriptPalette>					_columnPalette,
 											_functionPalette;
 	std::map<ScriptNode*, ScriptNodeItem*>	_nodeItems;
