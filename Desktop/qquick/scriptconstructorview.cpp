@@ -2,6 +2,7 @@
 #include "scriptnodeitem.h"
 #include "jasptheme.h"
 #include "qutils.h"
+#include "data/columnsmodel.h"
 
 #include <QQmlComponent>
 #include <QQmlIncubator>
@@ -16,6 +17,9 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 {
 	setFlag(QQuickItem::ItemHasContents, true);
 	setClip(true);
+
+	// The view resolves actual column types from the columns model for R generation.
+	_model.setColumnTypeProvider(this);
 
 	connect(&_model, &ScriptConstructorModel::reset,	this, [this](){ rebuildFormulaItems(); });
 	connect(&_model, &ScriptConstructorModel::changed,	this, [this](){
@@ -55,6 +59,7 @@ void ScriptConstructorView::setConstructorJson(const QString & json)
 
 	_model.fromJson(s);
 	_lastAppliedJson = tq(_model.toString());
+	setSomethingChanged(false);
 	emit constructorJsonChanged();
 }
 
@@ -99,6 +104,44 @@ void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
 		buildColumnPalette();
 }
 
+int ScriptConstructorView::columnType(const std::string & columnName) const
+{
+	QAbstractItemModel * model = _columnsModel ? _columnsModel : ColumnsModel::singleton();
+	if(!model)
+		return 1; // scale
+
+	int nameRole = static_cast<int>(model->roleNames().key("columnName"));
+	int typeRole = static_cast<int>(model->roleNames().key("columnType"));
+
+	QString wanted = tq(columnName);
+	for(int r = 0; r < model->rowCount(); r++)
+	{
+		QModelIndex idx = model->index(r, 0);
+		if(model->data(idx, nameRole).toString() == wanted)
+		{
+			int t = model->data(idx, typeRole).toInt();
+			return t > 0 ? t : 1;
+		}
+	}
+
+	return 1; // scale
+}
+
+void ScriptConstructorView::setFilterErrorMsg(const QString & msg)
+{
+	if(msg == _filterErrorMsg) return;
+	_filterErrorMsg = msg;
+	emit filterErrorMsgChanged();
+	refreshHint();
+}
+
+void ScriptConstructorView::setHintText(const QString & text)
+{
+	if(text == _hintText) return;
+	_hintText = text;
+	refreshHint();
+}
+
 // -------------------------------------------------------------------------------------
 // QML-callable API
 // -------------------------------------------------------------------------------------
@@ -133,19 +176,39 @@ bool ScriptConstructorView::checkAndApply()
 	_lastCheckPassed = complete && booleanOk && oneFormula;
 	emit lastCheckPassedChanged();
 
+	// Mark empty required drop spots in red after a failed check (mirrors old iWasChecked behaviour).
+	for(auto & pair : _nodeItems)
+	{
+		if(!pair.second) continue;
+		for(ScriptDropSpot * spot : pair.second->dropSpots())
+			spot->setError(!complete && !spot->target().optional && spot->filledItem() == nullptr);
+	}
+
+	QString hint;
+	if(complete && booleanOk && oneFormula)
+		hint = _model.formulaCount() == 0 ? tr("Filter cleared\n") : (isFilter ? tr("Filter applied\n") : tr("Computed columns code applied"));
+	if(!complete)
+		hint += tr("Please enter all arguments - see fields marked in red.\n");
+	if(!booleanOk)
+		hint += (!complete ? "\n" : QString()) + tr("Formula does not return a set of logical values, and therefore cannot be used in the filter.\n");
+	if(!oneFormula)
+		hint += (!complete ? "<br>" : QString()) + tr("Only one formula per computed column allowed.");
+	setHintText(hint.trimmed());
+
 	if(_lastCheckPassed)
 	{
 		_lastAppliedJson = tq(_model.toString());
 		emit applyRequested(constructorJson(), rCode());
 	}
 
-	refreshHint();
 	return _lastCheckPassed;
 }
 
 void ScriptConstructorView::nodeEdited()
 {
 	setSomethingChanged(true);
+	_hintText = "";
+	refreshHint();
 	emit rCodeChanged(rCode());
 }
 
@@ -252,6 +315,20 @@ void ScriptConstructorView::componentComplete()
 		_chromeBuilt = true;
 	}
 
+	// If no columns model was bound from QML (e.g. the property name shadows the
+	// `columnsModel` context property), fall back to the ColumnsModel singleton and
+	// keep the palette in sync with dataset changes.
+	if(!_columnsModel)
+	{
+		if(ColumnsModel * singleton = ColumnsModel::singleton())
+		{
+			connect(singleton, &QAbstractItemModel::modelReset,		this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
+			connect(singleton, &QAbstractItemModel::rowsInserted,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
+			connect(singleton, &QAbstractItemModel::rowsRemoved,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
+		}
+		buildColumnPalette();
+	}
+
 	rebuildFormulaItems();
 }
 
@@ -271,10 +348,10 @@ void ScriptConstructorView::buildChrome()
 	_operatorBar->setParentItem(this);
 	_operatorBar->setZ(3);
 
-	_columnPalette = new QQuickItem(this);
+	_columnPalette = new ScriptPalette(this);
 	_columnPalette->setParentItem(this);
 
-	_functionPalette = new QQuickItem(this);
+	_functionPalette = new ScriptPalette(this);
 	_functionPalette->setParentItem(this);
 
 	_scriptArea = new QQuickItem(this);
@@ -292,11 +369,39 @@ void ScriptConstructorView::buildChrome()
 		_trash->setProperty("border.width", 1);
 		_trash->setProperty("radius", 6.0);
 		_trash->setZ(10);
+
+		// Trash icon centred inside the drop zone.
+		QQuickItem * icon = newLeaf(imageComponent());
+		if(icon)
+		{
+			icon->setParentItem(_trash);
+			icon->setProperty("source", (theme ? theme->iconPath() : QString()) + "/trashcan.png");
+			icon->setProperty("fillMode", 1); // Image.PreserveAspectFit
+			qreal dim = blockDim() * 1.6;
+			icon->setWidth(dim);
+			icon->setHeight(dim);
+			icon->setX((blockDim() * 3 - dim) / 2);
+			icon->setY((blockDim() * 3 - dim) / 2);
+		}
+	}
+
+	_hint = newLeaf(textComponent());
+	if(_hint)
+	{
+		_hint->setParentItem(this);
+		_hint->setProperty("wrapMode", 4);			// Text.WordWrap
+		_hint->setProperty("horizontalAlignment", 4);	// Text.AlignHCenter
+		_hint->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
+		QFont f = theme ? theme->font() : QFont();
+		f.setPixelSize(static_cast<int>(fontPixelSize()));
+		_hint->setProperty("font", f);
+		_hint->setZ(5);
 	}
 
 	buildOperatorBar();
 	buildColumnPalette();
 	buildFunctionPalette();
+	refreshHint();
 }
 
 ScriptNodeItem * ScriptConstructorView::makeNodeItem(ScriptNode * node, QQuickItem * parent)
@@ -309,12 +414,28 @@ ScriptNodeItem * ScriptConstructorView::makeNodeItem(ScriptNode * node, QQuickIt
 
 void ScriptConstructorView::clearFormulaItems()
 {
-	for(auto & pair : _nodeItems)
-		if(pair.second)
-			pair.second->deleteLater();
+	// Delete only root items; child node items are QQuickItem children of their
+	// parent node/drop-spot and are destroyed transitively. Deleting every entry in
+	// _nodeItems would double-free the children.
+	for(ScriptNodeItem * item : _rootItems)
+		if(item)
+			item->deleteLater();
 
 	_nodeItems.clear();
 	_rootItems.clear();
+}
+
+void ScriptConstructorView::_clearPaletteChildren(QQuickItem * palette)
+{
+	if(!palette) return;
+	for(QQuickItem * child : palette->childItems())
+	{
+		// Palette prototype items own their ScriptNode prototype; free it too.
+		if(auto * ni = qobject_cast<ScriptNodeItem*>(child))
+			if(ni->node())
+				ni->node()->deleteLater();
+		child->deleteLater();
+	}
 }
 
 void ScriptConstructorView::rebuildFormulaItems()
@@ -338,6 +459,7 @@ void ScriptConstructorView::layoutAll()
 	qreal w = width(), h = height();
 	qreal barH = blockDim() * 1.75;
 	qreal paletteW = blockDim() * 6;
+	qreal hintH = _hint ? fontPixelSize() + 2 * spacing() : 0;
 
 	if(_background)
 	{
@@ -358,7 +480,7 @@ void ScriptConstructorView::layoutAll()
 		_columnPalette->setX(0);
 		_columnPalette->setY(barH);
 		_columnPalette->setWidth(paletteW);
-		_columnPalette->setHeight(h - barH);
+		_columnPalette->setHeight(h - barH - hintH);
 	}
 
 	if(_functionPalette)
@@ -366,7 +488,7 @@ void ScriptConstructorView::layoutAll()
 		_functionPalette->setX(w - paletteW);
 		_functionPalette->setY(barH);
 		_functionPalette->setWidth(paletteW);
-		_functionPalette->setHeight(h - barH);
+		_functionPalette->setHeight(h - barH - hintH);
 	}
 
 	if(_scriptArea)
@@ -374,7 +496,15 @@ void ScriptConstructorView::layoutAll()
 		_scriptArea->setX(paletteW);
 		_scriptArea->setY(barH);
 		_scriptArea->setWidth(w - 2 * paletteW);
-		_scriptArea->setHeight(h - barH);
+		_scriptArea->setHeight(h - barH - hintH);
+	}
+
+	if(_hint)
+	{
+		_hint->setX(paletteW);
+		_hint->setY(h - hintH);
+		_hint->setWidth(w - 2 * paletteW);
+		_hint->setHeight(hintH);
 	}
 
 	if(_trash)
@@ -435,7 +565,28 @@ QSGNode * ScriptConstructorView::updatePaintNode(QSGNode * oldNode, UpdatePaintN
 
 void ScriptConstructorView::refreshHint()
 {
-	// Hint text rendering is handled by the surrounding window (as before); kept as a hook.
+	if(!_hint) return;
+
+	JaspTheme * theme = JaspTheme::currentTheme();
+
+	if(!_filterErrorMsg.isEmpty())
+	{
+		_hint->setProperty("text", _filterErrorMsg);
+		_hint->setProperty("color", theme ? theme->redDarker() : QColor("darkred"));
+	}
+	else
+	{
+		QString text = _hintText.isEmpty() ? defaultHintText() : _hintText;
+		_hint->setProperty("text", text);
+		_hint->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
+	}
+}
+
+QString ScriptConstructorView::defaultHintText() const
+{
+	return _model.mode() == ScriptConstructorMode::Filter
+		? tr("Welcome to the drag and drop filter!")
+		: tr("Welcome to the drag and drop computed column constructor!");
 }
 
 // =====================================================================================
@@ -466,11 +617,14 @@ void ScriptConstructorView::buildFunctionPalette()
 {
 	if(!_functionPalette) return;
 
+	QQuickItem * content = _functionPalette->content();
+	_clearPaletteChildren(content);
+
 	qreal y = spacing();
 	for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().functionsForMode(_model.mode()))
 	{
 		ScriptNode * proto = new ScriptNodeFunction(def.name);
-		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _functionPalette);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, content);
 		item->setAcceptsDrops(false);
 		item->rebuild();
 		item->setX(spacing());
@@ -481,7 +635,7 @@ void ScriptConstructorView::buildFunctionPalette()
 	for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().rowFunctions())
 	{
 		ScriptNode * proto = new ScriptNodeRowFunction(def.name);
-		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _functionPalette);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, content);
 		item->setAcceptsDrops(false);
 		item->rebuild();
 		item->setX(spacing());
@@ -489,35 +643,37 @@ void ScriptConstructorView::buildFunctionPalette()
 		y += item->preferredHeight() + spacing();
 	}
 
-	_functionPalette->setWidth(blockDim() * 6);
-	_functionPalette->setHeight(y);
+	_functionPalette->setContentHeight(y);
 }
 
 void ScriptConstructorView::buildColumnPalette()
 {
 	if(!_columnPalette) return;
 
-	// Clear any previously built column prototypes (rebuilt when the dataset changes).
-	for(QQuickItem * child : _columnPalette->childItems())
-		child->deleteLater();
+	QQuickItem * content = _columnPalette->content();
 
-	// Columns come from _columnsModel (set from QML). Rendered as prototype Column nodes.
-	if(!_columnsModel)
+	// Clear any previously built column prototypes (rebuilt when the dataset changes).
+	_clearPaletteChildren(content);
+
+	// Columns come from the bound model, falling back to the ColumnsModel singleton.
+	QAbstractItemModel * model = _columnsModel ? _columnsModel : ColumnsModel::singleton();
+	if(!model)
 		return;
 
 	qreal y = spacing();
-	int rows = _columnsModel->rowCount();
+	int rows = model->rowCount();
+	int nameRole = static_cast<int>(model->roleNames().key("columnName"));
 
 	for(int r = 0; r < rows; r++)
 	{
-		QModelIndex idx = _columnsModel->index(r, 0);
-		QString name = _columnsModel->data(idx, static_cast<int>(_columnsModel->roleNames().key("columnName"))).toString();
+		QModelIndex idx = model->index(r, 0);
+		QString name = model->data(idx, nameRole).toString();
 
 		if(name.isEmpty())
 			continue;
 
 		ScriptNode * proto = new ScriptNodeColumn(fq(name));
-		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _columnPalette);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, content);
 		item->setAcceptsDrops(false);
 		item->rebuild();
 		item->setX(spacing());
@@ -525,8 +681,7 @@ void ScriptConstructorView::buildColumnPalette()
 		y += item->preferredHeight() + spacing();
 	}
 
-	_columnPalette->setWidth(blockDim() * 6);
-	_columnPalette->setHeight(y);
+	_columnPalette->setContentHeight(y);
 }
 
 // =====================================================================================
@@ -589,12 +744,11 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 	_dragIsNew		= false;
 	_draggedNewNode	= nullptr;
 
-	QPointF local = item->mapFromScene(scenePos);
-	_dragOffset = local;
+	_dragOffset = item->mapFromScene(scenePos);
 
 	item->setParentItem(this);
 	item->setZ(100);
-	item->setPosition(scenePos - _dragOffset);
+	item->setPosition(mapFromScene(scenePos) - _dragOffset);
 
 	setSomethingChanged(true);
 }
@@ -605,7 +759,7 @@ void ScriptConstructorView::startDragNew(ScriptNode * newNode, const QPointF & s
 
 	ScriptNodeItem * item = makeNodeItem(newNode, this);
 	item->setZ(100);
-	item->setPosition(scenePos);
+	item->setPosition(mapFromScene(scenePos));
 
 	_draggedItem	= item;
 	_dragIsNew		= true;
@@ -622,20 +776,54 @@ void ScriptConstructorView::collectDropSpots(QList<ScriptDropSpot*> & out) const
 			out.append(pair.second->dropSpots());
 }
 
-ScriptDropSpot * ScriptConstructorView::dropSpotAt(const QPointF & scenePos) const
+ScriptDropSpot * ScriptConstructorView::dropSpotAt(const QPointF & scenePos, ScriptNodeItem * dragged) const
 {
 	QList<ScriptDropSpot*> spots;
 	const_cast<ScriptConstructorView*>(this)->collectDropSpots(spots);
 
+	ScriptDropSpot * bestSpot = nullptr;
+	int bestDepth = -1;
+
 	for(ScriptDropSpot * spot : spots)
 	{
 		if(!spot) continue;
+
+		// Skip spots that are already filled, unless filled by the item being dragged
+		// (dropping back into its own spot is a no-op move).
+		if(spot->filledItem() && spot->filledItem() != dragged)
+			continue;
+
+		// Skip spots that live inside the dragged item's subtree.
+		if(dragged)
+		{
+			bool insideDragged = false;
+			for(QQuickItem * p = spot->parentItem(); p; p = p->parentItem())
+			{
+				if(p == dragged)
+				{
+					insideDragged = true;
+					break;
+				}
+			}
+			if(insideDragged) continue;
+		}
+
 		QPointF local = spot->mapFromScene(scenePos);
-		if(spot->contains(local))
-			return spot;
+		if(!spot->contains(local)) continue;
+
+		// Prefer the deepest spot under the cursor.
+		int depth = 0;
+		for(QQuickItem * p = spot->parentItem(); p; p = p->parentItem())
+			depth++;
+
+		if(depth > bestDepth)
+		{
+			bestDepth = depth;
+			bestSpot = spot;
+		}
 	}
 
-	return nullptr;
+	return bestSpot;
 }
 
 void ScriptConstructorView::clearHover()
@@ -651,9 +839,9 @@ void ScriptConstructorView::dragMove(const QPointF & scenePos)
 {
 	if(!_draggedItem) return;
 
-	_draggedItem->setPosition(scenePos - _dragOffset);
+	_draggedItem->setPosition(mapFromScene(scenePos) - _dragOffset);
 
-	ScriptDropSpot * spot = dropSpotAt(scenePos);
+	ScriptDropSpot * spot = dropSpotAt(scenePos, _draggedItem);
 
 	if(spot != _hoveredSpot)
 	{
@@ -673,7 +861,7 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 	if(!_draggedItem) return;
 
 	ScriptNode * node = _draggedItem->node();
-	ScriptDropSpot * spot = dropSpotAt(scenePos);
+	ScriptDropSpot * spot = dropSpotAt(scenePos, _draggedItem);
 
 	clearHover();
 
@@ -686,15 +874,8 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 			ScriptNode::deleteTree(node);
 		else
 			_model.removeNode(node);
-
-		_draggedItem = nullptr;
-		_draggedNewNode = nullptr;
-		rebuildFormulaItems();
-		nodeEdited();
-		return;
 	}
-
-	if(spot && spot->target().accepts(node))
+	else if(spot && spot->target().accepts(node))
 	{
 		DropTarget target = spot->target();
 
@@ -711,6 +892,11 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 		else
 			_model.moveNode(node, DropTarget::root());
 	}
+
+	// The dragged item was reparented to the view root (or created there), so it
+	// is not cleaned up by clearFormulaItems(); remove it explicitly.
+	if(_draggedItem)
+		_draggedItem->deleteLater();
 
 	_draggedItem = nullptr;
 	_draggedNewNode = nullptr;

@@ -19,6 +19,7 @@ struct DropTarget
 	ScriptNode	*	parent		= nullptr;	///< Node owning the slot (nullptr for Root)
 	int				index		= -1;		///< Formula index for Root, argument index for Function/RowFunction
 	stringvec		dropKeys;				///< Keys accepted at this spot
+	bool			optional	= false;	///< Empty spot does not fail completeness checks
 
 	bool isValid() const { return kind != Kind::None; }
 	bool isRoot() const { return kind == Kind::Root; }
@@ -86,10 +87,10 @@ private:
 	void			deleteAllFormulas();
 	void			detachFromParent(ScriptNode * node);
 	void			placeAt(ScriptNode * node, const DropTarget & target);
+	void			resolveColumnTypeDrop(ScriptNodeColumn * col, const stringvec & slotKeys);
 	ScriptNode	*	rootFormulaOf(ScriptNode * node) const;
 	int				rootIndexOf(ScriptNode * node) const;
 	bool			isAncestor(ScriptNode * ancestor, ScriptNode * descendant) const;
-	DropTarget		resolveInsertionTarget(ScriptNode * node, DropTarget requested);
 	bool			tryGobbleLeft(ScriptNode * node);
 
 	void			beginEdit();

@@ -172,8 +172,8 @@ FocusScope
 			{
 				id:					easyFilterConstructor
 				mode:				ScriptConstructor.Filter
-				columnsModel:		columnsModel
 				constructorJson:	filterModel.filter.constructorJson
+				filterErrorMsg:		filterModel.filter.filterErrorMsg
 				clip:				true
 
 				anchors
