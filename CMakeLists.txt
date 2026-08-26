@@ -127,13 +127,6 @@ endif()
 include(Programs)
 
 # Looking for libraries, e.g., Boost, Qt
-# When dependencies are built in Release but the consumer is RelWithDebInfo,
-# CMake needs to know to fall back to Release properties on imported targets.
-if(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  set(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release "")
-elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
-  set(CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL Release "")
-endif()
 include(Libraries)
 
 # Preparing irregular dependencies, e.g., ReadStat
