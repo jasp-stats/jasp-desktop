@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <QObject>
 #include <QString>
 #include "utils.h"
 
@@ -52,10 +51,8 @@ struct ScriptOperatorDef
 	QString			toolTipForMode(	ScriptConstructorMode mode) const;
 };
 
-class ScriptConstructorRegistry : public QObject
+class ScriptConstructorRegistry
 {
-	Q_OBJECT
-
 public:
 	static const ScriptConstructorRegistry & instance();
 
