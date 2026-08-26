@@ -205,6 +205,9 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	if(! emit DataSetPackage::pkg()->checkDoSync())
 	{
 		Log::log() << "[Importer::syncDataSet] checkDoSync returned false, aborting" << std::endl;
+		delete _importDataSet;	//was loaded just above; free it so this aborted sync doesn't leak it
+		_importDataSet	= nullptr;
+		_synching		= false;
 		return;
 	}
 	Log::log() << "[Importer::syncDataSet] checkDoSync returned true, continuing" << std::endl;

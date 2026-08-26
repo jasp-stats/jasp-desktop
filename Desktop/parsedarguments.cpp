@@ -264,7 +264,11 @@ bool ParsedArguments::checkFile(const std::vector<std::string> & args, int arg, 
 
 	Utils::FileType fileType = Utils::getTypeFromFileName(args[arg]);
 
-	if (fileType == Utils::FileType::unknown || fileType == Utils::FileType::empty)
+	//For online files the type often can't be derived from the URL (no extension); the real type is
+	//determined after downloading, so don't reject an unknown type here.
+	bool online = path.startsWith("https:") || path.startsWith("http:");
+
+	if (!online && (fileType == Utils::FileType::unknown || fileType == Utils::FileType::empty))
 	{
 		std::cerr << "Unknown file type: " << path << std::endl;
 		return false;
@@ -306,7 +310,7 @@ bool ParsedArguments::checkFolder(const std::vector<std::string> & args, int arg
 
 	if(!folderPath.exists())
 	{
-		std::cerr << "Folder for " << folderPath.absolutePath().toStdString() << " does not exist!" << (createIt ? " and cannot be created" : "") << std::endl;
+		std::cerr << "Folder for " << folderPath.absoluteFilePath().toStdString() << " does not exist!" << (createIt ? " and cannot be created" : "") << std::endl;
 		return false;
 	}
 
