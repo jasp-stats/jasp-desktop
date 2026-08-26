@@ -4,6 +4,7 @@
 #include <QQmlEngine>
 #include <QFileInfo>
 #include <QDir>
+#include "data/datasetpackage.h"
 
 CurrentDataFile::CurrentDataFile(FileMenu *parent): FileMenuObject(parent)
 {	
@@ -52,6 +53,9 @@ void CurrentDataFile::syncFile(const QString & path)
 	emit setCheckAutomaticSync(false);
 	FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
 	event->setPath(path);
+	if (DataSetPackage::pkg()->hasDataSet())
+		event->setDataSet(DataSetPackage::pkg()->dataSet());
+
 	event->starts();
 }
 

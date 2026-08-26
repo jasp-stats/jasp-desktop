@@ -402,7 +402,7 @@ private:
 	bool			_githubPatCustom, //Should be initialized on prefs construction
 					_autoSaveIntervalSec,
 					_autoSaveAtAll,
-					_keepMissingColsWhenSyncing;
+					_keepMissingColsWhenSyncing = false;
 	AIPersonaModel*	_aiPersonaModel = nullptr;
 	void			_loadDatabaseFont();
 	QString			_checkFontList(QString fonts)					const;
