@@ -11,6 +11,7 @@
 #include <QQuickWindow>
 #include <QSGRectangleNode>
 #include <QSGFlatColorMaterial>
+#include <algorithm>
 
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
@@ -375,6 +376,9 @@ void ScriptConstructorView::buildChrome()
 	_operatorBar->setParentItem(this);
 	_operatorBar->setZ(3);
 
+	// The operator prototypes live in a content item that is centred within the top bar.
+	_operatorBarContent = new QQuickItem(_operatorBar);
+
 	_columnPalette = new ScriptPalette(this);
 	_columnPalette->setParentItem(this);
 
@@ -498,7 +502,13 @@ void ScriptConstructorView::layoutAll()
 {
 	qreal w = width(), h = height();
 	qreal barH = blockDim() * 1.75;
-	qreal paletteW = blockDim() * 6;
+
+	// Widen the palettes to fit their widest entry (autosize), but never beyond a third of the
+	// view so the script area keeps enough room.
+	qreal paletteW = blockDim() * 8;
+	paletteW = std::max(paletteW, std::max(_columnPaletteContentWidth, _functionPaletteContentWidth));
+	paletteW = std::min(paletteW, w / 3.0);
+
 	qreal hintH = _hint ? fontPixelSize() + 2 * spacing() : 0;
 
 	// Reserve space at the bottom for the generated-R display (computed columns only).
@@ -517,6 +527,13 @@ void ScriptConstructorView::layoutAll()
 		_operatorBar->setY(0);
 		_operatorBar->setWidth(w);
 		_operatorBar->setHeight(barH);
+
+		// Centre the operator row within the top bar.
+		if(_operatorBarContent)
+		{
+			_operatorBarContent->setX((w - _operatorBarContent->width()) / 2);
+			_operatorBarContent->setY((barH - _operatorBarContent->height()) / 2);
+		}
 	}
 
 	if(_columnPalette)
@@ -653,7 +670,7 @@ void ScriptConstructorView::buildOperatorBar()
 	auto placeOperator = [this](qreal & x, const ScriptOperatorDef & def)
 	{
 		ScriptNode * proto = new ScriptNodeOperator(def.op, def.vertical);
-		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBar);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBarContent);
 		item->setAcceptsDrops(false);
 		item->rebuild();
 		item->setX(x);
@@ -665,7 +682,7 @@ void ScriptConstructorView::buildOperatorBar()
 	auto placeFunction = [this](qreal & x, const std::string & name)
 	{
 		ScriptNode * proto = new ScriptNodeFunction(name);
-		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBar);
+		ScriptNodeItem * item = new ScriptNodeItem(this, proto, _operatorBarContent);
 		item->setAcceptsDrops(false);
 		item->rebuild();
 		item->setX(x);
@@ -675,7 +692,7 @@ void ScriptConstructorView::buildOperatorBar()
 
 	const ScriptConstructorRegistry & registry = ScriptConstructorRegistry::instance();
 
-	qreal x = spacing();
+	qreal x = 0;
 	for(const ScriptOperatorDef & def : registry.operatorsForMode(_model.mode()))
 	{
 		placeOperator(x, def);
@@ -684,8 +701,8 @@ void ScriptConstructorView::buildOperatorBar()
 	}
 	placeFunction(x, "!");
 
-	_operatorBar->setWidth(x);
-	_operatorBar->setHeight(blockDim());
+	_operatorBarContent->setWidth(x);
+	_operatorBarContent->setHeight(blockDim());
 }
 
 void ScriptConstructorView::buildFunctionPalette()
@@ -695,6 +712,7 @@ void ScriptConstructorView::buildFunctionPalette()
 	QQuickItem * content = _functionPalette->content();
 	_clearPaletteChildren(content);
 
+	qreal maxW = 0;
 	qreal y = spacing();
 	for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().functionsForMode(_model.mode()))
 	{
@@ -705,6 +723,7 @@ void ScriptConstructorView::buildFunctionPalette()
 		item->setX(spacing());
 		item->setY(y);
 		y += item->preferredHeight() + spacing();
+		maxW = std::max(maxW, item->preferredWidth());
 	}
 
 	for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().rowFunctions())
@@ -716,9 +735,12 @@ void ScriptConstructorView::buildFunctionPalette()
 		item->setX(spacing());
 		item->setY(y);
 		y += item->preferredHeight() + spacing();
+		maxW = std::max(maxW, item->preferredWidth());
 	}
 
+	_functionPaletteContentWidth = maxW + spacing() * 2;
 	_functionPalette->setContentHeight(y);
+	if(_chromeBuilt) layoutAll();
 }
 
 void ScriptConstructorView::buildColumnPalette()
@@ -735,6 +757,7 @@ void ScriptConstructorView::buildColumnPalette()
 	if(!model)
 		return;
 
+	qreal maxW = 0;
 	qreal y = spacing();
 	int rows = model->rowCount();
 	int nameRole = static_cast<int>(model->roleNames().key("columnName"));
@@ -754,9 +777,12 @@ void ScriptConstructorView::buildColumnPalette()
 		item->setX(spacing());
 		item->setY(y);
 		y += item->preferredHeight() + spacing();
+		maxW = std::max(maxW, item->preferredWidth());
 	}
 
+	_columnPaletteContentWidth = maxW + spacing() * 2;
 	_columnPalette->setContentHeight(y);
+	if(_chromeBuilt) layoutAll();
 }
 
 // =====================================================================================
