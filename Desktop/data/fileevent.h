@@ -49,16 +49,16 @@ public:
 	void				setOsfPath(const QString & path)		{ _osfPath = path; }
 	const QString &		osfPath() const { return _osfPath;		}
 	void				setDatabase(	const Json::Value & dbInfo);
-	void				setSyncDataSet(DataSet * ds);		///< defined in fileevent.cpp (needs a complete DataSet)
-	DataSet		*		syncDataSet()							const;
-	int					syncDataSetId()							const { return _syncDataSetId; }
+	void				setDataSet(DataSet * ds);		///< defined in fileevent.cpp (needs a complete DataSet)
+	DataSet		*		dataSet()							const;
+	int					dataSetId()							const { return _dataSetId; }
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
 	void				starts();
 	void				setComplete(bool success = true, const QString &message = "", bool cancelled = false);
 	void				cleanUp();
-	void				chain(FileEvent *event);
+	void				chain(FileEvent *event, bool resetDataSet = false);
 
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
 	bool				isOnlineNode()	const { return _path.startsWith("http");		}
@@ -90,8 +90,8 @@ signals:
 
 private:
 	FileMode			_operation;
-	QPointer<DataSet>	_syncDataSet;			///< Auto-nulls if the target dataset is destroyed before the sync runs
-	int					_syncDataSetId	= -1;	///< id snapshot taken at bind time, survives destruction of the DataSet
+	QPointer<DataSet>	_dataSet;			///< Auto-nulls if the target dataset is destroyed before the event runs
+	int					_dataSetId	= -1;	///< id snapshot taken at bind time, survives destruction of the DataSet
 	Utils::FileType		_type			= Utils::FileType::unknown;
 	QString				_path,
 						_osfPath		= "", //To show the user a friendly path
