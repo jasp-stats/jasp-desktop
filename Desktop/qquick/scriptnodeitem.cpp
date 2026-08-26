@@ -2,13 +2,13 @@
 #include "scriptconstructorview.h"
 #include "jasptheme.h"
 #include "qutils.h"
-#include "utilities/messageforwarder.h"
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
 #include <QFontMetricsF>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QToolTip>
 #include <algorithm>
 
 // =====================================================================================
@@ -842,8 +842,10 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 				for(int t : allowed)
 					names << QColumnUtils::getTypeFriendly(static_cast<columnType>(t));
 
-				MessageForwarder::showWarning(tr("Cannot change column type"),
-											  tr("Only %1 allowed in this context.").arg(names.join(tr("/"))));
+				// Non-modal, transient tooltip near the clicked icon (translatable via tr()).
+				const QString message = tr("Only %1 allowed in this context.").arg(names.join(tr("/")));
+				QToolTip::showText(event->globalPosition().toPoint(), message, nullptr, QRect(), 3000);
+
 				event->accept();
 				return;
 			}
