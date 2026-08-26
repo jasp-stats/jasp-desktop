@@ -2099,5 +2099,103 @@ void TestAll::testScriptConstructorGobble()
 	QCOMPARE(model.toR(), std::string("(contNormal.scale > null)\n"));
 }
 
+void TestAll::testScriptConstructorAllowedColumnTypes()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto isAllowed = [&model](ScriptNode * node, int type)
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(node);
+		return std::find(allowed.begin(), allowed.end(), type) != allowed.end();
+	};
+
+	// Root column: unconstrained, all three types allowed.
+	model.fromJson(formulas({colNode("contNormal")}));
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(model.formulaAt(0));
+		QCOMPARE(allowed.size(), size_t(3));
+		QVERIFY(isAllowed(model.formulaAt(0), 1));
+		QVERIFY(isAllowed(model.formulaAt(0), 2));
+		QVERIFY(isAllowed(model.formulaAt(0), 3));
+	}
+
+	// Column in a numeric operator slot (+): only scale.
+	model.fromJson(formulas({opNode("+", colNode("contNormal"), numNode(1))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+	}
+
+	// Column in a comparison operator slot (>): scale and ordinal.
+	model.fromJson(formulas({opNode(">", colNode("contNormal"), numNode(0))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+		QVERIFY(isAllowed(op->leftChild(), 2));
+	}
+
+	// Column in a numeric function argument (mean): only scale.
+	model.fromJson(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(func->childAt(0), 1));
+	}
+
+	// Column in a string function argument (hasSubstring): ordinal and nominal.
+	model.fromJson(formulas({funcNode("hasSubstring", {funcArg("string", {"string"}, colNode("text")), funcArg("substring", {"string"}, strNode("a"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(func->childAt(0), 2));
+		QVERIFY(isAllowed(func->childAt(0), 3));
+	}
+}
+
+void TestAll::testScriptConstructorRowFunctionFreeSlot()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+
+	// Add a row function at the root (a freshly created one starts with a single empty slot).
+	auto * rowFunc = new ScriptNodeRowFunction("rowMean");
+	rowFunc->addChild(nullptr);
+	model.insertNode(rowFunc, DropTarget::root());
+	QCOMPARE(rowFunc->childCount(), 1);
+	QVERIFY(rowFunc->childAt(0) == nullptr);
+
+	// Fill the empty slot; a trailing empty slot must appear so more columns can be added.
+	auto * col = new ScriptNodeColumn("contNormal");
+	model.insertNode(col, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 0, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 2);
+	QVERIFY(rowFunc->childAt(0) != nullptr);
+	QVERIFY(rowFunc->childAt(1) == nullptr);
+
+	// Fill that one too; another trailing empty slot appears.
+	auto * col2 = new ScriptNodeColumn("contBinom");
+	model.insertNode(col2, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 1, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 3);
+	QVERIFY(rowFunc->childAt(1) != nullptr);
+	QVERIFY(rowFunc->childAt(2) == nullptr);
+
+	// The trailing empty slot must not leak into the generated R code.
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contBinom.scale)"));
+}
+
 
 QTEST_MAIN(TestAll)

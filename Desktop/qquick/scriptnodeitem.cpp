@@ -2,6 +2,7 @@
 #include "scriptconstructorview.h"
 #include "jasptheme.h"
 #include "qutils.h"
+#include "utilities/messageforwarder.h"
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
@@ -587,7 +588,10 @@ void ScriptNodeItem::rebuild()
 			actual = _view->model()->columnTypeProvider()->columnType(col->columnName());
 		int effective = col->effectiveColumnType(actual);
 
-		makeImage(getIconFilename(static_cast<columnType>(effective), varIconType::DefaultIconType));
+		// A column whose effective type differs from its dataset type gets the "transformed"
+		// icon (the one with the asterisk).
+		varIconType iconType = (effective == actual) ? varIconType::DefaultIconType : varIconType::TransformedIconType;
+		makeImage(getIconFilename(static_cast<columnType>(effective), iconType));
 		makeText(QString::fromStdString(col->columnName()));
 		break;
 	}
@@ -733,14 +737,21 @@ void ScriptNodeItem::layout()
 	}
 	else if(t == ScriptNode::Type::Function || t == ScriptNode::Type::RowFunction)
 	{
-		QQuickItem * nameVisual = _leaves.isEmpty() ? nullptr : _leaves.first();
-		if(nameVisual)
+		// Lay out all name leaves left-to-right. Row functions with a math symbol render as
+		// "row" text + image (e.g. rowSum -> "row" + Σ), so there can be more than one leaf.
+		for(QQuickItem * nameVisual : _leaves)
 		{
+			if(!nameVisual) continue;
 			qreal w = nameVisual->property("implicitWidth").toReal();
-			qreal h = block;
+			if(w <= 0) w = nameVisual->width();
+			qreal h = nameVisual->property("implicitHeight").toReal();
+			if(h <= 0) h = nameVisual->height();
+			if(h <= 0) h = block;
+
 			nameVisual->setX(x);
-			nameVisual->setY(0);
+			nameVisual->setY((maxH > h ? (maxH - h) / 2 : 0));
 			x += w;
+			maxH = std::max(maxH, h);
 		}
 
 		// opening paren
@@ -820,6 +831,23 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 		if(_node && _node->type() == ScriptNode::Type::Column)
 		{
 			auto * col = static_cast<ScriptNodeColumn*>(_node);
+
+			// When the column sits in a restrictive drop slot (e.g. a numeric argument of a
+			// function) its type is constrained to what the slot accepts; tell the user instead
+			// of silently cycling to a type that would just be reverted.
+			const std::vector<int> allowed = _view->model()->allowedColumnTypes(_node);
+			if(allowed.size() < 3)
+			{
+				QStringList names;
+				for(int t : allowed)
+					names << QColumnUtils::getTypeFriendly(static_cast<columnType>(t));
+
+				MessageForwarder::showWarning(tr("Cannot change column type"),
+											  tr("Only %1 allowed in this context.").arg(names.join(tr("/"))));
+				event->accept();
+				return;
+			}
+
 			int cur = col->columnTypeUser();
 			int next = (cur < 1 || cur >= 3) ? 1 : cur + 1;
 

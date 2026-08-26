@@ -225,7 +225,10 @@ void ScriptConstructorModel::placeAt(ScriptNode * node, const DropTarget & targe
 		break;
 	case DropTarget::Kind::RowFunctionArg:
 		if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(target.parent))
+		{
 			rowFunc->setChild(target.index, node);
+			rowFunc->ensureTrailingEmptySlot();
+		}
 		break;
 	case DropTarget::Kind::None:
 		break;
@@ -409,6 +412,20 @@ DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node
 	}
 
 	return rightMostEmptyDropSpotRec(last);
+}
+
+std::vector<int> ScriptConstructorModel::allowedColumnTypes(ScriptNode * node) const
+{
+	if(!node || !node->parent())
+		return {1, 2, 3}; // root: unconstrained
+
+	const stringvec keys = containingSlotKeys(node);
+
+	std::vector<int> out;
+	for(int t : {1, 2, 3}) // scale, ordinal, nominal
+		if(keysOverlap(ScriptConstructorRegistry::dropKeysForColumnType(t), keys))
+			out.push_back(t);
+	return out;
 }
 
 // --- editing operations ---
