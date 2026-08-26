@@ -84,6 +84,15 @@ private slots:
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
 
+	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
+	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
+	// JSON stored in .jasp files and the R code that gets sent to the engine.
+	void	testScriptConstructorRoundTrip();
+	void	testScriptConstructorGoldenR();
+	void	testScriptConstructorCompleteness();
+	void	testScriptConstructorUndo();
+	void	testScriptConstructorDefaultFilterJson();
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;

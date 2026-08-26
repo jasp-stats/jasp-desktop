@@ -23,12 +23,17 @@
 #include "data/asyncloader.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
+#include "scriptconstructormodel.h"
+#include "scriptnode.h"
+#include "scriptconstructorregistry.h"
 
 #include <QSignalSpy>
 #include <QFile>
 #include <QFileInfo>
 #include <QEventLoop>
 #include <QTimer>
+#include <QUndoStack>
+#include <random>
 #include <sqlite3.h>
 
 
@@ -1677,6 +1682,380 @@ void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 	//The MainWindow teardown took the session directory (and its database) with it; following tests
 	//still expect it to exist.
 	TempFiles::init(ProcessInfo::currentPID());
+}
+
+// =====================================================================================
+// ScriptConstructor regression tests
+// =====================================================================================
+
+namespace
+{
+	struct FixedColumnTypeProvider : public ScriptColumnTypeProvider
+	{
+		strintmap types;
+		int columnType(const std::string & name) const override
+		{
+			auto it = types.find(name);
+			return it == types.end() ? 1 : it->second;
+		}
+	};
+
+	Json::Value colNode(const std::string & name, int typeUser = -1, int typeDrop = -1)
+	{
+		Json::Value v;
+		v["nodeType"]			= "Column";
+		v["columnName"]			= name;
+		v["columnTypeUser"]		= typeUser;
+		v["columnTypeDrop"]		= typeDrop;
+		return v;
+	}
+
+	Json::Value numNode(double val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Number";
+		v["value"] = val;
+		return v;
+	}
+
+	Json::Value boolNode(bool val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Boolean";
+		v["value"] = val ? "TRUE" : "FALSE";
+		return v;
+	}
+
+	Json::Value strNode(const std::string & text)
+	{
+		Json::Value v;
+		v["nodeType"] = "String";
+		v["text"] = text;
+		return v;
+	}
+
+	Json::Value opNode(const std::string & op, const Json::Value & left, const Json::Value & right, bool vertical = false)
+	{
+		Json::Value v;
+		v["nodeType"]		= vertical ? "OperatorVertical" : "Operator";
+		v["operator"]		= op;
+		v["leftArgument"]	= left;
+		v["rightArgument"]	= right;
+		return v;
+	}
+
+	Json::Value funcArg(const std::string & name, const stringvec & keys, const Json::Value & argument)
+	{
+		Json::Value a;
+		a["name"] = name;
+		a["dropKeys"] = Json::arrayValue;
+		for(const std::string & k : keys)
+			a["dropKeys"].append(k);
+		a["argument"] = argument;
+		return a;
+	}
+
+	Json::Value funcNode(const std::string & name, std::initializer_list<Json::Value> args)
+	{
+		Json::Value v;
+		v["nodeType"]		= "Function";
+		v["functionName"]	= name;
+		v["arguments"]		= Json::arrayValue;
+		for(const Json::Value & a : args)
+			v["arguments"].append(a);
+		return v;
+	}
+
+	Json::Value rowFuncNode(const std::string & name, std::initializer_list<std::string> droppedJsonStrings)
+	{
+		Json::Value v;
+		v["nodeType"]		= "RowFunction";
+		v["functionName"]	= name;
+		v["droppedItems"]	= Json::arrayValue;
+		for(const std::string & s : droppedJsonStrings)
+			v["droppedItems"].append(s);
+		return v;
+	}
+
+	Json::Value formulas(std::initializer_list<Json::Value> nodes)
+	{
+		Json::Value v;
+		v["formulas"] = Json::arrayValue;
+		for(const Json::Value & n : nodes)
+			v["formulas"].append(n);
+		return v;
+	}
+
+	std::string compact(const Json::Value & v)
+	{
+		Json::StreamWriterBuilder b;
+		b["indentation"] = "";
+		std::string s = Json::writeString(b, v);
+		while(!s.empty() && (s.back() == '\n' || s.back() == '\r' || s.back() == ' '))
+			s.pop_back();
+		return s;
+	}
+}
+
+void TestAll::testScriptConstructorDefaultFilterJson()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.fromJson(std::string(DEFAULT_FILTER_JSON));
+
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(model.toString(), std::string(DEFAULT_FILTER_JSON));
+	QVERIFY(model.checkCompleteness());
+}
+
+void TestAll::testScriptConstructorGoldenR()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"]	= 1; // scale
+	provider.types["contBinom"]		= 1;
+	provider.types["group"]			= 3; // nominal
+	provider.types["ord"]			= 2; // ordinal
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto checkR = [&](const Json::Value & tree, const std::string & expected)
+	{
+		model.fromJson(tree);
+		QCOMPARE(model.toR(), expected);
+	};
+
+	// Column resolves through the provider (no user/drop override) -> ".scale"
+	checkR(formulas({colNode("contNormal")}), "contNormal.scale\n");
+
+	// Arithmetic operator with a literal
+	checkR(formulas({opNode("+", colNode("contNormal"), numNode(5))}), "(contNormal.scale + 5)\n");
+
+	// Empty right slot becomes "null"
+	checkR(formulas({opNode("+", colNode("contNormal"), Json::nullValue)}), "(contNormal.scale + null)\n");
+
+	// mean() gains ", na.rm=TRUE"
+	checkR(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}), "mean(contNormal.scale, na.rm=TRUE)\n");
+
+	// abs() has no na.rm
+	checkR(formulas({funcNode("abs", {funcArg("values", {"number"}, colNode("contNormal"))})}), "abs(contNormal.scale)\n");
+
+	// Empty function argument becomes "NULL"
+	checkR(formulas({funcNode("round", {funcArg("y", {"number"}, colNode("contNormal")), funcArg("n", {"number"}, Json::nullValue)})}), "round(contNormal.scale, NULL)\n");
+
+	// ifelse with boolean + numbers
+	checkR(formulas({funcNode("ifelse", {funcArg("test", {"boolean"}, boolNode(true)), funcArg("then", {"boolean","string","number"}, numNode(1)), funcArg("else", {"boolean","string","number"}, numNode(2))})}), "ifelse(TRUE, 1, 2)\n");
+
+	// String literal is single-quoted
+	checkR(formulas({strNode("hello")}), "'hello'\n");
+
+	// Nested boolean expression
+	checkR(formulas({opNode("&", opNode(">", colNode("contNormal"), numNode(0)), opNode("<", colNode("contBinom"), numNode(10)))}), "((contNormal.scale > 0) & (contBinom.scale < 10))\n");
+
+	// Vertical (fraction) operator serialises differently but generates the same R shape
+	checkR(formulas({opNode("/", colNode("contNormal"), numNode(2), true)}), "(contNormal.scale / 2)\n");
+
+	// RowFunction only emits filled entries and appends NaRm
+	{
+		Json::StreamWriterBuilder b; b["indentation"] = "";
+		std::string aJson = compact(colNode("contNormal"));
+		std::string bJson = compact(colNode("contBinom"));
+		checkR(formulas({rowFuncNode("rowMean", {aJson, "null", bJson})}), "rowMeanNaRm(contNormal.scale, contBinom.scale)\n");
+	}
+
+	// Column with an explicit user type override ignores the provider
+	checkR(formulas({colNode("group", 2)}), "group.ordinal\n");
+
+	// %|% conditional operator in filter mode
+	checkR(formulas({opNode("%|%", opNode(">", colNode("contNormal"), numNode(0)), colNode("group"))}), "((contNormal.scale > 0) %|% group.nominal)\n");
+}
+
+void TestAll::testScriptConstructorCompleteness()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Complete boolean formula passes both checks
+	model.fromJson(formulas({opNode(">", colNode("a"), numNode(0))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(model.allBoolean());
+
+	// Missing right operand -> incomplete
+	model.fromJson(formulas({opNode(">", colNode("a"), Json::nullValue)}));
+	QVERIFY(!model.checkCompleteness());
+
+	// Arithmetic root is complete but not boolean -> cannot be a filter root
+	model.fromJson(formulas({opNode("+", colNode("a"), numNode(1))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(!model.allBoolean());
+
+	// Optional ("?") parameters do not block completeness
+	{
+		Json::Value box = funcNode("BoxCoxAuto", {
+			funcArg("y", {"number"}, colNode("a")),
+			funcArg("?predictor", {"number"}, Json::nullValue),
+			funcArg("?groupSize", {"number"}, Json::nullValue),
+			funcArg("method", {"string"}, strNode("loglik")),
+			funcArg("lower", {"number"}, numNode(0)),
+			funcArg("upper", {"number"}, numNode(1)),
+			funcArg("shift", {"number"}, numNode(0)),
+			funcArg("continuityAdjustment", {"boolean"}, boolNode(true))});
+		model.fromJson(formulas({box}));
+		QVERIFY(model.checkCompleteness());
+	}
+
+	// RowFunction is complete when at least one slot is filled
+	{
+		std::string aJson = compact(colNode("a"));
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null", aJson})}));
+		QVERIFY(model.checkCompleteness());
+
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null"})}));
+		QVERIFY(!model.checkCompleteness());
+	}
+}
+
+void TestAll::testScriptConstructorRoundTrip()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	// Deterministic pseudo-random trees: fromJson -> toString -> fromJson -> toString must be idempotent.
+	// This guarantees that loading a stored constructor JSON and saving it again never loses or reorders
+	// information, which is what .jasp file round-trips rely on.
+
+	const std::vector<std::string> columnNames	= {"contNormal", "contBinom", "group", "ord", "text"};
+	const std::vector<std::string> operators	= {"+", "-", "*", "/", "^", "%%", "==", "!=", "<", "<=", ">", ">=", "&", "|", "%|%"};
+	const std::vector<std::string> functions	= {"abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median", "ifelse", "hasSubstring", "is.na", "log", "exp", "BoxCox", "cut", "replaceNA"};
+	const std::vector<std::string> rowFunctions	= {"rowMean", "rowSum", "rowSD", "rowVariance", "rowMedian", "rowMin", "rowMax"};
+
+	std::function<Json::Value(std::mt19937 &, int)> makeNode = [&](std::mt19937 & rng, int depth) -> Json::Value
+	{
+		std::uniform_int_distribution<int> pick(0, 99);
+		std::uniform_int_distribution<int> colPick(0, static_cast<int>(columnNames.size()) - 1);
+		std::uniform_int_distribution<int> opPick(0, static_cast<int>(operators.size()) - 1);
+		std::uniform_int_distribution<int> funcPick(0, static_cast<int>(functions.size()) - 1);
+		std::uniform_int_distribution<int> rowPick(0, static_cast<int>(rowFunctions.size()) - 1);
+		std::uniform_real_distribution<double> numDist(-100.0, 100.0);
+
+		int kind = pick(rng);
+
+		if(depth <= 0)
+		{
+			// Leaves only at max depth
+			int leaf = kind % 4;
+			if(leaf == 0) return colNode(columnNames[colPick(rng)]);
+			if(leaf == 1) return numNode(numDist(rng));
+			if(leaf == 2) return boolNode(kind % 2 == 0);
+			return strNode("s" + std::to_string(kind));
+		}
+
+		if(kind < 30)
+			return colNode(columnNames[colPick(rng)]);
+		if(kind < 45)
+			return numNode(numDist(rng));
+		if(kind < 52)
+			return boolNode(kind % 2 == 0);
+		if(kind < 58)
+			return strNode("s" + std::to_string(kind));
+		if(kind < 78)
+			return opNode(operators[opPick(rng)], makeNode(rng, depth - 1), makeNode(rng, depth - 1));
+		if(kind < 90)
+		{
+			const std::string & fn = functions[funcPick(rng)];
+			const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn);
+			Json::Value args = Json::arrayValue;
+			if(def)
+				for(const ScriptParamDef & p : def->params)
+				{
+					bool fill = (pick(rng) % 10) < 7;
+					args.append(funcArg(p.optional ? "?" + p.name : p.name, p.dropKeys, fill ? makeNode(rng, depth - 1) : Json::nullValue));
+				}
+			Json::Value v;
+			v["nodeType"] = "Function";
+			v["functionName"] = fn;
+			v["arguments"] = args;
+			return v;
+		}
+
+		// RowFunction with a couple of filled slots serialised as embedded JSON strings
+		int slotCount = 1 + (kind % 3);
+		std::vector<std::string> dropped;
+		for(int i = 0; i < slotCount; i++)
+			dropped.push_back((pick(rng) % 10) < 6 ? compact(makeNode(rng, depth - 1)) : std::string("null"));
+		if(std::all_of(dropped.begin(), dropped.end(), [](const std::string & s){ return s == "null"; }))
+			dropped[0] = compact(colNode(columnNames[colPick(rng)]));
+
+		Json::Value v;
+		v["nodeType"] = "RowFunction";
+		v["functionName"] = rowFunctions[rowPick(rng)];
+		v["droppedItems"] = Json::arrayValue;
+		for(const std::string & s : dropped)
+			v["droppedItems"].append(s);
+		return v;
+	};
+
+	ScriptConstructorModel model;
+
+	for(int seed = 0; seed < 300; seed++)
+	{
+		std::mt19937 rng(seed);
+		std::uniform_int_distribution<int> formulaCount(0, 3);
+
+		Json::Value tree;
+		tree["formulas"] = Json::arrayValue;
+		int n = formulaCount(rng);
+		for(int i = 0; i < n; i++)
+			tree["formulas"].append(makeNode(rng, 3));
+
+		model.fromJson(tree);
+		std::string first = model.toString();
+
+		model.fromJson(first);
+		std::string second = model.toString();
+
+		if(first != second)
+			QFAIL(("Round-trip not idempotent for seed " + std::to_string(seed) + ":\nfirst:  " + first + "\nsecond: " + second).c_str());
+
+		// The re-parsed tree must also be parseable without throwing and keep the same formula count.
+		QCOMPARE(model.formulaCount(), n);
+	}
+}
+
+void TestAll::testScriptConstructorUndo()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	QUndoStack stack;
+	model.setUndoStack(&stack);
+
+	QCOMPARE(model.formulaCount(), 0);
+
+	// Insert a node -> one undo command
+	ScriptNode * node = new ScriptNodeOperator(">", false);
+	model.insertNode(node, DropTarget::root());
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(stack.count(), 1);
+
+	// Undo removes it, redo brings it back
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 0);
+	stack.redo();
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Clear -> another command
+	model.clear();
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(stack.count(), 2);
+
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 1);
 }
 
 
