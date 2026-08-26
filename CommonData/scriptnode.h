@@ -151,6 +151,7 @@ public:
 	void addChild(ScriptNode * node);
 	void removeChildAt(int index);
 	int childCountFilled() const;
+	void ensureTrailingEmptySlot();
 
 private:
 	std::string					_functionName;

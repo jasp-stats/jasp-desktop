@@ -402,6 +402,15 @@ int ScriptNodeRowFunction::childCountFilled() const
 	return count;
 }
 
+void ScriptNodeRowFunction::ensureTrailingEmptySlot()
+{
+	// Keep a free (null) child at the end so the user can always drop another column.
+	for(ScriptNode * child : _children)
+		if(!child)
+			return;
+	_children.push_back(nullptr);
+}
+
 Json::Value ScriptNodeRowFunction::toJson() const
 {
 	Json::Value json;

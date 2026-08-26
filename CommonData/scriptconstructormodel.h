@@ -77,6 +77,10 @@ public:
 	/// Resolves where a freshly created node should go when the user did not drop it anywhere specific.
 	DropTarget		findReasonableInsertionSpot(ScriptNode * node) const;
 
+	/// Returns the column types (1=scale, 2=ordinal, 3=nominal) that the containing drop slot
+	/// accepts. At the root (no parent) all three are returned.
+	std::vector<int> allowedColumnTypes(ScriptNode * node) const;
+
 	/// Returns the drop keys accepted at a given target (used by the view for hover feedback).
 	static bool		keysOverlap(const stringvec & a, const stringvec & b);
 
