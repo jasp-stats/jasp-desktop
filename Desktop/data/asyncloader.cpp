@@ -52,9 +52,9 @@ AsyncLoader::AsyncLoader(QObject *parent) :
 	connect(this, &AsyncLoader::beginSave, this, &AsyncLoader::saveTask, Qt::QueuedConnection);
 }
 
-void AsyncLoader::onSyncRequired(int dataSetId, DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson)
+void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, const QString & extension, const QString & databaseJson)
 {
-	Log::log() << "[AsyncLoader::onSyncRequired] START: dataSetId=" << dataSetId << ", locator=" << locator.toStdString() << ", extension=" << extension.toStdString() << std::endl;
+	Log::log() << "[AsyncLoader::onSyncRequired] START: dataSetId=" << (dataSet ? dataSet->id() : -1) << ", locator=" << locator.toStdString() << ", extension=" << extension.toStdString() << std::endl;
 
 	//Owns the per-dataset sync lifecycle on behalf of the (data) syncer. The DataSet pointer is
 	//carried across the queued hand-off so this slot (which runs on our worker thread) never has to
@@ -68,12 +68,11 @@ void AsyncLoader::onSyncRequired(int dataSetId, DataSet * dataSet, const QString
 	if((locator.isEmpty() && databaseJson.isEmpty()) || !dataSet)
 	{
 		Log::log() << "[AsyncLoader::onSyncRequired] EMPTY locator/databaseJson or NULL dataSet, aborting" << std::endl;
-		emit syncCompleted(dataSetId, false); //Nothing sensible to sync; release the syncer guard.
+		emit syncCompleted(dataSet->id(), false); //Nothing sensible to sync; release the syncer guard.
 		return;
 	}
 
 	FileEvent * event = new FileEvent(this, FileEvent::FileSyncData);
-	event->setSyncDataSetId(dataSetId);
 	event->setSyncDataSet(dataSet);
 	event->setPath(locator);
 	if(!databaseJson.isEmpty())
@@ -84,7 +83,7 @@ void AsyncLoader::onSyncRequired(int dataSetId, DataSet * dataSet, const QString
 	}
 
 	Log::log() << "[AsyncLoader::onSyncRequired] Calling io(event)" << std::endl;
-	io(event);
+	event->starts();
 	Log::log() << "[AsyncLoader::onSyncRequired] io(event) returned" << std::endl;
 }
 
@@ -336,7 +335,6 @@ void AsyncLoader::loadPackage(QString id)
 				pkg->setFileReadOnly(_currentEvent->isReadOnly());
 				_currentEvent->setDataFilePath(QString::fromStdString(bookkeepingDataSet->dataFilePath()));
 			}
-			_currentEvent->setComplete();
 
 			//Sync completion is delivered through AsyncLoader::syncCompleted (slot on the GUI thread via a
 			//QueuedConnection), which covers success here and failure in the catch blocks below, so the
@@ -350,6 +348,8 @@ void AsyncLoader::loadPackage(QString id)
 			{
 				Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL, NOT emitting syncCompleted" << std::endl;
 			}
+
+			_currentEvent->setComplete();
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);

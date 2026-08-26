@@ -112,7 +112,8 @@ public:
 	static MainWindow * singleton() { return _singleton; }
 
 	void				showNewData();
-	void				open(QString filepath);
+
+	void				open(const QString & mainFilePath, const QString & inputDataFile = "", const QString & outputFile = "", bool keepJASPOpen = false);
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
 	void				reportHere(QString dir);
@@ -185,7 +186,7 @@ public slots:
 	void zoomResetKeyPressed();	
 	void undo();
 	void redo();
-	void openURLFile(QString fileURLPath);
+    bool openURLFile(QString fileURLPath);
 
 	QObject * loadQmlData(QString data, QUrl url);
 
@@ -206,6 +207,8 @@ public slots:
 	void	openGitHubBugReport() const;
 	void	reloadResults() const;
 	void	updateShownFilterInQmlContext();
+	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen);
+	void	waitForAllAnalysesFinishedBeforeStartingEvent();
 
 private slots:
 	void _setProgressBarVisible(bool progressBarVisible);
@@ -248,7 +251,6 @@ private:
 
 	void _openFile();
 	void _openDbJson();
-	void connectFileEventCompleted(FileEvent * event);
 	void refreshPlotsHandler(bool askUserForRefresh = true);
 	void checkEmptyWorkspace();
 	void registerRpcHandlers();
@@ -284,13 +286,12 @@ signals:
 	void hadFatalErrorChanged();
 	
 private slots:
-	void resultsPageLoaded();
 	void analysisResultsChangedHandler(Analysis* analysis);
 	void analysisImageSavedHandler(Analysis* analysis);
 	void removeAllAnalyses();
 
-	void dataSetIORequestHandler(FileEvent *event);
-	void dataSetIOCompleted(FileEvent *event);
+	void fileEventRequestHandler(FileEvent *event);
+	void fileEventRequestFinalize(FileEvent *event);
 	void populateUIfromDataSet();
 	void startDataEditorEventCompleted(FileEvent *event);
 	void analysisAdded(Analysis *analysis);
@@ -368,8 +369,7 @@ private:
 	int								_progressBarProgress,	//Runs from 0 to 100
 									_screenPPI				= 1;
 
-	QString							_openOnLoadFilename,
-									_fatalError				= "The engine crashed...",
+	QString							_fatalError				= "The engine crashed...",
 									_progressBarStatus,
 									_downloadNewJASPUrl		= "";
 	Json::Value						_openOnLoadDbJson		= Json::nullValue;
@@ -378,8 +378,6 @@ private:
 	AsyncLoaderThread				_loaderThread;
 
 	bool							_applicationExiting		= false,
-									_resultsPageLoaded		= false,
-									_qmlLoaded				= false,
 									_openedUsingArgs		= false,
 									_runButtonEnabled		= false,
 									_progressBarVisible		= false,
@@ -391,15 +389,15 @@ private:
 									_contactVisible			= false,
 									_communityVisible		= false,
                                     _hadFatalError			= false,
-                                     _aiChatVisible           = false,
+									 _aiChatVisible			= false,
 									_chatWindowActive		= false;
 	QFont							_defaultFont;
 	QPointer<QWindow>				_chatWindow				= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;
-	JaspRpcDispatcher*  _rpcDispatcher  = nullptr;
-	JaspRpcServer*      _rpcServer      = nullptr;
-	AiBridge				*	_aiBridge				= nullptr;
-	AIConfigModel			*	_aiConfigModel			= nullptr;
+	JaspRpcDispatcher		*		_rpcDispatcher			= nullptr;
+	JaspRpcServer			*		_rpcServer				= nullptr;
+	AiBridge				*		_aiBridge				= nullptr;
+	AIConfigModel			*		_aiConfigModel			= nullptr;
 
 	// RPC async data-load job tracking
 	struct RpcLoadJob
@@ -409,6 +407,7 @@ private:
 	};
 	std::unordered_map<int, RpcLoadJob>	_rpcJobs;
 	int									_nextRpcJobId = 1;
+	FileEvent					*	_waitingEvent			= nullptr;
 };
 
 #endif // MAINWIDGET_H

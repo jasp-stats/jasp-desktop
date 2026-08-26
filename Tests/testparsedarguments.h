@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2018 University of Amsterdam
+// Copyright (C) 2013-2026 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,28 +15,28 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+#pragma once
+#include <QtTest>
 
-#include "filemenuobject.h"
-#include "filemenu.h"
-
-FileMenuObject::FileMenuObject(FileMenu * parent) : QObject(parent)
+class TestParsedArguments : public QObject
 {
-	_filemenu = parent;
-}
+	Q_OBJECT
 
-FileEvent::FileMode FileMenuObject::mode() 
-{ 
-	return _filemenu->_mode;
-}
-
-void FileMenuObject::setMode(FileEvent::FileMode mode)
-{
-	_filemenu->_mode = mode;	
-}
-
-void FileMenuObject::openFile(const QString & path)
-{
-	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
-	event->setPath(path);
-	event->starts();
-}
+private slots:
+	void testIsDataFileType();
+	void testIsDataFileTypeFromPath();
+	void testNoArguments();
+	void testBooleanFlags();
+	void testTimeoutParsing();
+	void testTimeoutDefault();
+	void testTimeoutInvalidKeepsDefault();
+	void testJaspFilePositionalArg();
+	void testJaspFileWithOneDataFile();
+	void testJaspFileWithMultipleDataFiles();
+	void testInputDataDir();
+	void testOutputDir();
+	void testUnitTestFlag();
+	void testUnitTestRecursiveFlag();
+	void testCombinedOutputFlags();
+	void testMultipleFlagsIndependent();
+};

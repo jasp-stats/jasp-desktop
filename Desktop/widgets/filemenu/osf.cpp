@@ -287,7 +287,7 @@ void OSF::openSaveFile(const QString & nodePath, const QString & filename, const
 		{
 			setSavefilename(filename);
 
-			connect(event, SIGNAL(completed(FileEvent*)), this, SLOT(openSaveCompleted(FileEvent*)));
+            connect(event, &FileEvent::completed, this, &OSF::openSaveCompleted);
 		}
 	}
 	else
@@ -297,7 +297,7 @@ void OSF::openSaveFile(const QString & nodePath, const QString & filename, const
 		return;
 	}
 
-	emit dataSetIORequest(event);
+	event->starts();
 }
 
 void OSF::userDetailsReceived()
@@ -307,13 +307,12 @@ void OSF::userDetailsReceived()
 	userNode->deleteLater();
 }
 
-void OSF::openSaveCompleted(FileEvent* event)
+void OSF::openSaveCompleted()
 {
+    FileEvent* event = qobject_cast<FileEvent*>(sender());
 
 	if (event->isSuccessful())
-	{
 		_osfFileSystem->refresh();
-	}
 
 	setProcessing(false);
 }

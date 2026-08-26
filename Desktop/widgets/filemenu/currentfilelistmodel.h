@@ -3,8 +3,6 @@
 
 #include <QAbstractListModel>
 #include "currentfilefilesystem.h"
-#include "data/fileevent.h"
-#include "filemenulistitem.h"
 #include "filemenubasiclistmodel.h"
 
 class CurrentFileListModel  : public FileMenuBasicListModel
@@ -12,13 +10,13 @@ class CurrentFileListModel  : public FileMenuBasicListModel
 	Q_OBJECT
 	
 public:
-	explicit CurrentFileListModel(QObject *parent = nullptr);
+    explicit CurrentFileListModel(FileMenuObject *parent);
 	
 	CurrentFileFileSystem*		getCurrentFileFSBModel();
 	void						setCurrentFilePath(const QString &newcurrent);
 	
 signals:
-	void syncCurrentFile(FileEvent *event);
+	void syncCurrentFile(const QString& currentFile);
 
 #ifdef NOT_IGNORING_SYNCHING
 public slots:

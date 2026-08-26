@@ -47,10 +47,12 @@ QString CurrentDataFile::getHeaderText()
 }
 
 
-void CurrentDataFile::syncFile(FileEvent *event)
+void CurrentDataFile::syncFile(const QString & path)
 {
 	emit setCheckAutomaticSync(false);
-	emit dataSetIORequest(event);
+	FileEvent *event = new FileEvent(this, FileEvent::FileSyncData);
+	event->setPath(path);
+	event->starts();
 }
 
 

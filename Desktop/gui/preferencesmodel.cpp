@@ -204,19 +204,18 @@ GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					
 GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
 GET_PREF_FUNC_BOOL(	storeStateEtc,				Settings::STORE_STATE_ETC							)
 GET_PREF_FUNC_BOOL(	showInteractiveDefault,		Settings::SHOW_INTERACTIVE_DEFAULT					)
-
 GET_PREF_FUNC_BOOL(	autoSaveAtAll,				Settings::AUTOSAVE_ON								)
 GET_PREF_FUNC_INT(	autoSaveIntervalSec,		Settings::AUTOSAVE_INTERVAL_SEC						)
 GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-	GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
-	GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM		)
-	GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT				)
-	GET_PREF_FUNC_STR(	aiUserAvatar,			Settings::AI_USER_AVATAR						)
-	GET_PREF_FUNC_BOOL(	aiEnabled,			Settings::AI_ENABLED						)
-
-GET_PREF_FUNC_BOOL(	rpcServerEnabled,	Settings::RPC_SERVER_ENABLED				)
-GET_PREF_FUNC_STR(	rpcServerIp,		Settings::RPC_SERVER_IP					)
-GET_PREF_FUNC_INT(	rpcServerPort,		Settings::RPC_SERVER_PORT				)
+GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,		Settings::AI_ANNOTATION_USE_CUSTOM					)
+GET_PREF_FUNC_STR(	aiAnnotationPrompt,			Settings::AI_ANNOTATION_PROMPT						)
+GET_PREF_FUNC_STR(	aiUserAvatar,				Settings::AI_USER_AVATAR							)
+GET_PREF_FUNC_BOOL(	aiEnabled,					Settings::AI_ENABLED								)
+GET_PREF_FUNC_BOOL(	rpcServerEnabled,			Settings::RPC_SERVER_ENABLED						)
+GET_PREF_FUNC_STR(	rpcServerIp,				Settings::RPC_SERVER_IP								)
+GET_PREF_FUNC_INT(	rpcServerPort,				Settings::RPC_SERVER_PORT							)
+GET_PREF_FUNC_BOOL(	syncDroppedDatafile,		Settings::SYNC_DROPPED_DATAFILE						)
 
 bool PreferencesModel::engineSandbox() const
 {
@@ -428,17 +427,16 @@ SET_PREF_FUNCTION(				bool,   	setStoreStateEtc,			storeStateEtc,				storeStateE
 SET_PREF_FUNCTION(				bool,   	setShowInteractiveDefault,	showInteractiveDefault,		showInteractiveDefaultChanged,	Settings::SHOW_INTERACTIVE_DEFAULT 					)
 SET_PREF_FUNCTION(				bool,   	setAutoSaveAtAll,			autoSaveAtAll,				autoSaveAtAllChanged,			Settings::AUTOSAVE_ON			  					)
 SET_PREF_FUNCTION(				int,		setAutoSaveIntervalSec,		autoSaveIntervalSec,		autoSaveIntervalSecChanged,		Settings::AUTOSAVE_INTERVAL_SEC	  					)
-SET_PREF_FUNCTION(				QString,	setAiCommonSystemPrompt,		aiCommonSystemPrompt,		aiCommonSystemPromptChanged,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-	SET_PREF_FUNCTION(				bool,		setAiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustomChanged,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
-		SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
-	SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,		aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT				)
-	SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,			aiUserAvatarChanged,				Settings::AI_USER_AVATAR						)
-	SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED						)
-
-SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,	rpcServerEnabled,	rpcServerEnabledChanged,	Settings::RPC_SERVER_ENABLED			)
-SET_PREF_FUNCTION(				QString,	setRpcServerIp,		rpcServerIp,		rpcServerIpChanged,			Settings::RPC_SERVER_IP					)
-SET_PREF_FUNCTION(				int,		setRpcServerPort,		rpcServerPort,		rpcServerPortChanged,		Settings::RPC_SERVER_PORT				)
-
+SET_PREF_FUNCTION(				QString,	setAiCommonSystemPrompt,	aiCommonSystemPrompt,		aiCommonSystemPromptChanged,	Settings::AI_COMMON_SYSTEM_PROMPT					)
+SET_PREF_FUNCTION(				bool,		setAiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustomChanged,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,		aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM					)
+SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,			aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT						)
+SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,				aiUserAvatarChanged,			Settings::AI_USER_AVATAR							)
+SET_PREF_FUNCTION(				bool,		setAiEnabled,				aiEnabled,					aiEnabledChanged,				Settings::AI_ENABLED								)
+SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,		rpcServerEnabled,			rpcServerEnabledChanged,		Settings::RPC_SERVER_ENABLED						)
+SET_PREF_FUNCTION(				QString,	setRpcServerIp,				rpcServerIp,				rpcServerIpChanged,				Settings::RPC_SERVER_IP								)
+SET_PREF_FUNCTION(				int,		setRpcServerPort,			rpcServerPort,				rpcServerPortChanged,			Settings::RPC_SERVER_PORT							)
+SET_PREF_FUNCTION(				bool,		setSyncDroppedDatafile,		syncDroppedDatafile,		syncDroppedDatafileChanged,		Settings::SYNC_DROPPED_DATAFILE						)
 
 void PreferencesModel::resetAiDefaults()
 {

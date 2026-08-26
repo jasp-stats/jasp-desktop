@@ -89,25 +89,58 @@ Window
 		return (a + n) % n;
 	}
 
-	DropArea
-	{
-		id: drop
-		enabled: true
-		anchors.fill: parent
-		onDropped: (drop) => mainWindow.openURLFile(drop.text)
-	}
-
 	Item
 	{
 		anchors.fill:	parent
 		
 		Rectangle
 		{
+			id:				warningRect
 			z:				1
-			visible:		mainWindow.hadFatalError
-			color:			jaspTheme.red
+			color:			mainWindow.hadFatalError ? jaspTheme.red : "transparent"
 			opacity:		0.75
 			anchors.fill:	parent
+
+			DropArea
+			{
+				enabled: true
+				anchors.fill: parent
+				onDropped: (drop) =>
+				{
+				   if (mainWindow.openURLFile(drop.text))
+						drop.accepted = true
+				   parent.state = ""
+				}
+
+				onExited: parent.state = ""
+				onEntered: (drag) =>
+				{
+					if (drag.hasText)
+						parent.state = "active"
+				}
+			}
+
+			states: [
+					State {
+						name: "active"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.blueLighter
+							}
+						}
+					}
+				]
+
+			transitions: [
+					Transition {
+						from: ""
+						to: "active"
+						reversible: true
+						ColorAnimation { properties: "color"; duration: 150; easing.type: Easing.InOutQuad }
+					}
+				]
+
+
 		}
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
