@@ -483,7 +483,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::isModifiedChanged,					_fileMenu,				&FileMenu::workspaceModified								);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
-	connect(_package,				&DataSetPackage::newDataLoaded,						this,					&MainWindow::populateUIfromDataSet							);
+	connect(_package,				&DataSetPackage::newDataLoaded,						this,					[this](){ populateUIfromDataSet(); }						); //Through a lambda because a default argument is not part of the type of &MainWindow::populateUIfromDataSet, so it cannot fill in for the argument the signal does not carry.
 	connect(_package,				&DataSetPackage::newDataLoaded,						_fileMenu,				[&](){ _fileMenu->enableButtonsForOpenedWorkspace(); }		);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_analyses,				&Analyses::dataModeChanged									);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_engineSync,			&EngineSync::dataModeChanged								);
@@ -1960,7 +1960,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			populateUIfromDataSet();
+			populateUIfromDataSet(event->type() == Utils::FileType::jasp);
 
 			_package->setCurrentFile(event->path());
 			
@@ -2107,7 +2107,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 
 
 
-void MainWindow::populateUIfromDataSet()
+void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 {
 	JASPTIMER_SCOPE(MainWindow::populateUIfromDataSet);
 	bool errorFound = false;
@@ -2115,7 +2115,8 @@ void MainWindow::populateUIfromDataSet()
 	
 	_resultsJsInterface->setScrollAtAll(false);
 
-	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+	if (loadAnalyses)
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
