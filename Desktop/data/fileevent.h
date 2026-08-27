@@ -67,7 +67,8 @@ public:
 	bool				isStarted()		const { return _status != FileEventStatus::Initialized;	}
 	bool				isCompleted()	const { return _status == FileEventStatus::Completed;		}
 	bool				isSuccessful()	const { return isCompleted() && _success;					}
-	bool				isCancelled()	const { return _cancelled;									}
+	bool				isCancelled()	const { return _cancelled;									} ///< The user aborted this themselves (a dismissed dialog), so the workspace must be left alone.
+	bool				isSilent()		const { return _silent;										} ///< Report failure without bothering the user with a dialog (used for events JASP starts on its own).
 	bool				isTmp()			const { return _tmp; }
 	static bool			autoSaveExists();
 	static void			removeAutoSaveIfItExists();
@@ -101,6 +102,7 @@ private:
 	FileEventStatus		_status			= FileEventStatus::Initialized;
 	bool				_success		= false,
 						_cancelled		= false,
+						_silent			= false,
 						_tmp			= false;
 	Exporter		*	_exporter		= nullptr;
 	Json::Value			_database		= Json::nullValue;
