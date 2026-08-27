@@ -1,5 +1,6 @@
 #include "scriptnode.h"
 #include "columntype.h"
+#include "timers.h"
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -73,6 +74,8 @@ ScriptNode::Type ScriptNode::typeFromString(const std::string & str)
 
 ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 {
+	JASPTIMER_SCOPE(ScriptNode fromJson);
+
 	if(json.isNull() || !json.isObject())
 		return nullptr;
 
