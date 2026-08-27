@@ -8,6 +8,7 @@
 #include <QQmlIncubator>
 #include <QQmlEngine>
 #include <QQmlContext>
+#include <QQmlProperty>
 #include <QQuickWindow>
 #include <QKeyEvent>
 #include <QKeySequence>
@@ -453,8 +454,8 @@ void ScriptConstructorView::buildChrome()
 	{
 		_trash->setParentItem(_scriptArea);
 		_trash->setProperty("color", QColor(0, 0, 0, 0));
-		_trash->setProperty("border.color", theme ? theme->gray() : QColor("gray"));
-		_trash->setProperty("border.width", 1);
+		QQmlProperty(_trash, "border.color").write(theme ? theme->gray() : QColor("gray"));
+		QQmlProperty(_trash, "border.width").write(1);
 		_trash->setProperty("radius", 6.0);
 		_trash->setZ(10);
 
@@ -590,10 +591,22 @@ void ScriptConstructorView::layoutAll()
 
 	if(_backgroundDecoration)
 	{
-		const qreal iw = _backgroundDecoration->property("implicitWidth").toReal();
-		const qreal ih = _backgroundDecoration->property("implicitHeight").toReal();
-		if(iw > 0 && ih > 0)
+		// Cache the image's natural size on the first layout where it is known (the load).
+		// After that the Image's `sourceSize = width * 2` binding makes implicitWidth follow
+		// width, so we must use the cached natural size rather than re-reading implicitWidth.
+		if(_backgroundImageSize.isEmpty())
 		{
+			const qreal iw = _backgroundDecoration->property("implicitWidth").toReal();
+			const qreal ih = _backgroundDecoration->property("implicitHeight").toReal();
+			if(iw > 0 && ih > 0)
+				_backgroundImageSize = QSizeF(iw, ih);
+		}
+
+		if(!_backgroundImageSize.isEmpty())
+		{
+			const qreal iw = _backgroundImageSize.width();
+			const qreal ih = _backgroundImageSize.height();
+
 			if(w > 0 && h > 0)
 			{
 				// Fit within half the view, centred (matches the old fadeCollector watermark).
@@ -771,6 +784,7 @@ void ScriptConstructorView::updateBackgroundDecoration()
 		? QString("filterConstructorBackground.png")
 		: QString("columnConstructorBackground.png");
 
+	_backgroundImageSize = QSizeF();
 	_backgroundDecoration->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + file);
 }
 

@@ -4,6 +4,7 @@
 #include <QQuickItem>
 #include <QPointer>
 #include <QUndoStack>
+#include <QSizeF>
 #include <map>
 #include "scriptconstructormodel.h"
 
@@ -187,6 +188,10 @@ private:
 											_tooltipAreaComp;
 
 	QAbstractItemModel				*		_columnsModel = nullptr;
+
+	// Natural size of the background watermark image, cached on load (the Image's
+	// sourceSize = 2x binding makes implicitWidth follow width afterwards).
+	QSizeF									_backgroundImageSize;
 
 	// drag state
 	QPointer<ScriptNodeItem>				_draggedItem;
