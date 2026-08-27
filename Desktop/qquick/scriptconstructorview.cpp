@@ -299,7 +299,7 @@ QQmlComponent * ScriptConstructorView::imageComponent()
 	if(!_imageComp)
 	{
 		_imageComp = new QQmlComponent(qmlEngine(this));
-		_imageComp->setData("import QtQuick\nImage { smooth: true }", QUrl("ScriptConstructorImage"));
+		_imageComp->setData("import QtQuick\nImage { smooth: true; sourceSize.width: width * 2; sourceSize.height: height * 2; }", QUrl("ScriptConstructorImage"));
 	}
 	return _imageComp;
 }
@@ -423,8 +423,8 @@ void ScriptConstructorView::buildChrome()
 
 		// The source image loads asynchronously; re-layout once its intrinsic size is known so the
 		// watermark gets sized (it is otherwise left at 0x0 until an unrelated relayout happens).
-		connect(_backgroundDecoration, &QQuickItem::implicitWidthChanged,	 this, [this](){ if(_chromeBuilt) layoutAll(); });
-		connect(_backgroundDecoration, &QQuickItem::implicitHeightChanged, this, [this](){ if(_chromeBuilt) layoutAll(); });
+		connect(_backgroundDecoration, &QQuickItem::implicitWidthChanged,		this, [this](){ if(_chromeBuilt) layoutAll(); });
+		connect(_backgroundDecoration, &QQuickItem::implicitHeightChanged,		this, [this](){ if(_chromeBuilt) layoutAll(); });
 	}
 	updateBackgroundDecoration();
 
@@ -443,6 +443,7 @@ void ScriptConstructorView::buildChrome()
 
 	_scriptArea = new QQuickItem(this);
 	_scriptArea->setClip(true);
+	_scriptArea->setParentItem(this);
 
 	_scriptColumn = new QQuickItem(_scriptArea);
 	_scriptColumn->setParentItem(_scriptArea);
@@ -593,13 +594,21 @@ void ScriptConstructorView::layoutAll()
 		const qreal ih = _backgroundDecoration->property("implicitHeight").toReal();
 		if(iw > 0 && ih > 0)
 		{
-			// Fit within half the view, centred (matches the old fadeCollector watermark).
-			const qreal ratio = std::min(std::min(w / iw, h / ih), qreal(1.0)) * 0.5;
-			const qreal dw = iw * ratio, dh = ih * ratio;
-			_backgroundDecoration->setWidth(dw);
-			_backgroundDecoration->setHeight(dh);
-			_backgroundDecoration->setX((w - dw) / 2);
-			_backgroundDecoration->setY((h - dh) / 2);
+			if(w > 0 && h > 0)
+			{
+				// Fit within half the view, centred (matches the old fadeCollector watermark).
+				const qreal ratio = std::min(std::min(w / iw, h / ih), qreal(1.0)) * 0.5;
+				const qreal dw = iw * ratio, dh = ih * ratio;
+				_backgroundDecoration->setWidth(dw);
+				_backgroundDecoration->setHeight(dh);
+				_backgroundDecoration->setX((w - dw) / 2);
+				_backgroundDecoration->setY((h - dh) / 2);
+			}
+			else
+			{
+				_backgroundDecoration->setWidth(iw);
+				_backgroundDecoration->setHeight(ih);
+			}
 		}
 	}
 
