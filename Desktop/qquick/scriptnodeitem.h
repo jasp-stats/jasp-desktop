@@ -119,7 +119,8 @@ private:
 	QList<ScriptDropSpot*>		_dropSpots;
 	QPointer<QQuickItem>		_openParen,
 								_closeParen,
-								_overline;
+								_overline,
+								_fractionBar;
 	qreal						_preferredWidth		= 0,
 								_preferredHeight	= 0;
 	bool						_acceptsDrops		= true,

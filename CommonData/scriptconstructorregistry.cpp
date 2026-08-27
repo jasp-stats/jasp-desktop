@@ -233,13 +233,10 @@ const ScriptConstructorRegistry & ScriptConstructorRegistry::instance()
 	return registry;
 }
 
-const ScriptOperatorDef * ScriptConstructorRegistry::operatorDef(const std::string & op) const
+const ScriptOperatorDef * ScriptConstructorRegistry::operatorDef(const std::string & op, bool vertical) const
 {
-	for(const ScriptOperatorDef & def : _operators)
-		if(def.op == op)
-			return &def;
-
-	return nullptr;
+	auto it = _operatorIndex.find(op + (vertical ? "V" : ""));
+	return it != _operatorIndex.end() ? &_operators[it->second] : nullptr;
 }
 
 const ScriptFunctionDef * ScriptConstructorRegistry::functionDef(const std::string & name) const
