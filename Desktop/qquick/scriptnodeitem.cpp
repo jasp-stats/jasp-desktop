@@ -910,11 +910,11 @@ void ScriptNodeItem::layout()
 		if(arg)
 		{
 			arg->setX(block);
-			arg->setY(overlineH);
+			arg->setY(overlineH + 1);
 		}
 
 		x = block + argW;
-		maxH = totalH;
+		maxH = totalH + 1;
 	}
 	else if(t == ScriptNode::Type::Operator || t == ScriptNode::Type::OperatorVertical)
 	{
