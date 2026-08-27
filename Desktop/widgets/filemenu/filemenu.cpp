@@ -306,7 +306,7 @@ void FileMenu::buttonsForEmptyWorkspace()
 void FileMenu::startFileEvent()
 {
 	FileEvent* event = qobject_cast<FileEvent*>(sender());
-	Log::log() << "[FileMenu::dataSetIOCompleted] START: event->operation()=" << event->operation() << ", event->isSuccessful()=" << event->isSuccessful() << std::endl;
+	Log::log() << "[FileMenu::startFileEvent] START: event->operation()=" << event->operation() << ", event->isSuccessful()=" << event->isSuccessful() << std::endl;
 
 	_mainWindow->fileEventRequestHandler(event);
 
@@ -379,18 +379,18 @@ void FileMenu::finalizeFileEvent()
 			break;
 
 		case FileEvent::FileClose:
-			Log::log() << "[FileMenu::dataSetIOCompleted] FileClose operation" << std::endl;
+			Log::log() << "[FileMenu::finalizeFileEvent] FileClose operation" << std::endl;
 			buttonsForEmptyWorkspace();
 			setMode(FileEvent::FileOpen);
 			break;
 
 		default:
-			Log::log() << "[FileMenu::dataSetIOCompleted] Default case (operation=" << event->operation() << ")" << std::endl;
+			Log::log() << "[FileMenu::finalizeFileEvent] Default case (operation=" << event->operation() << ")" << std::endl;
 			//Do nothing?
 			break;
 		}
 	}
-	Log::log() << "[FileMenu::dataSetIOCompleted] END" << std::endl;
+	Log::log() << "[FileMenu::finalizeFileEvent] END" << std::endl;
 
 	_mainWindow->fileEventRequestFinalize(event);
 

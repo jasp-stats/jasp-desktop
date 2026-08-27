@@ -65,10 +65,14 @@ void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, con
 	//
 	//Note: For database sync, locator can be empty because the database path is in databaseJson.
 	//The check below allows empty locator when databaseJson is not empty.
+	//Take the id before the check below: it is also there to catch a null dataSet, so it cannot be
+	//dereferenced afterwards to report which sync was released.
+	const int dataSetId = dataSet ? dataSet->id() : -1;
+
 	if((locator.isEmpty() && databaseJson.isEmpty()) || !dataSet)
 	{
 		Log::log() << "[AsyncLoader::onSyncRequired] EMPTY locator/databaseJson or NULL dataSet, aborting" << std::endl;
-		emit syncCompleted(dataSet->id(), false); //Nothing sensible to sync; release the syncer guard.
+		emit syncCompleted(dataSetId, false); //Nothing sensible to sync; release the syncer guard.
 		return;
 	}
 
