@@ -23,6 +23,7 @@
 #include <QPointer>
 #include "json/json.h"
 #include "utilenums.h"
+#include "fileeventstatus.h"
 
 class Exporter;
 class DataSet;
@@ -36,7 +37,6 @@ class FileEvent : public QObject
 
 public:
 	enum FileMode { FileSave, FileNew, FileOpen, FileExportResults, FileExportData, FileGenerateData, FileSyncData, FileClose };
-	enum EventStatus { EventInitialized, EventStarted, EventCompleted };
 
 	FileEvent(QObject *parent, FileMode fileMode = FileEvent::FileOpen, bool routeThroughFileMenu = true); ///< routeThroughFileMenu=false for UI-independent events (the data-syncer path) that drive the loader themselves.
 	virtual	~FileEvent();
@@ -64,8 +64,8 @@ public:
 	bool				isOnlineNode()	const { return _path.startsWith("http");		}
 	bool				isExample()		const;
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
-	bool				isStarted()		const { return _status != EventStatus::EventInitialized;	}
-	bool				isCompleted()	const { return _status == EventStatus::EventCompleted;		}
+	bool				isStarted()		const { return _status != FileEventStatus::Initialized;	}
+	bool				isCompleted()	const { return _status == FileEventStatus::Completed;		}
 	bool				isSuccessful()	const { return isCompleted() && _success;					}
 	bool				isCancelled()	const { return _cancelled;									}
 	bool				isTmp()			const { return _tmp; }
@@ -98,7 +98,7 @@ private:
 						_dataFilePath,
 						_last_error		= "Unknown error",
 						_message;
-	EventStatus			_status			= EventStatus::EventInitialized;
+	FileEventStatus		_status			= FileEventStatus::Initialized;
 	bool				_success		= false,
 						_cancelled		= false,
 						_tmp			= false;
