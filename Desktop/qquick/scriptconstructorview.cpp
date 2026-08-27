@@ -3,6 +3,9 @@
 #include "jasptheme.h"
 #include "qutils.h"
 #include "data/columnsmodel.h"
+#include "variableinfo.h"
+#include "timers.h"
+#include "log.h"
 
 #include <QQmlComponent>
 #include <QQmlIncubator>
@@ -12,11 +15,14 @@
 #include <QQuickWindow>
 #include <QKeyEvent>
 #include <QKeySequence>
+#include <QTimer>
 #include <algorithm>
 
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
 {
+	JASPTIMER_START(ScriptConstructorView ctorToComponentComplete);
+
 	setClip(true);
 	setFlag(QQuickItem::ItemIsFocusScope);
 
@@ -74,6 +80,7 @@ QString ScriptConstructorView::constructorJson() const
 
 void ScriptConstructorView::setConstructorJson(const QString & json)
 {
+	JASPTIMER_SCOPE(ScriptConstructor setConstructorJson);
 	std::string s = fq(json);
 	if(s == _model.toString()) return;
 
@@ -124,9 +131,11 @@ void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
 
 	if(_columnsModel)
 	{
-		connect(_columnsModel, &QAbstractItemModel::modelReset,		this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
-		connect(_columnsModel, &QAbstractItemModel::rowsInserted,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
-		connect(_columnsModel, &QAbstractItemModel::rowsRemoved,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
+		connect(_columnsModel, &QAbstractItemModel::modelReset,				this, [this](){ schedulePaletteRebuild(); });
+		connect(_columnsModel, &QAbstractItemModel::rowsInserted,			this, [this](){ schedulePaletteRebuild(); });
+		connect(_columnsModel, &QAbstractItemModel::rowsRemoved,			this, [this](){ schedulePaletteRebuild(); });
+		connect(_columnsModel, &QAbstractItemModel::dataChanged,			this, [this](){ schedulePaletteRebuild(); });
+		connect(_columnsModel, &QAbstractItemModel::headerDataChanged,		this, [this](){ schedulePaletteRebuild(); });
 	}
 
 	emit columnsModelChanged();
@@ -137,14 +146,21 @@ void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
 
 int ScriptConstructorView::columnType(const std::string & columnName) const
 {
+	JASPTIMER_SCOPE(ScriptConstructor columnType lookup);
+	QString wanted = tq(columnName);
+
+	// Fast path: O(1) cache built in rebuildColumnCache().
+	if(_columnTypesByName.contains(wanted))
+		return _columnTypesByName.value(wanted);
+
+	// Fallback when the model changed without a cache rebuild (should be rare).
 	QAbstractItemModel * model = _columnsModel ? _columnsModel : ColumnsModel::singleton();
 	if(!model)
 		return 1; // scale
 
-	int nameRole = static_cast<int>(model->roleNames().key("columnName"));
-	int typeRole = static_cast<int>(model->roleNames().key("columnType"));
+	int nameRole = _nameRole		>= 0 ? _nameRole		: static_cast<int>(model->roleNames().key("columnName"));
+	int typeRole = _typeRole		>= 0 ? _typeRole		: static_cast<int>(model->roleNames().key("columnType"));
 
-	QString wanted = tq(columnName);
 	for(int r = 0; r < model->rowCount(); r++)
 	{
 		QModelIndex idx = model->index(r, 0);
@@ -156,6 +172,97 @@ int ScriptConstructorView::columnType(const std::string & columnName) const
 	}
 
 	return 1; // scale
+}
+
+QString ScriptConstructorView::columnDescription(const QString & name) const
+{
+	if(_columnDescriptionsByName.contains(name))
+		return _columnDescriptionsByName.value(name);
+
+	ColumnsModel * cols = ColumnsModel::singleton();
+	return cols ? cols->getColumnDescription(name) : QString();
+}
+
+QString ScriptConstructorView::columnTransformedPreview(const QString & name, int transformedTo) const
+{
+	ColumnsModel * cols = ColumnsModel::singleton();
+	if(!cols)
+		return "";
+
+	int idx = _columnIndexByName.value(name, -1);
+
+	// Very rare (cache stale): fall back to the ColumnsModel's own lookup.
+	if(idx < 0)
+		return cols->getColumnTransformedToolTip(name, transformedTo);
+
+	::columnType realType	= static_cast<::columnType>(cols->provideInfoAt(varInfoType::VariableType, idx).toInt());
+	::columnType chosenType	= static_cast<::columnType>(transformedTo);
+
+	if(chosenType == realType)
+		return "";
+
+	varInfoType previewType;
+
+	switch(chosenType)
+	{
+	default:					previewType = varInfoType::PreviewScale;		break;
+	case ::columnType::ordinal:	previewType	= varInfoType::PreviewOrdinal;		break;
+	case ::columnType::nominal:	previewType	= varInfoType::PreviewNominal;		break;
+	}
+
+	return cols->provideInfoAt(previewType, idx).toString();
+}
+
+void ScriptConstructorView::rebuildColumnCache()
+{
+	JASPTIMER_SCOPE(ScriptConstructor rebuildColumnCache);
+
+	_columnTypesByName.clear();
+	_columnIndexByName.clear();
+	_columnDescriptionsByName.clear();
+
+	QAbstractItemModel * model = _columnsModel ? _columnsModel : ColumnsModel::singleton();
+	if(!model)
+		return;
+
+	_nameRole = static_cast<int>(model->roleNames().key("columnName"));
+	_typeRole = static_cast<int>(model->roleNames().key("columnType"));
+
+	// Descriptions can only be read in O(1) when the model is (the) ColumnsModel itself;
+	// otherwise columnDescription() falls back to the singleton on demand.
+	ColumnsModel * cols = qobject_cast<ColumnsModel*>(model);
+
+	int rows = model->rowCount();
+	for(int r = 0; r < rows; r++)
+	{
+		QModelIndex idx = model->index(r, 0);
+		QString name = model->data(idx, _nameRole).toString();
+		if(name.isEmpty())
+			continue;
+
+		int t = model->data(idx, _typeRole).toInt();
+		_columnTypesByName[name]   = t > 0 ? t : 1;
+		_columnIndexByName[name]   = r;
+
+		if(cols)
+			_columnDescriptionsByName[name] = cols->provideInfoAt(varInfoType::ColumnDescription, r).toString().trimmed();
+	}
+}
+
+void ScriptConstructorView::schedulePaletteRebuild()
+{
+	if(!_chromeBuilt || _paletteRebuildScheduled)
+		return;
+
+	_paletteRebuildScheduled = true;
+	QTimer::singleShot(0, this, [this]()
+	{
+		_paletteRebuildScheduled = false;
+		if(!_chromeBuilt)
+			return;
+		rebuildColumnCache();
+		buildColumnPalette();
+	});
 }
 
 void ScriptConstructorView::setFilterErrorMsg(const QString & msg)
@@ -189,6 +296,7 @@ bool ScriptConstructorView::jsonChanged() const
 
 void ScriptConstructorView::initializeFromJSON(const QString & json)
 {
+	JASPTIMER_SCOPE(ScriptConstructor initializeFromJSON);
 	_localUndoStack.clear();
 	std::string s = json.isEmpty() ? fq(_lastAppliedJson) : fq(json);
 	_model.fromJson(s);
@@ -289,6 +397,7 @@ QQmlComponent * ScriptConstructorView::textComponent()
 {
 	if(!_textComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile textComponent);
 		_textComp = new QQmlComponent(qmlEngine(this));
 		_textComp->setData("import QtQuick\nText { verticalAlignment: Text.AlignVCenter }", QUrl("ScriptConstructorText"));
 	}
@@ -299,6 +408,7 @@ QQmlComponent * ScriptConstructorView::imageComponent()
 {
 	if(!_imageComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile imageComponent);
 		_imageComp = new QQmlComponent(qmlEngine(this));
 		_imageComp->setData("import QtQuick\nImage { smooth: true; sourceSize.width: width * 2; sourceSize.height: height * 2; }", QUrl("ScriptConstructorImage"));
 	}
@@ -309,6 +419,7 @@ QQmlComponent * ScriptConstructorView::textInputComponent()
 {
 	if(!_textInputComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile textInputComponent);
 		_textInputComp = new QQmlComponent(qmlEngine(this));
 		_textInputComp->setData("import QtQuick\nTextInput { selectByMouse: true }", QUrl("ScriptConstructorTextInput"));
 	}
@@ -319,6 +430,7 @@ QQmlComponent * ScriptConstructorView::checkBoxComponent()
 {
 	if(!_checkBoxComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile checkBoxComponent);
 		_checkBoxComp = new QQmlComponent(qmlEngine(this));
 		_checkBoxComp->setData("import QtQuick\nimport QtQuick.Controls\nCheckBox {}", QUrl("ScriptConstructorCheckBox"));
 	}
@@ -329,6 +441,7 @@ QQmlComponent * ScriptConstructorView::rectangleComponent()
 {
 	if(!_rectComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile rectangleComponent);
 		_rectComp = new QQmlComponent(qmlEngine(this));
 		_rectComp->setData("import QtQuick\nRectangle {}", QUrl("ScriptConstructorRectangle"));
 	}
@@ -339,6 +452,7 @@ QQmlComponent * ScriptConstructorView::tooltipAreaComponent()
 {
 	if(!_tooltipAreaComp)
 	{
+		JASPTIMER_SCOPE(ScriptConstructor compile tooltipAreaComponent);
 		_tooltipAreaComp = new QQmlComponent(qmlEngine(this));
 		_tooltipAreaComp->setData(
 			"import QtQuick\n"
@@ -349,7 +463,7 @@ QQmlComponent * ScriptConstructorView::tooltipAreaComponent()
 			"  acceptedButtons: Qt.NoButton\n"
 			"  hoverEnabled: true\n"
 			"  ToolTip.delay: 500\n"
-			"  ToolTip.text: parent.toolTip\n"
+			"  ToolTip.text: parent && parent.toolTip ? parent.toolTip : ''\n"
 			"  ToolTip.visible: ToolTip.text !== '' && containsMouse\n"
 			"  ToolTip.toolTip.background: Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }\n"
 			"}\n", QUrl("ScriptConstructorToolTipArea"));
@@ -361,6 +475,8 @@ QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp)
 {
 	if(!comp || comp->isError())
 		return nullptr;
+
+	JASPTIMER_SCOPE(ScriptConstructor newLeaf incubation);
 
 	QQmlIncubator incubator(QQmlIncubator::Synchronous);
 	comp->create(incubator);
@@ -377,6 +493,9 @@ QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp)
 
 void ScriptConstructorView::componentComplete()
 {
+	JASPTIMER_FINISH(ScriptConstructorView ctorToComponentComplete);
+	JASPTIMER_SCOPE(ScriptConstructorView componentComplete);
+
 	QQuickItem::componentComplete();
 
 	if(!_chromeBuilt)
@@ -392,9 +511,11 @@ void ScriptConstructorView::componentComplete()
 	{
 		if(ColumnsModel * singleton = ColumnsModel::singleton())
 		{
-			connect(singleton, &QAbstractItemModel::modelReset,		this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
-			connect(singleton, &QAbstractItemModel::rowsInserted,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
-			connect(singleton, &QAbstractItemModel::rowsRemoved,	this, [this](){ if(_chromeBuilt) buildColumnPalette(); });
+			connect(singleton, &QAbstractItemModel::modelReset,				this, [this](){ schedulePaletteRebuild(); });
+			connect(singleton, &QAbstractItemModel::rowsInserted,			this, [this](){ schedulePaletteRebuild(); });
+			connect(singleton, &QAbstractItemModel::rowsRemoved,			this, [this](){ schedulePaletteRebuild(); });
+			connect(singleton, &QAbstractItemModel::dataChanged,			this, [this](){ schedulePaletteRebuild(); });
+			connect(singleton, &QAbstractItemModel::headerDataChanged,		this, [this](){ schedulePaletteRebuild(); });
 		}
 		buildColumnPalette();
 	}
@@ -404,6 +525,7 @@ void ScriptConstructorView::componentComplete()
 
 void ScriptConstructorView::buildChrome()
 {
+	JASPTIMER_SCOPE(ScriptConstructor buildChrome);
 	JaspTheme * theme = JaspTheme::currentTheme();
 
 	_background = newLeaf(rectangleComponent());
@@ -555,6 +677,8 @@ void ScriptConstructorView::rebuildFormulaItems()
 	if(!_chromeBuilt || !_scriptColumn)
 		return;
 
+	JASPTIMER_SCOPE(ScriptConstructor rebuildFormulaItems);
+
 	clearFormulaItems();
 
 	for(ScriptNode * formula : _model.formulas())
@@ -568,6 +692,7 @@ void ScriptConstructorView::rebuildFormulaItems()
 
 void ScriptConstructorView::layoutAll()
 {
+	JASPTIMER_SCOPE(ScriptConstructor layoutAll);
 	qreal w = width(), h = height();
 	qreal barH = blockDim() * 1.75;
 
@@ -697,6 +822,8 @@ void ScriptConstructorView::layoutScriptArea()
 {
 	if(!_scriptColumn) return;
 
+	JASPTIMER_SCOPE(ScriptConstructor layoutScriptArea);
+
 	qreal y = spacing();
 	qreal x = spacing();
 
@@ -796,6 +923,8 @@ void ScriptConstructorView::buildOperatorBar()
 {
 	if(!_operatorBar) return;
 
+	JASPTIMER_SCOPE(ScriptConstructor buildOperatorBar);
+
 	auto placeOperator = [this](qreal & x, const ScriptOperatorDef & def)
 	{
 		ScriptNode * proto = new ScriptNodeOperator(def.op, def.vertical);
@@ -838,6 +967,8 @@ void ScriptConstructorView::buildFunctionPalette()
 {
 	if(!_functionPalette) return;
 
+	JASPTIMER_SCOPE(ScriptConstructor buildFunctionPalette);
+
 	QQuickItem * content = _functionPalette->content();
 	_clearPaletteChildren(content);
 
@@ -876,6 +1007,12 @@ void ScriptConstructorView::buildColumnPalette()
 {
 	if(!_columnPalette) return;
 
+	JASPTIMER_SCOPE(ScriptConstructor buildColumnPalette);
+
+	// (Re)build the O(1) column cache in a single pass before creating items, so each
+	// ScriptNodeItem::rebuild() below avoids its own O(N) scan of the columns model.
+	rebuildColumnCache();
+
 	QQuickItem * content = _columnPalette->content();
 
 	// Clear any previously built column prototypes (rebuilt when the dataset changes).
@@ -889,7 +1026,7 @@ void ScriptConstructorView::buildColumnPalette()
 	qreal maxW = 0;
 	qreal y = spacing();
 	int rows = model->rowCount();
-	int nameRole = static_cast<int>(model->roleNames().key("columnName"));
+	int nameRole = _nameRole >= 0 ? _nameRole : static_cast<int>(model->roleNames().key("columnName"));
 
 	for(int r = 0; r < rows; r++)
 	{

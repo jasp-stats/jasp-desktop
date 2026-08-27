@@ -1,5 +1,6 @@
 #include "scriptconstructormodel.h"
 #include "columntype.h"
+#include "timers.h"
 #include <QUndoStack>
 
 // --- DropTarget ---
@@ -40,6 +41,7 @@ void ScriptConstructorModel::deleteAllFormulas()
 
 void ScriptConstructorModel::fromJson(const std::string & json)
 {
+	JASPTIMER_SCOPE(ScriptConstructorModel fromJson);
 	Json::Value root;
 	Json::Reader().parse(json, root);
 	fromJson(root);
@@ -74,6 +76,7 @@ Json::Value ScriptConstructorModel::toJson() const
 
 std::string ScriptConstructorModel::toString() const
 {
+	JASPTIMER_SCOPE(ScriptConstructorModel toString);
 	Json::StreamWriterBuilder builder;
 	builder["indentation"] = "";
 	std::string out = Json::writeString(builder, toJson());
@@ -86,6 +89,7 @@ std::string ScriptConstructorModel::toString() const
 
 std::string ScriptConstructorModel::toR() const
 {
+	JASPTIMER_SCOPE(ScriptConstructorModel toR);
 	std::string out;
 
 	for(int i = 0; i < static_cast<int>(_formulas.size()); i++)

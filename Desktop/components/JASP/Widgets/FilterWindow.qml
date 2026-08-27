@@ -62,6 +62,7 @@ FocusScope
 		
 		Flickable
 		{
+			id:				filtersScroller
 			anchors
 			{
 				top:			backgroundFiltersTabs.top
@@ -80,13 +81,7 @@ FocusScope
 			{
 				id:		filtersTabs
 				z:		2
-				anchors
-				{
-					top:			backgroundFiltersTabs.top
-					left:			backgroundFiltersTabs.left
-					right:			backgroundFiltersTabs.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
+				width:	Math.max(implicitWidth, filtersScroller.width)
 				
 				Repeater
 				{
@@ -389,10 +384,10 @@ FocusScope
 						JaspControls.RectangularButton
 						{
 							id:						resetAllGeneratedFilters
-							width:					(workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0) ? height : 0
+							width:					(dataSetModel.columnsLabelFilteredCount > 0) ? height : 0
 							height:					filterGeneratedBox.height
 							iconSource:				jaspTheme.iconPath + "eraser_all.png"
-							visible:				workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0
+							visible:				dataSetModel.columnsLabelFilteredCount > 0
 							toolTip:				qsTr("Reset all checkmarks on all labels")
 							onClicked:				dataSetModel.resetAllFilters()
 

@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QUndoStack>
 #include <QSizeF>
+#include <QHash>
 #include <map>
 #include "scriptconstructormodel.h"
 
@@ -14,6 +15,7 @@ class ScriptPalette;
 class QQmlComponent;
 class QAbstractItemModel;
 class QKeyEvent;
+class ColumnsModel;
 
 ///
 /// C++ replacement for the old QML FilterConstructor / ComputedColumnsConstructor.
@@ -78,6 +80,10 @@ public:
 
 	// ScriptColumnTypeProvider: resolve a column's actual type from the columns model.
 	int					columnType(const std::string & columnName) const override;
+
+	// Cached (O(1)) column info used by ScriptNodeItem while building tooltips.
+	QString				columnDescription(const QString & name) const;
+	QString				columnTransformedPreview(const QString & name, int transformedTo) const;
 
 	// --- QML-callable API mirroring the old constructors ---
 	Q_INVOKABLE bool	checkAndApply();
@@ -159,6 +165,11 @@ private:
 
 	void				updateBackgroundDecoration();
 
+	// One-pass column cache (name -> type/index/description); keeps columnType() and the
+	// palette/tooltip builds O(1) per column instead of O(N) scans per column.
+	void				rebuildColumnCache();
+	void				schedulePaletteRebuild();
+
 	ScriptConstructorModel					_model;
 
 	// Local undo for in-progress constructor editing (separate from the dataset's UndoStack).
@@ -179,6 +190,14 @@ private:
 	QList<ScriptNodeItem*>					_rootItems;
 	qreal									_columnPaletteContentWidth	= 0,
 											_functionPaletteContentWidth = 0;
+
+	// Column lookup caches, rebuilt in a single pass (see rebuildColumnCache()).
+	QHash<QString,int>						_columnTypesByName,
+											_columnIndexByName;
+	QHash<QString,QString>					_columnDescriptionsByName;
+	int										_nameRole	= -1,
+											_typeRole	= -1;
+	bool									_paletteRebuildScheduled = false;
 
 	QPointer<QQmlComponent>					_textComp,
 											_imageComp,

@@ -3,6 +3,7 @@
 #include "jasptheme.h"
 #include "qutils.h"
 #include "data/columnsmodel.h"
+#include "timers.h"
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
@@ -567,6 +568,7 @@ bool ScriptNodeItem::shouldDrag(qreal x, qreal) const
 
 void ScriptNodeItem::rebuild()
 {
+	JASPTIMER_SCOPE(ScriptNodeItem rebuild);
 	clearLeaves();
 
 	if(!_node) return;
@@ -813,18 +815,15 @@ void ScriptNodeItem::rebuild()
 		QStringList parts;
 		parts << tr("Click icon to change column type");
 
-		if(ColumnsModel * cols = ColumnsModel::singleton())
-		{
-			const QString description = cols->getColumnDescription(tq(col->columnName()));
-			if(!description.isEmpty())
-				parts << tr("Column description: ") + description;
+		const QString description = _view->columnDescription(tq(col->columnName()));
+		if(!description.isEmpty())
+			parts << tr("Column description: ") + description;
 
-			if(effective != actual)
-			{
-				const QString preview = cols->getColumnTransformedToolTip(tq(col->columnName()), col->columnTypeUser());
-				if(!preview.isEmpty())
-					parts << preview;
-			}
+		if(effective != actual)
+		{
+			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
+			if(!preview.isEmpty())
+				parts << preview;
 		}
 
 		tip = parts.join("\n\n");
@@ -843,6 +842,7 @@ void ScriptNodeItem::layout()
 {
 	if(!_node) return;
 
+	JASPTIMER_SCOPE(ScriptNodeItem layout);
 	qreal block = _view->blockDim();
 	qreal spacing = _view->spacing();
 	qreal x = 0, maxH = block;
