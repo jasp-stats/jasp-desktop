@@ -14,6 +14,7 @@
 #include "data/importers/rdataimporter.h"
 #include "data/importers/readstatimporter.h"
 #include "utilities/settings.h"
+#include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "datasetsyncer.h"
 #include "dataset.h"
@@ -476,11 +477,10 @@ void TestAll::testSyncerFileChangeEmitsSignal()
 	QTRY_COMPARE_WITH_TIMEOUT(spy.count(), 1, 5000);
 
 	QList<QVariant> args = spy.takeFirst();
-	QCOMPARE(args.size(), 5); //(dataSetId, DataSet*, locator, extension, databaseJson)
-	QCOMPARE(args[0].toInt(), ds->id());
-	QCOMPARE(args[2].toString(), testFilePath);
-	QCOMPARE(args[3].toString(), QString("csv")); //extension
-	QVERIFY(args[4].toString().isEmpty()); //databaseJson
+	QCOMPARE(args.size(), 4); //(DataSet*, locator, extension, databaseJson)
+	QCOMPARE(args[1].toString(), testFilePath);
+	QCOMPARE(args[2].toString(), QString("csv")); //extension
+	QVERIFY(args[3].toString().isEmpty()); //databaseJson
 
 	syncer.stopFileSyncing();
 }
@@ -1061,6 +1061,92 @@ void TestAll::testFilterRevisionInvalidatedRoundTrip()
 	QVERIFY2(revision >= 0, "revision must stay an integer revision, not the invalidated flag");
 
 	dbi.filterDelete(filterId);
+}
+
+void TestAll::testSyncKeepMissingColumns()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+	//syncDataSet asks permission through checkDoSync; with no MainWindow around nothing answers it and
+	//the signal would return a default-constructed false, aborting every sync below.
+	connect(DataSetPackage::pkg(), &DataSetPackage::checkDoSync, this, &TestAll::_checkDoSyncFake, Qt::DirectConnection);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	auto writeCsv = [&](const QString & name, const QByteArray & content)
+	{
+		QString path = tempDir.filePath(name);
+		QFile	file(path);
+		if(!file.open(QIODevice::WriteOnly))
+			return QString();
+		file.write(content);
+		file.close();
+		return path;
+	};
+
+	const QString	abc	= writeCsv("abc.csv",	"a,b,c\n1,2,3\n"),
+					ab	= writeCsv("ab.csv",	"a,b\n4,5\n"),
+					pq	= writeCsv("pq.csv",	"p,q\n6,7\n");
+
+	QVERIFY(!abc.isEmpty() && !ab.isEmpty() && !pq.isEmpty());
+
+	auto freshDataSetFrom = [&](const QString & csv)
+	{
+		DataSet * ds = _pkg->createDataSet();
+		_pkg->workspace()->setShownDataSet(ds);
+
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+		return ds;
+	};
+
+	//Without the preference a column that is gone from the new data file is removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 2);
+		QVERIFY(!ds->column("c"));
+	}
+
+	//With the preference that same column is kept (emptied) instead of removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(true);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 3);
+		QVERIFY(ds->column("c"));
+
+		//Syncing on against a file that shares no column at all does not simply add everything up: the
+		//brand new columns first take over the ones that disappeared (a becomes p, b becomes q), and only
+		//what is left over after that (c) is kept as an empty column. So the data keeps the column count
+		//it already had rather than growing into the union of every file seen.
+		CSVImporter syncer2;
+		syncer2.syncDataSet(fq(pq), ds, [](int){});
+
+		QCOMPARE(ds->columnCount(), 3);
+		QVERIFY(ds->column("p"));
+		QVERIFY(ds->column("q"));
+		QVERIFY(ds->column("c"));
+	}
+
+	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
 }
 
 void TestAll::testFileSyncerFullAsyncFlow()
