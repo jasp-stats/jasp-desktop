@@ -31,7 +31,13 @@ FileMenu* FileMenu::_singleton = nullptr;
 
 FileMenu::FileMenu(QObject *parent) : QObject(parent)
 {
+	//Every FileEvent looks this singleton up to route its started/completed signals, so a silent
+	//overwrite would silently re-point all future events. assert() is gone in release builds, hence
+	//the log too.
 	assert(_singleton == nullptr);
+	if(_singleton)
+		Log::log() << "[FileMenu] Constructing a FileMenu while one already exists! FileEvent routing will target the new one from now on." << std::endl;
+
 	_singleton = this;
 
 	_mainWindow				= qobject_cast<MainWindow*>(parent);
@@ -65,6 +71,15 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
 	setResourceButtonsVisibleFor(_fileoperation);
+}
+
+FileMenu::~FileMenu()
+{
+	//FileEvent looks this singleton up to route its started/completed signals, so it must not be left
+	//dangling: events created after the menu is gone then log about the missing target instead of
+	//connecting to freed memory.
+	if(_singleton == this)
+		_singleton = nullptr;
 }
 
 void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
