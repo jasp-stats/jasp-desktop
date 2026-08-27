@@ -26,14 +26,9 @@
 #include "log.h"
 
 #include <QTimer>
-#include "fileevent.h"
 #include "processinfo.h"
 #include "utilities/appdirs.h"
-#include "exporters/dataexporter.h"
-#include "exporters/jaspexporter.h"
-#include "exporters/resultexporter.h"
 #include "widgets/filemenu/filemenu.h"
-#include "log.h"
 
 void FileEvent::setDataSet(DataSet * ds)
 { 
@@ -141,7 +136,7 @@ void FileEvent::starts()
 		return;
 	}
 
-	_status = EventStatus::EventStarted;
+	_status = FileEventStatus::Started;
 
 	emit started();
 }
@@ -155,7 +150,7 @@ void FileEvent::setComplete(bool success, const QString & message, bool cancelle
 		Log::log() << "Try to set complete event '" << getProgressMsg().toStdString() << "', but it was already completed!" << std::endl;
 		return;
 	}
-	_status     = EventStatus::EventCompleted;
+	_status     = FileEventStatus::Completed;
 	_success	= success;
 	_cancelled	= cancelled;
 	_message	= message;

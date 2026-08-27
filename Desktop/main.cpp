@@ -181,6 +181,12 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 	recursiveSyncDataFile(arguments.inputDataDir, dataFiles);
 
+	if(dataFiles.empty())
+	{
+		std::cerr << "No data files to synchronize with" << (arguments.inputDataDir.exists() ? " were found in " + fq(arguments.inputDataDir.absoluteFilePath()) : std::string()) << "! Treating that as a failure to notify you of it." << std::endl;
+		return 1;
+	}
+
 	int failures = 0;
 
 	for (const QFileInfo& dataFile : dataFiles)

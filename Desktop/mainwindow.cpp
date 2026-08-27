@@ -1245,8 +1245,10 @@ void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 
 		_analyses->applyToAll([&](Analysis * a)
 		{
-			if (a->form()->hasError())
-				a->setErrorInResults("Validation error: " + fq(a->form()->getError(true)));
+			//An analysis whose form never got instantiated (a module that failed to load for instance)
+			//has no error to report either, so leave it alone instead of dereferencing nothing.
+			if (a->form() && a->form()->hasError())
+				a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
 		});
 
 		waitingEvent->starts();
