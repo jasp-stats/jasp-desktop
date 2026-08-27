@@ -97,9 +97,15 @@ Window
 		{
 			id:				warningRect
 			z:				1
-			color:			mainWindow.hadFatalError ? jaspTheme.red : "transparent"
+			color:			"transparent"
 			opacity:		0.75
 			anchors.fill:	parent
+
+			//Both colours this rectangle can take are states, so a drop can never strand it on the wrong
+			//one: the state is a binding, and dropping simply clears droppingText again.
+			property bool droppingText: false
+
+			state: droppingText ? "droppingData" : (mainWindow.hadFatalError ? "fatalError" : "")
 
 			DropArea
 			{
@@ -109,23 +115,27 @@ Window
 				{
 				   if (mainWindow.openURLFile(drop.text))
 						drop.accepted = true
-				   parent.state = ""
+				   warningRect.droppingText = false
 				}
 
-				onExited: parent.state = ""
-				onEntered: (drag) =>
-				{
-					if (drag.hasText)
-						parent.state = "active"
-				}
+				onExited: warningRect.droppingText = false
+				onEntered: (drag) => warningRect.droppingText = drag.hasText
 			}
 
 			states: [
 					State {
-						name: "active"
+						name: "droppingData"
 						PropertyChanges {
 							warningRect {
 								color: jaspTheme.blueLighter
+							}
+						}
+					},
+					State {
+						name: "fatalError"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.red
 							}
 						}
 					}
@@ -133,14 +143,9 @@ Window
 
 			transitions: [
 					Transition {
-						from: ""
-						to: "active"
-						reversible: true
 						ColorAnimation { properties: "color"; duration: 150; easing.type: Easing.InOutQuad }
 					}
 				]
-
-
 		}
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }
