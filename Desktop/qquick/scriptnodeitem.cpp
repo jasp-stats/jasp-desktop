@@ -6,6 +6,7 @@
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
+#include <QQmlProperty>
 #include <QFontMetricsF>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -156,8 +157,8 @@ QQuickItem * ScriptDropSpot::ensureMarker()
 		_marker->setZ(-3);
 		_marker->setProperty("color", QColor("transparent"));
 		_marker->setProperty("radius", 4.0);
-		_marker->setProperty("border.width", 2.0);
-		_marker->setProperty("border.color", JaspTheme::currentTheme()->blue());
+		QQmlProperty(_marker, "border.width").write(2.0);
+		QQmlProperty(_marker, "border.color").write(JaspTheme::currentTheme()->blue());
 		_marker->setVisible(false);
 	}
 	return _marker;
@@ -215,7 +216,7 @@ void ScriptDropSpot::setHoverState(bool hovered, bool accepted)
 	if(hovered)
 	{
 		JaspTheme * theme = JaspTheme::currentTheme();
-		m->setProperty("border.color", accepted ? theme->green() : theme->red());
+		QQmlProperty(m, "border.color").write(accepted ? theme->green() : theme->red());
 		m->setWidth(width());
 		m->setHeight(height());
 	}
@@ -229,7 +230,7 @@ void ScriptDropSpot::setError(bool error)
 	if(error)
 	{
 		m->setVisible(true);
-		m->setProperty("border.color", QColor("#BB0000"));
+		QQmlProperty(m, "border.color").write(QColor("#BB0000"));
 		m->setWidth(width());
 		m->setHeight(height());
 	}
