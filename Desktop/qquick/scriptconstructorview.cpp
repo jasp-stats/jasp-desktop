@@ -16,7 +16,24 @@
 #include <QKeyEvent>
 #include <QKeySequence>
 #include <QTimer>
+#include <QToolTip>
+#include <QHoverEvent>
 #include <algorithm>
+
+#ifdef PROFILE_JASP
+namespace
+{
+// JASPTIMER_SCOPE takes a compile-time name; this variant takes a runtime (std::string) name
+// so leaf creation can be timed per component kind.
+struct RuntimeTimerMeasure
+{
+	explicit RuntimeTimerMeasure(std::string name) : _name(std::move(name)) { _getTimer(_name)->resume(); }
+	~RuntimeTimerMeasure() { try { _getTimerC(_name)->stop(); } catch(...) {} }
+
+	std::string _name;
+};
+}
+#endif
 
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
@@ -46,7 +63,7 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 
 ScriptConstructorView::~ScriptConstructorView()
 {
-	for(auto & comp : {_textComp, _imageComp, _textInputComp, _checkBoxComp, _rectComp, _tooltipAreaComp})
+	for(auto & comp : {_textComp, _imageComp, _textInputComp, _checkBoxComp, _rectComp})
 		delete comp.data();
 }
 
@@ -118,6 +135,13 @@ void ScriptConstructorView::setShowGeneratedRCode(bool v)
 
 	if(_chromeBuilt)
 		layoutAll();
+}
+
+void ScriptConstructorView::setDeferUntilVisible(bool v)
+{
+	if(v == _deferUntilVisible) return;
+	_deferUntilVisible = v;
+	emit deferUntilVisibleChanged();
 }
 
 void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
@@ -448,38 +472,28 @@ QQmlComponent * ScriptConstructorView::rectangleComponent()
 	return _rectComp;
 }
 
-QQmlComponent * ScriptConstructorView::tooltipAreaComponent()
-{
-	if(!_tooltipAreaComp)
-	{
-		JASPTIMER_SCOPE(ScriptConstructor compile tooltipAreaComponent);
-		_tooltipAreaComp = new QQmlComponent(qmlEngine(this));
-		_tooltipAreaComp->setData(
-			"import QtQuick\n"
-			"import QtQuick.Controls\n"
-			"MouseArea {\n"
-			"  anchors.fill: parent\n"
-			"  z: 5\n"
-			"  acceptedButtons: Qt.NoButton\n"
-			"  hoverEnabled: true\n"
-			"  ToolTip.delay: 500\n"
-			"  ToolTip.text: parent && parent.toolTip ? parent.toolTip : ''\n"
-			"  ToolTip.visible: ToolTip.text !== '' && containsMouse\n"
-			"  ToolTip.toolTip.background: Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }\n"
-			"}\n", QUrl("ScriptConstructorToolTipArea"));
-	}
-	return _tooltipAreaComp;
-}
-
-QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp)
+QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp, const char * kind)
 {
 	if(!comp || comp->isError())
 		return nullptr;
 
-	JASPTIMER_SCOPE(ScriptConstructor newLeaf incubation);
+	Q_UNUSED(kind);
+
+#ifdef PROFILE_JASP
+	RuntimeTimerMeasure incubateScope(std::string("ScriptConstructor incubate ") + kind);
+#endif
 
 	QQmlIncubator incubator(QQmlIncubator::Synchronous);
+
+#ifdef PROFILE_JASP
+	{
+		// Time only the raw synchronous create (compilation on first use happens here).
+		RuntimeTimerMeasure createScope(std::string("ScriptConstructor createSync ") + kind);
+		comp->create(incubator);
+	}
+#else
 	comp->create(incubator);
+#endif
 
 	if(incubator.isError())
 		return nullptr;
@@ -497,12 +511,20 @@ void ScriptConstructorView::componentComplete()
 	JASPTIMER_SCOPE(ScriptConstructorView componentComplete);
 
 	QQuickItem::componentComplete();
+	_componentComplete = true;
 
-	if(!_chromeBuilt)
-	{
-		buildChrome();
-		_chromeBuilt = true;
-	}
+	// With deferUntilVisible the (expensive) chrome + palettes are only built once the
+	// view is effectively visible (e.g. the computed-column constructor in a hidden
+	// StackLayout tab). The singleShot re-check runs after the surrounding layout has
+	// applied its page visibility, so a tab that is current from the start still builds.
+	if(!_deferUntilVisible)
+		ensureChromeBuilt();
+	else
+		QTimer::singleShot(0, this, [this]()
+		{
+			if(_componentComplete && !_chromeBuilt && isVisible())
+				ensureChromeBuilt();
+		});
 
 	// If no columns model was bound from QML (e.g. the property name shadows the
 	// `columnsModel` context property), fall back to the ColumnsModel singleton and
@@ -517,10 +539,33 @@ void ScriptConstructorView::componentComplete()
 			connect(singleton, &QAbstractItemModel::dataChanged,			this, [this](){ schedulePaletteRebuild(); });
 			connect(singleton, &QAbstractItemModel::headerDataChanged,		this, [this](){ schedulePaletteRebuild(); });
 		}
-		buildColumnPalette();
+		buildColumnPalette(); // No-op until the chrome exists (deferred case).
 	}
 
+	rebuildFormulaItems(); // No-op until the chrome exists (deferred case).
+}
+
+void ScriptConstructorView::ensureChromeBuilt()
+{
+	if(_chromeBuilt)
+		return;
+
+	JASPTIMER_SCOPE(ScriptConstructor ensureChromeBuilt);
+
+	buildChrome();
+	_chromeBuilt = true;
+
 	rebuildFormulaItems();
+}
+
+void ScriptConstructorView::itemChange(ItemChange change, const ItemChangeData & value)
+{
+	QQuickItem::itemChange(change, value);
+
+	// When the item becomes effectively visible (including ancestor-driven changes like
+	// a StackLayout switching to its tab) build the chrome if it hasn't been built yet.
+	if(change == ItemVisibleHasChanged && value.boolValue && _componentComplete && !_chromeBuilt)
+		ensureChromeBuilt();
 }
 
 void ScriptConstructorView::buildChrome()
@@ -528,7 +573,7 @@ void ScriptConstructorView::buildChrome()
 	JASPTIMER_SCOPE(ScriptConstructor buildChrome);
 	JaspTheme * theme = JaspTheme::currentTheme();
 
-	_background = newLeaf(rectangleComponent());
+	_background = newLeaf(rectangleComponent(), "rectangle");
 	if(_background)
 	{
 		_background->setParentItem(this);
@@ -537,7 +582,7 @@ void ScriptConstructorView::buildChrome()
 	}
 
 	// Faint centred decoration distinguishing a filter from a computed-column constructor.
-	_backgroundDecoration = newLeaf(imageComponent());
+	_backgroundDecoration = newLeaf(imageComponent(), "image");
 	if(_backgroundDecoration)
 	{
 		_backgroundDecoration->setParentItem(this);
@@ -571,7 +616,7 @@ void ScriptConstructorView::buildChrome()
 	_scriptColumn = new QQuickItem(_scriptArea);
 	_scriptColumn->setParentItem(_scriptArea);
 
-	_trash = newLeaf(rectangleComponent());
+	_trash = newLeaf(rectangleComponent(), "rectangle");
 	if(_trash)
 	{
 		_trash->setParentItem(_scriptArea);
@@ -581,17 +626,14 @@ void ScriptConstructorView::buildChrome()
 		_trash->setProperty("radius", 6.0);
 		_trash->setZ(10);
 
-		// Double-click erases the entire slate (handled via eventFilter).
+		// Double-click erases the entire slate; hover shows a tooltip (handled via eventFilter).
+		_trashToolTip = tr("Dump unwanted snippets here; double-click to erase the entire slate");
 		_trash->setAcceptedMouseButtons(Qt::LeftButton);
+		_trash->setAcceptHoverEvents(true);
 		_trash->installEventFilter(this);
 
-		// Hover tooltip (mirrors the old DropTrash.qml).
-		_trash->setProperty("toolTip", tr("Dump unwanted snippets here; double-click to erase the entire slate"));
-		if(QQuickItem * overlay = newLeaf(tooltipAreaComponent()))
-			overlay->setParentItem(_trash);
-
 		// Trash icon centred inside the drop zone.
-		QQuickItem * icon = newLeaf(imageComponent());
+		QQuickItem * icon = newLeaf(imageComponent(), "image");
 		if(icon)
 		{
 			icon->setParentItem(_trash);
@@ -606,7 +648,7 @@ void ScriptConstructorView::buildChrome()
 		}
 	}
 
-	_hint = newLeaf(textComponent());
+	_hint = newLeaf(textComponent(), "text");
 	if(_hint)
 	{
 		_hint->setParentItem(this);
@@ -620,7 +662,7 @@ void ScriptConstructorView::buildChrome()
 	}
 
 	// Generated R code display (computed-column mode, toggled via showGeneratedRCode).
-	_rCodeDisplay = newLeaf(textComponent());
+	_rCodeDisplay = newLeaf(textComponent(), "text");
 	if(_rCodeDisplay)
 	{
 		_rCodeDisplay->setParentItem(this);
@@ -867,11 +909,24 @@ void ScriptConstructorView::keyPressEvent(QKeyEvent * event)
 
 bool ScriptConstructorView::eventFilter(QObject * obj, QEvent * event)
 {
-	// Double-clicking the trash zone erases the whole slate (mirrors the old DropTrash.qml).
-	if(obj == _trash && event->type() == QEvent::MouseButtonDblClick)
+	// Double-clicking the trash zone erases the whole slate (mirrors the old DropTrash.qml);
+	// hovering it shows a tooltip (replaces the old per-item QtQuick ToolTip overlay).
+	if(obj == _trash)
 	{
-		_model.clear();
-		return true;
+		switch(event->type())
+		{
+		case QEvent::MouseButtonDblClick:
+			_model.clear();
+			return true;
+		case QEvent::HoverEnter:
+			QToolTip::showText(static_cast<QHoverEvent*>(event)->globalPosition().toPoint(), _trashToolTip, nullptr, QRect(), 15000);
+			return true;
+		case QEvent::HoverLeave:
+			QToolTip::hideText();
+			return true;
+		default:
+			break;
+		}
 	}
 
 	return QQuickItem::eventFilter(obj, event);
@@ -1107,6 +1162,8 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 {
 	if(!item) return;
 
+	QToolTip::hideText();
+
 	_draggedItem	= item;
 	_dragIsNew		= false;
 	_draggedNewNode	= nullptr;
@@ -1123,6 +1180,8 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 void ScriptConstructorView::startDragNew(ScriptNode * newNode, const QPointF & scenePos)
 {
 	if(!newNode) return;
+
+	QToolTip::hideText();
 
 	ScriptNodeItem * item = makeNodeItem(newNode, this);
 	item->setZ(100);

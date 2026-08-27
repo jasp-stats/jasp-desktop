@@ -15,6 +15,11 @@ FocusScope
 	property int	minimumHeightTextBoxes:		50 * preferencesModel.uiScale
 	property real	desiredMinimumHeight:		computeColumnButtons.height + computeColumnErrorScroll.height + (isRCode ? computeColumnEditRectangle.desiredMinimumHeight : computedColumnConstructor.desiredMinimumHeight)
 
+	// The C++ constructor only builds its chrome/palettes when it is actually visible.
+	// StackLayout sets our visibility for tab switches; this forwards it so the deferred
+	// build runs the first time the computed column tab is shown.
+	onVisibleChanged:			if(visible) computedColumnConstructor.requestBuild()
+
 	Connections
 	{
 		target: columnModel.column
@@ -180,6 +185,7 @@ FocusScope
 				anchors.fill:			parent
 				anchors.leftMargin:		1
 				visible:				!isRCode
+				deferUntilVisible:		true
 			
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton

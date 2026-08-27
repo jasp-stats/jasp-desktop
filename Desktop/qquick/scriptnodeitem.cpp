@@ -11,6 +11,7 @@
 #include <QFontMetricsF>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QHoverEvent>
 #include <QToolTip>
 #include <algorithm>
 
@@ -128,7 +129,7 @@ QQuickItem * ScriptDropSpot::ensurePlaceholder()
 	if(_placeholder)
 		return _placeholder;
 
-	_placeholder = _view->newLeaf(_view->textComponent());
+	_placeholder = _view->newLeaf(_view->textComponent(), "text");
 	if(_placeholder)
 	{
 		_placeholder->setParentItem(this);
@@ -151,7 +152,7 @@ QQuickItem * ScriptDropSpot::ensureMarker()
 	if(_marker)
 		return _marker;
 
-	_marker = _view->newLeaf(_view->rectangleComponent());
+	_marker = _view->newLeaf(_view->rectangleComponent(), "rectangle");
 	if(_marker)
 	{
 		_marker->setParentItem(this);
@@ -286,7 +287,7 @@ QQuickItem * ScriptDropSpot::ensureInput()
 	if(_input)
 		return _input;
 
-	_input = _view->newLeaf(_view->textInputComponent());
+	_input = _view->newLeaf(_view->textInputComponent(), "textInput");
 	if(_input)
 	{
 		_input->setParentItem(this);
@@ -398,17 +399,9 @@ ScriptNodeItem::ScriptNodeItem(ScriptConstructorView * view, ScriptNode * node, 
 {
 	setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
 
-	// Transparent tooltip overlay: a MouseArea that only reports hover (acceptedButtons:
-	// Qt.NoButton) so a QtQuick ToolTip can show on hover without breaking drag & drop.
-	if(view)
-	{
-		QQuickItem * overlay = view->newLeaf(view->tooltipAreaComponent());
-		if(overlay)
-		{
-			overlay->setParentItem(this);
-			overlay->setZ(5);
-		}
-	}
+	// Hover shows a native tooltip via QToolTip (see hoverEnterEvent), replacing the old
+	// per-item QtQuick ToolTip overlay that required one QML incubation per node item.
+	setAcceptHoverEvents(true);
 }
 
 void ScriptNodeItem::setToolTip(const QString & toolTip)
@@ -421,6 +414,7 @@ void ScriptNodeItem::setToolTip(const QString & toolTip)
 
 ScriptNodeItem::~ScriptNodeItem()
 {
+	QToolTip::hideText();
 	clearLeaves();
 }
 
@@ -449,7 +443,7 @@ void ScriptNodeItem::clearLeaves()
 
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 {
-	QQuickItem * item = _view->newLeaf(_view->textComponent());
+	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
@@ -468,7 +462,7 @@ QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 
 QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 {
-	QQuickItem * item = _view->newLeaf(_view->imageComponent());
+	QQuickItem * item = _view->newLeaf(_view->imageComponent(), "image");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
@@ -489,7 +483,7 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 
 QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 {
-	QQuickItem * item = _view->newLeaf(_view->textComponent());
+	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
@@ -508,7 +502,7 @@ QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 QQuickItem * ScriptNodeItem::makeComma()
 {
 	// Argument separator text (", ") — rendered between function/row-function arguments.
-	QQuickItem * item = _view->newLeaf(_view->textComponent());
+	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
@@ -590,7 +584,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Number:
 	{
 		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
-		QQuickItem * input = _view->newLeaf(_view->textInputComponent());
+		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
 		if(input)
 		{
 			input->setParentItem(this);
@@ -607,7 +601,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::String:
 	{
 		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
-		QQuickItem * input = _view->newLeaf(_view->textInputComponent());
+		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
 		if(input)
 		{
 			input->setParentItem(this);
@@ -624,7 +618,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Boolean:
 	{
 		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
-		QQuickItem * box = _view->newLeaf(_view->checkBoxComponent());
+		QQuickItem * box = _view->newLeaf(_view->checkBoxComponent(), "checkBox");
 		if(box)
 		{
 			box->setParentItem(this);
@@ -664,7 +658,7 @@ void ScriptNodeItem::rebuild()
 		if(op->isVertical() && _acceptsDrops)
 		{
 			// Fraction: the horizontal line is drawn in layout(); the ÷ image is only the bar prototype.
-			_fractionBar = _view->newLeaf(_view->rectangleComponent());
+			_fractionBar = _view->newLeaf(_view->rectangleComponent(), "rectangle");
 			if(_fractionBar)
 			{
 				_fractionBar->setParentItem(this);
@@ -697,7 +691,7 @@ void ScriptNodeItem::rebuild()
 		if(isSqrt && _acceptsDrops)
 		{
 			// Radical: a √ head (drawn tall) with an overline layered above the argument in layout().
-			QQuickItem * head = _view->newLeaf(_view->imageComponent());
+			QQuickItem * head = _view->newLeaf(_view->imageComponent(), "image");
 			if(head)
 			{
 				head->setParentItem(this);
@@ -708,7 +702,7 @@ void ScriptNodeItem::rebuild()
 				addLeaf(head);
 			}
 
-			_overline = _view->newLeaf(_view->rectangleComponent());
+			_overline = _view->newLeaf(_view->rectangleComponent(), "rectangle");
 			if(_overline)
 			{
 				_overline->setParentItem(this);
@@ -1144,6 +1138,20 @@ void ScriptNodeItem::mouseReleaseEvent(QMouseEvent * event)
 
 void ScriptNodeItem::mouseDoubleClickEvent(QMouseEvent * event)
 {
+	event->accept();
+}
+
+void ScriptNodeItem::hoverEnterEvent(QHoverEvent * event)
+{
+	if(!_toolTip.isEmpty())
+		QToolTip::showText(event->globalPosition().toPoint(), _toolTip, nullptr, QRect(), 15000);
+
+	event->accept();
+}
+
+void ScriptNodeItem::hoverLeaveEvent(QHoverEvent * event)
+{
+	QToolTip::hideText();
 	event->accept();
 }
 
