@@ -40,6 +40,7 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( qreal				desiredMinimumHeight	READ desiredMinimumHeight	NOTIFY desiredMinimumHeightChanged	)
 	Q_PROPERTY( bool				canUndo					READ canUndo				NOTIFY canUndoChanged				)
 	Q_PROPERTY( bool				canRedo					READ canRedo				NOTIFY canRedoChanged				)
+	Q_PROPERTY( bool				deferUntilVisible		READ deferUntilVisible		WRITE setDeferUntilVisible	NOTIFY deferUntilVisibleChanged	)
 
 public:
 	enum Mode { Filter = 0, ComputedColumn = 1, ComputedDataSet = 2 };
@@ -96,20 +97,27 @@ public:
 	bool				canUndo() const { return _localUndoStack.canUndo(); }
 	bool				canRedo() const { return _localUndoStack.canRedo(); }
 
+	bool				deferUntilVisible() const { return _deferUntilVisible; }
+	void				setDeferUntilVisible(bool v);
+
+	// Builds the chrome (idempotent). Called at completion when visible or deferred
+	// until the view first becomes visible (deferUntilVisible).
+	void				ensureChromeBuilt();
+	Q_INVOKABLE void	requestBuild() { if(_componentComplete) ensureChromeBuilt(); }
+
 	// --- used by ScriptNodeItem / ScriptDropSpot ---
 	QQmlComponent	*	textComponent();
 	QQmlComponent	*	imageComponent();
 	QQmlComponent	*	textInputComponent();
 	QQmlComponent	*	checkBoxComponent();
 	QQmlComponent	*	rectangleComponent();
-	QQmlComponent	*	tooltipAreaComponent();
 
 	qreal				blockDim() const;
 	qreal				fontPixelSize() const;
 	qreal				spacing() const;
 
 	QQuickItem		*	scriptArea() const { return _scriptArea; }
-	QQuickItem		*	newLeaf(QQmlComponent * comp);
+	QQuickItem		*	newLeaf(QQmlComponent * comp, const char * kind);
 
 	void				nodeEdited();
 	void				refresh() { rebuildFormulaItems(); }
@@ -124,7 +132,7 @@ public:
 	ScriptDropSpot	*	dropSpotAt(const QPointF & scenePos, ScriptNodeItem * dragged = nullptr) const;
 	void				collectDropSpots(QList<ScriptDropSpot*> & out) const;
 
-signals:
+	signals:
 	void				modeChanged();
 	void				constructorJsonChanged();
 	void				rCodeChanged(QString rScript);
@@ -136,6 +144,7 @@ signals:
 	void				desiredMinimumHeightChanged();
 	void				canUndoChanged();
 	void				canRedoChanged();
+	void				deferUntilVisibleChanged();
 
 	/// Emitted when the user applies a valid formula. The surrounding window persists it
 	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
@@ -144,6 +153,7 @@ signals:
 protected:
 	void				componentComplete() override;
 	void				geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
+	void				itemChange(ItemChange change, const ItemChangeData & value) override;
 	void				keyPressEvent(QKeyEvent * event) override;
 	bool				eventFilter(QObject * obj, QEvent * event) override;
 
@@ -203,10 +213,11 @@ private:
 											_imageComp,
 											_textInputComp,
 											_checkBoxComp,
-											_rectComp,
-											_tooltipAreaComp;
+											_rectComp;
 
 	QAbstractItemModel				*		_columnsModel = nullptr;
+
+	QString									_trashToolTip;
 
 	// Natural size of the background watermark image, cached on load (the Image's
 	// sourceSize = 2x binding makes implicitWidth follow width afterwards).
@@ -222,7 +233,9 @@ private:
 	bool									_somethingChanged	= false,
 											_lastCheckPassed		= true,
 											_showGeneratedRCode	= false,
-											_chromeBuilt			= false;
+											_chromeBuilt			= false,
+											_deferUntilVisible		= false,
+											_componentComplete		= false;
 	QString									_lastAppliedJson;
 	QString									_filterErrorMsg;
 	QString									_hintText;

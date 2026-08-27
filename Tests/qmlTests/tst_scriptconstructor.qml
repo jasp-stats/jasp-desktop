@@ -17,9 +17,35 @@ TestCase
 		height:	600
 	}
 
+	ScriptConstructor
+	{
+		id:					scHidden
+		mode:				ScriptConstructor.Filter
+		width:				500
+		height:				400
+		visible:			false
+		deferUntilVisible:	true
+	}
+
 	// In the headless test there is no ColumnsModel, so column types resolve to the
 	// scale fallback. The exact per-type R output is covered by the golden tests in
 	// testall.cpp which use a real column-type provider.
+
+	function test_deferred_build_on_visible()
+	{
+		// With deferUntilVisible the chrome is not built while the view is hidden.
+		compare(scHidden.children.length, 0)
+
+		// An explicit build request (as ComputeColumnWindow sends when it becomes
+		// visible) builds the chrome, idempotently.
+		scHidden.requestBuild()
+		verify(scHidden.children.length > 0)
+
+		scHidden.requestBuild()
+		verify(scHidden.children.length > 0)
+
+		compare(scHidden.rCode, "")
+	}
 
 	function test_load_json_generates_r()
 	{
