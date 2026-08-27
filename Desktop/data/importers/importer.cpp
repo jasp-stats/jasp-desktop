@@ -327,7 +327,9 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 
 	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
 	{
-		if (PreferencesModel::prefs()->keepMissingColsWhenSyncing())
+		//prefs() is absent when the importer runs without the GUI (unit tests, headless use); fall back to
+		//the historic behaviour of dropping the column in that case.
+		if (PreferencesModel::prefs() && PreferencesModel::prefs()->keepMissingColsWhenSyncing())
 		{
 			//getColumnIndex() gives the column's position in the full dataset, which can exceed
 			//newColumnOrder's size (it holds the imported columns plus any missing ones already re-inserted

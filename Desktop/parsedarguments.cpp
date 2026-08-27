@@ -223,10 +223,11 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		std::cerr	<< "If a filename is supplied JASP will try to load it. \n";
 #ifdef PRO
 		std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (in PDF format if --exportPdf is set)\n"
-					<< "If --outputDir is specified, then the results are exported in this folder, if not it wlll be exported in the same folder as the data file.\n"
+					<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
 					<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
 					<< "Per default after synchronizing with a data file, it will export the result, except if --dontExportResult is specified.\n"
-					<< "It will also remove columns afetr synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: it will then keep an empty column.\n"
+					<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: it will then keep an empty column.\n"
+					<< "  Columns of the new data file that did not exist yet take over the columns that disappeared (they are renamed), so only the ones left over after that are actually kept as empty columns. This does mean the data never holds fewer columns than it did before synchronizing, and with --keepJASPOpen and repeated synchronizations those leftovers stay around. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself.\n"
 					<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";
 #endif
 		std::cerr	<< "\n"
