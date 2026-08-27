@@ -2005,12 +2005,13 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
 					emit exitSignal(12);
 		}
-		else if (!event->isCancelled()) //A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current data/analyses to survive.
+		else if (!event->isCancelled()) //A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current data/analyses to survive. A failed open still has to, silent or not, since the loader already tore the workspace down.
 		{
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
+			if (!event->isSilent())
+				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	emit exitSignal(3);
 		}
@@ -2055,7 +2056,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 		}
 		else
 		{
-			if (!event->isCancelled())
+			if (!event->isCancelled() && !event->isSilent())
 				MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)

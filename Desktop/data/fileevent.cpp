@@ -196,7 +196,9 @@ bool FileEvent::isExample() const
 
 void FileEvent::setSilent(bool newSilent)
 {
-	_cancelled = newSilent;
+	//Deliberately not _cancelled: silent only suppresses the message box, while cancelled also means
+	//the user aborted and the workspace they still have must survive.
+	_silent = newSilent;
 }
 
 bool FileEvent::autoSaveExists()
