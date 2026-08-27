@@ -60,7 +60,7 @@ public:
 	const std::vector<ScriptFunctionDef>	& functions()		const { return _functions;		}
 	const std::vector<ScriptFunctionDef>	& rowFunctions()	const { return _rowFunctions;	}
 
-	const ScriptOperatorDef		* operatorDef(	const std::string & op)		const;
+	const ScriptOperatorDef		* operatorDef(	const std::string & op, bool vertical = false)	const;
 	const ScriptFunctionDef		* functionDef(	const std::string & name)	const;
 	const ScriptFunctionDef		* rowFunctionDef(const std::string & name)	const;
 

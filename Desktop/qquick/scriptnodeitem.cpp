@@ -441,6 +441,7 @@ void ScriptNodeItem::clearLeaves()
 	if(_openParen)	{ _openParen->deleteLater();	_openParen	= nullptr; }
 	if(_closeParen)	{ _closeParen->deleteLater();	_closeParen	= nullptr; }
 	if(_overline)	{ _overline->deleteLater();		_overline	= nullptr; }
+	if(_fractionBar){ _fractionBar->deleteLater();	_fractionBar = nullptr; }
 }
 
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
@@ -649,14 +650,25 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::OperatorVertical:
 	{
 		auto * op = static_cast<ScriptNodeOperator*>(_node);
-		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op());
+		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op(), op->isVertical());
 
 		// Horizontal operators wrap their children in parentheses; vertical (division) does not.
 		bool nest = !op->isVertical();
 
 		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft(), false, nest}, "...");
 
-		if(def && !def->image.empty())
+		if(op->isVertical() && _acceptsDrops)
+		{
+			// Fraction: the horizontal line is drawn in layout(); the ÷ image is only the bar prototype.
+			_fractionBar = _view->newLeaf(_view->rectangleComponent());
+			if(_fractionBar)
+			{
+				_fractionBar->setParentItem(this);
+				_fractionBar->setProperty("color", JaspTheme::currentTheme()->textEnabled());
+				_fractionBar->setVisible(false);
+			}
+		}
+		else if(def && !def->image.empty())
 			makeImage(tq(def->image));
 		else
 			makeText(QString::fromStdString(op->op()), true);
@@ -771,7 +783,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::OperatorVertical:
 	{
 		const std::string & op = static_cast<ScriptNodeOperator*>(_node)->op();
-		if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op))
+		if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node)->isVertical()))
 			tip = def->toolTipForMode(_view->model()->mode());
 		break;
 	}
@@ -909,28 +921,69 @@ void ScriptNodeItem::layout()
 		ScriptDropSpot * left = _dropSpots.size() > 0 ? _dropSpots[0] : nullptr;
 		ScriptDropSpot * right = _dropSpots.size() > 1 ? _dropSpots[1] : nullptr;
 
-		bool showParens = _nested && _openParen && _closeParen;
-		if(_openParen)	_openParen->setVisible(showParens);
-		if(_closeParen)	_closeParen->setVisible(showParens);
-
-		if(showParens) placeNext(_openParen);
-
-		if(left) { left->layout(); placeNext(left); }
-
-		QQuickItem * opVisual = _leaves.isEmpty() ? nullptr : _leaves.first();
-		if(opVisual)
+		// Vertical (fraction) division stacks numerator above a horizontal line above denominator.
+		if(op->isVertical() && _acceptsDrops)
 		{
-			qreal w = opVisual->width() > 0 ? opVisual->width() : opVisual->property("implicitWidth").toReal();
-			qreal h = opVisual->height() > 0 ? opVisual->height() : block;
-			opVisual->setX(x);
-			opVisual->setY((maxH > h ? (maxH - h) / 2 : 0));
-			x += w + spacing;
-			maxH = std::max(maxH, h);
+			if(left)	left->layout();
+			if(right)	right->layout();
+
+			qreal leftW  = left  ? left->width()  : 0;
+			qreal leftH  = left  ? left->height() : block;
+			qreal rightW = right ? right->width() : 0;
+			qreal rightH = right ? right->height() : block;
+
+			const qreal barH = std::max(qreal(2.0), block * 0.1);
+			const qreal barW = std::max(std::max(leftW, rightW), block);
+
+			if(left)
+			{
+				left->setX((barW - leftW) / 2);
+				left->setY(0);
+			}
+
+			if(_fractionBar)
+			{
+				_fractionBar->setVisible(true);
+				_fractionBar->setX(0);
+				_fractionBar->setY(leftH);
+				_fractionBar->setWidth(barW);
+				_fractionBar->setHeight(barH);
+			}
+
+			if(right)
+			{
+				right->setX((barW - rightW) / 2);
+				right->setY(leftH + barH);
+			}
+
+			x = barW;
+			maxH = leftH + barH + rightH;
 		}
+		else
+		{
+			bool showParens = _nested && _openParen && _closeParen;
+			if(_openParen)	_openParen->setVisible(showParens);
+			if(_closeParen)	_closeParen->setVisible(showParens);
 
-		if(right) { right->layout(); placeNext(right); }
+			if(showParens) placeNext(_openParen);
 
-		if(showParens) placeNext(_closeParen);
+			if(left) { left->layout(); placeNext(left); }
+
+			QQuickItem * opVisual = _leaves.isEmpty() ? nullptr : _leaves.first();
+			if(opVisual)
+			{
+				qreal w = opVisual->width() > 0 ? opVisual->width() : opVisual->property("implicitWidth").toReal();
+				qreal h = opVisual->height() > 0 ? opVisual->height() : block;
+				opVisual->setX(x);
+				opVisual->setY((maxH > h ? (maxH - h) / 2 : 0));
+				x += w + spacing;
+				maxH = std::max(maxH, h);
+			}
+
+			if(right) { right->layout(); placeNext(right); }
+
+			if(showParens) placeNext(_closeParen);
+		}
 		(void)op;
 	}
 	else if(t == ScriptNode::Type::Function || t == ScriptNode::Type::RowFunction)

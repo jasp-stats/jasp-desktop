@@ -403,6 +403,11 @@ void ScriptConstructorView::buildChrome()
 		_backgroundDecoration->setParentItem(this);
 		_backgroundDecoration->setZ(-2);
 		_backgroundDecoration->setProperty("fillMode", 1); // Image.PreserveAspectFit
+
+		// The source image loads asynchronously; re-layout once its intrinsic size is known so the
+		// watermark gets sized (it is otherwise left at 0x0 until an unrelated relayout happens).
+		connect(_backgroundDecoration, &QQuickItem::implicitWidthChanged,	 this, [this](){ if(_chromeBuilt) layoutAll(); });
+		connect(_backgroundDecoration, &QQuickItem::implicitHeightChanged, this, [this](){ if(_chromeBuilt) layoutAll(); });
 	}
 	updateBackgroundDecoration();
 

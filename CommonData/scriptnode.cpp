@@ -230,7 +230,7 @@ std::string ScriptNodeOperator::toR(const ScriptColumnTypeProvider * typeProvide
 
 stringvec ScriptNodeOperator::dragKeys() const
 {
-	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op);
+	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
 
 	if(!def) return {"number"};
 
@@ -247,13 +247,13 @@ bool ScriptNodeOperator::isComplete() const
 
 stringvec ScriptNodeOperator::dropKeysLeft() const
 {
-	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op);
+	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
 	return def ? def->dropKeysLeft(ScriptConstructorMode::Filter) : stringvec{"number"};
 }
 
 stringvec ScriptNodeOperator::dropKeysRight() const
 {
-	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op);
+	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
 	return def ? def->dropKeysRight(ScriptConstructorMode::Filter) : stringvec{"number"};
 }
 
