@@ -954,11 +954,11 @@ void ScriptNodeItem::layout()
 			if(right)
 			{
 				right->setX((barW - rightW) / 2);
-				right->setY(leftH + barH);
+				right->setY(leftH + barH + 1);
 			}
 
 			x = barW;
-			maxH = leftH + barH + rightH;
+			maxH = leftH + barH + rightH + 1;
 		}
 		else
 		{
