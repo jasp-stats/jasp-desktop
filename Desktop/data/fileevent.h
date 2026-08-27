@@ -38,7 +38,7 @@ public:
 	enum FileMode { FileSave, FileNew, FileOpen, FileExportResults, FileExportData, FileGenerateData, FileSyncData, FileClose };
 	enum EventStatus { EventInitialized, EventStarted, EventCompleted };
 
-	FileEvent(QObject *parent, FileMode fileMode = FileEvent::FileOpen);
+	FileEvent(QObject *parent, FileMode fileMode = FileEvent::FileOpen, bool routeThroughFileMenu = true); ///< routeThroughFileMenu=false for UI-independent events (the data-syncer path) that drive the loader themselves.
 	virtual	~FileEvent();
 
 	bool				setPath(		const QString & path);
