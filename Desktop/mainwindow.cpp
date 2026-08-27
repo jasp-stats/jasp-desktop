@@ -1998,16 +1998,14 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
 					emit exitSignal(12);
 		}
-		else
+		else if (!event->isCancelled()) //A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current data/analyses to survive.
 		{
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			if (!event->isCancelled())
-				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
+			MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	emit exitSignal(3);
-
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
