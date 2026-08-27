@@ -1,4 +1,5 @@
 #include "scriptnode.h"
+#include "columntype.h"
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -518,7 +519,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 	int actualType = typeProvider ? typeProvider->columnType(_columnName) : 1;
 	int effective = effectiveColumnType(actualType);
 
-	return _columnName + "." + ScriptConstructorRegistry::columnTypeString(effective);
+	return _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
 }
 
 stringvec ScriptNodeColumn::dragKeys() const

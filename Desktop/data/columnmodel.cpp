@@ -934,13 +934,23 @@ void ColumnModel::createComputedColumn(const QString & name, int colType, bool u
 	if(!dataSet || !isColumnNameFree(name))
 		return;
 
-	Column * column = Workspace::singleton()->createComputedColumn(
-		fq(name),
-		dataSet->id(),
-		-1,
+	// Undoable: the command's redo() creates the column, its undo() removes it.
+	undoStack()->pushCommand(new CreateComputedColumnCommand(
+		dataSet,
+		name,
 		columnType(colType),
-		useJsonConstructor ? computedColumnType::constructorCode : computedColumnType::rCode);
+		useJsonConstructor ? computedColumnType::constructorCode : computedColumnType::rCode));
 
-	if(column)
-		openComputedColumn(name);
+	openComputedColumn(name);
+}
+
+void ColumnModel::setComputedColumnCode(const QString & rCode, const QString & json)
+{
+	if(!column() || _beingRefreshed)
+		return;
+
+	if(column()->rCodeQ() == rCode && column()->constructorJsonQ() == json)
+		return;
+
+	undoStack()->pushCommand(new SetComputedColumnCodeCommand(DataSetPackage::filter(), column(), rCode, json));
 }

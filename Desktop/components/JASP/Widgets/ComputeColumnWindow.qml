@@ -59,15 +59,12 @@ FocusScope
 			return
 
 		if(isRCode)
-			columnModel.column.rCode = computeColumnEdit.text
+			columnModel.setComputedColumnCode(computeColumnEdit.text, columnModel.column.constructorJson)
 		else
 		{
 			computedColumnConstructor.forceActiveFocus();
 			if(computedColumnConstructor.checkAndApply())
-			{
-				columnModel.column.constructorJson	= computedColumnConstructor.returnFilterJSON()
-				columnModel.column.rCode			= computedColumnConstructor.rCode
-			}
+				columnModel.setComputedColumnCode(computedColumnConstructor.rCode, computedColumnConstructor.returnFilterJSON())
 		}
 	}
 

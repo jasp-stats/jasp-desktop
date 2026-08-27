@@ -68,7 +68,6 @@ public:
 	std::vector<ScriptOperatorDef>	operatorsForMode(ScriptConstructorMode mode) const;
 
 	static stringvec				dropKeysForColumnType(int columnType);
-	static std::string				columnTypeString(int columnType);
 
 private:
 	ScriptConstructorRegistry();
