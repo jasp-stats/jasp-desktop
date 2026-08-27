@@ -69,7 +69,7 @@ public:
 	Q_ENUM(FileMenuListItemType)
 
 	explicit FileMenu(QObject *parent = nullptr);
-	virtual ~FileMenu() {}
+	virtual ~FileMenu();
 	
 	static FileMenu*	singleton()	{ return _singleton; }
 
