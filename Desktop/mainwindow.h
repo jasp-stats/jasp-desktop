@@ -291,7 +291,7 @@ private slots:
 
 	void fileEventRequestHandler(FileEvent *event);
 	void fileEventRequestFinalize(FileEvent *event);
-	void populateUIfromDataSet();
+	void populateUIfromDataSet(bool loadAnalyses = false);
 	void startDataEditorEventCompleted(FileEvent *event);
 	void analysisAdded(Analysis *analysis);
 	void resendResultsToWebEngine();
