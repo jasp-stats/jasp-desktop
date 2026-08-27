@@ -126,7 +126,7 @@ signals:
 protected:
 	void				componentComplete() override;
 	void				geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
-	QSGNode			*	updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *) override;
+	bool				eventFilter(QObject * obj, QEvent * event) override;
 
 private:
 	void				buildChrome();
