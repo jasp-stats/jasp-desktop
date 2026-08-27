@@ -1235,7 +1235,13 @@ void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 
 	if (_analyses->allFinished())
 	{
-		disconnect(_analyses,	&Analyses::analysisResultsChanged,	this,	&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
+		//Take ownership of the waiting event *before* doing any work: setErrorInResults() below ends up
+		//emitting analysisResultsChanged, which re-enters this slot - the cleared _waitingEvent makes that
+		//re-entry return at the guard above. Note we must NOT disconnect from analysisResultsChanged to
+		//achieve that: this slot has to stay connected for any later event that waits on the analyses
+		//(a second sync/export with --keepJASPOpen), which would otherwise wait forever.
+		FileEvent * waitingEvent = _waitingEvent;
+		_waitingEvent            = nullptr;
 
 		_analyses->applyToAll([&](Analysis * a)
 		{
@@ -1243,8 +1249,7 @@ void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 				a->setErrorInResults("Validation error: " + fq(a->form()->getError(true)));
 		});
 
-		_waitingEvent->starts();
-		_waitingEvent = nullptr;
+		waitingEvent->starts();
 	}
 }
 
