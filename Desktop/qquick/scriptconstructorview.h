@@ -3,6 +3,7 @@
 
 #include <QQuickItem>
 #include <QPointer>
+#include <QUndoStack>
 #include <map>
 #include "scriptconstructormodel.h"
 
@@ -11,6 +12,7 @@ class ScriptDropSpot;
 class ScriptPalette;
 class QQmlComponent;
 class QAbstractItemModel;
+class QKeyEvent;
 
 ///
 /// C++ replacement for the old QML FilterConstructor / ComputedColumnsConstructor.
@@ -33,6 +35,8 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( QAbstractItemModel* columnsModel			READ columnsModel		WRITE setColumnsModel		NOTIFY columnsModelChanged		)
 	Q_PROPERTY( QString				filterErrorMsg			READ filterErrorMsg		WRITE setFilterErrorMsg		NOTIFY filterErrorMsgChanged	)
 	Q_PROPERTY( qreal				desiredMinimumHeight	READ desiredMinimumHeight	NOTIFY desiredMinimumHeightChanged	)
+	Q_PROPERTY( bool				canUndo					READ canUndo				NOTIFY canUndoChanged				)
+	Q_PROPERTY( bool				canRedo					READ canRedo				NOTIFY canRedoChanged				)
 
 public:
 	enum Mode { Filter = 0, ComputedColumn = 1, ComputedDataSet = 2 };
@@ -79,6 +83,11 @@ public:
 	Q_INVOKABLE void	initializeFromJSON(const QString & json = QString());
 	Q_INVOKABLE bool	jsonChanged() const;
 	Q_INVOKABLE QString returnFilterJSON() const;
+	Q_INVOKABLE void	undo();
+	Q_INVOKABLE void	redo();
+
+	bool				canUndo() const { return _localUndoStack.canUndo(); }
+	bool				canRedo() const { return _localUndoStack.canRedo(); }
 
 	// --- used by ScriptNodeItem / ScriptDropSpot ---
 	QQmlComponent	*	textComponent();
@@ -118,6 +127,8 @@ signals:
 	void				columnsModelChanged();
 	void				filterErrorMsgChanged();
 	void				desiredMinimumHeightChanged();
+	void				canUndoChanged();
+	void				canRedoChanged();
 
 	/// Emitted when the user applies a valid formula. The surrounding window persists it
 	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
@@ -126,6 +137,7 @@ signals:
 protected:
 	void				componentComplete() override;
 	void				geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
+	void				keyPressEvent(QKeyEvent * event) override;
 	bool				eventFilter(QObject * obj, QEvent * event) override;
 
 private:
@@ -147,6 +159,9 @@ private:
 	void				updateBackgroundDecoration();
 
 	ScriptConstructorModel					_model;
+
+	// Local undo for in-progress constructor editing (separate from the dataset's UndoStack).
+	QUndoStack								_localUndoStack;
 
 	QPointer<QQuickItem>					_background,
 											_backgroundDecoration,

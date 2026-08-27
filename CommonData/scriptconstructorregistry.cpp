@@ -276,20 +276,10 @@ std::vector<ScriptOperatorDef> ScriptConstructorRegistry::operatorsForMode(Scrip
 
 stringvec ScriptConstructorRegistry::dropKeysForColumnType(int colType)
 {
-	switch(colType)
+	switch(static_cast<columnType>(colType))
 	{
-	case 1:		return {"number"};
-	case 2:		return {"string", "ordered"};
-	default:	return {"string"};
-	}
-}
-
-std::string ScriptConstructorRegistry::columnTypeString(int colType)
-{
-	switch(colType)
-	{
-	case 1:		return "scale";
-	case 2:		return "ordinal";
-	default:	return "nominal";
+	case columnType::scale:		return {"number"};
+	case columnType::ordinal:	return {"string", "ordered"};
+	default:					return {"string"}; // nominal (and anything else)
 	}
 }

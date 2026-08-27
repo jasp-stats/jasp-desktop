@@ -9,15 +9,23 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
+#include <QKeyEvent>
+#include <QKeySequence>
 #include <algorithm>
 
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
 {
 	setClip(true);
+	setFlag(QQuickItem::ItemIsFocusScope);
 
 	// The view resolves actual column types from the columns model for R generation.
 	_model.setColumnTypeProvider(this);
+
+	// Constructor editing is undone locally (Ctrl+Z while focused), independently of the dataset.
+	_model.setUndoStack(&_localUndoStack);
+	connect(&_localUndoStack, &QUndoStack::canUndoChanged,	this, &ScriptConstructorView::canUndoChanged);
+	connect(&_localUndoStack, &QUndoStack::canRedoChanged,	this, &ScriptConstructorView::canRedoChanged);
 
 	connect(&_model, &ScriptConstructorModel::reset,	this, [this](){ rebuildFormulaItems(); });
 	connect(&_model, &ScriptConstructorModel::changed,	this, [this](){
@@ -68,6 +76,7 @@ void ScriptConstructorView::setConstructorJson(const QString & json)
 	std::string s = fq(json);
 	if(s == _model.toString()) return;
 
+	_localUndoStack.clear();
 	_model.fromJson(s);
 	_lastAppliedJson = tq(_model.toString());
 	setSomethingChanged(false);
@@ -179,10 +188,21 @@ bool ScriptConstructorView::jsonChanged() const
 
 void ScriptConstructorView::initializeFromJSON(const QString & json)
 {
+	_localUndoStack.clear();
 	std::string s = json.isEmpty() ? fq(_lastAppliedJson) : fq(json);
 	_model.fromJson(s);
 	setSomethingChanged(false);
 	rebuildFormulaItems();
+}
+
+void ScriptConstructorView::undo()
+{
+	_localUndoStack.undo();
+}
+
+void ScriptConstructorView::redo()
+{
+	_localUndoStack.redo();
 }
 
 bool ScriptConstructorView::checkAndApply()
@@ -676,6 +696,24 @@ void ScriptConstructorView::geometryChange(const QRectF & newGeometry, const QRe
 
 	if(newGeometry.size() != oldGeometry.size())
 		layoutAll();
+}
+
+void ScriptConstructorView::keyPressEvent(QKeyEvent * event)
+{
+	if(event->matches(QKeySequence::Undo))
+	{
+		_localUndoStack.undo();
+		event->accept();
+		return;
+	}
+	if(event->matches(QKeySequence::Redo))
+	{
+		_localUndoStack.redo();
+		event->accept();
+		return;
+	}
+
+	QQuickItem::keyPressEvent(event);
 }
 
 bool ScriptConstructorView::eventFilter(QObject * obj, QEvent * event)

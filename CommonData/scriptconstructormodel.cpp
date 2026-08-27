@@ -1,4 +1,5 @@
 #include "scriptconstructormodel.h"
+#include "columntype.h"
 #include <QUndoStack>
 
 // --- DropTarget ---
@@ -267,7 +268,7 @@ void ScriptConstructorModel::resolveColumnTypeDrop(ScriptNodeColumn * col, const
 		return;
 	}
 
-	for(int t : {1, 2, 3}) // scale, ordinal, nominal
+	for(int t : {int(columnType::scale), int(columnType::ordinal), int(columnType::nominal)})
 	{
 		if(accepts(t))
 		{
@@ -417,12 +418,12 @@ DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node
 std::vector<int> ScriptConstructorModel::allowedColumnTypes(ScriptNode * node) const
 {
 	if(!node || !node->parent())
-		return {1, 2, 3}; // root: unconstrained
+		return {int(columnType::scale), int(columnType::ordinal), int(columnType::nominal)}; // root: unconstrained
 
 	const stringvec keys = containingSlotKeys(node);
 
 	std::vector<int> out;
-	for(int t : {1, 2, 3}) // scale, ordinal, nominal
+	for(int t : {int(columnType::scale), int(columnType::ordinal), int(columnType::nominal)})
 		if(keysOverlap(ScriptConstructorRegistry::dropKeysForColumnType(t), keys))
 			out.push_back(t);
 	return out;
