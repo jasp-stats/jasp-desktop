@@ -152,9 +152,13 @@ void TestParsedArguments::testBooleanFlags()
 	check("--hide",				&ParsedArguments::hideJASP);
 	check("--safeGraphics",		&ParsedArguments::safeGraphics);
 	check("--newData",			&ParsedArguments::newData);
+
+#ifdef PRO
+	//These flags only exist in PRO builds; elsewhere they are passed on to Qt as unrecognized options.
 	check("--exportPdf",		&ParsedArguments::exportPdf);
 	check("--keepJASPOpen",		&ParsedArguments::keepJASPOpenAfterExporting);
 	check("--dontExportResult",	&ParsedArguments::dontExportResult);
+#endif
 }
 
 // ── --timeOut=N ────────────────────────────────────────────────────────────
@@ -209,6 +213,9 @@ void TestParsedArguments::testJaspFilePositionalArg()
 
 void TestParsedArguments::testJaspFileWithOneDataFile()
 {
+#ifndef PRO
+	QSKIP("A data file following a JASP file is only parsed in PRO builds");
+#endif
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -226,6 +233,9 @@ void TestParsedArguments::testJaspFileWithOneDataFile()
 
 void TestParsedArguments::testJaspFileWithMultipleDataFiles()
 {
+#ifndef PRO
+	QSKIP("Data files following a JASP file are only parsed in PRO builds");
+#endif
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -245,6 +255,9 @@ void TestParsedArguments::testJaspFileWithMultipleDataFiles()
 
 void TestParsedArguments::testInputDataDir()
 {
+#ifndef PRO
+	QSKIP("--inputDataDir is only parsed in PRO builds");
+#endif
 	QTemporaryDir dataDir;
 	QVERIFY(dataDir.isValid());
 
@@ -259,6 +272,9 @@ void TestParsedArguments::testInputDataDir()
 
 void TestParsedArguments::testOutputDir()
 {
+#ifndef PRO
+	QSKIP("--outputDir is only parsed in PRO builds");
+#endif
 	QTemporaryDir outDir;
 	QVERIFY(outDir.isValid());
 
@@ -303,6 +319,9 @@ void TestParsedArguments::testUnitTestRecursiveFlag()
 
 void TestParsedArguments::testCombinedOutputFlags()
 {
+#ifndef PRO
+	QSKIP("The export/output flags combination is only parsed in PRO builds");
+#endif
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -334,7 +353,9 @@ void TestParsedArguments::testMultipleFlagsIndependent()
 	QCOMPARE(pa.save,			true);
 	QCOMPARE(pa.logToFile,		true);
 	QCOMPARE(pa.safeGraphics,	true);
+#ifdef PRO
 	QCOMPARE(pa.exportPdf,		true);
+#endif
 	QCOMPARE(pa.timeOut,		5);
 	// Everything else stays default
 	QCOMPARE(pa.hideJASP,		false);
