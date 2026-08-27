@@ -72,7 +72,7 @@ void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, con
 		return;
 	}
 
-	FileEvent * event = new FileEvent(this, FileEvent::FileSyncData);
+	FileEvent * event = new FileEvent(this, FileEvent::FileSyncData, /*routeThroughFileMenu=*/false);
 	event->setDataSet(dataSet);
 	event->setPath(locator);
 	if(!databaseJson.isEmpty())
@@ -82,8 +82,13 @@ void AsyncLoader::onSyncRequired(DataSet * dataSet, const QString & locator, con
 		event->setDatabase(db);
 	}
 
+	//UI-independent path: drive the event straight through the loader (no FileMenu involved) and make
+	//sure it is cleaned up once finished, so the sync pipeline works headless (and in the unit tests).
+	connect(event, &FileEvent::completed, event, &FileEvent::cleanUp, Qt::QueuedConnection);
+
 	Log::log() << "[AsyncLoader::onSyncRequired] Calling io(event)" << std::endl;
 	event->starts();
+	io(event);
 	Log::log() << "[AsyncLoader::onSyncRequired] io(event) returned" << std::endl;
 }
 

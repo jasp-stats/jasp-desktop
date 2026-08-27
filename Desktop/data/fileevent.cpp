@@ -47,7 +47,7 @@ DataSet * FileEvent::dataSet() const
 	return _dataSet;
 }
 
-FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
+FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode, bool routeThroughFileMenu)
 	: QObject(parent), _operation(fileMode)
 {
 	switch (_operation)
@@ -59,10 +59,20 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode)
 	default:							_exporter = nullptr;					break;
 	}
 
-	// The FileMenu handles the started & completed signals
-	connect(this, &FileEvent::started,		FileMenu::singleton(), &FileMenu::startFileEvent);
-	connect(this, &FileEvent::completed,	FileMenu::singleton(), &FileMenu::finalizeFileEvent, Qt::QueuedConnection);
-
+	// UI-initiated file operations are routed through the FileMenu singleton (which forwards to the
+	// MainWindow handlers). The data-syncer path (AsyncLoader::onSyncRequired) runs headless and in
+	// unit tests where no FileMenu exists, so it opts out (routeThroughFileMenu == false) and drives
+	// the event through the loader itself. Never let the routing fail silently.
+	if (routeThroughFileMenu)
+	{
+		if (FileMenu::singleton())
+		{
+			connect(this, &FileEvent::started,		FileMenu::singleton(), &FileMenu::startFileEvent);
+			connect(this, &FileEvent::completed,	FileMenu::singleton(), &FileMenu::finalizeFileEvent, Qt::QueuedConnection);
+		}
+		else
+			Log::log() << "[FileEvent] routeThroughFileMenu requested but FileMenu::singleton() is null; started/completed will have no UI handler for this event." << std::endl;
+	}
 }
 
 FileEvent::~FileEvent()
