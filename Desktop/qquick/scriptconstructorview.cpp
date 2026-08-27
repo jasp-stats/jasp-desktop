@@ -9,14 +9,11 @@
 #include <QQmlEngine>
 #include <QQmlContext>
 #include <QQuickWindow>
-#include <QSGRectangleNode>
-#include <QSGFlatColorMaterial>
 #include <algorithm>
 
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
 {
-	setFlag(QQuickItem::ItemHasContents, true);
 	setClip(true);
 
 	// The view resolves actual column types from the columns model for R generation.
@@ -440,6 +437,10 @@ void ScriptConstructorView::buildChrome()
 		_trash->setProperty("radius", 6.0);
 		_trash->setZ(10);
 
+		// Double-click erases the entire slate (handled via eventFilter).
+		_trash->setAcceptedMouseButtons(Qt::LeftButton);
+		_trash->installEventFilter(this);
+
 		// Hover tooltip (mirrors the old DropTrash.qml).
 		_trash->setProperty("toolTip", tr("Dump unwanted snippets here; double-click to erase the entire slate"));
 		if(QQuickItem * overlay = newLeaf(tooltipAreaComponent()))
@@ -452,6 +453,7 @@ void ScriptConstructorView::buildChrome()
 			icon->setParentItem(_trash);
 			icon->setProperty("source", (theme ? theme->iconPath() : QString()) + "/trashcan.png");
 			icon->setProperty("fillMode", 1); // Image.PreserveAspectFit
+			icon->setAcceptedMouseButtons(Qt::NoButton);
 			qreal dim = blockDim() * 1.6;
 			icon->setWidth(dim);
 			icon->setHeight(dim);
@@ -676,21 +678,16 @@ void ScriptConstructorView::geometryChange(const QRectF & newGeometry, const QRe
 		layoutAll();
 }
 
-QSGNode * ScriptConstructorView::updatePaintNode(QSGNode * oldNode, UpdatePaintNodeData *)
+bool ScriptConstructorView::eventFilter(QObject * obj, QEvent * event)
 {
-	QSGRectangleNode * rect = static_cast<QSGRectangleNode*>(oldNode);
-
-	if(!rect)
+	// Double-clicking the trash zone erases the whole slate (mirrors the old DropTrash.qml).
+	if(obj == _trash && event->type() == QEvent::MouseButtonDblClick)
 	{
-		rect = window()->createRectangleNode();
-		QSGFlatColorMaterial * material = new QSGFlatColorMaterial();
-		material->setColor(JaspTheme::currentTheme() ? JaspTheme::currentTheme()->white() : QColor("white"));
-		rect->setMaterial(material);
-		rect->setFlag(QSGNode::OwnsMaterial);
+		_model.clear();
+		return true;
 	}
 
-	rect->setRect(boundingRect());
-	return rect;
+	return QQuickItem::eventFilter(obj, event);
 }
 
 void ScriptConstructorView::refreshHint()

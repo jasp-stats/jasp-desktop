@@ -130,7 +130,8 @@ QQuickItem * ScriptDropSpot::ensurePlaceholder()
 	if(_placeholder)
 	{
 		_placeholder->setParentItem(this);
-		_placeholder->setProperty("verticalAlignment", 128); // Text.AlignVCenter
+		_placeholder->setProperty("verticalAlignment", 128);	// Text.AlignVCenter
+		_placeholder->setProperty("horizontalAlignment", 4);	// Text.AlignHCenter
 		JaspTheme * theme = JaspTheme::currentTheme();
 		QFont f = theme->font();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
