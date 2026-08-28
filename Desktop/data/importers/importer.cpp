@@ -289,21 +289,24 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 		if(oldColumns.count(col))
 			oldColQ.push(col);
 	
+	//prefs() is absent when the importer runs without the GUI (unit tests, headless use);
+	bool keepMissingColsWhenSyncing = PreferencesModel::prefs() && PreferencesModel::prefs()->keepMissingColsWhenSyncing();
+
 	for(ImportColumn * newColumn : newColumns)
 	{
 		Log::log() << "New column " << newColumn->name() << std::endl;
-		
-		Column			* dataSetColumn	= oldColQ.size() > 0 ? oldColQ.front() : dataSet->createColumn(newColumn->name());
+
+		Column			* dataSetColumn	= (!keepMissingColsWhenSyncing && oldColQ.size() > 0) ? oldColQ.front() : dataSet->createColumn(newColumn->name());
 		InitColumnTask	* task			= new InitColumnTask(newColumn, dataSetColumn, totalCellsCallback);
-		
+
 		connect(newColumn, &ImportColumn::finished, this, &Importer::importColumnFinished, Qt::DirectConnection);
-		
-		if(oldColQ.size() > 0 && oldColQ.front() == dataSetColumn)
+
+		if(!keepMissingColsWhenSyncing && oldColQ.size() > 0 && oldColQ.front() == dataSetColumn)
 		{
 			changeNameColumns[dataSetColumn->name()] = newColumn->name();
 			oldColQ.pop();
 		}
-		
+
 		tasks		.push_back(task);
 		_waitingFor	.insert(newColumn);
 		oldColumns	.erase(dataSetColumn); //cause were replacing it with whatever the new column is
@@ -327,9 +330,7 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 
 	for (Column * oldCol : oldColumns) //already checked for not being computed column at creation list
 	{
-		//prefs() is absent when the importer runs without the GUI (unit tests, headless use); fall back to
-		//the historic behaviour of dropping the column in that case.
-		if (PreferencesModel::prefs() && PreferencesModel::prefs()->keepMissingColsWhenSyncing())
+		if (keepMissingColsWhenSyncing)
 		{
 			//getColumnIndex() gives the column's position in the full dataset, which can exceed
 			//newColumnOrder's size (it holds the imported columns plus any missing ones already re-inserted
