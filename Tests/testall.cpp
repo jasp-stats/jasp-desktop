@@ -1133,17 +1133,19 @@ void TestAll::testSyncKeepMissingColumns()
 		QCOMPARE(ds->columnCount(), 3);
 		QVERIFY(ds->column("c"));
 
-		//Syncing on against a file that shares no column at all does not simply add everything up: the
-		//brand new columns first take over the ones that disappeared (a becomes p, b becomes q), and only
-		//what is left over after that (c) is kept as an empty column. So the data keeps the column count
-		//it already had rather than growing into the union of every file seen.
+		//Syncing on against a file that shares no column at all keeps every one of them: p and q are added
+		//next to a, b and c rather than taking their place, so the data holds the union of both files. That
+		//union keeps growing for as long as one session goes on synchronizing, which is why each data file
+		//normally gets a JASP process of its own.
 		CSVImporter syncer2;
 		syncer2.syncDataSet(fq(pq), ds, [](int){});
 
-		QCOMPARE(ds->columnCount(), 3);
+		QCOMPARE(ds->columnCount(), 5);
+		QVERIFY(ds->column("a"));
+		QVERIFY(ds->column("b"));
+		QVERIFY(ds->column("c"));
 		QVERIFY(ds->column("p"));
 		QVERIFY(ds->column("q"));
-		QVERIFY(ds->column("c"));
 	}
 
 	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
