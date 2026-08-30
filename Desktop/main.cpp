@@ -490,8 +490,15 @@ int main(int argc, char *argv[])
 
 			QLocale::setDefault(QLocale(QLocale::English)); // make decimal points == . in at least R? Anyway, this has been here forever, ill just leave it.
 			
-			char dsteng[] = "LC_ALL=en_US.UTF-8"; // See this issue about encoding problems in the results: https://github.com/jasp-stats/jasp-test-release/issues/3099 and https://github.com/jasp-stats/jasp-issues/issues/3867 for xlsx importing
-			putenv(dsteng);
+            // This is issue about encoding problems in the results:
+            std::vector<std::string> localeEnv = {
+                "LC_ALL=",                  // https://github.com/jasp-stats/jasp-issues/issues/4394
+                "LC_NUMERIC=en_US.UTF-8"    // https://github.com/jasp-stats/jasp-test-release/issues/3099 and https://github.com/jasp-stats/jasp-issues/issues/3867 for xlsx importing
+            };
+
+            for (size_t i = 0; i < localeEnv.size(); i++) {
+                putenv(&localeEnv[i][0]);
+            }
 
 			//Now we convert all these strings in args back to an int and a char * array.
 			//But to keep things easy, we are going to copy the old argv to avoid duplication (or messing up the executable name)
