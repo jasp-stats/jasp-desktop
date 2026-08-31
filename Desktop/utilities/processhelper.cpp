@@ -38,10 +38,9 @@ QProcessEnvironment ProcessHelper::getProcessEnvironmentForJaspEngine()
 	// jasp -> JASPEngine with R-embedded -> Separate R -> separate instances of JASPEngine...
 	env.insert("JASPENGINE_LOCATION",					engineExe);
 
-	// Tell jaspBase to strip bulky environments/objects from the RDS so the
-	// saved file stays small (KB, not MB) for RoboReport and other consumers.
-	// Unsetting this restores the full toRObject() tree for debugging.
-	env.insert(kRdsStripEnvVar, "1");
+	// Ask jaspBase to save the jaspResults RDS for finished analyses —
+	// RoboReport reads its results back from that file.
+	env.insert(kResultsRdsEnvVar, "1");
 
 	QString TZDIR		= AppDirs::rHome() + "/share/zoneinfo";
 	QString rHomePath	= AppDirs::rHome();

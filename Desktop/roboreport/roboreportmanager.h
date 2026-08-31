@@ -8,6 +8,7 @@
 // Script resolution order (first match wins):
 //   1. <appData>/roboreport/<module>/<AnalysisName>.R        (user override)
 //   2. <module package>/scripts/roboreport/<AnalysisName>.R  (shipped with module)
+//   3. Resources/roboreport/<module>/<AnalysisName>.R        (app-bundled demo fallback)
 //
 // Each script defines `roboreport_main(analysisId)` and is executed by
 // `jaspRoboReport::run_script()` inside the shared RCmdEngine.
@@ -80,7 +81,8 @@ private:
 
 	/// Resolve the script path for (module, analysis).
 	/// Tries the user app-data roboreport folder first, then the module
-	/// package scripts/ folder. Returns empty string if not found.
+	/// package scripts/ folder, then the app-bundled Resources/ fallback.
+	/// Returns empty string if not found.
 	QString _resolveScriptPath(const std::string& module, const std::string& analysis) const;
 
 	/// Parse metadata from the script header (Name, Target, Version, Description).

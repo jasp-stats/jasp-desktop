@@ -172,6 +172,15 @@ QString RoboReportManager::_resolveScriptPath(const std::string& module, const s
 		}
 	}
 
+	// 3. Lowest priority: Resources/roboreport/<module>/<AnalysisName>.R.
+	//    Bundled with the app, so a demo can ship a script even when the
+	//    target module ships none. Wins only if neither the app-data override
+	//    nor the module provides the script.
+	QString resourcesPath = QString::fromStdString(
+		Dirs::resourcesDir() + "roboreport/" + module + "/" + analysis + ".R");
+	if (QFile::exists(resourcesPath))
+		return resourcesPath;
+
 	return {};
 }
 
