@@ -338,8 +338,6 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 			int i = dataSet->getColumnIndex(oldCol->name());
 			if (i < 0 || i > int(newColumnOrder.size()))
 				i = int(newColumnOrder.size());
-			stringvec emptyvalues(dataSet->rowCount());
-			oldCol->overwriteDataAndType(emptyvalues, oldCol->type(), false);
 			newColumnOrder.insert(newColumnOrder.begin() + i, oldCol->name());
 		}
 		else
