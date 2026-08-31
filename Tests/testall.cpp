@@ -1120,7 +1120,7 @@ void TestAll::testSyncKeepMissingColumns()
 		QVERIFY(!ds->column("c"));
 	}
 
-	//With the preference that same column is kept (emptied) instead of removed.
+	//With the preference that same column is kept instead of removed.
 	{
 		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(true);
 

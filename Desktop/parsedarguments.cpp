@@ -226,7 +226,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 					<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
 					<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
 					<< "Per default after synchronizing with a data file, it will export the result, except if --dontExportResult is specified.\n"
-					<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: it will then keep an empty column.\n"
+					<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
 					<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
 					<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";
 #endif

@@ -1161,7 +1161,7 @@ bool MainWindow::openURLFile(QString fileURLPath)
         return false;
 	}
 
-	if (_preferences->syncDroppedDatafile() && _package->hasDataSet() && fileType != Utils::FileType::jasp)
+	if (_preferences->syncDroppedDatafile() && _package->isLoaded() && fileType != Utils::FileType::jasp)
 	{
 		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
 		syncEvent->setPath(filePath);
