@@ -70,6 +70,7 @@ using Modules::Upgrader;
 class Application;
 class AllHelp;
 class QQuickWebEngineDownloadRequest;
+class QTimer;
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -210,6 +211,7 @@ public slots:
 	void	updateShownFilterInQmlContext();
 	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen);
 	void	waitForAllAnalysesFinishedBeforeStartingEvent();
+	void	waitingEventTimedOut();
 
 private slots:
 	void _setProgressBarVisible(bool progressBarVisible);
@@ -408,6 +410,7 @@ private:
 	std::unordered_map<int, RpcLoadJob>	_rpcJobs;
 	int									_nextRpcJobId = 1;
 	FileEvent					*	_waitingEvent			= nullptr;
+	QTimer						*	_waitingEventTimeoutTimer	= nullptr; ///< fires when an export waits on analyses that never finish (a crashed engine, say)
 };
 
 #endif // MAINWIDGET_H
