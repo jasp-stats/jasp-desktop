@@ -348,6 +348,10 @@ void AsyncLoader::loadPackage(QString id)
 			//Sync completion is delivered through AsyncLoader::syncCompleted (slot on the GUI thread via a
 			//QueuedConnection), which covers success here and failure in the catch blocks below, so the
 			//syncer's re-entrancy guard (_isSyncing) is released exactly once.
+			//setComplete() must come *before* the emit: isSuccessful() is only true once the event is
+			//completed, and reporting the sync to the syncer before that would always claim failure.
+			_currentEvent->setComplete();
+
 			if(syncTargetDataSet)
 			{
 				Log::log() << "[AsyncLoader::loadPackage] Emitting syncCompleted for datasetId=" << _currentEvent->dataSetId() << ", success=" << _currentEvent->isSuccessful() << std::endl;
@@ -357,8 +361,6 @@ void AsyncLoader::loadPackage(QString id)
 			{
 				Log::log() << "[AsyncLoader::loadPackage] syncTargetDataSet is NULL, NOT emitting syncCompleted" << std::endl;
 			}
-
-			_currentEvent->setComplete();
 
 			if (dataNode != nullptr)
 				_odm->deleteActionDataNode(id);
