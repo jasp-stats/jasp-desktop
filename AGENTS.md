@@ -28,7 +28,7 @@ ctest -R testDataImport --output-on-failure             # or via ctest
 ```
 
 Test names (use `-functions` on binary to list all). There are SEVEN test executables — verify against ALL of them:
-- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp)
+- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp); note the two `testDataImport` CSV/TSV hardcoded-json failures are pre-existing on this branch
 - `JASPTestParsedArgs` — command-line argument parsing (depends on `JASPDesktopLib`); PRO-only flags are exercised in both modes via `AppInfo::setProMode`, no PRO build required
 - `JASPTestEngine` — engine integration tests
 - `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPQuickTest`

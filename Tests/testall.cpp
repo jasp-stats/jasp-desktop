@@ -1569,6 +1569,82 @@ void TestAll::testCliSyncExportChainFromFreshWorkspace()
 	TempFiles::init(ProcessInfo::currentPID());
 }
 
+void TestAll::testCliSyncExportWaitsForAnalysesToSettle()
+{
+	//Regression for the export capturing the intermediate emptied results: synchronizing can
+	//schedule analysis refreshes deferred, and a refresh that starts *after* the export began
+	//wipes the results page to its empty in-between state while the export is capturing it.
+	//The export must therefore wait until the analyses have stopped changing status. Without a
+	//webview the exported HTML itself cannot be checked here, so this test simulates the wipe by
+	//flipping an analysis' status right after the export was queued and verifies the export only
+	//starts once the analysis is finished again.
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//Short-circuit the exporter's wait for the (nonexistent) webview: prepForExport is emitted from
+	//the exporter thread and only the QML results page would answer it, so answer it here instead.
+	connect(mw->_resultsJsInterface, &ResultsJsInterface::prepForExport, mw->_resultsJsInterface, &ResultsJsInterface::exportPrepFinished, Qt::QueuedConnection);
+
+	const QString	syncCsv		= QString::fromStdString(TempFiles::createTmpFolder()) + "/syncdata.csv",
+					outHtml		= QString::fromStdString(TempFiles::createTmpFolder()) + "/results.html";
+
+	QVERIFY(_writeTextFile(syncCsv, "V1\n1\n2\n"));
+
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, syncCsv, outHtml, false);
+
+	//The open -> synchronize chain queues an export that waits for the analyses:
+	QTRY_VERIFY_WITH_TIMEOUT(mw->_waitingEvent != nullptr, 30000);
+	QVERIFY(!mw->_waitingEvent->isStarted()); //the settle-debounce guarantees it cannot start this early
+
+	//In backendless mode the module-backed analyses from the jasp file are skipped, so inject a
+	//report-style analysis (created without a module, and never run: Analysis::run ignores reports):
+	Json::Value analysisData;
+	analysisData["id"]		= 1;
+	analysisData["title"]	= "SettleTest";
+	analysisData["isReport"]= true;
+	analysisData["status"]	= "complete";
+	Analysis * analysis = mw->_analyses->createFromJaspFileEntry(analysisData, nullptr);
+	QVERIFY(analysis);
+	QVERIFY(mw->_analyses->allFinished());
+
+	//Simulate a refresh starting (status Complete -> Empty, like Analysis::run() does) right after
+	//the export was queued: the pending start must be postponed until the analyses finish again:
+	analysis->setStatus(Analysis::Empty);
+	QVERIFY(mw->_waitingEvent); //not consumed by a premature start
+	QVERIFY(!mw->_waitingEvent->isStarted());
+
+	analysis->setStatus(Analysis::Complete);
+
+	//Only now may the export start, which is visible as the waiting event being taken over:
+	QTRY_VERIFY_WITH_TIMEOUT(mw->_waitingEvent == nullptr, 10000);
+
+	//The exporter waits for the (nonexistent) webview to deliver the HTML, and ResultsJsInterface::
+	//exportHTML resets the ready flag right before that wait; keep setting it so the exporter sees
+	//it ready no matter when exactly its wait starts (it dies with mw):
+	QTimer * readySetter = new QTimer(mw);
+	readySetter->setInterval(100);
+	connect(readySetter, &QTimer::timeout, this, [](){ DataSetPackage::pkg()->setAnalysesHTMLReady(); });
+	readySetter->start();
+
+	//The export finishing is what exits JASP with success:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QCOMPARE(exitSpy->first().first().toInt(), 0);
+	QVERIFY(QFileInfo::exists(outHtml));
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
 void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 {
 	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
