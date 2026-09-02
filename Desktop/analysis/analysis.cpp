@@ -552,9 +552,11 @@ std::set<std::string> Analysis::applyPlotEdits()
 			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
 			{
 				for (const std::string & key : engineEditOpts.getMemberNames())
-					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
+					if (!_plotEdits[uniqueName]["editOptions"].isMember(key) || _plotEdits[uniqueName]["editOptions"][key] != engineEditOpts[key])
+					{
 						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
-				reEditNames.insert(uniqueName);
+						reEditNames.insert(uniqueName);
+					}
 			}
 		}
 
