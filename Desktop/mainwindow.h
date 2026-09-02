@@ -105,6 +105,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 
 	friend class FileMenu;
+	friend class TestAll; ///< drives the command-line open/synchronize chain through a real MainWindow
 public:
 	explicit MainWindow(Application *application);
 			~MainWindow() override;

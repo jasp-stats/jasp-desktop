@@ -21,12 +21,15 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "mainwindow.h"
+#include "results/resultsjsinterface.h"
 
 #include <QSignalSpy>
 #include <QFile>
 #include <QFileInfo>
+#include <QEventLoop>
+#include <QTimer>
 #include <sqlite3.h>
-#include "data/asyncloader.h"
 
 
 void TestAll::initTestCase()
@@ -49,8 +52,17 @@ void TestAll::cleanup()
 	delete _importer;
 	_importer = nullptr;
 
-	DatabaseInterface::singleton()->close();
-	DatabaseInterface::singleton()->closeInterfaces();
+	//After a test tore down a full MainWindow the session database is gone with it, so the
+	//DatabaseInterface the singleton() call would lazily recreate here cannot load anything anymore.
+	//closeInterfaces() alone is enough: deleting a null pointer is fine and the destructor closes.
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "TestAll::cleanup: skipping database teardown: " << e.what() << std::endl;
+	}
 	delete _pkg;
 	_pkg = nullptr;
 }
@@ -1149,6 +1161,10 @@ void TestAll::testSyncKeepMissingColumns()
 	}
 
 	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+	//The singleton registers globally (PreferencesModelBase::_singleton) and is parented to this
+	//test, so it would survive this test and then make MainWindow's own PreferencesModel assert.
+	delete PreferencesModel::prefs();
 }
 
 void TestAll::testFileSyncerFullAsyncFlow()
@@ -1442,6 +1458,144 @@ void TestAll::testCloseWorkspaceAndDataSets()
 bool TestAll::_checkDoSyncFake()
 {
 	return true;
+}
+
+bool TestAll::_writeTextFile(const QString & path, const QByteArray & contents)
+{
+	QFile file(path);
+	if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+		return false;
+	return file.write(contents) == contents.size();
+}
+
+//Constructs a full MainWindow the way the command line sees it and detaches exitSignal from
+//QApplication::exit (which the constructor wires up and which would quit the test event loop),
+//returning a spy on the signal instead. The spy is parented to nothing; delete it after use.
+QSignalSpy * TestAll::_newMainWindowWithExitSpy(MainWindow *& mw)
+{
+	//A previous MainWindow teardown took the whole session directory (and its database) with it,
+	//while MainWindow wants to create its own DatabaseInterface in there again.
+	TempFiles::init(ProcessInfo::currentPID());
+
+	//Keep the QML engine and the R engines out of the test process: the data/sync chain under test
+	//does not need them, and both add many threads (sqlite contention, JS garbage collection) that
+	//make the test flaky. See headlessTestMode() in mainwindow.cpp.
+	qputenv("JASP_TEST_HEADLESS", "1");
+
+	//Other tests may have left the global PreferencesModel singleton behind; the MainWindow wants
+	//to construct its own, and a second one asserts.
+	delete PreferencesModel::prefs();
+
+	QCoreApplication::setApplicationName("JASPTest"); //so checkForUpdates() stays out of the way
+
+	try
+	{
+		mw = new MainWindow(nullptr);
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "MainWindow construction threw: " << e.what() << std::endl;
+		throw;
+	}
+
+	//The MainWindow listens for the interactive CSV preview; with no delimiter preset the importers
+	//would then block this (GUI) thread on an answer that can never come (regression guard: the
+	//per-test init() resets it to '\0').
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(',');
+
+	disconnect(mw, &MainWindow::exitSignal, mw, nullptr); //keep every other listener, lose only qApp
+
+	return new QSignalSpy(mw, &MainWindow::exitSignal);
+}
+
+void TestAll::testCliSyncExportChainFromFreshWorkspace()
+{
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	//A genuine JASP file from the test library, so the chain runs against a real saved document:
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+
+	//The sync data holds exactly the columns of that file (in its order), so synchronizing
+	//replaces them without adding or deleting any: this pins the plain open -> sync -> exit chain.
+	const QByteArray syncCsvData =
+		"V1,contNormal,contGamma,contBinom,contExpon,contWide,contNarrow,contOutlier,contcor1,contcor2,"
+		"facGender,facExperim,facFive,facFifty,facOutlier,debString,debMiss1,debMiss30,debMiss80,debMiss99,"
+		"debBinMiss20,debNaN,debNaN10,debInf,debCollin1,debCollin2,debCollin3,debEqual1,debEqual2,debSame,unicode\n"
+		"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,sixteen,17,18,19,20,21,22,23,24,25,26,27,28,29,thirty\n"
+		"31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,fortysix,47,48,49,50,51,52,53,54,55,56,57,58,59,sixty\n";
+
+	const QString	syncCsv		= tempDir.filePath("syncdata.csv");
+
+	QVERIFY(_writeTextFile(syncCsv, syncCsvData));
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//The results page finished loading before the command line triggers the file open, and nothing
+	//has been loaded into the workspace yet. Note that _open's dataset check still passes, because
+	//JASP startup itself creates an empty dataset; the chain therefore binds the *loaded* dataset
+	//only after the open has finalized, which is exactly what chain(..., resetDataSet=true) does.
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, syncCsv, "", false);
+
+	//The open -> synchronize chain should finish by exiting JASP with success:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QCOMPARE(exitSpy->first().first().toInt(), 0);
+
+	//And the workspace should hold the synchronized data:
+	DataSet * synced = DataSetPackage::pkg()->dataSet();
+	QVERIFY(synced);
+	QVERIFY(synced->column("contNormal"));
+
+	try
+	{
+		delete exitSpy;
+		delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "MainWindow teardown threw: " << e.what() << std::endl;
+		throw;
+	}
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testCliSyncExportChainFailsOnBadDataFile()
+{
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp"),
+					bogusData	= tempDir.filePath("bogus.xlsx");
+
+	QVERIFY(QFileInfo::exists(jaspPath));
+	QVERIFY(_writeTextFile(bogusData, "this is not a spreadsheet\n"));
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	mw->_resultsJsInterface->setResultsLoaded(true);
+
+	mw->open(jaspPath, bogusData, "", false);
+
+	//A failed synchronization must exit JASP with a non-zero code instead of continuing as if the
+	//synchronization had succeeded:
+	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
+	QVERIFY(exitSpy->first().first().toInt() != 0);
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
 }
 
 
