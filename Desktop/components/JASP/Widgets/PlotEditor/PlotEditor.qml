@@ -164,8 +164,8 @@ Popup
 				Item
 				{
 					id:							axes
-					SplitView.preferredWidth:	parent.width * .45
-					SplitView.minimumWidth:		parent.width * .45
+					SplitView.preferredWidth:	parent.width * .55
+					SplitView.minimumWidth:		parent.width * .2
 					SplitView.maximumWidth:		parent.width * .9
 
 					property real	tabBarHeight:		28 * preferencesModel.uiScale
@@ -241,6 +241,7 @@ Popup
 					{
 						id:				axesScrollbar
 						flickable:		axesFlickable
+
 						vertical:		true
 					}
 
@@ -257,6 +258,8 @@ Popup
 						clip:					true
 
 						flickableDirection:		Flickable.VerticalFlick
+						contentHeight:			stack.height
+
 
 						onFlickStarted:			forceActiveFocus();
 
