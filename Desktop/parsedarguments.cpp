@@ -22,6 +22,7 @@
 #include <QDir>
 #include "utilenums.h"
 #include "qutils.h"
+#include "appinfo.h"
 
 const std::string
 	ParsedArguments::unitTestArg			= "--unitTest",
@@ -67,12 +68,10 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		else if(arg == hideArg)									hideJASP					= true;
 		else if(arg == safeGraphicsArg)							safeGraphics				= true;
 		else if(arg == newDataArg)								newData						= true;
-#ifdef PRO
-		else if(arg == exportPdfArg)							exportPdf					= true;
-		else if(arg == keepJASPOpenArg)							keepJASPOpenAfterExporting	= true;
-		else if(arg == dontExportResultArg)						dontExportResult			= true;
-		else if(arg == keepMissingColsWhenSyncingArg)			keepMissingColsWhenSyncing	= true;
-#endif
+		else if(AppInfo::proMode() && arg == exportPdfArg)		exportPdf					= true;
+		else if(AppInfo::proMode() && arg == keepJASPOpenArg)	keepJASPOpenAfterExporting	= true;
+		else if(AppInfo::proMode() && arg == dontExportResultArg) dontExportResult			= true;
+		else if(AppInfo::proMode() && arg == keepMissingColsWhenSyncingArg)	keepMissingColsWhenSyncing	= true;
 #ifdef _WIN32
 		else if(arg == sandboxArg)			{				containerSettingForced	= true;		container = true; }
 		else if(arg == noSandboxArg)		{				containerSettingForced	= true;		container = false; }
@@ -111,8 +110,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 			if(convertedChars > 0)
 				timeOut = convertedTime;
 		}
-#ifdef PRO
-		else if (arg == inputDataDirArg)
+		else if (AppInfo::proMode() && arg == inputDataDirArg)
 		{
 			argNr++;
 			if (checkFolder(args, argNr, inputDataDir))
@@ -121,13 +119,12 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 				letsExplainSomeThings = true;
 
 		}
-		else if (arg == outputDirArg)
+		else if (AppInfo::proMode() && arg == outputDirArg)
 		{
 			argNr++;
 			if (!checkFolder(args, argNr, outputDir))
 				letsExplainSomeThings = true;
 		}
-#endif
 		else
 		{
 			QString qarg = tq(arg);
@@ -161,11 +158,9 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 					{
 						// The argument might be a database-connection json (as returned by DatabaseConnectionInfo)
 						// rather than a file, so try that first before treating it as a (missing) file to open.
-						Json::Reader	jsonReader;
-						Json::Value		parsedJson;
-
-						if (jsonReader.parse(arg, parsedJson) && parsedJson.isObject())
-							dbJson = parsedJson;
+						if (trySetDbJson(arg))
+						{
+						}
 						else if (checkFile(args, argNr, mainFilePath))
 						{
 							mainFileIsJaspFile = Utils::getTypeFromFileName(fq(mainFilePath.fileName())) == Utils::FileType::jasp;
@@ -174,8 +169,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 						else
 							letsExplainSomeThings = true;
 					}
-#ifdef PRO
-					else if (mainFileIsJaspFile)
+					else if (AppInfo::proMode() && mainFileIsJaspFile)
 					{
 						QFileInfo file;
 						if (checkFile(args, argNr, file, true, false))
@@ -187,18 +181,12 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 						else
 							letsExplainSomeThings = true;
 					}
-#endif
-					else
+					else if (!trySetDbJson(arg))
 					{
-						//Check whether it can be parsed as a json and if so assume it is a database connection json as returned by DatabaseConnectionInfo
-
-						Json::Reader jsonReader;
-
-						if(!jsonReader.parse(arg, dbJson))
-						{
-							std::cerr << "File to open " << arg << " does not exist (and also is not a (database) json)!" << std::endl;
-							letsExplainSomeThings = true;
-						}
+						//A second file argument while the main file is not a JASP file (or PRO mode is off):
+						//JASP can only open one document at a time.
+						std::cerr << "File to open " << arg << " does not exist (and also is not a (database) json), or it is a second file while JASP can only open one document at a time!" << std::endl;
+						letsExplainSomeThings = true;
 					}
 				}
 			}
@@ -214,22 +202,21 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 	if(letsExplainSomeThings)
 	{
 		std::cerr	<< "JASP can be started without arguments, or the following: ";
-#ifdef PRO
-
-		std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --exportPdf | --inputDataDir | --dontExportResult | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
-#else
-		std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n";
-#endif
+		if(AppInfo::proMode())
+			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --exportPdf | --inputDataDir | --dontExportResult | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
+		else
+			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n";
 		std::cerr	<< "If a filename is supplied JASP will try to load it. \n";
-#ifdef PRO
-		std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (in PDF format if --exportPdf is set)\n"
-					<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
-					<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
-					<< "Per default after synchronizing with a data file, it will export the result, except if --dontExportResult is specified.\n"
-					<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
-					<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
-					<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";
-#endif
+		if(AppInfo::proMode())
+		{
+			std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (in PDF format if --exportPdf is set)\n"
+						<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
+						<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
+						<< "Per default after synchronizing with a data file, it will export the result, except if --dontExportResult is specified.\n"
+						<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
+						<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
+						<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";
+		}
 		std::cerr	<< "\n"
 					<< "If --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
@@ -295,6 +282,20 @@ bool ParsedArguments::checkFile(const std::vector<std::string> & args, int arg, 
 	return true;
 }
 
+bool ParsedArguments::trySetDbJson(const std::string & arg)
+{
+	Json::Reader	jsonReader;
+	Json::Value		parsedJson;
+
+	if(jsonReader.parse(arg, parsedJson) && parsedJson.isObject())
+	{
+		dbJson = parsedJson;
+		return true;
+	}
+
+	return false;
+}
+
 bool ParsedArguments::checkFolder(const std::vector<std::string> & args, int arg, QFileInfo &folderPath, bool createIt)
 {
 	if(arg >= args.size())
@@ -338,4 +339,3 @@ bool ParsedArguments::isDataFileType(const QString & filePath)
 {
 	return isDataFileType(Utils::getTypeFromFileName(fq(filePath)));
 }
-

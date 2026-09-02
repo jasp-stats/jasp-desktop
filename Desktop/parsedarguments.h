@@ -90,6 +90,7 @@ public:
 private:
 	bool checkFile(const std::vector<std::string> & args, int arg, QFileInfo & filePath, bool checkFileType = false, bool checkJASPType = false);
 	bool checkFolder(const std::vector<std::string> & args, int arg, QFileInfo & folderPath, bool createIt = false);
+	bool trySetDbJson(const std::string & arg); ///< parses `arg` as a database-connection json (as returned by DatabaseConnectionInfo) and stores it in dbJson; returns whether that worked
 
 
 
