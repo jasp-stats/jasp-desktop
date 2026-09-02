@@ -1511,9 +1511,6 @@ QSignalSpy * TestAll::_newMainWindowWithExitSpy(MainWindow *& mw)
 
 void TestAll::testCliSyncExportChainFromFreshWorkspace()
 {
-	QTemporaryDir tempDir;
-	QVERIFY(tempDir.isValid());
-
 	//A genuine JASP file from the test library, so the chain runs against a real saved document:
 	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
 
@@ -1528,12 +1525,16 @@ void TestAll::testCliSyncExportChainFromFreshWorkspace()
 		"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,sixteen,17,18,19,20,21,22,23,24,25,26,27,28,29,thirty\n"
 		"31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,fortysix,47,48,49,50,51,52,53,54,55,56,57,58,59,sixty\n";
 
-	const QString	syncCsv		= tempDir.filePath("syncdata.csv");
-
-	QVERIFY(_writeTextFile(syncCsv, syncCsvData));
-
 	MainWindow * mw = nullptr;
 	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//A scratch folder inside JASP's own session directory: QTemporaryDir can trigger a permission
+	//dialog on some systems, while TempFiles already has a session dir set up by
+	//_newMainWindowWithExitSpy. The MainWindow teardown removes the session dir, so no manual
+	//cleanup of the folder or its file is needed.
+	const QString	syncCsv		= QString::fromStdString(TempFiles::createTmpFolder()) + "/syncdata.csv";
+
+	QVERIFY(_writeTextFile(syncCsv, syncCsvData));
 
 	//The results page finished loading before the command line triggers the file open, and nothing
 	//has been loaded into the workspace yet. Note that _open's dataset check still passes, because
@@ -1570,17 +1571,20 @@ void TestAll::testCliSyncExportChainFromFreshWorkspace()
 
 void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 {
-	QTemporaryDir tempDir;
-	QVERIFY(tempDir.isValid());
-
-	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp"),
-					bogusData	= tempDir.filePath("bogus.xlsx");
+	const QString	jaspPath	= _testLibrary().absoluteFilePath("jasp/Descriptives-Debug.jasp");
 
 	QVERIFY(QFileInfo::exists(jaspPath));
-	QVERIFY(_writeTextFile(bogusData, "this is not a spreadsheet\n"));
 
 	MainWindow * mw = nullptr;
 	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//A scratch folder inside JASP's own session directory: QTemporaryDir can trigger a permission
+	//dialog on some systems, while TempFiles already has a session dir set up by
+	//_newMainWindowWithExitSpy. The MainWindow teardown removes the session dir, so no manual
+	//cleanup of the folder or its file is needed.
+	const QString	bogusData	= QString::fromStdString(TempFiles::createTmpFolder()) + "/bogus.xlsx";
+
+	QVERIFY(_writeTextFile(bogusData, "this is not a spreadsheet\n"));
 
 	mw->_resultsJsInterface->setResultsLoaded(true);
 
