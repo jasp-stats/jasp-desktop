@@ -82,6 +82,7 @@ private slots:
 	// MainWindow::_open has to handle.
 	void	testCliSyncExportChainFromFreshWorkspace();
 	void	testCliSyncExportChainFailsOnBadDataFile();
+	void	testCliSyncExportWaitsForAnalysesToSettle();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

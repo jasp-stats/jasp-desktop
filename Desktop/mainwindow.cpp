@@ -612,6 +612,7 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
+	connect(_analyses,				&Analyses::analysisStatusChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
@@ -1262,28 +1263,51 @@ void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 	if (!_waitingEvent || _waitingEvent->isStarted())
 		return;
 
-	if (_analyses->allFinished())
+	//The analyses may all look finished *right now*, but the sync (or open) that led here can
+	//schedule analysis refreshes deferred: queued filter-refresh connections and EngineSync's
+	//100ms poll only run on later event-loop passes. A refresh started after the export begins
+	//would set the analyses to Empty/Running and wipe the results page to its intermediate empty
+	//state *while* the export captures it (compareResults avoids this by forcing a refresh first
+	//and waiting it out). So debounce: (re)start a settle timer that only starts the event once
+	//the analyses have gone a full settle interval without a single status change. Every status
+	//change and every new result re-enters this slot (analysisStatusChanged and
+	//analysisResultsChanged below) and postpones the start; a refresh that never finishes is
+	//caught by _waitingEventTimeoutTimer.
+	if (!_waitingEventStartTimer)
 	{
-		//Take ownership of the waiting event *before* doing any work: setErrorInResults() below ends up
-		//emitting analysisResultsChanged, which re-enters this slot - the cleared _waitingEvent makes that
-		//re-entry return at the guard above. Note we must NOT disconnect from analysisResultsChanged to
-		//achieve that: this slot has to stay connected for any later event that waits on the analyses
-		//(a second sync/export with --keepJASPOpen), which would otherwise wait forever.
-		FileEvent * waitingEvent = _waitingEvent;
-		_waitingEvent            = nullptr;
-		if(_waitingEventTimeoutTimer)
-			_waitingEventTimeoutTimer->stop();
-
-		_analyses->applyToAll([&](Analysis * a)
-		{
-			//An analysis whose form never got instantiated (a module that failed to load for instance)
-			//has no error to report either, so leave it alone instead of dereferencing nothing.
-			if (a->form() && a->form()->hasError())
-				a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
-		});
-
-		waitingEvent->starts();
+		_waitingEventStartTimer = new QTimer(this);
+		_waitingEventStartTimer->setSingleShot(true);
+		_waitingEventStartTimer->setInterval(1000);
+		connect(_waitingEventStartTimer, &QTimer::timeout, this, &MainWindow::_startWaitingEventIfAnalysesStillFinished);
 	}
+	_waitingEventStartTimer->start(); //restarting a running timer postpones the pending start
+}
+
+void MainWindow::_startWaitingEventIfAnalysesStillFinished()
+{
+	if (!_waitingEvent || _waitingEvent->isStarted() || !_analyses->allFinished())
+		return;
+
+	//Take ownership of the waiting event *before* doing any work: setErrorInResults() below ends up
+	//emitting analysisResultsChanged, which re-enters waitForAllAnalysesFinishedBeforeStartingEvent -
+	//the cleared _waitingEvent makes that re-entry return at the guard above. Note we must NOT
+	//disconnect from analysisResultsChanged/analysisStatusChanged to achieve that: those slots have
+	//to stay connected for any later event that waits on the analyses (a second sync/export with
+	//--keepJASPOpen), which would otherwise wait forever.
+	FileEvent * waitingEvent = _waitingEvent;
+	_waitingEvent            = nullptr;
+	if(_waitingEventTimeoutTimer)
+		_waitingEventTimeoutTimer->stop();
+
+	_analyses->applyToAll([&](Analysis * a)
+	{
+		//An analysis whose form never got instantiated (a module that failed to load for instance)
+		//has no error to report either, so leave it alone instead of dereferencing nothing.
+		if (a->form() && a->form()->hasError())
+			a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
+	});
+
+	waitingEvent->starts();
 }
 
 void MainWindow::waitingEventTimedOut()
@@ -1292,6 +1316,8 @@ void MainWindow::waitingEventTimedOut()
 		return;
 
 	Log::log() << "[MainWindow::waitingEventTimedOut] Waiting for the analyses timed out; the queued export will not run." << std::endl;
+	if(_waitingEventStartTimer)
+		_waitingEventStartTimer->stop();
 	FileEvent * waitingEvent = _waitingEvent;
 	_waitingEvent = nullptr;
 	waitingEvent->setComplete(false, tr("Timed out waiting for the analyses to finish"));
