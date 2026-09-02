@@ -33,6 +33,7 @@
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
+#include "data/fileeventrouter.h"
 #include "filemenulistitem.h"
 #include "actionbuttons.h"
 #include "resourcebuttonsvisible.h"
@@ -42,7 +43,7 @@
 class MainWindow;
 class DataSetPackage;
 
-class FileMenu : public QObject
+class FileMenu : public FileEventRouter
 {
 	friend FileMenuObject;
 
@@ -69,9 +70,7 @@ public:
 	Q_ENUM(FileMenuListItemType)
 
 	explicit FileMenu(QObject *parent = nullptr);
-	virtual ~FileMenu();
-	
-	static FileMenu*	singleton()	{ return _singleton; }
+	virtual ~FileMenu() override;
 
 	void		setResourceButtonsVisibleFor(FileOperation fo);
 
@@ -124,8 +123,8 @@ public slots:
 	void workspaceModified();
 	void setSyncFile(FileEvent *event);
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
-	void startFileEvent();
-	void finalizeFileEvent();
+	void startFileEvent()	override;
+	void finalizeFileEvent()	override;
 	void setFileoperation(const ActionButtons::FileOperation fo);
 	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
@@ -147,8 +146,6 @@ private:
 	static	bool clearOSFFromRecentList(QString path);
 
 private:
-	static FileMenu				*	_singleton;
-
 	OnlineDataManager			*	_odm						= nullptr;
 	CurrentDataFile				*	_currentDataFile			= nullptr;
 	RecentFiles					*	_recentFiles				= nullptr;

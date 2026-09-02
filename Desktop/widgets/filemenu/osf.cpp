@@ -310,6 +310,8 @@ void OSF::userDetailsReceived()
 void OSF::openSaveCompleted()
 {
     FileEvent* event = qobject_cast<FileEvent*>(sender());
+	if(!event)
+		return;
 
 	if (event->isSuccessful())
 		_osfFileSystem->refresh();
