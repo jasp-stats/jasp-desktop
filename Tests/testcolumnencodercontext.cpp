@@ -261,4 +261,156 @@ void TestColumnEncoderContext::currentEncoderReTargetsOnSwitchAndClearsOnDestruc
 	ColumnEncoder::setCurrentEncoder(defaultEncoder);
 }
 
+void TestColumnEncoderContext::rCommanderEncodingKeepsArgumentNamesIntact()
+{
+	//Regression for the built-in R Console: short column names such as "cl" and "g" used to be
+	//substituted *inside* function/argument names by the naive encodeAll path, turning
+	//	lavaan::sem("y~x", data=data, cluster="cl", missing="ml.x", group="g")
+	//into an unparseable script with mangled arguments ('...uster', 'missin...', '...roup').
+	//encodeRScriptCommander must honour word boundaries while still encoding column names that
+	//appear inside string literals (lavaan formulas / quoted arguments).
+	ColumnEncoder * encoder = ColumnEncoder::columnEncoder();
+
+	encoder->setCurrentNames(names({
+		{"y",  columnType::unknown},
+		{"x",  columnType::unknown},
+		{"cl", columnType::unknown},
+		{"g",  columnType::unknown}
+	}));
+
+	const std::string encY  = encoder->encode("y");
+	const std::string encX  = encoder->encode("x");
+	const std::string encCl = encoder->encode("cl");
+	const std::string encG  = encoder->encode("g");
+
+	const std::string userScript =
+		"lavaan::sem(\"y~x\", data=data, cluster=\"cl\", missing=\"ml.x\", group=\"g\")";
+
+	const std::string encoded = encoder->encodeRScriptCommander(userScript);
+
+	//Column references (also inside the quoted formula and quoted argument values) are encoded...
+	const std::string expected =
+		"lavaan::sem(\"" + encY + "~" + encX + "\", data=data, cluster=\"" + encCl +
+		"\", missing=\"ml.x\", group=\"" + encG + "\")";
+	QCOMPARE(QString::fromStdString(encoded), QString::fromStdString(expected));
+
+	//...while the argument names themselves stay intact.
+	QVERIFY2(encoded.find("cluster=\"") != std::string::npos, "Argument name 'cluster' was mangled by the commander encoder.");
+	QVERIFY2(encoded.find("missing=\"") != std::string::npos, "Argument name 'missing' was mangled by the commander encoder.");
+	QVERIFY2(encoded.find("group=\"")   != std::string::npos, "Argument name 'group' was mangled by the commander encoder.");
+
+	//The lavaan option value ml.x must be preserved: the '.' keeps the trailing 'x' bound, so it is not a column ref.
+	QVERIFY2(encoded.find("\"ml.x\"") != std::string::npos, "lavaan option value 'ml.x' should not be encoded.");
+
+	//Decoding the script (as the engine does to the result/error via decodeAll) restores the original text.
+	QCOMPARE(QString::fromStdString(encoder->decodeAll(encoded)), QString::fromStdString(userScript));
+}
+
+void TestColumnEncoderContext::encodeRScriptSkipsStringLiteralsAndSubstringsByDefault()
+{
+	//The plain public overload (encodeInsideStrings defaults to false) must honour word boundaries AND leave
+	//string literals untouched: a short column ("cl") may not eat into an argument/identifier ("cluster"), and
+	//column names quoted inside a string ("cl and g") stay verbatim. This is the behaviour every analysis form,
+	//filter and JAGS box relies on, and it is the raw-map (non-merged) path of the refactored worker.
+	ColumnEncoder * encoder = ColumnEncoder::columnEncoder();
+
+	encoder->setCurrentNames(names({
+		{"y",  columnType::unknown},
+		{"x",  columnType::unknown},
+		{"cl", columnType::unknown},
+		{"g",  columnType::unknown}
+	}));
+
+	const std::string encY = encoder->encode("y");
+	const std::string encX = encoder->encode("x");
+
+	const std::string userScript = "y ~ x + \"cl and g\" + cluster";
+
+	std::set<std::string> columnNamesFound;
+	const std::string encoded = encoder->encodeRScript(userScript, &columnNamesFound);
+
+	const std::string expected = encY + " ~ " + encX + " + \"cl and g\" + cluster";
+	QCOMPARE(QString::fromStdString(encoded), QString::fromStdString(expected));
+
+	//Only the free, out-of-string references were encoded.
+	QVERIFY2(columnNamesFound == (std::set<std::string>{"x", "y"}), "Only the free column references outside string literals should be reported.");
+
+	//The string literal survived untouched and the identifier 'cluster' was not clobbered by the column "cl".
+	QVERIFY2(encoded.find("\"cl and g\"") != std::string::npos, "Column names inside a string literal must not be encoded by the default overload.");
+	QVERIFY2(encoded.find("cluster")     != std::string::npos, "Identifier 'cluster' must not be clobbered by the short column 'cl'.");
+}
+
+void TestColumnEncoderContext::encodeRScriptEncodesInsideStringLiteralsWhenRequested()
+{
+	//Opting in with encodeInsideStrings=true must additionally rewrite column references that appear inside
+	//string literals (e.g. a formula assigned to a variable) while still respecting word boundaries.
+	ColumnEncoder * encoder = ColumnEncoder::columnEncoder();
+
+	encoder->setCurrentNames(names({
+		{"y", columnType::unknown},
+		{"x", columnType::unknown}
+	}));
+
+	const std::string encY = encoder->encode("y");
+	const std::string encX = encoder->encode("x");
+
+	const std::string userScript = "formula <- \"y ~ x\"";
+
+	std::set<std::string> columnNamesFound;
+	const std::string encoded = encoder->encodeRScript(userScript, &columnNamesFound, /*encodeInsideStrings=*/true);
+
+	const std::string expected = "formula <- \"" + encY + " ~ " + encX + "\"";
+	QCOMPARE(QString::fromStdString(encoded), QString::fromStdString(expected));
+	QVERIFY2(columnNamesFound == (std::set<std::string>{"x", "y"}), "Both column names inside the string literal should be reported when encodeInsideStrings is true.");
+}
+
+void TestColumnEncoderContext::encodeRScriptPrefixedTracksColumnsPerPrefix()
+{
+	//The prefix-aware overload reports, per allowed prefix (plus the implicit empty prefix), which columns it
+	//encoded. A bare "y" is caught by the empty prefix; a "data.y" reference only matches under the "data." prefix.
+	ColumnEncoder * encoder = ColumnEncoder::columnEncoder();
+
+	encoder->setCurrentNames(names({ {"y", columnType::unknown} }));
+
+	const std::string encY = encoder->encode("y");
+
+	const std::string userScript = "y + data.y";
+
+	std::map<std::string, std::set<std::string>> prefixedColumnsFound;
+	const std::string encoded = encoder->encodeRScript(userScript, prefixedColumnsFound, std::set<std::string>{"data."});
+
+	const std::string expected = encY + " + data." + encY;
+	QCOMPARE(QString::fromStdString(encoded), QString::fromStdString(expected));
+
+	QVERIFY2(prefixedColumnsFound[""]      == (std::set<std::string>{"y"}), "The bare column reference should be reported under the empty prefix.");
+	QVERIFY2(prefixedColumnsFound["data."] == (std::set<std::string>{"y"}), "The prefixed column reference should be reported under the 'data.' prefix.");
+}
+
+void TestColumnEncoderContext::encodeRScriptMergesExtraEncodersOnlyForCommander()
+{
+	//Regression for the refactored worker's useMergedMaps flag: the plain overload must encode against ONLY this
+	//encoder's own names, whereas encodeRScriptCommander merges the extra encoders (matching decodeAll on the
+	//result). An extra encoder's column must therefore be left verbatim by encodeRScript but encoded by the commander.
+	ColumnEncoder * encoder = ColumnEncoder::columnEncoder();
+	encoder->setCurrentNames(names({ {"y", columnType::unknown} }));
+
+	ColumnEncoder extraEncoder(ExtraOptionsPrefix);
+	extraEncoder.setCurrentNames(names({ {"extraCol", columnType::unknown} }));
+
+	const std::string encY        = encoder->encode("y");
+	const std::string encExtraCol = extraEncoder.encode("extraCol");
+
+	const std::string userScript = "y + extraCol";
+
+	//Raw path: only "y" (this encoder's own column) is encoded; the extra encoder's "extraCol" is untouched.
+	std::set<std::string> columnNamesFound;
+	const std::string rawEncoded = encoder->encodeRScript(userScript, &columnNamesFound);
+	QCOMPARE(QString::fromStdString(rawEncoded), QString::fromStdString(encY + " + extraCol"));
+	QVERIFY2(columnNamesFound == (std::set<std::string>{"y"}), "The plain overload must not see the extra encoder's columns.");
+
+	//Merged path: the commander also encodes the extra encoder's "extraCol".
+	const std::string commanderEncoded = encoder->encodeRScriptCommander(userScript);
+	QCOMPARE(QString::fromStdString(commanderEncoded), QString::fromStdString(encY + " + " + encExtraCol));
+}
+
 QTEST_MAIN(TestColumnEncoderContext)

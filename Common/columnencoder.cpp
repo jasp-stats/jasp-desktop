@@ -466,9 +466,16 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 
 	return text;
 }
-std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
+std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound, bool encodeInsideStrings)
 {
-	return encodeRScript(text, _encodingMap, _originalNames, columnNamesFound);
+	return encodeRScript(text, /*useMergedMaps=*/false, columnNamesFound, "", encodeInsideStrings);
+}
+
+std::string ColumnEncoder::encodeRScriptCommander(std::string text)
+{
+	//The R Console reads the full dataset into `data`/`filteredData` whose columns carry ENCODED names, so
+	//column references typed by the user (also those inside quoted formulas/arguments like lavaan's "y~x" or cluster="cl") must be encoded.
+	return encodeRScript(text, /*useMergedMaps=*/true, nullptr, "", /*encodeInsideStrings=*/true);
 }
 
 
@@ -488,19 +495,26 @@ std::string ColumnEncoder::encodeRScript(std::string text, std::map<std::string,
 	
 	for(auto& prefix : prefixes) {
 		stringset columnNamesFound;
-		text = encodeRScript(text, _encodingMap, _originalNames, &columnNamesFound, prefix);
+		text = encodeRScript(text, /*useMergedMaps=*/false, &columnNamesFound, prefix, /*encodeInsideStrings=*/false);
 		prefixedColumnsFound.insert({prefix, columnNamesFound});
 	}
 	return text;
 }
 
 /*!
- * \brief Replace column names with encoded column names.
+ * \brief Replace column names with encoded column names. Shared worker behind every encodeRScript overload and encodeRScriptCommander.
+ * \param useMergedMaps	true encodes against this encoder merged with the extra encoders (R Console); false uses only this encoder's own name maps.
  * \param mandatoryPrefix Specifies a prefix that column names SHOULD have in order to be replaced/encoded. We skip all names matches that lack this prefix. Default ""/empty_string means that all variables will be replaced.
  * \return Original string with column names replaced by encoded column names
  */
-std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound, const std::string& mandatoryPrefix)
+std::string ColumnEncoder::encodeRScript(std::string text, bool useMergedMaps, std::set<std::string> * columnNamesFound, const std::string& mandatoryPrefix, bool encodeInsideStrings)
 {
+	//Callers that must also see the extra encoders (the R Console, mirroring decodeAll on the result) use the merged maps; everyone else uses this encoder's own name maps. Both stay paired (original name -> encoded value).
+	const colMap   mergedMap   = useMergedMaps ? encodingMap(this)   : colMap();
+	const colVec   mergedNames = useMergedMaps ? originalNames(this) : colVec();
+	const colMap & map		   = useMergedMaps ? mergedMap   : _encodingMap;
+	const colVec & names	   = useMergedMaps ? mergedNames : _originalNames;
+
 	if(columnNamesFound)
 		columnNamesFound->clear();
 
@@ -542,7 +556,7 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	{
 		std::string	newCol	= map.at(oldCol);
 
-		std::vector<size_t> foundColPositions = getPositionsColumnNameMatches(text, oldCol);
+		std::vector<size_t> foundColPositions = getPositionsColumnNameMatches(text, oldCol, encodeInsideStrings);
 		std::reverse(foundColPositions.begin(), foundColPositions.end());
 
 		for (size_t foundPos : foundColPositions)
@@ -568,7 +582,7 @@ std::string ColumnEncoder::encodeRScript(std::string text, const std::map<std::s
 	return text;
 }
 
-std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::string & text, const std::string & columnName)
+std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::string & text, const std::string & columnName, bool includeInsideStrings)
 {
 	std::vector<size_t> positions;
 
@@ -576,7 +590,7 @@ std::vector<size_t> ColumnEncoder::getPositionsColumnNameMatches(const std::stri
 	char delim		= '?';
 
 	for (std::string::size_type pos = 0; pos < text.length(); ++pos)
-		if (!inString && text.substr(pos, columnName.length()) == columnName)
+		if ((includeInsideStrings || !inString) && text.substr(pos, columnName.length()) == columnName)
 			positions.push_back(int(pos));
 		else if (text[pos] == '"' || text[pos] == '\'') //string starts or ends. This does not take into account escape characters though...
 		{
@@ -720,8 +734,10 @@ std::string ColumnEncoder::replaceColumnNamesInRScript(const std::string & rCode
 		tempEncoder.replaceAll(
 			tempEncoder.encodeRScript(
 				rCode,
-				tempEncoder._encodingMap,
-				tempEncoder._originalNames
+				/*useMergedMaps=*/false,
+				nullptr,
+				"",
+				/*encodeInsideStrings=*/false
 			),
 			tempEncoder._decodingMap,
 			tempEncoder._encodedNames

@@ -88,9 +88,19 @@ public:
 
 
 			///Replace all occurences of columnNames in a string by their encoded versions, taking into account the presence of word boundaries and parentheses.
-			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound = nullptr);
+			///When encodeInsideStrings is true, matches inside R string literals ("..." / '...') are ALSO replaced, while still honouring word boundaries.
+			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound = nullptr, bool encodeInsideStrings = false);
+			///Prefix-aware variant: reports, per allowed prefix (plus the empty prefix), which column names were encoded. Used for "data.<column>" style references.
 			std::string			encodeRScript(std::string text, std::map<std::string, std::set<std::string>>& prefixedColumnsFound, const std::set<std::string>& allowedPrefixes);
-			std::string			encodeRScript(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, std::set<std::string> * columnNamesFound = nullptr, const std::string& acceptedPrefix = "");
+            
+		  ///Shared, word-boundary-aware R-script encoder behind every public encodeRScript overload and encodeRScriptCommander.
+		  ///useMergedMaps=true encodes against this encoder merged with the extra encoders (the R Console, matching decodeAll on the
+		  ///result); false uses only this encoder's own name maps. mandatoryPrefix restricts matches to names carrying that prefix.
+		  ///encodeInsideStrings additionally replaces matches inside R string literals ("..." / '...') while still honouring word boundaries.
+		  std::string			encodeRScript(std::string text, bool useMergedMaps, std::set<std::string> * columnNamesFound, const std::string & mandatoryPrefix, bool encodeInsideStrings);
+
+			///Word-boundary-aware encoder for the built-in R Console (RCommander).
+			std::string			encodeRScriptCommander(std::string text);
 
 		///Replace all occurences of columnNames in a string by their encoded versions, regardless of word boundaries or parentheses.
 		///Instance method: en/decode against *this* encoder. Engine callers use the process-global
@@ -120,8 +130,11 @@ private:
 	static  std::string			replaceAllStrict(const std::string & text, const std::map<std::string, std::string> & map);
 
 	static	void				replaceAll(Json::Value & json, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, bool replaceNames, bool replaceStrict);
-	static	std::vector<size_t>	getPositionsColumnNameMatches(const std::string & text, const std::string & columnName);
-			void				collectExtraEncodingsFromMetaJson(const Json::Value & in, colTypeMap & namesCollected) const;
+	///Find all positions where columnName occurs in text. By default matches inside R string literals ("..." / '...')
+	///are skipped; pass includeInsideStrings=true (used by the R Console) to also report matches inside strings so that
+	///column names in quoted formulas/arguments (e.g. lavaan's "y~x") get encoded too.
+	static	std::vector<size_t>	getPositionsColumnNameMatches(const std::string & text, const std::string & columnName, bool includeInsideStrings = false);
+	void				collectExtraEncodingsFromMetaJson(const Json::Value & in, colTypeMap & namesCollected) const;
 	static	void				sortVectorBigToSmall(std::vector<std::string> & vec);
 	static	const colMap	&	encodingMap();
 	static	const colMap	&	decodingMap();
