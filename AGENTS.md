@@ -27,8 +27,9 @@ xvfb-run build/Tests/JASPTest testSyncerStartStopFileSyncing  # single test by n
 ctest -R testDataImport --output-on-failure             # or via ctest
 ```
 
-Test names (use `-functions` on binary to list all). There are SIX test executables — verify against ALL of them:
-- `JASPTest` — data import + syncer tests
+Test names (use `-functions` on binary to list all). There are SEVEN test executables — verify against ALL of them:
+- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`), which construct a real `MainWindow` headlessly (set `JASP_TEST_HEADLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp)
+- `JASPTestParsedArgs` — command-line argument parsing (depends on `JASPDesktopLib`); PRO-only flags are exercised in both modes via `AppInfo::setProMode`, no PRO build required
 - `JASPTestEngine` — engine integration tests
 - `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
@@ -36,14 +37,17 @@ Test names (use `-functions` on binary to list all). There are SIX test executab
 To build and run everything in one go:
 
 ```bash
-cmake --build build --target JASPTest JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPQuickTest JASPTestColumnEncoderContext
+cmake --build build --target JASPTest JASPTestParsedArgs JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPQuickTest JASPTestColumnEncoderContext
 xvfb-run build/Tests/JASPTest
+xvfb-run build/Tests/JASPTestParsedArgs
 xvfb-run build/Tests/JASPTestEngine
 xvfb-run build/Tests/JASPTestDebugData
 xvfb-run build/Tests/JASPTestCsvPrev
 QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest
 xvfb-run build/Tests/JASPTestColumnEncoderContext
 ```
+
+PRO-only behaviour (batch data sync/export CLI) is a *runtime* flag now: `AppInfo::proMode()`, defaulting to the compile-time `PRO` CMake option and overridable with `AppInfo::setProMode()` (used by `JASPTestParsedArgs`). The remaining `#ifdef PRO` blocks are branding only.
 
 For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
 

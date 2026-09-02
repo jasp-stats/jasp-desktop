@@ -16,7 +16,7 @@ public:
 	void						setCurrentFilePath(const QString &newcurrent);
 	
 signals:
-	void syncCurrentFile(const QString& currentFile);	
+	void syncCurrentFile(const QString& currentFile);
 	
 private:
 	CurrentFileFileSystem			*_fsbmCurrentFile;
