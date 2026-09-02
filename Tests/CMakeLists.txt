@@ -128,12 +128,6 @@ target_include_directories(
   ${PROJECT_SOURCE_DIR}/Common
 )
 
-target_include_directories(
-  JASPTestParsedArgs
-  PUBLIC
-  JASPDesktopLib
-)
-
 target_link_libraries(
   JASPTest
   PUBLIC

@@ -82,6 +82,14 @@ using namespace Modules;
 
 MainWindow * MainWindow::_singleton	= nullptr;
 
+//MainWindow-level tests (JASPTest) only exercise the data/sync chain, for which neither the QML
+//user interface nor the R engines are needed - and both add a small fleet of flaky threads to the
+//test process. The environment variable also keeps loadQML's full QML engine from starting up.
+static bool headlessTestMode()
+{
+	return !qEnvironmentVariableIsEmpty("JASP_TEST_HEADLESS");
+}
+
 MainWindow::MainWindow(Application * application) : QObject(application), _application(application)
 {
 	std::cout << "MainWindow constructor started" << std::endl;
@@ -171,11 +179,12 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 	QmlUtils::registerQmlModuleTypes();
 
-	QTimer::singleShot(0, this, [&]() { loadQML(); });
+	QTimer::singleShot(0, this, [&]() { if(!headlessTestMode()) loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
 
-	_engineSync->start();
+	if(!headlessTestMode())
+		_engineSync->start();
 	
 	checkForUpdates();
 
@@ -237,18 +246,12 @@ This setting can always be changed in the Interface Preferences.)MultiLine"),
 MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
-	
+
 	delete _aiBridge;
 	delete _rpcServer;
 	delete _rpcDispatcher;
 
 	_engineSync->killProcessTimer();
-
-	try
-	{
-		DatabaseInterface::closeInterfaces();
-	}
-	catch(...) {}
 
 	try
 	{
@@ -277,6 +280,18 @@ MainWindow::~MainWindow()
 		delete _resultsJsInterface;
 	}
 	catch(...)	{}
+
+	//The database interface must outlive the QObjects destroyed below (DataSetPackage and its
+	//DataSets still write to it while they go away). Closing it earlier made any later database
+	//access lazily recreate the interface against a session database that is already gone.
+	//_package is deleted explicitly so it cannot outlive the interface via ~QObject.
+	delete _package;
+
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(...) {}
 }
 
 QString MainWindow::windowTitle() const
