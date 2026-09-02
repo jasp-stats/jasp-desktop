@@ -17,6 +17,7 @@
 //
 #include "testparsedarguments.h"
 #include "parsedarguments.h"
+#include "appinfo.h"
 #include "utilenums.h"
 
 #include <QTemporaryDir>
@@ -153,12 +154,12 @@ void TestParsedArguments::testBooleanFlags()
 	check("--safeGraphics",		&ParsedArguments::safeGraphics);
 	check("--newData",			&ParsedArguments::newData);
 
-#ifdef PRO
-	//These flags only exist in PRO builds; elsewhere they are passed on to Qt as unrecognized options.
+	//These flags only exist in PRO mode; elsewhere they are passed on to Qt as unrecognized options.
+	AppInfo::setProMode(true);
 	check("--exportPdf",		&ParsedArguments::exportPdf);
 	check("--keepJASPOpen",		&ParsedArguments::keepJASPOpenAfterExporting);
 	check("--dontExportResult",	&ParsedArguments::dontExportResult);
-#endif
+	AppInfo::setProMode(false);
 }
 
 // ── --timeOut=N ────────────────────────────────────────────────────────────
@@ -213,9 +214,8 @@ void TestParsedArguments::testJaspFilePositionalArg()
 
 void TestParsedArguments::testJaspFileWithOneDataFile()
 {
-#ifndef PRO
-	QSKIP("A data file following a JASP file is only parsed in PRO builds");
-#endif
+	AppInfo::setProMode(true); //a data file following a JASP file is only parsed in PRO mode
+
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -233,9 +233,8 @@ void TestParsedArguments::testJaspFileWithOneDataFile()
 
 void TestParsedArguments::testJaspFileWithMultipleDataFiles()
 {
-#ifndef PRO
-	QSKIP("Data files following a JASP file are only parsed in PRO builds");
-#endif
+	AppInfo::setProMode(true); //data files following a JASP file are only parsed in PRO mode
+
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -255,9 +254,8 @@ void TestParsedArguments::testJaspFileWithMultipleDataFiles()
 
 void TestParsedArguments::testInputDataDir()
 {
-#ifndef PRO
-	QSKIP("--inputDataDir is only parsed in PRO builds");
-#endif
+	AppInfo::setProMode(true); //--inputDataDir is only parsed in PRO mode
+
 	QTemporaryDir dataDir;
 	QVERIFY(dataDir.isValid());
 
@@ -272,9 +270,8 @@ void TestParsedArguments::testInputDataDir()
 
 void TestParsedArguments::testOutputDir()
 {
-#ifndef PRO
-	QSKIP("--outputDir is only parsed in PRO builds");
-#endif
+	AppInfo::setProMode(true); //--outputDir is only parsed in PRO mode
+
 	QTemporaryDir outDir;
 	QVERIFY(outDir.isValid());
 
@@ -319,9 +316,8 @@ void TestParsedArguments::testUnitTestRecursiveFlag()
 
 void TestParsedArguments::testCombinedOutputFlags()
 {
-#ifndef PRO
-	QSKIP("The export/output flags combination is only parsed in PRO builds");
-#endif
+	AppInfo::setProMode(true); //the export/output flags combination is only parsed in PRO mode
+
 	QTemporaryDir dir;
 	QVERIFY(dir.isValid());
 	QString jaspPath = createTempJaspFile(dir);
@@ -353,9 +349,15 @@ void TestParsedArguments::testMultipleFlagsIndependent()
 	QCOMPARE(pa.save,			true);
 	QCOMPARE(pa.logToFile,		true);
 	QCOMPARE(pa.safeGraphics,	true);
-#ifdef PRO
-	QCOMPARE(pa.exportPdf,		true);
-#endif
+	AppInfo::setProMode(true);
+	{
+		ArgArray a({"--save", "--logToFile", "--safeGraphics", "--exportPdf", "--timeOut=5"});
+		ParsedArguments paPro(a.argc, a.argv());
+		QCOMPARE(paPro.save,		true);
+		QCOMPARE(paPro.exportPdf,	true);
+		QCOMPARE(paPro.timeOut,		5);
+	}
+	AppInfo::setProMode(false);
 	QCOMPARE(pa.timeOut,		5);
 	// Everything else stays default
 	QCOMPARE(pa.hideJASP,		false);
