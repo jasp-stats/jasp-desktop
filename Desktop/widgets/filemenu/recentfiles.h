@@ -34,7 +34,7 @@ public:
 
 	RecentFilesListModel * listModel() const { return _recentFilesListModel; }
 
-public slots:	
+public slots:
 	void setListModel(RecentFilesListModel * listModel);
 
 signals:
