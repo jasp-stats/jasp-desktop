@@ -83,11 +83,13 @@ using namespace Modules;
 MainWindow * MainWindow::_singleton	= nullptr;
 
 //MainWindow-level tests (JASPTest) only exercise the data/sync chain, for which neither the QML
-//user interface nor the R engines are needed - and both add a small fleet of flaky threads to the
-//test process. The environment variable also keeps loadQML's full QML engine from starting up.
-static bool headlessTestMode()
+//user interface nor the R engines (and thus no analyses) are needed - and both add a small fleet
+//of flaky threads to the test process. The environment variable also keeps loadQML's full QML
+//engine from starting up. Note this is about running without any backend (R/engine), not about
+//being headless: the tests still run under a display via xvfb.
+static bool backendlessTestMode()
 {
-	return !qEnvironmentVariableIsEmpty("JASP_TEST_HEADLESS");
+	return !qEnvironmentVariableIsEmpty("JASP_TEST_BACKENDLESS");
 }
 
 MainWindow::MainWindow(Application * application) : QObject(application), _application(application)
@@ -179,11 +181,11 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 	QmlUtils::registerQmlModuleTypes();
 
-	QTimer::singleShot(0, this, [&]() { if(!headlessTestMode()) loadQML(); });
+	QTimer::singleShot(0, this, [&]() { if(!backendlessTestMode()) loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
 
-	if(!headlessTestMode())
+	if(!backendlessTestMode())
 		_engineSync->start();
 	
 	checkForUpdates();

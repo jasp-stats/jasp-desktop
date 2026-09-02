@@ -1478,9 +1478,10 @@ QSignalSpy * TestAll::_newMainWindowWithExitSpy(MainWindow *& mw)
 	TempFiles::init(ProcessInfo::currentPID());
 
 	//Keep the QML engine and the R engines out of the test process: the data/sync chain under test
-	//does not need them, and both add many threads (sqlite contention, JS garbage collection) that
-	//make the test flaky. See headlessTestMode() in mainwindow.cpp.
-	qputenv("JASP_TEST_HEADLESS", "1");
+	//does not need them (no backend at all, though the tests do run under a display), and both add
+	//many threads (sqlite contention, JS garbage collection) that make the test flaky. See
+	//backendlessTestMode() in mainwindow.cpp.
+	qputenv("JASP_TEST_BACKENDLESS", "1");
 
 	//Other tests may have left the global PreferencesModel singleton behind; the MainWindow wants
 	//to construct its own, and a second one asserts.
