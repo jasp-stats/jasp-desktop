@@ -28,7 +28,7 @@
 #include <QTimer>
 #include "processinfo.h"
 #include "utilities/appdirs.h"
-#include "widgets/filemenu/filemenu.h"
+#include "fileeventrouter.h"
 
 void FileEvent::setDataSet(DataSet * ds)
 { 
@@ -54,19 +54,20 @@ FileEvent::FileEvent(QObject *parent, FileEvent::FileMode fileMode, bool routeTh
 	default:							_exporter = nullptr;					break;
 	}
 
-	// UI-initiated file operations are routed through the FileMenu singleton (which forwards to the
-	// MainWindow handlers). The data-syncer path (AsyncLoader::onSyncRequired) runs headless and in
-	// unit tests where no FileMenu exists, so it opts out (routeThroughFileMenu == false) and drives
-	// the event through the loader itself. Never let the routing fail silently.
+	// UI-initiated file operations are routed through the registered FileEventRouter (usually the
+	// FileMenu, which forwards to the MainWindow handlers). The data-syncer path
+	// (AsyncLoader::onSyncRequired) runs headless and in unit tests where no router exists, so it
+	// opts out (routeThroughFileMenu == false) and drives the event through the loader itself.
+	// Never let the routing fail silently.
 	if (routeThroughFileMenu)
 	{
-		if (FileMenu::singleton())
+		if (FileEventRouter::current())
 		{
-			connect(this, &FileEvent::started,		FileMenu::singleton(), &FileMenu::startFileEvent);
-			connect(this, &FileEvent::completed,	FileMenu::singleton(), &FileMenu::finalizeFileEvent, Qt::QueuedConnection);
+			connect(this, &FileEvent::started,		FileEventRouter::current(), &FileEventRouter::startFileEvent);
+			connect(this, &FileEvent::completed,	FileEventRouter::current(), &FileEventRouter::finalizeFileEvent, Qt::QueuedConnection);
 		}
 		else
-			Log::log() << "[FileEvent] routeThroughFileMenu requested but FileMenu::singleton() is null; started/completed will have no UI handler for this event." << std::endl;
+			Log::log() << "[FileEvent] routeThroughFileMenu requested but no FileEventRouter is registered; started/completed will have no UI handler for this event." << std::endl;
 	}
 }
 
@@ -174,7 +175,7 @@ void FileEvent::chain(FileEvent *event, bool resetDataSet)
 		if (isCompleted())
 			Log::log() << "Event " << getProgressMsg().toStdString() << " is completed before Event " << event->getProgressMsg().toStdString() << " was completed" << std::endl;
 		else // The `this` event is already started, but it should wait for `event`to be finalized before being set to be completed
-			connect(event, &FileEvent::finalized, this, [this, event]() { setComplete(event->isSuccessful(), event->message()); });
+			connect(event, &FileEvent::finalized, this, [this, event]() { setComplete(event->isSuccessful(), event->message(), event->isCancelled()); });
 	}
 	else
 		connect(event, &FileEvent::finalized, this, [this, event, resetDataSet]() {

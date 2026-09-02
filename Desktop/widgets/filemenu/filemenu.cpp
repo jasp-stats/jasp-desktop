@@ -26,20 +26,10 @@
 #include "mainwindow.h"
 #include "utilities/appdirs.h"
 #include "data/jaspencryptiondata.h"
+#include "data/fileeventrouter.h"
 
-FileMenu* FileMenu::_singleton = nullptr;
-
-FileMenu::FileMenu(QObject *parent) : QObject(parent)
+FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 {
-	//Every FileEvent looks this singleton up to route its started/completed signals, so a silent
-	//overwrite would silently re-point all future events. assert() is gone in release builds, hence
-	//the log too.
-	assert(_singleton == nullptr);
-	if(_singleton)
-		Log::log() << "[FileMenu] Constructing a FileMenu while one already exists! FileEvent routing will target the new one from now on." << std::endl;
-
-	_singleton = this;
-
 	_mainWindow				= qobject_cast<MainWindow*>(parent);
 	_recentFiles			= new RecentFiles			(this);
 	_currentDataFile		= new CurrentDataFile		(this);
@@ -75,11 +65,8 @@ FileMenu::FileMenu(QObject *parent) : QObject(parent)
 
 FileMenu::~FileMenu()
 {
-	//FileEvent looks this singleton up to route its started/completed signals, so it must not be left
-	//dangling: events created after the menu is gone then log about the missing target instead of
-	//connecting to freed memory.
-	if(_singleton == this)
-		_singleton = nullptr;
+	//FileEventRouter's destructor unregisters this menu as the current router, so events created
+	//afterwards log about the missing target instead of connecting into freed memory.
 }
 
 void FileMenu::setFileoperation(ActionButtons::FileOperation fo)
@@ -306,6 +293,9 @@ void FileMenu::buttonsForEmptyWorkspace()
 void FileMenu::startFileEvent()
 {
 	FileEvent* event = qobject_cast<FileEvent*>(sender());
+	if(!event)
+		return;
+
 	Log::log() << "[FileMenu::startFileEvent] START: event->operation()=" << event->operation() << ", event->isSuccessful()=" << event->isSuccessful() << std::endl;
 
 	_mainWindow->fileEventRequestHandler(event);
@@ -315,6 +305,16 @@ void FileMenu::startFileEvent()
 void FileMenu::finalizeFileEvent()
 {
 	FileEvent* event = qobject_cast<FileEvent*>(sender());
+	if(!event)
+		return;
+
+	//An event that never started (FileMenu::save's OSF failure path completes it on the spot) has
+	//no request side behind it; finalizing it would run the failure handling twice.
+	if(!event->isStarted())
+	{
+		event->cleanUp();
+		return;
+	}
 
 	if(event->operation() != FileEvent::FileClose)
 		setVisible(false); //If we just did something we are now done with the filemenu right? Except if we just closed a file
