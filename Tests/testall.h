@@ -97,6 +97,10 @@ private slots:
 	void	testScriptConstructorAllowedColumnTypes();
 	void	testScriptConstructorRowFunctionFreeSlot();
 
+	// Malformed constructorJson (corrupt .jasp files) must never throw or crash: garbage is
+	// rejected, mistyped/corrupt formulas are skipped.
+	void	testScriptConstructorRobustJson();
+
 	// "Best spot" drop resolution: a drop without an explicit target fills the leftmost
 	// empty accepting slot, working left-to-right / top-to-bottom through the formulas.
 	void	testScriptConstructorLeftMostEmpty();

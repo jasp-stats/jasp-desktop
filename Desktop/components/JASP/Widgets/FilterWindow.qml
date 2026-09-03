@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import JASP.Controls	as JaspControls
-import "FilterConstructor"
 import JASP
 
 import QtQuick.Layouts

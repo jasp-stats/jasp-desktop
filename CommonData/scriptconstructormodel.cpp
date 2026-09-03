@@ -1,14 +1,16 @@
 #include "scriptconstructormodel.h"
 #include "columntype.h"
+#include "log.h"
 #include "timers.h"
 #include <QUndoStack>
+#include <sstream>
 
 // --- DropTarget ---
 
-bool DropTarget::accepts(ScriptNode * node) const
+bool DropTarget::accepts(ScriptNode * node, ScriptConstructorMode mode) const
 {
 	if(!node) return false;
-	return ScriptConstructorModel::keysOverlap(node->dragKeys(), dropKeys);
+	return ScriptConstructorModel::keysOverlap(node->dragKeys(mode), dropKeys);
 }
 
 bool ScriptConstructorModel::keysOverlap(const stringvec & a, const stringvec & b)
@@ -42,8 +44,18 @@ void ScriptConstructorModel::deleteAllFormulas()
 void ScriptConstructorModel::fromJson(const std::string & json)
 {
 	JASPTIMER_SCOPE(ScriptConstructorModel fromJson);
+
+	// constructorJson can come from saved .jasp files: never let a parse failure escape.
 	Json::Value root;
-	Json::Reader().parse(json, root);
+	Json::CharReaderBuilder builder;
+	std::string errors;
+	std::istringstream stream(json);
+	if(!Json::parseFromStream(builder, stream, &root, &errors))
+	{
+		Log::log() << "ScriptConstructorModel::fromJson: failed to parse JSON: " << errors << std::flush;
+		root = Json::Value(Json::objectValue);
+	}
+
 	fromJson(root);
 }
 
@@ -52,12 +64,25 @@ void ScriptConstructorModel::fromJson(const Json::Value & json)
 	deleteAllFormulas();
 
 	const Json::Value & formulas = json.get("formulas", Json::arrayValue);
-	for(Json::ArrayIndex i = 0; i < formulas.size(); i++)
-	{
-		ScriptNode * node = ScriptNode::fromJson(formulas[i], nullptr);
-		if(node)
-			_formulas.push_back(node);
-	}
+
+	if(formulas.isArray())
+		for(Json::ArrayIndex i = 0; i < formulas.size(); i++)
+		{
+			ScriptNode * node = nullptr;
+			try
+			{
+				node = ScriptNode::fromJson(formulas[i], nullptr);
+			}
+			catch(const std::exception & e)
+			{
+				// Belt and braces: jsoncpp should not throw anymore (defensive accessors in
+				// scriptnode.cpp), but a corrupt formula must never take the app down.
+				Log::log() << "ScriptConstructorModel::fromJson: skipped corrupt formula " << i << ": " << e.what() << std::flush;
+			}
+
+			if(node)
+				_formulas.push_back(node);
+		}
 
 	emit reset();
 	emit changed();
@@ -119,7 +144,7 @@ bool ScriptConstructorModel::allBoolean() const
 	for(ScriptNode * node : _formulas)
 	{
 		bool isBool = false;
-		for(const std::string & key : node->dragKeys())
+		for(const std::string & key : node->dragKeys(_mode))
 			if(key == "boolean")
 				isBool = true;
 
@@ -432,7 +457,7 @@ DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node
 		if(formula == node)
 			continue;
 
-		DropTarget spot = leftMostEmptyDropSpotRec(formula, node->dragKeys());
+		DropTarget spot = leftMostEmptyDropSpotRec(formula, node->dragKeys(_mode));
 		if(spot.isValid())
 			return spot;
 	}
@@ -463,16 +488,17 @@ void ScriptConstructorModel::beginEdit()
 
 void ScriptConstructorModel::endEdit(const QString & description)
 {
-	emit changed();
-
-	if(!_undoStack)
-		return;
-
 	std::string afterJson = toString();
+
+	// No-op edits (e.g. dropping a node back into its own slot) must neither flag the
+	// constructor dirty nor push an undo command.
 	if(afterJson == _editBeforeJson)
 		return;
 
-	_undoStack->push(new ScriptConstructorEditCommand(this, _editBeforeJson, afterJson, description));
+	emit changed();
+
+	if(_undoStack)
+		_undoStack->push(new ScriptConstructorEditCommand(this, _editBeforeJson, afterJson, description));
 }
 
 void ScriptConstructorModel::insertNode(ScriptNode * node, DropTarget target)
@@ -491,7 +517,7 @@ void ScriptConstructorModel::insertNode(ScriptNode * node, DropTarget target)
 		node->setParent(nullptr);
 
 		DropTarget spot = findReasonableInsertionSpot(node);
-		if(spot.isValid() && keysOverlap(node->dragKeys(), spot.dropKeys))
+		if(spot.isValid() && keysOverlap(node->dragKeys(_mode), spot.dropKeys))
 		{
 			detachFromParent(node);
 			placeAt(node, spot);
@@ -599,9 +625,9 @@ bool ScriptConstructorModel::tryGobbleLeft(ScriptNode * node)
 
 		while(gobbleMeUp)
 		{
-			if(keysOverlap(gobbleMeUp->dragKeys(), leftKeys))
+			if(keysOverlap(gobbleMeUp->dragKeys(_mode), leftKeys))
 			{
-				bool iFitHere = putIsRoot || keysOverlap(node->dragKeys(), putResultHere.dropKeys);
+				bool iFitHere = putIsRoot || keysOverlap(node->dragKeys(_mode), putResultHere.dropKeys);
 				if(iFitHere)
 				{
 					int gobbleRootIndex = rootIndexOf(gobbleMeUp);

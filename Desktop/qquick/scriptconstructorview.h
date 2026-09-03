@@ -108,6 +108,7 @@ public:
 	// --- used by ScriptNodeItem / ScriptDropSpot ---
 	QQmlComponent	*	textComponent();
 	QQmlComponent	*	imageComponent();
+	QQmlComponent	*	backgroundImageComponent();
 	QQmlComponent	*	textInputComponent();
 	QQmlComponent	*	checkBoxComponent();
 	QQmlComponent	*	rectangleComponent();
@@ -179,6 +180,14 @@ private:
 
 	void				clearHover();
 
+	/// Aborts an in-flight drag and cleans up its item (+ an unowned freshly-spawned node).
+	/// Called when a model reset or palette rebuild invalidates the drag context.
+	void				cancelDrag();
+
+	/// Restores the dirty flag after an undo/redo: the constructor is only dirty when the
+	/// tree differs from what was last applied (fromJson always emits changed()).
+	void				syncDirtyFlag();
+
 	void				updateBackgroundDecoration();
 
 	// One-pass column cache (name -> type/index/description); keeps columnType() and the
@@ -217,6 +226,7 @@ private:
 
 	QPointer<QQmlComponent>					_textComp,
 											_imageComp,
+											_backgroundImageComp,
 											_textInputComp,
 											_checkBoxComp,
 											_rectComp;
@@ -229,7 +239,6 @@ private:
 
 	// drag state
 	QPointer<ScriptNodeItem>				_draggedItem;
-	ScriptNode						*		_draggedNewNode = nullptr;
 	QPointF									_dragOffset;
 	QPointer<ScriptDropSpot>				_hoveredSpot;
 	bool									_dragIsNew = false;

@@ -51,7 +51,12 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	connect(&_localUndoStack, &QUndoStack::canUndoChanged,	this, &ScriptConstructorView::canUndoChanged);
 	connect(&_localUndoStack, &QUndoStack::canRedoChanged,	this, &ScriptConstructorView::canRedoChanged);
 
-	connect(&_model, &ScriptConstructorModel::reset,	this, [this](){ rebuildFormulaItems(); });
+	connect(&_model, &ScriptConstructorModel::reset,	this, [this](){
+		// A reset rebuilds the whole node tree (fromJson deletes the old nodes), so any
+		// in-flight drag holds a dangling ScriptNode: abort it before rebuilding.
+		cancelDrag();
+		rebuildFormulaItems();
+	});
 	connect(&_model, &ScriptConstructorModel::changed,	this, [this](){
 		setSomethingChanged(true);
 		emit rCodeChanged(rCode());
@@ -63,7 +68,7 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 
 ScriptConstructorView::~ScriptConstructorView()
 {
-	for(auto & comp : {_textComp, _imageComp, _textInputComp, _checkBoxComp, _rectComp})
+	for(auto & comp : {_textComp, _imageComp, _backgroundImageComp, _textInputComp, _checkBoxComp, _rectComp})
 		delete comp.data();
 }
 
@@ -87,7 +92,14 @@ void ScriptConstructorView::setModeInt(int m)
 	emit modeChanged();
 
 	if(_chromeBuilt)
+	{
+		// The operator bar and function palette are mode-dependent, so rebuild them
+		// (currently QML sets `mode` before the deferred build, but never rely on that).
+		buildOperatorBar();
+		buildColumnPalette();
+		buildFunctionPalette();
 		layoutAll();
+	}
 }
 
 QString ScriptConstructorView::constructorJson() const
@@ -284,6 +296,9 @@ void ScriptConstructorView::schedulePaletteRebuild()
 		_paletteRebuildScheduled = false;
 		if(!_chromeBuilt)
 			return;
+		// Rebuilding the palettes destroys the pressed prototype (the mouse grabber), which
+		// would leave a spawned drag dangling: abort any in-flight drag first.
+		cancelDrag();
 		rebuildColumnCache();
 		buildColumnPalette();
 	});
@@ -331,11 +346,18 @@ void ScriptConstructorView::initializeFromJSON(const QString & json)
 void ScriptConstructorView::undo()
 {
 	_localUndoStack.undo();
+	syncDirtyFlag();
 }
 
 void ScriptConstructorView::redo()
 {
 	_localUndoStack.redo();
+	syncDirtyFlag();
+}
+
+void ScriptConstructorView::syncDirtyFlag()
+{
+	setSomethingChanged(tq(_model.toString()) != _lastAppliedJson);
 }
 
 bool ScriptConstructorView::checkAndApply()
@@ -437,9 +459,24 @@ QQmlComponent * ScriptConstructorView::imageComponent()
 		// asynchronous: true so icon decoding happens on the loader thread instead of blocking
 		// the GUI thread; sizes are pinned via width/height + implicitWidth/Height by makeImage,
 		// so layout never depends on the load having finished.
+		// sourceSize at 2x keeps the small palette/trash icons crisp.
 		_imageComp->setData("import QtQuick\nImage { smooth: true; asynchronous: true; sourceSize.width: width * 2; sourceSize.height: height * 2; }", QUrl("ScriptConstructorImage"));
 	}
 	return _imageComp;
+}
+
+QQmlComponent * ScriptConstructorView::backgroundImageComponent()
+{
+	if(!_backgroundImageComp)
+	{
+		JASPTIMER_SCOPE(ScriptConstructor compile backgroundImageComponent);
+		_backgroundImageComp = new QQmlComponent(qmlEngine(this));
+		// The (large) watermark must not use the shared icon component: its `sourceSize = width * 2`
+		// binding would re-decode the whole PNG on every resize step. mipmap keeps the heavy
+		// downscale (the watermark is drawn at ~half size) crisp.
+		_backgroundImageComp->setData("import QtQuick\nImage { smooth: true; mipmap: true; asynchronous: true; }", QUrl("ScriptConstructorBackgroundImage"));
+	}
+	return _backgroundImageComp;
 }
 
 QQmlComponent * ScriptConstructorView::textInputComponent()
@@ -477,8 +514,14 @@ QQmlComponent * ScriptConstructorView::rectangleComponent()
 
 QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp, const char * kind)
 {
-	if(!comp || comp->isError())
+	if(!comp)
 		return nullptr;
+
+	if(comp->isError())
+	{
+		Log::log() << "ScriptConstructor: component '" << (kind ? kind : "?") << "' failed to compile: " << fq(comp->errorString()) << std::endl;
+		return nullptr;
+	}
 
 	Q_UNUSED(kind);
 
@@ -499,7 +542,12 @@ QQuickItem * ScriptConstructorView::newLeaf(QQmlComponent * comp, const char * k
 #endif
 
 	if(incubator.isError())
+	{
+		// A typo in an inline component string would otherwise silently remove UI.
+		for(const QQmlError & error : incubator.errors())
+			Log::log() << "ScriptConstructor: failed to incubate '" << (kind ? kind : "?") << "': " << error.toString().toStdString() << std::endl;
 		return nullptr;
+	}
 
 	return qobject_cast<QQuickItem*>(incubator.object());
 }
@@ -590,7 +638,7 @@ void ScriptConstructorView::buildChrome()
 	}
 
 	// Faint centred decoration distinguishing a filter from a computed-column constructor.
-	_backgroundDecoration = newLeaf(imageComponent(), "image");
+	_backgroundDecoration = newLeaf(backgroundImageComponent(), "backgroundImage");
 	if(_backgroundDecoration)
 	{
 		_backgroundDecoration->setParentItem(this);
@@ -649,7 +697,7 @@ void ScriptConstructorView::buildChrome()
 	if(_hint)
 	{
 		_hint->setParentItem(this);
-		_hint->setProperty("wrapMode", 4);			// Text.WordWrap
+		_hint->setProperty("wrapMode", 1);				// Text.WordWrap
 		_hint->setProperty("horizontalAlignment", 4);	// Text.AlignHCenter
 		_hint->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 		QFont f = theme ? theme->font() : QFont();
@@ -663,7 +711,7 @@ void ScriptConstructorView::buildChrome()
 	if(_rCodeDisplay)
 	{
 		_rCodeDisplay->setParentItem(this);
-		_rCodeDisplay->setProperty("wrapMode", 4);		// Text.WordWrap
+		_rCodeDisplay->setProperty("wrapMode", 1);		// Text.WordWrap
 		_rCodeDisplay->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 		QFont rf = theme ? theme->fontRCode() : QFont();
 		_rCodeDisplay->setProperty("font", rf);
@@ -877,7 +925,7 @@ void ScriptConstructorView::layoutScriptArea()
 		y += item->preferredHeight() + spacing() * 2;
 	}
 
-	_scriptColumn->setWidth(width());
+	_scriptColumn->setWidth(_scriptArea ? _scriptArea->width() : width());
 	_scriptColumn->setHeight(y);
 }
 
@@ -893,13 +941,13 @@ void ScriptConstructorView::keyPressEvent(QKeyEvent * event)
 {
 	if(event->matches(QKeySequence::Undo))
 	{
-		_localUndoStack.undo();
+		undo();
 		event->accept();
 		return;
 	}
 	if(event->matches(QKeySequence::Redo))
 	{
-		_localUndoStack.redo();
+		redo();
 		event->accept();
 		return;
 	}
@@ -944,7 +992,8 @@ void ScriptConstructorView::updateBackgroundDecoration()
 		: QString("columnConstructorBackground.png");
 
 	_backgroundImageSize = QSizeF();
-	_backgroundDecoration->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + file);
+	JaspTheme * theme = JaspTheme::currentTheme();
+	_backgroundDecoration->setProperty("source", (theme ? theme->iconPath() : QString()) + "/" + file);
 }
 
 // =====================================================================================
@@ -956,6 +1005,9 @@ void ScriptConstructorView::buildOperatorBar()
 	if(!_operatorBar) return;
 
 	JASPTIMER_SCOPE(ScriptConstructor buildOperatorBar);
+
+	// Clear any previously built operator prototypes (also called again by setModeInt).
+	_clearPaletteChildren(_operatorBarContent);
 
 	auto placeOperator = [this](qreal & x, const ScriptOperatorDef & def)
 	{
@@ -1153,7 +1205,6 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 
 	_draggedItem	= item;
 	_dragIsNew		= false;
-	_draggedNewNode	= nullptr;
 
 	_dragOffset = item->mapFromScene(scenePos);
 
@@ -1161,7 +1212,8 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 	item->setZ(100);
 	item->setPosition(mapFromScene(scenePos) - _dragOffset);
 
-	setSomethingChanged(true);
+	// Deliberately NOT marking the constructor dirty here: dropping the node back into its
+	// own spot (a plain click) is a no-op and must not enable the Apply button.
 }
 
 void ScriptConstructorView::startDragNew(ScriptNode * newNode, const QPointF & scenePos)
@@ -1176,10 +1228,25 @@ void ScriptConstructorView::startDragNew(ScriptNode * newNode, const QPointF & s
 
 	_draggedItem	= item;
 	_dragIsNew		= true;
-	_draggedNewNode	= newNode;
 	_dragOffset		= QPointF(0, 0);
+}
 
-	setSomethingChanged(true);
+void ScriptConstructorView::cancelDrag()
+{
+	if(!_draggedItem)
+		return;
+
+	QToolTip::hideText();
+	clearHover();
+
+	// A freshly spawned node is not owned by the model until it is dropped, so it would
+	// leak here; an existing node stays owned by (and alive inside) the model.
+	if(_dragIsNew && _draggedItem->node())
+		_draggedItem->node()->deleteLater();
+
+	_draggedItem->deleteLater();
+	_draggedItem = nullptr;
+	_dragIsNew = false;
 }
 
 void ScriptConstructorView::collectDropSpots(QList<ScriptDropSpot*> & out) const
@@ -1246,7 +1313,7 @@ ScriptDropSpot * ScriptConstructorView::bestDropSpotFor(ScriptNode * node, const
 	// 1) A precise hit on a spot that accepts the node always wins (dropSpotAt already skips
 	// filled spots and anything inside the dragged subtree).
 	if(ScriptDropSpot * hit = dropSpotAt(scenePos, dragged))
-		if(hit->target().accepts(node))
+		if(hit->target().accepts(node, _model.mode()))
 			return hit;
 
 	// Candidate spots: empty (or holding the dragged item itself), accepting the node's keys,
@@ -1274,7 +1341,7 @@ ScriptDropSpot * ScriptConstructorView::bestDropSpotFor(ScriptNode * node, const
 			if(insideDragged) continue;
 		}
 
-		if(!spot->target().accepts(node))
+		if(!spot->target().accepts(node, _model.mode()))
 			continue;
 
 		candidates.append({ spot->mapToScene(QPointF(0, 0)), spot });
@@ -1328,7 +1395,9 @@ void ScriptConstructorView::clearHover()
 
 void ScriptConstructorView::dragMove(const QPointF & scenePos)
 {
-	if(!_draggedItem) return;
+	// A reset/cancel may have freed the node under an active drag: bail out safely.
+	if(!_draggedItem || !_draggedItem->node())
+		return;
 
 	_draggedItem->setPosition(mapFromScene(scenePos) - _dragOffset);
 
@@ -1344,58 +1413,71 @@ void ScriptConstructorView::dragMove(const QPointF & scenePos)
 
 	if(_hoveredSpot)
 	{
-		bool accepted = _draggedItem && _hoveredSpot->target().accepts(_draggedItem->node());
+		bool accepted = _hoveredSpot->target().accepts(_draggedItem->node(), _model.mode());
 		_hoveredSpot->setHoverState(true, accepted);
 	}
 }
 
 void ScriptConstructorView::endDrag(const QPointF & scenePos)
 {
-	if(!_draggedItem) return;
+	if(!_draggedItem)
+		return;
 
-	ScriptNode * node = _draggedItem->node();
-	ScriptDropSpot * spot = bestDropSpotFor(node, scenePos, _draggedItem);
+	ScriptNodeItem * item = _draggedItem.data();
+	const bool dragIsNew = _dragIsNew;
 
+	// Detach the drag state *before* the model operations: they emit changed(), which must
+	// not be interpreted as an in-flight-drag invalidation (cancelDrag would kill the item).
+	_draggedItem = nullptr;
+	_dragIsNew = false;
 	clearHover();
+
+	ScriptNode * node = item ? item->node() : nullptr;
+
+	if(!item || !node)
+	{
+		// The node was freed by a reset while the drag was in flight; drop it on the floor.
+		if(item)
+			item->deleteLater();
+		return;
+	}
+
+	const std::string beforeDragJson = _model.toString();
 
 	// Trash zone: bottom-right of the script area.
 	bool overTrash = _trash && _trash->contains(_trash->mapFromScene(scenePos));
 
 	if(overTrash)
 	{
-		if(_dragIsNew)
+		if(dragIsNew)
 			ScriptNode::deleteTree(node);
 		else
 			_model.removeNode(node);
 	}
-	else if(spot)
+	else
 	{
-		DropTarget target = spot->target();
+		ScriptDropSpot * spot = bestDropSpotFor(node, scenePos, item);
+		DropTarget target = spot ? spot->target() : DropTarget::none();
 
-		if(_dragIsNew)
+		if(dragIsNew)
 			_model.insertNode(node, target);
 		else
 			_model.moveNode(node, target);
 	}
-	else
-	{
-		// No spot the node fits in: new nodes resolve a reasonable insertion point (topmost
-		// formula's leftmost slot) and, for operators with a free left slot, absorb
-		// ("gobble") an existing formula; existing nodes are re-rooted.
-		if(_dragIsNew)
-			_model.insertNode(node, DropTarget::none());
-		else
-			_model.moveNode(node, DropTarget::root());
-	}
 
 	// The dragged item was reparented to the view root (or created there), so it
 	// is not cleaned up by clearFormulaItems(); remove it explicitly.
-	if(_draggedItem)
-		_draggedItem->deleteLater();
+	item->deleteLater();
 
-	_draggedItem = nullptr;
-	_draggedNewNode = nullptr;
-
-	rebuildFormulaItems();
-	nodeEdited();
+	if(beforeDragJson != _model.toString())
+	{
+		rebuildFormulaItems();
+		nodeEdited();
+	}
+	else
+	{
+		// No-op (e.g. a plain click dropped the node back into its own spot): restore the
+		// item hierarchy without flagging the constructor dirty.
+		rebuildFormulaItems();
+	}
 }

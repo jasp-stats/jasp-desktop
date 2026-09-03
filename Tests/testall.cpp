@@ -2016,6 +2016,9 @@ void TestAll::testScriptConstructorGoldenR()
 	// String literal is single-quoted
 	checkR(formulas({strNode("hello")}), "'hello'\n");
 
+	// String literal escaping: quotes and backslashes must reach R escaped
+	checkR(formulas({strNode("it's a \\ test")}), "'it\\'s a \\\\ test'\n");
+
 	// Nested boolean expression
 	checkR(formulas({opNode("&", opNode(">", colNode("contNormal"), numNode(0)), opNode("<", colNode("contBinom"), numNode(10)))}), "((contNormal.scale > 0) & (contBinom.scale < 10))\n");
 
@@ -2445,6 +2448,35 @@ void TestAll::testScriptConstructorRowFunctionFreeSlot()
 
 	// The trailing empty slot must not leak into the generated R code.
 	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contBinom.scale)"));
+}
+
+void TestAll::testScriptConstructorRobustJson()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Garbage (e.g. a corrupt .jasp file) must neither throw nor crash: parse failure -> empty tree.
+	model.fromJson(std::string("this is definitely not json {"));
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(model.toR(), std::string(""));
+
+	// A formula with a non-string nodeType is skipped; valid formulas next to it survive.
+	model.fromJson(std::string(
+		"{\"formulas\":["
+		"{\"nodeType\":123},"
+		"{\"nodeType\":\"Number\",\"value\":3},"
+		"{\"nodeType\":\"Column\",\"columnName\":\"a\",\"columnTypeUser\":\"bogus\",\"columnTypeDrop\":null}"
+		"]}"));
+	QCOMPARE(model.formulaCount(), 2);
+	QCOMPARE(model.toR(), std::string("3\n& a.scale\n"));
+
+	// A RowFunction with a mistyped dropped item gets an empty slot instead of exploding.
+	model.fromJson(std::string(
+		"{\"formulas\":[{\"nodeType\":\"RowFunction\",\"functionName\":\"rowMean\",\"droppedItems\":[42,\"null\"]}]}"));
+	QCOMPARE(model.formulaCount(), 1);
+	QVERIFY(!model.checkCompleteness());
 }
 
 

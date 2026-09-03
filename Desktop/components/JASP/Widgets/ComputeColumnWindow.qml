@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import JASP.Controls	as JaspControls
 import JASP
 
-import "FilterConstructor"
 
 FocusScope
 {
