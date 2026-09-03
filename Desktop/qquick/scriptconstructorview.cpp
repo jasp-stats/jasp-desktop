@@ -434,7 +434,10 @@ QQmlComponent * ScriptConstructorView::imageComponent()
 	{
 		JASPTIMER_SCOPE(ScriptConstructor compile imageComponent);
 		_imageComp = new QQmlComponent(qmlEngine(this));
-		_imageComp->setData("import QtQuick\nImage { smooth: true; sourceSize.width: width * 2; sourceSize.height: height * 2; }", QUrl("ScriptConstructorImage"));
+		// asynchronous: true so icon decoding happens on the loader thread instead of blocking
+		// the GUI thread; sizes are pinned via width/height + implicitWidth/Height by makeImage,
+		// so layout never depends on the load having finished.
+		_imageComp->setData("import QtQuick\nImage { smooth: true; asynchronous: true; sourceSize.width: width * 2; sourceSize.height: height * 2; }", QUrl("ScriptConstructorImage"));
 	}
 	return _imageComp;
 }
