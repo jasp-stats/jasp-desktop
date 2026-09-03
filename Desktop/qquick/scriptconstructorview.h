@@ -155,7 +155,6 @@ protected:
 	void				geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
 	void				itemChange(ItemChange change, const ItemChangeData & value) override;
 	void				keyPressEvent(QKeyEvent * event) override;
-	bool				eventFilter(QObject * obj, QEvent * event) override;
 
 private:
 	void				buildChrome();
@@ -216,8 +215,6 @@ private:
 											_rectComp;
 
 	QAbstractItemModel				*		_columnsModel = nullptr;
-
-	QString									_trashToolTip;
 
 	// Natural size of the background watermark image, cached on load (the Image's
 	// sourceSize = 2x binding makes implicitWidth follow width afterwards).

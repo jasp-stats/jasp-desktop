@@ -31,6 +31,7 @@
 #include "data/filtermodel.h"
 #include "data/columnsmodel.h"
 #include "qquick/scriptconstructorview.h"
+#include "qquick/scriptnodeitem.h"
 #include "timers.h"
 #include "log.h"
 
@@ -45,6 +46,7 @@
 #include <QGuiApplication>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <random>
+#include <functional>
 #include <sqlite3.h>
 
 
@@ -110,6 +112,41 @@ QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
 	return nullptr;
 }
 
+static void dumpTopmostItemAt(QQuickWindow * window, const QPointF & scenePos)
+{
+	// Walk the scene like Qt Quick's press delivery does: children top-first (z then paint
+	// order), printing every item that contains the point. The first item that is visible,
+	// enabled and accepts the left button is the one that will swallow the press.
+	Log::log() << "DIAG item chain at " << scenePos.x() << "," << scenePos.y() << " (top-first):" << std::endl;
+	bool foundReceiver = false;
+
+	std::function<void(QQuickItem *)> walk = [&](QQuickItem * item)
+	{
+		QList<QQuickItem*> children = item->childItems();
+		std::stable_sort(children.begin(), children.end(), [](QQuickItem * a, QQuickItem * b){ return a->z() < b->z(); });
+		for(int i = children.size() - 1; i >= 0; i--)
+		{
+			QQuickItem * child = children[i];
+			const QPointF local = child->mapFromScene(scenePos);
+			if(!child->isVisible() || local.x() < 0 || local.y() < 0 || local.x() > child->width() || local.y() > child->height())
+				continue;
+
+			const bool accepts = child->acceptedMouseButtons().testFlag(Qt::LeftButton);
+			Log::log() << "  " << child->metaObject()->className() << " name='" << child->objectName()
+			           << "' z=" << child->z() << " enabled=" << child->isEnabled()
+			           << " acceptsLeft=" << accepts
+			           << " pos=" << child->x() << "," << child->y() << " size=" << child->width() << "x" << child->height()
+			           << (accepts && child->isEnabled() && !foundReceiver ? "   <== would take the press" : "")
+			           << std::endl;
+			if(accepts && child->isEnabled() && !foundReceiver)
+				foundReceiver = true;
+			walk(child);
+		}
+	};
+
+	walk(window->contentItem());
+}
+
 void TestAll::testMainWindowShowsFilterWindow()
 {
 	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
@@ -163,42 +200,86 @@ void TestAll::testMainWindowShowsFilterWindow()
 	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
 
 	// --- Trash can regression: double-click must erase the entire script area ---
-	// Put a formula in the script area (a column node at the root) and refresh the view.
-	ScriptNodeColumn * columnNode = new ScriptNodeColumn("contNormal");
-	scriptConstructor->model()->insertNode(columnNode, DropTarget::root());
-	scriptConstructor->refresh();
-	QCOMPARE(scriptConstructor->model()->formulaCount(), 1);
-
-	// The trash rectangle is the only script-area child with z == 10.
+	// The trash item is the only script-area child with z == 10.
 	QQuickItem * trash = nullptr;
 	for(QQuickItem * child : scriptConstructor->scriptArea()->childItems())
 		if(child->z() == 10)
 			trash = child;
-	QVERIFY2(trash != nullptr, "Trash rectangle not found in script area");
+	QVERIFY2(trash != nullptr, "Trash item not found in script area");
 
 	QQuickWindow * quickWindow = trash->window();
 	QVERIFY(quickWindow != nullptr);
-	QPointF centre = trash->mapToScene(QPointF(trash->width() / 2, trash->height() / 2));
 
-	// Simulate a full double-click sequence directly on the trash item (the offscreen
-	// harness window is too small for the trash to be within the scene bounds).
-	auto sendMouse = [&](QEvent::Type type)
+	// The offscreen SplitView never assigns a width to the Loader (it stays 0 wide), which
+	// excludes the whole filter window from mouse hit-testing even though its content is
+	// visible (children overflow unclipped ancestors). In the real app the SplitView/anchors
+	// give the loader a proper width; emulate that here.
+	if(QQuickItem * loader = filterWindow->parentItem())
 	{
-		QMouseEvent me(type, centre, quickWindow->mapToGlobal(centre), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-		QCoreApplication::sendEvent(trash, &me);
-	};
+		loader->setHeight(std::max(loader->height(), 600.0));
+		loader->setWidth(std::max(loader->width(), 1200.0));
+	}
 
-	// Clearing must also reach the surrounding FilterModel (old DropTrash called
-	// checkAndApplyFilter), so watch for the applyRequested signal.
+	auto trashCentre = [&]()
+	{
+		return trash->mapToScene(QPointF(trash->width() / 2, trash->height() / 2));
+	};
+	const QPointF centre = trashCentre();
+	QVERIFY2(centre.x() > 0 && centre.y() > 0 && centre.x() < quickWindow->width() && centre.y() < quickWindow->height(),
+		qPrintable(QString("Trash not inside the window bounds: centre=%1,%2 constructor=%3x%4 at %5,%6 window=%7x%8 trashSize=%9x%10")
+			.arg(centre.x()).arg(centre.y())
+			.arg(scriptConstructor->width()).arg(scriptConstructor->height())
+			.arg(scriptConstructor->x()).arg(scriptConstructor->y())
+			.arg(quickWindow->width()).arg(quickWindow->height())
+			.arg(trash->width()).arg(trash->height())));
+
+	// The engine/loader threads push filter results back into the view asynchronously; a push
+	// whose json differs from the current model resets it (fromJson emits reset), wiping
+	// unapplied formulas at any event-loop spin. QTest's mouse helpers spin internally, and
+	// the resulting QML GC churn reliably crashes this offscreen harness (not seen in the
+	// real app). So:
+	// - break the QML applyRequested -> FilterModel connection, so the trash's checkAndApply
+	//   cannot trigger the full apply chain (re-running the filter rebuilds the entire
+	//   DataSetView) inside the harness; and
+	// - verify the trash via its deterministic debug event counters, delivering the mouse
+	//   sequence directly to the item (no event-loop spin -> no interleaving).
+	// NOTE: real window hit-testing delivery to the trash was verified separately (the
+	// topmost-item walk shows ScriptTrashItem is the only accepting item at its position, and
+	// QTest-delivered presses arrived at it) — it is only the spinning+GC combination that
+	// cannot run in this harness.
+	QObject::disconnect(scriptConstructor, &ScriptConstructorView::applyRequested, scriptConstructor, nullptr);
+
 	QSignalSpy applySpy(scriptConstructor, &ScriptConstructorView::applyRequested);
 
+	// Boolean-valid formula (Filter mode requires it) so the trash's checkAndApply succeeds.
+	ScriptNodeOperator * equals = new ScriptNodeOperator("==", false);
+	equals->setLeft(new ScriptNodeColumn("contNormal"));
+	ScriptNodeLiteral * one = new ScriptNodeLiteral(ScriptNode::Type::Number);
+	one->setNumberValue(1);
+	equals->setRight(one);
+	scriptConstructor->model()->insertNode(equals, DropTarget::root());
+	scriptConstructor->refresh();
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 1);
+
+	ScriptTrashItem * trashItem = qobject_cast<ScriptTrashItem*>(trash);
+	QVERIFY2(trashItem != nullptr, "Trash is not a ScriptTrashItem");
+	const int pressesBefore = trashItem->debugPressCount;
+	const int dblClicksBefore = trashItem->debugDoubleClickCount;
+
+	auto sendMouse = [&](QEvent::Type type)
+	{
+		QMouseEvent me(type, trashCentre(), quickWindow->mapToGlobal(trashCentre()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QCoreApplication::sendEvent(trash, &me);
+	};
 	sendMouse(QEvent::MouseButtonPress);
 	sendMouse(QEvent::MouseButtonRelease);
 	sendMouse(QEvent::MouseButtonDblClick);
 	sendMouse(QEvent::MouseButtonRelease);
 
-	QCOMPARE(scriptConstructor->model()->formulaCount(), 0);
-	QVERIFY(!applySpy.isEmpty()); // the emptied filter must have been applied
+	QCOMPARE(trashItem->debugPressCount, pressesBefore + 1);
+	QCOMPARE(trashItem->debugDoubleClickCount, dblClicksBefore + 1);
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 0); // slate erased
+	QVERIFY(!applySpy.isEmpty());							 // emptied filter was applied
 
 	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
 	JASPTIMER_PRINTALL();

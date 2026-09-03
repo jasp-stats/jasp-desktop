@@ -56,6 +56,35 @@ private:
 };
 
 ///
+/// The trash zone at the bottom-right of the script area: a transparent hit-zone with the
+/// trashcan icon on top. Hovering shows a tooltip; double-clicking erases the entire slate
+/// and applies the emptied filter (mirrors the old DropTrash.qml).
+class ScriptTrashItem : public QQuickItem
+{
+	Q_OBJECT
+
+public:
+	explicit ScriptTrashItem(ScriptConstructorView * view, QQuickItem * parent = nullptr);
+
+	void			setToolTipText(const QString & text) { _toolTipText = text; }
+
+	// Test/debug counters: incremented on delivery of the corresponding event, so tests (and
+	// the "visible but unclickable" diagnostics) can verify delivery deterministically.
+	int				debugPressCount		= 0;
+	int				debugDoubleClickCount	= 0;
+
+protected:
+	void			mousePressEvent(QMouseEvent * event) override;
+	void			mouseDoubleClickEvent(QMouseEvent * event) override;
+	void			hoverEnterEvent(QHoverEvent * event) override;
+	void			hoverLeaveEvent(QHoverEvent * event) override;
+
+private:
+	ScriptConstructorView	*	_view = nullptr;
+	QString						_toolTipText;
+};
+
+///
 /// Visual representation of a single ScriptNode. Creates incubated QML leaves (Text, Image,
 /// TextInput, CheckBox) for its content plus ScriptDropSpot children for its slots, and lays
 /// them out. Contains no formula logic: it only renders and forwards gestures to the view.
