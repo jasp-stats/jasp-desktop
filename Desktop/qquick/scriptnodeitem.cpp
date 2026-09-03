@@ -9,11 +9,32 @@
 #include <QQmlEngine>
 #include <QQmlProperty>
 #include <QFontMetricsF>
+#include <QEvent>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QHoverEvent>
 #include <QToolTip>
 #include <algorithm>
+
+// JaspTheme::currentTheme() is null until a theme exists (and again after the last one is
+// destroyed), so every access must be guarded.
+namespace
+{
+QFont themeFont()
+{
+	if(JaspTheme * t = JaspTheme::currentTheme())
+		return t->font();
+	return QFont();
+}
+
+QString themeIconPath()
+{
+	if(JaspTheme * t = JaspTheme::currentTheme())
+		return t->iconPath();
+	return QString();
+}
+}
 
 // =====================================================================================
 // ScriptPalette
@@ -135,11 +156,10 @@ QQuickItem * ScriptDropSpot::ensurePlaceholder()
 		_placeholder->setParentItem(this);
 		_placeholder->setProperty("verticalAlignment", 128);	// Text.AlignVCenter
 		_placeholder->setProperty("horizontalAlignment", 4);	// Text.AlignHCenter
-		JaspTheme * theme = JaspTheme::currentTheme();
-		QFont f = theme->font();
+		QFont f = themeFont();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 		_placeholder->setProperty("font", f);
-		_placeholder->setProperty("color", theme->textDisabled());
+		_placeholder->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textDisabled() : QColor("gray"));
 		_placeholder->setProperty("text", _defaultText);
 		_placeholder->setX(0);
 		_placeholder->setY(0);
@@ -160,7 +180,8 @@ QQuickItem * ScriptDropSpot::ensureMarker()
 		_marker->setProperty("color", QColor("transparent"));
 		_marker->setProperty("radius", 4.0);
 		QQmlProperty(_marker, "border.width").write(2.0);
-		QQmlProperty(_marker, "border.color").write(JaspTheme::currentTheme()->blue());
+		if(JaspTheme * theme = JaspTheme::currentTheme())
+			QQmlProperty(_marker, "border.color").write(theme->blue());
 		_marker->setVisible(false);
 	}
 	return _marker;
@@ -214,18 +235,23 @@ void ScriptDropSpot::setHoverState(bool hovered, bool accepted)
 	QQuickItem * m = ensureMarker();
 	if(!m) return;
 
-	m->setVisible(hovered);
 	if(hovered)
 	{
 		JaspTheme * theme = JaspTheme::currentTheme();
-		QQmlProperty(m, "border.color").write(accepted ? theme->green() : theme->red());
+		QQmlProperty(m, "border.color").write(accepted
+			? (theme ? theme->green() : QColor("green"))
+			: (theme ? theme->red()    : QColor("red")));
 		m->setWidth(width());
 		m->setHeight(height());
 	}
+
+	// A previously flagged error must stay visible even when hover ends.
+	m->setVisible(hovered || _error);
 }
 
 void ScriptDropSpot::setError(bool error)
 {
+	_error = error;
 	QQuickItem * m = ensureMarker();
 	if(!m) return;
 
@@ -292,14 +318,14 @@ QQuickItem * ScriptDropSpot::ensureInput()
 	{
 		_input->setParentItem(this);
 		_input->setProperty("text", _defaultText);
-		JaspTheme * theme = JaspTheme::currentTheme();
-		QFont f = theme->font();
+		QFont f = themeFont();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 		_input->setProperty("font", f);
-		_input->setProperty("color", theme->textEnabled());
+		_input->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
 		_input->setX(0);
 		_input->setY(0);
 		_input->setVisible(false);
+		_input->installEventFilter(this); // Escape must cancel, not commit, the edit
 		connect(_input, SIGNAL(editingFinished()), this, SLOT(onInputEditingFinished()));
 	}
 	return _input;
@@ -313,6 +339,7 @@ void ScriptDropSpot::mousePressEvent(QMouseEvent * event)
 		QQuickItem * input = ensureInput();
 		if(input)
 		{
+			_cancelEdit = false;
 			input->setProperty("text", "");
 			if(_placeholder) _placeholder->setVisible(false);
 			input->setVisible(true);
@@ -324,9 +351,34 @@ void ScriptDropSpot::mousePressEvent(QMouseEvent * event)
 	event->ignore();
 }
 
+bool ScriptDropSpot::eventFilter(QObject * obj, QEvent * event)
+{
+	// Escape cancels the literal edit (focus loss commits it, like the old DropSpot).
+	if(event->type() == QEvent::KeyPress && obj == _input)
+	{
+		if(static_cast<QKeyEvent*>(event)->key() == Qt::Key_Escape)
+		{
+			_cancelEdit = true;
+			if(_input)
+			{
+				_input->setVisible(false);
+				_input->setFocus(false);
+			}
+			if(_placeholder && !_filled) _placeholder->setVisible(true);
+			return true;
+		}
+	}
+
+	return QQuickItem::eventFilter(obj, event);
+}
+
 void ScriptDropSpot::onInputEditingFinished()
 {
-	parseAndCreateLiteral();
+	const bool cancelled = _cancelEdit;
+	_cancelEdit = false;
+
+	if(!cancelled)
+		parseAndCreateLiteral();
 
 	if(_input)
 	{
@@ -503,12 +555,11 @@ QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeText setProps);
-		JaspTheme * theme = JaspTheme::currentTheme();
-		QFont f = theme->font();
+		QFont f = themeFont();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 		f.setBold(bold);
 		item->setProperty("font", f);
-		item->setProperty("color", theme->textEnabled());
+		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
 	}
 
 	addLeaf(item);
@@ -526,7 +577,7 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 		// Suspect #1 for slow init: Image loads synchronously by default, so this
 		// property write can trigger a PNG load + decode on the GUI thread.
 		JASPTIMER_SCOPE(ScriptNodeItem makeImage setSource);
-		item->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + iconFile);
+		item->setProperty("source", themeIconPath() + "/" + iconFile);
 	}
 	item->setProperty("fillMode", 1); // Image.PreserveAspectFit
 
@@ -553,11 +604,10 @@ QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeParenText setProps);
-		JaspTheme * theme = JaspTheme::currentTheme();
-		QFont f = theme->font();
+		QFont f = themeFont();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 		item->setProperty("font", f);
-		item->setProperty("color", theme->textEnabled());
+		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
 		item->setVisible(false); // visibility controlled in layout()
 	}
 
@@ -575,11 +625,10 @@ QQuickItem * ScriptNodeItem::makeComma()
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeComma setProps);
-		JaspTheme * theme = JaspTheme::currentTheme();
-		QFont f = theme->font();
+		QFont f = themeFont();
 		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 		item->setProperty("font", f);
-		item->setProperty("color", theme->textEnabled());
+		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
 	}
 
 	_argumentCommas.append(item);
@@ -636,7 +685,7 @@ void ScriptNodeItem::rebuild()
 
 	if(!_node) return;
 
-	JaspTheme * theme = JaspTheme::currentTheme();
+	JaspTheme * theme = JaspTheme::currentTheme(); // may be null: always guard before use
 	qreal block = _view->blockDim();
 
 	// Create a child item for an existing model child and place it into the drop spot.
@@ -652,16 +701,16 @@ void ScriptNodeItem::rebuild()
 	{
 	case ScriptNode::Type::Number:
 	{
-		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
+		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
 		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
 		if(input)
 		{
 			input->setParentItem(this);
 			input->setProperty("text", QString::number(lit->numberValue()));
-			QFont f = theme->font();
+			QFont f = themeFont();
 			f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 			input->setProperty("font", f);
-			input->setProperty("color", theme->textEnabled());
+			input->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 			addLeaf(input);
 			connect(input, SIGNAL(editingFinished()), this, SLOT(onLiteralEditFinished()));
 		}
@@ -669,16 +718,16 @@ void ScriptNodeItem::rebuild()
 	}
 	case ScriptNode::Type::String:
 	{
-		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
+		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
 		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
 		if(input)
 		{
 			input->setParentItem(this);
 			input->setProperty("text", QString::fromStdString(lit->stringValue()));
-			QFont f = theme->font();
+			QFont f = themeFont();
 			f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
 			input->setProperty("font", f);
-			input->setProperty("color", theme->textEnabled());
+			input->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 			addLeaf(input);
 			connect(input, SIGNAL(editingFinished()), this, SLOT(onLiteralEditFinished()));
 		}
@@ -686,7 +735,7 @@ void ScriptNodeItem::rebuild()
 	}
 	case ScriptNode::Type::Boolean:
 	{
-		auto * lit = static_cast<ScriptNodeLiteral*>(_node);
+		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
 		QQuickItem * box = _view->newLeaf(_view->checkBoxComponent(), "checkBox");
 		if(box)
 		{
@@ -700,7 +749,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Column:
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem rebuildColumn);
-		auto * col = static_cast<ScriptNodeColumn*>(_node);
+		auto * col = static_cast<ScriptNodeColumn*>(_node.data());
 
 		int actual = 1;
 		if(_view->model()->columnTypeProvider())
@@ -718,7 +767,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::OperatorVertical:
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem rebuildOperator);
-		auto * op = static_cast<ScriptNodeOperator*>(_node);
+		auto * op = static_cast<ScriptNodeOperator*>(_node.data());
 		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op(), op->isVertical());
 
 		// Horizontal operators wrap their children in parentheses; vertical (division) does not.
@@ -733,7 +782,7 @@ void ScriptNodeItem::rebuild()
 			if(_fractionBar)
 			{
 				_fractionBar->setParentItem(this);
-				_fractionBar->setProperty("color", JaspTheme::currentTheme()->textEnabled());
+				_fractionBar->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 				_fractionBar->setVisible(false);
 			}
 		}
@@ -755,7 +804,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Function:
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem rebuildFunction);
-		auto * func = static_cast<ScriptNodeFunction*>(_node);
+		auto * func = static_cast<ScriptNodeFunction*>(_node.data());
 		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
 		const bool hasImage = funcDef && !funcDef->image.empty();
 		const bool isSqrt = func->functionName() == "sqrt";
@@ -767,7 +816,7 @@ void ScriptNodeItem::rebuild()
 			if(head)
 			{
 				head->setParentItem(this);
-				head->setProperty("source", theme->iconPath() + "/rootHead.png");
+				head->setProperty("source", themeIconPath() + "/rootHead.png");
 				head->setProperty("fillMode", 0); // Image.Stretch (fill the box so the head's right edge is exact)
 				head->setWidth(block);
 				head->setHeight(block);
@@ -778,7 +827,7 @@ void ScriptNodeItem::rebuild()
 			if(_overline)
 			{
 				_overline->setParentItem(this);
-				_overline->setProperty("color", theme->textEnabled());
+				_overline->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
 				_overline->setVisible(false);
 			}
 		}
@@ -815,7 +864,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::RowFunction:
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem rebuildRowFunction);
-		auto * rowFunc = static_cast<ScriptNodeRowFunction*>(_node);
+		auto * rowFunc = static_cast<ScriptNodeRowFunction*>(_node.data());
 		const ScriptFunctionDef * rowDef = ScriptConstructorRegistry::instance().rowFunctionDef(rowFunc->functionName());
 		const bool hasImage = rowDef && !rowDef->image.empty();
 
@@ -855,34 +904,35 @@ void ScriptNodeItem::rebuild()
 		case ScriptNode::Type::Operator:
 		case ScriptNode::Type::OperatorVertical:
 		{
-			const std::string & op = static_cast<ScriptNodeOperator*>(_node)->op();
-			if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node)->isVertical()))
+			const std::string & op = static_cast<ScriptNodeOperator*>(_node.data())->op();
+			if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node.data())->isVertical()))
 				tip = def->toolTipForMode(_view->model()->mode());
 			break;
 		}
 		case ScriptNode::Type::Function:
 		{
-			const std::string & fn = static_cast<ScriptNodeFunction*>(_node)->functionName();
+			const std::string & fn = static_cast<ScriptNodeFunction*>(_node.data())->functionName();
 			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
 				tip = def->toolTipForMode(_view->model()->mode());
 			break;
 		}
 		case ScriptNode::Type::RowFunction:
 		{
-			const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node)->functionName();
+			const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node.data())->functionName();
 			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
 				tip = def->toolTipForMode(_view->model()->mode());
 			break;
 		}
 		case ScriptNode::Type::Column:
 		{
-			auto * col = static_cast<ScriptNodeColumn*>(_node);
+			auto * col = static_cast<ScriptNodeColumn*>(_node.data());
 
 			const int actual		= _view->columnType(col->columnName());
 			const int effective		= col->effectiveColumnType(actual);
 
 			QStringList parts;
-			parts << tr("Click icon to change column type");
+			if(_acceptsDrops)
+				parts << tr("Click icon to change column type");
 
 			const QString description = _view->columnDescription(tq(col->columnName()));
 			if(!description.isEmpty())
@@ -943,7 +993,7 @@ void ScriptNodeItem::layout()
 	ScriptNode::Type t = _node->type();
 
 	if(t == ScriptNode::Type::Function && _acceptsDrops
-		&& static_cast<ScriptNodeFunction*>(_node)->functionName() == "sqrt")
+		&& static_cast<ScriptNodeFunction*>(_node.data())->functionName() == "sqrt")
 	{
 		// Radical: √ head on the left, an overline above the argument, the argument below it.
 		QQuickItem * head = _leaves.isEmpty() ? nullptr : _leaves.first();
@@ -989,7 +1039,7 @@ void ScriptNodeItem::layout()
 	}
 	else if(t == ScriptNode::Type::Operator || t == ScriptNode::Type::OperatorVertical)
 	{
-		auto * op = static_cast<ScriptNodeOperator*>(_node);
+		auto * op = static_cast<ScriptNodeOperator*>(_node.data());
 		ScriptDropSpot * left = _dropSpots.size() > 0 ? _dropSpots[0] : nullptr;
 		ScriptDropSpot * right = _dropSpots.size() > 1 ? _dropSpots[1] : nullptr;
 
@@ -1158,7 +1208,7 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 		// Clicking a column's icon cycles its requested type (scale -> ordinal -> nominal -> scale).
 		if(_node && _node->type() == ScriptNode::Type::Column)
 		{
-			auto * col = static_cast<ScriptNodeColumn*>(_node);
+			auto * col = static_cast<ScriptNodeColumn*>(_node.data());
 
 			// When the column sits in a restrictive drop slot (e.g. a numeric argument of a
 			// function) its type is constrained to what the slot accepts; tell the user instead
@@ -1244,14 +1294,14 @@ void ScriptNodeItem::onLiteralEditFinished()
 		double value = text.toDouble(&ok);
 
 		if(ok)
-			_view->model()->setLiteralNumber(static_cast<ScriptNodeLiteral*>(_node), value);
+			_view->model()->setLiteralNumber(static_cast<ScriptNodeLiteral*>(_node.data()), value);
 		else
-			input->setProperty("text", QString::number(static_cast<ScriptNodeLiteral*>(_node)->numberValue()));
+			input->setProperty("text", QString::number(static_cast<ScriptNodeLiteral*>(_node.data())->numberValue()));
 	}
 	else if(_node->type() == ScriptNode::Type::String)
 	{
 		if(!text.isEmpty())
-			_view->model()->setLiteralString(static_cast<ScriptNodeLiteral*>(_node), fq(text));
+			_view->model()->setLiteralString(static_cast<ScriptNodeLiteral*>(_node.data()), fq(text));
 	}
 
 	_view->nodeEdited();
@@ -1263,6 +1313,6 @@ void ScriptNodeItem::onBooleanToggled()
 	if(!box || !_node || _node->type() != ScriptNode::Type::Boolean) return;
 
 	bool checked = box->property("checked").toBool();
-	_view->model()->setLiteralBool(static_cast<ScriptNodeLiteral*>(_node), checked);
+	_view->model()->setLiteralBool(static_cast<ScriptNodeLiteral*>(_node.data()), checked);
 	_view->nodeEdited();
 }

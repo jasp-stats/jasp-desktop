@@ -24,7 +24,7 @@ struct DropTarget
 
 	bool isValid() const { return kind != Kind::None; }
 	bool isRoot() const { return kind == Kind::Root; }
-	bool accepts(ScriptNode * node) const;
+	bool accepts(ScriptNode * node, ScriptConstructorMode mode) const;
 
 	static DropTarget none() { return {}; }
 	static DropTarget root(int formulaIndex = -1) { DropTarget t; t.kind = Kind::Root; t.index = formulaIndex; return t; }

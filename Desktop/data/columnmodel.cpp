@@ -941,7 +941,9 @@ void ColumnModel::createComputedColumn(const QString & name, int colType, bool u
 		columnType(colType),
 		useJsonConstructor ? computedColumnType::constructorCode : computedColumnType::rCode));
 
-	openComputedColumn(name);
+	// Only open the column if its creation actually succeeded.
+	if(dataSet->column(fq(name)))
+		openComputedColumn(name);
 }
 
 void ColumnModel::setComputedColumnCode(const QString & rCode, const QString & json)

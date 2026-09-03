@@ -35,6 +35,7 @@ public:
 
 protected:
 	void				mousePressEvent(QMouseEvent * event) override;
+	bool				eventFilter(QObject * obj, QEvent * event) override;
 
 private slots:
 	void				onInputEditingFinished();
@@ -53,6 +54,8 @@ private:
 	QPointer<QQuickItem>		_input;
 	QString						_defaultText	= "...";
 	bool						_acceptsDrops	= true;
+	bool						_error			= false;
+	bool						_cancelEdit		= false;
 };
 
 ///
@@ -144,7 +147,7 @@ private:
 	qreal			textWidth(QQuickItem * textItem) const;
 
 	ScriptConstructorView		*	_view = nullptr;
-	ScriptNode				*	_node = nullptr;
+	QPointer<ScriptNode>			_node;
 	QList<QQuickItem*>			_leaves;
 	QList<QQuickItem*>			_argumentCommas;
 	QList<ScriptDropSpot*>		_dropSpots;

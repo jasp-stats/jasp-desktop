@@ -1,9 +1,45 @@
 #include "scriptnode.h"
 #include "columntype.h"
+#include "log.h"
 #include "timers.h"
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <sstream>
+
+// Defensive JSON accessors: constructorJson comes from saved .jasp files, so it must never
+// be able to throw (a mistyped value is skipped, not a crash).
+namespace
+{
+std::string jsonStr(const Json::Value & json, const char * key, const std::string & def = "")
+{
+	const Json::Value & v = json[key];
+	return v.isString() ? v.asString() : def;
+}
+
+int jsonInt(const Json::Value & json, const char * key, int def)
+{
+	const Json::Value & v = json[key];
+	return v.isNumeric() ? v.asInt() : def;
+}
+
+double jsonDouble(const Json::Value & json, const char * key, double def)
+{
+	const Json::Value & v = json[key];
+	return v.isNumeric() ? v.asDouble() : def;
+}
+
+Json::Value parseJsonString(const std::string & str)
+{
+	Json::Value root;
+	Json::CharReaderBuilder builder;
+	std::string errors;
+	std::istringstream stream(str);
+	if(!Json::parseFromStream(builder, stream, &root, &errors) && !root.isObject())
+		root = Json::Value(Json::objectValue);
+	return root;
+}
+}
 
 static std::string numberToRString(double v)
 {
@@ -79,14 +115,14 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 	if(json.isNull() || !json.isObject())
 		return nullptr;
 
-	const std::string nodeType = json.get("nodeType", "").asString();
-	const std::string toolTip  = json.get("toolTipText", "").asString();
+	const std::string nodeType = jsonStr(json, "nodeType");
+	const std::string toolTip  = jsonStr(json, "toolTipText");
 
 	ScriptNode * result = nullptr;
 
 	if(nodeType == "Operator" || nodeType == "OperatorVertical")
 	{
-		auto * op = new ScriptNodeOperator(json.get("operator", "+").asString(), nodeType == "OperatorVertical", parent);
+		auto * op = new ScriptNodeOperator(jsonStr(json, "operator", "+"), nodeType == "OperatorVertical", parent);
 
 		op->setLeft(	fromJson(json.get("leftArgument", Json::nullValue),		op));
 		op->setRight(	fromJson(json.get("rightArgument", Json::nullValue),	op));
@@ -97,50 +133,62 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 	{
 		std::vector<ScriptNodeFunction::Argument> args;
 		const Json::Value & argsJson = json.get("arguments", Json::arrayValue);
+		const bool argsIsArray = argsJson.isArray();
 
-		for(Json::ArrayIndex i = 0; i < argsJson.size(); i++)
+		for(Json::ArrayIndex i = 0; argsIsArray && i < argsJson.size(); i++)
 		{
 			const Json::Value & argJson = argsJson[i];
+			if(!argJson.isObject())
+				continue;
 
 			ScriptNodeFunction::Argument arg;
-			arg.name		= argJson.get("name", "").asString();
+			arg.name		= jsonStr(argJson, "name");
 			arg.optional	= !arg.name.empty() && arg.name[0] == '?';
 
 			if(arg.optional)
 				arg.name = arg.name.substr(1);
 
 			const Json::Value & keysJson = argJson.get("dropKeys", Json::arrayValue);
-			for(Json::ArrayIndex k = 0; k < keysJson.size(); k++)
-				arg.dropKeys.push_back(keysJson[k].asString());
+			if(keysJson.isArray())
+				for(Json::ArrayIndex k = 0; k < keysJson.size(); k++)
+					if(keysJson[k].isString())
+						arg.dropKeys.push_back(keysJson[k].asString());
 
 			args.push_back(arg);
 		}
 
-		auto * func = new ScriptNodeFunction(json.get("functionName", "").asString(), args, parent);
+		auto * func = new ScriptNodeFunction(jsonStr(json, "functionName"), args, parent);
 
-		for(Json::ArrayIndex i = 0; i < argsJson.size(); i++)
+		for(Json::ArrayIndex i = 0; i < args.size(); i++)
 			func->setArgumentValue(static_cast<int>(i), fromJson(argsJson[i].get("argument", Json::nullValue), func));
 
 		result = func;
 	}
 	else if(nodeType == "RowFunction")
 	{
-		auto * rowFunc = new ScriptNodeRowFunction(json.get("functionName", "").asString(), parent);
+		auto * rowFunc = new ScriptNodeRowFunction(jsonStr(json, "functionName"), parent);
 
 		const Json::Value & droppedItems = json.get("droppedItems", Json::arrayValue);
-		for(Json::ArrayIndex i = 0; i < droppedItems.size(); i++)
-		{
-			const std::string itemStr = droppedItems[i].asString();
-
-			if(itemStr == "null" || itemStr.empty())
-				rowFunc->addChild(nullptr);
-			else
+		if(droppedItems.isArray())
+			for(Json::ArrayIndex i = 0; i < droppedItems.size(); i++)
 			{
-				Json::Value itemJson;
-				Json::Reader().parse(itemStr, itemJson);
-				rowFunc->addChild(fromJson(itemJson, rowFunc));
+				// Legacy format stores each child as a JSON *string*; accept direct objects too.
+				const Json::Value & item = droppedItems[i];
+
+				if(item.isString())
+				{
+					const std::string itemStr = item.asString();
+
+					if(itemStr == "null" || itemStr.empty())
+						rowFunc->addChild(nullptr);
+					else
+						rowFunc->addChild(fromJson(parseJsonString(itemStr), rowFunc));
+				}
+				else if(item.isObject())
+					rowFunc->addChild(fromJson(item, rowFunc));
+				else
+					rowFunc->addChild(nullptr);
 			}
-		}
 
 		if(rowFunc->childCount() == 0)
 			rowFunc->addChild(nullptr);
@@ -150,18 +198,18 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 	else if(nodeType == "Column")
 	{
 		result = new ScriptNodeColumn(
-			json.get("columnName", "").asString(),
-			json.get("columnTypeUser", -1).asInt(),
-			json.get("columnTypeDrop", -1).asInt(),
+			jsonStr(json, "columnName"),
+			jsonInt(json, "columnTypeUser", -1),
+			jsonInt(json, "columnTypeDrop", -1),
 			parent);
 
 		if(json.isMember("dataSetName"))
-			static_cast<ScriptNodeColumn*>(result)->setDataSetName(json["dataSetName"].asString());
+			static_cast<ScriptNodeColumn*>(result)->setDataSetName(jsonStr(json, "dataSetName"));
 	}
 	else if(nodeType == "Number")
 	{
 		auto * lit = new ScriptNodeLiteral(Type::Number, parent);
-		lit->setNumberValue(json.get("value", 0).asDouble());
+		lit->setNumberValue(jsonDouble(json, "value", 0));
 		result = lit;
 	}
 	else if(nodeType == "Boolean")
@@ -170,14 +218,14 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 
 		const Json::Value & val = json.get("value", false);
 		if(val.isString())	lit->setBoolValue(val.asString() == "TRUE");
-		else				lit->setBoolValue(val.asBool());
+		else if(val.isBool()) lit->setBoolValue(val.asBool());
 
 		result = lit;
 	}
 	else if(nodeType == "String")
 	{
 		auto * lit = new ScriptNodeLiteral(Type::String, parent);
-		lit->setStringValue(json.get("text", "").asString());
+		lit->setStringValue(jsonStr(json, "text"));
 		result = lit;
 	}
 
@@ -232,13 +280,14 @@ std::string ScriptNodeOperator::toR(const ScriptColumnTypeProvider * typeProvide
 	return out;
 }
 
-stringvec ScriptNodeOperator::dragKeys() const
+stringvec ScriptNodeOperator::dragKeys(ScriptConstructorMode mode) const
 {
 	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
 
 	if(!def) return {"number"};
 
-	return def->dragKeys(ScriptConstructorMode::Filter);
+	// The mode decides e.g. %|% (boolean in a filter, numeric in a computed column).
+	return def->dragKeys(mode);
 }
 
 bool ScriptNodeOperator::isComplete() const
@@ -347,7 +396,7 @@ std::string ScriptNodeFunction::toR(const ScriptColumnTypeProvider * typeProvide
 	return out;
 }
 
-stringvec ScriptNodeFunction::dragKeys() const
+stringvec ScriptNodeFunction::dragKeys(ScriptConstructorMode) const
 {
 	const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(_functionName);
 	return def ? def->dragKeys() : stringvec{"number"};
@@ -459,7 +508,7 @@ std::string ScriptNodeRowFunction::toR(const ScriptColumnTypeProvider * typeProv
 	return out;
 }
 
-stringvec ScriptNodeRowFunction::dragKeys() const
+stringvec ScriptNodeRowFunction::dragKeys(ScriptConstructorMode) const
 {
 	return {"number"};
 }
@@ -525,7 +574,7 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 	return _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
 }
 
-stringvec ScriptNodeColumn::dragKeys() const
+stringvec ScriptNodeColumn::dragKeys(ScriptConstructorMode) const
 {
 	if(_columnTypeDrop != -1)
 		return ScriptConstructorRegistry::dropKeysForColumnType(_columnTypeDrop);
@@ -566,12 +615,27 @@ std::string ScriptNodeLiteral::toR(const ScriptColumnTypeProvider *) const
 	{
 	case Type::Number:	return numberToRString(_numberValue);
 	case Type::Boolean:	return _boolValue ? "TRUE" : "FALSE";
-	case Type::String:	return "'" + _stringValue + "'";
+	case Type::String:
+	{
+		// Escape for a single-quoted R string literal; an unescaped quote or backslash from
+		// user input would otherwise produce syntactically invalid R.
+		std::string out;
+		out.reserve(_stringValue.size() + 2);
+		out += '\'';
+		for(char c : _stringValue)
+		{
+			if(c == '\'' || c == '\\')
+				out += '\\';
+			out += c;
+		}
+		out += '\'';
+		return out;
+	}
 	default:			return "";
 	}
 }
 
-stringvec ScriptNodeLiteral::dragKeys() const
+stringvec ScriptNodeLiteral::dragKeys(ScriptConstructorMode) const
 {
 	switch(_literalType)
 	{

@@ -32,7 +32,7 @@ public:
 	virtual Type			type()		const = 0;
 	virtual Json::Value		toJson()	const = 0;
 	virtual std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const = 0;
-	virtual stringvec		dragKeys()	const = 0;
+	virtual stringvec		dragKeys(ScriptConstructorMode mode) const = 0;
 	virtual bool			isComplete() const = 0;
 
 	virtual ScriptNode	*	leftChild()			const	{ return nullptr; }
@@ -67,7 +67,7 @@ public:
 	Type			type() const override { return _vertical ? Type::OperatorVertical : Type::Operator; }
 	Json::Value		toJson() const override;
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
-	stringvec		dragKeys() const override;
+	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override;
 
 	ScriptNode	*	leftChild()		const override { return _left; }
@@ -110,7 +110,7 @@ public:
 	Type			type() const override { return Type::Function; }
 	Json::Value		toJson() const override;
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
-	stringvec		dragKeys() const override;
+	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override;
 
 	int				childCount()	const override { return static_cast<int>(_arguments.size()); }
@@ -138,7 +138,7 @@ public:
 	Type			type() const override { return Type::RowFunction; }
 	Json::Value		toJson() const override;
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
-	stringvec		dragKeys() const override;
+	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override;
 
 	int				childCount()	const override { return static_cast<int>(_children.size()); }
@@ -168,7 +168,7 @@ public:
 	Type			type() const override { return Type::Column; }
 	Json::Value		toJson() const override;
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
-	stringvec		dragKeys() const override;
+	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override { return true; }
 
 	const std::string & columnName() const { return _columnName; }
@@ -200,7 +200,7 @@ public:
 	Type			type() const override { return _literalType; }
 	Json::Value		toJson() const override;
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
-	stringvec		dragKeys() const override;
+	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override { return true; }
 
 	double			numberValue() const { return _numberValue; }
