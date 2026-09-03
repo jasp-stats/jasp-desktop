@@ -55,6 +55,11 @@ Window
 			mainWindow.closeWindows();
 	}
 
+	function startTutorial()
+	{
+		onboardingOverlay.start(preferencesModel.onboardingStep)
+	}
+
 	function toggleFullScreen()
 	{
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
@@ -385,6 +390,6 @@ Window
 	
 	Component.onCompleted:
 		if (!preferencesModel.onboardingCompleted)
-			onboardingOverlay.start(preferencesModel.onboardingStep)
+			startTutorial()
 
 }

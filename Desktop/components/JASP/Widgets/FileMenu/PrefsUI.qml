@@ -233,9 +233,22 @@ PrefsScrollView
 			id:					showOnboardingCheckbox
 			label:				qsTr("Show onboarding tour on next start")
 			checked:			!preferencesModel.onboardingCompleted
-			onCheckedChanged:	preferencesModel.onboardingCompleted = !checked
+			onCheckedChanged:
+			{
+				preferencesModel.onboardingStep = 0
+				preferencesModel.onboardingCompleted = !checked
+			}
 			toolTip:			qsTr("Enable this to see the guided tour again the next time JASP starts.")
 
+			KeyNavigation.tab:	startTutorialButton
+		}
+
+		RoundedButton
+		{
+			id:					startTutorialButton
+			text:				qsTr("Start tutorial")
+			onClicked:			mainWindowRoot.startTutorial()
+			activeFocusOnTab:	true
 			KeyNavigation.tab:	uiScaleSpinBox
 		}
 	}

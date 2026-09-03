@@ -1,7 +1,5 @@
 import QtQuick
-import QtQuick.Controls
-import JASP.Controls	as  JC
-import JASP
+import JASP.Controls
 Item
 {
 	id: onboardingOverlay
@@ -9,13 +7,9 @@ Item
 	property var	steps:			[]
 	property int	currentIndex:	-1
 	property bool	active:			false
-	property bool	dontShowAgain:	false
 
 	readonly property var	currentStep:	(currentIndex >= 0 && currentIndex < steps.length) ? steps[currentIndex] : null
 	readonly property bool	lastStep:		currentIndex === steps.length - 1
-
-	signal finished()
-	signal skipped()
 
 	anchors.fill:	parent
 	z:				1000
@@ -27,7 +21,6 @@ Item
 		if (steps.length === 0)
 			return;
 
-		dontShowAgain	= false;
 		active			= true;
 		_goToStep(fromStep !== undefined ? fromStep : 0);
 	}
@@ -56,28 +49,23 @@ Item
 		}
 	}
 
+	function previous()
+	{
+		if (currentIndex <= 0)
+			return;
+		_goToStep(currentIndex - 1);
+		preferencesModel.onboardingStep = currentIndex;
+	}
+
 	function finish()
 	{
 		_runStepCallback(currentIndex, "onExit");
 		active			= false;
 		currentIndex	= -1;
 
-		if (dontShowAgain)
-			preferencesModel.onboardingCompleted	= true;
-		else
-			preferencesModel.onboardingStep		= 0;
+		preferencesModel.onboardingCompleted	= true;
+		preferencesModel.onboardingStep		= 0;
 
-		onboardingOverlay.finished();
-	}
-
-	function skip()
-	{
-		_runStepCallback(currentIndex, "onExit");
-		active			= false;
-		currentIndex	= -1;
-
-		// preferencesModel.onboardingCompleted = true;	// should not showing it again?
-		onboardingOverlay.skipped();
 	}
 
 	property rect targetRect:
@@ -246,17 +234,9 @@ Item
 
 			Text
 			{
-				text:			(onboardingOverlay.currentIndex + 1) / onboardingOverlay.steps.length
+				text:			"" + (onboardingOverlay.currentIndex + 1) + "/" + onboardingOverlay.steps.length
 				font.pixelSize:	11
 				color:			jaspTheme.textDisabled
-			}
-
-			JC.CheckBox
-			{
-				visible:			onboardingOverlay.lastStep
-				text:				qsTr("Don't show it on the next startup")
-				checked:			onboardingOverlay.dontShowAgain
-				onCheckedChanged:	onboardingOverlay.dontShowAgain = checked
 			}
 
 			Row
@@ -265,16 +245,24 @@ Item
 				spacing:			8
 				layoutDirection:	Qt.RightToLeft
 
-				JC.Button
+				Button
 				{
-					text:			onboardingOverlay.lastStep ? qsTr("Finish") : qsTr("The Next Step")
+					text:			onboardingOverlay.lastStep ? qsTr("Finish") : qsTr("Next")
 					onClicked:		onboardingOverlay.next()
 				}
 
-				JC.Button
+				Button
+				{
+					visible:		onboardingOverlay.currentIndex > 0
+					text:			qsTr("Previous")
+					onClicked:		onboardingOverlay.previous()
+				}
+
+				Button
 				{
 					text:			qsTr("Skip the Tutorial")
-					onClicked:		onboardingOverlay.skip()
+					onClicked:		onboardingOverlay.finish()
+					visible:		!onboardingOverlay.lastStep
 				}
 			}
 		}
