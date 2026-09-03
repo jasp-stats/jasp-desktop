@@ -41,6 +41,7 @@
 #include <QTimer>
 #include <QUndoStack>
 #include <QQuickWindow>
+#include <QMouseEvent>
 #include <QGuiApplication>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <random>
@@ -160,6 +161,44 @@ void TestAll::testMainWindowShowsFilterWindow()
 	ScriptConstructorView * scriptConstructor = filterWindow->findChild<ScriptConstructorView*>();
 	QVERIFY(scriptConstructor != nullptr);
 	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
+
+	// --- Trash can regression: double-click must erase the entire script area ---
+	// Put a formula in the script area (a column node at the root) and refresh the view.
+	ScriptNodeColumn * columnNode = new ScriptNodeColumn("contNormal");
+	scriptConstructor->model()->insertNode(columnNode, DropTarget::root());
+	scriptConstructor->refresh();
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 1);
+
+	// The trash rectangle is the only script-area child with z == 10.
+	QQuickItem * trash = nullptr;
+	for(QQuickItem * child : scriptConstructor->scriptArea()->childItems())
+		if(child->z() == 10)
+			trash = child;
+	QVERIFY2(trash != nullptr, "Trash rectangle not found in script area");
+
+	QQuickWindow * quickWindow = trash->window();
+	QVERIFY(quickWindow != nullptr);
+	QPointF centre = trash->mapToScene(QPointF(trash->width() / 2, trash->height() / 2));
+
+	// Simulate a full double-click sequence directly on the trash item (the offscreen
+	// harness window is too small for the trash to be within the scene bounds).
+	auto sendMouse = [&](QEvent::Type type)
+	{
+		QMouseEvent me(type, centre, quickWindow->mapToGlobal(centre), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QCoreApplication::sendEvent(trash, &me);
+	};
+
+	// Clearing must also reach the surrounding FilterModel (old DropTrash called
+	// checkAndApplyFilter), so watch for the applyRequested signal.
+	QSignalSpy applySpy(scriptConstructor, &ScriptConstructorView::applyRequested);
+
+	sendMouse(QEvent::MouseButtonPress);
+	sendMouse(QEvent::MouseButtonRelease);
+	sendMouse(QEvent::MouseButtonDblClick);
+	sendMouse(QEvent::MouseButtonRelease);
+
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 0);
+	QVERIFY(!applySpy.isEmpty()); // the emptied filter must have been applied
 
 	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
 	JASPTIMER_PRINTALL();

@@ -629,9 +629,7 @@ void ScriptConstructorView::buildChrome()
 	{
 		_trash->setParentItem(_scriptArea);
 		_trash->setProperty("color", QColor(0, 0, 0, 0));
-		QQmlProperty(_trash, "border.color").write(theme ? theme->gray() : QColor("gray"));
-		QQmlProperty(_trash, "border.width").write(1);
-		_trash->setProperty("radius", 6.0);
+		// No border: the old DropTrash.qml was just the icon on a transparent hit-zone.
 		_trash->setZ(10);
 
 		// Double-click erases the entire slate; hover shows a tooltip (handled via eventFilter).
@@ -927,7 +925,11 @@ bool ScriptConstructorView::eventFilter(QObject * obj, QEvent * event)
 		switch(event->type())
 		{
 		case QEvent::MouseButtonDblClick:
+			// Mirrors the old DropTrash: erase the slate AND apply the (now empty) filter,
+			// otherwise the surrounding FilterModel keeps the old constructorJson and pushes
+			// the erased formula tree straight back into the view on the next filter sync.
 			_model.clear();
+			checkAndApply();
 			return true;
 		case QEvent::HoverEnter:
 			QToolTip::showText(static_cast<QHoverEvent*>(event)->globalPosition().toPoint(), _trashToolTip, nullptr, QRect(), 15000);
