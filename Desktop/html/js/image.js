@@ -377,12 +377,19 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 			Plotly.purge(targetEl);
 			targetEl._plotlyInitialized = false;
 
+			// Keep whatever the plot itself configured, but leave the plotly logo out of the toolbar: it is
+			// only a link back to their site and takes up a slot next to the buttons that actually do
+			// something.
+			const config		= Object.assign({}, payload.config);
+			config.displaylogo	= false;
+
 			// Then create new plot
-			Plotly.newPlot(targetEl, payload.data, payload.layout)
+			Plotly.newPlot(targetEl, payload.data, payload.layout, config)
 				.then(() => {
 					console.log("Plotly chart rendered successfully");
 					// Mark the element as having a valid Plotly chart
 					targetEl._plotlyInitialized = true;
+					this.describePlotlyModeBar(targetEl);
 				})
 				.catch((err) => {
 					console.error("Plotly rendering failed:", err);
@@ -512,6 +519,43 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		html += JASPWidgets.Exporter.exportErrorWindow(this.$el.find('.error-message-positioner'), error);
 
 		return html;
+	},
+
+	// Plotly labels its toolbar buttons with just their name ("Zoom", "Pan", ...), which does not say
+	// what they actually do. Buttons are matched on data-attr/data-val rather than on the label, since
+	// the label is translated.
+	plotlyModeBarDescriptions: {
+		"dragmode|zoom"		: "Drag a rectangle to zoom in on that part of the plot",
+		"dragmode|pan"		: "Drag to move the plot underneath the axes",
+		"dragmode|select"	: "Drag a rectangle to highlight the points inside it",
+		"dragmode|lasso"	: "Draw a shape to highlight the points inside it",
+		"zoom|in"			: "Zoom in one step",
+		"zoom|out"			: "Zoom out one step",
+		"zoom|auto"			: "Fit the axes around all the data",
+		"zoom|reset"		: "Put the axes back as they started"
+	},
+
+	describePlotlyModeBar: function(el) {
+
+		var descriptions = this.plotlyModeBarDescriptions;
+
+		el.querySelectorAll(".modebar-btn").forEach(function(button) {
+
+			var name		= button.getAttribute("data-title"),
+				key			= button.getAttribute("data-attr") + "|" + button.getAttribute("data-val"),
+				description	= descriptions[key];
+
+			if (!name && !description)
+				return;
+
+			// Hand the tooltip over to the browser. Plotly draws its own from the data-title attribute
+			// with the box pinned to the right of the button (top:110%, right:50%), so it grows to the
+			// left however wide it needs to be and disappears underneath the edge of the results panel.
+			// A title attribute is placed by the platform instead, which keeps it on screen wherever the
+			// plot happens to sit. Removing data-title stops plotly drawing a second tooltip next to it.
+			button.title = description && name ? name + ": " + description : (description || name);
+			button.removeAttribute("data-title");
+		});
 	},
 
 	// ideally these hooks are set inside jaspGraphs...

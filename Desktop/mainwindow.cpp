@@ -26,6 +26,8 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
+#include <QtWebEngineQuick/qquickwebengineprofile.h>
+#include <QtWebEngineQuick/qquickwebenginedownloadrequest.h>
 #include <QAction>
 #include <QMenuBar>
 #include <exception>
@@ -566,6 +568,11 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		_languageModel,			&LanguageModel::resultsPageLoaded,							Qt::QueuedConnection);
 	connect(_resultsJsInterface,	&ResultsJsInterface::showRSyntaxInResults,			_analyses,				&Analyses::showRSyntaxInResults								);
 
+	//Whatever the results page downloads by itself (the plotly menu offers to save a plot as png for
+	//instance) is cancelled by webengine unless someone accepts it, so ask the user where to put it.
+	//This is the default profile on purpose: the plot/img/jaspPersona scheme handlers are installed
+	//there as well, so the results view cannot be given a profile of its own without losing those.
+	connect(QQuickWebEngineProfile::defaultProfile(),	&QQuickWebEngineProfile::downloadRequested,	this,	&MainWindow::webEngineDownloadRequested										);
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
@@ -1395,6 +1402,48 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 	
 	if(_reporter && _analyses->allFinished())
 		_reporter->analysesFinished();
+}
+
+void MainWindow::webEngineDownloadRequested(QQuickWebEngineDownloadRequest * download)
+{
+	if(!download)
+		return;
+
+	//Without a name of its own fall back on what the page suggested, and on something recognizable
+	//after that, so the dialog never opens on an empty file name.
+	QString suggested = download->downloadFileName();
+
+	if(suggested.isEmpty())
+		suggested = download->suggestedFileName();
+
+	if(suggested.isEmpty())
+		suggested = "download";
+
+	QFileInfo	suggestedInfo(suggested);
+	QString		extension	= suggestedInfo.suffix(),
+				filter		= extension.isEmpty()
+							? tr("All Files") + " (*)"
+							: tr("%1 Files").arg(extension.toUpper()) + " (*." + extension + ");;" + tr("All Files") + " (*)",
+				finalPath	= MessageForwarder::browseSaveFile(tr("Save File"), suggested, filter);
+
+	if(finalPath.isEmpty())
+	{
+		download->cancel();
+		return;
+	}
+
+	QFileInfo finalInfo(finalPath);
+
+	//browseSaveFile hands back the whole path while the request wants it split, and it overwrites
+	//itself, so remove whatever is there instead of letting webengine pick "file (1).png".
+	if(finalInfo.exists())
+		QFile::remove(finalPath);
+
+	download->setDownloadDirectory(finalInfo.absolutePath());
+	download->setDownloadFileName(finalInfo.fileName());
+	download->accept();
+
+	Log::log() << "Accepted a download from the webengine, storing it as '" << finalPath << "'" << std::endl;
 }
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
