@@ -624,34 +624,25 @@ void ScriptConstructorView::buildChrome()
 	_scriptColumn = new QQuickItem(_scriptArea);
 	_scriptColumn->setParentItem(_scriptArea);
 
-	_trash = newLeaf(rectangleComponent(), "rectangle");
-	if(_trash)
+	ScriptTrashItem * trash = new ScriptTrashItem(this);
+	trash->setToolTipText(tr("Dump unwanted snippets here; double-click to erase the entire slate"));
+	trash->setParentItem(_scriptArea);
+	trash->setZ(10);
+	_trash = trash;
+
+	// Trash icon centred inside the drop zone.
+	QQuickItem * icon = newLeaf(imageComponent(), "image");
+	if(icon)
 	{
-		_trash->setParentItem(_scriptArea);
-		_trash->setProperty("color", QColor(0, 0, 0, 0));
-		// No border: the old DropTrash.qml was just the icon on a transparent hit-zone.
-		_trash->setZ(10);
-
-		// Double-click erases the entire slate; hover shows a tooltip (handled via eventFilter).
-		_trashToolTip = tr("Dump unwanted snippets here; double-click to erase the entire slate");
-		_trash->setAcceptedMouseButtons(Qt::LeftButton);
-		_trash->setAcceptHoverEvents(true);
-		_trash->installEventFilter(this);
-
-		// Trash icon centred inside the drop zone.
-		QQuickItem * icon = newLeaf(imageComponent(), "image");
-		if(icon)
-		{
-			icon->setParentItem(_trash);
-			icon->setProperty("source", (theme ? theme->iconPath() : QString()) + "/trashcan.png");
-			icon->setProperty("fillMode", 1); // Image.PreserveAspectFit
-			icon->setAcceptedMouseButtons(Qt::NoButton);
-			qreal dim = blockDim() * 1.6;
-			icon->setWidth(dim);
-			icon->setHeight(dim);
-			icon->setX((blockDim() * 3 - dim) / 2);
-			icon->setY((blockDim() * 3 - dim) / 2);
-		}
+		icon->setParentItem(_trash);
+		icon->setProperty("source", (theme ? theme->iconPath() : QString()) + "/trashcan.png");
+		icon->setProperty("fillMode", 1); // Image.PreserveAspectFit
+		icon->setAcceptedMouseButtons(Qt::NoButton);
+		qreal dim = blockDim() * 1.6;
+		icon->setWidth(dim);
+		icon->setHeight(dim);
+		icon->setX((blockDim() * 3 - dim) / 2);
+		icon->setY((blockDim() * 3 - dim) / 2);
 	}
 
 	_hint = newLeaf(textComponent(), "text");
@@ -914,35 +905,6 @@ void ScriptConstructorView::keyPressEvent(QKeyEvent * event)
 	}
 
 	QQuickItem::keyPressEvent(event);
-}
-
-bool ScriptConstructorView::eventFilter(QObject * obj, QEvent * event)
-{
-	// Double-clicking the trash zone erases the whole slate (mirrors the old DropTrash.qml);
-	// hovering it shows a tooltip (replaces the old per-item QtQuick ToolTip overlay).
-	if(obj == _trash)
-	{
-		switch(event->type())
-		{
-		case QEvent::MouseButtonDblClick:
-			// Mirrors the old DropTrash: erase the slate AND apply the (now empty) filter,
-			// otherwise the surrounding FilterModel keeps the old constructorJson and pushes
-			// the erased formula tree straight back into the view on the next filter sync.
-			_model.clear();
-			checkAndApply();
-			return true;
-		case QEvent::HoverEnter:
-			QToolTip::showText(static_cast<QHoverEvent*>(event)->globalPosition().toPoint(), _trashToolTip, nullptr, QRect(), 15000);
-			return true;
-		case QEvent::HoverLeave:
-			QToolTip::hideText();
-			return true;
-		default:
-			break;
-		}
-	}
-
-	return QQuickItem::eventFilter(obj, event);
 }
 
 void ScriptConstructorView::refreshHint()
