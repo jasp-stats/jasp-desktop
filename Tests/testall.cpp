@@ -27,12 +27,22 @@
 #include "scriptnode.h"
 #include "scriptconstructorregistry.h"
 
+#include "mainwindow.h"
+#include "data/filtermodel.h"
+#include "data/columnsmodel.h"
+#include "qquick/scriptconstructorview.h"
+#include "timers.h"
+#include "log.h"
+
 #include <QSignalSpy>
 #include <QFile>
 #include <QFileInfo>
 #include <QEventLoop>
 #include <QTimer>
 #include <QUndoStack>
+#include <QQuickWindow>
+#include <QGuiApplication>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <random>
 #include <sqlite3.h>
 
@@ -88,6 +98,75 @@ bool TestAll::_newPkgWithDataSet()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), _pkg->createDataSet(), [](int){});
 
 	return _pkg->dataSet() != nullptr;
+}
+
+QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
+{
+	for(QWindow * window : QGuiApplication::topLevelWindows())
+		if(QQuickWindow * quickWindow = qobject_cast<QQuickWindow*>(window))
+			if(QQuickItem * item = quickWindow->findChild<QQuickItem*>(objectName))
+				return item;
+	return nullptr;
+}
+
+void TestAll::testMainWindowShowsFilterWindow()
+{
+	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
+	QCoreApplication::setApplicationName("JASPTest");
+
+	// The full QML UI contains WebEngine views (ChatWindow, results page), so WebEngine must be
+	// initialized before MainWindow creates its QQmlApplicationEngine (same order as main.cpp).
+	QtWebEngineQuick::initialize();
+
+	// MainWindow constructs the one-and-only DataSetPackage singleton, so no other package may
+	// exist at this point (the cleanup() of any previous test has deleted it).
+	QVERIFY(DataSetPackage::pkg() == nullptr);
+
+	MainWindow * mainWindow = new MainWindow(nullptr);
+
+	QSignalSpy qmlLoadedSpy(mainWindow, &MainWindow::qmlLoadedChanged);
+	QTRY_VERIFY(!qmlLoadedSpy.isEmpty()); // loadQML() runs from a QTimer::singleShot in the ctor
+
+	// Load a dataset the way production does: into the package owned by MainWindow, mark it
+	// as the shown dataset (DataSetLoader::loadPackage does the same) and then notify the UI
+	// (newDataLoaded -> MainWindow::populateUIfromDataSet).
+	DataSet * dataSet = DataSetPackage::pkg()->createDataSet();
+	QVERIFY(dataSet != nullptr);
+	// Exactly what DataSetLoader::loadPackage does (datasetloader.cpp): setShownDataSet may
+	// early-return (the empty dataset was already made shown by the EngineSync-ctor reset),
+	// so refresh() is needed to (re)emit shownDataSetChanged now that makeConnections() has
+	// wired up the models.
+	DataSetPackage::pkg()->workspace()->setShownDataSet(dataSet);
+	DataSetPackage::pkg()->workspace()->refresh();
+
+	// Pre-set the delimiter: with MainWindow connected, askCsvDelimiterSignal would otherwise
+	// open a CSV delimiter dialog and deadlock the synchronous import on the main thread.
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(',');
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), dataSet, [](int){});
+	DataSetPackage::pkg()->newDataLoaded();
+
+	// Open the filter window the way the UI does (Loader in DataPanel.qml).
+	FilterModel * filterModel = mainWindow->findChild<FilterModel*>();
+	QVERIFY(filterModel != nullptr);
+	filterModel->setFilterVisible(true);
+
+	// FilterWindow (objectName "filterWindow") must appear and the ScriptConstructor inside it
+	// must have built its chrome now that it is visible.
+	QQuickItem * filterWindow = nullptr;
+	QTRY_VERIFY((filterWindow = _findQuickItemByName("filterWindow")) != nullptr);
+
+	ScriptConstructorView * scriptConstructor = filterWindow->findChild<ScriptConstructorView*>();
+	QVERIFY(scriptConstructor != nullptr);
+	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
+
+	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
+
+	// Deliberately do not delete mainWindow: tearing down the EngineSync / DatabaseInterface
+	// during process shutdown throws (sqlite session already gone), which would fail the test
+	// even though the assertions passed. The binary exits right after this slot anyway.
 }
 
 #define TO_STR2(x) #x

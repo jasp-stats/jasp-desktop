@@ -7,6 +7,7 @@ class DataSet;
 class DataSetSyncer;
 class QSignalSpy;
 class MainWindow;
+class QQuickItem;
 
 class TestAll: public QObject
 {
@@ -96,6 +97,12 @@ private slots:
 	void	testScriptConstructorAllowedColumnTypes();
 	void	testScriptConstructorRowFunctionFreeSlot();
 
+	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
+	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
+	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
+	// regression test that the full UI bootstrap + filter window opening works headlessly.
+	void	testMainWindowShowsFilterWindow();
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;
@@ -103,4 +110,5 @@ private:
 	bool					_checkDoSyncFake();
 	static bool				_writeTextFile(const QString & path, const QByteArray & contents);
 	QSignalSpy			*	_newMainWindowWithExitSpy(MainWindow *& mw);
+	QQuickItem			*	_findQuickItemByName(const QString & objectName);
 };
