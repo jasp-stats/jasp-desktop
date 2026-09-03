@@ -4,7 +4,6 @@
 #include "qutils.h"
 #include "data/columnsmodel.h"
 #include "timers.h"
-#include "log.h"
 #include <QQmlComponent>
 #include <QQmlIncubator>
 #include <QQmlEngine>
@@ -407,13 +406,11 @@ void ScriptTrashItem::mousePressEvent(QMouseEvent * event)
 	// Accept the press so the window treats this item as the press target (and can
 	// synthesize the double click on the second press).
 	debugPressCount++;
-	Log::log() << "DIAG trash mousePress" << std::endl;
 	event->accept();
 }
 
 void ScriptTrashItem::mouseDoubleClickEvent(QMouseEvent * event)
 {
-	Log::log() << "DIAG trash mouseDoubleClick" << std::endl;
 	debugDoubleClickCount++;
 	// Mirrors the old DropTrash: erase the slate AND apply the (now empty) filter, otherwise
 	// the surrounding FilterModel keeps the old constructorJson and pushes the erased formula
@@ -428,26 +425,6 @@ void ScriptTrashItem::mouseDoubleClickEvent(QMouseEvent * event)
 
 void ScriptTrashItem::hoverEnterEvent(QHoverEvent * event)
 {
-	// Diagnostic for "visible but unclickable": mouse presses are only delivered when EVERY
-	// ancestor contains the cursor position, while hover is per-item. Log which ancestor
-	// (if any) excludes the point, so the culprit is visible in the log.
-#ifdef PROFILE_JASP
-	{
-		const QPointF scenePos = mapToScene(boundingRect().center());
-		QQuickItem * ancestor = parentItem();
-		while(ancestor)
-		{
-			const QPointF local = ancestor->mapFromScene(scenePos);
-			const bool contained = ancestor->contains(local);
-			Log::log() << "DIAG trash hover ancestor " << ancestor->metaObject()->className()
-			           << " name='" << ancestor->objectName() << "' size=" << ancestor->width() << "x" << ancestor->height()
-			           << " contains=" << contained << (contained ? "" : "   <== EXCLUDES THE POINT")
-			           << std::endl;
-			ancestor = ancestor->parentItem();
-		}
-	}
-#endif
-
 	if(!_toolTipText.isEmpty())
 		QToolTip::showText(event->globalPosition().toPoint(), _toolTipText, nullptr, QRect(), 15000);
 

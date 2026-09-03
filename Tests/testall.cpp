@@ -33,7 +33,6 @@
 #include "qquick/scriptconstructorview.h"
 #include "qquick/scriptnodeitem.h"
 #include "timers.h"
-#include "log.h"
 
 #include <QSignalSpy>
 #include <QFile>
@@ -110,41 +109,6 @@ QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
 			if(QQuickItem * item = quickWindow->findChild<QQuickItem*>(objectName))
 				return item;
 	return nullptr;
-}
-
-static void dumpTopmostItemAt(QQuickWindow * window, const QPointF & scenePos)
-{
-	// Walk the scene like Qt Quick's press delivery does: children top-first (z then paint
-	// order), printing every item that contains the point. The first item that is visible,
-	// enabled and accepts the left button is the one that will swallow the press.
-	Log::log() << "DIAG item chain at " << scenePos.x() << "," << scenePos.y() << " (top-first):" << std::endl;
-	bool foundReceiver = false;
-
-	std::function<void(QQuickItem *)> walk = [&](QQuickItem * item)
-	{
-		QList<QQuickItem*> children = item->childItems();
-		std::stable_sort(children.begin(), children.end(), [](QQuickItem * a, QQuickItem * b){ return a->z() < b->z(); });
-		for(int i = children.size() - 1; i >= 0; i--)
-		{
-			QQuickItem * child = children[i];
-			const QPointF local = child->mapFromScene(scenePos);
-			if(!child->isVisible() || local.x() < 0 || local.y() < 0 || local.x() > child->width() || local.y() > child->height())
-				continue;
-
-			const bool accepts = child->acceptedMouseButtons().testFlag(Qt::LeftButton);
-			Log::log() << "  " << child->metaObject()->className() << " name='" << child->objectName()
-			           << "' z=" << child->z() << " enabled=" << child->isEnabled()
-			           << " acceptsLeft=" << accepts
-			           << " pos=" << child->x() << "," << child->y() << " size=" << child->width() << "x" << child->height()
-			           << (accepts && child->isEnabled() && !foundReceiver ? "   <== would take the press" : "")
-			           << std::endl;
-			if(accepts && child->isEnabled() && !foundReceiver)
-				foundReceiver = true;
-			walk(child);
-		}
-	};
-
-	walk(window->contentItem());
 }
 
 void TestAll::testMainWindowShowsFilterWindow()
