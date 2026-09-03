@@ -539,10 +539,15 @@ void ScriptConstructorView::componentComplete()
 			connect(singleton, &QAbstractItemModel::dataChanged,			this, [this](){ schedulePaletteRebuild(); });
 			connect(singleton, &QAbstractItemModel::headerDataChanged,		this, [this](){ schedulePaletteRebuild(); });
 		}
-		buildColumnPalette(); // No-op until the chrome exists (deferred case).
+		// Only build here if ensureChromeBuilt() hasn't already done so (the deferred
+		// case); otherwise buildChrome() already populated the column palette.
+		if(!_chromeBuilt)
+			buildColumnPalette(); // No-op until the chrome exists (deferred case).
 	}
 
-	rebuildFormulaItems(); // No-op until the chrome exists (deferred case).
+	// ensureChromeBuilt() already ran this after building the chrome.
+	if(!_chromeBuilt)
+		rebuildFormulaItems(); // No-op until the chrome exists (deferred case).
 }
 
 void ScriptConstructorView::ensureChromeBuilt()
@@ -704,6 +709,9 @@ void ScriptConstructorView::clearFormulaItems()
 void ScriptConstructorView::_clearPaletteChildren(QQuickItem * palette)
 {
 	if(!palette) return;
+
+	JASPTIMER_SCOPE(ScriptConstructor clearPaletteChildren);
+
 	for(QQuickItem * child : palette->childItems())
 	{
 		// Palette prototype items own their ScriptNode prototype; free it too.
@@ -960,6 +968,8 @@ QString ScriptConstructorView::defaultHintText() const
 
 void ScriptConstructorView::updateBackgroundDecoration()
 {
+	JASPTIMER_SCOPE(ScriptConstructor updateBackgroundDecoration);
+
 	if(!_backgroundDecoration) return;
 
 	const QString file = _model.mode() == ScriptConstructorMode::Filter
@@ -1016,6 +1026,10 @@ void ScriptConstructorView::buildOperatorBar()
 
 	_operatorBarContent->setWidth(x);
 	_operatorBarContent->setHeight(blockDim());
+
+#ifdef PROFILE_JASP
+	Log::log() << "ScriptConstructor buildOperatorBar created " << _operatorBarContent->childItems().size() << " items" << std::endl;
+#endif
 }
 
 void ScriptConstructorView::buildFunctionPalette()
@@ -1055,6 +1069,9 @@ void ScriptConstructorView::buildFunctionPalette()
 
 	_functionPaletteContentWidth = maxW + spacing() * 2;
 	_functionPalette->setContentHeight(y);
+#ifdef PROFILE_JASP
+	Log::log() << "ScriptConstructor buildFunctionPalette created " << content->childItems().size() << " items" << std::endl;
+#endif
 	if(_chromeBuilt) layoutAll();
 }
 
@@ -1103,6 +1120,9 @@ void ScriptConstructorView::buildColumnPalette()
 
 	_columnPaletteContentWidth = maxW + spacing() * 2;
 	_columnPalette->setContentHeight(y);
+#ifdef PROFILE_JASP
+	Log::log() << "ScriptConstructor buildColumnPalette created " << content->childItems().size() << " items (rows: " << rows << ")" << std::endl;
+#endif
 	if(_chromeBuilt) layoutAll();
 }
 

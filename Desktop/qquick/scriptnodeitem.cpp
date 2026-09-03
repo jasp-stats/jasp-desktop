@@ -397,6 +397,7 @@ ScriptNodeItem::ScriptNodeItem(ScriptConstructorView * view, ScriptNode * node, 
 	, _view(view)
 	, _node(node)
 {
+	JASPTIMER_SCOPE(ScriptNodeItem ctor);
 	setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
 
 	// Hover shows a native tooltip via QToolTip (see hoverEnterEvent), replacing the old
@@ -420,6 +421,7 @@ ScriptNodeItem::~ScriptNodeItem()
 
 void ScriptNodeItem::clearLeaves()
 {
+	JASPTIMER_SCOPE(ScriptNodeItem clearLeaves);
 	for(QQuickItem * leaf : _leaves)
 		if(leaf)
 			leaf->deleteLater();
@@ -443,18 +445,22 @@ void ScriptNodeItem::clearLeaves()
 
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 {
+	JASPTIMER_SCOPE(ScriptNodeItem makeText total);
 	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
 	item->setProperty("text", text);
 
-	JaspTheme * theme = JaspTheme::currentTheme();
-	QFont f = theme->font();
-	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-	f.setBold(bold);
-	item->setProperty("font", f);
-	item->setProperty("color", theme->textEnabled());
+	{
+		JASPTIMER_SCOPE(ScriptNodeItem makeText setProps);
+		JaspTheme * theme = JaspTheme::currentTheme();
+		QFont f = theme->font();
+		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+		f.setBold(bold);
+		item->setProperty("font", f);
+		item->setProperty("color", theme->textEnabled());
+	}
 
 	addLeaf(item);
 	return item;
@@ -462,11 +468,17 @@ QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 
 QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 {
+	JASPTIMER_SCOPE(ScriptNodeItem makeImage total);
 	QQuickItem * item = _view->newLeaf(_view->imageComponent(), "image");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
-	item->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + iconFile);
+	{
+		// Suspect #1 for slow init: Image loads synchronously by default, so this
+		// property write can trigger a PNG load + decode on the GUI thread.
+		JASPTIMER_SCOPE(ScriptNodeItem makeImage setSource);
+		item->setProperty("source", JaspTheme::currentTheme()->iconPath() + "/" + iconFile);
+	}
 	item->setProperty("fillMode", 1); // Image.PreserveAspectFit
 
 	qreal dim = _view->blockDim();
@@ -483,18 +495,22 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 
 QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 {
+	JASPTIMER_SCOPE(ScriptNodeItem makeParenText total);
 	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
 	if(!item) return nullptr;
 
 	item->setParentItem(this);
 	item->setProperty("text", text);
 
-	JaspTheme * theme = JaspTheme::currentTheme();
-	QFont f = theme->font();
-	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-	item->setProperty("font", f);
-	item->setProperty("color", theme->textEnabled());
-	item->setVisible(false); // visibility controlled in layout()
+	{
+		JASPTIMER_SCOPE(ScriptNodeItem makeParenText setProps);
+		JaspTheme * theme = JaspTheme::currentTheme();
+		QFont f = theme->font();
+		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+		item->setProperty("font", f);
+		item->setProperty("color", theme->textEnabled());
+		item->setVisible(false); // visibility controlled in layout()
+	}
 
 	return item;
 }
@@ -508,11 +524,14 @@ QQuickItem * ScriptNodeItem::makeComma()
 	item->setParentItem(this);
 	item->setProperty("text", ", ");
 
-	JaspTheme * theme = JaspTheme::currentTheme();
-	QFont f = theme->font();
-	f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-	item->setProperty("font", f);
-	item->setProperty("color", theme->textEnabled());
+	{
+		JASPTIMER_SCOPE(ScriptNodeItem makeComma setProps);
+		JaspTheme * theme = JaspTheme::currentTheme();
+		QFont f = theme->font();
+		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
+		item->setProperty("font", f);
+		item->setProperty("color", theme->textEnabled());
+	}
 
 	_argumentCommas.append(item);
 	return item;
@@ -520,6 +539,7 @@ QQuickItem * ScriptNodeItem::makeComma()
 
 ScriptDropSpot * ScriptNodeItem::makeDropSpot(const DropTarget & target, const QString & placeholder)
 {
+	JASPTIMER_SCOPE(ScriptNodeItem makeDropSpot);
 	ScriptDropSpot * spot = new ScriptDropSpot(_view, this);
 	spot->setTarget(target);
 	spot->setAcceptsDrops(_acceptsDrops);
@@ -630,6 +650,7 @@ void ScriptNodeItem::rebuild()
 	}
 	case ScriptNode::Type::Column:
 	{
+		JASPTIMER_SCOPE(ScriptNodeItem rebuildColumn);
 		auto * col = static_cast<ScriptNodeColumn*>(_node);
 
 		int actual = 1;
@@ -647,6 +668,7 @@ void ScriptNodeItem::rebuild()
 	case ScriptNode::Type::Operator:
 	case ScriptNode::Type::OperatorVertical:
 	{
+		JASPTIMER_SCOPE(ScriptNodeItem rebuildOperator);
 		auto * op = static_cast<ScriptNodeOperator*>(_node);
 		const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op->op(), op->isVertical());
 
@@ -683,6 +705,7 @@ void ScriptNodeItem::rebuild()
 	}
 	case ScriptNode::Type::Function:
 	{
+		JASPTIMER_SCOPE(ScriptNodeItem rebuildFunction);
 		auto * func = static_cast<ScriptNodeFunction*>(_node);
 		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
 		const bool hasImage = funcDef && !funcDef->image.empty();
@@ -742,6 +765,7 @@ void ScriptNodeItem::rebuild()
 	}
 	case ScriptNode::Type::RowFunction:
 	{
+		JASPTIMER_SCOPE(ScriptNodeItem rebuildRowFunction);
 		auto * rowFunc = static_cast<ScriptNodeRowFunction*>(_node);
 		const ScriptFunctionDef * rowDef = ScriptConstructorRegistry::instance().rowFunctionDef(rowFunc->functionName());
 		const bool hasImage = rowDef && !rowDef->image.empty();
@@ -773,61 +797,64 @@ void ScriptNodeItem::rebuild()
 	}
 
 	// Compute the hover tooltip for this element.
-	QString tip;
-
-	switch(_node->type())
 	{
-	case ScriptNode::Type::Operator:
-	case ScriptNode::Type::OperatorVertical:
-	{
-		const std::string & op = static_cast<ScriptNodeOperator*>(_node)->op();
-		if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node)->isVertical()))
-			tip = def->toolTipForMode(_view->model()->mode());
-		break;
-	}
-	case ScriptNode::Type::Function:
-	{
-		const std::string & fn = static_cast<ScriptNodeFunction*>(_node)->functionName();
-		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
-			tip = def->toolTipForMode(_view->model()->mode());
-		break;
-	}
-	case ScriptNode::Type::RowFunction:
-	{
-		const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node)->functionName();
-		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
-			tip = def->toolTipForMode(_view->model()->mode());
-		break;
-	}
-	case ScriptNode::Type::Column:
-	{
-		auto * col = static_cast<ScriptNodeColumn*>(_node);
+		JASPTIMER_SCOPE(ScriptNodeItem tooltip);
+		QString tip;
 
-		const int actual		= _view->columnType(col->columnName());
-		const int effective		= col->effectiveColumnType(actual);
-
-		QStringList parts;
-		parts << tr("Click icon to change column type");
-
-		const QString description = _view->columnDescription(tq(col->columnName()));
-		if(!description.isEmpty())
-			parts << tr("Column description: ") + description;
-
-		if(effective != actual)
+		switch(_node->type())
 		{
-			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
-			if(!preview.isEmpty())
-				parts << preview;
+		case ScriptNode::Type::Operator:
+		case ScriptNode::Type::OperatorVertical:
+		{
+			const std::string & op = static_cast<ScriptNodeOperator*>(_node)->op();
+			if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node)->isVertical()))
+				tip = def->toolTipForMode(_view->model()->mode());
+			break;
+		}
+		case ScriptNode::Type::Function:
+		{
+			const std::string & fn = static_cast<ScriptNodeFunction*>(_node)->functionName();
+			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
+				tip = def->toolTipForMode(_view->model()->mode());
+			break;
+		}
+		case ScriptNode::Type::RowFunction:
+		{
+			const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node)->functionName();
+			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
+				tip = def->toolTipForMode(_view->model()->mode());
+			break;
+		}
+		case ScriptNode::Type::Column:
+		{
+			auto * col = static_cast<ScriptNodeColumn*>(_node);
+
+			const int actual		= _view->columnType(col->columnName());
+			const int effective		= col->effectiveColumnType(actual);
+
+			QStringList parts;
+			parts << tr("Click icon to change column type");
+
+			const QString description = _view->columnDescription(tq(col->columnName()));
+			if(!description.isEmpty())
+				parts << tr("Column description: ") + description;
+
+			if(effective != actual)
+			{
+				const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
+				if(!preview.isEmpty())
+					parts << preview;
+			}
+
+			tip = parts.join("\n\n");
+			break;
+		}
+		default:
+			break;
 		}
 
-		tip = parts.join("\n\n");
-		break;
+		setToolTip(tip);
 	}
-	default:
-		break;
-	}
-
-	setToolTip(tip);
 
 	layout();
 }
