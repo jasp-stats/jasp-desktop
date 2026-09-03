@@ -1239,6 +1239,84 @@ ScriptDropSpot * ScriptConstructorView::dropSpotAt(const QPointF & scenePos, Scr
 	return bestSpot;
 }
 
+ScriptDropSpot * ScriptConstructorView::bestDropSpotFor(ScriptNode * node, const QPointF & scenePos, ScriptNodeItem * dragged) const
+{
+	if(!node) return nullptr;
+
+	// 1) A precise hit on a spot that accepts the node always wins (dropSpotAt already skips
+	// filled spots and anything inside the dragged subtree).
+	if(ScriptDropSpot * hit = dropSpotAt(scenePos, dragged))
+		if(hit->target().accepts(node))
+			return hit;
+
+	// Candidate spots: empty (or holding the dragged item itself), accepting the node's keys,
+	// and not inside the dragged subtree.
+	QList<ScriptDropSpot*> spots;
+	const_cast<ScriptConstructorView*>(this)->collectDropSpots(spots);
+
+	QList<QPair<QPointF, ScriptDropSpot*>> candidates; // scene top-left of the spot
+	for(ScriptDropSpot * spot : spots)
+	{
+		if(!spot || (spot->filledItem() && spot->filledItem() != dragged))
+			continue;
+
+		if(dragged)
+		{
+			bool insideDragged = false;
+			for(QQuickItem * p = spot->parentItem(); p; p = p->parentItem())
+			{
+				if(p == dragged)
+				{
+					insideDragged = true;
+					break;
+				}
+			}
+			if(insideDragged) continue;
+		}
+
+		if(!spot->target().accepts(node))
+			continue;
+
+		candidates.append({ spot->mapToScene(QPointF(0, 0)), spot });
+	}
+
+	if(candidates.isEmpty())
+		return nullptr;
+
+	// Sort topmost, then leftmost ("fill the constructor left-to-right, top-to-bottom").
+	std::sort(candidates.begin(), candidates.end(), [](const auto & a, const auto & b)
+	{
+		if(!qFuzzyCompare(a.first.y(), b.first.y()))
+			return a.first.y() < b.first.y();
+		return a.first.x() < b.first.x();
+	});
+
+	// 2) Dropped on a formula: use its leftmost accepting empty spot.
+	ScriptNodeItem * formulaUnderCursor = nullptr;
+	for(ScriptNodeItem * root : _rootItems)
+	{
+		if(!root) continue;
+		QPointF topLeft = root->mapToScene(QPointF(0, 0));
+		if(QRectF(topLeft, QSizeF(root->width(), root->height())).contains(scenePos))
+		{
+			formulaUnderCursor = root;
+			break;
+		}
+	}
+
+	if(formulaUnderCursor)
+	{
+		for(const auto & candidate : candidates)
+			for(QQuickItem * p = candidate.second->parentItem(); p; p = p->parentItem())
+				if(p == formulaUnderCursor)
+					return candidate.second;
+		return nullptr;
+	}
+
+	// 3) Dropped on empty space: the topmost, then leftmost accepting empty spot anywhere.
+	return candidates.first().second;
+}
+
 void ScriptConstructorView::clearHover()
 {
 	if(_hoveredSpot)
@@ -1254,7 +1332,9 @@ void ScriptConstructorView::dragMove(const QPointF & scenePos)
 
 	_draggedItem->setPosition(mapFromScene(scenePos) - _dragOffset);
 
-	ScriptDropSpot * spot = dropSpotAt(scenePos, _draggedItem);
+	// Preview the resolved "best spot" (precise hit, else the spot the drop would take), so
+	// the green highlight shows the actual destination while dragging.
+	ScriptDropSpot * spot = bestDropSpotFor(_draggedItem->node(), scenePos, _draggedItem);
 
 	if(spot != _hoveredSpot)
 	{
@@ -1274,7 +1354,7 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 	if(!_draggedItem) return;
 
 	ScriptNode * node = _draggedItem->node();
-	ScriptDropSpot * spot = dropSpotAt(scenePos, _draggedItem);
+	ScriptDropSpot * spot = bestDropSpotFor(node, scenePos, _draggedItem);
 
 	clearHover();
 
@@ -1288,7 +1368,7 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 		else
 			_model.removeNode(node);
 	}
-	else if(spot && spot->target().accepts(node))
+	else if(spot)
 	{
 		DropTarget target = spot->target();
 
@@ -1299,13 +1379,11 @@ void ScriptConstructorView::endDrag(const QPointF & scenePos)
 	}
 	else
 	{
-		// No specific spot under the cursor.
+		// No spot the node fits in: new nodes resolve a reasonable insertion point (topmost
+		// formula's leftmost slot) and, for operators with a free left slot, absorb
+		// ("gobble") an existing formula; existing nodes are re-rooted.
 		if(_dragIsNew)
-		{
-			// A brand-new node resolves a reasonable insertion point and, for operators
-			// with a free left slot, absorbs ("gobbles") the preceding formula.
 			_model.insertNode(node, DropTarget::none());
-		}
 		else
 			_model.moveNode(node, DropTarget::root());
 	}
