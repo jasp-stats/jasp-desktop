@@ -97,6 +97,10 @@ private slots:
 	void	testScriptConstructorAllowedColumnTypes();
 	void	testScriptConstructorRowFunctionFreeSlot();
 
+	// "Best spot" drop resolution: a drop without an explicit target fills the leftmost
+	// empty accepting slot, working left-to-right / top-to-bottom through the formulas.
+	void	testScriptConstructorLeftMostEmpty();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

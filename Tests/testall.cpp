@@ -2262,6 +2262,93 @@ void TestAll::testScriptConstructorGobble()
 	QCOMPARE(model.toR(), std::string("(contNormal.scale > null)\n"));
 }
 
+void TestAll::testScriptConstructorLeftMostEmpty()
+{
+	// The dataset is not used directly, but opening it creates the session database that
+	// cleanup() closes (all model-level tests follow this pattern).
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// --- Operator with two empty slots: consecutive no-target drops fill left, then right ---
+	ScriptNode * plus = new ScriptNodeOperator("+", false);
+	model.insertNode(plus, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op != nullptr);
+		auto * left = dynamic_cast<ScriptNodeColumn*>(op->leftChild());
+		QVERIFY(left != nullptr);
+		QCOMPARE(left->columnName(), std::string("contNormal"));
+		QVERIFY(op->rightChild() == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("(contNormal.scale + contNormal.scale)\n"));
+
+	// --- Function arguments fill in ascending order, skipping non-accepting slots ---
+	// ifelse's first argument wants booleans, so a number column must land in the second one.
+	model.fromJson(formulas({funcNode("ifelse", {
+		funcArg("test",	{"boolean"},					Json::nullValue),
+		funcArg("then",	{"boolean","string","number"},	Json::nullValue),
+		funcArg("else",	{"boolean","string","number"},	Json::nullValue)})}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func != nullptr);
+		QVERIFY(func->arguments()[0].value == nullptr); // test (booleans only): skipped
+		QVERIFY(func->arguments()[1].value != nullptr); // then: filled
+		QVERIFY(func->arguments()[2].value == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("ifelse(NULL, contNormal.scale, contNormal.scale)\n"));
+
+	// --- Topmost formula wins: the first formula with an accepting empty slot gets the drop ---
+	model.fromJson(formulas({
+		opNode("+", colNode("contNormal"), Json::nullValue),
+		opNode("+", colNode("contNormal"), Json::nullValue)}));
+	QCOMPARE(model.formulaCount(), 2);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * first = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		auto * second = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(1));
+		QVERIFY(first != nullptr);
+		QVERIFY(second != nullptr);
+		QVERIFY(first->rightChild() != nullptr);  // topmost formula was filled
+		QVERIFY(second->rightChild() == nullptr);
+	}
+
+	// --- Row functions fill their slots left to right ---
+	model.fromJson(formulas({}));
+	auto * rowMean = new ScriptNodeRowFunction("rowMean");
+	rowMean->addChild(nullptr); // the palette clone starts with one empty slot
+	model.insertNode(rowMean, DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contNormal.scale)\n"));
+
+	// --- Gobble is still preferred when no empty slot anywhere accepts the node ---
+	model.fromJson(formulas({colNode("contNormal")}));
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QVERIFY(dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild()) != nullptr); // absorbed
+	QVERIFY(rootOp->rightChild() == nullptr);
+}
+
 void TestAll::testScriptConstructorAllowedColumnTypes()
 {
 	QVERIFY(_newPkgWithDataSet());

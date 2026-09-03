@@ -316,29 +316,49 @@ static DropTarget makeSlotTarget(ScriptNode * parent, DropTarget::Kind kind, int
 	return t;
 }
 
-static DropTarget rightMostEmptyDropSpotRec(ScriptNode * node)
+static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & dragKeys)
 {
+	// In-order leftmost empty slot that accepts the dragged node's keys: for operators the
+	// left subtree/slot before the right one, for functions and row functions the arguments
+	// in ascending index (descending into filled arguments to find nested empty slots further
+	// left). Non-accepting empty slots are skipped, search continues to their right.
 	if(!node) return DropTarget::none();
 
 	if(auto * op = dynamic_cast<ScriptNodeOperator*>(node))
 	{
+		if(op->leftChild())
+		{
+			DropTarget sub = leftMostEmptyDropSpotRec(op->leftChild(), dragKeys);
+			if(sub.isValid())
+				return sub;
+		}
+		else if(ScriptConstructorModel::keysOverlap(dragKeys, op->dropKeysLeft()))
+			return makeSlotTarget(op, DropTarget::Kind::OperatorLeft, 0, op->dropKeysLeft());
+
 		if(op->rightChild())
-			return rightMostEmptyDropSpotRec(op->rightChild());
-		return makeSlotTarget(op, DropTarget::Kind::OperatorRight, 1, op->dropKeysRight());
+		{
+			DropTarget sub = leftMostEmptyDropSpotRec(op->rightChild(), dragKeys);
+			if(sub.isValid())
+				return sub;
+		}
+		else if(ScriptConstructorModel::keysOverlap(dragKeys, op->dropKeysRight()))
+			return makeSlotTarget(op, DropTarget::Kind::OperatorRight, 1, op->dropKeysRight());
+
+		return DropTarget::none();
 	}
 
 	if(auto * func = dynamic_cast<ScriptNodeFunction*>(node))
 	{
-		for(int i = func->childCount() - 1; i >= 0; i--)
+		for(int i = 0; i < func->childCount(); i++)
 		{
 			const auto & arg = func->arguments()[i];
 			if(arg.value)
 			{
-				DropTarget sub = rightMostEmptyDropSpotRec(arg.value);
+				DropTarget sub = leftMostEmptyDropSpotRec(arg.value, dragKeys);
 				if(sub.isValid())
 					return sub;
 			}
-			else
+			else if(ScriptConstructorModel::keysOverlap(dragKeys, arg.dropKeys))
 				return makeSlotTarget(func, DropTarget::Kind::FunctionArg, i, arg.dropKeys);
 		}
 		return DropTarget::none();
@@ -346,15 +366,15 @@ static DropTarget rightMostEmptyDropSpotRec(ScriptNode * node)
 
 	if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(node))
 	{
-		for(int i = rowFunc->childCount() - 1; i >= 0; i--)
+		for(int i = 0; i < rowFunc->childCount(); i++)
 		{
 			if(rowFunc->childAt(i))
 			{
-				DropTarget sub = rightMostEmptyDropSpotRec(rowFunc->childAt(i));
+				DropTarget sub = leftMostEmptyDropSpotRec(rowFunc->childAt(i), dragKeys);
 				if(sub.isValid())
 					return sub;
 			}
-			else
+			else if(ScriptConstructorModel::keysOverlap(dragKeys, {"number"}))
 				return makeSlotTarget(rowFunc, DropTarget::Kind::RowFunctionArg, i, {"number"});
 		}
 		return DropTarget::none();
@@ -403,20 +423,21 @@ static DropTarget rightMostFilledDropSpotRec(ScriptNode * node)
 
 DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node) const
 {
-	if(_formulas.empty())
-		return DropTarget::none();
-
-	ScriptNode * last = _formulas.back();
-	if(last == node)
+	// "Best spot" for a node dropped without an explicit target: scan the root formulas in
+	// order (they are laid out top-to-bottom) and take the first formula whose leftmost empty
+	// slot accepts the node — consecutive drops fill the constructor left-to-right,
+	// top-to-bottom. Returning nothing lets the caller fall back to gobble-left absorption.
+	for(ScriptNode * formula : _formulas)
 	{
-		if(_formulas.size() == 1)
-			return DropTarget::none();
-		last = _formulas[_formulas.size() - 2];
-		if(last == node)
-			return DropTarget::none();
+		if(formula == node)
+			continue;
+
+		DropTarget spot = leftMostEmptyDropSpotRec(formula, node->dragKeys());
+		if(spot.isValid())
+			return spot;
 	}
 
-	return rightMostEmptyDropSpotRec(last);
+	return DropTarget::none();
 }
 
 std::vector<int> ScriptConstructorModel::allowedColumnTypes(ScriptNode * node) const

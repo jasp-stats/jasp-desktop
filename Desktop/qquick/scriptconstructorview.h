@@ -130,6 +130,13 @@ public:
 	void				dragMove(const QPointF & scenePos);
 	void				endDrag(const QPointF & scenePos);
 	ScriptDropSpot	*	dropSpotAt(const QPointF & scenePos, ScriptNodeItem * dragged = nullptr) const;
+
+	/// Resolves the "best" drop spot for a node at a scene position: a precise hit on an
+	/// accepting spot wins; otherwise the leftmost accepting empty slot of the formula under
+	/// the cursor; otherwise the topmost-then-leftmost accepting empty slot of the whole
+	/// constructor; otherwise nullptr (caller falls back to root insertion / gobble-left).
+	ScriptDropSpot	*	bestDropSpotFor(ScriptNode * node, const QPointF & scenePos, ScriptNodeItem * dragged) const;
+
 	void				collectDropSpots(QList<ScriptDropSpot*> & out) const;
 
 	signals:
