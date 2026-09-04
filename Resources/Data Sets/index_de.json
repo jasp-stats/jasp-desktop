@@ -857,7 +857,14 @@
           "description": "Ein meta-analytischer Datensatz über die Beziehung zwischen Akkulturationsmismatch und intergenerationalem Kulturkonflikt. <br><br> Die JASP-Beispieldatei veranschaulicht die Verwendung und Meldung von PET-PEESE, selection models, and Robust Bayesian meta-analysis.<br><br> <i>Die Daten stammen von Lui (2015).<\/i>",
           "kind": "file",
           "associated_datafile": "Acculturation Mismatch and Intergenerational Cultural Conflict.csv"
-        }      
+        },
+        {
+          "name": "Writing-to-Learn Interventions",
+          "path": "Writing-to-Learn Interventions.jasp",
+          "description": "Ergebnisse aus 48 Studien zur Wirksamkeit schulischer Writing-to-Learn-Interventionen auf die akademische Leistung. <br><br> Die JASP-Beispieldatei demonstriert eine Meta-Regressionsanalyse mit Feedback und Behandlungsdauer als Moderatoren.<br><br> <i> Der Datensatz wurde aus dem R-Paket metadat abgerufen.<\/i>",
+          "kind": "file",
+          "associated_datafile": "Writing-to-Learn Interventions.csv"
+        }
       ],
       "debug": false
     },
