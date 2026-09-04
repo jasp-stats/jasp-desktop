@@ -273,6 +273,7 @@ if(WIN32 AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   include(FindRToolsDLLPath)
 
   find_package(freexl 2.0.99 REQUIRED)
+  find_package(librdata 0.0.0 REQUIRED)
   find_package(libsodium 1.0.20 REQUIRED)
 
   copy_rtools_header(RTOOLS_LIBREADSTAT_H	readstat.h		${CMAKE_SOURCE_DIR}/Desktop/data/importers/readstat/readstat.h)
