@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- License: MIT. Made by Denali Design: https://github.com/denali-design/denali-icons -->
+<svg width="800px" height="800px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="invisible_box" data-name="invisible box">
+      <rect width="48" height="48" fill="none"/>
+    </g>
+    <g id="Icons">
+      <g fill="#97C4F2">
+        <circle cx="18" cy="12" r="4"/>
+        <circle cx="18" cy="24" r="4"/>
+        <circle cx="18" cy="36" r="4"/>
+        <circle cx="30" cy="12" r="4"/>
+        <circle cx="30" cy="24" r="4"/>
+        <circle cx="30" cy="36" r="4"/>
+      </g>
+    </g>
+  </g>
+</svg>
