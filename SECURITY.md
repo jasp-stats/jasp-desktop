@@ -4,7 +4,7 @@
 
 Please report security vulnerabilities in JASP or its modules privately — do **not** open a public issue.
 
-- **GitHub:** use [private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/guidance-for-reporting-and-fixing-vulnerabilities/privately-reporting-a-security-vulnerability) on the affected repository (jasp-stats/jasp-desktop or the module repository).
+- **GitHub:** use [private vulnerability reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately) on the affected repository (jasp-stats/jasp-desktop or the module repository).
 - **Email:** [security@jasp-stats.org](mailto:security@jasp-stats.org)
 
 We aim to acknowledge reports within 5 working days. Please include a description of the issue, steps to reproduce, and affected versions.
