@@ -954,5 +954,5 @@ void ColumnModel::setComputedColumnCode(const QString & rCode, const QString & j
 	if(column()->rCodeQ() == rCode && column()->constructorJsonQ() == json)
 		return;
 
-	undoStack()->pushCommand(new SetComputedColumnCodeCommand(DataSetPackage::filter(), column(), rCode, json));
+	undoStack()->pushCommand(new SetComputedColumnCodeCommand(column(), rCode, json));
 }
