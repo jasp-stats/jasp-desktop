@@ -393,13 +393,12 @@ FocusScope
 			flickableDirection:		Flickable.VerticalFlick
 			contentHeight:			workspaceSpecs.visible ? workspaceSpecs.height : modules.height
 			contentWidth:			width
-			width:                  340 * preferencesModel.uiScale
+			width:                  (ribbonModel.dataMode ? 540 : 340) * preferencesModel.uiScale
 			clip:					true
 
 			anchors
 			{
 				top:				parent.top
-				margins:			jaspTheme.contentMargin
 				right:				vertScroller.visible ? vertScroller.left : parent.right
 				bottom:				parent.bottom
 			}
@@ -414,6 +413,8 @@ FocusScope
 				MenuHeader
 				{
 					headertext:	qsTr("Workspace settings")
+					width:		parent.width - (jaspTheme.generalAnchorMargin * 2)
+					addMargin:	false
 				}
 
 
@@ -426,15 +427,14 @@ FocusScope
 
 					Text
 					{
-						anchors.margins:	3 * preferencesModel.uiScale
 						text:				qsTr("Name: %1").arg(workspaceModel.name)
 					}
 
 					TextArea
 					{
-						anchors.margins:	3 * preferencesModel.uiScale
 						title:				qsTr("Description: ")
-						height:				100 * jaspTheme.uiScale
+						height:				150 * jaspTheme.uiScale
+						width:				parent.width
 						control.padding:	3 * jaspTheme.uiScale
 						text:				workspaceModel.description
 						onEditingFinished: 	if(workspaceModel.description !== text) workspaceModel.description = text
@@ -444,13 +444,6 @@ FocusScope
 						useTabAsSpaces:		false
 						nextTabItem:		missingValues
 						wrapMode:			TextEdit.Wrap
-						anchors
-						{
-							left:			parent.left
-							right:			parent.right
-							margins:		jaspTheme.generalAnchorMargin
-						}
-
 					}
 				}
 
@@ -458,7 +451,6 @@ FocusScope
 				{
 					id:								missingValues
 					width:							parent.width - (jaspTheme.generalAnchorMargin * 2)
-					x:								jaspTheme.generalAnchorMargin
 					model:							workspaceModel
 					resetButtonTooltip:				qsTr("Reset missing values with the ones set in Data Preferences")
 					showWorkspaceMissingValues:		false
