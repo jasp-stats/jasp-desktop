@@ -239,7 +239,7 @@ TextAreaBase
 						}
 						break;
 					default:
-						infoText.text = textArea.applyScriptInfo;
+						textArea.infoText = textArea.applyScriptInfo;
 						textArea.hasScriptError = false;
 					}
 				}
