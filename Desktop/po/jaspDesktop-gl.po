@@ -10036,3 +10036,16 @@ msgstr ""
 "manualmente un motor facendo clic co botón dereito sobre el. \n"
 "Isto pode ser útil se deixou de responder durante algún cálculo "
 "particularmente pesado pero innecesario.\n"
+
+msgctxt "MainWindow|"
+msgid "All Files"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 Files"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Save File"
+msgstr ""

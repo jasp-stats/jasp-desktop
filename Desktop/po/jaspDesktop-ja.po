@@ -9752,3 +9752,16 @@ msgstr ""
 "はあまり高くありません。ただし、右クリックしてエンジンを手動で強制終了するオ"
 "プションはあります。\n"
 "これは、特に重くて不要な計算中に応答しなくなった場合に役立ちます。\n"
+
+msgctxt "MainWindow|"
+msgid "All Files"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 Files"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Save File"
+msgstr ""

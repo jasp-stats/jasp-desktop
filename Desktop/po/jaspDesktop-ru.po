@@ -8208,3 +8208,16 @@ msgid ""
 "This can be helpful if it stopped responding during some particularly heavy "
 "yet unnecessary calculation.\n"
 msgstr ""
+
+msgctxt "MainWindow|"
+msgid "All Files"
+msgstr ""
+
+#, qt-format
+msgctxt "MainWindow|"
+msgid "%1 Files"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Save File"
+msgstr ""
