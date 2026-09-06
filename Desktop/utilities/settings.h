@@ -111,6 +111,8 @@ public:
 		RPC_SERVER_ENABLED,
 		RPC_SERVER_IP,
 		RPC_SERVER_PORT,
+		ONBOARDING_COMPLETED,
+		ONBOARDING_STEP,
 	};
 
 	static QVariant value(Settings::Type key);

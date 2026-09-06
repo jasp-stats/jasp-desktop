@@ -55,6 +55,11 @@ Window
 			mainWindow.closeWindows();
 	}
 
+	function startTutorial()
+	{
+		onboardingOverlay.start(preferencesModel.onboardingStep)
+	}
+
 	function toggleFullScreen()
 	{
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
@@ -344,5 +349,47 @@ Window
 			onClicked:		mainWindow.toggleChat()
 		}
 	}
+	
+	Tutorial
+	{
+		id: 	onboardingOverlay
+		z: 		1000
+
+		steps:
+		[
+			{
+				target:		ribbon,
+				title:		qsTr("Data and Analysis Section"),
+				text:		qsTr("This is the main entry point for the Data and Analysis menu."),
+				placement:	"bottom"
+			},
+			{
+				target:		filemenu,
+				title:		qsTr("File Menu and Preferences"),
+				text:		qsTr("Clicking the hamburger button in the upper left corner opens/closes this file menu and preferences interface, used to open and save files, and to configure JASP global preferences."),
+				placement:	"right",
+				onEnter:	function() { fileMenuModel.visible = true;  },
+				onExit:		function() { fileMenuModel.visible = false; }
+			},
+			{
+				target:		modulesMenu,
+				title:		qsTr("Modules library"),
+				text:		qsTr("This is where you can manage analytics modules. In the list on the far right of this area, you can enable/disable installed modules, and you can also manage all available modules from the online modules store on the left."),
+				placement:	"left",
+				onEnter:	function() { modulesMenu.opened = true;  },
+				onExit:		function() { modulesMenu.opened = false; }
+			},
+			{
+				target:		chatToggleButton,
+				title:		qsTr("AI Assistant"),
+				text:		qsTr("Click the robot icon here or press Ctrl+J to bring up the AI chat panel.Detailed AI settings can be found in the preferences menu."),
+				placement:	"top"
+			}
+		]
+	}
+	
+	Component.onCompleted:
+		if (!preferencesModel.onboardingCompleted)
+			startTutorial()
 
 }

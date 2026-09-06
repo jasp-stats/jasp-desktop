@@ -19,41 +19,41 @@ using namespace std;
 
 
 PreferencesModel::PreferencesModel(QObject *parent) :
-	PreferencesModelBase(parent)
+    PreferencesModelBase(parent)
 {	
 	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::onUseDefaultPPIChanged			);
 	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::onDefaultPPIChanged			);
-	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
-	connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
-	connect(this,					&PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
-	connect(this,					&PreferencesModel::modulesRememberChanged,		this, &PreferencesModel::resetRememberedModules			);
-	connect(this,					&PreferencesModel::currentThemeReady,			this, &PreferencesModel::currentJaspThemeChanged,		Qt::QueuedConnection);
-	connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
-	connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
-	connect(this,					&PreferencesModel::dataLabelNAChanged,			this, &PreferencesModel::dataLabelNAChangedSlot			);
-	connect(this,					&PreferencesModel::guiQtTextRenderChanged,		this, &PreferencesModel::onGuiQtTextRenderChanged,		Qt::QueuedConnection);
-	connect(this,					&PreferencesModel::developerModeChanged,		this, [&](){ this->setEngineSandbox(!this->developerMode()); } );
-	
-	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
-
-	_loadDatabaseFont();
-
-	for(auto pdfPageSizeElt : pdfPageSizeToVector())
-	{
-		QMap<QString, QVariant> map =
-		{
-			std::make_pair("value", int(pdfPageSizeElt)),
-			std::make_pair("label", pdfPageSizeToQString(pdfPageSizeElt)),
-		};
-
-		_pdfPageSizeModel.append(map);
-	}
-
-	dataLabelNAChangedSlot(dataLabelNA());
-
-	_aiPersonaModel = new AIPersonaModel(this);
+    connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::onCustomPPIChanged				);
+    connect(this,					&PreferencesModel::useDefaultPPIChanged,		this, &PreferencesModel::plotPPIPropChanged				);
+    connect(this,					&PreferencesModel::defaultPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+    connect(this,					&PreferencesModel::customPPIChanged,			this, &PreferencesModel::plotPPIPropChanged				);
+    connect(this,					&PreferencesModel::plotBackgroundChanged,		this, &PreferencesModel::whiteBackgroundChanged			);
+    connect(this,					&PreferencesModel::modulesRememberChanged,		this, &PreferencesModel::resetRememberedModules			);
+    connect(this,					&PreferencesModel::currentThemeReady,			this, &PreferencesModel::currentJaspThemeChanged,		Qt::QueuedConnection);
+    connect(this,					&PreferencesModel::safeGraphicsChanged,			this, &PreferencesModel::animationsOnChanged			); // So animationsOn *might* not be changed, but it  doesnt matter
+    connect(this,					&PreferencesModel::disableAnimationsChanged,	this, &PreferencesModel::animationsOnChanged			);
+    connect(this,					&PreferencesModel::dataLabelNAChanged,			this, &PreferencesModel::dataLabelNAChangedSlot			);
+    connect(this,					&PreferencesModel::guiQtTextRenderChanged,		this, &PreferencesModel::onGuiQtTextRenderChanged,		Qt::QueuedConnection);
+    connect(this,					&PreferencesModel::developerModeChanged,		this, [&](){ this->setEngineSandbox(!this->developerMode()); } );
+    
+    connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
+    
+    _loadDatabaseFont();
+    
+    for(auto pdfPageSizeElt : pdfPageSizeToVector())
+    {
+        QMap<QString, QVariant> map =
+            {
+                std::make_pair("value", int(pdfPageSizeElt)),
+                std::make_pair("label", pdfPageSizeToQString(pdfPageSizeElt)),
+            };
+        
+        _pdfPageSizeModel.append(map);
+    }
+    
+    dataLabelNAChangedSlot(dataLabelNA());
+    
+    _aiPersonaModel = new AIPersonaModel(this);
 }
 
 AIPersonaModel* PreferencesModel::aiPersonaModel() const { return _aiPersonaModel; }
@@ -62,82 +62,82 @@ AIConfigModel* PreferencesModel::aiConfigModel() const { return AIConfigModel::c
 
 void PreferencesModel::browseSpreadsheetEditor()
 {
-	
-	QString filter = "File Description (*.*)";
-	QString applicationfolder;
+    
+    QString filter = "File Description (*.*)";
+    QString applicationfolder;
 
 #ifdef _WIN32
-	applicationfolder = "c:\\Program Files";
+    applicationfolder = "c:\\Program Files";
 #elif __APPLE__
-	applicationfolder = "/Applications";
+    applicationfolder = "/Applications";
 #else
-	applicationfolder = "/usr/bin";
+    applicationfolder = "/usr/bin";
 #endif
-
-	QString filename = MessageForwarder::browseOpenFile(tr("Select a file..."), applicationfolder, filter);
-
-	if (filename != "")
-		setCustomEditor(filename);
-	
+    
+    QString filename = MessageForwarder::browseOpenFile(tr("Select a file..."), applicationfolder, filter);
+    
+    if (filename != "")
+        setCustomEditor(filename);
+    
 }
 
 void PreferencesModel::browseDeveloperFolder()
 {
-	QString defaultfolder = developerFolder();
-	if (defaultfolder.isEmpty())
-	{
+    QString defaultfolder = developerFolder();
+    if (defaultfolder.isEmpty())
+    {
 #ifdef _WIN32
-		defaultfolder = "c:\\";
+        defaultfolder = "c:\\";
 #else
-		defaultfolder = "~";
+        defaultfolder = "~";
 #endif
-	}
-
-	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
-
-	if (!folder.isEmpty())
-		setDeveloperFolder(folder);	
+    }
+    
+    QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
+    
+    if (!folder.isEmpty())
+        setDeveloperFolder(folder);	
 }
 
 
 void PreferencesModel::browseDeveloperLibPathFolder()
 {
-	QString defaultfolder = directLibpathFolder();
-	if (defaultfolder.isEmpty())
-	{
+    QString defaultfolder = directLibpathFolder();
+    if (defaultfolder.isEmpty())
+    {
 #ifdef _WIN32
-		defaultfolder = "c:\\";
+        defaultfolder = "c:\\";
 #else
-		defaultfolder = "~";
+        defaultfolder = "~";
 #endif
-	}
-
-	QString folder = MessageForwarder::browseOpenFolder(tr("Select a R-library..."), defaultfolder);
-
-	if (!folder.isEmpty())
-		setDirectLibpathFolder(folder);
+    }
+    
+    QString folder = MessageForwarder::browseOpenFolder(tr("Select a R-library..."), defaultfolder);
+    
+    if (!folder.isEmpty())
+        setDirectLibpathFolder(folder);
 }
 
 void PreferencesModel::browseConfigurationFile()
 {
-	QString defaultfolder = JASPConfiguration::getInstance()->getDefaultConfigurationPath();
-	if (defaultfolder.isEmpty())
-	{
+    QString defaultfolder = JASPConfiguration::getInstance()->getDefaultConfigurationPath();
+    if (defaultfolder.isEmpty())
+    {
 #ifdef _WIN32
-		defaultfolder = "c:\\";
+        defaultfolder = "c:\\";
 #else
-		defaultfolder = "~";
+        defaultfolder = "~";
 #endif
-	}
-
-	QString folder = MessageForwarder::browseOpenFile(tr("Select a file..."), defaultfolder, "");
-
-	if (!folder.isEmpty())
-	{
-		setLocalConfigurationPATH(folder);
-		JASPConfiguration::getInstance()->processConfiguration();
-	}
-
+    }
+    
+    QString folder = MessageForwarder::browseOpenFile(tr("Select a file..."), defaultfolder, "");
+    
+    if (!folder.isEmpty())
+    {
+        setLocalConfigurationPATH(folder);
+        JASPConfiguration::getInstance()->processConfiguration();
+    }
+    
 }
 
 
@@ -208,11 +208,13 @@ GET_PREF_FUNC_BOOL(	showInteractiveDefault,		Settings::SHOW_INTERACTIVE_DEFAULT	
 GET_PREF_FUNC_BOOL(	autoSaveAtAll,				Settings::AUTOSAVE_ON								)
 GET_PREF_FUNC_INT(	autoSaveIntervalSec,		Settings::AUTOSAVE_INTERVAL_SEC						)
 GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-	GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
-	GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM		)
-	GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT				)
-	GET_PREF_FUNC_STR(	aiUserAvatar,			Settings::AI_USER_AVATAR						)
-	GET_PREF_FUNC_BOOL(	aiEnabled,			Settings::AI_ENABLED						)
+GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,	Settings::AI_ANNOTATION_USE_CUSTOM		)
+GET_PREF_FUNC_STR(	aiAnnotationPrompt,		Settings::AI_ANNOTATION_PROMPT				)
+GET_PREF_FUNC_STR(	aiUserAvatar,			Settings::AI_USER_AVATAR						)
+GET_PREF_FUNC_BOOL(	aiEnabled,			Settings::AI_ENABLED						)
+GET_PREF_FUNC_BOOL(	onboardingCompleted,	Settings::ONBOARDING_COMPLETED	)
+GET_PREF_FUNC_INT(	onboardingStep,			Settings::ONBOARDING_STEP		)
 
 GET_PREF_FUNC_BOOL(	rpcServerEnabled,	Settings::RPC_SERVER_ENABLED				)
 GET_PREF_FUNC_STR(	rpcServerIp,		Settings::RPC_SERVER_IP					)
@@ -221,9 +223,9 @@ GET_PREF_FUNC_INT(	rpcServerPort,		Settings::RPC_SERVER_PORT				)
 bool PreferencesModel::engineSandbox() const
 {
 #ifdef _WIN32
-	return Settings::value(Settings::ENGINE_SANDBOX).toBool();
+    return Settings::value(Settings::ENGINE_SANDBOX).toBool();
 #else
-	return false;
+    return false;
 #endif
 }
 
@@ -231,150 +233,150 @@ bool PreferencesModel::engineSandbox() const
 
 int PreferencesModel::maxEngines() const
 {
-	int maxEngines = Settings::value(Settings::MAX_ENGINE_COUNT).toInt();
-
-	if(maxEnginesAdmin() > 0)	return std::min(maxEngines, maxEnginesAdmin());
-	else						return maxEngines;
-
+    int maxEngines = Settings::value(Settings::MAX_ENGINE_COUNT).toInt();
+    
+    if(maxEnginesAdmin() > 0)	return std::min(maxEngines, maxEnginesAdmin());
+    else						return maxEngines;
+    
 }
 
 QString PreferencesModel::githubPatCustom() const
 {
-	return 	decrypt(Settings::value(Settings::GITHUB_PAT_CUSTOM).toString());
+    return 	decrypt(Settings::value(Settings::GITHUB_PAT_CUSTOM).toString());
 }
 
 
 double PreferencesModel::uiScale()
 {
-	if (_uiScale < 0)
-		_uiScale = Settings::value(Settings::UI_SCALE).toDouble();
-	return _uiScale;
+    if (_uiScale < 0)
+        _uiScale = Settings::value(Settings::UI_SCALE).toDouble();
+    return _uiScale;
 }
 
 QStringList PreferencesModel::emptyValues()		const
 {
-	return _splitValues(Settings::value(Settings::EMPTY_VALUES_LIST).toString());
+    return _splitValues(Settings::value(Settings::EMPTY_VALUES_LIST).toString());
 }
 
 QStringList PreferencesModel::modulesRemembered()	const
 {
-	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|");
-
-	return items;
+    QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|");
+    
+    return items;
 }
 
 void PreferencesModel::moduleEnabledChanged(QString moduleName, bool enabled)
 {
-	QStringList list = modulesRemembered();
-
-	if(list.contains(moduleName) != enabled)
-	{
-		if(enabled)	list.append(moduleName);
-		else		list.removeAll(moduleName);
-	}
-
-	setModulesRemembered(list);
+    QStringList list = modulesRemembered();
+    
+    if(list.contains(moduleName) != enabled)
+    {
+        if(enabled)	list.append(moduleName);
+        else		list.removeAll(moduleName);
+    }
+    
+    setModulesRemembered(list);
 }
 
 QString PreferencesModel::languageCode() const
 {
-	return LanguageModel::lang()->currentLanguageCode();
+    return LanguageModel::lang()->currentLanguageCode();
 }
 
 bool PreferencesModel::useThousandSeparators() const
 {
-	return LanguageModel::lang()->useThousandSeps();
+    return LanguageModel::lang()->useThousandSeps();
 }
 
 
 const QLocale & PreferencesModel::localeQt() const
 {
-	return LanguageModel::lang()->currentLocale();
+    return LanguageModel::lang()->currentLocale();
 }
 
 QString PreferencesModel::githubPatResolved() const
 {
-	if(githubPatUseDefault())
-		return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", GITHUB_PAT_DEFINED);
-
-	return githubPatCustom();
+    if(githubPatUseDefault())
+        return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", GITHUB_PAT_DEFINED);
+    
+    return githubPatCustom();
 }
 
 QString PreferencesModel::fixedDecimalsForJS() const
 {
-	if(!fixedDecimals())
-		return "\"\"";
-
-	return QString::fromStdString(std::to_string(numDecimals()));
+    if(!fixedDecimals())
+        return "\"\"";
+    
+    return QString::fromStdString(std::to_string(numDecimals()));
 }
 
 void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 {
-	if (fixedDecimals() == newFixedDecimals)
-		return;
-
-	Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
-
-	emit fixedDecimalsChanged(newFixedDecimals);
-	emit fixedDecimalsChangedString(fixedDecimalsForJS());
+    if (fixedDecimals() == newFixedDecimals)
+        return;
+    
+    Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
+    
+    emit fixedDecimalsChanged(newFixedDecimals);
+    emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
 
 void PreferencesModel::setNumDecimals(int newNumDecimals)
 {
-	if (numDecimals() == newNumDecimals)
-		return;
-
-	Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
-
-	emit numDecimalsChanged(newNumDecimals);
-
-	if(fixedDecimals())
-		emit fixedDecimalsChangedString(fixedDecimalsForJS());
+    if (numDecimals() == newNumDecimals)
+        return;
+    
+    Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
+    
+    emit numDecimalsChanged(newNumDecimals);
+    
+    if(fixedDecimals())
+        emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
 
 void PreferencesModel::onUseDefaultPPIChanged(bool )
 {
-	if(customPPI() != defaultPPI())
-		emit plotPPIChanged(plotPPI(), true);
+    if(customPPI() != defaultPPI())
+        emit plotPPIChanged(plotPPI(), true);
 }
 
 void PreferencesModel::onCustomPPIChanged(int)
 {
-	if(!useDefaultPPI())
-		emit plotPPIChanged(plotPPI(), true);
+    if(!useDefaultPPI())
+        emit plotPPIChanged(plotPPI(), true);
 }
 
 void PreferencesModel::onDefaultPPIChanged(int)
 {
-
-	if(useDefaultPPI())
-		emit plotPPIChanged(plotPPI(), false);
+    
+    if(useDefaultPPI())
+        emit plotPPIChanged(plotPPI(), false);
 }
 
 #define SET_PREF_FUNCTION(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-	if(GET_FUNC() == newVal) return;									\
-	Settings::setValue(SETTING, newVal);								\
-	emit NOTIFY(newVal);												\
+        if(GET_FUNC() == newVal) return;									\
+        Settings::setValue(SETTING, newVal);								\
+        emit NOTIFY(newVal);												\
 }
 
 #define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-	if(GET_FUNC() == newVal) return;									\
-	Settings::setValue(SETTING, newVal);								\
-	emit NOTIFY();														\
+        if(GET_FUNC() == newVal) return;									\
+        Settings::setValue(SETTING, newVal);								\
+        emit NOTIFY();														\
 }
 
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 {
-	if (currentThemeName() == _currentThemeName) return;
-
-	Settings::setValue(Settings::THEME_NAME, _currentThemeName);
-	JaspTheme::setCurrentThemeFromName(_currentThemeName);
-
-	emit currentThemeNameChanged(_currentThemeName);
+    if (currentThemeName() == _currentThemeName) return;
+    
+    Settings::setValue(Settings::THEME_NAME, _currentThemeName);
+    JaspTheme::setCurrentThemeFromName(_currentThemeName);
+    
+    emit currentThemeNameChanged(_currentThemeName);
 }
 
 SET_PREF_FUNCTION(				bool,		setExactPValues,			exactPValues,				exactPValuesChanged,			Settings::EXACT_PVALUES								)
@@ -429,11 +431,13 @@ SET_PREF_FUNCTION(				bool,   	setShowInteractiveDefault,	showInteractiveDefault
 SET_PREF_FUNCTION(				bool,   	setAutoSaveAtAll,			autoSaveAtAll,				autoSaveAtAllChanged,			Settings::AUTOSAVE_ON			  					)
 SET_PREF_FUNCTION(				int,		setAutoSaveIntervalSec,		autoSaveIntervalSec,		autoSaveIntervalSecChanged,		Settings::AUTOSAVE_INTERVAL_SEC	  					)
 SET_PREF_FUNCTION(				QString,	setAiCommonSystemPrompt,		aiCommonSystemPrompt,		aiCommonSystemPromptChanged,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-	SET_PREF_FUNCTION(				bool,		setAiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustomChanged,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
-		SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
-	SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,		aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT				)
-	SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,			aiUserAvatarChanged,				Settings::AI_USER_AVATAR						)
-	SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED						)
+SET_PREF_FUNCTION(				bool,		setAiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustom,	aiCommonSystemPromptUseCustomChanged,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
+SET_PREF_FUNCTION(				bool,		setAiAnnotationUseCustom,	aiAnnotationUseCustom,	aiAnnotationUseCustomChanged,	Settings::AI_ANNOTATION_USE_CUSTOM			)
+SET_PREF_FUNCTION(				QString,	setAiAnnotationPrompt,		aiAnnotationPrompt,		aiAnnotationPromptChanged,		Settings::AI_ANNOTATION_PROMPT				)
+SET_PREF_FUNCTION(				QString,	setAiUserAvatar,			aiUserAvatar,			aiUserAvatarChanged,				Settings::AI_USER_AVATAR						)
+SET_PREF_FUNCTION(				bool,		setAiEnabled,			aiEnabled,			aiEnabledChanged,				Settings::AI_ENABLED						)
+SET_PREF_FUNCTION(	bool,	setOnboardingCompleted,	onboardingCompleted,	onboardingCompletedChanged,	Settings::ONBOARDING_COMPLETED	)
+SET_PREF_FUNCTION(	int,	setOnboardingStep,			onboardingStep,			onboardingStepChanged,			Settings::ONBOARDING_STEP		)
 
 SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,	rpcServerEnabled,	rpcServerEnabledChanged,	Settings::RPC_SERVER_ENABLED			)
 SET_PREF_FUNCTION(				QString,	setRpcServerIp,		rpcServerIp,		rpcServerIpChanged,			Settings::RPC_SERVER_IP					)
@@ -442,270 +446,270 @@ SET_PREF_FUNCTION(				int,		setRpcServerPort,		rpcServerPort,		rpcServerPortChan
 
 void PreferencesModel::resetAiDefaults()
 {
-	AIConfigModel::config()->resetToDefaults();
-	_aiPersonaModel->resetAll();
-	setAiCommonSystemPrompt(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT).toString());
-	setAiCommonSystemPromptUseCustom(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM).toBool());
-	setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
-	setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
-	setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
-	setRpcServerEnabled(Settings::defaultValue(Settings::RPC_SERVER_ENABLED).toBool());
-	setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
+    AIConfigModel::config()->resetToDefaults();
+    _aiPersonaModel->resetAll();
+    setAiCommonSystemPrompt(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT).toString());
+    setAiCommonSystemPromptUseCustom(Settings::defaultValue(Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM).toBool());
+    setAiAnnotationUseCustom(Settings::defaultValue(Settings::AI_ANNOTATION_USE_CUSTOM).toBool());
+    setAiAnnotationPrompt(	Settings::defaultValue(Settings::AI_ANNOTATION_PROMPT).toString());
+    setAiUserAvatar(	Settings::defaultValue(Settings::AI_USER_AVATAR).toString());
+    setRpcServerEnabled(Settings::defaultValue(Settings::RPC_SERVER_ENABLED).toBool());
+    setAiEnabled(		Settings::defaultValue(Settings::AI_ENABLED).toBool());
 }
 
 void PreferencesModel::setGithubPatCustom(QString newPat)
 {
-	if (githubPatCustom() == newPat)
-		return;
-
-	Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
-
-	emit githubPatCustomChanged();
+    if (githubPatCustom() == newPat)
+        return;
+    
+    Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
+    
+    emit githubPatCustomChanged();
 }
 
 void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
-	if (whiteBackground() == newWhiteBackground)
-		return;
-
-	setPlotBackground(newWhiteBackground ? "white" : "transparent");
+    if (whiteBackground() == newWhiteBackground)
+        return;
+    
+    setPlotBackground(newWhiteBackground ? "white" : "transparent");
 }
 
 void PreferencesModel::setDefaultPPI(int defaultPPI)
 {
-	if (_defaultPPI == defaultPPI)
-		return;
-
-	_defaultPPI = defaultPPI;
-	emit defaultPPIChanged(_defaultPPI);
+    if (_defaultPPI == defaultPPI)
+        return;
+    
+    _defaultPPI = defaultPPI;
+    emit defaultPPIChanged(_defaultPPI);
 }
 
 void PreferencesModel::setUiScale(double newUiScale)
 {
-	newUiScale = std::min(3.0, std::max(0.2, newUiScale));
-
-	if (std::abs(uiScale() - newUiScale) < 0.001)
-		return;
-
-	Settings::setValue(Settings::UI_SCALE, newUiScale);
-	_uiScale = newUiScale;
-
-	emit uiScaleChanged();
+    newUiScale = std::min(3.0, std::max(0.2, newUiScale));
+    
+    if (std::abs(uiScale() - newUiScale) < 0.001)
+        return;
+    
+    Settings::setValue(Settings::UI_SCALE, newUiScale);
+    _uiScale = newUiScale;
+    
+    emit uiScaleChanged();
 }
 
 void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
 {
-	if (modulesRemembered() == newModulesRemembered)
-		return;
-
-	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
-	emit modulesRememberedChanged();
+    if (modulesRemembered() == newModulesRemembered)
+        return;
+    
+    Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
+    emit modulesRememberedChanged();
 }
 
 void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 {
-	if (safeGraphics() == newSafeGraphics)
-		return;
-
-	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
-	emit modulesRememberChanged(newSafeGraphics);
-
-	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
-
-	emit safeGraphicsChanged(newSafeGraphics);
+    if (safeGraphics() == newSafeGraphics)
+        return;
+    
+    Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
+    emit modulesRememberChanged(newSafeGraphics);
+    
+    MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
+    
+    emit safeGraphicsChanged(newSafeGraphics);
 }
 
 void PreferencesModel::zoomIn()
 {
-	setUiScale(uiScale() + 0.1);
+    setUiScale(uiScale() + 0.1);
 }
 
 void PreferencesModel::zoomOut()
 {
-	if (uiScale() >= 0.2)
-		setUiScale(uiScale() - 0.1);
+    if (uiScale() >= 0.2)
+        setUiScale(uiScale() - 0.1);
 }
 
 void PreferencesModel::zoomReset()
 {
-	setUiScale(1.0);
+    setUiScale(1.0);
 }
 
 void PreferencesModel::removeEmptyValue(QString value)
 {
-	QStringList currentValues = emptyValues();
-	if(currentValues.contains(value))
-	{
-		currentValues.removeAll(value);
-		_setEmptyValues(currentValues);
-	}
+    QStringList currentValues = emptyValues();
+    if(currentValues.contains(value))
+    {
+        currentValues.removeAll(value);
+        _setEmptyValues(currentValues);
+    }
 }
 
 void PreferencesModel::addEmptyValue(QString value)
 {
-	QStringList currentValues = emptyValues();
-	if(!currentValues.contains(value))
-	{
-		currentValues.append(value);
-		_setEmptyValues(currentValues);
-	}
+    QStringList currentValues = emptyValues();
+    if(!currentValues.contains(value))
+    {
+        currentValues.append(value);
+        _setEmptyValues(currentValues);
+    }
 }
 
 void PreferencesModel::resetEmptyValues()
 {
-	QStringList defaultValues = _splitValues(Settings::defaultEmptyValues);
-	_setEmptyValues(defaultValues);
+    QStringList defaultValues = _splitValues(Settings::defaultEmptyValues);
+    _setEmptyValues(defaultValues);
 }
 
 void PreferencesModel::setThresholdScale(int newThresholdScale)
 {
-	if (thresholdScale() == newThresholdScale)
-		return;
-
-	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
-	emit thresholdScaleChanged(newThresholdScale);
-
+    if (thresholdScale() == newThresholdScale)
+        return;
+    
+    Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
+    emit thresholdScaleChanged(newThresholdScale);
+    
 }
 
 void PreferencesModel::_loadDatabaseFont()
 {
-	QFontDatabase fontDatabase;
-
-	fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
-	fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-
-	_allFonts = _allCodeFonts = _allResultFonts = _allInterfaceFonts = fontDatabase.families();
-	_allCodeFonts.removeAll(defaultCodeFont());
-	_allResultFonts.removeAll(defaultResultFont());
-	_allInterfaceFonts.removeAll(defaultInterfaceFont());
+    QFontDatabase fontDatabase;
+    
+    fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
+    fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
+    
+    _allFonts = _allCodeFonts = _allResultFonts = _allInterfaceFonts = fontDatabase.families();
+    _allCodeFonts.removeAll(defaultCodeFont());
+    _allResultFonts.removeAll(defaultResultFont());
+    _allInterfaceFonts.removeAll(defaultInterfaceFont());
 }
 
 QString PreferencesModel::_checkFontList(QString fonts) const
 {
-	if (fonts.contains(","))
-		// If it is a list of fonts.
-		// Select the first one which is available.
-		for (QString font : fonts.split(","))
-		{
-			if (_allFonts.contains(font.remove('"')))
-				return font;
-		}
-
-	return fonts;
+    if (fonts.contains(","))
+        // If it is a list of fonts.
+        // Select the first one which is available.
+        for (QString font : fonts.split(","))
+        {
+            if (_allFonts.contains(font.remove('"')))
+                return font;
+        }
+    
+    return fonts;
 }
 
 QString PreferencesModel::defaultResultFont() const
 {
-	return _checkFontList(Settings::defaultValue(Settings::RESULT_FONT).toString());
+    return _checkFontList(Settings::defaultValue(Settings::RESULT_FONT).toString());
 }
 
 QString PreferencesModel::resultFont(bool forWebEngine) const
 {
-	QString font		= Settings::value(Settings::RESULT_FONT).toString(),
-			defaultFont = Settings::defaultValue(Settings::RESULT_FONT).toString();
-
-	if (font.isEmpty()) font = defaultFont;
-
-	if (forWebEngine)
-	{
-		// for WebEngine, if the font is the default one (that is a list of fonts), then use directly this list.
-		// the css is then exacly the same as it used to be and we are sure that the user gets the same rendering.
-		// If the font starts with a dot, then it needs extra quote for the WebEngine.
-		if (font.startsWith("."))
-			font = '"' + font + '"';
-	}
-	else
-		font = _checkFontList(font);
-
-	return font;
+    QString font		= Settings::value(Settings::RESULT_FONT).toString(),
+        defaultFont = Settings::defaultValue(Settings::RESULT_FONT).toString();
+    
+    if (font.isEmpty()) font = defaultFont;
+    
+    if (forWebEngine)
+    {
+        // for WebEngine, if the font is the default one (that is a list of fonts), then use directly this list.
+        // the css is then exacly the same as it used to be and we are sure that the user gets the same rendering.
+        // If the font starts with a dot, then it needs extra quote for the WebEngine.
+        if (font.startsWith("."))
+            font = '"' + font + '"';
+    }
+    else
+        font = _checkFontList(font);
+    
+    return font;
 }
 
 QString PreferencesModel::interfaceFont() const
 {
-	QString font = Settings::value(Settings::INTERFACE_FONT).toString();
-
-	if (font.isEmpty()) font = defaultInterfaceFont();
-
-	return font;
+    QString font = Settings::value(Settings::INTERFACE_FONT).toString();
+    
+    if (font.isEmpty()) font = defaultInterfaceFont();
+    
+    return font;
 }
 
 QString PreferencesModel::codeFont() const
 {
-	QString font = Settings::value(Settings::CODE_FONT).toString();
-
-	if (font.isEmpty()) font = defaultCodeFont();
-
-	return font;
+    QString font = Settings::value(Settings::CODE_FONT).toString();
+    
+    if (font.isEmpty()) font = defaultCodeFont();
+    
+    return font;
 }
 
 QString PreferencesModel::defaultInterfaceFont() const
 {
-	return Settings::defaultValue(Settings::INTERFACE_FONT).toString();
+    return Settings::defaultValue(Settings::INTERFACE_FONT).toString();
 }
 
 QString PreferencesModel::defaultCodeFont() const
 {
-	return Settings::defaultValue(Settings::CODE_FONT).toString();
+    return Settings::defaultValue(Settings::CODE_FONT).toString();
 }
 
 void PreferencesModel::resetRememberedModules(bool setToRemember) 
 {
-	setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
+    setModulesRemembered(!setToRemember ? QStringList({}) : RibbonModel::singleton()->getModulesEnabled());
 }
 
 void PreferencesModel::dataLabelNAChangedSlot(QString dataLabelNA)
 {
-	EmptyValues::setDisplayString(fq(dataLabelNA));
+    EmptyValues::setDisplayString(fq(dataLabelNA));
 }
 
 void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 {
-	QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
-
-	MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
+    QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
+    
+    MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
 }
 
 void PreferencesModel::currentThemeNameHandler()
 {
-	setCurrentThemeName(JaspTheme::currentTheme()->themeName());
+    setCurrentThemeName(JaspTheme::currentTheme()->themeName());
 }
 
 void PreferencesModel::_setEmptyValues(const QStringList& values)
 {
-	if (values != emptyValues())
-	{
-		Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
-		emit emptyValuesChanged();
-	}
+    if (values != emptyValues())
+    {
+        Settings::setValue(Settings::EMPTY_VALUES_LIST, values.join("|"));
+        emit emptyValuesChanged();
+    }
 }
 
 QStringList PreferencesModel::_splitValues(const QString &values) const
 {
-	QStringList items = values.split("|");
-	std::set<QString> orderedValues; // use std::set to order the items
-	for (const QString& item : items)
-		orderedValues.insert(stripFirstAndLastChar(item,"\""));
-
-	return QStringList(orderedValues.begin(), orderedValues.end());
-
+    QStringList items = values.split("|");
+    std::set<QString> orderedValues; // use std::set to order the items
+    for (const QString& item : items)
+        orderedValues.insert(stripFirstAndLastChar(item,"\""));
+    
+    return QStringList(orderedValues.begin(), orderedValues.end());
+    
 }
 
 void PreferencesModel::setDirectLibpathFolder(QString libpath)
 {
-	if (libpath != "")
-	{
-		Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
-		emit directLibpathFolderChanged();
-	}
+    if (libpath != "")
+    {
+        Settings::setValue(Settings::DIRECT_LIBPATH_FOLDER, libpath);
+        emit directLibpathFolderChanged();
+    }
 }
 
 void PreferencesModel::setEngineSandbox(bool engineSandbox) {
-	if(engineSandbox != PreferencesModel::engineSandbox()) {
-		Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
+    if(engineSandbox != PreferencesModel::engineSandbox()) {
+        Settings::setValue(Settings::ENGINE_SANDBOX, engineSandbox);
 
 #ifdef _WIN32
-		MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));
+        MessageForwarder::showWarning(tr("Engine Sandbox setting changed"), tr("The Engine Sandbox setting has been changed, this will only take full effect after JASP is restarted."));
 #endif
-		emit engineSandboxChanged(engineSandbox);
-	}
+        emit engineSandboxChanged(engineSandbox);
+    }
 }
