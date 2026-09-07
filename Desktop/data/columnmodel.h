@@ -218,7 +218,7 @@ private:
 							_rowWidth			= 60;
 	std::set<QString>		_selected;
 	int						_lastSelected		= -1;
-	Column				*	_column				= nullptr;
+	QPointer<Column>		_column				= nullptr;
 	DataSet				*	_shownDataSet		= nullptr;
 	int						_columnIndex		= -1;
 };

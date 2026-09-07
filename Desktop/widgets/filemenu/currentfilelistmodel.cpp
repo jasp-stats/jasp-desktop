@@ -1,9 +1,8 @@
 #include "currentfilelistmodel.h"
-#include "filesystementry.h"
 #include <QFileInfo>
 #include <QDir>
 
-CurrentFileListModel::CurrentFileListModel(QObject *parent)
+CurrentFileListModel::CurrentFileListModel(FileMenuObject *parent)
 	: FileMenuBasicListModel(parent, new CurrentFileFileSystem(parent))
 {
 	_openFileWhenClicked = false;
@@ -25,17 +24,3 @@ void CurrentFileListModel::setCurrentFilePath(const QString &newcurrent)
 	
 	endResetModel();	
 }
-
-#ifdef NOT_IGNORING_SYNCHING
-
-void CurrentFileListModel::openFile(const QString &path)
-{
-	if (path.isEmpty())
-		return;
-
-	FileEvent *event = new FileEvent(this->parent(), FileEvent::FileSyncData);
-	event->setPath(path);
-
-	emit syncCurrentFile(event);
-}
-#endif

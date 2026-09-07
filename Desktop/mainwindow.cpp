@@ -82,6 +82,16 @@ using namespace Modules;
 
 MainWindow * MainWindow::_singleton	= nullptr;
 
+//MainWindow-level tests (JASPTest) only exercise the data/sync chain, for which neither the QML
+//user interface nor the R engines (and thus no analyses) are needed - and both add a small fleet
+//of flaky threads to the test process. The environment variable also keeps loadQML's full QML
+//engine from starting up. Note this is about running without any backend (R/engine), not about
+//being headless: the tests still run under a display via xvfb.
+static bool backendlessTestMode()
+{
+	return !qEnvironmentVariableIsEmpty("JASP_TEST_BACKENDLESS");
+}
+
 MainWindow::MainWindow(Application * application) : QObject(application), _application(application)
 {
 	std::cout << "MainWindow constructor started" << std::endl;
@@ -171,11 +181,12 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 	QmlUtils::setGlobalPropertiesInQMLContext(_qml->rootContext());
 	QmlUtils::registerQmlModuleTypes();
 
-	QTimer::singleShot(0, this, [&]() { loadQML(); });
+	QTimer::singleShot(0, this, [&]() { if(!backendlessTestMode()) loadQML(); });
 
 	_languageModel->setApplicationEngine(_qml);
 
-	_engineSync->start();
+	if(!backendlessTestMode())
+		_engineSync->start();
 	
 	checkForUpdates();
 
@@ -237,18 +248,12 @@ This setting can always be changed in the Interface Preferences.)MultiLine"),
 MainWindow::~MainWindow()
 {
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
-	
+
 	delete _aiBridge;
 	delete _rpcServer;
 	delete _rpcDispatcher;
 
 	_engineSync->killProcessTimer();
-
-	try
-	{
-		DatabaseInterface::closeInterfaces();
-	}
-	catch(...) {}
 
 	try
 	{
@@ -277,6 +282,18 @@ MainWindow::~MainWindow()
 		delete _resultsJsInterface;
 	}
 	catch(...)	{}
+
+	//The database interface must outlive the QObjects destroyed below (DataSetPackage and its
+	//DataSets still write to it while they go away). Closing it earlier made any later database
+	//access lazily recreate the interface against a session database that is already gone.
+	//_package is deleted explicitly so it cannot outlive the interface via ~QObject.
+	delete _package;
+
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(...) {}
 }
 
 QString MainWindow::windowTitle() const
@@ -483,7 +500,7 @@ void MainWindow::makeConnections()
 	connect(_package,				&DataSetPackage::isModifiedChanged,					_fileMenu,				&FileMenu::workspaceModified								);
 	connect(_package,				&DataSetPackage::windowTitleChanged,				this,					&MainWindow::windowTitleChanged								);
 	connect(_package,				&DataSetPackage::checkDoSync,						_loader,				&AsyncLoader::checkDoSync,									Qt::DirectConnection); //Force DirectConnection because the signal is called from Importer which means it is running in AsyncLoaderThread...
-	connect(_package,				&DataSetPackage::newDataLoaded,						this,					&MainWindow::populateUIfromDataSet							);
+	connect(_package,				&DataSetPackage::newDataLoaded,						this,					[this](){ populateUIfromDataSet(); }						); //Through a lambda because a default argument is not part of the type of &MainWindow::populateUIfromDataSet, so it cannot fill in for the argument the signal does not carry.
 	connect(_package,				&DataSetPackage::newDataLoaded,						_fileMenu,				[&](){ _fileMenu->enableButtonsForOpenedWorkspace(); }		);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_analyses,				&Analyses::dataModeChanged									);
 	connect(_package,				&DataSetPackage::dataModeChanged,					_engineSync,			&EngineSync::dataModeChanged								);
@@ -514,27 +531,29 @@ void MainWindow::makeConnections()
 		DataSet * ds = _package->workspace() ? _package->workspace()->dataSetById(dataSetId) : nullptr;
 		if(ds)
 			connect(ds, &DataSet::syncRequired, _loader, &AsyncLoader::onSyncRequired, static_cast<Qt::ConnectionType>(Qt::QueuedConnection | Qt::UniqueConnection));
-  });
-  //The worker thread finishes the sync; route the completion back to the dataset's syncer on the main
-  //thread (via a QueuedConnection, since syncCompleted is emitted from the loader worker) so its
-  //re-entrancy guard (_isSyncing) is released exactly once for whichever dataset syncs.
-  //A (non-sync) load added a dataset to the workspace on the worker thread; refresh the workspace
-  //table model here, on the GUI thread, so views bound to it (dataset tabbuttons) pick it up.
-  connect(_loader,				&AsyncLoader::dataSetsChanged,						this,					[this](){
+	});
+	//The worker thread finishes the sync; route the completion back to the dataset's syncer on the main
+	//thread (via a QueuedConnection, since syncCompleted is emitted from the loader worker) so its
+	//re-entrancy guard (_isSyncing) is released exactly once for whichever dataset syncs.
+	//A (non-sync) load added a dataset to the workspace on the worker thread; refresh the workspace
+	//table model here, on the GUI thread, so views bound to it (dataset tabbuttons) pick it up.
+	connect(_loader,				&AsyncLoader::dataSetsChanged,						this,					[this](){
 	  if(_package->workspace())
 		  _package->workspace()->refresh();
-  },																											Qt::QueuedConnection);
-  connect(_loader,				&AsyncLoader::syncCompleted,						this,					[this](int dataSetId, bool success){
-    Log::log() << "[MainWindow::syncCompleted] Received: dataSetId=" << dataSetId << ", success=" << success << std::endl;
-    DataSet * ds = _package->workspace() ? _package->workspace()->dataSetById(dataSetId) : nullptr;
-    Log::log() << "[MainWindow::syncCompleted] dataSetById returned: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl;
-    if(ds)
-    {
-      Log::log() << "[MainWindow::syncCompleted] Calling setSyncingResult for datasetId=" << ds->id() << std::endl;
-      ds->syncer().setSyncingResult(success);
-      Log::log() << "[MainWindow::syncCompleted] setSyncingResult returned" << std::endl;
-    }
-  },																											Qt::QueuedConnection);
+	}, Qt::QueuedConnection);
+
+	connect(_loader,				&AsyncLoader::syncCompleted,						this,					[this](int dataSetId, bool success){
+		Log::log() << "[MainWindow::syncCompleted] Received: dataSetId=" << dataSetId << ", success=" << success << std::endl;
+		DataSet * ds = _package->workspace() ? _package->workspace()->dataSetById(dataSetId) : nullptr;
+		Log::log() << "[MainWindow::syncCompleted] dataSetById returned: " << (ds ? QString::number(ds->id()) : "NULL") << std::endl;
+		if(ds)
+		{
+		  Log::log() << "[MainWindow::syncCompleted] Calling setSyncingResult for datasetId=" << ds->id() << std::endl;
+		  ds->syncer().setSyncingResult(success);
+		  Log::log() << "[MainWindow::syncCompleted] setSyncingResult returned" << std::endl;
+		}
+	}, Qt::QueuedConnection);
+
 	connect(_package,				&DataSetPackage::shownFilterChanged,				this,					&MainWindow::updateShownFilterInQmlContext					);
 	connect(_package,				&DataSetPackage::shownFilterChanged,				_filterModel,			&FilterModel::filterChanged,								Qt::QueuedConnection);
 	connect(_package,				&DataSetPackage::filtersCountChanged,				_filterModel,			&FilterModel::filterDropDownListChanged						);
@@ -567,7 +586,6 @@ void MainWindow::makeConnections()
 	connect(_resultsJsInterface,	&ResultsJsInterface::saveTextToFile,				this,					&MainWindow::saveTextToFileHandler							);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisSaveImage,				this,					&MainWindow::analysisSaveImageHandler						);
 	connect(_resultsJsInterface,	&ResultsJsInterface::analysisResizeImage,			this,					&MainWindow::analysisEditImageHandler						);
-	connect(_resultsJsInterface,	&ResultsJsInterface::resultsPageLoadedSignal,		this,					&MainWindow::resultsPageLoaded								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::refreshAllAnalyses,			this,					&MainWindow::refreshKeyPressed								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::removeAllAnalyses,				this,					&MainWindow::removeAllAnalyses								);
 	connect(_resultsJsInterface,	&ResultsJsInterface::openFileTab,					_fileMenu,				&FileMenu::showFileOpenMenu									);
@@ -593,6 +611,8 @@ void MainWindow::makeConnections()
 
 	connect(_analyses,				&Analyses::countChanged,							this,					&MainWindow::analysesCountChangedHandler					);
 	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::analysisResultsChangedHandler					);
+	connect(_analyses,				&Analyses::analysisResultsChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
+	connect(_analyses,				&Analyses::analysisStatusChanged,					this,					&MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent	);
 	connect(_analyses,				&Analyses::analysisImageSaved,						this,					&MainWindow::analysisImageSavedHandler						);
 	connect(_analyses,				&Analyses::emptyQMLCache,							this,					&MainWindow::resetQmlCache									);
 	connect(_analyses,				&Analyses::analysisAdded,							this,					&MainWindow::analysisAdded									);
@@ -613,7 +633,6 @@ void MainWindow::makeConnections()
 	connect(_analyses,				&Analyses::analysisImageEdited,						_plotEditorModel,		&PlotEditorModel::updateOptions								);
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
-	connect(_fileMenu,				&FileMenu::dataSetIORequest,						this,					&MainWindow::dataSetIORequestHandler						);
 	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
 	connect(_fileMenu,				&FileMenu::showContact,								this,					&MainWindow::showContact									);
 	connect(_fileMenu,				&FileMenu::showCommunity,							this,					&MainWindow::showCommunity								);
@@ -1134,13 +1153,13 @@ void MainWindow::showLogFolder() const
 	openFolderExternally(AppDirs::logDir());
 }
 
-void MainWindow::openURLFile(QString fileURLPath)
+bool MainWindow::openURLFile(QString fileURLPath)
 {
 	QUrl fileUrl = fileURLPath.startsWith("file:") ? QUrl(fileURLPath) : QUrl::fromLocalFile(fileURLPath);
 	if (!fileUrl.isLocalFile())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("Cannot access file %1").arg(fileURLPath));
-		return;
+        return false;
 	}
 
 	QString filePath = fileUrl.toLocalFile();
@@ -1149,26 +1168,161 @@ void MainWindow::openURLFile(QString fileURLPath)
 	if (!fileInfo.exists())
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("File %1 is not found.").arg(filePath));
-		return;
+        return false;
 	}
 
-	if (!FileTypeBaseValidName(fileInfo.suffix().toLower().toStdString()))
+    Utils::FileType fileType = Utils::getTypeFromFileName(fq(filePath));
+
+    if (fileType == Utils::FileType::empty || fileType == Utils::FileType::unknown || fileType == Utils::FileType::html ||  fileType == Utils::FileType::pdf)
 	{
 		MessageForwarder::showWarning(tr("Open file"), tr("JASP does not support this file type %1.").arg(filePath));
-		return;
+        return false;
 	}
 
-	open(filePath);
+	if (_preferences->syncDroppedDatafile() && _package->isLoaded() && fileType != Utils::FileType::jasp)
+	{
+		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
+		syncEvent->setPath(filePath);
+		syncEvent->setDataSet(_package->dataSet());
+
+		syncEvent->starts();
+	}
+	else
+        open(filePath);
+
+    return true;
 }
 
-void MainWindow::open(QString filepath)
+void MainWindow::open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen)
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode())
-		resultXmlCompare::compareResults::theOne()->setFilePath(filepath);
+		resultXmlCompare::compareResults::theOne()->setFilePath(mainFilePath);
 
 	_openedUsingArgs = true;
-	if (_resultsPageLoaded)	_fileMenu->open(filepath);
-	else					_openOnLoadFilename = filepath;
+	if (_resultsJsInterface->resultsLoaded())
+		_open(mainFilePath, inputDataFile, outputFile, keepJASPOpen);
+	else
+		connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, [this, mainFilePath, inputDataFile, outputFile, keepJASPOpen](){_open(mainFilePath, inputDataFile, outputFile, keepJASPOpen); }, Qt::SingleShotConnection);
+}
+
+void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen)
+{
+	FileEvent * openEvent = _fileMenu->open(mainFilePath);
+	if (!inputDataFile.isEmpty() && _package->hasDataSet())
+	{
+		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
+		syncEvent->setPath(inputDataFile);
+		syncEvent->chain(openEvent, true);
+
+		// Once the synchronization is finalized, decide what to do based on whether it succeeded:
+		//  - failed sync:             do not export, and exit with a non-zero code (unless we keep JASP open).
+		//  - success, no output file: we are done, exit with success.
+		//  - success, with output:    export the results, but only after all analyses have refreshed.
+		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, outputFile, keepJASPOpen]()
+		{
+			if (!syncEvent->isSuccessful())
+			{
+				if (!keepJASPOpen)
+					emit exitSignal(1);
+				return;
+			}
+
+			if (outputFile.isEmpty())
+			{
+				if (!keepJASPOpen)
+					emit exitSignal(0);
+				return;
+			}
+
+			FileEvent * exportEvent = new FileEvent(this, FileEvent::FileExportResults);
+			exportEvent->setPath(outputFile);
+
+			if (!keepJASPOpen)
+				connect(exportEvent, &FileEvent::finalized, this, [this, exportEvent]() { emit exitSignal(exportEvent->isSuccessful() ? 0 : 1); });
+
+			_waitingEvent = exportEvent;
+
+			//If the analyses never finish (a crashed engine, say) the export would wait forever:
+			//time out and exit non-zero instead. The same default as --timeOut: ten minutes.
+			if(!_waitingEventTimeoutTimer)
+			{
+				_waitingEventTimeoutTimer = new QTimer(this);
+				_waitingEventTimeoutTimer->setSingleShot(true);
+				_waitingEventTimeoutTimer->setInterval(10 * 60 * 1000);
+				connect(_waitingEventTimeoutTimer, &QTimer::timeout, this, &MainWindow::waitingEventTimedOut);
+			}
+			_waitingEventTimeoutTimer->start();
+
+			waitForAllAnalysesFinishedBeforeStartingEvent();
+		} );
+	}
+}
+
+void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
+{
+	if (!_waitingEvent || _waitingEvent->isStarted())
+		return;
+
+	//The analyses may all look finished *right now*, but the sync (or open) that led here can
+	//schedule analysis refreshes deferred: queued filter-refresh connections and EngineSync's
+	//100ms poll only run on later event-loop passes. A refresh started after the export begins
+	//would set the analyses to Empty/Running and wipe the results page to its intermediate empty
+	//state *while* the export captures it (compareResults avoids this by forcing a refresh first
+	//and waiting it out). So debounce: (re)start a settle timer that only starts the event once
+	//the analyses have gone a full settle interval without a single status change. Every status
+	//change and every new result re-enters this slot (analysisStatusChanged and
+	//analysisResultsChanged below) and postpones the start; a refresh that never finishes is
+	//caught by _waitingEventTimeoutTimer.
+	if (!_waitingEventStartTimer)
+	{
+		_waitingEventStartTimer = new QTimer(this);
+		_waitingEventStartTimer->setSingleShot(true);
+		_waitingEventStartTimer->setInterval(1000);
+		connect(_waitingEventStartTimer, &QTimer::timeout, this, &MainWindow::_startWaitingEventIfAnalysesStillFinished);
+	}
+	_waitingEventStartTimer->start(); //restarting a running timer postpones the pending start
+}
+
+void MainWindow::_startWaitingEventIfAnalysesStillFinished()
+{
+	if (!_waitingEvent || _waitingEvent->isStarted() || !_analyses->allFinished())
+		return;
+
+	//Take ownership of the waiting event *before* doing any work: setErrorInResults() below ends up
+	//emitting analysisResultsChanged, which re-enters waitForAllAnalysesFinishedBeforeStartingEvent -
+	//the cleared _waitingEvent makes that re-entry return at the guard above. Note we must NOT
+	//disconnect from analysisResultsChanged/analysisStatusChanged to achieve that: those slots have
+	//to stay connected for any later event that waits on the analyses (a second sync/export with
+	//--keepJASPOpen), which would otherwise wait forever.
+	FileEvent * waitingEvent = _waitingEvent;
+	_waitingEvent            = nullptr;
+	if(_waitingEventTimeoutTimer)
+		_waitingEventTimeoutTimer->stop();
+
+	_analyses->applyToAll([&](Analysis * a)
+	{
+		//An analysis whose form never got instantiated (a module that failed to load for instance)
+		//has no error to report either, so leave it alone instead of dereferencing nothing.
+		if (a->form() && a->form()->hasError())
+			a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
+	});
+
+	waitingEvent->starts();
+}
+
+void MainWindow::waitingEventTimedOut()
+{
+	if(!_waitingEvent)
+		return;
+
+	Log::log() << "[MainWindow::waitingEventTimedOut] Waiting for the analyses timed out; the queued export will not run." << std::endl;
+	if(_waitingEventStartTimer)
+		_waitingEventStartTimer->stop();
+	FileEvent * waitingEvent = _waitingEvent;
+	_waitingEvent = nullptr;
+	waitingEvent->setComplete(false, tr("Timed out waiting for the analyses to finish"));
+	waitingEvent->cleanUp();
+	emit exitSignal(1);
 }
 
 ///This function assumes there should afterwards be only 1 DataSet!
@@ -1196,69 +1350,9 @@ void MainWindow::addNewDataSet()
 void MainWindow::open(const Json::Value & dbJson)
 {
 	_openedUsingArgs = true;
-	if (_resultsPageLoaded)	_fileMenu->open(dbJson);
-	else					_openOnLoadDbJson = dbJson;
+	if (_resultsJsInterface->resultsLoaded())	_fileMenu->open(dbJson);
+	else										_openOnLoadDbJson = dbJson;
 }
-
-/*
-
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-	const QMimeData *data = event->mimeData();
-
-	if (data->hasUrls())
-	{
-		QList<QUrl> urls = data->urls();
-		QUrl first = urls.first();
-		QFileInfo file(first.path());
-
-		if (file.exists() && (file.completeSuffix() == "csv" || file.completeSuffix() == "jasp"))
-			event->accept();
-		else
-			event->ignore();
-	}
-	else
-	{
-		event->ignore();
-	}
-}
-
-
-void MainWindow::dropEvent(QDropEvent *event)
-{
-	const QMimeData *data = event->mimeData();
-	QUrl url = data->urls().first();
-	open(url.path());
-
-	event->accept();
-}
-
-
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-	_odm->clearAuthenticationOnExit(OnlineDataManager::OSF);
-
-	if (_applicationExiting)
-	{
-		// sometimes on osx we get two events
-		event->accept();
-	}
-
-	_applicationExiting = true;
-
-	if (_package->isModified())
-	{
-		_fileMenu->close();
-		event->ignore();
-	}
-	else
-	{
-		event->accept();
-	}
-
-	PreferencesDialog *rd = ui->tabBar->getPreferencesDialog();
-	if (rd) rd->close();
-}*/
 
 void MainWindow::saveKeyPressed()
 {
@@ -1518,11 +1612,6 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 	}
 }
 
-void MainWindow::connectFileEventCompleted(FileEvent * event)
-{
-	connect(event, &FileEvent::completed, this, &MainWindow::dataSetIOCompleted, Qt::QueuedConnection);
-}
-
 void MainWindow::registerRpcHandlers()
 {
 	auto* disp = JaspRpcDispatcher::singleton();
@@ -1586,19 +1675,19 @@ void MainWindow::registerRpcHandlers()
 	{
 		// Reject if a load is already in progress
 		for (const auto& [id, job] : _rpcJobs)
-			if (job.status == "running")
-				return JaspRpcDispatcher::errorResult(
-						"A data load is already in progress (job " + std::to_string(id) + ").");
+		   if (job.status == "running")
+			   return JaspRpcDispatcher::errorResult(
+				   "A data load is already in progress (job " + std::to_string(id) + ").");
 
-				bool wait      = params.get("wait", true).asBool();
-				int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+		bool wait      = params.get("wait", true).asBool();
+		int  timeoutMs = params.get("timeoutMs", 30000).asInt();
 
-				// Set CSV delimiter before load to skip interactive preview popup
-				std::string delimStr = params.get("delimiter", ",").asString();
-				if (!delimStr.empty())
-					DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimStr[0]);
+		// Set CSV delimiter before load to skip interactive preview popup
+		std::string delimStr = params.get("delimiter", ",").asString();
+		if (!delimStr.empty())
+		   DesktopCommunicator::singleton()->setKnownCsvDelimiter(delimStr[0]);
 
-				std::string path = params["path"].asString();
+		std::string path = params["path"].asString();
 
 		int jobId = _nextRpcJobId++;
 		_rpcJobs[jobId] = {"running", ""};
@@ -1607,185 +1696,182 @@ void MainWindow::registerRpcHandlers()
 		event->setSilent(true);
 		event->setPath(QString::fromStdString(path));
 
-		connect(event, &FileEvent::completed, this,
-			[this, jobId](FileEvent* e)
-			{
-				auto& job = _rpcJobs[jobId];
-
-				if (e->isSuccessful())
+		connect(event, &FileEvent::completed, this, [this, jobId, event]()
 				{
-					DataSetPackage* pkg = DataSetPackage::pkg();
-					pkg->setCurrentFile(e->path());
-					emit pkg->newDataLoaded();
+					auto& job = _rpcJobs[jobId];
 
-					job.status = "complete";
+					if (event->isSuccessful())
+					{
+					   DataSetPackage* pkg = DataSetPackage::pkg();
+					   pkg->setCurrentFile(event->path());
+					   emit pkg->newDataLoaded();
+
+					   job.status = "complete";
+					}
+					else
+					{
+					   job.status = "error";
+					   job.error  = event->message().toStdString();
+					}
 				}
-				else
-				{
-					job.status = "error";
-					job.error  = e->message().toStdString();
-				}
+		);
 
-				e->deleteLater();
-			},
-			Qt::QueuedConnection);
-
-		_loader->io(event);
+		event->starts();
 
 		// Fast path: non-blocking — return jobId immediately
 		if (!wait)
 		{
-			Json::Value response = JaspRpcDispatcher::successResult();
-			response["status"] = "accepted";
-			response["jobId"]  = jobId;
-			return response;
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["status"] = "accepted";
+		   response["jobId"]  = jobId;
+		   return response;
 		}
 
-		// Blocking wait — poll until complete, error, or timeout
+	   // Blocking wait — poll until complete, error, or timeout
 		JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
-			[&](QEventLoop& loop, QTimer&) {
-				auto* pollTimer = new QTimer(&loop);
-				QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
-					auto it = _rpcJobs.find(jobId);
-					if (it == _rpcJobs.end() || it->second.status != "running")
-						loop.quit();
-				});
-				pollTimer->start(100);
-			});
+											   [&](QEventLoop& loop, QTimer&) {
+												   auto* pollTimer = new QTimer(&loop);
+												   QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+													   auto it = _rpcJobs.find(jobId);
+													   if (it == _rpcJobs.end() || it->second.status != "running")
+														   loop.quit();
+												   });
+												   pollTimer->start(100);
+											   });
 
-		// Build response based on final job state
-		auto it = _rpcJobs.find(jobId);
-		if (it == _rpcJobs.end())
-			return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+	   // Build response based on final job state
+	   auto it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
 
-		const auto& job = it->second;
+	   const auto& job = it->second;
 
-		if (job.status == "error")
-		{
-			Json::Value response = JaspRpcDispatcher::errorResult(job.error);
-			response["jobId"]  = jobId;
-			response["status"] = "error";
-			return response;
-		}
+	   if (job.status == "error")
+	   {
+		   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+		   response["jobId"]  = jobId;
+		   response["status"] = "error";
+		   return response;
+	   }
 
-		if (job.status == "running")
-		{
-			Json::Value response = JaspRpcDispatcher::successResult();
-			response["jobId"]  = jobId;
-			response["status"] = "running";
-			return response;
-		}
+	   if (job.status == "running")
+	   {
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["jobId"]  = jobId;
+		   response["status"] = "running";
+		   return response;
+	   }
 
-		// job.status == "complete" — return full metadata
-		{
-			Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
-			response["status"] = "success";
-			response["jobId"]  = jobId;
+	   // job.status == "complete" — return full metadata
+	   {
+		   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+		   response["status"] = "success";
+		   response["jobId"]  = jobId;
 
-			// Agent just loaded new data — clear data dirty flags
-			AgentStateTracker::notifyDataObserved();
+		   // Agent just loaded new data — clear data dirty flags
+		   AgentStateTracker::notifyDataObserved();
 
-			return response;
-		}
-		});
+		   return response;
+	   }
+	});
 
-		// --- data_load_status ---
-		disp->registerMethodByName("data_load_status", [this, buildDataInfo](const Json::Value& params) -> Json::Value
-		{
-			int jobId = params["jobId"].asInt();
+	// --- data_load_status ---
+	disp->registerMethodByName("data_load_status", [this, buildDataInfo](const Json::Value& params) -> Json::Value
+	{
+	   int jobId = params["jobId"].asInt();
 
-			auto it = _rpcJobs.find(jobId);
-			if (it == _rpcJobs.end())
-				return JaspRpcDispatcher::errorResult(
-					"Unknown jobId: " + std::to_string(jobId));
+	   auto it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult(
+			   "Unknown jobId: " + std::to_string(jobId));
 
-			bool wait      = params.get("wait", true).asBool();
-			int  timeoutMs = params.get("timeoutMs", 30000).asInt();
+	   bool wait      = params.get("wait", true).asBool();
+	   int  timeoutMs = params.get("timeoutMs", 30000).asInt();
 
-			// Fast path: already done or not waiting
-			if (!wait || it->second.status != "running")
-			{
-				const auto& job = it->second;
+	   // Fast path: already done or not waiting
+	   if (!wait || it->second.status != "running")
+	   {
+		   const auto& job = it->second;
 
-				if (job.status == "error")
-				{
-					Json::Value response = JaspRpcDispatcher::errorResult(job.error);
-					response["jobId"]  = jobId;
-					response["status"] = "error";
-					return response;
-				}
+		   if (job.status == "error")
+		   {
+			   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+			   response["jobId"]  = jobId;
+			   response["status"] = "error";
+			   return response;
+		   }
 
-				if (job.status == "complete")
-				{
-					Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
-					response["status"] = "complete";
-					response["jobId"]  = jobId;
-					AgentStateTracker::notifyDataObserved();
-					return response;
-				}
+		   if (job.status == "complete")
+		   {
+			   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+			   response["status"] = "complete";
+			   response["jobId"]  = jobId;
+			   AgentStateTracker::notifyDataObserved();
+			   return response;
+		   }
 
-				Json::Value response = JaspRpcDispatcher::successResult();
-					response["jobId"]  = jobId;
-					response["status"] = "running";
-					return response;
-				}
+		   Json::Value response = JaspRpcDispatcher::successResult();
+		   response["jobId"]  = jobId;
+		   response["status"] = "running";
+		   return response;
+	   }
 
-				// Blocking wait
-			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
-				[&](QEventLoop& loop, QTimer&) {
-					auto* pollTimer = new QTimer(&loop);
-					QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
-						auto it2 = _rpcJobs.find(jobId);
-						if (it2 == _rpcJobs.end() || it2->second.status != "running")
-							loop.quit();
-					});
-					pollTimer->start(100);
-				});
+	   // Blocking wait
+	   JaspRpcDispatcher::waitAndProcessEvents(timeoutMs,
+											   [&](QEventLoop& loop, QTimer&) {
+												   auto* pollTimer = new QTimer(&loop);
+												   QObject::connect(pollTimer, &QTimer::timeout, &loop, [&]() {
+													   auto it2 = _rpcJobs.find(jobId);
+													   if (it2 == _rpcJobs.end() || it2->second.status != "running")
+														   loop.quit();
+												   });
+												   pollTimer->start(100);
+											   });
 
-			// Re-read after wait
-			it = _rpcJobs.find(jobId);
-			if (it == _rpcJobs.end())
-				return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
+	   // Re-read after wait
+	   it = _rpcJobs.find(jobId);
+	   if (it == _rpcJobs.end())
+		   return JaspRpcDispatcher::errorResult("Job vanished: " + std::to_string(jobId));
 
-			const auto& job = it->second;
+	   const auto& job = it->second;
 
-			if (job.status == "error")
-			{
-				Json::Value response = JaspRpcDispatcher::errorResult(job.error);
-				response["jobId"]  = jobId;
-				response["status"] = "error";
-				return response;
-			}
+	   if (job.status == "error")
+	   {
+		   Json::Value response = JaspRpcDispatcher::errorResult(job.error);
+		   response["jobId"]  = jobId;
+		   response["status"] = "error";
+		   return response;
+	   }
 
-			if (job.status == "complete")
-			{
-				Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
-				response["status"] = "complete";
-				response["jobId"]  = jobId;
-				AgentStateTracker::notifyDataObserved();
-				return response;
-			}
+	   if (job.status == "complete")
+	   {
+		   Json::Value response = buildDataInfo(DataSetPackage::pkg() && DataSetPackage::pkg()->workspace() ? DataSetPackage::pkg()->workspace()->shownDataSet() : nullptr);
+		   response["status"] = "complete";
+		   response["jobId"]  = jobId;
+		   AgentStateTracker::notifyDataObserved();
+		   return response;
+	   }
 
-			Json::Value response = JaspRpcDispatcher::successResult();
-				response["jobId"]  = jobId;
-				response["status"] = "running";
-				return response;
-			});
+	   Json::Value response = JaspRpcDispatcher::successResult();
+	   response["jobId"]  = jobId;
+	   response["status"] = "running";
+	   return response;
+	});
 
-		// --- data_info ---
-		disp->registerMethodByName("data_info", [buildDataInfo, resolveDataSet](const Json::Value& params) -> Json::Value
-		{
-			Json::Value response = buildDataInfo(resolveDataSet(params));
-			response["status"] = "success";
+	// --- data_info ---
+	disp->registerMethodByName("data_info", [buildDataInfo, resolveDataSet](const Json::Value& params) -> Json::Value
+	{
+	   Json::Value response = buildDataInfo(resolveDataSet(params));
+	   response["status"] = "success";
 
-			// Agent just observed the dataset — clear data dirty flags
-			AgentStateTracker::notifyDataObserved();
+	   // Agent just observed the dataset — clear data dirty flags
+	   AgentStateTracker::notifyDataObserved();
 
-			return response;
-		});
+	   return response;
+	});
 
-		Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
-	}
+	Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
+}
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
 {
@@ -1809,7 +1895,7 @@ bool MainWindow::startDetached(const QString & applicationPath, const QStringLis
 	return worked;
 }
 
-void MainWindow::dataSetIORequestHandler(FileEvent *event)
+void MainWindow::fileEventRequestHandler(FileEvent *event)
 {
 	if (event->operation() == FileEvent::FileNew)
 	{
@@ -1836,7 +1922,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 		}
 		else
 		{
-			connectFileEventCompleted(event);
+			setWelcomePageVisible(false);
 
 			_loader->io(event);
 			showProgress();
@@ -1844,8 +1930,6 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileSave)
 	{
-		connectFileEventCompleted(event);
-		
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
 
@@ -1855,29 +1939,31 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 	}
 	else if (event->operation() == FileEvent::FileExportResults)
 	{
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileExportData || event->operation() == FileEvent::FileGenerateData)
 	{
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileSyncData)
 	{
+		//Without a dataset there is nothing to synchronize into; failing the event (instead of
+		//silently dropping it) makes whoever waits for it, e.g. the command-line export chain,
+		//finish with a clear error instead of hanging.
 		if (!_package->hasDataSet())
+		{
+			Log::log() << "[MainWindow::fileEventRequestHandler] FileSyncData without a dataset; failing the event." << std::endl;
+			event->setComplete(false, tr("There is no dataset to synchronize with."));
 			return;
+		}
 
-		connectFileEventCompleted(event);
 		_loader->io(event);
 		showProgress();
 	}
 	else if (event->operation() == FileEvent::FileClose)
 	{
-		connectFileEventCompleted(event);
-
 		if (_package->isModified() && (dataAvailable() || analysesAvailable()))
 		{
 			switch(MessageForwarder::showSaveDiscardCancel(tr("%1 has been modified").arg(currentFileUserReadable()), tr("Would you like to save your changes?")))
@@ -1888,7 +1974,7 @@ void MainWindow::dataSetIORequestHandler(FileEvent *event)
 				return;
 
 			case MessageForwarder::DialogResponse::Save:
-				event->chain(_fileMenu->save());
+				event->chain(_fileMenu->save()); // event will be set completed when the save event is first completed.
 				break;
 
 			case MessageForwarder::DialogResponse::Discard:
@@ -1940,7 +2026,7 @@ void MainWindow::closeVariablesPage()
 	_columnModel->setVisible(false);
 }
 
-void MainWindow::dataSetIOCompleted(FileEvent *event)
+void MainWindow::fileEventRequestFinalize(FileEvent *event)
 {
 	hideProgress(event->isTmp() && event->operation() == FileEvent::FileSave);
 	
@@ -1951,7 +2037,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 	{
 		if (event->isSuccessful())
 		{
-			populateUIfromDataSet();
+			populateUIfromDataSet(event->type() == Utils::FileType::jasp);
 
 			_package->setCurrentFile(event->path());
 			
@@ -1996,16 +2082,15 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
 					emit exitSignal(12);
 		}
-		else
+		else if (!event->isCancelled()) //A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current data/analyses to survive. A failed open still has to, silent or not, since the loader already tore the workspace down.
 		{
 			_package->reset();
 			setWelcomePageVisible(true);
 
-			if (!event->isCancelled())
+			if (!event->isSilent())
 				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
 			if (_openedUsingArgs)	emit exitSignal(3);
-
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -2048,7 +2133,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 		}
 		else
 		{
-			if (!event->isCancelled())
+			if (!event->isCancelled() && !event->isSilent())
 				MessageForwarder::showWarning(tr("Save failed"), tr("Unable to save file.\n\n%1").arg(event->message()));
 
 			if(testingAndSaving)
@@ -2100,7 +2185,7 @@ void MainWindow::dataSetIOCompleted(FileEvent *event)
 
 
 
-void MainWindow::populateUIfromDataSet()
+void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 {
 	JASPTIMER_SCOPE(MainWindow::populateUIfromDataSet);
 	bool errorFound = false;
@@ -2108,7 +2193,8 @@ void MainWindow::populateUIfromDataSet()
 	
 	_resultsJsInterface->setScrollAtAll(false);
 
-	_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+	if (loadAnalyses)
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis
@@ -2144,36 +2230,10 @@ void MainWindow::checkUsedModules()
 void MainWindow::qmlLoaded()
 {
 	Log::log() << "MainWindow::qmlLoaded()" << std::endl;
-	_qmlLoaded = true;
 	emit qmlLoadedChanged();
-	
-	handleDeferredFileLoad();
-}
 
-void MainWindow::resultsPageLoaded()
-{
-	Log::log() << "MainWindow::resultsPageLoaded()" << std::endl;
-	_resultsPageLoaded = true;
-	
-	handleDeferredFileLoad();
-}
-
-void MainWindow::handleDeferredFileLoad()
-{
-	if( !(_qmlLoaded && _resultsPageLoaded))
-		return;
-			
-	if (_openOnLoadFilename != "")
-		QTimer::singleShot(0, this, &MainWindow::_openFile); // this timer solves a resizing issue with the webengineview (https://github.com/jasp-stats/jasp-test-release/issues/70)
-	
 	if(!_openOnLoadDbJson.isNull())
 		QTimer::singleShot(0, this, &MainWindow::_openDbJson);
-}
-
-void MainWindow::_openFile()
-{
-	_fileMenu->open(_openOnLoadFilename);
-	_openOnLoadFilename = "";
 }
 
 void MainWindow::_openDbJson()
@@ -2376,36 +2436,32 @@ bool MainWindow::startDataEditorHandler()
 			|| _package->isReadOnlyFile()
 	)
 	{
+		bool manualEditsMode = _package->manualEdits() && !dataFilePath.isEmpty() && !_package->isReadOnlyFile();
+
 		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
 		if (dataFilePath.startsWith("http"))	message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
 		else if (_package->isReadOnlyFile())	message = tr("JASP was started with a read-only data file (probably from the examples). But to edit the data, JASP needs to write to the data file. Does the same file also exist on your computer, or do you want to generate it?");
+		else if (manualEditsMode)				message = tr("JASP has an associated data file, but you edited it. Would you like to reload from the associated data or generate a new file?");
 
 		MessageForwarder::DialogResponse choice;
 
-		const bool manualEditsMode = _package->manualEdits() && !dataFilePath.isEmpty() && !_package->isReadOnlyFile();
-
 		if (manualEditsMode)
-		{
-			message = tr("JASP has an associated data file, but you edited it. Would you like to reload from the associated data or generate a new file?");
 			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Reload Data File"));
-		}
 		else
 			choice = MessageForwarder::showYesNoCancel(tr("Start Spreadsheet Editor"), message, tr("Generate Data File"), tr("Find Data File"));
 
+		if (choice != MessageForwarder::DialogResponse::Yes && choice != MessageForwarder::DialogResponse::No)
+			return false;
+
+		if (manualEditsMode && choice == MessageForwarder::DialogResponse::No)
+		{
+			startDataEditor(dataFilePath);
+			return true;
+		}
 
 		FileEvent *event = nullptr;
 
-		bool justOpenItAlready = false;
-
-		switch(choice)
-		{
-		case MessageForwarder::DialogResponse::Save:
-		case MessageForwarder::DialogResponse::Discard:
-		case MessageForwarder::DialogResponse::Cancel:
-			return false;
-
-
-		case MessageForwarder::DialogResponse::Yes:
+		if (choice == MessageForwarder::DialogResponse::Yes)
 		{
 			QString	caption = "Generate Data File as CSV",
 					filter = "CSV Files (*.csv)",
@@ -2427,9 +2483,7 @@ bool MainWindow::startDataEditorHandler()
 				name = fi.dir().absoluteFilePath(fi.completeBaseName() + ".csv");
 			}
 			else
-			{
 				name = QDir::current().absoluteFilePath(_package->name().replace('#', '_') + ".csv");
-			}
 
 			dataFilePath = MessageForwarder::browseSaveFile(caption, name, filter);
 
@@ -2440,43 +2494,23 @@ bool MainWindow::startDataEditorHandler()
 				dataFilePath.append(".csv");
 
 			event = new FileEvent(this, FileEvent::FileGenerateData);
-			break;
-		}
-
-		case MessageForwarder::DialogResponse::No:
-		{
-			if(manualEditsMode)
-				justOpenItAlready = true;
-			else
-			{
-				QString caption = "Find Data File";
-				QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
-
-				dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
-				if (dataFilePath == "")
-					return false;
-				event = new FileEvent(this, FileEvent::FileSyncData);
-				event->setSyncDataSetId(_package->dataSet()->id());
-			}
-
-			break;
-		}
-
-		}
-
-		if(!justOpenItAlready)
-		{
-			connect(event, &FileEvent::completed, this,			&MainWindow::startDataEditorEventCompleted);
-			connect(event, &FileEvent::completed, _fileMenu,	&FileMenu::setSyncFile);
-			event->setPath(dataFilePath);
-			_loader->io(event);
-			showProgress();
 		}
 		else
 		{
-			startDataEditor(dataFilePath);
-			//_package->setSynchingExternally(true);
+			QString caption = "Find Data File";
+			QString filter = "Data File (*.csv *.txt *.tsv *.sav *.ods *.xls *.xlsx *.rdata *.rds *.mwx *.mpx)";
+
+			dataFilePath = MessageForwarder::browseOpenFile(caption, "", filter);
+			if (dataFilePath == "")
+				return false;
+
+			event = new FileEvent(this, FileEvent::FileSyncData);
+			event->setDataSet(_package->dataSet());
 		}
+
+		event->setPath(dataFilePath);
+		connect(event, &FileEvent::completed, this,	[this, event]()		{ startDataEditorEventCompleted(event); });
+		event->starts();
 	}
 	else
 		startDataEditor(dataFilePath);
@@ -2538,6 +2572,7 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 		_package->dataSet()->setDataFile(event->path().toStdString());
 		Log::log() << "[MainWindow::startDataEditorEventCompleted] Dataset file set to: " << event->path().toStdString() << std::endl;
 		_package->setFileReadOnly(false);
+        _fileMenu->setSyncFile(event);
 		_package->setModified(true);
 		Log::log() << "[MainWindow::startDataEditorEventCompleted] Calling startDataEditor" << std::endl;
 		startDataEditor(event->path());
@@ -2601,11 +2636,9 @@ void MainWindow::startDataEditor(QString path)
 						path.append(".csv");
 
 					FileEvent *event = new FileEvent(this, FileEvent::FileGenerateData);
-					connect(event, &FileEvent::completed, this, &MainWindow::startDataEditorEventCompleted);
-					connect(event, &FileEvent::completed, _fileMenu, &FileMenu::setSyncFile);
-					event->setPath(path);
-					_loader->io(event);
-					showProgress();
+                    event->setPath(path);
+                    connect(event, &FileEvent::completed, this,	 [this, event]() { startDataEditorEventCompleted(event); });
+					event->starts();
 				}
 			}
 		}
@@ -2713,7 +2746,7 @@ void MainWindow::saveJaspFileHandler()
 {
 	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
 	saveEvent->setPath(resultXmlCompare::compareResults::theOne()->filePath());
-	dataSetIORequestHandler(saveEvent);
+	saveEvent->starts();
 }
 
 void MainWindow::saveTmpFileHandler()
@@ -2723,7 +2756,7 @@ void MainWindow::saveTmpFileHandler()
 
 	FileEvent * saveEvent = new FileEvent(this, FileEvent::FileSave);
 	saveEvent->setTmp(true);
-	dataSetIORequestHandler(saveEvent);
+	saveEvent->starts();
 }
 
 bool MainWindow::enginesInitializing()

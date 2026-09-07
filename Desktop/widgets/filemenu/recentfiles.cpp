@@ -12,11 +12,6 @@ void RecentFiles::pushRecentFilePath(const QString &newrecent)
 	_recentFilesListModel->addRecentFilePath(newrecent);
 }
 
-void RecentFiles::openFile(FileEvent *event)
-{
-	emit dataSetIORequest(event);
-}
-
 void RecentFiles::setListModel(RecentFilesListModel * listModel)
 {
 	if (_recentFilesListModel == listModel)
