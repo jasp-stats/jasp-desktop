@@ -31,6 +31,21 @@
 #include "data/importers/rdataimporter.h"
 
 #include "data/importers/readstatimporter.h"
+#include "utilities/settings.h"
+#include "gui/preferencesmodel.h"
+#include "utilities/desktopcommunicator.h"
+#include "dataset.h"
+#include "data/asyncloader.h"
+#include "mainwindow.h"
+#include "results/resultsjsinterface.h"
+
+#include <QSignalSpy>
+#include <QFile>
+#include <QFileInfo>
+#include <QEventLoop>
+#include <QTimer>
+#include <sqlite3.h>
+
 
 void TestAll::initTestCase()
 {
@@ -49,8 +64,17 @@ void TestAll::cleanup()
 	delete _importer;
 	_importer = nullptr;
 
-	DatabaseInterface::singleton()->close();
-	DatabaseInterface::singleton()->closeInterfaces();
+	//After a test tore down a full MainWindow the session database is gone with it, so the
+	//DatabaseInterface the singleton() call would lazily recreate here cannot load anything anymore.
+	//closeInterfaces() alone is enough: deleting a null pointer is fine and the destructor closes.
+	try
+	{
+		DatabaseInterface::closeInterfaces();
+	}
+	catch(const std::exception & e)
+	{
+		std::cerr << "TestAll::cleanup: skipping database teardown: " << e.what() << std::endl;
+	}
 	delete _pkg;
 	_pkg = nullptr;
 }
@@ -394,6 +418,95 @@ void TestAll::testFilterLabels()
 	QVERIFY2(controlLabel->filterAllows(),				qPrintable("'Control' label is filtered"));
 	QVERIFY2(!treatLabel->filterAllows(),				qPrintable("'Treat'label is not filtered"));
 
+}
+
+
+void TestAll::testSyncKeepMissingColumns()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	auto writeCsv = [&](const QString & name, const QByteArray & content)
+	{
+		QString path = tempDir.filePath(name);
+		QFile	file(path);
+		if(!file.open(QIODevice::WriteOnly))
+			return QString();
+		file.write(content);
+		file.close();
+		return path;
+	};
+
+	const QString	abc	= writeCsv("abc.csv",	"a,b,c\n1,2,3\n"),
+					ab	= writeCsv("ab.csv",	"a,b\n4,5\n"),
+					pq	= writeCsv("pq.csv",	"p,q\n6,7\n");
+
+	QVERIFY(!abc.isEmpty() && !ab.isEmpty() && !pq.isEmpty());
+
+	auto freshDataSetFrom = [&](const QString & csv)
+	{
+		_pkg->createDataSet();
+
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), [](int){});
+		return DataSetPackage::pkg()->dataSet();
+	};
+
+	//Without the preference a column that is gone from the new data file is removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), [](int){});
+
+		QCOMPARE(ds->columnCount(), 2);
+		QVERIFY(!ds->column("c"));
+	}
+
+	//With the preference that same column is kept instead of removed.
+	{
+		PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(true);
+
+		DataSet * ds = freshDataSetFrom(abc);
+		QCOMPARE(ds->columnCount(), 3);
+
+		CSVImporter syncer;
+		syncer.syncDataSet(fq(ab), [](int){});
+
+		QCOMPARE(ds->columnCount(), 3);
+		QVERIFY(ds->column("c"));
+
+		//Syncing on against a file that shares no column at all keeps every one of them: p and q are added
+		//next to a, b and c rather than taking their place, so the data holds the union of both files. That
+		//union keeps growing for as long as one session goes on synchronizing, which is why each data file
+		//normally gets a JASP process of its own.
+		CSVImporter syncer2;
+		syncer2.syncDataSet(fq(pq), [](int){});
+
+		QCOMPARE(ds->columnCount(), 5);
+		QVERIFY(ds->column("a"));
+		QVERIFY(ds->column("b"));
+		QVERIFY(ds->column("c"));
+		QVERIFY(ds->column("p"));
+		QVERIFY(ds->column("q"));
+	}
+
+	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(false);
+
+	//The singleton registers globally (PreferencesModelBase::_singleton) and is parented to this
+	//test, so it would survive this test and then make MainWindow's own PreferencesModel assert.
+	delete PreferencesModel::prefs();
 }
 
 

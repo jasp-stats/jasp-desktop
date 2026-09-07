@@ -11,7 +11,7 @@ class OSFListModel : public FileMenuBasicListModel
 	Q_OBJECT
 	
 public:
-	explicit OSFListModel(QObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList);
+	explicit OSFListModel(FileMenuObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList);
 		
 
 	void setFSBModel(OSFFileSystem *model);
@@ -21,7 +21,6 @@ public:
 public slots:
 	void changePath(const QString& name, const QString& path)	override;
 	void changePathCrumbIndex(const int& index)					override;
-	void openFile(const QString& path)							override	{ emit openFileRequest(path); }
 	
 signals:
 	void startProcessing();

@@ -18,8 +18,7 @@ PrefsScrollView
 
 	PrefsGroupRect
 	{
-		id:				spreadSheetEditor
-		title:			qsTr("External spreadsheet editor (for data synchronization)")
+		title:			qsTr("Data synchronization")
 
 		Item
 		{
@@ -29,7 +28,8 @@ PrefsScrollView
 			CheckBox
 			{
 				id:                     useDefaultEditor
-				label:                  qsTr("Use default spreadsheet editor")
+
+				label:                  qsTr("Use default as external spreadsheet editor.")
 				checked:                LINUX || preferencesModel.useDefaultEditor
 				onCheckedChanged:       preferencesModel.useDefaultEditor = checked
 				enabled:                !LINUX
@@ -96,7 +96,7 @@ PrefsScrollView
 						onTextChanged:		preferencesModel.customEditor = text
 						color:				jaspTheme.textEnabled
 
-						KeyNavigation.tab:      autoSave
+						KeyNavigation.tab:	syncWhenDroppedDatafile
 
 						anchors
 						{
@@ -114,6 +114,16 @@ PrefsScrollView
 					}
 				}
 			}
+		}
+
+		CheckBox
+		{
+			id:						syncWhenDroppedDatafile
+			label:					qsTr("Synchronize when a new data file is dropped into JASP")
+			checked:				preferencesModel.syncDroppedDatafile
+			onCheckedChanged:       preferencesModel.syncDroppedDatafile = checked
+
+			KeyNavigation.tab:      autoSave
 		}
 	}
 

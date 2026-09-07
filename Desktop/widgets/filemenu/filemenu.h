@@ -33,6 +33,7 @@
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
+#include "data/fileeventrouter.h"
 #include "filemenulistitem.h"
 #include "actionbuttons.h"
 #include "resourcebuttonsvisible.h"
@@ -42,10 +43,10 @@
 class MainWindow;
 class DataSetPackage;
 
-class FileMenu : public QObject
+class FileMenu : public FileEventRouter
 {
 	friend FileMenuObject;
-	
+
 	typedef ActionButtons::FileOperation FileOperation;
 	Q_OBJECT
 
@@ -69,8 +70,7 @@ public:
 	Q_ENUM(FileMenuListItemType)
 
 	explicit FileMenu(QObject *parent = nullptr);
-	virtual ~FileMenu() {}
-	
+	virtual ~FileMenu() override;
 
 	void		setResourceButtonsVisibleFor(FileOperation fo);
 
@@ -84,7 +84,7 @@ public:
 
 	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);
-	
+
 	void			setMode(FileEvent::FileMode mode);
 	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
 	QString			getCurrentFilePath()	const { return _currentFilePath; }
@@ -113,7 +113,6 @@ public:
 	
 signals:
 	void fileoperationChanged();
-	void dataSetIORequest(FileEvent *event);
 	void exportSelected(QString filename);
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
@@ -127,8 +126,9 @@ public slots:
 	void workspaceModified();
 	void setSyncFile(FileEvent *event);
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
-	void dataSetIOCompleted(FileEvent *event);
 	void dataFileModifiedHandler(QString path);
+	void startFileEvent()	override;
+	void finalizeFileEvent()	override;
 	void setFileoperation(const ActionButtons::FileOperation fo);
 	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
@@ -136,16 +136,11 @@ public slots:
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
 	void showContactRequest();
-	void dataColumnAdded(QString columnName);
 	void analysesExportResults();
 	void refresh();
 	void close();
 	void enableButtonsForOpenedWorkspace(bool enableSaveButton = false);
 	void buttonsForEmptyWorkspace();
-
-
-private slots:
-			void dataSetIORequestHandler(FileEvent *event);
 
 private:
 			bool checkSyncFileExists(const QString &path, bool waitForExistence = false);

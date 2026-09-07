@@ -44,7 +44,7 @@ class OSF: public FileMenuObject
 	Q_PROPERTY(SortMenuModel			*	sortedMenuModel	READ sortedMenuModel							NOTIFY sortedMenuModelChanged	)
 
 public:
-	explicit OSF(FileMenu *parent = nullptr);
+	explicit OSF(FileMenu *parent);
 
 	bool loggedin()				const { return _mLoggedin;			}
 	bool rememberme()			const { return _mRememberMe;		}
@@ -96,7 +96,7 @@ private slots:
 	void saveClicked();
 	void openSaveFile(const QString & nodePath, const QString & filename, const QString & osfpath = "");
 	void userDetailsReceived();
-	void openSaveCompleted(FileEvent * event);
+    void openSaveCompleted();
 	void updateUserDetails();
 	void newFolderCreated();
 	void resetOSFListModel();
@@ -105,7 +105,7 @@ private slots:
 public slots:
 	void logoutClicked();
 	void loginRequested(const QString &username, const QString &password);
-	void openFile(const QString &name);
+	void openFile(const QString &name)	override;
 	void saveFile(const QString &name);
 	void saveFolder(const QString &name);
 	void startProcessing();
