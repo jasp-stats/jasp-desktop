@@ -128,25 +128,31 @@ QSizeF DataSetViewBase::getColumnSize(int col)
 {
 	JASPTIMER_SCOPE(DataSetViewBase::getColumnSize);
 	
+	auto it = _customColumnWidths.find(col);
+	if (it != _customColumnWidths.end()) {
+		double w = it->second;
+		double h = 0;
+		QVariant maxColStringVar = _model->headerData(col, Qt::Orientation::Horizontal, getRole("maxColString"));
+		if (!maxColStringVar.isNull())
+			h = getTextSize(maxColStringVar.toString()).height();
+		else
+			h = getTextSize("??????").height();
+		return QSizeF(w - _itemHorizontalPadding * 2, h);
+	}
+
 	QVariant maxColStringVar = _model->headerData(col, Qt::Orientation::Horizontal, getRole("maxColString"));
-	
 	QSizeF colSize;
-	
 	if(!maxColStringVar.isNull())
 		colSize = getTextSize(maxColStringVar.toString());
 	else
 	{
 		JASPTIMER_SCOPE(DataSetViewBase::getColumnSize fallback);
-		
 		QVariant columnWidthFallbackVar = _model->headerData(col, Qt::Orientation::Horizontal, getRole("columnWidthFallback"));
-
 		colSize = getTextSize("??????");
-
 		if(!columnWidthFallbackVar.isNull())
 			colSize.setWidth(columnWidthFallbackVar.toFloat() - itemHorizontalPadding() * 2);
 	}
-	
-	return  QSizeF(_maxColWidth <= 0 ? colSize.width() : std::min(colSize.width(), double(_maxColWidth)), colSize.height());
+	return QSizeF(_maxColWidth <= 0 ? colSize.width() : std::min(colSize.width(), double(_maxColWidth)), colSize.height());
 }
 
 QSizeF DataSetViewBase::getRowHeaderSize()
@@ -727,15 +733,14 @@ QQuickItem * DataSetViewBase::createTextItem(int row, int col)
 			JASPTIMER_STOP(DataSetViewBase::createTextItem textItemStorage has NOTHING);
 		}
 
-		JASPTIMER_RESUME(DataSetViewBase::createTextItem setValues);
-
-		setTextItemInfo(row, col, textItem);
-
 		_cellTextItems[col][row] = itemCon;
 		
-
 		JASPTIMER_STOP(DataSetViewBase::createTextItem setValues);
 	}
+
+	JASPTIMER_RESUME(DataSetViewBase::createTextItem setValues);
+
+	setTextItemInfo(row, col, _cellTextItems[col][row]->item);
 
 	JASPTIMER_STOP(DataSetViewBase::createTextItem);
 
@@ -891,8 +896,6 @@ void DataSetViewBase::storeRowNumber(int row)
 
 QQuickItem * DataSetViewBase::createColumnHeader(int col)
 {
-	//Log::log() << "createColumnHeader("<<col<<") called!\n" << std::flush;
-
 	if(_columnHeaderDelegate == nullptr)
 	{
 		_columnHeaderDelegate = new QQmlComponent(qmlEngine(this));
@@ -903,7 +906,6 @@ QQuickItem * DataSetViewBase::createColumnHeader(int col)
 
 		emit columnHeaderDelegateChanged();
 	}
-
 
 	QQuickItem * columnHeader = nullptr;
 	ItemContextualized * itemCon = nullptr;
@@ -962,11 +964,17 @@ QQuickItem * DataSetViewBase::createColumnHeader(int col)
 		_columnHeaderItems[col] = itemCon;
 	}
 	else
-		columnHeader = _columnHeaderItems[col]->item;
+	{
+		itemCon = _columnHeaderItems[col];
+		columnHeader = itemCon->item;
+	}
 
-	columnHeader->setX(_colXPositions[col]);
-	columnHeader->setY(_viewportY);
+	columnHeader->setHeight(_dataRowsMaxHeight    - 1);
+	columnHeader->setWidth(_dataColsMaxWidth[col] - 1);
+	columnHeader->setX(0.5 + _colXPositions[col]);
+	columnHeader->setY(0.5 + _viewportY);
 	columnHeader->setZ(-4);
+	columnHeader->setVisible(true);
 
 	return columnHeader;
 }
@@ -1371,14 +1379,39 @@ void DataSetViewBase::rowsAboutToBeRemoved(const QModelIndex & parent, int first
 	modelAboutToBeReset();
 }
 
-void DataSetViewBase::columnsInserted(const QModelIndex & parent, int first, int last)
+void DataSetViewBase::columnsInserted(const QModelIndex &parent, int first, int last)
 {
 	_resetLessTimer->start();
+
+	int shift = last - first + 1;
+	std::map<int, double> newWidths;
+	for (const auto& pair : _customColumnWidths) {
+		int col = pair.first;
+		if (col >= first)
+			col += shift;
+		newWidths[col] = pair.second;
+	}
+	_customColumnWidths = newWidths;
+	
+	modelWasReset();
 }
 
-void DataSetViewBase::columnsRemoved(const QModelIndex & parent, int first, int last)
+void DataSetViewBase::columnsRemoved(const QModelIndex &parent, int first, int last)
 {
 	_resetLessTimer->start();
+	int shift = last - first + 1;
+	std::map<int, double> newWidths;
+	for (const auto& pair : _customColumnWidths) {
+		int col = pair.first;
+		if (col > last)
+			col -= shift;
+		else if (col >= first)
+			continue;
+		newWidths[col] = pair.second;
+	}
+	_customColumnWidths = newWidths;
+	
+	modelWasReset();
 }
 
 void DataSetViewBase::rowsInserted(const QModelIndex & parent, int first, int last)
@@ -1824,4 +1857,61 @@ void DataSetViewBase::setMaxColWidth(int newMaxColWidth)
 		return;
 	_maxColWidth = newMaxColWidth;
 	emit maxColWidthChanged();
+}
+
+void DataSetViewBase::setColumnWidth(int col, double newWidth)
+{
+	if (col < 0 || col >= int(_dataColsMaxWidth.size()))
+		return;
+
+	const double minWidth = 30.0;
+	newWidth = std::max(minWidth, newWidth);
+	if (_maxColWidth > 0)
+		newWidth = std::min(newWidth, double(_maxColWidth));
+
+	QPoint selMin = selectionMin();
+	QPoint selMax = selectionMax();
+	bool applyToAll = false;
+	std::set<int> affectedCols;
+
+	// Multiple column selection and adjusted column width
+	if (selMin.x() >= 0 && selMax.x() >= 0) {
+		bool fullColumnsSelected = (selMin.y() == 0 && selMax.y() == rowCount() - 1);
+		if (fullColumnsSelected && selMin.x() <= col && col <= selMax.x()) {
+			for (int c = selMin.x(); c <= selMax.x(); ++c) {
+				if (_selectionModel->isColumnSelected(c, QModelIndex()))
+					affectedCols.insert(c);
+			}
+			applyToAll = (affectedCols.size() > 1);
+		}
+	}
+
+	if (applyToAll) {
+		for (int c : affectedCols) {
+			_dataColsMaxWidth[c] = newWidth;
+			_customColumnWidths[c] = newWidth;
+		}
+	} else {
+		_dataColsMaxWidth[col] = newWidth;
+		_customColumnWidths[col] = newWidth;
+	}
+
+	float x = _rowNumberMaxWidth;
+	for (int c = 0; c < int(_dataColsMaxWidth.size()); ++c) {
+		_colXPositions[c] = x;
+		x += _dataColsMaxWidth[c];
+	}
+	_dataWidth = x;
+
+	qreal newTotalWidth = (_extraColumnItem && !expandDataSet() ? _dataRowsMaxHeight + 1 : 0) + _dataWidth;
+	setWidth(newTotalWidth);
+
+	viewportChanged();
+}
+
+double DataSetViewBase::getColumnWidth(int col) const
+{
+	if (col >= 0 && col < int(_dataColsMaxWidth.size()))
+		return _dataColsMaxWidth[col];
+	return 0;
 }
