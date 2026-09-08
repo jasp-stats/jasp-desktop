@@ -28,7 +28,7 @@ $(document).ready(function () {
     decimals: "",
     tempFolder: "",
     normalizedNotation: true,
-    showInteractiveDefault: true,
+    showInteractiveDefault: false,
   };
 
   var selectedAnalysisId = -1;
