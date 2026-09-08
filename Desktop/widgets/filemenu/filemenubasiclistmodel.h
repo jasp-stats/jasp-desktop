@@ -8,13 +8,14 @@
 #include "datalibrarybreadcrumbsmodel.h"
 #include "data/fileevent.h"
 #include "filemenulistitem.h"
+#include "filemenuobject.h"
 
 class FileMenuBasicListModel : public QAbstractListModel
 {
 	Q_OBJECT
 
 public:
-	explicit FileMenuBasicListModel(QObject *parent, FileSystem * model);
+	explicit FileMenuBasicListModel(FileMenuObject *parent, FileSystem * model);
 	virtual ~FileMenuBasicListModel() {}
 
 	int						rowCount(const QModelIndex &parent = QModelIndex())									const	override;
@@ -32,6 +33,9 @@ public slots:
 
 	void resetPath() { changePathCrumbIndex(0); }
 	bool mayOpen();
+
+signals:
+	void openFileEvent(const QString &path);
 
 protected:
 	FileSystem	*	_model = nullptr;

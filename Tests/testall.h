@@ -23,4 +23,9 @@ private slots:
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;
+
+	// keepMissingColsWhenSyncing: pins the current semantics, including the fact that the kept columns
+	// accumulate over the syncs of one session (see the --keepMissingColsWhenSyncing help text).
+	void	testSyncKeepMissingColumns();
+
 };

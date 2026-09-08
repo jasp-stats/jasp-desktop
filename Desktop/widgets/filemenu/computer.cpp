@@ -22,6 +22,7 @@
 #include "utilities/desktopcommunicator.h"
 #include "log.h"
 #include "data/jaspencryptiondata.h"
+#include "data/datasetpackage.h"
 
 Computer::Computer(FileMenu *parent): FileMenuObject(parent)
 {
@@ -63,12 +64,10 @@ FileEvent *Computer::browseOpen(const QString &path)
 	if (finalPath != "")
 	{
 		event->setPath(finalPath);
-		emit dataSetIORequest(event);
+		event->starts();
 	}
 	else
-	{
-		event->setComplete(false);
-	}
+		event->setComplete(false, "", true);	// the user cancelled the dialog: mark as cancelled, not failed
 
 	return event;
 }
@@ -138,10 +137,10 @@ FileEvent *Computer::browseSave(const QString &path, FileEvent::FileMode mode)
 			JaspEncryptionData::getInstance()->setEncryptionActive(false);
 
         event->setPath(finalPath);
-		emit dataSetIORequest(event);
+		event->starts();
 	}
 	else
-		event->setComplete(false);
+		event->setComplete(false, "", true);	// the user cancelled the dialog: mark as cancelled, not failed
 
 	return event;
 

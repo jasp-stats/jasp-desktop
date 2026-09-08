@@ -340,7 +340,10 @@ void EngineSync::start()
 
 void EngineSync::killProcessTimer()
 {
-	_timerProcess->stop();
+	//start() may never have run (tests can skip the engines entirely), in which case the timers
+	//do not exist and there is nothing to stop.
+	if(_timerProcess)
+		_timerProcess->stop();
 }
 
 void EngineSync::restartEngines()

@@ -28,7 +28,7 @@ class Computer : public FileMenuObject
 	Q_PROPERTY(ComputerListModel * listModel READ listModel WRITE setListModel NOTIFY listModelChanged)
 	
 public:
-	explicit Computer(FileMenu *parent = nullptr);
+	explicit Computer(FileMenu *parent);
 
 	void setFileName(const QString &filename);
 	void clearFileName();
