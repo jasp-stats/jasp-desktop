@@ -69,7 +69,7 @@ private:
 	void					runComputeColumn(	int dataSet,		const std::string & computeColumnName,	const std::string & computeColumnCode,	columnType computeColumnType	);
 	void					runComputeDataSet(	int dataSet,		const std::string & computeCode,			int defaultInputFilterId			);
 	void					runDefaultFilter(	int dataSet,		const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
-	void 					runFilterByName(	const std::string & name, int dataSet);
+	void 					runFilterByName(	const std::string & name, int dataSet, int requestId = -1);
 	void					runRCode(			int dataSet,		const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
 	void					runRCodeCommander(	int dataSet,		std::string   rCode																						);
 
@@ -88,7 +88,7 @@ private:
 	void					removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void					sendAnalysisResults();
-	void					sendFilterByNameDone(	const std::string & name, int dataSetId, const std::string & errorMessage);
+	void					sendFilterByNameDone(	const std::string & name, int dataSetId, const std::string & errorMessage, int requestId = -1);
 	void					sendFilterResult(		int filterRequestId);
 	void					sendFilterError(		int filterRequestId,	const std::string & errorMessage);
 	void					sendRCodeResult(		int rCodeRequestId,		const std::string & rCodeResult);
