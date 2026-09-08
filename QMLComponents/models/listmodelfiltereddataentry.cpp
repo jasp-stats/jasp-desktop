@@ -189,8 +189,12 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	if(terms.filterName.isEmpty())
 	{
 		//We dont apparently have a previous filterName, so this is a fresh one, we need a new filter!
-		assert(!_filter && !_filterName.empty());
-        _filter =   listView()->form()->varInfo()->dataSet()->createFilter(_filterName, true);
+		//Unless we already created one during a previous bindTo (e.g. the form was re-bound with the
+		//default/empty options table, which happens on every analysis re-run through the RPC/agent API).
+		//In that case the existing filter stays valid and recreating it would crash on the assert below.
+		assert(!_filterName.empty()); //the constructor always generates a filterName
+		if(!_filter)
+			_filter = listView()->form()->varInfo()->dataSet()->createFilter(_filterName, true);
 	}
 	else if(!_filter)
 	{
