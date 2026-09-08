@@ -49,7 +49,7 @@ is a single data file combined with `--keepJASPOpen`, which is handled in the JA
 | `--outputDir <folder>` | Write all results here. Without it, each result lands next to its own data file. The folder is created if it does not exist. |
 | `--exportPdf` | Export as PDF instead of HTML. |
 | `--dontExportResult` | Synchronize and refresh, but write nothing. Useful to check that a set of data files runs through without errors. |
-| `--keepMissingColsWhenSyncing` | Keep columns that the new data file does not have, as empty columns, instead of removing them. See below. |
+| `--keepMissingColsWhenSyncing` | Keep columns that the new data file does not have, instead of removing them. See below. |
 | `--keepJASPOpen` | Leave JASP open at the end instead of closing it. Only meaningful with a single data file. |
 | `--save` | Save the `.jasp` file after refreshing. |
 | `--timeOut=<minutes>` | How long to wait for the analyses of one data file. Default is 10. |
@@ -125,7 +125,7 @@ JASP weights.jasp january.csv --dontExportResult --keepJASPOpen
 From a shell script, acting on the exit code:
 
 ```bash
-if JASP weights.jasp --inputDataDir ./measurements --outputDir ./reports --hide; then
+if JASP weights.jasp --inputDataDir ./measurements --outputDir ./reports; then
     echo "all reports written"
 else
     echo "at least one data file failed, see the output above"
