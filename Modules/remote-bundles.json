@@ -5,8 +5,8 @@
             "checksum": "f2f02712a1f4fa2ce854a294d054eb93cf57903ef08b83d13b69b639ed317416"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAnova_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "8804cffe400c177b2c7b2a6a7130df700df085a18bf84513aa2ac2a85eabb170"
+            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.96.6-release.0_R-4-5-2_Release/jaspAnova_0.96.6-release.0_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "2ce342b765e6136faa26a85c3c30aefd88bd5110e288a1fe34e952726bc9a9b3"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspAudit/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAudit_0.95.5-release.12_Windows_x86-64_R-4-5-2.JASPModule",
@@ -113,8 +113,8 @@
             "checksum": "53c2698b403ec54330593aa4d6d8d09d3c71f61753ef63892c2672b3623eaf0a"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.95.5-release.13_R-4-5-2_Release/jaspRegression_0.95.5-release.13_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "8c7cd574146c9744093a015255336a72789b747f17b96c7c3b7e24e3b42b0628"
+            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspRegression_0.96.5-release.0_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "6270dabb3aa1351bbe06ba8a717cf98c439720d6694080ee19f5e46243333819"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspReliability/releases/download/0.98.1-release.0_R-4-5-2_Release/jaspReliability_0.98.1-release.0_Windows_x86-64_R-4-5-2.JASPModule",
@@ -159,8 +159,8 @@
             "checksum": "22135b412c11391665128f534cd7fa386deb02a26d03300c39bb5c90f84f705b"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAnova_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
-            "checksum": "6144bc5dc49f5c8ffc3e952b3d8cef2a907dac27ec25de7b12092ef177dc1721"
+            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.96.6-release.0_R-4-5-2_Release/jaspAnova_0.96.6-release.0_MacOS_arm64_R-4-5-2.JASPModule",
+            "checksum": "0b034db696b790c3645a80a3680a3fe9d5d43861f3c536aa5c18925f333a05eb"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspAudit/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAudit_0.95.5-release.12_MacOS_arm64_R-4-5-2.JASPModule",
@@ -267,8 +267,8 @@
             "checksum": "306d527b67794fc55499ec35734bf75b62cee1cbefb7ec8f2e0c61c7917622a1"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.95.5-release.13_R-4-5-2_Release/jaspRegression_0.95.5-release.13_MacOS_arm64_R-4-5-2.JASPModule",
-            "checksum": "bf6e276a51b33f85e3def97d185edf84fafcbc0e2b72fe90001b659cb294c826"
+            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspRegression_0.96.5-release.0_MacOS_arm64_R-4-5-2.JASPModule",
+            "checksum": "f8645c801619a801bc2f81b550b49880881e492ca7cfd883f2de39996378ebd1"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspReliability/releases/download/0.98.1-release.0_R-4-5-2_Release/jaspReliability_0.98.1-release.0_MacOS_arm64_R-4-5-2.JASPModule",
@@ -313,8 +313,8 @@
             "checksum": "eedd5f96ef77cf64466e82c22cb73dac560f46e29e65bb9d084fc23b11643b5f"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAnova_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
-            "checksum": "a7c21b99adf354e8f1ae5369bdeb20ad933f3a730442c7053d583529670eb9d5"
+            "url": "https://github.com/jasp-stats-modules/jaspAnova/releases/download/0.96.6-release.0_R-4-5-2_Release/jaspAnova_0.96.6-release.0_MacOS_x86_64_R-4-5-2.JASPModule",
+            "checksum": "a10826ef50d507c85a9c8e3c7b73c7ce2971c6f0b6d6f624075e9108e7c9cfb5"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspAudit/releases/download/0.95.5-release.12_R-4-5-2_Release/jaspAudit_0.95.5-release.12_MacOS_x86_64_R-4-5-2.JASPModule",
@@ -421,8 +421,8 @@
             "checksum": "8b755d68d4fb9b15342a07a7fee39d18f6db308e2e61bb30cf2b0afa1b08eba2"
         },
         {
-            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.95.5-release.13_R-4-5-2_Release/jaspRegression_0.95.5-release.13_MacOS_x86_64_R-4-5-2.JASPModule",
-            "checksum": "efb69803ce3070405a33cdcf19bd9a58ed10d22346a698e82346340131fd0cf0"
+            "url": "https://github.com/jasp-stats-modules/jaspRegression/releases/download/0.96.5-release.0_R-4-5-2_Release/jaspRegression_0.96.5-release.0_MacOS_x86_64_R-4-5-2.JASPModule",
+            "checksum": "7aff896779a48dde9dc418d4559a768eba6ab4cb6f59bfc313d3444e74f4fb31"
         },
         {
             "url": "https://github.com/jasp-stats-modules/jaspReliability/releases/download/0.98.1-release.0_R-4-5-2_Release/jaspReliability_0.98.1-release.0_MacOS_x86_64_R-4-5-2.JASPModule",
