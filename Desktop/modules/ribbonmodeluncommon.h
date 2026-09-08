@@ -6,8 +6,9 @@
 
 ///
 /// This filters the RibbonButtons made available by RibbonModel.
-/// It only passes through those bundled modules not in Common or those installed manually by the user
-/// This is used by the modules-menu to allow users to turn modules on and off, because those in Common are always enabled
+/// It passes through all actual modules, common (core) ones included, as well as special buttons that may be toggled (such as the R-console).
+/// This is used by the modules-menu to allow users to turn modules on and off.
+///
 class RibbonModelUncommon : public QSortFilterProxyModel
 {
 	Q_OBJECT
@@ -20,6 +21,8 @@ public:
 	bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const override;
 
 	Q_INVOKABLE void setModuleEnabled(int filteredRow, bool checked);
+	Q_INVOKABLE void moveModule(int from, int to); //Takes filtered rows and forwards them as source rows to RibbonModel::moveModule
+	Q_INVOKABLE bool isModule(int filteredRow); //Whether the row is an actual (reorderable) module rather than a special button such as the R-console
 
 private:
 	RibbonModel		*_ribbonModel			= nullptr;

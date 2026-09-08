@@ -112,10 +112,27 @@ QString AppDirs::documents()
 	return processPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 }
 
+static QString _sandboxDirOverride = ""; //Set by JASP-Desktop from the preferences, empty means no override and the default (home) location is used.
+
+void AppDirs::setSandboxDirOverride(const QString &path)
+{
+	_sandboxDirOverride = path;
+}
+
 QString AppDirs::sandboxedDocuments()
 {
 	const QString name = "JASP_Sandbox";
-    QDir res(AppDirs::documents());
+
+	if(!_sandboxDirOverride.isEmpty()) //A custom location was set in the preferences, so use that directly as the sandbox-dir itself
+	{
+		QDir res(_sandboxDirOverride);
+		if(!res.exists())
+			res.mkpath(".");
+		return res.absolutePath();
+	}
+
+	// The home-folder is used, and not Documents, because the latter is quite often redirected (and thus synced) by OneDrive and we do not want logs, clipboard-images and the like synced there.
+	QDir res(processPath(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)));
 	res.mkdir(name);
 	res.cd(name);
 	return res.absolutePath();
@@ -147,7 +164,12 @@ void AppDirs::purgeClipboard()
 
 QString AppDirs::logDir()	
 {
-    QString path = sandboxedDocuments();
+	QString path;
+#ifdef _WIN32
+	path = sandboxedDocuments();	//So the sandboxed Engines can write their logs there
+#else
+	path = appData();				//There is no engine-sandbox outside of Windows, so logs can simply go to the regular app-data folder and JASP_Sandbox need not be created at all
+#endif
 	path += "/Logs/";
 
 	QDir log(path);

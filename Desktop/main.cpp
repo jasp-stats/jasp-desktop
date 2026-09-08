@@ -441,6 +441,9 @@ int main(int argc, char *argv[])
 #endif
 	Dirs::setLocalAppdataDir(AppDirs::appData(false).toStdString());
 
+	//Apply any user-preference for the location of the sandbox-dir before anything (logs, clipboard, sandboxed engines, filedialogs) starts using it.
+	AppDirs::setSandboxDirOverride(Settings::value(Settings::ENGINE_SANDBOX_DIR).toString());
+
 	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, containForce, contain, dbJson, reportingDir);
 
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);

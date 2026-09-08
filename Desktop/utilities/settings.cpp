@@ -56,8 +56,10 @@ const Settings::Setting Settings::Values[] = {
 	{"logToFile",					false}, //By default do not log to file and when running debug-mode log to stdout and in release to nowhere.
 	{"logFilesMax",					15},
 	{"maxFlickVelocity",			800},
-	{"modulesRemember",				true},
-	{"modulesRemembered",			""},
+	{"modulesRemember",				true	},
+	{"modulesRemembered",			""		},
+	{"modulesSelectionMigrated",		false	}, //One-time migration flag for selections stored before all modules (common ones included) became (de)selectable
+	{"modulesOrder",					""		}, //Order of the module-buttons on the ribbon, '|'-joined; special buttons (data, separator, R-console) stay anchored
 	{"safeGraphicsMode",			false},
 	{"cranRepositoryURL",			"https://cloud.r-project.org"},
 	{"moduleLibraryURL",			"https://module-library.jasp-stats.org"},
@@ -134,6 +136,7 @@ const Settings::Setting Settings::Values[] = {
 #else
     {"engineSandbox",				false	},
 #endif
+	{"engineSandboxDir",				""		}, //Empty means the default sandbox-location is used: <home>/JASP_Sandbox
 	{"remoteConfiguration",			false   },
 	
 	{"remoteConfigurationURL",		""		},
@@ -218,6 +221,14 @@ QVariant Settings::defaultValue(Settings::Type key)
 void Settings::setValue(Settings::Type key, const QVariant &value)
 {
 	getSettings()->setValue(Settings::Values[key].type, value);
+}
+
+bool Settings::isSet(Settings::Type key)
+{
+	if(resultXmlCompare::compareResults::theOne()->testMode() || _thisIsATest)
+		return false; //In test-mode value() always returns defaults, so nothing is ever considered set
+
+	return getSettings()->contains(Settings::Values[key].type);
 }
 
 void Settings::sync()

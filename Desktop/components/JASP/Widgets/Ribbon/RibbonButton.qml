@@ -18,6 +18,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import JASP
 import JASP.Widgets
 
@@ -36,6 +37,7 @@ Item
 	property string	source		: ""
 	property bool	enabled		: true
 	property bool	separator	: false
+	property bool	isModule	: false //Only actual modules can be dragged to another spot in the ribbon
 	property bool	ready		: false
 	property string moduleName	: "???"
 	property string toolTip		: ""
@@ -50,7 +52,7 @@ Item
 	signal clicked
 
 	ToolTip.text:				ribbonButton.toolTip
-	ToolTip.visible:			ribbonButton.toolTip !== "" && mice.containsMouse && !ribbonButton.showPressed
+	ToolTip.visible:			ribbonButton.toolTip !== "" && mice.containsMouse && !ribbonButton.showPressed && !buttonContent.Drag.active
 	ToolTip.toolTip.background:		Rectangle { color: jaspTheme.tooltipBackgroundColor; radius: jaspTheme.borderRadius }
 	
 	Keys.onPressed: (event) =>
@@ -259,6 +261,19 @@ Item
 		customSubMenu.toggle(subItem, props);
 	}
 
+	//Marks this button as the spot the dragged module will land on, and the buttons in between slide aside
+	//to show the gap. Nothing is reordered until the mouse is released. Data, the R-console and the
+	//separators are no target: moveModule would refuse them anyway and they must keep their place. The
+	//target is not cleared on exit, so passing over the seams between buttons does not make them slide back
+	//and forth.
+	DropArea
+	{
+		anchors.fill:	parent
+		keys:			["ribbonModule"]
+
+		onEntered:		if(ribbonButton.isModule) jaspRibbons.dropTargetIndex = ribbonButton.listIndex
+	}
+
 	Rectangle
 	{
 		id:			separatorLine
@@ -303,13 +318,77 @@ Item
 
 	Rectangle
 	{
-		anchors.centerIn	: parent
-		width				: parent.implicitWidth
+		id					: buttonContent
+		width				: ribbonButton.implicitWidth //Not parent.implicitWidth: while being dragged the parent is the ribbon
 		height				: jaspTheme.ribbonButtonHeight
 		scale				: preferencesModel.ribbonBarHeightScale * (mice.containsMouse && !ribbonButton.showPressed ? jaspTheme.ribbonScaleHovered : 1)
 		visible				: !separator
-		color			: separator || !showPressed ? "transparent" : jaspTheme.grayLighter
-		
+		color			: separator || !(showPressed || buttonContent.Drag.active) ? "transparent" : jaspTheme.grayLighter
+
+		//Spelled out rather than centerIn, because AnchorChanges cannot undo that one
+		anchors
+		{
+			horizontalCenter	: ribbonButton.horizontalCenter
+			verticalCenter		: ribbonButton.verticalCenter
+		}
+
+		//Only the button slides aside, not the drop area around it, so the module being dragged keeps hitting
+		//the same buttons however far they have moved out of its way
+		transform: Translate
+		{
+			x:	jaspRibbons.buttonShift(ribbonButton.listIndex)
+
+			Behavior on x
+			{
+				enabled: jaspRibbons.slideButtons && preferencesModel.animationsOn
+				NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+			}
+		}
+
+		Drag.keys:			["ribbonModule"]
+		Drag.active:		mice.drag.active
+		Drag.hotSpot.x:		width  / 2
+		Drag.hotSpot.y:		height / 2
+
+		states:
+		[
+			State
+			{
+				name:	"dragging"
+				when:	buttonContent.Drag.active
+
+				//Out of the list while being dragged, otherwise it is positioned by it, cannot follow the cursor
+				//and would be clipped at the edges of the ribbon
+				ParentChange	{ target: buttonContent; parent: jaspRibbons																		}
+				AnchorChanges	{ target: buttonContent; anchors.horizontalCenter: undefined; anchors.verticalCenter: undefined							}
+				PropertyChanges	{ restoreEntryValues: false; buttonContent { z: 20 }																}
+			},
+
+			State
+			{
+				name:	"chilling"
+				when:	!buttonContent.Drag.active
+
+				ParentChange	{ target: buttonContent; parent: ribbonButton																		}
+				AnchorChanges	{ target: buttonContent; anchors.horizontalCenter: ribbonButton.horizontalCenter; anchors.verticalCenter: ribbonButton.verticalCenter	}
+			}
+		]
+
+		RectangularShadow
+		{
+			z:					-1 //Behind the button's own background, so only the blur around it shows
+			anchors.centerIn:	parent
+			width:				parent.width
+			height:				parent.height
+			visible:			buttonContent.Drag.active
+			color:				jaspTheme.grayDarker
+			blur:				10
+			spread:				3
+			radius:				jaspTheme.borderRadius
+			offset.x:			0
+			offset.y:			0
+		}
+
 		Image
 		{
 			id:			backgroundImage
@@ -411,8 +490,21 @@ Item
 			anchors.fill	: parent
 			hoverEnabled	: true
 			acceptedButtons	: Qt.LeftButton
-			cursorShape		: Qt.PointingHandCursor
+			cursorShape		: buttonContent.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
 			enabled			: ribbonButton.enabled
+
+			//A click is only delivered when the press did not turn into a drag, so the same mouse area can open
+			//the menu and pick the button up. Deliberately unbounded: minimumX and maximumX are measured in the
+			//ribbon's own coordinates, so any bound there pins the buttons nearest that edge - the very ones that
+			//need room to be dragged past their neighbour, and to reach the strip that starts the auto scroll.
+			drag.target		: ribbonButton.isModule ? buttonContent : null
+			drag.axis		: Drag.XAxis
+
+			drag.onActiveChanged:
+			{
+				if(drag.active)	jaspRibbons.startModuleDrag(ribbonButton.listIndex, ribbonButton.width, buttonContent);
+				else			jaspRibbons.finishModuleDrag(ribbonButton.listIndex);
+			}
 
 			onClicked: (mouse)=>
 			{

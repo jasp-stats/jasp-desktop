@@ -82,8 +82,10 @@ public:
 	QString						moduleName(size_t index)							const;
 	RibbonButton*				ribbonButtonModelAt(size_t index)					const;
 	RibbonButton*				ribbonButtonModel(std::string moduleName)			const;
-	int							ribbonButtonModelIndex(RibbonButton * model)		const;
-	void						setCommonOrder(QStringList order);
+	int								ribbonButtonModelIndex(RibbonButton * model)		const;
+	QStringList					getModuleOrder()												const;
+	void					setModuleOrder(QStringList order);
+	Q_INVOKABLE void			moveModule(int from, int to);
 
 	Q_INVOKABLE void			toggleModuleEnabled(int ribbonButtonModelIndex);
 	Q_INVOKABLE void			setModuleEnabled(int ribbonButtonModelIndex, bool enabled);
@@ -150,7 +152,8 @@ private: // fields
 	std::vector<stringvec>					_buttonNames; //Can be multiple rows, originally [ { Analyses }, { Data Mode } ]
 	int										_highlightedModuleIndex = -1;
 	stringvec								_commonModulesToLoad;
-	size_t									_currentRow				= size_t(RowType::Analyses);
+	size_t								_currentRow				= size_t(RowType::Analyses);
+	bool								_loadingModules			= false; //Whether loadModules() is running: modules added then get their enabled-state from the (stored) selection, modules added afterwards (installation at runtime) are enabled by default
 	Modules::AnalysisEntries			*	_entriesInsert			= nullptr,
 										*	_entriesDelete			= nullptr,
 										*	_entriesSynchOn			= nullptr;

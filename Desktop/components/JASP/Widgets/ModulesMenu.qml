@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as QTC
+import QtQuick.Effects
 import QtQuick.Layouts
 import JASP.Controls
 import QtWebEngine
@@ -546,70 +547,227 @@ FocusScope
 					id:		repeater
 					model:	ribbonModelUncommon
 
-					Rectangle
+					//The row being dragged and where it would end up. The model is only reordered once, when the
+					//mouse is released; until then the other rows are slid aside to show the gap it will drop into.
+					property int  draggedIndex:		-1
+					property int  dropTargetIndex:	-1
+
+					//Turned off just before the model is reordered, so the rows do not slide back from a gap that
+					//is about to be filled by the dragged module anyway
+					property bool slideRows:			false
+
+					readonly property real rowStep:	modules.buttonHeight + modules.spacing
+
+					//How far a row must slide to open up the gap the dragged module will drop into
+					function rowShift(row)
 					{
+						if(draggedIndex < 0 || dropTargetIndex < 0 || row === draggedIndex)
+							return 0;
+
+						if(draggedIndex < dropTargetIndex)	return row >  draggedIndex	&& row <= dropTargetIndex	? -rowStep : 0;
+						else								return row >= dropTargetIndex	&& row <  draggedIndex		?  rowStep : 0;
+					}
+
+					DropArea
+					{
+						id:					moduleDropArea
 						width:				modules.buttonWidth
 						height:				modules.buttonHeight
-						anchors.leftMargin: modules.buttonMargin
-						color:				isSpecial || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
+						keys:				["module"]
 
-						CheckBox
+						//Dragging over a row marks it as the spot to land on and the rows in between slide over at
+						//once, but nothing is reordered until the mouse is released. Special rows (R console and the
+						//like) are no target: moveModule would refuse them anyway and they must keep their place.
+						//The target is not cleared on exit, so passing over the gaps between rows does not make them
+						//slide back and forth.
+						onEntered:
 						{
-							id:					moduleButton
-							label:				displayText
-							checked:			ribbonEnabled
-							onCheckedChanged:	ribbonModelUncommon.setModuleEnabled(index, checked)
-							enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
-							font:				jaspTheme.fontRibbon
-							focus:				index === currentIndex
-							forwardKeys:		true
-							Keys.forwardTo:		[modulesMenu]
+							if(ribbonModelUncommon.isModule(index))
+								repeater.dropTargetIndex = index
+						}
 
-							toolTip:			isSpecial									? qsTr("Ready") //Always ready!
-												: dynamicModule.installing					? qsTr("Installing: %1\n").arg(dynamicModule.installLog)
-												: dynamicModule.loading						? qsTr("Loading: %1\n").arg(dynamicModule.loadLog)
+						//Shows where the module will be put down
+						Rectangle
+						{
+							anchors.fill:		parent
+							visible:			repeater.dropTargetIndex === index
+							color:				"transparent"
+							radius:				jaspTheme.borderRadius
+							border.color:		jaspTheme.focusBorderColor
+							border.width:		2
+						}
+
+						Rectangle
+						{
+							id:					moduleRow
+							width:				modules.buttonWidth
+							height:				modules.buttonHeight
+							anchors.leftMargin: modules.buttonMargin
+							color:				isSpecial || dynamicModule.status !== "error" ? "transparent" : jaspTheme.red
+
+							property int myIndex:	index
+
+							//Only the row slides aside, not the drop area around it, so the module being dragged keeps
+							//hitting the same rows however far they have moved out of its way
+							transform: Translate
+							{
+								y:	repeater.rowShift(moduleRow.myIndex)
+
+								Behavior on y
+								{
+									enabled: repeater.slideRows && preferencesModel.animationsOn
+									NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+								}
+							}
+
+							Drag.keys:			["module"]
+							Drag.active:		moduleDragArea.drag.active
+							Drag.hotSpot.x:		width  / 2
+							Drag.hotSpot.y:		height / 2
+
+							states:
+							[
+								State
+								{
+									name:	"dragging"
+									when:	moduleRow.Drag.active
+
+									//Out of the column while being dragged, otherwise it is positioned by it and cannot follow the cursor
+									ParentChange	{ target: moduleRow; parent: modulesFlick										}
+									AnchorChanges	{ target: moduleRow; anchors.top: undefined; anchors.left: undefined			}
+									PropertyChanges	{ restoreEntryValues: false; moduleRow { z: 10 }								}
+								},
+
+								State
+								{
+									name:	"chilling"
+									when:	!moduleRow.Drag.active
+
+									ParentChange	{ target: moduleRow; parent: moduleDropArea									}
+									AnchorChanges	{ target: moduleRow; anchors.top: parent.top; anchors.left: parent.left			}
+								}
+							]
+
+							RectangularShadow
+							{
+								anchors.centerIn:	moduleRow
+								width:				moduleRow.width
+								height:				moduleRow.height
+								visible:			moduleRow.Drag.active
+								color:				jaspTheme.grayDarker
+								blur:				10
+								spread:				3
+								radius:				jaspTheme.borderRadius
+								offset.x:			0
+								offset.y:			0
+							}
+
+
+
+
+							CheckBox
+							{
+								id:					moduleButton
+								label:				displayText
+								checked:			ribbonEnabled
+								onCheckedChanged:	ribbonModelUncommon.setModuleEnabled(index, checked)
+								enabled:			isSpecial || !(dynamicModule.loading || dynamicModule.installing)
+								font:				jaspTheme.fontRibbon
+								focus:				index === currentIndex
+								forwardKeys:		true
+								Keys.forwardTo:		[modulesMenu]
+
+								toolTip:			isSpecial										? qsTr("Ready") //Always ready!
+												: dynamicModule.installing						? qsTr("Installing: %1\n").arg(dynamicModule.installLog)
+												: dynamicModule.loading							? qsTr("Loading: %1\n").arg(dynamicModule.loadLog)
 												: dynamicModule.status === "readyForUse"	? qsTr("Loaded and ready for use!")
-												: dynamicModule.status === "error"			? qsTr("Error occurred!")
-																							: qsTr("Not ready for use?")
+												: dynamicModule.status === "error"				? qsTr("Error occurred!")
+																														: qsTr("Not ready for use?")
 
-							anchors
-							{
-								left			: parent.left
-								right			: refreshButton.left
-								verticalCenter	: parent.verticalCenter
+								anchors
+								{
+									left		: parent.left
+									right		: refreshButton.left
+									verticalCenter	: parent.verticalCenter
+								}
 							}
-						}
 
-
-						MenuButton
-						{
-							z:				1
-							id:				refreshButton
-							visible:		isDevMod
-							iconSource:		jaspTheme.iconPath + "/redo.svg"
-							width:			visible ? height : 0
-							onClicked:		dynamicModules.refreshDeveloperModule();
-							toolTip:		qsTr("Refresh developer module ") + displayText
-							anchors
+							MenuButton
 							{
-								right			: minusButton.left
-								verticalCenter	: parent.verticalCenter
+								z:				1
+								id:				refreshButton
+								visible:		isDevMod
+								iconSource:		jaspTheme.iconPath + "/redo.svg"
+								width:			visible ? height : 0
+								onClicked:		dynamicModules.refreshDeveloperModule();
+								toolTip:		qsTr("Refresh developer module ") + displayText
+								anchors
+								{
+									right			: minusButton.left
+									verticalCenter	: parent.verticalCenter
+								}
 							}
-						}
 
-						MenuButton
-						{
-							z:				1
-							id:				minusButton
-							visible:		!isBundled && !isSpecial
-							iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
-							width:			visible ? height : 0
-							onClicked:		dynamicModules.uninstallJASPModule(moduleName)
-							toolTip:		qsTr("Uninstall module ") + displayText
-							anchors
+							MenuButton
 							{
-								right			: parent.right
-								verticalCenter	: parent.verticalCenter
+								z:				1
+								id:				minusButton
+								visible:		!isBundled && !isSpecial
+								iconSource:		hovered ? jaspTheme.iconPath + "/delete_icon.png" : jaspTheme.iconPath + "/delete_icon_gray.png"  // icon from https://icons8.com/icon/set/delete/material
+								width:				visible ? height : 0
+								onClicked: 			dynamicModules.uninstallJASPModule(moduleName)
+								toolTip:			qsTr("Uninstall module ") + displayText
+								anchors
+								{
+									right:			parent.right
+									verticalCenter:	parent.verticalCenter
+								}
+							}
+
+							//On top of the checkbox (so a module can be picked up anywhere on its row) but underneath the
+							//refresh and uninstall buttons, which carry a z of their own. A click is only delivered when the
+							//press did not turn into a drag, so it can hand the toggle to the model itself.
+							MouseArea
+							{
+								id:					moduleDragArea
+								anchors.fill:		parent
+								enabled:			!isSpecial
+								hoverEnabled:		true
+								cursorShape:		moduleRow.Drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+								drag.target:		moduleRow
+								drag.axis:			Drag.YAxis
+
+								//Reorder once, on release, rather than every time another row is passed over: moveModule
+								//writes the order to the settings, and a drag would otherwise rewrite them all the way over.
+								drag.onActiveChanged:
+								{
+									if(drag.active)
+									{
+										repeater.draggedIndex		= moduleRow.myIndex
+										repeater.dropTargetIndex	= moduleRow.myIndex
+										repeater.slideRows			= true
+									}
+									else
+									{
+										//Stop sliding before the rows are put back where the column wants them: the model
+										//move right after this drops the module into the gap they were holding open.
+										repeater.slideRows			= false
+
+										let from					= moduleRow.myIndex
+										let to						= repeater.dropTargetIndex
+
+										repeater.draggedIndex		= -1
+										repeater.dropTargetIndex	= -1
+
+										if(to >= 0 && to !== from)
+											ribbonModelUncommon.moveModule(from, to)
+									}
+								}
+
+								onClicked:			if(moduleButton.enabled) ribbonModelUncommon.setModuleEnabled(index, !moduleButton.checked)
+
+								QTC.ToolTip.text:		qsTr("Drag to reorder the modules in the ribbon")
+								QTC.ToolTip.visible:	containsMouse && !moduleRow.Drag.active && repeater.count > 1
 							}
 						}
 					}

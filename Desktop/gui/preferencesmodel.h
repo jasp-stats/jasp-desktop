@@ -79,7 +79,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
 	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
-	Q_PROPERTY(bool			engineSandbox			READ engineSandbox				WRITE setEngineSandbox				NOTIFY engineSandboxChanged				)
+	Q_PROPERTY(bool			engineSandbox			READ engineSandbox			WRITE setEngineSandbox			NOTIFY engineSandboxChanged			)
+	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir		WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
 	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
@@ -232,7 +233,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setRpcServerPort(int v);
 		
 	public slots:
-	bool engineSandbox()							const;
+	bool engineSandbox()								const;
+	QString		engineSandboxDir()						const;
 	bool useNativeFileDialog()						const;
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -252,6 +254,7 @@ class PreferencesModel : public PreferencesModelBase
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
 	void browseDeveloperLibPathFolder();
+	void browseEngineSandboxDir();
 	void browseConfigurationFile();
 	void removeEmptyValue(				QString		value);
 	void addEmptyValue(					QString		value);
@@ -300,6 +303,7 @@ class PreferencesModel : public PreferencesModelBase
 	void setDirectLibpathFolder(		QString		libpath);
 	void setDirectDevModName(			QString		 name);
 	void setEngineSandbox(				bool		engineSandbox);
+	void setEngineSandboxDir(			QString		dir);
 	void setLocalConfigurationPATH(		QString		path);
 	void setRemoteConfiguration(		bool		enabled);
 	void setRemoteConfigurationURL(		QString		URL);
@@ -362,6 +366,7 @@ signals:
 	void directLibpathFolderChanged();
 	void directDevModNameChanged(		QString name);
 	void engineSandboxChanged(			bool		engineSandbox);
+	void engineSandboxDirChanged(		QString		dir);
 	void localConfigurationPATHChanged(	QString		path);
 	void remoteConfigurationChanged(	bool		enabled);
 	void remoteConfigurationURLChanged(	QString		remoteConfigurationURL);

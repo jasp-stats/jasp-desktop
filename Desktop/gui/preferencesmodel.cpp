@@ -3,6 +3,7 @@
 #include "qutils.h"
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"
+#include "utilities/appdirs.h"
 #include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
@@ -118,6 +119,18 @@ void PreferencesModel::browseDeveloperLibPathFolder()
 		setDirectLibpathFolder(folder);
 }
 
+void PreferencesModel::browseEngineSandboxDir()
+{
+	QString defaultfolder = engineSandboxDir();
+	if(defaultfolder.isEmpty())
+		defaultfolder = QDir::homePath();
+
+	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
+
+	if(!folder.isEmpty())
+		setEngineSandboxDir(folder);
+}
+
 void PreferencesModel::browseConfigurationFile()
 {
 	QString defaultfolder = JASPConfiguration::getInstance()->getDefaultConfigurationPath();
@@ -227,6 +240,11 @@ bool PreferencesModel::engineSandbox() const
 #endif
 }
 
+QString PreferencesModel::engineSandboxDir() const
+{
+	return Settings::value(Settings::ENGINE_SANDBOX_DIR).toString();
+}
+
 
 
 int PreferencesModel::maxEngines() const
@@ -258,7 +276,7 @@ QStringList PreferencesModel::emptyValues()		const
 
 QStringList PreferencesModel::modulesRemembered()	const
 {
-	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|");
+	QStringList items = Settings::value(Settings::MODULES_REMEMBERED).toString().split("|", Qt::SkipEmptyParts);
 
 	return items;
 }
@@ -708,4 +726,18 @@ void PreferencesModel::setEngineSandbox(bool engineSandbox) {
 #endif
 		emit engineSandboxChanged(engineSandbox);
 	}
+}
+
+void PreferencesModel::setEngineSandboxDir(QString dir)
+{
+	if(dir == engineSandboxDir())
+		return;
+
+	Settings::setValue(Settings::ENGINE_SANDBOX_DIR, dir);
+	AppDirs::setSandboxDirOverride(dir); //Apply it right away so that for example newly started engines and file-dialogs use the new location, a restart is needed for the rest.
+
+#ifdef _WIN32
+	MessageForwarder::showWarning(tr("Engine Sandbox directory changed"), tr("The directory used by the Engine Sandbox has been changed, this will only take full effect after JASP is restarted."));
+#endif
+	emit engineSandboxDirChanged(dir);
 }
