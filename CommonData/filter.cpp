@@ -100,8 +100,8 @@ void Filter::dbUpdate(bool writeFiltered)
 	if(!_data->writeBatchedToDB())
 	{
 		db().transactionWriteBegin();
-		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
-		
+		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name, _invalidated);
+
 		if(writeFiltered)
 			db().filterWrite(_id, _filtered);
 
@@ -388,13 +388,19 @@ void Filter::setInvalidated(bool invalidated)
 
 	if(wasChange)
 		emit invalidatedChanged();
-	
-	//NOTE: this intentionally fires even when the filter was already invalidated:
-	//nothing ever clears _invalidated for filters, so this emit is the mechanism
-	//that re-runs invalidated filters when e.g. DataSet::runFilters() is called
-	//after manual data edits. Do not gate it on wasChange without first adding a
-	//proper "filter has fresh results" state transition (otherwise data edits
-	//would stop re-running filters). See also checkForUpdates() above.
+
+	//Re-queue a run whenever a filter is (re)invalidated. Since DataSet::filterByNameDone
+	//now clears the flag when a reply for the latest request is consumed, this flag is
+	//truthful and this emit is no longer load-bearing-with-weird-semantics: it simply
+	//ensures a run gets queued for the current inputs. Gating this on wasChange is
+	//tempting but WRONG: an input change while a request is already in flight would be
+	//suppressed, and the in-flight reply (computed from the older inputs) would then
+	//mark the filter fresh with outdated results. Duplicates are harmless: the newer
+	//request computes the newer inputs and EngineRepresentation drops the older reply.
+	//The historical infinite loop came from feedback paths that re-invalidated a filter
+	//on every reply; those are closed now (Filter::checkForUpdates reports only actual
+	//changes, initTableTerms skips no-op rebinds, runFilters is column-aware and the
+	//empty-result retry is bounded).
 	if(_invalidated)
 		emit _data->sendFilterByName(data()->id(), nameQ(), "*");
 }

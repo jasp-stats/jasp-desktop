@@ -389,6 +389,12 @@ void EngineRepresentation::runScriptOnProcess(RFilterByNameStore *filterStore)
 	json["typeRequest"]		= engineStateToString(_engineState);
 	json["name"]			= filterStore->name.toStdString();
 	json["dataSetId"]		= filterStore->dataSetId;
+	json["requestId"]		= filterStore->requestId;
+
+	//Remember which request we sent out: replies for superseded requests (a newer
+	//input change queued another run while this one was in flight) must be dropped,
+	//otherwise they would be treated as the freshest result of the filter.
+	_lastFilterByNameRequestId = filterStore->requestId;
 
 	sendString(json);
 }
@@ -431,8 +437,17 @@ void EngineRepresentation::processFilterByNameReply(Json::Value &json)
 	std::string name	= json.get("name",			"???").asString(),
 				error	= json.get("errorMessage", "").asString();
 	int			dataSet = json.get("dataSetId", -1).asInt();
+	int			requestId = json.get("requestId", -1).asInt();
 
-	
+	//Drop stale replies: only the reply for the most recently dispatched filterByName may
+	//update filter results / clear the stale flag. When either side is -1 we cannot match
+	//(mixed old-engine/desktop builds) so we let it through as before.
+	if(_lastFilterByNameRequestId != -1 && requestId != -1 && requestId != _lastFilterByNameRequestId)
+	{
+		Log::log() << "Dropping stale filterByName reply for '" << name << "' (requestId " << requestId << " != " << _lastFilterByNameRequestId << ")" << std::endl;
+		return;
+	}
+
 	Workspace::singleton()->checkForUpdates();
 	emit filterByNameDone(dataSet, tq(name), tq(error));
 }

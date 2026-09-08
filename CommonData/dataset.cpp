@@ -1297,12 +1297,18 @@ void DataSet::refresh(bool doColumnsToo)
 	emit titleChanged();
 }
 
-void DataSet::runFilters()
+void DataSet::runFilters(const QString & editedColumn)
 {
+	//The default filter always re-runs: its generated (label) filter can depend on any
+	//column's labels/values.
 	_defaultFilter->setInvalidated(true);
-	
+
+	//Named filters only need a re-run when they actually use the edited column. Blanket
+	//invalidation of every named filter on every manual edit used to queue pointless
+	//engine runs for each of them (and fed the audit filterByName loop).
 	for(Filter * f : _filters)
-		f->setInvalidated(true);
+		if(f != _defaultFilter && (editedColumn.isEmpty() || f->columnUsed(editedColumn)))
+			f->setInvalidated(true);
 }
 
 DatabaseInterface &DataSet::db()	
@@ -1460,11 +1466,11 @@ bool DataSet::setData(const QModelIndex &index, const QVariant &value, int role)
 			handleColumnChanged(column);
 			handleLabelsReordered(column);
 			
-			//Probably the labelfilter thing and the constructor thing should 
+			//Probably the labelfilter thing and the constructor thing should
 			if(column->hasLabelFilter())
 			{
 				emit labelFilterChanged();
-				runFilters();
+				runFilters(tq(column->name()));
 			}
 		}
 		
@@ -1981,11 +1987,21 @@ void DataSet::filterByNameDone(int dataSetID, const QString &name, const QString
 		return;
 
 	Filter * f = filter(fq(name));
-	
-	if(f && f->dbLoadResultAndError())
+
+	if(!f)
+		return;
+
+	//The reply that reaches us is guaranteed to be for the most recently dispatched request
+	//(EngineRepresentation drops superseded ones), so after loading the results the filter is
+	//fresh: its cached state now matches its inputs, regardless of whether the values changed.
+	bool changed = f->dbLoadResultAndError();
+
+	f->setInvalidated(false);
+
+	if(changed)
 	{
 		emit f->refreshAllAnalyses(f);
-		
+
 		if(shownFilter() == f)
 			refresh();
 	}

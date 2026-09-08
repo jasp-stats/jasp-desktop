@@ -283,7 +283,7 @@ signals:
 			
 public slots:
 			void			refresh(bool doColumnsToo = true);
-			void			runFilters();
+			void			runFilters(const QString & editedColumn = QString());
 			void			handleColumnChanged(		const Column * column);
 			void			handleLabelsReordered(		const Column * column);
 			bool			setColumnTypes(stringset columnIndexes, columnType newColumnType);

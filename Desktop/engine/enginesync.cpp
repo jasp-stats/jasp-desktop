@@ -564,7 +564,7 @@ int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const
 void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QString & module)
 {
 	std::queue<RScriptStore *> copyQueue = _waitingScripts;
-	
+
 	if(copyQueue.size() > 0)
 		for(RScriptStore * script = copyQueue.front(); copyQueue.size() > 0; script = copyQueue.front(), copyQueue.pop())
 		{
@@ -579,8 +579,11 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 			if(waiting->name == name && waiting->module == module && waiting->dataSetId == dataSetId)
 				return;
 		}
-					
-	_waitingScripts.push(new RFilterByNameStore(dataSetId, name, module));
+
+	//Unique requestId so the reply can be matched to this request (mirrors the default
+	//filter path): replies for superseded requests are dropped by EngineRepresentation
+	//and must never clear the filter's stale flag.
+	_waitingScripts.push(new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module));
 }
 
 void EngineSync::sendRCode(int dataSetId, const QString & rCode, int requestId, bool whiteListedVersion, QString module)

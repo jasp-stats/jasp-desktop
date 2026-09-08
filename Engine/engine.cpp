@@ -317,17 +317,18 @@ void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
 	_engineState				= engineState::filter;
 	std::string name			= jsonRequest.get("name",		"").asString();
 	int dataSetId				= jsonRequest.get("dataSetId",	-1).asInt();
+	int requestId				= jsonRequest.get("requestId",	-1).asInt();
 
-	runFilterByName(name, dataSetId);
+	runFilterByName(name, dataSetId, requestId);
 }
 
-void Engine::runFilterByName(const std::string & name, int dataSetId)
+void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId)
 {
 	provideAndUpdateDataSet(dataSetId);
 	
 	if(!_workspace || !_workspace->dataSetById(dataSetId) || !_workspace->dataSetById(dataSetId)->showFilter(name))
 	{
-		sendFilterByNameDone(name, dataSetId, "No workspace or filter in it found!");
+		sendFilterByNameDone(name, dataSetId, "No workspace or filter in it found!", requestId);
 		_engineState = engineState::idle;
 		
 		return;
@@ -360,7 +361,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId)
 	localFilter->incRevision();
 	DatabaseInterface::singleton()->transactionWriteEnd();
 
-	sendFilterByNameDone(name, dataSetId, RPossibleWarning);
+	sendFilterByNameDone(name, dataSetId, RPossibleWarning, requestId);
 
 	_engineState = engineState::idle;
 }
@@ -434,7 +435,7 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 	sendString(filterResponse);
 }
 
-void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const std::string & errorMessage)
+void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const std::string & errorMessage, int requestId)
 {
 	Json::Value filterResponse(Json::objectValue);
 
@@ -442,6 +443,7 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 	filterResponse["name"]			= name;
 	filterResponse["dataSetId"]		= dataSetId;
 	filterResponse["errorMessage"]	= errorMessage;
+	filterResponse["requestId"]		= requestId;
 
 	sendString(filterResponse);
 }

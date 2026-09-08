@@ -49,6 +49,9 @@ ListModelFilteredDataEntry::~ListModelFilteredDataEntry()
 
 void ListModelFilteredDataEntry::dataSetChangedHandler()
 {
+	//The dataset changed, so whatever the previous runs computed may be outdated:
+	//allow one fresh empty-retry again and re-run our filter.
+	_retriedEmptyRun = false;
 	runFilter();
 }
 
@@ -96,7 +99,17 @@ void ListModelFilteredDataEntry::filterDoneHandler(int dataSetID, const QString 
 		_tableView->clearControlError();
 	
 	if(_filter->filteredRowCount() == 0)
-		runFilter();
+	{
+		//A filter can legitimately yield 0 rows while its data is still loading/being
+		//computed, so retry once. But do not retry endlessly: a filter that genuinely
+		//yields 0 rows must not loop (it used to, together with the datasetChanged
+		//feedback, as part of the audit filterByName loop).
+		if(!_retriedEmptyRun)
+		{
+			_retriedEmptyRun = true;
+			runFilter();
+		}
+	}
 	else
 		informDataSetOfInitialValues();
 }
@@ -181,7 +194,21 @@ void ListModelFilteredDataEntry::initialValuesChanged()
 
 void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 {
-	//std::cout << "ListModelFilteredDataEntry::initValues(OptionsTable * bindHere)" << std::endl;
+	//A re-bind with identical terms (e.g. an analysis re-run through the RPC/agent API with
+	//unchanged options) must not re-run the filter: nothing changed, so the results are
+	//still fresh. This unconditional run used to be the entry point of the infinite
+	//filterByName loop with the audit data-entry. Cell values are not part of TableTerms,
+	//they reach the table through the bound value/_initialValues, so skipping here cannot
+	//miss a value-only change.
+	if(_filter &&
+		terms.colName		== _tableTerms.colName &&
+		terms.extraCol		== _tableTerms.extraCol &&
+		terms.filter		== _tableTerms.filter &&
+		terms.filterName	== _tableTerms.filterName &&
+		terms.colNames		== _tableTerms.colNames)
+		return;
+
+	_retriedEmptyRun = false;
 
 	if (terms.values.size() > 1)
 		Log::log() << "Too many values in ListModelFilteredDataEntry" << std::endl;
