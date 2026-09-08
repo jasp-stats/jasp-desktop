@@ -5,6 +5,7 @@ class DataSetPackage;
 class Importer;
 class DataSet;
 class DataSetSyncer;
+class QQuickItem;
 
 class TestAll: public QObject
 {
@@ -71,9 +72,32 @@ private slots:
 	// and the workspace teardown paths).
 	void	testCloseWorkspaceAndDataSets();
 
+	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
+	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
+	// JSON stored in .jasp files and the R code that gets sent to the engine.
+	void	testScriptConstructorRoundTrip();
+	void	testScriptConstructorGoldenR();
+	void	testScriptConstructorCompleteness();
+	void	testScriptConstructorUndo();
+	void	testScriptConstructorGobble();
+	void	testScriptConstructorDefaultFilterJson();
+	void	testScriptConstructorAllowedColumnTypes();
+	void	testScriptConstructorRowFunctionFreeSlot();
+
+	// "Best spot" drop resolution: a drop without an explicit target fills the leftmost
+	// empty accepting slot, working left-to-right / top-to-bottom through the formulas.
+	void	testScriptConstructorLeftMostEmpty();
+
+	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
+	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
+	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
+	// regression test that the full UI bootstrap + filter window opening works headlessly.
+	void	testMainWindowShowsFilterWindow();
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;
 	bool					_newPkgWithDataSet();
 	bool					_checkDoSyncFake();
+	QQuickItem			*	_findQuickItemByName(const QString & objectName);
 };

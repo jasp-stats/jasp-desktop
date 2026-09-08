@@ -103,6 +103,7 @@ public:
 	
 	Q_INVOKABLE bool isColumnNameFree(		const QString & name);
 	Q_INVOKABLE void createComputedColumn(	const QString & name, int columnType, bool useJsonConstructor);
+	Q_INVOKABLE void setComputedColumnCode(	const QString & rCode, const QString & json); ///< Via UndoStack
 	
 	UndoStack *	undoStack();
 

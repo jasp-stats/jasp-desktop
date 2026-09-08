@@ -62,6 +62,7 @@ FocusScope
 		
 		Flickable
 		{
+			id:				filtersScroller
 			anchors
 			{
 				top:			backgroundFiltersTabs.top
@@ -80,13 +81,7 @@ FocusScope
 			{
 				id:		filtersTabs
 				z:		2
-				anchors
-				{
-					top:			backgroundFiltersTabs.top
-					left:			backgroundFiltersTabs.left
-					right:			backgroundFiltersTabs.right
-					margins:		jaspTheme.generalAnchorMargin
-				}
+				width:	Math.max(implicitWidth, filtersScroller.width)
 				
 				Repeater
 				{
@@ -168,11 +163,13 @@ FocusScope
 			visible:			filterModel.showEasyFilter
 
 
-			FilterConstructor
+			ScriptConstructor
 			{
-				id:				easyFilterConstructor
-				onRCodeChanged: filterContainer.rCodeChanged(rScript)
-				clip:			true
+				id:					easyFilterConstructor
+				mode:				ScriptConstructor.Filter
+				constructorJson:	filterModel.filter.constructorJson
+				filterErrorMsg:		filterModel.filter.filterErrorMsg
+				clip:				true
 
 				anchors
 				{
@@ -182,38 +179,13 @@ FocusScope
 					top:	parent.top
 				}
 
-
-				functionModel: ListModel
+				onApplyRequested: function(json, rCode)
 				{
-
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Abs");					*/ functionName: "abs";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("absolute value") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Standard deviation");	*/ functionName: "sd";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("standard deviation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Variance");			*/ functionName: "var";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("variance") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Sum");					*/ functionName: "sum";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("summation") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("Product");				*/ functionName: "prod";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("product of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /* qsTr("ZScores");				*/ functionName: "zScores";		functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("Standardizes the variable") }
-
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise mean") ;				*/	functionName: "rowMean";		toolTip: qsTr("Rowwise mean") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise sum") ;				*/	functionName: "rowSum";			toolTip: qsTr("Rowwise sum") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise standard deviation");	*/	functionName: "rowSD";			toolTip: qsTr("Rowwise standard deviation") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise variance") ;			*/	functionName: "rowVariance";	toolTip: qsTr("Rowwise variance") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise median") ;				*/	functionName: "rowMedian";		toolTip: qsTr("Rowwise median") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise minimum") ;			*/	functionName: "rowMin";			toolTip: qsTr("Rowwise minimum") }
-					ListElement	{ type: "rowfunction";	friendlyFunctionName:	""; /* qsTr("Rowwise maximum") ;			*/	functionName: "rowMax";			toolTip: qsTr("Rowwise maximum") }
-					
-					
-
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Min");			*/	functionName: "min";			functionParameters: "values";			functionParamTypes: "number";						toolTip: qsTr("returns minimum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Max");			*/	functionName: "max";			functionParameters: "values";			functionParamTypes: "number";							toolTip: qsTr("returns maximum of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Mean");			*/	functionName: "mean";			functionParameters: "values";			functionParamTypes: "number";								toolTip: qsTr("mean") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Sign");			*/	functionName: "sign";			functionParameters: "values";			functionParamTypes: "number";									toolTip: qsTr("returns the sign of values") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Round");		*/		functionName: "round";			functionParameters: "y,n";				functionParamTypes: "number,number";								toolTip: qsTr("rounds y to n decimals") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Length");		*/		functionName: "length";			functionParameters: "y";				functionParamTypes: "string:number";									toolTip: qsTr("returns number of elements in y") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Median");		*/		functionName: "median";			functionParameters: "values";			functionParamTypes: "number";												toolTip: qsTr("median") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("IfElse");		*/		functionName: "ifelse";			functionParameters: "test,then,else";	functionParamTypes: "boolean,boolean:string:number,boolean:string:number";		toolTip: qsTr("if-else statement") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("HasSubstring");	*/	functionName: "hasSubstring";	functionParameters: "string,substring";	functionParamTypes: "string,string";											toolTip: qsTr("returns true if string contains substring at least once") }
-					ListElement	{ type: "function";	friendlyFunctionName:	""; /*qsTr("Is.NA");		*/		functionName: "is.na";			functionParameters: "y";				functionParamTypes: "string:number:boolean";									toolTip: qsTr("Combine with not-operator to filter out rows with missing values (NA) for a column.") }
+					filterModel.applyConstructorJson(json)
+					filterModel.filter.constructorR = rCode
 				}
+
+				onRCodeChanged: filterContainer.rCodeChanged(rScript)
 
 				function askIfChanged(closeFunc)
 				{
@@ -235,7 +207,7 @@ FocusScope
 
 					property var closeFunc: undefined
 
-					onSave:		if(easyFilterConstructor.checkAndApplyFilter()) closeFunc();
+					onSave:		if(easyFilterConstructor.checkAndApply()) closeFunc();
 					onDiscard:	{ easyFilterConstructor.initializeFromJSON(); closeFunc(); }
 				}
 			}
@@ -304,12 +276,12 @@ FocusScope
 
 			JaspControls.RectangularButton
 			{
-				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged || easyFilterConstructor.showStartupMsg
+				property bool showApplyNotApplied: easyFilterConstructor.somethingChanged
 
 				id:				applyEasyFilter
 				text:			showApplyNotApplied ? qsTr("Apply pass-through filter") : qsTr("Filter applied")
 				enabled:		easyFilterConstructor.somethingChanged
-				onClicked:		easyFilterConstructor.checkAndApplyFilter()
+				onClicked:		easyFilterConstructor.checkAndApply()
 				toolTip:		showApplyNotApplied ? qsTr("Click to apply filter") : qsTr("Filter is already applied")
 				anchors
 				{
@@ -412,10 +384,10 @@ FocusScope
 						JaspControls.RectangularButton
 						{
 							id:						resetAllGeneratedFilters
-							width:					(workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0) ? height : 0
+							width:					(dataSetModel.columnsLabelFilteredCount > 0) ? height : 0
 							height:					filterGeneratedBox.height
 							iconSource:				jaspTheme.iconPath + "eraser_all.png"
-							visible:				workspace.shownDataSet && workspace.shownDataSet.columnsLabelFilteredCount > 0
+							visible:				dataSetModel.columnsLabelFilteredCount > 0
 							toolTip:				qsTr("Reset all checkmarks on all labels")
 							onClicked:				dataSetModel.resetAllFilters()
 

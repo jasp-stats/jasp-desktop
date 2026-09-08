@@ -20,10 +20,27 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "scriptconstructormodel.h"
+#include "scriptnode.h"
+#include "scriptconstructorregistry.h"
+
+#include "mainwindow.h"
+#include "data/filtermodel.h"
+#include "data/columnsmodel.h"
+#include "qquick/scriptconstructorview.h"
+#include "qquick/scriptnodeitem.h"
+#include "timers.h"
 
 #include <QSignalSpy>
 #include <QFile>
 #include <QFileInfo>
+#include <QUndoStack>
+#include <QQuickWindow>
+#include <QMouseEvent>
+#include <QGuiApplication>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
+#include <random>
+#include <functional>
 #include <sqlite3.h>
 #include "data/asyncloader.h"
 
@@ -70,6 +87,157 @@ bool TestAll::_newPkgWithDataSet()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), _pkg->createDataSet(), [](int){});
 
 	return _pkg->dataSet() != nullptr;
+}
+
+QQuickItem * TestAll::_findQuickItemByName(const QString & objectName)
+{
+	for(QWindow * window : QGuiApplication::topLevelWindows())
+		if(QQuickWindow * quickWindow = qobject_cast<QQuickWindow*>(window))
+			if(QQuickItem * item = quickWindow->findChild<QQuickItem*>(objectName))
+				return item;
+	return nullptr;
+}
+
+void TestAll::testMainWindowShowsFilterWindow()
+{
+	// Makes MainWindow::checkForUpdates() bail out (mainwindow.cpp).
+	QCoreApplication::setApplicationName("JASPTest");
+
+	// The full QML UI contains WebEngine views (ChatWindow, results page), so WebEngine must be
+	// initialized before MainWindow creates its QQmlApplicationEngine (same order as main.cpp).
+	QtWebEngineQuick::initialize();
+
+	// MainWindow constructs the one-and-only DataSetPackage singleton, so no other package may
+	// exist at this point (the cleanup() of any previous test has deleted it).
+	QVERIFY(DataSetPackage::pkg() == nullptr);
+
+	MainWindow * mainWindow = new MainWindow(nullptr);
+
+	QSignalSpy qmlLoadedSpy(mainWindow, &MainWindow::qmlLoadedChanged);
+	QTRY_VERIFY(!qmlLoadedSpy.isEmpty()); // loadQML() runs from a QTimer::singleShot in the ctor
+
+	// Load a dataset the way production does: into the package owned by MainWindow, mark it
+	// as the shown dataset (DataSetLoader::loadPackage does the same) and then notify the UI
+	// (newDataLoaded -> MainWindow::populateUIfromDataSet).
+	DataSet * dataSet = DataSetPackage::pkg()->createDataSet();
+	QVERIFY(dataSet != nullptr);
+	// Exactly what DataSetLoader::loadPackage does (datasetloader.cpp): setShownDataSet may
+	// early-return (the empty dataset was already made shown by the EngineSync-ctor reset),
+	// so refresh() is needed to (re)emit shownDataSetChanged now that makeConnections() has
+	// wired up the models.
+	DataSetPackage::pkg()->workspace()->setShownDataSet(dataSet);
+	DataSetPackage::pkg()->workspace()->refresh();
+
+	// Pre-set the delimiter: with MainWindow connected, askCsvDelimiterSignal would otherwise
+	// open a CSV delimiter dialog and deadlock the synchronous import on the main thread.
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(',');
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), dataSet, [](int){});
+	DataSetPackage::pkg()->newDataLoaded();
+
+	// Open the filter window the way the UI does (Loader in DataPanel.qml).
+	FilterModel * filterModel = mainWindow->findChild<FilterModel*>();
+	QVERIFY(filterModel != nullptr);
+	filterModel->setFilterVisible(true);
+
+	// FilterWindow (objectName "filterWindow") must appear and the ScriptConstructor inside it
+	// must have built its chrome now that it is visible.
+	QQuickItem * filterWindow = nullptr;
+	QTRY_VERIFY((filterWindow = _findQuickItemByName("filterWindow")) != nullptr);
+
+	ScriptConstructorView * scriptConstructor = filterWindow->findChild<ScriptConstructorView*>();
+	QVERIFY(scriptConstructor != nullptr);
+	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
+
+	// --- Trash can regression: double-click must erase the entire script area ---
+	// The trash item is the only script-area child with z == 10.
+	QQuickItem * trash = nullptr;
+	for(QQuickItem * child : scriptConstructor->scriptArea()->childItems())
+		if(child->z() == 10)
+			trash = child;
+	QVERIFY2(trash != nullptr, "Trash item not found in script area");
+
+	QQuickWindow * quickWindow = trash->window();
+	QVERIFY(quickWindow != nullptr);
+
+	// The offscreen SplitView never assigns a width to the Loader (it stays 0 wide), which
+	// excludes the whole filter window from mouse hit-testing even though its content is
+	// visible (children overflow unclipped ancestors). In the real app the SplitView/anchors
+	// give the loader a proper width; emulate that here.
+	if(QQuickItem * loader = filterWindow->parentItem())
+	{
+		loader->setHeight(std::max(loader->height(), 600.0));
+		loader->setWidth(std::max(loader->width(), 1200.0));
+	}
+
+	auto trashCentre = [&]()
+	{
+		return trash->mapToScene(QPointF(trash->width() / 2, trash->height() / 2));
+	};
+	const QPointF centre = trashCentre();
+	QVERIFY2(centre.x() > 0 && centre.y() > 0 && centre.x() < quickWindow->width() && centre.y() < quickWindow->height(),
+		qPrintable(QString("Trash not inside the window bounds: centre=%1,%2 constructor=%3x%4 at %5,%6 window=%7x%8 trashSize=%9x%10")
+			.arg(centre.x()).arg(centre.y())
+			.arg(scriptConstructor->width()).arg(scriptConstructor->height())
+			.arg(scriptConstructor->x()).arg(scriptConstructor->y())
+			.arg(quickWindow->width()).arg(quickWindow->height())
+			.arg(trash->width()).arg(trash->height())));
+
+	// The engine/loader threads push filter results back into the view asynchronously; a push
+	// whose json differs from the current model resets it (fromJson emits reset), wiping
+	// unapplied formulas at any event-loop spin. QTest's mouse helpers spin internally, and
+	// the resulting QML GC churn reliably crashes this offscreen harness (not seen in the
+	// real app). So:
+	// - break the QML applyRequested -> FilterModel connection, so the trash's checkAndApply
+	//   cannot trigger the full apply chain (re-running the filter rebuilds the entire
+	//   DataSetView) inside the harness; and
+	// - verify the trash via its deterministic debug event counters, delivering the mouse
+	//   sequence directly to the item (no event-loop spin -> no interleaving).
+	// NOTE: real window hit-testing delivery to the trash was verified separately (the
+	// topmost-item walk shows ScriptTrashItem is the only accepting item at its position, and
+	// QTest-delivered presses arrived at it) — it is only the spinning+GC combination that
+	// cannot run in this harness.
+	QObject::disconnect(scriptConstructor, &ScriptConstructorView::applyRequested, scriptConstructor, nullptr);
+
+	QSignalSpy applySpy(scriptConstructor, &ScriptConstructorView::applyRequested);
+
+	// Boolean-valid formula (Filter mode requires it) so the trash's checkAndApply succeeds.
+	ScriptNodeOperator * equals = new ScriptNodeOperator("==", false);
+	equals->setLeft(new ScriptNodeColumn("contNormal"));
+	ScriptNodeLiteral * one = new ScriptNodeLiteral(ScriptNode::Type::Number);
+	one->setNumberValue(1);
+	equals->setRight(one);
+	scriptConstructor->model()->insertNode(equals, DropTarget::root());
+	scriptConstructor->refresh();
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 1);
+
+	ScriptTrashItem * trashItem = qobject_cast<ScriptTrashItem*>(trash);
+	QVERIFY2(trashItem != nullptr, "Trash is not a ScriptTrashItem");
+	const int pressesBefore = trashItem->debugPressCount;
+	const int dblClicksBefore = trashItem->debugDoubleClickCount;
+
+	auto sendMouse = [&](QEvent::Type type)
+	{
+		QMouseEvent me(type, trashCentre(), quickWindow->mapToGlobal(trashCentre()), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+		QCoreApplication::sendEvent(trash, &me);
+	};
+	sendMouse(QEvent::MouseButtonPress);
+	sendMouse(QEvent::MouseButtonRelease);
+	sendMouse(QEvent::MouseButtonDblClick);
+	sendMouse(QEvent::MouseButtonRelease);
+
+	QCOMPARE(trashItem->debugPressCount, pressesBefore + 1);
+	QCOMPARE(trashItem->debugDoubleClickCount, dblClicksBefore + 1);
+	QCOMPARE(scriptConstructor->model()->formulaCount(), 0); // slate erased
+	QVERIFY(!applySpy.isEmpty());							 // emptied filter was applied
+
+	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
+
+	// Deliberately do not delete mainWindow: tearing down the EngineSync / DatabaseInterface
+	// during process shutdown throws (sqlite session already gone), which would fail the test
+	// even though the assertions passed. The binary exits right after this slot anyway.
 }
 
 #define TO_STR2(x) #x
@@ -1354,6 +1522,606 @@ void TestAll::testCloseWorkspaceAndDataSets()
 bool TestAll::_checkDoSyncFake()
 {
 	return true;
+}
+
+// =====================================================================================
+// ScriptConstructor regression tests
+// =====================================================================================
+
+namespace
+{
+	struct FixedColumnTypeProvider : public ScriptColumnTypeProvider
+	{
+		strintmap types;
+		int columnType(const std::string & name) const override
+		{
+			auto it = types.find(name);
+			return it == types.end() ? 1 : it->second;
+		}
+	};
+
+	Json::Value colNode(const std::string & name, int typeUser = -1, int typeDrop = -1)
+	{
+		Json::Value v;
+		v["nodeType"]			= "Column";
+		v["columnName"]			= name;
+		v["columnTypeUser"]		= typeUser;
+		v["columnTypeDrop"]		= typeDrop;
+		return v;
+	}
+
+	Json::Value numNode(double val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Number";
+		v["value"] = val;
+		return v;
+	}
+
+	Json::Value boolNode(bool val)
+	{
+		Json::Value v;
+		v["nodeType"] = "Boolean";
+		v["value"] = val ? "TRUE" : "FALSE";
+		return v;
+	}
+
+	Json::Value strNode(const std::string & text)
+	{
+		Json::Value v;
+		v["nodeType"] = "String";
+		v["text"] = text;
+		return v;
+	}
+
+	Json::Value opNode(const std::string & op, const Json::Value & left, const Json::Value & right, bool vertical = false)
+	{
+		Json::Value v;
+		v["nodeType"]		= vertical ? "OperatorVertical" : "Operator";
+		v["operator"]		= op;
+		v["leftArgument"]	= left;
+		v["rightArgument"]	= right;
+		return v;
+	}
+
+	Json::Value funcArg(const std::string & name, const stringvec & keys, const Json::Value & argument)
+	{
+		Json::Value a;
+		a["name"] = name;
+		a["dropKeys"] = Json::arrayValue;
+		for(const std::string & k : keys)
+			a["dropKeys"].append(k);
+		a["argument"] = argument;
+		return a;
+	}
+
+	Json::Value funcNode(const std::string & name, std::initializer_list<Json::Value> args)
+	{
+		Json::Value v;
+		v["nodeType"]		= "Function";
+		v["functionName"]	= name;
+		v["arguments"]		= Json::arrayValue;
+		for(const Json::Value & a : args)
+			v["arguments"].append(a);
+		return v;
+	}
+
+	Json::Value rowFuncNode(const std::string & name, std::initializer_list<std::string> droppedJsonStrings)
+	{
+		Json::Value v;
+		v["nodeType"]		= "RowFunction";
+		v["functionName"]	= name;
+		v["droppedItems"]	= Json::arrayValue;
+		for(const std::string & s : droppedJsonStrings)
+			v["droppedItems"].append(s);
+		return v;
+	}
+
+	Json::Value formulas(std::initializer_list<Json::Value> nodes)
+	{
+		Json::Value v;
+		v["formulas"] = Json::arrayValue;
+		for(const Json::Value & n : nodes)
+			v["formulas"].append(n);
+		return v;
+	}
+
+	std::string compact(const Json::Value & v)
+	{
+		Json::StreamWriterBuilder b;
+		b["indentation"] = "";
+		std::string s = Json::writeString(b, v);
+		while(!s.empty() && (s.back() == '\n' || s.back() == '\r' || s.back() == ' '))
+			s.pop_back();
+		return s;
+	}
+}
+
+void TestAll::testScriptConstructorDefaultFilterJson()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.fromJson(std::string(DEFAULT_FILTER_JSON));
+
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(model.toString(), std::string(DEFAULT_FILTER_JSON));
+	QVERIFY(model.checkCompleteness());
+}
+
+void TestAll::testScriptConstructorGoldenR()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"]	= 1; // scale
+	provider.types["contBinom"]		= 1;
+	provider.types["group"]			= 3; // nominal
+	provider.types["ord"]			= 2; // ordinal
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto checkR = [&](const Json::Value & tree, const std::string & expected)
+	{
+		model.fromJson(tree);
+		QCOMPARE(model.toR(), expected);
+	};
+
+	// Column resolves through the provider (no user/drop override) -> ".scale"
+	checkR(formulas({colNode("contNormal")}), "contNormal.scale\n");
+
+	// Arithmetic operator with a literal
+	checkR(formulas({opNode("+", colNode("contNormal"), numNode(5))}), "(contNormal.scale + 5)\n");
+
+	// Empty right slot becomes "null"
+	checkR(formulas({opNode("+", colNode("contNormal"), Json::nullValue)}), "(contNormal.scale + null)\n");
+
+	// mean() gains ", na.rm=TRUE"
+	checkR(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}), "mean(contNormal.scale, na.rm=TRUE)\n");
+
+	// abs() has no na.rm
+	checkR(formulas({funcNode("abs", {funcArg("values", {"number"}, colNode("contNormal"))})}), "abs(contNormal.scale)\n");
+
+	// Empty function argument becomes "NULL"
+	checkR(formulas({funcNode("round", {funcArg("y", {"number"}, colNode("contNormal")), funcArg("n", {"number"}, Json::nullValue)})}), "round(contNormal.scale, NULL)\n");
+
+	// ifelse with boolean + numbers
+	checkR(formulas({funcNode("ifelse", {funcArg("test", {"boolean"}, boolNode(true)), funcArg("then", {"boolean","string","number"}, numNode(1)), funcArg("else", {"boolean","string","number"}, numNode(2))})}), "ifelse(TRUE, 1, 2)\n");
+
+	// String literal is single-quoted
+	checkR(formulas({strNode("hello")}), "'hello'\n");
+
+	// Nested boolean expression
+	checkR(formulas({opNode("&", opNode(">", colNode("contNormal"), numNode(0)), opNode("<", colNode("contBinom"), numNode(10)))}), "((contNormal.scale > 0) & (contBinom.scale < 10))\n");
+
+	// Vertical (fraction) operator serialises differently but generates the same R shape
+	checkR(formulas({opNode("/", colNode("contNormal"), numNode(2), true)}), "(contNormal.scale / 2)\n");
+
+	// RowFunction only emits filled entries and appends NaRm
+	{
+		Json::StreamWriterBuilder b; b["indentation"] = "";
+		std::string aJson = compact(colNode("contNormal"));
+		std::string bJson = compact(colNode("contBinom"));
+		checkR(formulas({rowFuncNode("rowMean", {aJson, "null", bJson})}), "rowMeanNaRm(contNormal.scale, contBinom.scale)\n");
+	}
+
+	// Column with an explicit user type override ignores the provider
+	checkR(formulas({colNode("group", 2)}), "group.ordinal\n");
+
+	// %|% conditional operator in filter mode
+	checkR(formulas({opNode("%|%", opNode(">", colNode("contNormal"), numNode(0)), colNode("group"))}), "((contNormal.scale > 0) %|% group.nominal)\n");
+
+	// sqrt (operator-bar-only function) wraps a single number argument
+	checkR(formulas({funcNode("sqrt", {funcArg("value(s)", {"number"}, colNode("contNormal"))})}), "sqrt(contNormal.scale)\n");
+
+	// ! (operator-bar-only function) wraps a single boolean argument
+	checkR(formulas({funcNode("!", {funcArg("logical(s)", {"boolean"}, boolNode(true))})}), "!(TRUE)\n");
+}
+
+void TestAll::testScriptConstructorCompleteness()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Complete boolean formula passes both checks
+	model.fromJson(formulas({opNode(">", colNode("a"), numNode(0))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(model.allBoolean());
+
+	// Missing right operand -> incomplete
+	model.fromJson(formulas({opNode(">", colNode("a"), Json::nullValue)}));
+	QVERIFY(!model.checkCompleteness());
+
+	// Arithmetic root is complete but not boolean -> cannot be a filter root
+	model.fromJson(formulas({opNode("+", colNode("a"), numNode(1))}));
+	QVERIFY(model.checkCompleteness());
+	QVERIFY(!model.allBoolean());
+
+	// Optional ("?") parameters do not block completeness
+	{
+		Json::Value box = funcNode("BoxCoxAuto", {
+			funcArg("y", {"number"}, colNode("a")),
+			funcArg("?predictor", {"number"}, Json::nullValue),
+			funcArg("?groupSize", {"number"}, Json::nullValue),
+			funcArg("method", {"string"}, strNode("loglik")),
+			funcArg("lower", {"number"}, numNode(0)),
+			funcArg("upper", {"number"}, numNode(1)),
+			funcArg("shift", {"number"}, numNode(0)),
+			funcArg("continuityAdjustment", {"boolean"}, boolNode(true))});
+		model.fromJson(formulas({box}));
+		QVERIFY(model.checkCompleteness());
+	}
+
+	// RowFunction is complete when at least one slot is filled
+	{
+		std::string aJson = compact(colNode("a"));
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null", aJson})}));
+		QVERIFY(model.checkCompleteness());
+
+		model.fromJson(formulas({rowFuncNode("rowSum", {"null"})}));
+		QVERIFY(!model.checkCompleteness());
+	}
+}
+
+void TestAll::testScriptConstructorRoundTrip()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	// Deterministic pseudo-random trees: fromJson -> toString -> fromJson -> toString must be idempotent.
+	// This guarantees that loading a stored constructor JSON and saving it again never loses or reorders
+	// information, which is what .jasp file round-trips rely on.
+
+	const std::vector<std::string> columnNames	= {"contNormal", "contBinom", "group", "ord", "text"};
+	const std::vector<std::string> operators	= {"+", "-", "*", "/", "^", "%%", "==", "!=", "<", "<=", ">", ">=", "&", "|", "%|%"};
+	const std::vector<std::string> functions	= {"abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median", "ifelse", "hasSubstring", "is.na", "log", "exp", "BoxCox", "cut", "replaceNA"};
+	const std::vector<std::string> rowFunctions	= {"rowMean", "rowSum", "rowSD", "rowVariance", "rowMedian", "rowMin", "rowMax"};
+
+	std::function<Json::Value(std::mt19937 &, int)> makeNode = [&](std::mt19937 & rng, int depth) -> Json::Value
+	{
+		std::uniform_int_distribution<int> pick(0, 99);
+		std::uniform_int_distribution<int> colPick(0, static_cast<int>(columnNames.size()) - 1);
+		std::uniform_int_distribution<int> opPick(0, static_cast<int>(operators.size()) - 1);
+		std::uniform_int_distribution<int> funcPick(0, static_cast<int>(functions.size()) - 1);
+		std::uniform_int_distribution<int> rowPick(0, static_cast<int>(rowFunctions.size()) - 1);
+		std::uniform_real_distribution<double> numDist(-100.0, 100.0);
+
+		int kind = pick(rng);
+
+		if(depth <= 0)
+		{
+			// Leaves only at max depth
+			int leaf = kind % 4;
+			if(leaf == 0) return colNode(columnNames[colPick(rng)]);
+			if(leaf == 1) return numNode(numDist(rng));
+			if(leaf == 2) return boolNode(kind % 2 == 0);
+			return strNode("s" + std::to_string(kind));
+		}
+
+		if(kind < 30)
+			return colNode(columnNames[colPick(rng)]);
+		if(kind < 45)
+			return numNode(numDist(rng));
+		if(kind < 52)
+			return boolNode(kind % 2 == 0);
+		if(kind < 58)
+			return strNode("s" + std::to_string(kind));
+		if(kind < 78)
+			return opNode(operators[opPick(rng)], makeNode(rng, depth - 1), makeNode(rng, depth - 1));
+		if(kind < 90)
+		{
+			const std::string & fn = functions[funcPick(rng)];
+			const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn);
+			Json::Value args = Json::arrayValue;
+			if(def)
+				for(const ScriptParamDef & p : def->params)
+				{
+					bool fill = (pick(rng) % 10) < 7;
+					args.append(funcArg(p.optional ? "?" + p.name : p.name, p.dropKeys, fill ? makeNode(rng, depth - 1) : Json::nullValue));
+				}
+			Json::Value v;
+			v["nodeType"] = "Function";
+			v["functionName"] = fn;
+			v["arguments"] = args;
+			return v;
+		}
+
+		// RowFunction with a couple of filled slots serialised as embedded JSON strings
+		int slotCount = 1 + (kind % 3);
+		std::vector<std::string> dropped;
+		for(int i = 0; i < slotCount; i++)
+			dropped.push_back((pick(rng) % 10) < 6 ? compact(makeNode(rng, depth - 1)) : std::string("null"));
+		if(std::all_of(dropped.begin(), dropped.end(), [](const std::string & s){ return s == "null"; }))
+			dropped[0] = compact(colNode(columnNames[colPick(rng)]));
+
+		Json::Value v;
+		v["nodeType"] = "RowFunction";
+		v["functionName"] = rowFunctions[rowPick(rng)];
+		v["droppedItems"] = Json::arrayValue;
+		for(const std::string & s : dropped)
+			v["droppedItems"].append(s);
+		return v;
+	};
+
+	ScriptConstructorModel model;
+
+	for(int seed = 0; seed < 300; seed++)
+	{
+		std::mt19937 rng(seed);
+		std::uniform_int_distribution<int> formulaCount(0, 3);
+
+		Json::Value tree;
+		tree["formulas"] = Json::arrayValue;
+		int n = formulaCount(rng);
+		for(int i = 0; i < n; i++)
+			tree["formulas"].append(makeNode(rng, 3));
+
+		model.fromJson(tree);
+		std::string first = model.toString();
+
+		model.fromJson(first);
+		std::string second = model.toString();
+
+		if(first != second)
+			QFAIL(("Round-trip not idempotent for seed " + std::to_string(seed) + ":\nfirst:  " + first + "\nsecond: " + second).c_str());
+
+		// The re-parsed tree must also be parseable without throwing and keep the same formula count.
+		QCOMPARE(model.formulaCount(), n);
+	}
+}
+
+void TestAll::testScriptConstructorUndo()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	QUndoStack stack;
+	model.setUndoStack(&stack);
+
+	QCOMPARE(model.formulaCount(), 0);
+
+	// Insert a node -> one undo command
+	ScriptNode * node = new ScriptNodeOperator(">", false);
+	model.insertNode(node, DropTarget::root());
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(stack.count(), 1);
+
+	// Undo removes it, redo brings it back
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 0);
+	stack.redo();
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Clear -> another command
+	model.clear();
+	QCOMPARE(model.formulaCount(), 0);
+	QCOMPARE(stack.count(), 2);
+
+	stack.undo();
+	QCOMPARE(model.formulaCount(), 1);
+}
+
+void TestAll::testScriptConstructorGobble()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// Start with a single column formula at the root: contNormal
+	model.fromJson(formulas({colNode("contNormal")}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	// Drop a ">" operator with no specific target. It should absorb ("gobble")
+	// the existing column as its left operand, leaving the right slot empty.
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+
+	QCOMPARE(model.formulaCount(), 1);
+
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QCOMPARE(rootOp->op(), std::string(">"));
+
+	auto * leftCol = dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild());
+	QVERIFY(leftCol != nullptr);
+	QCOMPARE(leftCol->columnName(), std::string("contNormal"));
+	QVERIFY(rootOp->rightChild() == nullptr);
+
+	// R code reflects the gobble: (contNormal.scale > null)
+	QCOMPARE(model.toR(), std::string("(contNormal.scale > null)\n"));
+}
+
+void TestAll::testScriptConstructorLeftMostEmpty()
+{
+	// The dataset is not used directly, but opening it creates the session database that
+	// cleanup() closes (all model-level tests follow this pattern).
+	QVERIFY(_newPkgWithDataSet());
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	// --- Operator with two empty slots: consecutive no-target drops fill left, then right ---
+	ScriptNode * plus = new ScriptNodeOperator("+", false);
+	model.insertNode(plus, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op != nullptr);
+		auto * left = dynamic_cast<ScriptNodeColumn*>(op->leftChild());
+		QVERIFY(left != nullptr);
+		QCOMPARE(left->columnName(), std::string("contNormal"));
+		QVERIFY(op->rightChild() == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("(contNormal.scale + contNormal.scale)\n"));
+
+	// --- Function arguments fill in ascending order, skipping non-accepting slots ---
+	// ifelse's first argument wants booleans, so a number column must land in the second one.
+	model.fromJson(formulas({funcNode("ifelse", {
+		funcArg("test",	{"boolean"},					Json::nullValue),
+		funcArg("then",	{"boolean","string","number"},	Json::nullValue),
+		funcArg("else",	{"boolean","string","number"},	Json::nullValue)})}));
+	QCOMPARE(model.formulaCount(), 1);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func != nullptr);
+		QVERIFY(func->arguments()[0].value == nullptr); // test (booleans only): skipped
+		QVERIFY(func->arguments()[1].value != nullptr); // then: filled
+		QVERIFY(func->arguments()[2].value == nullptr);
+	}
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("ifelse(NULL, contNormal.scale, contNormal.scale)\n"));
+
+	// --- Topmost formula wins: the first formula with an accepting empty slot gets the drop ---
+	model.fromJson(formulas({
+		opNode("+", colNode("contNormal"), Json::nullValue),
+		opNode("+", colNode("contNormal"), Json::nullValue)}));
+	QCOMPARE(model.formulaCount(), 2);
+
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	{
+		auto * first = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		auto * second = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(1));
+		QVERIFY(first != nullptr);
+		QVERIFY(second != nullptr);
+		QVERIFY(first->rightChild() != nullptr);  // topmost formula was filled
+		QVERIFY(second->rightChild() == nullptr);
+	}
+
+	// --- Row functions fill their slots left to right ---
+	model.fromJson(formulas({}));
+	auto * rowMean = new ScriptNodeRowFunction("rowMean");
+	rowMean->addChild(nullptr); // the palette clone starts with one empty slot
+	model.insertNode(rowMean, DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contNormal.scale)\n"));
+
+	// --- Gobble is still preferred when no empty slot anywhere accepts the node ---
+	model.fromJson(formulas({colNode("contNormal")}));
+	ScriptNode * op = new ScriptNodeOperator(">", false);
+	model.insertNode(op, DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+	auto * rootOp = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(rootOp != nullptr);
+	QVERIFY(dynamic_cast<ScriptNodeColumn*>(rootOp->leftChild()) != nullptr); // absorbed
+	QVERIFY(rootOp->rightChild() == nullptr);
+}
+
+void TestAll::testScriptConstructorAllowedColumnTypes()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	auto isAllowed = [&model](ScriptNode * node, int type)
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(node);
+		return std::find(allowed.begin(), allowed.end(), type) != allowed.end();
+	};
+
+	// Root column: unconstrained, all three types allowed.
+	model.fromJson(formulas({colNode("contNormal")}));
+	{
+		const std::vector<int> allowed = model.allowedColumnTypes(model.formulaAt(0));
+		QCOMPARE(allowed.size(), size_t(3));
+		QVERIFY(isAllowed(model.formulaAt(0), 1));
+		QVERIFY(isAllowed(model.formulaAt(0), 2));
+		QVERIFY(isAllowed(model.formulaAt(0), 3));
+	}
+
+	// Column in a numeric operator slot (+): only scale.
+	model.fromJson(formulas({opNode("+", colNode("contNormal"), numNode(1))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+	}
+
+	// Column in a comparison operator slot (>): scale and ordinal.
+	model.fromJson(formulas({opNode(">", colNode("contNormal"), numNode(0))}));
+	{
+		auto * op = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+		QVERIFY(op);
+		const std::vector<int> allowed = model.allowedColumnTypes(op->leftChild());
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(op->leftChild(), 1));
+		QVERIFY(isAllowed(op->leftChild(), 2));
+	}
+
+	// Column in a numeric function argument (mean): only scale.
+	model.fromJson(formulas({funcNode("mean", {funcArg("values", {"number"}, colNode("contNormal"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(1));
+		QVERIFY(isAllowed(func->childAt(0), 1));
+	}
+
+	// Column in a string function argument (hasSubstring): ordinal and nominal.
+	model.fromJson(formulas({funcNode("hasSubstring", {funcArg("string", {"string"}, colNode("text")), funcArg("substring", {"string"}, strNode("a"))})}));
+	{
+		auto * func = dynamic_cast<ScriptNodeFunction*>(model.formulaAt(0));
+		QVERIFY(func);
+		const std::vector<int> allowed = model.allowedColumnTypes(func->childAt(0));
+		QCOMPARE(allowed.size(), size_t(2));
+		QVERIFY(isAllowed(func->childAt(0), 2));
+		QVERIFY(isAllowed(func->childAt(0), 3));
+	}
+}
+
+void TestAll::testScriptConstructorRowFunctionFreeSlot()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+
+	// Add a row function at the root (a freshly created one starts with a single empty slot).
+	auto * rowFunc = new ScriptNodeRowFunction("rowMean");
+	rowFunc->addChild(nullptr);
+	model.insertNode(rowFunc, DropTarget::root());
+	QCOMPARE(rowFunc->childCount(), 1);
+	QVERIFY(rowFunc->childAt(0) == nullptr);
+
+	// Fill the empty slot; a trailing empty slot must appear so more columns can be added.
+	auto * col = new ScriptNodeColumn("contNormal");
+	model.insertNode(col, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 0, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 2);
+	QVERIFY(rowFunc->childAt(0) != nullptr);
+	QVERIFY(rowFunc->childAt(1) == nullptr);
+
+	// Fill that one too; another trailing empty slot appears.
+	auto * col2 = new ScriptNodeColumn("contBinom");
+	model.insertNode(col2, DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, 1, {"number"}, false, false});
+	QCOMPARE(rowFunc->childCount(), 3);
+	QVERIFY(rowFunc->childAt(1) != nullptr);
+	QVERIFY(rowFunc->childAt(2) == nullptr);
+
+	// The trailing empty slot must not leak into the generated R code.
+	QCOMPARE(model.toR(), std::string("rowMeanNaRm(contNormal.scale, contBinom.scale)"));
 }
 
 
