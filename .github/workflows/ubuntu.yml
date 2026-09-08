@@ -20,7 +20,7 @@ jobs:
        JASP_R_VERSION: '4.5.3'
   
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -52,7 +52,6 @@ jobs:
             sudo apt install -y libglpk-dev libcurl4-openssl-dev libmpfr-dev libfontconfig1-dev libcairo2-dev netcdf-bin #required by some r packages
             sudo apt install -y jags
             sudo apt install -y libminizip-dev # required by freexl
-            sudo apt install -y librdata-dev
             # to solve qt missing so files.
             sudo apt install -y libnss3-dev libnspr4-dev
             sudo apt install -y libxcomposite-dev libxdamage-dev libxrandr-dev libxtst-dev libxi-dev
@@ -73,6 +72,11 @@ jobs:
             boost_version: 1.83.0
             platform_version: 22.04
 
+      - name: Install libradata
+        run: |
+            git clone https://github.com/WizardMac/librdata.git
+            cd librdata && ./autogen.sh && ./configure && make && sudo make install
+            
       - name: Install Readstat
         run: |
             wget https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz
@@ -84,7 +88,7 @@ jobs:
       - name: Configure JASP desktop
         run: |
             git submodule update --init
-            cmake -S . -B jasp-build -DJASP_TEST_BUILD=ON
+            cmake -S . -B jasp-build -DBUILD_TESTS=ON
         env:
             BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
             Boost_INCLUDE_DIR: "${{steps.install-boost.outputs.BOOST_ROOT}}/include"
@@ -93,5 +97,19 @@ jobs:
 
       - name: Build JASP desktop
         run: |
-            # speed up build with -j
             cmake --build jasp-build --target all -j6
+            
+      - name: Run JASPDesktop Test
+        run: |
+            cd jasp-build
+            export QT_QPA_PLATFORM=offscreen
+            ./Tests/JASPTest &
+            TEST_PID=$!
+      
+            wait $TEST_PID
+            EXIT_CODE=$?
+      
+            if [ $EXIT_CODE -ne 0 ]; then
+              echo "Tests failed with exit code $EXIT_CODE"
+              exit $EXIT_CODE
+            fi
