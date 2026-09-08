@@ -1328,6 +1328,49 @@ void Analyses::registerRpcHandlers()
 		return response;
 	});
 
+	disp->registerMethodByName("analysis_getOptions", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
+		// Note: keep response["status"] as the RPC-level status ("success"),
+		// the analysis lifecycle status goes into "analysisStatus".
+		response["analysisStatus"] = Analysis::statusToString(a->status());
+		_rpcWriteOptions(response, a, true);
+
+		AgentStateTracker::notifyAnalysisObserved(a->id());
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_remove", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		// Take the identity before removal, the Analysis object is deleted inside.
+		std::string module   = a->module();
+		std::string analysis = a->name();
+		int         id       = static_cast<int>(a->id());
+
+		// Analyses::removeAnalysis emits analysisRemoved, which AgentStateTracker
+		// listens to (markAnalysisRemoved), so the workspace-dirty bookkeeping is handled there.
+		Analyses::analyses()->removeAnalysisById(static_cast<size_t>(analysisId));
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["analysisId"] = id;
+		response["module"]     = module;
+		response["analysis"]   = analysis;
+		return response;
+	});
+
 	disp->registerMethodByName("analysis_run", [](const Json::Value& params) -> Json::Value
 	{
 		int analysisId = params["analysisId"].asInt();

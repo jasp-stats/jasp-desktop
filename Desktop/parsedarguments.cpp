@@ -29,6 +29,7 @@ const std::string
 	ParsedArguments::unitTestArg			= "--unitTest",
 	ParsedArguments::saveArg				= "--save",
 	ParsedArguments::timeOutArg				= "--timeOut=",
+	ParsedArguments::rpcPortArg				= "--rpcPort=",
 	ParsedArguments::helpArg				= "--help",
 	ParsedArguments::helpShortArg			= "-h",
 	ParsedArguments::logToFileArg			= "--logToFile",
@@ -116,6 +117,23 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 
 			if(convertedChars > 0)
 				timeOut = convertedTime;
+		}
+		else if(arg.size() > rpcPortArg.size() && arg.substr(0, rpcPortArg.size()) == rpcPortArg)
+		{
+			std::string port			= arg.substr(rpcPortArg.size());
+			size_t		convertedChars	= 0;
+			int			convertedPort	= 0;
+			try								{ convertedPort = std::stoi(port, &convertedChars); }
+			catch(std::invalid_argument &)	{}
+			catch(std::out_of_range &)		{}
+
+			if(convertedChars > 0 && convertedPort > 0 && convertedPort <= 65535)
+				rpcPort = convertedPort;
+			else
+			{
+				std::cerr << "Argument for rpcPort must be a valid port number (1-65535), got: " << port << std::endl;
+				letsExplainSomeThings = true;
+			}
 		}
 		else if (AppInfo::proMode() && arg == inputDataDirArg)
 		{
@@ -219,9 +237,9 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 	{
 		std::cerr	<< "JASP can be started without arguments, or the following: ";
 		if(AppInfo::proMode())
-			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --export=<Html/Pdf/No/Jasp> | --inputDataDir | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
+			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --rpcPort=48164 | --outputDir | --export=<Html/Pdf/No/Jasp> | --inputDataDir | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
 		else
-			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n";
+			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --rpcPort=48164 } \n";
 		std::cerr	<< "If a filename is supplied JASP will try to load it. \n";
 		if(AppInfo::proMode())
 		{
@@ -241,6 +259,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
 					<< "If --hide is specified then JASP will not be shown during recursive testing or reporting.\n"
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled, this will be saved to your settings.\n"
+					<< "If --rpcPort is specified then JASP will enable its RPC server (aka the MCP server) on the given port on startup and save these settings, this is useful for automation such as the gate test in Tests/gatetest.\n"
 					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
 #ifdef _WIN32
 					<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."

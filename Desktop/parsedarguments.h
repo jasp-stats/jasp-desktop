@@ -47,7 +47,8 @@ public:
 						keepJASPOpenAfterExporting	= false,
 						foundWebEngineArgs			= false,
 						keepMissingColsWhenSyncing	= false;
-	int					timeOut						= 10;
+	int					timeOut						= 10,
+						rpcPort						= -1;
 	ExportType			exportType					= ExportType::Html;
 	Json::Value			dbJson;
 	QFileInfo			mainFilePath,
@@ -60,6 +61,7 @@ public:
 		unitTestArg,
 		saveArg,
 		timeOutArg,
+		rpcPortArg,
 		helpArg,
 		helpShortArg,
 		logToFileArg,

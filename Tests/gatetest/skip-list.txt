@@ -1,0 +1,22 @@
+# Skip-list for the JASP gate test.
+#
+# Lines are either a module ("jaspFoo") or a module/analysis pair
+# ("jaspFoo/Bar"). Everything starting with # is a comment.
+#
+# Keep entries here ONLY with a justification and a tracking reference,
+# and remove them once the underlying problem is fixed.
+#
+# ---------------------------------------------------------------------------
+# jaspAudit/auditClassicalWorkflow
+# jaspAudit/auditBayesianWorkflow
+# JUSTIFICATION: infinite filter re-run loop (~20 filterByName requests/s)
+# involving ListModelFilteredDataEntry + the named-filter write path from the
+# DataSetQ refactor (#5783). The audit data-entry column write
+# (ListModelFilteredDataEntry::informDataSetOfInitialValues -> sendInfo)
+# perturbs the dataset, which re-triggers the filter endlessly, starving the
+# engine pool so the analysis run never gets scheduled (status stays
+# "empty"/"aborted" until the gate timeout).
+# Verified: engine + DB results are correct (Filter_2 column = 100x TRUE),
+# the analysis itself reaches "complete" once; only the filter loop is broken.
+# Left enabled by default so the gate keeps flagging it until fixed.
+# ---------------------------------------------------------------------------

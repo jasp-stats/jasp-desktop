@@ -355,6 +355,13 @@ int main(int argc, char *argv[])
 	if(arguments.safeGraphics)				Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else									arguments.safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
 
+	if(arguments.rpcPort > 0) //Enable the RPC/MCP server for automation (e.g. Tests/gatetest) and let it listen on the requested port. Same persistence behaviour as --safeGraphics.
+	{
+		Settings::setValue(Settings::RPC_SERVER_ENABLED, true);
+		Settings::setValue(Settings::RPC_SERVER_PORT,	 arguments.rpcPort);
+		Settings::sync();
+	}
+
 	if(arguments.containerSettingForced)	Settings::setValue(Settings::ENGINE_SANDBOX,	arguments.container);
 	else									arguments.container = Settings::value(Settings::ENGINE_SANDBOX).toBool();
 
