@@ -127,13 +127,13 @@ void Filter::dbUpdateErrorMsg()
 	}
 }
 
-void Filter::dbLoad()
+bool Filter::dbLoad()
 {
 	if(_id == -1)
 		_id = _name == "" ? db().filterGetId(_data->id()) : db().filterGetId(_data->id(),_name);
 
 	if(_id == -1)
-		return;
+		return false;
 
 	db().transactionReadBegin();
 	
@@ -146,14 +146,22 @@ void Filter::dbLoad()
 
 	rescanForColumns();
 
-	if(oldRFilter			!= _rFilter)			emit rFilterChanged();
-	if(oldGeneratedFilter	!= _generatedFilter)	emit generatedFilterChanged();
-	if(oldConstructorJson	!= _constructorJson)	emit constructorJsonChanged();
-	if(oldConstructorR		!= _constructorR)		emit constructorRChanged();
+	bool changed = false;
+
+	if(oldRFilter			!= _rFilter)		{ emit rFilterChanged();			changed = true; }
+	if(oldGeneratedFilter	!= _generatedFilter){ emit generatedFilterChanged();	changed = true; }
+	if(oldConstructorJson	!= _constructorJson){ emit constructorJsonChanged();	changed = true; }
+	if(oldConstructorR		!= _constructorR)	{ emit constructorRChanged();		changed = true; }
 	
-	dbLoadResultAndError();
+	//If the results (or their error) also changed, the filter genuinely changed.
+	//Syncing our own cache with a recompute we just triggered ourselves is NOT a
+	//change: treat identical results as no-change so callers do not see this as
+	//a dataset update (which would re-trigger the filter and loop forever).
+	changed = dbLoadResultAndError() || changed;
 
 	db().transactionReadEnd();
+
+	return changed;
 }
 
 bool Filter::setFilterVector(const boolvec & filterResult)
@@ -263,8 +271,12 @@ bool Filter::checkForUpdates()
 
 	if(_data->id() != -1 && _id != -1)
 	{
-		dbLoad();
-		return true;
+		//Only report an actual change. Returning true here merely because the engine
+		//bumped the revision (e.g. as the direct result of our own filterByName request)
+		//used to make DataSet::checkForUpdates emit datasetChanged for every reply,
+		//which re-triggered the filter in ListModelFilteredDataEntry and caused an
+		//infinite filterByName loop for named filters such as the audit data-entry.
+		return dbLoad();
 	}
 	else
 		return false;
@@ -377,6 +389,12 @@ void Filter::setInvalidated(bool invalidated)
 	if(wasChange)
 		emit invalidatedChanged();
 	
+	//NOTE: this intentionally fires even when the filter was already invalidated:
+	//nothing ever clears _invalidated for filters, so this emit is the mechanism
+	//that re-runs invalidated filters when e.g. DataSet::runFilters() is called
+	//after manual data edits. Do not gate it on wasChange without first adding a
+	//proper "filter has fresh results" state transition (otherwise data edits
+	//would stop re-running filters). See also checkForUpdates() above.
 	if(_invalidated)
 		emit _data->sendFilterByName(data()->id(), nameQ(), "*");
 }

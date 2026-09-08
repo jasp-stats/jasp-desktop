@@ -6,17 +6,8 @@
 # Keep entries here ONLY with a justification and a tracking reference,
 # and remove them once the underlying problem is fixed.
 #
-# ---------------------------------------------------------------------------
-# jaspAudit/auditClassicalWorkflow
-# jaspAudit/auditBayesianWorkflow
-# JUSTIFICATION: infinite filter re-run loop (~20 filterByName requests/s)
-# involving ListModelFilteredDataEntry + the named-filter write path from the
-# DataSetQ refactor (#5783). The audit data-entry column write
-# (ListModelFilteredDataEntry::informDataSetOfInitialValues -> sendInfo)
-# perturbs the dataset, which re-triggers the filter endlessly, starving the
-# engine pool so the analysis run never gets scheduled (status stays
-# "empty"/"aborted" until the gate timeout).
-# Verified: engine + DB results are correct (Filter_2 column = 100x TRUE),
-# the analysis itself reaches "complete" once; only the filter loop is broken.
-# Left enabled by default so the gate keeps flagging it until fixed.
-# ---------------------------------------------------------------------------
+# (Currently empty: the jaspAudit infinite filterByName loop that used to be
+# listed here was fixed by making Filter::checkForUpdates()/dbLoad() report
+# only actual changes instead of treating every engine revision bump as a
+# dataset change. Re-add entries here if a new gate failure turns up that is
+# genuinely not actionable.)
