@@ -147,7 +147,14 @@ public:
 	const QString 		contactUrlFeatures()	const;
 	const QString 		contactUrlCrashReport()	const;
 	const QString 		contactText()			const;
-	const QString		questionsUrl()			const { return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"; }
+	const QString		questionsUrl()			const
+	{
+#ifdef PRO
+		return "https://www.jasp-services.com/contact/";
+#else
+		return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor";
+#endif
+	}
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 	
