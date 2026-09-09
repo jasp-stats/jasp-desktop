@@ -150,7 +150,7 @@ public:
 	const QString		questionsUrl()			const
 	{
 #ifdef PRO
-		return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new";
+		return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new";
 #else
 		return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor";
 #endif

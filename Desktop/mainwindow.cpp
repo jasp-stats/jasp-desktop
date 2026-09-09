@@ -381,7 +381,7 @@ const QString MainWindow::commUrlMembers() const
 const QString MainWindow::contactUrlFeatures() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";
 #else
 	return "https://jasp-stats.org/request-feature";	
 #endif
@@ -390,7 +390,7 @@ const QString MainWindow::contactUrlFeatures() const
 const QString MainWindow::contactUrlBugs() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";
 #else
 	return "https://jasp-stats.org/report-bug";
 #endif
@@ -399,7 +399,7 @@ const QString MainWindow::contactUrlBugs() const
 const QString MainWindow::contactUrlCrashReport() const
 {
 #ifdef PRO
-	return QString("http://support.jasp-services.com/") + PRO_COMPANY_NAME + "/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
+	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
 #else
 	return "https://jasp-stats.org/report-bug";
 #endif
