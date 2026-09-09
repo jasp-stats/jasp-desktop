@@ -72,7 +72,7 @@ void PlotEditorModel::setup()
 	setWidth(				_imgOptions.get(	"width",		100).asInt());
 	setHeight(				_imgOptions.get(	"height",		100).asInt());
 
-	Json::Value editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlot(_name.toStdString());
+	Json::Value editOptions		=	_name == "" || !_analysis ? Json::objectValue : _analysis->editOptionsOfPlotFromEdits(_name.toStdString());
 	editOptions["resetPlot"] = false;
 	_imgOptions["editOptions"] = editOptions;
 
@@ -163,7 +163,7 @@ void PlotEditorModel::updateOptions(Analysis *analysis)
 
 	int request = _analysis->imgResults()["request"].asInt();
 	const Json::Value& optionsSend = _editedImgsMap[request];
-	Json::Value optionsReceived = analysis->editOptionsOfPlot(_name.toStdString());
+	Json::Value optionsReceived = analysis->editOptionsOfPlotFromEdits(_name.toStdString());
 	// After editing a plot the engine returns the current edit options.
 	// These options may differ from the ones send to the engine (currently only when resetDefault is called, but later there could have other situation):
 	// in this case the plot editor options must be updated.

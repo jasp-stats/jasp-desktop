@@ -478,6 +478,7 @@ Item
 				// It would be much better to have resultsJsInterface be passed directly though..
 				// It also gives you an overview of the functions used in results html
 
+				function jsLog(msg)									{ resultsJsInterface.jsLog(msg)									}
 				function openFileTab()								{ resultsJsInterface.openFileTab()                              }
 				function saveTextToFile(fileName, html)				{ resultsJsInterface.saveTextToFile(fileName, html)             }
 				function analysisUnselected()						{ resultsJsInterface.analysisUnselected()                       }

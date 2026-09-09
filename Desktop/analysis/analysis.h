@@ -23,6 +23,8 @@
 #include "enginedefinitions.h"
 
 #include <set>
+#include <deque>
+#include <vector>
 #include "analysisbase.h"
 #include "utilities/qutils.h"
 #include "modules/dynamicmodules.h"
@@ -91,6 +93,7 @@ public:
 	void				setErrorInResults(const std::string	& msg);
 
 	Json::Value			editOptionsOfPlot(		const std::string & uniqueName, bool emitError = true);
+	Json::Value			editOptionsOfPlotFromEdits(const std::string & uniqueName);
 	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
 	bool				checkAnalysisEntry();
 
@@ -100,6 +103,8 @@ public:
 
 	const	Json::Value		&	results()			const				{ return _results;							}
 	const	Json::Value		&	userData()			const				{ return _userData;							}
+	const	Json::Value		&	plotEdits()			const				{ return _plotEdits;						}
+				void			setPlotEdits(const Json::Value & edits)				{ _plotEdits = edits;						}
 	const	std::string		&	name()				const	override	{ return _name;								}
 	const	std::string		&	qml()				const				{ return _qml;								}
 	const	std::string		&	title()				const	override	{ return _title;							}
@@ -213,9 +218,22 @@ private:
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const	Json::Value & results, const std::string & uniqueName,			Json::Value & editOptions);
 	bool					_setEditOptionsOfPlot(		Json::Value & results, const std::string & uniqueName, const	Json::Value & editOptions);
+	bool					_updatePlotField(			Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value);
+	bool					_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const;
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
-	bool					updatePlotSize(const std::string & plotName, int width, int height, Json::Value & root);
+	// Phase 1: stamp saved editOptions and sizes into fresh engine results.
+	// Returns names of plots whose dimensions changed (need engine re-render).
+	std::set<std::string>		applyPlotEdits();
+	
+	// Phase 2: batch-trigger engine re-edits for plots that changed dimensions.
+	// This is a separate flow from user-initiated queueing (_editQueue).
+	void					applyPlotReEdits(const std::set<std::string> & plotNames);
+	
+	// Dispatches a single image-edit to the engine. Called from the
+	// user-edit queue (editImage) and from applyPlotReEdits (batch re-edits).
+	void					_dispatchEditImage(const Json::Value &options);
+	
 	void					checkForRSources();
 	void					clearRSources();
 	void					initAnalysis();
@@ -230,10 +248,22 @@ protected:
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
 								_userData			= Json::nullValue,
+								_plotEdits			= Json::nullValue,
 								_imgOptions			= Json::nullValue,
+								// The full image-edit options submitted by the last user-initiated
+								// edit. Only set when options contains "editOptions" (not
+								// size-only re-edits). Used in imageEdited to merge the user's
+								// intended edits over the engine's response (which may be stale).
+								_imgOptionsUserEdit	= Json::nullValue,
 								_progress			= Json::nullValue,
 								_oldUserData		= Json::nullValue,
 								_oldMetaData		= Json::nullValue;
+	// Tracks which in-flight imageEdited responses belong to
+	// applyPlotReEdits (batch) rather than user-initiated edits.
+	// When set, imageEdited does NOT update _plotEdits (re-edits
+	// are just re-rendering already-stored edits).
+	std::set<std::string>		_pendingReEdits;
+	std::deque<Json::Value>		_editQueue; // Serializes user-initiated image edits: only one dispatched at a time, the rest queue up
 	std::string					_preUpgraderVersion	= "0";
 
 

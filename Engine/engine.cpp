@@ -811,7 +811,17 @@ void Engine::editImage()
 	Json::Reader().parse(result, _analysisResults, false);
 
 	if(_analysisResults.isMember("results"))
+	{
 		_analysisResults["results"]["request"] = _imageOptions.get("request", -1);
+		// When pngFile is present (jaspBase ≥ <next>), the true PNG path is
+		// provided by R and the hack is unnecessary. Older jaspBase builds won't
+		// have pngFile, so fall back to injecting the plot name as data so the
+		// C++/JS pipeline can still identify which image to update.
+		if (_analysisResults["results"].isMember("name")
+			&& !_analysisResults["results"].isMember("data")
+			&& !_analysisResults["results"].isMember("pngFile"))
+			_analysisResults["results"]["data"] = _analysisResults["results"]["name"];
+	}
 
 	_analysisStatus			= Status::complete;
 
