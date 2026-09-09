@@ -281,8 +281,11 @@ private:
 	bool						_isDuplicate					= false,
 								_wasUpgraded					= false,
 								_optionsFromDifferentVersion	= false,
-								_storedWithoutState				= false,
-								_tryToFixNotes					= false,
+								_storedWithoutState			= false,
+								// True while results are restored from a .jasp file; setResults must not
+								// dispatch engine re-edits then (see loadResultsUserdataAndRSourcesFromJASPFile).
+								_restoringFromJaspFile		= false,
+								_tryToFixNotes				= false,
 
 								_hasReport					= false,
 								_beingTranslated			= false,

@@ -256,7 +256,10 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	setStatus(status);
 
-	if (status == Analysis::Complete && !reEditNames.empty())
+	if (!reEditNames.empty() && _restoringFromJaspFile)
+		Log::log() << "setResults: restoring from .jasp file — skipping engine re-edits for " << reEditNames.size() << " plot(s); saved results already contain the edited plots" << std::endl;
+
+	if (status == Analysis::Complete && !reEditNames.empty() && !_restoringFromJaspFile)
 		applyPlotReEdits(reEditNames);
 
 	emit resultsChangedSignal(this);
@@ -828,6 +831,13 @@ void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & an
 	}
 	else
 		Log::log() << "loadResultsUserdata: no plotEdits key in saved data (or null)" << std::endl;
+
+	// Suppress engine re-edits while restoring: on file-open the engine has no
+	// state for this analysis yet, so editImage requests would crash it. The
+	// saved results already contain the edited/resized plots, so skipping the
+	// re-render here is safe (and faster — no roundtrip per plot).
+	_restoringFromJaspFile = true;
+	auto restoringGuard = qScopeGuard([&]{ _restoringFromJaspFile = false; });
 	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
 
