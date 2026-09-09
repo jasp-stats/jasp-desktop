@@ -1,5 +1,6 @@
 #include "log.h"
 #include <QThread>
+#include <QPointer>
 #include "dataenums.h"
 #include "datasetbasenode.h"
 #include <QGuiApplication>
@@ -7,12 +8,32 @@
 DataSetBaseNode::DataSetBaseNode(dataSetBaseNodeType typeNode, QObject * parent) 
 	: QAbstractTableModel(nullptr), _type(typeNode), _nodeAbove(dynamic_cast<DataSetBaseNode *>(parent))
 {
-	if(QGuiApplication::instance())
-		this->moveToThread(QGuiApplication::instance()->thread());
-	else if(parent && parent->thread() != QThread::currentThread())
-		this->moveToThread(parent->thread());
+	//Nodes are built by the importers on the AsyncLoader (and QThreadPool) threads but must live on
+	//the GUI thread, because they are QAbstractItemModels that QML binds to.
+	QThread * target =	QGuiApplication::instance()	? QGuiApplication::instance()->thread()
+						:	parent						? parent->thread()
+						:							  thread();
 
-	setParent(parent);
+	if(thread() != target)
+		moveToThread(target);
+
+	//QObject::setParent() sends a ChildAdded event to the parent, and QCoreApplication::sendEvent()
+	//asserts (in debug builds) when called from a thread other than the one owning the receiver.
+	//The moveToThread() above already made our affinity match the parent's, so Qt's own "new parent
+	//is in a different thread" guard no longer catches this and the assert fires for every
+	//Column/Label/DataSet created during an import. Hand the parenting to the parent's thread instead.
+	//Only the QObject ownership is deferred; the node tree (_nodeAbove/registerNode below) is still
+	//wired up synchronously, and DataSetBaseNode::parent() returns _nodeAbove anyway.
+	if(parent)
+	{
+		if(QThread::currentThread() == target)
+			setParent(parent);
+		else
+		{
+			QPointer<DataSetBaseNode> self(this); //We might be destroyed again before the GUI thread gets round to this
+			QMetaObject::invokeMethod(parent, [self, parent]() { if(self) self->setParent(parent); }, Qt::QueuedConnection);
+		}
+	}
 	
 	if(_nodeAbove)
 		_nodeAbove->registerNode(this);
