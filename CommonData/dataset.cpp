@@ -1299,15 +1299,12 @@ void DataSet::refresh(bool doColumnsToo)
 
 void DataSet::runFilters(const QString & editedColumn)
 {
-	//The default filter always re-runs: its generated (label) filter can depend on any
-	//column's labels/values.
-	_defaultFilter->setInvalidated(true);
-
-	//Named filters only need a re-run when they actually use the edited column. Blanket
-	//invalidation of every named filter on every manual edit used to queue pointless
-	//engine runs for each of them (and fed the audit filterByName loop).
+	//All filters are treated uniformly: Filter::columnUsed() knows about the R filter
+	//code, the drag&drop json and (for the default filter) active label filters, so it
+	//is the single source of truth for whether an edit can change a filter's result.
+	//When we do not know which column was edited, every filter re-runs.
 	for(Filter * f : _filters)
-		if(f != _defaultFilter && (editedColumn.isEmpty() || f->columnUsed(editedColumn)))
+		if(editedColumn.isEmpty() || f->columnUsed(editedColumn))
 			f->setInvalidated(true);
 }
 

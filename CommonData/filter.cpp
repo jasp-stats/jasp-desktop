@@ -587,7 +587,7 @@ void Filter::datasetChanged(int, QStringList changedColumns, QStringList missing
 
 	if(!invalidateMe)
 		for(const QString & changed : changedColumns)
-			if(_columnsUsedInRFilter.count(fq(changed)) > 0 || _columnsInConstructorJson.count(fq(changed)) > 0)
+			if(columnUsed(changed))
 			{
 				invalidateMe = true;
 				break;
@@ -734,7 +734,14 @@ QString Filter::constructorJsonQ() const
 
 bool Filter::columnUsed(const QString &name) const
 {
-	return _columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name));
+	if(_columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name)))
+		return true;
+
+	//The default filter's generated (label) filter also depends on every column that has
+	//active label filtering (see LabelFilterGenerator::generateFilter): a value edit can
+	//move a row between levels without changing the generated code itself, so the filter
+	//still has to be re-run. Named filters have no label filter generator.
+	return _labelGen && data()->column(name) && data()->column(name)->hasLabelFilter();
 }
 
 const QString & Filter::defaultRFilter()
