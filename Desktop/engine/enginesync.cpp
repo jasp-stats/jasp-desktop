@@ -252,7 +252,10 @@ EngineRepresentation * EngineSync::createNewEngine(bool addToEngines, int overri
 			while(!channelFree(freeChannel) && freeChannel < maxEngineCount())
 				freeChannel++;
 
-			if(freeChannel > maxEngineCount())
+			//freeChannel can end up == maxEngineCount() when every channel is taken:
+			//that is still not a free channel (and writing _engineStopTimes[freeChannel]
+			//below was an out-of-bounds write), so the check must be >=.
+			if(freeChannel >= maxEngineCount())
 				throw std::runtime_error("createNewEngine but no engines can be started because no channel is free or cooled down...");
 
 			_engineStopTimes[freeChannel] = -1;
