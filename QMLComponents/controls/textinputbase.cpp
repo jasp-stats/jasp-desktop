@@ -50,8 +50,18 @@ void TextInputBase::bindTo(const Json::Value& value)
 	{
 	case TextInputType::IntegerInputType:
 		int intVal;
-		if (value.isNumeric())
+		//asInt() throws on values outside int range (e.g. 1e300 fuzzed into an integer
+		//option), so check the range instead of just isNumeric().
+		if (value.isInt())
 			_value = value.asInt();
+		else if (value.isInt64() && value.asInt64() >= INT_MIN && value.asInt64() <= INT_MAX)
+			_value = int(value.asInt64());
+		else if (value.isDouble())
+		{
+			double dbl = value.asDouble();
+			if (dbl >= INT_MIN && dbl <= INT_MAX)
+				_value = int(dbl);
+		}
 		else if (value.isString() && QColumnUtils::getIntValue(tq(value.asString()), intVal))
 			_value = intVal;
 
