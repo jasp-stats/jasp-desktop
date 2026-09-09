@@ -335,15 +335,33 @@ void AnalysisForm::clearAllErrors()
 bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptions, std::string& errorMsg)
 {
 	Json::Reader jsonReader;
-	
+
 	jsonReader.parse(rawOptions, parsedOptions, false);
 
 	clearAllErrors(); // Remove old error in case
 
-	if (_rSyntax->parseRSyntaxOptions(parsedOptions))
+	try
 	{
-		bindTo(parsedOptions);
-		parsedOptions = _analysis->boundValues();
+		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
+		{
+			bindTo(parsedOptions);
+			parsedOptions = _analysis->boundValues();
+		}
+	}
+	catch (const Json::Exception & e)
+	{
+		//Malformed option values (e.g. numbers far out of range, or non-objects where
+		//objects are expected) used to escape as raw Json::LogicErrors, which the RPC
+		//dispatcher turned into -32603 "Internal error". They are just invalid input.
+		errorMsg = std::string("Option values could not be parsed: ") + e.what();
+		addFormError(tq(errorMsg));
+		return false;
+	}
+	catch (const std::exception & e)
+	{
+		errorMsg = std::string("Option values could not be applied: ") + e.what();
+		addFormError(tq(errorMsg));
+		return false;
 	}
 
 	if (hasError())
@@ -458,14 +476,28 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 	{
 		BoundControl* boundControl = control->boundControl();
 		Json::Value optionValue = Json::nullValue;
+		std::string name = control->name().toStdString();
+
 		if (boundControl)
 		{
-			std::string name = control->name().toStdString();
+			//A stored/generated value can still be structurally wrong in ways isJsonValid
+			//does not check (out-of-range numbers, non-object rows in arrays, ...). Do not
+			//let one bad option abort the whole bind: bindTo also runs from setAnalysisUp/
+			//file load/R-syntax rebinding, i.e. outside the RPC dispatcher where an escaping
+			//exception would terminate the process instead of surfacing as an error.
+			try
+			{
+				if (defaultOptions.isObject() && defaultOptions.isMember(name))
+					optionValue = defaultOptions[name];
 
-			if (defaultOptions.isMember(name))
-				optionValue = defaultOptions[name];
-
-			if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
+				if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
+				{
+					optionValue = Json::nullValue;
+					control->setHasWarning(true);
+					controlsJsonWrong.insert(name);
+				}
+			}
+			catch (const Json::Exception &)
 			{
 				optionValue = Json::nullValue;
 				control->setHasWarning(true);
@@ -473,7 +505,18 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 			}
 		}
 
-		control->setInitialized(optionValue);
+		try
+		{
+			control->setInitialized(optionValue);
+		}
+		catch (const Json::Exception &)
+		{
+			//Reset this one control to its defaults (setInitialized(null) uses createJson)
+			//so the form stays coherent, and flag it like any other wrong-valued option.
+			control->setInitialized(Json::nullValue);
+			control->setHasWarning(true);
+			controlsJsonWrong.insert(name);
+		}
 	}
 
 	_addLoadingError(tql(controlsJsonWrong));
