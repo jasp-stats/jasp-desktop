@@ -79,67 +79,6 @@
 			}
 		},
 		{
-			"name": "analysis_getOptions",
-			"summary": "Retrieve the current options and option metadata of an existing analysis.",
-			"x-displayName": "Get Analysis Options",
-			"params": [
-				{
-					"name": "analysisId",
-					"required": true,
-					"description": "The integer identifier of the analysis.",
-					"schema": {
-						"type": "integer"
-					}
-				}
-			],
-			"result": {
-				"name": "analysis_getOptions_result",
-				"description": "The analysis identity, its lifecycle status and its current options.",
-				"schema": {
-					"type": "object",
-					"properties": {
-						"status": {
-							"type": "string",
-							"description": "Always 'success' when the analysis was found."
-						},
-						"analysisId": {
-							"type": "integer"
-						},
-						"module": {
-							"type": "string"
-						},
-						"analysis": {
-							"type": "string"
-						},
-						"dataSetId": {
-							"type": "integer",
-							"description": "Id of the dataset the analysis belongs to, -1 if none."
-						},
-						"analysisStatus": {
-							"type": "string",
-							"description": "Analysis lifecycle status: empty, running, complete, validationError, fatalError, etc."
-						},
-						"options": {
-							"type": "object",
-							"description": "The current analysis options. Same schema as used by analysis_run and analysis_create."
-						},
-						"optionMeta": {
-							"type": "object",
-							"description": "Metadata describing each option: its kind (checkbox/combo/variables/number/string), valid choices for combos, allowed column types for variable lists, and a shape example."
-						}
-					},
-					"required": [
-						"status",
-						"analysisId",
-						"module",
-						"analysis",
-						"options",
-						"optionMeta"
-					]
-				}
-			}
-		},
-		{
 			"name": "analysis_remove",
 			"summary": "Remove (delete) an analysis from the workspace.",
 			"x-displayName": "Remove Analysis",
