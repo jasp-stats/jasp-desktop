@@ -139,8 +139,13 @@ bool RowControls::addJASPControl(JASPControl *control)
 	else
 		success = true;
 
-	if (!control->name().isEmpty() && success)
-		_rowJASPControlMap[control->name()] = control;
+	if (success)
+	{
+		if (!control->name().isEmpty())
+			_rowJASPControlMap[control->name()] = control;
+		else
+			control->setUp();
+	}
 
 	return success;
 }

@@ -16,9 +16,6 @@ public:
 	bool		isJsonValid(const Json::Value& value)		const	override;
 	Json::Value createJson()								const	override;
 	QString		value()										const;
-
-protected:
-	QString		_value;
 };
 
 #endif // COLORPICKERBASE_H
