@@ -88,6 +88,7 @@ private:
 	void					removeNonKeepFiles(const Json::Value & filesToKeepValue);
 
 	void					sendAnalysisResults();
+	void					sendAbortAck();
 	void					sendFilterByNameDone(	const std::string & name, int dataSetId, const std::string & errorMessage, int requestId = -1);
 	void					sendFilterResult(		int filterRequestId);
 	void					sendFilterError(		int filterRequestId,	const std::string & errorMessage);

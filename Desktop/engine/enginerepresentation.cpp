@@ -744,6 +744,15 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 			analysis->setResults(results, status, progress);
 		break;
 
+	case analysisResultStatus::aborted:
+		//The engine acknowledged our abort: just clear the in-progress bookkeeping
+		//(and go back to scheduling). The analysis is already in the state the desktop
+		//gave it (Empty/Aborted/removed), so its results must not be touched here.
+		//Before the engine sent this ack, every abort ended in the ENGINE_KILLTIME
+		//kill+restart cycle.
+		clearAnalysisInProgress();
+		break;
+
 	default:
 		analysis->setResults(results, status, progress);
 		break;
@@ -982,19 +991,42 @@ void EngineRepresentation::processEnginePausedReply()
 void EngineRepresentation::processEngineResumedReply(Json::Value & json)
 {
 	Log::log() << "EngineRepresentation::processEngineResumedReply() for engine #" << channelNumber() << std::endl;
-	
+
 	if(json.get("justReloadedData", false))
 		_loadingProgress = 0.0;
 
 	if(_engineState != engineState::resuming && _engineState != engineState::initializing && _engineState != engineState::loadingData && _engineState != engineState::idle)
 	{
 	//	throw unexpectedEngineReply("Received an unexpected engine #" + std::to_string(channelNumber()) + " resumed reply (current state is " + engineStateToString(_engineState) +")!");
-		resend();
+
+		//A resumed reply means the engine (re)started and has NOTHING running. If we were
+		//waiting for a genuinely running analysis, resend its (possibly lost) request.
+		//But if the last message was an abort request (analysis aborting or removed),
+		//resending it here used to create an endless loop: the engine acks the abort
+		//(analysisResultStatus::aborted), yet that ack is overwritten in the single-slot
+		//IPC mailbox by the engine's idle-reload messages before we read it, so we kept
+		//resending aborts forever while the scheduler saw a never-idle engine and no
+		//analysis was ever scheduled again.
+		if(_analysisInProgress && (_analysisInProgress->status() == Analysis::Status::Running || _analysisInProgress->status() == Analysis::Status::RunningImg))
+			resend();
+		else
+		{
+			//The engine has no analysis in flight: recover to idle and let the scheduler
+			//re-dispatch. If an analysis was removed while aborting, its bookkeeping can
+			//be cleared too: the engine received the abort (and any ack it sent is moot).
+			if(_analysisInProgress == nullptr && _idRemovedAnalysis >= 0)
+			{
+				_idRemovedAnalysis	= -1;
+				_analysisAborted	= nullptr;
+			}
+			clearAnalysisInProgress();
+			restartAbortedAnalysis();
+		}
 	}
 	else
 	{
 		setState(engineState::idle);
-		
+
 		restartAbortedAnalysis();
 	}
 }
