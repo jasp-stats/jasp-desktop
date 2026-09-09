@@ -130,23 +130,55 @@ endif()
 
 if(WIN32)
 
-  find_program(
-    DEPLOYQT_EXECUTABLE
-    NAMES windeployqt
-    PATHS ${Qt6_DIR}/bin)
+  set(_QT_DEPLOY_BIN_HINTS)
+  foreach(_QT_PREFIX IN LISTS CMAKE_PREFIX_PATH)
+    if(EXISTS "${_QT_PREFIX}/bin")
+      list(APPEND _QT_DEPLOY_BIN_HINTS "${_QT_PREFIX}/bin")
+    endif()
+  endforeach()
 
-  # look for Rtools from most newest to oldest
-    message(CHECK_START "Looking for Rtools $ENV{RTOOLS45_HOME}")
+  find_program(
+    _DEPLOYQT_EXECUTABLE_FROM_PREFIX
+    NAMES windeployqt windeployqt.exe
+    PATHS ${_QT_DEPLOY_BIN_HINTS}
+    NO_DEFAULT_PATH)
+
+  if(_DEPLOYQT_EXECUTABLE_FROM_PREFIX)
+    set(DEPLOYQT_EXECUTABLE
+        "${_DEPLOYQT_EXECUTABLE_FROM_PREFIX}"
+        CACHE FILEPATH "Path to the windeployqt executable matching the configured Qt prefix"
+        FORCE)
+  else()
+    find_program(DEPLOYQT_EXECUTABLE NAMES windeployqt windeployqt.exe)
+  endif()
+
+  message(STATUS "  ${DEPLOYQT_EXECUTABLE}")
+
+  message(CHECK_START "Looking for Rtools $ENV{RTOOLS45_HOME}")
   if(DEFINED ENV{RTOOLS45_HOME})
-		set(RTOOLS_PATH "$ENV{RTOOLS45_HOME}/ucrt64" CACHE PATH "Path to Rtools45 x64 folder, e.g., C:/rtools45/ucrt64")
+    file(TO_CMAKE_PATH "$ENV{RTOOLS45_HOME}" _RTOOLS45_HOME)
+    set(RTOOLS_ROOT "${_RTOOLS45_HOME}" CACHE PATH "Path to Rtools45 installation root, e.g., C:/rtools45")
 	else()
-		set(RTOOLS_PATH "C:/rtools45/ucrt64" CACHE PATH "Path to Rtools45 x64 folder, e.g., C:/rtools45/ucrt64")
+    set(RTOOLS_ROOT "C:/rtools45" CACHE PATH "Path to Rtools45 installation root, e.g., C:/rtools45")
 	endif()
+  set(RTOOLS_PATH "${RTOOLS_ROOT}/ucrt64" CACHE PATH "Path to Rtools45 UCRT64 package folder, e.g., C:/rtools45/ucrt64")
+
+  get_filename_component(_RTOOLS_ROOT_FROM_UCRT "${RTOOLS_PATH}" DIRECTORY)
+  set(RTOOLS_STATIC_TOOLCHAIN_PATH
+      "${_RTOOLS_ROOT_FROM_UCRT}/x86_64-w64-mingw32.static.posix"
+      CACHE PATH
+      "Path to Rtools45 static.posix compiler toolchain, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
+  set(RTOOLS_BUILD_TOOLS_PATH
+      "${_RTOOLS_ROOT_FROM_UCRT}/usr"
+      CACHE PATH
+      "Path to Rtools45 MSYS build tools, e.g., C:/rtools45/usr")
 
   if(EXISTS ${RTOOLS_PATH})
 
     message(CHECK_PASS "found")
-    message(STATUS "  ${RTOOLS_PATH}")
+    message(STATUS "  UCRT package path: ${RTOOLS_PATH}")
+    message(STATUS "  static toolchain:  ${RTOOLS_STATIC_TOOLCHAIN_PATH}")
+    message(STATUS "  build tools:       ${RTOOLS_BUILD_TOOLS_PATH}")
 
     message(CHECK_START 
             "Looking for Rtools legacy and auto remove it, if not work please remove such `RTOOLS44_HOME` manually from Windows environment settings."
@@ -164,8 +196,21 @@ if(WIN32)
   else()
     message(
       FATAL_ERROR
-        "Rtools not found. Rtools is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your MinGW x64 path, e.g., C:/rtools45/ucrt64"
+        "Rtools not found. Rtools is required for building on Windows, please follow the build instruction before you continue. If you have installed the MINGW in a custom location, you can set the RTOOLS_PATH to your UCRT64 package path, e.g., C:/rtools45/ucrt64"
     )
+  endif()
+
+  if(NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/gcc.exe"
+     OR NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/g++.exe")
+    message(
+      FATAL_ERROR
+        "Rtools static.posix compiler toolchain not found. Set RTOOLS_STATIC_TOOLCHAIN_PATH to the Rtools static toolchain path, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
+  endif()
+
+  if(NOT EXISTS "${RTOOLS_BUILD_TOOLS_PATH}/bin/make.exe")
+    message(
+      FATAL_ERROR
+        "Rtools MSYS make not found. Set RTOOLS_BUILD_TOOLS_PATH to the Rtools build tools path, e.g., C:/rtools45/usr")
   endif()
 
   if(DEFINED ENV{WIX})
@@ -207,9 +252,12 @@ if(WIN32)
     LIGHT_EXECUTABLE_NATIVE)
   message(STATUS "  ${LIGHT_EXECUTABLE_NATIVE}")
 
-  set(RTOOLS_C_COMPILER "${RTOOLS_PATH}/bin/gcc.exe")
-  set(RTOOLS_CXX_COMPILER "${RTOOLS_PATH}/bin/g++.exe")
-  set(RTOOLS_MAKE_PROGRAM "${RTOOLS_PATH}/bin/mingw32-make.exe")
+  set(RTOOLS_STATIC_TOOLCHAIN_BIN "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin")
+  set(RTOOLS_BUILD_TOOLS_BIN "${RTOOLS_BUILD_TOOLS_PATH}/bin")
+  set(RTOOLS_C_COMPILER "${RTOOLS_STATIC_TOOLCHAIN_BIN}/gcc.exe")
+  set(RTOOLS_CXX_COMPILER "${RTOOLS_STATIC_TOOLCHAIN_BIN}/g++.exe")
+  set(RTOOLS_MAKE_PROGRAM "${RTOOLS_BUILD_TOOLS_BIN}/make.exe")
+  set(RTOOLS_R_INTERFACE_GENERATOR "Unix Makefiles")
 
 endif()
 

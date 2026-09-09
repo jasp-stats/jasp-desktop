@@ -32,6 +32,7 @@
 #include <QMenuBar>
 #include <exception>
 #include <iostream>
+#include <streambuf>
 
 #include "log.h"
 #include "timers.h"
@@ -72,13 +73,27 @@
 #include "rpc/jasprpcserver.h"
 #include "ai/agentstatetracker.h"
 
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
-
 #include "communitydefs.h"
 
 using namespace std;
 using namespace Modules;
+
+namespace
+{
+class NullBuffer : public std::streambuf
+{
+protected:
+	int_type overflow(int_type ch) override { return traits_type::not_eof(ch); }
+	std::streamsize xsputn(const char *, std::streamsize count) override { return count; }
+};
+
+std::ostream & nullOutputStream()
+{
+	static NullBuffer buffer;
+	static std::ostream stream(&buffer);
+	return stream;
+}
+}
 
 MainWindow * MainWindow::_singleton	= nullptr;
 
@@ -1093,7 +1108,7 @@ void MainWindow::initLog()
 {
 	assert(_engineSync != nullptr && _preferences != nullptr);
 
-	static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
+	std::ostream & nullstream = nullOutputStream();
 
 	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
 	Log::init(&nullstream);
