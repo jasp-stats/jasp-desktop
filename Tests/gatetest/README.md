@@ -85,3 +85,51 @@ and runs `gatetest.py`.
 
 Any analysis that legitimately cannot run with default options should be added
 to a skip file, with an issue reference in a comment.
+
+---
+
+# JASP Option Fuzzer (`fuzztest.py`)
+
+Schema-guided fuzzing of analysis options through the same agent API. For every
+analysis it generates mutations of the default options based on the
+machine-readable `optionMeta` schema (kinds: checkbox / combo / variables /
+number / integer / percent / string / array, including deliberately invalid
+values), runs them via `analysis_run` and classifies the outcome.
+
+```bash
+# everything, ~8 mutations per analysis (30-60 min)
+Tests/gatetest/.venv/bin/python Tests/gatetest/fuzztest.py --report /tmp/fuzz.json
+
+# one module, quick
+Tests/gatetest/.venv/bin/python Tests/gatetest/fuzztest.py --module jaspTTests --runs-per-analysis 5
+
+# replay a recorded failure
+Tests/gatetest/.venv/bin/python Tests/gatetest/fuzztest.py --repro /tmp/fuzz.json.repro.json
+```
+
+**Hunted (gate failures, immediate abort + `.repro.json`):** JASP process death,
+hangs (run not terminal within `--timeout-per-run`), malformed responses, and an
+engine-queue wedge (≥ `--max-consecutive-stuck` consecutive runs that never even
+get scheduled — the audit-style wedge, observed to precede a SIGABRT).
+
+**Tolerated and counted:** `validationError` / rejected options, R `fatalError`,
+JSON-RPC validation errors. `-32603` internal errors and unexpected statuses are
+listed as *suspicious* (they do not fail the run unless `--strict`).
+
+**Reproducibility:** a fresh random SEED is printed at the start and end of every
+run and stored in the report; `--seed N` replays it exactly (the RNG stream is
+deterministic — a fresh analysis instance is created per mutation so no
+server-side state leaks, and schema-derived orderings are normalised because
+JASP's `choices` order varies between process starts). Every run's exact options
+JSON is recorded in the report; crash-class failures additionally write a
+minimal `.repro.json` that `--repro` can replay in isolation.
+
+Known findings from the first runs (as of this writing, unfixed — see issues):
+- Huge numbers in numeric options reach JsonCpp `asInt()` and surface as
+  `-32603` internal errors ("LargestInt out of Int range") instead of clean
+  validation errors (`jaspDescriptives/Descriptives`).
+- Garbage in the `raincloudPlots` `customizationTable` (data-entry options
+  table) wedges the engine queue: analyses are never scheduled again, ending
+  in a SIGABRT in one observed run.
+- `Json::Value::find: requires objectValue` internal errors on
+  `jaspAnova/Anova` with non-object options where objects are expected.
