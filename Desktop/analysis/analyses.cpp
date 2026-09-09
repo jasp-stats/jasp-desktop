@@ -1328,24 +1328,9 @@ void Analyses::registerRpcHandlers()
 		return response;
 	});
 
-	disp->registerMethodByName("analysis_getOptions", [](const Json::Value& params) -> Json::Value
-	{
-		int analysisId = params["analysisId"].asInt();
-
-		Json::Value error;
-		Analysis* a = _rpcResolveAnalysis(analysisId, error);
-		if (!a) return error;
-
-		Json::Value response = JaspRpcDispatcher::successResult();
-		_rpcWriteIdentity(response, a);
-		// Note: keep response["status"] as the RPC-level status ("success"),
-		// the analysis lifecycle status goes into "analysisStatus".
-		response["analysisStatus"] = Analysis::statusToString(a->status());
-		_rpcWriteOptions(response, a, true);
-
-		AgentStateTracker::notifyAnalysisObserved(a->id());
-		return response;
-	});
+	//NOTE: no analysis_getOptions method: get_analyses_state with a single analysisId
+	//already returns the identity, lifecycle status, options and optionMeta of an
+	//existing analysis (include_options=true, options_meta_diff=false for the full meta).
 
 	disp->registerMethodByName("analysis_remove", [](const Json::Value& params) -> Json::Value
 	{

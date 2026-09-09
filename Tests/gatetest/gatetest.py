@@ -45,7 +45,7 @@ MCP_SAFE_WAIT_MS = 55000
 EXPECTED_RPC_METHODS = [
     "ping", "rpc_discover", "modules_list", "analyses_list", "data_load",
     "data_load_status", "data_info", "analysis_create", "analysis_run",
-    "analysis_results", "analysis_getOptions", "analysis_remove",
+    "analysis_results", "analysis_remove",
 ]
 
 TEST_MODULE = "jaspTestModule"  # dev playground module, not shippable surface
