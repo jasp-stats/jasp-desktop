@@ -84,6 +84,23 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `FileEvent::FileSyncData` — was dead/never existed, now added to enum.
 - `DataSet::setDataFileAndTimeStamp` (overload) exists alongside `setDataFile` (single string).
 
+## Gate test / fuzzer (`Tests/gatetest/`)
+
+- `run_gatetest.sh` → gate test (every analysis, default options, via jasp-mcp MCP layer).
+- `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array).
+- `gatecommon.py` → shared RPC harness (MCP-first with direct-JSON-RPC fallback), JASP process handling.
+- JASP headless requires `-platform offscreen` (`-platform minimal`, used by `--hide`, crashes QtWebEngine's scene graph during blocking RPC waits). `--rpcPort=<n>` enables the RPC server at startup (persisted in user settings, like `--safeGraphics`).
+- The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge/`-32603` abort the run with a `.repro.json`.
+- `jaspTestModule` is always skipped (dev-only module).
+
+## Debugging JASP desktop crashes — pitfalls learned the hard way
+
+- **lldb batch mode ends supervision at the first stop.** Any breakpoint hit (or attach-SIGSTOP handling quirk) ends the `-k`-scripted session, leaving the target stopped/frozen. Do not use `break set -n abort` style name matching: it resolves to *all* matching symbols (e.g. `Analysis::abort`, hit constantly during fuzzing — 121 locations). Pin exact symbols per library, e.g. `break set -n exit -s libsystem_c.dylib` / `-n __abort_message -s libc++abi.dylib`, and prefer `QCoreApplication::exit` / `QGuiApplication::quit` for clean-exit tracing.
+- **Silent clean `exit(0)` is a real death mode** for JASP: Qt's `quitOnLastWindowClosed` default (true) is never disabled, so anything that closes/destroys the main QML window exits the whole app with code 0 — no log output, no signal. The fuzzer's summary filters exit code 0 out (`finish()`), so a clean quit shows up only as "connection refused" transport errors. Check `jasp_proc.returncode` when chasing "process died" reports.
+- Attaching lldb mid-run changes timing; crashes may become hangs or clean exits. Prefer launching JASP *under* lldb (`lldb --batch -o "process launch" ...`) and driving it from outside, and let the process run to death under supervision instead of attaching late.
+- The R engine processes detect parent death via heartbeat files (`temp/JASP-IPC-<pid>_heartbeat`); "no parent alive" in engine logs means the desktop process already died — check the *desktop* log and exit code.
+- The IPC channel is a **single-slot mailbox** with a fixed-width id prefix (4 digits since `f268fa249`); each send overwrites the slot, so fast repeated engine messages can overwrite an unread reply. `processReplies` never reads while the desktop thinks the engine is `idle`.
+
 ## Conventions
 
 - `#include` paths: Desktop headers use `data/datasetpackage.h`, CommonData/Common headers use flat `"dataset.h"`.
