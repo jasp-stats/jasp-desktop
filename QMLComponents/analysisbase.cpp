@@ -57,7 +57,14 @@ void AnalysisBase::destroyForm()
 		_analysisForm->setParent(		nullptr);
 		_analysisForm->setParentItem(	nullptr);
 
-		delete _analysisForm;
+		//The form is a live QML item tree. The AnalysisFormExpander delegate that spawned
+		//it is torn down deferred (Repeater deleteLater semantics after the model row
+		//removal) and still holds JS wrappers/references to this form (myForm, Connections,
+		//closures) until then. A synchronous delete here frees the whole tree under the
+		//QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in QV4::markDrain.
+		//Defer the deletion to the next event-loop pass, at the same quiet point where
+		//the delegate's JS references get invalidated.
+		_analysisForm->deleteLater();
 		_analysisForm = nullptr;
 
 		emit formItemChanged();

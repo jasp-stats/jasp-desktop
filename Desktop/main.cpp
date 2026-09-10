@@ -442,6 +442,18 @@ int main(int argc, char *argv[])
 
 	qInstallMessageHandler(qtMessageHandler);
 
+	//Qt's incremental QV4 GC runs mark/sweep in ~5ms event-loop slices (default
+	//QV4_GC_TIMELIMIT = (1000/60)/3). JASP destroys C++-backed QML objects
+	//(AnalysisForm trees etc.) from the same event loop at arbitrary points
+	//(e.g. analysis_remove while an R run is still in flight), and Qt 6.11.1's
+	//wrapper-invalidation has no re-validation for wrappers already marked
+	//mid-cycle: the next QV4::markDrain slice then dereferences freed memory
+	//(intermittent EXC_BAD_ACCESS, SIGSEGV/-11 or SIGBUS/-10, hardest hit under
+	//automation churn). With a time limit of 0 the whole GC runs to completion
+	//atomically (QDeadlineTimer::Forever), which closes that race at the cost of
+	//somewhat longer (but rare) full-GC pauses. Set before any QQmlEngine exists.
+	qputenv("QV4_GC_TIMELIMIT", "0");
+
 #ifdef _WIN32
 	if(DynamicRuntimeInfo::getRuntimeEnvironment() == RuntimeEnvironment::MSIX) {
 		QCoreApplication::setOrganizationName("JASP-Stats-MSIX");
