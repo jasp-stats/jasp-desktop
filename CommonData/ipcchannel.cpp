@@ -405,7 +405,7 @@ void IPCChannel::send(const string & data, bool alreadyLockedMutex)
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
 
-		_dataOut->assign(msgIDPrefix(_msgIDSend)); // prefix the fixed-width msg ID
+		_dataOut->assign(msgIDPrefix(_msgIDSend).c_str()); // prefix the fixed-width msg ID
 		_msgIDSend++;
 		_dataOut->append(data.c_str(), data.length());
 
@@ -449,7 +449,7 @@ void IPCChannel::resend()
 	{
 		_mutexOut->lock();
 
-		_dataOut->replace(0, MsgIDWidth, msgIDPrefix(_msgIDSend)); // replace the msg-id prefix
+		_dataOut->replace(0, MsgIDWidth, msgIDPrefix(_msgIDSend).c_str()); // replace the msg-id prefix
 		_msgIDSend++;
 	}
 	catch (boost::interprocess::interprocess_exception &e)
