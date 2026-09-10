@@ -2,6 +2,9 @@ if(BUILD_TESTS)
 
 find_package(Qt6 REQUIRED COMPONENTS Test QuickTest Qml Core)
 
+qt_add_executable(JASPTestBatchResult testbatchresult.cpp)
+target_link_libraries(JASPTestBatchResult PRIVATE JASPDesktopLib Qt::Test)
+
 qt_add_executable(
   JASPTest
   ${SYSTEM_TYPE}
@@ -219,6 +222,8 @@ target_compile_definitions(
 )
 
 enable_testing(true)
+
+add_test(NAME testBatchResult COMMAND JASPTestBatchResult)
 
 add_test(NAME testDataImport               COMMAND JASPTest)
 add_test(NAME testParsedArgs               COMMAND JASPTestParsedArgs)

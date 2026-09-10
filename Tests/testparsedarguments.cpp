@@ -125,9 +125,8 @@ void TestParsedArguments::testNoArguments()
 	QCOMPARE(pa.hideJASP,				false);
 	QCOMPARE(pa.safeGraphics,			false);
 	QCOMPARE(pa.newData,				false);
-	QCOMPARE(pa.exportPdf,				false);
+	QCOMPARE(pa.exportType, ExportType::Html);
 	QCOMPARE(pa.keepJASPOpenAfterExporting, false);
-	QCOMPARE(pa.dontExportResult,		false);
 	QCOMPARE(pa.unitTest,				false);
 	QCOMPARE(pa.unitTestRecursive,		false);
 	QCOMPARE(pa.syncDataFileRecursive,	false);
@@ -156,9 +155,7 @@ void TestParsedArguments::testBooleanFlags()
 
 	//These flags only exist in PRO mode; elsewhere they are passed on to Qt as unrecognized options.
 	AppInfo::setProMode(true);
-	check("--exportPdf",		&ParsedArguments::exportPdf);
 	check("--keepJASPOpen",		&ParsedArguments::keepJASPOpenAfterExporting);
-	check("--dontExportResult",	&ParsedArguments::dontExportResult);
 	AppInfo::setProMode(false);
 }
 
@@ -326,14 +323,13 @@ void TestParsedArguments::testCombinedOutputFlags()
 	QVERIFY(outDir.isValid());
 
 	ArgArray a({jaspPath, csvPath,
-		"--exportPdf", "--outputDir", outDir.path(),
-		"--dontExportResult", "--keepJASPOpen", "--hide"});
+		"--exportType=Pdf", "--outputDir", outDir.path(),
+		"--exportType=No", "--keepJASPOpen", "--hide"});
 	ParsedArguments pa(a.argc, a.argv());
 
 	QCOMPARE(pa.mainFileIsJaspFile,			true);
 	QCOMPARE((int)pa.dataFiles.size(),		1);
-	QCOMPARE(pa.exportPdf,					true);
-	QCOMPARE(pa.dontExportResult,			true);
+	QCOMPARE(pa.exportType, ExportType::No);
 	QCOMPARE(pa.keepJASPOpenAfterExporting,	true);
 	QCOMPARE(pa.hideJASP,					true);
 	QCOMPARE(pa.outputDir.absoluteFilePath(), QFileInfo(outDir.path()).absoluteFilePath());
@@ -343,7 +339,7 @@ void TestParsedArguments::testCombinedOutputFlags()
 
 void TestParsedArguments::testMultipleFlagsIndependent()
 {
-	ArgArray a({"--save", "--logToFile", "--safeGraphics", "--exportPdf", "--timeOut=5"});
+	ArgArray a({"--save", "--logToFile", "--safeGraphics", "--exportType=Pdf", "--timeOut=5"});
 	ParsedArguments pa(a.argc, a.argv());
 
 	QCOMPARE(pa.save,			true);
@@ -351,10 +347,10 @@ void TestParsedArguments::testMultipleFlagsIndependent()
 	QCOMPARE(pa.safeGraphics,	true);
 	AppInfo::setProMode(true);
 	{
-		ArgArray a({"--save", "--logToFile", "--safeGraphics", "--exportPdf", "--timeOut=5"});
+		ArgArray a({"--save", "--logToFile", "--safeGraphics", "--exportType=Pdf", "--timeOut=5"});
 		ParsedArguments paPro(a.argc, a.argv());
 		QCOMPARE(paPro.save,		true);
-		QCOMPARE(paPro.exportPdf,	true);
+		QCOMPARE(paPro.exportType, ExportType::Pdf);
 		QCOMPARE(paPro.timeOut,		5);
 	}
 	AppInfo::setProMode(false);

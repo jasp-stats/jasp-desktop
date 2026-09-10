@@ -32,6 +32,7 @@
 #include "data/computedcolumnmodel.h"
 #include "data/datasettablemodel.h"
 #include "data/fileevent.h"
+#include "batchresult.h"
 #include "data/filtermodel.h"
 #include "data/columnmodel.h"
 #include "data/labelfiltergenerator.h"
@@ -111,7 +112,7 @@ class MainWindow : public QObject
 	friend class FileMenu;
 	friend class TestAll; ///< drives the command-line open/synchronize chain through a real MainWindow
 public:
-	explicit MainWindow(Application *application);
+	explicit MainWindow(Application *application, bool batchRun = false);
 			~MainWindow() override;
 
 	static MainWindow * singleton() { return _singleton; }
@@ -162,6 +163,7 @@ public:
 
 	bool				startedForBatch()					const	{ return _startedForBatch; }	///< whether this JASP was started to process a data file for another JASP, see setStartedForBatch()
 	void				setStartedForBatch(bool startedForBatch);
+	void                configureBatchRun(int timeoutMinutes);
 	
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -426,7 +428,10 @@ private:
 	int									_nextRpcJobId = 1;
 	FileEvent					*	_waitingEvent			= nullptr;
 	QTimer						*	_waitingEventStartTimer		= nullptr; ///< debounces the start of a waiting event until the analyses have stopped changing status (see waitForAllAnalysesFinishedBeforeStartingEvent)
-	QTimer						*	_waitingEventTimeoutTimer	= nullptr; ///< fires when an export waits on analyses that never finish (a crashed engine, say)
+	QTimer						*	_waitingEventTimeoutTimer	= nullptr; ///< deadline for the whole batch worker, including import and export
+	BatchResult _batchResult;
+	bool _batchRunning = false, _batchKeepOpen = false, _batchWaitingForAnalyses = false;
+	void finishBatchRun();
 };
 
 #endif // MAINWIDGET_H

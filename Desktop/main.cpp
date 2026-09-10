@@ -33,6 +33,7 @@
 #include <json/json.h>
 #include "utilities/appdirs.h"
 #include "parsedarguments.h"
+#include "batchresult.h"
 
 #ifdef linux
 #include "utilities/qmlutils.h"
@@ -187,11 +188,12 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 		return 1;
 	}
 
-	int failures = 0;
+	int failures = 0, warningCount = 0;
+	QStringList diagnostics, runtimeDiagnostics;
 
 	for (const QFileInfo& dataFile : dataFiles)
 	{
-		bool failed = false;
+		BatchResult result;
 		try{
 			QProcess subJasp;
 			subJasp.setProgram(jaspName);
@@ -243,8 +245,7 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 				if (!subJasp.startDetached(&pid))
 				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
-					failed = true;
+					result.addError("Could not start JASP: " + subJasp.errorString());
 				}
 			}
 			else
@@ -253,40 +254,62 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 				if (!subJasp.waitForStarted())
 				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
-					failed = true;
+					result.addError("Could not start JASP: " + subJasp.errorString());
 				}
 				else
 				{
 					if (!subJasp.waitForFinished((arguments.timeOut * 60000) + 10000))
 					{
-						std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " did not finish in time; killing it." << std::endl;
+						result.addError("Timed out; the worker was terminated.");
 						subJasp.kill();
 						subJasp.waitForFinished(10000);
-						failed = true;
-					}
-					else if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
-					{
-						std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " failed (exit code " << subJasp.exitCode() << ")." << std::endl;
-						failed = true;
 					}
 
-					std::cerr << subJasp.readAllStandardError().toStdString() << std::endl;
+					bool reported = false;
+					for (const auto & line : subJasp.readAllStandardOutput().split('\n'))
+						reported = result.read(line.trimmed()) || reported;
+					if (result.errors.isEmpty())
+					{
+						if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
+							result.addError("JASP failed (exit code " + QString::number(subJasp.exitCode()) + ").");
+						else if (!reported)
+							result.addError("JASP exited without reporting completion.");
+					}
+
+					//Keep raw Qt/Chromium output separate: stderr is not an analysis warning count.
+					const QString stderrText = QString::fromLocal8Bit(subJasp.readAllStandardError()).trimmed();
+					if (!stderrText.isEmpty())
+						runtimeDiagnostics << "Runtime diagnostics [" + dataFile.absoluteFilePath() + "]:\n" + stderrText;
 				}
 			}
 		}
 		catch(...)
 		{
-			std::cerr << "An error occurred while processing data file " << fq(dataFile.absoluteFilePath()) << std::endl;
-			failed = true;
+			result.addError("An error occurred while processing the data file.");
 		}
 
-		if (failed)
+		if (!result.errors.isEmpty())
+		{
 			failures++;
+			std::cout << "  Failed: " << fq(result.errors.join("\n          ")) << std::endl;
+		}
+		else
+			std::cout << (arguments.keepJASPOpenAfterExporting ? "  Launched" : "  Succeeded") << std::endl;
+		warningCount += int(result.warnings.size());
+		for (const auto & error : result.errors)
+			diagnostics << "ERROR [" + dataFile.absoluteFilePath() + "]: " + error;
+		for (const auto & warning : result.warnings)
+			diagnostics << "WARNING [" + dataFile.absoluteFilePath() + "]: " + warning;
 	}
 
-	if (failures > 0)
-		std::cerr << failures << " out of " << dataFiles.size() << " data file(s) FAILED to process." << std::endl;
+	if (!runtimeDiagnostics.isEmpty())
+		std::cerr << "\nTechnical runtime output (see the batch summary for successes and failures):\n" << fq(runtimeDiagnostics.join("\n\n")) << std::endl;
+	if (!diagnostics.isEmpty())
+		std::cout << "\nErrors and warnings:\n" << fq(diagnostics.join('\n')) << std::endl;
+	if (arguments.keepJASPOpenAfterExporting)
+		std::cout << "\nLaunch summary: " << dataFiles.size() - failures << " launched; " << failures << " failed to start. Analysis completion is not monitored for windows kept open." << std::endl;
+	else
+		std::cout << "\nBatch summary: " << dataFiles.size() << " data files; successes: " << dataFiles.size() - failures << "; errors: " << failures << "; warnings: " << warningCount << "." << std::endl;
 
 	return failures;
 }
@@ -390,7 +413,7 @@ int main(int argc, char *argv[])
 		putenv(dst);
 	}
 
-	if(arguments.hideJASP)
+	if(arguments.hideJASP && arguments.dataFiles.empty())
 	{
 		args.push_back("-platform");
 		args.push_back("minimal");

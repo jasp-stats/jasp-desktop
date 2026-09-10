@@ -56,9 +56,13 @@ Note that this is also the one case where the batch takes the focus: a JASP mean
 
 ## While it runs
 
-The batch does not take the focus away from you, so you can keep working in JASP (or anywhere else) while it runs. On macOS the JASP windows doing the work do appear, but they never come to the front and never take the keyboard; the exception is *Keep JASP open afterwards*, which is meant to give you a JASP to look at.
+Batch workers run in hidden windows, so you can keep working in JASP or another application. *Keep JASP open afterwards* opens visible windows for inspection instead.
 
-The output of the batch is shown at the bottom of the page: which data file is being started, and which ones failed. A data file counts as failed when its JASP could not be started, exited with an error, or did not finish within the timeout. *Stop* ends the batch; the data files it already processed keep their results.
+The output shows progress for each data file. An empty or invalid file, an analysis error, a failed export, or a timeout counts as a failure; processing continues with the next file. JASP warning messages are reported without opening a dialog. The template's original linked data file is not automatically reloaded: the selected batch data is used.
+
+At the end, errors and warnings are listed by data file, followed by the number of successful files, failed files, and distinct JASP warning messages per file. Raw runtime diagnostics (such as Chromium output) are shown separately and are not counted as warnings. An exported report can contain an analysis error and still count as a failed file. With *Keep JASP open afterwards*, the summary reports how many windows were launched; their analyses are not monitored for completion.
+
+*Stop* ends the batch; the data files it already processed keep their results.
 )for_c++_include");
 }
 QString AllHelp::Database()

@@ -99,19 +99,35 @@ Because each data file gets its own JASP process, this starts fresh every time.
 
 ## Exit codes
 
-Meant for scripting; `0` always means everything went through.
+For unattended batches, the exit code covers importing, refreshing analyses, and exporting.
 
 | Code | Meaning |
 | --- | --- |
-| `0` | All data files were processed and exported. |
+| `0` | All data files completed without errors (warnings may still be reported). |
 | `1` | At least one data file failed, or there was nothing to synchronize with. |
-| `3` | The `.jasp` file itself could not be opened. |
 
-A data file counts as failed when its JASP could not be started, exited with an error, or did not
-finish within the timeout (it is stopped after `--timeOut` minutes plus ten seconds of grace).
-The names of the failing files are written to standard error, followed by a count.
+A data file counts as failed if its template or data could not be imported, an analysis reports
+an error, an export fails, or the worker crashes or times out. Processing continues with the next
+file. The deadline is `--timeOut` minutes, with ten seconds of grace before a stuck worker is killed.
+`--exportType=No` still waits for the analyses and checks their results.
 
-With `--keepJASPOpen` only the first of those can happen, since nothing is waited for.
+Workers run hidden and report JASP warning messages without opening dialogs. They use the supplied
+data file and do not automatically reload the template's original linked data source.
+
+For a folder or list of data files, standard output shows progress, then errors and warnings
+grouped by input file, and a summary:
+
+```
+Batch summary: 4 data files; successes: 3; errors: 1; warnings: 2.
+```
+
+Successes and errors count data files; warnings count distinct JASP warning messages per file.
+Raw runtime diagnostics on standard error (including Chromium messages) are shown separately,
+excluded from the warning count, and do not by themselves make an analysis fail.
+An HTML report containing an analysis error counts as a failed file.
+
+With `--keepJASPOpen`, the exit code and launch summary cover starting the visible windows only;
+their analyses are not monitored for completion.
 
 ## Examples
 

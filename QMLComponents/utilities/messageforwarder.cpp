@@ -80,6 +80,7 @@ QString MessageForwarder::constrainToSandboxStartDir(const QString &initialPath)
 }
 
 MessageForwarder * MessageForwarder::_singleton = nullptr;
+MessageForwarder::WarningHandler MessageForwarder::_warningHandler;
 
 QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &message)
 {
@@ -95,6 +96,11 @@ QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &m
 
 void MessageForwarder::showWarning(QString title, QString message, QMessageBox::Icon icon)
 {
+	if (_warningHandler)
+	{
+		_warningHandler(title, message, icon == QMessageBox::Critical);
+		return;
+	}
 	//A modal dialog would block an automated test runner forever, so in tests it becomes a log line.
 	//Same pattern as MainWindow::checkForUpdates, which also stays out of the way in tests.
 	if(QCoreApplication::applicationName() == "JASPTest")

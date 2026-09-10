@@ -25,20 +25,17 @@ Window
 {
     id:					mainWindowRoot
     title:				mainWindow.windowTitle
-	visible:			true
+	visible:			!mainWindow.startedForBatch
 	width:				1280
 	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				mainWindow.hadFatalError ? jaspTheme.red : jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
 	minimumHeight:		400 * jaspTheme.uiScale
-	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
+	visibility:			mainWindow.startedForBatch ? Window.Hidden : (!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized)
 
-	//Read by the platform plugin the first time this window is shown: a JASP that was started to run a data file
-	//through a jasp-file should not take the focus away from the JASP that started it. Windows then shows the window
-	//with SW_SHOWNOACTIVATE, X11 sets _NET_WM_USER_TIME to 0, Wayland skips the activation request and macOS refuses
-	//key-window status. Underscore and all, this is the name Qt itself looks for.
-	property bool _q_showWithoutActivating: mainWindow.startedForBatch
+	//Keep unattended workers hidden on the normal platform: the minimal platform used by --hide
+	//does not support the results view on all operating systems.
 
 	onVisibleChanged:
 		if(!visible)
