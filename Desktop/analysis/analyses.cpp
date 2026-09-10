@@ -208,7 +208,7 @@ void Analyses::clear()
 		analysis->remove();
 
 		emit analysisRemoved(analysis);
-		delete analysis;
+		analysis->deleteLater(); //Deferred: see Analyses::removeAnalysis for the QV4 GC rationale.
 	}
 
 	_analysisMap.clear();
@@ -344,7 +344,13 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	emit analysisRemoved(analysis);
 	emit somethingModified();
 
-	delete analysis;
+	//Deferred delete: the AnalysisFormExpander delegate (a Repeater child) is torn down
+	//deferred by beginRemoveRows/endRemoveRows and still holds JS wrappers of this
+	//Analysis (myAnalysis: model.analysis) plus of its form. A synchronous delete here
+	//frees them under the QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in
+	//QV4::markDrain. deleteLater runs the destruction at the next quiet point, after
+	//those references are invalidated. (~Analysis then synchronously deletes the form.)
+	analysis->deleteLater();
 }
 
 

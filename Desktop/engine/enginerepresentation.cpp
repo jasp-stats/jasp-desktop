@@ -677,6 +677,15 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 
 	Analysis *analysis			= _analysisInProgress;
 
+	//Stale reply for an analysis we no longer track (e.g. removed earlier, whose
+	//_idRemovedAnalysis bookkeeping was already cleared): _analysisInProgress is null
+	//here and dereferencing it used to be a null-pointer crash.
+	if (!analysis)
+	{
+		Log::log() << "Analysis reply (id " << id << ") arrived but nothing is in progress and it is not the tracked removed analysis; ignoring it." << std::endl;
+		return;
+	}
+
 	if (analysis->id() != id || analysis->revision() < revision)
 		throw std::runtime_error("Received results for wrong analysis!");
 
