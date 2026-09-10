@@ -1,5 +1,6 @@
 {
     "common" : [
+        "jaspDescriptives",
         "jaspClassicalTests",
         "jaspAnova",
         "jaspRegression",
@@ -16,7 +17,6 @@
         "jaspBsts",
         "jaspCircular",
         "jaspCochrane",
-        "jaspDescriptives",
         "jaspEquivalenceTTests",
         "jaspEsci",
         "jaspFactor",
