@@ -127,9 +127,35 @@ minimal `.repro.json` that `--repro` can replay in isolation.
 Known findings from the first runs (as of this writing, unfixed — see issues):
 - Huge numbers in numeric options reach JsonCpp `asInt()` and surface as
   `-32603` internal errors ("LargestInt out of Int range") instead of clean
-  validation errors (`jaspDescriptives/Descriptives`).
+  validation errors (`jaspDescriptives/Descriptives`). **FIXED** (option
+  binding is now exception-safe; huge ints are range-checked).
 - Garbage in the `raincloudPlots` `customizationTable` (data-entry options
   table) wedges the engine queue: analyses are never scheduled again, ending
-  in a SIGABRT in one observed run.
+  in a SIGABRT in one observed run. **FIXED** (engine aborts are acked; the
+  resend-abort loop is closed).
 - `Json::Value::find: requires objectValue` internal errors on
   `jaspAnova/Anova` with non-object options where objects are expected.
+  **FIXED** (binding is exception-safe; malformed values are rejected).
+
+Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
+
+- **FIXED** — `jaspMetaAnalysis/BayesianMetaAnalysis` + `FunnelPlot`: a
+  caught option-bind exception could leave half-bound option arrays behind;
+  the deferred QML path (`RadioButton` destruction → `setBoundValue` →
+  `AnalysisBase::boundValue` → `_getParentBoundValue`) then threw
+  `Json::LogicError` from inside a Qt signal handler → `std::terminate` →
+  SIGABRT. Fixed by requiring objects in `_getParentBoundValue` array
+  elements (analysisbase.cpp) and handling `aborted` acks for removed
+  analyses.
+- **Hang (unfixed)** — `jaspLearnBayes/LSgameofchance` and
+  `LSgameofskill`: extreme or non-numeric `pointsToWin` (e.g. 1e308 or
+  `"not-a-number"`) reaches the R simulation loop, which then runs (nearly)
+  forever. Repro: `fuzztest.py --repro` with the saved `.repro.json`. The
+  QML validators clamp user input; the RPC path bypasses them, so a range
+  clamp at the option layer is the likely fix.
+- **Dispatcher hang (unfixed)** — `jaspVisualModeling/mixedmod` with some
+  fuzzed plot options: the R analysis completes, the desktop receives the
+  (large, plot-heavy) results, and then the RPC dispatcher stops answering
+  (`analysis_remove` times out); the desktop process wedges and must be
+  killed. Repro recorded; needs investigation (suspected in the results→QML
+  update or dispatcher bookkeeping).

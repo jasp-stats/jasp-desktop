@@ -658,6 +658,7 @@ void EngineRepresentation::processAnalysisReply(Json::Value & json)
 		case analysisResultStatus::complete:
 		case analysisResultStatus::fatalError:
 		case analysisResultStatus::validationError:
+		case analysisResultStatus::aborted:
 			setState(engineState::idle);
 			_idRemovedAnalysis	= -1;
 
