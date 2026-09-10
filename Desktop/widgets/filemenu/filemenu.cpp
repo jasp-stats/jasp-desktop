@@ -37,6 +37,7 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	_computer				= new Computer				(this);
 	_OSF					= new OSF					(this);
 	_database				= new DatabaseFileMenu		(this);
+	_batch					= new BatchFileMenu			(this);
 	_dataLibrary			= new DataLibrary			(this);
 	_actionButtons			= new ActionButtons			(this);
 	_resourceButtons		= new ResourceButtons		(this);
@@ -481,6 +482,10 @@ void FileMenu::resourceButtonClicked(const int buttonType)
 
 	case ResourceButtons::AutoSaves:
 		_autoSaves->listModel()->refresh();
+		break;
+
+	case ResourceButtons::Batch:
+		_batch->refresh();
 		break;
 	}
 

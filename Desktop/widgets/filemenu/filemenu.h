@@ -30,6 +30,7 @@
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
 #include "widgets/filemenu/databasefilemenu.h"
+#include "widgets/filemenu/batchfilemenu.h"
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
@@ -58,6 +59,7 @@ class FileMenu : public FileEventRouter
 	Q_PROPERTY(Computer					*	computer				READ computer														CONSTANT						)
 	Q_PROPERTY(OSF						*	osf						READ osf															CONSTANT						)
 	Q_PROPERTY(DatabaseFileMenu			*	database				READ database														CONSTANT						)
+	Q_PROPERTY(BatchFileMenu			*	batch					READ batch															CONSTANT						)
 	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													CONSTANT						)
 	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												CONSTANT						)
 	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											CONSTANT						)
@@ -103,6 +105,7 @@ public:
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
 	DatabaseFileMenu				*	database()					const	{ return _database;					}
+	BatchFileMenu					*	batch()						const	{ return _batch;					}
 	bool								visible()					const	{ return _visible;					}
 	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
@@ -157,6 +160,7 @@ private:
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
 	DatabaseFileMenu			*	_database					= nullptr;
+	BatchFileMenu				*	_batch						= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;

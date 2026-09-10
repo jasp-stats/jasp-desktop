@@ -8,6 +8,7 @@ class AllHelp : public QObject
 {
 	Q_OBJECT
 
+	Q_PROPERTY(QString	Batch	READ Batch	NOTIFY helpChanged)
 	Q_PROPERTY(QString	Database	READ Database	NOTIFY helpChanged)
 	Q_PROPERTY(QString	PrefsAI	READ PrefsAI	NOTIFY helpChanged)
 	Q_PROPERTY(QString	PrefsAdvanced	READ PrefsAdvanced	NOTIFY helpChanged)
@@ -24,6 +25,7 @@ class AllHelp : public QObject
 public:
 	AllHelp(QObject * parent) : QObject(parent) {};
 
+	QString Batch();
 	QString Database();
 	QString PrefsAI();
 	QString PrefsAdvanced();
