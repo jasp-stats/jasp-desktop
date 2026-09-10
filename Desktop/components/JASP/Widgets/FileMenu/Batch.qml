@@ -247,8 +247,7 @@ PrefsScrollView
 			label:				qsTr("Keep JASP open afterwards")
 			checked:			batchView.batch.keepJASPOpen
 			onCheckedChanged:	batchView.batch.keepJASPOpen = checked
-			enabled:			!batchView.batch.useInputFolder
-			toolTip:			qsTr("Leave the JASP that was started open at the end instead of closing it, so you can look at the result. Only possible for a single data file, because each data file of a folder gets its own JASP.")
+			toolTip:			qsTr("Leave the JASP that was started open at the end instead of closing it, so you can look at the result. With more than one data file you end up with a JASP per data file, all open at the same time, so mind how many you pick. These JASPs also take the focus, where a batch that closes itself again leaves you working undisturbed.")
 			KeyNavigation.tab:	keepMissingCols
 		}
 

@@ -45,6 +45,12 @@ For each data file JASP:
 one file cannot influence the next: each one starts from the `.jasp` file again. The only exception
 is a single data file combined with `--keepJASPOpen`, which is handled in the JASP you started.
 
+Those processes are started one after the other, each one waited for before the next begins — except
+with `--keepJASPOpen`, where none of them ever finishes on its own. There they are all started at
+once and left to you, so a folder of twenty data files leaves you with twenty JASPs running side by
+side. Waiting is also the only reason the exit code can say anything about a data file, so with
+`--keepJASPOpen` a failure means "could not be started" and nothing more.
+
 ## Options
 
 | Option | What it does |
@@ -53,7 +59,7 @@ is a single data file combined with `--keepJASPOpen`, which is handled in the JA
 | `--outputDir <folder>` | Write all results here. Without it, each result lands next to its own data file. The folder is created if it does not exist. |
 | `--exportType=Html/Pdf/Jasp/No` | Default is Html. If `No` is used, only synchronize and refresh is done: can be useful to check that a set of data files runs through without errors. |
 | `--keepMissingColsWhenSyncing` | Keep columns that the new data file does not have, instead of removing them. See below. |
-| `--keepJASPOpen` | Leave JASP open at the end instead of closing it. Only meaningful with a single data file. |
+| `--keepJASPOpen` | Leave JASP open at the end instead of closing it. With several data files that means a JASP per data file, all open at once. |
 | `--save` | Save the `.jasp` file after refreshing. Same as `--exportType=Jasp` |
 | `--timeOut=<minutes>` | How long to wait for the analyses of one data file. Default is 10. |
 | `--logToFile` | Write logging to a file, for when a run does something you did not expect. |
@@ -105,6 +111,8 @@ A data file counts as failed when its JASP could not be started, exited with an 
 finish within the timeout (it is stopped after `--timeOut` minutes plus ten seconds of grace).
 The names of the failing files are written to standard error, followed by a count.
 
+With `--keepJASPOpen` only the first of those can happen, since nothing is waited for.
+
 ## Examples
 
 Check that a set of data files still runs, without producing reports:
@@ -123,6 +131,12 @@ Look at the result of a single data file in JASP itself instead of exporting it:
 
 ```
 JASP weights.jasp january.csv --exportType=No --keepJASPOpen
+```
+
+Same for a handful of data files, giving you one JASP per file to look through:
+
+```
+JASP weights.jasp january.csv february.csv march.csv --exportType=No --keepJASPOpen
 ```
 
 From a shell script, acting on the exit code:

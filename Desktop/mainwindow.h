@@ -106,6 +106,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
+	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
 	friend class FileMenu;
 	friend class TestAll; ///< drives the command-line open/synchronize chain through a real MainWindow
@@ -158,6 +159,9 @@ public:
 	}
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
+
+	bool				startedForBatch()					const	{ return _startedForBatch; }	///< whether this JASP was started to process a data file for another JASP, see setStartedForBatch()
+	void				setStartedForBatch(bool startedForBatch);
 	
 public slots:
 	void setImageBackgroundHandler(QString value);
@@ -402,7 +406,8 @@ private:
 									_communityVisible		= false,
                                     _hadFatalError			= false,
 									 _aiChatVisible			= false,
-									_chatWindowActive		= false;
+									_chatWindowActive		= false,
+									_startedForBatch		= false;
 	QFont							_defaultFont;
 	QPointer<QWindow>				_chatWindow				= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;

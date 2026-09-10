@@ -43,10 +43,14 @@ With "Do not export" JASP only synchronizes and refreshes. That is a good way to
 
 ## Options
 
-*Keep JASP open afterwards* leaves the JASP that was started open at the end instead of closing it, so you can look at the result yourself. This only works for a single data file, because for a folder each data file gets its own JASP.
+*Keep JASP open afterwards* leaves the JASP that was started open at the end instead of closing it, so you can look at the result yourself. This works for a folder too, but do keep in mind what it means there: every data file gets its own JASP and they all stay open, so a folder of twenty data files leaves you with twenty JASPs running at the same time. They are also started all at once rather than one after the other, since none of them ever finishes on its own.
+
+Note that this is also the one case where the batch takes the focus: a JASP meant to stay open should be one you can get at. See *While it runs* below.
 
 *Keep columns missing from the data file* changes what happens to a column that the JASP file uses but the new data file does not have. Normally such a column is removed and the analyses using it report that their variable is gone. With this option the column is kept as it is, with the data it already had, so the analyses keep their variables, and the columns of the new data file are added next to the ones already there rather than taking their place.
 
 ## While it runs
+
+The batch does not take the focus away from you, so you can keep working in JASP (or anywhere else) while it runs. On macOS the JASP windows doing the work do appear, but they never come to the front and never take the keyboard; the exception is *Keep JASP open afterwards*, which is meant to give you a JASP to look at.
 
 The output of the batch is shown at the bottom of the page: which data file is being started, and which ones failed. A data file counts as failed when its JASP could not be started, exited with an error, or did not finish within the timeout. *Stop* ends the batch; the data files it already processed keep their results.

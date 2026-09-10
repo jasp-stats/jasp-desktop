@@ -2898,3 +2898,14 @@ bool MainWindow::hadFatalError() const
 {
 	return _hadFatalError;
 }
+
+void MainWindow::setStartedForBatch(bool startedForBatch)
+{
+	//MainWindow.qml hands this to the platform plugin as "_q_showWithoutActivating" when it shows the window,
+	//which is why this must be set before loadQML() runs (it is called from a singleshot timer in the constructor).
+	//It keeps this JASP from taking the focus away from the JASP that started it: Windows shows the window with
+	//SW_SHOWNOACTIVATE, X11 sets _NET_WM_USER_TIME to 0 and Wayland skips the activation request. On macOS the
+	//window then refuses to become key, but the application would still pull itself to the foreground, so there
+	//BatchFileMenu also passes QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM to us.
+	_startedForBatch = startedForBatch;
+}

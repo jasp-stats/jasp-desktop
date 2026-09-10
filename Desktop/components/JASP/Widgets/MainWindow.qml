@@ -34,6 +34,12 @@ Window
 	minimumHeight:		400 * jaspTheme.uiScale
 	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
 
+	//Read by the platform plugin the first time this window is shown: a JASP that was started to run a data file
+	//through a jasp-file should not take the focus away from the JASP that started it. Windows then shows the window
+	//with SW_SHOWNOACTIVATE, X11 sets _NET_WM_USER_TIME to 0, Wayland skips the activation request and macOS refuses
+	//key-window status. Underscore and all, this is the name Qt itself looks for.
+	property bool _q_showWithoutActivating: mainWindow.startedForBatch
+
 	onVisibleChanged:
 		if(!visible)
 		{

@@ -40,6 +40,11 @@ void Application::init(const ParsedArguments& arguments)
 	_mainWindow = new MainWindow(this);
 	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(arguments.keepMissingColsWhenSyncing);
 
+	//A JASP started to run a data file through a jasp-file is doing that on behalf of someone else, so it should not
+	//steal the focus while they keep working. Unless it is meant to stay open at the end, because then they do want it.
+	//MainWindow only gets to use this until it loads its QML, which happens after we return here.
+	_mainWindow->setStartedForBatch(arguments.dataFiles.size() > 0 && !arguments.keepJASPOpenAfterExporting);
+
 	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=,this]() {
 		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
 		// But to correctly work, the following calls need the QML files to be loaded.

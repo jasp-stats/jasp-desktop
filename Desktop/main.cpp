@@ -203,6 +203,9 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 			if (arguments.keepMissingColsWhenSyncing)
 				subArguments << tq(arguments.keepMissingColsWhenSyncingArg);
 
+			if (arguments.keepJASPOpenAfterExporting)
+				subArguments << tq(arguments.keepJASPOpenArg);
+
 			if(arguments.save)
 				subArguments << tq(arguments.saveArg);
 
@@ -215,29 +218,61 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 			std::cout << "Starting subJASP with args: " << fq(subArguments.join(' ')) << std::endl;
 			subJasp.setArguments(subArguments);
-			subJasp.start();
 
-			if (!subJasp.waitForStarted())
+			if (arguments.keepJASPOpenAfterExporting)
 			{
-				std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
-				failed = true;
+				//These JASPs stay open, so waiting for one to finish would mean waiting for you to close it and the
+				//timeout would kill it while you were still looking at it. Start them detached instead: they outlive
+				//this process, which does mean the starting is the only thing that can still fail here. They also all
+				//run at the same time, so do keep an eye on how many data files you use this with.
+
+				//A detached child inherits our standard streams, and ours are a pipe when JASP itself started us
+				//(the Batch page reads our output). We are gone long before these JASPs are, so that pipe loses its
+				//reader and the first thing they log kills them with SIGPIPE, without a trace. Give them the null
+				//device instead, the same way MainWindow::startDetached does.
+				subJasp.setStandardInputFile (QProcess::nullDevice());
+				subJasp.setStandardOutputFile(QProcess::nullDevice());
+				subJasp.setStandardErrorFile (QProcess::nullDevice());
+
+//Note that macOS defines neither __unix__ nor __linux__, hence the __APPLE__ here
+#if defined(__unix__) || defined(__APPLE__)
+				subJasp.setUnixProcessParameters(QProcess::UnixProcessFlag::IgnoreSigPipe | QProcess::UnixProcessFlag::CreateNewSession | QProcess::UnixProcessFlag::ResetSignalHandlers | QProcess::UnixProcessFlag::DisconnectControllingTerminal);
+#endif
+
+				qint64 pid = 0;
+
+				if (!subJasp.startDetached(&pid))
+				{
+					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
+					failed = true;
+				}
 			}
 			else
 			{
-				if (!subJasp.waitForFinished((arguments.timeOut * 60000) + 10000))
-				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " did not finish in time; killing it." << std::endl;
-					subJasp.kill();
-					subJasp.waitForFinished(10000);
-					failed = true;
-				}
-				else if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
-				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " failed (exit code " << subJasp.exitCode() << ")." << std::endl;
-					failed = true;
-				}
+				subJasp.start();
 
-				std::cerr << subJasp.readAllStandardError().toStdString() << std::endl;
+				if (!subJasp.waitForStarted())
+				{
+					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
+					failed = true;
+				}
+				else
+				{
+					if (!subJasp.waitForFinished((arguments.timeOut * 60000) + 10000))
+					{
+						std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " did not finish in time; killing it." << std::endl;
+						subJasp.kill();
+						subJasp.waitForFinished(10000);
+						failed = true;
+					}
+					else if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
+					{
+						std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " failed (exit code " << subJasp.exitCode() << ")." << std::endl;
+						failed = true;
+					}
+
+					std::cerr << subJasp.readAllStandardError().toStdString() << std::endl;
+				}
 			}
 		}
 		catch(...)
