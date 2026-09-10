@@ -153,6 +153,16 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   forever. Repro: `fuzztest.py --repro` with the saved `.repro.json`. The
   QML validators clamp user input; the RPC path bypasses them, so a range
   clamp at the option layer is the likely fix.
+- **SIGSEGV in the QML JS GC (flaky, unfixed)** — under heavy churn
+  (analysis_remove while a run is in flight + fresh analysis_create re-binding),
+  the desktop dies in `QV4::markDrain` (QtQml incremental GC marking) with
+  EXC_BAD_ACCESS on a mangled/PAC-style address: a stale JS reference to a
+  freed C++-backed QML object. This is the same finding that ended the first
+  full sweep at 158/271 as a mystery "exit code 0"; subsequent runs also died
+  with SIGBUS (-10) or SIGSEGV (-11). Not a gate-harness artifact: reproduced
+  under lldb launch-supervision with the stack captured, and predates the
+  #6313 branch. Qt/QML ownership territory (JS heap vs AnalysisForm/destroyForm
+  timing during remove-while-in-flight); needs a Qt-level or ownership fix.
 - **Dispatcher hang (unfixed)** — `jaspVisualModeling/mixedmod` with some
   fuzzed plot options: the R analysis completes, the desktop receives the
   (large, plot-heavy) results, and then the RPC dispatcher stops answering
