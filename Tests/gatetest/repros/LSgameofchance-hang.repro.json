@@ -1,0 +1,39 @@
+{
+ "seed": 0,
+ "module": "jaspLearnBayes",
+ "analysis": "LSgameofchance",
+ "csv": "/Users/virtuoos/Broncode/JASP/jasp-desktop/Resources/Data Sets/debug.csv",
+ "options": {
+  "ci": false,
+  "numberOfSimulatedGames": 500,
+  "players": [
+   {
+    "levels": [
+     "p(win 1 point)",
+     "Points gained"
+    ],
+    "name": " 1",
+    "values": [
+     1,
+     0
+    ]
+   },
+   {
+    "levels": [
+     "p(win 1 point)",
+     "Points gained"
+    ],
+    "name": " 2",
+    "values": [
+     1,
+     0
+    ]
+   }
+  ],
+  "plotHeight": 320,
+  "plotWidth": 480,
+  "pointsToWin": 1000000000000000052504760255204420248704468581108159154915854115511802457988908195786371375080447864043704443832883878176942523235360430575644792184786706982848387200926575803737830233794788090059368953234970799945081119038967640880074652742780142494579258788820056842838115669472196386865459400540160
+ },
+ "detail": "hang (R simulation loop runs ~forever with pointsToWin=1e308); fuzz run 2026-09-09, seed 0",
+ "hint": "Replay with: fuzztest.py --repro <this file>"
+}

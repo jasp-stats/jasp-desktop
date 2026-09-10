@@ -39,8 +39,10 @@ import datetime
 import json
 import os
 import random
+import subprocess
 import sys
 import tempfile
+import threading
 import time
 
 from gatecommon import (
@@ -370,6 +372,53 @@ def main() -> int:
     jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
     log(f"JASP pid {jasp_proc.pid}, log: {jasp_log_path}")
 
+    # Machine-protection watchdog: sample the RSS of the whole JASP process tree
+    # (desktop + QtWebEngine helpers + R engines) and kill it when it exceeds the cap.
+    # Without this, a leak or wedge can consume all RAM and destabilize the machine.
+    watchdog_flag = {"killed": False}
+    if cfg.max_tree_rss_mb > 0:
+        def _tree_pids(root_pid: int) -> list[int]:
+            pids, frontier = [root_pid], [root_pid]
+            while frontier:
+                children = []
+                for pid in frontier:
+                    try:
+                        out = subprocess.run(["pgrep", "-P", str(pid)], capture_output=True, text=True, timeout=5)
+                        children += [int(p) for p in out.stdout.split()]
+                    except Exception:
+                        pass
+                frontier = [c for c in children if c not in pids]
+                pids += frontier
+            return pids
+
+        def _watchdog():
+            while jasp_proc.poll() is None:
+                time.sleep(10)
+                try:
+                    pid_list = ",".join(str(p) for p in _tree_pids(jasp_proc.pid))
+                    out = subprocess.run(["ps", "-o", "rss=,comm=", "-p", pid_list],
+                                         capture_output=True, text=True, timeout=15)
+                    total_mb, breakdown = 0, []
+                    for line in out.stdout.splitlines():
+                        parts = line.split(None, 1)
+                        if not parts:
+                            continue
+                        rss_mb = int(parts[0]) // 1024  # ps rss is in KB on macOS and Linux
+                        total_mb += rss_mb
+                        if rss_mb > 100:
+                            name = parts[1].strip().split("/")[-1] if len(parts) > 1 else "?"
+                            breakdown.append(f"{name}={rss_mb}MB")
+                    if total_mb > cfg.max_tree_rss_mb:
+                        log(f"WATCHDOG: JASP process tree at {total_mb}MB > cap {cfg.max_tree_rss_mb}MB "
+                            f"({', '.join(breakdown)}) — killing it to protect the machine")
+                        watchdog_flag["killed"] = True
+                        shutdown_jasp(jasp_proc)
+                        return
+                except Exception:
+                    continue
+
+        threading.Thread(target=_watchdog, daemon=True).start()
+
     client = GateClient(DirectRpcClient(url), None)
     records: list[dict] = []
     crashes: list[dict] = []
@@ -377,6 +426,26 @@ def main() -> int:
 
     def bump(cls: str) -> None:
         totals[cls] = totals.get(cls, 0) + 1
+
+    def restart_after_death(where: str) -> bool:
+        """With --restart-on-death: restart JASP after a death and continue the sweep.
+        Returns True on success. Records the death in `crashes` either way."""
+        nonlocal jasp_proc
+        if not cfg.restart_on_death:
+            return False
+        log(f"RESTARTING JASP after death ({where}); sweep continues (occurrence recorded)")
+        shutdown_jasp(jasp_proc)
+        jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
+        log(f"JASP pid {jasp_proc.pid} (restarted), log: {jasp_log_path}")
+        try:
+            wait_for_server(client, jasp_proc, cfg.startup_timeout)
+            if client.mcp is not None:
+                connect_mcp(client, url)  # jasp-mcp reconnects/re-discovers for the new instance
+            load_data(client, cfg.csv, expected_rows, expected_cols)
+        except GateFailure as e:
+            log(f"FATAL: restart failed: {e}")
+            return False
+        return True
 
     try:
         wait_for_server(client, jasp_proc, cfg.startup_timeout)
@@ -407,7 +476,8 @@ def main() -> int:
                 log(f"FATAL: {detail} {module}/{analysis}")
                 if last_mutation is not None and cfg.report:
                     write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, last_mutation, detail)
-                break
+                if not restart_after_death(f"{module}/{analysis}"):
+                    break
             try:
                 _, created = client.call("analysis_create", {"module": module, "analysis": analysis}, timeout_s=90)
                 analysis_id = created.get("analysisId")
@@ -473,6 +543,9 @@ def main() -> int:
                         log(f"{label} run {i + 1} ... {outcome.upper()}: {detail[:200]}")
                         if cfg.report:
                             write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, options, detail)
+                        if restart_after_death(f"{module}/{analysis} run {i + 1}"):
+                            consecutive_stuck = 0
+                            continue
                         raise _StopFuzzing()
 
                     # Engine-queue wedge detector: a run that never even got scheduled
@@ -491,6 +564,9 @@ def main() -> int:
                         log(f"{label} run {i + 1} ... WEDGED: {detail}")
                         if cfg.report:
                             write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, options, detail)
+                        if restart_after_death(f"{module}/{analysis} run {i + 1} (wedge)"):
+                            consecutive_stuck = 0
+                            continue
                         raise _StopFuzzing()
 
                     if outcome == "internal-error":
@@ -581,6 +657,11 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--timeout-per-run", type=float, default=60, help="seconds per run incl. polling (default 60)")
     p.add_argument("--max-consecutive-stuck", type=int, default=3,
                    help="abort as wedged after this many consecutive runs that never got scheduled (default 3)")
+    p.add_argument("--max-tree-rss-mb", type=int, default=6000,
+                   help="kill the whole JASP process tree when its total RSS exceeds this many MB (0 disables; default 6000)")
+    p.add_argument("--restart-on-death", action="store_true",
+                   help="when the desktop dies or wedges, restart it and continue the sweep instead of aborting "
+                        "(deaths are still recorded in the report; use for full-coverage sweeps of flaky crashes)")
     p.add_argument("--startup-timeout", type=float, default=300)
     p.add_argument("--seed", type=int, default=None, help="RNG seed (default: fresh random, printed for reproduction)")
     p.add_argument("--fail-fast", action="store_true", help="stop after the first analysis that misbehaves")

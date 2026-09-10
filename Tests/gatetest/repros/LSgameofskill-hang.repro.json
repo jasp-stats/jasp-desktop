@@ -1,0 +1,39 @@
+{
+  "seed": 0,
+  "module": "jaspLearnBayes",
+  "analysis": "LSgameofskill",
+  "csv": "/Users/virtuoos/Broncode/JASP/jasp-desktop/Resources/Data Sets/debug.csv",
+  "options": {
+    "ci": false,
+    "numberOfSimulatedGames": 500,
+    "players": [
+      {
+        "levels": [
+          "p(win 1 point)",
+          "Points gained"
+        ],
+        "name": " 1",
+        "values": [
+          1,
+          0
+        ]
+      },
+      {
+        "levels": [
+          "p(win 1 point)",
+          "Points gained"
+        ],
+        "name": " 2",
+        "values": [
+          1,
+          0
+        ]
+      }
+    ],
+    "plotHeight": 320,
+    "plotWidth": 480,
+    "pointsToWin": "not-a-number"
+  },
+  "detail": "hang (pointsToWin='not-a-number' -> NA in R sim loop)",
+  "hint": "Replay with: fuzztest.py --repro <this file>"
+}
