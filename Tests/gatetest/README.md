@@ -163,6 +163,16 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   under lldb launch-supervision with the stack captured, and predates the
   #6313 branch. Qt/QML ownership territory (JS heap vs AnalysisForm/destroyForm
   timing during remove-while-in-flight); needs a Qt-level or ownership fix.
+  Full write-up: `Docs/development/qv4-gc-crash.md`.
+
+  Full-sweep data point (2026-09-10, commit `309fe5227`, seed 77,
+  `--restart-on-death`): **269/271 analyses × 8 mutations = 2152 runs in 95
+  min**, surviving 2 QV4 GC crashes (both in jaspAnova, recorded and restarted
+  through). Outcome distribution: 1092 complete, 1020 rejected (graceful),
+  35 fatalError (tolerated R errors), 3 validationError, 2 crash (the GC
+  occurrences). Zero wedges, zero dispatcher hangs, zero watchdog kills — the
+  mixedmod wedge (below) is gone and the web-view JS leak fix held (tree RSS
+  stayed under the 5 GB cap for the entire sweep).
 - **Dispatcher hang** — `jaspVisualModeling/mixedmod` with some
   fuzzed plot options: the R analysis completes, the desktop receives the
   (large, plot-heavy) results, and then the RPC dispatcher stops answering
