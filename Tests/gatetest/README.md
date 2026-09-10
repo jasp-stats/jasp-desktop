@@ -163,9 +163,10 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   under lldb launch-supervision with the stack captured, and predates the
   #6313 branch. Qt/QML ownership territory (JS heap vs AnalysisForm/destroyForm
   timing during remove-while-in-flight); needs a Qt-level or ownership fix.
-- **Dispatcher hang (unfixed)** — `jaspVisualModeling/mixedmod` with some
+- **Dispatcher hang** — `jaspVisualModeling/mixedmod` with some
   fuzzed plot options: the R analysis completes, the desktop receives the
   (large, plot-heavy) results, and then the RPC dispatcher stops answering
-  (`analysis_remove` times out); the desktop process wedges and must be
-  killed. Repro recorded; needs investigation (suspected in the results→QML
-  update or dispatcher bookkeeping).
+  (`analysis_remove` times out). **FIXED** as a side effect of the deferred
+  analysis-teardown change (commit `032c74952`): the original seed-234304393
+  shard that wedged now completes cleanly. A saved repro is kept in
+  `Tests/gatetest/repros/` for regression checking.
