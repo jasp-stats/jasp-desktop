@@ -189,6 +189,12 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 			{
 				for (Json::Value & boundValue : (*parentBoundValues))
 				{
+					//isMember throws on non-objects (e.g. fuzzed garbage, or an array
+					//left half-bound after an interrupted option bind), which would
+					//escape through QML signal handlers and terminate the process.
+					if (!boundValue.isObject())
+						continue;
+
 					if (boundValue.isMember(parent.key))
 					{
 						Json::Value* keyValue = &(boundValue[parent.key]);
