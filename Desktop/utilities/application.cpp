@@ -26,14 +26,14 @@
 #include "log.h"
 
 void Application::init(const ParsedArguments& arguments)
-{	
+{
 	std::cout << "Application init entered" << std::endl;
-	
+
 	if(arguments.logToFile)
 		Settings::setValue(Settings::LOG_TO_FILE, true);
 
 	Dirs::setReportingDir(fq(arguments.reportingDir.absoluteFilePath()));
-	
+
 	if(arguments.unitTest)
 		resultXmlCompare::compareResults::theOne()->enableTestMode(); //So languagemodel can be aware
 
@@ -50,10 +50,12 @@ void Application::init(const ParsedArguments& arguments)
 			if(arguments.unitTest)
 				_mainWindow->testLoadedJaspFile(arguments.timeOut, arguments.save);
 
+			ExportType exportType = arguments.save ? ExportType::Jasp : arguments.exportType;
+
 			if(arguments.mainFilePath.exists() || arguments.mainFileIsOnline)
 			{
 				QFileInfo inputDataFile;
-				QString outputFile;
+				QString exportFile;
 
 				if (arguments.dataFiles.size() > 0)
 				{
@@ -65,16 +67,16 @@ void Application::init(const ParsedArguments& arguments)
 						exit(-1);
 					}
 
-					if (!arguments.dontExportResult)
+					if (exportType != ExportType::No)
 					{
 						QString outputDir = arguments.outputDir.exists() ? arguments.outputDir.absoluteFilePath() : inputDataFile.absoluteDir().absolutePath();
-						outputFile = outputDir + "/" + inputDataFile.baseName() + (arguments.exportPdf ? ".pdf" : ".html");
+						exportFile = outputDir + "/" + inputDataFile.baseName() + "." + ExportTypeToQString(exportType).toLower();
 					}
 				}
 
 				QString mainFile = arguments.mainFileIsOnline ? arguments.mainFilePath.filePath() : arguments.mainFilePath.absoluteFilePath();
 
-				_mainWindow->open(mainFile, inputDataFile.absoluteFilePath(), outputFile, arguments.keepJASPOpenAfterExporting);
+				_mainWindow->open(mainFile, inputDataFile.absoluteFilePath(), exportFile, arguments.keepJASPOpenAfterExporting, exportType == ExportType::Jasp);
 			}
 
 			if(!arguments.dbJson.isNull())

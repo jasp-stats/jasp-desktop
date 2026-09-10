@@ -200,12 +200,6 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 			if(arguments.outputDir.exists())
 				subArguments << tq(arguments.outputDirArg) << arguments.outputDir.absoluteFilePath();
 
-			if (arguments.exportPdf)
-				subArguments << tq(arguments.exportPdfArg);
-
-			if (arguments.dontExportResult)
-				subArguments << tq(arguments.dontExportResultArg);
-
 			if (arguments.keepMissingColsWhenSyncing)
 				subArguments << tq(arguments.keepMissingColsWhenSyncingArg);
 
@@ -215,6 +209,7 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 			if(arguments.hideJASP)
 				subArguments << tq(arguments.hideArg);
 
+			subArguments << tq(arguments.exportTypeArg) + ExportTypeToQString(arguments.exportType);
 			subArguments << tq(arguments.timeOutArg) + QString::number(arguments.timeOut);
 
 
