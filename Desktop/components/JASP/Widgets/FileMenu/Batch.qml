@@ -258,7 +258,7 @@ PrefsScrollView
 			label:				qsTr("Keep columns missing from the data file")
 			checked:			batchView.batch.keepMissingColsWhenSyncing
 			onCheckedChanged:	batchView.batch.keepMissingColsWhenSyncing = checked
-			toolTip:			qsTr("Keep the columns the JASP file uses but the data file does not have, as empty columns, instead of removing them. The columns of the data file are then added next to the ones already there.")
+			toolTip:			qsTr("Keep the columns the JASP file uses but the data file does not have, with the data they already had, instead of removing them. The columns of the data file are then added next to the ones already there.")
 			KeyNavigation.tab:	runButton
 		}
 	}

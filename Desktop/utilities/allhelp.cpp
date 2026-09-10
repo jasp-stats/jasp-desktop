@@ -50,7 +50,7 @@ With "Do not export" JASP only synchronizes and refreshes. That is a good way to
 
 *Keep JASP open afterwards* leaves the JASP that was started open at the end instead of closing it, so you can look at the result yourself. This only works for a single data file, because for a folder each data file gets its own JASP.
 
-*Keep columns missing from the data file* changes what happens to a column that the JASP file uses but the new data file does not have. Normally such a column is removed and the analyses using it report that their variable is gone. With this option the column is kept as an empty column instead, so the analyses keep their variables, and the columns of the new data file are added next to the ones already there rather than taking their place.
+*Keep columns missing from the data file* changes what happens to a column that the JASP file uses but the new data file does not have. Normally such a column is removed and the analyses using it report that their variable is gone. With this option the column is kept as it is, with the data it already had, so the analyses keep their variables, and the columns of the new data file are added next to the ones already there rather than taking their place.
 
 ## While it runs
 
