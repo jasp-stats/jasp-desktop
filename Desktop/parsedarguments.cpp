@@ -40,9 +40,8 @@ const std::string
 	ParsedArguments::reportArg				= "--report",
 	ParsedArguments::inputDataDirArg		= "--inputDataDir",
 	ParsedArguments::outputDirArg			= "--outputDir",
-	ParsedArguments::exportPdfArg			= "--exportPdf",
+	ParsedArguments::exportTypeArg			= "--exportType=",
 	ParsedArguments::keepJASPOpenArg		= "--keepJASPOpen",
-	ParsedArguments::dontExportResultArg	= "--dontExportResult",
 	ParsedArguments::keepMissingColsWhenSyncingArg = "--keepMissingColsWhenSyncing",
 	ParsedArguments::platformQtArg			= "-platform",
 	ParsedArguments::remoteDebuggingPortArg	= "--remote-debugging-port=",
@@ -68,9 +67,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		else if(arg == hideArg)									hideJASP					= true;
 		else if(arg == safeGraphicsArg)							safeGraphics				= true;
 		else if(arg == newDataArg)								newData						= true;
-		else if(AppInfo::proMode() && arg == exportPdfArg)		exportPdf					= true;
 		else if(AppInfo::proMode() && arg == keepJASPOpenArg)	keepJASPOpenAfterExporting	= true;
-		else if(AppInfo::proMode() && arg == dontExportResultArg) dontExportResult			= true;
 		else if(AppInfo::proMode() && arg == keepMissingColsWhenSyncingArg)	keepMissingColsWhenSyncing	= true;
 #ifdef _WIN32
 		else if(arg == sandboxArg)			{				containerSettingForced	= true;		container = true; }
@@ -98,6 +95,15 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 			if (!checkFolder(args, argNr, reportingDir, true))
 				letsExplainSomeThings = true;
 		}
+		else if(AppInfo::proMode() && arg.size() > exportTypeArg.size() && arg.substr(0, exportTypeArg.size()) == exportTypeArg)
+		{
+			std::string exportTypeStr	= arg.substr(exportTypeArg.size());
+			if (ExportTypeValidName(exportTypeStr))
+				exportType = ExportTypeFromString(exportTypeStr);
+			else
+				std::cerr << "Wrong export type in command line: " << arg << ". Only Html, Pdf, No or Jasp is possible. Default export type (" << ExportTypeToString(exportType) << ") is used." << std::endl;
+		}
+
 		else if(arg.size() > timeOutArg.size() && arg.substr(0, timeOutArg.size()) == timeOutArg)
 		{
 			std::string time			= arg.substr(timeOutArg.size());
@@ -203,16 +209,16 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 	{
 		std::cerr	<< "JASP can be started without arguments, or the following: ";
 		if(AppInfo::proMode())
-			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --exportPdf | --inputDataDir | --dontExportResult | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
+			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --export=<Html/Pdf/No/Jasp> | --inputDataDir | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
 		else
 			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n";
 		std::cerr	<< "If a filename is supplied JASP will try to load it. \n";
 		if(AppInfo::proMode())
 		{
-			std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (in PDF format if --exportPdf is set)\n"
+			std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (to export it on other format use the --export argument)\n"
 						<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
 						<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
-						<< "Per default after synchronizing with a data file, it will export the result, except if --dontExportResult is specified.\n"
+						<< "Per default after synchronizing with a data file, it will export the result, except if --export=No is specified.\n"
 						<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
 						<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
 						<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";

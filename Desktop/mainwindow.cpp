@@ -1147,19 +1147,19 @@ bool MainWindow::openURLFile(QString fileURLPath)
     return true;
 }
 
-void MainWindow::open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen)
+void MainWindow::open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 		resultXmlCompare::compareResults::theOne()->setFilePath(mainFilePath);
 
 	_openedUsingArgs = true;
 	if (_resultsJsInterface->resultsLoaded())
-		_open(mainFilePath, inputDataFile, outputFile, keepJASPOpen);
+		_open(mainFilePath, inputDataFile, exportFile, keepJASPOpen, save);
 	else
-		connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, [this, mainFilePath, inputDataFile, outputFile, keepJASPOpen](){_open(mainFilePath, inputDataFile, outputFile, keepJASPOpen); }, Qt::SingleShotConnection);
+		connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, [this, mainFilePath, inputDataFile, exportFile, keepJASPOpen, save](){_open(mainFilePath, inputDataFile, exportFile, keepJASPOpen, save); }, Qt::SingleShotConnection);
 }
 
-void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen)
+void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	FileEvent * openEvent = _fileMenu->open(mainFilePath);
 	if (!inputDataFile.isEmpty() && _package->hasDataSet())
@@ -1172,7 +1172,7 @@ void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFi
 		//  - failed sync:             do not export, and exit with a non-zero code (unless we keep JASP open).
 		//  - success, no output file: we are done, exit with success.
 		//  - success, with output:    export the results, but only after all analyses have refreshed.
-		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, outputFile, keepJASPOpen]()
+		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, mainFilePath, exportFile, keepJASPOpen, save]()
 		{
 			if (!syncEvent->isSuccessful())
 			{
@@ -1181,15 +1181,15 @@ void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFi
 				return;
 			}
 
-			if (outputFile.isEmpty())
+			if (exportFile.isEmpty())
 			{
 				if (!keepJASPOpen)
 					emit exitSignal(0);
 				return;
 			}
 
-			FileEvent * exportEvent = new FileEvent(this, FileEvent::FileExportResults);
-			exportEvent->setPath(outputFile);
+			FileEvent * exportEvent	= save ? new FileEvent(this, FileEvent::FileSave) : new FileEvent(this, FileEvent::FileExportResults);
+			exportEvent->setPath(exportFile);
 
 			if (!keepJASPOpen)
 				connect(exportEvent, &FileEvent::finalized, this, [this, exportEvent]() { emit exitSignal(exportEvent->isSuccessful() ? 0 : 1); });
