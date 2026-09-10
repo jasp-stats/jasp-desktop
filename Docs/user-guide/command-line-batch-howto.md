@@ -24,7 +24,7 @@ JASP weights.jasp january.csv february.csv march.csv
 Same thing for every data file in a folder (and its subfolders), as PDF, collected in one place:
 
 ```
-JASP weights.jasp --inputDataDir ./measurements --outputDir ./reports --exportPdf
+JASP weights.jasp --inputDataDir ./measurements --outputDir ./reports --exportType=Pdf
 ```
 
 ## What actually happens
@@ -47,11 +47,10 @@ is a single data file combined with `--keepJASPOpen`, which is handled in the JA
 | --- | --- |
 | `--inputDataDir <folder>` | Use every data file in this folder *and its subfolders* instead of naming them one by one. |
 | `--outputDir <folder>` | Write all results here. Without it, each result lands next to its own data file. The folder is created if it does not exist. |
-| `--exportPdf` | Export as PDF instead of HTML. |
-| `--dontExportResult` | Synchronize and refresh, but write nothing. Useful to check that a set of data files runs through without errors. |
+| `--exportType=Html/Pdf/Jasp/No` | Default is Html. If `No` is used, only synchronize and refresh is done: can be useful to check that a set of data files runs through without errors. |
 | `--keepMissingColsWhenSyncing` | Keep columns that the new data file does not have, instead of removing them. See below. |
 | `--keepJASPOpen` | Leave JASP open at the end instead of closing it. Only meaningful with a single data file. |
-| `--save` | Save the `.jasp` file after refreshing. |
+| `--save` | Save the `.jasp` file after refreshing. Same as `--exportType=Jasp` |
 | `--timeOut=<minutes>` | How long to wait for the analyses of one data file. Default is 10. |
 | `--logToFile` | Write logging to a file, for when a run does something you did not expect. |
 
@@ -107,19 +106,19 @@ The names of the failing files are written to standard error, followed by a coun
 Check that a set of data files still runs, without producing reports:
 
 ```
-JASP weights.jasp --inputDataDir ./measurements --dontExportResult
+JASP weights.jasp --inputDataDir ./measurements --exportType=No
 ```
 
 Give slow analyses more room and keep the refreshed data:
 
 ```
-JASP weights.jasp big-january.csv big-february.csv --timeOut=45 --save
+JASP weights.jasp big-january.csv big-february.csv --timeOut=45 --exportType=Jasp
 ```
 
 Look at the result of a single data file in JASP itself instead of exporting it:
 
 ```
-JASP weights.jasp january.csv --dontExportResult --keepJASPOpen
+JASP weights.jasp january.csv --exportType=No --keepJASPOpen
 ```
 
 From a shell script, acting on the exit code:
@@ -135,5 +134,5 @@ fi
 ## When something goes wrong
 
 * Add `--logToFile` and look at the log if a run fails without a clear message.
-* Use `--dontExportResult` together with `--keepJASPOpen` and one data file to inspect the
+* Use `--exportType=No` together with `--keepJASPOpen` and one data file to inspect the
   synchronized data by hand.

@@ -117,7 +117,7 @@ public:
 
 	void				showNewData();
 
-	void				open(const QString & mainFilePath, const QString & inputDataFile = "", const QString & outputFile = "", bool keepJASPOpen = false);
+	void				open(const QString & mainFilePath, const QString & inputDataFile = "", const QString & exportFile = "", bool keepJASPOpen = false, bool save = false);
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
 	void				reportHere(QString dir);
@@ -215,7 +215,7 @@ public slots:
 	void	setCheckAutomaticSync(bool check)									{  _checkAutomaticSync = check;	}
 	void	openGitHubBugReport() const;
 	void	reloadResults() const;
-	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & outputFile, bool keepJASPOpen);
+	void	_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save);
 	void	waitForAllAnalysesFinishedBeforeStartingEvent();
 	void	_startWaitingEventIfAnalysesStillFinished();
 	void	waitingEventTimedOut();

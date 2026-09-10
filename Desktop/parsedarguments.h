@@ -24,6 +24,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <QDir>
+#include "exporttype.h"
 
 struct ParsedArguments
 {
@@ -43,12 +44,11 @@ public:
 						safeGraphics				= false,
 						containerSettingForced		= false,
 						container					= false,
-						exportPdf					= false,
 						keepJASPOpenAfterExporting	= false,
-						dontExportResult			= false,
 						foundWebEngineArgs			= false,
 						keepMissingColsWhenSyncing	= false;
 	int					timeOut						= 10;
+	ExportType			exportType					= ExportType::Html;
 	Json::Value			dbJson;
 	QFileInfo			mainFilePath,
 						reportingDir,
@@ -72,9 +72,8 @@ public:
 		reportArg,
 		inputDataDirArg,
 		outputDirArg,
-		exportPdfArg,
+		exportTypeArg,
 		keepJASPOpenArg,
-		dontExportResultArg,
 		platformQtArg,
 		remoteDebuggingPortArg,
 		webEngineArgs,
