@@ -9,6 +9,10 @@ only the data changes.
 These options are part of the JASP Pro feature set and are ignored by a build that does not run in
 pro mode.
 
+You can also put such a run together inside JASP itself, under *File* > *Sync Data* > *Batch*. That
+page has the options below that are about which files to use, and shows the commandline it is going
+to run, so it doubles as a way to write the line you want to use here.
+
 ## The short version
 
 ```
