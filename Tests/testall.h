@@ -57,6 +57,11 @@ private slots:
 	// runFilters() must stay safe afterwards.
 	void	testFilterRemoveFilter();
 
+	// Column-aware runFilters: editing a column a filter does not use must NOT invalidate it,
+	// while used columns (R filter) and label-filtered columns (default filter) must.
+	// Guards against under-invalidation in DataSet::runFilters(editedColumn)/Filter::columnUsed.
+	void	testRunFiltersColumnAware();
+
 	// Sync + export integration tests
 	void	testSyncerExportModifyReimport();
 	void	testSyncerExportModifyReimportChangesDetected();
