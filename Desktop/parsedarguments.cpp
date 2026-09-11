@@ -221,7 +221,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 						<< "Per default after synchronizing with a data file, it will export the result, except if --export=No is specified.\n"
 						<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
 						<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
-						<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if only one data file is used and --keepJASPOpen is specified.\n";
+						<< "Also per default JASP will be automatically closed after synchronizing (and exporting the result), except if --keepJASPOpen is specified. With more than one data file that leaves you with a JASP per data file, all started at once and all open at the same time.\n";
 		}
 		std::cerr	<< "\n"
 					<< "If --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"

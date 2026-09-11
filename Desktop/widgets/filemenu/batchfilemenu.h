@@ -112,6 +112,11 @@ private:
 	///< The exporttypes offered on the page, in the order the dropdown in Batch.qml shows them
 	static const std::vector<ExportType>	exportTypes;
 
+#ifdef __APPLE__
+	///< Keeps a starting JASP from making itself the foreground application, see runBatch()
+	static const QString					noFocusStealingEnvVar;
+#endif
+
 	QProcess			*	_process					= nullptr;
 	QString					_inputFile,
 							_inputFolder,

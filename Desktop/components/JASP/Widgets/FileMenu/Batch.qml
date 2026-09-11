@@ -45,17 +45,31 @@ PrefsScrollView
 				  :									   ""
 	}
 
-	PrefsGroupRect
+	//Not an option but an indication: the JASP file is simply the one you have open, so this is
+	//plain text rather than a group with a field, which would suggest there is something to pick.
+	Column
 	{
-		title:	qsTr("JASP file to run")
+		width:		parent.width
+		spacing:	jaspTheme.generalAnchorMargin
 
-		PrefsTextInput
+		Text
 		{
-			id:					jaspFileText
-			width:				parent.width
-			text:				batchView.batch.jaspFile === "" ? qsTr("<no JASP file opened>") : batchView.batch.jaspFile
-			textInput.readOnly:	true
-			toolTip:			qsTr("Every data file is run against this JASP file, which is the one you have open.")
+			width:		parent.width
+			text:		qsTr("Every data file is run against the current JASP file:")
+			font:		jaspTheme.font
+			color:		jaspTheme.textEnabled
+			wrapMode:	Text.Wrap
+		}
+
+		Text
+		{
+			width:			parent.width
+			leftPadding:	jaspTheme.subOptionOffset
+			text:			batchView.batch.jaspFile === "" ? qsTr("<no JASP file opened>") : batchView.batch.jaspFile
+			textFormat:		Text.PlainText //A path can hold '<' or '&', and AutoText would swallow "<no JASP file opened>" as a tag
+			font:			jaspTheme.font
+			color:			jaspTheme.textEnabled
+			wrapMode:		Text.Wrap
 		}
 	}
 
@@ -244,11 +258,10 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					keepJASPOpen
-			label:				qsTr("Keep JASP open afterwards")
+			label:				qsTr("Open a JASP window for each data file")
 			checked:			batchView.batch.keepJASPOpen
 			onCheckedChanged:	batchView.batch.keepJASPOpen = checked
-			enabled:			!batchView.batch.useInputFolder
-			toolTip:			qsTr("Leave the JASP that was started open at the end instead of closing it, so you can look at the result. Only possible for a single data file, because each data file of a folder gets its own JASP.")
+			toolTip:			qsTr("Show the JASP that is started and leave it open at the end instead of closing it, so you can look at the result. Every data file gets its own, all open at the same time, so a folder of twenty data files leaves you with twenty JASPs to close again. These JASPs also take the focus, where a batch that closes itself again leaves you working undisturbed.")
 			KeyNavigation.tab:	keepMissingCols
 		}
 
