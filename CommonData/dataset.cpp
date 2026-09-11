@@ -1297,12 +1297,15 @@ void DataSet::refresh(bool doColumnsToo)
 	emit titleChanged();
 }
 
-void DataSet::runFilters()
+void DataSet::runFilters(const QString & editedColumn)
 {
-	_defaultFilter->setInvalidated(true);
-	
+	//All filters are treated uniformly: Filter::columnUsed() knows about the R filter
+	//code, the drag&drop json and (for the default filter) active label filters, so it
+	//is the single source of truth for whether an edit can change a filter's result.
+	//When we do not know which column was edited, every filter re-runs.
 	for(Filter * f : _filters)
-		f->setInvalidated(true);
+		if(editedColumn.isEmpty() || f->columnUsed(editedColumn))
+			f->setInvalidated(true);
 }
 
 DatabaseInterface &DataSet::db()	
@@ -1460,11 +1463,11 @@ bool DataSet::setData(const QModelIndex &index, const QVariant &value, int role)
 			handleColumnChanged(column);
 			handleLabelsReordered(column);
 			
-			//Probably the labelfilter thing and the constructor thing should 
+			//Probably the labelfilter thing and the constructor thing should
 			if(column->hasLabelFilter())
 			{
 				emit labelFilterChanged();
-				runFilters();
+				runFilters(tq(column->name()));
 			}
 		}
 		
@@ -1981,11 +1984,21 @@ void DataSet::filterByNameDone(int dataSetID, const QString &name, const QString
 		return;
 
 	Filter * f = filter(fq(name));
-	
-	if(f && f->dbLoadResultAndError())
+
+	if(!f)
+		return;
+
+	//The reply that reaches us is guaranteed to be for the most recently dispatched request
+	//(EngineRepresentation drops superseded ones), so after loading the results the filter is
+	//fresh: its cached state now matches its inputs, regardless of whether the values changed.
+	bool changed = f->dbLoadResultAndError();
+
+	f->setInvalidated(false);
+
+	if(changed)
 	{
 		emit f->refreshAllAnalyses(f);
-		
+
 		if(shownFilter() == f)
 			refresh();
 	}

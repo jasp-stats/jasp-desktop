@@ -948,6 +948,69 @@ void TestAll::testFilterRemoveFilter()
 	ds->runFilters(); //must still be safe after removal (the dangling-pointer regression would crash here)
 }
 
+void TestAll::testRunFiltersColumnAware()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	Column * scaleCol	= ds->column("contNormal");
+	Column * otherCol	= ds->column("contGamma");
+	Column * nominalCol	= ds->column("facGender");
+	QVERIFY2(scaleCol && otherCol && nominalCol, "debug.csv must contain contNormal, contGamma and facGender");
+	QVERIFY2(nominalCol->hasLabels() && nominalCol->labelsNonEmptyCount() >= 2, "facGender must have at least 2 labels");
+
+	// --- Named filter: columnUsed() must come from the columns scanned out of the R filter ---
+	Filter * f = ds->createFilter("testColumnAware", true);
+	QVERIFY(f);
+	f->setRFilter(scaleCol->name() + " > 0"); //setRFilter runs rescanForColumns()
+	QVERIFY2(f->columnUsed(tq(scaleCol->name())),	"R filter referencing a column must report it as used");
+	QVERIFY2(!f->columnUsed(tq(otherCol->name())),	"R filter must not report an unrelated column as used");
+
+	f->setInvalidated(false);
+	QVERIFY2(!f->invalidated(), "precondition: filter starts fresh");
+
+	//An edit to an unrelated column must NOT re-run (invalidate) the filter.
+	ds->runFilters(tq(otherCol->name()));
+	QVERIFY2(!f->invalidated(), "runFilters with an unrelated column must not invalidate the filter");
+
+	//An edit to a used column must invalidate it.
+	ds->runFilters(tq(scaleCol->name()));
+	QVERIFY2(f->invalidated(), "runFilters with a used column must invalidate the filter");
+
+	//Unknown editor (empty column name) must invalidate everything (the old blanket behaviour).
+	f->setInvalidated(false);
+	ds->runFilters();
+	QVERIFY2(f->invalidated(), "runFilters without a column must invalidate all filters");
+
+	// --- Default filter: label-filtered columns must be reported as used ---
+	//A value edit can move a row between label levels without changing the generated filter
+	//code, so Filter::columnUsed() must also look at the active label filters (its _labelGen
+	//branch). Named filters have no label generator and must not pick up this path.
+	Filter * def = ds->defaultFilter();
+	QVERIFY(def);
+	QVERIFY2(!nominalCol->hasLabelFilter(), "precondition: no label filter active on facGender yet");
+	QVERIFY2(!def->columnUsed(tq(nominalCol->name())), "without an active label filter the column must not count as used");
+
+	nominalCol->setLabelAllowFilter(0, false);
+	QVERIFY2(nominalCol->hasLabelFilter(), "deactivating a label must activate the label filter");
+
+	QVERIFY2(def->columnUsed(tq(nominalCol->name())), "default filter must treat label-filtered columns as used");
+	QVERIFY2(!f->columnUsed(tq(nominalCol->name())), "named filters must not pick up the label-filter path");
+
+	//The label-filtered column must drive runFilters for the default filter only.
+	def->setInvalidated(false);
+	f->setInvalidated(false);
+
+	ds->runFilters(tq(otherCol->name()));
+	QVERIFY2(!def->invalidated(), "editing a column without label filter must not invalidate the default filter");
+
+	ds->runFilters(tq(nominalCol->name()));
+	QVERIFY2(def->invalidated(),	"editing a label-filtered column must invalidate the default filter");
+	QVERIFY2(!f->invalidated(),		"editing a label-filtered column must not invalidate a named filter that does not use it");
+}
+
 void TestAll::testSyncerExportModifyReimportChangesDetected()
 {
 	_pkg = new DataSetPackage(this);

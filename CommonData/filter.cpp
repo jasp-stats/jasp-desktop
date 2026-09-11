@@ -100,8 +100,8 @@ void Filter::dbUpdate(bool writeFiltered)
 	if(!_data->writeBatchedToDB())
 	{
 		db().transactionWriteBegin();
-		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name);
-		
+		db().filterUpdate(_id, _rFilter, _generatedFilter, _constructorJson, _constructorR, _name, _invalidated);
+
 		if(writeFiltered)
 			db().filterWrite(_id, _filtered);
 
@@ -127,13 +127,13 @@ void Filter::dbUpdateErrorMsg()
 	}
 }
 
-void Filter::dbLoad()
+bool Filter::dbLoad()
 {
 	if(_id == -1)
 		_id = _name == "" ? db().filterGetId(_data->id()) : db().filterGetId(_data->id(),_name);
 
 	if(_id == -1)
-		return;
+		return false;
 
 	db().transactionReadBegin();
 	
@@ -146,14 +146,22 @@ void Filter::dbLoad()
 
 	rescanForColumns();
 
-	if(oldRFilter			!= _rFilter)			emit rFilterChanged();
-	if(oldGeneratedFilter	!= _generatedFilter)	emit generatedFilterChanged();
-	if(oldConstructorJson	!= _constructorJson)	emit constructorJsonChanged();
-	if(oldConstructorR		!= _constructorR)		emit constructorRChanged();
+	bool changed = false;
+
+	if(oldRFilter			!= _rFilter)		{ emit rFilterChanged();			changed = true; }
+	if(oldGeneratedFilter	!= _generatedFilter){ emit generatedFilterChanged();	changed = true; }
+	if(oldConstructorJson	!= _constructorJson){ emit constructorJsonChanged();	changed = true; }
+	if(oldConstructorR		!= _constructorR)	{ emit constructorRChanged();		changed = true; }
 	
-	dbLoadResultAndError();
+	//If the results (or their error) also changed, the filter genuinely changed.
+	//Syncing our own cache with a recompute we just triggered ourselves is NOT a
+	//change: treat identical results as no-change so callers do not see this as
+	//a dataset update (which would re-trigger the filter and loop forever).
+	changed = dbLoadResultAndError() || changed;
 
 	db().transactionReadEnd();
+
+	return changed;
 }
 
 bool Filter::setFilterVector(const boolvec & filterResult)
@@ -263,8 +271,12 @@ bool Filter::checkForUpdates()
 
 	if(_data->id() != -1 && _id != -1)
 	{
-		dbLoad();
-		return true;
+		//Only report an actual change. Returning true here merely because the engine
+		//bumped the revision (e.g. as the direct result of our own filterByName request)
+		//used to make DataSet::checkForUpdates emit datasetChanged for every reply,
+		//which re-triggered the filter in ListModelFilteredDataEntry and caused an
+		//infinite filterByName loop for named filters such as the audit data-entry.
+		return dbLoad();
 	}
 	else
 		return false;
@@ -376,7 +388,19 @@ void Filter::setInvalidated(bool invalidated)
 
 	if(wasChange)
 		emit invalidatedChanged();
-	
+
+	//Re-queue a run whenever a filter is (re)invalidated. Since DataSet::filterByNameDone
+	//now clears the flag when a reply for the latest request is consumed, this flag is
+	//truthful and this emit is no longer load-bearing-with-weird-semantics: it simply
+	//ensures a run gets queued for the current inputs. Gating this on wasChange is
+	//tempting but WRONG: an input change while a request is already in flight would be
+	//suppressed, and the in-flight reply (computed from the older inputs) would then
+	//mark the filter fresh with outdated results. Duplicates are harmless: the newer
+	//request computes the newer inputs and EngineRepresentation drops the older reply.
+	//The historical infinite loop came from feedback paths that re-invalidated a filter
+	//on every reply; those are closed now (Filter::checkForUpdates reports only actual
+	//changes, initTableTerms skips no-op rebinds, runFilters is column-aware and the
+	//empty-result retry is bounded).
 	if(_invalidated)
 		emit _data->sendFilterByName(data()->id(), nameQ(), "*");
 }
@@ -563,7 +587,7 @@ void Filter::datasetChanged(int, QStringList changedColumns, QStringList missing
 
 	if(!invalidateMe)
 		for(const QString & changed : changedColumns)
-			if(_columnsUsedInRFilter.count(fq(changed)) > 0 || _columnsInConstructorJson.count(fq(changed)) > 0)
+			if(columnUsed(changed))
 			{
 				invalidateMe = true;
 				break;
@@ -710,7 +734,14 @@ QString Filter::constructorJsonQ() const
 
 bool Filter::columnUsed(const QString &name) const
 {
-	return _columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name));
+	if(_columnsInConstructorJson.count(fq(name)) || _columnsUsedInRFilter.count(fq(name)))
+		return true;
+
+	//The default filter's generated (label) filter also depends on every column that has
+	//active label filtering (see LabelFilterGenerator::generateFilter): a value edit can
+	//move a row between levels without changing the generated code itself, so the filter
+	//still has to be re-run. Named filters have no label filter generator.
+	return _labelGen && data()->column(name) && data()->column(name)->hasLabelFilter();
 }
 
 const QString & Filter::defaultRFilter()

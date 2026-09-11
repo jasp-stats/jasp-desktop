@@ -79,6 +79,53 @@
 			}
 		},
 		{
+			"name": "analysis_remove",
+			"summary": "Remove (delete) an analysis from the workspace.",
+			"x-displayName": "Remove Analysis",
+			"x-failOnStateDiverged": true,
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis to remove.",
+					"schema": {
+						"type": "integer"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_remove_result",
+				"description": "Confirmation of the removed analysis.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success' when the analysis was removed."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "Id of the removed analysis."
+						},
+						"module": {
+							"type": "string",
+							"description": "Module name of the removed analysis."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "Analysis name of the removed analysis."
+						}
+					},
+					"required": [
+						"status",
+						"analysisId",
+						"module",
+						"analysis"
+					]
+				}
+			}
+		},
+		{
 			"name": "analysis_run",
 			"summary": "Set options and run an analysis, blocking up to timeoutMs for the R engine to finish. Combines setOptions + results in one call. Use analysis_results to poll if the timeout fires.",
 			"x-displayName": "Run Analysis",

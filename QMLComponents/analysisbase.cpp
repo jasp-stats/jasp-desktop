@@ -57,7 +57,14 @@ void AnalysisBase::destroyForm()
 		_analysisForm->setParent(		nullptr);
 		_analysisForm->setParentItem(	nullptr);
 
-		delete _analysisForm;
+		//The form is a live QML item tree. The AnalysisFormExpander delegate that spawned
+		//it is torn down deferred (Repeater deleteLater semantics after the model row
+		//removal) and still holds JS wrappers/references to this form (myForm, Connections,
+		//closures) until then. A synchronous delete here frees the whole tree under the
+		//QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in QV4::markDrain.
+		//Defer the deletion to the next event-loop pass, at the same quiet point where
+		//the delegate's JS references get invalidated.
+		_analysisForm->deleteLater();
 		_analysisForm = nullptr;
 
 		emit formItemChanged();
@@ -189,6 +196,12 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 			{
 				for (Json::Value & boundValue : (*parentBoundValues))
 				{
+					//isMember throws on non-objects (e.g. fuzzed garbage, or an array
+					//left half-bound after an interrupted option bind), which would
+					//escape through QML signal handlers and terminate the process.
+					if (!boundValue.isObject())
+						continue;
+
 					if (boundValue.isMember(parent.key))
 					{
 						Json::Value* keyValue = &(boundValue[parent.key]);

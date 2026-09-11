@@ -1,0 +1,13 @@
+# Skip-list for the JASP gate test.
+#
+# Lines are either a module ("jaspFoo") or a module/analysis pair
+# ("jaspFoo/Bar"). Everything starting with # is a comment.
+#
+# Keep entries here ONLY with a justification and a tracking reference,
+# and remove them once the underlying problem is fixed.
+#
+# (Currently empty: the jaspAudit infinite filterByName loop that used to be
+# listed here was fixed by making Filter::checkForUpdates()/dbLoad() report
+# only actual changes instead of treating every engine revision bump as a
+# dataset change. Re-add entries here if a new gate failure turns up that is
+# genuinely not actionable.)
