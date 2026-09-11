@@ -48,8 +48,11 @@ struct BatchResult
 
 	bool read(const QByteArray & line)
 	{
-		if (!line.startsWith(prefix)) return false;
-		const auto doc = QJsonDocument::fromJson(line.mid(int(QByteArray(prefix).size())));
+		//JASP's own logging writes to the same stdout and can leave a partial line (its "Desktop:\t"
+		//prefix) in front of ours, so look for the marker anywhere in the line instead of at its start.
+		const qsizetype at = line.indexOf(prefix);
+		if (at < 0) return false;
+		const auto doc = QJsonDocument::fromJson(line.mid(at + QByteArray(prefix).size()));
 		if (!doc.isObject() || !doc["errors"].isArray() || !doc["warnings"].isArray()) return false;
 		for (const auto & message : doc["errors"].toArray()) addError(message.toString());
 		for (const auto & message : doc["warnings"].toArray()) addWarning(message.toString());

@@ -43,7 +43,7 @@ With "Do not export" JASP only synchronizes and refreshes. That is a good way to
 
 ## Options
 
-*Keep JASP open afterwards* leaves the JASP that was started open at the end instead of closing it, so you can look at the result yourself. This works for a folder too, but do keep in mind what it means there: every data file gets its own JASP and they all stay open, so a folder of twenty data files leaves you with twenty JASPs running at the same time. They are also started all at once rather than one after the other, since none of them ever finishes on its own.
+*Open a JASP window for each data file* shows the JASP that is started and leaves it open at the end instead of closing it, so you can look at the result yourself. This works for a folder too, but do keep in mind what it means there: every data file gets its own JASP and they all stay open, so a folder of twenty data files leaves you with twenty JASPs running at the same time. They are also started all at once rather than one after the other, since none of them ever finishes on its own.
 
 Note that this is also the one case where the batch takes the focus: a JASP meant to stay open should be one you can get at. See *While it runs* below.
 
@@ -51,10 +51,10 @@ Note that this is also the one case where the batch takes the focus: a JASP mean
 
 ## While it runs
 
-Batch workers run in hidden windows, so you can keep working in JASP or another application. *Keep JASP open afterwards* opens visible windows for inspection instead.
+Batch workers run in hidden windows, so you can keep working in JASP or another application. *Open a JASP window for each data file* opens visible windows for inspection instead.
 
 The output shows progress for each data file. An empty or invalid file, an analysis error, a failed export, or a timeout counts as a failure; processing continues with the next file. JASP warning messages are reported without opening a dialog. The template's original linked data file is not automatically reloaded: the selected batch data is used.
 
-At the end, errors and warnings are listed by data file, followed by the number of successful files, failed files, and distinct JASP warning messages per file. Raw runtime diagnostics (such as Chromium output) are shown separately and are not counted as warnings. An exported report can contain an analysis error and still count as a failed file. With *Keep JASP open afterwards*, the summary reports how many windows were launched; their analyses are not monitored for completion.
+At the end, errors and warnings are listed by data file, followed by the number of successful files, failed files, and distinct JASP warning messages per file. Raw runtime diagnostics (such as Chromium output) are shown separately and are not counted as warnings. An exported report can contain an analysis error and still count as a failed file. With *Open a JASP window for each data file*, the summary reports how many windows were launched; their analyses are not monitored for completion.
 
 *Stop* ends the batch; the data files it already processed keep their results.

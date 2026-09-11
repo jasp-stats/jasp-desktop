@@ -244,10 +244,10 @@ PrefsScrollView
 		CheckBox
 		{
 			id:					keepJASPOpen
-			label:				qsTr("Keep JASP open afterwards")
+			label:				qsTr("Open a JASP window for each data file")
 			checked:			batchView.batch.keepJASPOpen
 			onCheckedChanged:	batchView.batch.keepJASPOpen = checked
-			toolTip:			qsTr("Leave the JASP that was started open at the end instead of closing it, so you can look at the result. With more than one data file you end up with a JASP per data file, all open at the same time, so mind how many you pick. These JASPs also take the focus, where a batch that closes itself again leaves you working undisturbed.")
+			toolTip:			qsTr("Show the JASP that is started and leave it open at the end instead of closing it, so you can look at the result. Every data file gets its own, all open at the same time, so a folder of twenty data files leaves you with twenty JASPs to close again. These JASPs also take the focus, where a batch that closes itself again leaves you working undisturbed.")
 			KeyNavigation.tab:	keepMissingCols
 		}
 

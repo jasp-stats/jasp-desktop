@@ -2951,7 +2951,10 @@ void MainWindow::finishBatchRun()
 	for (QStringList * messages : {&_batchResult.errors, &_batchResult.warnings})
 		for (QString & message : *messages)
 			if (Qt::mightBeRichText(message)) message = QTextDocumentFragment::fromHtml(message).toPlainText();
-	std::cout << _batchResult.serialize().constData() << std::endl;
+	//Anything still holding an unterminated line on stdout (JASP's own logging prefixes one before
+	//every message) would otherwise end up in front of the marker, so open a fresh line and write
+	//the whole report in a single insertion.
+	std::cout << ("\n" + _batchResult.serialize() + "\n").constData() << std::flush;
 	_batchRunning = false;
 	MessageForwarder::setWarningHandler({});
 	if (!_batchKeepOpen) emit exitSignal(_batchResult.errors.isEmpty() ? 0 : 1);
