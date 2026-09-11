@@ -45,17 +45,31 @@ PrefsScrollView
 				  :									   ""
 	}
 
-	PrefsGroupRect
+	//Not an option but an indication: the JASP file is simply the one you have open, so this is
+	//plain text rather than a group with a field, which would suggest there is something to pick.
+	Column
 	{
-		title:	qsTr("JASP file to run")
+		width:		parent.width
+		spacing:	jaspTheme.generalAnchorMargin
 
-		PrefsTextInput
+		Text
 		{
-			id:					jaspFileText
-			width:				parent.width
-			text:				batchView.batch.jaspFile === "" ? qsTr("<no JASP file opened>") : batchView.batch.jaspFile
-			textInput.readOnly:	true
-			toolTip:			qsTr("Every data file is run against this JASP file, which is the one you have open.")
+			width:		parent.width
+			text:		qsTr("Every data file is run against the current JASP file:")
+			font:		jaspTheme.font
+			color:		jaspTheme.textEnabled
+			wrapMode:	Text.Wrap
+		}
+
+		Text
+		{
+			width:			parent.width
+			leftPadding:	jaspTheme.subOptionOffset
+			text:			batchView.batch.jaspFile === "" ? qsTr("<no JASP file opened>") : batchView.batch.jaspFile
+			textFormat:		Text.PlainText //A path can hold '<' or '&', and AutoText would swallow "<no JASP file opened>" as a tag
+			font:			jaspTheme.font
+			color:			jaspTheme.textEnabled
+			wrapMode:		Text.Wrap
 		}
 	}
 
