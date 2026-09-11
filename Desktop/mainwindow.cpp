@@ -2845,7 +2845,7 @@ QQmlContext * MainWindow::giveRootQmlContext()
 QString MainWindow::versionString()
 {
 	return	"JASP "
-		+	QString::fromStdString(AppInfo::version.asString())
+		+QString::fromStdString(AppInfo::version.asString(3)) //always show major.minor.patch, otherwise 1.0.0.0 would be minimized to "1"
 #ifdef JASP_DEBUG
 		+	"-Debug"
 #endif
