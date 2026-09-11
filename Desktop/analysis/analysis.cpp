@@ -545,19 +545,23 @@ std::set<std::string> Analysis::applyPlotEdits()
 		{
 			// _plotEdits is now the sole authority for editOptions.
 			// _results stays pure engine output — never patched by us.
-			// Merge new top-level keys from the engine's fresh editOptions
-			// into _plotEdits so it stays complete without overwriting
-			// user-set values.
+			// Merge only the keys the stored edits do not have yet, so a fresh run can add what
+			// it newly describes (a "reasonNotEditable" for instance) while everything the user
+			// set stays theirs. Taking the engine's value whenever it differs would undo exactly
+			// the keys the user changed, which is what an edit is.
 			Json::Value engineEditOpts;
 			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
-			{
 				for (const std::string & key : engineEditOpts.getMemberNames())
-					if (!_plotEdits[uniqueName]["editOptions"].isMember(key) || _plotEdits[uniqueName]["editOptions"][key] != engineEditOpts[key])
-					{
+					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
 						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
-						reEditNames.insert(uniqueName);
-					}
-			}
+
+			// A re-run hands us a plain plot: jaspBase deliberately does not re-apply earlier
+			// edits to a freshly drawn figure (see the disabled block in writeImage.R), so every
+			// edited plot needs its edits rendered onto the new one again. Flagging only the plots
+			// whose options differ from the engine's would miss precisely the edits the engine
+			// knows nothing about: reference lines exist only in the editOptions the desktop
+			// sends, never in the ones it receives, so nothing about them can ever differ.
+			reEditNames.insert(uniqueName);
 		}
 
 		if (edit.isMember("width") && edit.isMember("height"))
