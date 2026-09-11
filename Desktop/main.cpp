@@ -33,6 +33,7 @@
 #include <json/json.h>
 #include "utilities/appdirs.h"
 #include "parsedarguments.h"
+#include "batchresult.h"
 
 #ifdef linux
 #include "utilities/qmlutils.h"
@@ -187,11 +188,12 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 		return 1;
 	}
 
-	int failures = 0;
+	int failures = 0, warningCount = 0;
+	QStringList diagnostics, runtimeDiagnostics;
 
 	for (const QFileInfo& dataFile : dataFiles)
 	{
-		bool failed = false;
+		BatchResult result;
 		try{
 			QProcess subJasp;
 			subJasp.setProgram(jaspName);
@@ -202,6 +204,9 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 			if (arguments.keepMissingColsWhenSyncing)
 				subArguments << tq(arguments.keepMissingColsWhenSyncingArg);
+
+			if (arguments.keepJASPOpenAfterExporting)
+				subArguments << tq(arguments.keepJASPOpenArg);
 
 			if(arguments.save)
 				subArguments << tq(arguments.saveArg);
@@ -215,43 +220,96 @@ int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 
 			std::cout << "Starting subJASP with args: " << fq(subArguments.join(' ')) << std::endl;
 			subJasp.setArguments(subArguments);
-			subJasp.start();
 
-			if (!subJasp.waitForStarted())
+			if (arguments.keepJASPOpenAfterExporting)
 			{
-				std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " could not be started." << std::endl;
-				failed = true;
+				//These JASPs stay open, so waiting for one to finish would mean waiting for you to close it and the
+				//timeout would kill it while you were still looking at it. Start them detached instead: they outlive
+				//this process, which does mean the starting is the only thing that can still fail here. They also all
+				//run at the same time, so do keep an eye on how many data files you use this with.
+
+				//A detached child inherits our standard streams, and ours are a pipe when JASP itself started us
+				//(the Batch page reads our output). We are gone long before these JASPs are, so that pipe loses its
+				//reader and the first thing they log kills them with SIGPIPE, without a trace. Give them the null
+				//device instead, the same way MainWindow::startDetached does.
+				subJasp.setStandardInputFile (QProcess::nullDevice());
+				subJasp.setStandardOutputFile(QProcess::nullDevice());
+				subJasp.setStandardErrorFile (QProcess::nullDevice());
+
+//Note that macOS defines neither __unix__ nor __linux__, hence the __APPLE__ here
+#if defined(__unix__) || defined(__APPLE__)
+				subJasp.setUnixProcessParameters(QProcess::UnixProcessFlag::IgnoreSigPipe | QProcess::UnixProcessFlag::CreateNewSession | QProcess::UnixProcessFlag::ResetSignalHandlers | QProcess::UnixProcessFlag::DisconnectControllingTerminal);
+#endif
+
+				qint64 pid = 0;
+
+				if (!subJasp.startDetached(&pid))
+				{
+					result.addError("Could not start JASP: " + subJasp.errorString());
+				}
 			}
 			else
 			{
-				if (!subJasp.waitForFinished((arguments.timeOut * 60000) + 10000))
-				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " did not finish in time; killing it." << std::endl;
-					subJasp.kill();
-					subJasp.waitForFinished(10000);
-					failed = true;
-				}
-				else if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
-				{
-					std::cerr << "subJASP for data file " << fq(dataFile.absoluteFilePath()) << " failed (exit code " << subJasp.exitCode() << ")." << std::endl;
-					failed = true;
-				}
+				subJasp.start();
 
-				std::cerr << subJasp.readAllStandardError().toStdString() << std::endl;
+				if (!subJasp.waitForStarted())
+				{
+					result.addError("Could not start JASP: " + subJasp.errorString());
+				}
+				else
+				{
+					if (!subJasp.waitForFinished((arguments.timeOut * 60000) + 10000))
+					{
+						result.addError("Timed out; the worker was terminated.");
+						subJasp.kill();
+						subJasp.waitForFinished(10000);
+					}
+
+					bool reported = false;
+					for (const auto & line : subJasp.readAllStandardOutput().split('\n'))
+						reported = result.read(line.trimmed()) || reported;
+					if (result.errors.isEmpty())
+					{
+						if (subJasp.exitStatus() != QProcess::NormalExit || subJasp.exitCode() != 0)
+							result.addError("JASP failed (exit code " + QString::number(subJasp.exitCode()) + ").");
+						else if (!reported)
+							result.addError("JASP exited without reporting completion.");
+					}
+
+					//Keep raw Qt/Chromium output separate: stderr is not an analysis warning count.
+					const QString stderrText = QString::fromLocal8Bit(subJasp.readAllStandardError()).trimmed();
+					if (!stderrText.isEmpty())
+						runtimeDiagnostics << "Runtime diagnostics [" + dataFile.absoluteFilePath() + "]:\n" + stderrText;
+				}
 			}
 		}
 		catch(...)
 		{
-			std::cerr << "An error occurred while processing data file " << fq(dataFile.absoluteFilePath()) << std::endl;
-			failed = true;
+			result.addError("An error occurred while processing the data file.");
 		}
 
-		if (failed)
+		if (!result.errors.isEmpty())
+		{
 			failures++;
+			std::cout << "  Failed: " << fq(result.errors.join("\n          ")) << std::endl;
+		}
+		else
+			std::cout << (arguments.keepJASPOpenAfterExporting ? "  Launched" : "  Succeeded") << std::endl;
+		warningCount += int(result.warnings.size());
+		for (const auto & error : result.errors)
+			diagnostics << "ERROR [" + dataFile.absoluteFilePath() + "]: " + error;
+		for (const auto & warning : result.warnings)
+			diagnostics << "WARNING [" + dataFile.absoluteFilePath() + "]: " + warning;
 	}
 
-	if (failures > 0)
-		std::cerr << failures << " out of " << dataFiles.size() << " data file(s) FAILED to process." << std::endl;
+	if (!runtimeDiagnostics.isEmpty())
+		std::cerr << "\nTechnical runtime output (see the batch summary for successes and failures):\n" << fq(runtimeDiagnostics.join("\n\n")) << std::endl;
+	if (!diagnostics.isEmpty())
+		std::cout << "\nErrors and warnings:\n" << fq(diagnostics.join('\n')) << std::endl;
+	if (arguments.keepJASPOpenAfterExporting)
+		std::cout << "\nLaunch summary: " << dataFiles.size() - failures << " launched; " << failures << " failed to start. Analysis completion is not monitored for windows kept open." << std::endl;
+	else
+		std::cout << "\nBatch summary: " << dataFiles.size() << " data files; successes: " << dataFiles.size() - failures << "; errors: " << failures << "; warnings: " << warningCount << "." << std::endl;
 
 	return failures;
 }
@@ -355,7 +413,7 @@ int main(int argc, char *argv[])
 		putenv(dst);
 	}
 
-	if(arguments.hideJASP)
+	if(arguments.hideJASP && arguments.dataFiles.empty())
 	{
 		args.push_back("-platform");
 		args.push_back("minimal");

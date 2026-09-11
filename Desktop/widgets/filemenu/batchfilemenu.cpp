@@ -32,6 +32,10 @@
 ///Keep this in the same order as the values of the exporttype-dropdown in Batch.qml
 const std::vector<ExportType> BatchFileMenu::exportTypes = { ExportType::Html, ExportType::Pdf, ExportType::Jasp, ExportType::No };
 
+#ifdef __APPLE__
+const QString BatchFileMenu::noFocusStealingEnvVar = "QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM";
+#endif
+
 BatchFileMenu::BatchFileMenu(FileMenu * parent) : FileMenuObject{parent}
 {
 	//The commandline (and thus whether we can run it) is made up out of all of the settings below
@@ -185,8 +189,7 @@ QStringList BatchFileMenu::arguments() const
 	if(_keepMissingColsWhenSyncing)
 		args << tq(ParsedArguments::keepMissingColsWhenSyncingArg);
 
-	//Keeping JASP open only means something for a single data file, because each data file of a folder gets its own JASP
-	if(_keepJASPOpen && !_useInputFolder)
+	if(_keepJASPOpen)
 		args << tq(ParsedArguments::keepJASPOpenArg);
 
 	return args;
@@ -199,7 +202,14 @@ QString BatchFileMenu::quoteIfNeeded(const QString & argument)
 
 QString BatchFileMenu::commandLine() const
 {
-	QStringList parts = { quoteIfNeeded(QCoreApplication::applicationFilePath()) };
+	QStringList parts;
+
+#ifdef __APPLE__
+	if(!_keepJASPOpen)
+		parts << noFocusStealingEnvVar + "=1";
+#endif
+
+	parts << quoteIfNeeded(QCoreApplication::applicationFilePath());
 
 	for(const QString & argument : arguments())
 		parts << quoteIfNeeded(argument);
@@ -237,6 +247,20 @@ void BatchFileMenu::runBatch()
 	_process->setProgram(QCoreApplication::applicationFilePath());
 	_process->setArguments(arguments());
 	_process->setProcessChannelMode(QProcess::MergedChannels); //Keeps the order of the progress (stdout) and the failures (stderr) intact
+
+#ifdef __APPLE__
+	//A starting JASP makes itself the foreground application and takes the focus away from the JASP you are working in,
+	//once per data file. This tells Qt's cocoa plugin not to do that, so a batch can run while you keep working.
+	//The JASPs started per data file inherit this environment, so setting it here is enough for all of them.
+	//Not done when JASP is supposed to stay open, because then you do want to be able to get at it.
+	//(--hide is not an option here: it runs JASP on the minimal platform, on which the results view crashes.)
+	if(!_keepJASPOpen)
+	{
+		QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+		environment.insert(noFocusStealingEnvVar, "1");
+		_process->setProcessEnvironment(environment);
+	}
+#endif
 
 	connect(_process, &QProcess::readyReadStandardOutput,	this, &BatchFileMenu::readProcessOutput		);
 	connect(_process, &QProcess::finished,					this, &BatchFileMenu::processFinished		);

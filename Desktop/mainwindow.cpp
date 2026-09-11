@@ -39,6 +39,8 @@
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "mainwindow.h"
+#include <QTextDocumentFragment>
+#include <QTextDocument>
 
 #include "gui/preferencesmodel.h"
 #include "data/exporters/jaspexporter.h"
@@ -92,7 +94,7 @@ static bool backendlessTestMode()
 	return !qEnvironmentVariableIsEmpty("JASP_TEST_BACKENDLESS");
 }
 
-MainWindow::MainWindow(Application * application) : QObject(application), _application(application)
+MainWindow::MainWindow(Application * application, bool batchRun) : QObject(application), _application(application), _batchRunning(batchRun)
 {
 	std::cout << "MainWindow constructor started" << std::endl;
 	connect(this, &MainWindow::exitSignal, this, &QApplication::exit, Qt::QueuedConnection);
@@ -220,7 +222,7 @@ MainWindow::MainWindow(Application * application) : QObject(application), _appli
 
 void MainWindow::checkForUpdates()
 {
-	if(resultXmlCompare::compareResults::theOne()->testMode() || QCoreApplication::applicationName() == "JASPTest")
+	if(_batchRunning || resultXmlCompare::compareResults::theOne()->testMode() || QCoreApplication::applicationName() == "JASPTest")
 		return;
 	
 	if(PreferencesModel::prefs()->checkUpdatesAskUser())
@@ -250,6 +252,7 @@ This setting can always be changed in the Interface Preferences.)MultiLine"),
 
 MainWindow::~MainWindow()
 {
+	MessageForwarder::setWarningHandler({});
 	Log::log() << "MainWindow::~MainWindow()" << std::endl;
 
 	delete _aiBridge;
@@ -462,6 +465,8 @@ void MainWindow::showAnalysis()
 
 bool MainWindow::checkDoSync()
 {
+	if (_batchRunning)
+		return !checkAutomaticSync(); //Only the explicit command-line data source may be imported.
 	//Only do this if we are *not* running in reporting mode. 
 	if (!_reporter && checkAutomaticSync() && !MessageForwarder::showYesNo(tr("Datafile changed"), tr("The datafile that was used by this JASP file was modified. Do you want to reload the analyses with this new data?")))
 	{
@@ -1162,51 +1167,53 @@ void MainWindow::open(const QString & mainFilePath, const QString & inputDataFil
 void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	FileEvent * openEvent = _fileMenu->open(mainFilePath);
-	if (!inputDataFile.isEmpty() && _package->hasDataSet())
+	if (!inputDataFile.isEmpty())
 	{
+		_batchKeepOpen = keepJASPOpen;
+		openEvent->setSilent(_batchRunning);
 		FileEvent * syncEvent = new FileEvent(this, FileEvent::FileSyncData);
+		syncEvent->setSilent(_batchRunning);
 		syncEvent->setPath(inputDataFile);
 		syncEvent->chain(openEvent);
 
-		// Once the synchronization is finalized, decide what to do based on whether it succeeded:
-		//  - failed sync:             do not export, and exit with a non-zero code (unless we keep JASP open).
-		//  - success, no output file: we are done, exit with success.
-		//  - success, with output:    export the results, but only after all analyses have refreshed.
-		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, mainFilePath, exportFile, keepJASPOpen, save]()
+		//Import failures finish this worker; otherwise wait for analyses before reporting or exporting.
+		connect(syncEvent, &FileEvent::finalized, this, [this, syncEvent, exportFile, save]()
 		{
 			if (!syncEvent->isSuccessful())
 			{
-				if (!keepJASPOpen)
-					emit exitSignal(1);
+				_batchResult.addError(tr("Could not import data: %1").arg(syncEvent->message()));
+				finishBatchRun();
 				return;
 			}
 
-			if (exportFile.isEmpty())
+			bool hasValues = false;
+			for (Column * column : _package->dataSet()->columns())
 			{
-				if (!keepJASPOpen)
-					emit exitSignal(0);
+				if (!column->isComputed())
+					for (size_t row = 0; row < column->rowCount() && !hasValues; ++row)
+						hasValues = !column->isEmptyValue(column->getValue(row));
+				if (hasValues) break;
+			}
+			if (!hasValues)
+			{
+				_batchResult.addError(tr("Cannot analyse this file: imported %1 rows, but all data values are blank or marked as missing. Check the file and JASP's missing-value settings.").arg(_package->dataSet()->rowCount()));
+				finishBatchRun();
 				return;
 			}
 
-			FileEvent * exportEvent	= save ? new FileEvent(this, FileEvent::FileSave) : new FileEvent(this, FileEvent::FileExportResults);
-			exportEvent->setPath(exportFile);
-
-			if (!keepJASPOpen)
-				connect(exportEvent, &FileEvent::finalized, this, [this, exportEvent]() { emit exitSignal(exportEvent->isSuccessful() ? 0 : 1); });
-
-			_waitingEvent = exportEvent;
-
-			//If the analyses never finish (a crashed engine, say) the export would wait forever:
-			//time out and exit non-zero instead. The same default as --timeOut: ten minutes.
-			if(!_waitingEventTimeoutTimer)
+			if (!exportFile.isEmpty())
 			{
-				_waitingEventTimeoutTimer = new QTimer(this);
-				_waitingEventTimeoutTimer->setSingleShot(true);
-				_waitingEventTimeoutTimer->setInterval(10 * 60 * 1000);
-				connect(_waitingEventTimeoutTimer, &QTimer::timeout, this, &MainWindow::waitingEventTimedOut);
+				FileEvent * exportEvent = new FileEvent(this, save ? FileEvent::FileSave : FileEvent::FileExportResults);
+				exportEvent->setPath(exportFile);
+				exportEvent->setSilent(true);
+				connect(exportEvent, &FileEvent::finalized, this, [this, exportEvent]() {
+					if (!exportEvent->isSuccessful())
+						_batchResult.addError(tr("Could not export results: %1").arg(exportEvent->message()));
+					finishBatchRun();
+				});
+				_waitingEvent = exportEvent;
 			}
-			_waitingEventTimeoutTimer->start();
-
+			_batchWaitingForAnalyses = true; //Also wait and inspect errors when --exportType=No is used.
 			waitForAllAnalysesFinishedBeforeStartingEvent();
 		} );
 	}
@@ -1214,7 +1221,7 @@ void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFi
 
 void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 {
-	if (!_waitingEvent || _waitingEvent->isStarted())
+	if (!_batchWaitingForAnalyses)
 		return;
 
 	//The analyses may all look finished *right now*, but the sync (or open) that led here can
@@ -1239,19 +1246,15 @@ void MainWindow::waitForAllAnalysesFinishedBeforeStartingEvent()
 
 void MainWindow::_startWaitingEventIfAnalysesStillFinished()
 {
-	if (!_waitingEvent || _waitingEvent->isStarted() || !_analyses->allFinished())
+	if (!_batchWaitingForAnalyses || !_analyses->allFinished())
 		return;
 
-	//Take ownership of the waiting event *before* doing any work: setErrorInResults() below ends up
-	//emitting analysisResultsChanged, which re-enters waitForAllAnalysesFinishedBeforeStartingEvent -
-	//the cleared _waitingEvent makes that re-entry return at the guard above. Note we must NOT
-	//disconnect from analysisResultsChanged/analysisStatusChanged to achieve that: those slots have
-	//to stay connected for any later event that waits on the analyses (a second sync/export with
-	//--keepJASPOpen), which would otherwise wait forever.
+	//Stop waiting before inspecting results: setErrorInResults() emits analysisResultsChanged,
+	//which re-enters the waiting slot. Clearing the flag prevents a second export without
+	//disconnecting the status/result signals needed by later operations.
 	FileEvent * waitingEvent = _waitingEvent;
 	_waitingEvent            = nullptr;
-	if(_waitingEventTimeoutTimer)
-		_waitingEventTimeoutTimer->stop();
+	_batchWaitingForAnalyses = false;
 
 	_analyses->applyToAll([&](Analysis * a)
 	{
@@ -1259,24 +1262,23 @@ void MainWindow::_startWaitingEventIfAnalysesStillFinished()
 		//has no error to report either, so leave it alone instead of dereferencing nothing.
 		if (a->form() && a->form()->hasError())
 			a->setErrorInResults(fq(tr("Validation error: %1").arg(a->form()->getError(true))));
+		if (_batchRunning)
+		{
+			const auto errorCount = _batchResult.errors.size();
+			_batchResult.collect(a->results(), tq(a->title()));
+			if (a->status() != Analysis::Complete && !a->isReport() && _batchResult.errors.size() == errorCount)
+				_batchResult.addError(tq(a->title()) + ": " + a->statusQ());
+		}
 	});
 
-	waitingEvent->starts();
+	if (waitingEvent) waitingEvent->starts();
+	else finishBatchRun();
 }
 
 void MainWindow::waitingEventTimedOut()
 {
-	if(!_waitingEvent)
-		return;
-
-	Log::log() << "[MainWindow::waitingEventTimedOut] Waiting for the analyses timed out; the queued export will not run." << std::endl;
-	if(_waitingEventStartTimer)
-		_waitingEventStartTimer->stop();
-	FileEvent * waitingEvent = _waitingEvent;
-	_waitingEvent = nullptr;
-	waitingEvent->setComplete(false, tr("Timed out waiting for the analyses to finish"));
-	waitingEvent->cleanUp();
-	emit exitSignal(1);
+	_batchResult.addError(tr("Timed out waiting for the batch data file to finish."));
+	finishBatchRun();
 }
 
 void MainWindow::showNewData()
@@ -1960,6 +1962,8 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 		if (event->isSuccessful())
 		{
 			populateUIfromDataSet(event->type() == Utils::FileType::jasp);
+			if (_batchRunning)
+				_package->setSynchingExternally(false);
 
 			_package->setCurrentFile(event->path());
 			
@@ -1970,7 +1974,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 			if(event->osfPath() != "")
 				_package->setFolder("OSF://" + event->osfPath()); //It is also set by setCurrentPath, but then we get some weirdlooking OSF path
 
-			if (event->type() == Utils::FileType::jasp)
+			if (event->type() == Utils::FileType::jasp && !_batchRunning)
 			{
 				if(!_package->dataFilePath().empty() && !_package->dataFileReadOnly() && strncmp("http", _package->dataFilePath().c_str(), 4) != 0)
 				{
@@ -2012,7 +2016,12 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 			if (!event->isSilent())
 				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
 
-			if (_openedUsingArgs)	emit exitSignal(3);
+			if (_batchRunning)
+			{
+				_batchResult.addError(tr("Unable to open template: %1").arg(event->message()));
+				finishBatchRun();
+			}
+			else if (_openedUsingArgs) emit exitSignal(3);
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
@@ -2125,7 +2134,11 @@ void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 	_analyses->setVisible(hasAnalyses && !resultXmlCompare::compareResults::theOne()->testMode());
 
 	if (_package->warningMessage() != "")	MessageForwarder::showWarning(_package->warningMessage());
-	else if (errorFound)					MessageForwarder::showWarning(errorMsg.str());
+	else if (errorFound)
+	{
+		if (_batchRunning) _batchResult.addError(tq(errorMsg.str()));
+		else MessageForwarder::showWarning(errorMsg.str());
+	}
 
 	_package->setLoaded(true);
 	checkUsedModules();
@@ -2250,6 +2263,12 @@ void MainWindow::openGitHubBugReport() const
 
 void MainWindow::fatalError()
 {
+	if (_batchRunning)
+	{
+		_batchResult.addError(tr("JASP internal error: %1").arg(_fatalError));
+		finishBatchRun();
+		return;
+	}
 	static bool exiting = false;
 
 	if (exiting == false)
@@ -2897,4 +2916,46 @@ void MainWindow::loadModulesFromUserConfiguration(configState state)
 bool MainWindow::hadFatalError() const
 {
 	return _hadFatalError;
+}
+
+void MainWindow::setStartedForBatch(bool startedForBatch)
+{
+	//Set before loadQML(): unattended workers use a hidden window on the normal Qt platform.
+	_startedForBatch = startedForBatch;
+}
+
+void MainWindow::configureBatchRun(int timeoutMinutes)
+{
+	MessageForwarder::setWarningHandler([this](const QString & title, const QString & message, bool error) {
+		const QString diagnostic = title.isEmpty() ? message : title + ": " + message;
+		if (error)
+		{
+			_batchResult.addError(diagnostic);
+			QTimer::singleShot(0, this, [this]() { finishBatchRun(); });
+		}
+		else _batchResult.addWarning(diagnostic);
+	});
+	_waitingEventTimeoutTimer = new QTimer(this);
+	_waitingEventTimeoutTimer->setSingleShot(true);
+	connect(_waitingEventTimeoutTimer, &QTimer::timeout, this, &MainWindow::waitingEventTimedOut);
+	_waitingEventTimeoutTimer->start(std::chrono::minutes(std::max(1, timeoutMinutes)));
+}
+
+void MainWindow::finishBatchRun()
+{
+	if (!_batchRunning) return;
+	if (_waitingEventTimeoutTimer) _waitingEventTimeoutTimer->stop();
+	if (_waitingEventStartTimer) _waitingEventStartTimer->stop();
+	_batchWaitingForAnalyses = false;
+	_waitingEvent = nullptr;
+	for (QStringList * messages : {&_batchResult.errors, &_batchResult.warnings})
+		for (QString & message : *messages)
+			if (Qt::mightBeRichText(message)) message = QTextDocumentFragment::fromHtml(message).toPlainText();
+	//Anything still holding an unterminated line on stdout (JASP's own logging prefixes one before
+	//every message) would otherwise end up in front of the marker, so open a fresh line and write
+	//the whole report in a single insertion.
+	std::cout << ("\n" + _batchResult.serialize() + "\n").constData() << std::flush;
+	_batchRunning = false;
+	MessageForwarder::setWarningHandler({});
+	if (!_batchKeepOpen) emit exitSignal(_batchResult.errors.isEmpty() ? 0 : 1);
 }
