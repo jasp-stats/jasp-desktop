@@ -9,6 +9,9 @@
 # Usage:  Tests/gatetest/run_gatetest.sh [gatetest.py args...]
 #   e.g.  Tests/gatetest/run_gatetest.sh --module jaspTTests --fail-fast
 #
+# Set GATETEST_SCRIPT=fuzztest.py to run the option fuzzer instead of the gate
+# test (the venv/setup is shared).
+#
 # Exit code is the gate test's exit code (0 = pass, 1 = gate failure).
 
 set -euo pipefail
@@ -45,4 +48,10 @@ else
 	echo "         Until then the gate runs with the MCP layer absent (recorded as a failure)."
 fi
 
-exec "$VENV/bin/python" "$HERE/gatetest.py" --jasp-bin "$JASP_BIN" "$@"
+SCRIPT="${GATETEST_SCRIPT:-gatetest.py}"
+if [[ ! -f "$HERE/$SCRIPT" ]]; then
+	echo "FATAL: GATETEST_SCRIPT '$SCRIPT' not found in $HERE"
+	exit 1
+fi
+
+exec "$VENV/bin/python" "$HERE/$SCRIPT" --jasp-bin "$JASP_BIN" "$@"

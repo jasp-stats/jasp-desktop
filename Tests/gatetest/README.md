@@ -39,7 +39,24 @@ Tests/gatetest/run_gatetest.sh --fail-fast --report /tmp/gate.json
 
 `run_gatetest.sh` builds the `JASP` target if `build/Desktop/JASP` is missing,
 creates `.venv` with `mcp` + `httpx`, installs the pinned `jasp-mcp` submodule,
-and runs `gatetest.py`.
+and runs `gatetest.py`. Set `GATETEST_SCRIPT=fuzztest.py` to run the option
+fuzzer instead (the venv/setup is shared).
+
+## Running through CTest
+
+With `-DBUILD_TESTS=ON` two smokes are always registered (both drive
+`jaspTTests` only, a few minutes):
+
+```bash
+ctest -R "gateSmoke|fuzzSmoke" --output-on-failure
+```
+
+The full sweep is opt-in, since it runs for hours:
+
+```bash
+cmake -DBUILD_GATETEST=ON build/   # registers the gateTest target
+ctest -R gateTest --output-on-failure
+```
 
 ## Prerequisites
 
@@ -122,7 +139,10 @@ deterministic — a fresh analysis instance is created per mutation so no
 server-side state leaks, and schema-derived orderings are normalised because
 JASP's `choices` order varies between process starts). Every run's exact options
 JSON is recorded in the report; crash-class failures additionally write a
-minimal `.repro.json` that `--repro` can replay in isolation.
+minimal `.repro.json` that `--repro` can replay in isolation. Note that a seed
+only reproduces against the *same version* of `fuzztest.py`: any change to the
+mutation logic changes the RNG stream (the options JSON in the report/repro
+always replays exactly, regardless).
 
 Known findings from the first runs (as of this writing, unfixed — see issues):
 - Huge numbers in numeric options reach JsonCpp `asInt()` and surface as

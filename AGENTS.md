@@ -47,6 +47,8 @@ xvfb-run build/Tests/JASPTestColumnEncoderContext
 
 For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
 
+With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
+
 ## Library architecture (dependency order)
 
 ```
