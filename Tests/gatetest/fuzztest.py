@@ -130,15 +130,23 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
         return rng.choice(["__fuzz_nonexistent__", "", UNICODE_CRUD, None, 0, True])
 
     if kind in ("number", "integer", "percent"):
+        #Kind-appropriate valid pools: -1 is not a valid percent and 0.95 not a valid
+        #integer, so the "valid" branch must never emit them for those kinds (it used to,
+        #which put deliberately-invalid values into the valid bucket and skewed outcomes).
+        valid_pool = {"percent": [0, 0.5, 0.95, 1],
+                      "integer": [0, 1, 7, 100],
+                      "number":  [0, 1, 0.95, -1]}[kind]
         if rng.random() < valid_probability:
             default = meta.get("default")
+            if kind == "percent":
+                #Percent options live in [0,1]: pick from the pool instead of jittering
+                #(jittering could push the default out of range, e.g. 1 + 1).
+                return rng.choice(valid_pool)
             if isinstance(default, (int, float)) and not isinstance(default, bool):
-                jitter = rng.choice([0, 1, -1, 0.5, -0.5, 1e-6, 100])
-                value = default + jitter if kind != "integer" else int(default + rng.choice([0, 1, -1, 7]))
-                if kind == "percent":
-                    value = rng.choice([0, 0.5, 0.95, 1])
-                return value
-            return rng.choice([0, 1, 0.95, -1])
+                if kind == "integer":
+                    return int(default + rng.choice([0, 1, -1, 7]))
+                return default + rng.choice([0, 1, -1, 0.5, -0.5, 1e-6, 100])
+            return rng.choice(valid_pool)
         # invalid / extreme
         pick = rng.choice(NUMBERS + [None, "not-a-number", True, [1]])
         if kind == "integer" and isinstance(pick, float) and pick == int(pick):
@@ -464,11 +472,13 @@ def main() -> int:
 
         done = 0
         analyses_done = 0
-        last_mutation: dict | None = None  # most recent options we sent, for crash reports
         consecutive_stuck = 0              # runs that never even got scheduled (engine queue wedged)
         t_start = time.time()
         for module, analysis in pairs:
             analyses_done += 1
+            #Options most recently sent *for this analysis*; reset per analysis so a death
+            #before the first mutation can never be blamed on the previous analysis's options.
+            last_mutation: dict | None = None
             if jasp_proc.poll() is not None:
                 detail = f"JASP process exited (code {jasp_proc.returncode}) while fuzzing"
                 crashes.append({"type": "crash", "module": module, "analysis": analysis, "detail": detail,
