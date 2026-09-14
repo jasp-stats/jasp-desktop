@@ -305,6 +305,26 @@ void AIConfigModel::emitAllDerivedSignals()
 	emit currentChatLimitChanged();
 	emit currentMessageExtraChanged();
 	emit currentWarningChanged();
+	emit currentAuthModeChanged();
+	emit currentAuthAuthorityChanged();
+	emit currentAuthScopeChanged();
+	emit currentAuthClientIdChanged();
+	emit currentAuthBackendChanged();
+	emit currentAuthHeaderNameChanged();
+	emit currentAuthHeaderPrefixChanged();
+}
+
+// Auth schemes are named by protocol, not by vendor, so supporting another
+// identity provider is configuration rather than a new value. "entra" is the
+// vendor-named spelling this used before the rename; keep accepting it so
+// already-written config still resolves. Unknown values pass through unchanged,
+// so an older build cannot silently rewrite a newer build's scheme to apiKey.
+static QString normalizeAuthMode(const QString &mode)
+{
+	if (mode.isEmpty() || mode == QStringLiteral("apiKey")) return QStringLiteral("apiKey");
+	if (mode == QStringLiteral("none"))                     return QStringLiteral("none");
+	if (mode == QStringLiteral("entra"))                    return QStringLiteral("oidc");
+	return mode;
 }
 
 // ── Derived getters — read straight from m_providers ──────────
@@ -325,6 +345,69 @@ QString AIConfigModel::currentApiKey() const
 	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].apiKey.isEmpty())
 		return SecretStore::decryptValue(m_providerOverrides[prov->id].apiKey);
 	return prov->defaultApiKey;
+}
+
+QString AIConfigModel::currentAuthMode() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return QStringLiteral("apiKey");
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authMode.isEmpty())
+		return normalizeAuthMode(m_providerOverrides[prov->id].authMode);
+	return normalizeAuthMode(prov->authMode);
+}
+
+QString AIConfigModel::currentAuthAuthority() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authAuthority.isEmpty())
+		return m_providerOverrides[prov->id].authAuthority;
+	return prov->authAuthority;
+}
+
+QString AIConfigModel::currentAuthScope() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authScope.isEmpty())
+		return m_providerOverrides[prov->id].authScope;
+	return prov->authScope;
+}
+
+QString AIConfigModel::currentAuthClientId() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authClientId.isEmpty())
+		return m_providerOverrides[prov->id].authClientId;
+	return prov->authClientId;
+}
+
+QString AIConfigModel::currentAuthBackend() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return QStringLiteral("auto");
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authBackend.isEmpty())
+		return m_providerOverrides[prov->id].authBackend;
+	return prov->authBackend.isEmpty() ? QStringLiteral("auto") : prov->authBackend;
+}
+
+QString AIConfigModel::currentAuthHeaderName() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return QStringLiteral("Authorization");
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authHeaderName.isEmpty())
+		return m_providerOverrides[prov->id].authHeaderName;
+	return prov->authHeaderName.isEmpty() ? QStringLiteral("Authorization") : prov->authHeaderName;
+}
+
+QString AIConfigModel::currentAuthHeaderPrefix() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authHeaderPrefix.isEmpty())
+		return m_providerOverrides[prov->id].authHeaderPrefix;
+	return prov->authHeaderPrefix;
 }
 
 QString AIConfigModel::currentModel() const
@@ -519,6 +602,121 @@ void AIConfigModel::setCurrentApiKey(const QString &v)
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentApiKeyChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthMode(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+
+	// Store the canonical scheme so a legacy "entra" value migrates on write.
+	const QString mode = normalizeAuthMode(v);
+	if (currentAuthMode() == mode) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authMode = mode;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthModeChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthAuthority(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthAuthority() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authAuthority = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthAuthorityChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthScope(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthScope() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authScope = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthScopeChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthClientId(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthClientId() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authClientId = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthClientIdChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthBackend(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthBackend() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authBackend = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthBackendChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthHeaderName(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthHeaderName() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authHeaderName = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthHeaderNameChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthHeaderPrefix(const QString &v)
+{
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthHeaderPrefix() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authHeaderPrefix = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthHeaderPrefixChanged();
 	saveUserData();
 }
 
@@ -826,6 +1024,17 @@ void AIConfigModel::loadShippedProviders()
 		prov.name         = pobj["name"].toString();
 		prov.endpoint     = pobj["endpoint"].toString();
 		prov.defaultApiKey = pobj["defaultApiKey"].toString();
+		prov.authMode         = pobj["authMode"].toString();
+		prov.authAuthority    = pobj["authAuthority"].toString();
+		prov.authScope        = pobj["authScope"].toString();
+		prov.authClientId     = pobj["authClientId"].toString();
+		prov.authBackend      = pobj["authBackend"].toString();
+		prov.authHeaderName   = pobj["authHeaderName"].toString();
+		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
+		// Pre-rename (vendor-named) keys — keep reading them so shipped or saved
+		// config written before the rename still resolves.
+		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
+		if (prov.authScope.isEmpty())     prov.authScope     = pobj["entraScope"].toString();
 		prov.isSystem     = true;
 
 		const QJsonArray marr = pobj["models"].toArray();
@@ -890,6 +1099,18 @@ void AIConfigModel::loadUserData()
 		ov.apiKey        = o["apiKey"].toString();
 		ov.currentModelId = o["currentModelId"].toString();
 		ov.customModel    = o["customModel"].toString();
+		if (o.contains("authMode"))         ov.authMode         = o["authMode"].toString();
+		if (o.contains("authAuthority"))    ov.authAuthority    = o["authAuthority"].toString();
+		if (o.contains("authScope"))        ov.authScope        = o["authScope"].toString();
+		if (o.contains("authClientId"))     ov.authClientId     = o["authClientId"].toString();
+		if (o.contains("authBackend"))      ov.authBackend      = o["authBackend"].toString();
+		if (o.contains("authHeaderName"))   ov.authHeaderName   = o["authHeaderName"].toString();
+		if (o.contains("authHeaderPrefix")) ov.authHeaderPrefix = o["authHeaderPrefix"].toString();
+		// Pre-rename (vendor-named) keys
+		if (o.contains("entraTenant") && !o.contains("authAuthority"))
+			ov.authAuthority = o["entraTenant"].toString();
+		if (o.contains("entraScope") && !o.contains("authScope"))
+			ov.authScope = o["entraScope"].toString();
 		if (o.contains("systemPromptPostfix")) { ov.systemPromptPostfix = o["systemPromptPostfix"].toString(); ov.systemPromptPostfixSet = true; }
 		if (o.contains("extraParams"))         { ov.extraParams = o["extraParams"].toObject(); ov.extraParamsSet = true; }
 		if (o.contains("useCompleteSchema"))    ov.useCompleteSchema = o["useCompleteSchema"].toBool();
@@ -953,6 +1174,16 @@ void AIConfigModel::loadUserData()
 		prov.name     = pobj["name"].toString();
 		prov.endpoint = pobj["endpoint"].toString();
 		prov.defaultApiKey = pobj["defaultApiKey"].toString();
+		prov.authMode         = pobj["authMode"].toString();
+		prov.authAuthority    = pobj["authAuthority"].toString();
+		prov.authScope        = pobj["authScope"].toString();
+		prov.authClientId     = pobj["authClientId"].toString();
+		prov.authBackend      = pobj["authBackend"].toString();
+		prov.authHeaderName   = pobj["authHeaderName"].toString();
+		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
+		// Pre-rename (vendor-named) keys
+		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
+		if (prov.authScope.isEmpty())     prov.authScope     = pobj["entraScope"].toString();
 		prov.isSystem  = false;
 
 		const QJsonArray marr = pobj["models"].toArray();
@@ -1044,7 +1275,11 @@ void AIConfigModel::saveUserData()
 		if (m_providerOverrides.contains(prov->id))
 			pov = m_providerOverrides[prov->id];
 		pov.currentModelId = mod ? mod->id : QString();
-		if (pov.endpoint.isEmpty() && pov.apiKey.isEmpty() && pov.customModel.isEmpty())
+		if (pov.endpoint.isEmpty() && pov.apiKey.isEmpty() && pov.customModel.isEmpty()
+		    && pov.authMode.isEmpty() && pov.authAuthority.isEmpty()
+		    && pov.authScope.isEmpty() && pov.authClientId.isEmpty()
+		    && pov.authBackend.isEmpty() && pov.authHeaderName.isEmpty()
+		    && pov.authHeaderPrefix.isEmpty())
 			m_providerOverrides.remove(prov->id);
 		else
 			m_providerOverrides[prov->id] = pov;
@@ -1082,6 +1317,14 @@ void AIConfigModel::saveUserData()
 		if (!ov.apiKey.isEmpty())        o["apiKey"]        = ov.apiKey;
 		if (!ov.currentModelId.isEmpty()) o["currentModelId"] = ov.currentModelId;
 		if (!ov.customModel.isEmpty())    o["customModel"]    = ov.customModel;
+		// Auth overrides (empty = not overridden)
+		if (!ov.authMode.isEmpty())         o["authMode"]         = ov.authMode;
+		if (!ov.authAuthority.isEmpty())    o["authAuthority"]    = ov.authAuthority;
+		if (!ov.authScope.isEmpty())        o["authScope"]        = ov.authScope;
+		if (!ov.authClientId.isEmpty())     o["authClientId"]     = ov.authClientId;
+		if (!ov.authBackend.isEmpty())      o["authBackend"]      = ov.authBackend;
+		if (!ov.authHeaderName.isEmpty())   o["authHeaderName"]   = ov.authHeaderName;
+		if (!ov.authHeaderPrefix.isEmpty()) o["authHeaderPrefix"] = ov.authHeaderPrefix;
 		// Per-provider custom-mode fields
 		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
 		if (ov.extraParamsSet)            o["extraParams"]         = ov.extraParams;
@@ -1133,6 +1376,13 @@ void AIConfigModel::saveUserData()
 		po["name"]          = prov.name;
 		po["endpoint"]      = prov.endpoint;
 		po["defaultApiKey"] = prov.defaultApiKey;
+		if (!prov.authMode.isEmpty())         po["authMode"]         = prov.authMode;
+		if (!prov.authAuthority.isEmpty())    po["authAuthority"]    = prov.authAuthority;
+		if (!prov.authScope.isEmpty())        po["authScope"]        = prov.authScope;
+		if (!prov.authClientId.isEmpty())     po["authClientId"]     = prov.authClientId;
+		if (!prov.authBackend.isEmpty())      po["authBackend"]      = prov.authBackend;
+		if (!prov.authHeaderName.isEmpty())   po["authHeaderName"]   = prov.authHeaderName;
+		if (!prov.authHeaderPrefix.isEmpty()) po["authHeaderPrefix"] = prov.authHeaderPrefix;
 
 		QJsonArray marr;
 		for (const auto &m : prov.models)

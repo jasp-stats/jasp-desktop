@@ -27,6 +27,7 @@
 #include "gui/preferencesmodel.h"
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
+#include "auth/apitokenprovider.h"
 
 // =============================================================================
 // Singleton
@@ -73,6 +74,8 @@ AiBridge *AiBridge::_singleton = nullptr;
 		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,  this, &AiBridge::clearChat);
 		connect(acm, &AIConfigModel::currentChatLimitChanged,        this, &AiBridge::clearChat);
 		connect(acm, &AIConfigModel::currentMessageExtraChanged,     this, &AiBridge::clearChat);
+
+		configureTokenProvider();
 	}
 
 AiBridge::~AiBridge()
@@ -92,7 +95,59 @@ QString AiBridge::endpoint() const
 
 QString AiBridge::authToken() const
 {
-	return AIConfigModel::config()->currentApiKey();
+	// Phase 1: delegates to the API-key provider. Later phases swap in WAM or
+	// browser providers; AiBridge only ever consumes the resulting token.
+	return m_tokenProvider ? m_tokenProvider->token() : QString();
+}
+
+QString AiBridge::authHeaderName() const
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	QString header = cfg ? cfg->currentAuthHeaderName() : QString();
+	return header.isEmpty() ? QStringLiteral("Authorization") : header;
+}
+
+QString AiBridge::authHeaderPrefix() const
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString prefix = cfg ? cfg->currentAuthHeaderPrefix() : QString();
+	if (!prefix.isEmpty())
+		return prefix;
+
+	// Default: RFC 6750 "Bearer " for Authorization, raw value for a custom
+	// header (a gateway that takes e.g. "X-API-Key: <token>").
+	return authHeaderName().compare(QStringLiteral("Authorization"), Qt::CaseInsensitive) == 0
+	       ? QStringLiteral("Bearer ")
+	       : QString();
+}
+
+void AiBridge::configureTokenProvider()
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString mode = cfg ? cfg->currentAuthMode() : QStringLiteral("apiKey");
+
+	if (m_tokenProvider && m_tokenProviderMode == mode)
+		return;
+
+	m_tokenProviderMode = mode;
+	delete m_tokenProvider;
+	m_tokenProvider = nullptr;
+
+	// Phase 1: API-key auth is the only implemented backend. "none" sends no
+	// header; "oidc" (Entra ID, or any other OIDC identity provider) has no
+	// backend yet — WAM arrives in Phase 2, browser in Phase 4 — so it stays
+	// null and callers surface a clear message.
+	if (mode == QStringLiteral("apiKey"))
+		m_tokenProvider = new ApiKeyTokenProvider(this);
+}
+
+void AiBridge::applyAuthHeader(QNetworkRequest &request) const
+{
+	const QString token = authToken();
+	if (token.isEmpty())
+		return;
+
+	request.setRawHeader(authHeaderName().toUtf8(), (authHeaderPrefix() + token).toUtf8());
 }
 
 QString AiBridge::model() const
@@ -495,15 +550,20 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 		return;
 	}
 
+	configureTokenProvider();
+	if (m_tokenProviderMode == QStringLiteral("oidc") && !m_tokenProvider) {
+		m_streaming = false;
+		emitError(QStringLiteral("Sign-in is not available in this build yet. Please select a provider that uses an API key."));
+		emit onStreamClose();
+		return;
+	}
+
 	QNetworkRequest request{QUrl(ep)};
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 	request.setRawHeader("Accept", "text/event-stream");
 	request.setTransferTimeout(120000); // 120 s — large conversations with tool results need time
 
-	QString token = authToken();
-	if (!token.isEmpty()) {
-		request.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
-	}
+	applyAuthHeader(request);
 
 	QByteArray body = buildRequestBody(messages, withTools);
 
@@ -1271,15 +1331,19 @@ void AiBridge::testConnection()
 		return;
 	}
 
+	configureTokenProvider();
+	if (m_tokenProviderMode == QStringLiteral("oidc") && !m_tokenProvider) {
+		emit testConnectionResult(false, QStringLiteral("Sign-in is not available in this build yet."));
+		return;
+	}
+
 	Log::log() << "AiBridge::testConnection — probing " << ep.toStdString() << std::endl;
 
 	QNetworkRequest request{QUrl(ep)};
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 	request.setTransferTimeout(10000); // 10 s for a test
 
-	QString token = authToken();
-	if (!token.isEmpty())
-		request.setRawHeader("Authorization", ("Bearer " + token).toUtf8());
+	applyAuthHeader(request);
 
 	// Build a minimal valid body — just enough to provoke a meaningful response
 	QJsonObject body;

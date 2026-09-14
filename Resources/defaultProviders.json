@@ -112,6 +112,24 @@
 			]
 		},
 		{
+			"id": "f2b9a4d1-6c7e-4a3b-9d0e-1a2b3c4d5e6f",
+			"name": "Azure OpenAI (Entra ID)",
+			"endpoint": "https://YOUR-RESOURCE.openai.azure.com/openai/v1/chat/completions",
+			"defaultApiKey": "",
+			"authMode": "oidc",
+			"authAuthority": "organizations",
+			"authScope": "https://cognitiveservices.azure.com/.default",
+			"models": [
+				{
+					"id": "a3c8b5e2-7d9f-4b1a-8e6c-2f3a4b5c6d7e",
+					"name": "Azure deployment",
+					"model": "your-deployment-name",
+					"extraParams": {},
+					"systemPromptPostfix": ""
+				}
+			]
+		},
+		{
 			"id": "b7c4d3e8-9d0e-1f2a-3456-0123456789bc",
 			"name": "Anthropic",
 			"endpoint": "https://api.anthropic.com/v1/chat/completions",

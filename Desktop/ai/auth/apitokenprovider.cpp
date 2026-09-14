@@ -1,0 +1,37 @@
+#include "apitokenprovider.h"
+
+#include "gui/aiconfigmodel.h"
+
+ApiKeyTokenProvider::ApiKeyTokenProvider(QObject *parent)
+	: TokenProvider(parent)
+{}
+
+QString ApiKeyTokenProvider::authMode() const
+{
+	return QStringLiteral("apiKey");
+}
+
+void ApiKeyTokenProvider::ensureToken()
+{
+	// A static key needs no asynchronous acquisition; report it immediately.
+	// Later interactive backends will emit this after sign-in instead.
+	emit tokenReady(token());
+}
+
+QString ApiKeyTokenProvider::token() const
+{
+	if (AIConfigModel *cfg = AIConfigModel::config())
+		return cfg->currentApiKey();
+	return {};
+}
+
+bool ApiKeyTokenProvider::isValid() const
+{
+	return !token().isEmpty();
+}
+
+void ApiKeyTokenProvider::signOut()
+{
+	// Nothing to revoke for a static key. Clearing it is the user's action via
+	// the API-key field, not a sign-out.
+}

@@ -25,8 +25,11 @@
 #include <QTimer>
 #include <QMap>
 #include <QVector>
+#include <QString>
 
 class PreferencesModel;
+class TokenProvider;
+class QNetworkRequest;
 
 class AiBridge : public QObject
 {
@@ -45,6 +48,8 @@ public:
 
 	QString endpoint() const;
 	QString authToken() const;
+	QString authHeaderName() const;
+	QString authHeaderPrefix() const;
 	QString model() const;
 
 	/// List all available persona names.
@@ -114,6 +119,14 @@ private:
 	QByteArray buildRequestBody(const QJsonArray &messages, bool withTools = true);
 	void emitError(const QString &message);
 
+	/// (Re)create m_tokenProvider when the configured auth mode changes.
+	/// Phase 1 only knows the API-key backend; WAM/browser plug in here later.
+	void configureTokenProvider();
+
+	/// Apply the provider's token to a request using the configured header name
+	/// and prefix ("Authorization: Bearer <token>" by default).
+	void applyAuthHeader(QNetworkRequest &request) const;
+
 	/// True when new work must not be started — a reply is being processed or
 	/// an RPC dispatch is in-flight (possibly inside a nested event loop).
 	bool isBusy() const;
@@ -139,6 +152,9 @@ private:
 	QNetworkAccessManager *m_networkManager = nullptr;
 	QNetworkReply *m_activeReply = nullptr;
 	QByteArray m_sseBuffer;
+
+	TokenProvider *m_tokenProvider     = nullptr;
+	QString        m_tokenProviderMode;   // auth mode the provider was built for
 
 	QJsonArray m_conversation;
 	QJsonArray m_pendingToolCalls;

@@ -42,6 +42,17 @@ struct AIProviderEntry
 	QString               name;         // "DeepSeek"
 	QString               endpoint;     // full chat completions URL
 	QString               defaultApiKey;
+	// Auth is described by protocol, not by vendor, so supporting another
+	// identity provider is configuration rather than new fields:
+	//   scheme = authMode   who = authAuthority   app = authClientId
+	//   what   = authScope  how = authBackend     wire = authHeaderName/Prefix
+	QString               authMode;         // "apiKey" (default when empty) | "oidc" | "none"
+	QString               authAuthority;    // OIDC authority: tenant id, "organizations", or issuer URL
+	QString               authScope;        // resource the token is requested for
+	QString               authClientId;     // app registration; empty = built-in JASP client id
+	QString               authBackend;      // "auto" (default when empty) | wam | browser | devicecode
+	QString               authHeaderName;   // empty = "Authorization"
+	QString               authHeaderPrefix; // empty = "Bearer " for Authorization, raw otherwise
 	bool                  isSystem  = true;   // from shipped JSON?
 	QVector<AIModelEntry> models;             // at least 1
 };
@@ -149,6 +160,22 @@ public:
 	           WRITE setCurrentMessageExtra         NOTIFY currentMessageExtraChanged)
 	Q_PROPERTY(QString currentWarning              READ currentWarning              NOTIFY currentWarningChanged)
 
+	// ── Authentication (scheme | authority | scope | backend | wire) ─────
+	Q_PROPERTY(QString currentAuthMode         READ currentAuthMode
+	           WRITE setCurrentAuthMode         NOTIFY currentAuthModeChanged)
+	Q_PROPERTY(QString currentAuthAuthority    READ currentAuthAuthority
+	           WRITE setCurrentAuthAuthority    NOTIFY currentAuthAuthorityChanged)
+	Q_PROPERTY(QString currentAuthScope        READ currentAuthScope
+	           WRITE setCurrentAuthScope        NOTIFY currentAuthScopeChanged)
+	Q_PROPERTY(QString currentAuthClientId     READ currentAuthClientId
+	           WRITE setCurrentAuthClientId     NOTIFY currentAuthClientIdChanged)
+	Q_PROPERTY(QString currentAuthBackend      READ currentAuthBackend
+	           WRITE setCurrentAuthBackend      NOTIFY currentAuthBackendChanged)
+	Q_PROPERTY(QString currentAuthHeaderName   READ currentAuthHeaderName
+	           WRITE setCurrentAuthHeaderName   NOTIFY currentAuthHeaderNameChanged)
+	Q_PROPERTY(QString currentAuthHeaderPrefix READ currentAuthHeaderPrefix
+	           WRITE setCurrentAuthHeaderPrefix NOTIFY currentAuthHeaderPrefixChanged)
+
 	// ── Is current provider user-editable? ──────────────
 	Q_PROPERTY(bool currentProviderIsUserEditable
 	           READ currentProviderIsUserEditable NOTIFY currentProviderChanged)
@@ -183,6 +210,20 @@ public:
 	QString currentMessageExtra()          const;
 	void    setCurrentMessageExtra(const QString &v);
 	QString currentWarning()               const;
+	QString currentAuthMode()              const;
+	void    setCurrentAuthMode(const QString &v);
+	QString currentAuthAuthority()         const;
+	void    setCurrentAuthAuthority(const QString &v);
+	QString currentAuthScope()             const;
+	void    setCurrentAuthScope(const QString &v);
+	QString currentAuthClientId()          const;
+	void    setCurrentAuthClientId(const QString &v);
+	QString currentAuthBackend()           const;
+	void    setCurrentAuthBackend(const QString &v);
+	QString currentAuthHeaderName()        const;
+	void    setCurrentAuthHeaderName(const QString &v);
+	QString currentAuthHeaderPrefix()      const;
+	void    setCurrentAuthHeaderPrefix(const QString &v);
 	bool    currentProviderIsUserEditable() const;
 
 	// ── Reset ────────────────────────────────────────────
@@ -202,6 +243,13 @@ signals:
 	void currentChatLimitChanged();
 	void currentMessageExtraChanged();
 	void currentWarningChanged();
+	void currentAuthModeChanged();
+	void currentAuthAuthorityChanged();
+	void currentAuthScopeChanged();
+	void currentAuthClientIdChanged();
+	void currentAuthBackendChanged();
+	void currentAuthHeaderNameChanged();
+	void currentAuthHeaderPrefixChanged();
 	void currentProviderChanged();
 	void providerValuesChanged();
 	void modelValuesChanged();
@@ -223,6 +271,15 @@ private:
 		bool        chatLimitActive        = true;
 		QString     messageExtra;
 		bool        messageExtraSet        = false;
+
+		// Auth overrides — empty means "not overridden".
+		QString     authMode;
+		QString     authAuthority;
+		QString     authScope;
+		QString     authClientId;
+		QString     authBackend;
+		QString     authHeaderName;
+		QString     authHeaderPrefix;
 
 		bool operator==(const ProviderOverrides &o) const = default;
 	};
