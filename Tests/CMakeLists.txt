@@ -268,25 +268,34 @@ add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
 # RPC/MCP API (see Tests/gatetest/README.md); run_gatetest.sh builds the Python
 # venv and installs the pinned jasp-mcp submodule on first use. They need no
 # xvfb-run (the scripts handle their own platform) but do need a built JASP.
+# All three carry the `gatetest` label: exclude them from a normal run with
+# `ctest -LE gatetest` (first run also needs network for the venv bootstrap).
+# JASP_BIN is passed explicitly so the smokes work from any build-tree name.
 add_test(NAME gateSmoke
 	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
 			--module jaspTTests --timeout-per-analysis 120
+			--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
 			--report ${CMAKE_CURRENT_BINARY_DIR}/gateSmoke.json)
-set_tests_properties(gateSmoke PROPERTIES TIMEOUT 1800)
+set_tests_properties(gateSmoke PROPERTIES TIMEOUT 1800 LABELS gatetest
+	ENVIRONMENT "JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
 
 add_test(NAME fuzzSmoke
 	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
 			--module jaspTTests --runs-per-analysis 2
+			--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
 			--report ${CMAKE_CURRENT_BINARY_DIR}/fuzzSmoke.json)
-set_tests_properties(fuzzSmoke PROPERTIES TIMEOUT 1800 ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py")
+set_tests_properties(fuzzSmoke PROPERTIES TIMEOUT 1800 LABELS gatetest
+	ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py;JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
 
 # Full sweep (every analysis of every module): opt-in, since it runs for hours.
 if(BUILD_GATETEST)
 	add_test(NAME gateTest
 		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
 				--restart-on-death
+				--skip-file ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/skip-list.txt
 				--report ${CMAKE_CURRENT_BINARY_DIR}/gateTest.json)
-	set_tests_properties(gateTest PROPERTIES TIMEOUT 14400)
+	set_tests_properties(gateTest PROPERTIES TIMEOUT 14400 LABELS gatetest
+		ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py;JASP_BIN=${CMAKE_BINARY_DIR}/Desktop/JASP")
 endif()
 
 
