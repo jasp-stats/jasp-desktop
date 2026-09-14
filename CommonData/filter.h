@@ -80,7 +80,7 @@ public:
 	void						dbUpdate(bool writeFiltered = false);
 	void						dbUpdateErrorMsg();
 	bool						dbLoad();
-	bool						dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if an error is set
+	bool						dbLoadResultAndError();					///< Loads (updated) filtervalues from database and the (possible) error msg, returns true if the values or the error changed (NOT "an error is set"!)
 	void						dbDelete();
 	void						incRevision() override;
 	bool						checkForUpdates();

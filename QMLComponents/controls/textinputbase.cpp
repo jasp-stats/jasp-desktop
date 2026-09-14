@@ -61,6 +61,8 @@ void TextInputBase::bindTo(const Json::Value& value)
 			double dbl = value.asDouble();
 			if (dbl >= INT_MIN && dbl <= INT_MAX)
 				_value = int(dbl);
+			else
+				setHasWarning(true); //Out-of-int-range: keep the old value, flag it like any other wrong option value
 		}
 		else if (value.isString() && QColumnUtils::getIntValue(tq(value.asString()), intVal))
 			_value = intVal;
