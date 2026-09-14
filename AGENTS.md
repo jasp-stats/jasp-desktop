@@ -7,9 +7,9 @@ cmake -GNinja -S . -B build -DBUILD_TESTS=ON
 cmake --build build --target CommonData    # library target only
 cmake --build build                        # everything (slow)
 cmake --build build --target JASP          # desktop app only
-
-Add `-DINSTALL_R_MODULES=OFF` to skip building R modules (much faster build, but analyses won't run).
 ```
+
+Add `-DINSTALL_R_MODULES=OFF` to skip building R modules (much faster build, but analyses won't run). CI's `JASP_TEST_BUILD=ON` flag is a no-op — the real option is `BUILD_TESTS`.
 
 - Use the existing `build/` directory — it is already configured.
 - Re-run `cmake build/` after adding new `.cpp`/`.h` files (CMake uses `GLOB_RECURSE` in `CommonData/CMakeLists.txt`).
@@ -27,29 +27,32 @@ xvfb-run build/Tests/JASPTest testSyncerStartStopFileSyncing  # single test by n
 ctest -R testDataImport --output-on-failure             # or via ctest
 ```
 
-Test names (use `-functions` on binary to list all). There are SEVEN test executables — verify against ALL of them:
-- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp); note the two `testDataImport` CSV/TSV hardcoded-json failures are pre-existing on this branch
+Test names (use `-functions` on binary to list all). There are EIGHT test executables — verify against ALL of them:
+- `JASPTest` — data import + syncer tests (slots in `Tests/testall.{h,cpp}`); also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp)
 - `JASPTestParsedArgs` — command-line argument parsing (depends on `JASPDesktopLib`); PRO-only flags are exercised in both modes via `AppInfo::setProMode`, no PRO build required
 - `JASPTestEngine` — engine integration tests
-- `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPQuickTest`
+- `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPTestDbMigration`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
 
-To build and run everything in one go:
+Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too.
+
+To build and run everything in one go (Linux; on macOS drop `xvfb-run`, `QT_QPA_PLATFORM=offscreen` suffices):
 
 ```bash
-cmake --build build --target JASPTest JASPTestParsedArgs JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPQuickTest JASPTestColumnEncoderContext
+cmake --build build --target JASPTest JASPTestParsedArgs JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPTestDbMigration JASPQuickTest JASPTestColumnEncoderContext
 xvfb-run build/Tests/JASPTest
 xvfb-run build/Tests/JASPTestParsedArgs
 xvfb-run build/Tests/JASPTestEngine
 xvfb-run build/Tests/JASPTestDebugData
 xvfb-run build/Tests/JASPTestCsvPrev
+xvfb-run build/Tests/JASPTestDbMigration
 QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest
 xvfb-run build/Tests/JASPTestColumnEncoderContext
 ```
 
 PRO-only behaviour (batch data sync/export CLI) is a *runtime* flag now: `AppInfo::proMode()`, defaulting to the compile-time `PRO` CMake option and overridable with `AppInfo::setProMode()` (used by `JASPTestParsedArgs`). The remaining `#ifdef PRO` blocks are branding only.
 
-For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
+For most tests on Linux, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
 
 With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
 
@@ -76,16 +79,19 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `ColumnEncoder` — per-dataset column name encoding singleton with context pointer (`ColumnEncoder::setCurrentEncoder()`)
 - `DatabaseConnectionInfo` — DB interval polling timer (owned by `DataSetSyncer`)
 - `DataSetPackage` — singleton desktop wrapper around Workspace
+- `JaspRpcDispatcher`/`JaspRpcServer` (`Desktop/rpc/`) — the JSON-RPC/MCP surface the agent API and gate tests use; method specs live in `Resources/JASP_RPC.json`, server start is gated on `PreferencesModel::rpcServerEnabled()`
+- `MainWindow` is NOT built in `main.cpp` — it's `new`ed inside `Application::init()`; `--rpcPort`/`--safeGraphics` style runtime overrides must be applied in `main()` before that
 
 ## Git notes
 
 - No enforced prefix convention (`feature/`, `bugfix/` not used).
 - Bot branches prefixed `bot` (e.g., `botDataSetSynch`, `botDev`).
-- Upstream branch: `origin/development`. Forks: `joris/development`, `bruno/development`.
+- Base/PR branch: `development` on the upstream remote.
 
 ## Qt quirks
 
-- Tests use `QApplication` (Widgets-based), need a display. Use `xvfb-run`.
+- Tests use `QApplication` (Widgets-based), need a display. Use `xvfb-run` on Linux; `QT_QPA_PLATFORM=offscreen` on macOS.
+- `PreferencesModel::prefs()` is still null inside the early `MainWindow` ctor (the model is constructed a few lines later in that same ctor); anything read there must be `this`-free (static `Settings`/static overrides only) — that is how the RPC server reads its host/port.
 - `#ifdef NOT_IGNORING_SYNCHING` — never defined anywhere, dead code.
 - `FileEvent::FileSyncData` — was dead/never existed, now added to enum.
 - `DataSet::setDataFileAndTimeStamp` (overload) exists alongside `setDataFile` (single string).
