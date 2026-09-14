@@ -14,6 +14,12 @@ class JaspConanConfig(ConanFile):
     default_options = {
         "brotli*:shared": True,
         "sqlite3*:max_column": 32767,
+        # JASP uses Boost header-only (only ${Boost_INCLUDE_DIRS} is consumed, no
+        # compiled component is linked). Skipping the libraries avoids b2, which
+        # currently fails on Visual Studio 2026 (MSVC 19.50): it looks for
+        # vcvarsall.bat under VC\Tools\MSVC\<ver>\bin\Hostx64\ instead of
+        # VC\Auxiliary\Build. See boostorg/build#784.
+        "boost*:header_only": True,
         "syntax_interface_only": False,
     }
 
@@ -35,7 +41,10 @@ class JaspConanConfig(ConanFile):
             self.requires("gmp/6.3.0")
             self.requires("mpfr/4.2.1")
             self.requires("freexl/2.0.99.cci.20260225")
-            self.requires("libsodium/1.0.20")
+            # 1.0.22 is the first version whose MSVC project ships a vs2026
+            # solution (PlatformToolset v145); older recipes fall back to the
+            # vs2022 project, which pins v143 and fails on Visual Studio 2026.
+            self.requires("libsodium/1.0.22")
             # librdata is not available for Windows platforms on conan-center yet
             if self.settings_build.os == "Macos":
                 self.requires("librdata/0.0.0.cci.20231003")

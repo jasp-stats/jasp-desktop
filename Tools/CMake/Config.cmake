@@ -137,62 +137,82 @@ if(WIN32)
 
   set(USE_CONAN ON)
   set(SYSTEM_TYPE WIN32)
-  set(VS_PATH 
-    "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC"
-    CACHE PATH "Visual Studio edition path")
+  # A Visual Studio developer prompt (and the CI action that sources vcvarsall)
+  # exposes VCINSTALLDIR, which always points at the installation actually in
+  # use, so prefer it over a pinned path. The path ends up in a cache entry, so
+  # removing the build directory is needed when switching Visual Studio.
+  if(DEFINED ENV{VCINSTALLDIR} AND NOT "$ENV{VCINSTALLDIR}" STREQUAL "")
+    file(TO_CMAKE_PATH "$ENV{VCINSTALLDIR}" _VS_PATH_DEFAULT)
+    string(REGEX REPLACE "/+$" "" _VS_PATH_DEFAULT "${_VS_PATH_DEFAULT}")
+  else()
+    set(_VS_PATH_DEFAULT
+        "C:/Program Files/Microsoft Visual Studio/18/Community/VC")
+  endif()
 
-  if(MSVC_VERSION EQUAL 1950)
-    # VS 2026 MSVC_TOOLSET_VERSION will not correct on some old cmake version.
+  set(VS_PATH
+      "${_VS_PATH_DEFAULT}"
+      CACHE PATH "Visual Studio edition path")
+
+  # MSVC 14.50 (Visual Studio 2026) reports _MSC_VER 1950 and uses the v145
+  # toolset. From Visual Studio 2026 on, the MSVC toolset is versioned
+  # independently of the IDE, and CMake releases that predate a toolset cap
+  # MSVC_TOOLSET_VERSION at the newest one they know, so derive the value
+  # ourselves whenever CMake left it empty or stale.
+  if(MSVC_VERSION GREATER_EQUAL 1950
+     AND (NOT MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION LESS 145))
     set(MSVC_TOOLSET_VERSION 145)
   endif()
-  
-  message(STATUS ${MSVC_TOOLSET_VERSION})
-  message(STATUS ${MSVC_VERSION})
 
-  if(MSVC_TOOLSET_VERSION  GREATER_EQUAL "143")
-    set(VC_MERGE_MODULE_NAME
-        "Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm"
-        CACHE STRING "Module Merge Name")
-    set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
-    set(VC_TOOLS_REDIST_PATH
-        "${VS_PATH}\\Redist\\MSVC\\v${MSVC_TOOLSET_VERSION}"
-    )
-    set(VC_VARS_PATH_NATIVE
-        "${VS_PATH}\\Auxiliary\\Build"
-    )
-  elseif(MSVC_VERSION GREATER "1930")
-    set(VC_MERGE_MODULE_NAME
-        "Microsoft_VC143_CRT_x64.msm"
-        CACHE STRING "Module Merge Name")
-    set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
-    set(VC_TOOLS_REDIST_PATH
-        "${VS_PATH}\\Redist\\MSVC\\v143"
-    )
-    set(VC_VARS_PATH_NATIVE
-        "${VS_PATH}\\Auxiliary\\Build"
-    )
-  elseif(MSVC_VERSION EQUAL "1920")
-    set(VS_PATH "C:\\Program Files\\Microsoft Visual Studio\\2019\\Community\\VC")
-    set(VC_MERGE_MODULE_NAME
-        "Microsoft_VC142_CRT_x64.msm"
-        CACHE STRING "Module Merge Name")
-    set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCToolsRedistDir%")
-    set(VC_TOOLS_REDIST_PATH
-        "${VS_PATH}\\Redist\\MSVC\\v143"
-    )
-    set(VC_VARS_PATH_NATIVE
-        "${VS_PATH}\\Auxiliary\\Build"
-    )
+  if(NOT MSVC_TOOLSET_VERSION)
+    message(
+      FATAL_ERROR
+        "Could not determine the MSVC platform toolset (MSVC_VERSION is ${MSVC_VERSION}). "
+        "Set MSVC_TOOLSET_VERSION to the toolset in use, e.g. 143 for Visual Studio 2022 "
+        "or 145 for Visual Studio 2026, and run the configuration again.")
+  endif()
+
+  message(STATUS "MSVC version:         ${MSVC_VERSION}")
+  message(STATUS "MSVC toolset version: ${MSVC_TOOLSET_VERSION}")
+
+  # Both the redistributable folder and its merge module are named after the
+  # platform toolset, e.g. Microsoft_VC145_CRT_x64.msm in
+  # "<VS_PATH>/Redist/MSVC/v145/MergeModules". The merge module itself is an
+  # optional component of the Visual Studio installer ("C++ <year>
+  # Redistributable MSMs").
+  set(VC_MERGE_MODULE_NAME
+      "Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm"
+      CACHE STRING "Module Merge Name")
+
+  set(VC_TOOLS_REDIST_DIR_VARIABLE "%VCINSTALLDIR%")
+
+  set(VC_TOOLS_REDIST_PATH
+      "${VS_PATH}/Redist/MSVC/v${MSVC_TOOLSET_VERSION}")
+
+  set(VC_VARS_PATH_NATIVE "${VS_PATH}/Auxiliary/Build")
+
+  set(_VC_MERGE_MODULE_DEFAULT
+      "${VC_TOOLS_REDIST_PATH}/MergeModules/${VC_MERGE_MODULE_NAME}")
+
+  # The folder naming has changed between Visual Studio releases, so if the
+  # toolset-named folder is not there, fall back to the newest one that does
+  # contain the module instead of failing the configuration.
+  if(NOT EXISTS "${_VC_MERGE_MODULE_DEFAULT}")
+    file(GLOB _VC_MERGE_MODULE_CANDIDATES
+         "${VS_PATH}/Redist/MSVC/*/MergeModules/${VC_MERGE_MODULE_NAME}")
+    if(_VC_MERGE_MODULE_CANDIDATES)
+      list(SORT _VC_MERGE_MODULE_CANDIDATES)
+      list(POP_BACK _VC_MERGE_MODULE_CANDIDATES _VC_MERGE_MODULE_DEFAULT)
+    endif()
   endif()
 
   set(VC_MERGE_MODULE_PATH_NATIVE
-      "${VC_TOOLS_REDIST_PATH}/MergeModules/${VC_MERGE_MODULE_NAME}"
+      "${_VC_MERGE_MODULE_DEFAULT}"
       CACHE PATH "Merge Module Path")
 
   message(CHECK_START
           "Looking for VC Merge Module, ${VC_MERGE_MODULE_PATH_NATIVE}")
 
-  if(EXISTS ${VC_MERGE_MODULE_PATH_NATIVE})
+  if(EXISTS "${VC_MERGE_MODULE_PATH_NATIVE}")
 
     message(CHECK_PASS "found.")
     message(STATUS "  ${VC_MERGE_MODULE_PATH_NATIVE}")
@@ -206,7 +226,12 @@ if(WIN32)
 
     message(CHECK_FAIL "not found.")
     if(NOT JASP_SYNTAX_INTERFACE_ONLY)
-      message(FATAL_ERROR "${VC_MERGE_MODULE_NAME} cannot be found.")
+      message(
+        FATAL_ERROR
+          "${VC_MERGE_MODULE_NAME} cannot be found under ${VS_PATH}/Redist/MSVC.\n"
+          "Install the \"C++ <year> Redistributable MSMs\" component for the Visual Studio "
+          "installation in use (Visual Studio Installer -> Individual components), delete "
+          "the build directory, and run the configuration again.")
     else()
       message(WARNING "${VC_MERGE_MODULE_NAME} not found — skipped (JASP_SYNTAX_INTERFACE_ONLY=ON).")
     endif()

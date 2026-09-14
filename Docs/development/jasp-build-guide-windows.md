@@ -8,26 +8,26 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.7
     - Qt Creator 13
 - [RTools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html), for building R modules
-- [Conan](https://github.com/conan-io/conan/releases) > 2.0.0
+- [Conan](https://github.com/conan-io/conan/releases) >= 2.21.0, needed to recognise the MSVC toolset that ships with Visual Studio 2026
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
 ### Installing Visual Studio
 
 Before everything, you need to download and install the Microsoft Visual Studio and make sure that it contains all the necessary C++ libraries and tools. Please follow the steps below:
 
-- Download the Visual Studio with C++ Community Edition 2022 from [Microsoft website](https://visualstudio.microsoft.com/downloads/)
+- Download the Visual Studio with C++ Community Edition 2026 from [Microsoft website](https://visualstudio.microsoft.com/downloads/)
 	- Head to the bottom of the page, select the Windows, and then for the languages and platforms, select the C++. This should give you an installer with all the C++ tools and libraries that we need.
 - If you are installing the VS with C++ Community, you don't need to add or modify your installation, however, if you are downloading the general version, you need to make sure that the following packages are being installed.
 	- During the installation, you will be asked asked to customize your installation, in this section, here, make sure to select the followings, 
 		- From the "Workloads" tab, select the "Desktop Development with C++" item. This package includes several tools, and you should make sure that the followings are selected from the right panel,
 			- C++ code desktop features (probably pre-selected)
-			- MSVC v144 - VS 2022 C++ x64/x86 build tools
+			- MSVC v145 - VS 2026 C++ x64/x86 build tools
 			- Windows 10 SDK
 			- Just-In-Time debugger
 			- C++ profiling tools
 			- C++ CMake Tools for Windows
 		- From the "Individual Components" tab, search and select the following
-			- C++ 2022 Redistributable MSMs
+			- C++ 2026 Redistributable MSMs
 
 ### Installing Qt Creator and Qt 6
 
@@ -38,8 +38,8 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 - After downloading the installer, run the installer and make sure that the following packages are selected for installation
 	- **Qt**
 		- **Qt 6.7.0** (or newest stable Qt)
-			- [x] MSVC 2019 64-bit
-			- [x] MSVC 2019 ARM64 (Optional)
+			- [x] MSVC 2022 64-bit
+			- [x] MSVC 2022 ARM64 (Optional)
 			- [x] Qt Shader Tools 
 			- **Additional Libraries**
 				- [x] Qt Web Engine
@@ -52,6 +52,8 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 			- [x] Debugging Tools for Windows
 			- [x] CMake
 			- [x] Ninja
+
+> 💡 Qt still ships its Windows binaries built with the MSVC 2022 toolset, hence "MSVC 2022" above rather than a Visual Studio 2026 entry. MSVC toolsets in the 14.x series are binary compatible, so these packages link against JASP built with the Visual Studio 2026 (v145) toolset.
 
 ### Installing Rtools45
 
@@ -106,7 +108,7 @@ It's important that Rtools45 is in your user variables PATH. You can check this 
 
 We are using Conan to manage some of the dependencies of JASP on Windows, so you need to make sure that Conan is installed in your system.
 
-You can download Conan from their [GitHub Release page](https://github.com/conan-io/conan/releases). Make sure that you are downloading 1.45.0 or higher, otherwise you might ran into some compatibility issues with Visual Studio and MSVC. You can also install Conan using Python, `pip install --upgrade conan`.
+You can download Conan from their [GitHub Release page](https://github.com/conan-io/conan/releases). You need Conan 2, and at least 2.21.0, which is the first release that knows the MSVC toolset shipped with Visual Studio 2026 (`compiler.version=195`); earlier releases reject that profile. You can also install Conan using Python, `pip install --upgrade conan`.
 
 > ⚠️ Make sure that you select a box which prompt you for whether or not to add the Conan to your PATH. You should make sure that the box is checked and Conan can be found in your PATH; otherwise, you might run into a problem later.
 
@@ -127,7 +129,7 @@ compiler=msvc
 compiler.cppstd=20
 compiler.runtime=dynamic
 compiler.runtime_type=Release
-compiler.version=194
+compiler.version=195
 os=Windows
 [conf]
 tools.cmake.cmaketoolchain:generator=Ninja
@@ -138,7 +140,7 @@ tools.cmake.cmaketoolchain:generator=Ninja
 
 ### Configuring JASP Desktop
 
-At this point, you are ready to start configuring and building JASP. Open the Qt Creator, and select "File → Open Project", then find and open the `CMakeLists.txt` file inside the `jasp-desktop` folder. By opening this file, you are opening the entire JASP project, and and you will be prompted to "Manage Kits". Here you want to select the "Desktop Qt 6.2.3 MSVC2019 64bit" kit by checking the checkbox next to it. 
+At this point, you are ready to start configuring and building JASP. Open the Qt Creator, and select "File → Open Project", then find and open the `CMakeLists.txt` file inside the `jasp-desktop` folder. By opening this file, you are opening the entire JASP project, and and you will be prompted to "Manage Kits". Here you want to select the "Desktop Qt 6.11 MSVC2022 64bit" kit by checking the checkbox next to it. 
 
 > ⚠️ This is an important step, and if you miss selecting the **Desktop** kit, you will not be able to build JASP.
 
