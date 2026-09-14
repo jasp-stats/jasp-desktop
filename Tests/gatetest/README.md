@@ -92,8 +92,9 @@ apply to the CTest runs as well.
 ## How it works
 
 1. Launches `JASP -platform offscreen --rpcPort=<port>` (`--rpcPort` enables the
-   RPC server on startup; note this is persisted in JASP settings, same as
-   `--safeGraphics`). `-platform offscreen` is mandatory: with `-platform
+   RPC server on startup as a session-only override — the user's persisted
+   settings are never touched, so parallel/CI runs cannot leak a port into
+   someone's desktop). `-platform offscreen` is mandatory: with `-platform
    minimal` (as used by `--hide`) QtWebEngine crashes the scene graph during
    the blocking `data_load`/`analysis_run` waits.
 2. Waits for `ping` over direct JSON-RPC.
