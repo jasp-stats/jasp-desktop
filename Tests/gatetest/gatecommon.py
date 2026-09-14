@@ -13,15 +13,18 @@ jasp-mcp importable (see run_gatetest.sh).
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import concurrent.futures
 import csv
 import json
 import os
 import shlex
+import signal
 import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
@@ -89,7 +92,12 @@ class DirectRpcClient:
         if "error" in body:
             err = body["error"]
             raise RpcError(f"{method}: {err.get('message', str(err))} (code {err.get('code')})")
-        return body.get("result") or {}
+        result = body.get("result")
+        if result is None:
+            return {}
+        # JASP's methods all answer with objects, but a legitimate falsy result
+        # (false, 0) must not be silently turned into {} either: wrap non-dicts.
+        return result if isinstance(result, dict) else {"result": result}
 
 
 class McpRpcClient:
@@ -176,11 +184,22 @@ class GateClient:
         self.mcp_ok = mcp is not None
         self.mcp_reason: str | None = None
         self.mcp_failures = 0
+        self.mcp_calls_ok = 0
+
+    def mcp_layer_dead(self) -> bool:
+        """The MCP layer was set up but never served a single successful call while
+        per-call failures kept forcing the direct fallback: connected-but-dead.
+        (A hard McpBroken is reported through mcp_reason instead.) Without this the
+        gate would PASS with a jasp-mcp that is up but serves nothing."""
+        return (self.mcp is not None and self.mcp_ok
+                and self.mcp_calls_ok == 0 and self.mcp_failures > 5)
 
     def call(self, method: str, params: dict, timeout_s: float = 120.0) -> tuple[str, dict]:
         if self.mcp is not None and self.mcp_ok:
             try:
-                return "mcp", self.mcp.call(method, params, timeout_s)
+                res = self.mcp.call(method, params, timeout_s)
+                self.mcp_calls_ok += 1
+                return "mcp", res
             except McpBroken as e:
                 self.mcp_ok = False
                 self.mcp_reason = str(e)
@@ -206,12 +225,12 @@ def find_free_port() -> int:
         return s.getsockname()[1]
 
 
-def parse_csv(path: str) -> tuple[int, int, list[str]]:
+def parse_csv(path: str) -> tuple[int, int]:
     with open(path, newline="", encoding="utf-8-sig") as f:
         reader = csv.reader(f)
         header = next(reader)
         rows = list(reader)
-    return len(rows), len(header), [h for h in header if h]
+    return len(rows), len(header)
 
 
 def start_jasp(jasp_bin: str, port: int, log_path: str, extra_args: str = "") -> subprocess.Popen:
@@ -220,21 +239,44 @@ def start_jasp(jasp_bin: str, port: int, log_path: str, extra_args: str = "") ->
     # QtWebEngine's render delegate crashes the scene graph as soon as a
     # nested event loop lets the web view repaint (EXC_BAD_ACCESS in
     # QSGTexture::resolveInterface via NativeSkiaOutputDeviceMetal::texture).
-    jasp_log = open(log_path, "wb")
+    # Append mode: restarts (--restart-on-death) must not truncate the pre-crash
+    # evidence of earlier instances; a banner separates the instances' output.
+    jasp_log = open(log_path, "ab")
+    jasp_log.write(f"\n=== JASP start {jasp_bin} rpcPort={port} at "
+                   f"{time.strftime('%Y-%m-%d %H:%M:%S')} ===\n".encode())
+    jasp_log.flush()
     try:
         args = [jasp_bin, "-platform", "offscreen", f"--rpcPort={port}"] + shlex.split(extra_args)
-        return subprocess.Popen(args, stdout=jasp_log, stderr=subprocess.STDOUT)
+        # start_new_session: own process group, so shutdown_jasp can take the whole
+        # tree (QtWebEngine helpers) down with one killpg instead of orphaning it.
+        return subprocess.Popen(args, stdout=jasp_log, stderr=subprocess.STDOUT,
+                                start_new_session=True)
     finally:
         jasp_log.close()  # the child inherited the fd; we do not need ours anymore
 
 
 def shutdown_jasp(jasp_proc: subprocess.Popen) -> None:
+    """Terminate JASP, take its process group down if needed, and always reap it
+    (a kill() without wait() would leave one zombie per restart of a long sweep)."""
     if jasp_proc.poll() is None:
         jasp_proc.terminate()
         try:
             jasp_proc.wait(timeout=10)
         except subprocess.TimeoutExpired:
+            try:
+                os.killpg(os.getpgid(jasp_proc.pid), signal.SIGKILL)  # whole tree
+            except (ProcessLookupError, PermissionError, OSError):
+                pass
             jasp_proc.kill()
+            try:
+                jasp_proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                pass
+    else:
+        try:
+            jasp_proc.wait(timeout=10)  # reap the already-exited child
+        except subprocess.TimeoutExpired:
+            pass
 
 
 def wait_for_server(client: GateClient, jasp_proc: subprocess.Popen, startup_timeout: float) -> None:
@@ -245,18 +287,34 @@ def wait_for_server(client: GateClient, jasp_proc: subprocess.Popen, startup_tim
         try:
             client.direct.call("ping", {}, timeout_s=10)
             return
-        except RpcError:
+        except RpcError as e:
+            # Any JSON-RPC-level answer proves a dispatcher is listening; only
+            # transport-level failures (connection refused, timeout) and non-JSON
+            # garbage mean "not up yet" and are worth retrying until the deadline.
+            msg = str(e)
+            if "transport error" not in msg and "non-JSON" not in msg:
+                return
             time.sleep(1)
     raise GateFailure(f"RPC server did not answer 'ping' within {startup_timeout}s")
 
 
 def connect_mcp(client: GateClient, url: str) -> None:
     """Attach the MCP layer to the client if possible; failure is recorded, not raised."""
+    if client.mcp is not None:
+        # A reconnect (after a restart) replaces the layer: close the old stdio
+        # session first, else its helper thread + jasp_mcp subprocess leak per restart.
+        try:
+            client.mcp.close()
+        except Exception:
+            pass
+        client.mcp = None
+        client.mcp_ok = False
     try:
         mcp = McpRpcClient(url)
         mcp.connect()
         client.mcp = mcp
         client.mcp_ok = True
+        client.mcp_reason = None
         log("jasp-mcp layer connected.")
     except Exception as e:
         client.mcp_reason = f"could not set up jasp-mcp: {type(e).__name__}: {e}"
@@ -277,15 +335,19 @@ def collect_analyses(client: GateClient, module_filter: list[str], skip: list[st
     pairs = []
     for mod in res.get("modules", []):
         name = mod.get("name", "")
-        if name == TEST_MODULE or name in skips or name in ("jaspTestModule",):
+        if name == TEST_MODULE or name in skips:
             continue
         if only and name not in only:
             continue
         for ana in mod.get("analyses", []):
-            key_full = f"{name}/{ana['name']}"
+            ana_name = ana.get("name")
+            if not ana_name:
+                log(f"WARNING: modules_list entry without a name in module '{name}': {str(ana)[:120]}")
+                continue
+            key_full = f"{name}/{ana_name}"
             if key_full in skips:
                 continue
-            pairs.append((name, ana["name"]))
+            pairs.append((name, ana_name))
     return pairs
 
 
@@ -304,3 +366,65 @@ def load_data(client: GateClient, csv_path: str, expected_rows: int, expected_co
             f"loaded dataset shape mismatch: got {rows}x{cols}, expected {expected_rows}x{expected_cols} from {csv_path}"
         )
     log(f"Loaded {os.path.basename(csv_path)}: {rows} rows x {cols} columns")
+
+
+# ---------------------------------------------------------------------------
+# Shared startup (used by both gatetest.py and fuzztest.py)
+# ---------------------------------------------------------------------------
+
+def common_parser(description: str) -> argparse.ArgumentParser:
+    """Parser with the flags both the gate test and the fuzzer share."""
+    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    p = argparse.ArgumentParser(description=description,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--jasp-bin", default=os.path.join(repo, "build", "Desktop", "JASP"))
+    p.add_argument("--port", type=int, default=0, help="RPC server port (default: pick a free port)")
+    p.add_argument("--csv", default=os.path.join(repo, "Resources", "Data Sets", "debug.csv"))
+    p.add_argument("--module", action="append", default=[], help="only include this module (repeatable)")
+    p.add_argument("--skip", action="append", default=[], help="skip a module ('jaspFoo') or analysis ('jaspFoo/Bar')")
+    p.add_argument("--skip-file", default=None, help="file with skip entries (# comments allowed)")
+    p.add_argument("--startup-timeout", type=float, default=300, help="seconds to wait for JASP + RPC server (default 300)")
+    p.add_argument("--fail-fast", action="store_true")
+    p.add_argument("--no-mcp", action="store_true", help="skip the jasp-mcp layer, drive JSON-RPC directly")
+    p.add_argument("--jasp-extra-args", default="", help="extra args for the JASP process (shell-quoted)")
+    p.add_argument("--jasp-log", default=None, help="where to write JASP stdout/stderr (default: temp file)")
+    p.add_argument("--report", default=None, help="write a JSON report to this path")
+    return p
+
+
+def launch_ready(cfg, log_tag: str, load_csv: bool = True, on_started=None):
+    """Start JASP, wait for the RPC server, attach the MCP layer and (optionally)
+    load the csv. On any failure JASP is shut down before the exception escapes,
+    so a failed startup never leaks a running instance (also covers a ctest TIMEOUT
+    hitting during startup, which the driver's own finally cannot see yet).
+
+    `on_started(jasp_proc)` runs right after the launch and before the wait, e.g.
+    to arm an RSS watchdog so even the startup phase is protected.
+
+    Returns (jasp_proc, client, port, url, jasp_log_path)."""
+    expected = parse_csv(cfg.csv) if load_csv else None
+    port = cfg.port if cfg.port else find_free_port()
+    url = f"http://127.0.0.1:{port}/rpc"
+    jasp_log_path = cfg.jasp_log or os.path.join(tempfile.gettempdir(), f"jasp-{log_tag}-{os.getpid()}.log")
+    client = GateClient(DirectRpcClient(url), None)
+    jasp_proc = None
+    try:
+        jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
+        log(f"JASP pid {jasp_proc.pid}, log: {jasp_log_path}")
+        if on_started is not None:
+            on_started(jasp_proc)
+        wait_for_server(client, jasp_proc, cfg.startup_timeout)
+        if not cfg.no_mcp:
+            connect_mcp(client, url)
+        if load_csv:
+            load_data(client, cfg.csv, expected[0], expected[1])
+    except BaseException:
+        if client.mcp is not None:
+            try:
+                client.mcp.close()
+            except Exception:
+                pass
+        if jasp_proc is not None:
+            shutdown_jasp(jasp_proc)
+        raise
+    return jasp_proc, client, port, url, jasp_log_path

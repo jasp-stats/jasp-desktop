@@ -18,28 +18,22 @@ jasp-mcp importable (see run_gatetest.sh).
 
 from __future__ import annotations
 
-import argparse
 import datetime
 import json
 import os
 import sys
-import tempfile
 import time
 
 from gatecommon import (
     MCP_SAFE_WAIT_MS,
-    DirectRpcClient,
-    GateClient,
     GateFailure,
     collect_analyses,
-    connect_mcp,
-    find_free_port,
+    common_parser,
+    launch_ready,
     load_data,
     log,
     parse_csv,
     shutdown_jasp,
-    start_jasp,
-    wait_for_server,
 )
 
 TERMINAL_OK = {"complete"}
@@ -114,34 +108,30 @@ def main() -> int:
     if not os.path.isfile(cfg.csv):
         log(f"FATAL: csv not found: {cfg.csv}")
         return 1
-    expected_rows, expected_cols, colnames = parse_csv(cfg.csv)
+    expected_rows, expected_cols = parse_csv(cfg.csv)
 
-    jasp_bin = cfg.jasp_bin
-    if not os.path.isfile(jasp_bin):
-        log(f"FATAL: JASP binary not found: {jasp_bin} (pass --jasp-bin)")
+    if not os.path.isfile(cfg.jasp_bin):
+        log(f"FATAL: JASP binary not found: {cfg.jasp_bin} (pass --jasp-bin)")
         return 1
 
-    port = cfg.port if cfg.port else find_free_port()
-    url = f"http://127.0.0.1:{port}/rpc"
-    log(f"JASP gate test starting: {jasp_bin} on port {port}")
-
-    jasp_log_path = cfg.jasp_log or os.path.join(tempfile.gettempdir(), f"jasp-gatetest-{os.getpid()}.log")
-    jasp_proc = start_jasp(jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
-    log(f"JASP pid {jasp_proc.pid}, log: {jasp_log_path}")
-
-    client = GateClient(DirectRpcClient(url), None)
+    log(f"JASP gate test starting: {cfg.jasp_bin}")
 
     try:
-        wait_for_server(client, jasp_proc, cfg.startup_timeout)
-        log("JASP RPC server is up.")
+        # Startup (launch + wait + MCP + shutdown-on-failure) is shared with the
+        # fuzzer via launch_ready; the csv load stays below so its failure gets
+        # proper gate-test bookkeeping.
+        jasp_proc, client, _port, url, _log_path = launch_ready(cfg, "gatetest", load_csv=False)
+    except (GateFailure, OSError) as e:
+        log(f"FATAL: startup failed: {e}")
+        return 1
 
-        if not cfg.no_mcp:
-            connect_mcp(client, url)
+    try:
+        log("JASP RPC server is up.")
 
         # Spec sanity: every method we rely on must be exposed.
         try:
             _, disc = client.call("rpc_discover", {}, timeout_s=60)
-            exposed = {m["name"] for m in disc.get("methods", [])}
+            exposed = {m.get("name", "") for m in disc.get("methods", []) if isinstance(m, dict)}
             missing = [m for m in EXPECTED_RPC_METHODS if m not in exposed]
             if missing:
                 failures.append({"type": "spec", "detail": f"methods missing from rpc_discover: {missing}"})
@@ -167,12 +157,16 @@ def main() -> int:
         for module, analysis in pairs:
             done += 1
             if jasp_proc.poll() is not None:
+                prev = pairs[done - 2] if done >= 2 else None
+                culprit = f"{prev[0]}/{prev[1]}" if prev else "workspace setup"
                 failures.append({
                     "type": "crash",
-                    "module": module, "analysis": analysis,
-                    "detail": f"JASP process exited (code {jasp_proc.returncode}) mid-run after {done - 1}/{len(pairs)} analyses",
+                    "module": prev[0] if prev else module, "analysis": prev[1] if prev else analysis,
+                    "detail": f"JASP process exited on its own (code {jasp_proc.returncode}) mid-run after "
+                              f"{done - 1}/{len(pairs)} analyses — death detected before {module}/{analysis}, "
+                              f"so the culprit is most likely {culprit} (possibly its removal)",
                 })
-                log(f"FATAL: JASP crashed/exited while testing {module}/{analysis}")
+                log(f"FATAL: JASP crashed/exited while testing {module}/{analysis} (culprit likely {culprit})")
                 break
             label = f"[{done}/{len(pairs)}] {module}/{analysis}"
             try:
@@ -217,11 +211,21 @@ def main() -> int:
 
 
 def finish(failures, client, jasp_proc, cfg, done, elapsed) -> int:
-    if jasp_proc.poll() is not None and jasp_proc.returncode not in (0,):
-        failures.append({"type": "crash", "detail": f"JASP exited with code {jasp_proc.returncode}"})
+    # finish() always runs before we shut JASP down ourselves, so anything that
+    # already exited did so on its own — and a clean exit(0) is a real death mode
+    # for JASP (quitOnLastWindowClosed, see AGENTS.md), so NO exit code is exempt.
+    if jasp_proc.poll() is not None:
+        failures.append({"type": "crash", "detail": f"JASP exited on its own (code {jasp_proc.returncode}) before shutdown"})
 
     if client.mcp_reason:
         failures.append({"type": "mcp-layer", "detail": client.mcp_reason})
+    elif client.mcp_layer_dead():
+        # Connected-but-dead: every MCP call failed functionally and fell back to
+        # direct JSON-RPC — the gate's headline purpose (verifying the MCP layer)
+        # was not served, so this must not PASS silently.
+        failures.append({"type": "mcp-layer", "detail":
+                         f"jasp-mcp connected but never served a single successful call "
+                         f"({client.mcp_failures} per-call failures forced the direct fallback): MCP layer broken"})
 
     jasp_failures = [f for f in failures if f["type"] in ("analysis", "data", "crash", "cleanup", "modules_list", "spec", "infra")]
     mcp_failures = [f for f in failures if f["type"] == "mcp-layer"]
@@ -252,21 +256,8 @@ def finish(failures, client, jasp_proc, cfg, done, elapsed) -> int:
 
 
 def parse_args() -> argparse.Namespace:
-    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--jasp-bin", default=os.path.join(repo, "build", "Desktop", "JASP"))
-    p.add_argument("--port", type=int, default=0, help="RPC server port (default: pick a free port)")
-    p.add_argument("--csv", default=os.path.join(repo, "Resources", "Data Sets", "debug.csv"))
-    p.add_argument("--module", action="append", default=[], help="only test this module (repeatable)")
-    p.add_argument("--skip", action="append", default=[], help="skip a module ('jaspFoo') or analysis ('jaspFoo/Bar')")
-    p.add_argument("--skip-file", default=None, help="file with lines of 'jaspFoo' or 'jaspFoo/Bar' to skip (# comments allowed)")
-    p.add_argument("--startup-timeout", type=float, default=300, help="seconds to wait for JASP + RPC server (default 300)")
+    p = common_parser(__doc__)
     p.add_argument("--timeout-per-analysis", type=float, default=120, help="seconds per analysis (default 120)")
-    p.add_argument("--fail-fast", action="store_true")
-    p.add_argument("--no-mcp", action="store_true", help="skip the jasp-mcp layer, drive JSON-RPC directly")
-    p.add_argument("--jasp-extra-args", default="", help="extra args for the JASP process (shell-quoted)")
-    p.add_argument("--jasp-log", default=None, help="where to write JASP stdout/stderr (default: temp file)")
-    p.add_argument("--report", default=None, help="write a JSON summary report to this path")
     return p.parse_args()
 
 

@@ -52,8 +52,10 @@ from gatecommon import (
     GateFailure,
     RpcError,
     collect_analyses,
+    common_parser,
     connect_mcp,
     find_free_port,
+    launch_ready,
     load_data,
     log,
     parse_csv,
@@ -62,7 +64,7 @@ from gatecommon import (
     wait_for_server,
 )
 
-CRASH_CLASSES = ("crash", "hang", "malformed")
+CRASH_CLASSES = ("crash", "hang", "malformed", "rss-watchdog")
 
 UNICODE_CRUD = "¤_α_а_א_ሀ_あ_🚀_\x01\x7f"
 LONG_STRING = "x" * 10000
@@ -92,8 +94,8 @@ def _columns_matching(allowed_types: list[str], by_type: dict[str, list[str]]) -
     return out
 
 
-def _pick_invalid_for_variables(rng: random.Random, by_type: dict[str, list[str]]) -> list:
-    """Values that are deliberately wrong for a variables option."""
+def _pick_invalid_for_variables(rng: random.Random, by_type: dict[str, list[str]]) -> object:
+    """One value that is deliberately wrong for a variables option."""
     all_names = sorted(n for names in by_type.values() for n in names)
     pool: list = [
         ["__fuzz_nonexistent_column__"],
@@ -107,7 +109,11 @@ def _pick_invalid_for_variables(rng: random.Random, by_type: dict[str, list[str]
         [None],
         [123],
     ]
-    return [rng.choice(pool)]
+    uniq: list = []  # order-preserving dedup (with no columns the pools collapse to duplicates of [])
+    for entry in pool:
+        if entry not in uniq:
+            uniq.append(entry)
+    return rng.choice(uniq)
 
 
 def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]],
@@ -160,22 +166,26 @@ def _value_for_kind(rng: random.Random, meta: dict, by_type: dict[str, list[str]
         if rng.random() < valid_probability:
             allowed = meta.get("allowedTypes") or []
             types_map = meta.get("types") if isinstance(meta.get("types"), dict) else None
+            all_names = sorted(n for ns in by_type.values() for n in ns)
+            if not all_names:
+                # data_info gave us nothing to work with: emit a sentinel instead of
+                # crashing on rng.choice([]) (a malformed/empty data_info reply would
+                # otherwise abort coverage at the first variables option).
+                return "__fuzz_no_columns__"
             if types_map:
                 # types+value shape: pick plausible columns for each entry of types
                 cols = []
                 for t in types_map.get("types", []) if isinstance(types_map.get("types"), list) else []:
-                    candidates = _columns_matching([t], by_type)
-                    cols.append(rng.choice(candidates) if candidates else rng.choice([n for ns in by_type.values() for n in ns]))
+                    candidates = _columns_matching([t], by_type) or all_names
+                    cols.append(rng.choice(candidates))
                 value = cols[0] if (is_single and cols) else cols
             else:
-                candidates = _columns_matching(allowed, by_type) if allowed else sorted(n for ns in by_type.values() for n in ns)
-                if not candidates:
-                    candidates = sorted(n for ns in by_type.values() for n in ns)
+                candidates = _columns_matching(allowed, by_type) or all_names
                 value = rng.choice(candidates) if is_single else rng.sample(candidates, k=min(len(candidates), rng.randint(1, 3)))
             if isinstance(value_shape, dict) and isinstance(value_shape.get("types"), list) and isinstance(value, list):
                 return {"types": value_shape["types"][:len(value)], "value": value}
             return value
-        return rng.choice(_pick_invalid_for_variables(rng, by_type))
+        return _pick_invalid_for_variables(rng, by_type)
 
     if kind == "string":
         if rng.random() < valid_probability:
@@ -205,11 +215,7 @@ def mutate_options(rng: random.Random, defaults: dict, option_meta: dict,
 
     if rng.random() < 0.05:
         # occasionally attack the top-level contract itself
-        attack = rng.choice([
-            "__fuzz_unknown_option__",
-            "__fuzz_unknown_option__",
-        ])
-        return {attack: rng.choice([1, "x", None, {"deep": {"deeper": [LONG_STRING]}}])}
+        return {"__fuzz_unknown_option__": rng.choice([1, "x", None, {"deep": {"deeper": [LONG_STRING]}}])}
 
     known = [name for name in options.keys()]
     meta_keys = [name for name in option_meta.keys() if name not in known]
@@ -300,7 +306,20 @@ def run_one_mutation(client: GateClient, analysis_id: int, options: object,
         return outcome, layer, res
 
 
+def unique_path(base: str) -> str:
+    """Never overwrite an existing repro: a --restart-on-death sweep can hit the
+    same analysis twice (the QV4 GC crash did) and every occurrence matters."""
+    if not os.path.exists(base):
+        return base
+    stem = base[:-len(".json")] if base.endswith(".json") else base
+    n = 2
+    while os.path.exists(f"{stem}-{n}.json"):
+        n += 1
+    return f"{stem}-{n}.json"
+
+
 def write_repro(path: str, seed: int, module: str, analysis: str, csv_path: str, options: object, detail: str) -> None:
+    path = unique_path(path)
     repro = {
         "seed": seed,
         "module": module,
@@ -331,9 +350,12 @@ def replay(cfg) -> int:
         wait_for_server(client, jasp_proc, cfg.startup_timeout)
         if not cfg.no_mcp:
             connect_mcp(client, url)
-        load_data(client, repro["csv"], *parse_csv(repro["csv"])[:2])
-        created = call_or_reject(client, "analysis_create", {"module": repro["module"], "analysis": repro["analysis"]})
+        load_data(client, repro["csv"], *parse_csv(repro["csv"]))
+        _, created = client.call("analysis_create", {"module": repro["module"], "analysis": repro["analysis"]}, timeout_s=90)
         aid = created.get("analysisId")
+        if aid is None:
+            log("NOT reproduced: analysis_create returned no analysisId during replay")
+            return 0
         outcome, _, _ = run_one_mutation(client, aid, repro["options"], cfg.timeout_per_run)
         log(f"Replay outcome: {outcome}")
         log("REPRODUCED" if outcome in CRASH_CLASSES else "NOT reproduced (fixed or flaky?)")
@@ -345,11 +367,6 @@ def replay(cfg) -> int:
         if client.mcp is not None:
             client.mcp.close()
         shutdown_jasp(jasp_proc)
-
-
-def call_or_reject(client: GateClient, method: str, params: dict, timeout_s: float = 90) -> dict:
-    layer, res = client.call(method, params, timeout_s=timeout_s)
-    return res
 
 
 def main() -> int:
@@ -372,65 +389,83 @@ def main() -> int:
     log(f"SEED: {seed}          <- reproduce this exact run with: --seed {seed}")
     log("=" * 70)
 
-    expected_rows, expected_cols, _ = parse_csv(cfg.csv)
-    port = cfg.port if cfg.port else find_free_port()
-    url = f"http://127.0.0.1:{port}/rpc"
-
-    jasp_log_path = cfg.jasp_log or os.path.join(tempfile.gettempdir(), f"jasp-fuzztest-{os.getpid()}.log")
-    jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
-    log(f"JASP pid {jasp_proc.pid}, log: {jasp_log_path}")
+    expected_rows, expected_cols = parse_csv(cfg.csv)
 
     # Machine-protection watchdog: sample the RSS of the whole JASP process tree
-    # (desktop + QtWebEngine helpers + R engines) and kill it when it exceeds the cap.
-    # Without this, a leak or wedge can consume all RAM and destabilize the machine.
+    # (desktop + QtWebEngine helpers + R engines) and kill it when it exceeds the
+    # cap. Without this, a leak or wedge can consume all RAM and destabilize the
+    # machine. The thread survives deaths and restarts (it always looks at the
+    # *current* jasp_proc) and records kills in watchdog_flag: the main loop then
+    # reports an "rss-watchdog" death that is NOT attributed to a mutation and
+    # gets no repro file (options cannot deterministically reproduce a cap kill).
     watchdog_flag = {"killed": False}
-    if cfg.max_tree_rss_mb > 0:
-        def _tree_pids(root_pid: int) -> list[int]:
-            pids, frontier = [root_pid], [root_pid]
-            while frontier:
-                children = []
-                for pid in frontier:
-                    try:
-                        out = subprocess.run(["pgrep", "-P", str(pid)], capture_output=True, text=True, timeout=5)
-                        children += [int(p) for p in out.stdout.split()]
-                    except Exception:
-                        pass
-                frontier = [c for c in children if c not in pids]
-                pids += frontier
-            return pids
+    watchdog_stop = threading.Event()
 
-        def _watchdog():
-            while jasp_proc.poll() is None:
-                time.sleep(10)
+    def _tree_pids(root_pid: int) -> list[int]:
+        pids, frontier = [root_pid], [root_pid]
+        while frontier:
+            children = []
+            for pid in frontier:
                 try:
-                    pid_list = ",".join(str(p) for p in _tree_pids(jasp_proc.pid))
-                    out = subprocess.run(["ps", "-o", "rss=,comm=", "-p", pid_list],
-                                         capture_output=True, text=True, timeout=15)
-                    total_mb, breakdown = 0, []
-                    for line in out.stdout.splitlines():
-                        parts = line.split(None, 1)
-                        if not parts:
-                            continue
-                        rss_mb = int(parts[0]) // 1024  # ps rss is in KB on macOS and Linux
-                        total_mb += rss_mb
-                        if rss_mb > 100:
-                            name = parts[1].strip().split("/")[-1] if len(parts) > 1 else "?"
-                            breakdown.append(f"{name}={rss_mb}MB")
-                    if total_mb > cfg.max_tree_rss_mb:
-                        log(f"WATCHDOG: JASP process tree at {total_mb}MB > cap {cfg.max_tree_rss_mb}MB "
-                            f"({', '.join(breakdown)}) — killing it to protect the machine")
-                        watchdog_flag["killed"] = True
-                        shutdown_jasp(jasp_proc)
-                        return
+                    out = subprocess.run(["pgrep", "-P", str(pid)], capture_output=True, text=True, timeout=5)
+                    children += [int(p) for p in out.stdout.split()]
                 except Exception:
-                    continue
+                    pass
+            frontier = [c for c in children if c not in pids]
+            pids += frontier
+        return pids
 
-        threading.Thread(target=_watchdog, daemon=True).start()
+    def _watchdog():
+        scan_failures = 0
+        while not watchdog_stop.is_set():
+            time.sleep(10)
+            if watchdog_stop.is_set() or jasp_proc.poll() is not None:
+                continue  # death/restart window: the main thread restarts, stay armed
+            try:
+                pid_list = ",".join(str(p) for p in _tree_pids(jasp_proc.pid))
+                out = subprocess.run(["ps", "-o", "rss=,comm=", "-p", pid_list],
+                                     capture_output=True, text=True, timeout=15)
+                total_mb, breakdown = 0, []
+                for line in out.stdout.splitlines():
+                    parts = line.split(None, 1)
+                    if not parts:
+                        continue
+                    rss_mb = int(parts[0]) // 1024  # ps rss is in KB on macOS and Linux
+                    total_mb += rss_mb
+                    if rss_mb > 100:
+                        name = parts[1].strip().split("/")[-1] if len(parts) > 1 else "?"
+                        breakdown.append(f"{name}={rss_mb}MB")
+                scan_failures = 0
+                if total_mb > cfg.max_tree_rss_mb:
+                    log(f"WATCHDOG: JASP process tree at {total_mb}MB > cap {cfg.max_tree_rss_mb}MB "
+                        f"({', '.join(breakdown)}) — killing it to protect the machine")
+                    watchdog_flag["killed"] = True
+                    shutdown_jasp(jasp_proc)
+            except Exception as e:
+                # Do not fail open silently: a systematic scan failure (missing
+                # pgrep/ps, permissions, ...) would otherwise disable protection
+                # for a whole unattended sweep. Log it prominently.
+                scan_failures += 1
+                if scan_failures in (1, 5) or scan_failures % 30 == 0:
+                    log(f"WARNING: RSS watchdog scan failed {scan_failures}x in a row ({e}); "
+                        f"memory protection may be inactive")
 
-    client = GateClient(DirectRpcClient(url), None)
+    def _arm_watchdog(_proc) -> None:
+        if cfg.max_tree_rss_mb > 0:
+            threading.Thread(target=_watchdog, daemon=True).start()
+
+    try:
+        jasp_proc, client, port, url, jasp_log_path = launch_ready(
+            cfg, "fuzztest", load_csv=True, on_started=_arm_watchdog)
+    except (GateFailure, OSError) as e:
+        log(f"FATAL: {e}")
+        return 1
+
     records: list[dict] = []
     crashes: list[dict] = []
     totals: dict[str, int] = {}
+    creates_attempted = 0
+    analysis_id: int | None = None
 
     def bump(cls: str) -> None:
         totals[cls] = totals.get(cls, 0) + 1
@@ -438,17 +473,25 @@ def main() -> int:
     def restart_after_death(where: str) -> bool:
         """With --restart-on-death: restart JASP after a death and continue the sweep.
         Returns True on success. Records the death in `crashes` either way."""
-        nonlocal jasp_proc
+        nonlocal jasp_proc, port, url, analysis_id
         if not cfg.restart_on_death:
             return False
         log(f"RESTARTING JASP after death ({where}); sweep continues (occurrence recorded)")
         shutdown_jasp(jasp_proc)
+        watchdog_flag["killed"] = False  # fresh instance: any later death is a new story
+        analysis_id = None               # ids from the dead instance are meaningless now
+        # Fresh port: the killed server's accepted sockets may sit in TIME_WAIT and a
+        # same-port rebind can fail (EADDRINUSE), which would abort the sweep with a
+        # bogus "restart failed". A fresh port cannot collide.
+        port = cfg.port if cfg.port else find_free_port()
+        url = f"http://127.0.0.1:{port}/rpc"
+        client.direct.url = url
         jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
         log(f"JASP pid {jasp_proc.pid} (restarted), log: {jasp_log_path}")
         try:
             wait_for_server(client, jasp_proc, cfg.startup_timeout)
             if client.mcp is not None:
-                connect_mcp(client, url)  # jasp-mcp reconnects/re-discovers for the new instance
+                connect_mcp(client, url)  # closes the old stdio session, re-discovers for the new instance
             load_data(client, cfg.csv, expected_rows, expected_cols)
         except GateFailure as e:
             log(f"FATAL: restart failed: {e}")
@@ -456,11 +499,7 @@ def main() -> int:
         return True
 
     try:
-        wait_for_server(client, jasp_proc, cfg.startup_timeout)
         log("JASP RPC server is up.")
-        if not cfg.no_mcp:
-            connect_mcp(client, url)
-        load_data(client, cfg.csv, expected_rows, expected_cols)
 
         by_type = _columns_by_type(client)
         pairs = collect_analyses(client, cfg.module, cfg.skip, cfg.skip_file)
@@ -474,21 +513,43 @@ def main() -> int:
         analyses_done = 0
         consecutive_stuck = 0              # runs that never even got scheduled (engine queue wedged)
         t_start = time.time()
+        # Options most recently *applied*, kept across analysis boundaries: a death is
+        # usually discovered at the start of the NEXT analysis (the culprit's mutation
+        # and its analysis_remove already completed), so blaming the analysis that is
+        # about to run (and losing the repro to a None reset, as before) mis-attributed
+        # the crash. prev_* names the mutation that was actually last in play.
+        prev_mod: str | None = None
+        prev_ana: str | None = None
+        prev_mutation: dict | None = None
         for module, analysis in pairs:
             analyses_done += 1
-            #Options most recently sent *for this analysis*; reset per analysis so a death
-            #before the first mutation can never be blamed on the previous analysis's options.
-            last_mutation: dict | None = None
             if jasp_proc.poll() is not None:
-                detail = f"JASP process exited (code {jasp_proc.returncode}) while fuzzing"
-                crashes.append({"type": "crash", "module": module, "analysis": analysis, "detail": detail,
-                                "last_options": last_mutation})
-                log(f"FATAL: {detail} {module}/{analysis}")
-                if last_mutation is not None and cfg.report:
-                    write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, last_mutation, detail)
-                if not restart_after_death(f"{module}/{analysis}"):
+                if watchdog_flag["killed"]:
+                    watchdog_flag["killed"] = False
+                    detail = (f"RSS watchdog killed the JASP tree (> {cfg.max_tree_rss_mb}MB cap) around "
+                              f"{module}/{analysis}; machine-protection kill, not attributable to a mutation")
+                    crashes.append({"type": "rss-watchdog", "module": module, "analysis": analysis, "detail": detail})
+                    log(f"FATAL: {detail}")
+                else:
+                    if prev_mod:
+                        culprit_mod, culprit_ana = prev_mod, prev_ana
+                        detail = (f"JASP process exited (code {jasp_proc.returncode}) at the boundary before "
+                                  f"{module}/{analysis}; death most likely happened during "
+                                  f"{culprit_mod}/{culprit_ana} (mutation or its removal)")
+                    else:
+                        culprit_mod, culprit_ana = module, analysis
+                        detail = f"JASP process exited (code {jasp_proc.returncode}) before any mutation ran"
+                    crashes.append({"type": "crash", "module": culprit_mod, "analysis": culprit_ana,
+                                    "options": prev_mutation, "detail": detail})
+                    log(f"FATAL: {detail}")
+                    if prev_mutation is not None and cfg.report:
+                        write_repro(cfg.report + ".repro.json", seed, culprit_mod, culprit_ana, cfg.csv, prev_mutation, detail)
+                if not restart_after_death(f"boundary before {module}/{analysis}"):
                     break
+                prev_mod = prev_ana = None
+                prev_mutation = None
             try:
+                creates_attempted += 1
                 _, created = client.call("analysis_create", {"module": module, "analysis": analysis}, timeout_s=90)
                 analysis_id = created.get("analysisId")
                 defaults = created.get("options")
@@ -500,6 +561,7 @@ def main() -> int:
             except GateFailure as e:
                 records.append({"module": module, "analysis": analysis, "outcome": "create-failed", "detail": str(e)})
                 bump("create-failed")
+                analysis_id = None
                 if cfg.fail_fast:
                     break
                 continue
@@ -509,13 +571,13 @@ def main() -> int:
                 for i in range(cfg.runs_per_analysis):
                     done += 1
                     options = mutate_options(rng, defaults, option_meta or {}, by_type)
-                    last_mutation = options if isinstance(options, dict) else None
 
                     # Fresh analysis per mutation: reusing one instance leaks server-side
                     # option state between runs, which makes outcomes (and hence the RNG
                     # stream via optionMetaDelta) irreproducible. create/remove per run is
                     # cheap and makes --seed truly replay a run.
                     try:
+                        creates_attempted += 1
                         _, fresh = client.call("analysis_create", {"module": module, "analysis": analysis}, timeout_s=90)
                         fresh_id = fresh.get("analysisId")
                         if fresh_id is None:
@@ -535,23 +597,36 @@ def main() -> int:
                         outcome = classify_failure(str(e))
                         res = {"message": str(e)}
                     finally:
-                        try:
-                            client.call("analysis_remove", {"analysisId": fresh_id}, timeout_s=60)
-                        except GateFailure as e:
-                            log(f"WARNING: analysis_remove failed for {module}/{analysis}: {e}")
+                        if jasp_proc.poll() is None:  # against a dead server this is pure spam
+                            try:
+                                client.call("analysis_remove", {"analysisId": fresh_id}, timeout_s=60)
+                            except GateFailure as e:
+                                log(f"WARNING: analysis_remove failed for {module}/{analysis}: {e}")
+
+                    # A transport-level "crash" right after the RSS watchdog pulled the plug
+                    # is machine protection, not a fuzz finding: relabel it so it is never
+                    # blamed on (or repro'd from) the innocent current mutation.
+                    if outcome == "crash" and watchdog_flag["killed"]:
+                        watchdog_flag["killed"] = False
+                        outcome = "rss-watchdog"
+                        res = {"message": f"RSS watchdog killed the JASP tree (> {cfg.max_tree_rss_mb}MB cap) "
+                                          f"while running {module}/{analysis}"}
 
                     rec = {"module": module, "analysis": analysis, "run": i + 1,
                            "options": options, "outcome": outcome,
-                           "message": str(res.get("message") or res.get("results", {}).get("errorMessage", ""))[:300] if isinstance(res, dict) else ""}
+                           "message": str(res.get("message") or (res.get("results") or {}).get("errorMessage", ""))[:300] if isinstance(res, dict) else ""}
                     records.append(rec)
                     bump(outcome)
+
+                    prev_mod, prev_ana = module, analysis
+                    prev_mutation = options if isinstance(options, dict) else None
 
                     if outcome in CRASH_CLASSES:
                         detail = rec.get("message") or outcome
                         crashes.append({"type": outcome, "module": module, "analysis": analysis,
                                         "options": options, "detail": detail})
                         log(f"{label} run {i + 1} ... {outcome.upper()}: {detail[:200]}")
-                        if cfg.report:
+                        if cfg.report and outcome != "rss-watchdog":
                             write_repro(cfg.report + ".repro.json", seed, module, analysis, cfg.csv, options, detail)
                         if restart_after_death(f"{module}/{analysis} run {i + 1}"):
                             consecutive_stuck = 0
@@ -593,10 +668,14 @@ def main() -> int:
             except _StopFuzzing:
                 break
             finally:
-                try:
-                    client.call("analysis_remove", {"analysisId": analysis_id}, timeout_s=60)
-                except GateFailure as e:
-                    log(f"WARNING: analysis_remove failed for {module}/{analysis}: {e}")
+                # analysis_id may be None (create failed / a restart cleared it) and the
+                # server may be dead — both cases would only produce warning spam.
+                if analysis_id is not None and jasp_proc.poll() is None:
+                    try:
+                        client.call("analysis_remove", {"analysisId": analysis_id}, timeout_s=60)
+                    except GateFailure as e:
+                        log(f"WARNING: analysis_remove failed for {module}/{analysis}: {e}")
+                analysis_id = None
 
         elapsed = time.time() - t_start
 
@@ -619,6 +698,24 @@ def main() -> int:
             log(f"\nSuspicious outcomes: {len(suspicious)} (does not fail the run unless --strict)")
             for r in suspicious[:10]:
                 log(f"  - {r['module']}/{r['analysis']} run {r.get('run')}: [{r['outcome']}] {r.get('message', '')[:200]}")
+
+        # Run-level health: a sweep where nothing (or almost nothing) actually got
+        # fuzzed must NOT pass, and neither may a connected-but-dead MCP layer.
+        # (create-failed alone is tolerated per analysis; systemically it is a bug.)
+        create_failed = totals.get("create-failed", 0)
+        run_level_failures: list[str] = []
+        if done == 0:
+            run_level_failures.append("no mutations ran at all")
+        if creates_attempted >= 10 and create_failed > max(5, 0.10 * creates_attempted):
+            run_level_failures.append(
+                f"analysis_create failed for {create_failed}/{creates_attempted} attempts "
+                f"(> 10%): systemic create regression, not per-analysis flakiness")
+        if client.mcp_layer_dead():
+            run_level_failures.append(
+                "jasp-mcp connected but never served a successful call "
+                f"({client.mcp_failures} per-call failures forced the direct fallback): MCP layer broken")
+        for msg in run_level_failures:
+            log(f"RUN FAILURE: {msg}")
         log("=" * 70)
 
         if cfg.report:
@@ -628,14 +725,17 @@ def main() -> int:
                     "seed": seed,
                     "runs_done": done,
                     "analyses_done": analyses_done,
+                    "creates_attempted": creates_attempted,
+                    "create_failed": create_failed,
                     "totals": totals,
                     "crashes": crashes,
+                    "run_level_failures": run_level_failures,
                     "suspicious": [r for r in records if r.get("outcome") == "internal-error"],
                     "records": records,
                 }, f, indent=2)
             log(f"Report written to {cfg.report}")
 
-        failed = bool(crashes) or (cfg.strict and bool(suspicious))
+        failed = bool(crashes) or (cfg.strict and bool(suspicious)) or bool(run_level_failures)
         return 1 if failed else 0
 
     except KeyboardInterrupt:
@@ -645,6 +745,7 @@ def main() -> int:
         log(f"FATAL: {e}")
         return 1
     finally:
+        watchdog_stop.set()
         if client.mcp is not None:
             client.mcp.close()
         shutdown_jasp(jasp_proc)
@@ -655,14 +756,7 @@ class _StopFuzzing(Exception):
 
 
 def parse_args() -> argparse.Namespace:
-    repo = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--jasp-bin", default=os.path.join(repo, "build", "Desktop", "JASP"))
-    p.add_argument("--port", type=int, default=0, help="RPC server port (default: pick a free port)")
-    p.add_argument("--csv", default=os.path.join(repo, "Resources", "Data Sets", "debug.csv"))
-    p.add_argument("--module", action="append", default=[], help="only fuzz this module (repeatable)")
-    p.add_argument("--skip", action="append", default=[], help="skip a module ('jaspFoo') or analysis ('jaspFoo/Bar')")
-    p.add_argument("--skip-file", default=None, help="file with skip entries (# comments allowed)")
+    p = common_parser(__doc__)
     p.add_argument("--runs-per-analysis", type=int, default=8, help="mutations per analysis (default 8)")
     p.add_argument("--timeout-per-run", type=float, default=60, help="seconds per run incl. polling (default 60)")
     p.add_argument("--max-consecutive-stuck", type=int, default=3,
@@ -672,17 +766,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--restart-on-death", action="store_true",
                    help="when the desktop dies or wedges, restart it and continue the sweep instead of aborting "
                         "(deaths are still recorded in the report; use for full-coverage sweeps of flaky crashes)")
-    p.add_argument("--startup-timeout", type=float, default=300)
     p.add_argument("--seed", type=int, default=None, help="RNG seed (default: fresh random, printed for reproduction)")
-    p.add_argument("--fail-fast", action="store_true", help="stop after the first analysis that misbehaves")
-    p.add_argument("--no-mcp", action="store_true", help="skip the jasp-mcp layer, drive JSON-RPC directly")
     p.add_argument("--strict", action="store_true", help="fail the run on -32603 internal errors too")
     p.add_argument("--verbose", action="store_true", help="log every tolerated outcome (validationError etc.)")
-    p.add_argument("--jasp-extra-args", default="", help="extra args for the JASP process (shell-quoted)")
-    p.add_argument("--jasp-log", default=None, help="where to write JASP stdout/stderr (default: temp file)")
-    p.add_argument("--report", default=None, help="write a JSON report to this path")
     p.add_argument("--repro", default=None, help="replay a failure recorded in a *.repro.json file")
-    return p.parse_args()
+    args = p.parse_args()
+    # 0 would wedge every run: after a clean `complete` the counter is 0 and
+    # `0 >= 0` would trip the engine-queue detector on the very first analysis.
+    args.max_consecutive_stuck = max(1, args.max_consecutive_stuck)
+    return args
 
 
 if __name__ == "__main__":

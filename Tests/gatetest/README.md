@@ -58,6 +58,13 @@ cmake -DBUILD_GATETEST=ON build/   # registers the gateTest target
 ctest -R gateTest --output-on-failure
 ```
 
+All three targets carry the `gatetest` label, so a normal sweep can skip them
+with `ctest -LE gatetest` (the first run additionally needs network access to
+bootstrap the Python venv). CMake passes the configured build tree's JASP via
+`JASP_BIN`, so the smokes work from any build-directory name; `--skip-file
+Tests/gatetest/skip-list.txt` is passed to all three, so entries added there
+apply to the CTest runs as well.
+
 ## Prerequisites
 
 - Built JASP binary (`cmake --build build --target JASP`)
@@ -127,11 +134,22 @@ Tests/gatetest/.venv/bin/python Tests/gatetest/fuzztest.py --repro /tmp/fuzz.jso
 **Hunted (gate failures, immediate abort + `.repro.json`):** JASP process death,
 hangs (run not terminal within `--timeout-per-run`), malformed responses, and an
 engine-queue wedge (≥ `--max-consecutive-stuck` consecutive runs that never even
-get scheduled — the audit-style wedge, observed to precede a SIGABRT).
+get scheduled — the audit-style wedge, observed to precede a SIGABRT). Multiple
+repros from one sweep are kept side by side (`-2`, `-3` suffixes), and a death
+detected at an analysis boundary is attributed to the *previous* analysis (its
+mutation or removal), which is where it almost always really happened.
 
 **Tolerated and counted:** `validationError` / rejected options, R `fatalError`,
 JSON-RPC validation errors. `-32603` internal errors and unexpected statuses are
-listed as *suspicious* (they do not fail the run unless `--strict`).
+listed as *suspicious* (they do not fail the run unless `--strict`). RSS
+watchdog kills are recorded as `rss-watchdog`: they are machine protection, so
+they fail the sweep but are deliberately not attributed to a mutation and get
+no `.repro.json` (the options cannot reproduce a cap kill).
+
+**Run-level health (fails the sweep even without a crash):** nothing ran at all,
+a systemic `analysis_create` failure ratio (>10% of attempts), or a jasp-mcp
+layer that is connected but never serves a single successful call (silent
+all-direct fallback would otherwise make the gate pass without exercising MCP).
 
 **Reproducibility:** a fresh random SEED is printed at the start and end of every
 run and stored in the report; `--seed N` replays it exactly (the RNG stream is
@@ -192,7 +210,7 @@ Full-sweep findings (2026-09, ~2600 mutations across all 271 analyses):
   35 fatalError (tolerated R errors), 3 validationError, 2 crash (the GC
   occurrences). Zero wedges, zero dispatcher hangs, zero watchdog kills — the
   mixedmod wedge (below) is gone and the web-view JS leak fix held (tree RSS
-  stayed under the 5 GB cap for the entire sweep).
+  stayed under the `--max-tree-rss-mb` cap (6 GB default) for the entire sweep).
 - **Dispatcher hang** — `jaspVisualModeling/mixedmod` with some
   fuzzed plot options: the R analysis completes, the desktop receives the
   (large, plot-heavy) results, and then the RPC dispatcher stops answering

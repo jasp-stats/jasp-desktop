@@ -96,7 +96,10 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array).
 - `gatecommon.py` → shared RPC harness (MCP-first with direct-JSON-RPC fallback), JASP process handling.
 - JASP headless requires `-platform offscreen` (`-platform minimal`, used by `--hide`, crashes QtWebEngine's scene graph during blocking RPC waits). `--rpcPort=<n>` enables the RPC server at startup (persisted in user settings, like `--safeGraphics`).
-- The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge/`-32603` abort the run with a `.repro.json`.
+- The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge abort the run with a `.repro.json` (multiple repros get `-2`, `-3` suffixes). `-32603` internal errors and unexpected statuses are only counted as *suspicious* — they fail the run solely with `--strict`.
+- RSS-watchdog kills are recorded as `rss-watchdog` (machine protection, deliberately NOT attributed to a mutation and without a repro); the watchdog survives restarts and keeps protecting the sweep.
+- Run-level health fails the sweep even without a crash: nothing ran at all, a systemic `analysis_create` failure ratio (>10%), or a jasp-mcp layer that is connected but never serves a successful call.
+- The `gateSmoke`/`fuzzSmoke`/`gateTest` ctest targets carry the `gatetest` label (`ctest -LE gatetest` to exclude them) and take the JASP binary from the `JASP_BIN` env var, which CMake sets to the configured build tree.
 - `jaspTestModule` is always skipped (dev-only module).
 
 ## Debugging JASP desktop crashes — pitfalls learned the hard way
