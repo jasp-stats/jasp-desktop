@@ -373,7 +373,7 @@ Window
 			},
 			{
 				target:		modulesMenu,
-				title:		qsTr("Modules library"),
+				title:		qsTr("Modules Library"),
 				text:		qsTr("This is where you can manage analytics modules. In the list on the far right of this area, you can enable/disable installed modules, and you can also manage all available modules from the online modules store on the left."),
 				placement:	"left",
 				onEnter:	function() { modulesMenu.opened = true;  },
