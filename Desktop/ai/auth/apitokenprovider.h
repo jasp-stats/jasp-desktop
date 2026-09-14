@@ -18,11 +18,13 @@ class ApiKeyTokenProvider : public TokenProvider
 public:
 	explicit ApiKeyTokenProvider(QObject *parent = nullptr);
 
-	QString authMode() const override;
-	void    ensureToken() override;
-	QString token() const override;
-	bool    isValid() const override;
-	void    signOut() override;
+	QString   authMode() const override;
+	void      ensureToken() override;
+	QString   token() const override;
+	bool      isValid() const override;
+	QDateTime expiresAt() const override;
+	QString   accountName() const override;
+	void      signOut() override;
 };
 
 #endif // APITOKENPROVIDER_H

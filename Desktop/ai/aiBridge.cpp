@@ -28,6 +28,7 @@
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
 #include "auth/apitokenprovider.h"
+#include "auth/browsertokenprovider.h"
 
 // =============================================================================
 // Singleton
@@ -130,15 +131,36 @@ void AiBridge::configureTokenProvider()
 		return;
 
 	m_tokenProviderMode = mode;
+	m_authUnavailable.clear();
 	delete m_tokenProvider;
 	m_tokenProvider = nullptr;
 
-	// Phase 1: API-key auth is the only implemented backend. "none" sends no
-	// header; "oidc" (Entra ID, or any other OIDC identity provider) has no
-	// backend yet — WAM arrives in Phase 2, browser in Phase 4 — so it stays
-	// null and callers surface a clear message.
 	if (mode == QStringLiteral("apiKey"))
+	{
 		m_tokenProvider = new ApiKeyTokenProvider(this);
+	}
+	else if (mode == QStringLiteral("oidc"))
+	{
+		const QString backend = cfg ? cfg->currentAuthBackend() : QStringLiteral("auto");
+
+		if (backend == QStringLiteral("devicecode"))
+			m_authUnavailable = QStringLiteral("Device-code sign-in is not implemented yet. "
+											   "Choose the browser sign-in method in AI preferences.");
+		else
+			// "auto" and "browser" both land here: the system browser plus a
+			// loopback redirect is the flow JASP ships.
+			m_tokenProvider = new BrowserTokenProvider(this);
+	}
+
+	// "none" deliberately has no provider: the request goes out with no auth
+	// header, which is what a locally-hosted gateway may want.
+
+	if (m_tokenProvider)
+	{
+		connect(m_tokenProvider, &TokenProvider::tokenReady,          this, &AiBridge::onTokenReady);
+		connect(m_tokenProvider, &TokenProvider::interactionRequired, this, &AiBridge::onAuthInteractionRequired);
+		connect(m_tokenProvider, &TokenProvider::authFailed,          this, &AiBridge::onAuthFailed);
+	}
 }
 
 void AiBridge::applyAuthHeader(QNetworkRequest &request) const
@@ -148,6 +170,98 @@ void AiBridge::applyAuthHeader(QNetworkRequest &request) const
 		return;
 
 	request.setRawHeader(authHeaderName().toUtf8(), (authHeaderPrefix() + token).toUtf8());
+}
+
+bool AiBridge::isSignedIn() const
+{
+	return m_tokenProvider && m_tokenProvider->isValid();
+}
+
+void AiBridge::signIn()
+{
+	configureTokenProvider();
+
+	if (!m_tokenProvider)
+	{
+		// API-key auth has nothing to sign in to; "none" has nothing at all.
+		if (m_tokenProviderMode != QStringLiteral("apiKey"))
+			emitError(m_authUnavailable.isEmpty()
+				? QStringLiteral("This provider does not use sign-in.")
+				: m_authUnavailable);
+		return;
+	}
+
+	m_tokenProvider->ensureToken();
+}
+
+void AiBridge::signOut()
+{
+	if (m_tokenProvider)
+		m_tokenProvider->signOut();
+
+	emit authStateChanged();
+}
+
+void AiBridge::onTokenReady(const QString &)
+{
+	emit authStateChanged();
+
+	if (m_pendingTest)
+	{
+		m_pendingTest = false;
+		postTestConnection();
+		return;
+	}
+
+	if (m_pendingSend)
+	{
+		// Dropped if the user stopped the stream while signing in — stopStream()
+		// clears m_streaming, so honour that rather than reviving the request.
+		if (!m_streaming)
+		{
+			Log::log() << "AiBridge: dropping queued request — stream was stopped during sign-in" << std::endl;
+			m_pendingSend     = false;
+			m_pendingMessages = QJsonArray();
+			return;
+		}
+
+		const QJsonArray messages = m_pendingMessages;
+		const bool       withTools = m_pendingWithTools;
+		m_pendingSend     = false;
+		m_pendingMessages = QJsonArray();
+		postStreamingRequest(messages, withTools);
+	}
+}
+
+void AiBridge::onAuthInteractionRequired(const QString &message)
+{
+	// The backend needs the user to act. Any queued request stays parked so it
+	// resumes once a token arrives.
+	emit authInteractionRequired(message);
+}
+
+void AiBridge::onAuthFailed(const QString &error)
+{
+	emit authStateChanged();
+
+	if (m_pendingTest)
+	{
+		m_pendingTest = false;
+		emit testConnectionResult(false, error);
+		return;
+	}
+
+	if (m_pendingSend)
+	{
+		m_pendingSend     = false;
+		m_pendingMessages = QJsonArray();
+		m_streaming       = false;
+		emitError(error);
+		emit onStreamClose();
+		return;
+	}
+
+	emitError(error);
 }
 
 QString AiBridge::model() const
@@ -542,8 +656,7 @@ void AiBridge::exportToMarkdownFile(const QString &filePath) const
 
 void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 {
-	QString ep = endpoint();
-	if (ep.isEmpty()) {
+	if (endpoint().isEmpty()) {
 		m_streaming = false;
 		emitError(QStringLiteral("No AI endpoint configured. Please set an endpoint URL."));
 		emit onStreamClose();
@@ -551,12 +664,35 @@ void AiBridge::sendToAI(const QJsonArray &messages, bool withTools)
 	}
 
 	configureTokenProvider();
-	if (m_tokenProviderMode == QStringLiteral("oidc") && !m_tokenProvider) {
+
+	if (!m_tokenProvider && m_tokenProviderMode != QStringLiteral("none")) {
 		m_streaming = false;
-		emitError(QStringLiteral("Sign-in is not available in this build yet. Please select a provider that uses an API key."));
+		emitError(m_authUnavailable.isEmpty()
+			? QStringLiteral("No authentication is configured for this provider. Choose a sign-in method in AI preferences.")
+			: m_authUnavailable);
 		emit onStreamClose();
 		return;
 	}
+
+	if (m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		// Interactive sign-in, or a refresh that hasn't landed yet. Park the
+		// request and resume in onTokenReady(): blocking here would stall the
+		// event loop the browser flow needs to complete.
+		Log::log() << "AiBridge: request queued until authentication completes" << std::endl;
+		m_pendingMessages  = messages;
+		m_pendingWithTools = withTools;
+		m_pendingSend      = true;
+		m_tokenProvider->ensureToken();
+		return;
+	}
+
+	postStreamingRequest(messages, withTools);
+}
+
+void AiBridge::postStreamingRequest(const QJsonArray &messages, bool withTools)
+{
+	const QString ep = endpoint();
 
 	QNetworkRequest request{QUrl(ep)};
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
@@ -1325,17 +1461,40 @@ bool AiBridge::isBusy() const
 
 void AiBridge::testConnection()
 {
-	QString ep = endpoint();
-	if (ep.isEmpty()) {
+	if (endpoint().isEmpty()) {
 		emit testConnectionResult(false, QStringLiteral("No endpoint configured."));
 		return;
 	}
 
-	configureTokenProvider();
-	if (m_tokenProviderMode == QStringLiteral("oidc") && !m_tokenProvider) {
-		emit testConnectionResult(false, QStringLiteral("Sign-in is not available in this build yet."));
+	// Check the rest of the config before any sign-in, so we never send the user
+	// through a browser prompt only to fail on a missing model.
+	if (model().isEmpty()) {
+		emit testConnectionResult(false, QStringLiteral("No model selected. Please choose a model or type a model name."));
 		return;
 	}
+
+	configureTokenProvider();
+
+	if (!m_tokenProvider && m_tokenProviderMode != QStringLiteral("none")) {
+		emit testConnectionResult(false, m_authUnavailable.isEmpty()
+			? QStringLiteral("No authentication is configured for this provider.")
+			: m_authUnavailable);
+		return;
+	}
+
+	if (m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		m_pendingTest = true;
+		m_tokenProvider->ensureToken();
+		return;
+	}
+
+	postTestConnection();
+}
+
+void AiBridge::postTestConnection()
+{
+	const QString ep = endpoint();
 
 	Log::log() << "AiBridge::testConnection — probing " << ep.toStdString() << std::endl;
 

@@ -95,6 +95,23 @@ public:
 	/// Export the full conversation to a Markdown file.
 	Q_INVOKABLE void exportToMarkdownFile(const QString &filePath) const;
 
+	// ------------------------------------------------------------------
+	// Authentication — thin passthrough to the configured TokenProvider.
+	// ------------------------------------------------------------------
+
+	/// Start an interactive sign-in for the configured provider. A no-op for
+	/// API-key auth, which needs no user interaction. The outcome arrives via
+	/// authStateChanged(), authInteractionRequired() or onStreamError().
+	Q_INVOKABLE void signIn();
+
+	/// Discard cached credentials for the configured provider. Local only —
+	/// nothing is revoked at the identity provider.
+	Q_INVOKABLE void signOut();
+
+	/// True when the configured provider holds a usable token. For API-key auth
+	/// that simply means a key is set.
+	bool isSignedIn() const;
+
 signals:
 	void onStreamOpen();
 	void onStreamClose();
@@ -104,6 +121,13 @@ signals:
 	void testConnectionResult(bool success, const QString &message);
 	void conversationStatsUpdated();
 
+	/// Sign-in state changed — a token arrived, or credentials were dropped.
+	void authStateChanged();
+
+	/// The auth backend needs the user to do something; the message is
+	/// display-ready. Any queued request resumes once a token arrives.
+	void authInteractionRequired(const QString &message);
+
 private slots:
 	void onReadyRead();
 	void onReplyFinished();
@@ -111,6 +135,20 @@ private slots:
 
 private:
 	void sendToAI(const QJsonArray &messages, bool withTools = true);
+
+	/// Issue the streaming request. The endpoint is known, and the provider
+	/// holds a usable token or no auth header is wanted.
+	void postStreamingRequest(const QJsonArray &messages, bool withTools);
+
+	/// Issue the testConnection probe. Same preconditions as above.
+	void postTestConnection();
+
+	/// TokenProvider signal handlers. A request queued while waiting for sign-in
+	/// resumes in onTokenReady().
+	void onTokenReady(const QString &token);
+	void onAuthInteractionRequired(const QString &message);
+	void onAuthFailed(const QString &error);
+
 	void processSSELine(const QByteArray &line);
 	void processSSEData(const QString &eventType, const QByteArray &data);
 	void processToolCalls(const QJsonArray &toolCalls);
@@ -119,8 +157,8 @@ private:
 	QByteArray buildRequestBody(const QJsonArray &messages, bool withTools = true);
 	void emitError(const QString &message);
 
-	/// (Re)create m_tokenProvider when the configured auth mode changes.
-	/// Phase 1 only knows the API-key backend; WAM/browser plug in here later.
+	/// (Re)create m_tokenProvider when the configured auth mode changes. Also
+	/// records why no backend could be built, so callers can explain it.
 	void configureTokenProvider();
 
 	/// Apply the provider's token to a request using the configured header name
@@ -155,6 +193,15 @@ private:
 
 	TokenProvider *m_tokenProvider     = nullptr;
 	QString        m_tokenProviderMode;   // auth mode the provider was built for
+	QString        m_authUnavailable;     // non-empty => why that mode has no backend
+
+	// Work queued while an interactive sign-in is in flight. Acquisition is
+	// asynchronous, so the request is parked here and resumed in onTokenReady()
+	// rather than blocking the event loop the browser flow needs.
+	QJsonArray m_pendingMessages;
+	bool       m_pendingSend      = false;
+	bool       m_pendingWithTools = true;
+	bool       m_pendingTest      = false;
 
 	QJsonArray m_conversation;
 	QJsonArray m_pendingToolCalls;

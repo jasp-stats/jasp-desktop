@@ -30,6 +30,18 @@ bool ApiKeyTokenProvider::isValid() const
 	return !token().isEmpty();
 }
 
+QDateTime ApiKeyTokenProvider::expiresAt() const
+{
+	// A static key has no expiry we can see, and none we could renew.
+	return {};
+}
+
+QString ApiKeyTokenProvider::accountName() const
+{
+	// An API key identifies the key's owner, not a signed-in user.
+	return {};
+}
+
 void ApiKeyTokenProvider::signOut()
 {
 	// Nothing to revoke for a static key. Clearing it is the user's action via

@@ -99,6 +99,7 @@ if(NOT FLATPAK_USED)
                WebChannel
                Svg
                Network
+               NetworkAuth
                HttpServer
                Xml
                Sql
@@ -122,6 +123,7 @@ else()
                Svg
                Sql
                Network
+               NetworkAuth
                HttpServer
                Xml
                DBus
