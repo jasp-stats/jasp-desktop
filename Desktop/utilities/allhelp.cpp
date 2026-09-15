@@ -8,7 +8,7 @@ Batch
 
 Batch takes the JASP file you have open, swaps its data for another data file, waits for every analysis to finish and writes the results out again. Point it at data files, at whole folders, or at both, and it does that once per data file, which makes it useful for a monthly report, a set of measurements that arrives per subject, or any other situation where the analyses stay the same and only the data changes.
 
-Everything on this page is also available from the commandline, and the commandline that this page is going to run is shown at the bottom of it. So once a batch does what you want you can copy that line into a terminal or a script and run it there, for instance from a scheduled task. See [the commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/tdk/Docs/user-guide/command-line-batch-howto.md) for the options that are not on this page, such as the timeout and logging to a file.
+Everything on this page is also available from the commandline, and the commandline that this page is going to run is shown at the bottom of it. So once a batch does what you want you can copy that line into a terminal or a script and run it there, for instance from a scheduled task. See [the commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/user-guide/command-line-batch-howto.md) for the options that are not on this page, such as the timeout and logging to a file.
 
 ## What actually happens
 

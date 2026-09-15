@@ -314,7 +314,6 @@ PrefsScrollView
 				anchors
 				{
 					left:				parent.left
-					leftMargin:			jaspTheme.subOptionOffset
 					verticalCenter:		parent.verticalCenter
 				}
 			}
@@ -347,9 +346,6 @@ PrefsScrollView
 			toolTip:				qsTr("Which kind of result is written per data file. \"Do not export\" only synchronizes and refreshes, which is a good way to check that a set of data files runs through without errors.")
 			startValue:				values[batchView.batch.exportTypeIndex]
 			onActivated:			(index) => { batchView.batch.exportTypeIndex = index }
-
-			anchors.left:			parent.left
-			anchors.leftMargin:		jaspTheme.subOptionOffset
 		}
 	}
 
