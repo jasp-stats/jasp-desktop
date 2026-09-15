@@ -34,6 +34,8 @@ private slots:
 	void testJaspFileWithOneDataFile();
 	void testJaspFileWithMultipleDataFiles();
 	void testInputDataDir();
+	void testMultipleInputDataDirs();
+	void testAllDataFiles();
 	void testOutputDir();
 	void testUnitTestFlag();
 	void testUnitTestRecursiveFlag();

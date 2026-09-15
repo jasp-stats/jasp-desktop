@@ -18,13 +18,16 @@
 
 #include "batchfilemenu.h"
 
+#include <QClipboard>
 #include <QCoreApplication>
 #include <QDir>
+#include <QGuiApplication>
 #include <QFileInfo>
 
 #include "filemenu.h"
 #include "log.h"
 #include "parsedarguments.h"
+#include "utilenums.h"
 #include "data/datasetpackage.h"
 #include "utilities/messageforwarder.h"
 #include "utilities/qutils.h"
@@ -36,13 +39,11 @@ const std::vector<ExportType> BatchFileMenu::exportTypes = { ExportType::Html, E
 const QString BatchFileMenu::noFocusStealingEnvVar = "QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM";
 #endif
 
-BatchFileMenu::BatchFileMenu(FileMenu * parent) : FileMenuObject{parent}
+BatchFileMenu::BatchFileMenu(FileMenu * parent) : FileMenuObject{parent}, _inputs(new BatchInputsModel(this))
 {
 	//The commandline (and thus whether we can run it) is made up out of all of the settings below
 	connect(this, &BatchFileMenu::jaspFileChanged,						this, &BatchFileMenu::commandLineChanged);
-	connect(this, &BatchFileMenu::useInputFolderChanged,					this, &BatchFileMenu::commandLineChanged);
-	connect(this, &BatchFileMenu::inputFileChanged,						this, &BatchFileMenu::commandLineChanged);
-	connect(this, &BatchFileMenu::inputFolderChanged,					this, &BatchFileMenu::commandLineChanged);
+	connect(_inputs, &BatchInputsModel::selectionChanged,				this, &BatchFileMenu::commandLineChanged);
 	connect(this, &BatchFileMenu::outputFolderChanged,					this, &BatchFileMenu::commandLineChanged);
 	connect(this, &BatchFileMenu::exportTypeIndexChanged,				this, &BatchFileMenu::commandLineChanged);
 	connect(this, &BatchFileMenu::keepJASPOpenChanged,					this, &BatchFileMenu::commandLineChanged);
@@ -67,33 +68,6 @@ int BatchFileMenu::exportTypeIndex() const
 			return int(i);
 
 	return 0;
-}
-
-void BatchFileMenu::setUseInputFolder(bool useInputFolder)
-{
-	if(_useInputFolder == useInputFolder)
-		return;
-
-	_useInputFolder = useInputFolder;
-	emit useInputFolderChanged();
-}
-
-void BatchFileMenu::setInputFile(const QString & inputFile)
-{
-	if(_inputFile == inputFile)
-		return;
-
-	_inputFile = inputFile;
-	emit inputFileChanged();
-}
-
-void BatchFileMenu::setInputFolder(const QString & inputFolder)
-{
-	if(_inputFolder == inputFolder)
-		return;
-
-	_inputFolder = inputFolder;
-	emit inputFolderChanged();
 }
 
 void BatchFileMenu::setOutputFolder(const QString & outputFolder)
@@ -137,33 +111,57 @@ void BatchFileMenu::refresh()
 	//The jasp-file (and whether it was modified since it was saved) is taken from the loaded workspace,
 	//so it can have changed without us hearing about it.
 	emit jaspFileChanged();
+
+	//The same goes for the data files in the folders
+	_inputs->refresh();
 }
 
 QString BatchFileMenu::browseStartFolder() const
 {
-	QString chosen = _useInputFolder ? _inputFolder : QFileInfo(_inputFile).absolutePath();
+	//Where the data file or folder added last is, so whatever is next to it is right there
+	if(!_inputs->lastAddedPath().isEmpty())
+	{
+		QString whereLastAddedIs = QFileInfo(_inputs->lastAddedPath()).absolutePath();
 
-	if(!chosen.isEmpty() && QFileInfo::exists(chosen))
-		return chosen;
+		if(QFileInfo::exists(whereLastAddedIs))
+			return whereLastAddedIs;
+	}
 
 	return jaspFile().isEmpty() ? QDir::homePath() : QFileInfo(jaspFile()).absolutePath();
 }
 
-void BatchFileMenu::browseInputFile()
+QStringList BatchFileMenu::dataFileExtensions()
 {
-	QString filter	= tr("Data Files") + " (*.csv *.txt *.tsv *.sav *.zsav *.por *.xpt *.ods *.xls *.xlsx *.dta *.sas7bdat *.sas7bcat *.rdata *.rds *.mwx *.mpx)",
-			chosen	= MessageForwarder::browseOpenFile(tr("Select a data file"), browseStartFolder(), filter);
+	QStringList extensions;
 
-	if(!chosen.isEmpty())
-		setInputFile(chosen);
+	//The same loop Utils::getTypeFromFileName uses to recognize a file by its extension
+	for(int i = 0; i < int(Utils::FileType::empty); i++)
+		if(ParsedArguments::isDataFileType(Utils::FileType(i)))
+			extensions.push_back(tq(FileTypeBaseToString(Utils::FileType(i))));
+
+	return extensions;
 }
 
-void BatchFileMenu::browseInputFolder()
+void BatchFileMenu::browseDataFiles()
 {
-	QString chosen = MessageForwarder::browseOpenFolder(tr("Select a folder with data files"), browseStartFolder());
+	QStringList patterns;
+
+	for(const QString & extension : dataFileExtensions())
+		patterns.push_back("*." + extension);
+
+	QString		chosen			= MessageForwarder::browseOpenFile(tr("Select the data files to run the JASP file against"), browseStartFolder(), tr("Data Files") + " (" + patterns.join(' ') + ")", true);
+	QStringList	notDataFiles	= _inputs->addDataFiles(chosen.split(';', Qt::SkipEmptyParts)); //browseOpenFile joins several files with ';'
+
+	if(!notDataFiles.isEmpty())
+		MessageForwarder::showWarning(tr("Not a data file"), tr("JASP cannot import these files, so they were not added: %1").arg(notDataFiles.join(", ")));
+}
+
+void BatchFileMenu::browseDataFolder()
+{
+	QString chosen = MessageForwarder::browseOpenFolder(tr("Select a folder holding data files to run the JASP file against"), browseStartFolder());
 
 	if(!chosen.isEmpty())
-		setInputFolder(chosen);
+		_inputs->addFolder(chosen);
 }
 
 void BatchFileMenu::browseOutputFolder()
@@ -178,8 +176,7 @@ QStringList BatchFileMenu::arguments() const
 {
 	QStringList args = { jaspFile() };
 
-	if(_useInputFolder)		args << tq(ParsedArguments::inputDataDirArg) << _inputFolder;
-	else					args << _inputFile;
+	args << _inputs->arguments();
 
 	if(!_outputFolder.isEmpty())
 		args << tq(ParsedArguments::outputDirArg) << _outputFolder;
@@ -217,16 +214,24 @@ QString BatchFileMenu::commandLine() const
 	return parts.join(' ');
 }
 
+void BatchFileMenu::copyCommandLine() const
+{
+	QGuiApplication::clipboard()->setText(commandLine());
+}
+
 QString BatchFileMenu::problem() const
 {
 	if(jaspFile().isEmpty())
 		return tr("A batch runs the analyses of a JASP file, so open (or save) one first.");
 
-	if(!_useInputFolder && _inputFile.isEmpty())
-		return tr("Select the data file to run the JASP file against.");
+	if(_inputs->isEmpty())
+		return tr("Add the data files, or a folder holding them, to run the JASP file against.");
 
-	if(_useInputFolder && _inputFolder.isEmpty())
-		return tr("Select the folder holding the data files to run the JASP file against.");
+	if(!_inputs->missingPath().isEmpty())
+		return tr("%1 does not exist anymore, remove it from the data files.").arg(_inputs->missingPath());
+
+	if(_inputs->selectedCount() == 0)
+		return tr("Select at least one of the data files to run the JASP file against.");
 
 	return "";
 }
@@ -235,6 +240,9 @@ void BatchFileMenu::runBatch()
 {
 	if(running())
 		return;
+
+	//What is in the folders right now is what gets run, so the list should show exactly that
+	_inputs->refresh();
 
 	if(!problem().isEmpty())
 	{
