@@ -17,6 +17,7 @@
 //
 
 import QtQuick
+import QtQuick.Controls as QTC
 import JASP.Widgets
 import JASP.Controls
 
@@ -24,7 +25,6 @@ PrefsScrollView
 {
 	id:		batchView
 
-	property real	labelWidth:		Math.max(inputFileButton.implicitWidth, inputFolderButton.implicitWidth, outputFolderButton.implicitWidth)
 	property var	batch:			fileMenuModel.batch
 
 	MenuHeader
@@ -78,111 +78,215 @@ PrefsScrollView
 		id:		inputGroup
 		title:	qsTr("Data files to run it against")
 
-		RadioButtonGroup
-		{
-			id:	inputKind
-
-			RadioButton
-			{
-				id:					oneFileButton
-				label:				qsTr("One data file")
-				checked:			!batchView.batch.useInputFolder
-				onCheckedChanged:	if(checked) batchView.batch.useInputFolder = false
-				toolTip:			qsTr("Run the JASP file against a single data file.")
-				KeyNavigation.tab:	aFolderButton
-			}
-
-			RadioButton
-			{
-				id:					aFolderButton
-				label:				qsTr("A folder of data files")
-				checked:			batchView.batch.useInputFolder
-				onCheckedChanged:	if(checked) batchView.batch.useInputFolder = true
-				toolTip:			qsTr("Run the JASP file against every data file in a folder and its subfolders. Each data file gets its own JASP, so one data file cannot influence the next.")
-				KeyNavigation.tab:	inputFileButton
-			}
-		}
-
 		Item
 		{
-			width:		parent.width
-			height:		inputFileButton.height
-			enabled:	!batchView.batch.useInputFolder
+			width:	parent.width
+			height:	addDataFilesButton.height
 
 			RoundedButton
 			{
-				id:						inputFileButton
-				text:					qsTr("Data file:")
-				width:					batchView.labelWidth
-				onClicked:				batchView.batch.browseInputFile()
-				toolTip:				qsTr("Browse to the data file to run the analyses on.")
-				activeFocusOnTab:		true
-				KeyNavigation.tab:		inputFileText.textInput
-
-				anchors
-				{
-					left:				parent.left
-					leftMargin:			jaspTheme.subOptionOffset
-					verticalCenter:		parent.verticalCenter
-				}
+				id:					addDataFilesButton
+				text:				qsTr("Add files...")
+				onClicked:			batchView.batch.browseDataFiles()
+				toolTip:			qsTr("Browse to the data files to run the JASP file against, you can select several at once.")
+				activeFocusOnTab:	true
+				KeyNavigation.tab:	addDataFolderButton
+				anchors.left:		parent.left
 			}
-
-			PrefsTextInput
-			{
-				id:					inputFileText
-				text:				batchView.batch.inputFile
-				onEditingFinished:	batchView.batch.inputFile = text
-				nextEl:				inputFolderButton
-				height:				inputFileButton.height
-
-				anchors
-				{
-					left:			inputFileButton.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-					verticalCenter:	parent.verticalCenter
-				}
-			}
-		}
-
-		Item
-		{
-			width:		parent.width
-			height:		inputFolderButton.height
-			enabled:	batchView.batch.useInputFolder
 
 			RoundedButton
 			{
-				id:						inputFolderButton
-				text:					qsTr("Data folder:")
-				width:					batchView.labelWidth
-				onClicked:				batchView.batch.browseInputFolder()
-				toolTip:				qsTr("Browse to the folder holding the data files. Its subfolders are used as well, files JASP cannot import (and .jasp, .html and .pdf files) are skipped.")
-				activeFocusOnTab:		true
-				KeyNavigation.tab:		inputFolderText.textInput
+				id:					addDataFolderButton
+				text:				qsTr("Add folder...")
+				onClicked:			batchView.batch.browseDataFolder()
+				toolTip:			qsTr("Browse to a folder holding data files. All data files in it and in its subfolders are listed, so you can deselect the ones you do not want. Files JASP cannot import (such as .jasp, .html and .pdf files) are skipped.")
+				activeFocusOnTab:	true
+				KeyNavigation.tab:	outputFolderButton
+				anchors.left:		addDataFilesButton.right
+				anchors.leftMargin:	jaspTheme.generalAnchorMargin
+			}
+		}
 
-				anchors
-				{
-					left:				parent.left
-					leftMargin:			jaspTheme.subOptionOffset
-					verticalCenter:		parent.verticalCenter
-				}
+		Rectangle
+		{
+			width:			parent.width
+			height:			inputsList.height + (2 * jaspTheme.generalAnchorMargin)
+			color:			jaspTheme.white
+			border.color:	jaspTheme.borderColor
+			border.width:	1
+			radius:			jaspTheme.borderRadius
+
+			FontMetrics
+			{
+				id:		inputsFontMetrics
+				font:	jaspTheme.font
 			}
 
-			PrefsTextInput
+			Text
 			{
-				id:					inputFolderText
-				text:				batchView.batch.inputFolder
-				onEditingFinished:	batchView.batch.inputFolder = text
-				nextEl:				outputFolderButton
-				height:				inputFolderButton.height
+				anchors.fill:		inputsList
+				visible:			inputsList.count === 0
+				text:				qsTr("No data files yet.")
+				font:				jaspTheme.font
+				color:				jaspTheme.textDisabled
+				verticalAlignment:	Text.AlignVCenter
+				elide:				Text.ElideRight
+			}
+
+			ListView
+			{
+				id:					inputsList
+				model:				batchView.batch.inputs
+				height:				Math.max(1, Math.min(count, maxVisibleRows)) * rowHeight
+				interactive:		count > maxVisibleRows //Until then the scrolling is left to the page
+				clip:				true
+				boundsBehavior:		Flickable.StopAtBounds
+
+				readonly property int	maxVisibleRows:	10
+				readonly property real	rowHeight:		Math.ceil(inputsFontMetrics.height) + jaspTheme.generalAnchorMargin
 
 				anchors
 				{
-					left:			inputFolderButton.right
-					right:			parent.right
-					margins:		jaspTheme.generalAnchorMargin
-					verticalCenter:	parent.verticalCenter
+					top:		parent.top
+					left:		parent.left
+					right:		parent.right
+					margins:	jaspTheme.generalAnchorMargin
+				}
+
+				delegate: Rectangle
+				{
+					id:		inputRow
+					width:	inputsList.width
+					height:	inputsList.rowHeight
+					color:	inputHover.containsMouse ? jaspTheme.itemHoverColor : "transparent"
+
+					required property int		index
+					required property bool		isFolder
+					required property string	label
+					required property string	path
+					required property bool		selected
+					required property bool		inFolder
+					required property bool		removable
+					required property int		selectedCount
+					required property int		dataFileCount
+
+					MouseArea
+					{
+						id:				inputHover
+						anchors.fill:	parent
+						hoverEnabled:	true
+						cursorShape:	Qt.PointingHandCursor
+						onClicked:		batchView.batch.inputs.setSelected(inputRow.index, !inputRow.selected) //The whole row (de)selects, not only its box
+
+						QTC.ToolTip.text:		inputRow.path
+						QTC.ToolTip.visible:	inputLabel.truncated && containsMouse && !removeInput.containsMouse
+
+						//The box of a JASP CheckBox, which itself is a form control: too much for every row of a list,
+						//and clicking it would break the binding to the model that a click on the row of its folder has to update.
+						Rectangle
+						{
+							id:				selectedBox
+							height:			inputsFontMetrics.height
+							width:			height
+							color:			inputRow.selected ? jaspTheme.buttonBackgroundColor : jaspTheme.controlBackgroundColor
+							border.color:	inputRow.selected ? jaspTheme.buttonBackgroundColor : jaspTheme.borderColor
+							border.width:	1
+							radius:			jaspTheme.borderRadius
+
+							anchors
+							{
+								left:			parent.left
+								leftMargin:		(inputRow.inFolder ? jaspTheme.subOptionOffset : 0) + (jaspTheme.generalAnchorMargin / 2)
+								verticalCenter:	parent.verticalCenter
+							}
+
+							Text
+							{
+								visible:			inputRow.selected
+								color:				jaspTheme.white
+								text:				"✓"
+								font:				jaspTheme.font
+								anchors.centerIn:	parent
+								renderType:			Text.QtRendering
+							}
+						}
+
+						Image
+						{
+							id:					folderIcon
+							visible:			inputRow.isFolder
+							height:				inputsFontMetrics.height
+							width:				visible ? height : 0
+							sourceSize.width:	height * 2
+							sourceSize.height:	height * 2
+							fillMode:			Image.PreserveAspectFit
+							source:				jaspTheme.iconPath + "/folder.svg"
+
+							anchors
+							{
+								left:			selectedBox.right
+								leftMargin:		visible ? jaspTheme.generalAnchorMargin : 0
+								verticalCenter:	parent.verticalCenter
+							}
+						}
+
+						Text
+						{
+							id:				inputLabel
+							text:			inputRow.label
+							textFormat:		Text.PlainText	//A path can hold '<' or '&'
+							font:			jaspTheme.font
+							color:			jaspTheme.textEnabled
+							elide:			Text.ElideMiddle	//The start and the end of a path tell the most about it
+
+							anchors
+							{
+								left:			folderIcon.right
+								leftMargin:		jaspTheme.generalAnchorMargin
+								right:			folderCount.left
+								rightMargin:	jaspTheme.generalAnchorMargin
+								verticalCenter:	parent.verticalCenter
+							}
+						}
+
+						Text
+						{
+							id:				folderCount
+							visible:		inputRow.isFolder
+							width:			visible ? implicitWidth : 0
+							text:			inputRow.dataFileCount === 0 ? qsTr("no data files") : qsTr("%1 of %2 selected").arg(inputRow.selectedCount).arg(inputRow.dataFileCount)
+							font:			jaspTheme.font
+							color:			jaspTheme.textDisabled
+
+							anchors
+							{
+								right:			removeInput.left
+								verticalCenter:	parent.verticalCenter
+							}
+						}
+
+						MouseArea
+						{
+							id:				removeInput
+							visible:		inputRow.removable
+							height:			parent.height
+							width:			height
+							anchors.right:	parent.right
+							hoverEnabled:	true
+							cursorShape:	Qt.PointingHandCursor
+							onClicked:		batchView.batch.inputs.remove(inputRow.index)
+
+							QTC.ToolTip.text:		inputRow.isFolder ? qsTr("Remove this folder and its data files from the list") : qsTr("Remove from the list")
+							QTC.ToolTip.visible:	containsMouse
+
+							Image
+							{
+								anchors.fill:	parent
+								source:			jaspTheme.iconPath + "/subtraction-sign-small.svg"
+								visible:		inputHover.containsMouse
+							}
+						}
+					}
 				}
 			}
 		}
@@ -202,7 +306,6 @@ PrefsScrollView
 			{
 				id:						outputFolderButton
 				text:					qsTr("Output folder:")
-				width:					batchView.labelWidth
 				onClicked:				batchView.batch.browseOutputFolder()
 				toolTip:				qsTr("Browse to the folder the results should be written to. Leave it empty to write each result next to its own data file.")
 				activeFocusOnTab:		true
@@ -211,7 +314,6 @@ PrefsScrollView
 				anchors
 				{
 					left:				parent.left
-					leftMargin:			jaspTheme.subOptionOffset
 					verticalCenter:		parent.verticalCenter
 				}
 			}
@@ -244,9 +346,6 @@ PrefsScrollView
 			toolTip:				qsTr("Which kind of result is written per data file. \"Do not export\" only synchronizes and refreshes, which is a good way to check that a set of data files runs through without errors.")
 			startValue:				values[batchView.batch.exportTypeIndex]
 			onActivated:			(index) => { batchView.batch.exportTypeIndex = index }
-
-			anchors.left:			parent.left
-			anchors.leftMargin:		jaspTheme.subOptionOffset
 		}
 	}
 
@@ -272,7 +371,7 @@ PrefsScrollView
 			checked:			batchView.batch.keepMissingColsWhenSyncing
 			onCheckedChanged:	batchView.batch.keepMissingColsWhenSyncing = checked
 			toolTip:			qsTr("Keep the columns the JASP file uses but the data file does not have, with the data they already had, instead of removing them. The columns of the data file are then added next to the ones already there.")
-			KeyNavigation.tab:	runButton
+			KeyNavigation.tab:	copyCommandLineButton
 		}
 	}
 
@@ -290,31 +389,77 @@ PrefsScrollView
 			wrapMode:	Text.Wrap
 		}
 
-		Rectangle
+		Item
 		{
-			width:			parent.width
-			height:			commandLineText.height + (2 * jaspTheme.generalAnchorMargin)
-			color:			jaspTheme.white
-			border.color:	jaspTheme.borderColor
-			border.width:	1
-			radius:			jaspTheme.borderRadius
+			width:	parent.width
+			height:	Math.max(commandLineBox.height, copyCommandLineButton.height)
 
-			TextEdit
+			Rectangle
 			{
-				id:					commandLineText
-				text:				batchView.batch.commandLine
-				font:				jaspTheme.fontCode
-				color:				jaspTheme.textEnabled
-				wrapMode:			TextEdit.Wrap
-				readOnly:			true
-				selectByMouse:		true
+				id:				commandLineBox
+				height:			commandLineText.height + (2 * jaspTheme.generalAnchorMargin)
+				color:			jaspTheme.controlDisabledBackgroundColor
+				border.color:	jaspTheme.borderColor
+				border.width:	1
+				radius:			jaspTheme.borderRadius
 
 				anchors
 				{
-					left:			parent.left
-					right:			parent.right
 					top:			parent.top
-					margins:		jaspTheme.generalAnchorMargin
+					left:			parent.left
+					right:			copyCommandLineButton.left
+					rightMargin:	jaspTheme.generalAnchorMargin
+				}
+
+				//Only there to be read (and copied with the button next to it), so it looks like a disabled field
+				TextEdit
+				{
+					id:			commandLineText
+					text:		batchView.batch.commandLine
+					font:		jaspTheme.fontCode
+					color:		jaspTheme.textDisabled
+					wrapMode:	TextEdit.Wrap
+					readOnly:	true
+					enabled:	false
+
+					anchors
+					{
+						left:		parent.left
+						right:		parent.right
+						top:		parent.top
+						margins:	jaspTheme.generalAnchorMargin
+					}
+				}
+			}
+
+			RoundedButton
+			{
+				id:					copyCommandLineButton
+				text:				qsTr("Copy")
+				iconSource:			jaspTheme.iconPath + (justCopied ? "/check-mark.png" : "/menu-data-copy.svg")
+				showIconAndText:	true
+				iconLeft:			false	//RectangularButton only leaves room for the icon next to the text
+				centerText:			false	//when the text is on the left and the icon on the right
+				toolTip:			justCopied ? qsTr("Copied to the clipboard") : qsTr("Copy the commandline to the clipboard")
+				activeFocusOnTab:	true
+				KeyNavigation.tab:	runButton
+				anchors.top:		parent.top
+				anchors.right:		parent.right
+
+				property bool		justCopied:	false //Shows the copy worked, for a moment, without changing the size of the button
+
+				onClicked:
+				{
+					batchView.batch.copyCommandLine()
+					justCopied = true
+					justCopiedTimer.restart()
+				}
+
+				Timer
+				{
+					id:				justCopiedTimer
+					interval:		2000
+					onTriggered:	copyCommandLineButton.justCopied = false
 				}
 			}
 		}
@@ -333,8 +478,32 @@ PrefsScrollView
 				toolTip:			batchView.batch.problem !== "" ? batchView.batch.problem : qsTr("Start JASP with the commandline above. Keep this JASP open while the batch runs.")
 				activeFocusOnTab:	true
 				KeyNavigation.tab:	stopButton
+				showIconAndText:	batchView.batch.running	//Makes room for the LoadingIndicator, in the place of the icon
+				iconLeft:			false
+				centerText:			!batchView.batch.running
 
 				anchors.left:		parent.left
+
+				LoadingIndicator
+				{
+					id:						runningIndicator
+					x:						runButton.icon.x
+					y:						runButton.icon.y
+					width:					runButton.icon.width
+					height:					runButton.icon.height
+					visible:				batchView.batch.running
+					autoStartOnVisibility:	false	//That only starts turning when it becomes visible, not when it already is as the page opens during a batch
+
+					function followRunning() { if(batchView.batch.running) startManually(); else stopManually(); }
+
+					Component.onCompleted:	followRunning()
+
+					Connections
+					{
+						target:						batchView.batch
+						function onRunningChanged()	{ runningIndicator.followRunning() }
+					}
+				}
 			}
 
 			RoundedButton
@@ -378,7 +547,7 @@ PrefsScrollView
 			width:			parent.width
 			height:			250 * preferencesModel.uiScale
 			visible:		batchView.batch.output !== ""
-			color:			jaspTheme.white
+			color:			jaspTheme.controlDisabledBackgroundColor
 			border.color:	jaspTheme.borderColor
 			border.width:	1
 			radius:			jaspTheme.borderRadius
@@ -396,16 +565,17 @@ PrefsScrollView
 				//Follow the batch while it runs, but leave the scrolling alone as long as nothing new comes in
 				onContentHeightChanged:	contentY = Math.max(0, contentHeight - height)
 
+				//Disabled like the commandline, the Flickable around it still scrolls it
 				TextEdit
 				{
 					id:				outputText
 					width:			outputFlickable.width
 					text:			batchView.batch.output
 					font:			jaspTheme.fontCode
-					color:			jaspTheme.textEnabled
+					color:			jaspTheme.textDisabled
 					wrapMode:		TextEdit.Wrap
 					readOnly:		true
-					selectByMouse:	true
+					enabled:		false
 				}
 			}
 		}

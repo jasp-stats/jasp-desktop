@@ -24,6 +24,7 @@
 
 #include "filemenuobject.h"
 #include "exporttype.h"
+#include "batchinputsmodel.h"
 
 ///
 /// The "Batch" page of File/Sync Data, a frontend for the batch commandline described in
@@ -36,9 +37,7 @@ class BatchFileMenu : public FileMenuObject
 
 	Q_PROPERTY(QString	jaspFile					READ jaspFile													NOTIFY jaspFileChanged					)
 	Q_PROPERTY(bool		jaspFileModified			READ jaspFileModified											NOTIFY jaspFileChanged					)
-	Q_PROPERTY(bool		useInputFolder				READ useInputFolder					WRITE setUseInputFolder		NOTIFY useInputFolderChanged			)
-	Q_PROPERTY(QString	inputFile					READ inputFile						WRITE setInputFile			NOTIFY inputFileChanged					)
-	Q_PROPERTY(QString	inputFolder					READ inputFolder					WRITE setInputFolder		NOTIFY inputFolderChanged				)
+	Q_PROPERTY(BatchInputsModel *	inputs			READ inputs														CONSTANT								)
 	Q_PROPERTY(QString	outputFolder				READ outputFolder					WRITE setOutputFolder		NOTIFY outputFolderChanged				)
 	Q_PROPERTY(int		exportTypeIndex				READ exportTypeIndex				WRITE setExportTypeIndex	NOTIFY exportTypeIndexChanged			)
 	Q_PROPERTY(bool		keepJASPOpen				READ keepJASPOpen					WRITE setKeepJASPOpen		NOTIFY keepJASPOpenChanged				)
@@ -52,18 +51,17 @@ class BatchFileMenu : public FileMenuObject
 public:
 	explicit				BatchFileMenu(FileMenu * parent);
 
-	Q_INVOKABLE void		browseInputFile();
-	Q_INVOKABLE void		browseInputFolder();
+	Q_INVOKABLE void		browseDataFiles();
+	Q_INVOKABLE void		browseDataFolder();
 	Q_INVOKABLE void		browseOutputFolder();
 	Q_INVOKABLE void		runBatch();
 	Q_INVOKABLE void		stopBatch();
 	Q_INVOKABLE void		clearOutput();
+	Q_INVOKABLE void		copyCommandLine()			const;
 
 	QString					jaspFile()					const;
 	bool					jaspFileModified()			const;
-	bool					useInputFolder()			const	{ return _useInputFolder;				}
-	const QString		&	inputFile()					const	{ return _inputFile;					}
-	const QString		&	inputFolder()				const	{ return _inputFolder;					}
+	BatchInputsModel	*	inputs()					const	{ return _inputs;						}
 	const QString		&	outputFolder()				const	{ return _outputFolder;					}
 	int						exportTypeIndex()			const;
 	bool					keepJASPOpen()				const	{ return _keepJASPOpen;					}
@@ -74,9 +72,6 @@ public:
 	bool					running()					const	{ return _process;						}
 	const QString		&	output()					const	{ return _output;						}
 
-	void					setUseInputFolder(				bool			useInputFolder				);
-	void					setInputFile(					const QString &	inputFile					);
-	void					setInputFolder(					const QString &	inputFolder					);
 	void					setOutputFolder(				const QString &	outputFolder				);
 	void					setExportTypeIndex(				int				exportTypeIndex				);
 	void					setKeepJASPOpen(				bool			keepJASPOpen				);
@@ -86,9 +81,6 @@ public:
 
 signals:
 	void					jaspFileChanged();
-	void					useInputFolderChanged();
-	void					inputFileChanged();
-	void					inputFolderChanged();
 	void					outputFolderChanged();
 	void					exportTypeIndexChanged();
 	void					keepJASPOpenChanged();
@@ -104,10 +96,11 @@ private slots:
 
 private:
 	QStringList				arguments()										const;	///< the arguments JASP is started with, in the same order as the documentation lists them
-	QString					browseStartFolder()								const;	///< the folder the browse-dialogs start in: whatever was chosen before, or the folder of the jasp-file
+	QString					browseStartFolder()								const;	///< the folder the browse-dialogs start in: where the data file or folder added last is, or else the folder of the jasp-file
 	void					appendOutput(const QString & text);
 
 	static QString			quoteIfNeeded(const QString & argument);
+	static QStringList		dataFileExtensions();									///< the extensions of what JASP counts as a data file, the same it looks for in a folder
 
 	///< The exporttypes offered on the page, in the order the dropdown in Batch.qml shows them
 	static const std::vector<ExportType>	exportTypes;
@@ -118,13 +111,11 @@ private:
 #endif
 
 	QProcess			*	_process					= nullptr;
-	QString					_inputFile,
-							_inputFolder,
-							_outputFolder,
+	BatchInputsModel	*	_inputs						= nullptr;	///< the data files to run the jasp-file against
+	QString					_outputFolder,
 							_output;
 	ExportType				_exportType					= ExportType::Html;
-	bool					_useInputFolder				= false,
-							_keepJASPOpen				= false,
+	bool					_keepJASPOpen				= false,
 							_keepMissingColsWhenSyncing	= false;
 };
 
