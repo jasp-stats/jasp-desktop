@@ -1,8 +1,8 @@
 # Running a JASP file against several data files from the command line
 
 JASP can take an existing `.jasp` file, swap its data for another data file, wait for every
-analysis to finish, and write the results out again. Point it at a list of data files (or whole
-folders) and it does that once per file, which makes it useful for a monthly report, a set of
+analysis to finish, and write the results out again. Point it at a list of data files (or a whole
+folder) and it does that once per file, which makes it useful for a monthly report, a set of
 measurements that arrives per subject, or any other situation where the analyses stay the same and
 only the data changes.
 
@@ -31,12 +31,6 @@ Same thing for every data file in a folder (and its subfolders), as PDF, collect
 JASP weights.jasp --inputDataDir ./measurements --outputDir ./reports --exportType=Pdf
 ```
 
-`--inputDataDir` can be used more than once, and together with data files named one by one:
-
-```
-JASP weights.jasp extra.csv --inputDataDir ./2025 --inputDataDir ./2026
-```
-
 ## What actually happens
 
 For each data file JASP:
@@ -61,7 +55,7 @@ side. Waiting is also the only reason the exit code can say anything about a dat
 
 | Option | What it does |
 | --- | --- |
-| `--inputDataDir <folder>` | Use every data file in this folder *and its subfolders* instead of naming them one by one. Give it more than once to use several folders. |
+| `--inputDataDir <folder>` | Use every data file in this folder *and its subfolders* instead of naming them one by one. |
 | `--outputDir <folder>` | Write all results here. Without it, each result lands next to its own data file. The folder is created if it does not exist. |
 | `--exportType=Html/Pdf/Jasp/No` | Default is Html. If `No` is used, only synchronize and refresh is done: can be useful to check that a set of data files runs through without errors. |
 | `--keepMissingColsWhenSyncing` | Keep columns that the new data file does not have, instead of removing them. See below. |
@@ -78,9 +72,6 @@ Anything JASP can import: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt
 `.jasp`, `.html` and `.pdf` files are not data files, so `--inputDataDir` skips them and you can
 safely point it at a folder that also holds the results of an earlier run.
 
-A data file is run only once, even when it is found more than once: named by itself as well as being
-in a folder, or in a folder that is given together with one of its subfolders.
-
 ## Where the results end up
 
 The result is named after the data file, in the folder given by `--outputDir`, or next to the data
@@ -94,10 +85,6 @@ One thing to watch: the name is taken up to the **first** dot, not the last. A d
 `january.2026.csv` produces `january.html`, so a folder holding `january.2026.csv` and
 `january.2027.csv` would have them overwrite each other. Give such files a name without extra dots,
 or use `--outputDir` per run.
-
-The folder a data file is in is not part of the name either, so `2025/january.csv` and
-`2026/january.csv` both produce `reports/january.html` when they share an `--outputDir`, and the one
-that runs last overwrites the other. Leave `--outputDir` out to write each result next to its own data file.
 
 ## Keeping columns that disappeared
 

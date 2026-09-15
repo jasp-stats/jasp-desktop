@@ -260,60 +260,7 @@ void TestParsedArguments::testInputDataDir()
 	ParsedArguments pa(a.argc, a.argv());
 
 	QCOMPARE(pa.syncDataFileRecursive, true);
-	QCOMPARE((int)pa.inputDataDirs.size(), 1);
-	QCOMPARE(pa.inputDataDirs[0].absoluteFilePath(), QFileInfo(dataDir.path()).absoluteFilePath());
-}
-
-void TestParsedArguments::testMultipleInputDataDirs()
-{
-	AppInfo::setProMode(true); //--inputDataDir is only parsed in PRO mode
-
-	QTemporaryDir dataDir1, dataDir2;
-	QVERIFY(dataDir1.isValid());
-	QVERIFY(dataDir2.isValid());
-
-	ArgArray a({"--inputDataDir", dataDir1.path(), "--inputDataDir", dataDir2.path()});
-	ParsedArguments pa(a.argc, a.argv());
-
-	// A second --inputDataDir adds a folder instead of replacing the first one
-	QCOMPARE(pa.syncDataFileRecursive, true);
-	QCOMPARE((int)pa.inputDataDirs.size(), 2);
-	QCOMPARE(pa.inputDataDirs[0].absoluteFilePath(), QFileInfo(dataDir1.path()).absoluteFilePath());
-	QCOMPARE(pa.inputDataDirs[1].absoluteFilePath(), QFileInfo(dataDir2.path()).absoluteFilePath());
-}
-
-// ── allDataFiles ───────────────────────────────────────────────────────────
-
-void TestParsedArguments::testAllDataFiles()
-{
-	AppInfo::setProMode(true); //data files after a JASP file and --inputDataDir are only parsed in PRO mode
-
-	QTemporaryDir dir;
-	QVERIFY(dir.isValid());
-	QVERIFY(QDir(dir.path()).mkpath("data/sub"));
-	QVERIFY(QDir(dir.path()).mkpath("other"));
-
-	QString jaspPath = createTempJaspFile(dir);
-	QString aCsv     = createTempDataFile(dir, "data/a.csv");
-	QString bSav     = createTempDataFile(dir, "data/sub/b.sav");
-	QString dXlsx    = createTempDataFile(dir, "other/d.xlsx");
-	createTempDataFile(dir, "data/results.html");	// not a data file
-	createTempJaspFile(dir, "data/sub/template.jasp");	// not a data file either
-
-	// a.csv is given by itself and is also in data, and data/sub is given by itself as well as being part of data
-	ArgArray a({jaspPath, aCsv,
-		"--inputDataDir", dir.path() + "/data",
-		"--inputDataDir", dir.path() + "/data/sub",
-		"--inputDataDir", dir.path() + "/other"});
-	ParsedArguments pa(a.argc, a.argv());
-
-	std::vector<QFileInfo> dataFiles = pa.allDataFiles();
-
-	// Every data file once, in the order they were found: the ones given by themselves first, then folder by folder
-	QCOMPARE((int)dataFiles.size(), 3);
-	QCOMPARE(dataFiles[0].absoluteFilePath(), QFileInfo(aCsv).absoluteFilePath());
-	QCOMPARE(dataFiles[1].absoluteFilePath(), QFileInfo(bSav).absoluteFilePath());
-	QCOMPARE(dataFiles[2].absoluteFilePath(), QFileInfo(dXlsx).absoluteFilePath());
+	QCOMPARE(pa.inputDataDir.absoluteFilePath(), QFileInfo(dataDir.path()).absoluteFilePath());
 }
 
 // ── --outputDir ────────────────────────────────────────────────────────────

@@ -52,9 +52,9 @@ public:
 	Json::Value			dbJson;
 	QFileInfo			mainFilePath,
 						reportingDir,
+						inputDataDir,
 						outputDir;
-	std::vector<QFileInfo>	dataFiles,
-							inputDataDirs;	///< one per --inputDataDir, which can be given more than once
+	std::vector<QFileInfo>	dataFiles;
 
 	static const std::string
 		unitTestArg,
@@ -84,9 +84,6 @@ public:
 
 	static bool		isDataFileType(			Utils::FileType type);
 	static bool		isDataFileType(			const QString &path);
-
-	std::vector<QFileInfo>	allDataFiles() const; ///< the data files given one by one, followed by the ones in the inputDataDirs and their subfolders, each data file only once
-	static void				addDataFilesInFolder(const QFileInfo & folder, std::vector<QFileInfo> & dataFiles); ///< adds the data files in folder and in its subfolders, the ones --inputDataDir would use
 
 
 private:

@@ -161,17 +161,30 @@ void recursiveFileOpener(const QFileInfo & file, int & failures, int & total, co
 	}
 }
 
+void recursiveSyncDataFile(const QFileInfo& fileInfo, std::vector<QFileInfo>& dataFiles)
+{
+	if (fileInfo.exists() && fileInfo.isDir())
+	{
+		QDir dir(fileInfo.absoluteFilePath());
+		for(QFileInfo & subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
+		{
+			if (subFile.isDir())
+				recursiveSyncDataFile(subFile, dataFiles);
+			else if (ParsedArguments::isDataFileType(subFile.fileName()))
+				dataFiles.push_back(subFile);
+		}
+	}
+}
+
 int syncDataFiles(const ParsedArguments& arguments, char* jaspName)
 {
-	std::vector<QFileInfo> dataFiles = arguments.allDataFiles();
+	std::vector<QFileInfo> dataFiles = arguments.dataFiles;
+
+	recursiveSyncDataFile(arguments.inputDataDir, dataFiles);
 
 	if(dataFiles.empty())
 	{
-		QStringList inputDataDirs;
-		for (const QFileInfo & inputDataDir : arguments.inputDataDirs)
-			inputDataDirs << inputDataDir.absoluteFilePath();
-
-		std::cerr << "No data files to synchronize with" << (inputDataDirs.empty() ? std::string() : " were found in " + fq(inputDataDirs.join(", "))) << "! Treating that as a failure to notify you of it." << std::endl;
+		std::cerr << "No data files to synchronize with" << (arguments.inputDataDir.exists() ? " were found in " + fq(arguments.inputDataDir.absoluteFilePath()) : std::string()) << "! Treating that as a failure to notify you of it." << std::endl;
 		return 1;
 	}
 
