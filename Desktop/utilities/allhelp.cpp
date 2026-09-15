@@ -6,9 +6,9 @@ QString AllHelp::Batch()
 Batch
 =========
 
-Batch takes the JASP file you have open, swaps its data for another data file, waits for every analysis to finish and writes the results out again. Point it at a single data file or at a whole folder and it does that once per data file, which makes it useful for a monthly report, a set of measurements that arrives per subject, or any other situation where the analyses stay the same and only the data changes.
+Batch takes the JASP file you have open, swaps its data for another data file, waits for every analysis to finish and writes the results out again. Point it at data files, at whole folders, or at both, and it does that once per data file, which makes it useful for a monthly report, a set of measurements that arrives per subject, or any other situation where the analyses stay the same and only the data changes.
 
-Everything on this page is also available from the commandline, and the commandline that this page is going to run is shown at the bottom of it. So once a batch does what you want you can copy that line into a terminal or a script and run it there, for instance from a scheduled task. See [the commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/development/Docs/user-guide/command-line-batch-howto.md) for the options that are not on this page, such as the timeout and logging to a file.
+Everything on this page is also available from the commandline, and the commandline that this page is going to run is shown at the bottom of it. So once a batch does what you want you can copy that line into a terminal or a script and run it there, for instance from a scheduled task. See [the commandline documentation](https://github.com/jasp-stats/jasp-desktop/blob/tdk/Docs/user-guide/command-line-batch-howto.md) for the options that are not on this page, such as the timeout and logging to a file.
 
 ## What actually happens
 
@@ -30,9 +30,15 @@ The JASP file you currently have open. Open (or save) the file whose analyses yo
 
 ## Data files to run it against
 
-Either one data file, or a folder. A folder is searched recursively, so its subfolders are used as well. Anything JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.
+Use *Add files...* to add data files, several at once if you like, and *Add folder...* to add all data files in a folder. A folder is searched recursively, so the data files in its subfolders are added as well. Anything JASP can import counts as a data file: `.csv`, `.txt`, `.tsv`, `.sav`, `.zsav`, `.por`, `.xpt`, `.ods`, `.xls`, `.xlsx`, `.dta`, `.sas7bdat`, `.sas7bcat`, `.rdata`, `.rds`, `.mwx` and `.mpx`.
 
 `.jasp`, `.html` and `.pdf` files are not data files, so a folder is allowed to also hold the results of an earlier run.
+
+The list shows every data file that can be run, also each one in the folders you added. Click a data file to deselect it when you do not want to run it, or click a folder to select or deselect all of its data files at once. A data file is listed only once, even when it is in more than one of the folders you added. To take a folder or a data file you added off the list again, hover over it and click the minus sign at its end.
+
+The folders are looked at again whenever you open this page and when you run the batch, so the data files that were put in them in the meantime are listed and selected as well.
+
+As long as all data files of a folder are selected, the commandline simply names the folder, so it also picks up data files that are put in that folder later on when you run the commandline yourself. Once one of them is deselected, the commandline names the selected data files one by one instead.
 
 ## Results
 
@@ -43,6 +49,8 @@ measurements/january.csv   ->   reports/january.html
 ```
 
 One thing to watch: the name is taken up to the **first** dot, not the last. A data file called `january.2026.csv` produces `january.html`, so a folder holding `january.2026.csv` and `january.2027.csv` would have them overwrite each other. Give such files a name without extra dots, or use a separate output folder per run.
+
+The folder a data file is in is not part of the name either: `2025/january.csv` and `2026/january.csv` both produce `january.html`, so in a shared output folder the one that runs last overwrites the other. Leave the output folder empty to write every result next to its own data file.
 
 With "Do not export" JASP only synchronizes and refreshes. That is a good way to check that a set of data files runs through without errors.
 

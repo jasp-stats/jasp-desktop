@@ -20,6 +20,7 @@
 #include <iostream>
 #include <QFileInfo>
 #include <QDir>
+#include <QSet>
 #include "utilenums.h"
 #include "utilities/qutils.h"
 #include "appinfo.h"
@@ -118,12 +119,21 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		}
 		else if (AppInfo::proMode() && arg == inputDataDirArg)
 		{
+			//Can be given more than once, each folder adds its data files to the ones already given
 			argNr++;
-			if (checkFolder(args, argNr, inputDataDir))
-				syncDataFileRecursive = true;
-			else
+			QFileInfo inputDataDir;
+			if (!checkFolder(args, argNr, inputDataDir))
 				letsExplainSomeThings = true;
-
+			else if (!inputDataDir.isDir())
+			{
+				std::cerr << inputDataDir.absoluteFilePath().toStdString() << " is not a folder, a single data file is given after the JASP file without " << inputDataDirArg << "." << std::endl;
+				letsExplainSomeThings = true;
+			}
+			else
+			{
+				inputDataDirs.push_back(inputDataDir);
+				syncDataFileRecursive = true;
+			}
 		}
 		else if (AppInfo::proMode() && arg == outputDirArg)
 		{
@@ -217,7 +227,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		{
 			std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (to export it on other format use the --export argument)\n"
 						<< "If --outputDir is specified, then the results are exported in this folder, if not it will be exported in the same folder as the data file.\n"
-						<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization.\n"
+						<< "if --inputDataDir is specified, all the data files in this folder (and subfolders) will be used for the synchronization. It can be specified more than once to use several folders, also together with data files given one by one. A data file that is found more than once is used only once.\n"
 						<< "Per default after synchronizing with a data file, it will export the result, except if --export=No is specified.\n"
 						<< "It will also remove columns after synchronizing if the column did not exist, except if --keepMissingColsWhenSyncing is specified: in this case, synchronization will keep columns not specified in the new dataset.\n"
 						<< "  Every column that is missing is kept, so the columns of the new data file are added next to the ones already there instead of taking their place. Within one JASP session that adds up: synchronizing several data files after one another leaves the data holding all columns of all of them, the ones that are missing from the last file being empty. Every data file gets its own JASP process (so it starts from the JASP file again) unless you keep JASP open yourself with --keepJASPOpen.\n"
@@ -344,4 +354,48 @@ bool ParsedArguments::isDataFileType(Utils::FileType type)
 bool ParsedArguments::isDataFileType(const QString & filePath)
 {
 	return isDataFileType(Utils::getTypeFromFileName(fq(filePath)));
+}
+
+std::vector<QFileInfo> ParsedArguments::allDataFiles() const
+{
+	std::vector<QFileInfo> found = dataFiles;
+
+	for (const QFileInfo & inputDataDir : inputDataDirs)
+		addDataFilesInFolder(inputDataDir, found);
+
+	//The same data file can turn up more than once, for instance when a folder is given as well as one of its subfolders,
+	//but running it again would only overwrite the results it already got.
+	std::vector<QFileInfo>	dataFilesOnce;
+	QSet<QString>			seen;
+
+	for (const QFileInfo & dataFile : found)
+	{
+		QString path = dataFile.canonicalFilePath(); //So a symlink or a detour through ".." is recognized as the same file
+
+		if (path.isEmpty())
+			path = dataFile.absoluteFilePath();
+
+		if (!seen.contains(path))
+		{
+			seen.insert(path);
+			dataFilesOnce.push_back(dataFile);
+		}
+	}
+
+	return dataFilesOnce;
+}
+
+void ParsedArguments::addDataFilesInFolder(const QFileInfo & folder, std::vector<QFileInfo> & dataFiles)
+{
+	if (!folder.exists() || !folder.isDir())
+		return;
+
+	QDir dir(folder.absoluteFilePath());
+	for (const QFileInfo & subFile : dir.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Files | QDir::Dirs))
+	{
+		if (subFile.isDir())
+			addDataFilesInFolder(subFile, dataFiles);
+		else if (isDataFileType(subFile.fileName()))
+			dataFiles.push_back(subFile);
+	}
 }
