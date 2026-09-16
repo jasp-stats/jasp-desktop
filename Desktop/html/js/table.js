@@ -551,15 +551,25 @@ JASPWidgets.tablePrimitive = JASPWidgets.View.extend({
 		var tableTitle = optTitle ? optTitle : (optError ? optError.errorMessage : 'Table');
 
 		if (optError) {
-			chunks.push('<table class="error-state jasp-no-select" role="table" aria-label="' + escapeHTML(tableTitle) + '" aria-describedby="' + tableId + '-description" tabindex="0">')
+			chunks.push('<table class="error-state jasp-no-select" role="table" aria-label="' + escapeHTML(tableTitle) + '" aria-describedby="' + tableId + '-error-title" tabindex="0">')
 		}
 		else {
 			chunks.push('<table class="jasp-no-select" role="table" aria-label="' + escapeHTML(tableTitle) + '" id="' + tableId + '" tabindex="0">')
 		}
 
+		// Accessibility: a caption gives the table a programmatic title that
+		// screen readers announce in table navigation; visually hidden since
+		// the title is already shown as a separate element.
+		chunks.push('<caption class="sr-only">' + escapeHTML(tableTitle) + '</caption>')
+
 		chunks.push('<thead>')
 		chunks.push('<tr>')
-		chunks.push('<th colspan="' + columnCount + '"><div class="toolbar"></div>')
+		// Accessibility: the hover-only toolbar (copy/cite/save buttons)
+		// polluted the accessibility tree right under the table node, which
+		// made Narrator read a pile of unlabeled buttons instead of the
+		// table. All of these actions are available in the title context
+		// menu, so hide the toolbar from the tree entirely.
+		chunks.push('<th colspan="' + columnCount + '"><div class="toolbar" aria-hidden="true"></div>')
 
 		if (optError && optError.errorMessage) {
 
@@ -692,8 +702,13 @@ if (newTitle == oldTitle) {
 			if (optTitle) {
 				rowAriaLabel = optTitle + ' row ' + (rowNo + 1);
 			}
-			
+
 			chunks.push('<tr role="row" aria-label="' + escapeHTML(rowAriaLabel) + '">')
+
+			// Accessibility: ids of the row-header cells created in this row;
+			// data cells reference them (plus their column header) via the
+			// headers attribute so screen readers announce full cell context.
+			var rowHeaderIds = [];
 
 			for (var colNo = 0; colNo < columnCount; colNo++) {
 
@@ -713,13 +728,19 @@ if (newTitle == oldTitle) {
 					var cellTag = isHeader ? 'th' : 'td';
 					var cellRole = isHeader ? 'rowheader' : 'gridcell';
 					var cellId = 'cell-' + rowNo + '-' + colNo;
-					
+
+					if (isHeader)
+						rowHeaderIds.push(cellId)
+
 					var ariaLabel = '';
 					if (cell.content) {
 						ariaLabel = ' aria-label="' + escapeHTML(cell.content) + '"';
 					}
-					
-					var headersAttr = ' headers="header-' + colNo + '"';
+
+					var headersAttr = ' headers="header-' + colNo;
+					if (rowHeaderIds.length > 0 && !isHeader)
+						headersAttr += ' ' + rowHeaderIds.join(' ');
+					headersAttr += '"';
 
 					cellHtml += '<' + cellTag
 					cellHtml += ' role="' + cellRole + '"'
