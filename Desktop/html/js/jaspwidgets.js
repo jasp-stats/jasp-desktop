@@ -484,19 +484,17 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		}
 
 		// Accessibility: keyboard activation of titles/expanders.
-		// Enter/Space toggles a collapsible container, or opens the
-		// context menu for titles without collapse (analysis/All).
-		// Shift+F10 / Ctrl+Enter always opens the menu.
+		// Enter/Space toggles a collapsible container. The context menu
+		// opens with Shift+Enter (also Ctrl+Enter, or Shift+F10) — never
+		// on plain Enter, so a screen-reader user activating a table or
+		// title can't accidentally open the menu.
 		if (e.which == 13 || e.which == 32) {
 			e.preventDefault();
-			if (e.ctrlKey) {
+			if (e.shiftKey || e.ctrlKey) {
 				this._showMenu(0, 0);
 			}
 			else if (this.options && this.options.hasCollapse && this.parent.setCollapsedState !== undefined) {
 				this.parent.collapseMenuClicked();
-			}
-			else {
-				this._showMenu(0, 0);
 			}
 		}
 		else if (e.which == 93 || (e.shiftKey && e.which == 121)) {

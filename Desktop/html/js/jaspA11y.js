@@ -83,11 +83,11 @@ JASPWidgets.a11y = {
 	//
 	// Arrow Up/Down move focus between the narratable blocks of the
 	// results (titles, tables, plots, notes, markdown, error boxes) in
-	// document order; tables are skipped at block level (Tab reaches
-	// them). Enter on a focused table drills into cell navigation:
-	// arrows move cell-by-cell with full header context via the headers
-	// attributes, Escape/Tab returns to block navigation. Arrows are
-	// ignored while a text editor has focus.
+	// document order. Enter activates the block under focus (table:
+	// drill into cell navigation, collapsible container: toggle, note:
+	// edit). Shift+Enter opens the block's context menu (also
+	// Ctrl+Enter and Shift+F10). Arrows are ignored while a text editor
+	// has focus.
 
 	_blocksSelector: '.in-toolbar, table[role="table"], .jasp-image-image[data-plot-title], .jasp-notes, .jasp-md-text, .error-message-box',
 
@@ -116,12 +116,7 @@ JASPWidgets.a11y = {
 		var current = a.drillTable || document.activeElement;
 		a.exitDrill();
 
-		// arrow navigation skips tables (Enter on a focused table drills in)
-		var all = a.visibleBlocks();
-		var nav = [];
-		for (var i = 0; i < all.length; i++)
-			if (all[i].tagName !== 'TABLE')
-				nav.push(all[i]);
+		var nav = a.visibleBlocks();
 		if (nav.length === 0)
 			return;
 
@@ -141,6 +136,35 @@ JASPWidgets.a11y = {
 		}
 		if (next)
 			next.focus();
+	},
+
+	// The title element whose context menu governs this block: the
+	// nearest ancestor subtree containing an .in-toolbar title.
+	_blockMenuAnchor: function (el) {
+		var root = el;
+		while (root && root !== document.body) {
+			if (root.querySelectorAll) {
+				var titles = root.querySelectorAll('.in-toolbar');
+				if (titles.length > 0)
+					return titles[titles.length - 1];
+			}
+			root = root.parentElement;
+		}
+		return null;
+	},
+
+	// Opens the context menu governing the given block (table, plot,
+	// note, ...). Reuses the Toolbar's own keydown handling via a
+	// jQuery-synthesized Shift+Enter on the anchor title, so the menu
+	// anchors to that title element exactly like a mouse activation.
+	openMenuFor: function (el) {
+		var anchor = JASPWidgets.a11y._blockMenuAnchor(el);
+		if (!anchor)
+			return;
+		$(anchor).trigger({
+			type: 'keydown', which: 13, keyCode: 13, key: 'Enter',
+			shiftKey: true, target: anchor
+		});
 	},
 
 	// ── table cell drill-in ─────────────────────────────────────────────
@@ -224,6 +248,16 @@ JASPWidgets.a11y = {
 				return;
 			}
 
+			// Shift+Enter opens the block's context menu; titles handle
+			// this themselves via the Toolbar keydown handler.
+			if (e.key === 'Enter' && e.shiftKey) {
+				if (target && target.matches && target.matches('.in-toolbar'))
+					return;
+				e.preventDefault();
+				a.openMenuFor(target);
+				return;
+			}
+
 			// Enter on a focused table drills into cell navigation
 			if (e.key === 'Enter' && target && target.matches && target.matches('table[role="table"]')) {
 				e.preventDefault();
@@ -231,7 +265,7 @@ JASPWidgets.a11y = {
 				return;
 			}
 
-			// block-level arrow navigation
+			// block-level arrow navigation (tables included)
 			if (e.key === 'ArrowDown')	{ e.preventDefault(); a.blockMove(1);	return; }
 			if (e.key === 'ArrowUp')	{ e.preventDefault(); a.blockMove(-1);	return; }
 		});
