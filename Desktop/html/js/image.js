@@ -240,8 +240,8 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 	_buildErrorHTML: function(errorMessage) {
 		var html = '';
 		html += '<div class="error-message-positioner">';
-		html += '<div class="error-message-box ui-state-error">';
-		html += '<span class="error-message-symbol ui-icon ui-icon-alert"></span>';
+		html += '<div class="error-message-box ui-state-error" role="alert">';
+		html += '<span class="error-message-symbol ui-icon ui-icon-alert" aria-hidden="true"></span>';
 		html += '<div class="error-message-message">' + errorMessage + '</div>';
 		html += '</div>';
 		html += '</div>';
@@ -282,7 +282,11 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 		} else {
 			// Create the same structure as renderDefault when there's data
 			html += '<div class="jasp-image-image"';
-			html += ' id="plotly-container-' + this.plotlyId + '">';
+			html += ' id="plotly-container-' + this.plotlyId + '"';
+			// Accessibility: same treatment as static plots in renderDefault
+			if (!error || error === "")
+				html += ' role="img" tabindex="0"';
+			html += ' data-plot-title="' + escapeHTML(this.model.get("title")) + '" aria-label="Plot">';
 
 			// Add the plotly div with proper dimensions
 			html += '<div id="' + this.plotlyId + '" class="plotly html-widget html-widget-output" style="width:' + width + 'px; height:' + height + 'px;"></div>';
@@ -377,7 +381,16 @@ JASPWidgets.imagePrimitive = JASPWidgets.View.extend({
 			html += '<div class="jasp-image-image"';
 			var id = data.replace(/[^A-Za-z0-9]/g, '-');
 			var url = insideJASP ? "plot://" + data : data;
-			html += ' id="' + id + '" style="';
+			html += ' id="' + id + '"';
+			// Accessibility: plots are CSS background-image divs, invisible
+			// to screen readers without role="img" + a label. The final
+			// label is computed post-render by JASPWidgets.a11y.enrichPlots
+			// (container title -> analysis title -> position); errors must
+			// stay un-roled so the role="alert" box inside is narrated.
+			if (!error)
+				html += ' role="img" tabindex="0"';
+			html += ' data-plot-title="' + escapeHTML(this.model.get("title")) + '" aria-label="Plot"';
+			html += ' style="';
 			html += error ? 'background-image: linear-gradient(rgba(255,255,255,0.67), rgba(255,255,255,0.67)),' : 'background-image:'
 			html += 'url(\'' + url + '?rev=' + this.model.get("revision") + '\'); '
 			html += 'background-size : 100% 100%">'
