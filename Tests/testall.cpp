@@ -181,6 +181,12 @@ void TestAll::testMainWindowShowsFilterWindow()
 	QVERIFY(scriptConstructor != nullptr);
 	QTRY_VERIFY(scriptConstructor->scriptArea() != nullptr); // non-null once the chrome is built
 
+	// Regression: a freshly opened, untouched filter (the default/empty filter, whose json is
+	// DEFAULT_FILTER_JSON and equals the empty model's serialization) must NOT report as changed,
+	// otherwise closing it wrongly pops the "apply or discard?" prompt even with no user action.
+	QVERIFY2(!scriptConstructor->jsonChanged(), "Untouched filter constructor reported changes");
+	QVERIFY(scriptConstructor->lastCheckPassed());
+
 	// --- Trash can regression: double-click must erase the entire script area ---
 	// The trash item is the only script-area child with z == 10.
 	QQuickItem * trash = nullptr;
