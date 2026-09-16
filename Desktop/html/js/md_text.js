@@ -15,6 +15,33 @@ JASPWidgets.md_textView = JASPWidgets.objectView.extend({
 
   events: {
     dblclick: "_startEdit",
+    keydown: "_a11yKeydown",
+  },
+
+  // Accessibility: markdown blocks were editable via dblclick only, so
+  // keyboard users could never edit them. Make the block a button-like
+  // activator (Enter/Space starts editing, Escape cancels).
+  _a11yKeydown: function (ev) {
+    if (this.editing) return;
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._startEdit(ev);
+    }
+  },
+
+  _a11yRefreshLabel: function () {
+    var raw = this.model.get("content") || "";
+    var preview = raw.replace(/\s+/g, " ").trim();
+    if (preview.length > 120) preview = preview.slice(0, 119) + "…";
+    this.$el
+      .attr("tabindex", 0)
+      .attr("role", "button")
+      .attr(
+        "aria-label",
+        (preview
+          ? "Markdown text: " + preview + ". "
+          : "Empty markdown text. ") + "Press Enter to edit."
+      );
   },
 
   _startEdit: function (e) {
@@ -47,6 +74,7 @@ JASPWidgets.md_textView = JASPWidgets.objectView.extend({
     wrapper.appendChild(textarea);
     this.$el.empty().append(wrapper);
     textarea.focus();
+    textarea.setAttribute("aria-label", "Markdown text editor");
 
     var save = function () {
       if (!self.editing) return;
@@ -62,6 +90,7 @@ JASPWidgets.md_textView = JASPWidgets.objectView.extend({
       if (ev.key === "Escape") {
         self.editing = false;
         self.render();
+        self.$el.focus();
       }
       if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) {
         ev.preventDefault();
@@ -82,6 +111,8 @@ JASPWidgets.md_textView = JASPWidgets.objectView.extend({
     if (typeof enhanceMarkdownTables === "function") {
       enhanceMarkdownTables(this.$el[0]);
     }
+
+    this._a11yRefreshLabel();
 
     return this;
   },

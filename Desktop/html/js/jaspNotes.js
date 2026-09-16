@@ -243,12 +243,74 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			if (window.resultsDocumentChanged)
 				window.resultsDocumentChanged();
 		});
+
+		// Accessibility: reveal the remove-button whenever any part of the
+		// note has keyboard focus (not only on mouse hover), and hide it
+		// again once focus leaves the note entirely.
+		this.$el.on('focusin.a11y', function () {
+			self.closeButton.setVisibility(true);
+		});
+		this.$el.on('focusout.a11y', function (e) {
+			if (!e.relatedTarget || !$.contains(self.$el[0], e.relatedTarget))
+				self.closeButton.setVisibility(false);
+		});
 	},
 
 	events: {
 		'mouseenter': '_hoveringStart',
 		'mouseleave': '_hoveringEnd',
 		'mousedown' : '_handleMouseDown',
+		'keydown'   : '_a11yKeydown',
+	},
+
+	// Accessibility: the notebox wrapper is a button-like activator
+	// ("press Enter to edit"); the Quill editor itself is kept out of the
+	// Tab order (tabindex=-1) so notes no longer trap Tab navigation.
+	_a11yKeydown: function (e) {
+		var target = e.target;
+		var onCloser = target && target !== e.currentTarget && $(target).closest('.jasp-closer').length > 0;
+		if (onCloser && (e.key === 'Enter' || e.key === ' ')) {
+			e.preventDefault();
+			this.closeButton.$el.trigger('click');
+			return;
+		}
+		if (target !== e.currentTarget)
+			return; // keypresses inside the editor/latex input are not ours
+		if (!this.editing && (e.key === 'Enter' || e.key === ' ')) {
+			e.preventDefault();
+			this.enterEditing();
+		}
+	},
+
+	enterEditing: function () {
+		if (this.editing || !this.$quill)
+			return;
+		this.editing = true;
+		this.$el.attr('role', 'region');
+		this.$el.attr('aria-label', i18n('Note') + ' — ' + i18n('editing'));
+		this.setQuillToolbarVisibility('block');
+		this.closeButton.setVisibility(true);
+		this.$quill.setSelection(0, 0, 'silent');
+		this.$quill.focus();
+	},
+
+	exitEditing: function () {
+		if (!this.editing)
+			return;
+		this.editing = false;
+		this.updateA11yLabel();
+		this.$el.focus();
+	},
+
+	updateA11yLabel: function () {
+		if (!this.$quill)
+			return;
+		var text = (this.$quill.getText() || '').replace(/\s+/g, ' ').trim();
+		if (text === '')
+			text = this.$quill.options.placeholder || i18n('Click here to add text');
+		else if (text.length > 120)
+			text = text.slice(0, 119) + '…';
+		this.$el.attr('aria-label', i18n('Note') + ': ' + text + '. ' + i18n('Press Enter to edit.'));
 	},
 
 	detach: function() {
@@ -273,6 +335,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.model.set('text', '');
 		this.model.set('delta', {});
 		this.model.set('deltaAvailable', false);
+		this.editing = false;
 	
 		if (this.$quill)
 			this.$quill.setContents([]);
@@ -306,14 +369,15 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		this.closeButton.render();
 
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
-        this.$el.attr('role', 'region').attr('aria-label', i18n('Note')).attr('id', noteId)
-        this.$el.append(`<div id="editor" role="textbox" aria-multiline="true" aria-label="${i18n('Note content')}" aria-describedby="${noteId}-instructions">`)
+        this.$el.attr('id', noteId).attr('role', 'button').attr('tabindex', '0')
+        this.$el.append(`<div id="${noteId}-editor" role="textbox" aria-multiline="true" aria-label="${i18n('Note content')}" aria-describedby="${noteId}-instructions">`)
                 .append(`<div class="jasp-latex-container jasp-hide">
                             <textarea class="jasp-latex-input" rows="5" cols="25" placeholder='${i18n("Input LaTeX here:")}
 								&bull; ${i18n("Press `Cmd/Ctrl + Enter` to apply;")}'>
 								</textarea>
                             <div class="jasp-latex-preview" title='${i18n("Click to apply formula")}'><div></div></div>
                         </div>`)
+                .append(`<div id="${noteId}-instructions" class="sr-only">${i18n('Press Enter to edit this note. Press Escape when you are finished.')}</div>`)
 
         var toolbarOptions = [
                     ['bold', 'italic', 'underline', 'link'], ['formula', 'code-block', 'image', 'video'],
@@ -541,6 +605,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		});
 		
 		quillEditorElement.addEventListener('focusin', () => {
+			// Mouse users focus the editor directly; keep the editing
+			// state consistent with the keyboard path.
+			if (!self.editing) {
+				self.editing = true;
+				self.$el.attr('role', 'region');
+				self.$el.attr('aria-label', i18n('Note') + ' — ' + i18n('editing'));
+			}
 			self.setQuillToolbarVisibility('block');
 		});
 
@@ -548,7 +619,26 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			if (!latexContainer.hasClass('jasp-hide') || this.$quillTooltip.is(':visible') || self.formulaClicked)
 				return;
 			self.setQuillToolbarVisibility('none');
+			if (self.editing) {
+				self.editing = false;
+				self.updateA11yLabel();
+			}
 		});
+
+		// Accessibility: keep the editor and its toolbar out of the Tab
+		// order entirely — notes are entered with Enter on the wrapper and
+		// left with Escape, so a screen-reader user tabbing through the
+		// results never gets trapped inside a note.
+		quillEditorElement.setAttribute('tabindex', '-1');
+		this.$quillToolbar.find('button, .ql-picker-label, .ql-picker-item, span, input').attr('tabindex', '-1');
+		quillEditorElement.addEventListener('keydown', (ev) => {
+			if (ev.key === 'Escape') {
+				ev.stopPropagation();
+				self.exitEditing();
+			}
+		});
+		this.closeButton.$el.on('focusin', () => self.closeButton.setVisibility(true));
+		this.closeButton.$el.on('focusout', () => self.closeButton.setVisibility(false));
 
 		if (this.model.get('deltaAvailable')) {
 			delt = this.model.get('delta');
@@ -563,10 +653,13 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
 		this.$quill.setContents(delt);
 		self.onNoteChanged(self.$quill.root.innerHTML, self.$quill.getContents());
+		self.updateA11yLabel();
 
 		this.$quill.on('text-change', function(delta, oldDelta, source) {
 
 			setContainerPosition();
+
+			self.updateA11yLabel();
 
 			let _quillRootHTML = self.$quill.root
 
