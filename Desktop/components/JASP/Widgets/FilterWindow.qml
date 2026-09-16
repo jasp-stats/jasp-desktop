@@ -165,7 +165,7 @@ FocusScope
 			ScriptConstructor
 			{
 				id:					easyFilterConstructor
-				mode:				ScriptConstructor.Filter
+				mode:				ScriptConstructorMode.Filter
 				constructorJson:	filterModel.filter.constructorJson
 				filterErrorMsg:		filterModel.filter.filterErrorMsg
 				clip:				true

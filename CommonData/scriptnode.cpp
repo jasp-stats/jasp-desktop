@@ -80,32 +80,12 @@ void ScriptNode::deleteTree(ScriptNode * node)
 
 std::string ScriptNode::nodeTypeString() const
 {
-	switch(type())
-	{
-	case Type::Operator:			return "Operator";
-	case Type::OperatorVertical:	return "OperatorVertical";
-	case Type::Function:			return "Function";
-	case Type::RowFunction:			return "RowFunction";
-	case Type::Column:				return "Column";
-	case Type::Number:				return "Number";
-	case Type::Boolean:				return "Boolean";
-	case Type::String:				return "String";
-	}
-	return "";
+	return ScriptNodeTypeToString(type());
 }
 
 ScriptNode::Type ScriptNode::typeFromString(const std::string & str)
 {
-	if(str == "Operator")			return Type::Operator;
-	if(str == "OperatorVertical")	return Type::OperatorVertical;
-	if(str == "Function")			return Type::Function;
-	if(str == "RowFunction")		return Type::RowFunction;
-	if(str == "Column")				return Type::Column;
-	if(str == "Number")				return Type::Number;
-	if(str == "Boolean")			return Type::Boolean;
-	if(str == "String")				return Type::String;
-
-	throw std::runtime_error("Unknown script node type: " + str);
+	return ScriptNodeTypeFromString(str);
 }
 
 ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
@@ -118,18 +98,27 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 	const std::string nodeType = jsonStr(json, "nodeType");
 	const std::string toolTip  = jsonStr(json, "toolTipText");
 
+	if(!ScriptNodeTypeValidName(nodeType))
+		return nullptr;
+
+	const ScriptNodeType t = ScriptNodeTypeFromString(nodeType);
+
 	ScriptNode * result = nullptr;
 
-	if(nodeType == "Operator" || nodeType == "OperatorVertical")
+	switch(t)
 	{
-		auto * op = new ScriptNodeOperator(jsonStr(json, "operator", "+"), nodeType == "OperatorVertical", parent);
+	case ScriptNodeType::Operator:
+	case ScriptNodeType::OperatorVertical:
+	{
+		auto * op = new ScriptNodeOperator(jsonStr(json, "operator", "+"), t == ScriptNodeType::OperatorVertical, parent);
 
 		op->setLeft(	fromJson(json.get("leftArgument", Json::nullValue),		op));
 		op->setRight(	fromJson(json.get("rightArgument", Json::nullValue),	op));
 
 		result = op;
+		break;
 	}
-	else if(nodeType == "Function")
+	case ScriptNodeType::Function:
 	{
 		std::vector<ScriptNodeFunction::Argument> args;
 		const Json::Value & argsJson = json.get("arguments", Json::arrayValue);
@@ -163,8 +152,9 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 			func->setArgumentValue(static_cast<int>(i), fromJson(argsJson[i].get("argument", Json::nullValue), func));
 
 		result = func;
+		break;
 	}
-	else if(nodeType == "RowFunction")
+	case ScriptNodeType::RowFunction:
 	{
 		auto * rowFunc = new ScriptNodeRowFunction(jsonStr(json, "functionName"), parent);
 
@@ -194,8 +184,9 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 			rowFunc->addChild(nullptr);
 
 		result = rowFunc;
+		break;
 	}
-	else if(nodeType == "Column")
+	case ScriptNodeType::Column:
 	{
 		result = new ScriptNodeColumn(
 			jsonStr(json, "columnName"),
@@ -205,28 +196,33 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 
 		if(json.isMember("dataSetName"))
 			static_cast<ScriptNodeColumn*>(result)->setDataSetName(jsonStr(json, "dataSetName"));
+		break;
 	}
-	else if(nodeType == "Number")
+	case ScriptNodeType::Number:
 	{
-		auto * lit = new ScriptNodeLiteral(Type::Number, parent);
+		auto * lit = new ScriptNodeLiteral(ScriptNodeType::Number, parent);
 		lit->setNumberValue(jsonDouble(json, "value", 0));
 		result = lit;
+		break;
 	}
-	else if(nodeType == "Boolean")
+	case ScriptNodeType::Boolean:
 	{
-		auto * lit = new ScriptNodeLiteral(Type::Boolean, parent);
+		auto * lit = new ScriptNodeLiteral(ScriptNodeType::Boolean, parent);
 
 		const Json::Value & val = json.get("value", false);
 		if(val.isString())	lit->setBoolValue(val.asString() == "TRUE");
 		else if(val.isBool()) lit->setBoolValue(val.asBool());
 
 		result = lit;
+		break;
 	}
-	else if(nodeType == "String")
+	case ScriptNodeType::String:
 	{
-		auto * lit = new ScriptNodeLiteral(Type::String, parent);
+		auto * lit = new ScriptNodeLiteral(ScriptNodeType::String, parent);
 		lit->setStringValue(jsonStr(json, "text"));
 		result = lit;
+		break;
+	}
 	}
 
 	if(result && !toolTip.empty())
@@ -356,7 +352,7 @@ int ScriptNodeFunction::argumentIndex(const std::string & name) const
 Json::Value ScriptNodeFunction::toJson() const
 {
 	Json::Value json;
-	json["nodeType"]		= "Function";
+	json["nodeType"]		= nodeTypeString();
 	json["functionName"]	= _functionName;
 	json["arguments"]		= Json::arrayValue;
 
@@ -424,6 +420,13 @@ ScriptNodeRowFunction::ScriptNodeRowFunction(const std::string & functionName, S
 {
 }
 
+ScriptNode * ScriptNodeRowFunction::cloneEmpty() const
+{
+	auto * out = new ScriptNodeRowFunction(_functionName);
+	out->addChild(nullptr);	// the palette clone always starts with one free slot
+	return out;
+}
+
 void ScriptNodeRowFunction::setChild(int index, ScriptNode * node)
 {
 	if(index < 0 || index >= static_cast<int>(_children.size()))
@@ -467,7 +470,7 @@ void ScriptNodeRowFunction::ensureTrailingEmptySlot()
 Json::Value ScriptNodeRowFunction::toJson() const
 {
 	Json::Value json;
-	json["nodeType"]		= "RowFunction";
+	json["nodeType"]		= nodeTypeString();
 	json["functionName"]	= _functionName;
 	json["droppedItems"]	= Json::arrayValue;
 
@@ -510,7 +513,7 @@ std::string ScriptNodeRowFunction::toR(const ScriptColumnTypeProvider * typeProv
 
 stringvec ScriptNodeRowFunction::dragKeys(ScriptConstructorMode) const
 {
-	return {"number"};
+	return ScriptConstructorRegistry::rowFunctionKeys();
 }
 
 bool ScriptNodeRowFunction::isComplete() const
@@ -552,7 +555,7 @@ int ScriptNodeColumn::effectiveColumnType(int actualColumnType) const
 Json::Value ScriptNodeColumn::toJson() const
 {
 	Json::Value json;
-	json["nodeType"]			= "Column";
+	json["nodeType"]			= nodeTypeString();
 	json["columnName"]			= _columnName;
 	json["columnTypeUser"]		= _columnTypeUser;
 	json["columnTypeDrop"]		= _columnTypeDrop;

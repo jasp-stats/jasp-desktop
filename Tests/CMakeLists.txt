@@ -217,6 +217,7 @@ target_link_libraries(
 target_compile_definitions(
   JASPTest
   PUBLIC TESTLIBRARY_DIR=${CMAKE_SOURCE_DIR}/Tests/TestLibrary
+  PRIVATE JASP_TESTHOOKS
 )
 
 target_compile_definitions(

@@ -91,6 +91,10 @@ if(NOT FLATPAK_USED)
       QuickControls2Impl
       QmlWorkerScript
       QuickWidgets
+      # Private headers of QQuickText/QQuickRectangle/QQuickTextInput/QQuickImage (script
+      # constructor leaf items) and QQuickCheckBox:
+      QuickPrivate
+      QuickTemplates2Private
   )
   if(NOT USE_QT_STATIC_LIBS)
     find_package(
@@ -132,7 +136,9 @@ else()
                QuickControls2
                QuickControls2Impl
                QmlWorkerScript
-               QuickWidgets)
+               QuickWidgets
+               QuickPrivate
+               QuickTemplates2Private)
 
   find_package(
     Qt6WebEngineQuick

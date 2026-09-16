@@ -6,9 +6,12 @@
 #include <vector>
 #include <QObject>
 #include "utils.h"
+#include "enumutilities.h"
 #include "scriptconstructorregistry.h"
 
 class ScriptNodeModel;
+
+DECLARE_ENUM(ScriptNodeType, Operator, OperatorVertical, Function, RowFunction, Column, Number, Boolean, String)
 
 /// Provides the actual column type for a column name (needed for R code generation of Column nodes).
 /// The view/integration layer implements this using ColumnsModel or DataSet.
@@ -24,7 +27,7 @@ class ScriptNode : public QObject
 	Q_OBJECT
 
 public:
-	enum class Type { Operator, OperatorVertical, Function, RowFunction, Column, Number, Boolean, String };
+	using Type = ScriptNodeType;
 
 	explicit ScriptNode(ScriptNode * parent = nullptr);
 	virtual ~ScriptNode() = default;
@@ -39,6 +42,17 @@ public:
 	virtual ScriptNode	*	rightChild()		const	{ return nullptr; }
 	virtual int				childCount()		const	{ return 0; }
 	virtual ScriptNode	*	childAt(int)		const	{ return nullptr; }
+
+	// --- slot API: every child index of a node is also a droppable slot (leaf nodes have none) ---
+
+	/// Number of child slots; for operators slot 0 = left, slot 1 = right.
+	virtual int				slotCount()					const	{ return 0; }
+	/// Drop keys accepted by the given slot.
+	virtual stringvec		slotDropKeys(int)			const	{ return {}; }
+	/// Store node in the given slot (implementations must setParent() when node != nullptr).
+	virtual void			setSlot(int, ScriptNode *)			{}
+	/// Fresh node of the same type without children (row functions with one trailing empty slot).
+	virtual ScriptNode	*	cloneEmpty()				const	= 0;
 
 	ScriptNode	*	parent() const { return _parent; }
 	void			setParent(ScriptNode * newParent) { _parent = newParent; }
@@ -74,6 +88,11 @@ public:
 	ScriptNode	*	rightChild()	const override { return _right; }
 	int				childCount()	const override { return 2; }
 	ScriptNode	*	childAt(int i)	const override { return i == 0 ? _left : _right; }
+
+	int				slotCount()				const override { return 2; }
+	stringvec		slotDropKeys(int slot)	const override { return slot == 0 ? dropKeysLeft() : dropKeysRight(); }
+	void			setSlot(int slot, ScriptNode * node) override { slot == 0 ? setLeft(node) : setRight(node); }
+	ScriptNode	*	cloneEmpty()			const override { return new ScriptNodeOperator(_op, _vertical); }
 
 	const std::string & op() const { return _op; }
 	bool isVertical() const { return _vertical; }
@@ -116,6 +135,11 @@ public:
 	int				childCount()	const override { return static_cast<int>(_arguments.size()); }
 	ScriptNode	*	childAt(int i)	const override { return _arguments.at(i).value; }
 
+	int				slotCount()				const override { return static_cast<int>(_arguments.size()); }
+	stringvec		slotDropKeys(int slot)	const override { return slot >= 0 && slot < static_cast<int>(_arguments.size()) ? _arguments[slot].dropKeys : stringvec{}; }
+	void			setSlot(int slot, ScriptNode * node) override { setArgumentValue(slot, node); }
+	ScriptNode	*	cloneEmpty()			const override { return new ScriptNodeFunction(_functionName); }
+
 	const std::string & functionName() const { return _functionName; }
 	const std::vector<Argument> & arguments() const { return _arguments; }
 
@@ -144,6 +168,11 @@ public:
 	int				childCount()	const override { return static_cast<int>(_children.size()); }
 	ScriptNode	*	childAt(int i)	const override { return _children.at(i); }
 
+	int				slotCount()				const override { return static_cast<int>(_children.size()); }
+	stringvec		slotDropKeys(int)			const override { return ScriptConstructorRegistry::rowFunctionKeys(); }
+	void			setSlot(int slot, ScriptNode * node) override { setChild(slot, node); }
+	ScriptNode	*	cloneEmpty()			const override;
+
 	const std::string & functionName() const { return _functionName; }
 	const std::vector<ScriptNode*> & children() const { return _children; }
 
@@ -170,6 +199,7 @@ public:
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
 	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override { return true; }
+	ScriptNode	*	cloneEmpty() const override { return new ScriptNodeColumn(_columnName); }
 
 	const std::string & columnName() const { return _columnName; }
 	int columnTypeUser() const { return _columnTypeUser; }
@@ -202,6 +232,7 @@ public:
 	std::string		toR(const ScriptColumnTypeProvider * typeProvider = nullptr) const override;
 	stringvec		dragKeys(ScriptConstructorMode mode) const override;
 	bool			isComplete() const override { return true; }
+	ScriptNode	*	cloneEmpty() const override { return new ScriptNodeLiteral(_literalType); }
 
 	double			numberValue() const { return _numberValue; }
 	bool			boolValue() const { return _boolValue; }

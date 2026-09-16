@@ -3,11 +3,29 @@
 
 #include <QQuickItem>
 #include <QPointer>
+#include <QtQuick/private/qquickimage_p.h>
 #include "scriptconstructormodel.h"
 
 class ScriptConstructorView;
 class ScriptNodeItem;
-class QQmlComponent;
+
+///
+/// QQuickImage with the settings the constructor used in its inline-QML Image component:
+/// asynchronous loading (decode off the GUI thread) and PreserveAspectFit, plus a
+/// sourceSize of 2x the item size so watermarks/icons stay crisp (replicates the old
+/// `sourceSize.width: width * 2` binding; for fixed-size icon leaves the 2x sourceSize is
+/// harmless as before).
+///
+class ScriptImage : public QQuickImage
+{
+	Q_OBJECT
+
+public:
+	explicit ScriptImage(QQuickItem * parent = nullptr);
+
+protected:
+	void			geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
+};
 
 ///
 /// A single drop slot in the constructor. Visually a rounded placeholder that can hold one
@@ -26,7 +44,8 @@ public:
 	ScriptNodeItem	*	filledItem() const { return _filled; }
 	void				clearFilled();
 
-	void				setHoverState(bool hovered, bool accepted);
+	/// Drag-hover highlight (green marker); the red error state is marked via setError.
+	void				setHoverState(bool hovered);
 	void				setError(bool error);
 	void				setAcceptsDrops(bool accepts);
 	void				setDefaultText(const QString & text);
@@ -45,6 +64,7 @@ private:
 	QQuickItem	*	ensureMarker();
 	QQuickItem	*	ensureInput();
 	void			parseAndCreateLiteral();
+	QSizeF			defaultSpotSize() const;
 
 	ScriptConstructorView	*	_view		= nullptr;
 	DropTarget					_target;
@@ -71,10 +91,15 @@ public:
 
 	void			setToolTipText(const QString & text) { _toolTipText = text; }
 
+#ifdef JASP_TESTHOOKS
 	// Test/debug counters: incremented on delivery of the corresponding event, so tests (and
 	// the "visible but unclickable" diagnostics) can verify delivery deterministically.
+	// Compiled in only when JASP_TESTHOOKS is defined (BUILD_TESTS builds); the class layout
+	// differs with and without the define, so the flag is set PUBLIC on JASPDesktopLib (see
+	// Desktop/CMakeLists.txt) to keep library and consumers consistent.
 	int				debugPressCount		= 0;
 	int				debugDoubleClickCount	= 0;
+#endif
 
 protected:
 	void			mousePressEvent(QMouseEvent * event) override;
@@ -88,9 +113,10 @@ private:
 };
 
 ///
-/// Visual representation of a single ScriptNode. Creates incubated QML leaves (Text, Image,
-/// TextInput, CheckBox) for its content plus ScriptDropSpot children for its slots, and lays
-/// them out. Contains no formula logic: it only renders and forwards gestures to the view.
+/// Visual representation of a single ScriptNode. Creates native QtQuick leaf items
+/// (QQuickText, ScriptImage, QQuickTextInput, QQuickCheckBox) for its content plus
+/// ScriptDropSpot children for its slots, and lays them out. Contains no formula logic:
+/// it only renders and forwards gestures to the view.
 class ScriptNodeItem : public QQuickItem
 {
 	Q_OBJECT
@@ -109,7 +135,7 @@ public:
 	qreal			preferredWidth() const { return _preferredWidth; }
 	qreal			preferredHeight() const { return _preferredHeight; }
 
-	bool			shouldDrag(qreal x, qreal y) const;
+	bool			shouldDrag(qreal x) const;
 	QList<ScriptDropSpot*> dropSpots() const { return _dropSpots; }
 
 	void			setAcceptsDrops(bool accepts);

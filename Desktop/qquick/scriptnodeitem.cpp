@@ -4,10 +4,16 @@
 #include "qutils.h"
 #include "data/columnsmodel.h"
 #include "timers.h"
-#include <QQmlComponent>
-#include <QQmlIncubator>
-#include <QQmlEngine>
-#include <QQmlProperty>
+
+// Leaf items are constructed natively (these classes live in the QtQuick/QtQuickTemplates2
+// private headers; both libraries are linked by JASPDesktopLib).
+#include <QtQuick/private/qquicktext_p.h>
+#include <QtQuick/private/qquickrectangle_p.h>
+#include <QtQuick/private/qquicktextinput_p.h>
+#include <QtQuickTemplates2/private/qquickcheckbox_p.h>
+#include <QtQml/qqmlcontext.h>
+#include <QtQml/QQmlEngine>
+
 #include <QFontMetricsF>
 #include <QEvent>
 #include <QKeyEvent>
@@ -19,21 +25,20 @@
 
 // JaspTheme::currentTheme() is null until a theme exists (and again after the last one is
 // destroyed), so every access must be guarded.
-namespace
+static QFont viewFont(ScriptConstructorView * view, bool bold = false)
 {
-QFont themeFont()
-{
-	if(JaspTheme * t = JaspTheme::currentTheme())
-		return t->font();
-	return QFont();
+	JaspTheme * theme = JaspTheme::currentTheme();
+	QFont f = theme ? theme->font() : QFont();
+	f.setPixelSize(static_cast<int>(view ? view->fontPixelSize() : 16));
+	if(bold) f.setBold(true);
+	return f;
 }
 
-QString themeIconPath()
+static QString themeIconPath()
 {
 	if(JaspTheme * t = JaspTheme::currentTheme())
 		return t->iconPath();
 	return QString();
-}
 }
 
 // =====================================================================================
@@ -128,16 +133,58 @@ void ScriptPalette::geometryChange(const QRectF & newGeometry, const QRectF & ol
 }
 
 // =====================================================================================
+// ScriptImage
+// =====================================================================================
+
+ScriptImage::ScriptImage(QQuickItem * parent)
+	: QQuickImage(parent)
+{
+	// NB: the old inline-QML Image component also wrote smooth: true; that property was
+	// removed from Qt 6 Images (the write was a no-op warning), so there is nothing to set.
+	setAsynchronous(true);
+	setFillMode(QQuickImage::PreserveAspectFit);
+
+	// Items constructed in C++ have no QQmlContext, which leaves qmlEngine(this) null; the
+	// QQuickPixmap loader then completes with an *empty* pixmap (status Ready, painted 0x0).
+	// Attach the visual parent's context so image loading behaves exactly like QML-created
+	// Images (same pattern as datasetviewbase.cpp / rowcontrols.cpp).
+	if(parent)
+		if(QQmlContext * context = qmlContext(parent))
+			QQmlEngine::setContextForObject(this, context);
+}
+
+void ScriptImage::geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry)
+{
+	QQuickImage::geometryChange(newGeometry, oldGeometry);
+
+	// Keep sourceSize = 2x size (the old `sourceSize.width: width * 2` binding) so the
+	// watermark stays crisp; for fixed-size icons the 2x sourceSize is harmless as before.
+	if(newGeometry.size() != oldGeometry.size())
+		setSourceSize(QSize(qRound(newGeometry.width() * 2), qRound(newGeometry.height() * 2)));
+}
+
+// =====================================================================================
 // ScriptDropSpot
 // =====================================================================================
+
+QSizeF ScriptDropSpot::defaultSpotSize() const
+{
+	return QSizeF(_view ? _view->blockDim() * 3 : 60, _view ? _view->blockDim() : 20);
+}
 
 ScriptDropSpot::ScriptDropSpot(ScriptConstructorView * view, QQuickItem * parent)
 	: QQuickItem(parent)
 	, _view(view)
 {
-	setImplicitWidth(_view ? _view->blockDim() * 3 : 60);
-	setImplicitHeight(_view ? _view->blockDim() : 20);
+	const QSizeF def = defaultSpotSize();
+	setImplicitWidth(def.width());
+	setImplicitHeight(def.height());
 	setAcceptedMouseButtons(Qt::LeftButton);
+
+	// See ScriptNodeItem ctor: keep the view's context through the C++-built tree.
+	if(view)
+		if(QQmlContext * context = qmlContext(view))
+			QQmlEngine::setContextForObject(this, context);
 }
 
 void ScriptDropSpot::setTarget(const DropTarget & target)
@@ -150,20 +197,18 @@ QQuickItem * ScriptDropSpot::ensurePlaceholder()
 	if(_placeholder)
 		return _placeholder;
 
-	_placeholder = _view->newLeaf(_view->textComponent(), "text");
-	if(_placeholder)
-	{
-		_placeholder->setParentItem(this);
-		_placeholder->setProperty("verticalAlignment", 128);	// Text.AlignVCenter
-		_placeholder->setProperty("horizontalAlignment", 4);	// Text.AlignHCenter
-		QFont f = themeFont();
-		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-		_placeholder->setProperty("font", f);
-		_placeholder->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textDisabled() : QColor("gray"));
-		_placeholder->setProperty("text", _defaultText);
-		_placeholder->setX(0);
-		_placeholder->setY(0);
-	}
+	QQuickText * text = new QQuickText();
+	text->setParentItem(this);
+	text->setVAlign(QQuickText::AlignVCenter);
+	text->setHAlign(QQuickText::AlignHCenter);
+	JaspTheme * theme = JaspTheme::currentTheme();
+	text->setFont(viewFont(_view));
+	text->setColor(theme ? theme->textDisabled() : QColor("gray"));
+	text->setText(_defaultText);
+	text->setX(0);
+	text->setY(0);
+
+	_placeholder = text;
 	return _placeholder;
 }
 
@@ -172,18 +217,17 @@ QQuickItem * ScriptDropSpot::ensureMarker()
 	if(_marker)
 		return _marker;
 
-	_marker = _view->newLeaf(_view->rectangleComponent(), "rectangle");
-	if(_marker)
-	{
-		_marker->setParentItem(this);
-		_marker->setZ(-3);
-		_marker->setProperty("color", QColor("transparent"));
-		_marker->setProperty("radius", 4.0);
-		QQmlProperty(_marker, "border.width").write(2.0);
-		if(JaspTheme * theme = JaspTheme::currentTheme())
-			QQmlProperty(_marker, "border.color").write(theme->blue());
-		_marker->setVisible(false);
-	}
+	QQuickRectangle * marker = new QQuickRectangle();
+	marker->setParentItem(this);
+	marker->setZ(-3);
+	marker->setColor(QColor("transparent"));
+	marker->setRadius(4.0);
+	marker->border()->setWidth(2.0);
+	if(JaspTheme * theme = JaspTheme::currentTheme())
+		marker->border()->setColor(theme->blue());
+	marker->setVisible(false);
+
+	_marker = marker;
 	return _marker;
 }
 
@@ -222,25 +266,22 @@ void ScriptDropSpot::clearFilled()
 {
 	_filled = nullptr;
 	if(_placeholder) _placeholder->setVisible(_acceptsDrops);
-	qreal w = _view ? _view->blockDim() * 3 : 60;
-	qreal h = _view ? _view->blockDim() : 20;
-	setImplicitWidth(w);
-	setImplicitHeight(h);
-	setWidth(w);
-	setHeight(h);
+	const QSizeF def = defaultSpotSize();
+	setImplicitWidth(def.width());
+	setImplicitHeight(def.height());
+	setWidth(def.width());
+	setHeight(def.height());
 }
 
-void ScriptDropSpot::setHoverState(bool hovered, bool accepted)
+void ScriptDropSpot::setHoverState(bool hovered)
 {
-	QQuickItem * m = ensureMarker();
+	QQuickRectangle * m = qobject_cast<QQuickRectangle*>(ensureMarker());
 	if(!m) return;
 
 	if(hovered)
 	{
 		JaspTheme * theme = JaspTheme::currentTheme();
-		QQmlProperty(m, "border.color").write(accepted
-			? (theme ? theme->green() : QColor("green"))
-			: (theme ? theme->red()    : QColor("red")));
+		m->border()->setColor(theme ? theme->green() : QColor("green"));
 		m->setWidth(width());
 		m->setHeight(height());
 	}
@@ -252,13 +293,13 @@ void ScriptDropSpot::setHoverState(bool hovered, bool accepted)
 void ScriptDropSpot::setError(bool error)
 {
 	_error = error;
-	QQuickItem * m = ensureMarker();
+	QQuickRectangle * m = qobject_cast<QQuickRectangle*>(ensureMarker());
 	if(!m) return;
 
 	if(error)
 	{
 		m->setVisible(true);
-		QQmlProperty(m, "border.color").write(QColor("#BB0000"));
+		m->border()->setColor(QColor("#BB0000"));
 		m->setWidth(width());
 		m->setHeight(height());
 	}
@@ -281,9 +322,9 @@ void ScriptDropSpot::layout()
 		if(_placeholder)
 			_placeholder->setProperty("text", _defaultText);
 		qreal pw = _placeholder ? _placeholder->property("implicitWidth").toReal() : 0;
-		qreal minW = _acceptsDrops && _view ? _view->blockDim() * 3 : 0;
+		qreal minW = _acceptsDrops ? defaultSpotSize().width() : 0;
 		w = std::max(pw, minW);
-		h = _view ? _view->blockDim() : 20;
+		h = defaultSpotSize().height();
 	}
 
 	setImplicitWidth(w);
@@ -313,21 +354,20 @@ QQuickItem * ScriptDropSpot::ensureInput()
 	if(_input)
 		return _input;
 
-	_input = _view->newLeaf(_view->textInputComponent(), "textInput");
-	if(_input)
-	{
-		_input->setParentItem(this);
-		_input->setProperty("text", _defaultText);
-		QFont f = themeFont();
-		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-		_input->setProperty("font", f);
-		_input->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
-		_input->setX(0);
-		_input->setY(0);
-		_input->setVisible(false);
-		_input->installEventFilter(this); // Escape must cancel, not commit, the edit
-		connect(_input, SIGNAL(editingFinished()), this, SLOT(onInputEditingFinished()));
-	}
+	QQuickTextInput * input = new QQuickTextInput();
+	input->setParentItem(this);
+	input->setSelectByMouse(true);
+	input->setText(_defaultText);
+	JaspTheme * theme = JaspTheme::currentTheme();
+	input->setFont(viewFont(_view));
+	input->setColor(theme ? theme->textEnabled() : QColor("black"));
+	input->setX(0);
+	input->setY(0);
+	input->setVisible(false);
+	input->installEventFilter(this); // Escape must cancel, not commit, the edit
+	connect(input, SIGNAL(editingFinished()), this, SLOT(onInputEditingFinished()));
+
+	_input = input;
 	return _input;
 }
 
@@ -457,13 +497,17 @@ void ScriptTrashItem::mousePressEvent(QMouseEvent * event)
 {
 	// Accept the press so the window treats this item as the press target (and can
 	// synthesize the double click on the second press).
+#ifdef JASP_TESTHOOKS
 	debugPressCount++;
+#endif
 	event->accept();
 }
 
 void ScriptTrashItem::mouseDoubleClickEvent(QMouseEvent * event)
 {
+#ifdef JASP_TESTHOOKS
 	debugDoubleClickCount++;
+#endif
 	// Mirrors the old DropTrash: erase the slate AND apply the (now empty) filter, otherwise
 	// the surrounding FilterModel keeps the old constructorJson and pushes the erased formula
 	// tree straight back into the view on the next filter sync.
@@ -504,6 +548,12 @@ ScriptNodeItem::ScriptNodeItem(ScriptConstructorView * view, ScriptNode * node, 
 	// Hover shows a native tooltip via QToolTip (see hoverEnterEvent), replacing the old
 	// per-item QtQuick ToolTip overlay that required one QML incubation per node item.
 	setAcceptHoverEvents(true);
+
+	// Propagate the view's QQmlContext into the C++-built item tree: without a context the
+	// QQuickImage-based leaves get an empty pixmap from the loader (status Ready, 0x0).
+	if(view)
+		if(QQmlContext * context = qmlContext(view))
+			QQmlEngine::setContextForObject(this, context);
 }
 
 void ScriptNodeItem::setToolTip(const QString & toolTip)
@@ -547,19 +597,16 @@ void ScriptNodeItem::clearLeaves()
 QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 {
 	JASPTIMER_SCOPE(ScriptNodeItem makeText total);
-	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
-	if(!item) return nullptr;
-
+	QQuickText * item = new QQuickText();
 	item->setParentItem(this);
-	item->setProperty("text", text);
+	item->setText(text);
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeText setProps);
-		QFont f = themeFont();
-		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-		f.setBold(bold);
-		item->setProperty("font", f);
-		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
+		JaspTheme * theme = JaspTheme::currentTheme();
+		item->setVAlign(QQuickText::AlignVCenter);	// the old inline Text component set this for every text leaf
+		item->setFont(viewFont(_view, bold));
+		item->setColor(theme ? theme->textEnabled() : QColor("black"));
 	}
 
 	addLeaf(item);
@@ -569,17 +616,14 @@ QQuickItem * ScriptNodeItem::makeText(const QString & text, bool bold)
 QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 {
 	JASPTIMER_SCOPE(ScriptNodeItem makeImage total);
-	QQuickItem * item = _view->newLeaf(_view->imageComponent(), "image");
-	if(!item) return nullptr;
-
+	ScriptImage * item = new ScriptImage(this);
 	item->setParentItem(this);
 	{
-		// Suspect #1 for slow init: Image loads synchronously by default, so this
-		// property write can trigger a PNG load + decode on the GUI thread.
+		// Suspect #1 for slow init: the image load is asynchronous (ScriptImage ctor), but
+		// setting the source can still trigger work on the GUI thread.
 		JASPTIMER_SCOPE(ScriptNodeItem makeImage setSource);
-		item->setProperty("source", themeIconPath() + "/" + iconFile);
+		item->setSource(QUrl(themeIconPath() + "/" + iconFile)); // same string->QUrl conversion as the old property write
 	}
-	item->setProperty("fillMode", 1); // Image.PreserveAspectFit
 
 	qreal dim = _view->blockDim();
 	item->setWidth(dim);
@@ -596,18 +640,16 @@ QQuickItem * ScriptNodeItem::makeImage(const QString & iconFile)
 QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 {
 	JASPTIMER_SCOPE(ScriptNodeItem makeParenText total);
-	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
-	if(!item) return nullptr;
-
+	QQuickText * item = new QQuickText();
 	item->setParentItem(this);
-	item->setProperty("text", text);
+	item->setText(text);
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeParenText setProps);
-		QFont f = themeFont();
-		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-		item->setProperty("font", f);
-		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
+		JaspTheme * theme = JaspTheme::currentTheme();
+		item->setVAlign(QQuickText::AlignVCenter);	// the old inline Text component set this for every text leaf
+		item->setFont(viewFont(_view));
+		item->setColor(theme ? theme->textEnabled() : QColor("black"));
 		item->setVisible(false); // visibility controlled in layout()
 	}
 
@@ -617,18 +659,16 @@ QQuickItem * ScriptNodeItem::makeParenText(const QString & text)
 QQuickItem * ScriptNodeItem::makeComma()
 {
 	// Argument separator text (", ") — rendered between function/row-function arguments.
-	QQuickItem * item = _view->newLeaf(_view->textComponent(), "text");
-	if(!item) return nullptr;
-
+	QQuickText * item = new QQuickText();
 	item->setParentItem(this);
-	item->setProperty("text", ", ");
+	item->setText(", ");
 
 	{
 		JASPTIMER_SCOPE(ScriptNodeItem makeComma setProps);
-		QFont f = themeFont();
-		f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-		item->setProperty("font", f);
-		item->setProperty("color", JaspTheme::currentTheme() ? JaspTheme::currentTheme()->textEnabled() : QColor("black"));
+		JaspTheme * theme = JaspTheme::currentTheme();
+		item->setVAlign(QQuickText::AlignVCenter);	// the old inline Text component set this for every text leaf
+		item->setFont(viewFont(_view));
+		item->setColor(theme ? theme->textEnabled() : QColor("black"));
 	}
 
 	_argumentCommas.append(item);
@@ -669,7 +709,7 @@ void ScriptNodeItem::setNested(bool nested)
 	_nested = nested;
 }
 
-bool ScriptNodeItem::shouldDrag(qreal x, qreal) const
+bool ScriptNodeItem::shouldDrag(qreal x) const
 {
 	// For columns the icon (leftmost blockDim) is a click target for changing the type, not a drag handle.
 	if(_node && _node->type() == ScriptNode::Type::Column && _acceptsDrops)
@@ -697,53 +737,35 @@ void ScriptNodeItem::rebuild()
 		spot->setFilledItem(childItem);
 	};
 
+	// Inline editor for number/string literals.
+	auto makeLiteralInput = [&](const QString & text)
+	{
+		QQuickTextInput * input = new QQuickTextInput();
+		input->setSelectByMouse(true);
+		input->setParentItem(this);
+		input->setText(text);
+		input->setFont(viewFont(_view));
+		input->setColor(theme ? theme->textEnabled() : QColor("black"));
+		addLeaf(input);
+		connect(input, SIGNAL(editingFinished()), this, SLOT(onLiteralEditFinished()));
+	};
+
 	switch(_node->type())
 	{
 	case ScriptNode::Type::Number:
-	{
-		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
-		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
-		if(input)
-		{
-			input->setParentItem(this);
-			input->setProperty("text", QString::number(lit->numberValue()));
-			QFont f = themeFont();
-			f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-			input->setProperty("font", f);
-			input->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
-			addLeaf(input);
-			connect(input, SIGNAL(editingFinished()), this, SLOT(onLiteralEditFinished()));
-		}
+		makeLiteralInput(QString::number(static_cast<ScriptNodeLiteral*>(_node.data())->numberValue()));
 		break;
-	}
 	case ScriptNode::Type::String:
-	{
-		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
-		QQuickItem * input = _view->newLeaf(_view->textInputComponent(), "textInput");
-		if(input)
-		{
-			input->setParentItem(this);
-			input->setProperty("text", QString::fromStdString(lit->stringValue()));
-			QFont f = themeFont();
-			f.setPixelSize(static_cast<int>(_view->fontPixelSize()));
-			input->setProperty("font", f);
-			input->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
-			addLeaf(input);
-			connect(input, SIGNAL(editingFinished()), this, SLOT(onLiteralEditFinished()));
-		}
+		makeLiteralInput(QString::fromStdString(static_cast<ScriptNodeLiteral*>(_node.data())->stringValue()));
 		break;
-	}
 	case ScriptNode::Type::Boolean:
 	{
 		auto * lit = static_cast<ScriptNodeLiteral*>(_node.data());
-		QQuickItem * box = _view->newLeaf(_view->checkBoxComponent(), "checkBox");
-		if(box)
-		{
-			box->setParentItem(this);
-			box->setProperty("checked", lit->boolValue());
-			addLeaf(box);
-			connect(box, SIGNAL(toggled()), this, SLOT(onBooleanToggled()));
-		}
+		QQuickCheckBox * box = new QQuickCheckBox();
+		box->setParentItem(this);
+		box->setChecked(lit->boolValue());
+		addLeaf(box);
+		connect(box, SIGNAL(toggled()), this, SLOT(onBooleanToggled()));
 		break;
 	}
 	case ScriptNode::Type::Column:
@@ -751,7 +773,7 @@ void ScriptNodeItem::rebuild()
 		JASPTIMER_SCOPE(ScriptNodeItem rebuildColumn);
 		auto * col = static_cast<ScriptNodeColumn*>(_node.data());
 
-		int actual = 1;
+		int actual = int(columnType::scale);
 		if(_view->model()->columnTypeProvider())
 			actual = _view->model()->columnTypeProvider()->columnType(col->columnName());
 		int effective = col->effectiveColumnType(actual);
@@ -778,13 +800,11 @@ void ScriptNodeItem::rebuild()
 		if(op->isVertical() && _acceptsDrops)
 		{
 			// Fraction: the horizontal line is drawn in layout(); the ÷ image is only the bar prototype.
-			_fractionBar = _view->newLeaf(_view->rectangleComponent(), "rectangle");
-			if(_fractionBar)
-			{
-				_fractionBar->setParentItem(this);
-				_fractionBar->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
-				_fractionBar->setVisible(false);
-			}
+			QQuickRectangle * fractionBar = new QQuickRectangle();
+			fractionBar->setParentItem(this);
+			fractionBar->setColor(theme ? theme->textEnabled() : QColor("black"));
+			fractionBar->setVisible(false);
+			_fractionBar = fractionBar;
 		}
 		else if(def && !def->image.empty())
 			makeImage(tq(def->image));
@@ -807,31 +827,26 @@ void ScriptNodeItem::rebuild()
 		auto * func = static_cast<ScriptNodeFunction*>(_node.data());
 		const ScriptFunctionDef * funcDef = ScriptConstructorRegistry::instance().functionDef(func->functionName());
 		const bool hasImage = funcDef && !funcDef->image.empty();
-		const bool isSqrt = func->functionName() == "sqrt";
+		const bool radix = funcDef && funcDef->radix;
 
-		if(isSqrt && _acceptsDrops)
+		if(radix && _acceptsDrops)
 		{
 			// Radical: a √ head (drawn tall) with an overline layered above the argument in layout().
-			QQuickItem * head = _view->newLeaf(_view->imageComponent(), "image");
-			if(head)
-			{
-				head->setParentItem(this);
-				head->setProperty("source", themeIconPath() + "/rootHead.png");
-				head->setProperty("fillMode", 0); // Image.Stretch (fill the box so the head's right edge is exact)
-				head->setWidth(block);
-				head->setHeight(block);
-				addLeaf(head);
-			}
+			ScriptImage * head = new ScriptImage(this);
+			head->setParentItem(this);
+			head->setSource(QUrl(themeIconPath() + "/rootHead.png")); // same string->QUrl conversion as the old property write
+			head->setFillMode(QQuickImage::Stretch);	// fill the box so the head's right edge is exact
+			head->setWidth(block);
+			head->setHeight(block);
+			addLeaf(head);
 
-			_overline = _view->newLeaf(_view->rectangleComponent(), "rectangle");
-			if(_overline)
-			{
-				_overline->setParentItem(this);
-				_overline->setProperty("color", theme ? theme->textEnabled() : QColor("black"));
-				_overline->setVisible(false);
-			}
+			QQuickRectangle * overline = new QQuickRectangle();
+			overline->setParentItem(this);
+			overline->setColor(theme ? theme->textEnabled() : QColor("black"));
+			overline->setVisible(false);
+			_overline = overline;
 		}
-		else if(isSqrt) // operator bar: plain square-root symbol
+		else if(radix) // operator bar: plain square-root symbol
 			makeImage(QString("sqrtSelector.png"));
 		else if(hasImage)
 			makeImage(tq(funcDef->image));
@@ -841,8 +856,10 @@ void ScriptNodeItem::rebuild()
 			makeText(displayName);
 		}
 
-		// Single-argument (non-abs) functions wrap their child in parentheses.
-		bool nest = (func->childCount() == 1 && func->functionName() != "abs");
+		// Single-argument functions (all but abs, per the registry's parensSingleArg flag)
+		// wrap their child in parentheses.
+		const bool parensSingleArg = funcDef ? funcDef->parensSingleArg : true;
+		bool nest = (func->childCount() == 1 && parensSingleArg);
 
 		// Functions show parentheses around their arguments unless they are a single-argument
 		// math symbol rendered as an image (e.g. sum -> Σ).
@@ -882,7 +899,7 @@ void ScriptNodeItem::rebuild()
 
 		for(int i = 0; i < rowFunc->childCount(); i++)
 		{
-			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, i, {"number"}, true}, "...");
+			ScriptDropSpot * spot = makeDropSpot(DropTarget{DropTarget::Kind::RowFunctionArg, rowFunc, i, ScriptConstructorRegistry::rowFunctionKeys(), true}, "...");
 			fillSpot(spot, rowFunc->childAt(i));
 		}
 
@@ -968,14 +985,27 @@ void ScriptNodeItem::layout()
 	qreal x = 0, maxH = block;
 
 	// Lay out leaves and drop spots left-to-right in creation order.
-	auto placeNext = [&](QQuickItem * item)
+	// placeLeaf places one item at x (vertically centred in the block laid out so far) and
+	// advances x by w + spacing. preferWidth takes the explicit width first (operator glyphs
+	// are sized directly); otherwise implicitWidth is preferred, falling back to width/height.
+	auto placeLeaf = [&](QQuickItem * item, qreal & x, qreal & maxH, qreal block, qreal spacing, bool preferWidth)
 	{
 		if(!item) return;
-		qreal w = item->property("implicitWidth").toReal();
-		qreal h = item->property("implicitHeight").toReal();
-		if(w <= 0) w = item->width();
-		if(h <= 0) h = item->height();
-		if(h <= 0) h = block;
+
+		qreal w, h;
+		if(preferWidth)
+		{
+			w = item->width() > 0 ? item->width() : item->property("implicitWidth").toReal();
+			h = item->height() > 0 ? item->height() : block;
+		}
+		else
+		{
+			w = item->property("implicitWidth").toReal();
+			if(w <= 0) w = item->width();
+			h = item->property("implicitHeight").toReal();
+			if(h <= 0) h = item->height();
+			if(h <= 0) h = block;
+		}
 
 		item->setX(x);
 		item->setY((maxH > h ? (maxH - h) / 2 : 0));
@@ -983,17 +1013,18 @@ void ScriptNodeItem::layout()
 		maxH = std::max(maxH, h);
 	};
 
-	// Interleave leaves and drop spots: for operators/function the drop spots were created
-	// between leaves. We simply walk both lists by their visual order stored during rebuild.
-	// To keep it simple we lay out leaves first that precede drops; the rebuild order is
-	// preserved by construction (leaves and spots appended in visual order is not guaranteed),
-	// so we reconstruct order by type.
+	auto placeNext = [&](QQuickItem * item) { placeLeaf(item, x, maxH, block, spacing, false); };
 
-	// For a robust visual order we re-derive from the node structure:
+	// The visual left-to-right order (leaves interleaved with drop spots) is re-derived from the
+	// node type below; the _leaves/_dropSpots lists are creation-ordered and not visual-ordered.
 	ScriptNode::Type t = _node->type();
 
-	if(t == ScriptNode::Type::Function && _acceptsDrops
-		&& static_cast<ScriptNodeFunction*>(_node.data())->functionName() == "sqrt")
+	const ScriptFunctionDef * radixFuncDef = t == ScriptNode::Type::Function && _acceptsDrops
+		? ScriptConstructorRegistry::instance().functionDef(static_cast<ScriptNodeFunction*>(_node.data())->functionName())
+		: nullptr;
+	const bool radix = radixFuncDef && radixFuncDef->radix;
+
+	if(radix)
 	{
 		// Radical: √ head on the left, an overline above the argument, the argument below it.
 		QQuickItem * head = _leaves.isEmpty() ? nullptr : _leaves.first();
@@ -1092,40 +1123,20 @@ void ScriptNodeItem::layout()
 			if(left) { left->layout(); placeNext(left); }
 
 			QQuickItem * opVisual = _leaves.isEmpty() ? nullptr : _leaves.first();
-			if(opVisual)
-			{
-				qreal w = opVisual->width() > 0 ? opVisual->width() : opVisual->property("implicitWidth").toReal();
-				qreal h = opVisual->height() > 0 ? opVisual->height() : block;
-				opVisual->setX(x);
-				opVisual->setY((maxH > h ? (maxH - h) / 2 : 0));
-				x += w + spacing;
-				maxH = std::max(maxH, h);
-			}
+			placeLeaf(opVisual, x, maxH, block, spacing, true);
 
 			if(right) { right->layout(); placeNext(right); }
 
 			if(showParens) placeNext(_closeParen);
 		}
-		(void)op;
 	}
 	else if(t == ScriptNode::Type::Function || t == ScriptNode::Type::RowFunction)
 	{
 		// Lay out all name leaves left-to-right. Row functions with a math symbol render as
-		// "row" text + image (e.g. rowSum -> "row" + Σ), so there can be more than one leaf.
+		// "row" text + image (e.g. rowSum -> "row" + Σ), so there can be more than one leaf;
+		// they abut each other (no spacing).
 		for(QQuickItem * nameVisual : _leaves)
-		{
-			if(!nameVisual) continue;
-			qreal w = nameVisual->property("implicitWidth").toReal();
-			if(w <= 0) w = nameVisual->width();
-			qreal h = nameVisual->property("implicitHeight").toReal();
-			if(h <= 0) h = nameVisual->height();
-			if(h <= 0) h = block;
-
-			nameVisual->setX(x);
-			nameVisual->setY((maxH > h ? (maxH - h) / 2 : 0));
-			x += w;
-			maxH = std::max(maxH, h);
-		}
+			placeLeaf(nameVisual, x, maxH, block, 0, false);
 
 		if(_openParen)	_openParen->setVisible(_showParens);
 		if(_closeParen)	_closeParen->setVisible(_showParens);
@@ -1148,19 +1159,7 @@ void ScriptNodeItem::layout()
 	{
 		// Leaves (column, number, string, boolean)
 		for(QQuickItem * leaf : _leaves)
-		{
-			if(!leaf) continue;
-			qreal w = leaf->property("implicitWidth").toReal();
-			if(w <= 0) w = leaf->width();
-			qreal h = leaf->property("implicitHeight").toReal();
-			if(h <= 0) h = leaf->height();
-			if(h <= 0) h = block;
-
-			leaf->setX(x);
-			leaf->setY((maxH > h ? (maxH - h) / 2 : 0));
-			x += w + spacing;
-			maxH = std::max(maxH, h);
-		}
+			placeLeaf(leaf, x, maxH, block, spacing, false);
 	}
 
 	_preferredWidth = x > 0 ? x - spacing : 0;
@@ -1203,7 +1202,7 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 		return;
 	}
 
-	if(!shouldDrag(event->position().x(), event->position().y()))
+	if(!shouldDrag(event->position().x()))
 	{
 		// Clicking a column's icon cycles its requested type (scale -> ordinal -> nominal -> scale).
 		if(_node && _node->type() == ScriptNode::Type::Column)
@@ -1228,8 +1227,15 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 				return;
 			}
 
-			int cur = col->columnTypeUser();
-			int next = (cur < 1 || cur >= 3) ? 1 : cur + 1;
+			// Cycle scale -> ordinal -> nominal -> scale; unset or out-of-range starts at scale.
+			int next;
+			switch(static_cast<columnType>(col->columnTypeUser()))
+			{
+			case columnType::scale:		next = int(columnType::ordinal);	break;
+			case columnType::ordinal:	next = int(columnType::nominal);	break;
+			case columnType::nominal:	next = int(columnType::scale);		break;
+			default:					next = int(columnType::scale);		break;
+			}
 
 			_view->model()->setColumnTypeUser(col, next);
 			_view->refresh();
