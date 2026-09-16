@@ -29,6 +29,7 @@
 
 #include "mainwindow.h"
 #include "data/filtermodel.h"
+#include "data/columnmodel.h"
 #include "data/columnsmodel.h"
 #include "qquick/scriptconstructorview.h"
 #include "qquick/scriptnodeitem.h"
@@ -149,10 +150,27 @@ void TestAll::testMainWindowShowsFilterWindow()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), dataSet, [](int){});
 	DataSetPackage::pkg()->newDataLoaded();
 
-	// Open the filter window the way the UI does (Loader in DataPanel.qml).
+	// --- FilterWindow / VariablesWindow mutual exclusion (enforced in DataPanel.qml) ---
+	// ColumnModel is parented to the DataSetPackage (QIdentityProxyModel(pkg)), not to MainWindow.
 	FilterModel * filterModel = mainWindow->findChild<FilterModel*>();
 	QVERIFY(filterModel != nullptr);
+	ColumnModel * columnModel = DataSetPackage::pkg()->findChild<ColumnModel*>();
+	QVERIFY(columnModel != nullptr);
+
+	// Direction A: opening the FilterWindow must close the VariablesWindow through its usual
+	// apply/discard route. Open variables first (filter closed -> nothing to close yet), then
+	// open the filter. chosenColumn is -1, so the computed-column dialog cannot pop, and the
+	// DataPanel Connections fire synchronously (direct connect) -> modal-free, no event-loop spin.
+	// This leaves the FilterWindow open (its Loader builds it exactly once, like the original test).
+	columnModel->setVisible(true);
+	QVERIFY(columnModel->visible());
+	QVERIFY(!filterModel->filterVisible());
+
 	filterModel->setFilterVisible(true);
+	QVERIFY(!columnModel->visible());      // VariablesWindow closed because the Filter opened
+	QVERIFY(filterModel->filterVisible()); // FilterWindow stayed open
+
+	// Open/keep the filter window the way the UI does (Loader in DataPanel.qml).
 
 	// FilterWindow (objectName "filterWindow") must appear and the ScriptConstructor inside it
 	// must have built its chrome now that it is visible.
@@ -244,6 +262,15 @@ void TestAll::testMainWindowShowsFilterWindow()
 	QCOMPARE(trashItem->debugDoubleClickCount, dblClicksBefore + 1);
 	QCOMPARE(scriptConstructor->model()->formulaCount(), 0); // slate erased
 	QVERIFY(!applySpy.isEmpty());							 // emptied filter was applied
+
+	// Direction B (reverse), done last: opening the VariablesWindow must close the FilterWindow
+	// through its usual apply/discard route. The filter is clean here (just trashed to empty and
+	// applied) and applyRequested is disconnected, so no dialog pops and the Loader-destroy churn
+	// is minimal. It is last because closing the Filter deactivates its Loader and tears down the
+	// FilterWindow/ScriptConstructor that the assertions above relied on.
+	columnModel->setVisible(true);
+	QVERIFY(!filterModel->filterVisible()); // FilterWindow closed because the VariablesWindow opened
+	QVERIFY(columnModel->visible());        // VariablesWindow stayed open
 
 	// Leave the full timer table behind for profiling (needs JASP_TIMER_USED=ON).
 	JASPTIMER_PRINTALL();

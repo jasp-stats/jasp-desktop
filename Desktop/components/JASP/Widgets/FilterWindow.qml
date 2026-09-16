@@ -34,6 +34,14 @@ FocusScope
 			filterEditRectangle.askIfChanged(closeFunc) 
 	}
 
+	// Close through the usual apply/discard/cancel route (stays open on Cancel).
+	// Used by the Filter/Variables exclusivity logic; the in-window close buttons
+	// already invoke askIfChanged directly.
+	function requestClose()
+	{
+		askIfChanged(function() { close() })
+	}
+
 	Rectangle
 	{
 		anchors.fill:	parent
