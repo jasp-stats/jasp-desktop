@@ -88,7 +88,17 @@ void ScriptConstructorView::setConstructorJson(const QString & json)
 {
 	JASPTIMER_SCOPE(ScriptConstructor setConstructorJson);
 	std::string s = fq(json);
-	if(s == _model.toString()) return;
+	if(s == _model.toString())
+	{
+		// Nothing to reload, but this json is (still) the clean baseline: keep _lastAppliedJson
+		// in sync. Otherwise a freshly opened, untouched constructor reports jsonChanged()==true
+		// because _lastAppliedJson is still the empty-string default while the (empty) model
+		// serialises to DEFAULT_FILTER_JSON ("{\"formulas\":[]}"), so closing would wrongly ask
+		// to apply/discard even though the user did nothing.
+		_lastAppliedJson = tq(_model.toString());
+		setSomethingChanged(false);
+		return;
+	}
 
 	_localUndoStack.clear();
 	_model.fromJson(s);
