@@ -59,7 +59,6 @@ protected:
 protected slots:
 	void setMarginBetweenVariablesLists(qreal value);
 	void setMinimumHeightVariablesLists(qreal value);
-	void setControlsSizeSlot();
 
 private:
 
