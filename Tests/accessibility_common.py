@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """
-Shared utilities for JASP accessibility tests using AT-SPI2.
+Shared utilities for JASP accessibility tests.
+
 Import from this module to avoid duplicating tree-search, click,
 and window-discovery logic across test files.
+
+The platform backend (AT-SPI2 on Linux, UIA on Windows, AX on macOS) is
+selected automatically and can be overridden with JASP_A11Y_BACKEND.
+Node objects returned by this module are duck-typed to the AT-SPI API the
+tests historically used, so test bodies stay platform-agnostic.
 """
 
 import time
@@ -10,20 +16,12 @@ import sys
 import os
 from pathlib import Path
 
-try:
-    gi = __import__("gi")
-    gi.require_version("Atspi", "2.0")
-    from gi.repository import Atspi, GLib
+from a11y_backends import load_backend, A11yError
 
-    _GLIB_HANDLER_DONE = False
-    if not _GLIB_HANDLER_DONE:
-        _GLIB_HANDLER_DONE = True
-        def _glib_suppress_fatal(domain, level, message, user_data):
-            pass
-        for dm in ("GLib", "GLib-GObject", "dbind"):
-            GLib.log_set_handler(dm, GLib.LogLevelFlags.LEVEL_ERROR, _glib_suppress_fatal, None)
-except ImportError as e:
-    print(f"PyGObject not available: {e}")
+try:
+    backend = load_backend()
+except A11yError as e:
+    print(f"Accessibility backend not available: {e}")
     sys.exit(77)
 
 
@@ -48,6 +46,16 @@ def is_jasp_alive():
     """Return True if JASP is still running, False if it has died."""
     pid = _get_jasp_pid()
     if pid is None:
+        return True
+    if sys.platform == "win32":
+        # os.kill(pid, 0) is destructive/erroneous on Windows
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        SYNCHRONIZE = 0x00100000
+        handle = kernel32.OpenProcess(SYNCHRONIZE, False, pid)
+        if not handle:
+            return False
+        kernel32.CloseHandle(handle)
         return True
     try:
         os.kill(pid, 0)
@@ -74,14 +82,8 @@ KEY_CONTROL_R  = 0xFFE4
 
 
 def close_window_via_shortcut():
-    """Send Ctrl+W (close window shortcut) via AT-SPI keyboard events."""
-    Atspi.generate_keyboard_event(KEY_CONTROL_L, None, Atspi.KeySynthType.PRESS)
-    time.sleep(0.02)
-    Atspi.generate_keyboard_event(ord('w'), None, Atspi.KeySynthType.PRESS)
-    time.sleep(0.02)
-    Atspi.generate_keyboard_event(ord('w'), None, Atspi.KeySynthType.RELEASE)
-    time.sleep(0.02)
-    Atspi.generate_keyboard_event(KEY_CONTROL_L, None, Atspi.KeySynthType.RELEASE)
+    """Send Ctrl+W (close window shortcut) via backend key events."""
+    backend.ctrl_w()
     time.sleep(0.5)
 
 
@@ -262,52 +264,18 @@ def _search_by_role_and_name(obj, role_lower, name_lower):
 
 
 def find_file_dialog(timeout=10):
-    """Find any non-JASP file dialog / frame on the AT-SPI desktop."""
-    for _ in range(timeout * 2):
-        try:
-            desktop = Atspi.get_desktop(0)
-            for i in range(desktop.get_child_count()):
-                a = desktop.get_child_at_index(i)
-                for j in range(a.get_child_count()):
-                    try:
-                        c = a.get_child_at_index(j)
-                        role = c.get_role_name()
-                        if role in ("frame", "dialog", "file chooser") and c.get_child_count() > 0:
-                            name = c.get_name()
-                            if name not in ("JASP", "Data Preview") and "jasp" not in name.lower():
-                                return c
-                    except Exception:
-                        pass
-        except Exception:
-            pass
-        require_jasp_alive()
-        time.sleep(0.5)
-    return None
+    """Find any non-JASP file dialog / frame (platform-specific discovery)."""
+    return backend.find_file_dialog(timeout)
 
 
 def grab_window_focus():
-    """Grab X11 focus for the first JASP frame window."""
-    try:
-        desktop = Atspi.get_desktop(0)
-        for i in range(desktop.get_child_count()):
-            a = desktop.get_child_at_index(i)
-            if "jasp" in a.get_name().lower():
-                for j in range(a.get_child_count()):
-                    try:
-                        c = a.get_child_at_index(j)
-                        if c.get_role_name() == "frame":
-                            c.grab_focus()
-                            return True
-                    except Exception:
-                        pass
-    except Exception:
-        pass
-    return False
+    """Grab focus for the first JASP frame window."""
+    return backend.grab_window_focus()
 
 
 def setup_jasp_app(timeout=30, main_window_names=None):
-    """Initialize AT-SPI, find JASP, dismiss dialogs. Returns (app, main_window)."""
-    Atspi.init()
+    """Initialize backend, find JASP, dismiss dialogs. Returns (app, main_window)."""
+    backend.init()
     app, main_window = find_jasp_app(timeout=timeout, main_window_names=main_window_names)
     if not main_window:
         return None, None
@@ -399,21 +367,7 @@ def click_element(element):
 
 def get_jasp_app():
     """Get a fresh reference to the JASP application with the most children (main window app)."""
-    try:
-        desktop = Atspi.get_desktop(0)
-        best = None
-        best_cc = -1
-        for i in range(desktop.get_child_count()):
-            a = desktop.get_child_at_index(i)
-            if "jasp" in a.get_name().lower():
-                cc = a.get_child_count()
-                if cc > best_cc:
-                    best_cc = cc
-                    best = a
-        return best
-    except Exception:
-        pass
-    return None
+    return backend.get_jasp_app()
 
 
 # ── app/window discovery ─────────────────────────────────────────────
@@ -422,44 +376,13 @@ def get_jasp_app():
 def find_jasp_app(timeout=30, main_window_names=None):
     """
     Wait for JASP to start and return (app, main_window).
-    JASP may register multiple applications on the AT-SPI bus;
+    JASP may register multiple applications on the accessibility bus;
     main_window_names is a set/tuple of acceptable frame names.
     Defaults to ('JASP',) for bare startup; pass ('JASP', 'Sleep') etc.
     when loading a .jasp file by name.
     If None, accepts any frame with > 3 children.
     """
-    if main_window_names is None:
-        main_window_names = ("JASP",)
-
-    Atspi.init()
-    app = None
-    main_window = None
-    for attempt in range(timeout):
-        require_jasp_alive()
-        time.sleep(1)
-        try:
-            desktop = Atspi.get_desktop(0)
-            for i in range(desktop.get_child_count()):
-                a = desktop.get_child_at_index(i)
-                if "jasp" not in a.get_name().lower():
-                    continue
-                for j in range(a.get_child_count()):
-                    try:
-                        c = a.get_child_at_index(j)
-                        if c.get_role_name() == "frame" and c.get_child_count() > 3:
-                            if c.get_name() in main_window_names:
-                                app = a
-                                main_window = c
-                                break
-                    except Exception:
-                        pass
-                if main_window:
-                    break
-        except Exception:
-            pass
-        if main_window:
-            break
-    return app, main_window
+    return backend.find_jasp_app(timeout=timeout, main_window_names=main_window_names)
 
 
 def find_document_web(app):
@@ -528,25 +451,7 @@ def find_window_by_name(app, window_name, timeout=10, role_name=None):
     """Find a frame/window child of app by name, with retry.
     If app is None, searches across all desktop apps.
     If role_name is given, match that role instead of 'frame'/'window'."""
-    wl = window_name.lower()
-    roles = (role_name,) if role_name else ("frame", "window")
-    for _ in range(timeout * 2):
-        desktop = Atspi.get_desktop(0)
-        apps_to_search = [desktop.get_child_at_index(i) for i in range(desktop.get_child_count())] if app is None else [app]
-        for a in apps_to_search:
-            try:
-                for j in range(a.get_child_count()):
-                    try:
-                        c = a.get_child_at_index(j)
-                        if c.get_role_name() in roles and wl in c.get_name().lower():
-                            return c
-                    except Exception:
-                        pass
-            except Exception:
-                pass
-        require_jasp_alive()
-        time.sleep(0.5)
-    return None
+    return backend.find_window_by_name(app, window_name, timeout=timeout, role_name=role_name)
 
 
 def find_all_buttons(parent, max_depth=8):
@@ -571,9 +476,9 @@ def find_menu_items(parent):
 
 def find_menu_items_global(app, timeout=3):
     """
-    Find all menu items in the AT-SPI tree, including those in transient
+    Find all menu items in the accessibility tree, including those in transient
     popup windows that are not direct children of the app.
-    Searches both the app subtree and the desktop for transient frames.
+    Searches both the app subtree and other top-level app nodes.
     """
     items = find_menu_items(app)
     if items:
@@ -581,9 +486,9 @@ def find_menu_items_global(app, timeout=3):
 
     for _ in range(timeout * 4):
         try:
-            desktop = Atspi.get_desktop(0)
-            for i in range(desktop.get_child_count()):
-                a = desktop.get_child_at_index(i)
+            for a in backend.app_nodes():
+                if a is app:
+                    continue
                 for j in range(a.get_child_count()):
                     try:
                         c = a.get_child_at_index(j)
@@ -600,12 +505,8 @@ def find_menu_items_global(app, timeout=3):
 
 
 def generate_key_event(keyval):
-    """Send a key event via AT-SPI to generate keyboard events."""
-    try:
-        Atspi.generate_keyboard_event(keyval, None, Atspi.KeySynthType.SYM)
-        return True
-    except Exception:
-        return False
+    """Send a key event via the platform backend."""
+    return backend.generate_key_event(keyval)
 
 
 def type_text(text, delay=0.01):
@@ -635,8 +536,7 @@ def edit_cell_text(app, new_value, timeout=5):
         return None
 
     try:
-        ei = editable.get_editable_text_iface()
-        ei.set_text_contents(new_value)
+        backend.set_editable_text(editable, new_value)
     except Exception:
         raise AssertionError(f"set_text_contents failed on '{editable.get_name()}'")
 
@@ -648,14 +548,13 @@ def edit_cell_text(app, new_value, timeout=5):
 
 def set_editable_text(element, new_value, commit_with_enter=True):
     """
-    Set the text of any AT-SPI editable text element via
-    get_editable_text_iface, then optionally commit with Enter.
+    Set the text of an editable text element via the backend,
+    then optionally commit with Enter.
 
     Returns True on success, raises Exception on failure.
     """
     try:
-        ei = element.get_editable_text_iface()
-        ei.set_text_contents(new_value)
+        backend.set_editable_text(element, new_value)
     except Exception as e:
         raise RuntimeError(f"set_text_contents failed on '{element.get_name()}': {e}")
 
@@ -669,20 +568,17 @@ def set_editable_text(element, new_value, commit_with_enter=True):
 
 
 def has_focus(element):
-    """Check if an AT-SPI element has keyboard focus."""
-    try:
-        return element.get_state_set().contains(Atspi.StateType.FOCUSED)
-    except Exception:
-        return False
+    """Check if an element has keyboard focus."""
+    return backend.is_focused(element)
 
 
 def find_focused(app, max_depth=20):
-    """Find the focused element in the AT-SPI tree under app."""
+    """Find the focused element in the tree under app."""
     try:
         all_elements = find_all(app, max_depth=max_depth)
         for role, name, elem in all_elements:
             try:
-                if elem.get_state_set().contains(Atspi.StateType.FOCUSED):
+                if backend.is_focused(elem):
                     return elem
             except Exception:
                 pass
@@ -695,7 +591,7 @@ def close_menu():
     """Send Escape key to close any open menus/dialogs."""
     for _ in range(3):
         try:
-            Atspi.generate_keyboard_event(KEY_ESCAPE, None, Atspi.KeySynthType.SYM)
+            backend.generate_key_event(KEY_ESCAPE)
         except Exception:
             pass
         time.sleep(0.3)

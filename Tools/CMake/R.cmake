@@ -194,15 +194,21 @@ set(R_BINARY_HASHES
   "0184504a11da63b26cc31f91a812e5456d523e0e"
   "0184504a11da63b26cc31f91a812e5456d523e0e"
   "1cc0b3d78bc3b3857c6bf3128a9d414b130d938e"
-  "3e9a1cf2f48cab87f62a9f3b374c1faab78e89c6"
+  #R-4.6.0-win: hash updated to the current CRAN /old/4.6.0 installer
+  "dbd1c09b4cc8b551ebe5daa703f2ef32b8fbc491"
 )
 
 
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 # dont forget check and upgrande Rtools version if major_minor version changed.
-set(R_VERSION "4.6.0")
-set(R_VERSION_MAJOR_MINOR "4.6")
+# NOTE: Windows module bundles (Modules/remote-bundles.json) are built
+# against R 4.5.2 (see the R-4-5-2 tags on jasp-stats-modules releases).
+# The build must use the same R minor version or the bundled packages
+# fail to load ("LoadLibrary failure: The specified procedure could not
+# be found" on rlang.dll etc.).
+set(R_VERSION "4.5.2")
+set(R_VERSION_MAJOR_MINOR "4.5")
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
@@ -672,7 +678,7 @@ elseif(WIN32)
 
     set(R_VERSION_NAME "R-${R_VERSION}-win")
     set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
-    set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+    set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}old/${R_VERSION}/${R_PACKAGE_NAME}")
 
     list(
       FIND
