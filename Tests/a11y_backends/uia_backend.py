@@ -266,6 +266,7 @@ class UiaBackend:
             main_window_names = ("JASP",)
         app = UiaAppNode(self._pid) if self._pid else None
         deadline = time.time() + timeout
+        fallback = None
         while time.time() < deadline:
             if app is None:
                 time.sleep(1)
@@ -275,6 +276,12 @@ class UiaBackend:
                     wname = win.get_name()
                     if any(wname == n or wname.startswith(n) for n in main_window_names):
                         return app, win
+                    # any frame window of the JASP process is a fine fallback:
+                    # loaded datasets replace the title entirely ("Sleep (C:\...)")
+                    if fallback is None:
+                        fallback = win
+            if fallback is not None:
+                return app, fallback
             time.sleep(1)
         return app, None
 

@@ -10,7 +10,8 @@ param(
     [switch]$Narrator,
     [switch]$KeepJasp,
     [switch]$NoAxDebug,
-    [string]$DataDir = ""
+    [string]$DataDir = "",
+    [string]$FileArg = ""
 )
 $ErrorActionPreference = "Continue"
 
@@ -30,13 +31,16 @@ if ($existing) {
 } else {
     Write-Host "Starting JASP (detached)..."
     $tmpCmd = "$env:TEMP\jasp-launch-$PID.cmd"
+    $fileQuoted = if ($FileArg -ne "") { '"' + $FileArg.Trim('"') + '"' } else { "" }
     @"
 @echo off
 set PATH=$qtPrefix\bin;%PATH%
 set R_HOME=$buildDir\R
 set QTWEBENGINE_AX_DEBUG=$(if ($NoAxDebug) { "0" } else { "1" })
+rem CDP: lets tests verify DOM-level a11y (roles, tabindex, focus moves)
+set QTWEBENGINE_CHROMIUM_FLAGS=--remote-debugging-port=9223
 cd /d $buildDir
-JASPDesktop.exe --safeGraphics > C:\Virtuoos\tools\jasp-run.log 2> C:\Virtuoos\tools\jasp-run-err.log
+JASPDesktop.exe --safeGraphics $fileQuoted > C:\Virtuoos\tools\jasp-run.log 2> C:\Virtuoos\tools\jasp-run-err.log
 "@ | Set-Content -Path $tmpCmd -Encoding ascii
     $r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = "cmd /c `"$tmpCmd`"" }
     if (-not $r.ProcessId) { Write-Host "FATAL: could not spawn JASP"; exit 2 }
@@ -74,6 +78,7 @@ $env:QTWEBENGINE_AX_DEBUG = $(if ($NoAxDebug) { "0" } else { "1" })
 $env:PATH = "$qtPrefix\bin;$env:PATH"
 $env:R_HOME = "$buildDir\R"
 if ($DataDir -ne "") { $env:JASP_DATA_DIR = $DataDir }
+$env:JASP_CDP_PORT = "9223"
 
 Write-Host "=== running test: $Test ==="
 & $venvPy $Test

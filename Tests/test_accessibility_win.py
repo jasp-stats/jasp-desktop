@@ -192,6 +192,214 @@ def narrator_emulation(doc, duration_s=20):
     log(f"  [emulation] finished after {duration_s}s")
 
 
+# ── Phase 6: DOM-level results accessibility checks (via CDP) ─────────
+
+def _cdp_connect(port):
+    import json
+    import urllib.request
+    import websocket
+    with urllib.request.urlopen(f"http://127.0.0.1:{port}/json") as r:
+        targets = json.load(r)
+    target = None
+    for t in targets:
+        if "index-jasp" in t.get("url", ""):
+            target = t
+            break
+    if target is None:
+        return None, None
+    return json, websocket.create_connection(target["webSocketDebuggerUrl"], timeout=15)
+
+
+def run_results_a11y_checks(port):
+    """Verify the results-page accessibility contract over CDP:
+    roles/labels/keyboard wiring produced by the a11y work, plus a live
+    drill-in round-trip. Returns True when no check failed."""
+    import json
+    import time as _time
+
+    _, ws = _cdp_connect(port)
+    if ws is None:
+        log("  CDP: no results page target found")
+        return False
+
+    # proper CDP request/response matching: unique ids, responses for
+    # abandoned calls get drained, events ignored
+    pending = set()
+    next_id = [0]
+
+    def evaljs(expr, timeout_s=30.0):
+        next_id[0] += 1
+        rid = next_id[0]
+        pending.add(rid)
+        ws.send(json.dumps({"id": rid, "method": "Runtime.evaluate",
+                            "params": {"expression": expr, "returnByValue": True}}))
+        deadline = _time.time() + timeout_s
+        while _time.time() < deadline:
+            try:
+                msg = json.loads(ws.recv())
+            except Exception:
+                return None
+            mid = msg.get("id")
+            if mid is None:
+                continue  # CDP event
+            if mid == rid:
+                pending.discard(mid)
+                # CDP wraps the JS value in result.result
+                inner = msg.get("result", {}).get("result", {})
+                return inner.get("value")
+            pending.discard(mid)  # response of an abandoned call
+        pending.discard(rid)
+        return None
+
+    def key(key_name, code, vk):
+        next_id[0] += 1
+        rid = next_id[0]
+        pending.add(rid)
+        for t in ("rawKeyDown", "keyUp"):
+            ws.send(json.dumps({"id": rid, "method": "Input.dispatchKeyEvent",
+                                "params": {"type": t, "key": key_name, "code": code,
+                                           "windowsVirtualKeyCode": vk,
+                                           "nativeVirtualKeyCode": vk}}))
+        _time.sleep(0.3)
+
+    failures = []
+
+    def check(name, ok, detail=""):
+        log(f"  [{'PASS' if ok else 'FAIL'}] {name}" + (f" - {detail}" if detail else ""))
+        if not ok:
+            failures.append(name)
+
+    # the page must have rendered analysis content (JASP may still be
+    # loading a file passed on the command line - the engine spawn can
+    # take a minute; poll, and bail out cleanly if it never renders)
+    n_analyses = 0
+    for _ in range(90):
+        n_analyses = evaljs("document.querySelectorAll('.jasp-analysis').length") or 0
+        if n_analyses > 0:
+            break
+        _time.sleep(1)
+    check("analyses rendered", n_analyses > 0, f"{n_analyses} analyses")
+    if n_analyses == 0:
+        ws.close()
+        return False
+
+    # navigation engine sees the narratable blocks
+    n_blocks = evaljs("JASPWidgets.a11y.visibleBlocks().length")
+    check("navigable blocks present", (n_blocks or 0) >= 3, f"{n_blocks} blocks")
+
+    # every title is keyboard-reachable
+    bad_titles = evaljs(
+        "document.querySelectorAll('.in-toolbar[tabindex]:not([tabindex=\"0\"])').length")
+    n_titles = evaljs("document.querySelectorAll('.in-toolbar[tabindex=\"0\"]').length")
+    check("titles focusable", not bad_titles and (n_titles or 0) > 0,
+          f"{n_titles} focusable titles, {bad_titles} misconfigured")
+
+    # collapsible containers expose aria-expanded (soft: depends on content)
+    n_expanders = evaljs("document.querySelectorAll('.in-toolbar[aria-expanded]').length")
+    log(f"  [info] collapsible containers with aria-expanded: {n_expanders}")
+
+    # plots narratable (soft: only when the analysis has plots)
+    plots = evaljs("""
+        (function () {
+          var ps = document.querySelectorAll('.jasp-image-image[data-plot-title]');
+          var bad = 0;
+          for (var i = 0; i < ps.length; i++) {
+            var lbl = ps[i].getAttribute('aria-label') || '';
+            if (ps[i].getAttribute('role') !== 'img' || lbl.lastIndexOf('Plot', 0) !== 0)
+              bad++;
+          }
+          return ps.length + '/' + bad;
+        })()
+    """)
+    if plots and not plots.startswith("0/"):
+        n, bad = plots.split("/")
+        check("plots labeled", int(bad) == 0, f"{n} plots")
+    else:
+        log("  [info] no plots in this analysis - plot check skipped")
+
+    # noteboxes: button-like activators, editors out of Tab order
+    notes = evaljs("""
+        (function () {
+          var ns = document.querySelectorAll('.jasp-notes');
+          if (ns.length === 0) return 'none';
+          var badRole = 0, badLabel = 0;
+          for (var i = 0; i < ns.length; i++) {
+            var lbl = ns[i].getAttribute('aria-label') || '';
+            if (ns[i].getAttribute('role') !== 'button') badRole++;
+            if (lbl.lastIndexOf('Note', 0) !== 0) badLabel++;
+          }
+          var badTab = document.querySelectorAll('.ql-editor[tabindex]:not([tabindex="-1"])').length;
+          var editors = document.querySelectorAll('.ql-editor').length;
+          return ns.length + '/' + badRole + '/' + badLabel + '/' + badTab + '/' + editors;
+        })()
+    """)
+    if notes and notes != "none":
+        n, bad_role, bad_label, bad_tab, editors = notes.split("/")
+        check("noteboxes are Enter-to-edit activators",
+              int(bad_role) == 0 and int(bad_label) == 0,
+              f"{n} notes ({bad_role} bad role, {bad_label} bad label)")
+        check("note editors untabbable", int(bad_tab) == 0,
+              f"{editors} editors, {bad_tab} still tabbable")
+    else:
+        log("  [info] no notes present - note checks skipped")
+
+    # tables: caption matches the accessible name
+    tables = evaljs("""
+        (function () {
+          var ts = document.querySelectorAll('table[role="table"]');
+          if (ts.length === 0) return 'none';
+          var bad = 0;
+          for (var i = 0; i < ts.length; i++) {
+            var cap = ts[i].querySelector('caption');
+            var label = ts[i].getAttribute('aria-label') || '';
+            if (!cap || cap.textContent.trim() !== label.trim()) bad++;
+          }
+          return ts.length + '/' + bad;
+        })()
+    """)
+    if tables and tables != "none":
+        n, bad = tables.split("/")
+        check("tables have captions", int(bad) == 0, f"{n} tables")
+        # hover toolbar is hidden from the tree
+        tb = evaljs("(function(){ var t = document.querySelector('table div.toolbar');"
+                    " return t ? t.getAttribute('aria-hidden') : 'none'; })()")
+        check("table toolbar AX-hidden", tb in ("true", "none"), f"aria-hidden={tb}")
+    else:
+        log("  [info] no tables present - table checks skipped")
+
+    # live drill-in round trip: Enter opens cell nav, Escape closes it
+    drilled = evaljs("""
+        (function () {
+          var t = document.querySelector('table[role="table"]');
+          if (!t) return 'no-table';
+          t.focus();
+          return 'focused';
+        })()
+    """)
+    if drilled == "focused":
+        key("Enter", "Enter", 13)
+        in_drill = evaljs("!!JASPWidgets.a11y.drillTable")
+        cell = evaljs("JASPWidgets.a11y.drillTable ? document.activeElement.tagName : 'none'")
+        key("Escape", "Escape", 27)
+        out_drill = evaljs("!JASPWidgets.a11y.drillTable")
+        back_on_table = evaljs("document.activeElement.tagName === 'TABLE'")
+        check("table drill-in works", in_drill and cell in ("TD", "TH"),
+              f"cell={cell}")
+        check("drill-in Escape exits", out_drill and back_on_table)
+
+    # arrow navigation moves between blocks
+    evaljs("document.getElementById('spacer').focus()")
+    key("ArrowDown", "ArrowDown", 40)
+    first_block = evaljs("(function(){ var a = document.activeElement;"
+                         " return (a.className||'').substring(0, 30); })()")
+    check("arrow navigation moves focus", first_block not in ("BODY", "", None),
+          f"focus after ArrowDown: {first_block}")
+
+    ws.close()
+    log(f"=== results a11y checks: {'PASS' if not failures else 'FAIL (' + ', '.join(failures) + ')'} ===")
+    return len(failures) == 0
+
+
 def main():
     log("=== setup: attaching to JASP ===")
     app, main_window = ac.setup_jasp_app(timeout=40, main_window_names=("JASP", "Sleep", "debug"))
@@ -283,6 +491,24 @@ def main():
     log(f"  'Boxplots' found: {found_box}")
 
     ok = found_stats or stats["count"] > 100
+
+    # ── 6. results a11y structure checks (Phase 6, via CDP) ───────────
+    # Runs last: by now the results page definitely has content (either
+    # from a -FileArg .jasp file or the dataset+analysis flow above), and
+    # cold engine starts can take minutes, which an early poll can't wait
+    # for without stalling the whole test.
+    cdp_port = os.environ.get("JASP_CDP_PORT", "")
+    if cdp_port:
+        try:
+            results_checks_ok = run_results_a11y_checks(int(cdp_port))
+        except Exception as e:
+            log(f"  results a11y checks errored: {e}")
+            results_checks_ok = False
+        if results_checks_ok is False:
+            ok = False
+    else:
+        log("  (JASP_CDP_PORT not set - skipping DOM-level results checks)")
+
     log(f"=== {'PASS' if ok else 'INCONCLUSIVE'} ===")
     return 0 if ok else 1
 
