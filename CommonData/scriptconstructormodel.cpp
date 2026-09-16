@@ -122,9 +122,8 @@ std::string ScriptConstructorModel::toR() const
 		if(i > 0) out += "& ";
 		out += _formulas[i]->toR(_typeProvider);
 
-		if(_mode == ScriptConstructorMode::Filter)
-			out += "\n";
-		else if(i < static_cast<int>(_formulas.size()) - 1)
+		// Filters end every formula line with a newline; computed columns have no trailing newline.
+		if(_mode == ScriptConstructorMode::Filter || i < static_cast<int>(_formulas.size()) - 1)
 			out += "\n";
 	}
 
@@ -201,31 +200,26 @@ void ScriptConstructorModel::detachFromParent(ScriptNode * node)
 		return;
 	}
 
-	if(auto * op = dynamic_cast<ScriptNodeOperator*>(par))
-	{
-		if(op->leftChild() == node)	op->setLeft(nullptr);
-		else							op->setRight(nullptr);
-	}
-	else if(auto * func = dynamic_cast<ScriptNodeFunction*>(par))
-	{
-		for(int i = 0; i < func->childCount(); i++)
-			if(func->childAt(i) == node)
-			{
-				func->setArgumentValue(i, nullptr);
-				break;
-			}
-	}
-	else if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(par))
-	{
-		for(int i = 0; i < rowFunc->childCount(); i++)
-			if(rowFunc->childAt(i) == node)
-			{
-				rowFunc->setChild(i, nullptr);
-				break;
-			}
-	}
+	for(int i = 0; i < par->slotCount(); i++)
+		if(par->childAt(i) == node)
+		{
+			par->setSlot(i, nullptr);
+			break;
+		}
 
 	node->setParent(nullptr);
+}
+
+/// The child-slot a DropTarget addresses: operators derive the slot from the kind (left=0,
+/// right=1), function/row-function arguments use the index field.
+static int slotIndexOf(const DropTarget & target)
+{
+	switch(target.kind)
+	{
+	case DropTarget::Kind::OperatorLeft:	return 0;
+	case DropTarget::Kind::OperatorRight:	return 1;
+	default:								return target.index;
+	}
 }
 
 void ScriptConstructorModel::placeAt(ScriptNode * node, const DropTarget & target)
@@ -241,27 +235,20 @@ void ScriptConstructorModel::placeAt(ScriptNode * node, const DropTarget & targe
 		node->setParent(nullptr);
 		break;
 	}
-	case DropTarget::Kind::OperatorLeft:
-		if(auto * op = dynamic_cast<ScriptNodeOperator*>(target.parent))
-			op->setLeft(node);
-		break;
-	case DropTarget::Kind::OperatorRight:
-		if(auto * op = dynamic_cast<ScriptNodeOperator*>(target.parent))
-			op->setRight(node);
-		break;
-	case DropTarget::Kind::FunctionArg:
-		if(auto * func = dynamic_cast<ScriptNodeFunction*>(target.parent))
-			func->setArgumentValue(target.index, node);
-		break;
-	case DropTarget::Kind::RowFunctionArg:
-		if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(target.parent))
-		{
-			rowFunc->setChild(target.index, node);
-			rowFunc->ensureTrailingEmptySlot();
-		}
-		break;
 	case DropTarget::Kind::None:
 		break;
+	default:
+	{
+		const int slot = slotIndexOf(target);
+		if(target.parent && slot >= 0 && slot < target.parent->slotCount())
+			target.parent->setSlot(slot, node);
+
+		// Row functions keep a free trailing slot so another column can always be dropped.
+		if(target.kind == DropTarget::Kind::RowFunctionArg)
+			if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(target.parent))
+				rowFunc->ensureTrailingEmptySlot();
+		break;
+	}
 	}
 
 	if(auto * col = dynamic_cast<ScriptNodeColumn*>(node))
@@ -290,7 +277,7 @@ void ScriptConstructorModel::resolveColumnTypeDrop(ScriptNodeColumn * col, const
 		return;
 	}
 
-	int actualType = _typeProvider ? _typeProvider->columnType(col->columnName()) : 1;
+	int actualType = _typeProvider ? _typeProvider->columnType(col->columnName()) : int(columnType::scale);
 	if(accepts(actualType))
 	{
 		col->setColumnTypeDrop(actualType);
@@ -307,26 +294,16 @@ void ScriptConstructorModel::resolveColumnTypeDrop(ScriptNodeColumn * col, const
 	}
 }
 
-// --- right-most empty / filled drop spot helpers ---
+// --- drop-spot traversal helpers ---
 
 static stringvec containingSlotKeys(ScriptNode * node)
 {
 	ScriptNode * par = node ? node->parent() : nullptr;
 	if(!par) return {};
 
-	if(auto * op = dynamic_cast<ScriptNodeOperator*>(par))
-		return op->leftChild() == node ? op->dropKeysLeft() : op->dropKeysRight();
-
-	if(auto * func = dynamic_cast<ScriptNodeFunction*>(par))
-	{
-		for(int i = 0; i < func->childCount(); i++)
-			if(func->childAt(i) == node)
-				return func->arguments()[i].dropKeys;
-		return {};
-	}
-
-	if(dynamic_cast<ScriptNodeRowFunction*>(par))
-		return {"number"};
+	for(int i = 0; i < par->slotCount(); i++)
+		if(par->childAt(i) == node)
+			return par->slotDropKeys(i);
 
 	return {};
 }
@@ -341,6 +318,19 @@ static DropTarget makeSlotTarget(ScriptNode * parent, DropTarget::Kind kind, int
 	return t;
 }
 
+/// The DropTarget kind for the given child slot of a node (None for leaf nodes, which have no slots).
+static DropTarget::Kind slotKindFor(ScriptNode * node, int slot)
+{
+	switch(node->type())
+	{
+	case ScriptNode::Type::Operator:
+	case ScriptNode::Type::OperatorVertical:	return slot == 0 ? DropTarget::Kind::OperatorLeft : DropTarget::Kind::OperatorRight;
+	case ScriptNode::Type::Function:			return DropTarget::Kind::FunctionArg;
+	case ScriptNode::Type::RowFunction:			return DropTarget::Kind::RowFunctionArg;
+	default:									return DropTarget::Kind::None;
+	}
+}
+
 static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & dragKeys)
 {
 	// In-order leftmost empty slot that accepts the dragged node's keys: for operators the
@@ -349,60 +339,22 @@ static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & 
 	// left). Non-accepting empty slots are skipped, search continues to their right.
 	if(!node) return DropTarget::none();
 
-	if(auto * op = dynamic_cast<ScriptNodeOperator*>(node))
+	for(int i = 0; i < node->slotCount(); i++)
 	{
-		if(op->leftChild())
+		ScriptNode * child = node->childAt(i);
+
+		if(child)
 		{
-			DropTarget sub = leftMostEmptyDropSpotRec(op->leftChild(), dragKeys);
+			DropTarget sub = leftMostEmptyDropSpotRec(child, dragKeys);
 			if(sub.isValid())
 				return sub;
 		}
-		else if(ScriptConstructorModel::keysOverlap(dragKeys, op->dropKeysLeft()))
-			return makeSlotTarget(op, DropTarget::Kind::OperatorLeft, 0, op->dropKeysLeft());
-
-		if(op->rightChild())
+		else
 		{
-			DropTarget sub = leftMostEmptyDropSpotRec(op->rightChild(), dragKeys);
-			if(sub.isValid())
-				return sub;
+			const stringvec keys = node->slotDropKeys(i);
+			if(ScriptConstructorModel::keysOverlap(dragKeys, keys))
+				return makeSlotTarget(node, slotKindFor(node, i), i, keys);
 		}
-		else if(ScriptConstructorModel::keysOverlap(dragKeys, op->dropKeysRight()))
-			return makeSlotTarget(op, DropTarget::Kind::OperatorRight, 1, op->dropKeysRight());
-
-		return DropTarget::none();
-	}
-
-	if(auto * func = dynamic_cast<ScriptNodeFunction*>(node))
-	{
-		for(int i = 0; i < func->childCount(); i++)
-		{
-			const auto & arg = func->arguments()[i];
-			if(arg.value)
-			{
-				DropTarget sub = leftMostEmptyDropSpotRec(arg.value, dragKeys);
-				if(sub.isValid())
-					return sub;
-			}
-			else if(ScriptConstructorModel::keysOverlap(dragKeys, arg.dropKeys))
-				return makeSlotTarget(func, DropTarget::Kind::FunctionArg, i, arg.dropKeys);
-		}
-		return DropTarget::none();
-	}
-
-	if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(node))
-	{
-		for(int i = 0; i < rowFunc->childCount(); i++)
-		{
-			if(rowFunc->childAt(i))
-			{
-				DropTarget sub = leftMostEmptyDropSpotRec(rowFunc->childAt(i), dragKeys);
-				if(sub.isValid())
-					return sub;
-			}
-			else if(ScriptConstructorModel::keysOverlap(dragKeys, {"number"}))
-				return makeSlotTarget(rowFunc, DropTarget::Kind::RowFunctionArg, i, {"number"});
-		}
-		return DropTarget::none();
 	}
 
 	return DropTarget::none();
@@ -412,38 +364,23 @@ static DropTarget rightMostFilledDropSpotRec(ScriptNode * node)
 {
 	if(!node) return DropTarget::none();
 
-	if(auto * op = dynamic_cast<ScriptNodeOperator*>(node))
+	// Operators continue the chain through their right slot only (the left operand is what a
+	// gobble absorbs); functions and row functions through their consecutive filled arguments.
+	if(node->type() == ScriptNode::Type::Operator || node->type() == ScriptNode::Type::OperatorVertical)
 	{
-		if(op->rightChild())
-			return makeSlotTarget(op, DropTarget::Kind::OperatorRight, 1, op->dropKeysRight());
+		if(node->childAt(1))
+			return makeSlotTarget(node, DropTarget::Kind::OperatorRight, 1, node->slotDropKeys(1));
 		return DropTarget::none();
 	}
 
-	if(auto * func = dynamic_cast<ScriptNodeFunction*>(node))
+	DropTarget last;
+	for(int i = 0; i < node->slotCount(); i++)
 	{
-		DropTarget last;
-		for(int i = 0; i < func->childCount(); i++)
-		{
-			if(!func->childAt(i))
-				return last.isValid() ? last : DropTarget::none();
-			last = makeSlotTarget(func, DropTarget::Kind::FunctionArg, i, func->arguments()[i].dropKeys);
-		}
-		return last.isValid() ? last : DropTarget::none();
+		if(!node->childAt(i))
+			return last.isValid() ? last : DropTarget::none();
+		last = makeSlotTarget(node, slotKindFor(node, i), i, node->slotDropKeys(i));
 	}
-
-	if(auto * rowFunc = dynamic_cast<ScriptNodeRowFunction*>(node))
-	{
-		DropTarget last;
-		for(int i = 0; i < rowFunc->childCount(); i++)
-		{
-			if(!rowFunc->childAt(i))
-				return last.isValid() ? last : DropTarget::none();
-			last = makeSlotTarget(rowFunc, DropTarget::Kind::RowFunctionArg, i, {"number"});
-		}
-		return last.isValid() ? last : DropTarget::none();
-	}
-
-	return DropTarget::none();
+	return last.isValid() ? last : DropTarget::none();
 }
 
 DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node) const

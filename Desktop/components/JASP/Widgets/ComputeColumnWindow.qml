@@ -180,12 +180,12 @@ FocusScope
 			ScriptConstructor
 			{
 				id:						computedColumnConstructor
-				mode:					ScriptConstructor.ComputedColumn
+				mode:					ScriptConstructorMode.ComputedColumn
 				anchors.fill:			parent
 				anchors.leftMargin:		1
 				visible:				!isRCode
 				deferUntilVisible:		true
-			
+
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
 			}

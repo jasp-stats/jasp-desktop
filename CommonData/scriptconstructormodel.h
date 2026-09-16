@@ -11,6 +11,11 @@
 class QUndoStack;
 
 /// Describes a place where a ScriptNode can be (or is requested to be) inserted.
+///
+/// Identifies one droppable slot. NB: the raw `parent` pointer and `index` are only valid
+/// until the next model rebuild / undo step — the view recreates all drop spots on every
+/// edit — so a target is never stored across mutations.
+///
 struct DropTarget
 {
 	enum class Kind { None, Root, OperatorLeft, OperatorRight, FunctionArg, RowFunctionArg };

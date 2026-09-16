@@ -12,7 +12,6 @@
 class ScriptNodeItem;
 class ScriptDropSpot;
 class ScriptPalette;
-class QQmlComponent;
 class QAbstractItemModel;
 class QKeyEvent;
 class ColumnsModel;
@@ -28,7 +27,7 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 {
 	Q_OBJECT
 
-	Q_PROPERTY( int					mode					READ modeInt			WRITE setModeInt			NOTIFY modeChanged				)
+	Q_PROPERTY( ScriptConstructorMode	mode					READ mode			WRITE setMode			NOTIFY modeChanged				)
 	Q_PROPERTY( QString				constructorJson			READ constructorJson	WRITE setConstructorJson	NOTIFY constructorJsonChanged	)
 	Q_PROPERTY( QString				rCode					READ rCode											NOTIFY rCodeChanged				)
 	Q_PROPERTY( bool				somethingChanged		READ somethingChanged	WRITE setSomethingChanged	NOTIFY somethingChangedChanged	)
@@ -43,16 +42,12 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( bool				deferUntilVisible		READ deferUntilVisible		WRITE setDeferUntilVisible	NOTIFY deferUntilVisibleChanged	)
 
 public:
-	enum Mode { Filter = 0, ComputedColumn = 1, ComputedDataSet = 2 };
-	Q_ENUM(Mode)
-
 	explicit ScriptConstructorView(QQuickItem * parent = nullptr);
-	~ScriptConstructorView() override;
 
 	ScriptConstructorModel	*	model() { return &_model; }
 
-	int					modeInt() const { return static_cast<int>(_model.mode()); }
-	void				setModeInt(int m);
+	ScriptConstructorMode	mode() const { return _model.mode(); }
+	void					setMode(ScriptConstructorMode mode);
 
 	QString				constructorJson() const;
 	void				setConstructorJson(const QString & json);
@@ -106,23 +101,19 @@ public:
 	Q_INVOKABLE void	requestBuild() { if(_componentComplete) ensureChromeBuilt(); }
 
 	// --- used by ScriptNodeItem / ScriptDropSpot ---
-	QQmlComponent	*	textComponent();
-	QQmlComponent	*	imageComponent();
-	QQmlComponent	*	backgroundImageComponent();
-	QQmlComponent	*	textInputComponent();
-	QQmlComponent	*	checkBoxComponent();
-	QQmlComponent	*	rectangleComponent();
-
 	qreal				blockDim() const;
 	qreal				fontPixelSize() const;
 	qreal				spacing() const;
 
 	QQuickItem		*	scriptArea() const { return _scriptArea; }
-	QQuickItem		*	newLeaf(QQmlComponent * comp, const char * kind);
 
 	void				nodeEdited();
 	void				refresh() { rebuildFormulaItems(); }
 	ScriptNodeItem	*	makeNodeItem(ScriptNode * node, QQuickItem * parent);
+
+	/// Non-droppable prototype item for the palette / operator bar (positions and max-width
+	/// bookkeeping are done by the caller).
+	ScriptNodeItem	*	addPrototypeItem(ScriptNode * proto, QQuickItem * content);
 
 	// --- drag & drop orchestration (called by ScriptNodeItem / palette items) ---
 	void				startDragExisting(ScriptNodeItem * item, const QPointF & scenePos);
@@ -224,18 +215,15 @@ private:
 											_typeRole	= -1;
 	bool									_paletteRebuildScheduled = false;
 
-	QPointer<QQmlComponent>					_textComp,
-											_imageComp,
-											_backgroundImageComp,
-											_textInputComp,
-											_checkBoxComp,
-											_rectComp;
-
 	QAbstractItemModel				*		_columnsModel = nullptr;
 
 	// Natural size of the background watermark image, cached on load (the Image's
 	// sourceSize = 2x binding makes implicitWidth follow width afterwards).
 	QSizeF									_backgroundImageSize;
+
+	// Last emitted desiredMinimumHeight(); layoutAll() emits desiredMinimumHeightChanged()
+	// only when the value actually changes (the property itself is READ-only).
+	qreal									_lastDesiredMinimumHeight = -1;
 
 	// drag state
 	QPointer<ScriptNodeItem>				_draggedItem;
