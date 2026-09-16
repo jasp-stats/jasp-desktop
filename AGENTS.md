@@ -146,9 +146,18 @@ Key files:
 - `js/jaspA11y.js` — enrichment + keyboard navigation engine
   (`JASPWidgets.a11y`): plot labeling (role=img; container title →
   plot title → analysis title N-of-M), block-level ArrowUp/Down
-  navigation, table cell drill-in (Enter opens, arrows move cells,
-  Escape exits). Blocks = `.in-toolbar` titles, tables, plots, notes,
-  md_text, error boxes.
+  navigation (tables included), table cell drill-in (Enter opens,
+  arrows move cells, Escape exits). Blocks = `.in-toolbar` titles,
+  tables, plots, notes, md_text, error boxes. The results webview is
+  titled "Results" via `<title>` in index-jasp.html (Narrator announces
+  "<title> Document"; the Document role itself comes from webengine).
+
+  Keyboard contract (do not regress):
+  - ArrowUp/Down: move between all blocks in document order
+  - Enter: activate (table → cell drill-in, collapsible → toggle,
+    note → edit mode); plain Enter NEVER opens the context menu
+  - Shift+Enter / Ctrl+Enter / Shift+F10: open the governing context
+    menu (anchored to the block's title element, via openMenuFor)
 - `js/jaspNotes.js` — NoteBox wrapper is a button-like activator
   ("Note: <preview>. Press Enter to edit"); Quill editor + toolbar are
   tabindex=-1 (Tab can never trap in a note); Enter/Space edits,
