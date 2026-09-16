@@ -251,7 +251,8 @@ def run_results_a11y_checks(port):
         pending.discard(rid)
         return None
 
-    def key(key_name, code, vk):
+    def key(key_name, code, vk, shift=False):
+        mods = 8 if shift else 0  # CDP modifiers: 8 = Shift
         next_id[0] += 1
         rid = next_id[0]
         pending.add(rid)
@@ -259,7 +260,8 @@ def run_results_a11y_checks(port):
             ws.send(json.dumps({"id": rid, "method": "Input.dispatchKeyEvent",
                                 "params": {"type": t, "key": key_name, "code": code,
                                            "windowsVirtualKeyCode": vk,
-                                           "nativeVirtualKeyCode": vk}}))
+                                           "nativeVirtualKeyCode": vk,
+                                           "modifiers": mods}}))
         _time.sleep(0.3)
 
     failures = []
@@ -387,6 +389,34 @@ def run_results_a11y_checks(port):
               f"cell={cell}")
         check("drill-in Escape exits", out_drill and back_on_table)
 
+    # menu discipline: plain Enter must never open the context menu;
+    # Shift+Enter must open it. The menu marks its owner with
+    # jasp-menu-selected (cleared on next document mousedown).
+    menu_probe = evaljs("""
+        (function () {
+          var t = document.querySelector('table[role="table"]');
+          if (!t) return 'no-table';
+          var before = document.querySelectorAll('.jasp-menu-selected').length;
+          t.focus();
+          return { before: before };
+        })()
+    """)
+    if menu_probe:
+        key("Enter", "Enter", 13)
+        after_plain = evaljs("document.querySelectorAll('.jasp-menu-selected').length")
+        check("plain Enter does not open menu",
+              after_plain is not None and after_plain == (menu_probe.get("before") or 0),
+              f"markers {menu_probe.get('before')} -> {after_plain}")
+        key("Escape", "Escape", 27)
+        evaljs("!JASPWidgets.a11y.drillTable && JASPWidgets.a11y.exitDrill()")
+        key("Enter", "Enter", 13, shift=True)
+        after_shift = evaljs("document.querySelectorAll('.jasp-menu-selected').length")
+        check("Shift+Enter opens menu", (after_shift or 0) > (menu_probe.get("before") or 0),
+              f"markers -> {after_shift}")
+        key("Escape", "Escape", 27)
+        evaljs("(function(){ document.querySelectorAll('.jasp-menu-selected')"
+               ".forEach(function(e){ e.classList.remove('jasp-menu-selected'); }); return 1; })()")
+
     # arrow navigation moves between blocks
     evaljs("document.getElementById('spacer').focus()")
     key("ArrowDown", "ArrowDown", 40)
@@ -394,6 +424,179 @@ def run_results_a11y_checks(port):
                          " return (a.className||'').substring(0, 30); })()")
     check("arrow navigation moves focus", first_block not in ("BODY", "", None),
           f"focus after ArrowDown: {first_block}")
+
+    # ── ordered block walk: Down visits every block in DOM order, Up
+    # walks back through the same sequence
+    walk = evaljs("""
+        (function () {
+          var a = JASPWidgets.a11y;
+          var blocks = a.visibleBlocks();
+          if (document.activeElement) document.activeElement.blur();
+          var seq = [];
+          for (var i = 0; i < blocks.length; i++) {
+            var ev = new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true, cancelable: true});
+            document.dispatchEvent(ev);
+            seq.push(document.activeElement === blocks[i] ? 'ok' : 'miss');
+          }
+          return blocks.length + '|' + seq.join(',');
+        })()
+    """)
+    if walk and '|' in str(walk):
+        n, seq = str(walk).split('|', 1)
+        seq = seq.split(',')
+        check("block walk visits every block in order",
+              all(s == 'ok' for s in seq), f"{n} blocks: {seq}")
+    else:
+        check("block walk visits every block in order", False, f"got {walk}")
+
+    upwalk = evaljs("""
+        (function () {
+          var a = JASPWidgets.a11y;
+          var blocks = a.visibleBlocks();
+          blocks[blocks.length - 1].focus();
+          var seq = [];
+          for (var i = 0; i < blocks.length - 1; i++) {
+            var ev = new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true, cancelable: true});
+            document.dispatchEvent(ev);
+            seq.push(document.activeElement === blocks[blocks.length - 2 - i] ? 'ok' : 'miss');
+          }
+          return seq.join(',');
+        })()
+    """)
+    check("reverse walk (ArrowUp) works", upwalk is not None and 'miss' not in str(upwalk),
+          f"{upwalk}")
+
+    # ── typing safety: arrows must be inert while an editor has focus.
+    # Real typing dispatches on the focused element (the editor), which
+    # then bubbles to the document handler — so dispatch there.
+    arrow_safe = evaljs("""
+        (function () {
+          var editors = document.querySelectorAll('.ql-editor');
+          for (var i = 0; i < editors.length; i++) {
+            if (editors[i].offsetParent !== null) {
+              editors[i].focus();
+              editors[i].dispatchEvent(new KeyboardEvent('keydown',
+                  {key: 'ArrowDown', bubbles: true, cancelable: true}));
+              return document.activeElement.classList.contains('ql-editor') ? 'safe' : 'hijacked';
+            }
+          }
+          return 'no-visible-editor';
+        })()
+    """)
+    if arrow_safe == 'no-visible-editor':
+        log("  [info] no visible note editor - arrow-safety check skipped")
+    else:
+        check("arrows inert inside note editor", arrow_safe == 'safe', arrow_safe)
+
+    # ── note edit round trip: Enter starts editing, Escape returns
+    note_rt = evaljs("""
+        (function () {
+          var ns = document.querySelectorAll('.jasp-notes');
+          for (var i = 0; i < ns.length; i++) {
+            if (ns[i].offsetParent !== null) {
+              ns[i].focus();
+              return ns[i].getAttribute('role');
+            }
+          }
+          return null;
+        })()
+    """)
+    if note_rt == 'button':
+        key("Enter", "Enter", 13)
+        editing = evaljs("(function(){ var n = document.activeElement.closest('.jasp-notes');"
+                         " return n ? n.getAttribute('role') + '/' +"
+                         " document.activeElement.classList.contains('ql-editor') : 'none'; })()")
+        key("Escape", "Escape", 27)
+        done = evaljs("(function(){ var n = document.querySelector('.jasp-notes[tabindex=\"0\"]');"
+                      " return document.activeElement.classList.contains('jasp-notes') ?"
+                      " document.activeElement.getAttribute('role') : 'not-focused'; })()")
+        check("note Enter->edit / Escape->exit",
+              editing == 'region/true' and done == 'button',
+              f"editing={editing}, after-escape={done}")
+    else:
+        log("  [info] no visible note - note edit round trip skipped")
+
+    # ── Tab from a note wrapper must skip the Quill editor
+    tabskip = evaljs("""
+        (function () {
+          var ns = document.querySelectorAll('.jasp-notes');
+          for (var i = 0; i < ns.length; i++) {
+            if (ns[i].offsetParent !== null) { ns[i].focus(); return 'focused'; }
+          }
+          return null;
+        })()
+    """)
+    if tabskip:
+        key("Tab", "Tab", 9)
+        where = evaljs("document.activeElement.className || document.activeElement.tagName")
+        check("Tab skips note editor", not (where or '').startswith('ql-editor'),
+              f"focus went to: {where}")
+
+    # ── collapsible containers: Enter toggles aria-expanded
+    toggle = evaljs("""
+        (function () {
+          var t = document.querySelector('.in-toolbar[aria-expanded]');
+          if (!t) return null;
+          t.focus();
+          return t.getAttribute('aria-expanded');
+        })()
+    """)
+    if toggle:
+        key("Enter", "Enter", 13)
+        after = evaljs("document.activeElement.getAttribute('aria-expanded')")
+        key("Enter", "Enter", 13)
+        back = evaljs("document.activeElement.getAttribute('aria-expanded')")
+        check("Enter toggles expander", after != toggle and back == toggle,
+              f"{toggle} -> {after} -> {back}")
+    else:
+        log("  [info] no collapsible containers - expander toggle check skipped")
+
+    # ── plots: focusable, Enter is a no-op, focus outline visible
+    plot_check = evaljs("""
+        (function () {
+          var p = document.querySelector('.jasp-image-image[role="img"]');
+          if (!p) return null;
+          p.focus();
+          var st = getComputedStyle(p);
+          return p === document.activeElement ? st.outlineStyle : 'not-focused';
+        })()
+    """)
+    if plot_check:
+        markers0 = evaljs("document.querySelectorAll('.jasp-menu-selected').length")
+        key("Enter", "Enter", 13)
+        markers1 = evaljs("document.querySelectorAll('.jasp-menu-selected').length")
+        check("plot focusable with visible outline",
+              plot_check in ('solid', 'none') and plot_check != 'not-focused' and
+              evaljs("document.activeElement.classList.contains('jasp-image-image')"),
+              f"outline={plot_check}")
+        check("plot Enter is a no-op", (markers1 or 0) == (markers0 or 0),
+              f"menu markers {markers0} -> {markers1}")
+    else:
+        log("  [info] no plots - plot focus checks skipped")
+
+    # ── page scroll helpers exist (regression guard for the
+    # 'windows.pageDown' typo in MainPage.qml)
+    scrollfns = evaljs("typeof window.pageUp + '/' + typeof window.pageDown")
+    check("pageUp/pageDown helpers defined", scrollfns == 'function/function', scrollfns)
+
+    # ── markdown blocks: Enter-to-edit (soft, when present)
+    md = evaljs("""
+        (function () {
+          var m = document.querySelector('.jasp-md-text');
+          if (!m) return null;
+          m.focus();
+          return 'focused';
+        })()
+    """)
+    if md:
+        key("Enter", "Enter", 13)
+        editing = evaljs("!!document.querySelector('.jasp-md-text-editor')")
+        key("Escape", "Escape", 27)
+        closed = evaljs("!document.querySelector('.jasp-md-text-editor')")
+        check("markdown Enter-to-edit", editing and closed,
+              f"opened={editing}, closed={closed}")
+    else:
+        log("  [info] no markdown blocks - md_text check skipped")
 
     ws.close()
     log(f"=== results a11y checks: {'PASS' if not failures else 'FAIL (' + ', '.join(failures) + ')'} ===")
@@ -431,10 +634,14 @@ def main():
     else:
         log("  About window did not open (skipping)")
 
-    # ── 3. load Sleep.csv ─────────────────────────────────────────────
-    log("=== 3. loading dataset ===")
-    if not open_sleep_csv(app, main_window):
-        log("WARN: dataset load flow failed - continuing with whatever is loaded")
+    # ── 3. load Sleep.csv (skipped when JASP started with a .jasp file) ──
+    file_preloaded = os.environ.get("JASP_FILE_LOADED", "") == "1"
+    if file_preloaded:
+        log("=== 3. dataset load skipped (JASP launched with -FileArg) ===")
+    else:
+        log("=== 3. loading dataset ===")
+        if not open_sleep_csv(app, main_window):
+            log("WARN: dataset load flow failed - continuing with whatever is loaded")
 
     # refresh app/window references (window may now be titled Sleep)
     app, main_window = ac.setup_jasp_app(timeout=20, main_window_names=("JASP", "Sleep", "debug"))
@@ -442,19 +649,22 @@ def main():
         log("FAIL: lost JASP after dataset load")
         return 1
 
-    # ── 4. add Descriptives analysis ──────────────────────────────────
-    log("=== 4. Descriptives analysis ===")
-    ac.ensure_menu_closed(app, main_window)
-    time.sleep(0.5)
-    desc = ac.find_by_role_and_name(main_window, "button", "Descriptives", timeout=10)
-    if desc:
-        if ac.click_element(desc):
-            log("  Descriptives clicked - waiting for analysis to run")
-            time.sleep(12)
-        else:
-            log("  Descriptives click failed")
+    # ── 4. add Descriptives analysis (skipped when a file was preloaded) ──
+    if file_preloaded:
+        log("=== 4. analysis click skipped (results come from the loaded file) ===")
     else:
-        log("  Descriptives button not found in ribbon")
+        log("=== 4. Descriptives analysis ===")
+        ac.ensure_menu_closed(app, main_window)
+        time.sleep(0.5)
+        desc = ac.find_by_role_and_name(main_window, "button", "Descriptives", timeout=10)
+        if desc:
+            if ac.click_element(desc):
+                log("  Descriptives clicked - waiting for analysis to run")
+                time.sleep(12)
+            else:
+                log("  Descriptives click failed")
+        else:
+            log("  Descriptives button not found in ribbon")
 
     # ── 5. results page: document web + bounds emulation ─────────────
     log("=== 5. results page (document web) ===")
@@ -481,16 +691,37 @@ def main():
     # look for expected results content
     found_stats = False
     found_box = False
+    named_images = 0
+    unnamed_images = 0
     for role, name, _ in ac.find_all(doc, max_depth=25):
         nl = name.lower()
         if "descriptive statistics" in nl:
             found_stats = True
         if "boxplot" in nl or "box plot" in nl:
             found_box = True
+        if role.lower() in ("image", "graphic"):
+            if name.strip():
+                named_images += 1
+            else:
+                unnamed_images += 1
     log(f"  'Descriptive Statistics' found: {found_stats}")
     log(f"  'Boxplots' found: {found_box}")
+    log(f"  images in a11y tree: {named_images} named, {unnamed_images} unnamed")
+
+    # Narrator announces the results webview as "<title> Document"; the
+    # title must be "Results" (not the old "JASP")
+    doc_name = (doc.get_name() or "").strip()
+    log(f"  results document name: {doc_name!r}")
+    doc_named_results = doc_name.lower().startswith("results")
+    log(f"  document named 'Results': {doc_named_results}")
 
     ok = found_stats or stats["count"] > 100
+    if named_images > 0 and unnamed_images > named_images:
+        log("  FAIL: most images in the a11y tree have no name")
+        ok = False
+    if not doc_named_results:
+        log("  FAIL: results document is not named 'Results'")
+        ok = False
 
     # ── 6. results a11y structure checks (Phase 6, via CDP) ───────────
     # Runs last: by now the results page definitely has content (either

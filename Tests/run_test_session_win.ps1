@@ -74,6 +74,7 @@ if ($Narrator -and -not (Get-Process -Name Narrator -ErrorAction SilentlyContinu
 
 # ── run the test ─────────────────────────────────────────────────────
 $env:JASP_PID = $jaspPid
+if ($FileArg -ne "") { $env:JASP_FILE_LOADED = "1" }
 $env:QTWEBENGINE_AX_DEBUG = $(if ($NoAxDebug) { "0" } else { "1" })
 $env:PATH = "$qtPrefix\bin;$env:PATH"
 $env:R_HOME = "$buildDir\R"
