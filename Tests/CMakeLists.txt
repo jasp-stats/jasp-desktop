@@ -222,6 +222,32 @@ add_test(NAME testEngine                   COMMAND JASPTestEngine)
 add_test(NAME testQuick                    COMMAND JASPQuickTest)
 add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
 
+# --- RPC gate/fuzz smokes (Tests/gatetest) ---
+# These launch the full JASP app with `-platform offscreen` and drive it over its
+# RPC/MCP API (see Tests/gatetest/README.md); run_gatetest.sh builds the Python
+# venv and installs the pinned jasp-mcp submodule on first use. They need no
+# xvfb-run (the scripts handle their own platform) but do need a built JASP.
+add_test(NAME gateSmoke
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+			--module jaspTTests --timeout-per-analysis 120
+			--report ${CMAKE_CURRENT_BINARY_DIR}/gateSmoke.json)
+set_tests_properties(gateSmoke PROPERTIES TIMEOUT 1800)
+
+add_test(NAME fuzzSmoke
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+			--module jaspTTests --runs-per-analysis 2
+			--report ${CMAKE_CURRENT_BINARY_DIR}/fuzzSmoke.json)
+set_tests_properties(fuzzSmoke PROPERTIES TIMEOUT 1800 ENVIRONMENT "GATETEST_SCRIPT=fuzztest.py")
+
+# Full sweep (every analysis of every module): opt-in, since it runs for hours.
+if(BUILD_GATETEST)
+	add_test(NAME gateTest
+		COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/gatetest/run_gatetest.sh
+				--restart-on-death
+				--report ${CMAKE_CURRENT_BINARY_DIR}/gateTest.json)
+	set_tests_properties(gateTest PROPERTIES TIMEOUT 14400)
+endif()
+
 
 
 endif()

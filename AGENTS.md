@@ -47,6 +47,8 @@ xvfb-run build/Tests/JASPTestColumnEncoderContext
 
 For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
 
+With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
+
 ## Library architecture (dependency order)
 
 ```
@@ -83,6 +85,25 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `#ifdef NOT_IGNORING_SYNCHING` — never defined anywhere, dead code.
 - `FileEvent::FileSyncData` — was dead/never existed, now added to enum.
 - `DataSet::setDataFileAndTimeStamp` (overload) exists alongside `setDataFile` (single string).
+
+## Gate test / fuzzer (`Tests/gatetest/`)
+
+- `run_gatetest.sh` → gate test (every analysis, default options, via jasp-mcp MCP layer).
+- `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array).
+- `gatecommon.py` → shared RPC harness (MCP-first with direct-JSON-RPC fallback), JASP process handling.
+- JASP headless requires `-platform offscreen` (`-platform minimal`, used by `--hide`, crashes QtWebEngine's scene graph during blocking RPC waits). `--rpcPort=<n>` enables the RPC server at startup (persisted in user settings, like `--safeGraphics`).
+- The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge/`-32603` abort the run with a `.repro.json`.
+- `jaspTestModule` is always skipped (dev-only module).
+
+## Debugging JASP desktop crashes — pitfalls learned the hard way
+
+- **lldb batch mode ends supervision at the first stop.** Any breakpoint hit (or attach-SIGSTOP handling quirk) ends the `-k`-scripted session, leaving the target stopped/frozen. Do not use `break set -n abort` style name matching: it resolves to *all* matching symbols (e.g. `Analysis::abort`, hit constantly during fuzzing — 121 locations). Pin exact symbols per library, e.g. `break set -n exit -s libsystem_c.dylib` / `-n __abort_message -s libc++abi.dylib`, and prefer `QCoreApplication::exit` / `QGuiApplication::quit` for clean-exit tracing.
+- **Silent clean `exit(0)` is a real death mode** for JASP: Qt's `quitOnLastWindowClosed` default (true) is never disabled, so anything that closes/destroys the main QML window exits the whole app with code 0 — no log output, no signal. The fuzzer's summary filters exit code 0 out (`finish()`), so a clean quit shows up only as "connection refused" transport errors. Check `jasp_proc.returncode` when chasing "process died" reports.
+- Attaching lldb mid-run changes timing; crashes may become hangs or clean exits. Prefer launching JASP *under* lldb (`lldb --batch -o "process launch" ...`) and driving it from outside, and let the process run to death under supervision instead of attaching late. Note: lldb batch **attaching** ends supervision after the sourced script finishes — for guaranteed supervision, launch under lldb via a wrapper script (`exec lldb --batch -s script -- real-binary "$@"`) with `process launch` as the first script line and auto-continue breakpoint commands (`breakpoint command add N -o bt -o continue`), and check the *fuzzer's own output* for the real JASP pid (`grep "JASP pid"`); `pgrep -f rpcPort` can match stale leftovers from earlier runs.
+- **DYLD_INSERT_LIBRARIES interposition of `exit`/`_exit` via `dlsym(RTLD_NEXT)` recurses into itself** (the interpose table redirects RTLD_NEXT back to the interposer) — stack-overflow SIGSEGVs that poison the experiment. Interpose with the raw `SYS_exit` syscall instead (see the pattern used while chasing the QV4 GC crash; keep the dylib out of the fuzzer's own process expectations — it inherits DYLD_* so its own exits get logged too).
+- The mysterious clean-exit(0) fuzz deaths resolved into **multiple real crash modes**: EXC_BAD_ACCESS in `QV4::markDrain` (QtQml GC marking, use-after-free on the QML heap — see Tests/gatetest/README.md), plus one-off SIGBUS. "Connection refused" transport errors mean the desktop process is already gone; `jasp_proc.returncode` tells the death mode (0 filtered by summaries, -6 SIGABRT, -10 SIGBUS, -11 SIGSEGV).
+- The R engine processes detect parent death via heartbeat files (`temp/JASP-IPC-<pid>_heartbeat`); "no parent alive" in engine logs means the desktop process already died — check the *desktop* log and exit code.
+- The IPC channel is a **single-slot mailbox** with a fixed-width id prefix (4 digits since `f268fa249`); each send overwrites the slot, so fast repeated engine messages can overwrite an unread reply. `processReplies` never reads while the desktop thinks the engine is `idle`.
 
 ## Conventions
 

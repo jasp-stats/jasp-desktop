@@ -100,3 +100,7 @@ Modules/local
 /Tests/debug_*.py
 /Tests/test_file_dialog_trigger.py
 /Desktop/modules/activemodules.h
+
+# Gate/fuzzer test artifacts
+Tests/gatetest/.venv/
+__pycache__/

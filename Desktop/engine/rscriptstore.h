@@ -34,8 +34,7 @@ struct RFilterStore : public RScriptStore
 /// For when you want to run a filter from a qmlcomponent or something use this override
 struct RFilterByNameStore : public RScriptStore
 {
-	RFilterByNameStore(int dataSetId, QString name, QString module) : RScriptStore(dataSetId, -1, "Filter selected by name", module, engineState::filterByName), name(name) { }
-
+	RFilterByNameStore(int dataSetId, int requestId, QString name, QString module) : RScriptStore(dataSetId, requestId, "Filter selected by name", module, engineState::filterByName), name(name) { }
 
 	QString name;
 };

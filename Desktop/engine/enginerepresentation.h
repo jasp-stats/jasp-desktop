@@ -216,6 +216,7 @@ private:
 				*	_analysisAborted	= nullptr;	///<To make sure we know that the response we got was from this aborted analysis or not
 	int64_t			_idRemovedAnalysis	= -1,		///<If the analysis was deleted we should ignore its results
 					_lastRequestId		= -1,		///<for R code requests from qml components, so that we can send it back to the right element
+					_lastFilterByNameRequestId = -1,///<for named filter runs: replies for superseded requests are dropped (see processFilterByNameReply)
 					_abortTime			= -1,		///<When did we tell the analysis to abort? So that we can kill it if it takes too long
 					_idleStartSecs		= -1,
 					_lastCompColDataSet = -1,

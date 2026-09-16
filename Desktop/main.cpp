@@ -40,7 +40,8 @@
 const std::string	jaspExtension		= ".jasp",
 					unitTestArg			= "--unitTest",
 					saveArg				= "--save",
-					timeOutArg			= "--timeOut=";
+					timeOutArg			= "--timeOut=",
+					rpcPortArg			= "--rpcPort=";
 
 #ifdef _WIN32
 #include "utilities/dynamicruntimeinfo.h"
@@ -99,7 +100,7 @@ bool createJunctions()
 #endif
 
 
-void parseArguments(int argc, char *argv[], std::string & filePath, bool & newData, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & containerSettingForced, bool & container, Json::Value & dbJson, QString & reportingDir)
+void parseArguments(int argc, char *argv[], std::string & filePath, bool & newData, bool & unitTest, bool & dirTest, int & timeOut, bool & save, bool & logToFile, bool & hideJASP, bool & safeGraphics, bool & containerSettingForced, bool & container, Json::Value & dbJson, QString & reportingDir, int & rpcPort)
 {
 	filePath				= "";
 	unitTest				= false;
@@ -113,6 +114,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 	container				= false;
 	reportingDir			= "";
 	timeOut					= 10;
+	rpcPort					= -1;
 	dbJson					= Json::nullValue;
 
 	bool letsExplainSomeThings = false;
@@ -205,7 +207,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 		}
 		else if(args[arg].size() > timeOutArg.size() && args[arg].substr(0, timeOutArg.size()) == timeOutArg)
 		{
-			std::string time			= timeOutArg.substr(timeOutArg.size());
+			std::string time			= args[arg].substr(timeOutArg.size());
 			size_t		convertedChars	= 0;
 			int			convertedTime	= 0;
 			try								{ convertedTime = std::stoi(time, &convertedChars); }
@@ -214,6 +216,23 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 
 			if(convertedChars > 0)
 				timeOut = convertedTime;
+		}
+		else if(args[arg].size() > rpcPortArg.size() && args[arg].substr(0, rpcPortArg.size()) == rpcPortArg)
+		{
+			std::string port			= args[arg].substr(rpcPortArg.size());
+			size_t		convertedChars	= 0;
+			int			convertedPort	= 0;
+			try								{ convertedPort = std::stoi(port, &convertedChars); }
+			catch(std::invalid_argument &)	{}
+			catch(std::out_of_range &)		{}
+
+			if(convertedChars > 0 && convertedPort > 0 && convertedPort <= 65535)
+				rpcPort = convertedPort;
+			else
+			{
+				std::cerr << "Argument for rpcPort must be a valid port number (1-65535), got: " << port << std::endl;
+				letsExplainSomeThings = true;
+			}
 		}
 		else
 		{
@@ -288,7 +307,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 
 	if(letsExplainSomeThings)
 	{
-		std::cerr	<< "JASP can be started without arguments, or the following: { --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n"
+		std::cerr	<< "JASP can be started without arguments, or the following: { --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --rpcPort=48164 } \n"
 					<< "If a filename is supplied JASP will try to load it. \nIf --unitTest is specified JASP will refresh all analyses in \"filename\" (which must be a JASP file) and see if the output remains the same and will then exit with an errorcode indicating succes or failure.\n"
 					<< "If --unitTestRecursive is specified JASP will go through specified \"folder\" and perform a --unitTest on each JASP file. After it has done this it will exit with an errorcode indication succes or failure.\n"
 					<< "For both testing arguments there is the optional --save argument, which specifies that JASP should save the file after refreshing it.\n"
@@ -296,6 +315,7 @@ void parseArguments(int argc, char *argv[], std::string & filePath, bool & newDa
 					<< "If --logToFile is specified then JASP will try it's utmost to write logging to a file, this might come in handy if you want to figure out why JASP does not start in case of a bug.\n"
 					<< "If --hide is specified then JASP will not be shown during recursive testing or reporting.\n"
 					<< "If --safeGraphics is specified then JASP will be started with software rendering enabled, this will be saved to your settings.\n"
+					<< "If --rpcPort is specified then JASP will enable its RPC server (aka the MCP server) on the given port on startup and save these settings, this is useful for automation such as the gate test in Tests/gatetest.\n"
 					<< "If --report is specified then JASP will be started in reporting mode, which requires a path to where you would like to store the results. This is usually used in conjunction with a service/daemon and in that case it might make sense to also pass --hide. Don't forget to also pass a jasp filename otherwise it won't have anything to run...\n"
 			   #ifdef _WIN32
 					<< "In case one really wants the engines to be sandboxed specify --sandbox, otherwise use --noSandbox."
@@ -416,7 +436,8 @@ int main(int argc, char *argv[])
 				containForce,
 				contain,
 				newData;
-	int			timeOut;
+	int			timeOut,
+				rpcPort;
 	Json::Value	dbJson;
 
 	qInstallMessageHandler(qtMessageHandler);
@@ -444,10 +465,17 @@ int main(int argc, char *argv[])
 	//Apply any user-preference for the location of the sandbox-dir before anything (logs, clipboard, sandboxed engines, filedialogs) starts using it.
 	AppDirs::setSandboxDirOverride(Settings::value(Settings::ENGINE_SANDBOX_DIR).toString());
 
-	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, containForce, contain, dbJson, reportingDir);
+	parseArguments(argc, argv, filePath, newData, unitTest, dirTest, timeOut, save, logToFile, hideJASP, safeGraphics, containForce, contain, dbJson, reportingDir, rpcPort);
 
 	if(safeGraphics)		Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else					safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+
+	if(rpcPort > 0) //Enable the RPC/MCP server for automation (e.g. Tests/gatetest) and let it listen on the requested port. Same persistence behaviour as --safeGraphics.
+	{
+		Settings::setValue(Settings::RPC_SERVER_ENABLED, true);
+		Settings::setValue(Settings::RPC_SERVER_PORT,	 rpcPort);
+		Settings::sync();
+	}
 
 	if(containForce)		Settings::setValue(Settings::ENGINE_SANDBOX,	contain);
 	else					contain = Settings::value(Settings::ENGINE_SANDBOX).toBool();

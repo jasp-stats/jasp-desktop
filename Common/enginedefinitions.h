@@ -10,7 +10,7 @@
 
 DECLARE_ENUM(engineState,			initializing, idle, analysis, filter, filterByName, rCode, computeColumn, computeDataSet, moduleInstallRequest, moduleUninstallRequest, moduleLoadRequest, pauseRequested, paused, resuming, stopRequested, stopped, logCfg, settings, killed, loadingData);
 DECLARE_ENUM(performType,			run, abort, saveImg, editImg, rewriteImgs);
-DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, running, changed, waiting);
+DECLARE_ENUM(analysisResultStatus,	validationError, fatalError, imageSaved, imageEdited, imagesRewritten, complete, running, changed, waiting, aborted);
 DECLARE_ENUM(moduleStatus,			initializing, installNeeded, uninstallNeeded, loading, readyForUse, error);
 DECLARE_ENUM(engineAnalysisStatus,	empty, toRun, running, changed, complete, error, exception, aborted, stopped, saveImg, editImg, rewriteImgs, synchingData);
 DECLARE_ENUM(enginesListRoles,		channel =  257, module, engineState, analysisStatus, runsWhat, running, idle, idleSoon, loadingProgress); //hardcoded Qt::UserRole + 1
