@@ -77,5 +77,168 @@ JASPWidgets.a11y = {
 				el.setAttribute('aria-label', JASPWidgets.a11y.plotLabel(el, i, members.length, members[i].containerTitle));
 			}
 		}
+	},
+
+	// ── Keyboard navigation engine ──────────────────────────────────────
+	//
+	// Arrow Up/Down move focus between the narratable blocks of the
+	// results (titles, tables, plots, notes, markdown, error boxes) in
+	// document order; tables are skipped at block level (Tab reaches
+	// them). Enter on a focused table drills into cell navigation:
+	// arrows move cell-by-cell with full header context via the headers
+	// attributes, Escape/Tab returns to block navigation. Arrows are
+	// ignored while a text editor has focus.
+
+	_blocksSelector: '.in-toolbar, table[role="table"], .jasp-image-image[data-plot-title], .jasp-notes, .jasp-md-text, .error-message-box',
+
+	visibleBlocks: function () {
+		var blocks = [];
+		var els = document.querySelectorAll(JASPWidgets.a11y._blocksSelector);
+		for (var i = 0; i < els.length; i++) {
+			var el = els[i];
+			if (el.classList.contains('jasp-hide'))
+				continue;
+			if (el.offsetParent === null && el !== document.activeElement)
+				continue; // hidden (display:none)
+			blocks.push(el);
+		}
+		return blocks;
+	},
+
+	isEditingContext: function (el) {
+		return !!(el && el.closest && el.closest('input, textarea, select, [contenteditable="true"], .ql-editor'));
+	},
+
+	blockMove: function (dir) {
+		var a = JASPWidgets.a11y;
+
+		// leaving a table drill-in anchors the next move at the table
+		var current = a.drillTable || document.activeElement;
+		a.exitDrill();
+
+		// arrow navigation skips tables (Enter on a focused table drills in)
+		var all = a.visibleBlocks();
+		var nav = [];
+		for (var i = 0; i < all.length; i++)
+			if (all[i].tagName !== 'TABLE')
+				nav.push(all[i]);
+		if (nav.length === 0)
+			return;
+
+		var next = null;
+		if (!current || current === document.body) {
+			next = dir > 0 ? nav[0] : nav[nav.length - 1];
+		} else {
+			var candidates = [];
+			for (var j = 0; j < nav.length; j++) {
+				var rel = current.compareDocumentPosition(nav[j]);
+				if (dir > 0 && (rel & Node.DOCUMENT_POSITION_FOLLOWING))
+					candidates.push(nav[j]);
+				else if (dir < 0 && (rel & Node.DOCUMENT_POSITION_PRECEDING))
+					candidates.push(nav[j]);
+			}
+			next = dir > 0 ? candidates[0] : candidates[candidates.length - 1];
+		}
+		if (next)
+			next.focus();
+	},
+
+	// ── table cell drill-in ─────────────────────────────────────────────
+
+	drillTable: null,
+	_drillGrid: null,
+	drillPos: null,
+
+	_tableGrid: function (table) {
+		var grid = [];
+		var rows = table.querySelectorAll('tr');
+		for (var i = 0; i < rows.length; i++) {
+			var rowCells = rows[i].querySelectorAll('[role="rowheader"], [role="columnheader"], [role="gridcell"]');
+			if (rowCells.length > 0) {
+				var arr = [];
+				for (var j = 0; j < rowCells.length; j++)
+					arr.push(rowCells[j]);
+				grid.push(arr);
+			}
+		}
+		return grid;
+	},
+
+	drillCells: function (table) {
+		var a = JASPWidgets.a11y;
+		a._drillGrid = a._tableGrid(table);
+		if (a._drillGrid.length === 0)
+			return;
+		a.drillTable = table;
+		a.drillPos = { r: 0, c: 0 };
+		a._focusDrillCell();
+	},
+
+	_focusDrillCell: function () {
+		var a = JASPWidgets.a11y;
+		var row = a._drillGrid[a.drillPos.r];
+		var cell = row[Math.min(a.drillPos.c, row.length - 1)];
+		cell.setAttribute('tabindex', '-1');
+		cell.focus();
+	},
+
+	exitDrill: function () {
+		var a = JASPWidgets.a11y;
+		if (!a.drillTable)
+			return;
+		var table = a.drillTable;
+		a.drillTable = null;
+		a._drillGrid = null;
+		a.drillPos = null;
+		table.focus();
+	},
+
+	drillMove: function (dR, dC) {
+		var a = JASPWidgets.a11y;
+		if (!a.drillTable)
+			return;
+		var g = a._drillGrid;
+		var r = Math.max(0, Math.min(g.length - 1, a.drillPos.r + dR));
+		var c = Math.max(0, Math.min(g[r].length - 1, a.drillPos.c + dC));
+		a.drillPos = { r: r, c: c };
+		a._focusDrillCell();
+	},
+
+	initNav: function () {
+		document.addEventListener('keydown', function (e) {
+			var a = JASPWidgets.a11y;
+			var target = e.target;
+
+			// never interfere while typing or editing text
+			if (a.isEditingContext(target))
+				return;
+
+			// table cell navigation (drill-in mode)
+			if (a.drillTable) {
+				if (e.key === 'ArrowDown')		{ e.preventDefault(); a.drillMove(1, 0);	return; }
+				if (e.key === 'ArrowUp')		{ e.preventDefault(); a.drillMove(-1, 0);	return; }
+				if (e.key === 'ArrowRight')		{ e.preventDefault(); a.drillMove(0, 1);	return; }
+				if (e.key === 'ArrowLeft')		{ e.preventDefault(); a.drillMove(0, -1);	return; }
+				if (e.key === 'Escape')			{ e.preventDefault(); a.exitDrill();		return; }
+				if (e.key === 'Tab')			{ a.drillTable = null; a._drillGrid = null; a.drillPos = null; return; }
+				return;
+			}
+
+			// Enter on a focused table drills into cell navigation
+			if (e.key === 'Enter' && target && target.matches && target.matches('table[role="table"]')) {
+				e.preventDefault();
+				a.drillCells(target);
+				return;
+			}
+
+			// block-level arrow navigation
+			if (e.key === 'ArrowDown')	{ e.preventDefault(); a.blockMove(1);	return; }
+			if (e.key === 'ArrowUp')	{ e.preventDefault(); a.blockMove(-1);	return; }
+		});
 	}
 };
+
+// the results page is the only consumer; jQuery is loaded before this file
+$(function () {
+	JASPWidgets.a11y.initNav();
+});

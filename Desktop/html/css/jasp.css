@@ -652,7 +652,9 @@ th[role="rowheader"] {
 [role="menuitem"]:focus,
 [role="link"]:focus,
 [role="gridcell"]:focus,
-[role="img"]:focus {
+[role="img"]:focus,
+th[role="rowheader"]:focus,
+th[role="columnheader"]:focus {
   outline: 2px solid #0066cc;
   outline-offset: 2px;
 }
