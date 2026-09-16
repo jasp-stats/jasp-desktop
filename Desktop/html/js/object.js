@@ -312,6 +312,8 @@ JASPWidgets.objectView = JASPWidgets.View.extend({
 			this.$body.slideDown(300);
 		}
 		this.model.set('collapsed', collapsed);
+		// keep screen readers informed about the expander state
+		this.$el.find('.in-toolbar').first().attr('aria-expanded', collapsed ? 'false' : 'true');
 	},
 
 	isCollapsed: function() {

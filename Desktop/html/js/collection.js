@@ -125,6 +125,8 @@ JASPWidgets.collectionView = JASPWidgets.View.extend({
 		}
 
 		this.model.set('collapsed', collapsed);
+		// keep screen readers informed about the expander state
+		this.$el.find('.in-toolbar').first().attr('aria-expanded', collapsed ? 'false' : 'true');
 	},
 
 

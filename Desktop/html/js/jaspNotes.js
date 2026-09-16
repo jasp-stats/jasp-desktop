@@ -298,6 +298,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 		if (!this.editing)
 			return;
 		this.editing = false;
+		this.$el.attr('role', 'button');
 		this.updateA11yLabel();
 		this.$el.focus();
 	},
@@ -370,7 +371,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 
         this.$el.append(`<div class="jasp-hide" data-button-class="jasp-comment"></div>`);
         this.$el.attr('id', noteId).attr('role', 'button').attr('tabindex', '0')
-        this.$el.append(`<div id="${noteId}-editor" role="textbox" aria-multiline="true" aria-label="${i18n('Note content')}" aria-describedby="${noteId}-instructions">`)
+        this.$el.append(`<div id="${noteId}-editor" class="jasp-note-editor" role="textbox" aria-multiline="true" aria-label="${i18n('Note content')}" aria-describedby="${noteId}-instructions">`)
                 .append(`<div class="jasp-latex-container jasp-hide">
                             <textarea class="jasp-latex-input" rows="5" cols="25" placeholder='${i18n("Input LaTeX here:")}
 								&bull; ${i18n("Press `Cmd/Ctrl + Enter` to apply;")}'>
@@ -443,7 +444,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			placeholder: placeholderText
 		};
 
-		let targetDiv = this.$el.find("#editor").get(0);
+		let targetDiv = this.$el.find(".jasp-note-editor").get(0);
 		this.$quill = new Quill(targetDiv, options)
 
 		var self = this;
@@ -621,6 +622,7 @@ JASPWidgets.NoteBox = JASPWidgets.View.extend({
 			self.setQuillToolbarVisibility('none');
 			if (self.editing) {
 				self.editing = false;
+				self.$el.attr('role', 'button');
 				self.updateA11yLabel();
 			}
 		});

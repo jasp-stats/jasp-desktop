@@ -342,8 +342,8 @@ Item
 			{
 				switch(event)
 				{
-				case Qt.Key_PageDown:	resultsView.runJavaScript("windows.pageDown();");	event.accepted=true; break;
-				case Qt.Key_PageUp:		resultsView.runJavaScript("windows.pageUp();");		event.accepted=true; break;
+				case Qt.Key_PageDown:	resultsView.runJavaScript("window.pageDown();");	event.accepted=true; break;
+				case Qt.Key_PageUp:		resultsView.runJavaScript("window.pageUp();");		event.accepted=true; break;
 				}
 			}
 

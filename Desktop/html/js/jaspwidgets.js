@@ -355,8 +355,19 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 			this.$el.addClass(this.titleTag + "-toolbar");
 
 		if (this.title !== undefined) {
-			if (this.titleTag !== undefined)
-				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable">' + this.title + '</' + this.titleTag + '>');
+			if (this.titleTag !== undefined) {
+				// Accessibility: make the title focusable so screen-reader
+				// users can reach it; collapsible containers also expose
+				// their state via aria-expanded (kept in sync in
+				// setCollapsedState).
+				var collapsible = this.options && this.options.hasCollapse && this.parent.setCollapsedState !== undefined;
+				var expandedAttr = '';
+				if (collapsible) {
+					var collapsedNow = this.parent.isCollapsed && this.parent.isCollapsed();
+					expandedAttr = ' aria-expanded="' + (collapsedNow ? 'false' : 'true') + '"';
+				}
+				this.$el.append('<' + this.titleTag + ' class="in-toolbar toolbar-clickable" tabindex="0"' + expandedAttr + '>' + this.title + '</' + this.titleTag + '>');
+			}
 			else
 				this.$el.append(this.title);
 		}
@@ -457,19 +468,40 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	_keydown: function (e) {
-		if (!this.editing)
+		if (this.editing) {
+			if (e.which == 9) {
+				e.preventDefault();
+			}
+			else if (e.which == 13) {
+				e.preventDefault();
+				this.endEdit(true);
+			}
+			else if (e.which == 27) {
+				e.preventDefault();
+				this.endEdit(false);
+			}
 			return;
+		}
 
-		if (e.which == 9) {
+		// Accessibility: keyboard activation of titles/expanders.
+		// Enter/Space toggles a collapsible container, or opens the
+		// context menu for titles without collapse (analysis/All).
+		// Shift+F10 / Ctrl+Enter always opens the menu.
+		if (e.which == 13 || e.which == 32) {
 			e.preventDefault();
+			if (e.ctrlKey) {
+				this._showMenu(0, 0);
+			}
+			else if (this.options && this.options.hasCollapse && this.parent.setCollapsedState !== undefined) {
+				this.parent.collapseMenuClicked();
+			}
+			else {
+				this._showMenu(0, 0);
+			}
 		}
-		else if (e.which == 13) {
+		else if (e.which == 93 || (e.shiftKey && e.which == 121)) {
 			e.preventDefault();
-			this.endEdit(true);
-		}
-		else if (e.which == 27) {
-			e.preventDefault();
-			this.endEdit(false);
+			this._showMenu(0, 0);
 		}
 	},
 
@@ -494,6 +526,13 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 	},
 
 	_mouseDown: function (e) {
+		return this._showMenu(e.screenX, e.screenY);
+	},
+
+	// Opens the analysis/context menu for this title. screenX/screenY are
+	// only stored for legacy compatibility — the QML menu anchors to the
+	// element-derived rX/rY/rXright, so keyboard activation passes 0s.
+	_showMenu: function (screenX, screenY) {
 
 		if (this.editing)
 			return true;
@@ -517,8 +556,8 @@ JASPWidgets.Toolbar = JASPWidgets.View.extend({
 		this.options.rY = posY;
 		this.options.rXright = posXright;
 
-		this.options.x = e.screenX;
-		this.options.y = e.screenY;
+		this.options.x = screenX;
+		this.options.y = screenY;
 
 		if (this.options.hasNotes)
 			this.options['noteOptions'] = this.parent.noteOptions();
