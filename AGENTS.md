@@ -136,6 +136,47 @@ Branch `accessibilityQuick`. Key files:
 Debug: set `QTWEBENGINE_AX_DEBUG=1` before launching; output goes to
 jasp-run.log with `[AX-DEBUG]` prefix.
 
+### Results page accessibility (Desktop/html/)
+
+The results page is a Backbone.js SPA (qrc `:/html/`, entry
+`index-jasp.html`) that templates JSON from R into HTML. All a11y
+behavior lives here + one QML touch-up in MainPage.qml.
+
+Key files:
+- `js/jaspA11y.js` — enrichment + keyboard navigation engine
+  (`JASPWidgets.a11y`): plot labeling (role=img; container title →
+  plot title → analysis title N-of-M), block-level ArrowUp/Down
+  navigation, table cell drill-in (Enter opens, arrows move cells,
+  Escape exits). Blocks = `.in-toolbar` titles, tables, plots, notes,
+  md_text, error boxes.
+- `js/jaspNotes.js` — NoteBox wrapper is a button-like activator
+  ("Note: <preview>. Press Enter to edit"); Quill editor + toolbar are
+  tabindex=-1 (Tab can never trap in a note); Enter/Space edits,
+  Escape exits. **The editor div must keep its stable class
+  `jasp-note-editor`** — render() looks it up by class, not id.
+- `js/jaspwidgets.js` (Toolbar) — titles are focusable headings;
+  Enter/Space on collapsible containers toggles collapse (aria-expanded
+  synced in object.js/collection.js setCollapsedState); Enter on the
+  analysis title opens the context menu (anchored to element coords,
+  no mouse needed); Shift+F10/Ctrl+Enter opens the menu anywhere.
+- `js/table.js` — sr-only `<caption>`, `headers=` includes row headers,
+  hover toolbar aria-hidden (it polluted the tree under the table).
+
+Debugging DOM-level a11y: launch JASP with
+`QTWEBENGINE_CHROMIUM_FLAGS=--remote-debugging-port=9223`, then
+`urllib http://127.0.0.1:9223/json` → pick the `index-jasp.html` page →
+`websocket` Runtime.evaluate (CDP `result.result` wraps the value;
+match request ids — the page emits events between responses).
+`Tests/test_accessibility_win.py`'s `run_results_a11y_checks` does all
+of this; the runner sets the flags up automatically (`-FileArg
+something.jasp` loads saved analyses with plots/notes/tables).
+
+A JS exception during `analyses.render()` leaves the results page
+empty forever (`initialised=true` blocks the retry) — if the page is
+blank, suspect a render-path exception first (verify via CDP:
+`analysesGlobal.analyses.length` is a View property, not
+Backbone's `.models`).
+
 ### Test side (Tests/)
 
 Platform-dispatched backends:
