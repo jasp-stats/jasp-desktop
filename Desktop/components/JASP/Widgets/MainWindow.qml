@@ -92,6 +92,28 @@ Window
 		return (a + n) % n;
 	}
 
+	//This DropArea must stay a plain sibling *before* the contents below, at the default z.
+	//Qt hands a drag to the topmost DropArea that accepts it, and this one accepts anything
+	//(it sets no keys), so as soon as it sits on top it swallows every drag inside the app as well
+	//- the drag & drop of a variable from one VariablesList to another included. Being declared
+	//first and at z 0 makes it the bottom-most one, so it only gets the drags nothing else wants.
+	DropArea
+	{
+		id:				drop
+		enabled:		true
+		anchors.fill:	parent
+
+		onDropped: (drop) =>
+		{
+			if (mainWindow.openURLFile(drop.text))
+				drop.accepted = true
+			warningRect.droppingText = false
+		}
+
+		onExited:	warningRect.droppingText = false
+		onEntered:	(drag) => warningRect.droppingText = drag.hasText
+	}
+
 	Item
 	{
 		anchors.fill:	parent
@@ -109,21 +131,6 @@ Window
 			property bool droppingText: false
 
 			state: droppingText ? "droppingData" : (mainWindow.hadFatalError ? "fatalError" : "")
-
-			DropArea
-			{
-				enabled: true
-				anchors.fill: parent
-				onDropped: (drop) =>
-				{
-				   if (mainWindow.openURLFile(drop.text))
-						drop.accepted = true
-				   warningRect.droppingText = false
-				}
-
-				onExited: warningRect.droppingText = false
-				onEntered: (drag) => warningRect.droppingText = drag.hasText
-			}
 
 			states: [
 					State {
