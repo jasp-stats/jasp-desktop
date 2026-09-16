@@ -7,7 +7,7 @@ If you have not cloned the `jasp-desktop` repository, please head back to the [b
 - [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/)
 - [Qt Creator](https://www.qt.io/download) / Qt >= 6.7
     - Qt Creator 13
-- [RTools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html), for building R modules
+- [RTools45](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html), for building the R interface and R modules
 - [Conan](https://github.com/conan-io/conan/releases) > 2.0.0
 - [WIX Toolset](https://wixtoolset.org), if you want to distribute JASP, i.e., creating an installer.
 
@@ -57,52 +57,64 @@ You also need Qt Creator and Qt 6 to be able to build and test JASP's libraries 
 
 Download the Rtools45 from [here](https://cran.r-project.org/bin/windows/Rtools/rtools45/rtools.html) and *preferably* install it in the **default** path, i.e., `C:\rtools45`.
 
-> ⚠️ This is important because JASP build system expect to find the Rtools45 in the following default path, otherwise you need to specify your custom path to CMake, using the `RTOOLS_PATH` variable, e.g., `-DRTOOLS_PATH=D:\rtools45\ucrt64`.
+> ⚠️ This is important because JASP build system expects to find Rtools45 in the default path. If Rtools45 is installed somewhere else, set the `RTOOLS45_HOME` environment variable to the Rtools45 installation root, or set the CMake cache variables explicitly: `RTOOLS_PATH` for the UCRT package folder, `RTOOLS_STATIC_TOOLCHAIN_PATH` for the static toolchain, and `RTOOLS_BUILD_TOOLS_PATH` for the MSYS build tools.
 
-#### Installing Rtools45 Libraries and Packages
+#### R-Interface and Syntax Builds
 
-After installing Rtools45, you will find a new program in your Start Menu. Search for "Rtools45" in your Start Menu, and from the selection of applications that are showing up, run the one name "Rtool 64-bit UCRT". At this point, you should be welcomed with a command prompt. Somtimes, it's quite tricky to find this executable, especially if you already have the Rtools45 installed, so, to make sure that you are running the right console, you can navigate to your Rtools45 installation folder, and find the `ucrt64` executable.
+For syntax-only builds and for `R-Interface`, installing Rtools45 is enough. You do not need to install extra UCRT packages such as Boost, jsoncpp, ReadStat, or librdata for `R-Interface`.
 
-Copy and paste the following line into the `ucrt64` command line and press Enter. With this command, we are installing some of required packages and libraries necessary for building JASP. Run this command at least twice to make sure all required packages are installed.
+On Windows, CMake builds `R-Interface` with the Rtools45 `static.posix` compiler toolchain and the MSYS build tools that come with Rtools45. This keeps the produced `R-Interface` DLLs from depending on extra MinGW runtime DLLs.
+
+#### Full Desktop Importer Dependencies
+
+The full Desktop build also links the Windows data importers against ReadStat and librdata. These importer dependencies are separate from `R-Interface`. Until they are provided by Conan or bootstrapped automatically by CMake, install only the source-build tools and runtime libraries needed for those importers.
+
+Open the "Rtools45 64-bit UCRT" shell and run:
 
 ```bash
-pacman -Syu mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-boost jsoncpp bison flex make autoconf automake git wget cmake  mingw-w64-ucrt-x86_64-libiconv  libiconv-devel libtool zlib-devel zlib mingw-w64-ucrt-x86_64-zlib mingw-w64-ucrt-x86_64-jsoncpp
+pacman -S --needed --noconfirm make autoconf-wrapper automake-wrapper git libtool mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-libiconv
 ```
+
+Do not install the old broad package set here. In particular, `mingw-w64-ucrt-x86_64-boost`, `mingw-w64-ucrt-x86_64-jsoncpp`, and `mingw-w64-ucrt-x86_64-readstat` are not required for the `R-Interface` fix and can hide dependency problems.
 
 #### Downloading and Building ReadStat and librdata (on Rtools45)
 
-In addition to these libraries, you need to manually download and install the ReadStat and librdata library. You can do that by typing the following commands into the `ucrt64` command line.
+Download the [ReadStat 1.1.9 release tarball](https://github.com/WizardMac/ReadStat/releases/download/v1.1.9/readstat-1.1.9.tar.gz) to a working directory. The expected SHA256 is:
+
+```text
+3a232b9e852d10173e2f25da9155afe2e129a30d1fc6c9aac142cdc5cbfe527e
+```
+
+Then build and install it from the "Rtools45 64-bit UCRT" shell:
 
 To build ReadStat:
-```
-git clone https://github.com/WizardMac/ReadStat.git
-git checkout a000e9c
-cd ReadStat
-export CFLAGS=-Wno-error; export CXXFLAGS=-Wno-error; # I couldnt build 1.1.7 nor 1.1.8 without setting these
-autoreconf -i -f
-./configure --host=x86_64-ucrt-mingw32 --build=x86_64-ucrt-mingw32
-make -j
+```bash
+tar -xzf readstat-1.1.9.tar.gz
+cd readstat-1.1.9
+./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX
+make -j2 CFLAGS=-Wno-error=use-after-free CXXFLAGS=-Wno-error=use-after-free
 make install
 ```
 
 To build librdata
-```
+```bash
 git clone https://github.com/WizardMac/librdata.git
 git checkout 33bd276
 cd librdata
+git checkout 33bd276ecb0bbcd8997ccc71a544149b3da0d940
 ./autogen.sh
-./configure
-make
+./configure --disable-dependency-tracking --host=$MINGW_CHOST --build=$MINGW_CHOST --prefix=$MINGW_PREFIX
+make -j2
 make install
 ```
 
-This will build and install these libraries inside the Rtools45 environment where JASP will look for them. If any of these steps goes wrong, JASP's build system cannot configure the build.
+This builds and installs the importer libraries inside the Rtools45 UCRT environment where JASP will look for them. If any of these steps goes wrong, a full Desktop build cannot configure the importer targets.
 
 #### Adding Rtools45 to your PATH
 
-It's important that Rtools45 is in your user variables PATH. You can check this by opening the "Edit the system environment variables" setting, and selecting the "Environment Variables", and finally adding the path to your UCRT bin folder to the PATH variable, e.g., `C:\rtools45\ucrt64\bin`.
+It is usually enough to install Rtools45 in the default location. If you use a custom Rtools45 installation or Qt Creator cannot find Rtools tools while configuring, add the relevant Rtools paths to the Qt Creator build environment or set the CMake variables listed above.
 
-> ⚠️ **I'm not 100% sure what the correct order is, but you most likely need to have the Rtools path under the Qt path. Moreover, please make sure that both Qt, and Rtools45 are the first two items after the last item mentioning the `SYSTEM`, or `WINDOWS`.** 
+For a default install, the most common path to add is `C:\rtools45\ucrt64\bin`. Keep the Visual Studio and Qt paths before Rtools paths so Qt Creator does not accidentally pick the wrong compiler tools.
 
 ### Installing Conan
 
@@ -156,11 +168,9 @@ If this is your first time preparing your project, CMake is going to configure *
 
 #### R-Interface 
 
-CMake makes sure that it build the R-Interface using the MinGW x64 libraries every time (if necessary). So, unlike before, you don't need to anything special to have the R-Interface build and prepared, however, you need to make sure that the `C:\rtools45\ucrt64\bin` is in your PATH. You can add this address to your Build Environment path inside the Qt Creator.
+CMake builds `R-Interface` with the Rtools45 static compiler toolchain when necessary. You do not need to install the full Desktop importer dependencies or the old broad UCRT package set for `R-Interface`.
 
-Find the "Build Environment" section under the "Projects -> Build", and expand its details by clicking the "Details". Here, you need to find the `Path` variable, select it, press "Edit", and add the mentioned path to the list.
-
-> ⚠️ One of the most common issues that you may run into is that Qt Creator, and CMake cannot figure out where compiler binaries are, and you'll get an error like this, `The C compiler "C:/rtools45/ucrt64/bin/qcc.exe"is not able to compile a simple test program`. In order to resolve this, you need to make sure that the order of items in `Qt Creator → Projects → Build Environment → Path` is similiar to your environment variables, as described above.
+If Rtools45 is not installed in `C:\rtools45`, set `RTOOLS45_HOME` or configure `RTOOLS_PATH`, `RTOOLS_STATIC_TOOLCHAIN_PATH`, and `RTOOLS_BUILD_TOOLS_PATH` in CMake. If Qt Creator or CMake picks the wrong compiler, check the "Build Environment" section under "Projects -> Build" and keep the Visual Studio and Qt paths before the Rtools paths.
 
 #### Configuring the CMake Variables
 
