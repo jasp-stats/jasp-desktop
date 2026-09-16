@@ -10,6 +10,38 @@ Rectangle
 
 	property int leftHandSpace: 0 //Used to allow splithandler to move out of the screen on the left a bit.
 
+	// FilterWindow and VariablesWindow are mutually exclusive: opening one closes the other
+	// through its usual apply/discard route. The confirm dialogs are modal (blocking), so the
+	// outcome is known as soon as requestClose() returns: if closing the Filter was cancelled
+	// we also abort the Variables open we just triggered, so the two are never both visible.
+	Connections
+	{
+		target: filterModel
+		function onFilterVisibleChanged()
+		{
+			if(!filterModel.filterVisible)
+				return
+			if(columnModel.visible && variablesWindow)
+				variablesWindow.requestClose()
+		}
+	}
+
+	Connections
+	{
+		target: columnModel
+		function onVisibleChanged()
+		{
+			if(!columnModel.visible)
+				return
+			if(filterModel.filterVisible && filterLoader.item)
+			{
+				filterLoader.item.requestClose()
+				if(filterModel.filterVisible)			// still open => the user cancelled
+					columnModel.visible = false			// so abort opening the VariablesWindow
+			}
+		}
+	}
+
     SplitView
     {
 		id:					splitViewData
@@ -19,6 +51,7 @@ Rectangle
 		
 		Loader
 		{
+			id:							filterLoader
 			SplitView.minimumHeight:	preferencesModel.uiScale * 200
 			SplitView.preferredHeight:	Screen.desktopAvailableHeight / 3
 			SplitView.maximumHeight:	splitViewData.height
