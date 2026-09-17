@@ -53,6 +53,7 @@ DataSetPackage::DataSetPackage(QObject * parent) : QObject(parent)
 	connect(this, &DataSetPackage::isModifiedAfterAutoSaveChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::nameChanged);
 	connect(this, &DataSetPackage::dataModeChanged,						this, &DataSetPackage::onDataModeChanged);
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::trackShownDataSetForSynching);
 	
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveAtAllChanged,			this, &DataSetPackage::handleAutoSavePrefChange);
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveIntervalSecChanged,	this, &DataSetPackage::handleAutoSavePrefChange);
@@ -636,5 +637,80 @@ void DataSetPackage::setManualEdits(bool newManualEdits)
 		dataSet()->setDataFileSynch(false);
 
 	emit manualEditsChanged();
+}
+
+bool DataSetPackage::synchingExternally() const
+{
+	DataSet * ds = dataSet();
+
+	return ds && ds->dataFileSynch() && (!ds->dataFilePath().empty() || ds->syncer().isDatabaseSyncing());
+}
+
+void DataSetPackage::setSynchingExternally(bool synchingExternally)
+{
+	DataSet * ds = dataSet();
+
+	if(ds)
+	{
+		if(!synchingExternally)
+			ds->syncer().stopFileSyncing();
+		else
+		{
+			ds->syncer().startFileSyncing(tq(ds->dataFilePath()));
+
+			//The data file is leading again, so the edits made by hand no longer block it.
+			//Clearing the flag also makes sure a *next* manual edit can disable the synching again.
+			if(ds->dataFileSynch())
+				setManualEdits(false);
+		}
+	}
+
+	emitSynchingExternallyChanged();
+}
+
+void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
+{
+	if(synchingExternally)
+	{
+		//There might not be a (usable) data file to synch with, for instance because the data was
+		//entered or edited by hand. So let the user generate or find one first.
+		if(!emit askUserForExternalDataFile())
+			return;
+
+		setSynchingExternally(true);
+	}
+	else if(dataSet() && dataSet()->dataFileSynch())
+		setSynchingExternally(false);
+
+	setModified(true); //Perhaps someone would like to save the fact that it should (not) be synchronized
+}
+
+void DataSetPackage::emitSynchingExternallyChanged()
+{
+	emit synchingExternallyChanged(synchingExternally());
+}
+
+void DataSetPackage::trackShownDataSetForSynching()
+{
+	DataSet * shown = dataSet();
+
+	if(_synchTrackedDataSet != shown)
+	{
+		if(_synchTrackedDataSet)
+		{
+			disconnect(_synchTrackedDataSet,	&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
+			disconnect(_synchTrackedDataSet,	&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
+		}
+
+		_synchTrackedDataSet = shown;
+
+		if(_synchTrackedDataSet)
+		{
+			connect(_synchTrackedDataSet,		&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
+			connect(_synchTrackedDataSet,		&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
+		}
+	}
+
+	emitSynchingExternallyChanged();
 }
 

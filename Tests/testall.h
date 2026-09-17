@@ -34,6 +34,14 @@ private slots:
 	void	testSyncerReleasesSyncGuardOnCompletion();
 	void	testSyncerRetriesFileChangeMissedDuringSync();
 
+	// Editing the data by hand must stop the external synching *and* say so, so the Synchronisation
+	// ribbon button can switch to its off-state instead of claiming the data file is still leading.
+	void	testManualEditStopsExternalSynching();
+
+	// ...and "Reload Data File" has to really reload: re-importing the (unchanged) data file must throw
+	// the hand-made edits away instead of leaving the edited data on screen.
+	void	testReloadDataFileDiscardsManualEdits();
+
 	// DataExporter tests
 	void	testDataExporterShownDataSetOnly();
 

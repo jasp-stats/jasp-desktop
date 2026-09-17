@@ -28,6 +28,7 @@
 #include "workspace.h"
 #include "databaseinterface.h"
 #include <QSortFilterProxyModel>
+#include <QPointer>
 
 class EngineSync;
 
@@ -142,6 +143,9 @@ public:
 				
 				bool				manualEdits() const;
 				void				setManualEdits(bool newManualEdits);
+
+				/// Is the shown dataset actually being kept in synch with an external data file (or database)?
+				bool				synchingExternally() const;
 				
 signals:
 				void				datasetChanged(	int						dataSetID,
@@ -189,6 +193,7 @@ signals:
 				void				runComputedDataSet(int dataSetId, QString code, int defaultInputFilterId);
 				void				filterByNameDone(int dataSetId, const QString &name, const QString &error);
 				void				manualEditsChanged();
+				void				synchingExternallyChanged(bool synchingExternally);
 				void				checkForDependentAnalyses(Column * column);
 				
 public slots:
@@ -204,8 +209,13 @@ public slots:
 				void				prepareForLanguageChange();
 				void				languageChangeDone();
 				void				handleAutoSavePrefChange();
+
+				void				setSynchingExternally(			bool synchingExternally);	///< (Re)starts or stops the synching of the shown dataset with its external data file
+				void				setSynchingExternallyFriendly(	bool synchingExternally);	///< Same, but lets the user generate or find a data file first when there is none (or when it was edited by hand)
 				
 private:
+				void				emitSynchingExternallyChanged();
+				void				trackShownDataSetForSynching();	///< Follows the synch-state of whichever dataset is shown, so synchingExternallyChanged keeps reflecting reality
 				bool				isThisTheSameThreadAsEngineSync();
 				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);
 				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *)>			applyThis);
@@ -234,6 +244,7 @@ private:
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
 								_waitingForLanguageChange	= false;
+	QPointer<DataSet>			_synchTrackedDataSet;
 	Json::Value					_analysesData;
 	Version						_archiveVersion,
 								_jaspVersion;

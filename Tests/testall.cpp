@@ -775,6 +775,127 @@ void TestAll::testSyncerRetriesFileChangeMissedDuringSync()
 	syncer.stopFileSyncing();
 }
 
+void TestAll::testManualEditStopsExternalSynching()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QVERIFY(!_pkg->synchingExternally());
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	QString testFilePath = tempDir.filePath("manual_edit.csv");
+	QVERIFY(_writeTextFile(testFilePath, "a,b,c\n1,2,3\n"));
+
+	QSignalSpy synchingSpy(_pkg, &DataSetPackage::synchingExternallyChanged);
+
+	ds->syncer().startFileSyncing(testFilePath);
+	QVERIFY(_pkg->synchingExternally());
+	//Setting the data file and turning the synching on each announce themselves, so what matters is
+	//that the last thing everybody heard is the state we are actually in.
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	//Changing a value by hand means the data file no longer reflects the workspace, so the synching
+	//has to stop and everybody watching (the ribbon) has to hear about it.
+	synchingSpy.clear();
+	const QModelIndex	cell		= ds->index(0, 0);
+	const QString		oldValue	= ds->data(cell, int(dataPkgRoles::value)).toString();
+	QVERIFY(ds->setData(cell, QVariant(oldValue + "9"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!ds->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(!synchingSpy.last().first().toBool());
+
+	//Turning it back on is what the ribbon button does. That also clears the manual-edits flag, so a
+	//next edit can disable the synching again.
+	synchingSpy.clear();
+	_pkg->setSynchingExternally(true);
+
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testReloadDataFileDiscardsManualEdits()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+	//syncDataSet asks permission through checkDoSync; with no MainWindow around nothing answers it.
+	connect(DataSetPackage::pkg(), &DataSetPackage::checkDoSync, this, &TestAll::_checkDoSyncFake, Qt::DirectConnection);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	const QString csvPath = tempDir.filePath("reload.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n3,4\n"));
+
+	DataSet * ds = _pkg->createDataSet();
+	QVERIFY(ds);
+	_pkg->workspace()->setShownDataSet(ds);
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(csvPath), ds, [](int){});
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex cell = ds->index(0, 0);
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+
+	//Editing by hand is what turns the synching off, and what "Reload Data File" has to undo.
+	QVERIFY(ds->setData(cell, QVariant("999"), int(dataPkgRoles::value)));
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("999"));
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//This is what picking "Reload Data File" does: turn the synching back on and re-import the
+	//(unchanged) data file. That has to bring the original value back.
+	_pkg->setSynchingExternally(true);
+	QVERIFY(_pkg->synchingExternally());
+
+	CSVImporter reloader;
+	reloader.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+	QVERIFY(!_pkg->manualEdits());
+
+	//A sync replaces the data, but those changes are not edits by the user, so it must not switch the
+	//synching off again - the Synchronisation button would turn itself off after every sync.
+	QVERIFY(ds->dataFileSynch());
+	QVERIFY(_pkg->synchingExternally());
+
+	//Which also has to hold for a sync that finds nothing to change...
+	CSVImporter reloadAgain;
+	reloadAgain.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//...and for one that brings in a new column, which DataSet::createColumn announces as a manual edit.
+	QVERIFY(_writeTextFile(csvPath, "a,b,c\n1,2,5\n3,4,6\n"));
+
+	CSVImporter reloadWithNewColumn;
+	reloadWithNewColumn.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->columnCount(), 3);
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
 void TestAll::testFilterSetFilterVectorResizesToResult()
 {
 	QVERIFY(_newPkgWithDataSet());
