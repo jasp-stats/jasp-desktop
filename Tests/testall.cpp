@@ -21,6 +21,7 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "data/importers/csv/csvparser.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -423,6 +424,36 @@ void TestAll::testFilterLabels()
 	col->setLabelAllowFilter(1, false);
 	QVERIFY2(controlLabel->filterAllows(),				qPrintable("'Control' label is filtered"));
 	QVERIFY2(!treatLabel->filterAllows(),				qPrintable("'Treat'label is not filtered"));
+}
+
+void TestAll::testCsvParserTrimsOnlyUnquotedPadding()
+{
+	CSVParser parser(',');
+
+	const CSVParser::Grid grid = parser.parse(std::string(
+		" a , b\t,\tc \n"
+		"\" a \",\" b\",\"c \"\n"
+		" \"a\" ,\t\"b\"\t,\"c\"\n"
+		"   ,\"\",\"  \"\n"
+		"\"a,b\",\"a\"\"b\",d\n"));
+
+	QCOMPARE(grid.size(), size_t(5));
+
+	//Unquoted padding is not data, so it goes.
+	QCOMPARE(grid[0], stringvec({"a", "b", "c"}));
+
+	//What sits inside the quotes is data, so it stays.
+	QCOMPARE(grid[1], stringvec({" a ", " b", "c "}));
+
+	//And padding around a quoted field is padding too.
+	QCOMPARE(grid[2], stringvec({"a", "b", "c"}));
+
+	//A field of nothing but whitespace is empty (which the importers read as a missing value), while
+	//quoted whitespace is a value of its own.
+	QCOMPARE(grid[3], stringvec({"", "", "  "}));
+
+	//None of this may disturb the quoting itself.
+	QCOMPARE(grid[4], stringvec({"a,b", "a\"b", "d"}));
 }
 
 // ---------- DataSetSyncer tests ----------

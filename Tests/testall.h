@@ -25,6 +25,9 @@ private slots:
 	void	testSavLabels();
 	void	testFilterLabels();
 
+	// JASP reads the whitespace around a csv field as padding, but whatever sits inside quotes is data.
+	void	testCsvParserTrimsOnlyUnquotedPadding();
+
 	// DataSetSyncer tests
 	void	testSyncerStartStopFileSyncing();
 	void	testSyncerFileChangeEmitsSignal();
