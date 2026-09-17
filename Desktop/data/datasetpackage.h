@@ -48,7 +48,7 @@ class DataSetPackage : public QObject
 	Q_PROPERTY(bool			loaded					READ isLoaded					WRITE setLoaded					NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile				WRITE setCurrentFile			NOTIFY currentFileChanged			)
 	Q_PROPERTY(bool			dataMode				READ dataMode													NOTIFY dataModeChanged				)
-	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change something in the data in such a way that external synching should be disabled if enabled?
+	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change the *shown* dataset by hand, so that external synching should be off? The flag itself lives on DataSet.
 	Q_PROPERTY(DataSet *	dataSet					READ dataSet													NOTIFY shownDataSetChanged			) 
 	Q_PROPERTY(Workspace *	workspace				READ workspace													NOTIFY workspaceChanged				)
 public:
@@ -214,8 +214,9 @@ public slots:
 				void				setSynchingExternallyFriendly(	bool synchingExternally);	///< Same, but lets the user generate or find a data file first when there is none (or when it was edited by hand)
 				
 private:
+				void				onUndoCleanChanged(bool clean);	///< Undone back to the point where the data still matched the data file? Then the synching can go back on.
 				void				emitSynchingExternallyChanged();
-				void				trackShownDataSetForSynching();	///< Follows the synch-state of whichever dataset is shown, so synchingExternallyChanged keeps reflecting reality
+				void				trackShownDataSet();			///< Follows the synch- and edit-state of whichever dataset is shown, so this class keeps reflecting reality
 				bool				isThisTheSameThreadAsEngineSync();
 				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);
 				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *)>			applyThis);
@@ -239,7 +240,6 @@ private:
 								_fileReadOnly				= false,
 								_isModified					= false,
 								_isModifiedAfterAutoSave	= false,
-								_manualEdits				= false,
 								_isLoaded					= false,
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,

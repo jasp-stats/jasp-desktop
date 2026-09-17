@@ -364,7 +364,7 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	if(newColumnOrder.size() > 0)
 		dataSet->columnsReorder(newColumnOrder);
 	
-	DataSetPackage::pkg()->setManualEdits(false);
+	dataSet->setManualEdits(false); //On the synched dataset itself, which is not necessarily the shown one
 	delete _importDataSet;
 	
 	int64_t totalS = (Utils::currentSeconds() - timeBeginS);

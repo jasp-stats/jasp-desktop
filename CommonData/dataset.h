@@ -40,6 +40,7 @@ class DataSet : public DataSetBaseNode
 	Q_PROPERTY(QString				dataFile					READ dataFileQ					WRITE setDataFileQ				NOTIFY dataFileChanged					)
 	//Q_PROPERTY(QJsonValue			databaseJson				READ databaseJsonQ				WRITE setDatabaseJsonQ			NOTIFY databaseJsonChanged				)
 	Q_PROPERTY(bool					dataFileSynch				READ dataFileSynch				WRITE setDataFileSynch			NOTIFY dataFileSynchChanged				)
+	Q_PROPERTY(bool					manualEdits					READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged				) ///< Was the data changed by hand, so that the data file no longer describes it?
 	Q_PROPERTY(long					dataFileTimestamp			READ dataFileTimestamp			WRITE setDataTimestamp			NOTIFY dataTimestampChanged				)
 	Q_PROPERTY(int					columnsLabelFilteredCount	READ columnsLabelFilteredCount									NOTIFY columnsLabelFilteredCountChanged	)
 	Q_PROPERTY(Filter	*			shownFilter					READ shownFilter												NOTIFY shownFilterChanged				)
@@ -88,6 +89,10 @@ public:
 	
 			int				id()					const { return _dataSetId;				}
 			bool			dataFileSynch()			const { return _dataFileSynch;			}
+			///Was *this* dataset changed by hand, so that its data file no longer describes it? Per dataset, because another one can be shown, and edited, in the meantime.
+			bool			manualEdits()									const	{ return _manualEdits;							}
+			///Was the synching switched off because *this* dataset was edited by hand? Only then may undoing those edits switch it back on again.
+			bool			synchTurnedOffByManualEdits()					const	{ return _synchTurnedOffByManualEdits;			}
 			
 	const	std::string &	dataFilePath()			const { return _dataFilePath;			}
 			bool			dataFileCanHaveLabels() const;
@@ -176,6 +181,7 @@ public:
 			void			setDataTimestamp(	long timestamp);
 			void			setDatabaseJson(	const Json::Value & databaseJson);
 			void			setDataFileSynch(	bool synchronizing);
+			void			setManualEdits(		bool manualEdits);
 			bool			synchingData()		const { return _synchingDataNow; }
 			///While this is on the data is being replaced by the contents of the data file, so the changes that causes are not edits by the user.
 			void			setSynchingData(	bool synching)	{ _synchingDataNow = synching; }
@@ -258,6 +264,7 @@ signals:
 			void			dataFileChanged();
 			void			databaseJsonChanged();
 			void			dataFileSynchChanged();
+			void			manualEditsChanged();
 			void			dataTimestampChanged();
 			void			columnsLabelFilteredCountChanged();
 			void			refreshAllAnalyses(Filter * f);
@@ -343,7 +350,11 @@ private:
 	std::string				_dataFilePath,
 							_title;
 	bool					_dataFileSynch			= false,
-							_synchingDataNow		= false;
+							_synchingDataNow		= false,
+							//Neither of these is stored in the database: they describe this session's editing,
+							//and the second one only means anything together with this session's undo stack.
+							_manualEdits			= false,
+							_synchTurnedOffByManualEdits = false;
 	char					_csvDelimiter			= '\0';
 	Json::Value				_database				= Json::nullValue;
 	static stringset		_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
