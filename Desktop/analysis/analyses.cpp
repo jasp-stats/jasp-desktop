@@ -1341,8 +1341,8 @@ void Analyses::registerRpcHandlers()
 			return JaspRpcDispatcher::errorResult(
 				"Analysis form not available for analysis " + std::to_string(analysisId));
 
-		if (params.isMember("relaxInputConstraints"))
-			form->setRelaxInputConstraints(params["relaxInputConstraints"].asBool());
+		// The options are not typed in by a user here, so by default the input constraints (like the number of decimals) are relaxed.
+		form->setRelaxInputConstraints(params.get("relaxInputConstraints", true).asBool());
 
 		Json::Value parsedOptions;
 		std::string errorMsg;
