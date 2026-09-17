@@ -51,7 +51,9 @@ DataSet::DataSet(Workspace * workspace, int id)
 	connect(this,			&DataSet::showYesNo,				_workspace, &Workspace::showYesNo					);
 	connect(this,			&DataSet::askPassword,				_workspace, &Workspace::askPassword					);
 	connect(this,			&DataSet::showWarning,				_workspace, &Workspace::showWarning					);
-	connect(this,			&DataSet::manualEditMade,			_workspace, &Workspace::manualEditMade				);
+	//The columns change during a synchronization from the data file as well, but that is not an edit by
+	//the user: passing it on would switch the external synching off again after every single sync.
+	connect(this,			&DataSet::manualEditMade,			_workspace, [this](){ if(!_synchingDataNow) emit _workspace->manualEditMade(); });
 	connect(this,			&DataSet::datasetChanged,			_workspace, &Workspace::datasetChanged				);
 	connect(this,			&DataSet::labelsReordered,			_workspace, &Workspace::labelsReordered				);
 
