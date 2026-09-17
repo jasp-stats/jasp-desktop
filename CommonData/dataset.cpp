@@ -52,8 +52,15 @@ DataSet::DataSet(Workspace * workspace, int id)
 	connect(this,			&DataSet::askPassword,				_workspace, &Workspace::askPassword					);
 	connect(this,			&DataSet::showWarning,				_workspace, &Workspace::showWarning					);
 	//The columns change during a synchronization from the data file as well, but that is not an edit by
-	//the user: passing it on would switch the external synching off again after every single sync.
-	connect(this,			&DataSet::manualEditMade,			_workspace, [this](){ if(!_synchingDataNow) emit _workspace->manualEditMade(); });
+	//the user: acting on it would switch the external synching off again after every single sync.
+	connect(this,			&DataSet::manualEditMade,			this,		[this]()
+	{
+		if(_synchingDataNow)
+			return;
+
+		setManualEdits(true);
+		emit _workspace->manualEditMade();
+	});
 	connect(this,			&DataSet::datasetChanged,			_workspace, &Workspace::datasetChanged				);
 	connect(this,			&DataSet::labelsReordered,			_workspace, &Workspace::labelsReordered				);
 
@@ -588,12 +595,43 @@ void DataSet::setDatabaseJson(const Json::Value & databaseJson)
 		emit databaseJsonChanged(); 
 }
 
+void DataSet::setManualEdits(bool manualEdits)
+{
+	if(_manualEdits == manualEdits)
+		return;
+
+	_manualEdits = manualEdits;
+
+	//Changing the data by hand means the data file no longer describes this dataset, so stop synching
+	//with it: otherwise the next change of that file silently reverts those edits. Remembering whether
+	//the synching was on at all is what lets undoing the edits (DataSetPackage::onUndoCleanChanged)
+	//turn it back on, and only then.
+	if(_manualEdits)
+	{
+		_synchTurnedOffByManualEdits = _dataFileSynch;
+		setDataFileSynch(false);
+	}
+
+	emit manualEditsChanged();
+}
+
 void DataSet::setDataFileSynch(bool synchronizing)					
 { 
 	bool isChange	= _dataFileSynch	!= synchronizing;
 	_dataFileSynch	= synchronizing;	
 	if(isChange) dbUpdate(); 
 	
+	//Synching on means the data matches the data file as it is right now, so whatever hand-made edits
+	//switched it off before are water under the bridge. Marking that spot in the undo stack lets undoing
+	//edits back to it tell that the data matches the file again (see DataSetPackage::onUndoCleanChanged).
+	if(synchronizing)
+	{
+		_synchTurnedOffByManualEdits = false;
+
+		if(_undoStack)
+			_undoStack->setClean();
+	}
+
 	if(isChange)
 		emit dataFileSynchChanged();
 }
@@ -1732,8 +1770,10 @@ bool DataSet::removeColumns(int column, int count, const QModelIndex &)
 
 void DataSet::handleColumnChanged(const Column * column)
 {
+	//No manualEditMade here: this runs for label edits and filter resets (through Column::columnChanged)
+	//as well, and those are not changes of the *data*, so they must not switch the external synching off.
+	//The one caller that *is* a data change, DataSet::setData, announces the manual edit itself.
 	emit datasetChanged(_dataSetId, tq(stringvec({column->name()})), {}, {}, false, false);
-	emit manualEditMade();
 }
 
 void DataSet::handleLabelsReordered(const Column *column)
