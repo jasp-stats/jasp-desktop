@@ -67,10 +67,11 @@ void JASPVersionChecker::downloadVersionFinished()
 		{
 			Version cv		= AppInfo::version,
 					lv		= version.toStdString();
-			long	cur		= cv.major()*1000000 + cv.minor()*100000 + cv.release()*1000 + cv.fourth(),
-					latest	= lv.major()*1000000 + lv.minor()*100000 + lv.release()*1000 + lv.fourth();
-
-			if (latest > cur)
+	    
+		  	Log::log()<< "Current version " << cv.asString(4) << ", remote version " << lv.asString(4) << std::endl;
+			
+			//`Version` already has full exicographical comparison (e.g.where `operator<` compares `major` first),just compare them!
+			if (lv > cv)
 				emit showDownloadButton(downloadfile);
 
 			if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
