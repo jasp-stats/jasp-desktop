@@ -261,9 +261,8 @@ private:
 	qstringset										_waitingFilters;
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRButton					= false,
-													_developerMode					= false,
-
-													_relaxInputConstraints			= true;
+													_developerMode					= false;
+	bool											_relaxInputConstraints			= false;
 	JASPControl*									_activeJASPControl				= nullptr;
 };
 
