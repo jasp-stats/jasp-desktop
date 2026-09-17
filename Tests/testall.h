@@ -91,4 +91,5 @@ private:
 	bool					_checkDoSyncFake();
 	static bool				_writeTextFile(const QString & path, const QByteArray & contents);
 	QSignalSpy			*	_newMainWindowWithExitSpy(MainWindow *& mw);
+	static bool				_batchErrorsAreOnlyMissingModules(MainWindow * mw);
 };
