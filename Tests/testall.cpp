@@ -21,6 +21,7 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "data/expanddataproxymodel.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -894,6 +895,36 @@ void TestAll::testReloadDataFileDiscardsManualEdits()
 	QVERIFY(_pkg->synchingExternally());
 
 	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testUndoChangedSurvivesWorkspaceRecreation()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Stands in for the one model behind the data view: created once, while the first workspace exists.
+	ExpandDataProxyModel model(this);
+
+	//Loading data throws that workspace away and makes a new one, just like opening a data file does.
+	_pkg->reset();
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QCOMPARE(UndoStack::singleton(), ds->undoStack());
+
+	QSignalSpy undoSpy(&model, &ExpandDataProxyModel::undoChanged);
+
+	UndoModelCommand * command = new UndoModelCommand(ds);
+	command->setText("test edit");
+	UndoStack::singleton()->push(command);
+
+	//The ribbon's Undo/Redo buttons only ever update on this signal.
+	QCOMPARE(undoSpy.count(), 1);
+	QCOMPARE(model.undoText(), QString("test edit"));
+
+	//And tearing the workspace down must not leave the singleton pointing at a freed stack.
+	_pkg->deleteWorkspace();
+	QVERIFY(!UndoStack::singleton());
+	QCOMPARE(model.undoText(), QString());
 }
 
 void TestAll::testFilterSetFilterVectorResizesToResult()

@@ -3,6 +3,7 @@
 #include "dataenums.h"
 #include "qutils.h"
 #include "workspace.h"
+#include "datasetpackage.h"
 #include <algorithm>
 #include <climits>
 
@@ -11,8 +12,12 @@ ExpandDataProxyModel::ExpandDataProxyModel(QObject *parent)
 {
 	connectUndoStack();
 
-	if (Workspace::singleton())
-		connect(Workspace::singleton(), &Workspace::shownDataSetChanged, this, &ExpandDataProxyModel::onCurrentUndoStackChanged);
+	//Deliberately not Workspace::singleton(): that object is destroyed and recreated whenever a workspace
+	//is (re)loaded, and this connection would go with it, after which the current undo stack is never
+	//picked up again and undoChanged stops being emitted. DataSetPackage relays the very same signal and
+	//sticks around for the whole session.
+	if (DataSetPackage::pkg())
+		connect(DataSetPackage::pkg(), &DataSetPackage::shownDataSetChanged, this, &ExpandDataProxyModel::onCurrentUndoStackChanged);
 }
 
 void ExpandDataProxyModel::connectUndoStack()

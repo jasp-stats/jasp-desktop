@@ -34,6 +34,10 @@ private slots:
 	void	testSyncerReleasesSyncGuardOnCompletion();
 	void	testSyncerRetriesFileChangeMissedDuringSync();
 
+	// The model behind the data view must keep following the current undo stack across the workspace
+	// teardown+recreation that loading data does, or the ribbon's Undo/Redo buttons never light up.
+	void	testUndoChangedSurvivesWorkspaceRecreation();
+
 	// Editing the data by hand must stop the external synching *and* say so, so the Synchronisation
 	// ribbon button can switch to its off-state instead of claiming the data file is still leading.
 	void	testManualEditStopsExternalSynching();
