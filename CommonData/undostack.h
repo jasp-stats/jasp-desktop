@@ -461,6 +461,8 @@ class UndoStack : public QUndoStack
 	Q_OBJECT
 public:
 	UndoStack(QObject* parent = nullptr);
+	///The stacks are owned by their DataSet, so the current one can be destroyed by a workspace teardown. Don't leave the singleton dangling.
+	~UndoStack() override { if(_currentUndoStack == this) _currentUndoStack = nullptr; }
 
 	static UndoStack*	singleton() { return _currentUndoStack; }
 	static void			setCurrent(UndoStack* stack) { _currentUndoStack = stack; }

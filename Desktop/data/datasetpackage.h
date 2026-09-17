@@ -28,6 +28,7 @@
 #include "workspace.h"
 #include "databaseinterface.h"
 #include <QSortFilterProxyModel>
+#include <QPointer>
 
 class EngineSync;
 
@@ -47,7 +48,7 @@ class DataSetPackage : public QObject
 	Q_PROPERTY(bool			loaded					READ isLoaded					WRITE setLoaded					NOTIFY loadedChanged				)
 	Q_PROPERTY(QString		currentFile				READ currentFile				WRITE setCurrentFile			NOTIFY currentFileChanged			)
 	Q_PROPERTY(bool			dataMode				READ dataMode													NOTIFY dataModeChanged				)
-	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change something in the data in such a way that external synching should be disabled if enabled?
+	Q_PROPERTY(bool			manualEdits				READ manualEdits				WRITE setManualEdits			NOTIFY manualEditsChanged			) ///< Did the user change the *shown* dataset by hand, so that external synching should be off? The flag itself lives on DataSet.
 	Q_PROPERTY(DataSet *	dataSet					READ dataSet													NOTIFY shownDataSetChanged			) 
 	Q_PROPERTY(Workspace *	workspace				READ workspace													NOTIFY workspaceChanged				)
 public:
@@ -142,6 +143,9 @@ public:
 				
 				bool				manualEdits() const;
 				void				setManualEdits(bool newManualEdits);
+
+				/// Is the shown dataset actually being kept in synch with an external data file (or database)?
+				bool				synchingExternally() const;
 				
 signals:
 				void				datasetChanged(	int						dataSetID,
@@ -189,6 +193,7 @@ signals:
 				void				runComputedDataSet(int dataSetId, QString code, int defaultInputFilterId);
 				void				filterByNameDone(int dataSetId, const QString &name, const QString &error);
 				void				manualEditsChanged();
+				void				synchingExternallyChanged(bool synchingExternally);
 				void				checkForDependentAnalyses(Column * column);
 				
 public slots:
@@ -204,8 +209,14 @@ public slots:
 				void				prepareForLanguageChange();
 				void				languageChangeDone();
 				void				handleAutoSavePrefChange();
+
+				void				setSynchingExternally(			bool synchingExternally);	///< (Re)starts or stops the synching of the shown dataset with its external data file
+				void				setSynchingExternallyFriendly(	bool synchingExternally);	///< Same, but lets the user generate or find a data file first when there is none (or when it was edited by hand)
 				
 private:
+				void				onUndoCleanChanged(bool clean);	///< Undone back to the point where the data still matched the data file? Then the synching can go back on.
+				void				emitSynchingExternallyChanged();
+				void				trackShownDataSet();			///< Follows the synch- and edit-state of whichever dataset is shown, so this class keeps reflecting reality
 				bool				isThisTheSameThreadAsEngineSync();
 				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);
 				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *)>			applyThis);
@@ -229,11 +240,11 @@ private:
 								_fileReadOnly				= false,
 								_isModified					= false,
 								_isModifiedAfterAutoSave	= false,
-								_manualEdits				= false,
 								_isLoaded					= false,
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
 								_waitingForLanguageChange	= false;
+	QPointer<DataSet>			_synchTrackedDataSet;
 	Json::Value					_analysesData;
 	Version						_archiveVersion,
 								_jaspVersion;

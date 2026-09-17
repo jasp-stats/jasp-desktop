@@ -32,6 +32,7 @@
 #include <ranges>
 #include "variableinfo.h"
 #include "fileevent.h"
+#include "undostack.h"
 
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
@@ -53,6 +54,7 @@ DataSetPackage::DataSetPackage(QObject * parent) : QObject(parent)
 	connect(this, &DataSetPackage::isModifiedAfterAutoSaveChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::nameChanged);
 	connect(this, &DataSetPackage::dataModeChanged,						this, &DataSetPackage::onDataModeChanged);
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::trackShownDataSet);
 	
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveAtAllChanged,			this, &DataSetPackage::handleAutoSavePrefChange);
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveIntervalSecChanged,	this, &DataSetPackage::handleAutoSavePrefChange);
@@ -178,8 +180,6 @@ void DataSetPackage::connectWorkspace()
 	Workspace		::connect(workspace(),	&Workspace::shownDataSetChanged,				this,			&DataSetPackage::shownDataSetChanged				);	
 	Workspace		::connect(workspace(),	&Workspace::dataSetCreated,						this,			&DataSetPackage::dataSetCreated					);	
 	Workspace		::connect(workspace(),	&Workspace::dataSetRemoved,						this,			&DataSetPackage::dataSetRemoved					);	
-	//A manual edit by the user (in the data grid / paste) means external-file syncing should be disabled.
-	Workspace		::connect(workspace(),	&Workspace::manualEditMade,						this,			[this]{ setManualEdits(true); }					);
 	Workspace		::connect(workspace(),	&Workspace::runComputedColumn,					this,			&DataSetPackage::runComputedColumn					);	
 	Workspace		::connect(workspace(),	&Workspace::runComputedDataSet,					this,			&DataSetPackage::runComputedDataSet					);	
 	Workspace		::connect(workspace(),	&Workspace::checkForDependentAnalyses,			this,			&DataSetPackage::checkForDependentAnalyses			);	
@@ -617,24 +617,108 @@ void DataSetPackage::checkDataSetForUpdates()
 	_workspace->checkForUpdates();
 }
 
+//Editing by hand, and what that does to the external synching, is per-dataset bookkeeping and lives on
+//DataSet: another dataset can be shown, and edited, in the meantime. These two only pass the question on
+//to whichever dataset is shown, for the QML property and for everybody who thinks in terms of "the" data.
 bool DataSetPackage::manualEdits() const
 {
-	return _manualEdits;
+	return dataSet() && dataSet()->manualEdits();
 }
 
 void DataSetPackage::setManualEdits(bool newManualEdits)
 {
-	if (_manualEdits == newManualEdits)
-		return;
+	if(dataSet())
+		dataSet()->setManualEdits(newManualEdits);
+}
 
-	_manualEdits = newManualEdits;
+bool DataSetPackage::synchingExternally() const
+{
+	DataSet * ds = dataSet();
 
-	//Editing the data by hand means the external data file no longer reflects the workspace: disable
-	//external synching for the (shown) dataset so the next file change doesn't silently revert the
-	//user's edits. This is per-dataset now (the shown dataset owns its own DataSetSyncer).
-	if(_manualEdits && dataSet())
-		dataSet()->setDataFileSynch(false);
+	return ds && ds->dataFileSynch() && (!ds->dataFilePath().empty() || ds->syncer().isDatabaseSyncing());
+}
 
-	emit manualEditsChanged();
+void DataSetPackage::setSynchingExternally(bool synchingExternally)
+{
+	DataSet * ds = dataSet();
+
+	if(ds)
+	{
+		if(!synchingExternally)
+			ds->syncer().stopFileSyncing();
+		else
+		{
+			ds->syncer().startFileSyncing(tq(ds->dataFilePath()));
+
+			//The data file is leading again, so the edits made by hand no longer block it.
+			//Clearing the flag also makes sure a *next* manual edit can disable the synching again.
+			if(ds->dataFileSynch())
+				setManualEdits(false);
+		}
+	}
+
+	emitSynchingExternallyChanged();
+}
+
+void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
+{
+	if(synchingExternally)
+	{
+		//There might not be a (usable) data file to synch with, for instance because the data was
+		//entered or edited by hand. So let the user generate or find one first.
+		if(!emit askUserForExternalDataFile())
+			return;
+
+		setSynchingExternally(true);
+	}
+	else if(dataSet() && dataSet()->dataFileSynch())
+		setSynchingExternally(false);
+
+	setModified(true); //Perhaps someone would like to save the fact that it should (not) be synchronized
+}
+
+void DataSetPackage::onUndoCleanChanged(bool clean)
+{
+	//Undone all the way back to the point where the data still matched the data file (see
+	//DataSet::setDataFileSynch), so the edits that switched the synching off are gone and it can go
+	//back on. Only when those edits were what switched it off, of course.
+	if(clean && dataSet() && dataSet()->manualEdits() && dataSet()->synchTurnedOffByManualEdits())
+		setSynchingExternally(true);
+}
+
+void DataSetPackage::emitSynchingExternallyChanged()
+{
+	emit synchingExternallyChanged(synchingExternally());
+}
+
+void DataSetPackage::trackShownDataSet()
+{
+	DataSet * shown = dataSet();
+
+	if(_synchTrackedDataSet != shown)
+	{
+		if(_synchTrackedDataSet)
+		{
+			disconnect(_synchTrackedDataSet,				&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
+			disconnect(_synchTrackedDataSet,				&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
+			disconnect(_synchTrackedDataSet,				&DataSet::manualEditsChanged,	this,	&DataSetPackage::manualEditsChanged);
+			disconnect(_synchTrackedDataSet->undoStack(),	&QUndoStack::cleanChanged,		this,	&DataSetPackage::onUndoCleanChanged);
+		}
+
+		_synchTrackedDataSet = shown;
+
+		if(_synchTrackedDataSet)
+		{
+			connect(_synchTrackedDataSet,					&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
+			connect(_synchTrackedDataSet,					&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
+			connect(_synchTrackedDataSet,					&DataSet::manualEditsChanged,	this,	&DataSetPackage::manualEditsChanged);
+			connect(_synchTrackedDataSet->undoStack(),		&QUndoStack::cleanChanged,		this,	&DataSetPackage::onUndoCleanChanged);
+		}
+
+		//Another dataset is shown, so both answers can be different now.
+		emit manualEditsChanged();
+	}
+
+	emitSynchingExternallyChanged();
 }
 

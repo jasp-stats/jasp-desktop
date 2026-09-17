@@ -188,6 +188,16 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 {
 	Log::log() << "[Importer::syncDataSet] START: locator=" << locator << ", dataSetId=" << (dataSet ? dataSet->id() : -1) << std::endl;
 
+	//Everything this function changes in `dataSet` comes from the data file, not from the user. Marking
+	//the dataset as synching for the duration keeps those changes from counting as manual edits (which
+	//would switch the external synching right back off). Scoped, because loadFile below can throw.
+	struct SynchingGuard
+	{
+		DataSet * dataSet;
+		SynchingGuard(DataSet * dataSet) : dataSet(dataSet)	{ if(dataSet) dataSet->setSynchingData(true);	}
+		~SynchingGuard()									{ if(dataSet) dataSet->setSynchingData(false);	}
+	} synchingGuard(dataSet);
+
 					_synching			= true;
 					_progressCallback	= progress;
 	int64_t			timeBeginS		= Utils::currentSeconds();
@@ -354,7 +364,7 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 	if(newColumnOrder.size() > 0)
 		dataSet->columnsReorder(newColumnOrder);
 	
-	DataSetPackage::pkg()->setManualEdits(false);
+	dataSet->setManualEdits(false); //On the synched dataset itself, which is not necessarily the shown one
 	delete _importDataSet;
 	
 	int64_t totalS = (Utils::currentSeconds() - timeBeginS);

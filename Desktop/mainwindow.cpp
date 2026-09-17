@@ -498,7 +498,7 @@ void MainWindow::makeConnections()
 	connect(this,					&MainWindow::analysesAvailableChanged,				this,					&MainWindow::checkEmptyWorkspace							);
 	connect(this,					&MainWindow::resetVariableTypes,					_package,				&DataSetPackage::resetVariableTypes							);
 
-	//connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
+	connect(_package,				&DataSetPackage::synchingExternallyChanged,			_ribbonModel,			&RibbonModel::synchronisationChanged						);
 	connect(_package,				&DataSetPackage::datasetChanged,					_columnsModel,			&ColumnsModel::datasetChanged								);
 	connect(_package,				&DataSetPackage::isModifiedChanged,					this,					&MainWindow::packageChanged									);
 	connect(_package,				&DataSetPackage::workspaceChanged,					this,					&MainWindow::onWorkspaceChanged								);
@@ -688,7 +688,7 @@ void MainWindow::makeConnections()
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
-	//connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
+	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleUnloadBegin,			_analyses,				&Analyses::removeAnalysesOfDynamicModule					);
 	connect(_dynamicModules,		&DynamicModules::dynamicModuleChanged,				_analyses,				&Analyses::refreshAnalysesOfDynamicModule						);
@@ -2455,7 +2455,14 @@ bool MainWindow::startDataEditorHandler()
 			|| _package->isReadOnlyFile()
 	)
 	{
-		bool manualEditsMode = _package->manualEdits() && !dataFilePath.isEmpty() && !_package->isReadOnlyFile();
+		//"Reload Data File" is only an honest offer when there actually is a local data file to reload
+		//from; without one (no path, online, gone, empty or read-only) the user has to find or generate one.
+		bool manualEditsMode =		_package->manualEdits()
+								&&	!dataFilePath.isEmpty()
+								&&	!dataFilePath.startsWith("http")
+								&&	!_package->isReadOnlyFile()
+								&&	QFileInfo::exists(dataFilePath)
+								&&	Utils::getFileSize(dataFilePath.toStdString()) > 0;
 
 		QString									message = tr("JASP was started without associated data file (csv, sav or ods file). But to edit the data, JASP starts a spreadsheet editor based on this file and synchronize the data when the file is saved. Does this data file exist already, or do you want to generate it?");
 		if (dataFilePath.startsWith("http"))	message = tr("JASP was started with an online data file (csv, sav or ods file). But to edit the data, JASP needs this file on your computer. Does this data file also exist on your computer, or do you want to generate it?");
@@ -2472,13 +2479,8 @@ bool MainWindow::startDataEditorHandler()
 		if (choice != MessageForwarder::DialogResponse::Yes && choice != MessageForwarder::DialogResponse::No)
 			return false;
 
-		if (manualEditsMode && choice == MessageForwarder::DialogResponse::No)
-		{
-			startDataEditor(dataFilePath);
-			return true;
-		}
-
-		FileEvent *event = nullptr;
+		FileEvent	*	event				= nullptr;
+		bool			startEditorAfter	= true;
 
 		if (choice == MessageForwarder::DialogResponse::Yes)
 		{
@@ -2514,6 +2516,15 @@ bool MainWindow::startDataEditorHandler()
 
 			event = new FileEvent(this, FileEvent::FileGenerateData);
 		}
+		else if (manualEditsMode)
+		{
+			//"Reload Data File": the data file is still there and unchanged, only the edits made by hand
+			//made JASP diverge from it. So re-import that file, which throws those edits away, instead of
+			//leaving the edited data on screen. The user asked for their data back, not for an editor.
+			event				= new FileEvent(this, FileEvent::FileSyncData);
+			startEditorAfter	= false;
+			event->setDataSet(_package->dataSet());
+		}
 		else
 		{
 			QString caption = "Find Data File";
@@ -2528,7 +2539,7 @@ bool MainWindow::startDataEditorHandler()
 		}
 
 		event->setPath(dataFilePath);
-		connect(event, &FileEvent::completed, this,	[this, event]()		{ startDataEditorEventCompleted(event); });
+		connect(event, &FileEvent::completed, this,	[this, event, startEditorAfter]()	{ startDataEditorEventCompleted(event, startEditorAfter); });
 		event->starts();
 	}
 	else
@@ -2580,7 +2591,7 @@ void MainWindow::showCommunity()
 	setCommunityVisible(true);
 }
 
-void MainWindow::startDataEditorEventCompleted(FileEvent* event)
+void MainWindow::startDataEditorEventCompleted(FileEvent* event, bool startEditor)
 {
 	Log::log() << "[MainWindow::startDataEditorEventCompleted] START: event->isSuccessful()=" << event->isSuccessful() << ", event->path()=" << event->path().toStdString() << std::endl;
 	hideProgress();
@@ -2593,9 +2604,14 @@ void MainWindow::startDataEditorEventCompleted(FileEvent* event)
 		_package->setFileReadOnly(false);
         _fileMenu->setSyncFile(event);
 		_package->setModified(true);
-		Log::log() << "[MainWindow::startDataEditorEventCompleted] Calling startDataEditor" << std::endl;
-		startDataEditor(event->path());
-		Log::log() << "[MainWindow::startDataEditorEventCompleted] startDataEditor returned" << std::endl;
+		if(!startEditor)
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] Not starting the data editor" << std::endl;
+		else
+		{
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] Calling startDataEditor" << std::endl;
+			startDataEditor(event->path());
+			Log::log() << "[MainWindow::startDataEditorEventCompleted] startDataEditor returned" << std::endl;
+		}
 	}
 	else
 	{

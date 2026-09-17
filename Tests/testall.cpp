@@ -21,6 +21,7 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "data/expanddataproxymodel.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -773,6 +774,356 @@ void TestAll::testSyncerRetriesFileChangeMissedDuringSync()
 	QCOMPARE(syncRequiredSpy.count(), 2);
 
 	syncer.stopFileSyncing();
+}
+
+void TestAll::testManualEditStopsExternalSynching()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QVERIFY(!_pkg->synchingExternally());
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	QString testFilePath = tempDir.filePath("manual_edit.csv");
+	QVERIFY(_writeTextFile(testFilePath, "a,b,c\n1,2,3\n"));
+
+	QSignalSpy synchingSpy(_pkg, &DataSetPackage::synchingExternallyChanged);
+
+	ds->syncer().startFileSyncing(testFilePath);
+	QVERIFY(_pkg->synchingExternally());
+	//Setting the data file and turning the synching on each announce themselves, so what matters is
+	//that the last thing everybody heard is the state we are actually in.
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	//Changing a value by hand means the data file no longer reflects the workspace, so the synching
+	//has to stop and everybody watching (the ribbon) has to hear about it.
+	synchingSpy.clear();
+	const QModelIndex	cell		= ds->index(0, 0);
+	const QString		oldValue	= ds->data(cell, int(dataPkgRoles::value)).toString();
+	QVERIFY(ds->setData(cell, QVariant(oldValue + "9"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!ds->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(!synchingSpy.last().first().toBool());
+
+	//Turning it back on is what the ribbon button does. That also clears the manual-edits flag, so a
+	//next edit can disable the synching again.
+	synchingSpy.clear();
+	_pkg->setSynchingExternally(true);
+
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(synchingSpy.count() > 0);
+	QVERIFY(synchingSpy.last().first().toBool());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testReloadDataFileDiscardsManualEdits()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Importer::syncDataSet reads the preferences singleton; nothing else in the tests creates one.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+	QVERIFY(PreferencesModel::prefs());
+
+	//syncDataSet asks permission through checkDoSync; with no MainWindow around nothing answers it.
+	connect(DataSetPackage::pkg(), &DataSetPackage::checkDoSync, this, &TestAll::_checkDoSyncFake, Qt::DirectConnection);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+
+	const QString csvPath = tempDir.filePath("reload.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n3,4\n"));
+
+	DataSet * ds = _pkg->createDataSet();
+	QVERIFY(ds);
+	_pkg->workspace()->setShownDataSet(ds);
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(csvPath), ds, [](int){});
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex cell = ds->index(0, 0);
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+
+	//Editing by hand is what turns the synching off, and what "Reload Data File" has to undo.
+	QVERIFY(ds->setData(cell, QVariant("999"), int(dataPkgRoles::value)));
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("999"));
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//This is what picking "Reload Data File" does: turn the synching back on and re-import the
+	//(unchanged) data file. That has to bring the original value back.
+	_pkg->setSynchingExternally(true);
+	QVERIFY(_pkg->synchingExternally());
+
+	CSVImporter reloader;
+	reloader.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), QString("1"));
+	QVERIFY(!_pkg->manualEdits());
+
+	//A sync replaces the data, but those changes are not edits by the user, so it must not switch the
+	//synching off again - the Synchronisation button would turn itself off after every sync.
+	QVERIFY(ds->dataFileSynch());
+	QVERIFY(_pkg->synchingExternally());
+
+	//Which also has to hold for a sync that finds nothing to change...
+	CSVImporter reloadAgain;
+	reloadAgain.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//...and for one that brings in a new column, which DataSet::createColumn announces as a manual edit.
+	QVERIFY(_writeTextFile(csvPath, "a,b,c\n1,2,5\n3,4,6\n"));
+
+	CSVImporter reloadWithNewColumn;
+	reloadWithNewColumn.syncDataSet(fq(csvPath), ds, [](int){});
+
+	QCOMPARE(ds->columnCount(), 3);
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testUndoingManualEditRestoresSynching()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("undo_synch.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex	cell		= ds->index(0, 0);
+	const QString		oldValue	= ds->data(cell, int(dataPkgRoles::value)).toString();
+
+	//Exactly what editing a cell in the data view does: push the change as an undo command.
+	ds->undoStack()->push(new SetDataCommand(ds, 0, 0, QVariant(oldValue + "9"), int(dataPkgRoles::value)));
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), oldValue + "9");
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Undoing puts the data back to what the data file holds, so the synching must come back on.
+	ds->undoStack()->undo();
+
+	QCOMPARE(ds->data(cell, int(dataPkgRoles::value)).toString(), oldValue);
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//And redoing the edit switches it off again.
+	ds->undoStack()->redo();
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testSynchRestoreIsPerDataSet()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString	csvA = tempDir.filePath("a.csv"),
+					csvB = tempDir.filePath("b.csv");
+	QVERIFY(_writeTextFile(csvA, "a,b\n1,2\n"));
+	QVERIFY(_writeTextFile(csvB, "p,q\n3,4\n"));
+
+	auto loadInto = [&](DataSet * ds, const QString & csv)
+	{
+		_pkg->workspace()->setShownDataSet(ds);
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+	};
+
+	//A synchs with its data file and then gets edited by hand, which switches its synching off.
+	DataSet * dsA = _pkg->createDataSet();
+	QVERIFY(dsA);
+	loadInto(dsA, csvA);
+	dsA->syncer().startFileSyncing(csvA);
+	QVERIFY(_pkg->synchingExternally());
+
+	dsA->undoStack()->push(new SetDataCommand(dsA, 0, 0, QVariant("99"), int(dataPkgRoles::value)));
+	QVERIFY(dsA->synchTurnedOffByManualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//B has a data file too, but is deliberately not synching with it.
+	DataSet * dsB = _pkg->createDataSet();
+	QVERIFY(dsB);
+	loadInto(dsB, csvB);
+	dsB->setDataFile(fq(csvB));
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Undoing something in B brings *B's* undo stack back to clean. A's hand edits must not make that
+	//turn B's synching on behind the user's back.
+	dsB->undoStack()->push(new SetDataCommand(dsB, 0, 0, QVariant("77"), int(dataPkgRoles::value)));
+	dsB->undoStack()->undo();
+
+	QVERIFY(!dsB->synchTurnedOffByManualEdits());
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//While undoing in A, which is where the edits were made, does turn it back on.
+	_pkg->workspace()->setShownDataSet(dsA);
+	dsA->undoStack()->undo();
+
+	QVERIFY(dsA->dataFileSynch());
+	QVERIFY(_pkg->synchingExternally());
+
+	dsA->syncer().stopFileSyncing();
+}
+
+void TestAll::testManualEditsAreTrackedPerDataSet()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString	csvA = tempDir.filePath("a.csv"),
+					csvB = tempDir.filePath("b.csv");
+	QVERIFY(_writeTextFile(csvA, "a,b\n1,2\n"));
+	QVERIFY(_writeTextFile(csvB, "p,q\n3,4\n"));
+
+	auto synchedDataSetFrom = [&](const QString & csv)
+	{
+		DataSet * ds = _pkg->createDataSet();
+		_pkg->workspace()->setShownDataSet(ds);
+
+		CSVImporter importer;
+		importer.loadDataSet(fq(csv), ds, [](int){});
+		ds->syncer().startFileSyncing(csv);
+
+		return ds;
+	};
+
+	//A synchs with its data file and is then edited by hand, which switches its synching off.
+	DataSet * dsA = synchedDataSetFrom(csvA);
+	QVERIFY(dsA);
+	QVERIFY(dsA->dataFileSynch());
+
+	dsA->undoStack()->push(new SetDataCommand(dsA, 0, 0, QVariant("99"), int(dataPkgRoles::value)));
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	//B is a second dataset, synching with a data file of its own. A's hand edits are not B's.
+	DataSet * dsB = synchedDataSetFrom(csvB);
+	QVERIFY(dsB);
+	QVERIFY(dsB->dataFileSynch());
+	QVERIFY(!dsB->manualEdits());
+	QVERIFY(!_pkg->manualEdits());		//B is the shown one, and B was not edited
+	QVERIFY(_pkg->synchingExternally());
+
+	//Editing B by hand has to switch B's synching off too, even though A was already edited.
+	dsB->undoStack()->push(new SetDataCommand(dsB, 0, 0, QVariant("77"), int(dataPkgRoles::value)));
+
+	QVERIFY(dsB->manualEdits());
+	QVERIFY(!dsB->dataFileSynch());
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//And none of that touched A.
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	//Undoing B's edit brings B's synching back, and leaves A alone.
+	dsB->undoStack()->undo();
+
+	QVERIFY(!dsB->manualEdits());
+	QVERIFY(dsB->dataFileSynch());
+	QVERIFY(dsA->manualEdits());
+	QVERIFY(!dsA->dataFileSynch());
+
+	dsA->syncer().stopFileSyncing();
+	dsB->syncer().stopFileSyncing();
+}
+
+void TestAll::testLabelEditDoesNotStopSynching()
+{
+	_pkg = new DataSetPackage(this);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("labels.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\nx,1\ny,2\n"));
+
+	DataSet * ds = _pkg->createDataSet();
+	QVERIFY(ds);
+	_pkg->workspace()->setShownDataSet(ds);
+
+	CSVImporter importer;
+	importer.loadDataSet(fq(csvPath), ds, [](int){});
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+
+	Column * col = ds->column(0);
+	QVERIFY(col);
+
+	//A label is not data: renaming one must leave the synching alone.
+	QVERIFY(col->setLabelDisplay(0, "a nicer label"));
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	//Same for resetting the label filter.
+	col->resetFilterAllows();
+
+	QVERIFY(!_pkg->manualEdits());
+	QVERIFY(_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
+void TestAll::testUndoChangedSurvivesWorkspaceRecreation()
+{
+	_pkg = new DataSetPackage(this);
+
+	//Stands in for the one model behind the data view: created once, while the first workspace exists.
+	ExpandDataProxyModel model(this);
+
+	//Loading data throws that workspace away and makes a new one, just like opening a data file does.
+	_pkg->reset();
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+	QCOMPARE(UndoStack::singleton(), ds->undoStack());
+
+	QSignalSpy undoSpy(&model, &ExpandDataProxyModel::undoChanged);
+
+	UndoModelCommand * command = new UndoModelCommand(ds);
+	command->setText("test edit");
+	UndoStack::singleton()->push(command);
+
+	//The ribbon's Undo/Redo buttons only ever update on this signal.
+	QCOMPARE(undoSpy.count(), 1);
+	QCOMPARE(model.undoText(), QString("test edit"));
+
+	//And tearing the workspace down must not leave the singleton pointing at a freed stack.
+	_pkg->deleteWorkspace();
+	QVERIFY(!UndoStack::singleton());
+	QCOMPARE(model.undoText(), QString());
 }
 
 void TestAll::testFilterSetFilterVectorResizesToResult()
