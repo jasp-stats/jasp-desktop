@@ -25,41 +25,66 @@
 #include <QString>
 #include "log.h"
 
-void Application::init(QString filePath, bool newData, bool unitTest, int timeOut, bool save, bool logToFile, const Json::Value & dbJson, QString reportingPath)
+void Application::init(const ParsedArguments& arguments)
 {	
 	std::cout << "Application init entered" << std::endl;
 	
-	if(logToFile)
+	if(arguments.logToFile)
 		Settings::setValue(Settings::LOG_TO_FILE, true);
 
-	Dirs::setReportingDir(fq(reportingPath));
+	Dirs::setReportingDir(fq(arguments.reportingDir.absoluteFilePath()));
 	
-	if(unitTest)
+	if(arguments.unitTest)
 		resultXmlCompare::compareResults::theOne()->enableTestMode(); //So languagemodel can be aware
 
 	_mainWindow = new MainWindow(this);
+	PreferencesModel::prefs()->setKeepMissingColsWhenSyncing(arguments.keepMissingColsWhenSyncing);
 
 	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=,this]() {
 		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
 		// But to correctly work, the following calls need the QML files to be loaded.
-		if (newData)
+		if (arguments.newData)
 			_mainWindow->showNewData();
 		else
 		{
-			if(unitTest)
-				_mainWindow->testLoadedJaspFile(timeOut, save);
+			if(arguments.unitTest)
+				_mainWindow->testLoadedJaspFile(arguments.timeOut, arguments.save);
 
-			if(filePath.size() > 0)
-				_mainWindow->open(filePath);
+			if(arguments.mainFilePath.exists() || arguments.mainFileIsOnline)
+			{
+				QFileInfo inputDataFile;
+				QString outputFile;
 
-			if(!dbJson.isNull())
-				_mainWindow->open(dbJson);
+				if (arguments.dataFiles.size() > 0)
+				{
+					inputDataFile = arguments.dataFiles.front();
+
+					if (!inputDataFile.exists())
+					{
+						std::cerr << "File " << inputDataFile.absoluteFilePath() << " does not exist!" << std::endl;
+						exit(-1);
+					}
+
+					if (!arguments.dontExportResult)
+					{
+						QString outputDir = arguments.outputDir.exists() ? arguments.outputDir.absoluteFilePath() : inputDataFile.absoluteDir().absolutePath();
+						outputFile = outputDir + "/" + inputDataFile.baseName() + (arguments.exportPdf ? ".pdf" : ".html");
+					}
+				}
+
+				QString mainFile = arguments.mainFileIsOnline ? arguments.mainFilePath.filePath() : arguments.mainFilePath.absoluteFilePath();
+
+				_mainWindow->open(mainFile, inputDataFile.absoluteFilePath(), outputFile, arguments.keepJASPOpenAfterExporting);
+			}
+
+			if(!arguments.dbJson.isNull())
+				_mainWindow->open(arguments.dbJson);
 		}
 
 	});
 
-	if(reportingPath != "")
-		_mainWindow->reportHere(reportingPath);
+	if(arguments.reportingDir.exists())
+		_mainWindow->reportHere(arguments.reportingDir.absoluteFilePath());
 }
 
 Application::~Application()

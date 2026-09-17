@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2018 University of Amsterdam
+// Copyright (C) 2013-2026 University of Amsterdam
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,28 +15,11 @@
 // License along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //
+#ifndef FILEEVENTSTATUS_H
+#define FILEEVENTSTATUS_H
+#include "enumutilities.h"
 
-#include "filemenuobject.h"
-#include "filemenu.h"
+///Where a FileEvent is in its lifecycle: it is initialized, then started once, and completed once.
+DECLARE_ENUM(FileEventStatus, Initialized, Started, Completed);
 
-FileMenuObject::FileMenuObject(FileMenu * parent) : QObject(parent)
-{
-	_filemenu = parent;
-}
-
-FileEvent::FileMode FileMenuObject::mode() 
-{ 
-	return _filemenu->_mode;
-}
-
-void FileMenuObject::setMode(FileEvent::FileMode mode)
-{
-	_filemenu->_mode = mode;	
-}
-
-void FileMenuObject::openFile(const QString & path)
-{
-	FileEvent *event = new FileEvent(this, FileEvent::FileOpen);
-	event->setPath(path);
-	event->starts();
-}
+#endif // FILEEVENTSTATUS_H

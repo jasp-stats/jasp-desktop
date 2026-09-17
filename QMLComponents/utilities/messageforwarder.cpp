@@ -103,6 +103,14 @@ QMessageBox *MessageForwarder::getInfoBox(const QString &title, const QString &m
 
 void MessageForwarder::showWarning(QString title, QString message, QMessageBox::Icon icon)
 {
+	//A modal dialog would block an automated test runner forever, so in tests it becomes a log line.
+	//Same pattern as MainWindow::checkForUpdates, which also stays out of the way in tests.
+	if(QCoreApplication::applicationName() == "JASPTest")
+	{
+		Log::log() << "[MessageForwarder::showWarning] suppressed in test: " << fq(message) << std::endl;
+		return;
+	}
+
 	QMessageBox box;
 	box.setText(title);
 	box.setInformativeText(message);

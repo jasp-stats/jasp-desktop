@@ -3,7 +3,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-OSFListModel::OSFListModel(QObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList)
+OSFListModel::OSFListModel(FileMenuObject *parent, OSFFileSystem * fsbMod, OSFBreadCrumbsListModel * crummyList)
 	: FileMenuBasicListModel(parent, nullptr)
 {
 

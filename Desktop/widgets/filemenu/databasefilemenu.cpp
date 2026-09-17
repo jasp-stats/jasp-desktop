@@ -96,12 +96,10 @@ void DatabaseFileMenu::importResults()
 	_info.close();
 	
 	FileEvent *event = new FileEvent(this, mode());
-	
 	event->setFileType(FileTypeBase::database);
-
 	event->setDatabase(_info.toJson());
 
-	emit dataSetIORequest(event);
+	event->starts();
 	
 	resetEphemeralFields();
 }

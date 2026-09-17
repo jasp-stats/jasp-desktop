@@ -5,6 +5,8 @@ class DataSetPackage;
 class Importer;
 class DataSet;
 class DataSetSyncer;
+class QSignalSpy;
+class MainWindow;
 
 class TestAll: public QObject
 {
@@ -61,6 +63,10 @@ private slots:
 	void	testSyncerExportModifyReimport();
 	void	testSyncerExportModifyReimportChangesDetected();
 
+	// keepMissingColsWhenSyncing: pins the current semantics, including the fact that the kept columns
+	// accumulate over the syncs of one session (see the --keepMissingColsWhenSyncing help text).
+	void	testSyncKeepMissingColumns();
+
 	// AsyncLoader FileEvent sync flow test
 	void	testFileSyncerFullAsyncFlow();
 
@@ -71,9 +77,18 @@ private slots:
 	// and the workspace teardown paths).
 	void	testCloseWorkspaceAndDataSets();
 
+	// The PRO command-line chain: open a .jasp file and synchronize it with a data file afterwards.
+	// Nothing is loaded yet when that chain is set up, which is exactly the condition
+	// MainWindow::_open has to handle.
+	void	testCliSyncExportChainFromFreshWorkspace();
+	void	testCliSyncExportChainFailsOnBadDataFile();
+	void	testCliSyncExportWaitsForAnalysesToSettle();
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;
 	bool					_newPkgWithDataSet();
 	bool					_checkDoSyncFake();
+	static bool				_writeTextFile(const QString & path, const QByteArray & contents);
+	QSignalSpy			*	_newMainWindowWithExitSpy(MainWindow *& mw);
 };
