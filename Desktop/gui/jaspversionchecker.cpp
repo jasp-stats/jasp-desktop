@@ -60,7 +60,11 @@ void JASPVersionChecker::downloadVersionFinished()
 	
 	QString version			= _networkReply->readAll().trimmed(),
 			downloadfile	= "https://jasp-stats.org/download/";
-
+	
+	_networkReply->deleteLater();
+	_networkReply = nullptr;
+	bool keepAlive = false;
+	
 	if(version != "")
 	{
 		try
@@ -74,14 +78,19 @@ void JASPVersionChecker::downloadVersionFinished()
 			if (lv > cv)
 				emit showDownloadButton(downloadfile);
 
-			if(KnownIssues::issues()->downloadNeededOrLoad())	downloadKnownIssues();
-			else deleteLater(); //Remove yourself!
+			if(KnownIssues::issues()->downloadNeededOrLoad())
+			{
+				keepAlive = true;
+				downloadKnownIssues();
+			}
 		}
 		catch(std::runtime_error& e)
 		{
 			Log::log() << "Unable to parse version number:\n " << e.what() << std::endl;
 		}
 	}
+	if(!keepAlive)
+		deleteLater(); //Remove yourself!
 
 }
 
