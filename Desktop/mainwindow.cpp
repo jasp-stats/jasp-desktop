@@ -2041,7 +2041,7 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 		{
 			populateUIfromDataSet(event->type() == Utils::FileType::jasp);
 			if (_batchRunning)
-				_package->setSynchingExternally(false);
+				_package->dataSet()->setDataFileSynch(false);
 
 			_package->setCurrentFile(event->path());
 			

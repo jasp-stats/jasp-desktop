@@ -30,7 +30,7 @@
 #include "utilenums.h"
 #include "data/datasetpackage.h"
 #include "utilities/messageforwarder.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 ///Keep this in the same order as the values of the exporttype-dropdown in Batch.qml
 const std::vector<ExportType> BatchFileMenu::exportTypes = { ExportType::Html, ExportType::Pdf, ExportType::Jasp, ExportType::No };

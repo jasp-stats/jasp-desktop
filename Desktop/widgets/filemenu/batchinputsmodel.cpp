@@ -22,7 +22,7 @@
 #include <QFileInfo>
 
 #include "parsedarguments.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 BatchInputsModel::BatchInputsModel(QObject * parent) : QAbstractListModel(parent)
 {

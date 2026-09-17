@@ -21,7 +21,7 @@
 
 #include "widgets/filemenu/batchinputsmodel.h"
 #include "parsedarguments.h"
-#include "utilities/qutils.h"
+#include "qutils.h"
 
 namespace
 {
