@@ -47,8 +47,8 @@ public:
 
 	/// Number of child slots; for operators slot 0 = left, slot 1 = right.
 	virtual int				slotCount()					const	{ return 0; }
-	/// Drop keys accepted by the given slot.
-	virtual stringvec		slotDropKeys(int)			const	{ return {}; }
+	/// Drop keys accepted by the given slot; the mode matters for operators like %|%.
+	virtual stringvec		slotDropKeys(int, ScriptConstructorMode)	const	{ return {}; }
 	/// Store node in the given slot (implementations must setParent() when node != nullptr).
 	virtual void			setSlot(int, ScriptNode *)			{}
 	/// Fresh node of the same type without children (row functions with one trailing empty slot).
@@ -90,7 +90,7 @@ public:
 	ScriptNode	*	childAt(int i)	const override { return i == 0 ? _left : _right; }
 
 	int				slotCount()				const override { return 2; }
-	stringvec		slotDropKeys(int slot)	const override { return slot == 0 ? dropKeysLeft() : dropKeysRight(); }
+	stringvec		slotDropKeys(int slot, ScriptConstructorMode mode)	const override { return slot == 0 ? dropKeysLeft(mode) : dropKeysRight(mode); }
 	void			setSlot(int slot, ScriptNode * node) override { slot == 0 ? setLeft(node) : setRight(node); }
 	ScriptNode	*	cloneEmpty()			const override { return new ScriptNodeOperator(_op, _vertical); }
 
@@ -100,8 +100,8 @@ public:
 	void setLeft(ScriptNode * node);
 	void setRight(ScriptNode * node);
 
-	stringvec dropKeysLeft() const;
-	stringvec dropKeysRight() const;
+	stringvec dropKeysLeft(ScriptConstructorMode mode) const;
+	stringvec dropKeysRight(ScriptConstructorMode mode) const;
 
 private:
 	std::string		_op;
@@ -136,7 +136,7 @@ public:
 	ScriptNode	*	childAt(int i)	const override { return _arguments.at(i).value; }
 
 	int				slotCount()				const override { return static_cast<int>(_arguments.size()); }
-	stringvec		slotDropKeys(int slot)	const override { return slot >= 0 && slot < static_cast<int>(_arguments.size()) ? _arguments[slot].dropKeys : stringvec{}; }
+	stringvec		slotDropKeys(int slot, ScriptConstructorMode)	const override { return slot >= 0 && slot < static_cast<int>(_arguments.size()) ? _arguments[slot].dropKeys : stringvec{}; }
 	void			setSlot(int slot, ScriptNode * node) override { setArgumentValue(slot, node); }
 	ScriptNode	*	cloneEmpty()			const override { return new ScriptNodeFunction(_functionName); }
 
@@ -169,7 +169,7 @@ public:
 	ScriptNode	*	childAt(int i)	const override { return _children.at(i); }
 
 	int				slotCount()				const override { return static_cast<int>(_children.size()); }
-	stringvec		slotDropKeys(int)			const override { return ScriptConstructorRegistry::rowFunctionKeys(); }
+	stringvec		slotDropKeys(int, ScriptConstructorMode)	const override { return ScriptConstructorRegistry::rowFunctionKeys(); }
 	void			setSlot(int slot, ScriptNode * node) override { setChild(slot, node); }
 	ScriptNode	*	cloneEmpty()			const override;
 

@@ -294,16 +294,16 @@ bool ScriptNodeOperator::isComplete() const
 	return leftOk && rightOk;
 }
 
-stringvec ScriptNodeOperator::dropKeysLeft() const
+stringvec ScriptNodeOperator::dropKeysLeft(ScriptConstructorMode mode) const
 {
 	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
-	return def ? def->dropKeysLeft(ScriptConstructorMode::Filter) : stringvec{"number"};
+	return def ? def->dropKeysLeft(mode) : stringvec{"number"};
 }
 
-stringvec ScriptNodeOperator::dropKeysRight() const
+stringvec ScriptNodeOperator::dropKeysRight(ScriptConstructorMode mode) const
 {
 	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
-	return def ? def->dropKeysRight(ScriptConstructorMode::Filter) : stringvec{"number"};
+	return def ? def->dropKeysRight(mode) : stringvec{"number"};
 }
 
 // --- ScriptNodeFunction ---

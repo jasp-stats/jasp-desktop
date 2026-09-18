@@ -74,12 +74,13 @@ void ScriptConstructorView::setMode(ScriptConstructorMode newMode)
 
 	if(_chromeBuilt)
 	{
-		// The operator bar and function palette are mode-dependent, so rebuild them
-		// (currently QML sets `mode` before the deferred build, but never rely on that).
+		// The operator bar, function palette and the formulas' drop spots (e.g. the left side of
+		// %|%) are mode-dependent, so rebuild them (currently QML sets `mode` before the deferred
+		// build, but never rely on that).
 		buildOperatorBar();
 		buildColumnPalette();
 		buildFunctionPalette();
-		layoutAll();
+		rebuildFormulaItems();
 	}
 }
 

@@ -797,8 +797,9 @@ void ScriptNodeItem::rebuild()
 
 		// Horizontal operators wrap their children in parentheses; vertical (division) does not.
 		bool nest = !op->isVertical();
+		const ScriptConstructorMode mode = _view->model()->mode();
 
-		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft(), false, nest}, "...");
+		ScriptDropSpot * leftSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorLeft, op, 0, op->dropKeysLeft(mode), false, nest}, "...");
 
 		if(op->isVertical() && _acceptsDrops)
 		{
@@ -814,7 +815,7 @@ void ScriptNodeItem::rebuild()
 		else
 			makeText(QString::fromStdString(op->op()), true);
 
-		ScriptDropSpot * rightSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight(), false, nest}, "...");
+		ScriptDropSpot * rightSpot = makeDropSpot(DropTarget{DropTarget::Kind::OperatorRight, op, 1, op->dropKeysRight(mode), false, nest}, "...");
 
 		// Parentheses shown when this operator is nested inside another node's drop spot.
 		_openParen	= makeParenText("(");

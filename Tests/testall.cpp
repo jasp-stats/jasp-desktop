@@ -2572,5 +2572,36 @@ void TestAll::testScriptConstructorNumberLiteralText()
 	}
 }
 
+void TestAll::testScriptConstructorModeDropKeys()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	auto keys = [](const stringvec & v)
+	{
+		QStringList out;
+		for(const std::string & k : v)
+			out << tq(k);
+		return out;
+	};
+
+	ScriptNodeOperator split("%|%", false);
+	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::Filter)),			QStringList({"boolean"}));
+	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::ComputedColumn)),	QStringList({"number"}));
+	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::ComputedDataSet)),	QStringList({"number"}));
+	QCOMPARE(keys(split.slotDropKeys(1, ScriptConstructorMode::ComputedColumn)),	QStringList({"string", "boolean"}));
+
+	// A scale column dropped on a computed column's %|% fills its left slot and stays scale.
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+	model.insertNode(new ScriptNodeOperator("%|%", false),	DropTarget::root());
+	model.insertNode(new ScriptNodeColumn("contNormal"),	DropTarget::none());
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(model.toR(), std::string("(contNormal.scale %|% null)"));
+}
+
 
 QTEST_MAIN(TestAll)

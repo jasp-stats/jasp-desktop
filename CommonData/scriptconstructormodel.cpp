@@ -296,14 +296,14 @@ void ScriptConstructorModel::resolveColumnTypeDrop(ScriptNodeColumn * col, const
 
 // --- drop-spot traversal helpers ---
 
-static stringvec containingSlotKeys(ScriptNode * node)
+static stringvec containingSlotKeys(ScriptNode * node, ScriptConstructorMode mode)
 {
 	ScriptNode * par = node ? node->parent() : nullptr;
 	if(!par) return {};
 
 	for(int i = 0; i < par->slotCount(); i++)
 		if(par->childAt(i) == node)
-			return par->slotDropKeys(i);
+			return par->slotDropKeys(i, mode);
 
 	return {};
 }
@@ -331,7 +331,7 @@ static DropTarget::Kind slotKindFor(ScriptNode * node, int slot)
 	}
 }
 
-static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & dragKeys)
+static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & dragKeys, ScriptConstructorMode mode)
 {
 	// In-order leftmost empty slot that accepts the dragged node's keys: for operators the
 	// left subtree/slot before the right one, for functions and row functions the arguments
@@ -345,13 +345,13 @@ static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & 
 
 		if(child)
 		{
-			DropTarget sub = leftMostEmptyDropSpotRec(child, dragKeys);
+			DropTarget sub = leftMostEmptyDropSpotRec(child, dragKeys, mode);
 			if(sub.isValid())
 				return sub;
 		}
 		else
 		{
-			const stringvec keys = node->slotDropKeys(i);
+			const stringvec keys = node->slotDropKeys(i, mode);
 			if(ScriptConstructorModel::keysOverlap(dragKeys, keys))
 				return makeSlotTarget(node, slotKindFor(node, i), i, keys);
 		}
@@ -360,7 +360,7 @@ static DropTarget leftMostEmptyDropSpotRec(ScriptNode * node, const stringvec & 
 	return DropTarget::none();
 }
 
-static DropTarget rightMostFilledDropSpotRec(ScriptNode * node)
+static DropTarget rightMostFilledDropSpotRec(ScriptNode * node, ScriptConstructorMode mode)
 {
 	if(!node) return DropTarget::none();
 
@@ -369,7 +369,7 @@ static DropTarget rightMostFilledDropSpotRec(ScriptNode * node)
 	if(node->type() == ScriptNode::Type::Operator || node->type() == ScriptNode::Type::OperatorVertical)
 	{
 		if(node->childAt(1))
-			return makeSlotTarget(node, DropTarget::Kind::OperatorRight, 1, node->slotDropKeys(1));
+			return makeSlotTarget(node, DropTarget::Kind::OperatorRight, 1, node->slotDropKeys(1, mode));
 		return DropTarget::none();
 	}
 
@@ -378,7 +378,7 @@ static DropTarget rightMostFilledDropSpotRec(ScriptNode * node)
 	{
 		if(!node->childAt(i))
 			return last.isValid() ? last : DropTarget::none();
-		last = makeSlotTarget(node, slotKindFor(node, i), i, node->slotDropKeys(i));
+		last = makeSlotTarget(node, slotKindFor(node, i), i, node->slotDropKeys(i, mode));
 	}
 	return last.isValid() ? last : DropTarget::none();
 }
@@ -394,7 +394,7 @@ DropTarget ScriptConstructorModel::findReasonableInsertionSpot(ScriptNode * node
 		if(formula == node)
 			continue;
 
-		DropTarget spot = leftMostEmptyDropSpotRec(formula, node->dragKeys(_mode));
+		DropTarget spot = leftMostEmptyDropSpotRec(formula, node->dragKeys(_mode), _mode);
 		if(spot.isValid())
 			return spot;
 	}
@@ -407,7 +407,7 @@ std::vector<int> ScriptConstructorModel::allowedColumnTypes(ScriptNode * node) c
 	if(!node || !node->parent())
 		return {int(columnType::scale), int(columnType::ordinal), int(columnType::nominal)}; // root: unconstrained
 
-	const stringvec keys = containingSlotKeys(node);
+	const stringvec keys = containingSlotKeys(node, _mode);
 
 	std::vector<int> out;
 	for(int t : {int(columnType::scale), int(columnType::ordinal), int(columnType::nominal)})
@@ -504,7 +504,7 @@ void ScriptConstructorModel::setColumnTypeUser(ScriptNodeColumn * node, int colu
 	node->setColumnTypeUser(columnType);
 	// Re-resolve the drop-time type, like the old JASPColumn.qml did when the
 	// user clicked the type icon while the column was inside a drop spot.
-	resolveColumnTypeDrop(node, containingSlotKeys(node));
+	resolveColumnTypeDrop(node, containingSlotKeys(node, _mode));
 	endEdit(tr("Change column type"));
 }
 
@@ -549,7 +549,7 @@ bool ScriptConstructorModel::tryGobbleLeft(ScriptNode * node)
 	if(_formulas.size() <= 1)
 		return false;
 
-	stringvec leftKeys = op->dropKeysLeft();
+	stringvec leftKeys = op->dropKeysLeft(_mode);
 
 	for(int i = static_cast<int>(_formulas.size()) - 1; i >= 0; i--)
 	{
@@ -587,7 +587,7 @@ bool ScriptConstructorModel::tryGobbleLeft(ScriptNode * node)
 				}
 			}
 
-			DropTarget filled = rightMostFilledDropSpotRec(gobbleMeUp);
+			DropTarget filled = rightMostFilledDropSpotRec(gobbleMeUp, _mode);
 			if(!filled.isValid())
 				return false;
 
