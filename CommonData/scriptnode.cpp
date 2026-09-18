@@ -121,6 +121,7 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 	case ScriptNodeType::Function:
 	{
 		std::vector<ScriptNodeFunction::Argument> args;
+		std::vector<Json::ArrayIndex> argSources; // index in argsJson of each entry in args (mistyped entries are skipped)
 		const Json::Value & argsJson = json.get("arguments", Json::arrayValue);
 		const bool argsIsArray = argsJson.isArray();
 
@@ -144,12 +145,13 @@ ScriptNode * ScriptNode::fromJson(const Json::Value & json, ScriptNode * parent)
 						arg.dropKeys.push_back(keysJson[k].asString());
 
 			args.push_back(arg);
+			argSources.push_back(i);
 		}
 
 		auto * func = new ScriptNodeFunction(jsonStr(json, "functionName"), args, parent);
 
-		for(Json::ArrayIndex i = 0; i < args.size(); i++)
-			func->setArgumentValue(static_cast<int>(i), fromJson(argsJson[i].get("argument", Json::nullValue), func));
+		for(size_t a = 0; a < args.size(); a++)
+			func->setArgumentValue(static_cast<int>(a), fromJson(argsJson[argSources[a]].get("argument", Json::nullValue), func));
 
 		result = func;
 		break;
