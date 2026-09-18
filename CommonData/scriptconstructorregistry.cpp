@@ -75,7 +75,6 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 							boolKeys		= {"boolean"},
 							strKeys			= {"string"},
 							boolStrNum		= {"boolean", "string", "number"},
-							strNum			= {"string", "number"},
 							strBoolNum		= {"string", "boolean", "number"},
 							ifElseKeys		= {"string", "number", "boolean"},
 							numberCompareKeys	= {"number", "ordered"},
@@ -143,7 +142,7 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addFunc({ .name = "mean",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "mean"),							.params = {P("values", numKeys)},	.naRm = true	});
 	addFunc({ .name = "sign",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "returns the sign of values"),		.params = {P("values", numKeys)}	});
 	addFunc({ .name = "round",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "rounds y to n decimals"),			.params = {P("y", numKeys), P("n", numKeys)}	});
-	addFunc({ .name = "length",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "returns number of elements in y"),	.params = {P("y", strNum)}	});
+	addFunc({ .name = "length",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "returns number of elements in y"),	.params = {P("y", strBoolNum)}	});
 	addFunc({ .name = "median",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "median"),							.params = {P("values", numKeys)},	.naRm = true	});
 	//NB: dragKeys matches QML Function.qml `isIfElse: functionName === "ifelse"` (lowercase only)
 	addFunc({ .name = "ifelse",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "if-else statement"),				.params = {P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)},	.dragKeysData = ifElseKeys,	.inColumnPalette = false	});
