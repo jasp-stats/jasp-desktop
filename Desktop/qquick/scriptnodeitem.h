@@ -143,6 +143,11 @@ public:
 
 	void			setNested(bool nested);
 
+	/// Caps the width of this item's text leaves: text that does not fit is elided and the
+	/// full text moves into the tooltip. 0 (the default) means no cap. Used for the column
+	/// palette, where one very long column name would otherwise widen the whole palette.
+	void			setMaxTextWidth(qreal maxTextWidth) { _maxTextWidth = maxTextWidth; }
+
 	QString			toolTip() const { return _toolTip; }
 	void			setToolTip(const QString & toolTip);
 
@@ -172,6 +177,10 @@ private:
 
 	qreal			textWidth(QQuickItem * textItem) const;
 
+	/// (Re)builds the hover tooltip from the node; also called from layout() when the elision
+	/// of a text leaf changes, since an elided item carries its full text in the tooltip.
+	void			refreshToolTip();
+
 	ScriptConstructorView		*	_view = nullptr;
 	QPointer<ScriptNode>			_node;
 	QList<QQuickItem*>			_leaves;
@@ -182,10 +191,12 @@ private:
 								_overline,
 								_fractionBar;
 	qreal						_preferredWidth		= 0,
-								_preferredHeight	= 0;
+								_preferredHeight	= 0,
+								_maxTextWidth		= 0;
 	bool						_acceptsDrops		= true,
 								_nested				= false,
-								_showParens			= false;
+								_showParens			= false,
+								_textElided			= false;
 	QString						_toolTip;
 };
 

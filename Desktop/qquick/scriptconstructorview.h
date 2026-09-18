@@ -112,8 +112,9 @@ public:
 	ScriptNodeItem	*	makeNodeItem(ScriptNode * node, QQuickItem * parent);
 
 	/// Non-droppable prototype item for the palette / operator bar (positions and max-width
-	/// bookkeeping are done by the caller).
-	ScriptNodeItem	*	addPrototypeItem(ScriptNode * proto, QQuickItem * content);
+	/// bookkeeping are done by the caller). `maxTextWidth` (0 = uncapped) elides text that does
+	/// not fit, so that one very long entry cannot widen the whole palette.
+	ScriptNodeItem	*	addPrototypeItem(ScriptNode * proto, QQuickItem * content, qreal maxTextWidth = 0);
 
 	// --- drag & drop orchestration (called by ScriptNodeItem / palette items) ---
 	void				startDragExisting(ScriptNodeItem * item, const QPointF & scenePos);
@@ -198,6 +199,7 @@ private:
 											_scriptArea,
 											_scriptColumn,
 											_trash,
+											_trashIcon,
 											_hint,
 											_rCodeDisplay;
 	QPointer<ScriptPalette>					_columnPalette,
@@ -213,7 +215,8 @@ private:
 	QHash<QString,QString>					_columnDescriptionsByName;
 	int										_nameRole	= -1,
 											_typeRole	= -1;
-	bool									_paletteRebuildScheduled = false;
+	bool									_paletteRebuildScheduled = false,
+											_hintRelayoutScheduled	 = false;
 
 	QAbstractItemModel				*		_columnsModel = nullptr;
 

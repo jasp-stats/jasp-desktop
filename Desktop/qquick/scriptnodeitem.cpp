@@ -912,67 +912,77 @@ void ScriptNodeItem::rebuild()
 	}
 
 	// Compute the hover tooltip for this element.
-	{
-		JASPTIMER_SCOPE(ScriptNodeItem tooltip);
-		QString tip;
-
-		switch(_node->type())
-		{
-		case ScriptNode::Type::Operator:
-		case ScriptNode::Type::OperatorVertical:
-		{
-			const std::string & op = static_cast<ScriptNodeOperator*>(_node.data())->op();
-			if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node.data())->isVertical()))
-				tip = def->toolTipForMode(_view->model()->mode());
-			break;
-		}
-		case ScriptNode::Type::Function:
-		{
-			const std::string & fn = static_cast<ScriptNodeFunction*>(_node.data())->functionName();
-			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
-				tip = def->toolTipForMode(_view->model()->mode());
-			break;
-		}
-		case ScriptNode::Type::RowFunction:
-		{
-			const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node.data())->functionName();
-			if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
-				tip = def->toolTipForMode(_view->model()->mode());
-			break;
-		}
-		case ScriptNode::Type::Column:
-		{
-			auto * col = static_cast<ScriptNodeColumn*>(_node.data());
-
-			const int actual		= _view->columnType(col->columnName());
-			const int effective		= col->effectiveColumnType(actual);
-
-			QStringList parts;
-			if(_acceptsDrops)
-				parts << tr("Click icon to change column type");
-
-			const QString description = _view->columnDescription(tq(col->columnName()));
-			if(!description.isEmpty())
-				parts << tr("Column description: ") + description;
-
-			if(effective != actual)
-			{
-				const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
-				if(!preview.isEmpty())
-					parts << preview;
-			}
-
-			tip = parts.join("\n\n");
-			break;
-		}
-		default:
-			break;
-		}
-
-		setToolTip(tip);
-	}
+	refreshToolTip();
 
 	layout();
+}
+
+void ScriptNodeItem::refreshToolTip()
+{
+	if(!_node) return;
+
+	JASPTIMER_SCOPE(ScriptNodeItem tooltip);
+	QString tip;
+
+	switch(_node->type())
+	{
+	case ScriptNode::Type::Operator:
+	case ScriptNode::Type::OperatorVertical:
+	{
+		const std::string & op = static_cast<ScriptNodeOperator*>(_node.data())->op();
+		if(const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(op, static_cast<ScriptNodeOperator*>(_node.data())->isVertical()))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::Function:
+	{
+		const std::string & fn = static_cast<ScriptNodeFunction*>(_node.data())->functionName();
+		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().functionDef(fn))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::RowFunction:
+	{
+		const std::string & fn = static_cast<ScriptNodeRowFunction*>(_node.data())->functionName();
+		if(const ScriptFunctionDef * def = ScriptConstructorRegistry::instance().rowFunctionDef(fn))
+			tip = def->toolTipForMode(_view->model()->mode());
+		break;
+	}
+	case ScriptNode::Type::Column:
+	{
+		auto * col = static_cast<ScriptNodeColumn*>(_node.data());
+
+		const int actual		= _view->columnType(col->columnName());
+		const int effective		= col->effectiveColumnType(actual);
+
+		QStringList parts;
+
+		// A name too long for the palette is shown elided, so the tooltip carries it in full.
+		if(_textElided)
+			parts << tq(col->columnName());
+
+		if(_acceptsDrops)
+			parts << tr("Click icon to change column type");
+
+		const QString description = _view->columnDescription(tq(col->columnName()));
+		if(!description.isEmpty())
+			parts << tr("Column description: ") + description;
+
+		if(effective != actual)
+		{
+			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
+			if(!preview.isEmpty())
+				parts << preview;
+		}
+
+		tip = parts.join("\n\n");
+		break;
+	}
+	default:
+		break;
+	}
+
+	setToolTip(tip);
 }
 
 void ScriptNodeItem::layout()
@@ -983,6 +993,7 @@ void ScriptNodeItem::layout()
 	qreal block = _view->blockDim();
 	qreal spacing = _view->spacing();
 	qreal x = 0, maxH = block;
+	bool elided = false;
 
 	// Lay out leaves and drop spots left-to-right in creation order.
 	// placeLeaf places one item at x (vertically centred in the block laid out so far) and
@@ -1005,6 +1016,17 @@ void ScriptNodeItem::layout()
 			h = item->property("implicitHeight").toReal();
 			if(h <= 0) h = item->height();
 			if(h <= 0) h = block;
+
+			// Text wider than the cap is elided to it (implicitWidth keeps reporting the full
+			// width, so this stays stable across repeated layouts).
+			if(_maxTextWidth > 0 && w > _maxTextWidth)
+				if(QQuickText * text = qobject_cast<QQuickText*>(item))
+				{
+					text->setElideMode(QQuickText::ElideRight);
+					text->setWidth(_maxTextWidth);
+					w		= _maxTextWidth;
+					elided	= true;
+				}
 		}
 
 		item->setX(x);
@@ -1160,6 +1182,13 @@ void ScriptNodeItem::layout()
 		// Leaves (column, number, string, boolean)
 		for(QQuickItem * leaf : _leaves)
 			placeLeaf(leaf, x, maxH, block, spacing, false);
+	}
+
+	// An item that had to elide carries its full text in the tooltip instead.
+	if(elided != _textElided)
+	{
+		_textElided = elided;
+		refreshToolTip();
 	}
 
 	_preferredWidth = x > 0 ? x - spacing : 0;
