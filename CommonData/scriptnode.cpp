@@ -297,12 +297,22 @@ bool ScriptNodeOperator::isComplete() const
 stringvec ScriptNodeOperator::dropKeysLeft(ScriptConstructorMode mode) const
 {
 	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
+
+	// ==/!= compare like with like: once the other side is filled, this side only accepts what it
+	// offers (dropKeysMirrorEachother in the old Operator.qml).
+	if(def && def->mirrorKeys() && _right)
+		return _right->dragKeys(mode);
+
 	return def ? def->dropKeysLeft(mode) : stringvec{"number"};
 }
 
 stringvec ScriptNodeOperator::dropKeysRight(ScriptConstructorMode mode) const
 {
 	const ScriptOperatorDef * def = ScriptConstructorRegistry::instance().operatorDef(_op, _vertical);
+
+	if(def && def->mirrorKeys() && _left)
+		return _left->dragKeys(mode);
+
 	return def ? def->dropKeysRight(mode) : stringvec{"number"};
 }
 

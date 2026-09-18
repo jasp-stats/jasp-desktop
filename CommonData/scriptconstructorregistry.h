@@ -70,7 +70,7 @@ struct ScriptOperatorDef
 
 	bool			booleanResultFilter	= false;				///< returns logicals in Filter mode (can root a filter formula)
 	bool			booleanResultColumn	= false;				///< returns logicals in the column modes
-	bool			keysMirrored		= false;				///< ==/!= style: both sides accept the same keys
+	bool			keysMirrored		= false;				///< ==/!= style: once one side is filled, the other accepts only what it offers
 
 	stringvec		dropKeysLeft(	ScriptConstructorMode mode) const;
 	stringvec		dropKeysRight(	ScriptConstructorMode mode) const;
