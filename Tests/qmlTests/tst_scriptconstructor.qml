@@ -153,6 +153,10 @@ TestCase
 		verify(sc.checkAndApply())
 		sc.visible = true
 
+		// A mode switch in an earlier test rebuilt the operator bar and deleteLater()ed the old one; no
+		// event loop ran since, so let those items go before collecting images.
+		wait(0)
+
 		var images = []
 		function collect(item)
 		{
@@ -162,8 +166,12 @@ TestCase
 		}
 		collect(sc)
 		verify(images.length > 0)
+		// The image leaves load asynchronously (ScriptImage): give every image the time to arrive.
 		for(var i = 0; i < images.length; i++)
-			compare(images[i].paintedWidth > 0, true, "image paints: " + images[i].source)
+		{
+			var image = images[i]
+			tryVerify(function() { return image.paintedWidth > 0 }, 5000, "image paints: " + image.source)
+		}
 
 		var watermark = null
 		for(i = 0; i < images.length; i++)
