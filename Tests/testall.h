@@ -123,6 +123,10 @@ private slots:
 	// length() takes booleans too, as the old computed-column palette's "string:number:boolean" did.
 	void	testScriptConstructorLengthAcceptsBooleans();
 
+	// A dragged formula leaves the formula rows: a relayout during the drag does not snap it back,
+	// and a cancelled drag (the columns model changed) gives it its row back.
+	void	testScriptConstructorDragKeepsFormulaRows();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

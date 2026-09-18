@@ -44,6 +44,7 @@
 #include <QQuickWindow>
 #include <QMouseEvent>
 #include <QGuiApplication>
+#include <QStandardItemModel>
 #include <QtWebEngineQuick/qtwebenginequickglobal.h>
 #include <random>
 #include <functional>
@@ -2660,6 +2661,48 @@ void TestAll::testScriptConstructorLengthAcceptsBooleans()
 		ScriptNodeLiteral	truth(ScriptNode::Type::Boolean);
 		QVERIFY(DropTarget({DropTarget::Kind::FunctionArg, &length, 0, length.slotDropKeys(0, mode), false, true}).accepts(&truth, mode));
 	}
+}
+
+void TestAll::testScriptConstructorDragKeepsFormulaRows()
+{
+	QStandardItemModel		columns;	// outlives the view, which listens to it
+	ScriptConstructorView	view;
+	view.setSize(QSizeF(800, 400));
+	view.ensureChromeBuilt();
+	view.setColumnsModel(&columns);
+
+	auto * number = new ScriptNodeLiteral(ScriptNode::Type::Number);
+	view.model()->insertNode(number, DropTarget::root());
+	view.refresh();
+
+	// The formula row showing `number` (a direct child of the script column), if any.
+	auto rowItem = [&]() -> ScriptNodeItem *
+	{
+		for(QQuickItem * scriptColumn : view.scriptArea()->childItems())
+			for(QQuickItem * child : scriptColumn->childItems())
+				if(auto * item = qobject_cast<ScriptNodeItem*>(child); item && item->node() == number)
+					return item;
+		return nullptr;
+	};
+
+	ScriptNodeItem * item = rowItem();
+	QVERIFY(item);
+
+	// A relayout during the drag (a resize, the hint growing a line, ...) leaves the formula at the cursor.
+	const QPointF grab = item->mapToScene(QPointF(1, 1));
+	view.startDragExisting(item, grab);
+	view.dragMove(grab + QPointF(150, 100));
+	const QPointF dragged = item->position();
+	view.setWidth(view.width() + 20);
+	QCOMPARE(item->position(), dragged);
+
+	// A columns-model change rebuilds the palette, which cancels the drag: the formula gets a row again,
+	// and relayouts after the dragged item is deleted must not touch it.
+	columns.appendRow(new QStandardItem("x"));
+	QTRY_VERIFY(rowItem() != nullptr);
+	QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+	view.setWidth(view.width() + 20);
+	QVERIFY(rowItem() != nullptr);
 }
 
 

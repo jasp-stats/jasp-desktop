@@ -1104,6 +1104,11 @@ void ScriptConstructorView::startDragExisting(ScriptNodeItem * item, const QPoin
 	_draggedItem	= item;
 	_dragIsNew		= false;
 
+	// While it follows the cursor the item is no formula row: layoutScriptArea() would snap it back
+	// into place and bestDropSpotFor() would take it for the formula under the cursor. endDrag() and
+	// cancelDrag() rebuild the rows.
+	_rootItems.removeAll(item);
+
 	_dragOffset = item->mapFromScene(scenePos);
 
 	item->setParentItem(this);
@@ -1139,12 +1144,18 @@ void ScriptConstructorView::cancelDrag()
 
 	// A freshly spawned node is not owned by the model until it is dropped, so it would
 	// leak here; an existing node stays owned by (and alive inside) the model.
+	const bool draggedExisting = !_dragIsNew;
 	if(_dragIsNew && _draggedItem->node())
 		_draggedItem->node()->deleteLater();
 
 	_draggedItem->deleteLater();
 	_draggedItem = nullptr;
 	_dragIsNew = false;
+
+	// The item of an existing node is gone, and it was no formula row (nor in its parent's drop
+	// spot) anymore: rebuild the rows from the model.
+	if(draggedExisting)
+		rebuildFormulaItems();
 }
 
 void ScriptConstructorView::collectDropSpots(QList<ScriptDropSpot*> & out) const
