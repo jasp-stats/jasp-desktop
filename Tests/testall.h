@@ -105,6 +105,10 @@ private slots:
 	// empty accepting slot, working left-to-right / top-to-bottom through the formulas.
 	void	testScriptConstructorLeftMostEmpty();
 
+	// The function palette of each mode matches the old QML constructors: the filter never offered
+	// the computed-column transforms, cut/replaceNA or the random-data generators.
+	void	testScriptConstructorFunctionPalette();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

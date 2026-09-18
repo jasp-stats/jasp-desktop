@@ -2512,5 +2512,35 @@ void TestAll::testScriptConstructorRobustJson()
 	QVERIFY(!model.checkCompleteness());
 }
 
+void TestAll::testScriptConstructorFunctionPalette()
+{
+	auto paletteNames = [](ScriptConstructorMode mode)
+	{
+		QStringList names;
+		for(const ScriptFunctionDef & def : ScriptConstructorRegistry::instance().functionsForMode(mode))
+			names << tq(def.name);
+		names.sort();
+		return names;
+	};
+
+	// The deleted FilterWindow.qml functionModel (its row functions come from rowFunctions(), and
+	// sqrt and ! live in the operator bar).
+	QStringList filterPalette = { "abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median",
+												   "ifelse", "hasSubstring", "is.na" };
+	filterPalette.sort();
+	QCOMPARE(paletteNames(ScriptConstructorMode::Filter), filterPalette);
+
+	// The deleted ComputeColumnWindow.qml functionModel, used by both column modes.
+	QStringList columnPalette = { "abs", "sd", "var", "sum", "prod", "zScores", "min", "max", "mean", "sign", "round", "length", "median",
+												   "log", "log2", "log10", "logb", "exp", "fishZ", "invFishZ", "logit", "invLogit",
+												   "BoxCox", "BoxCoxAuto", "invBoxCox", "powerTransform", "powerTransformAuto", "YeoJohnson", "YeoJohnsonAuto", "Johnson",
+												   "cut", "replaceNA", "ifElse", "hasSubstring", "is.na",
+												   "normalDist", "tDist", "chiSqDist", "fDist", "binomDist", "negBinomDist", "geomDist", "poisDist",
+												   "betaDist", "unifDist", "gammaDist", "expDist", "logNormDist", "weibullDist" };
+	columnPalette.sort();
+	QCOMPARE(paletteNames(ScriptConstructorMode::ComputedColumn),	columnPalette);
+	QCOMPARE(paletteNames(ScriptConstructorMode::ComputedDataSet),	columnPalette);
+}
+
 
 QTEST_MAIN(TestAll)
