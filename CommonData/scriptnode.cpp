@@ -338,11 +338,6 @@ ScriptNodeFunction::ScriptNodeFunction(const std::string & functionName, const s
 {
 }
 
-void ScriptNodeFunction::addArgument(const Argument & arg)
-{
-	_arguments.push_back(arg);
-}
-
 void ScriptNodeFunction::setArgumentValue(int index, ScriptNode * node)
 {
 	if(index < 0 || index >= static_cast<int>(_arguments.size()))
@@ -350,15 +345,6 @@ void ScriptNodeFunction::setArgumentValue(int index, ScriptNode * node)
 
 	if(node) node->setParent(this);
 	_arguments[index].value = node;
-}
-
-int ScriptNodeFunction::argumentIndex(const std::string & name) const
-{
-	for(int i = 0; i < static_cast<int>(_arguments.size()); i++)
-		if(_arguments[i].name == name)
-			return i;
-
-	return -1;
 }
 
 Json::Value ScriptNodeFunction::toJson() const
@@ -452,22 +438,6 @@ void ScriptNodeRowFunction::addChild(ScriptNode * node)
 {
 	if(node) node->setParent(this);
 	_children.push_back(node);
-}
-
-void ScriptNodeRowFunction::removeChildAt(int index)
-{
-	if(index < 0 || index >= static_cast<int>(_children.size()))
-		return;
-
-	_children.erase(_children.begin() + index);
-}
-
-int ScriptNodeRowFunction::childCountFilled() const
-{
-	int count = 0;
-	for(ScriptNode * child : _children)
-		if(child) count++;
-	return count;
 }
 
 void ScriptNodeRowFunction::ensureTrailingEmptySlot()

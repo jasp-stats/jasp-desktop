@@ -143,9 +143,7 @@ public:
 	const std::string & functionName() const { return _functionName; }
 	const std::vector<Argument> & arguments() const { return _arguments; }
 
-	void addArgument(const Argument & arg);
 	void setArgumentValue(int index, ScriptNode * node);
-	int argumentIndex(const std::string & name) const;
 
 private:
 	std::string				_functionName;
@@ -178,8 +176,6 @@ public:
 
 	void setChild(int index, ScriptNode * node);
 	void addChild(ScriptNode * node);
-	void removeChildAt(int index);
-	int childCountFilled() const;
 	void ensureTrailingEmptySlot();
 
 private:
