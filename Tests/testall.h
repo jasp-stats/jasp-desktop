@@ -120,6 +120,9 @@ private slots:
 	// ==/!= compare like with like: once one side is filled, the other only accepts what it offers.
 	void	testScriptConstructorMirroredKeys();
 
+	// length() takes booleans too, as the old computed-column palette's "string:number:boolean" did.
+	void	testScriptConstructorLengthAcceptsBooleans();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

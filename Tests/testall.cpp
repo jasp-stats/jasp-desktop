@@ -2651,5 +2651,16 @@ void TestAll::testScriptConstructorMirroredKeys()
 	QCOMPARE(keyList(ne->slotDropKeys(1, filter)), QStringList({"number"}));
 }
 
+void TestAll::testScriptConstructorLengthAcceptsBooleans()
+{
+	// One registry entry serves both modes, so the filter accepts booleans here as well.
+	for(ScriptConstructorMode mode : {ScriptConstructorMode::Filter, ScriptConstructorMode::ComputedColumn})
+	{
+		ScriptNodeFunction	length("length");
+		ScriptNodeLiteral	truth(ScriptNode::Type::Boolean);
+		QVERIFY(DropTarget({DropTarget::Kind::FunctionArg, &length, 0, length.slotDropKeys(0, mode), false, true}).accepts(&truth, mode));
+	}
+}
+
 
 QTEST_MAIN(TestAll)
