@@ -2518,6 +2518,16 @@ void TestAll::testScriptConstructorRobustJson()
 		"{\"formulas\":[{\"nodeType\":\"RowFunction\",\"functionName\":\"rowMean\",\"droppedItems\":[42,\"null\"]}]}"));
 	QCOMPARE(model.formulaCount(), 1);
 	QVERIFY(!model.checkCompleteness());
+
+	// A mistyped function argument is skipped without shifting the values of the arguments after it.
+	model.fromJson(std::string(
+		"{\"formulas\":[{\"nodeType\":\"Function\",\"functionName\":\"round\",\"arguments\":["
+		"null,"
+		"{\"name\":\"y\",\"dropKeys\":[\"number\"],\"argument\":{\"nodeType\":\"Number\",\"value\":3.5}},"
+		"{\"name\":\"n\",\"dropKeys\":[\"number\"],\"argument\":{\"nodeType\":\"Number\",\"value\":1}}"
+		"]}]}"));
+	QCOMPARE(model.formulaCount(), 1);
+	QCOMPARE(model.toR(), std::string("round(3.5, 1)\n"));
 }
 
 void TestAll::testScriptConstructorFunctionPalette()
