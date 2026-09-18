@@ -57,6 +57,12 @@ QString ScriptOperatorDef::toolTipForMode(ScriptConstructorMode mode) const
 	return logicalSuffixToolTip(toolTip, logicalSuffix, mode);
 }
 
+bool ScriptFunctionDef::inPalette(ScriptConstructorMode mode) const
+{
+	// operatorBarOnly functions (sqrt, !) are offered in the operator bar instead.
+	return !operatorBarOnly && (mode == ScriptConstructorMode::Filter ? inFilterPalette : inColumnPalette);
+}
+
 QString ScriptFunctionDef::toolTipForMode(ScriptConstructorMode mode) const
 {
 	return logicalSuffixToolTip(toolTip, logicalSuffix, mode);
@@ -122,6 +128,10 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 
 	auto P = [](const std::string & name, const stringvec & keys) { return ScriptParamDef::fromRaw(name, keys); };
 
+	// Function palettes (as the old FilterWindow.qml / ComputeColumnWindow.qml lists): the filter
+	// offers abs .. is.na; the computed-column constructors also offer the transforms, cut/replaceNA
+	// and the random-data generators below (inFilterPalette = false), and ifElse instead of ifelse.
+
 	addFunc({ .name = "abs",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "absolute value"),					.params = {P("values", numKeys)},	.parensSingleArg = false	});
 	addFunc({ .name = "sd",				.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "standard deviation"),				.image = "sigma.png",	.params = {P("values", numKeys)},		.naRm = true	});
 	addFunc({ .name = "var",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "variance"),						.image = "variance.png",	.params = {P("values", numKeys)},	.naRm = true	});
@@ -136,7 +146,7 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addFunc({ .name = "length",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "returns number of elements in y"),	.params = {P("y", strNum)}	});
 	addFunc({ .name = "median",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "median"),							.params = {P("values", numKeys)},	.naRm = true	});
 	//NB: dragKeys matches QML Function.qml `isIfElse: functionName === "ifelse"` (lowercase only)
-	addFunc({ .name = "ifelse",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "if-else statement"),				.params = {P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)},	.dragKeysData = ifElseKeys	});
+	addFunc({ .name = "ifelse",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "if-else statement"),				.params = {P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)},	.dragKeysData = ifElseKeys,	.inColumnPalette = false	});
 	addFunc({ .name = "hasSubstring",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "returns true if string contains substring at least once"),	.params = {P("string", strKeys), P("substring", strKeys)},	.dragKeysData = boolKeys	});
 	addFunc({ .name = "is.na",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Combine with not-operator to filter out rows with missing values (NA) for a column."),			.params = {P("y", strBoolNum)},	.dragKeysData = boolKeys	});
 
@@ -146,42 +156,42 @@ ScriptConstructorRegistry::ScriptConstructorRegistry()
 	addFunc({ .name = "sqrt",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Square root"),						.image = "rootHead.png",	.params = {P("value(s)", numKeys)},	.operatorBarOnly = true,	.radix = true,	.barAfter = "^"	});
 	addFunc({ .name = "!",				.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Not: %1"),							.image = "negative.png",	.params = {P("logical(s)", boolKeys)},	.operatorBarOnly = true,	.logicalSuffix = true,	.dragKeysData = boolKeys	});
 
-	addFunc({ .name = "log",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "natural logarithm"),				.params = {P("y", numKeys)}	});
-	addFunc({ .name = "log2",			.friendlyName = "log\u2082",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "base 2 logarithm"),		.params = {P("y", numKeys)}	});
-	addFunc({ .name = "log10",			.friendlyName = "log\u2081\u2080",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "base 10 logarithm"),	.params = {P("y", numKeys)}	});
-	addFunc({ .name = "logb",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "logarithm of y in 'base'"),		.params = {P("y", numKeys), P("base", numKeys)}	});
-	addFunc({ .name = "exp",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "exponential"),						.params = {P("y", numKeys)}	});
-	addFunc({ .name = "fishZ",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line"),	.params = {P("y", numKeys)}	});
-	addFunc({ .name = "invFishZ",		.friendlyName = "fishZ\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1"),	.params = {P("y", numKeys)}	});
-	addFunc({ .name = "logit",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Logit transform (i.e., the inverse of the standard logit function, or log-odds transform) converts numbers between 0 and 1 to the real line."),	.params = {P("y", numKeys)}	});
-	addFunc({ .name = "invLogit",		.friendlyName = "logit\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse logit transform (i.e., the standard logit function) converts numbers on the real line to numbers between 0 and 1."),	.params = {P("y", numKeys)}	});
-	addFunc({ .name = "BoxCox",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter Box-Cox transform (transforms values greater than -shift) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)}	});
-	addFunc({ .name = "BoxCoxAuto",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter Box-Cox transform with an automatic determination of the shape parameter lambda, according to one of the three of methods:'loglik', 'sd', or 'movingRange'. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("?predictor", numKeys), P("?groupSize", numKeys), P("method", strKeys), P("lower", numKeys), P("upper", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)}	});
-	addFunc({ .name = "invBoxCox",		.friendlyName = "BoxCox\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse two-parameter Box-Cox transform."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)}	});
-	addFunc({ .name = "powerTransform",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter power transform (scale-invariant Box-Box; transforms values greater than -shift) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys)}	});
-	addFunc({ .name = "powerTransformAuto",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter power transform with an automatic determination of the shape parameter lambda. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("?predictor", numKeys), P("?groupSize", numKeys), P("lower", numKeys), P("upper", numKeys), P("shift", numKeys)}	});
-	addFunc({ .name = "YeoJohnson",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Yeo-Johnson transform (transforms any real values) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys)}	});
-	addFunc({ .name = "YeoJohnsonAuto",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Yeo-Johnson transform (transforms any real values) with an automatic determination of the shape parameter lambda. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("lower", numKeys), P("upper", numKeys)}	});
-	addFunc({ .name = "Johnson",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Johnson transform (transforms any real values). The search for optimal parameter is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("lower", numKeys), P("upper", numKeys)}	});
+	addFunc({ .name = "log",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "natural logarithm"),				.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "log2",			.friendlyName = "log\u2082",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "base 2 logarithm"),		.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "log10",			.friendlyName = "log\u2081\u2080",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "base 10 logarithm"),	.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "logb",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "logarithm of y in 'base'"),		.params = {P("y", numKeys), P("base", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "exp",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "exponential"),						.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "fishZ",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform correlations, numbers between -1 and 1 to the real line"),	.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "invFishZ",		.friendlyName = "fishZ\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform real numbers to numbers between -1 and 1"),	.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "logit",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Logit transform (i.e., the inverse of the standard logit function, or log-odds transform) converts numbers between 0 and 1 to the real line."),	.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "invLogit",		.friendlyName = "logit\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse logit transform (i.e., the standard logit function) converts numbers on the real line to numbers between 0 and 1."),	.params = {P("y", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "BoxCox",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter Box-Cox transform (transforms values greater than -shift) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "BoxCoxAuto",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter Box-Cox transform with an automatic determination of the shape parameter lambda, according to one of the three of methods:'loglik', 'sd', or 'movingRange'. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("?predictor", numKeys), P("?groupSize", numKeys), P("method", strKeys), P("lower", numKeys), P("upper", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "invBoxCox",		.friendlyName = "BoxCox\u207B\u00B9",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Inverse two-parameter Box-Cox transform."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys), P("continuityAdjustment", boolKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "powerTransform",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter power transform (scale-invariant Box-Box; transforms values greater than -shift) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys), P("shift", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "powerTransformAuto",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Two-parameter power transform with an automatic determination of the shape parameter lambda. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("?predictor", numKeys), P("?groupSize", numKeys), P("lower", numKeys), P("upper", numKeys), P("shift", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "YeoJohnson",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Yeo-Johnson transform (transforms any real values) to stabilize variance and attempt to make the data more normal distribution-like."),	.params = {P("y", numKeys), P("lambda", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "YeoJohnsonAuto",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Yeo-Johnson transform (transforms any real values) with an automatic determination of the shape parameter lambda. The search for optimal lambda is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("lower", numKeys), P("upper", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "Johnson",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "Johnson transform (transforms any real values). The search for optimal parameter is bounded within 'lower' and 'upper' limits."),	.params = {P("y", numKeys), P("lower", numKeys), P("upper", numKeys)},	.inFilterPalette = false	});
 
-	addFunc({ .name = "cut",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "break your data up in numBreaks levels"),	.params = {P("values", numKeys), P("numBreaks", numKeys)}	});
-	addFunc({ .name = "replaceNA",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "replace any missing values (NA) in column by the value in replaceWith"),	.params = {P("column", strBoolNum), P("replaceWith", strBoolNum)}	});
-	addFunc({ .name = "ifElse",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "if-else statement"),				.params = {P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)}	});
+	addFunc({ .name = "cut",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "break your data up in numBreaks levels"),	.params = {P("values", numKeys), P("numBreaks", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "replaceNA",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "replace any missing values (NA) in column by the value in replaceWith"),	.params = {P("column", strBoolNum), P("replaceWith", strBoolNum)},	.inFilterPalette = false	});
+	addFunc({ .name = "ifElse",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "if-else statement"),				.params = {P("test", boolKeys), P("then", boolStrNum), P("else", boolStrNum)},	.inFilterPalette = false	});
 
-	addFunc({ .name = "normalDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Gaussian distribution with specified mean and standard deviation sd"),	.params = {P("mean", numKeys), P("sd", numKeys)}	});
-	addFunc({ .name = "tDist",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from t distribution with degrees of freedom df and non-centrality parameter ncp"),	.params = {P("df", numKeys), P("ncp", numKeys)}	});
-	addFunc({ .name = "chiSqDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp"),	.params = {P("df", numKeys), P("ncp", numKeys)}	});
-	addFunc({ .name = "fDist",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp"),	.params = {P("df1", numKeys), P("df2", numKeys), P("ncp", numKeys)}	});
-	addFunc({ .name = "binomDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a binomial distribution with specified trials and probability prob"),	.params = {P("trials", numKeys), P("prob", numKeys)}	});
-	addFunc({ .name = "negBinomDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a negative binomial distribution with specified trials and probability prob"),	.params = {P("targetTrial", numKeys), P("prob", numKeys)}	});
-	addFunc({ .name = "geomDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a geometric distribution with specified probability prob"),	.params = {P("prob", numKeys)}	});
-	addFunc({ .name = "poisDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Poisson distribution with specified rate lambda"),	.params = {P("lambda", numKeys)}	});
-	addFunc({ .name = "betaDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a beta distribution with specified shapes alpha and beta"),	.params = {P("alpha", numKeys), P("beta", numKeys)}	});
-	addFunc({ .name = "unifDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a uniform distribution between min and max"),	.params = {P("min", numKeys), P("max", numKeys)}	});
-	addFunc({ .name = "gammaDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a gamma distribution with specified shape and scale"),	.params = {P("shape", numKeys), P("scale", numKeys)}	});
-	addFunc({ .name = "expDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from an exponential distribution with specified rate"),	.params = {P("rate", numKeys)}	});
-	addFunc({ .name = "logNormDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog"),	.params = {P("meanLog", numKeys), P("sdLog", numKeys)}	});
-	addFunc({ .name = "weibullDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Weibull distribution with specified shape and scale"),	.params = {P("shape", numKeys), P("scale", numKeys)}	});
+	addFunc({ .name = "normalDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Gaussian distribution with specified mean and standard deviation sd"),	.params = {P("mean", numKeys), P("sd", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "tDist",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from t distribution with degrees of freedom df and non-centrality parameter ncp"),	.params = {P("df", numKeys), P("ncp", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "chiSqDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a chi-squared distribution with degrees of freedom df and non-centrality parameter ncp"),	.params = {P("df", numKeys), P("ncp", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "fDist",			.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from an F distribution with specified degrees of freedoms df1, df2 and non-centrality parameter ncp"),	.params = {P("df1", numKeys), P("df2", numKeys), P("ncp", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "binomDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a binomial distribution with specified trials and probability prob"),	.params = {P("trials", numKeys), P("prob", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "negBinomDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a negative binomial distribution with specified trials and probability prob"),	.params = {P("targetTrial", numKeys), P("prob", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "geomDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a geometric distribution with specified probability prob"),	.params = {P("prob", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "poisDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Poisson distribution with specified rate lambda"),	.params = {P("lambda", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "betaDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a beta distribution with specified shapes alpha and beta"),	.params = {P("alpha", numKeys), P("beta", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "unifDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a uniform distribution between min and max"),	.params = {P("min", numKeys), P("max", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "gammaDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a gamma distribution with specified shape and scale"),	.params = {P("shape", numKeys), P("scale", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "expDist",		.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from an exponential distribution with specified rate"),	.params = {P("rate", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "logNormDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a log-normal distribution with specified logarithmic mean meanLog and standard deviation sdLog"),	.params = {P("meanLog", numKeys), P("sdLog", numKeys)},	.inFilterPalette = false	});
+	addFunc({ .name = "weibullDist",	.toolTip = QT_TRANSLATE_NOOP("ScriptConstructorRegistry", "generates data from a Weibull distribution with specified shape and scale"),	.params = {P("shape", numKeys), P("scale", numKeys)},	.inFilterPalette = false	});
 
 	// Row functions combine numeric columns; friendlyName/variadic/isRowFunction/dragKeys
 	// are the same for all of them and are set by the lambda.
@@ -230,18 +240,11 @@ const ScriptFunctionDef * ScriptConstructorRegistry::rowFunctionDef(const std::s
 
 std::vector<ScriptFunctionDef> ScriptConstructorRegistry::functionsForMode(ScriptConstructorMode mode) const
 {
-	static const stringset filterOnlyFunctions = {"ifelse"};
-
 	std::vector<ScriptFunctionDef> out;
 
 	for(const ScriptFunctionDef & def : _functions)
-	{
-		if(def.operatorBarOnly)												continue;
-		if(mode == ScriptConstructorMode::Filter && def.name == "ifElse")	continue;
-		if(mode != ScriptConstructorMode::Filter && filterOnlyFunctions.count(def.name))	continue;
-
-		out.push_back(def);
-	}
+		if(def.inPalette(mode))
+			out.push_back(def);
 
 	return out;
 }

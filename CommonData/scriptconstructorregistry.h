@@ -46,9 +46,12 @@ struct ScriptFunctionDef
 	bool							radix			= false;		///< rendered as root head + overline (sqrt)
 	bool							parensSingleArg	= true;			///< a single argument gets parentheses (all functions but abs)
 	std::string						barAfter;						///< operator bar: insert directly after this operator; empty with operatorBarOnly means "append after the operator list"
+	bool							inFilterPalette	= true;			///< listed in the function palette in Filter mode
+	bool							inColumnPalette	= true;			///< listed in the function palette in ComputedColumn/ComputedDataSet
 
 	stringvec						dragKeys() const					{ return dragKeysData; }
 	bool							addsNaRm() const						{ return naRm; }
+	bool							inPalette(ScriptConstructorMode mode) const;	///< offered in the function palette of this mode
 	QString							toolTipForMode(ScriptConstructorMode mode) const;
 };
 
