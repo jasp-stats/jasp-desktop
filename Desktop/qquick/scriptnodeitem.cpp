@@ -974,7 +974,9 @@ void ScriptNodeItem::refreshToolTip()
 
 		if(effective != actual)
 		{
-			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), col->columnTypeUser());
+			// Preview the type the column is shown (and generated) as: a type forced by the drop slot
+			// leaves columnTypeUser() at -1.
+			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), effective);
 			if(!preview.isEmpty())
 				parts << preview;
 		}
