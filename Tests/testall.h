@@ -7,6 +7,7 @@ class DataSet;
 class DataSetSyncer;
 class QSignalSpy;
 class MainWindow;
+class QQuickItem;
 
 class TestAll: public QObject
 {
@@ -84,6 +85,54 @@ private slots:
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
 
+	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
+	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
+	// JSON stored in .jasp files and the R code that gets sent to the engine.
+	void	testScriptConstructorRoundTrip();
+	void	testScriptConstructorGoldenR();
+	void	testScriptConstructorCompleteness();
+	void	testScriptConstructorUndo();
+	void	testScriptConstructorGobble();
+	void	testScriptConstructorDefaultFilterJson();
+	void	testScriptConstructorAllowedColumnTypes();
+	void	testScriptConstructorRowFunctionFreeSlot();
+
+	// Malformed constructorJson (corrupt .jasp files) must never throw or crash: garbage is
+	// rejected, mistyped/corrupt formulas are skipped.
+	void	testScriptConstructorRobustJson();
+
+	// "Best spot" drop resolution: a drop without an explicit target fills the leftmost
+	// empty accepting slot, working left-to-right / top-to-bottom through the formulas.
+	void	testScriptConstructorLeftMostEmpty();
+
+	// The function palette of each mode matches the old QML constructors: the filter never offered
+	// the computed-column transforms, cut/replaceNA or the random-data generators.
+	void	testScriptConstructorFunctionPalette();
+
+	// A number literal's inline editor shows the value in full, and committing it unchanged (a
+	// focus loss) keeps the exact value.
+	void	testScriptConstructorNumberLiteralText();
+
+	// Operator slots take their drop keys for the constructor's mode: the left side of %|% takes
+	// the condition (boolean) in a filter, but the values to split (number) in a computed column.
+	void	testScriptConstructorModeDropKeys();
+
+	// ==/!= compare like with like: once one side is filled, the other only accepts what it offers.
+	void	testScriptConstructorMirroredKeys();
+
+	// length() takes booleans too, as the old computed-column palette's "string:number:boolean" did.
+	void	testScriptConstructorLengthAcceptsBooleans();
+
+	// A dragged formula leaves the formula rows: a relayout during the drag does not snap it back,
+	// and a cancelled drag (the columns model changed) gives it its row back.
+	void	testScriptConstructorDragKeepsFormulaRows();
+
+	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
+	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
+	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a
+	// regression test that the full UI bootstrap + filter window opening works headlessly.
+	void	testMainWindowShowsFilterWindow();
+
 private:
 	DataSetPackage		*	_pkg		= nullptr;
 	Importer			*	_importer	= nullptr;
@@ -91,4 +140,5 @@ private:
 	bool					_checkDoSyncFake();
 	static bool				_writeTextFile(const QString & path, const QByteArray & contents);
 	QSignalSpy			*	_newMainWindowWithExitSpy(MainWindow *& mw);
+	QQuickItem			*	_findQuickItemByName(const QString & objectName);
 };

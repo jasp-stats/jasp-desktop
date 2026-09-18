@@ -5,6 +5,7 @@
 #include "datasetprovider.h"
 #include "utilities/qmlutils.h"
 #include "utilities/settings.h"
+#include "qquick/scriptconstructorview.h"
 
 TestQml::TestQml(QObject *parent)
 	: QObject{parent}
@@ -35,6 +36,10 @@ void TestQml::qmlEngineAvailable(QQmlEngine *engine)
 	// Initialization requiring the QQmlEngine to be constructed
 	QmlUtils::setupQMLEngine(engine);
 
+	// Required: this harness never constructs a MainWindow, and the production
+	// registration happens in the MainWindow constructor (not at static init).
+	qmlRegisterType<ScriptConstructorView>("JASP", 1, 0, "ScriptConstructor");
+	qmlRegisterUncreatableMetaObject(ScriptConstructorEnums::staticMetaObject, "JASP", 1, 0, "ScriptConstructorMode", "enums only");
 }
 
 void TestQml::cleanupTestCase()

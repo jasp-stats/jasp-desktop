@@ -56,6 +56,7 @@
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
+#include "qquick/scriptconstructorview.h"
 
 #include "resultstesting/compareresults.h"
 
@@ -176,6 +177,8 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
 	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
+	qmlRegisterType<ScriptConstructorView>						("JASP",			1, 0, "ScriptConstructor"				);
+	qmlRegisterUncreatableMetaObject(ScriptConstructorEnums::staticMetaObject, "JASP", 1, 0, "ScriptConstructorMode", "enums only");
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
 	qmlRegisterUncreatableType<PlotEditor::PlotEditorModel>		("JASP.PlotEditor",	1, 0, "PlotEditorModel",			"Can't make it");
 
@@ -297,6 +300,8 @@ MainWindow::~MainWindow()
 		DatabaseInterface::closeInterfaces();
 	}
 	catch(...) {}
+	// Only logs when PROFILE_JASP is defined (JASP_TIMER_USED=ON).
+	JASPTIMER_PRINTALL();
 }
 
 QString MainWindow::windowTitle() const

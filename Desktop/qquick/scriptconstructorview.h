@@ -1,0 +1,248 @@
+#ifndef SCRIPTCONSTRUCTORVIEW_H
+#define SCRIPTCONSTRUCTORVIEW_H
+
+#include <QQuickItem>
+#include <QPointer>
+#include <QUndoStack>
+#include <QSizeF>
+#include <QHash>
+#include <map>
+#include "scriptconstructormodel.h"
+
+class ScriptNodeItem;
+class ScriptDropSpot;
+class ScriptPalette;
+class QAbstractItemModel;
+class QKeyEvent;
+class ColumnsModel;
+
+///
+/// C++ replacement for the old QML FilterConstructor / ComputedColumnsConstructor.
+///
+/// Owns a ScriptConstructorModel (the single source of truth for the formula tree, JSON and R
+/// code) and renders it as a tree of QQuickItems. All formula logic lives in the model; this
+/// class only renders, lays out, and forwards user gestures (drag/drop, inline editing, column
+/// type changes) to the model.
+class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
+{
+	Q_OBJECT
+
+	Q_PROPERTY( ScriptConstructorMode	mode					READ mode			WRITE setMode			NOTIFY modeChanged				)
+	Q_PROPERTY( QString				constructorJson			READ constructorJson	WRITE setConstructorJson	NOTIFY constructorJsonChanged	)
+	Q_PROPERTY( QString				rCode					READ rCode											NOTIFY rCodeChanged				)
+	Q_PROPERTY( bool				somethingChanged		READ somethingChanged	WRITE setSomethingChanged	NOTIFY somethingChangedChanged	)
+	Q_PROPERTY( bool				lastCheckPassed			READ lastCheckPassed								NOTIFY lastCheckPassedChanged	)
+	Q_PROPERTY( bool				isColumnConstructor		READ isColumnConstructor							NOTIFY modeChanged				)
+	Q_PROPERTY( bool				showGeneratedRCode		READ showGeneratedRCode	WRITE setShowGeneratedRCode	NOTIFY showGeneratedRCodeChanged)
+	Q_PROPERTY( QAbstractItemModel* columnsModel			READ columnsModel		WRITE setColumnsModel		NOTIFY columnsModelChanged		)
+	Q_PROPERTY( QString				filterErrorMsg			READ filterErrorMsg		WRITE setFilterErrorMsg		NOTIFY filterErrorMsgChanged	)
+	Q_PROPERTY( qreal				desiredMinimumHeight	READ desiredMinimumHeight	NOTIFY desiredMinimumHeightChanged	)
+	Q_PROPERTY( bool				canUndo					READ canUndo				NOTIFY canUndoChanged				)
+	Q_PROPERTY( bool				canRedo					READ canRedo				NOTIFY canRedoChanged				)
+	Q_PROPERTY( bool				deferUntilVisible		READ deferUntilVisible		WRITE setDeferUntilVisible	NOTIFY deferUntilVisibleChanged	)
+
+public:
+	explicit ScriptConstructorView(QQuickItem * parent = nullptr);
+
+	ScriptConstructorModel	*	model() { return &_model; }
+
+	ScriptConstructorMode	mode() const { return _model.mode(); }
+	void					setMode(ScriptConstructorMode mode);
+
+	QString				constructorJson() const;
+	void				setConstructorJson(const QString & json);
+
+	QString				rCode() const;
+
+	bool				somethingChanged() const { return _somethingChanged; }
+	void				setSomethingChanged(bool v);
+
+	bool				lastCheckPassed() const { return _lastCheckPassed; }
+	bool				isColumnConstructor() const { return _model.mode() != ScriptConstructorMode::Filter; }
+
+	bool				showGeneratedRCode() const { return _showGeneratedRCode; }
+	void				setShowGeneratedRCode(bool v);
+
+	QAbstractItemModel*	columnsModel() const { return _columnsModel; }
+	void				setColumnsModel(QAbstractItemModel * m);
+
+	QString				filterErrorMsg() const { return _filterErrorMsg; }
+	void				setFilterErrorMsg(const QString & msg);
+
+	qreal				desiredMinimumHeight() const;
+
+	void				setColumnTypeProvider(const ScriptColumnTypeProvider * p) { _model.setColumnTypeProvider(p); }
+	void				setUndoStack(QUndoStack * s) { _model.setUndoStack(s); }
+
+	// ScriptColumnTypeProvider: resolve a column's actual type from the columns model.
+	int					columnType(const std::string & columnName) const override;
+
+	// Cached (O(1)) column info used by ScriptNodeItem while building tooltips.
+	QString				columnDescription(const QString & name) const;
+	QString				columnTransformedPreview(const QString & name, int transformedTo) const;
+
+	// --- QML-callable API mirroring the old constructors ---
+	Q_INVOKABLE bool	checkAndApply();
+	Q_INVOKABLE void	initializeFromJSON(const QString & json = QString());
+	Q_INVOKABLE bool	jsonChanged() const;
+	Q_INVOKABLE QString returnFilterJSON() const;
+	Q_INVOKABLE void	undo();
+	Q_INVOKABLE void	redo();
+
+	bool				canUndo() const { return _localUndoStack.canUndo(); }
+	bool				canRedo() const { return _localUndoStack.canRedo(); }
+
+	bool				deferUntilVisible() const { return _deferUntilVisible; }
+	void				setDeferUntilVisible(bool v);
+
+	// Builds the chrome (idempotent). Called at completion when visible or deferred
+	// until the view first becomes visible (deferUntilVisible).
+	void				ensureChromeBuilt();
+	Q_INVOKABLE void	requestBuild() { if(_componentComplete) ensureChromeBuilt(); }
+
+	// --- used by ScriptNodeItem / ScriptDropSpot ---
+	qreal				blockDim() const;
+	qreal				fontPixelSize() const;
+	qreal				spacing() const;
+
+	QQuickItem		*	scriptArea() const { return _scriptArea; }
+
+	void				nodeEdited();
+	void				refresh() { rebuildFormulaItems(); }
+	ScriptNodeItem	*	makeNodeItem(ScriptNode * node, QQuickItem * parent);
+
+	/// Non-droppable prototype item for the palette / operator bar (positions and max-width
+	/// bookkeeping are done by the caller). `maxTextWidth` (0 = uncapped) elides text that does
+	/// not fit, so that one very long entry cannot widen the whole palette.
+	ScriptNodeItem	*	addPrototypeItem(ScriptNode * proto, QQuickItem * content, qreal maxTextWidth = 0);
+
+	// --- drag & drop orchestration (called by ScriptNodeItem / palette items) ---
+	void				startDragExisting(ScriptNodeItem * item, const QPointF & scenePos);
+	void				startDragNew(ScriptNode * newNode, const QPointF & scenePos);
+	void				spawnFromPrototype(ScriptNode * proto, const QPointF & scenePos);
+	void				dragMove(const QPointF & scenePos);
+	void				endDrag(const QPointF & scenePos);
+	ScriptDropSpot	*	dropSpotAt(const QPointF & scenePos, ScriptNodeItem * dragged = nullptr) const;
+
+	/// Resolves the "best" drop spot for a node at a scene position: a precise hit on an
+	/// accepting spot wins; otherwise the leftmost accepting empty slot of the formula under
+	/// the cursor; otherwise the topmost-then-leftmost accepting empty slot of the whole
+	/// constructor; otherwise nullptr (caller falls back to root insertion / gobble-left).
+	ScriptDropSpot	*	bestDropSpotFor(ScriptNode * node, const QPointF & scenePos, ScriptNodeItem * dragged) const;
+
+	void				collectDropSpots(QList<ScriptDropSpot*> & out) const;
+
+	signals:
+	void				modeChanged();
+	void				constructorJsonChanged();
+	void				rCodeChanged(QString rScript);
+	void				somethingChangedChanged();
+	void				lastCheckPassedChanged();
+	void				showGeneratedRCodeChanged();
+	void				columnsModelChanged();
+	void				filterErrorMsgChanged();
+	void				desiredMinimumHeightChanged();
+	void				canUndoChanged();
+	void				canRedoChanged();
+	void				deferUntilVisibleChanged();
+
+	/// Emitted when the user applies a valid formula. The surrounding window persists it
+	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
+	void				applyRequested(QString json, QString rCode);
+
+protected:
+	void				componentComplete() override;
+	void				geometryChange(const QRectF & newGeometry, const QRectF & oldGeometry) override;
+	void				itemChange(ItemChange change, const ItemChangeData & value) override;
+	void				keyPressEvent(QKeyEvent * event) override;
+
+private:
+	void				buildChrome();
+	void				buildOperatorBar();
+	void				buildColumnPalette();
+	void				buildFunctionPalette();
+	void				rebuildFormulaItems();
+	void				clearFormulaItems();
+	void				_clearPaletteChildren(QQuickItem * palette);
+	void				layoutAll();
+	void				layoutScriptArea();
+	void				refreshHint();
+	void				setHintText(const QString & text);
+	QString				defaultHintText() const;
+
+	void				clearHover();
+
+	/// Aborts an in-flight drag and cleans up its item (+ an unowned freshly-spawned node).
+	/// Called when a model reset or palette rebuild invalidates the drag context.
+	void				cancelDrag();
+
+	/// Restores the dirty flag after an undo/redo: the constructor is only dirty when the
+	/// tree differs from what was last applied (fromJson always emits changed()).
+	void				syncDirtyFlag();
+
+	void				updateBackgroundDecoration();
+
+	// One-pass column cache (name -> type/index/description); keeps columnType() and the
+	// palette/tooltip builds O(1) per column instead of O(N) scans per column.
+	void				rebuildColumnCache();
+	void				schedulePaletteRebuild();
+
+	ScriptConstructorModel					_model;
+
+	// Local undo for in-progress constructor editing (separate from the dataset's UndoStack).
+	QUndoStack								_localUndoStack;
+
+	QPointer<QQuickItem>					_background,
+											_backgroundDecoration,
+											_operatorBar,
+											_operatorBarContent,
+											_scriptArea,
+											_scriptColumn,
+											_trash,
+											_trashIcon,
+											_hint,
+											_rCodeDisplay;
+	QPointer<ScriptPalette>					_columnPalette,
+											_functionPalette;
+	std::map<ScriptNode*, ScriptNodeItem*>	_nodeItems;
+	QList<ScriptNodeItem*>					_rootItems;
+	qreal									_columnPaletteContentWidth	= 0,
+											_functionPaletteContentWidth = 0;
+
+	// Column lookup caches, rebuilt in a single pass (see rebuildColumnCache()).
+	QHash<QString,int>						_columnTypesByName,
+											_columnIndexByName;
+	QHash<QString,QString>					_columnDescriptionsByName;
+	int										_nameRole	= -1,
+											_typeRole	= -1;
+	bool									_paletteRebuildScheduled = false,
+											_hintRelayoutScheduled	 = false;
+
+	QAbstractItemModel				*		_columnsModel = nullptr;
+
+	// Natural size of the background watermark image, cached on load (the Image's
+	// sourceSize = 2x binding makes implicitWidth follow width afterwards).
+	QSizeF									_backgroundImageSize;
+
+	// Last emitted desiredMinimumHeight(); layoutAll() emits desiredMinimumHeightChanged()
+	// only when the value actually changes (the property itself is READ-only).
+	qreal									_lastDesiredMinimumHeight = -1;
+
+	// drag state
+	QPointer<ScriptNodeItem>				_draggedItem;
+	QPointF									_dragOffset;
+	QPointer<ScriptDropSpot>				_hoveredSpot;
+	bool									_dragIsNew = false;
+
+	bool									_somethingChanged	= false,
+											_lastCheckPassed		= true,
+											_showGeneratedRCode	= false,
+											_chromeBuilt			= false,
+											_deferUntilVisible		= false,
+											_componentComplete		= false;
+	QString									_lastAppliedJson;
+	QString									_filterErrorMsg;
+	QString									_hintText;
+};
+
+#endif // SCRIPTCONSTRUCTORVIEW_H

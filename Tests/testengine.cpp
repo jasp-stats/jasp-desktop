@@ -14,6 +14,13 @@
 #include "utilities/settings.h"
 #include "filter.h"
 #include "variableinfo.h"
+#include "scriptconstructormodel.h"
+#include "scriptnode.h"
+#include "scriptconstructorregistry.h"
+
+#include <json/json.h>
+#include <random>
+#include <functional>
 
 void TestEngine::initTestCase()
 {
@@ -442,6 +449,147 @@ void TestEngine::testVariableInfoPerFilter()
 
 	info.setProvider(defaultF);
 	QCOMPARE(info.rowCount(), rowCount);
+}
+
+void TestEngine::testScriptConstructorFuzz()
+{
+	QVERIFY2(_data,			"No dataset!");
+	QVERIFY2(_engines,		"No EngineSync!");
+	QVERIFY2(_engineRep,	"No EngineRepresentation!");
+
+	_engines->startStoppedEngine(_engineRep);
+
+	QSignalSpy spy(_engineRep, &EngineRepresentation::rCodeReturned);
+	QVERIFY2(spy.isValid(), "Spy is broken!");
+
+	// JSON node builders (mirror Tests/testall.cpp) restricted to complete, type-valid trees
+	// made from numeric/boolean literals only. Leaves are literals so the generated R depends
+	// only on base R (no columns, no JASP-only helper functions) and always evaluates without
+	// error: R turns bad arithmetic (x/0, log of a negative, sqrt of a negative) into Inf/NaN,
+	// not an error.
+	auto numNode = [](double v)
+	{
+		Json::Value j; j["nodeType"] = "Number"; j["value"] = v; return j;
+	};
+	auto boolNode = [](bool b)
+	{
+		Json::Value j; j["nodeType"] = "Boolean"; j["value"] = b ? "TRUE" : "FALSE"; return j;
+	};
+	auto opNode = [](const std::string & op, const Json::Value & l, const Json::Value & r)
+	{
+		Json::Value j; j["nodeType"] = "Operator"; j["operator"] = op;
+		j["leftArgument"] = l; j["rightArgument"] = r; return j;
+	};
+	auto funcNode = [](const std::string & name, const std::vector<Json::Value> & args)
+	{
+		Json::Value j; j["nodeType"] = "Function"; j["functionName"] = name; j["arguments"] = Json::arrayValue;
+		for(const Json::Value & a : args)
+		{
+			Json::Value arg; arg["name"] = "x"; arg["dropKeys"] = Json::arrayValue; arg["argument"] = a;
+			j["arguments"].append(arg);
+		}
+		return j;
+	};
+
+	static const std::vector<std::string> arithOps	= {"+", "-", "*", "/", "^", "%%"};
+	static const std::vector<std::string> compareOps	= {"==", "!=", "<", "<=", ">", ">="};
+	// Base-R numeric functions that accept a single numeric argument and return a number.
+	static const std::vector<std::string> unaryNumFuncs	= {"abs", "sqrt", "sign", "exp", "log", "log2", "log10", "mean", "sd", "var", "sum", "prod", "min", "max", "median"};
+
+	std::function<Json::Value(std::mt19937 &, int)> makeNumber = [&](std::mt19937 & rng, int depth) -> Json::Value
+	{
+		std::uniform_int_distribution<int> kind(0, 99);
+		std::uniform_real_distribution<double> val(1.0, 50.0);
+		std::uniform_int_distribution<int> arithPick(0, static_cast<int>(arithOps.size()) - 1);
+		std::uniform_int_distribution<int> funcPick(0, static_cast<int>(unaryNumFuncs.size()) - 1);
+
+		if(depth <= 0)
+			return numNode(val(rng));
+
+		int k = kind(rng);
+		if(k < 30) return numNode(val(rng));
+		if(k < 65) return opNode(arithOps[arithPick(rng)], makeNumber(rng, depth - 1), makeNumber(rng, depth - 1));
+		if(k < 80)
+		{
+			const std::string & fn = unaryNumFuncs[funcPick(rng)];
+			return funcNode(fn, {makeNumber(rng, depth - 1)});
+		}
+		// round needs a numeric "n" as well.
+		return funcNode("round", {makeNumber(rng, depth - 1), numNode(std::uniform_int_distribution<int>(0, 3)(rng))});
+	};
+
+	std::function<Json::Value(std::mt19937 &, int)> makeBoolean = [&](std::mt19937 & rng, int depth) -> Json::Value
+	{
+		std::uniform_int_distribution<int> kind(0, 99);
+		std::uniform_int_distribution<int> cmpPick(0, static_cast<int>(compareOps.size()) - 1);
+
+		if(depth <= 0)
+			return boolNode(kind(rng) % 2 == 0);
+
+		int k = kind(rng);
+		if(k < 25) return boolNode(k % 2 == 0);
+		if(k < 60) return opNode(compareOps[cmpPick(rng)], makeNumber(rng, depth - 1), makeNumber(rng, depth - 1));
+		if(k < 85) return opNode(k % 2 == 0 ? "&" : "|", makeBoolean(rng, depth - 1), makeBoolean(rng, depth - 1));
+		return funcNode("!", {makeBoolean(rng, depth - 1)});
+	};
+
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::ComputedColumn);
+
+	int requestId = 0;
+	const int cases = 40;
+
+	for(int seed = 0; seed < cases; seed++)
+	{
+		std::mt19937 rng(seed);
+
+		Json::Value tree;
+		tree["formulas"] = Json::arrayValue;
+		tree["formulas"].append(seed % 2 == 0 ? makeNumber(rng, 3) : makeBoolean(rng, 3));
+
+		model.fromJson(tree);
+		const std::string rCode = model.toR();
+
+		// jaspRCPP_evalRCode returns "null" for any non-string R result, which the engine treats
+		// as an error. Wrap the generated expression so it always yields a string: "OK" when it
+		// evaluates without error, "ERR" when R raises. This makes the distinction between a real
+		// evaluation error and a merely non-string (e.g. numeric) result explicit.
+		const std::string wrapped = "tryCatch({" + rCode + "; 'OK'}, error = function(e) 'ERR')";
+
+		_engines->sendRCode(_data->id(), tq(wrapped), requestId, false, "");
+
+		// Wait for the reply for our request id and confirm the R evaluated without error.
+		bool gotIt = false;
+		QString result;
+		const int target = requestId;
+
+		while(!gotIt && spy.wait(120000))
+		{
+			while(spy.count() > 0)
+			{
+				QVariantList response = spy.takeFirst();
+				if(response[1].toInt() == target)
+				{
+					gotIt	= true;
+					result	= response[0].toString();
+				}
+			}
+		}
+
+		if(!gotIt)
+		{
+			const std::string msg = "No R reply for request " + std::to_string(target) + " (seed " + std::to_string(seed) + "), rCode: " + rCode;
+			QFAIL(msg.c_str());
+		}
+
+		if(result != "OK")
+		{
+			const std::string msg = "Generated R evaluated with error (seed " + std::to_string(seed) + "): " + rCode + " (result: " + fq(result) + ")";
+			QFAIL(msg.c_str());
+		}
+
+		requestId++;
+	}
 }
 
 

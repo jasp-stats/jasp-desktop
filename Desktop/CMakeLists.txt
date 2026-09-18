@@ -158,9 +158,11 @@ target_link_libraries(
     Qt::Xml
     Qt::Sql
     Qt::Quick
+    Qt::QuickPrivate
     Qt::QuickLayouts
     Qt::QuickControls2
     Qt::QuickControls2Impl
+    Qt::QuickTemplates2Private
     Qt::QuickWidgets
     Qt::QuickTemplates2
     Qt::DBus
@@ -202,6 +204,13 @@ target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)
 if(INTERACTIVE_PLOTS)
 target_compile_definitions(JASPDesktopLib PUBLIC INTERACTIVE_PLOTS)
 target_compile_definitions(JASP           PUBLIC INTERACTIVE_PLOTS)
+endif()
+
+# Test hooks (e.g. the ScriptTrashItem debug counters) change class layout, so the define must
+# be identical for JASPDesktopLib itself and every consumer: set it PUBLIC here (only when
+# tests are built) rather than on individual test executables.
+if(BUILD_TESTS)
+target_compile_definitions(JASPDesktopLib PUBLIC JASP_TESTHOOKS)
 endif()
 
 if(NOT WINDOWS)
