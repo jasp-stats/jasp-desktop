@@ -753,7 +753,10 @@ void ScriptNodeItem::rebuild()
 	switch(_node->type())
 	{
 	case ScriptNode::Type::Number:
-		makeLiteralInput(QString::number(static_cast<ScriptNodeLiteral*>(_node.data())->numberValue()));
+		// The literal's R text is shortest-round-trip, so the editor shows exactly the value that is
+		// applied and parses back to it (QString::number would round to 6 significant digits, and the
+		// rounded text is written back into the model when the editor loses focus).
+		makeLiteralInput(tq(_node->toR()));
 		break;
 	case ScriptNode::Type::String:
 		makeLiteralInput(QString::fromStdString(static_cast<ScriptNodeLiteral*>(_node.data())->stringValue()));
@@ -1331,7 +1334,7 @@ void ScriptNodeItem::onLiteralEditFinished()
 		if(ok)
 			_view->model()->setLiteralNumber(static_cast<ScriptNodeLiteral*>(_node.data()), value);
 		else
-			input->setProperty("text", QString::number(static_cast<ScriptNodeLiteral*>(_node.data())->numberValue()));
+			input->setProperty("text", tq(_node->toR()));
 	}
 	else if(_node->type() == ScriptNode::Type::String)
 	{

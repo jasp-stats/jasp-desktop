@@ -109,6 +109,10 @@ private slots:
 	// the computed-column transforms, cut/replaceNA or the random-data generators.
 	void	testScriptConstructorFunctionPalette();
 
+	// A number literal's inline editor shows the value in full, and committing it unchanged (a
+	// focus loss) keeps the exact value.
+	void	testScriptConstructorNumberLiteralText();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

@@ -2542,5 +2542,35 @@ void TestAll::testScriptConstructorFunctionPalette()
 	QCOMPARE(paletteNames(ScriptConstructorMode::ComputedDataSet),	columnPalette);
 }
 
+void TestAll::testScriptConstructorNumberLiteralText()
+{
+	ScriptNodeLiteral		lit(ScriptNode::Type::Number);	// outlives the view and its items
+	ScriptConstructorView	view;
+
+	const std::vector<std::pair<double, QString>> cases = {
+		{ 123456789,		"123456789"		},
+		{ 0.123456789,	"0.123456789"	},
+		{ -2.5,			"-2.5"				},
+		{ 3,				"3"					}
+	};
+
+	for(const auto & [value, text] : cases)
+	{
+		lit.setNumberValue(value);
+		ScriptNodeItem * item = view.makeNodeItem(&lit, &view);
+
+		QQuickItem * input = nullptr;
+		for(QQuickItem * child : item->childItems())
+			if(QByteArray(child->metaObject()->className()) == "QQuickTextInput")
+				input = child;
+		QVERIFY(input);
+		QCOMPARE(input->property("text").toString(), text);
+
+		// The editor writes its text back into the model when it loses focus.
+		QMetaObject::invokeMethod(input, "editingFinished");
+		QVERIFY2(lit.numberValue() == value, qPrintable(QString("%1 became %2").arg(text).arg(lit.numberValue(), 0, 'g', 17)));
+	}
+}
+
 
 QTEST_MAIN(TestAll)
