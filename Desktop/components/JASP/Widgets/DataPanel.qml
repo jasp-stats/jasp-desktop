@@ -12,8 +12,8 @@ Rectangle
 
 	// FilterWindow and VariablesWindow are mutually exclusive: opening one closes the other
 	// through its usual apply/discard route. The confirm dialogs are modal (blocking), so the
-	// outcome is known as soon as requestClose() returns: if closing the Filter was cancelled
-	// we also abort the Variables open we just triggered, so the two are never both visible.
+	// outcome is known as soon as requestClose() returns: if closing one was cancelled we also
+	// abort the open of the other we just triggered, so the two are never both visible.
 	Connections
 	{
 		target: filterModel
@@ -21,8 +21,8 @@ Rectangle
 		{
 			if(!filterModel.filterVisible)
 				return
-			if(columnModel.visible && variablesWindow)
-				variablesWindow.requestClose()
+			if(columnModel.visible && variablesWindow && !variablesWindow.requestClose())
+				filterModel.filterVisible = false	// the user cancelled, so abort opening the FilterWindow
 		}
 	}
 
