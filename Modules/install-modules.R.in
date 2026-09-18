@@ -121,7 +121,7 @@ if(length(remoteBundleURLS) > 0) {
 
     if(length(toInstallRemote) > 0) {
         installRemote <- function(remote) {
-            bundlePath <- file.path(BUNDLE_DOWNLOAD_DIR, basename(remote))
+            bundlePath <- file.path(BUNDLE_DOWNLOAD_DIR, bundleFileNames(remote))
             cat("Installing: ", bundlePath, "\n")
             jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
         }
