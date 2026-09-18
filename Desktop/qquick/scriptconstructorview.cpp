@@ -19,6 +19,10 @@
 #include <QHoverEvent>
 #include <algorithm>
 
+/// Width of the frame drawn around the script area, as in the old QML constructors
+/// (rectangularColumnContainer in FilterConstructor.qml / ComputedColumnsConstructor.qml).
+static constexpr qreal scriptAreaBorderWidth = 1.0;
+
 ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 	: QQuickItem(parent)
 {
@@ -536,9 +540,15 @@ void ScriptConstructorView::buildChrome()
 	_functionPalette = new ScriptPalette(this);
 	_functionPalette->setParentItem(this);
 
-	_scriptArea = new QQuickItem(this);
-	_scriptArea->setClip(true);
-	_scriptArea->setParentItem(this);
+	// The drop area is framed, like rectangularColumnContainer in the old constructors:
+	// a transparent rectangle with a thin border around the script column and the trash.
+	QQuickRectangle * scriptArea = new QQuickRectangle();
+	scriptArea->setParentItem(this);
+	scriptArea->setClip(true);
+	scriptArea->setColor(Qt::transparent);
+	scriptArea->border()->setWidth(scriptAreaBorderWidth);
+	scriptArea->border()->setColor(theme ? theme->uiBorder() : QColor("grey"));
+	_scriptArea = scriptArea;
 
 	_scriptColumn = new QQuickItem(_scriptArea);
 	_scriptColumn->setParentItem(_scriptArea);
@@ -549,16 +559,12 @@ void ScriptConstructorView::buildChrome()
 	trash->setZ(10);
 	_trash = trash;
 
-	// Trash icon centred inside the drop zone.
+	// Trash icon; centred inside the drop zone by layoutAll(), which owns the trash geometry.
 	ScriptImage * icon = new ScriptImage(this); // `this` for the QQmlContext; _trash is C++-created and has none
 	icon->setParentItem(_trash);
 	icon->setSource(QUrl((theme ? theme->iconPath() : QString()) + "/trashcan.png")); // same string->QUrl conversion as the old property write
 	icon->setAcceptedMouseButtons(Qt::NoButton);
-	qreal dim = blockDim() * 1.6;
-	icon->setWidth(dim);
-	icon->setHeight(dim);
-	icon->setX((blockDim() * 3 - dim) / 2);
-	icon->setY((blockDim() * 3 - dim) / 2);
+	_trashIcon = icon;
 
 	QQuickText * hint = new QQuickText();
 	hint->setParentItem(this);
@@ -571,6 +577,23 @@ void ScriptConstructorView::buildChrome()
 	hint->setFont(f);
 	hint->setZ(5);
 	_hint = hint;
+
+	// The hint wraps, so its height changes with its text and with the width it gets. Re-run the
+	// layout when that happens, or a message that grew to two lines would run under the script
+	// area. Queued, because this also fires from inside layoutAll() (which sets the hint's width).
+	connect(hint, &QQuickText::contentHeightChanged, this, [this]()
+	{
+		if(!_chromeBuilt || _hintRelayoutScheduled)
+			return;
+
+		_hintRelayoutScheduled = true;
+		QTimer::singleShot(0, this, [this]()
+		{
+			_hintRelayoutScheduled = false;
+			if(_chromeBuilt)
+				layoutAll();
+		});
+	});
 
 	// Generated R code display (computed-column mode, toggled via showGeneratedRCode).
 	QQuickText * rCodeDisplay = new QQuickText();
@@ -597,10 +620,11 @@ ScriptNodeItem * ScriptConstructorView::makeNodeItem(ScriptNode * node, QQuickIt
 	return item;
 }
 
-ScriptNodeItem * ScriptConstructorView::addPrototypeItem(ScriptNode * proto, QQuickItem * content)
+ScriptNodeItem * ScriptConstructorView::addPrototypeItem(ScriptNode * proto, QQuickItem * content, qreal maxTextWidth)
 {
 	ScriptNodeItem * item = new ScriptNodeItem(this, proto, content);
 	item->setAcceptsDrops(false);
+	item->setMaxTextWidth(maxTextWidth);
 	item->rebuild();
 	return item;
 }
@@ -658,17 +682,39 @@ void ScriptConstructorView::layoutAll()
 	qreal w = width(), h = height();
 	qreal barH = blockDim() * 1.75;
 
-	// Widen the palettes to fit their widest entry (autosize), but never beyond a third of the
-	// view so the script area keeps enough room.
-	qreal paletteW = blockDim() * 8;
-	paletteW = std::max(paletteW, std::max(_columnPaletteContentWidth, _functionPaletteContentWidth));
-	paletteW = std::min(paletteW, w / 3.0);
+	// Each palette autosizes to its own widest entry: the columns on the left are usually much
+	// narrower than the functions on the right, and one shared width left a wide empty gap
+	// between the column names and the script area. Both keep a floor (so a dataset of very
+	// short names still reads as a column) and a cap (so the script area keeps its room).
+	auto paletteWidth = [&](qreal contentWidth)
+	{
+		return std::min(std::max(contentWidth, blockDim() * 4), w / 3.0);
+	};
 
-	qreal hintH = _hint ? fontPixelSize() + 2 * spacing() : 0;
+	// Both palettes keep a margin towards the script area, so that neither the widest column name
+	// nor the function entries touch its border. The function palette keeps the same margin on
+	// its right as well, so its widest entry does not run into the edge of the window.
+	const qreal paletteMargin = blockDim() / 2;
+
+	qreal columnPaletteW	= paletteWidth(_columnPaletteContentWidth + paletteMargin),
+		  functionPaletteW	= paletteWidth(_functionPaletteContentWidth + 2 * paletteMargin);
+
+	// The hint wraps, so reserve the height it actually needs instead of a single line: the
+	// script area above it then shrinks to match, rather than the text running underneath it.
+	// Its width does not depend on its height, so it can be set here already.
+	qreal hintH = 0;
+	if(_hint)
+	{
+		_hint->setWidth(std::max(qreal(0), w - columnPaletteW - functionPaletteW));
+		hintH = std::max(fontPixelSize(), _hint->property("contentHeight").toReal()) + 2 * spacing();
+	}
 
 	// Reserve space at the bottom for the generated-R display (computed columns only).
 	bool showRCode = _showGeneratedRCode && _model.mode() != ScriptConstructorMode::Filter;
 	qreal rCodeH = (showRCode && _rCodeDisplay) ? fontPixelSize() * 2 + spacing() * 2 : 0;
+
+	// What is left for the operator bar's siblings once the bottom rows have taken their share.
+	const qreal contentH = std::max(qreal(0), h - barH - hintH - rCodeH);
 
 	if(_background)
 	{
@@ -731,40 +777,44 @@ void ScriptConstructorView::layoutAll()
 	{
 		_columnPalette->setX(0);
 		_columnPalette->setY(barH);
-		_columnPalette->setWidth(paletteW);
-		_columnPalette->setHeight(h - barH - hintH - rCodeH);
+		_columnPalette->setWidth(columnPaletteW);
+		_columnPalette->setHeight(contentH);
 	}
 
 	if(_functionPalette)
 	{
-		_functionPalette->setX(w - paletteW);
+		_functionPalette->setX(w - functionPaletteW);
 		_functionPalette->setY(barH);
-		_functionPalette->setWidth(paletteW);
-		_functionPalette->setHeight(h - barH - hintH - rCodeH);
+		_functionPalette->setWidth(functionPaletteW);
+		_functionPalette->setHeight(contentH);
+
+		// Indent the entries; the palette only ever scrolls vertically, so its content keeps this x.
+		if(QQuickItem * content = _functionPalette->content())
+			content->setX(paletteMargin);
 	}
 
 	if(_scriptArea)
 	{
-		_scriptArea->setX(paletteW);
+		_scriptArea->setX(columnPaletteW);
 		_scriptArea->setY(barH);
-		_scriptArea->setWidth(w - 2 * paletteW);
-		_scriptArea->setHeight(h - barH - hintH - rCodeH);
+		_scriptArea->setWidth(w - columnPaletteW - functionPaletteW);
+		_scriptArea->setHeight(contentH);
 	}
 
 	if(_hint)
 	{
-		_hint->setX(paletteW);
+		_hint->setX(columnPaletteW);
 		_hint->setY(h - hintH - rCodeH);
-		_hint->setWidth(w - 2 * paletteW);
+		_hint->setWidth(w - columnPaletteW - functionPaletteW);
 		_hint->setHeight(hintH);
 	}
 
 	if(_rCodeDisplay)
 	{
 		_rCodeDisplay->setVisible(showRCode);
-		_rCodeDisplay->setX(paletteW);
+		_rCodeDisplay->setX(columnPaletteW);
 		_rCodeDisplay->setY(h - rCodeH);
-		_rCodeDisplay->setWidth(w - 2 * paletteW);
+		_rCodeDisplay->setWidth(w - columnPaletteW - functionPaletteW);
 		_rCodeDisplay->setHeight(rCodeH);
 	}
 
@@ -775,6 +825,17 @@ void ScriptConstructorView::layoutAll()
 		_trash->setHeight(trashDim);
 		_trash->setX(_scriptArea->width() - trashDim - spacing());
 		_trash->setY(_scriptArea->height() - trashDim - spacing());
+
+		// Icon centred in the drop zone, at the 0.9 padding of the old DropTrash.qml
+		// (PreserveAspectFit then paints it at the icon's own aspect, as it did before).
+		if(_trashIcon)
+		{
+			qreal iconDim = trashDim * 0.9;
+			_trashIcon->setWidth(iconDim);
+			_trashIcon->setHeight(iconDim);
+			_trashIcon->setX((trashDim - iconDim) / 2);
+			_trashIcon->setY((trashDim - iconDim) / 2);
+		}
 	}
 
 	layoutScriptArea();
@@ -806,7 +867,10 @@ void ScriptConstructorView::layoutScriptArea()
 		y += item->preferredHeight() + spacing() * 2;
 	}
 
-	_scriptColumn->setWidth(_scriptArea ? _scriptArea->width() : width());
+	// Inset by the frame so snippets don't sit on the script area's border.
+	_scriptColumn->setX(scriptAreaBorderWidth);
+	_scriptColumn->setY(scriptAreaBorderWidth);
+	_scriptColumn->setWidth((_scriptArea ? _scriptArea->width() : width()) - 2 * scriptAreaBorderWidth);
 	_scriptColumn->setHeight(y);
 }
 
@@ -983,6 +1047,14 @@ void ScriptConstructorView::buildColumnPalette()
 	if(!model)
 		return;
 
+	// One very long column name must not widen the whole palette: cap it at the theme's
+	// text-field width and elide the rest. ScriptNodeItem moves an elided name into its tooltip,
+	// so the full name stays reachable. A column item is icon + spacing + name, and
+	// buildColumnPalette pads the content by spacing() on either side.
+	JaspTheme  *	theme		= JaspTheme::currentTheme();
+	const qreal		maxItemW	= (theme ? theme->textFieldWidth() : blockDim() * 10) - spacing() * 2;
+	const qreal		maxTextW	= std::max(blockDim(), maxItemW - blockDim() - spacing());
+
 	qreal maxW = 0;
 	qreal y = spacing();
 	int rows = model->rowCount();
@@ -996,7 +1068,7 @@ void ScriptConstructorView::buildColumnPalette()
 		if(name.isEmpty())
 			continue;
 
-		ScriptNodeItem * item = addPrototypeItem(new ScriptNodeColumn(fq(name)), content);
+		ScriptNodeItem * item = addPrototypeItem(new ScriptNodeColumn(fq(name)), content, maxTextW);
 		item->setX(spacing());
 		item->setY(y);
 		y += item->preferredHeight() + spacing();
