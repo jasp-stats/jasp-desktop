@@ -46,9 +46,22 @@ if(length(remoteBundleURLS) > 0) {
     if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
         tryCatch({
             remoteBundleDownloaded <- read.delim("@MODULES_BINARY_PATH@/bundles-downloaded.txt", header = FALSE)[[1]]
-            remoteBundleDownloaded <- remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleDownloaded)))]
+            remoteBundleDownloaded <- remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, bundleFileNames(remoteBundleDownloaded)))]
         }, error = function(e) { remoteBundleDownloaded <- c() })
     }
+    #draft-release assets are only reachable through api.github.com asset urls
+    #and need authentication; their explicit "name" says what the file should be
+    #called (the api url basename is just the asset id)
+    githubToken <- Sys.getenv("BUNDLE_PAT")
+    bundleFileName <- function(bundle) if (is.null(bundle$name)) basename(bundle$url) else bundle$name
+    bundleFileNames <- function(urls) {
+        out <- basename(urls)
+        idx <- match(urls, remoteBundleURLS)
+        hit <- !is.na(idx)
+        out[hit] <- sapply(remoteBundles[idx[hit]], function(b) if (is.null(b$name)) basename(b$url) else b$name)
+        out
+    }
+
     toDownload <- remoteBundles[!remoteBundleURLS %in% remoteBundleDownloaded]
 
     #download and write a file with all our successes
@@ -57,8 +70,13 @@ if(length(remoteBundleURLS) > 0) {
         cat("We will download: ", paste(toDownload, sep=' '), '\n')
         download <- function(bundle) {
             req <- tryCatch({
-                path <- file.path(BUNDLE_DOWNLOAD_DIR, basename(bundle$url))
-                res <- curl::curl_fetch_disk(bundle$url, path)
+                path <- file.path(BUNDLE_DOWNLOAD_DIR, bundleFileName(bundle))
+                handle <- curl::new_handle()
+                if (nzchar(githubToken) && startsWith(bundle$url, "https://api.github.com/"))
+                    curl::handle_setheaders(handle,
+                        "Authorization" = paste("Bearer", githubToken),
+                        "Accept"        = "application/octet-stream")
+                res <- curl::curl_fetch_disk(bundle$url, path, handle = handle)
                 if(sha256sum(files=path) != bundle$checksum) {
                     file.remove(path)
                     warning(paste0("Checksum of: ", bundle$url, "Does not match. Skipping"))
@@ -66,8 +84,11 @@ if(length(remoteBundleURLS) > 0) {
                 }
                 res 
             }, error = function(e) { print(e); list(status_code=404) })
-            if(req$status_code != 200)
+            if(req$status_code != 200) {
+                if(startsWith(bundle$url, "https://api.github.com/") && !nzchar(githubToken))
+                    cat("Hint: api.github.com asset url failed and BUNDLE_PAT is not set -- draft-release bundles need it\n")
                 return(FALSE)
+            }
             TRUE
         }
         res <- sapply(toDownload, download)
@@ -83,13 +104,13 @@ if(length(remoteBundleURLS) > 0) {
 
         #clean up the download folder a bit by removing all bundles we where not instructed to download
         files <- list.files(BUNDLE_DOWNLOAD_DIR)
-        leftover <- files[! files %in% basename(downloaded)]
+        leftover <- files[! files %in% bundleFileNames(downloaded)]
         file.remove(file.path(BUNDLE_DOWNLOAD_DIR, leftover))
     }
 
 
     # use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
-    toInstallRemoteTotal <- remoteBundleURLS[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleURLS)))]
+    toInstallRemoteTotal <- remoteBundleURLS[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, bundleFileNames(remoteBundleURLS)))]
     prevInstalledRemote <- c()
     if(file.exists("@MODULES_BINARY_PATH@/remote-bundles-installed.txt")) {
         tryCatch({
