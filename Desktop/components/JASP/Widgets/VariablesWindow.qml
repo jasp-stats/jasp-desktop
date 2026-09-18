@@ -31,12 +31,16 @@ FocusScope
 	id:			variablesContainer
 	visible:	columnModel.visible
 
-	// Close through the usual apply/discard route (guard unsaved computed-column edits),
-	// then hide. Used both by the close button and by the Filter/Variables exclusivity logic.
+	// Close through the usual apply/discard/cancel route (guard unsaved computed-column edits):
+	// stays open when the user cancels or the edits cannot be applied, and returns whether it
+	// closed. Used by both close buttons and by the Filter/Variables exclusivity logic.
 	function requestClose()
 	{
-		computedColumnWindow.askIfChangedOrClose()
+		if(!computedColumnWindow.askIfChangedOrClose())
+			return false
+
 		columnModel.visible = false
+		return true
 	}
 
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)

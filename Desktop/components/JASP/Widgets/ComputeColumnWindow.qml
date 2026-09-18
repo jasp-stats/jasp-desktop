@@ -57,25 +57,35 @@ FocusScope
 		z:				-1
 	}
 
+	// Returns whether the code was applied (an incomplete constructor formula is not).
 	function applyComputedColumn()
 	{
 		if(!columnModel.column)
-			return
+			return false
 
 		if(isRCode)
 			columnModel.setComputedColumnCode(computeColumnEdit.text, columnModel.column.constructorJson)
 		else
 		{
 			computedColumnConstructor.forceActiveFocus();
-			if(computedColumnConstructor.checkAndApply())
-				columnModel.setComputedColumnCode(computedColumnConstructor.rCode, computedColumnConstructor.returnFilterJSON())
+			if(!computedColumnConstructor.checkAndApply())
+				return false
+
+			columnModel.setComputedColumnCode(computedColumnConstructor.rCode, computedColumnConstructor.returnFilterJSON())
 		}
+
+		return true
 	}
 
+	// Asks what to do with unapplied edits (the dialog is blocking) and returns whether the window
+	// may close: not after Cancel, nor when the edits could not be applied.
 	function askIfChangedOrClose()
 	{
-		if(columnModel.column && columnModel.column.isComputed && columnModel.computedTypeEditable && computedColumnContainer.changed)	
-			saveDialog.open()
+		if(!(columnModel.column && columnModel.column.isComputed && columnModel.computedTypeEditable && computedColumnContainer.changed))
+			return true
+
+		saveDialog.open()
+		return saveDialog.resolved
 	}
 
 	Item
@@ -295,12 +305,16 @@ FocusScope
 			id:			saveDialog
 			title:		qsTr("Would you like to save your changes to the Computed Column?")
 			text:		qsTr("Your changes will be lost if you don't save them.")
-			onSave:
-			{
-				computedColumnContainer.applyComputedColumn()
-			}
+
+			// Whether the last answer dealt with the edits (applied or discarded them); see askIfChangedOrClose().
+			property bool resolved: false
+
+			onCancel:	resolved = false
+			onSave:		resolved = computedColumnContainer.applyComputedColumn()
 			onDiscard:
 			{
+				resolved = true
+
 				//Revert any unsaved edits back to whatever is stored on the column.
 				if(columnModel.column)
 				{
