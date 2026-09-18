@@ -407,7 +407,7 @@ FocusScope
 		Text
 		{
 			id:				version
-			text:			mainWindow.versionString()
+			text:			qsTr("JASP 2026.0") //flavor text, the real version is set in the toplevel CMakeLists.txt
 			color:			jaspTheme.white
 			font.family:	jaspTheme.font.family
 			font.pixelSize: 14 * welcomeRoot.scaler
