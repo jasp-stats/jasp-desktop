@@ -117,6 +117,9 @@ private slots:
 	// the condition (boolean) in a filter, but the values to split (number) in a computed column.
 	void	testScriptConstructorModeDropKeys();
 
+	// ==/!= compare like with like: once one side is filled, the other only accepts what it offers.
+	void	testScriptConstructorMirroredKeys();
+
 	// Boots the real QML MainWindow headlessly, loads a dataset and shows the filter window
 	// (which instantiates the C++ ScriptConstructorView). Serves as a profiling harness for
 	// the ScriptConstructor initialization path (use with JASP_TIMER_USED=ON) and as a

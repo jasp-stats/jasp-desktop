@@ -1991,6 +1991,14 @@ namespace
 			s.pop_back();
 		return s;
 	}
+
+	QStringList keyList(const stringvec & keys)
+	{
+		QStringList out;
+		for(const std::string & k : keys)
+			out << tq(k);
+		return out;
+	}
 }
 
 void TestAll::testScriptConstructorDefaultFilterJson()
@@ -2576,19 +2584,11 @@ void TestAll::testScriptConstructorModeDropKeys()
 {
 	QVERIFY(_newPkgWithDataSet());
 
-	auto keys = [](const stringvec & v)
-	{
-		QStringList out;
-		for(const std::string & k : v)
-			out << tq(k);
-		return out;
-	};
-
 	ScriptNodeOperator split("%|%", false);
-	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::Filter)),			QStringList({"boolean"}));
-	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::ComputedColumn)),	QStringList({"number"}));
-	QCOMPARE(keys(split.slotDropKeys(0, ScriptConstructorMode::ComputedDataSet)),	QStringList({"number"}));
-	QCOMPARE(keys(split.slotDropKeys(1, ScriptConstructorMode::ComputedColumn)),	QStringList({"string", "boolean"}));
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::Filter)),			QStringList({"boolean"}));
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::ComputedColumn)),	QStringList({"number"}));
+	QCOMPARE(keyList(split.slotDropKeys(0, ScriptConstructorMode::ComputedDataSet)),	QStringList({"number"}));
+	QCOMPARE(keyList(split.slotDropKeys(1, ScriptConstructorMode::ComputedColumn)),	QStringList({"string", "boolean"}));
 
 	// A scale column dropped on a computed column's %|% fills its left slot and stays scale.
 	FixedColumnTypeProvider provider;
@@ -2601,6 +2601,44 @@ void TestAll::testScriptConstructorModeDropKeys()
 	model.insertNode(new ScriptNodeColumn("contNormal"),	DropTarget::none());
 	QCOMPARE(model.formulaCount(), 1);
 	QCOMPARE(model.toR(), std::string("(contNormal.scale %|% null)"));
+}
+
+void TestAll::testScriptConstructorMirroredKeys()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	const ScriptConstructorMode filter = ScriptConstructorMode::Filter;
+
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 1; // scale
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(filter);
+
+	// An empty == accepts anything on either side...
+	auto * eq = new ScriptNodeOperator("==", false);
+	model.insertNode(eq, DropTarget::root());
+	QCOMPARE(keyList(eq->slotDropKeys(0, filter)), QStringList({"boolean", "string", "number"}));
+
+	// ...but once the right side holds a string, the left side only takes strings.
+	auto * text = new ScriptNodeLiteral(ScriptNode::Type::String);
+	text->setStringValue("abc");
+	model.insertNode(text, DropTarget{DropTarget::Kind::OperatorRight, eq, 1, eq->slotDropKeys(1, filter), false, true});
+	QCOMPARE(keyList(eq->slotDropKeys(0, filter)), QStringList({"string"}));
+
+	ScriptNodeLiteral number(ScriptNode::Type::Number);
+	QVERIFY(!DropTarget({DropTarget::Kind::OperatorLeft, eq, 0, eq->slotDropKeys(0, filter), false, true}).accepts(&number, filter));
+
+	// A scale column still fits, as a type that compares with strings (like the old JASPColumn.qml).
+	model.insertNode(new ScriptNodeColumn("contNormal"), DropTarget::none());
+	QCOMPARE(model.toR(), std::string("(contNormal.ordinal == 'abc')\n"));
+
+	// The mirroring works in both directions: a scale column on the left of != wants numbers.
+	model.fromJson(formulas({opNode("!=", colNode("contNormal", -1, 1), Json::nullValue)}));
+	auto * ne = dynamic_cast<ScriptNodeOperator*>(model.formulaAt(0));
+	QVERIFY(ne);
+	QCOMPARE(keyList(ne->slotDropKeys(1, filter)), QStringList({"number"}));
 }
 
 
