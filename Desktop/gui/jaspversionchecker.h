@@ -49,7 +49,7 @@ private slots:
 private:
 	QNetworkReply			*	_networkReply			= nullptr;
 	//Do not do use https here because then, on windows, openSSL dll needs to be loaded and that blocks the whole application
-	QString						_urlVersion				= "http://static.jasp-stats.org/JASP-Version.txt",
+	QString						_urlVersion				= "http://static.jasp-stats.org/JASP-Version_1.txt",
 								_urlKnownIssues			= "http://static.jasp-stats.org/JASP-KnownIssues.json";
 	QNetworkAccessManager		_networkManager;
 };
