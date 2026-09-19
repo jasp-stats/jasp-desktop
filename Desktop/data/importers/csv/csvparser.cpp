@@ -62,6 +62,8 @@ bool CSVParser::processChar(char ch)
 		{
 		case '"':
 			_state = Quoted;
+			if (_quotedBegin == std::string::npos)
+				_quotedBegin = _currentField.size();
 			return false;
 		case '\r':
 			finishField();
@@ -117,6 +119,7 @@ bool CSVParser::processChar(char ch)
 		default:
 			_skipNextLF = false;
 			_state = Normal;
+			_quotedEnd = _currentField.size(); //the quote that got us here closed the quoted part
 			return true;
 		}
 	}
@@ -176,6 +179,7 @@ void CSVParser::reset()
 	while(!_gridQueue.empty())
 		_gridQueue.pop();
 	_rowFinished = false;
+	_quotedBegin = _quotedEnd = std::string::npos;
 }
 
 void CSVParser::setDelimiter(char delimiter)
@@ -191,8 +195,39 @@ void CSVParser::finishField()
 	{
 		replaceLineEndings(_currentField);
 	}
+
+	trimUnquotedPadding();
+
 	_currentRow.push_back(_currentField);
 	_currentField.clear();
+	_quotedBegin = _quotedEnd = std::string::npos;
+}
+
+//JASP has always read the whitespace around a field as padding rather than as data: a cell holding
+//nothing but spaces is a missing value, and " 1 " is the number 1. Whitespace *inside* quotes is
+//content the user deliberately asked for, so only the unquoted parts of the field are trimmed:
+//` a ` and ` "a" ` both give `a`, while `" a "` keeps its spaces.
+void CSVParser::trimUnquotedPadding()
+{
+	auto isPadding = [](char c) { return c == ' ' || c == '\t'; };
+
+	const bool		hadQuotes	= _quotedBegin != std::string::npos;
+	//An unterminated quote (at the end of the file) leaves _quotedEnd unset: treat the rest of the
+	//field as quoted, so nothing of it is eaten.
+	const size_t	quotedBegin	= hadQuotes ? _quotedBegin : _currentField.size(),
+					quotedEnd	= !hadQuotes						? 0
+								: _quotedEnd == std::string::npos	? _currentField.size()
+								: _quotedEnd;
+
+	size_t begin = 0;
+	while (begin < quotedBegin && isPadding(_currentField[begin]))
+		begin++;
+
+	size_t end = _currentField.size();
+	while (end > begin && end > quotedEnd && isPadding(_currentField[end - 1]))
+		end--;
+
+	_currentField = _currentField.substr(begin, end - begin);
 }
 
 void CSVParser::finishRow()
