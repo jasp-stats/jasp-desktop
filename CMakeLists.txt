@@ -69,10 +69,14 @@ add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP     TRUE)
 set(PRO               TRUE        CACHE BOOL   "Are we building the pro-version?")
 set(INTERACTIVE_PLOTS TRUE        CACHE BOOL "Interactive Plots")
+set(PRO_BUG_REPORT_URL ""        CACHE STRING "Custom URL for the 'Report bugs' link on the welcome page, leave empty to hide the link entirely")
 
 
 if(PRO)
   add_definitions(-DPRO)
+  if(NOT PRO_BUG_REPORT_URL STREQUAL "")
+    add_definitions(-DPRO_BUG_REPORT_URL="${PRO_BUG_REPORT_URL}")
+  endif()
 endif()
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)

@@ -447,7 +447,37 @@ FocusScope
 			bottom:	parent.bottom
 		}
 		
+		Text
+		{
+			id:						jaspUrlBug
+			visible:				mainWindow.bugReportUrl !== ""
+			text:					qsTr("Report bugs")
+			color:					jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			14 * welcomeRoot.scaler
+			font.weight:			Font.Normal
+			font.underline:			bugsMouseArea.containsMouse
+			renderType:				Text.QtRendering
+			textFormat:				Text.StyledText
 
+			anchors
+			{
+				left:				parent.left
+				bottom:				parent.bottom
+				margins:				10 * welcomeRoot.scaler
+			}
+			
+			JASPMouseAreaToolTipped
+			{
+				id:						bugsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(mainWindow.bugReportUrl);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.bugReportUrl
+			}
+		}
+		
 		Text
 		{
 			id:						jaspUrl

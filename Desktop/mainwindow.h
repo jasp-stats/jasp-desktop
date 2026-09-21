@@ -91,6 +91,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
+	Q_PROPERTY(QString		bugReportUrl		READ bugReportUrl														CONSTANT								)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
     Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
 	Q_PROPERTY(bool			chatWindowActive READ chatWindowActive											NOTIFY chatWindowActiveChanged	)
@@ -140,6 +141,14 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
+	QString				bugReportUrl()			const
+	{
+#ifdef PRO_BUG_REPORT_URL
+		return QStringLiteral(PRO_BUG_REPORT_URL);
+#else
+		return QString();
+#endif
+	}
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 
