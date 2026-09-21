@@ -155,7 +155,7 @@ private:
 	QString               m_lastToolCallId;   // active tool call receiving fragments
 	QJsonObject m_assistantDelta;
 
-	bool m_debugDumpEnabled = true;
+	bool m_debugDumpEnabled = false; // conversation dump to <tempDir>/ai-request.json, opt-in only — contains full chat incl. tool results
 	bool m_verboseLogging    = false;
 	bool m_streaming = false;
 	bool m_processingReply = false;   // true while inside onReplyFinished()
