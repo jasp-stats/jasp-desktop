@@ -474,7 +474,7 @@ int main(int argc, char *argv[])
 	{
 		Log::log() << "We need to recreate junctions!" << std::endl;
 
-		QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating Junctions, one moment please", "Creating Junctions, one moment please");
+		QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating Junctions, one moment please", "JASP is creating junctions (i.e., internal links between its folders) so the analysis modules can find the R files they share. This is a one-time step after unzipping and takes a minute.");
 		msgBox->show();
 
 		if(!createJunctions())
