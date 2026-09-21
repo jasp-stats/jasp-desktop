@@ -21,6 +21,7 @@
 #include "workspace.h"
 #include "undostack.h"
 #include "data/asyncloader.h"
+#include "data/importers/csv/csvparser.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -423,6 +424,36 @@ void TestAll::testFilterLabels()
 	col->setLabelAllowFilter(1, false);
 	QVERIFY2(controlLabel->filterAllows(),				qPrintable("'Control' label is filtered"));
 	QVERIFY2(!treatLabel->filterAllows(),				qPrintable("'Treat'label is not filtered"));
+}
+
+void TestAll::testCsvParserTrimsOnlyUnquotedPadding()
+{
+	CSVParser parser(',');
+
+	const CSVParser::Grid grid = parser.parse(std::string(
+		" a , b\t,\tc \n"
+		"\" a \",\" b\",\"c \"\n"
+		" \"a\" ,\t\"b\"\t,\"c\"\n"
+		"   ,\"\",\"  \"\n"
+		"\"a,b\",\"a\"\"b\",d\n"));
+
+	QCOMPARE(grid.size(), size_t(5));
+
+	//Unquoted padding is not data, so it goes.
+	QCOMPARE(grid[0], stringvec({"a", "b", "c"}));
+
+	//What sits inside the quotes is data, so it stays.
+	QCOMPARE(grid[1], stringvec({" a ", " b", "c "}));
+
+	//And padding around a quoted field is padding too.
+	QCOMPARE(grid[2], stringvec({"a", "b", "c"}));
+
+	//A field of nothing but whitespace is empty (which the importers read as a missing value), while
+	//quoted whitespace is a value of its own.
+	QCOMPARE(grid[3], stringvec({"", "", "  "}));
+
+	//None of this may disturb the quoting itself.
+	QCOMPARE(grid[4], stringvec({"a,b", "a\"b", "d"}));
 }
 
 // ---------- DataSetSyncer tests ----------
@@ -1468,6 +1499,21 @@ bool TestAll::_writeTextFile(const QString & path, const QByteArray & contents)
 	return file.write(contents) == contents.size();
 }
 
+//No modules are loaded in this backendless test process, so every module-backed analysis in a jasp
+//file reports that its module is missing and the batch run exits non-zero for that alone. Anything
+//else in the report means the chain under test actually went wrong.
+bool TestAll::_batchErrorsAreOnlyMissingModules(MainWindow * mw)
+{
+	for(const QString & error : mw->_batchResult.errors)
+		if(!error.contains("Module is not available"))
+		{
+			qWarning() << "Unexpected batch error:" << error;
+			return false;
+		}
+
+	return true;
+}
+
 //Constructs a full MainWindow the way the command line sees it and detaches exitSignal from
 //QApplication::exit (which the constructor wires up and which would quit the test event loop),
 //returning a spy on the signal instead. The spy is parented to nothing; delete it after use.
@@ -1491,7 +1537,10 @@ QSignalSpy * TestAll::_newMainWindowWithExitSpy(MainWindow *& mw)
 
 	try
 	{
-		mw = new MainWindow(nullptr);
+		//In batch mode, because that is what the command-line chain under test is: since #6318 the
+		//chain ends in finishBatchRun(), which returns right away when the window was not started
+		//for a batch, so without this nothing ever exits.
+		mw = new MainWindow(nullptr, true);
 	}
 	catch(const std::exception & e)
 	{
@@ -1544,9 +1593,11 @@ void TestAll::testCliSyncExportChainFromFreshWorkspace()
 
 	mw->open(jaspPath, syncCsv, "", false);
 
-	//The open -> synchronize chain should finish by exiting JASP with success:
+	//The open -> synchronize chain should finish by exiting JASP, and complain about nothing but the
+	//modules this process does not have:
 	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
-	QCOMPARE(exitSpy->first().first().toInt(), 0);
+	QVERIFY(_batchErrorsAreOnlyMissingModules(mw));
+	QCOMPARE(exitSpy->first().first().toInt(), mw->_batchResult.errors.isEmpty() ? 0 : 1);
 
 	//And the workspace should hold the synchronized data:
 	DataSet * synced = DataSetPackage::pkg()->dataSet();
@@ -1632,9 +1683,10 @@ void TestAll::testCliSyncExportWaitsForAnalysesToSettle()
 	connect(readySetter, &QTimer::timeout, this, [](){ DataSetPackage::pkg()->setAnalysesHTMLReady(); });
 	readySetter->start();
 
-	//The export finishing is what exits JASP with success:
+	//The export finishing is what exits JASP, again complaining about nothing but the missing modules:
 	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
-	QCOMPARE(exitSpy->first().first().toInt(), 0);
+	QVERIFY(_batchErrorsAreOnlyMissingModules(mw));
+	QCOMPARE(exitSpy->first().first().toInt(), mw->_batchResult.errors.isEmpty() ? 0 : 1);
 	QVERIFY(QFileInfo::exists(outHtml));
 
 	delete exitSpy;
@@ -1670,6 +1722,11 @@ void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 	//synchronization had succeeded:
 	QTRY_COMPARE_WITH_TIMEOUT(exitSpy->count(), 1, 30000);
 	QVERIFY(exitSpy->first().first().toInt() != 0);
+
+	//...and for the right reason: the modules missing from this backendless process already make the
+	//run non-zero, so check the import failure is actually in the report.
+	QVERIFY2(!mw->_batchResult.errors.filter("Could not import data").isEmpty(),
+			 qPrintable("Batch errors: " + mw->_batchResult.errors.join(" | ")));
 
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
