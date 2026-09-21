@@ -265,7 +265,7 @@ private:
 	RSyntax										*	_rSyntax						= nullptr;
 	bool											_showRButton					= false,
 													_developerMode					= false;
-	bool											_relaxInputConstraints			= true;
+	bool											_relaxInputConstraints			= false;
 	JASPControl*									_activeJASPControl				= nullptr;
 };
 

@@ -57,7 +57,8 @@ protected:
 
 private:
 	bool	_isInf(double value);
-	bool	_relaxDecimals = true;
+	/// When true, the decimals property is not enforced. This is only used when the values are not typed in by a user, but set programmatically (via the AI/RPC interface).
+	bool	_relaxDecimals = false;
 };
 
 #endif // JASPDOUBLEVALIDATOR_H
