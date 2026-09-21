@@ -59,7 +59,6 @@ FileMenu::FileMenu(QObject *parent) : FileEventRouter(parent)
 	_actionButtons->setEnabled(ActionButtons::SyncData,			false);
 	_actionButtons->setEnabled(ActionButtons::Close,			false);
 	_actionButtons->setEnabled(ActionButtons::Preferences,		true);
-	_actionButtons->setEnabled(ActionButtons::Contact,			true);
 	_actionButtons->setEnabled(ActionButtons::Community,		true);
 	_actionButtons->setEnabled(ActionButtons::About,			true);
 
@@ -456,12 +455,6 @@ void FileMenu::actionButtonClicked(const ActionButtons::FileOperation action)
 		showAboutRequest();
 		break;
 
-	case ActionButtons::FileOperation::Contact:
-		setVisible(false);
-		showContactRequest();
-		break;
-
-
 	case ActionButtons::FileOperation::Community:
 		setVisible(false);
 		showCommunity();
@@ -494,11 +487,6 @@ void FileMenu::resourceButtonClicked(const int buttonType)
 void FileMenu::showAboutRequest()
 {
 	emit showAbout();
-}
-
-void FileMenu::showContactRequest()
-{
-	emit showContact();
 }
 
 void FileMenu::setSyncRequest(const QString& path, bool waitForExistence)

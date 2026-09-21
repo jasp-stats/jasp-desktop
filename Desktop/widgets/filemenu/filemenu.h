@@ -120,7 +120,6 @@ signals:
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
 	void showAbout();
-	void showContact();
 	void showCommunity();
 	void modeChanged(FileEvent::FileMode mode);
 
@@ -138,7 +137,6 @@ public slots:
 	void showFileOpenMenu();
 	void resourceButtonClicked(const int buttonType);
 	void showAboutRequest();
-	void showContactRequest();
 	void analysesExportResults();
 	void refresh();
 	void close();

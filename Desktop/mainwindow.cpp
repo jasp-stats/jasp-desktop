@@ -383,79 +383,6 @@ const QString MainWindow::commUrlMembers() const
 	return Coop::communityMembersUrl();
 }
 
-const QString MainWindow::contactUrlFeatures() const
-{
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";
-#else
-	return "https://jasp-stats.org/request-feature";	
-#endif
-}
-
-const QString MainWindow::contactUrlBugs() const
-{
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";
-#else
-	return "https://jasp-stats.org/report-bug";
-#endif
-}
-
-const QString MainWindow::contactUrlCrashReport() const
-{
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
-#else
-	return "https://jasp-stats.org/report-bug";
-#endif
-}
-
-const QString MainWindow::contactText() const
-{
-#ifdef PRO
-	return tr(
-		"<h3>Contact</h3>\n"
-		"The following links will bring you directly to your company's own issue tracker.\n"
-		"<ul><li><a href=\"%1\">Feature requests</a>, when you would like something added to JASP.</li>"
-		"<li><a href=\"%2\">Bug reports</a>, when a feature in JASP doesn't work as it should.</li>"
-		"<li><a href=\"%3\">Crash reports</a>, for the unfortunate situation where JASP crashes.</li>"
-		"</ul>\n"
-		"There you will be in direct contact with the JASP software developers.\n"
-		"\n"
-		"You can find out more about JASP Services BV at <a href=\"%3\">our website</a>."
-	)
-	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
-	.arg(	contactUrlFeatures()
-	,		contactUrlBugs()
-	,		contactUrlCrashReport()
-	,		"https://jasp-services.com");
-#else
-	return tr(
-		"<h3>Contact</h3>\n"
-		"For <a href=\"%1\">feature requests</a> and <a href=\"%2\">bug reports</a>: please post an issue on our GitHub page, <a href=\"%3\">as explained here.</a>\n"
-		"This will bring you in direct contact with the JASP software developers.\n"
-		"\n"
-		"For statistical questions: please post an issue <a href=\"%4\">on the JASP Forum.</a>\n"
-		"\n"
-		"For information on the JASP Community: please read <a href=\"%5\">the information on the JASP website</a>\n"
-		"\n"
-		"For suggesting we add your institution to the <a href=\"%6\">JASP World Map</a> please send an email to <a href=\"%7\">communications@jasp-stats.org</a>.\n"
-		"\n"
-		"For individual donations: please visit <a href=\"%8\">the JASP website</a>.\n"
-	)
-	.replace("&", "&amp;").replace(", ", ",&nbsp;").replace("\n", "<br>")
-	.arg(	contactUrlFeatures()
-	,		contactUrlBugs()
-	,		"https://jasp-stats.org/2018/03/29/request-feature-report-bug-jasp/"
-	,		"https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor"
-	,		commUrl()
-	,		"https://jasp-stats.org/world-map/"
-	,		"mailto:communications@jasp-stats.org"
-	,		"https://jasp-stats.org/donate/");
-#endif
-}
-
-
 void MainWindow::showAnalysis()
 {
 	_ribbonModel->showStatistics();
@@ -602,7 +529,6 @@ void MainWindow::makeConnections()
 
 	connect(_fileMenu,				&FileMenu::exportSelected,							_resultsJsInterface,	&ResultsJsInterface::exportSelected							);
 	connect(_fileMenu,				&FileMenu::showAbout,								this,					&MainWindow::showAbout										);
-	connect(_fileMenu,				&FileMenu::showContact,								this,					&MainWindow::showContact									);
 	connect(_fileMenu,				&FileMenu::showCommunity,							this,					&MainWindow::showCommunity								);
 
 	connect(_odm,					&OnlineDataManager::progress,						this,					&MainWindow::setProgressStatus,								Qt::QueuedConnection);
@@ -685,7 +611,6 @@ void MainWindow::makeConnections()
 	connect(_languageModel,			&LanguageModel::languageChangeDone,					_package,				&DataSetPackage::languageChangeDone							);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_analyses,				&Analyses::languageChangedHandler,							Qt::QueuedConnection);
 	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				_helpModel,				&HelpModel::generateJavascript,								Qt::QueuedConnection);
-	connect(_languageModel,			&LanguageModel::currentLanguageChanged,				this,					&MainWindow::contactTextChanged,							Qt::QueuedConnection); //Probably not necessary but we can check once there actually are translations
 	connect(_languageModel,			&LanguageModel::stopEngines,						_engineSync,			&EngineSync::stopEngines									);
 	connect(_languageModel,			&LanguageModel::resumeEngines,						_engineSync,			&EngineSync::resumeEngines,									Qt::QueuedConnection);
 
@@ -820,7 +745,6 @@ void MainWindow::loadQML()
 
     Log::log() << "Loading HelpWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/HelpWindow.qml"));
 	Log::log() << "Loading AboutWindow"					<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/AboutWindow.qml"));
-	Log::log() << "Loading ContactWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/ContactWindow.qml"));
 	Log::log() << "Loading CommunityWindow"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CommunityWindow.qml"));
 	Log::log() << "Loading EncryptionSettingsWindow"	<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/EncryptionSettingsWindow.qml"));
 	Log::log() << "Loading CSV Preview"				<< std::endl; _qml->load(QUrl("qrc:///components/JASP/Widgets/CsvPreview.qml"));
@@ -2481,11 +2405,6 @@ void MainWindow::showAbout()
 	_aboutModel->setVisible(true);
 }
 
-void MainWindow::showContact()
-{
-	setContactVisible(true);
-}
-
 void MainWindow::showCommunity()
 {
 	setCommunityVisible(true);
@@ -2872,19 +2791,6 @@ QString MainWindow::versionString()
 		+	" (" + QString::fromStdString(AppInfo::getArchLabel()) + ")"
 #endif
 			;
-}
-
-bool MainWindow::contactVisible() const
-{
-	return _contactVisible;
-}
-
-void MainWindow::setContactVisible(bool newContactVisible)
-{
-	if (_contactVisible == newContactVisible)
-		return;
-	_contactVisible = newContactVisible;
-	emit contactVisibleChanged();
 }
 
 bool MainWindow::communityVisible() const

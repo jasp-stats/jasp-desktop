@@ -91,7 +91,6 @@ class MainWindow : public QObject
 	Q_PROPERTY(bool			analysesAvailable	READ analysesAvailable										NOTIFY analysesAvailableChanged		)
 	Q_PROPERTY(bool			welcomePageVisible	READ welcomePageVisible		WRITE setWelcomePageVisible		NOTIFY welcomePageVisibleChanged	)
 	Q_PROPERTY(QString		downloadNewJASPUrl	READ downloadNewJASPUrl		WRITE setDownloadNewJASPUrl		NOTIFY downloadNewJASPUrlChanged	)
-	Q_PROPERTY(bool			contactVisible		READ contactVisible			WRITE setContactVisible			NOTIFY contactVisibleChanged		)
 	Q_PROPERTY(bool			communityVisible	READ communityVisible		WRITE setCommunityVisible		NOTIFY communityVisibleChanged	)
     Q_PROPERTY(bool			aiChatVisible	READ aiChatVisible              WRITE setAiChatVisible                NOTIFY aiChatVisibleChanged	)
 	Q_PROPERTY(bool			chatWindowActive READ chatWindowActive											NOTIFY chatWindowActiveChanged	)
@@ -102,10 +101,6 @@ class MainWindow : public QObject
 	Q_PROPERTY(QStringList	commThankYou		READ commThankYou											CONSTANT							)
 	Q_PROPERTY(QString		commUrlMembers		READ commUrlMembers											CONSTANT							)
 	Q_PROPERTY(QString		commHowToSupport	READ commHowToSupport										CONSTANT							)
-	Q_PROPERTY(QString		contactUrlFeatures	READ contactUrlFeatures										CONSTANT							)
-	Q_PROPERTY(QString		contactUrlBugs		READ contactUrlBugs											CONSTANT							)
-	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
-	Q_PROPERTY(QString		questionsUrl		READ questionsUrl											CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
@@ -134,7 +129,6 @@ public:
 	bool				analysesAvailable()		const	{ return _analysesAvailable;	}
 	bool				welcomePageVisible()	const	{ return _welcomePageVisible;	}
 	bool				checkAutomaticSync()	const	{ return _checkAutomaticSync;	}
-	bool				contactVisible()		const;
 	bool				communityVisible()		const;
     bool            aiChatVisible()     const   {return _aiChatVisible; }
 	bool			chatWindowActive()	const	{ return _chatWindowActive; }
@@ -146,18 +140,6 @@ public:
 	const QString 		commHowToSupport()		const;
 	const QString 		commUrl()				const;
 	const QString 		commUrlMembers()		const;
-	const QString 		contactUrlBugs()		const;
-	const QString 		contactUrlFeatures()	const;
-	const QString 		contactUrlCrashReport()	const;
-	const QString 		contactText()			const;
-	const QString		questionsUrl()			const
-	{
-#ifdef PRO
-		return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new";
-#else
-		return "https://forum.cogsci.nl/index.php?p=/categories/jasp-bayesfactor";
-#endif
-	}
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 
@@ -175,7 +157,6 @@ public slots:
 	void setAnalysesAvailable(bool analysesAvailable);
 	void setDataAvailable(bool dataAvailable);
 	void setScreenPPI(int screenPPI);
-	void setContactVisible(bool newContactVisible);
 	void setCommunityVisible(bool newCommunityVisible);
 	void setDefaultWorkspaceEmptyValues();
     void setAiChatVisible(bool visible) { if(_aiChatVisible != visible) { _aiChatVisible = visible; emit aiChatVisibleChanged(); } }
@@ -187,7 +168,6 @@ public slots:
 	void clearModulesFoldersUser();
 
 	void showAbout();
-	void showContact();
 	void showCommunity();
 	void fatalError();
 
@@ -290,9 +270,7 @@ signals:
 	void closeWindows();
 	void hideDataPanel();
 	void exitSignal(				int			returnCode = 0) const;
-	void contactVisibleChanged();
 	void communityVisibleChanged();
-	void contactTextChanged();
 	void resizeData(int row, int col);
 	void qmlLoadedChanged();
     void aiChatVisibleChanged();
@@ -404,7 +382,6 @@ private:
 									_savingForClose			= false,
 									_welcomePageVisible		= true,
 									_checkAutomaticSync		= false,
-									_contactVisible			= false,
 									_communityVisible		= false,
                                     _hadFatalError			= false,
 									 _aiChatVisible			= false,

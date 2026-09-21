@@ -68,13 +68,11 @@ project(
 add_definitions(-DBUILDING_JASP)
 set(BUILDING_JASP     TRUE)
 set(PRO               TRUE        CACHE BOOL   "Are we building the pro-version?")
-set(PRO_COMPANY_NAME  "TDK-Electronics-AG"  CACHE STRING "What company is this for?")
 set(INTERACTIVE_PLOTS TRUE        CACHE BOOL "Interactive Plots")
 
 
 if(PRO)
   add_definitions(-DPRO)
-  add_definitions(-DPRO_COMPANY_NAME="${PRO_COMPANY_NAME}")
 endif()
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
