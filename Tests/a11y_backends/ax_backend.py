@@ -236,13 +236,58 @@ class AxBackend:
 
     # ── keyboard synthesis ───────────────────────────────────────────
     # AX cannot synthesize global keyboard events; use Quartz CGEvent
-    # (pyobjc) when needed. Kept minimal.
+    # (pyobjc) when needed.
+
+    # X-keysym (as used by the AT-SPI tests) -> macOS virtual key code
+    _KEYSYM_TO_VK = {
+        0xFF08: 51,  # BackSpace  kVK_Delete
+        0xFF09: 48,  # Tab        kVK_Tab
+        0xFF0D: 36,  # Return     kVK_Return
+        0xFF1B: 53,  # Escape     kVK_Escape
+        0xFF50: 115, # Home       kVK_Home
+        0xFF51: 123, # Left       kVK_LeftArrow
+        0xFF52: 126, # Up         kVK_UpArrow
+        0xFF53: 124, # Right      kVK_RightArrow
+        0xFF54: 125, # Down       kVK_DownArrow
+        0xFF55: 116, # Prior      kVK_PageUp
+        0xFF56: 121, # Next       kVK_PageDown
+        0xFF57: 119, # End        kVK_End
+        0xFFFF: 117, # Delete     kVK_ForwardDelete
+        0xFFE1: 56,  # Shift_L    kVK_Shift
+        0xFFE2: 60,  # Shift_R    kVK_RightShift
+        0xFFE3: 59,  # Control_L  kVK_Control
+        0xFFE4: 54,  # Control_R  kVK_RightControl
+        0xFFE7: 63,  # Super_L    kVK_Function
+        0xFFE9: 58,  # Alt_L      kVK_Option
+        0xFFEA: 61,  # Alt_R      kVK_RightOption
+    }
 
     def generate_key_event(self, keyval):
         try:
             import Quartz
-            if 0x20 <= keyval < 0x7F:
-                ch = chr(keyval).upper()
+
+            # X-keysym specials (Enter/Escape/arrows/modifiers...)
+            vk = self._KEYSYM_TO_VK.get(keyval)
+            if vk is not None:
+                flags = 0
+                if keyval in (0xFFE1, 0xFFE2):
+                    flags = Quartz.kCGEventFlagMaskShift
+                elif keyval in (0xFFE3, 0xFFE4):
+                    flags = Quartz.kCGEventFlagMaskControl
+                elif keyval in (0xFFE9, 0xFFEA):
+                    flags = Quartz.kCGEventFlagMaskAlternate
+                down = Quartz.CGEventCreateKeyboardEvent(None, vk, True)
+                if flags:
+                    Quartz.CGEventSetFlags(down, flags)
+                Quartz.CGEventPost(Quartz.kCGHIDEventTap, down)
+                up = Quartz.CGEventCreateKeyboardEvent(None, vk, False)
+                if flags:
+                    Quartz.CGEventSetFlags(up, flags)
+                Quartz.CGEventPost(Quartz.kCGHIDEventTap, up)
+                return True
+
+            if 0x20 <= keyval < 0x7F or keyval == 0x1B:
+                ch = chr(keyval)
                 code = Quartz.CGEventCreateKeyboardEvent(None, 0, True)
                 Quartz.CGEventKeyboardSetUnicodeString(code, 1, ch)
                 Quartz.CGEventPost(Quartz.kCGHIDEventTap, code)
