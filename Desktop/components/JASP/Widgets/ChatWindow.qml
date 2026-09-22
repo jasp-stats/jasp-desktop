@@ -23,6 +23,10 @@ Window
 
     onVisibleChanged:   {
         mainWindow.aiChatVisible = visible
+        // The greeting is a foreground act now: sent when the user opens the
+        // chat, not prefetched from config signals at startup. It no-ops on a
+        // non-empty conversation.
+        if (visible) aiBridge.sendIntroMessage()
     }
 
     onClosing: {
@@ -144,7 +148,7 @@ Window
                 buttonPadding: 4 * preferencesModel.uiScale
                 iconSource: jaspTheme.iconPath + "chat-clear.svg"
                 toolTip: qsTr("Reset conversation")
-                onClicked: { aiBridgeInterface.clearChat() }
+                onClicked: { aiBridgeInterface.clearChat(); aiBridge.sendIntroMessage() }
             }
 
             // Save button

@@ -1,5 +1,4 @@
 #include "preferencesmodel.h"
-#include "utilities/secretstore.h"
 #include "utilities/qutils.h"
 #include "utilities/settings.h"
 #include "utilities/messageforwarder.h"

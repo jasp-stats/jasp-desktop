@@ -1,6 +1,7 @@
 #include "aiconfigmodel.h"
 #include "utilities/settings.h"
-#include "utilities/secretstore.h"
+#include "auth/encryptedsettingsstore.h"
+#include "auth/secretvault.h"
 #include "utilities/qutils.h"
 #include "log.h"
 #include "dirs.h"
@@ -173,6 +174,8 @@ AIConfigModel::~AIConfigModel()
 QObject* AIConfigModel::providerListModel() { return m_providerListModel; }
 QObject* AIConfigModel::modelListModel()    { return m_modelListModel; }
 
+static QString normalizeAuthMode(const QString &mode);
+
 QVariantList AIConfigModel::providerValues() const
 {
 	QVariantList list;
@@ -269,6 +272,24 @@ void AIConfigModel::setCurrentProviderIndex(int i)
 	// index happens to be the same number, the actual model is different.
 	emitAllDerivedSignals();
 	saveUserData();
+
+	// The stored mode follows the provider kind: picking the sign-in provider
+	// moves the AI page to the sign-in tab, and picking a key provider moves it
+	// back. Equality-guarded, so this cannot loop with setAuthMode().
+	const bool providerIsOidc = normalizeAuthMode(prov.authMode) == QStringLiteral("oidc");
+	if (providerIsOidc != (authMode() == QStringLiteral("oidc")))
+	{
+		Settings::setValue(Settings::AI_AUTH_MODE,
+				providerIsOidc ? QStringLiteral("oidc") : QStringLiteral("apiKey"));
+		emit authModeChanged();
+	}
+
+	// Remember the last-used provider of each kind, so switching tabs and
+	// coming back restores the choice instead of falling through to whatever
+	// happens to sit last in the list.
+	Settings::setValue(providerIsOidc ? Settings::AI_LAST_OIDC_PROVIDER
+	                                 : Settings::AI_LAST_APIKEY_PROVIDER,
+	                  prov.id);
 }
 
 void AIConfigModel::setCurrentModelIndex(int i)
@@ -327,6 +348,13 @@ static QString normalizeAuthMode(const QString &mode)
 	return mode;
 }
 
+/// Vault key under which a provider's API key lives. Provider ids are stable
+/// and unique, shipped and user-created alike.
+static QString providerVaultKey(const QString &providerId)
+{
+	return SecretVault::key({ QStringLiteral("AI"), QStringLiteral("provider") }, providerId);
+}
+
 // ── Derived getters — read straight from m_providers ──────────
 
 QString AIConfigModel::currentEndpoint() const
@@ -342,8 +370,14 @@ QString AIConfigModel::currentApiKey() const
 {
 	const auto *prov = currentProvider();
 	if (!prov) return {};
-	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].apiKey.isEmpty())
-		return SecretStore::decryptValue(m_providerOverrides[prov->id].apiKey);
+
+	// API keys live in SecretVault — the OS credential store where there is
+	// one, the obfuscated settings fallback where there is not. They are no
+	// longer embedded in the aiUserProviders JSON.
+	const QByteArray stored = SecretVault::read(providerVaultKey(prov->id));
+	if (!stored.isEmpty())
+		return QString::fromUtf8(stored);
+
 	return prov->defaultApiKey;
 }
 
@@ -595,14 +629,78 @@ void AIConfigModel::setCurrentApiKey(const QString &v)
 	QString cur = currentApiKey();
 	if (cur == v) return;
 
-	ProviderOverrides ov;
-	if (m_providerOverrides.contains(prov->id))
-		ov = m_providerOverrides[prov->id];
-	ov.apiKey = v.isEmpty() ? QString() : SecretStore::encryptValue(v);
-	m_providerOverrides[prov->id] = ov;
+	// Default degrade policy on purpose: an API key is something the user
+	// typed and can revoke, so machines without an OS vault keep working via
+	// the fallback.
+	if (v.isEmpty())
+		SecretVault::remove(providerVaultKey(prov->id));
+	else
+		SecretVault::write(providerVaultKey(prov->id), v.toUtf8());
 
 	emit currentApiKeyChanged();
 	saveUserData();
+}
+
+QString AIConfigModel::authMode() const
+{
+	// Only two modes exist today; anything unknown — including the empty value
+	// before the setting ever existed — reads as the default.
+	return normalizeAuthMode(Settings::value(Settings::AI_AUTH_MODE).toString())
+	       == QStringLiteral("oidc") ? QStringLiteral("oidc") : QStringLiteral("apiKey");
+}
+
+void AIConfigModel::setAuthMode(const QString &v)
+{
+	const QString mode = normalizeAuthMode(v) == QStringLiteral("oidc")
+	                     ? QStringLiteral("oidc") : QStringLiteral("apiKey");
+	if (mode == authMode()) return;
+
+	Settings::setValue(Settings::AI_AUTH_MODE, mode);
+	emit authModeChanged();
+
+	// The mode and the active provider must agree; switch if they don't.
+	applyAuthModeToSelection();
+}
+
+void AIConfigModel::applyAuthModeToSelection()
+{
+	const bool wantOidc = authMode() == QStringLiteral("oidc");
+	const auto *prov = currentProvider();
+	if (prov && (normalizeAuthMode(prov->authMode) == QStringLiteral("oidc")) == wantOidc)
+		return;
+
+	// Restore whatever provider of that kind was last used — that is what
+	// "switching back" should mean, not "whichever of that kind is last in
+	// the list".
+	const QString remembered = Settings::value(wantOidc ? Settings::AI_LAST_OIDC_PROVIDER
+	                                                    : Settings::AI_LAST_APIKEY_PROVIDER).toString();
+	for (int i = 0; i < m_providers.size(); ++i)
+	{
+		if (m_providers[i].id == remembered
+		 && (normalizeAuthMode(m_providers[i].authMode) == QStringLiteral("oidc")) == wantOidc)
+		{
+			setCurrentProviderIndex(i);
+			return;
+		}
+	}
+
+	// Nothing remembered (first run after upgrade, or it was deleted) — take
+	// the first provider of that kind.
+	for (int i = 0; i < m_providers.size(); ++i)
+	{
+		if ((normalizeAuthMode(m_providers[i].authMode) == QStringLiteral("oidc")) == wantOidc)
+		{
+			setCurrentProviderIndex(i);
+			return;
+		}
+	}
+
+	// No provider of that kind exists — revert the mode rather than leave the
+	// page pointing at a provider of the other kind.
+	Settings::setValue(Settings::AI_AUTH_MODE, QStringLiteral("apiKey"));
+	emit authModeChanged();
+	if (!m_providers.isEmpty())
+		setCurrentProviderIndex(0);
 }
 
 void AIConfigModel::setCurrentAuthMode(const QString &v)
@@ -907,12 +1005,20 @@ void AIConfigModel::setCurrentMessageExtra(const QString &v)
 
 void AIConfigModel::resetToDefaults()
 {
+	// API keys live in the vault now; a reset must clear them too, or a stale
+	// key would silently keep applying to a freshly-reset provider.
+	for (const auto &prov : m_providers)
+		SecretVault::remove(providerVaultKey(prov.id));
+	for (auto it = m_providerOverrides.begin(); it != m_providerOverrides.end(); ++it)
+		SecretVault::remove(providerVaultKey(it.key()));
+
 	m_providers.clear();
 	m_providerOverrides.clear();
 	m_modelOverrides.clear();
 
 	loadShippedProviders();
 	addCustomProvider();
+	applyAuthModeToSelection();
 
 	m_providerListModel->setProviders(m_providers);
 	emit providerValuesChanged();
@@ -1096,7 +1202,7 @@ void AIConfigModel::loadUserData()
 		QJsonObject o = it.value().toObject();
 		ProviderOverrides ov;
 		ov.endpoint      = o["endpoint"].toString();
-		ov.apiKey        = o["apiKey"].toString();
+		ov.apiKey        = o["apiKey"].toString();   // legacy — migrated into SecretVault below
 		ov.currentModelId = o["currentModelId"].toString();
 		ov.customModel    = o["customModel"].toString();
 		if (o.contains("authMode"))         ov.authMode         = o["authMode"].toString();
@@ -1254,6 +1360,31 @@ void AIConfigModel::loadUserData()
 			m_currentModelIndex = 0;
 	}
 
+	// ── One-time migration: API keys out of this JSON, into SecretVault ──
+	// They used to be encrypted inside aiUserProviders. Move them to the
+	// vault (default policy — the fallback keeps keyless machines working),
+	// clear the legacy field, and rewrite settings so the old copies are
+	// gone for good. Idempotent: after the rewrite there is nothing left to
+	// migrate.
+	bool migratedApiKey = false;
+	for (auto it = m_providerOverrides.begin(); it != m_providerOverrides.end(); ++it)
+	{
+		ProviderOverrides &ov = it.value();
+		if (ov.apiKey.isEmpty())
+			continue;
+
+		const QString plain = EncryptedSettingsStore::decryptValue(ov.apiKey);
+		if (!plain.isEmpty())
+			SecretVault::write(providerVaultKey(it.key()), plain.toUtf8());
+		ov.apiKey.clear();
+		migratedApiKey = true;
+	}
+	if (migratedApiKey)
+		saveUserData();
+
+	// The stored tab and the active provider must agree before anything binds.
+	applyAuthModeToSelection();
+
 	// Feed list models
 	m_providerListModel->setProviders(m_providers);
 }
@@ -1275,7 +1406,7 @@ void AIConfigModel::saveUserData()
 		if (m_providerOverrides.contains(prov->id))
 			pov = m_providerOverrides[prov->id];
 		pov.currentModelId = mod ? mod->id : QString();
-		if (pov.endpoint.isEmpty() && pov.apiKey.isEmpty() && pov.customModel.isEmpty()
+		if (pov.endpoint.isEmpty() && pov.customModel.isEmpty()
 		    && pov.authMode.isEmpty() && pov.authAuthority.isEmpty()
 		    && pov.authScope.isEmpty() && pov.authClientId.isEmpty()
 		    && pov.authBackend.isEmpty() && pov.authHeaderName.isEmpty()
@@ -1314,7 +1445,6 @@ void AIConfigModel::saveUserData()
 			// User-created: store all
 			if (!ov.endpoint.isEmpty()) o["endpoint"] = ov.endpoint;
 		}
-		if (!ov.apiKey.isEmpty())        o["apiKey"]        = ov.apiKey;
 		if (!ov.currentModelId.isEmpty()) o["currentModelId"] = ov.currentModelId;
 		if (!ov.customModel.isEmpty())    o["customModel"]    = ov.customModel;
 		// Auth overrides (empty = not overridden)

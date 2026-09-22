@@ -1,6 +1,11 @@
 //
 // TokenProvider — abstract source of the HTTP auth token used by AiBridge.
 //
+// The feature that owns a provider pushes its configuration in (an API key,
+// an OidcConfig); the backend never reaches back into the feature's settings,
+// so this folder has no dependency on the AI feature — or any other feature
+// that later wants tokens for, say, database connections.
+//
 // AiBridge must never know *how* a token is obtained. Each backend owns
 // acquisition, caching, refresh and sign-out, and reports the result through
 // the signals below.
@@ -21,6 +26,16 @@
 #include <QObject>
 #include <QString>
 #include <QDateTime>
+
+/// Configuration pushed into OIDC-based backends by whichever feature owns
+/// them. One struct so the browser and (future) device-code backends stay
+/// configured identically.
+struct OidcConfig
+{
+	QString authority;   ///< tenant id, "organizations", or a full issuer URL
+	QString scope;       ///< the resource the token is for, e.g. https://cognitiveservices.azure.com/.default
+	QString clientId;    ///< the app registration; empty means "the JASP default"
+};
 
 class TokenProvider : public QObject
 {

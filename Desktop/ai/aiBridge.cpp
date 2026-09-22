@@ -56,25 +56,32 @@ AiBridge *AiBridge::_singleton = nullptr;
 		// Initialize the agent state tracker for workspace-change notifications
 		AgentStateTracker::init();
 
-		// Clear chat when persona changes so the new persona takes effect from a clean slate
+		// Clear chat when persona changes so the new persona takes effect from a clean slate.
+		//
+		// These signals fire in storms at startup — AIConfigModel sets its saved
+		// indices while loading, the persona model loads late — without anything
+		// actually changing. Wiring them straight to clearChat() aborted live
+		// requests (surfacing as a stray error in the chat view) whenever the
+		// storm arrived after the window opened. So they all point at one guard
+		// that reacts only to a *real* change in the effective configuration.
 		AIPersonaModel *pm = PreferencesModel::prefs()->aiPersonaModel();
 		if (pm)
-			connect(pm, &AIPersonaModel::currentPersonaIndexChanged, this, &AiBridge::clearChat);
+			connect(pm, &AIPersonaModel::currentPersonaIndexChanged, this, &AiBridge::onEffectiveConfigMaybeChanged);
 
 		// Clear chat whenever the AI provider/model config changes — old responses
 		// were generated under a different configuration and shouldn't carry forward.
 		AIConfigModel *acm = AIConfigModel::config();
-		connect(acm, &AIConfigModel::currentProviderIndexChanged,    this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentModelIndexChanged,       this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentEndpointChanged,         this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentApiKeyChanged,           this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentModelChanged,            this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentExtraParamsChanged,      this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentUseCompleteSchemaChanged, this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentSystemPromptPostfixChanged, this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,  this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentChatLimitChanged,        this, &AiBridge::clearChat);
-		connect(acm, &AIConfigModel::currentMessageExtraChanged,     this, &AiBridge::clearChat);
+		connect(acm, &AIConfigModel::currentProviderIndexChanged,       this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentModelIndexChanged,          this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentEndpointChanged,            this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentApiKeyChanged,              this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentModelChanged,               this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentExtraParamsChanged,         this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentUseCompleteSchemaChanged,   this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentSystemPromptPostfixChanged, this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentChatLimitActiveChanged,     this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentChatLimitChanged,           this, &AiBridge::onEffectiveConfigMaybeChanged);
+		connect(acm, &AIConfigModel::currentMessageExtraChanged,        this, &AiBridge::onEffectiveConfigMaybeChanged);
 
 		configureTokenProvider();
 	}
@@ -122,13 +129,31 @@ QString AiBridge::authHeaderPrefix() const
 	       : QString();
 }
 
+void AiBridge::pushAuthConfig()
+{
+	AIConfigModel *cfg = AIConfigModel::config();
+	if (!cfg || !m_tokenProvider) return;
+
+	// Providers are configured by pushing, never by reaching into AIConfigModel
+	// themselves — auth/ must stay independent of the feature using it, so it
+	// can serve a second consumer (data-store credentials, say) unchanged.
+	if (auto *api = qobject_cast<ApiKeyTokenProvider *>(m_tokenProvider))
+		api->setApiKey(cfg->currentApiKey());
+	else if (auto *oidc = qobject_cast<BrowserTokenProvider *>(m_tokenProvider))
+		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId() });
+}
+
 void AiBridge::configureTokenProvider()
 {
 	AIConfigModel *cfg = AIConfigModel::config();
 	const QString mode = cfg ? cfg->currentAuthMode() : QStringLiteral("apiKey");
 
 	if (m_tokenProvider && m_tokenProviderMode == mode)
+	{
+		// Same backend, but the key or authority/scope may have changed.
+		pushAuthConfig();
 		return;
+	}
 
 	m_tokenProviderMode = mode;
 	m_authUnavailable.clear();
@@ -155,6 +180,8 @@ void AiBridge::configureTokenProvider()
 	// "none" deliberately has no provider: the request goes out with no auth
 	// header, which is what a locally-hosted gateway may want.
 
+	pushAuthConfig();
+
 	if (m_tokenProvider)
 	{
 		connect(m_tokenProvider, &TokenProvider::tokenReady,          this, &AiBridge::onTokenReady);
@@ -175,6 +202,16 @@ void AiBridge::applyAuthHeader(QNetworkRequest &request) const
 bool AiBridge::isSignedIn() const
 {
 	return m_tokenProvider && m_tokenProvider->isValid();
+}
+
+QString AiBridge::authAccountName() const
+{
+	return m_tokenProvider ? m_tokenProvider->accountName() : QString();
+}
+
+QDateTime AiBridge::authExpiresAt() const
+{
+	return m_tokenProvider ? m_tokenProvider->expiresAt() : QDateTime();
 }
 
 void AiBridge::signIn()
@@ -309,6 +346,10 @@ void AiBridge::setDebugDumpEnabled(bool enabled)
 {
 	m_debugDumpEnabled = enabled;
 	Log::log() << "AiBridge: debug dump " << (enabled ? "enabled" : "disabled") << std::endl;
+
+	// Turning the dump off must not leave the previous request body behind in the temp dir.
+	if (!enabled && !Dirs::tempDir().empty())
+		QFile::remove(QString::fromStdString(Dirs::tempDir() + "/ai-request.json"));
 }
 
 // =============================================================================
@@ -458,12 +499,76 @@ void AiBridge::clearChat()
 	stopStream();
 	clearConversation();
 	emit onClearChat();
+
+	// Greet after every clear. This used to be the original behavior; it was
+	// removed because the startup config-signal storm turned it into a
+	// background prefetch — but that storm is now suppressed by the signature
+	// guard in onEffectiveConfigMaybeChanged (first observation never clears),
+	// so the follow-up greeting only ever happens after a real user action:
+	// a provider switch, a mode switch, or the reset button. The empty-
+	// conversation guard makes the reset button's own direct call a no-op.
 	sendIntroMessage();
+}
+
+void AiBridge::onEffectiveConfigMaybeChanged()
+{
+	// Auth settings may have changed along with the rest; refresh what the
+	// provider was pushed before deciding anything else. Cheap when nothing
+	// actually changed.
+	configureTokenProvider();
+
+	AIConfigModel *cfg = AIConfigModel::config();
+	if (!cfg)
+		return;
+
+	// Everything a reply in the current conversation depends on. Values, not
+	// signals: several signals firing for one real change still clear once, and
+	// a storm of signals for no change at all — startup — clears never.
+	QStringList parts;
+	parts << cfg->currentEndpoint()
+	      << cfg->currentApiKey()
+	      << cfg->currentModel()
+	      << cfg->currentExtraParams()
+	      << cfg->currentSystemPromptPostfix()
+	      << cfg->currentMessageExtra()
+	      << (cfg->currentUseCompleteSchema() ? QStringLiteral("schema=1") : QStringLiteral("schema=0"))
+	      << (cfg->currentChatLimitActive()
+	              ? QStringLiteral("limit=") + QString::number(cfg->currentChatLimit())
+	              : QStringLiteral("limit=off"));
+
+	const auto *personaModel = PreferencesModel::prefs()->aiPersonaModel();
+	if (personaModel)
+		parts << personaModel->activePersona().personaPrompt;
+
+	const QString signature = parts.join(QLatin1Char('|'));
+
+	if (signature == m_effectiveConfigSignature)
+		return;
+
+	// Only reset when there is something to reset. At startup — and during
+	// any late-arriving model load — config signals fire in storms while the
+	// conversation is still empty, and clearing then would emit onClearChat
+	// and prefetch a greeting nobody asked for (loadUserData restores its
+	// indices silently, so the first *observed* signature is whatever the
+	// user's first real change produces — exactly why "first observation"
+	// was the wrong guard and the first switch never reset). Once a
+	// conversation exists, any genuinely different configuration resets it,
+	// first switch included.
+	const bool conversationHasContent = !m_conversation.isEmpty();
+	m_effectiveConfigSignature = signature;
+
+	if (conversationHasContent)
+		clearChat();
 }
 
 void AiBridge::sendIntroMessage()
 {
 	if (endpoint().isEmpty()) return;
+
+	// Only prime a greeting into an empty conversation. The chat window calls
+	// this whenever it becomes visible; without the guard every toggle of the
+	// window would fire another request.
+	if (!m_conversation.isEmpty()) return;
 
 	// Guard: if a reply is being processed or an RPC dispatch is in
 	// flight (possibly inside a nested event loop), defer until the
@@ -742,8 +847,10 @@ void AiBridge::postStreamingRequest(const QJsonArray &messages, bool withTools)
 	<< " | system prompt (common+persona): " << estimateTokens(PreferencesModel::prefs()->aiCommonSystemPrompt() + (PreferencesModel::prefs()->aiPersonaModel() ? PreferencesModel::prefs()->aiPersonaModel()->activePersona().personaPrompt : QString())) << " tokens"
 	           << std::endl;
 
-	// Log the full request body at a debug level (can be very verbose)
-	Log::log() << "AiBridge: REQUEST BODY:\n" << QJsonDocument::fromJson(body).toJson(QJsonDocument::Indented).toStdString() << std::endl;
+	// A request body carries the system prompt and the user's data, so this is verbose-only
+	// (and dropped entirely in release builds).
+	if (m_verboseLogging)
+		Log::log() << "AiBridge: REQUEST BODY:\n" << QJsonDocument::fromJson(body).toJson(QJsonDocument::Indented).toStdString() << std::endl;
 
 	m_activeReply = m_networkManager->post(request, body);
 
@@ -1277,9 +1384,25 @@ void AiBridge::onReplyFinished()
 	int httpStatus = m_activeReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 	QByteArray body = m_activeReply->readAll();
 
-	// Network-level errors (connection refused, timeout, host not found, etc.)
-	// are already handled in onReplyError — just clean up here.
+	// Network-level errors (connection refused, timeout, host not found, etc.) are
+	// already handled in onReplyError. HTTP-level errors (401/403/404 …) *also*
+	// arrive as QNetworkReply errors, but unlike the network ones they carry a body
+	// that says *why* — so surface it instead of swallowing it.
 	if (m_activeReply->error() != QNetworkReply::NoError) {
+		if (!body.isEmpty()) {
+			QString detail = QString::fromUtf8(body).trimmed();
+			QJsonDocument errDoc = QJsonDocument::fromJson(body);
+			if (errDoc.isObject() && errDoc.object().contains(QStringLiteral("error"))) {
+				QJsonObject errObj = errDoc.object().value(QStringLiteral("error")).toObject();
+				QString msg = errObj.value(QStringLiteral("message")).toString();
+				const QString code = errObj.value(QStringLiteral("code")).toString();
+				if (!code.isEmpty()) msg = code + QStringLiteral(": ") + msg;
+				if (!msg.isEmpty()) detail = msg;
+			}
+			if (detail.length() > 300) detail = detail.left(300) + QStringLiteral("…");
+			Log::log() << "AiBridge: HTTP " << httpStatus << " error body: " << body.toStdString() << std::endl;
+			emitError(QStringLiteral("HTTP ") + QString::number(httpStatus) + QStringLiteral(": ") + detail);
+		}
 		m_activeReply->deleteLater();
 		m_activeReply = nullptr;
 		m_streaming = false;
@@ -1395,9 +1518,22 @@ void AiBridge::onReplyFinished()
 
 void AiBridge::onReplyError(QNetworkReply::NetworkError error)
 {
-	Log::log() << "AiBridge::onReplyError code=" << (int)error << std::endl;
+	QNetworkReply *reply = m_activeReply;
+	const int httpStatus = reply
+		? reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+		: 0;
+
+	Log::log() << "AiBridge::onReplyError code=" << (int)error
+		<< " http=" << httpStatus << std::endl;
 
 	if (error == QNetworkReply::NoError) return;
+
+	// If the server actually answered, its reply carries a body explaining why and
+	// onReplyFinished() will report that verbatim. Emitting the generic text here
+	// would only overwrite it with something less useful — notably "check your API
+	// key" for a 401 on an Entra-authenticated request, which sends the reader down
+	// entirely the wrong path. Only speak when there was no HTTP response at all.
+	if (httpStatus != 0) return;
 
 	// onReplyFinished will handle the cleanup after this.
 	emitError(networkErrorToString(error, m_activeReply));

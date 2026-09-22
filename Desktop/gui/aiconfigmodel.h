@@ -163,6 +163,14 @@ public:
 	// ── Authentication (scheme | authority | scope | backend | wire) ─────
 	Q_PROPERTY(QString currentAuthMode         READ currentAuthMode
 	           WRITE setCurrentAuthMode         NOTIFY currentAuthModeChanged)
+
+	// ── Which connection method the AI page shows (the tab): "apiKey"
+	// (default) or "oidc". Stored so JASP reopens where the user left off,
+	// and so a group policy can pin it — Settings::value() prefers
+	// HKCU/HKLM Software\Policies\JASP over the user's own setting.
+	// Kept consistent with the active provider: changing either follows
+	// the other.
+	Q_PROPERTY(QString authMode READ authMode WRITE setAuthMode NOTIFY authModeChanged)
 	Q_PROPERTY(QString currentAuthAuthority    READ currentAuthAuthority
 	           WRITE setCurrentAuthAuthority    NOTIFY currentAuthAuthorityChanged)
 	Q_PROPERTY(QString currentAuthScope        READ currentAuthScope
@@ -212,6 +220,8 @@ public:
 	QString currentWarning()               const;
 	QString currentAuthMode()              const;
 	void    setCurrentAuthMode(const QString &v);
+	QString authMode()                     const;
+	void    setAuthMode(const QString &v);
 	QString currentAuthAuthority()         const;
 	void    setCurrentAuthAuthority(const QString &v);
 	QString currentAuthScope()             const;
@@ -244,6 +254,7 @@ signals:
 	void currentMessageExtraChanged();
 	void currentWarningChanged();
 	void currentAuthModeChanged();
+	void authModeChanged();
 	void currentAuthAuthorityChanged();
 	void currentAuthScopeChanged();
 	void currentAuthClientIdChanged();
@@ -258,6 +269,8 @@ private:
 	// ── Override helpers ────────────────────────────────
 	struct ProviderOverrides {
 		QString endpoint;
+		// Legacy carrier for API keys written before SecretVault existed. Read
+		// once by the migration at the end of loadUserData(); never written.
 		QString apiKey;
 		QString currentModelId;
 		QString customModel;
@@ -306,6 +319,10 @@ private:
 	void loadShippedProviders();
 	void loadUserData();
 	void saveUserData();
+
+	/// Make the active provider match the stored authMode — switch to the last
+	/// provider of that kind, or revert the mode when none exists.
+	void applyAuthModeToSelection();
 	ModelOverrides freshModelOverrides(const AIModelEntry *m) const;
 
 	// ── Values array getters ────────────────────────────

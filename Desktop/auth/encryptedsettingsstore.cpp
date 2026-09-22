@@ -1,17 +1,18 @@
 //
-// SecretStore implementation.
+// EncryptedSettingsStore implementation.
 //
 // Encryption:       libsodium crypto_secretbox (XSalsa20-Poly1305)
 // Key derivation:   crypto_generichash (BLAKE2b) from machine + user identity
 // Storage backend:  QSettings (existing Settings infrastructure)
 //
 
-#include "secretstore.h"
+#include "encryptedsettingsstore.h"
 
 #include <sodium.h>
 
 #include <QDir>
 #include <QFile>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QMutex>
 #include <QMutexLocker>
@@ -24,10 +25,10 @@
 
 // =============================================================================
 // Master-key seed — defined here so it stays out of every translation unit
-// that includes secretstore.h.
+// that includes encryptedsettingsstore.h.
 // =============================================================================
 
-const unsigned char SecretStore::kMasterKeySeed[32] = {
+const unsigned char EncryptedSettingsStore::kMasterKeySeed[32] = {
 	0x7e, 0x3a, 0x91, 0x4c, 0xd2, 0x6f, 0x88, 0x15,
 	0x3b, 0xae, 0x72, 0x59, 0xc1, 0x4d, 0x0f, 0xe8,
 	0x66, 0x2d, 0x97, 0x53, 0xa4, 0x1b, 0x38, 0xcc,
@@ -38,7 +39,7 @@ const unsigned char SecretStore::kMasterKeySeed[32] = {
 // Master key — derived once, cached forever
 // =============================================================================
 
-QByteArray SecretStore::masterKey()
+QByteArray EncryptedSettingsStore::masterKey()
 {
 	static QByteArray key;
 	static QMutex mutex;
@@ -46,17 +47,17 @@ QByteArray SecretStore::masterKey()
 
 	if (key.isEmpty()) {
 		if (sodium_init() < 0) {
-			Log::log() << "SecretStore: libsodium init failed — secrets will be stored as plaintext"
+			Log::log() << "EncryptedSettingsStore: libsodium init failed — secrets will be stored as plaintext"
 					   << std::endl;
 			return QByteArray(); // empty key → store in plaintext
 		}
 		key = deriveMasterKey();
-		Log::log() << "SecretStore: master key derived (" << key.size() << " bytes)" << std::endl;
+		Log::log() << "EncryptedSettingsStore: master key derived (" << key.size() << " bytes)" << std::endl;
 	}
 	return key;
 }
 
-QByteArray SecretStore::deriveMasterKey()
+QByteArray EncryptedSettingsStore::deriveMasterKey()
 {
 	// Gather identity material that is:
 	//   - unique to this machine
@@ -109,7 +110,7 @@ QByteArray SecretStore::deriveMasterKey()
 	// If we couldn't gather anything, fall back to a process-unique random key.
 	// Secrets won't survive a restart, but at least nothing crashes.
 	if (parts.isEmpty() || (parts.size() == 2 && parts.last() == QStringLiteral("JASP"))) {
-		Log::log() << "SecretStore: no machine identity available, using ephemeral key" << std::endl;
+		Log::log() << "EncryptedSettingsStore: no machine identity available, using ephemeral key" << std::endl;
 		unsigned char rnd[crypto_secretbox_KEYBYTES];
 		randombytes_buf(rnd, sizeof rnd);
 		return QByteArray(reinterpret_cast<const char *>(rnd), sizeof rnd);
@@ -130,7 +131,7 @@ QByteArray SecretStore::deriveMasterKey()
 // Symmetric encryption (libsodium crypto_secretbox)
 // =============================================================================
 
-QByteArray SecretStore::encrypt(const QByteArray &plaintext, const QByteArray &key)
+QByteArray EncryptedSettingsStore::encrypt(const QByteArray &plaintext, const QByteArray &key)
 {
 	if (key.isEmpty() || key.size() != static_cast<int>(crypto_secretbox_KEYBYTES))
 		return QByteArray(); // no encryption available
@@ -154,7 +155,7 @@ QByteArray SecretStore::encrypt(const QByteArray &plaintext, const QByteArray &k
 	return blob;
 }
 
-QByteArray SecretStore::decrypt(const QByteArray &blob, const QByteArray &key)
+QByteArray EncryptedSettingsStore::decrypt(const QByteArray &blob, const QByteArray &key)
 {
 	if (key.isEmpty() || key.size() != static_cast<int>(crypto_secretbox_KEYBYTES))
 		return QByteArray();
@@ -173,7 +174,7 @@ QByteArray SecretStore::decrypt(const QByteArray &blob, const QByteArray &key)
 			nonce,
 			reinterpret_cast<const unsigned char *>(key.constData())) != 0)
 	{
-		Log::log() << "SecretStore: decryption failed (tampered data or wrong key)" << std::endl;
+		Log::log() << "EncryptedSettingsStore: decryption failed (tampered data or wrong key)" << std::endl;
 		return QByteArray();
 	}
 
@@ -181,111 +182,10 @@ QByteArray SecretStore::decrypt(const QByteArray &blob, const QByteArray &key)
 }
 
 // =============================================================================
-// Settings I/O — thin wrappers around QSettings
-// =============================================================================
-
-QString SecretStore::readSetting(Settings::Type setting)
-{
-	return Settings::value(setting).toString();
-}
-
-void SecretStore::writeSetting(Settings::Type setting, const QString &value)
-{
-	Settings::setValue(setting, value);
-}
-
-void SecretStore::deleteSetting(Settings::Type setting)
-{
-	Settings::remove(setting);
-}
-
-// =============================================================================
-// Migration — encrypt any leftover plaintext from the qtkeychain era
-// =============================================================================
-
-void SecretStore::migrateIfNeeded(Settings::Type setting)
-{
-	const QString raw = readSetting(setting);
-	if (raw.isEmpty())
-		return;
-
-	// Already encrypted?  Encrypted blobs are base64-encoded binary
-	// and always start with a nonce (24 bytes of random bytes). Plaintext
-	// API keys start with "sk-" or similar.  If it looks like base64 and
-	// is long enough, assume it's already migrated.
-	if (raw.size() > 64 && !raw.startsWith(QLatin1String("sk-"))
-		&& !raw.startsWith(QLatin1String("{"))) // JSON values
-	{
-		// Probably already base64 ciphertext — don't double-encrypt
-		return;
-	}
-
-	// Looks like plaintext — encrypt it
-	Log::log() << "SecretStore: migrating plaintext setting to encrypted storage" << std::endl;
-	const QByteArray key = masterKey();
-	if (key.isEmpty()) {
-		Log::log() << "SecretStore: no master key, skipping migration" << std::endl;
-		return;
-	}
-
-	const QByteArray encrypted = encrypt(raw.toUtf8(), key);
-	if (!encrypted.isEmpty()) {
-		writeSetting(setting, QString::fromLatin1(encrypted.toBase64()));
-	}
-}
-
-// =============================================================================
 // Public API
 // =============================================================================
 
-QString SecretStore::read(const QString & /*logicalKey*/, Settings::Type setting)
-{
-	const QByteArray key = masterKey();
-
-	// --- no encryption available → plaintext fallback ---
-	if (key.isEmpty())
-		return readSetting(setting);
-
-	// --- one-time migration from plaintext ---
-	migrateIfNeeded(setting);
-
-	// --- decrypt ---
-	const QString stored = readSetting(setting);
-	if (stored.isEmpty())
-		return QString();
-
-	const QByteArray blob = QByteArray::fromBase64(stored.toLatin1());
-	const QByteArray plain = decrypt(blob, key);
-
-	return QString::fromUtf8(plain);
-}
-
-void SecretStore::write(const QString & /*logicalKey*/, const QString &value, Settings::Type setting)
-{
-	const QByteArray key = masterKey();
-
-	if (key.isEmpty()) {
-		// No encryption — store as plaintext
-		writeSetting(setting, value);
-		return;
-	}
-
-	const QByteArray encrypted = encrypt(value.toUtf8(), key);
-	if (encrypted.isEmpty()) {
-		Log::log() << "SecretStore: encryption failed, storing as plaintext" << std::endl;
-		writeSetting(setting, value);
-		return;
-	}
-
-	writeSetting(setting, QString::fromLatin1(encrypted.toBase64()));
-}
-
-void SecretStore::remove(const QString & /*logicalKey*/, Settings::Type setting)
-{
-	deleteSetting(setting);
-}
-
-QString SecretStore::encryptValue(const QString &plaintext)
+QString EncryptedSettingsStore::encryptValue(const QString &plaintext)
 {
 	const QByteArray key = masterKey();
 	if (key.isEmpty())
@@ -298,7 +198,7 @@ QString SecretStore::encryptValue(const QString &plaintext)
 	return QString::fromLatin1(encrypted.toBase64());
 }
 
-QString SecretStore::decryptValue(const QString &ciphertextBase64)
+QString EncryptedSettingsStore::decryptValue(const QString &ciphertextBase64)
 {
 	const QByteArray key = masterKey();
 	if (key.isEmpty())

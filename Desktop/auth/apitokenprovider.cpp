@@ -1,7 +1,5 @@
 #include "apitokenprovider.h"
 
-#include "gui/aiconfigmodel.h"
-
 ApiKeyTokenProvider::ApiKeyTokenProvider(QObject *parent)
 	: TokenProvider(parent)
 {}
@@ -20,9 +18,7 @@ void ApiKeyTokenProvider::ensureToken()
 
 QString ApiKeyTokenProvider::token() const
 {
-	if (AIConfigModel *cfg = AIConfigModel::config())
-		return cfg->currentApiKey();
-	return {};
+	return m_apiKey;
 }
 
 bool ApiKeyTokenProvider::isValid() const

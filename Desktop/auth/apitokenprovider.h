@@ -1,9 +1,9 @@
 //
 // ApiKeyTokenProvider — TokenProvider for static API keys.
 //
-// This preserves the pre-existing behavior exactly: the token is the provider's
-// configured API key, read live from AIConfigModel at request time (no cache),
-// so edits take effect immediately. No interactive step is ever required.
+// The key is pushed in by the feature that owns the provider; there is no
+// cache, so pushing a new key takes effect on the next request. No
+// interactive step is ever required.
 //
 
 #ifndef APITOKENPROVIDER_H
@@ -25,6 +25,13 @@ public:
 	QDateTime expiresAt() const override;
 	QString   accountName() const override;
 	void      signOut() override;
+
+	/// The key to use as the token. May be empty, in which case isValid()
+	/// is false and requests go out unauthenticated.
+	void setApiKey(const QString &key) { m_apiKey = key; }
+
+private:
+	QString m_apiKey;
 };
 
 #endif // APITOKENPROVIDER_H

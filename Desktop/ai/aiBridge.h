@@ -90,7 +90,11 @@ public:
 	Q_INVOKABLE void testConnection();
 
 	/// Send a hidden "Introduce yourself." message to prime the chat with a greeting.
-	void sendIntroMessage();
+	/// Only acts on an empty conversation, so it is safe to call whenever the chat
+	/// window becomes visible. No longer called from clearChat(): the config
+	/// signals fire that at startup, which turned the intro into a background
+	/// request (and, before token persistence, a browser window) nobody asked for.
+	Q_INVOKABLE void sendIntroMessage();
 
 	/// Export the full conversation to a Markdown file.
 	Q_INVOKABLE void exportToMarkdownFile(const QString &filePath) const;
@@ -111,6 +115,14 @@ public:
 	/// True when the configured provider holds a usable token. For API-key auth
 	/// that simply means a key is set.
 	bool isSignedIn() const;
+
+	/// Who is signed in, and until when — for the preferences sign-in card.
+	/// Empty / invalid when not signed in, or when the provider is a plain API
+	/// key (which has no account). Bindings refresh through authStateChanged.
+	Q_PROPERTY(QString authAccountName READ authAccountName NOTIFY authStateChanged)
+	Q_PROPERTY(QDateTime authExpiresAt  READ authExpiresAt  NOTIFY authStateChanged)
+	QString   authAccountName() const;
+	QDateTime authExpiresAt() const;
 
 signals:
 	void onStreamOpen();
@@ -136,6 +148,13 @@ private slots:
 private:
 	void sendToAI(const QJsonArray &messages, bool withTools = true);
 
+	/// React to any of the config signals. Compares the effective configuration
+	/// (endpoint, key, model, extras, persona…) against what the current
+	/// conversation was built on, and clears the chat only when it actually
+	/// differs — the signals themselves fire in storms at startup while models
+	/// load indices that never really changed.
+	void onEffectiveConfigMaybeChanged();
+
 	/// Issue the streaming request. The endpoint is known, and the provider
 	/// holds a usable token or no auth header is wanted.
 	void postStreamingRequest(const QJsonArray &messages, bool withTools);
@@ -160,6 +179,10 @@ private:
 	/// (Re)create m_tokenProvider when the configured auth mode changes. Also
 	/// records why no backend could be built, so callers can explain it.
 	void configureTokenProvider();
+
+	/// Push the current auth settings into the provider. Providers never read
+	/// AIConfigModel themselves, so auth/ stays independent of this feature.
+	void pushAuthConfig();
 
 	/// Apply the provider's token to a request using the configured header name
 	/// and prefix ("Authorization: Bearer <token>" by default).
@@ -202,6 +225,9 @@ private:
 	bool       m_pendingSend      = false;
 	bool       m_pendingWithTools = true;
 	bool       m_pendingTest      = false;
+
+	/// Last observed effective configuration; see onEffectiveConfigMaybeChanged().
+	QString    m_effectiveConfigSignature;
 
 	QJsonArray m_conversation;
 	QJsonArray m_pendingToolCalls;
