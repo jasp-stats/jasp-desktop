@@ -79,6 +79,7 @@ public:
 	
 	Filter				*	filter();
 	VariableInfo		*	varInfo() { return _varInfo; }
+	VariableInfoProvider*	variableInfoProvider();		///< The filter of the analysis if there is one, otherwise the provider of the form's VariableInfo (e.g. in R Syntax, where there is no filter).
 
 	void					itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value) override;
 
