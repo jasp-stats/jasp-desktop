@@ -250,8 +250,11 @@ void SourceItem::disconnectModels()
 	if (_sourceNativeModel)
 		_sourceNativeModel->disconnect(this);
 
+	//Null whenever there is no provider, and during teardown also once the form's VariableInfo is gone,
+	//so this may not be dereferenced blindly the way connectModels() never has to.
 	if (_isDataSetVariables)
-		infoProviderModel()->disconnect(controlModel);
+		if (QAbstractItemModel * providerModel = infoProviderModel())
+			providerModel->disconnect(controlModel);
 
 	if (_sourceListModel)
 		_sourceListModel->disconnect(controlModel);
