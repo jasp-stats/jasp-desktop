@@ -581,6 +581,13 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 
+	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
+	//process-global ColumnEncoder at the loaded dataset. Without it encodeColumnNamesinOptions() below
+	//falls back to the empty default encoder, the options keep their original column names, and the
+	//analysis then gets a dataset whose columns *are* encoded - so it finds no data at all.
+	if (gl_dataBridge)
+		gl_dataBridge->provideAndUpdateDataSet();
+
 	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
 	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);

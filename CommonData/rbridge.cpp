@@ -509,6 +509,13 @@ void __freeRBridgeColumnType(RBridgeColumnType *columns, size_t colMax)
 
 extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, bool obeyFilter)
 {
+	//Point the process-global ColumnEncoder at the shown dataset before encoding the wanted columns
+	//below. rbridge_readDataSet() at the end of this function does this too, but by then the names
+	//have already been encoded - against the empty fallback encoder if nothing else provided the
+	//dataset first. See the invariant documented in DataBridge::provideAndUpdateDataSet().
+	if(data_bridge)
+		rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
+
 	*colMax = 0;
 	RBridgeColumnType * requestedColumns = new RBridgeColumnType[datasetWanted.size()];
 
