@@ -259,6 +259,12 @@ stores, batches and evaluations — the Assistants API family, which OpenAI suns
 
 **`rewrite-uri` scope matters.** See step 6.
 
+**A leading space in the model field also returns `DeploymentNotFound`.** Verified live
+(2026-09-23): a model pasted as `" gpt-5.4-mini"` — an invisible space from the portal —
+produced this exact 404 while the endpoint was correct, and it survived into the saved
+config. Same class as the whitespace-in-endpoint trap above; `aiconfigmodel` now trims
+these fields on save and load.
+
 ---
 
 ## What is not proven yet

@@ -507,7 +507,9 @@ void AiBridge::clearChat()
 	// so the follow-up greeting only ever happens after a real user action:
 	// a provider switch, a mode switch, or the reset button. The empty-
 	// conversation guard makes the reset button's own direct call a no-op.
-	sendIntroMessage();
+	// Non-interactive: a config edit in the settings dialog must not open a
+	// sign-in browser (allowSignIn=false skips the greeting when signed out).
+	sendIntroMessage(false);
 }
 
 void AiBridge::onEffectiveConfigMaybeChanged()
@@ -563,12 +565,29 @@ void AiBridge::onEffectiveConfigMaybeChanged()
 
 void AiBridge::sendIntroMessage()
 {
+	// The user did something visible (opened the chat window, pressed reset) —
+	// interactive sign-in for the greeting is expected behavior.
+	sendIntroMessage(true);
+}
+
+void AiBridge::sendIntroMessage(bool allowSignIn)
+{
 	if (endpoint().isEmpty()) return;
 
 	// Only prime a greeting into an empty conversation. The chat window calls
 	// this whenever it becomes visible; without the guard every toggle of the
 	// window would fire another request.
 	if (!m_conversation.isEmpty()) return;
+
+	// Automatic paths (clearChat after a config edit) must never open a
+	// sign-in browser on their own. Without a usable token the greeting is
+	// simply skipped; it fires properly when the chat window is opened or the
+	// user signs in through the settings card.
+	if (!allowSignIn && m_tokenProvider && !m_tokenProvider->isValid())
+	{
+		Log::log() << "AiBridge: skipping automatic intro — sign-in required" << std::endl;
+		return;
+	}
 
 	// Guard: if a reply is being processed or an RPC dispatch is in
 	// flight (possibly inside a nested event loop), defer until the
@@ -1460,7 +1479,7 @@ void AiBridge::onReplyFinished()
 			m_processingReply = false;
 			clearConversation();
 			emit onClearChat();
-			sendIntroMessage();
+			sendIntroMessage(false);
 			return;
 		}
 
@@ -1504,7 +1523,7 @@ void AiBridge::onReplyFinished()
 		m_processingReply = false;
 		clearConversation();
 		emit onClearChat();
-		sendIntroMessage();
+		sendIntroMessage(false);
 		return;
 	}
 

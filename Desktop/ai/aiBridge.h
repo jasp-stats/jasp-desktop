@@ -91,9 +91,9 @@ public:
 
 	/// Send a hidden "Introduce yourself." message to prime the chat with a greeting.
 	/// Only acts on an empty conversation, so it is safe to call whenever the chat
-	/// window becomes visible. No longer called from clearChat(): the config
-	/// signals fire that at startup, which turned the intro into a background
-	/// request (and, before token persistence, a browser window) nobody asked for.
+	/// window becomes visible. Interactive: obtaining a token for it may open the
+	/// sign-in browser, which is what the user expects when they open the chat
+	/// window or press the reset button.
 	Q_INVOKABLE void sendIntroMessage();
 
 	/// Export the full conversation to a Markdown file.
@@ -147,6 +147,13 @@ private slots:
 
 private:
 	void sendToAI(const QJsonArray &messages, bool withTools = true);
+
+	/// Greeting implementation. allowSignIn=false is for the automatic paths
+	/// (clearChat after a config edit): an unprompted greeting must never open
+	/// the sign-in browser — the chat window's own greeting or the sign-in
+	/// button does that instead. It skips the greeting when no usable token is
+	/// cached; the greeting then fires on the next user-visible trigger.
+	void sendIntroMessage(bool allowSignIn);
 
 	/// React to any of the config signals. Compares the effective configuration
 	/// (endpoint, key, model, extras, persona…) against what the current

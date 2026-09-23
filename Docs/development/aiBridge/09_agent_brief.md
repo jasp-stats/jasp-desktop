@@ -33,17 +33,19 @@ customer's own Azure subscription.
 | **0 — Azure prerequisites** | ✅ Done |
 | **1 — TokenProvider abstraction + generic config** | ✅ Done, committed |
 | **2 — Browser sign-in backend** | ✅ **Done and verified end-to-end against live Azure** |
-| **3 — UI (`PrefsAI.qml`)** | 🟡 **Tab skeleton built, in the working tree** — `aiAuthMode` setting + `AIConfigModel.authMode` (two-way consistency with the active provider), TabView with API-key / Sign-in tabs, sign-in card with four states, auth passthroughs on `AiBridge`. Not yet run — QML lints clean against baseline |
-| **4 — Refresh-token persistence (OS vault)** | 🟡 **Windows done in the working tree** — `SecretVault` (Credential Manager) + silent renewal; macOS/Linux stay in-memory until Keychain/libsecret |
+| **3 — UI (`PrefsAI.qml`)** | ✅ **Built and exercised** on Windows and macOS — tabbed settings, sign-in card, mode↔provider consistency |
+| **4 — Refresh-token persistence (OS vault)** | ✅ **Windows and macOS verified** — Credential Manager / Keychain + silent renewal. **macOS 2026-09-23: sign-in survives a JASP restart** (Keychain write + silent renew). Linux written, **not yet run** (libsecret loads at runtime) |
 | **5 — Device-code fallback** | ❌ Not started |
-| **6 — Privacy hardening** | 🟡 In the working tree, uncommitted — see §2 |
-| **7 — Test matrix / second tenant** | ❌ Not started |
+| **6 — Privacy hardening** | 🟡 Mostly committed (`78129fe87`); sign-out/revocation still open |
+| **7 — Test matrix / second tenant** | 🟡 **macOS ✅ 2026-09-23** (sign-in + persistence; first compile of the Keychain backend after linking `-framework Security`). **Linux next.** Multi-tenant consent, CA policy untested |
 | **Gateway support (shapes 1–3)** | ✅ **Shape 2 verified end-to-end against live APIM, 2026-09-21** — see `10_apim_test_checklist.md`. Shape 3 still untested. |
 
 **Commits on `development`:** `a377a2743` (build on VS 2026), `db64f2a57` (TokenProvider +
-generic auth config), `ccd395773` (browser OIDC sign-in), `8f07714ef` (**temporary checkpoint**:
-SecretVault + API-key migration + silent renewal, tabbed AI settings with per-mode provider
-memory, APIM record — meant to be split into logical commits before merging).
+generic auth config), `ccd395773` (browser OIDC sign-in), `8f07714ef` → split into
+`78129fe87` (vault + API-key migration + silent renewal, tabbed AI settings, APIM record),
+plus **2026-09-23, pushed to `priv/tdk`**: macOS enablement — `Security` framework link for
+the Keychain backend, `Tools/CMake/SignJasp.cmake` stable dev signing, whitespace trimming
+of pasted AI config fields, automatic greetings no longer open the sign-in browser (see §9).
 
 ### Committed as one temporary checkpoint — split before merging
 
@@ -268,9 +270,10 @@ Useful facts:
 
 ## 8. Next steps, in order
 
-**1. Split the temporary checkpoint `8f07714ef` into logical commits** (§2 has the
-inventory): error-bodies/privacy, vault + migration, AI settings tabs + intro lifecycle,
-docs.
+**1. Linux bring-up (in progress, 2026-09-23).** The libsecret backend loads at runtime —
+expect `available() == false` and the in-memory fallback on machines without a Secret
+Service. Flatpak needs the `--talk-name=org.freedesktop.secrets` grant (Phase 4). The
+checkpoint split is done: `78129fe87`.
 
 **2. Finish Phase 6 — privacy hardening.** *Mostly done in the working tree* (§2): the
 unconditional request-body log is gated behind `m_verboseLogging`, and `m_debugDumpEnabled` now
@@ -353,6 +356,9 @@ The high-value section. Most of these cost real time.
 | **A previous agent flooded context with the regex `entra\|Entra`** | It matches "**centra**l" in bundled jQuery/plotly. Scope searches with include-patterns or word-exact terms. |
 | **Git Bash `tar` fails on `C:\` paths** | Use PowerShell `System.IO.Compression.ZipFile` instead. |
 | **Don't `fetch` `fuget.org`** | Currently a squatted domain. |
+| **Ad-hoc dev builds re-prompt the Keychain on every rebuild** | arm64's linker signs ad-hoc, so every rebuild is a new signature, and Keychain item ACLs are signature-keyed — each vault item prompts for the login password again. Fixed by `Tools/CMake/SignJasp.cmake` (+ `JaspResign`, an always-run target in `Desktop/CMakeLists.txt`): signs with `LOCAL_CODESIGN_IDENTITY` (see `Tools/CMake/Config.cmake`) or the team Developer ID at build time, falling back to ad-hoc so the build never breaks. Items created by an ad-hoc build need one **Always Allow** per item, once; macOS has no bulk grant. Release builds (signed by `Pack.cmake`) never prompt — end users are unaffected. |
+| **Whitespace in the model field is invisible and fatal** | A leading space (`" gpt-5.4-mini"`, pasted from the portal) returns `DeploymentNotFound` — the checklist's rule (bare `404` = path, `DeploymentNotFound` = deployment name) held exactly. `aiconfigmodel` now trims endpoint/model/custom-model/auth fields in the setters **and** on load, so stored dirt self-heals. |
+| **The automatic greeting used to open the sign-in browser** | Any config edit (endpoint **and** model are in the conversation signature) → `clearChat()` → greeting → parked request → `ensureToken()` → browser, once per edit in the settings dialog. Fixed: `sendIntroMessage(bool allowSignIn)`; automatic paths skip the greeting when no usable token is cached. Interactive sign-in now starts only from: opening the chat window, the reset button, the sign-in button, **Test connection**, or sending a message. |
 
 ---
 

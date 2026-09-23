@@ -6,7 +6,7 @@
 | **Scope** | Identity-based auth for the AI chat feature (`AiBridge`) |
 | **Driver** | Enterprise customers require identity-based auth; no static API keys distributed to users |
 | **Decision** | **System browser + loopback PKCE** (QtNetworkAuth). **No third-party binaries.** |
-| **Last verified against** | `Desktop/ai/aiBridge.{h,cpp}`, `Desktop/auth/`, `Desktop/gui/aiconfigmodel.{h,cpp}`, Qt 6.11.2 |
+| **Last verified against** | `Desktop/ai/aiBridge.{h,cpp}`, `Desktop/auth/`, `Desktop/gui/aiconfigmodel.{h,cpp}`, Qt 6.11.2 — macOS arm64 end-to-end 2026-09-23 |
 
 ---
 
@@ -1228,8 +1228,8 @@ Debugging additions made while chasing the 401, all worth keeping:
 
 - [x] `Desktop/auth/secretvault.{h,cpp}` — generic key→blob vault, **Windows
       Credential Manager backend** (DPAPI-protected, user-visible in Control Panel).
-      macOS/Linux return `available() == false` and stay in memory until Keychain /
-      libsecret land — same behaviour as before, no regression.
+      macOS Keychain verified (2026-09-23); Linux stays in memory until libsecret
+      is exercised — same behaviour as before, no regression.
       `SecretStore` is **not** used for refresh tokens (hardcoded `kMasterKeySeed` =
       obfuscation); it is the intended *fallback* backend for non-token secrets only.
 - [x] `BrowserTokenProvider` persists the refresh token (plus the account name) per
@@ -1242,8 +1242,10 @@ Debugging additions made while chasing the 401, all worth keeping:
 - [ ] Sign-out / revocation UI that clears the vault entry deliberately.
 - [x] macOS Keychain + Linux Secret Service backends (libsecret loaded at runtime via
       `QLibrary`, so a missing library is a clean "unavailable" rather than a packaging
-      dependency). **Written but not compiled** — the Windows box has no macOS/Linux
-      toolchain; first CI run over these files is the real test.
+      dependency). **macOS compiled and verified end-to-end 2026-09-23** — the Keychain
+      backend needed `-framework Security` added to the `JASPDesktopLib` link list
+      (`Desktop/CMakeLists.txt`); sign-in survives a JASP restart via silent renewal.
+      Linux written but not yet run.
 - [x] Degradation policy encoded in the API: `SecretVault::Degrade::Never` for token-class
       secrets (write fails, caller reports), `ToEncryptedSettings` default for secrets a
       user typed and can revoke. `SecretStore` renamed to `EncryptedSettingsStore` and
@@ -1281,7 +1283,8 @@ Debugging additions made while chasing the 401, all worth keeping:
 
 - [ ] Multi-tenant consent; silent refresh; expiry mid-session.
 - [ ] CA compliant-device policy (pass + fail paths).
-- [ ] Non-Windows (macOS / Linux) sign-in.
+- [x] macOS sign-in — **verified 2026-09-23**, including refresh-token persistence
+      across restarts. Linux pending.
 - [ ] Add slots per `Tests/` conventions.
 
 ### Deferred — broker (conditional, licence-gated)

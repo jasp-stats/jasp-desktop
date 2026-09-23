@@ -197,6 +197,40 @@ target_link_libraries(
     JASPDesktopLib
   )
 
+if(APPLE)
+  # Keychain backend in Desktop/auth/secretvault.cpp (SecItemAdd et al.)
+  target_link_libraries(JASPDesktopLib PUBLIC "-framework Security")
+endif()
+
+if(APPLE)
+  # Re-sign the freshly linked JASP binary with a stable identity so the
+  # Keychain (SecretVault) recognises it across rebuilds — the linker's ad-hoc
+  # signature changes on every build, re-prompting for the login password.
+  # SignJasp.cmake resolves the best available identity at build time and
+  # falls back to ad-hoc when none is available, so this never breaks a build.
+  add_custom_command(TARGET JASP POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP")
+
+  # POST_BUILD only runs when the target relinks — a binary last signed by an
+  # environment without the identity (CI, a sandboxed terminal) keeps its
+  # ad-hoc signature through every subsequent no-op build. This always-run
+  # target re-signs on every default ("all") build, so a machine that does
+  # hold the identity repairs a stale ad-hoc signature on the first build.
+  add_custom_target(JaspResign ALL
+    DEPENDS JASP
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP (always)")
+endif()
+
 target_compile_definitions(JASPDesktopLib PUBLIC JASP_USES_QT_HERE)
 target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)
 

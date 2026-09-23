@@ -463,6 +463,10 @@ QString AIConfigModel::currentModel() const
 
 void AIConfigModel::setCurrentModel(const QString &v)
 {
+	// Whitespace from pasting is invisible in the UI and fatal on the wire
+	// (Azure: DeploymentNotFound, AADSTS errors, "Protocol unknown") — recorded
+	// twice in Docs/development/aiBridge. Trim at the door.
+	const QString t = v.trimmed();
 	auto *m = const_cast<AIModelEntry*>(currentModelEntry());
 	if (m)
 	{
@@ -471,11 +475,11 @@ void AIConfigModel::setCurrentModel(const QString &v)
 			ov = m_modelOverrides[m->id];
 		else
 			ov = freshModelOverrides(m);
-		if (ov.modelName == v && ov.modelNameSet) return;
-		ov.modelName = v;
+		if (ov.modelName == t && ov.modelNameSet) return;
+		ov.modelName = t;
 		ov.modelNameSet = true;
 		m_modelOverrides[m->id] = ov;
-		m->model = v;
+		m->model = t;
 	}
 	else
 	{
@@ -485,8 +489,8 @@ void AIConfigModel::setCurrentModel(const QString &v)
 		ProviderOverrides ov;
 		if (m_providerOverrides.contains(prov->id))
 			ov = m_providerOverrides[prov->id];
-		if (ov.customModel == v) return;
-		ov.customModel = v;
+		if (ov.customModel == t) return;
+		ov.customModel = t;
 		m_providerOverrides[prov->id] = ov;
 	}
 	emit currentModelChanged();
@@ -602,20 +606,21 @@ bool AIConfigModel::currentProviderIsUserEditable() const
 
 void AIConfigModel::setCurrentEndpoint(const QString &v)
 {
+	const QString t = v.trimmed(); // pasted URLs carry invisible whitespace — see setCurrentModel
 	const auto *prov = currentProvider();
 	if (!prov) return;
 
 	QString cur = currentEndpoint();
-	if (cur == v) return;
+	if (cur == t) return;
 
 	ProviderOverrides ov;
 	if (m_providerOverrides.contains(prov->id))
 		ov = m_providerOverrides[prov->id];
-	ov.endpoint = v;
+	ov.endpoint = t;
 	m_providerOverrides[prov->id] = ov;
 
 	auto *mutableProv = const_cast<AIProviderEntry*>(prov);
-	mutableProv->endpoint = v;
+	mutableProv->endpoint = t;
 
 	emit currentEndpointChanged();
 	saveUserData();
@@ -724,14 +729,15 @@ void AIConfigModel::setCurrentAuthMode(const QString &v)
 
 void AIConfigModel::setCurrentAuthAuthority(const QString &v)
 {
+	const QString t = v.trimmed();
 	const auto *prov = currentProvider();
 	if (!prov) return;
-	if (currentAuthAuthority() == v) return;
+	if (currentAuthAuthority() == t) return;
 
 	ProviderOverrides ov;
 	if (m_providerOverrides.contains(prov->id))
 		ov = m_providerOverrides[prov->id];
-	ov.authAuthority = v;
+	ov.authAuthority = t;
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentAuthAuthorityChanged();
@@ -740,14 +746,15 @@ void AIConfigModel::setCurrentAuthAuthority(const QString &v)
 
 void AIConfigModel::setCurrentAuthScope(const QString &v)
 {
+	const QString t = v.trimmed();
 	const auto *prov = currentProvider();
 	if (!prov) return;
-	if (currentAuthScope() == v) return;
+	if (currentAuthScope() == t) return;
 
 	ProviderOverrides ov;
 	if (m_providerOverrides.contains(prov->id))
 		ov = m_providerOverrides[prov->id];
-	ov.authScope = v;
+	ov.authScope = t;
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentAuthScopeChanged();
@@ -756,14 +763,15 @@ void AIConfigModel::setCurrentAuthScope(const QString &v)
 
 void AIConfigModel::setCurrentAuthClientId(const QString &v)
 {
+	const QString t = v.trimmed();
 	const auto *prov = currentProvider();
 	if (!prov) return;
-	if (currentAuthClientId() == v) return;
+	if (currentAuthClientId() == t) return;
 
 	ProviderOverrides ov;
 	if (m_providerOverrides.contains(prov->id))
 		ov = m_providerOverrides[prov->id];
-	ov.authClientId = v;
+	ov.authClientId = t;
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentAuthClientIdChanged();
@@ -1201,14 +1209,14 @@ void AIConfigModel::loadUserData()
 	{
 		QJsonObject o = it.value().toObject();
 		ProviderOverrides ov;
-		ov.endpoint      = o["endpoint"].toString();
+		ov.endpoint      = o["endpoint"].toString().trimmed();
 		ov.apiKey        = o["apiKey"].toString();   // legacy — migrated into SecretVault below
 		ov.currentModelId = o["currentModelId"].toString();
-		ov.customModel    = o["customModel"].toString();
+		ov.customModel    = o["customModel"].toString().trimmed();
 		if (o.contains("authMode"))         ov.authMode         = o["authMode"].toString();
-		if (o.contains("authAuthority"))    ov.authAuthority    = o["authAuthority"].toString();
-		if (o.contains("authScope"))        ov.authScope        = o["authScope"].toString();
-		if (o.contains("authClientId"))     ov.authClientId     = o["authClientId"].toString();
+		if (o.contains("authAuthority"))    ov.authAuthority    = o["authAuthority"].toString().trimmed();
+		if (o.contains("authScope"))        ov.authScope        = o["authScope"].toString().trimmed();
+		if (o.contains("authClientId"))     ov.authClientId     = o["authClientId"].toString().trimmed();
 		if (o.contains("authBackend"))      ov.authBackend      = o["authBackend"].toString();
 		if (o.contains("authHeaderName"))   ov.authHeaderName   = o["authHeaderName"].toString();
 		if (o.contains("authHeaderPrefix")) ov.authHeaderPrefix = o["authHeaderPrefix"].toString();
@@ -1262,7 +1270,7 @@ void AIConfigModel::loadUserData()
 			ov.messageExtraSet = true;
 		}
 		if (o.contains("modelName")) {
-			ov.modelName = o["modelName"].toString();
+			ov.modelName = o["modelName"].toString().trimmed();
 			ov.modelNameSet = true;
 		}
 		m_modelOverrides[it.key()] = ov;
