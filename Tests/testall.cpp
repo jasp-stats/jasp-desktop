@@ -322,6 +322,46 @@ void TestAll::testJaspDataImport()
 // setDataSetSize() pre-allocates rows before initFromLookups() is called, causing rowCount() > 0
 // when setValues() checks allTheSame — which skipped the label-detection loop and silently dropped
 // all SPSS value labels.
+///Cancelling the csv preview aborts the import from inside loadDataSet, which is after beginLoadingData() opened a model reset.
+///If that reset is never closed the whole of JASP draws nothing at all, which is what a blank window after Cancel comes down to.
+void TestAll::testCancelledImportLeavesTheModelUsable()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(true);	//true: this one asks for a delimiter, so it can be cancelled
+
+	QSignalSpy resetStarted(	_pkg, &QAbstractItemModel::modelAboutToBeReset);
+	QSignalSpy resetFinished(	_pkg, &QAbstractItemModel::modelReset);
+
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); //Otherwise it would not ask at all
+
+	//Answering with '\0' is what pressing Cancel in the preview window comes down to
+	QMetaObject::Connection cancelling = connect(DesktopCommunicator::singleton(), &DesktopCommunicator::askCsvDelimiterSignal,
+		[](const QString &, char) { DesktopCommunicator::singleton()->delimiterChosen('\0'); });
+
+	QDir csvDir(_testLibrary());
+	csvDir.cd("csv");
+
+	bool threw = false;
+
+	try
+	{
+		_importer->loadDataSet(fq(csvDir.absoluteFilePath("Data Import Test CSV.csv")), [](int){});
+	}
+	catch(const std::exception &)
+	{
+		threw = true; //"No data loaded", the way an aborted import always ends
+	}
+
+	disconnect(cancelling);
+
+	QVERIFY2(threw, "cancelling the preview should abort the import");
+	QVERIFY2(resetStarted.count() > 0, "the import should have started a model reset at all");
+	QCOMPARE(resetFinished.count(), resetStarted.count()); //Every begin got its end, so the model is usable again
+}
+
 void TestAll::testSavLabels()
 {
 	if(_pkg)	delete _pkg;

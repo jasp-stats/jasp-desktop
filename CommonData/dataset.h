@@ -84,6 +84,9 @@ public:
 			void			setShowRSyntax(		bool showRSyntax)					{ _showRSyntax		= showRSyntax;			dbUpdate(); }
 			char			csvDelimiter()		const								{ return _csvDelimiter; }
 			void			setCsvDelimiter(	char delimiter)						{ _csvDelimiter		= delimiter;			dbUpdate(); }
+			///Name of the locale the numbers of dataFilePath were read with, "" meaning none was chosen and the locale of the interface applies. See CsvPreviewModel.
+	const	std::string	&	importLocale()		const								{ return _importLocale; }
+			void			setImportLocale(	const std::string & localeName)		{ _importLocale		= localeName;			dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);
@@ -132,6 +135,7 @@ private:
 	bool						_dataFileSynch			= false,
 								_showRSyntax			= false;
 	char						_csvDelimiter			= '\0';
+	std::string					_importLocale			= "";
 	static stringset			_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
 	std::string					_description;
 };

@@ -685,7 +685,7 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		{
 			std::string	valueStr = valueLookup(i);
 			double		valueDbl = EmptyValues::missingValueDouble;
-			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl);
+			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl, useLocale); //useLocale is false whenever the values do not come from the user but from R or the database, and those always use the C-locale
 
 			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(valueStr)));
 		

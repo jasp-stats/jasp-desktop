@@ -20,6 +20,8 @@
 #include "csv/csv.h"
 #include "timers.h"
 #include "utilities/desktopcommunicator.h"
+#include "utilities/qutils.h"
+#include "columnutils.h"
 
 using namespace std;
 
@@ -61,6 +63,11 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 			delimiter = knownDelimiter;
 	}
 
+	//The preview dialog also decides in which locale the numbers of this file are written, see CsvPreviewModel.
+	//Installing it here means every column below is read with it instead of with the locale of the interface,
+	//Importer::loadDataSet and Importer::syncDataSet clear it again once we are done.
+	if (DesktopCommunicator::singleton()->hasKnownImportLocale())
+		QColumnUtils::readNumbersIn(DesktopCommunicator::singleton()->knownImportLocale());
 
 	csv.setDelimiter(delimiter);
 	csv.readLine(colNames);

@@ -121,6 +121,8 @@ public:
 	
     static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
 	static void					setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps);
+	static void					readNumbersIn(const QLocale & locale);	///< For an import written in another locale than the interface, until readNumbersInInterfaceLocale() is called
+	static void					readNumbersInInterfaceLocale();
 	
 
 private:

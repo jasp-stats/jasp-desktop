@@ -76,6 +76,19 @@ public:
 	QString									exampleFormatting()												const;
 	QStringList								altLanguages()													const { return _altLanguages; }
 	QStringList								altTerritories()												const { return _altTerritories; }
+
+	///The entries the language dropdown in the preferences offers ("en - American English"), in that same order.
+	///The csv import dialog offers this same list before Advanced is ticked, see CsvPreviewModel.
+	QStringList								languageEntryNames()											const;
+	///The locale behind such an entry, and the entry belonging to a locale ("" when JASP is not translated into that language)
+	QLocale									localeForEntryName(	const QString & entryName)					const;
+	QString									entryNameForLocale(	const QLocale & locale)						const;
+	///The territories a language is spoken in, sorted like altTerritories() but for any language and without touching the alternative-locale preference.
+	///Used by fillAltTerritories() and by the csv import dialog, which picks a locale of its own (see CsvPreviewModel).
+	QStringList								territoriesForLanguage(	const QString & nativeLanguageName)		const;
+	///The locale those two native names stand for, the inverse of nativeLanguageName()/nativeTerritoryName()
+	QLocale									localeForNames(			const QString & nativeLanguageName,
+																	const QString & nativeTerritoryName)	const;
 	
 
 	//This function (currentTranslationSuffix) should be made obsolete through the abolishment of all the _nl etc files:

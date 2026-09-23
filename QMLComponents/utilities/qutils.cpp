@@ -495,6 +495,38 @@ QString QColumnUtils::decimalPoint()
 }
 
 
+//How the interface reads numbers, kept so that an import that reads them in another locale can hand them back afterwards
+static ColumnUtils::toDoubleF	interfaceStringToDouble;
+static ColumnUtils::toIntF		interfaceStringToInt;
+
+static ColumnUtils::toDoubleF stringToDoubleFor(const QLocale & locale)
+{
+	return [locale](const std::string & str, double & dbl)
+	{
+		bool	isDouble	= false;
+				dbl			= locale.toDouble(tq(str), &isDouble);
+		
+		if(!isDouble)
+			dbl = EmptyValues::missingValueDouble;
+
+		return isDouble;
+	};
+}
+
+static ColumnUtils::toIntF stringToIntFor(const QLocale & locale)
+{
+	return [locale](const std::string & str, int & intVal)
+	{
+		bool isInt = false;
+		intVal = locale.toInt(tq(str), &isInt);
+
+		if(!isInt)
+			intVal = EmptyValues::missingValueInteger;
+
+		return isInt;
+	};
+}
+
 void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps)
 {
 	QLocale::setDefault(locale);
@@ -502,9 +534,7 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 	ColumnUtils::setDecimalPoint(				fq(locale.decimalPoint())	);
 	
 	static ColumnUtils::currencyF	altFuncCurToString;
-	static ColumnUtils::toDoubleF	altFuncToDouble;
 	static ColumnUtils::doubleF		altFuncToString;
-	static ColumnUtils::toIntF		altFuncToInt;
 	
 	altFuncToString = [locale, useThousandSeps](double dbl, int precision, bool sepas)
 	{
@@ -526,29 +556,21 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 		return fq(loc.toCurrencyString(dbl, tq(symbol)));
 	};
 
-	altFuncToDouble = [locale, useThousandSeps](const std::string & str, double & dbl)
-	{
-		bool	isDouble	= false;
-				dbl			= locale.toDouble(tq(str), &isDouble);
-		
-		if(!isDouble)
-			dbl = EmptyValues::missingValueDouble;
-
-		return isDouble;
-	};
-
-	altFuncToInt = [locale, useThousandSeps](const std::string & str, int & intVal)
-	{
-		bool isInt = false;
-		intVal = locale.toInt(tq(str), &isInt);
-
-		if(!isInt)
-			intVal = EmptyValues::missingValueInteger;
-
-		return isInt;
-	};
+	interfaceStringToDouble	= stringToDoubleFor(locale);
+	interfaceStringToInt	= stringToIntFor(locale);
 	
 	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
 	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
-	ColumnUtils::setExtraStringToNumber(		altFuncToDouble, altFuncToInt		);	
+	readNumbersInInterfaceLocale();
 }
+
+void QColumnUtils::readNumbersIn(const QLocale & locale)
+{
+	ColumnUtils::setExtraStringToNumber(stringToDoubleFor(locale), stringToIntFor(locale));
+}
+
+void QColumnUtils::readNumbersInInterfaceLocale()
+{
+	ColumnUtils::setExtraStringToNumber(interfaceStringToDouble, interfaceStringToInt);
+}
+

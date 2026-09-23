@@ -141,6 +141,66 @@ void LanguageModel::fillAltOptions()
 	fillAltTerritories();
 }
 
+QStringList LanguageModel::languageEntryNames() const
+{
+	QStringList entryNames;
+
+	for(const auto & codeAndInfo : _languages)	//A std::map keyed on the language code, so this comes out in the same order as the model behind the preferences
+		entryNames.push_back(codeAndInfo.second.entryName);
+
+	return entryNames;
+}
+
+QLocale LanguageModel::localeForEntryName(const QString & entryName) const
+{
+	for(const auto & codeAndInfo : _languages)
+		if(codeAndInfo.second.entryName == entryName)
+			return codeAndInfo.second.locale;
+
+	return _defaultLocale;
+}
+
+QString LanguageModel::entryNameForLocale(const QLocale & locale) const
+{
+	for(const auto & codeAndInfo : _languages)
+		if(codeAndInfo.second.locale.language() == locale.language())
+			return codeAndInfo.second.entryName;
+
+	return "";	//JASP is not translated into this language, so the preferences do not offer it either
+}
+
+QStringList LanguageModel::territoriesForLanguage(const QString & nativeLanguageName) const
+{
+	const QLocale::Language languageChosen = _nativeLanguageNameToEnum.count(nativeLanguageName) ? _nativeLanguageNameToEnum.at(nativeLanguageName) : _defaultLocale.language();
+
+	QSet<QString> nativeTerritoryNames;
+
+	for(const QLocale & l : QLocale::matchingLocales(languageChosen, QLocale::AnyScript, QLocale::AnyTerritory))
+		nativeTerritoryNames.insert(l.nativeTerritoryName());
+
+	nativeTerritoryNames.remove("");
+
+	QStringList territories(nativeTerritoryNames.begin(), nativeTerritoryNames.end());
+
+	std::sort(territories.begin(), territories.end(), [](const QString & l, const QString & r)
+	{
+		return l.toLower() < r.toLower();
+	});
+
+	return territories;
+}
+
+QLocale LanguageModel::localeForNames(const QString & nativeLanguageName, const QString & nativeTerritoryName) const
+{
+	const QLocale::Language languageChosen = _nativeLanguageNameToEnum.count(nativeLanguageName) ? _nativeLanguageNameToEnum.at(nativeLanguageName) : _defaultLocale.language();
+
+	for(const QLocale & l : QLocale::matchingLocales(languageChosen, QLocale::AnyScript, QLocale::AnyTerritory))
+		if(l.nativeTerritoryName() == nativeTerritoryName)
+			return l;
+
+	return QLocale(languageChosen);
+}
+
 void LanguageModel::fillAltTerritories()
 {
 	QLocale::Language languageChosen = _currentAltLanguage == "" ? _defaultLocale.language() : _nativeLanguageNameToEnum[_currentAltLanguage];
@@ -154,27 +214,17 @@ void LanguageModel::fillAltTerritories()
 	QLocale::Territory	prevTer							= _nativeTerritoryNameToEnum.count(_currentAltTerritory) ? _nativeTerritoryNameToEnum.at(_currentAltTerritory) : QLocale::Territory::AnyTerritory;
 	
 			
-	QSet<QString> nativeTerritoryNames;
 	_nativeTerritoryNameToEnum.clear();
 
 	for(QLocale & l : languageLocales)
 	{
-		QString territory = l.nativeTerritoryName();
-		
-		nativeTerritoryNames.insert(territory);
-		_nativeTerritoryNameToEnum [territory] = l.territory();
+		_nativeTerritoryNameToEnum [l.nativeTerritoryName()] = l.territory();
 		
 		if(prevTer == l.territory())		
 			previouslyChosenTerritoryFound	= true;
 	}
 	
-	nativeTerritoryNames.remove("");
-	_altTerritories = QStringList(nativeTerritoryNames.begin(), nativeTerritoryNames.end());
-	
-	std::sort(_altTerritories.begin(), _altTerritories.end(), [](const QString & l, const QString & r)
-	{
-		return l.toLower() < r.toLower();
-	});
+	_altTerritories = territoriesForLanguage(_currentAltLanguage == "" ? _defaultLocale.nativeLanguageName() : _currentAltLanguage);
 	
 	emit altTerritoriesChanged();
 	

@@ -17,6 +17,19 @@
 //
 #include "testcsvpreviewmodel.h"
 #include "utilities/csvpreviewmodel.h"
+#include "utilities/desktopcommunicator.h"
+#include "utilities/languagemodel.h"
+#include "utilities/settings.h"
+#include "columnutils.h"
+#include "utilities/qutils.h"
+#include <QLocale>
+
+void TestCsvPreviewModel::initTestCase()
+{
+	//CsvPreviewModel offers the languages and territories that LanguageModel knows about, so there has to be one
+	Settings::informSettingsThatThisIsATest();
+	_languageModel = new LanguageModel(nullptr, nullptr, this);
+}
 
 
 void TestCsvPreviewModel::testCsvParsing()
@@ -65,7 +78,8 @@ void TestCsvPreviewModel::testDifferentDelimiters()
     model.preparePreview(semicolonData.toStdString().c_str(), ';');
     QCOMPARE(model.columnCount(), 3);
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("\"1,2\""));
-	QCOMPARE(model.data(model.index(1, 1), Qt::DisplayRole).toString(), QString("\"1,234\""));
+	//A comma with three digits behind it is a thousands separator in C and in English alike, so this is a number and not a label
+	QCOMPARE(model.data(model.index(1, 1), Qt::DisplayRole).toString(), QString("1234"));
 	QCOMPARE(model.data(model.index(1, 2), Qt::DisplayRole).toString(), QString("1.2"));
 
     // Tab delimiter
@@ -75,5 +89,189 @@ void TestCsvPreviewModel::testDifferentDelimiters()
     QCOMPARE(model.data(model.index(0, 2), Qt::DisplayRole).toString(), QString("Col3"));
 }
 
+///The preview reads numbers with the locale chosen in the dialog, not with the one of the interface.
+///A dot means something very different in German than it does in English.
+void TestCsvPreviewModel::testImportLocale()
+{
+	CsvPreviewModel model;
+
+	LanguageModel * languages = LanguageModel::lang();
+
+	const QString	german	= languages->entryNameForLocale(QLocale(QLocale::German)),
+					english	= languages->entryNameForLocale(QLocale(QLocale::English));
+
+	//The short list is the very same one the preferences offer, so entries carry the language code: "de - Deutsch"
+	QVERIFY(!german.isEmpty());
+	QVERIFY( german.startsWith("de - "));
+	QCOMPARE(model.languages(), languages->languageEntryNames());
+	QVERIFY( model.languages().contains(german));
+	QVERIFY( model.languages().contains(english));
+
+	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
+
+	//The dropdown opens on language(), so languages() has to offer it
+	QVERIFY2(model.languages().contains(model.language()), qPrintable("languages() does not offer " + model.language()));
+
+	//In English a dot is a decimal point, so this column holds eighty-six point something
+	model.setLanguage(english);
+	QCOMPARE(model.language(),		english);
+	QCOMPARE(model.importLocale().language(), QLocale::English);
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("86.298"));
+
+	//In German that same dot is a thousands separator, so this column is eighty-six thousand, without reloading the file
+	model.setLanguage(german);
+	QCOMPARE(model.language(),		german);
+	QCOMPARE(model.importLocale().language(), QLocale::German);
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("86298"));
+
+	//The example tells the user exactly that, before they press Load
+	QVERIFY(model.parseExample().contains("86298"));
+
+	model.setLanguage(english);
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("86.298"));
+
+	QColumnUtils::readNumbersInInterfaceLocale(); //Importer::loadDataSet does this in the real application
+}
+
+///Closing the dialog has to hand the locale to the importer, which is waiting on another thread
+void TestCsvPreviewModel::testImportLocaleIsHandedToTheImporter()
+{
+	CsvPreviewModel model;
+
+	DesktopCommunicator::singleton()->clearKnownImportLocale();
+	QVERIFY(!DesktopCommunicator::singleton()->hasKnownImportLocale());
+
+	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
+	model.setLanguage(LanguageModel::lang()->entryNameForLocale(QLocale(QLocale::German)));
+
+	model.setVisible(false); //What pressing Load or Cancel comes down to
+
+	QVERIFY(DesktopCommunicator::singleton()->hasKnownImportLocale());
+	QCOMPARE(DesktopCommunicator::singleton()->knownImportLocale().language(), QLocale::German);
+
+	DesktopCommunicator::singleton()->clearKnownImportLocale();
+	QColumnUtils::readNumbersInInterfaceLocale();
+}
+
+///The dialog opens on whatever language the preferences are set to, also when they were changed since the previous import
+void TestCsvPreviewModel::testLocaleFallsBackOnTheInterface()
+{
+	CsvPreviewModel model;
+
+	LanguageModel * languages = LanguageModel::lang();
+
+	const QString german = languages->entryNameForLocale(QLocale(QLocale::German));
+
+	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
+
+	//Straight out of the dialog, before anyone touched anything
+	QCOMPARE(model.language(),		languages->currentLanguage());
+	QCOMPARE(model.importLocale(),	languages->localeForEntryName(languages->currentLanguage()));
+
+	model.setLanguage(german);
+	QCOMPARE(model.importLocale().language(), QLocale::German);
+
+	//Which is where every import starts, see preparePreview below
+	model.resetLocaleToInterface();
+
+	QCOMPARE(model.language(),		languages->currentLanguage());
+	QCOMPARE(model.importLocale(),	languages->localeForEntryName(languages->currentLanguage()));
+
+	//And opening the dialog again re-reads the preferences rather than keeping what the previous import used,
+	//which is what makes a language changed in Preferences/Interface show up here as the new default
+	model.setLanguage(german);
+	QCOMPARE(model.importLocale().language(), QLocale::German);
+
+	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
+
+	QCOMPARE(model.language(),		languages->currentLanguage());
+	QCOMPARE(model.importLocale(),	languages->localeForEntryName(languages->currentLanguage()));
+
+	QColumnUtils::readNumbersInInterfaceLocale();
+}
+
+///Hundreds of languages are hard to pick from, so only the ones JASP itself speaks are offered until More languages is ticked
+void TestCsvPreviewModel::testMoreLanguagesWidensTheLanguageList()
+{
+	CsvPreviewModel model;
+
+	LanguageModel * languages = LanguageModel::lang();
+
+	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
+
+	QVERIFY(!model.moreLanguages());
+
+	const QStringList shortList = model.languages();
+
+	QCOMPARE(shortList, languages->languageEntryNames());
+
+	model.setMoreLanguages(true);
+
+	const QStringList wholeRange = model.languages();
+
+	QCOMPARE(wholeRange, languages->altLanguages());
+	QVERIFY (wholeRange.size() > shortList.size());
+
+	//The whole range names its languages natively, so the same locale is shown under another name and has to stay selectable
+	QVERIFY2(wholeRange.contains(model.language()), qPrintable("the whole range does not offer " + model.language()));
+
+	//A language JASP is not translated into can only be picked while More languages is on, so folding it away has to let go of it again
+	QString notTranslatedInto;
+
+	for(const QString & language : wholeRange)
+		if(languages->entryNameForLocale(languages->localeForNames(language, "")).isEmpty())
+		{
+			notTranslatedInto = language;
+			break;
+		}
+
+	QVERIFY(!notTranslatedInto.isEmpty());
+
+	model.setLanguage(notTranslatedInto);
+	QCOMPARE(model.language(), notTranslatedInto);
+
+	model.setMoreLanguages(false);
+
+	QVERIFY (model.languages().contains(model.language()));
+	QCOMPARE(model.language(),		languages->currentLanguage());
+	QCOMPARE(model.importLocale(),	languages->localeForEntryName(languages->currentLanguage()));
+
+	//A language JASP does speak survives the switch both ways, only its name changes with the list
+	model.setMoreLanguages(true);
+	model.setLanguage(QLocale(QLocale::German).nativeLanguageName());
+	QCOMPARE(model.importLocale().language(), QLocale::German);
+
+	model.setMoreLanguages(false);
+	QCOMPARE(model.language(),					languages->entryNameForLocale(QLocale(QLocale::German)));
+	QCOMPARE(model.importLocale().language(),	QLocale::German);
+
+	QColumnUtils::readNumbersInInterfaceLocale();
+}
+
 
 QTEST_MAIN(TestCsvPreviewModel)
+
+///Integers are tried before doubles when a column is read, so they have to follow the import locale as well: in English "1,234"
+///is the integer 1234, while a German file means one point two three four by it.
+void TestCsvPreviewModel::testImportLocaleAlsoReadsIntegers()
+{
+	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(QLocale::English, QLocale::UnitedStates), true);
+
+	int		anInt	= 0;
+	double	aDouble	= 0;
+
+	QVERIFY (ColumnUtils::getIntValue("1,234", anInt));
+	QCOMPARE(anInt, 1234);
+
+	QColumnUtils::readNumbersIn(QLocale(QLocale::German));
+
+	QVERIFY(!ColumnUtils::getIntValue("1,234", anInt));
+	QVERIFY (ColumnUtils::getDoubleValue("1,234", aDouble, true));
+	QCOMPARE(aDouble, 1.234);
+
+	//And afterwards the interface reads them its own way again
+	QColumnUtils::readNumbersInInterfaceLocale();
+
+	QVERIFY (ColumnUtils::getIntValue("1,234", anInt));
+	QCOMPARE(anInt, 1234);
+}

@@ -72,6 +72,8 @@ Window
 			RowLayout
 			{
 				id:				delimiterRow
+				anchors.top:	parent.top
+				anchors.left:	parent.left
 				spacing:		jaspTheme.rowSpacing
 
 				JC.Label
@@ -97,7 +99,7 @@ Window
 						// Treat the delimiter buttons as a radio group: Tab exits the group,
 						// Left/Right navigate within it.
 						activeFocusOnTab:		false
-						KeyNavigation.tab:		advanced
+						KeyNavigation.tab:		importLanguage
 						KeyNavigation.backtab:	cancelButton
 
 						Keys.onLeftPressed: (event) =>
@@ -115,31 +117,109 @@ Window
 					}
 				}
 			}
-
-			JC.CheckBox
-			{
-				id:						advanced
-				anchors.right:			parent.right
-				anchors.rightMargin:	jaspTheme.generalAnchorMargin
-				anchors.verticalCenter: parent.verticalCenter
-				label:					qsTr("Advanced")
-				KeyNavigation.priority:	KeyNavigation.BeforeItem
-				KeyNavigation.tab:		submitButton
-				KeyNavigation.backtab:	delimiterRepeater.itemAt(0)
-			}
 		}
 	}
 
-	PrefsLanguage
+	// Which locale the numbers in this file are written in. It starts out as the language JASP itself is set to
+	// but only applies to this import, the preferences are left alone. See CsvPreviewModel.
+	Rectangle
 	{
-		id:					prefLanguage
+		id:					importLocaleRect
 		anchors.top:		delimetersRect.bottom
 		anchors.left:		parent.left
 		anchors.right:		parent.right
 		anchors.margins:	windowPadding
-		visible:			advanced.checked
-		nextTabItem:		submitButton
-		showHelpLink:		false
+		height:				localeColumn.implicitHeight + 2 * jaspTheme.generalAnchorMargin
+		color:				jaspTheme.uiBackground
+
+		// The whole range holds names like "South Georgia & South Sandwich Islands", wider than this entire window,
+		// so the closed field is capped (it elides) while the popup stays as wide as it needs to be.
+		property real fieldWidth: 150 * jaspTheme.uiScale
+
+		Column
+		{
+			id:					localeColumn
+			anchors.top:		parent.top
+			anchors.left:		parent.left
+			anchors.right:		parent.right
+			anchors.margins:	jaspTheme.generalAnchorMargin
+			spacing:			jaspTheme.rowSpacing
+
+			Row
+			{
+				id:			localeRow
+				spacing:	jaspTheme.rowSpacing
+
+				JC.DropDown
+				{
+					id:						importLanguage
+					label:					qsTr("Read numbers as written in")
+					values:					csvPreviewModel.languages
+					startValue:				csvPreviewModel.language
+					value:					csvPreviewModel.language
+					addEmptyValue:			false
+					control.width:			Math.min(control.implicitWidth, importLocaleRect.fieldWidth)
+					onValueChanged:			if(value !== "") csvPreviewModel.language = value
+					KeyNavigation.priority:	KeyNavigation.BeforeItem
+					KeyNavigation.tab:		moreLanguages
+					KeyNavigation.backtab:	delimiterRepeater.itemAt(0)
+				}
+
+				JC.CheckBox
+				{
+					id:						moreLanguages
+					anchors.verticalCenter:	importLanguage.verticalCenter
+					label:					qsTr("More languages")
+					toolTip:				qsTr("Offer every language instead of the ones JASP is translated into, and let the territory be chosen as well.")
+					onCheckedChanged:		csvPreviewModel.moreLanguages = checked
+					KeyNavigation.priority:	KeyNavigation.BeforeItem
+					KeyNavigation.tab:		checked ? importTerritory : submitButton
+					KeyNavigation.backtab:	importLanguage
+				}
+			}
+
+			JC.DropDown
+			{
+				id:						importTerritory
+				label:					qsTr("Territory")
+				values:					csvPreviewModel.territories
+				startValue:				csvPreviewModel.territory
+				value:					csvPreviewModel.territory
+				addEmptyValue:			false
+				visible:				moreLanguages.checked
+				// Widen the label so this field lines up right under the language field instead of under its label
+				controlLabel.width:		Math.max(importTerritory.controlLabel.implicitWidth, importLanguage.controlLabel.width)
+				control.width:			Math.min(control.implicitWidth, importLocaleRect.fieldWidth)
+				onValueChanged:			if(value !== "") csvPreviewModel.territory = value
+				KeyNavigation.priority:	KeyNavigation.BeforeItem
+				KeyNavigation.tab:		submitButton
+				KeyNavigation.backtab:	moreLanguages
+			}
+
+			// What that locale does to a number, so the user can see before pressing Load that 86.298 is not always 86.298
+			Rectangle
+			{
+				implicitWidth:		parseExampleText.implicitWidth
+				implicitHeight:		parseExampleText.implicitHeight
+				width:				implicitWidth
+				height:				implicitHeight
+
+				color:				jaspTheme.white
+				border.width:		1
+				border.color:		jaspTheme.borderColor
+				radius:				jaspTheme.borderRadius
+
+				Text
+				{
+					id:				parseExampleText
+
+					text:			csvPreviewModel.parseExample
+					color:			jaspTheme.textEnabled
+					font:			jaspTheme.font
+					padding:		jaspTheme.itemPadding
+				}
+			}
+		}
 	}
 
 	// Data Preview
@@ -149,7 +229,7 @@ Window
 		{
 			left:				parent.left
 			right:				parent.right
-			top:				prefLanguage.visible ? prefLanguage.bottom : delimetersRect.bottom
+			top:				importLocaleRect.bottom
 			bottom:				buttons.top
 			margins:			windowPadding
 		}
@@ -247,7 +327,7 @@ Window
 			onClicked: csvPreviewModel.visible = false
 			KeyNavigation.priority:	KeyNavigation.BeforeItem
 			KeyNavigation.tab:		cancelButton
-			KeyNavigation.backtab:	advanced
+			KeyNavigation.backtab:	moreLanguages.checked ? importTerritory : moreLanguages
 		}
 
 		JC.Button

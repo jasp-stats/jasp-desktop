@@ -35,6 +35,7 @@
 #include "utils.h"
 #include "log.h"
 #include "utilities/desktopcommunicator.h"
+#include "utilities/qutils.h"
 #include "datasetpackage.h"
 
 using namespace std;
@@ -75,11 +76,16 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 	if (importer)
 	{
+		DesktopCommunicator::singleton()->clearKnownImportLocale(); //Whatever an earlier, possibly aborted, import left behind has nothing to do with this file
 		importer->loadDataSet(locator, progress);
 		char chosenDelimiter = DesktopCommunicator::singleton()->knownCsvDelimiter();
 		if (chosenDelimiter != '\0' && DataSetPackage::pkg()->dataSet())
 			DataSetPackage::pkg()->dataSet()->setCsvDelimiter(chosenDelimiter);
+		//Remember which locale the numbers were read with, so synchronising this same file later does not suddenly read them differently
+		if (DesktopCommunicator::singleton()->hasKnownImportLocale() && DataSetPackage::pkg()->dataSet())
+			DataSetPackage::pkg()->dataSet()->setImportLocale(fq(DesktopCommunicator::singleton()->knownImportLocale().name()));
 		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
+		DesktopCommunicator::singleton()->clearKnownImportLocale();
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
@@ -98,9 +104,20 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 	if (importer)
 	{
 		if (DataSetPackage::pkg()->dataSet())
+		{
 			DesktopCommunicator::singleton()->setKnownCsvDelimiter(DataSetPackage::pkg()->dataSet()->csvDelimiter());
+
+			//Read the file the way it was read when it was imported, otherwise a sync would silently reinterpret every number in it
+			const std::string & importLocale = DataSetPackage::pkg()->dataSet()->importLocale();
+
+			if(!importLocale.empty())	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(tq(importLocale)));
+			else						DesktopCommunicator::singleton()->clearKnownImportLocale(); //No locale was ever chosen for this file, so read it like the rest of JASP does
+		}
+		else
+			DesktopCommunicator::singleton()->clearKnownImportLocale();
 		importer->syncDataSet(locator, progress);
 		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
+		DesktopCommunicator::singleton()->clearKnownImportLocale();
 		delete importer;
 	}
 }

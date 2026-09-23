@@ -284,7 +284,7 @@ void DataSet::dbCreate()
 	db().transactionWriteBegin();
 
 	//The variables are probably empty though:
-	_dataSetID	= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description, _databaseJson, _emptyValues->toJson().toStyledString(), _dataFileSynch, _showRSyntax, _csvDelimiter);
+	_dataSetID	= db().dataSetInsert(_dataFilePath, _dataFileTimestamp, _description, _databaseJson, _emptyValues->toJson().toStyledString(), _dataFileSynch, _showRSyntax, _csvDelimiter, _importLocale);
 	
 	assert(_dataSetID == 1);
 	
@@ -300,7 +300,7 @@ void DataSet::dbCreate()
 void DataSet::dbUpdate()
 {
 	assert(_dataSetID > 0);
-	db().dataSetUpdate(_dataSetID, _dataFilePath, _dataFileTimestamp, _description, _databaseJson, _emptyValues->toJson().toStyledString(), _dataFileSynch, _showRSyntax, _csvDelimiter);
+	db().dataSetUpdate(_dataSetID, _dataFilePath, _dataFileTimestamp, _description, _databaseJson, _emptyValues->toJson().toStyledString(), _dataFileSynch, _showRSyntax, _csvDelimiter, _importLocale);
 	incRevision();
 }
 
@@ -326,7 +326,7 @@ void DataSet::dbLoad(int index, std::function<void(float)> progressCallback, Ver
 
 	std::string emptyVals;
 
-	db().dataSetLoad(_dataSetID, _dataFilePath, _dataFileTimestamp, _description, _databaseJson, emptyVals, _revision, _dataFileSynch, _showRSyntax, _csvDelimiter);
+	db().dataSetLoad(_dataSetID, _dataFilePath, _dataFileTimestamp, _description, _databaseJson, emptyVals, _revision, _dataFileSynch, _showRSyntax, _csvDelimiter, _importLocale);
 	progressCallback(0.1);
 
 	if(!_filter)
