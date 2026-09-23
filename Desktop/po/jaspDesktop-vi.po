@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-17 06:01+0000\n"
-"Last-Translator: Thành Khôi Lê <lethanhkhoi@gmail.com>\n"
+"PO-Revision-Date: 2026-09-23 09:25+0000\n"
+"Last-Translator: quocthinh1709 <hqthinh@outlook.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/jasp/"
 "jaspdesktop/vi/>\n"
 "Language: vi\n"
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 "X-Qt-Contexts: true\n"
 
 msgctxt "ComponentsList|"
@@ -518,7 +518,7 @@ msgstr "Thêm cột đã tính toán"
 #, qt-format
 msgctxt "BreadCrumbs|"
 msgid "Back to %1"
-msgstr "Quay  lại %1"
+msgstr "Quay lại %1"
 
 msgctxt "BreadCrumbs|"
 msgid "You are here"
@@ -621,18 +621,20 @@ msgid ""
 "Continue where you left of the next time JASP starts.\n"
 "Enabling this option makes JASP remember which Modules you've enabled."
 msgstr ""
+"Tiếp tục từ vị trí đã dừng ở lần khởi động JASP tiếp theo.\n"
+"Bật tùy chọn này để JASP ghi nhớ các mô-đun đã được kích hoạt."
 
 msgctxt "PrefsAdvanced|"
 msgid "To use JASP Modules enable this option."
-msgstr ""
+msgstr "Bạt tùy chọn này để sử dụng các mô-đun JASP."
 
 msgctxt "PrefsAdvanced|"
 msgid "Browse to your JASP Module folder."
-msgstr ""
+msgstr "Chọn thư mục mô-đun JASP."
 
 msgctxt "PrefsAdvanced|"
 msgid "Change the CRAN repository: "
-msgstr ""
+msgstr "Thay đổi kho lưu trữ CRAN: "
 
 msgctxt "PrefsAdvanced|"
 msgid "Generate markdown files for help"
@@ -802,13 +804,15 @@ msgstr ""
 
 msgctxt "PrefsUI|"
 msgid "Scroll speed (pix/s): "
-msgstr ""
+msgstr "Tốc độ cuộn (pixel/giây): "
 
 msgctxt "PrefsUI|"
 msgid ""
 "Set the speed with which you can scroll in the options, dataviewer and other "
 "places."
 msgstr ""
+"Thiết lập tốc độ cuộn trong các cửa sổ tùy chọn, trình xem dữ liệu và các "
+"khu vực khác."
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -817,15 +821,23 @@ msgid ""
 "glitches, cannot see results or anything even) might fix them.\n"
 "Analyses will still be just as fast though."
 msgstr ""
+"Chuyển sang chế độ đồ họa an toàn hơn (kết xuất bằng phần mềm).\n"
+"Tùy chọn này có thể làm giảm tốc độ phản hồi của giao diện, nhưng có thể "
+"khắc phục một số sự cố hiển thị như lỗi đồ họa, hiện tượng hiển thị bất "
+"thường hoặc không hiển thị kết quả phân tích.\n"
+"Tốc độ thực hiện các phân tích thống kê vẫn không bị ảnh hưởng."
 
 msgctxt "PrefsUI|"
 msgid ""
 "Turns off all animations, this is implied when \"Safe Graphics Mode\" is on."
 msgstr ""
+"Tắt tất cả hiệu ứng động. Tùy chọn này được tự động kích hoạt khi bật \"Chế "
+"độ đồ họa an toàn\"."
 
 msgctxt "PrefsUI|"
 msgid "Already disabled animations because \"Safe Graphics Mode\" is on"
 msgstr ""
+"Các hiệu ứng động đã được tắt do \"Chế độ đồ họa an toàn\" đang được bật"
 
 msgctxt "PrefsUI|"
 msgid ""
@@ -833,214 +845,227 @@ msgid ""
 "made by Qt. This might solve some problems on Windows where JASP crashes on "
 "pressing \"Browse\"."
 msgstr ""
+"Khi tắt tùy chọn này, JASP sẽ sử dụng hộp thoại tệp của Qt thay vì hộp thoại "
+"tệp mặc định của hệ điều hành. Điều này có thể khắc phục một số sự cố trên "
+"Windows khiến JASP bị đóng đột ngột khi nhấn \"Duyệt\"."
 
 msgctxt "RecentFiles|"
 msgid "Recent Files"
-msgstr ""
+msgstr "Tệp gần đây"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code clear(ed)"
-msgstr ""
+msgstr "Đã xóa mã của cột tính toán"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Computed columns code applied"
-msgstr ""
+msgstr "Đã áp dụng mã cho cột tính toán"
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Please enter all arguments - see fields marked in red."
 msgstr ""
+"Vui lòng nhập đầy đủ các tham số bắt buộc - xem các trường được đánh dấu màu "
+"đỏ."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Only one formula per computed column allowed."
-msgstr ""
+msgstr "Mỗi cột tính toán chỉ được phép chứa một công thức."
 
 msgctxt "ComputedColumnsConstructor|"
 msgid "Welcome to the drag and drop computed column constructor!"
-msgstr ""
+msgstr "Chào mừng đến với trình tạo cột tính toán bằng thao tác kéo và thả!"
 
 msgctxt "DropTrash|"
 msgid "Dump unwanted snippets here; double-click to erase the entire slate"
 msgstr ""
+"Thả các đoạn thành phần không cần thiết vào đây; nhấp đúp để xóa toàn bộ "
+"vùng soạn thảo"
 
 msgctxt "OperatorSelector|"
 msgid "Addition"
-msgstr ""
+msgstr "Phép cộng"
 
 msgctxt "OperatorSelector|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Phép trừ"
 
 msgctxt "OperatorSelector|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Phép nhân"
 
 msgctxt "OperatorSelector|"
 msgid "Division"
-msgstr ""
+msgstr "Phép chia"
 
 msgctxt "OperatorSelector|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Lũy thừa (2^3 cho kết quả 8)"
 
 msgctxt "OperatorSelector|"
 msgid "Square root"
-msgstr ""
+msgstr "Căn bậc hai"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr ""
+"Phép chia lấy dư (Modulo): trả về số dư của phép chia. Ví dụ: 3%2 cho kết "
+"quả 1"
 
 msgctxt "OperatorSelector|"
 msgid "returns logicals and can be the root of a filter formula"
 msgstr ""
+"trả về giá trị logic và có thể được sử dụng làm điều kiện gốc của công thức "
+"lọc"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Không bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Nhỏ hơn: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Nhỏ hơn hoặc bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lớn hơn: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lớn hơn hoặc bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "And: %1"
-msgstr ""
+msgstr "Và: %1"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Hoặc: %1"
 
 msgctxt "OperatorSelector|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Phân nhóm: áp dụng bộ lọc riêng biệt cho từng nhóm con"
 
 #, qt-format
 msgctxt "OperatorSelector|"
 msgid "not: %1"
-msgstr ""
+msgstr "phủ định (not): %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Addition"
-msgstr ""
+msgstr "Phép cộng"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Subtraction"
-msgstr ""
+msgstr "Phép trừ"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Multiplication"
-msgstr ""
+msgstr "Phép nhân"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Division"
-msgstr ""
+msgstr "Phép chia"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Power (2^3 returns 8)"
-msgstr ""
+msgstr "Lũy thừa (2^3 trả về kết quả 8)"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Square root"
-msgstr ""
+msgstr "Căn bậc hai"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr ""
+"Chia lấy dư (Modulo): trả về số dư của phép chia. Ví dụ: 3%2 cho kết quả 1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "returns logicals"
-msgstr ""
+msgstr "trả về giá trị logic"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Equality: %1"
-msgstr ""
+msgstr "Bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Inequality: %1"
-msgstr ""
+msgstr "Không bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Nhỏ hơn: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Less than or equal to: %1"
-msgstr ""
+msgstr "Nhỏ hơn hoặc bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Lớn hơn: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Greater than or equal to: %1"
-msgstr ""
+msgstr "Lớn hơn hoặc bằng: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "And: %1"
-msgstr ""
+msgstr "Và: %1"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Or: %1"
-msgstr ""
+msgstr "Hoặc: %1"
 
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Split: applies filter separately to each subgroup"
-msgstr ""
+msgstr "Phân nhóm: áp dụng bộ lọc riêng biệt cho từng nhóm con"
 
 #, qt-format
 msgctxt "OperatorSelectorComputedColumns|"
 msgid "Not: %1"
-msgstr ""
+msgstr "Not: %1"
 
 msgctxt "FilterWindow|"
 msgid "absolute value"
-msgstr ""
+msgstr "giá trị tuyệt đối"
 
 msgctxt "FilterWindow|"
 msgid "standard deviation"
-msgstr ""
+msgstr "độ lệch chuẩn"
 
 msgctxt "FilterWindow|"
 msgid "variance"
-msgstr ""
+msgstr "phương sai"
 
+#, fuzzy
 msgctxt "FilterWindow|"
 msgid "summation"
-msgstr ""
+msgstr "phép tính tổng"
 
 msgctxt "FilterWindow|"
 msgid "product of values"
@@ -1056,23 +1081,23 @@ msgstr ""
 
 msgctxt "FilterWindow|"
 msgid "mean"
-msgstr ""
+msgstr "trung bình"
 
 msgctxt "FilterWindow|"
 msgid "rounds y to n decimals"
-msgstr ""
+msgstr "làm tròn y đến n số thập phân"
 
 msgctxt "FilterWindow|"
 msgid "returns number of elements in y"
-msgstr ""
+msgstr "trả về số phần tử của y"
 
 msgctxt "FilterWindow|"
 msgid "median"
-msgstr ""
+msgstr "trung vị"
 
 msgctxt "FilterWindow|"
 msgid "if-else statement"
-msgstr ""
+msgstr "câu lệnh if-else"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -1132,7 +1157,7 @@ msgstr ""
 
 msgctxt "HelpWindow|"
 msgid "JASP Help"
-msgstr ""
+msgstr "Trợ giúp về JASP"
 
 msgctxt "HelpWindow|"
 msgid "Search for:"
@@ -1140,19 +1165,19 @@ msgstr ""
 
 msgctxt "JagsTableView|"
 msgid "Add Data"
-msgstr ""
+msgstr "Thêm dữ liệu"
 
 msgctxt "JagsTableView|"
 msgid "Delete Data"
-msgstr ""
+msgstr "Xóa dữ liệu"
 
 msgctxt "JagsTableView|"
 msgid "Reset"
-msgstr ""
+msgstr "Đặt lại"
 
 msgctxt "MainPage|"
 msgid "Hide data"
-msgstr ""
+msgstr "Ẩn dữ liệu"
 
 msgctxt "MainPage|"
 msgid "Show data"
@@ -5658,11 +5683,11 @@ msgstr ""
 
 msgctxt "ModulesMenu|"
 msgid "Cancel"
-msgstr ""
+msgstr "Hủy"
 
 msgctxt "ModulesMenu|"
 msgid "Cancel download"
-msgstr ""
+msgstr "Hủy tải về"
 
 #, qt-format
 msgctxt "Modules::DynamicModules|"
