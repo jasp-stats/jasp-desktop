@@ -23,6 +23,11 @@
 #ifndef TOKENPROVIDER_H
 #define TOKENPROVIDER_H
 
+// OIDC sign-in (the browser backend, the OidcConfig surface) is a PRO-build
+// feature: BrowserTokenProvider is compiled only under -DPRO, and AiBridge/
+// AIConfigModel gate their oidc branches likewise. Non-PRO builds ship API-key
+// auth only — see plan §4b and the brief.
+
 #include <QObject>
 #include <QString>
 #include <QDateTime>
@@ -37,6 +42,17 @@ struct OidcConfig
 	QString clientId;    ///< the app registration; empty means "the JASP default"
 	int    redirectPort = 0;  ///< loopback redirect port; 0 = ephemeral. Entra ignores the
 	                         ///< port for loopback URIs, but Okta matches it exactly.
+	QString authorizationUrl;  ///< explicit authorize endpoint; empty = derive it (discovery for
+	                         ///< foreign issuers, the fixed v2 layout for Entra)
+	QString tokenUrl;          ///< explicit token endpoint; empty = derive likewise. Must be set
+	                         ///< together with authorizationUrl, or neither.
+	QString tokenType;         ///< "id_token" = send the ID token as bearer — its aud is the client
+	                         ///< id itself, so a gateway validates audience = client id with no
+	                         ///< published scope and no consent (the Claude shape). Anything else
+	                         ///< (the default) = the access token.
+	QString offlineAccess;      ///< "" / "on" (default) = request offline_access so sign-in persists;
+	                         ///< "off" = send exactly the configured scopes, for IdPs that reject
+	                         ///< or specially consent it (OIDC Core §11).
 };
 
 class TokenProvider : public QObject

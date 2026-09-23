@@ -44,8 +44,11 @@ PrefsScrollView
 		// reparenting) and its row machinery is where JASP DropDowns stop
 		// working — so the strip is buttons, and the bodies below are ordinary
 		// group children, exactly where the old form's dropdowns worked.
+		// PRO builds only: OIDC sign-in is a PRO feature, so non-PRO builds hide
+		// the switch (and C++ forces authMode to apiKey) — API key is the only form.
 		Row
 		{
+			visible:	PRO
 			spacing:	jaspTheme.generalAnchorMargin
 
 			Button
@@ -69,7 +72,7 @@ PrefsScrollView
 		Item
 		{
 			id:			apiKeyBody
-			visible:	aiConfigModel.authMode === "apiKey"
+			visible:	!PRO || aiConfigModel.authMode === "apiKey"
 			width:		parent.width
 			height:	apiKeyBody.visible ? apiKeyColumn.implicitHeight + jaspTheme.contentMargin : 0
 
@@ -339,7 +342,7 @@ PrefsScrollView
 		Item
 		{
 			id:			signInBody
-			visible:	aiConfigModel.authMode === "oidc"
+			visible:	PRO && aiConfigModel.authMode === "oidc"
 			width:		parent.width
 			height:	signInBody.visible ? signInColumn.implicitHeight + jaspTheme.contentMargin : 0
 
@@ -407,13 +410,13 @@ PrefsScrollView
 							wrapMode:	Text.WordWrap
 							font:		jaspTheme.font
 							visible:	!aiBridge.isSignedIn
-							text:		qsTr("Sign in with your work account (Microsoft Entra ID). JASP opens your browser and never sees your password. Your sign-in persists in this machine's credential store.")
+							text:	qsTr("Sign in with your organization's account. JASP opens your browser and never sees your password. Your sign-in persists in this machine's credential store.")
 						}
 
 						Button
 						{
 							visible:	!aiBridge.isSignedIn
-							text:		qsTr("Sign in with Microsoft")
+							text:	qsTr("Sign in")
 							height:		40 * jaspTheme.uiScale
 							anchors.horizontalCenter:	parent.horizontalCenter
 							toolTip:	qsTr("Opens your browser to sign in with your work account.")
@@ -454,7 +457,7 @@ PrefsScrollView
 
 						Text
 						{
-							visible:	aiBridge.isSignedIn && aiBridge.authExpiresAt.valid
+							visible:	aiBridge.isSignedIn && !isNaN(aiBridge.authExpiresAt.getTime())
 							text:		qsTr("Token valid until %1 — renewed automatically").arg(Qt.formatDateTime(aiBridge.authExpiresAt, "HH:mm"))
 							font:		jaspTheme.font
 						}
@@ -486,9 +489,58 @@ PrefsScrollView
 
 					Label
 					{
-						text:	qsTr("Only change these if your organization's setup differs from the JASP defaults. Leave the application ID empty to use JASP's own registration. The redirect port only needs setting for providers that match it exactly, like Okta.")
+						text:	qsTr("Only change these if your organization's setup differs from the JASP defaults. Leave the application ID empty to use JASP's own registration. Custom identity provider? Pick it below, finish the authority field, then press Discover endpoints — the URLs fill in and stay editable.")
 						wrapMode:	Text.WordWrap
 						width:		parent.width
+						QTL.Layout.fillWidth:	true   // Section is a GridLayout: without this the label gets its implicit width and never wraps
+					}
+
+					DropDown
+					{
+						id:			idpPicker
+						label:			qsTr("Identity provider:")
+						values:			[ qsTr("Microsoft Entra ID"), qsTr("Microsoft Entra ID (US Government)"), qsTr("Okta"), qsTr("Auth0"), qsTr("Keycloak"), qsTr("Zitadel"), qsTr("Google"), qsTr("Custom…") ]
+
+						// Authority seeds per entry, parallel to values. "" on Custom = leave
+						// the field as the user typed it. Templates with {placeholders} must
+						// be finished by hand; placeholder-free ones can discover immediately.
+						property var templates: [ "organizations",
+											   "https://login.microsoftonline.us/organizations",
+											   "https://{your-okta-domain}",
+											   "https://{your-tenant}.auth0.com",
+											   "https://{your-keycloak-server}/realms/{realm}",
+											   "https://{your-instance}.zitadel.cloud",
+											   "https://accounts.google.com",
+											   "" ]
+
+						// Empty authority behaves as the Entra default; anything unknown is Custom.
+						currentIndex: {
+							const a = aiConfigModel.currentAuthAuthority;
+							const i = templates.indexOf(a === "" ? "organizations" : a);
+							return i >= 0 ? i : templates.length - 1;
+						}
+
+						onActivated:	function(index) {
+							if (index === idpPicker.templates.length - 1)
+								return;   // Custom: the authority field is the source of truth
+
+							const template = idpPicker.templates[index];
+
+							// A different identity provider invalidates any discovered or
+							// hand-entered endpoints — clear them so derivation is honest again.
+							aiConfigModel.currentAuthAuthorizationUrl = "";
+							aiConfigModel.currentAuthTokenUrl = "";
+							aiConfigModel.currentAuthAuthority = template;
+
+							if (template.indexOf("{") >= 0)
+									aiConfigModel.authDiscoveryMessage = qsTr("Fill in the {placeholders} in the Authority field, then press Discover endpoints.");
+							else if (index <= 1)
+									aiConfigModel.authDiscoveryMessage = qsTr("Entra's endpoints are built in — no discovery needed, leave the URLs empty.");
+							else
+									aiConfigModel.discoverAuthEndpoints();   // placeholder-free foreign issuer
+						}
+
+						toolTip:	qsTr("Seeds the Authority field for common identity providers. Templates with {placeholders} must be completed by hand. Custom leaves the field untouched.")
 					}
 
 					TextField
@@ -499,6 +551,24 @@ PrefsScrollView
 						width:			parent.width
 						fillWidth:		true
 						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					Button
+					{
+						text:				qsTr("Discover endpoints")
+						onClicked:	aiConfigModel.discoverAuthEndpoints()
+						toolTip:	qsTr("Fetches the identity provider's /.well-known/openid-configuration — the document every OIDC provider publishes — and fills in the authorization and token URLs below. For Microsoft Entra the fixed v2 endpoints are used automatically, so this is mainly for other providers (Okta, Keycloak, Auth0…).")
+					}
+
+					Text
+					{
+						text:				aiConfigModel.authDiscoveryMessage
+						visible:			aiConfigModel.authDiscoveryMessage !== ""
+						wrapMode:	Text.WordWrap
+						font:			jaspTheme.font
+						color:		jaspTheme.textEnabled
+						width:			parent.width
+						QTL.Layout.fillWidth:	true   // Section is a GridLayout — without this, no wrapping
 					}
 
 					TextField
@@ -533,7 +603,54 @@ PrefsScrollView
 						fillWidth:		true
 						fieldHeight:	25 * jaspTheme.uiScale
 					}
+
+					TextField
+					{
+						label:				qsTr("Authorization URL:")
+						value:				aiConfigModel.currentAuthAuthorizationUrl
+						onEditingFinished:	aiConfigModel.currentAuthAuthorizationUrl = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
 					}
+
+					TextField
+					{
+						label:				qsTr("Token URL:")
+						value:				aiConfigModel.currentAuthTokenUrl
+						onEditingFinished:	aiConfigModel.currentAuthTokenUrl = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
+
+					TextField
+					{
+						label:				qsTr("Extra headers (JSON):")
+						value:				aiConfigModel.currentExtraHeaders
+						onEditingFinished:	aiConfigModel.currentExtraHeaders = displayValue
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+						toolTip:	qsTr("A JSON object of extra HTTP headers sent with every request, e.g. { \"X-Cost-Centre\": \"dept42\" }. Routing and attribution labels only — never API keys or tokens: this is stored as plain configuration (the same rule Claude Desktop applies to its equivalent setting). The Authorization header cannot be overridden.")
+					}
+
+					CheckBox
+					{
+						label:				qsTr("Send the ID token as the bearer token")
+						checked:			aiConfigModel.currentAuthTokenType === "id_token"
+						onCheckedChanged:	aiConfigModel.currentAuthTokenType = checked ? "id_token" : ""
+						toolTip:	qsTr("Checked: JASP sends the ID token, whose audience is the client id itself — gateways (LiteLLM, APIM) can then validate audience = client id, with no published scope and no consent step.\n\nUnchecked (default): JASP sends the access token, as direct Azure OpenAI requires (audience = cognitiveservices.azure.com).")
+					}
+
+					CheckBox
+					{
+						label:				qsTr("Request offline access (persistent sign-in)")
+						checked:			aiConfigModel.currentAuthOfflineAccess !== "off"
+						onCheckedChanged:	aiConfigModel.currentAuthOfflineAccess = checked ? "" : "off"
+						toolTip:	qsTr("Checked (default): JASP requests offline_access, so sign-in persists in this machine's credential store and renews silently.\n\nUnchecked: exactly the configured scopes are sent, for identity providers that reject or specially consent to offline_access. Sign-in will not persist across JASP restarts, and you will be asked to sign in again when the token expires (roughly every hour).")
+					}
+				}
 				}
 			}
 		}

@@ -20,6 +20,10 @@
 #ifndef BROWSERTOKENPROVIDER_H
 #define BROWSERTOKENPROVIDER_H
 
+// OIDC browser sign-in ships only in PRO builds (see tokenprovider.h): this
+// whole header, and its .cpp, compile to nothing without -DPRO.
+#ifdef PRO
+
 #include "tokenprovider.h"
 
 #include <QDateTime>
@@ -60,6 +64,10 @@ private:
 	/// *error when there is not enough to sign in with.
 	bool configure(QString *error);
 
+	/// The token that goes on the wire: the id_token when the configuration asks for
+	/// it (audience = client id — the gateway shape), else the access token.
+	QString bearerToken() const;
+
 	/// Open the browser and wait for the loopback redirect.
 	void beginSignIn();
 
@@ -91,11 +99,17 @@ private:
 	QString m_scope;
 	QString m_clientId;
 	int     m_redirectPort = 0;  // 0 = ephemeral (Entra ignores the port; Okta matches it)
+	QString m_authorizationUrl;  // explicit endpoint overrides; empty = derive
+	QString m_tokenUrl;
+	QString m_tokenType;         // "id_token" or (default) "access_token"
+	QString m_offlineAccess;     // "off" = never append offline_access; default = append
 	QString m_configSignature;   // authority|scope|clientId the cached token belongs to
 	QString m_serverError;       // the provider's own explanation for the current attempt
 	bool    m_running    = false;
 	bool    m_vaultTried = false;  // the vault was consulted for this configuration
 	bool    m_refreshing = false;  // a silent renewal from a stored token is in flight
 };
+
+#endif // PRO
 
 #endif // BROWSERTOKENPROVIDER_H

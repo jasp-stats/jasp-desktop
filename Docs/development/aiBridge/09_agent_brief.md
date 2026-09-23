@@ -249,6 +249,15 @@ Useful facts:
 
 ## 7. Decisions already made — don't relitigate
 
+0. **OIDC sign-in is PRO-only** (2026-09-23). Whole-file `#ifdef PRO` on
+   `browsertokenprovider.{h,cpp}`; `#ifdef PRO` on the oidc branches in
+   `AiBridge::configureTokenProvider()`/`pushAuthConfig()`; non-PRO
+   `normalizeAuthMode()` forces `apiKey` and `loadShippedProviders()` skips
+   oidc presets; PrefsAI gates the mode strip and sign-in body on the `PRO`
+   context property (exposed by `QMLComponents/utilities/qmlutils.cpp`).
+   A non-PRO build reading a PRO-saved config degrades to the API-key path
+   with an explanatory message. Verified both ways with `-UPRO` compilation.
+
 1. **One interface, multiple backends.** Not one provider per method.
 2. **Browser first.** The system browser with a loopback redirect is the flow JASP ships, on
    every platform. Device code is the fallback (Phase 5).
@@ -295,19 +304,23 @@ sign-in method (`authMode`), authority, scope, client ID, endpoint, model, plus 
 from step 4 — and to hide the API-key field when `authMode` is `oidc`. Show the signed-in
 account and an expiry/refresh indicator.
 
-**4. Claude-parity config support** (plan §3c has the full table). In rough value order:
-- **`bearerTokenType`** — send the ID token instead of the access token. This is Claude's
-  default and it materially reduces customer setup: an id_token's `aud` is the client's own
-  ID, so a gateway needs only JWKS URL + audience and **no customer-published scope**. Direct
-  Azure OpenAI must stay `access_token` (`aud` must be `cognitiveservices.azure.com`), so it is
-  a per-deployment setting.
-- **A custom-headers map** (non-secret routing headers only — match Claude's policy, which
-  forbids credentials there).
-- **`appendOfflineAccess`** — we currently *always* append `offline_access`; Claude
-  deliberately does not when `scopes` is set explicitly in id_token mode (OIDC Core §11). The
-  failure mode is invisible until a session outlives an hour.
-- **`redirectPort`** and explicit `authorizationUrl`/`tokenUrl` — for Okta (exact-port match)
-  and IdPs that serve no discovery document.
+**4. Claude-parity config support** (plan §3c has the full table). ✅ **2026-09-23:
+`authTokenType` (`bearerTokenType` — id_token mode, `aud` = client id),
+`authAuthorizationUrl`/`authTokenUrl` (explicit endpoints) with a **Discover endpoints**
+button that fetches the IdP's `.well-known/openid-configuration` and fills them,
+`authRedirectPort`, and `authOfflineAccess` (`appendOfflineAccess`) are all in — each
+exposed in the Advanced section, so every one is manually configurable, preset values
+notwithstanding. The section is headed by an **identity-provider picker** (DropDown,
+Entra as the default) seeding the authority with per-provider templates (Okta, Auth0,
+Keycloak, Zitadel, Google, Entra US Government, Custom); picking a preset clears stale
+endpoint overrides, and placeholder-free foreign presets auto-discover. Discovery is deliberately a configuration-time action (button), not
+part of sign-in: a foreign issuer without URLs fails with an instructive message
+instead of a silent fetch. The button probes `/v2.0/.well-known/…` for Entra-shaped
+authorities (the v1 landmine). The sign-in button and card copy are provider-neutral
+("Sign in" / "your organization's account"), matching the protocol-not-vendor rule.**
+The last parity item — **`extraHeaders`** (Claude's `inferenceCustomHeaders`, non-secret
+routing headers on every request, no-credentials rule included) — shipped the same day.
+**The Claude-parity list is now complete.**
 
 **5. Customer-facing deployment guide, then a PDF.** `10_apim_test_checklist.md` is now the
 verified transcript to write this from — it holds the working policies, the values that are ours
@@ -364,6 +377,7 @@ The high-value section. Most of these cost real time.
 | **Whitespace in the model field is invisible and fatal** | A leading space (`" gpt-5.4-mini"`, pasted from the portal) returns `DeploymentNotFound` — the checklist's rule (bare `404` = path, `DeploymentNotFound` = deployment name) held exactly. `aiconfigmodel` now trims endpoint/model/custom-model/auth fields in the setters **and** on load, so stored dirt self-heals. |
 | **The automatic greeting used to open the sign-in browser** | Any config edit (endpoint **and** model are in the conversation signature) → `clearChat()` → greeting → parked request → `ensureToken()` → browser, once per edit in the settings dialog. Fixed: `sendIntroMessage(bool allowSignIn)`; automatic paths skip the greeting when no usable token is cached. Interactive sign-in now starts only from: opening the chat window, the reset button, the sign-in button, **Test connection**, or sending a message. |
 | **The bare `secret_password_*_sync` libsecret symbols are variadic** | Attributes go in a NULL-terminated `...` list after `error`, **not** a GHashTable. Calling them through a fixed-arity pointer shifts every argument — the password string gets dereferenced as a `GCancellable*` and it segfaults ~150 bytes into the function. Use the `v` variants (`secret_password_storev_sync` etc.): same job, GHashTable in, binding-facing ABI, present since libsecret ~0.16 — safe on every distro. Found the hard way on the first Linux run, 2026-09-23; reproduced standalone and fixed the same day. |
+| **Entra's un-versioned discovery document is v1** | `login.microsoftonline.com/{tenant}/.well-known/openid-configuration` describes the **v1** endpoints; the v2 document lives under `/v2.0/…`. Auto-discovering for an Entra authority therefore silently yields v1 endpoints and v1 tokens. `BrowserTokenProvider` never discovers for `login.microsoftonline.*` — Entra-shaped authorities (shorthand **or** full URL) use the fixed v2 layout; discovery is reserved for foreign issuers (Okta, Keycloak, …), where `{issuer}/.well-known/openid-configuration` is spec-correct. |
 
 ---
 

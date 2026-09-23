@@ -28,7 +28,9 @@
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
 #include "auth/apitokenprovider.h"
-#include "auth/browsertokenprovider.h"
+#ifdef PRO
+#  include "auth/browsertokenprovider.h"
+#endif
 
 // =============================================================================
 // Singleton
@@ -139,8 +141,15 @@ void AiBridge::pushAuthConfig()
 	// can serve a second consumer (data-store credentials, say) unchanged.
 	if (auto *api = qobject_cast<ApiKeyTokenProvider *>(m_tokenProvider))
 		api->setApiKey(cfg->currentApiKey());
+#ifdef PRO
 	else if (auto *oidc = qobject_cast<BrowserTokenProvider *>(m_tokenProvider))
-		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId(), cfg->currentAuthRedirectPort() });
+		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId(),
+		                     cfg->currentAuthRedirectPort(), cfg->currentAuthAuthorizationUrl(),
+		                     cfg->currentAuthTokenUrl(), cfg->currentAuthTokenType(),
+		                     cfg->currentAuthOfflineAccess() });
+#else
+	Q_UNUSED(cfg)
+#endif
 }
 
 void AiBridge::configureTokenProvider()
@@ -166,15 +175,23 @@ void AiBridge::configureTokenProvider()
 	}
 	else if (mode == QStringLiteral("oidc"))
 	{
+#ifdef PRO
 		const QString backend = cfg ? cfg->currentAuthBackend() : QStringLiteral("auto");
 
 		if (backend == QStringLiteral("devicecode"))
 			m_authUnavailable = QStringLiteral("Device-code sign-in is not implemented yet. "
-											   "Choose the browser sign-in method in AI preferences.");
+									   "Choose the browser sign-in method in AI preferences.");
 		else
 			// "auto" and "browser" both land here: the system browser plus a
 			// loopback redirect is the flow JASP ships.
 			m_tokenProvider = new BrowserTokenProvider(this);
+#else
+		// OIDC sign-in is a PRO feature; a non-PRO build reading a config saved
+		// by a PRO install falls back to no provider — requests go out only if
+		// the user switches to an API-key provider.
+		m_authUnavailable = QStringLiteral("Sign-in with a work account is only available in JASP PRO. "
+									 "Use a provider with an API key instead.");
+#endif
 	}
 
 	// "none" deliberately has no provider: the request goes out with no auth
@@ -197,6 +214,38 @@ void AiBridge::applyAuthHeader(QNetworkRequest &request) const
 		return;
 
 	request.setRawHeader(authHeaderName().toUtf8(), (authHeaderPrefix() + token).toUtf8());
+}
+
+void AiBridge::applyExtraHeaders(QNetworkRequest &request) const
+{
+	// Static routing/attribution headers on every request (org ids, cost centres,
+	// correlation ids — headers a gateway or proxy in the middle wants as plain
+	// labels). Claude parity: inferenceCustomHeaders, including its constraint —
+	// NEVER credentials: this rides the plaintext provider JSON, while secrets
+	// belong in SecretVault. The auth header is never overridable from here.
+	AIConfigModel *cfg = AIConfigModel::config();
+	const QString json = cfg ? cfg->currentExtraHeaders().trimmed() : QString();
+	if (json.isEmpty())
+		return;
+
+	const QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+	if (!doc.isObject())
+	{
+		Log::log() << "AiBridge: extra headers are not a valid JSON object — ignored" << std::endl;
+		return;
+	}
+
+	const QString authName = authHeaderName();
+	const QJsonObject headers = doc.object();
+	for (auto it = headers.begin(); it != headers.end(); ++it)
+	{
+		const QString value = it.value().toVariant().toString();
+		if (it.key().isEmpty() || value.isEmpty())
+			continue;
+		if (it.key().compare(authName, Qt::CaseInsensitive) == 0)
+			continue;   // the auth header belongs to the token provider alone
+		request.setRawHeader(it.key().toUtf8(), value.toUtf8());
+	}
 }
 
 bool AiBridge::isSignedIn() const
@@ -824,6 +873,7 @@ void AiBridge::postStreamingRequest(const QJsonArray &messages, bool withTools)
 	request.setTransferTimeout(120000); // 120 s — large conversations with tool results need time
 
 	applyAuthHeader(request);
+	applyExtraHeaders(request);
 
 	QByteArray body = buildRequestBody(messages, withTools);
 
@@ -1658,6 +1708,7 @@ void AiBridge::postTestConnection()
 	request.setTransferTimeout(10000); // 10 s for a test
 
 	applyAuthHeader(request);
+	applyExtraHeaders(request);
 
 	// Build a minimal valid body — just enough to provoke a meaningful response
 	QJsonObject body;

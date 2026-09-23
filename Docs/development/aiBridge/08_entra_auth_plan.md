@@ -211,6 +211,13 @@ broker plan (§3b) and is unused by the browser flow. It can stay without harm.
 
 ## 2. Design principles
 
+0. **PRO-gated.** OIDC sign-in ships only in PRO builds: `BrowserTokenProvider`
+   compiles to nothing without `-DPRO` (whole-file `#ifdef PRO`), `AiBridge` and
+   `AIConfigModel` gate their oidc branches the same way, non-PRO normalizes every
+   authMode to `apiKey`, skips shipped oidc presets, and PrefsAI hides the mode
+   switch behind the `PRO` context property. Non-PRO binaries contain no OIDC
+   code path and no sign-in UI. (2026-09-23.)
+
 1. **Additive.** Existing providers with an API key keep working, unchanged.
 2. **One interface, several backends.** `AiBridge` must not know *how* a token is
    obtained.
@@ -778,10 +785,10 @@ onboarded Claude Desktop can onboard JASP the same way.
 | `clientId` | `authClientId` | ✅ have |
 | `issuer` (base URL; app appends `/.well-known/openid-configuration`) | `authAuthority` | ✅ have |
 | `scopes` (default `openid profile email offline_access`) | `authScope` + those three implicit | ✅ have |
-| `authorizationUrl` / `tokenUrl` | — | ❌ **missing** — for IdPs serving no discovery document |
+| `authorizationUrl` / `tokenUrl` | `authAuthorizationUrl` / `authTokenUrl` | ✅ have — explicit endpoints, filled either by hand or by the **Discover endpoints** button, which fetches the IdP's `.well-known/openid-configuration` (a configuration-time action; the sign-in flow never fetches it) |
 | `redirectPort` (fixed loopback port) | `authRedirectPort` (0 = ephemeral) | ✅ have — Entra ignores the loopback port; Okta needs it pinned |
 | `appendOfflineAccess` | hardcoded | ❌ **make configurable** — some IdPs reject `offline_access` |
-| `bearerTokenType` — `id_token` (default) \| `access_token` | access token only | ❌ **missing — and the interesting one** |
+| `bearerTokenType` — `id_token` (default) \| `access_token` | `authTokenType` (default `access_token`) | ✅ have (2026-09-23) — the gateway shape: an id_token's `aud` is the client id itself |
 | `resource` (RFC 8707) | — | not needed — Entra rejects the parameter; AD FS only |
 | `additionalRedirectReferrerHosts` | — | not applicable to our callback handling |
 
@@ -913,6 +920,10 @@ strongest argument yet for treating shape 4 as *avoidable* rather than as a targ
 We should still ship a custom-headers map for the non-secret routing cases, and for parity
 — but it closes *routing* headers, not the subscription-key gap.
 
+**Shipped 2026-09-23** as `extraHeaders` (per-provider JSON, applied by
+`AiBridge::applyExtraHeaders()` on every request; Claude's no-credentials rule copied
+into the tooltip and the code comment; the auth header is never overridable).
+
 #### Claude's configuration is managed — and so is JASP's
 
 *Correction: an earlier draft called managed configuration a JASP gap. It is not.*
@@ -994,11 +1005,14 @@ stays the default for that preset; gateway presets should default to `id_token`.
 
 #### Two details worth copying wholesale
 
-- **`appendOfflineAccess` has a subtlety we currently get wrong.** In `id_token` mode with
-  `scopes` set explicitly, Claude deliberately does **not** append `offline_access` (OIDC
-  Core 11 treats it as requiring explicit consent), so silent refresh degrades to hourly
-  re-prompts unless the administrator includes it. We always append it. Copy their rule and
-  surface the consequence, because the failure is invisible until a session outlives an hour.
+- **`appendOfflineAccess` — resolved 2026-09-23, deliberately *not* by copying their rule.**
+  In `id_token` mode with `scopes` set explicitly, Claude does **not** append `offline_access`
+  (OIDC Core 11 treats it as requiring explicit consent), so their silent refresh degrades to
+  hourly re-prompts unless the administrator includes it. We ship `authOfflineAccess` instead:
+  appended by default — Entra grants it, and persistence is a feature users feel — while "off"
+  sends exactly the configured scopes for IdPs that reject or specially consent it. The
+  consequence is surfaced in the log at token acquisition, so the failure is no longer
+  invisible until a session outlives an hour.
 - **Their `Token exchange failed (HTTP 401)` troubleshooting entry** — the IdP app was
   registered as a confidential Web client instead of a public/native one. We will see this
   from customers, and it deserves its own message rather than a generic auth failure.
@@ -1123,7 +1137,7 @@ Per-provider fields, persisted inside the existing `AI_USER_PROVIDERS` JSON blob
 (no new `Settings::Type`).
 
 Auth is described by **protocol, never by vendor**, so supporting another
-identity provider is configuration rather than new fields. Six axes:
+identity provider is configuration rather than new fields:
 
 | Axis | Field | Values | Notes |
 |---|---|---|---|
@@ -1133,6 +1147,10 @@ identity provider is configuration rather than new fields. Six axes:
 | app | `authClientId` | optional | empty = the built-in JASP registration |
 | backend | `authBackend` | `auto` (default), `browser`, `devicecode` | *how* a token is acquired |
 | wire | `authHeaderName` / `authHeaderPrefix` | `Authorization` / `Bearer ` (defaults) | covers gateways |
+| loopback | `authRedirectPort` | `0` = ephemeral (default) | pinned only for IdPs that match the port exactly (Okta) |
+| endpoints | `authAuthorizationUrl` / `authTokenUrl` | optional, set together | empty = derived — the fixed v2 layout for Entra; foreign issuers press **Discover endpoints** (manual OIDC discovery) or paste their URLs |
+| wire token | `authTokenType` | `access_token` (default) / `id_token` | which JWT is the bearer; `id_token` gives `aud` = client id — the gateway shape |
+| persistence | `authOfflineAccess` | "" / `on` (default) = append `offline_access` / `off` | `off` = exactly the configured scopes — no refresh token, so no persistence and a re-prompt at expiry (logged) |
 
 Pre-rename keys — `entraTenant`, `entraScope`, and the `entra` scheme value — are
 still **read** on load so config written before the rename keeps resolving; only

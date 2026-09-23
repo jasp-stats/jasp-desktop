@@ -1,5 +1,9 @@
 #include "browsertokenprovider.h"
 
+// PRO-only file — the header defines nothing without -DPRO, so neither does
+// this translation unit.
+#ifdef PRO
+
 #include "auth/secretvault.h"
 #include "log.h"
 
@@ -41,6 +45,26 @@ static QString authorityBase(const QString &authority)
 		base.chop(5);
 
 	return base;
+}
+
+/// True when the authority means Entra — a bare tenant id / "organizations" shorthand,
+/// or any login.microsoftonline.* URL. Entra's v2 endpoint layout is fixed and known,
+/// so these never need (and must not use) discovery: the un-versioned discovery document
+/// on login.microsoftonline.com describes the **v1** endpoints, which mint v1 tokens —
+/// a silent, subtle wrong turn. Foreign issuers (Okta, Keycloak, Auth0, …) discover.
+static bool entraShaped(const QString &authority)
+{
+	const QString t = authority.trimmed();
+	if (t.isEmpty()) return true;
+	if (!t.startsWith(QStringLiteral("http://"), Qt::CaseInsensitive)
+	 && !t.startsWith(QStringLiteral("https://"), Qt::CaseInsensitive))
+		return true;
+
+	const QString host = QUrl(t).host().toLower();
+	return host == QStringLiteral("login.microsoftonline.com")
+		|| host == QStringLiteral("login.microsoftonline.us")
+		|| host.endsWith(QStringLiteral(".microsoftonline.com"))
+		|| host.endsWith(QStringLiteral(".microsoftonline.us"));
 }
 
 /// Identity providers return these percent-encoded, and Qt passes them through
@@ -276,7 +300,25 @@ QString BrowserTokenProvider::authMode() const
 
 QString BrowserTokenProvider::token() const
 {
-	return m_flow ? m_flow->token() : QString();
+	return bearerToken();
+}
+
+QString BrowserTokenProvider::bearerToken() const
+{
+	if (!m_flow)
+		return {};
+
+	const QString access = m_flow->token();
+	if (m_tokenType != QStringLiteral("id_token"))
+		return access;
+
+	// The gateway shape: an id_token's aud is the client id itself, so the
+	// gateway validates audience = client id with no published scope and no
+	// consent step (plan §3c, Claude parity). If the IdP returned no id_token
+	// despite the openid scope, send the access token rather than nothing —
+	// onTokenChanged() has already said so in the log.
+	const QString id = m_flow->idToken();
+	return id.isEmpty() ? access : id;
 }
 
 QDateTime BrowserTokenProvider::expiresAt() const
@@ -315,6 +357,16 @@ void BrowserTokenProvider::setOidcConfig(const OidcConfig &config)
 	m_redirectPort = (config.redirectPort > 0 && config.redirectPort <= 65535)
 						 ? config.redirectPort : 0;
 
+	// Likewise the endpoint overrides and the bearer choice: they change what is
+	// sent, never which refresh token is cached, so they live outside the
+	// signature and always apply immediately.
+	m_authorizationUrl = config.authorizationUrl.trimmed();
+	m_tokenUrl         = config.tokenUrl.trimmed();
+	m_tokenType        = (config.tokenType.trimmed() == QStringLiteral("id_token"))
+							 ? QStringLiteral("id_token") : QStringLiteral("access_token");
+	m_offlineAccess    = (config.offlineAccess.trimmed() == QStringLiteral("off"))
+							 ? QStringLiteral("off") : QString();
+
 	// A different provider, or the same one edited: anything cached belongs to
 	// the old configuration and must not be sent to the new endpoint.
 	const QString signature =
@@ -337,23 +389,57 @@ bool BrowserTokenProvider::configure(QString *error)
 	if (m_scope.isEmpty())
 	{
 		*error = QStringLiteral("No scope is configured for this provider, so there is nothing to request a token for. "
-								"For Azure OpenAI the scope is https://cognitiveservices.azure.com/.default.");
+							"For Azure OpenAI the scope is https://cognitiveservices.azure.com/.default.");
 		return false;
 	}
 
-	const QString base = authorityBase(m_authority);
+	if (!m_authorizationUrl.isEmpty() != !m_tokenUrl.isEmpty())
+	{
+		*error = QStringLiteral("The authorize and token endpoint URLs must be set together — set both, or leave both "
+							"empty so they are derived from the authority.");
+		return false;
+	}
+
 	m_flow->setClientIdentifier(m_clientId);
-	m_flow->setAuthorizationUrl(QUrl(base + QStringLiteral("/oauth2/v2.0/authorize")));
-	m_flow->setTokenUrl(QUrl(base + QStringLiteral("/oauth2/v2.0/token")));
+
+	// Endpoint resolution — explicit overrides first, then the fixed Entra v2
+	// layout. Foreign issuers must discover (the button in the AI settings) or
+	// paste their URLs, because their paths follow no shared convention; the
+	// provider never fetches the discovery document itself — that is a
+	// configuration-time action, not something sign-in should do silently.
+	if (!m_authorizationUrl.isEmpty())
+	{
+		m_flow->setAuthorizationUrl(QUrl(m_authorizationUrl));
+		m_flow->setTokenUrl(QUrl(m_tokenUrl));
+	}
+	else if (entraShaped(m_authority))
+	{
+		const QString base = authorityBase(m_authority);
+		m_flow->setAuthorizationUrl(QUrl(base + QStringLiteral("/oauth2/v2.0/authorize")));
+		m_flow->setTokenUrl(QUrl(base + QStringLiteral("/oauth2/v2.0/token")));
+	}
+	else
+	{
+		*error = QStringLiteral("The authority looks like a custom identity provider, and no endpoint URLs are set. "
+							"In the AI settings, press Discover endpoints (or fill in the authorization and token URLs) "
+							"before signing in.");
+		return false;
+	}
 
 	// openid   → an id_token, which is where the account name comes from
 	// profile  → the display name inside that id_token
-	// offline_access → a refresh token, without which every expiry starts over
 	QSet<QByteArray> scopes{
 		QByteArrayLiteral("openid"),
 		QByteArrayLiteral("profile"),
-		QByteArrayLiteral("offline_access"),
 	};
+	// offline_access → a refresh token, without which every expiry starts over.
+	// Appended by default: Entra grants it, and it is what makes sign-in persist
+	// (vault + silent renewal). "off" sends exactly the configured scopes — the
+	// spec-strict reading (OIDC Core §11 treats it as requiring explicit consent),
+	// for IdPs that reject or specially consent it. The consequence is surfaced
+	// in onTokenChanged(), because it is otherwise invisible for an hour.
+	if (m_offlineAccess != QStringLiteral("off"))
+		scopes.insert(QByteArrayLiteral("offline_access"));
 	scopes.insert(m_scope.toUtf8());
 	m_flow->setRequestedScopeTokens(scopes);
 
@@ -364,7 +450,7 @@ void BrowserTokenProvider::ensureToken()
 {
 	if (isValid())
 	{
-		emit tokenReady(m_flow->token());
+		emit tokenReady(bearerToken());
 		return;
 	}
 
@@ -380,6 +466,7 @@ void BrowserTokenProvider::ensureToken()
 		fail(error);
 		return;
 	}
+
 
 	// Renewal inside a session is Qt's job: autoRefresh() + refreshLeadTime()
 	// replace the access token ahead of expiry, and tokenChanged() picks the new
@@ -449,7 +536,7 @@ void BrowserTokenProvider::cancelAttempt()
 		m_timeout->stop();
 
 	// Closed but not destroyed: the flow holds this pointer, and the next attempt
-	// simply re-listens on it.
+	// simply re-lists on it.
 	if (m_replyHandler)
 		m_replyHandler->close();
 }
@@ -471,9 +558,17 @@ void BrowserTokenProvider::onTokenChanged(const QString &accessToken)
 	// Covers a silent refresh, which may not emit granted().
 	cancelAttempt();
 
+	if (m_tokenType == QStringLiteral("id_token") && m_flow->idToken().isEmpty())
+		Log::log() << "BrowserTokenProvider: bearer token type is id_token but none was returned — "
+				   << "sending the access token instead (expect the gateway to reject it if it "
+				      "validates audience = client id)" << std::endl;
+
+	// Describe and emit whatever actually goes on the wire — in id_token mode
+	// that is a different JWT with a different aud.
+	const QString bearer = bearerToken();
 	Log::log() << "BrowserTokenProvider: token acquired"
 			   << (m_account.isEmpty() ? std::string() : " for " + m_account.toStdString())
-			   << " (" << describeToken(accessToken).toStdString() << ")" << std::endl;
+			   << " (" << describeToken(bearer).toStdString() << ")" << std::endl;
 
 	// Persist the refresh token so the next JASP run renews silently instead of
 	// opening the browser. Written on every acquisition because Entra rotates
@@ -488,7 +583,13 @@ void BrowserTokenProvider::onTokenChanged(const QString &accessToken)
 		Log::log() << "BrowserTokenProvider: no secure credential store is available — "
 				  "sign-in works but will not persist across JASP restarts" << std::endl;
 
-	emit tokenReady(accessToken);
+	// No refresh token can also mean offline access was deliberately turned off;
+	// say so here, or the consequence stays invisible until the token expires.
+	if (refresh.isEmpty() && m_offlineAccess == QStringLiteral("off"))
+		Log::log() << "BrowserTokenProvider: offline access is off — sign-in will not persist "
+				  "across JASP restarts and the token will be re-prompted at expiry" << std::endl;
+
+	emit tokenReady(bearer);
 }
 
 void BrowserTokenProvider::onServerError(const QString &error, const QString &description)
@@ -569,3 +670,5 @@ void BrowserTokenProvider::refreshFailed(const QString &reason, bool networkErro
 	// surfacing an error they cannot act on.
 	beginSignIn();
 }
+
+#endif // PRO

@@ -9,6 +9,11 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QJsonObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QUrl>
 #include <QUuid>
 
 // ═══════════════════════════════════════════════════════════════
@@ -331,6 +336,11 @@ void AIConfigModel::emitAllDerivedSignals()
 	emit currentAuthScopeChanged();
 	emit currentAuthClientIdChanged();
 	emit currentAuthRedirectPortChanged();
+	emit currentAuthAuthorizationUrlChanged();
+	emit currentAuthTokenUrlChanged();
+	emit currentAuthTokenTypeChanged();
+	emit currentAuthOfflineAccessChanged();
+	emit currentExtraHeadersChanged();
 	emit currentAuthBackendChanged();
 	emit currentAuthHeaderNameChanged();
 	emit currentAuthHeaderPrefixChanged();
@@ -341,6 +351,15 @@ void AIConfigModel::emitAllDerivedSignals()
 // vendor-named spelling this used before the rename; keep accepting it so
 // already-written config still resolves. Unknown values pass through unchanged,
 // so an older build cannot silently rewrite a newer build's scheme to apiKey.
+#ifndef PRO
+// …except in non-PRO builds, where OIDC sign-in does not exist: every mode
+// normalizes to apiKey, so a PRO-saved config degrades to the API-key path
+// and the preferences UI shows only the API-key form.
+static QString normalizeAuthMode(const QString &)
+{
+	return QStringLiteral("apiKey");
+}
+#else
 static QString normalizeAuthMode(const QString &mode)
 {
 	if (mode.isEmpty() || mode == QStringLiteral("apiKey")) return QStringLiteral("apiKey");
@@ -348,6 +367,7 @@ static QString normalizeAuthMode(const QString &mode)
 	if (mode == QStringLiteral("entra"))                    return QStringLiteral("oidc");
 	return mode;
 }
+#endif
 
 /// Vault key under which a provider's API key lives. Provider ids are stable
 /// and unique, shipped and user-created alike.
@@ -425,6 +445,224 @@ int AIConfigModel::currentAuthRedirectPort() const
 	if (m_providerOverrides.contains(prov->id) && m_providerOverrides[prov->id].authRedirectPort > 0)
 		return m_providerOverrides[prov->id].authRedirectPort;
 	return prov->authRedirectPort;
+}
+
+QString AIConfigModel::currentAuthAuthorizationUrl() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authAuthorizationUrl.isEmpty())
+		return m_providerOverrides[prov->id].authAuthorizationUrl;
+	return prov->authAuthorizationUrl;
+}
+
+void AIConfigModel::setCurrentAuthAuthorizationUrl(const QString &v)
+{
+	const QString t = v.trimmed();
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthAuthorizationUrl() == t) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authAuthorizationUrl = t;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthAuthorizationUrlChanged();
+	saveUserData();
+}
+
+QString AIConfigModel::currentAuthTokenUrl() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authTokenUrl.isEmpty())
+		return m_providerOverrides[prov->id].authTokenUrl;
+	return prov->authTokenUrl;
+}
+
+void AIConfigModel::setCurrentAuthTokenUrl(const QString &v)
+{
+	const QString t = v.trimmed();
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthTokenUrl() == t) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authTokenUrl = t;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthTokenUrlChanged();
+	saveUserData();
+}
+
+QString AIConfigModel::currentAuthTokenType() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authTokenType.isEmpty())
+		return m_providerOverrides[prov->id].authTokenType;
+	return prov->authTokenType;
+}
+
+void AIConfigModel::setCurrentAuthTokenType(const QString &v)
+{
+	const QString t = v.trimmed();
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthTokenType() == t) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authTokenType = t;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthTokenTypeChanged();
+	saveUserData();
+}
+
+QString AIConfigModel::currentAuthOfflineAccess() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authOfflineAccess.isEmpty())
+		return m_providerOverrides[prov->id].authOfflineAccess;
+	return prov->authOfflineAccess;
+}
+
+void AIConfigModel::setCurrentAuthOfflineAccess(const QString &v)
+{
+	const QString t = v.trimmed();
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthOfflineAccess() == t) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authOfflineAccess = t;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthOfflineAccessChanged();
+	saveUserData();
+}
+
+void AIConfigModel::discoverAuthEndpoints()
+{
+	// The OIDC discovery document: every compliant IdP publishes its endpoints as
+	// plain JSON at a predictable URL, no authentication needed. Deliberately a
+	// configuration-time action (the button in PrefsAI), not part of sign-in —
+	// explicit, visible, debuggable, and it fills the URL fields so what will be
+	// used is exactly what the user can see and edit.
+	const QString authority  = currentAuthAuthority().trimmed();
+	const QString shorthand  = authority.isEmpty() ? QStringLiteral("organizations") : authority;
+	const bool    fullUrl    = authority.startsWith(QStringLiteral("https://"), Qt::CaseInsensitive)
+							   || authority.startsWith(QStringLiteral("http://"), Qt::CaseInsensitive);
+
+	QString discoveryUrl;
+	if (fullUrl)
+	{
+		const QString host = QUrl(authority).host().toLower();
+		const bool entra = host == QStringLiteral("login.microsoftonline.com")
+						|| host == QStringLiteral("login.microsoftonline.us")
+					|| host.endsWith(QStringLiteral(".microsoftonline.com"))
+					|| host.endsWith(QStringLiteral(".microsoftonline.us"));
+		QString base = authority;
+		while (base.endsWith(QLatin1Char('/')))
+			base.chop(1);
+		if (entra)
+		{
+			// Entra's un-versioned discovery document describes the v1 endpoints
+		// (plan landmine); the v2 one — the endpoints we actually use — lives
+		// under /v2.0/, which is also the spec location for the v2 issuer.
+			if (base.endsWith(QStringLiteral("/v2.0"), Qt::CaseInsensitive))
+				base.chop(5);
+			discoveryUrl = base + QStringLiteral("/v2.0/.well-known/openid-configuration");
+		}
+		else
+		{
+			// Foreign issuers: spec-correct — exactly {issuer}/.well-known/…, kept
+			// as given (a trailing /v2.0 on an issuer is part of its identity).
+			discoveryUrl = base + QStringLiteral("/.well-known/openid-configuration");
+		}
+	}
+	else
+		discoveryUrl = QStringLiteral("https://login.microsoftonline.com/") + shorthand
+				   + QStringLiteral("/v2.0/.well-known/openid-configuration");
+
+	setAuthDiscoveryMessage(QStringLiteral("Discovering…"));
+
+	// Application-lifetime manager; the model outlives the reply, and a second
+	// click simply issues another request whose results overwrite the first's.
+	static QNetworkAccessManager nam;
+	QNetworkRequest request{QUrl(discoveryUrl)};
+	request.setTransferTimeout(10 * 1000);
+	QNetworkReply *reply = nam.get(request);
+	connect(reply, &QNetworkReply::finished, this, [this, reply, discoveryUrl]() {
+		reply->deleteLater();
+
+		if (reply->error() == QNetworkReply::NoError)
+		{
+			const QJsonObject doc    = QJsonDocument::fromJson(reply->readAll()).object();
+			const QString authEp     = doc.value(QStringLiteral("authorization_endpoint")).toString();
+			const QString tokenEp    = doc.value(QStringLiteral("token_endpoint")).toString();
+			if (!authEp.isEmpty() && !tokenEp.isEmpty())
+			{
+				setCurrentAuthAuthorizationUrl(authEp);
+				setCurrentAuthTokenUrl(tokenEp);
+				setAuthDiscoveryMessage(QStringLiteral("Endpoints discovered and filled in below."));
+				Log::log() << "AIConfigModel: discovered authorization_endpoint " << authEp.toStdString()
+						   << " and token_endpoint " << tokenEp.toStdString() << std::endl;
+				return;
+			}
+		}
+
+		setAuthDiscoveryMessage(QStringLiteral("No usable discovery document at %1 — check the authority, "
+									  "or fill in the two endpoint URLs by hand.").arg(discoveryUrl));
+	});
+}
+
+QString AIConfigModel::authDiscoveryMessage() const
+{
+	return m_authDiscoveryMessage;
+}
+
+void AIConfigModel::setAuthDiscoveryMessage(const QString &message)
+{
+	if (m_authDiscoveryMessage == message)
+		return;
+	m_authDiscoveryMessage = message;
+	emit authDiscoveryMessageChanged();
+}
+
+QString AIConfigModel::currentExtraHeaders() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return {};
+	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].extraHeaders.isEmpty())
+		return m_providerOverrides[prov->id].extraHeaders;
+	return prov->extraHeaders;
+}
+
+void AIConfigModel::setCurrentExtraHeaders(const QString &v)
+{
+	const QString t = v.trimmed();
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentExtraHeaders() == t) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.extraHeaders = t;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentExtraHeadersChanged();
+	saveUserData();
 }
 
 QString AIConfigModel::currentAuthBackend() const
@@ -785,6 +1023,7 @@ void AIConfigModel::setCurrentAuthClientId(const QString &v)
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentAuthClientIdChanged();
+	emit currentAuthRedirectPortChanged();
 	saveUserData();
 }
 
@@ -1159,6 +1398,11 @@ void AIConfigModel::loadShippedProviders()
 	{
 		if (!pval.isObject()) continue;
 		QJsonObject pobj = pval.toObject();
+#ifndef PRO
+		// OIDC sign-in ships only in PRO — do not even list sign-in presets.
+		if (normalizeAuthMode(pobj["authMode"].toString()) == QStringLiteral("oidc"))
+			continue;
+#endif
 
 		AIProviderEntry prov;
 		prov.id           = pobj["id"].toString();
@@ -1173,6 +1417,11 @@ void AIConfigModel::loadShippedProviders()
 		prov.authHeaderName   = pobj["authHeaderName"].toString();
 		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
 		prov.authRedirectPort = pobj["authRedirectPort"].toInt();
+		prov.authAuthorizationUrl = pobj["authAuthorizationUrl"].toString().trimmed();
+		prov.authTokenUrl         = pobj["authTokenUrl"].toString().trimmed();
+		prov.authTokenType        = pobj["authTokenType"].toString().trimmed();
+		prov.authOfflineAccess    = pobj["authOfflineAccess"].toString().trimmed();
+		prov.extraHeaders         = pobj["extraHeaders"].toString().trimmed();
 		// Pre-rename (vendor-named) keys — keep reading them so shipped or saved
 		// config written before the rename still resolves.
 		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
@@ -1249,6 +1498,11 @@ void AIConfigModel::loadUserData()
 		if (o.contains("authHeaderName"))   ov.authHeaderName   = o["authHeaderName"].toString();
 		if (o.contains("authHeaderPrefix")) ov.authHeaderPrefix = o["authHeaderPrefix"].toString();
 		if (o.contains("authRedirectPort")) ov.authRedirectPort = o["authRedirectPort"].toInt();
+		if (o.contains("authAuthorizationUrl")) ov.authAuthorizationUrl = o["authAuthorizationUrl"].toString().trimmed();
+		if (o.contains("authTokenUrl"))         ov.authTokenUrl         = o["authTokenUrl"].toString().trimmed();
+		if (o.contains("authTokenType"))        ov.authTokenType        = o["authTokenType"].toString().trimmed();
+		if (o.contains("authOfflineAccess"))    ov.authOfflineAccess    = o["authOfflineAccess"].toString().trimmed();
+		if (o.contains("extraHeaders"))         ov.extraHeaders         = o["extraHeaders"].toString().trimmed();
 		// Pre-rename (vendor-named) keys
 		if (o.contains("entraTenant") && !o.contains("authAuthority"))
 			ov.authAuthority = o["entraTenant"].toString();
@@ -1325,6 +1579,11 @@ void AIConfigModel::loadUserData()
 		prov.authHeaderName   = pobj["authHeaderName"].toString();
 		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
 		prov.authRedirectPort = pobj["authRedirectPort"].toInt();
+		prov.authAuthorizationUrl = pobj["authAuthorizationUrl"].toString().trimmed();
+		prov.authTokenUrl         = pobj["authTokenUrl"].toString().trimmed();
+		prov.authTokenType        = pobj["authTokenType"].toString().trimmed();
+		prov.authOfflineAccess    = pobj["authOfflineAccess"].toString().trimmed();
+		prov.extraHeaders         = pobj["extraHeaders"].toString().trimmed();
 		// Pre-rename (vendor-named) keys
 		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
 		if (prov.authScope.isEmpty())     prov.authScope     = pobj["entraScope"].toString();
@@ -1448,7 +1707,10 @@ void AIConfigModel::saveUserData()
 		    && pov.authMode.isEmpty() && pov.authAuthority.isEmpty()
 		    && pov.authScope.isEmpty() && pov.authClientId.isEmpty()
 		    && pov.authBackend.isEmpty() && pov.authHeaderName.isEmpty()
-		    && pov.authHeaderPrefix.isEmpty() && pov.authRedirectPort == 0)
+		    && pov.authHeaderPrefix.isEmpty() && pov.authRedirectPort == 0
+		    && pov.authAuthorizationUrl.isEmpty() && pov.authTokenUrl.isEmpty()
+		    && pov.authTokenType.isEmpty() && pov.authOfflineAccess.isEmpty()
+		    && pov.extraHeaders.isEmpty())
 			m_providerOverrides.remove(prov->id);
 		else
 			m_providerOverrides[prov->id] = pov;
@@ -1494,6 +1756,11 @@ void AIConfigModel::saveUserData()
 		if (!ov.authHeaderName.isEmpty())   o["authHeaderName"]   = ov.authHeaderName;
 		if (!ov.authHeaderPrefix.isEmpty()) o["authHeaderPrefix"] = ov.authHeaderPrefix;
 		if (ov.authRedirectPort > 0)        o["authRedirectPort"] = ov.authRedirectPort;
+		if (!ov.authAuthorizationUrl.isEmpty()) o["authAuthorizationUrl"] = ov.authAuthorizationUrl;
+		if (!ov.authTokenUrl.isEmpty())         o["authTokenUrl"]         = ov.authTokenUrl;
+		if (!ov.authTokenType.isEmpty())        o["authTokenType"]        = ov.authTokenType;
+		if (!ov.authOfflineAccess.isEmpty())    o["authOfflineAccess"]    = ov.authOfflineAccess;
+		if (!ov.extraHeaders.isEmpty())         o["extraHeaders"]         = ov.extraHeaders;
 		// Per-provider custom-mode fields
 		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
 		if (ov.extraParamsSet)            o["extraParams"]         = ov.extraParams;
@@ -1553,6 +1820,11 @@ void AIConfigModel::saveUserData()
 		if (!prov.authHeaderName.isEmpty())   po["authHeaderName"]   = prov.authHeaderName;
 		if (!prov.authHeaderPrefix.isEmpty()) po["authHeaderPrefix"] = prov.authHeaderPrefix;
 		if (prov.authRedirectPort > 0)        po["authRedirectPort"] = prov.authRedirectPort;
+		if (!prov.authAuthorizationUrl.isEmpty()) po["authAuthorizationUrl"] = prov.authAuthorizationUrl;
+		if (!prov.authTokenUrl.isEmpty())         po["authTokenUrl"]         = prov.authTokenUrl;
+		if (!prov.authTokenType.isEmpty())        po["authTokenType"]        = prov.authTokenType;
+		if (!prov.authOfflineAccess.isEmpty())    po["authOfflineAccess"]    = prov.authOfflineAccess;
+		if (!prov.extraHeaders.isEmpty())         po["extraHeaders"]         = prov.extraHeaders;
 
 		QJsonArray marr;
 		for (const auto &m : prov.models)

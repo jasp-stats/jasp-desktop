@@ -197,6 +197,12 @@ private:
 	/// and prefix ("Authorization: Bearer <token>" by default).
 	void applyAuthHeader(QNetworkRequest &request) const;
 
+	/// Add the configured static extra headers (routing/attribution only — never
+	/// credentials, which live in SecretVault; parity with Claude's
+	/// inferenceCustomHeaders, including its no-credentials rule). Never touches
+	/// the auth header.
+	void applyExtraHeaders(QNetworkRequest &request) const;
+
 	/// True when new work must not be started — a reply is being processed or
 	/// an RPC dispatch is in-flight (possibly inside a nested event loop).
 	bool isBusy() const;
