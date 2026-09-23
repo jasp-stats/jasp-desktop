@@ -17,9 +17,9 @@
 //
 #include "importer.h"
 #include "utilities/qutils.h"
-#include "columnutils.h"
 #include "log.h"
 #include <QVariant>
+#include <QScopeGuard>
 #include "../datasetpackage.h"
 #include "timers.h"
 #include <QThreadPool>
@@ -107,42 +107,17 @@ void Importer::importColumnFinished(ImportColumn * column, bool doCallback)
 
 }
 
-///Makes sure the locale an import brought along (see CsvPreviewModel) is dropped again however we leave the import,
-///so the rest of JASP keeps reading numbers in the locale of the interface.
-struct ImportLocaleCleaner
-{
-	~ImportLocaleCleaner() { QColumnUtils::readNumbersInInterfaceLocale(); }
-};
-
-///beginLoadingData opens a model reset that only endLoadingData closes again. Cancelling the csv preview throws right
-///between the two (see the LoaderException below), and a model left inside its reset draws nothing at all: a blank JASP.
-///So whichever way we leave the import, the pair is balanced.
-struct DataLoadingScope
-{
-	DataLoadingScope()	{ DataSetPackage::pkg()->beginLoadingData();	}
-	~DataLoadingScope()	{ end();									}
-
-	void end()
-	{
-		if(_ended)
-			return;
-
-		_ended = true;
-		DataSetPackage::pkg()->endLoadingData();
-	}
-
-private:
-	bool _ended = false;
-};
-
 void Importer::loadDataSet(const std::string &locator, std::function<void(int)> progressCallback)
 {
-	ImportLocaleCleaner importLocaleCleaner;
-
 	int64_t timeBeginS = Utils::currentSeconds();
 	_progressCallback=progressCallback;
 	
-	DataLoadingScope dataLoadingScope;
+	DataSetPackage::pkg()->beginLoadingData();
+
+	//beginLoadingData opens a model reset that only endLoadingData closes again. Cancelling the csv preview throws right
+	//between the two (see the LoaderException below), and a model left inside its reset draws nothing at all: a blank JASP.
+	//So whichever way we leave the import, the pair is balanced.
+	auto endLoadingData = qScopeGuard([]{ DataSetPackage::pkg()->endLoadingData(); });
 
 	DataSetPackage::pkg()->createDataSet();
 	
@@ -209,7 +184,8 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	}
 	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
 	
-	dataLoadingScope.end();
+	endLoadingData.dismiss();
+	DataSetPackage::pkg()->endLoadingData();
 	
 	_importDataSet->clearColumns();
 	delete _importDataSet;
@@ -221,8 +197,6 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
-	ImportLocaleCleaner importLocaleCleaner;
-
 					_synching			= true;
 					_progressCallback	= progress;
 	int64_t			timeBeginS		= Utils::currentSeconds();

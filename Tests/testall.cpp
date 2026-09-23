@@ -34,6 +34,8 @@
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
+#include <QTemporaryDir>
+#include <QScopeGuard>
 #include "dataset.h"
 #include "data/asyncloader.h"
 #include "mainwindow.h"
@@ -318,10 +320,6 @@ void TestAll::testJaspDataImport()
 	QVERIFY2(dataSet->jsonForCompare() == loadMe.jsonForCompare(), "DataSet isnt the same after dbload!");
 }
 
-// Regression test for https://github.com/jasp-stats/jasp-desktop/commit/0a90b9a34e9d754f55bc32ec1efd2f67940ef756
-// setDataSetSize() pre-allocates rows before initFromLookups() is called, causing rowCount() > 0
-// when setValues() checks allTheSame — which skipped the label-detection loop and silently dropped
-// all SPSS value labels.
 ///Cancelling the csv preview aborts the import from inside loadDataSet, which is after beginLoadingData() opened a model reset.
 ///If that reset is never closed the whole of JASP draws nothing at all, which is what a blank window after Cancel comes down to.
 void TestAll::testCancelledImportLeavesTheModelUsable()
@@ -362,6 +360,41 @@ void TestAll::testCancelledImportLeavesTheModelUsable()
 	QCOMPARE(resetFinished.count(), resetStarted.count()); //Every begin got its end, so the model is usable again
 }
 
+///The locale picked in the csv preview decides how the numbers of that file are read: "1,234" in a German file is one point two three four,
+///also after the column read it once more, written out the way the rest of JASP reads numbers.
+void TestAll::testCsvImportLocale()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);	//false: take the delimiter below instead of asking for it
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+	QVERIFY(csv.open(QIODevice::WriteOnly));
+	csv.write("x\n1,234\n86,298\n0,5\n1.234,56\n");
+	csv.close();
+
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
+	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
+	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->clearKnownImportLocale(); });
+
+	_importer->loadDataSet(fq(csv.fileName()), [](int){});
+
+	const doublevec & values = _pkg->dataSet()->column(0)->dbls();
+
+	QCOMPARE(values.size(),	size_t(4));
+	QCOMPARE(values[0],		1.234);
+	QCOMPARE(values[1],		86.298);
+	QCOMPARE(values[2],		0.5);
+	QCOMPARE(values[3],		1234.56);
+}
+
+// Regression test for https://github.com/jasp-stats/jasp-desktop/commit/0a90b9a34e9d754f55bc32ec1efd2f67940ef756
+// setDataSetSize() pre-allocates rows before initFromLookups() is called, causing rowCount() > 0
+// when setValues() checks allTheSame — which skipped the label-detection loop and silently dropped
+// all SPSS value labels.
 void TestAll::testSavLabels()
 {
 	if(_pkg)	delete _pkg;

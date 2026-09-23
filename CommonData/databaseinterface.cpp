@@ -112,18 +112,14 @@ void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 				"ALTER TABLE Columns  ADD COLUMN hasLabels		INT DEFAULT 0;\n"
 				"UPDATE Columns SET hasLabels=1;" //Make sure old columns all "hasLabels" enabled
 			);
-		
-		
-		if(!tableHasColumn("DataSets", "csvDelimiter"))
-			runStatements("ALTER TABLE DataSets ADD COLUMN csvDelimiter INT DEFAULT 0;");
 	}
 
-	//<= and not <, because importLocale was added during the 0.97.0 cycle and jaspfiles saying "0.97" were already being written by then
-	if(originalVersion <= "0.98.1")
-	{
-		if(!tableHasColumn("DataSets", "importLocale"))
-			runStatements("ALTER TABLE DataSets ADD COLUMN importLocale TEXT DEFAULT \"\";");
-	}
+	//Not tied to a version: both were added while jaspfiles were already being written with the version number of their release
+	if(!tableHasColumn("DataSets", "csvDelimiter"))
+		runStatements("ALTER TABLE DataSets ADD COLUMN csvDelimiter INT DEFAULT 0;");
+
+	if(!tableHasColumn("DataSets", "importLocale"))
+		runStatements("ALTER TABLE DataSets ADD COLUMN importLocale TEXT DEFAULT \"\";");
 
 
 	transactionWriteEnd();

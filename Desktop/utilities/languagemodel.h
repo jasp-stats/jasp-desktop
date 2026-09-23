@@ -78,7 +78,7 @@ public:
 	QStringList								altTerritories()												const { return _altTerritories; }
 
 	///The entries the language dropdown in the preferences offers ("en - American English"), in that same order.
-	///The csv import dialog offers this same list before Advanced is ticked, see CsvPreviewModel.
+	///The csv import dialog offers this same list until More languages is ticked, see CsvPreviewModel.
 	QStringList								languageEntryNames()											const;
 	///The locale behind such an entry, and the entry belonging to a locale ("" when JASP is not translated into that language)
 	QLocale									localeForEntryName(	const QString & entryName)					const;

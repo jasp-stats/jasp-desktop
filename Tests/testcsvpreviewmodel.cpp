@@ -20,8 +20,6 @@
 #include "utilities/desktopcommunicator.h"
 #include "utilities/languagemodel.h"
 #include "utilities/settings.h"
-#include "columnutils.h"
-#include "utilities/qutils.h"
 #include <QLocale>
 
 void TestCsvPreviewModel::initTestCase()
@@ -129,8 +127,6 @@ void TestCsvPreviewModel::testImportLocale()
 
 	model.setLanguage(english);
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("86.298"));
-
-	QColumnUtils::readNumbersInInterfaceLocale(); //Importer::loadDataSet does this in the real application
 }
 
 ///Closing the dialog has to hand the locale to the importer, which is waiting on another thread
@@ -150,7 +146,6 @@ void TestCsvPreviewModel::testImportLocaleIsHandedToTheImporter()
 	QCOMPARE(DesktopCommunicator::singleton()->knownImportLocale().language(), QLocale::German);
 
 	DesktopCommunicator::singleton()->clearKnownImportLocale();
-	QColumnUtils::readNumbersInInterfaceLocale();
 }
 
 ///The dialog opens on whatever language the preferences are set to, also when they were changed since the previous import
@@ -186,8 +181,6 @@ void TestCsvPreviewModel::testLocaleFallsBackOnTheInterface()
 
 	QCOMPARE(model.language(),		languages->currentLanguage());
 	QCOMPARE(model.importLocale(),	languages->localeForEntryName(languages->currentLanguage()));
-
-	QColumnUtils::readNumbersInInterfaceLocale();
 }
 
 ///Hundreds of languages are hard to pick from, so only the ones JASP itself speaks are offered until More languages is ticked
@@ -244,34 +237,7 @@ void TestCsvPreviewModel::testMoreLanguagesWidensTheLanguageList()
 	model.setMoreLanguages(false);
 	QCOMPARE(model.language(),					languages->entryNameForLocale(QLocale(QLocale::German)));
 	QCOMPARE(model.importLocale().language(),	QLocale::German);
-
-	QColumnUtils::readNumbersInInterfaceLocale();
 }
 
 
 QTEST_MAIN(TestCsvPreviewModel)
-
-///Integers are tried before doubles when a column is read, so they have to follow the import locale as well: in English "1,234"
-///is the integer 1234, while a German file means one point two three four by it.
-void TestCsvPreviewModel::testImportLocaleAlsoReadsIntegers()
-{
-	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(QLocale::English, QLocale::UnitedStates), true);
-
-	int		anInt	= 0;
-	double	aDouble	= 0;
-
-	QVERIFY (ColumnUtils::getIntValue("1,234", anInt));
-	QCOMPARE(anInt, 1234);
-
-	QColumnUtils::readNumbersIn(QLocale(QLocale::German));
-
-	QVERIFY(!ColumnUtils::getIntValue("1,234", anInt));
-	QVERIFY (ColumnUtils::getDoubleValue("1,234", aDouble, true));
-	QCOMPARE(aDouble, 1.234);
-
-	//And afterwards the interface reads them its own way again
-	QColumnUtils::readNumbersInInterfaceLocale();
-
-	QVERIFY (ColumnUtils::getIntValue("1,234", anInt));
-	QCOMPARE(anInt, 1234);
-}

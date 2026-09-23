@@ -34,6 +34,7 @@
 #include "utils.h"
 #include <string>
 #include <vector>
+#include <functional>
 #include <json/json.h>
 #include <QItemSelection>
 
@@ -121,8 +122,7 @@ public:
 	
     static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
 	static void					setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps);
-	static void					readNumbersIn(const QLocale & locale);	///< For an import written in another locale than the interface, until readNumbersInInterfaceLocale() is called
-	static void					readNumbersInInterfaceLocale();
+	static std::function<bool(std::string, double &)>	stringToDoubleFor(const QLocale & locale);	///< A ColumnUtils::toDoubleF reading numbers written in locale, for a csv whose numbers are written in another locale than the interface, see CSVImportColumn::valueLookup
 	
 
 private:

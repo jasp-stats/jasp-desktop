@@ -19,6 +19,7 @@
 #include "utilities/desktopcommunicator.h"
 #include "utilities/qutils.h"
 #include "utilities/languagemodel.h"
+#include <QScopedValueRollback>
 
 CsvPreviewModel::CsvPreviewModel(QObject *parent) : QAbstractTableModel(parent)
 {
@@ -64,6 +65,8 @@ void CsvPreviewModel::setMoreLanguages(bool moreLanguages)
 	if(_moreLanguages == moreLanguages)
 		return;
 
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true); //See _setLocale
+
 	const QLocale wasUsing = _importLocale;
 
 	_moreLanguages = moreLanguages;
@@ -76,7 +79,7 @@ void CsvPreviewModel::setMoreLanguages(bool moreLanguages)
 
 	//And unticking More languages can leave behind a language that the short list does not offer at all
 	if(!_moreLanguages && LanguageModel::lang() && LanguageModel::lang()->entryNameForLocale(wasUsing).isEmpty())
-		keepUsing = LanguageModel::lang()->localeForEntryName(LanguageModel::lang()->currentLanguage());
+		keepUsing = _interfaceLocale();
 
 	_setLocale(keepUsing);
 }
@@ -112,14 +115,26 @@ void CsvPreviewModel::preparePreview(const QString &data, char delimiter)
 
 void CsvPreviewModel::resetLocaleToInterface()
 {
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true); //See _setLocale
+
 	emit languagesChanged(); //Preferences may have been given another language since the previous import
 
-	//Without a LanguageModel there is no interface to take a language from (unit tests), and then plain C is the honest default
-	_setLocale(LanguageModel::lang() ? LanguageModel::lang()->localeForEntryName(LanguageModel::lang()->currentLanguage()) : QLocale::c());
+	_setLocale(_interfaceLocale());
+}
+
+QLocale CsvPreviewModel::_interfaceLocale() const
+{
+	//The locale the rest of JASP reads numbers with, which is the alternative locale of the preferences when one is set.
+	//Without a LanguageModel there is no interface to take it from (unit tests), and then plain C is the honest default
+	return LanguageModel::lang() ? LanguageModel::lang()->currentLocale() : QLocale::c();
 }
 
 void CsvPreviewModel::_setLocale(const QLocale & locale)
 {
+	//The dropdowns write whatever they show back through setLanguage and setTerritory, also while they are still catching up
+	//with a list that changed underneath them and briefly show its first entry. That must not overrule the locale set here.
+	QScopedValueRollback<bool> settingLocale(_settingLocale, true);
+
 	//Single point where the locale changes: the two names shown in the dropdowns are derived from it, never the other way around
 	_importLocale	= locale;
 	_language		= _languageNameFor(locale);
@@ -135,12 +150,6 @@ void CsvPreviewModel::_setLocale(const QLocale & locale)
 
 void CsvPreviewModel::_applyImportLocale()
 {
-	//Only once this window is actually up do we let it decide how ColumnUtils reads numbers, otherwise the model would impose
-	//a locale on the whole application from the moment it is constructed. It stays in place for the import that follows the
-	//window closing, Importer::loadDataSet clears it again once the file has been read.
-	if(_visible)
-		QColumnUtils::readNumbersIn(_importLocale);
-
 	updateInternalStructure();
 
 	emit parseExampleChanged();
@@ -148,7 +157,7 @@ void CsvPreviewModel::_applyImportLocale()
 
 void CsvPreviewModel::setLanguage(const QString & language)
 {
-	if(_language == language || language == "")
+	if(_settingLocale || _language == language || language == "")
 		return;
 
 	_language = language;
@@ -158,7 +167,7 @@ void CsvPreviewModel::setLanguage(const QString & language)
 
 void CsvPreviewModel::setTerritory(const QString & territory)
 {
-	if(_territory == territory || territory == "")
+	if(_settingLocale || _territory == territory || territory == "")
 		return;
 
 	_territory		= territory;
@@ -167,6 +176,12 @@ void CsvPreviewModel::setTerritory(const QString & territory)
 	emit territoryChanged();
 
 	_applyImportLocale();
+}
+
+bool CsvPreviewModel::_readNumber(const QString & text, double & number) const
+{
+	//Exactly what CSVImportColumn::valueLookup does with it during the import
+	return QColumnUtils::stringToDoubleFor(_importLocale)(fq(text), number) || QColumnUtils::getDoubleValue(text, number, true);
 }
 
 QString CsvPreviewModel::parseExample() const
@@ -179,7 +194,7 @@ QString CsvPreviewModel::parseExample() const
 	for(const QString & sample : samples)
 	{
 		double	value		= 0;
-		bool	isNumber	= QColumnUtils::getDoubleValue(sample, value, true);
+		bool	isNumber	= _readNumber(sample, value);
 
 		lines.push_back(sample + "  \u2192  " + (isNumber ? QLocale::c().toString(value, 'g', 12) : tr("text")));
 	}
@@ -258,7 +273,7 @@ QVariant CsvPreviewModel::data(const QModelIndex &index, int role) const
 			return val;
 
 		double dblVal;
-		if (QColumnUtils::getDoubleValue(val, dblVal, true))
+		if (_readNumber(val, dblVal))
 			return QVariant(QColumnUtils::doubleToString(dblVal));
 
 		// Add quotes to signify that this will be considered as a string

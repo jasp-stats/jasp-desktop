@@ -495,11 +495,7 @@ QString QColumnUtils::decimalPoint()
 }
 
 
-//How the interface reads numbers, kept so that an import that reads them in another locale can hand them back afterwards
-static ColumnUtils::toDoubleF	interfaceStringToDouble;
-static ColumnUtils::toIntF		interfaceStringToInt;
-
-static ColumnUtils::toDoubleF stringToDoubleFor(const QLocale & locale)
+ColumnUtils::toDoubleF QColumnUtils::stringToDoubleFor(const QLocale & locale)
 {
 	return [locale](const std::string & str, double & dbl)
 	{
@@ -556,21 +552,8 @@ void QColumnUtils::setCallbacksAndDefaultLocale(const QLocale & locale, bool use
 		return fq(loc.toCurrencyString(dbl, tq(symbol)));
 	};
 
-	interfaceStringToDouble	= stringToDoubleFor(locale);
-	interfaceStringToInt	= stringToIntFor(locale);
-	
 	// ColumnUtils is in CommonData library and doesn't access Qt (for instance for QLocale), so instead we use a callback.
 	ColumnUtils::setAlternativeDoubleToString(	altFuncToString, altFuncCurToString	);
-	readNumbersInInterfaceLocale();
-}
-
-void QColumnUtils::readNumbersIn(const QLocale & locale)
-{
-	ColumnUtils::setExtraStringToNumber(stringToDoubleFor(locale), stringToIntFor(locale));
-}
-
-void QColumnUtils::readNumbersInInterfaceLocale()
-{
-	ColumnUtils::setExtraStringToNumber(interfaceStringToDouble, interfaceStringToInt);
+	ColumnUtils::setExtraStringToNumber(		stringToDoubleFor(locale), stringToIntFor(locale)	);
 }
 

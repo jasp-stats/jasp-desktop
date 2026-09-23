@@ -41,7 +41,7 @@ public:
 	char knownCsvDelimiter() const	{ return _knownCsvDelimiter; }
 	void setKnownCsvDelimiter(char d)	{ _knownCsvDelimiter = d; }
 	
-	///The locale the user picked in the import dialog to read numbers with, see CsvPreviewModel. Invalid QLocale() means "none chosen, use the locale of the interface".
+	///The locale the user picked in the import dialog to read numbers with, see CsvPreviewModel. Whether one was picked at all is what hasKnownImportLocale() says, a default QLocale() is simply the locale of the interface.
 	bool	hasKnownImportLocale()	const					{ return _hasKnownImportLocale;						}
 	QLocale	knownImportLocale()		const					{ return _knownImportLocale;						}
 	void	setKnownImportLocale(const QLocale & locale)	{ _knownImportLocale = locale; _hasKnownImportLocale = true;	}

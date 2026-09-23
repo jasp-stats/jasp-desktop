@@ -162,6 +162,11 @@ QLocale LanguageModel::localeForEntryName(const QString & entryName) const
 
 QString LanguageModel::entryNameForLocale(const QLocale & locale) const
 {
+	//Chinese is offered twice (zh_Hans and zh_Hant), so the script gets to decide before the language alone does
+	for(const auto & codeAndInfo : _languages)
+		if(codeAndInfo.second.locale.language() == locale.language() && codeAndInfo.second.locale.script() == locale.script())
+			return codeAndInfo.second.entryName;
+
 	for(const auto & codeAndInfo : _languages)
 		if(codeAndInfo.second.locale.language() == locale.language())
 			return codeAndInfo.second.entryName;

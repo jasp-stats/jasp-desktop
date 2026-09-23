@@ -2,6 +2,7 @@
 #define CSVIMPORTCOLUMN_H
 
 #include "../importcolumn.h"
+#include "columnutils.h"
 
 ///
 /// Storing a column during import of a CSV
@@ -9,7 +10,7 @@ class CSVImportColumn : public ImportColumn
 {
 public:
 							CSVImportColumn(ImportDataSet* importDataSet, std::string name);
-							CSVImportColumn(ImportDataSet* importDataSet, std::string name, long reserve);
+							CSVImportColumn(ImportDataSet* importDataSet, std::string name, long reserve, ColumnUtils::toDoubleF readNumbersAs = nullptr);
 							~CSVImportColumn()	override;
 
 			size_t			size()									const	override;
@@ -20,7 +21,8 @@ public:
 
 
 private:
-	stringvec _data;
+	stringvec				_data;
+	ColumnUtils::toDoubleF	_readNumbersAs;	///< Reads numbers in the locale chosen for this file in the csv preview, empty means that of the interface
 
 };
 

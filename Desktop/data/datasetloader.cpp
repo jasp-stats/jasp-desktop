@@ -83,7 +83,7 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 			DataSetPackage::pkg()->dataSet()->setCsvDelimiter(chosenDelimiter);
 		//Remember which locale the numbers were read with, so synchronising this same file later does not suddenly read them differently
 		if (DesktopCommunicator::singleton()->hasKnownImportLocale() && DataSetPackage::pkg()->dataSet())
-			DataSetPackage::pkg()->dataSet()->setImportLocale(fq(DesktopCommunicator::singleton()->knownImportLocale().name()));
+			DataSetPackage::pkg()->dataSet()->setImportLocale(fq(DesktopCommunicator::singleton()->knownImportLocale().bcp47Name()));
 		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
 		DesktopCommunicator::singleton()->clearKnownImportLocale();
 		delete importer;

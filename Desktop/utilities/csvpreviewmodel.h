@@ -22,7 +22,6 @@
 #include <QStringList>
 #include <QChar>
 #include <QLocale>
-#include "columnutils.h"
 
 ///Backs the Data Preview window: it shows how a csv file will be split into columns and how its numbers will be read.
 ///The locale used for reading is owned here, it starts out as the locale of the interface but the user can pick another one
@@ -94,13 +93,16 @@ private:
 	void					_setLocale(const QLocale & locale);			///< The one place the chosen locale changes, everything shown follows from it
 	QLocale					_localeForLanguage()				const;	///< Resolves whatever the language dropdown currently shows
 	QString					_languageNameFor(const QLocale & l)	const;	///< How that locale is named in the list the dropdown currently offers
-	void					_applyImportLocale();			///< Makes ColumnUtils read numbers with _importLocale, for the preview here and for the import that follows
+	void					_applyImportLocale();			///< Shows what _importLocale does to the numbers of the preview
+	QLocale					_interfaceLocale()					const;	///< The locale the rest of JASP reads numbers with
+	bool					_readNumber(const QString & text, double & number) const;	///< Reads a number of the preview the way the import will, see CSVImportColumn::valueLookup
 
 	QString					_rawData;
 	QChar					_delimiter = ','; // Default comma
 	QList<QList<QString>>	_grid; // The parsed data
 	bool					_visible	= false,
-							_moreLanguages	= false;	///< Off means only the languages JASP itself speaks are offered, on means every language Qt knows plus a territory
+							_moreLanguages	= false,	///< Off means only the languages JASP itself speaks are offered, on means every language Qt knows plus a territory
+							_settingLocale	= false;	///< While _setLocale runs, see there
 
 	QLocale					_importLocale;
 	QString					_language,
