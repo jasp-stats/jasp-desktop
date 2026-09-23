@@ -26,7 +26,7 @@
 // OIDC sign-in (the browser backend, the OidcConfig surface) is a PRO-build
 // feature: BrowserTokenProvider is compiled only under -DPRO, and AiBridge/
 // AIConfigModel gate their oidc branches likewise. Non-PRO builds ship API-key
-// auth only — see plan §4b and the brief.
+// auth only — see Docs/development/aiBridge/08_entra_auth_plan.md §2.
 
 #include <QObject>
 #include <QString>
