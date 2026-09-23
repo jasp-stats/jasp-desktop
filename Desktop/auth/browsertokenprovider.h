@@ -90,6 +90,7 @@ private:
 	QString m_authority;         // pushed via setOidcConfig
 	QString m_scope;
 	QString m_clientId;
+	int     m_redirectPort = 0;  // 0 = ephemeral (Entra ignores the port; Okta matches it)
 	QString m_configSignature;   // authority|scope|clientId the cached token belongs to
 	QString m_serverError;       // the provider's own explanation for the current attempt
 	bool    m_running    = false;

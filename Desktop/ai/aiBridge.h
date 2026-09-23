@@ -113,7 +113,9 @@ public:
 	Q_INVOKABLE void signOut();
 
 	/// True when the configured provider holds a usable token. For API-key auth
-	/// that simply means a key is set.
+	/// that simply means a key is set. A property, not just a method, because
+	/// QML binds visible: to it — a bare method reads as undefined there.
+	Q_PROPERTY(bool isSignedIn READ isSignedIn NOTIFY authStateChanged)
 	bool isSignedIn() const;
 
 	/// Who is signed in, and until when — for the preferences sign-in card.

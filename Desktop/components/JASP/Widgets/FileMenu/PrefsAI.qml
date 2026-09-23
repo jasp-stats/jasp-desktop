@@ -472,7 +472,9 @@ PrefsScrollView
 						target: aiBridge
 						function onAuthStateChanged() { signInCard.awaitingSignIn = false }
 						function onAuthInteractionRequired(message) { signInCard.lastMessage = message }
-						function onStreamError(error) { if (!aiBridge.isSignedIn) signInCard.lastMessage = error }
+						// Doubled "on" is correct: the C++ signal is literally named
+						// onStreamError (ChatWindow.qml relays it via connect() instead).
+						function onOnStreamError(error) { if (!aiBridge.isSignedIn) signInCard.lastMessage = error }
 					}
 				}
 
@@ -484,7 +486,7 @@ PrefsScrollView
 
 					Label
 					{
-						text:		qsTr("Only change these if your organization's setup differs from the JASP defaults. Leave the application ID empty to use JASP's own registration.")
+						text:	qsTr("Only change these if your organization's setup differs from the JASP defaults. Leave the application ID empty to use JASP's own registration. The redirect port only needs setting for providers that match it exactly, like Okta.")
 						wrapMode:	Text.WordWrap
 						width:		parent.width
 					}
@@ -518,6 +520,19 @@ PrefsScrollView
 						fillWidth:		true
 						fieldHeight:	25 * jaspTheme.uiScale
 						}
+
+					TextField
+					{
+						label:				qsTr("Redirect port:")
+						value:				aiConfigModel.currentAuthRedirectPort > 0 ? String(aiConfigModel.currentAuthRedirectPort) : ""
+						onEditingFinished:	{
+							const p = parseInt(displayValue);
+							aiConfigModel.currentAuthRedirectPort = (displayValue.length > 0 && p > 0 && p <= 65535) ? p : 0;
+						}
+						width:			parent.width
+						fillWidth:		true
+						fieldHeight:	25 * jaspTheme.uiScale
+					}
 					}
 				}
 			}

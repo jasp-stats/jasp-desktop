@@ -53,6 +53,7 @@ struct AIProviderEntry
 	QString               authBackend;      // "auto" (default when empty) | wam | browser | devicecode
 	QString               authHeaderName;   // empty = "Authorization"
 	QString               authHeaderPrefix; // empty = "Bearer " for Authorization, raw otherwise
+	int                   authRedirectPort = 0;  // loopback redirect port; 0 = ephemeral (Okta needs a fixed one)
 	bool                  isSystem  = true;   // from shipped JSON?
 	QVector<AIModelEntry> models;             // at least 1
 };
@@ -177,6 +178,8 @@ public:
 	           WRITE setCurrentAuthScope        NOTIFY currentAuthScopeChanged)
 	Q_PROPERTY(QString currentAuthClientId     READ currentAuthClientId
 	           WRITE setCurrentAuthClientId     NOTIFY currentAuthClientIdChanged)
+	Q_PROPERTY(int    currentAuthRedirectPort  READ currentAuthRedirectPort
+	           WRITE setCurrentAuthRedirectPort NOTIFY currentAuthRedirectPortChanged)
 	Q_PROPERTY(QString currentAuthBackend      READ currentAuthBackend
 	           WRITE setCurrentAuthBackend      NOTIFY currentAuthBackendChanged)
 	Q_PROPERTY(QString currentAuthHeaderName   READ currentAuthHeaderName
@@ -228,6 +231,8 @@ public:
 	void    setCurrentAuthScope(const QString &v);
 	QString currentAuthClientId()          const;
 	void    setCurrentAuthClientId(const QString &v);
+	int     currentAuthRedirectPort()      const;
+	void    setCurrentAuthRedirectPort(int v);
 	QString currentAuthBackend()           const;
 	void    setCurrentAuthBackend(const QString &v);
 	QString currentAuthHeaderName()        const;
@@ -258,6 +263,7 @@ signals:
 	void currentAuthAuthorityChanged();
 	void currentAuthScopeChanged();
 	void currentAuthClientIdChanged();
+	void currentAuthRedirectPortChanged();
 	void currentAuthBackendChanged();
 	void currentAuthHeaderNameChanged();
 	void currentAuthHeaderPrefixChanged();
@@ -293,6 +299,7 @@ private:
 		QString     authBackend;
 		QString     authHeaderName;
 		QString     authHeaderPrefix;
+		int         authRedirectPort = 0;
 
 		bool operator==(const ProviderOverrides &o) const = default;
 	};

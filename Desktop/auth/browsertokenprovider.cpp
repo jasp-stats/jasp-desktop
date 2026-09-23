@@ -68,7 +68,7 @@ static QString requestFailedReason(QAbstractOAuth::Error error)
 	case QAbstractOAuth::Error::OAuthTokenSecretNotFoundError:
 		return QStringLiteral("The sign-in service did not return a token secret.");
 	case QAbstractOAuth::Error::OAuthCallbackNotVerified:
-		return QStringLiteral("The sign-in redirect could not be verified. Check that the application registration allows http://localhost.");
+		return QStringLiteral("The sign-in redirect could not be verified. Check that the application registration allows http://127.0.0.1/callback.");
 	case QAbstractOAuth::Error::ClientError:
 		return QStringLiteral("The sign-in request was rejected. Check the authority and client ID.");
 	case QAbstractOAuth::Error::ExpiredError:
@@ -191,10 +191,14 @@ BrowserTokenProvider::BrowserTokenProvider(QObject *parent)
 	// so the flow never ends up holding a pointer to a destroyed handler.
 	m_replyHandler = new QOAuthHttpServerReplyHandler(quint16(0), this);
 
-	// Qt's default handler advertises itself as 127.0.0.1, but the app
-	// registration — and the portal text box — only accepts http://localhost.
-	// Without this the redirect fails to match and Entra returns AADSTS50011.
-	m_replyHandler->setCallbackHost(QStringLiteral("localhost"));
+	// The redirect mirrors Claude Desktop's convention — http://127.0.0.1/callback
+	// — which is what the app registration now carries, and what a customer
+	// following Anthropic's gateway guide registers for a bring-your-own app.
+	// The host is Qt's default, stated anyway: Entra matches redirect URIs
+	// exactly (host and path; only the port is free for loopback), so a mismatch
+	// here fails with AADSTS50011.
+	m_replyHandler->setCallbackHost(QStringLiteral("127.0.0.1"));
+	m_replyHandler->setCallbackPath(QStringLiteral("/callback"));
 	// Qt serves this for *any* callback at this path — success, an error redirect,
 	// or garbage — always HTTP 200, always this text, without inspecting the
 	// result. It also does so before the code is exchanged for a token, so it must
@@ -306,6 +310,11 @@ void BrowserTokenProvider::setOidcConfig(const OidcConfig &config)
 	if (clientId.isEmpty())
 		clientId = defaultClientId();
 
+	// The port is not part of the signature (it cannot affect tokens), so apply
+	// it before the early return — a port-only edit must still take effect.
+	m_redirectPort = (config.redirectPort > 0 && config.redirectPort <= 65535)
+						 ? config.redirectPort : 0;
+
 	// A different provider, or the same one edited: anything cached belongs to
 	// the old configuration and must not be sent to the new endpoint.
 	const QString signature =
@@ -406,14 +415,20 @@ void BrowserTokenProvider::beginSignIn()
 	// address, but listen()'s default is a non-null one — so a no-argument call
 	// binds 0.0.0.0, which exposes this redirect endpoint to the local network and
 	// triggers a Windows Firewall prompt for a listener that only ever needs the
-	// browser on this machine. The port is ephemeral, and the registration matches
-	// http://localhost regardless of port (plan Appendix A).
+	// browser on this machine. The port is ephemeral unless the configuration
+	// pins one (authRedirectPort): Entra ignores it for loopback redirects, but
+	// Okta matches it exactly — which is why the pin exists.
 	m_replyHandler->close();
 
-	if (!m_replyHandler->listen(QHostAddress::LocalHost, 0))
+	const quint16 port = m_redirectPort > 0 ? quint16(m_redirectPort) : quint16(0);
+	if (!m_replyHandler->listen(QHostAddress::LocalHost, port))
 	{
-		fail(QStringLiteral("Could not open a local port to receive the sign-in redirect. "
-							"JASP needs to listen on localhost to complete sign-in."));
+		fail(m_redirectPort > 0
+				? QStringLiteral("Could not open port %1 to receive the sign-in redirect — it may "
+								  "already be in use. Close whatever holds it, or clear the redirect "
+								  "port setting to pick a free port automatically.").arg(m_redirectPort)
+				: QStringLiteral("Could not open a local port to receive the sign-in redirect. "
+								  "JASP needs to listen on 127.0.0.1 to complete sign-in."));
 		return;
 	}
 

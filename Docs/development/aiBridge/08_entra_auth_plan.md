@@ -46,7 +46,7 @@ already compatible. The work is **token acquisition and lifecycle**.
 | Application (client) ID | `fc57bc92-9de6-405e-8a47-4161cc3e27d3` |
 | Platform | Mobile and desktop applications (public client) |
 | Supported accounts | Multiple Entra ID tenants (allow all) |
-| Redirect URIs | `http://localhost`; `ms-appx-web://Microsoft.AAD.BrokerPlugin/fc57bc92-…`; `msalfc57bc92-…://auth` |
+| Redirect URIs | `http://127.0.0.1/callback` (Claude-parity; replaced `http://localhost` 2026-09-23, end-to-end re-verification pending); `ms-appx-web://Microsoft.AAD.BrokerPlugin/fc57bc92-…`; `msalfc57bc92-…://auth` |
 | Delegated permission | Microsoft Cognitive Services → `user_impersonation` — **NOT YET GRANTED**, see below |
 | Partner Center | Company account, **fully verified** (identity + business) |
 | Partner program | Microsoft AI Cloud Partner Program |
@@ -779,7 +779,7 @@ onboarded Claude Desktop can onboard JASP the same way.
 | `issuer` (base URL; app appends `/.well-known/openid-configuration`) | `authAuthority` | ✅ have |
 | `scopes` (default `openid profile email offline_access`) | `authScope` + those three implicit | ✅ have |
 | `authorizationUrl` / `tokenUrl` | — | ❌ **missing** — for IdPs serving no discovery document |
-| `redirectPort` (fixed loopback port) | — | ❌ **missing** — we always take an ephemeral port; Okta requires an exact match |
+| `redirectPort` (fixed loopback port) | `authRedirectPort` (0 = ephemeral) | ✅ have — Entra ignores the loopback port; Okta needs it pinned |
 | `appendOfflineAccess` | hardcoded | ❌ **make configurable** — some IdPs reject `offline_access` |
 | `bearerTokenType` — `id_token` (default) \| `access_token` | access token only | ❌ **missing — and the interesting one** |
 | `resource` (RFC 8707) | — | not needed — Entra rejects the parameter; AD FS only |
@@ -1003,16 +1003,23 @@ stays the default for that preset; gateway presets should default to `id_token`.
   registered as a confidential Web client instead of a public/native one. We will see this
   from customers, and it deserves its own message rather than a generic auth failure.
 
-#### Redirect URI: their configuration and ours disagree — ours is verified
+#### Redirect URI — now Claude's, by decision (2026-09-23)
 
 Claude requires `http://127.0.0.1/callback` and states `127.0.0.1` is mandatory (*"use
-127.0.0.1 (not localhost), include the /callback path"*). Our verified working setup uses
-`http://localhost` with no path, and Appendix A records that `127.0.0.1` was rejected.
+127.0.0.1 (not localhost), include the /callback path"*). Our earlier verified setup used
+`http://localhost` with no path, and Appendix A recorded that the portal text box rejected
+`127.0.0.1` at the time.
 
-Both may be valid — possibly depending on whether a path is present, or Entra's behaviour may
-have changed. **Do not "fix" our working configuration to match theirs.** If we adopt a
-`/callback` path for parity, re-register and re-verify first; a mismatch here fails with
-`AADSTS50011` and costs an afternoon.
+**The human decided to match Claude**: the registration now carries
+`http://127.0.0.1/callback`, and `BrowserTokenProvider` advertises `127.0.0.1` + `/callback`
+to match (`setCallbackHost` + `setCallbackPath`). The original warning still applies in its
+new form: the advertised URI must match the registration exactly — host and path; only the
+port is free — or sign-in fails with `AADSTS50011`. **End-to-end re-verification after the
+switch is pending**; the verified runs all predate it.
+
+A `redirectPort` knob (`authRedirectPort`, 0 = ephemeral) ships alongside for parity:
+Entra ignores the loopback port, but Okta matches it exactly, which is the one case that
+needs it pinned.
 
 #### The broker, revisited
 
@@ -1197,9 +1204,10 @@ available in that build, before any backend existed).
       `authStateChanged()` / `authInteractionRequired()`.
 - [x] **Build and run it.**
 - [x] Redirect URI — logged on every attempt as
-      `BrowserTokenProvider: sign-in redirect URI is http://localhost:<port>/`.
-      `setCallbackHost("localhost")` is required: Qt's default advertises
-      `127.0.0.1`, which the registration rejects (`AADSTS50011`).
+      `BrowserTokenProvider: sign-in redirect URI is …`. Originally verified with
+      `http://localhost` (the registration of the time rejected Qt's `127.0.0.1`
+      default → `AADSTS50011`); **switched to `http://127.0.0.1/callback` on 2026-09-23**
+      to match Claude Desktop — re-verification pending.
 - [ ] Retry once on HTTP 401. Deliberately **not** done: it touches the streaming
       teardown in `onReplyFinished()`, which is the riskiest code in the file, and the
       provider already renews ahead of expiry.
@@ -1245,7 +1253,13 @@ Debugging additions made while chasing the 401, all worth keeping:
       dependency). **macOS compiled and verified end-to-end 2026-09-23** — the Keychain
       backend needed `-framework Security` added to the `JASPDesktopLib` link list
       (`Desktop/CMakeLists.txt`); sign-in survives a JASP restart via silent renewal.
-      Linux written but not yet run.
+      **Linux 2026-09-23: first run segfaulted** — the code resolved the variadic
+      `secret_password_*_sync` symbols, where attributes are a NULL-terminated `...` list,
+      shifting every argument left. Fixed to the GHashTable-based `v` variants
+      (`secret_password_storev_sync` etc., binding-facing ABI, present since libsecret
+      ~0.16) with GError capture and logging; verified standalone against libsecret
+      0.21.8 (graceful failure with a logged reason, no crash). **In-app rebuild +
+      verification pending.**
 - [x] Degradation policy encoded in the API: `SecretVault::Degrade::Never` for token-class
       secrets (write fails, caller reports), `ToEncryptedSettings` default for secrets a
       user typed and can revoke. `SecretStore` renamed to `EncryptedSettingsStore` and
@@ -1384,17 +1398,19 @@ Gather these **before each deployment**. None block development.
 | Supported accounts (`signInAudience`) | `AzureADMultipleOrgs` (work/school only) |
 | Platform | **Mobile and desktop applications** (not Web, not SPA) |
 | `allowPublicClient` | `true` |
-| Redirect URI (browser) | `http://localhost` — **port is ignored when matching** |
+| Redirect URI (browser) | `http://127.0.0.1/callback` — Claude-parity, switched from `http://localhost` 2026-09-23; **port is ignored when matching** |
 | Delegated permission | Microsoft Cognitive Services → `user_impersonation` (**required — currently missing**) |
 | Resource-side RBAC (client tenant) | `Cognitive Services OpenAI User` |
 | Admin consent URL | `https://login.microsoftonline.com/{tenant}/adminconsent?client_id={client_id}` |
 
 Notes:
 
-- The loopback redirect must match **`localhost` by name**. `127.0.0.1` is not
-  equivalent for the matcher and the portal text box rejects it; it must be added
-  via the manifest (`replyUrlsWithType`). This is why
-  `BrowserTokenProvider` calls `setCallbackHost("localhost")` explicitly.
+- The registration now carries **`http://127.0.0.1/callback`** (Claude-parity; switched from
+  `http://localhost` on 2026-09-23 — the earlier note that the portal text box rejected
+  `127.0.0.1` predates the switch). Host and path must match the advertised redirect exactly;
+  only the port is free, because Entra ignores it for loopback URIs.
+  `BrowserTokenProvider` sets `setCallbackHost("127.0.0.1")` + `setCallbackPath("/callback")`
+  accordingly, with an optional fixed port via `authRedirectPort` (Okta matches ports exactly).
 - IPv6 loopback `[::1]` is not supported (Qt tries IPv4 first, so this is fine in
   practice).
 - Prefer `Cognitive Services OpenAI User` over `Cognitive Services User` — the

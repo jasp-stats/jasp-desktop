@@ -35,6 +35,8 @@ struct OidcConfig
 	QString authority;   ///< tenant id, "organizations", or a full issuer URL
 	QString scope;       ///< the resource the token is for, e.g. https://cognitiveservices.azure.com/.default
 	QString clientId;    ///< the app registration; empty means "the JASP default"
+	int    redirectPort = 0;  ///< loopback redirect port; 0 = ephemeral. Entra ignores the
+	                         ///< port for loopback URIs, but Okta matches it exactly.
 };
 
 class TokenProvider : public QObject

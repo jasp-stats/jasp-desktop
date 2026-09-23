@@ -330,6 +330,7 @@ void AIConfigModel::emitAllDerivedSignals()
 	emit currentAuthAuthorityChanged();
 	emit currentAuthScopeChanged();
 	emit currentAuthClientIdChanged();
+	emit currentAuthRedirectPortChanged();
 	emit currentAuthBackendChanged();
 	emit currentAuthHeaderNameChanged();
 	emit currentAuthHeaderPrefixChanged();
@@ -415,6 +416,15 @@ QString AIConfigModel::currentAuthClientId() const
 	if (m_providerOverrides.contains(prov->id) && !m_providerOverrides[prov->id].authClientId.isEmpty())
 		return m_providerOverrides[prov->id].authClientId;
 	return prov->authClientId;
+}
+
+int AIConfigModel::currentAuthRedirectPort() const
+{
+	const auto *prov = currentProvider();
+	if (!prov) return 0;
+	if (m_providerOverrides.contains(prov->id) && m_providerOverrides[prov->id].authRedirectPort > 0)
+		return m_providerOverrides[prov->id].authRedirectPort;
+	return prov->authRedirectPort;
 }
 
 QString AIConfigModel::currentAuthBackend() const
@@ -775,6 +785,23 @@ void AIConfigModel::setCurrentAuthClientId(const QString &v)
 	m_providerOverrides[prov->id] = ov;
 
 	emit currentAuthClientIdChanged();
+	saveUserData();
+}
+
+void AIConfigModel::setCurrentAuthRedirectPort(int v)
+{
+	if (v < 1 || v > 65535) v = 0;   // anything not a usable port means "automatic"
+	const auto *prov = currentProvider();
+	if (!prov) return;
+	if (currentAuthRedirectPort() == v) return;
+
+	ProviderOverrides ov;
+	if (m_providerOverrides.contains(prov->id))
+		ov = m_providerOverrides[prov->id];
+	ov.authRedirectPort = v;
+	m_providerOverrides[prov->id] = ov;
+
+	emit currentAuthRedirectPortChanged();
 	saveUserData();
 }
 
@@ -1145,6 +1172,7 @@ void AIConfigModel::loadShippedProviders()
 		prov.authBackend      = pobj["authBackend"].toString();
 		prov.authHeaderName   = pobj["authHeaderName"].toString();
 		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
+		prov.authRedirectPort = pobj["authRedirectPort"].toInt();
 		// Pre-rename (vendor-named) keys — keep reading them so shipped or saved
 		// config written before the rename still resolves.
 		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
@@ -1220,6 +1248,7 @@ void AIConfigModel::loadUserData()
 		if (o.contains("authBackend"))      ov.authBackend      = o["authBackend"].toString();
 		if (o.contains("authHeaderName"))   ov.authHeaderName   = o["authHeaderName"].toString();
 		if (o.contains("authHeaderPrefix")) ov.authHeaderPrefix = o["authHeaderPrefix"].toString();
+		if (o.contains("authRedirectPort")) ov.authRedirectPort = o["authRedirectPort"].toInt();
 		// Pre-rename (vendor-named) keys
 		if (o.contains("entraTenant") && !o.contains("authAuthority"))
 			ov.authAuthority = o["entraTenant"].toString();
@@ -1295,6 +1324,7 @@ void AIConfigModel::loadUserData()
 		prov.authBackend      = pobj["authBackend"].toString();
 		prov.authHeaderName   = pobj["authHeaderName"].toString();
 		prov.authHeaderPrefix = pobj["authHeaderPrefix"].toString();
+		prov.authRedirectPort = pobj["authRedirectPort"].toInt();
 		// Pre-rename (vendor-named) keys
 		if (prov.authAuthority.isEmpty()) prov.authAuthority = pobj["entraTenant"].toString();
 		if (prov.authScope.isEmpty())     prov.authScope     = pobj["entraScope"].toString();
@@ -1418,7 +1448,7 @@ void AIConfigModel::saveUserData()
 		    && pov.authMode.isEmpty() && pov.authAuthority.isEmpty()
 		    && pov.authScope.isEmpty() && pov.authClientId.isEmpty()
 		    && pov.authBackend.isEmpty() && pov.authHeaderName.isEmpty()
-		    && pov.authHeaderPrefix.isEmpty())
+		    && pov.authHeaderPrefix.isEmpty() && pov.authRedirectPort == 0)
 			m_providerOverrides.remove(prov->id);
 		else
 			m_providerOverrides[prov->id] = pov;
@@ -1463,6 +1493,7 @@ void AIConfigModel::saveUserData()
 		if (!ov.authBackend.isEmpty())      o["authBackend"]      = ov.authBackend;
 		if (!ov.authHeaderName.isEmpty())   o["authHeaderName"]   = ov.authHeaderName;
 		if (!ov.authHeaderPrefix.isEmpty()) o["authHeaderPrefix"] = ov.authHeaderPrefix;
+		if (ov.authRedirectPort > 0)        o["authRedirectPort"] = ov.authRedirectPort;
 		// Per-provider custom-mode fields
 		if (ov.systemPromptPostfixSet)    o["systemPromptPostfix"] = ov.systemPromptPostfix;
 		if (ov.extraParamsSet)            o["extraParams"]         = ov.extraParams;
@@ -1521,6 +1552,7 @@ void AIConfigModel::saveUserData()
 		if (!prov.authBackend.isEmpty())      po["authBackend"]      = prov.authBackend;
 		if (!prov.authHeaderName.isEmpty())   po["authHeaderName"]   = prov.authHeaderName;
 		if (!prov.authHeaderPrefix.isEmpty()) po["authHeaderPrefix"] = prov.authHeaderPrefix;
+		if (prov.authRedirectPort > 0)        po["authRedirectPort"] = prov.authRedirectPort;
 
 		QJsonArray marr;
 		for (const auto &m : prov.models)

@@ -140,7 +140,7 @@ void AiBridge::pushAuthConfig()
 	if (auto *api = qobject_cast<ApiKeyTokenProvider *>(m_tokenProvider))
 		api->setApiKey(cfg->currentApiKey());
 	else if (auto *oidc = qobject_cast<BrowserTokenProvider *>(m_tokenProvider))
-		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId() });
+		oidc->setOidcConfig({ cfg->currentAuthAuthority(), cfg->currentAuthScope(), cfg->currentAuthClientId(), cfg->currentAuthRedirectPort() });
 }
 
 void AiBridge::configureTokenProvider()

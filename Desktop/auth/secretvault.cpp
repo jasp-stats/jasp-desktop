@@ -193,13 +193,28 @@ struct SecretSchema
 	SecretSchemaAttribute attributes[32];
 };
 
-using SecretPasswordStoreSync  = int    (*)(SecretSchema *, void *, const char *, const char *, const char *, void *, void **);
-using SecretPasswordLookupSync = char *(*)(SecretSchema *, void *, void *, void **);
-using SecretPasswordClearSync  = int    (*)(SecretSchema *, void *, void *, void **);
+// GError's layout is public ABI (GQuark is a guint32). Read-only here: the
+// message names the real cause ("no secret service", "keyring locked"), which
+// is worth surfacing in the log instead of failing silently.
+struct GErrorBox { unsigned int domain; int code; char *message; };
+
+// The bare secret_password_{store,lookup,clear}_sync functions are VARIADIC —
+// attributes go in a NULL-terminated "..." list after error. Calling them
+// through a fixed-arity pointer shifts every argument by one and segfaults
+// inside the cancellable type check. That is exactly what the first Linux run
+// did (2026-09-23, libsecret 0.21.8): the password string was dereferenced as
+// a GCancellable*. The v variants below take the GHashTable directly and are
+// the stable binding-facing ABI — never resolve the bare names.
+using SecretPasswordStoreSync  = int    (*)(SecretSchema *, void *, const char *, const char *, const char *, void *, GErrorBox **);
+using SecretPasswordLookupSync = char *(*)(SecretSchema *, void *, void *, GErrorBox **);
+using SecretPasswordClearSync  = int    (*)(SecretSchema *, void *, void *, GErrorBox **);
 using SecretPasswordFree       = void   (*)(char *);
 using GHashTableNewFn          = void *(*)(void *, void *);
 using GHashTableInsertFn       = int    (*)(void *, void *, void *);
 using GHashTableUnrefFn        = void   (*)(void *);
+using GErrorFreeFn             = void   (*)(void *);
+using GStrHashFn               = unsigned int (*)(const void *);
+using GStrEqualFn              = int    (*)(const void *, const void *);
 
 /// Loaded once; a missing library leaves every pointer null and available()
 /// false, which is the whole point of dlopen-ing instead of linking.
@@ -215,6 +230,9 @@ struct SecretServiceLib
 	GHashTableNewFn          tableNew     = nullptr;
 	GHashTableInsertFn       tableInsert  = nullptr;
 	GHashTableUnrefFn        tableUnref   = nullptr;
+	GErrorFreeFn             errorFree    = nullptr;
+	GStrHashFn               strHash      = nullptr;
+	GStrEqualFn              strEqual     = nullptr;
 
 	bool ok = false;
 
@@ -223,15 +241,18 @@ struct SecretServiceLib
 		if (!secret.load() || !glib.load())
 			return;
 
-		store        = reinterpret_cast<SecretPasswordStoreSync>(secret.resolve("secret_password_store_sync"));
-		lookup       = reinterpret_cast<SecretPasswordLookupSync>(secret.resolve("secret_password_lookup_sync"));
-		clear        = reinterpret_cast<SecretPasswordClearSync>(secret.resolve("secret_password_clear_sync"));
+		store        = reinterpret_cast<SecretPasswordStoreSync>(secret.resolve("secret_password_storev_sync"));
+		lookup       = reinterpret_cast<SecretPasswordLookupSync>(secret.resolve("secret_password_lookupv_sync"));
+		clear        = reinterpret_cast<SecretPasswordClearSync>(secret.resolve("secret_password_clearv_sync"));
 		freePassword = reinterpret_cast<SecretPasswordFree>(secret.resolve("secret_password_free"));
 		tableNew     = reinterpret_cast<GHashTableNewFn>(glib.resolve("g_hash_table_new"));
 		tableInsert  = reinterpret_cast<GHashTableInsertFn>(glib.resolve("g_hash_table_insert"));
 		tableUnref   = reinterpret_cast<GHashTableUnrefFn>(glib.resolve("g_hash_table_unref"));
+		errorFree    = reinterpret_cast<GErrorFreeFn>(glib.resolve("g_error_free"));
+		strHash      = reinterpret_cast<GStrHashFn>(glib.resolve("g_str_hash"));
+		strEqual     = reinterpret_cast<GStrEqualFn>(glib.resolve("g_str_equal"));
 
-		ok = store && lookup && clear && freePassword && tableNew && tableInsert && tableUnref;
+		ok = store && lookup && clear && freePassword && tableNew && tableInsert && tableUnref && errorFree && strHash && strEqual;
 	}
 };
 
@@ -252,10 +273,11 @@ SecretSchema makeSchema()
 
 void *makeAttributes(const SecretServiceLib &lib, const char *keyUtf8)
 {
-	// libsecret marshals this table into a DBus dict, so the client-side hash
-	// function has no effect on the wire format — which is why libsecret's own
-	// examples pass NULL, NULL.
-	void *table = lib.tableNew(nullptr, nullptr);
+	// Built the way libsecret's own v-variant examples build it: string keys
+	// with g_str_hash/g_str_equal. (The table is marshalled into a DBus dict
+	// and both hash styles behave identically there — verified — but matching
+	// the documented pattern is the defensible choice.)
+	void *table = lib.tableNew(reinterpret_cast<void *>(lib.strHash), reinterpret_cast<void *>(lib.strEqual));
 	if (!table)
 		return nullptr;
 	lib.tableInsert(table, const_cast<char *>("jasp-key"), const_cast<char *>(keyUtf8));
@@ -277,10 +299,17 @@ bool secretServiceWrite(const QString &key, const QByteArray &value)
 		return false;
 
 	const SecretSchema schema = makeSchema();
+	GErrorBox *err = nullptr;
 	const bool ok = lib.store(const_cast<SecretSchema *>(&schema), attributes, "default",
 	                          keyUtf8.constData(),   // the label shown by seahorse etc.
 	                          password.constData(),
-	                          nullptr, nullptr) != 0;
+	                          nullptr, &err) != 0;
+	if (err)
+	{
+		Log::log() << "SecretVault: storing in the Secret Service failed: "
+		           << (err->message ? err->message : "unknown error") << std::endl;
+		lib.errorFree(err);
+	}
 	lib.tableUnref(attributes);
 	return ok;
 }
@@ -297,7 +326,10 @@ QByteArray secretServiceRead(const QString &key)
 		return {};
 
 	const SecretSchema schema = makeSchema();
-	char *password = lib.lookup(const_cast<SecretSchema *>(&schema), attributes, nullptr, nullptr);
+	GErrorBox *err = nullptr;
+	char *password = lib.lookup(const_cast<SecretSchema *>(&schema), attributes, nullptr, &err);
+	if (err)
+		lib.errorFree(err);   // quiet: "not found"/"no service" is the normal cold-start case
 	lib.tableUnref(attributes);
 	if (!password)
 		return {};
@@ -319,7 +351,14 @@ void secretServiceRemove(const QString &key)
 		return;
 
 	const SecretSchema schema = makeSchema();
-	lib.clear(const_cast<SecretSchema *>(&schema), attributes, nullptr, nullptr);
+	GErrorBox *err = nullptr;
+	lib.clear(const_cast<SecretSchema *>(&schema), attributes, nullptr, &err);
+	if (err)
+	{
+		Log::log() << "SecretVault: removing from the Secret Service failed: "
+		           << (err->message ? err->message : "unknown error") << std::endl;
+		lib.errorFree(err);
+	}
 	lib.tableUnref(attributes);
 }
 

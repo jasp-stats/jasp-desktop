@@ -34,7 +34,7 @@ customer's own Azure subscription.
 | **1 — TokenProvider abstraction + generic config** | ✅ Done, committed |
 | **2 — Browser sign-in backend** | ✅ **Done and verified end-to-end against live Azure** |
 | **3 — UI (`PrefsAI.qml`)** | ✅ **Built and exercised** on Windows and macOS — tabbed settings, sign-in card, mode↔provider consistency |
-| **4 — Refresh-token persistence (OS vault)** | ✅ **Windows and macOS verified** — Credential Manager / Keychain + silent renewal. **macOS 2026-09-23: sign-in survives a JASP restart** (Keychain write + silent renew). Linux written, **not yet run** (libsecret loads at runtime) |
+| **4 — Refresh-token persistence (OS vault)** | ✅ **Windows and macOS verified** — Credential Manager / Keychain + silent renewal. **macOS 2026-09-23: sign-in survives a JASP restart** (Keychain write + silent renew). **Linux 2026-09-23: first run segfaulted** — wrong symbols (variadic `*_sync` instead of the `v` variants); **fixed + standalone-verified on libsecret 0.21.8, in-app rebuild pending** |
 | **5 — Device-code fallback** | ❌ Not started |
 | **6 — Privacy hardening** | 🟡 Mostly committed (`78129fe87`); sign-out/revocation still open |
 | **7 — Test matrix / second tenant** | 🟡 **macOS ✅ 2026-09-23** (sign-in + persistence; first compile of the Keychain backend after linking `-framework Security`). **Linux next.** Multi-tenant consent, CA policy untested |
@@ -271,9 +271,13 @@ Useful facts:
 ## 8. Next steps, in order
 
 **1. Linux bring-up (in progress, 2026-09-23).** The libsecret backend loads at runtime —
-expect `available() == false` and the in-memory fallback on machines without a Secret
-Service. Flatpak needs the `--talk-name=org.freedesktop.secrets` grant (Phase 4). The
-checkpoint split is done: `78129fe87`.
+expect `available() == false` and the fallback store on machines without a Secret Service.
+**First run segfaulted: the code dlsym'd the variadic `secret_password_*_sync` symbols;
+fixed to the `v` variants (GHashTable + GError), verified standalone on libsecret 0.21.8
+(graceful failure with a logged reason, no crash). Rebuild + run JASP to confirm the
+startup migration degrades cleanly.** Flatpak needs the
+`--talk-name=org.freedesktop.secrets` grant (Phase 4). The checkpoint split is done:
+`78129fe87`.
 
 **2. Finish Phase 6 — privacy hardening.** *Mostly done in the working tree* (§2): the
 unconditional request-body log is gated behind `m_verboseLogging`, and `m_debugDumpEnabled` now
@@ -335,7 +339,7 @@ The high-value section. Most of these cost real time.
 |---|---|
 | **A browser sign-in must never use an embedded view** | The chat UI is a `WebEngineView`, and Conditional Access device-compliance fails in embedded web views. `BrowserTokenProvider` opens the **system** browser via `QDesktopServices::openUrl`. |
 | **Bind the OAuth listener to loopback explicitly** | `QOAuthHttpServerReplyHandler::listen()` defaults to `QHostAddress::Any`, and its loopback fallback only fires for a *null* address — so calling `listen()` with no arguments binds `0.0.0.0`, exposing the redirect endpoint to the LAN and triggering a Windows Firewall prompt. `BrowserTokenProvider` passes `QHostAddress::LocalHost`. |
-| **The loopback redirect must say `localhost`** | Qt's default handler advertises `127.0.0.1`, which our registration does not accept → `AADSTS50011`. `setCallbackHost("localhost")` is required. **Note:** Claude Desktop's docs require the opposite (`127.0.0.1/callback`, with the path) and say `localhost` is wrong. Both may be valid; **ours is verified working — do not "fix" it to match theirs without re-registering and re-testing.** |
+| **The loopback redirect is now `127.0.0.1/callback`** | **Switched 2026-09-23 to match Claude Desktop** — the registration was changed and `BrowserTokenProvider` advertises `127.0.0.1` + `/callback` (`setCallbackHost` + `setCallbackPath`). The old `localhost` setup was verified working; the new one **needs a live sign-in to re-verify**. Entra matches host+path exactly and ignores the port; a mismatch fails with `AADSTS50011`. A fixed port is available via `authRedirectPort` (0 = ephemeral) for Okta, which matches ports exactly. |
 | **A tenant must own an Azure subscription for consent to be possible at all** | Service principals for Microsoft's APIs are provisioned per the products a tenant owns. A bare Entra tenant has **none** — not even Microsoft Graph — and admin consent fails with *"Your organization does not have a subscription (or service principal)…"*. This consumed most of a day. A customer using Azure OpenAI always has a subscription, so **this is a test-environment artifact, not a product problem.** |
 | **Admin consent was never required** | An earlier version of the plan insisted on it and sent us down a long wrong path. For one person signing in, **user consent is sufficient**. Admin consent is only a convenience for *other* users. |
 | **The portal permission picker cannot offer an API the tenant has no service principal for** | *"APIs my organization uses"* lists only APIs with an SP in the tenant. Searching by name **or** by resource ID finds nothing on an empty tenant. Add the permission through the **app manifest** (`requiredResourceAccess`) instead. |
@@ -359,6 +363,7 @@ The high-value section. Most of these cost real time.
 | **Ad-hoc dev builds re-prompt the Keychain on every rebuild** | arm64's linker signs ad-hoc, so every rebuild is a new signature, and Keychain item ACLs are signature-keyed — each vault item prompts for the login password again. Fixed by `Tools/CMake/SignJasp.cmake` (+ `JaspResign`, an always-run target in `Desktop/CMakeLists.txt`): signs with `LOCAL_CODESIGN_IDENTITY` (see `Tools/CMake/Config.cmake`) or the team Developer ID at build time, falling back to ad-hoc so the build never breaks. Items created by an ad-hoc build need one **Always Allow** per item, once; macOS has no bulk grant. Release builds (signed by `Pack.cmake`) never prompt — end users are unaffected. |
 | **Whitespace in the model field is invisible and fatal** | A leading space (`" gpt-5.4-mini"`, pasted from the portal) returns `DeploymentNotFound` — the checklist's rule (bare `404` = path, `DeploymentNotFound` = deployment name) held exactly. `aiconfigmodel` now trims endpoint/model/custom-model/auth fields in the setters **and** on load, so stored dirt self-heals. |
 | **The automatic greeting used to open the sign-in browser** | Any config edit (endpoint **and** model are in the conversation signature) → `clearChat()` → greeting → parked request → `ensureToken()` → browser, once per edit in the settings dialog. Fixed: `sendIntroMessage(bool allowSignIn)`; automatic paths skip the greeting when no usable token is cached. Interactive sign-in now starts only from: opening the chat window, the reset button, the sign-in button, **Test connection**, or sending a message. |
+| **The bare `secret_password_*_sync` libsecret symbols are variadic** | Attributes go in a NULL-terminated `...` list after `error`, **not** a GHashTable. Calling them through a fixed-arity pointer shifts every argument — the password string gets dereferenced as a `GCancellable*` and it segfaults ~150 bytes into the function. Use the `v` variants (`secret_password_storev_sync` etc.): same job, GHashTable in, binding-facing ABI, present since libsecret ~0.16 — safe on every distro. Found the hard way on the first Linux run, 2026-09-23; reproduced standalone and fixed the same day. |
 
 ---
 
