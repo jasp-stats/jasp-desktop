@@ -159,7 +159,12 @@ const Settings::Setting Settings::Values[] = {
 	{"rpcServerEnabled",			false},
 	{"rpcServerIp",					"127.0.0.1"},
 	{"rpcServerPort",				48164},
-	{"syncDroppedDatafile",			true}
+	{"syncDroppedDatafile",			true},
+	// 'Report bugs' link on the welcome page — empty (default) hides the link.
+	// Enterprise admins push it through group policy (bugReportUrl), so no
+	// build needs to be company-specific to carry the URL. Read once at
+	// startup by MainWindow::bugReportUrl().
+	{"bugReportUrl",				""}
 };
 
 QVariant Settings::value(Settings::Type key) {

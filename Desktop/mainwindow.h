@@ -139,16 +139,12 @@ public:
 	const QString &		commSilver()			const;
 	const QString &		commBronze()			const;
 	const QString 		commHowToSupport()		const;
-	const QString 		commUrl()				const;
-	const QString 		commUrlMembers()		const;
-	QString				bugReportUrl()			const
-	{
-#ifdef PRO_BUG_REPORT_URL
-		return QStringLiteral(PRO_BUG_REPORT_URL);
-#else
-		return QString();
-#endif
-	}
+	const QString 		commUrl() 				const;
+	const QString 		commUrlMembers() 			const;
+	/// 'Report bugs' link target for the welcome page. Sourced from Settings
+	/// (GPO-pushable, `bugReportUrl`) rather than a compile-time define, so one
+	/// build serves every customer; empty (the default) hides the link.
+	QString				bugReportUrl()			const;
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 
