@@ -42,6 +42,13 @@ set(CPACK_PACKAGE_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_REGISTRY_KEY ${CPACK_PACKAGE_NAME})
 
+# Uploads from pro-builds go into their own pro/ subdirectory on the nightlies-server
+if(PRO)
+  set(NIGHTLIES_PRO_SUBDIR "pro/")
+else()
+  set(NIGHTLIES_PRO_SUBDIR "")
+endif()
+
 if(WIN32)
 
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/Upload.cmd.in
