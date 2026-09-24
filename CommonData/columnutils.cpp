@@ -22,6 +22,7 @@
 #ifndef IGNORE_BOOST
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast/try_lexical_convert.hpp>
 #endif
 #include <codecvt>
 #include <regex>
@@ -58,14 +59,13 @@ bool ColumnUtils::getIntValue(const string &value, int &intValue)
 	if(_extraStringToInt && _extraStringToInt(value, intValue))
 		return true;
 
-	try
-	{
-		intValue = boost::lexical_cast<int>(value);
-		return true;
-	}
-	catch (...)	{}
+	//Reads just like boost::lexical_cast, which throws on every text that is no number, and throwing costs twenty times what reading does
+	int readAsC;
+	if(!boost::conversion::try_lexical_convert(value, readAsC))
+		return false;
 
-	return false;
+	intValue = readAsC;
+	return true;
 }
 
 bool ColumnUtils::isIntValue(const string &value)
@@ -110,17 +110,14 @@ bool ColumnUtils::getDoubleValue(const string &value, double &doubleValue, bool 
 
 	if(useLocale && _extraStringToDouble && _extraStringToDouble(value, doubleValue))
 		return true;
-	
-	try
-	{
-		doubleValue = boost::lexical_cast<double>((value));
-		return true;
-	}
-	catch (...)
-	{
-	}
 
-	return false;
+	//Reads just like boost::lexical_cast, without throwing (see getIntValue)
+	double readAsC;
+	if(!boost::conversion::try_lexical_convert(value, readAsC))
+		return false;
+
+	doubleValue = readAsC;
+	return true;
 }
 
 doubleset ColumnUtils::getDoubleValues(const stringset & values, bool stripNAN)
