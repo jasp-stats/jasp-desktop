@@ -1,6 +1,9 @@
 #include "csvimportcolumn.h"
 #include "columnutils.h"
 #include "timers.h"
+#include "utilities/qutils.h"
+#include <QLocale>
+#include <cmath>
 
 CSVImportColumn::CSVImportColumn(ImportDataSet* importDataSet, std::string name) : ImportColumn(importDataSet, name)
 {
@@ -27,13 +30,17 @@ std::string CSVImportColumn::valueLookup(size_t row) const
 	if(_data.size() <= row)
 		return "";
 
-	//A number written in the locale of this file is handed on written in the locale of the interface,
-	//because that is how the column, its labels and a later sync read it again.
-	double number;
-	if(_readNumbersAs && _readNumbersAs(_data[row], number))
-		return ColumnUtils::doubleToString(number);
+	if(!_readNumbersAs)
+		return ColumnUtils::doubleToLocale(_data[row]);
 
-	return ColumnUtils::doubleToLocale(_data[row]);
+	//The numbers of this file are written in the locale chosen for it in the csv preview: read them that way (or the way C writes them)
+	//but never the way the interface does, so text that locale does not take for a number stays text. They are handed on written the way
+	//C writes them, with the precision doubleToLocale has, because the column reads them without the locale of the interface (valuesUseLocale).
+	double number;
+	if(QColumnUtils::readNumber(_data[row], number, _readNumbersAs) && std::isfinite(number))
+		return QLocale::c().toString(number, 'g', 10).toStdString();
+
+	return _data[row];
 }
 
 void CSVImportColumn::addValue(const std::string &value)

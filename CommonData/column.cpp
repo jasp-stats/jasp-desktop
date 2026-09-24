@@ -2820,7 +2820,7 @@ stringvec Column::previewTransform(columnType transformType)
 	return out;
 }
 
-bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue)
+bool Column::initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool useLocale)
 {
 									setHasCustomEmptyValues(emptyValues.size());
 									setCustomEmptyValues(emptyValues);
@@ -2830,7 +2830,7 @@ bool Column::initFromLookups(const std::string & newName, size_t rows, const std
 	
 	bool		anyChanges		=	title != Column::title() || newName != name();
 	columnType	prevType		=	type(),
-				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, true, !_hasLabels);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
+				suggestedType	=	setValues(rows, valueLookup, labelLookup,	threshold, &anyChanges, useLocale, !_hasLabels);  //If less unique integers than the thresholdScale then we think it must be ordinal: https://github.com/jasp-stats/INTERNAL-jasp/issues/270
 									setType(type() != columnType::unknown ? type() : desiredType == columnType::unknown ? suggestedType : desiredType);
 
 									
@@ -2935,8 +2935,13 @@ void Column::noLabelsToLabels()
 	_ints.clear();
 	_ints.reserve(size);
 	
+	//Text without a number next to it is what setValues kept as text, and it stays text: reading it again here (as labelsAdd(display) does)
+	//could take it for a number after all when setValues read it without the locale of the interface (see initFromLookups).
+	//Text with a number next to it is the display of a label (see labelsToNoLabels), which is read again to recover its value.
 	for(size_t row=0; row<size; row++)
-		_ints.push_back(_strs[row].empty() ? labelsAdd(_dbls[row]) : labelsAdd(_strs[row]));
+		_ints.push_back(	_strs[row].empty()			? labelsAdd(_dbls[row])
+						:	std::isnan(_dbls[row])		? labelsAdd(_strs[row], "", Json::Value(_strs[row]))
+						:								  labelsAdd(_strs[row]));
 	
 	_dbls.clear();
 	_strs.clear();

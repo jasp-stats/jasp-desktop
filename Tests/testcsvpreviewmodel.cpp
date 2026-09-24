@@ -20,7 +20,10 @@
 #include "utilities/desktopcommunicator.h"
 #include "utilities/languagemodel.h"
 #include "utilities/settings.h"
+#include "utilities/qutils.h"
+#include "columnutils.h"
 #include <QLocale>
+#include <QScopeGuard>
 
 void TestCsvPreviewModel::initTestCase()
 {
@@ -239,5 +242,21 @@ void TestCsvPreviewModel::testMoreLanguagesWidensTheLanguageList()
 	QCOMPARE(model.importLocale().language(),	QLocale::German);
 }
 
+///Text the chosen locale does not take for a number stays text, also when the locale of the interface would read it,
+///and the preview shows exactly that: it reads numbers the way the import will (CSVImportColumn::valueLookup)
+void TestCsvPreviewModel::testChosenLocaleIsNotOverruledByTheInterface()
+{
+	ColumnUtils::setExtraStringToNumber(QColumnUtils::stringToDoubleFor(QLocale(QLocale::English, QLocale::UnitedStates)), nullptr); //An interface reading "1,234.56" just fine
+	auto noInterfaceLocale = qScopeGuard([]{ ColumnUtils::setExtraStringToNumber(nullptr, nullptr); });
+
+	CsvPreviewModel model;
+
+	model.preparePreview("Col1\n1,234.56\n1.234,56", ';');
+	model.setLanguage(LanguageModel::lang()->entryNameForLocale(QLocale(QLocale::German)));
+
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("\"1,234.56\""));
+	QCOMPARE(model.data(model.index(2, 0), Qt::DisplayRole).toString(), QString("1234.56"));
+	QVERIFY (model.parseExample().contains("1,234.56  \u2192  text"));
+}
 
 QTEST_MAIN(TestCsvPreviewModel)

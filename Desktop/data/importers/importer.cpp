@@ -17,6 +17,7 @@
 //
 #include "importer.h"
 #include "utilities/qutils.h"
+#include "columnutils.h"
 #include "log.h"
 #include <QVariant>
 #include <QScopeGuard>
@@ -70,7 +71,8 @@ public:
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
 					DataSetPackage::thresholdScale(),
-					DataSetPackage::orderByValueByDefault());
+					DataSetPackage::orderByValueByDefault(),
+					_importColumn->valuesUseLocale());
 		
 		_importColumn->finish(!_progressCells);
 	}
@@ -195,6 +197,19 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	Log::log() << "Loading '" << locator << "' took " << totalS << "s or " << (totalS / 60) << "m" << std::endl;
 }
 
+///What Column::getValue gives for this value once imported, so a sync only sees a change where the data really changed.
+///That is valueLookup itself, unless the import column writes its numbers the way C does (see ImportColumn::valuesUseLocale).
+static std::string valueAsTheColumnShowsIt(ImportColumn * importColumn, size_t row)
+{
+	const std::string	value = importColumn->valueLookup(row);
+	double				number;
+
+	if(!importColumn->valuesUseLocale() && ColumnUtils::getDoubleValue(value, number, false))
+		return ColumnUtils::doubleToString(number);
+
+	return value;
+}
+
 void Importer::syncDataSet(const std::string &locator, std::function<void(int)> progress)
 {
 					_synching			= true;
@@ -226,6 +241,9 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 	
 
 	DataSetPackage::pkg()->beginSynchingData();
+
+	//Just like in loadDataSet: whichever way we leave, the model reset beginSynchingData opened is closed again
+	auto endSynchingData = qScopeGuard([]{ DataSetPackage::pkg()->endSynchingData({}, {}, {}, false, false); });
 		
 	int		rowCount		= _importDataSet->rowCount(),
 			totalCells		= rowCount * _importDataSet->columnCount(),
@@ -271,7 +289,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 			if(dataSetColumn->isColumnDifferentFromStringLookUps(
 				importColumn->title(),
 				importColumn->size(),
-				[&importColumn](size_t r){ return importColumn->valueLookup(r); }, 
+				[&importColumn](size_t r){ return valueAsTheColumnShowsIt(importColumn, r); },
 				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
 				importColumn->allEmptyValuesAsStrings()
 				))
@@ -359,6 +377,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		}
 	}
 	
+	endSynchingData.dismiss();
 	DataSetPackage::pkg()->endSynchingData(changedColumns, missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
 	
 	if(newColumnOrder.size() > 0)

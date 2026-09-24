@@ -36,6 +36,9 @@
 #include "utilities/desktopcommunicator.h"
 #include <QTemporaryDir>
 #include <QScopeGuard>
+#include "columnutils.h"
+#include "appinfo.h"
+#include <cmath>
 #include "dataset.h"
 #include "data/asyncloader.h"
 #include "mainwindow.h"
@@ -360,8 +363,26 @@ void TestAll::testCancelledImportLeavesTheModelUsable()
 	QCOMPARE(resetFinished.count(), resetStarted.count()); //Every begin got its end, so the model is usable again
 }
 
-///The locale picked in the csv preview decides how the numbers of that file are read: "1,234" in a German file is one point two three four,
-///also after the column read it once more, written out the way the rest of JASP reads numbers.
+///Has (Q)ColumnUtils read and write numbers the way JASP does with its interface set to locale, until what is returned goes out of scope.
+///The tests here otherwise run without any locale of the interface, just like the numbers in C.
+static auto interfaceLocale(const QLocale & locale)
+{
+	const QLocale defaultBefore;
+
+	QColumnUtils::setCallbacksAndDefaultLocale(locale, false);
+
+	return qScopeGuard([defaultBefore]
+	{
+		QLocale::setDefault(defaultBefore);
+		ColumnUtils::setCurrentQLocaleId("C");
+		ColumnUtils::setDecimalPoint(".");
+		ColumnUtils::setAlternativeDoubleToString(nullptr, nullptr);
+		ColumnUtils::setExtraStringToNumber(nullptr, nullptr);
+	});
+}
+
+///The locale picked in the csv preview decides how the numbers of that file are read, whatever the locale of the interface:
+///"1,234" in a German file is one point two three four, and "1,234.56" is no German number at all even though English reads it fine.
 void TestAll::testCsvImportLocale()
 {
 	if(_pkg)		delete _pkg;
@@ -373,14 +394,18 @@ void TestAll::testCsvImportLocale()
 	QTemporaryDir	dir;
 	QFile			csv(dir.filePath("german.csv"));
 	QVERIFY(csv.open(QIODevice::WriteOnly));
-	csv.write("x\n1,234\n86,298\n0,5\n1.234,56\n");
+	csv.write("x;y\n1,234;1,234.56\n86,298;2\n0,5;3\n1.234,56;4\n");
 	csv.close();
+
+	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 
 	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
 	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
 	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->clearKnownImportLocale(); });
 
 	_importer->loadDataSet(fq(csv.fileName()), [](int){});
+
+	QVERIFY(_pkg->dataSet() && _pkg->dataSet()->columnCount() == 2);
 
 	const doublevec & values = _pkg->dataSet()->column(0)->dbls();
 
@@ -389,6 +414,77 @@ void TestAll::testCsvImportLocale()
 	QCOMPARE(values[1],		86.298);
 	QCOMPARE(values[2],		0.5);
 	QCOMPARE(values[3],		1234.56);
+
+	QCOMPARE(_pkg->dataSet()->column(1)->getValue(0), std::string("1,234.56")); //Text, not the number the interface would make of it
+}
+
+///The numbers in an .ods file are written the way C writes them (office:value), whatever the locale of the spreadsheet or of JASP,
+///so an interface in German must not read 0.111 as one hundred and eleven.
+void TestAll::testOdsImportLocale()
+{
+	QDir odsDir(_testLibrary());
+	odsDir.cd("ods");
+
+	auto importIt = [&]()
+	{
+		DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+		delete _pkg;
+		delete _importer;
+
+		_pkg		= new DataSetPackage(this);
+		_importer	= new ods::ODSImporter();
+
+		_importer->loadDataSet(fq(odsDir.absoluteFilePath("Data Import Test ODS.ods")), [](int){});
+
+		std::vector<doublevec> values;
+		for(Column * column : _pkg->dataSet()->columns())
+			values.push_back(column->dbls());
+
+		return values;
+	};
+
+	const std::vector<doublevec> inC = importIt();
+
+	auto german = interfaceLocale(QLocale(QLocale::German, QLocale::Germany));
+
+	const std::vector<doublevec> inGerman = importIt();
+
+	QCOMPARE(inGerman.size(), inC.size());
+
+	for(size_t c=0; c<inC.size(); c++)
+	{
+		QCOMPARE(inGerman[c].size(), inC[c].size());
+
+		for(size_t r=0; r<inC[c].size(); r++)
+			QVERIFY2((std::isnan(inC[c][r]) && std::isnan(inGerman[c][r])) || inC[c][r] == inGerman[c][r], qPrintable(QString("column %1 row %2: %3 in C but %4 in German").arg(c).arg(r).arg(inC[c][r]).arg(inGerman[c][r])));
+	}
+}
+
+///A jaspfile saved before csvDelimiter and importLocale existed gets them when it is opened, also when it says it was saved by the version this is
+void TestAll::testDataSetsTableUpgrade()
+{
+	if(_pkg)	delete _pkg;
+
+	_pkg = new DataSetPackage(this);	//Gives a freshly created internal database holding one dataset
+
+	DatabaseInterface * db = DatabaseInterface::singleton();
+
+	db->runStatements("ALTER TABLE DataSets DROP COLUMN importLocale;");
+	db->runStatements("ALTER TABLE DataSets DROP COLUMN csvDelimiter;");
+
+	db->upgradeDBFromVersion(AppInfo::version);
+
+	std::string	dataFilePath, description, databaseJson, emptyValuesJson, importLocale = "not read";
+	long		dataFileTimestamp;
+	int			revision;
+	bool		dataSynch, showRSyntax;
+	char		csvDelimiter = 'x';
+
+	//Throws "no such column" when the upgrade left one of them out
+	db->dataSetLoad(1, dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataSynch, showRSyntax, csvDelimiter, importLocale);
+
+	QCOMPARE(csvDelimiter,	'\0');
+	QCOMPARE(importLocale,	std::string(""));
 }
 
 // Regression test for https://github.com/jasp-stats/jasp-desktop/commit/0a90b9a34e9d754f55bc32ec1efd2f67940ef756

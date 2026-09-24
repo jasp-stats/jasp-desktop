@@ -509,6 +509,11 @@ ColumnUtils::toDoubleF QColumnUtils::stringToDoubleFor(const QLocale & locale)
 	};
 }
 
+bool QColumnUtils::readNumber(const std::string & text, double & number, const ColumnUtils::toDoubleF & readNumbersAs)
+{
+	return (readNumbersAs && readNumbersAs(text, number)) || ColumnUtils::getDoubleValue(text, number, false);
+}
+
 static ColumnUtils::toIntF stringToIntFor(const QLocale & locale)
 {
 	return [locale](const std::string & str, int & intVal)

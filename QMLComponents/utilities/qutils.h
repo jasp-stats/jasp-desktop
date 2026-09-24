@@ -123,6 +123,7 @@ public:
     static void					setOmitGroupSeparatorOnQLocale(QLocale & locale);
 	static void					setCallbacksAndDefaultLocale(const QLocale & locale, bool useThousandSeps);
 	static std::function<bool(std::string, double &)>	stringToDoubleFor(const QLocale & locale);	///< A ColumnUtils::toDoubleF reading numbers written in locale, for a csv whose numbers are written in another locale than the interface, see CSVImportColumn::valueLookup
+	static bool					readNumber(const std::string & text, double & number, const std::function<bool(std::string, double &)> & readNumbersAs); ///< How such a csv reads a number: with readNumbersAs, else the way C writes numbers, never the way the interface does
 	
 
 private:

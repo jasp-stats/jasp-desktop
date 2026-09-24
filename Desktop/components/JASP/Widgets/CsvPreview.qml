@@ -175,6 +175,9 @@ Window
 					KeyNavigation.priority:	KeyNavigation.BeforeItem
 					KeyNavigation.tab:		checked ? importTerritory : submitButton
 					KeyNavigation.backtab:	importLanguage
+
+					// The model ticks it as well, when the locale of the interface can only be shown by the complete list
+					Binding on checked { value: csvPreviewModel.moreLanguages }
 				}
 			}
 

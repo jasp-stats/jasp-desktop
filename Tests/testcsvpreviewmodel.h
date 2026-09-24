@@ -32,6 +32,7 @@ private slots:
 	void testImportLocaleIsHandedToTheImporter();
 	void testLocaleFallsBackOnTheInterface();
 	void testMoreLanguagesWidensTheLanguageList();
+	void testChosenLocaleIsNotOverruledByTheInterface();
 
 private:
 	LanguageModel * _languageModel = nullptr;	///< CsvPreviewModel gets its languages and territories from here

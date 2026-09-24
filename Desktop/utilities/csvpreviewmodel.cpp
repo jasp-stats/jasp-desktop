@@ -77,9 +77,13 @@ void CsvPreviewModel::setMoreLanguages(bool moreLanguages)
 	//Both lists name the same locale differently, so the names have to be derived again either way
 	QLocale keepUsing = wasUsing;
 
-	//And unticking More languages can leave behind a language that the short list does not offer at all
-	if(!_moreLanguages && LanguageModel::lang() && LanguageModel::lang()->entryNameForLocale(wasUsing).isEmpty())
-		keepUsing = _interfaceLocale();
+	//The short list offers the languages JASP speaks, each in the territory of its entry only, as any other territory would hide behind
+	//the name of the entry. So unticking More languages keeps the language if JASP speaks it, and otherwise falls back on that of the interface.
+	if(!_moreLanguages && LanguageModel::lang())
+	{
+		const QString entryName = LanguageModel::lang()->entryNameForLocale(wasUsing);
+		keepUsing = LanguageModel::lang()->localeForEntryName(entryName.isEmpty() ? LanguageModel::lang()->currentLanguage() : entryName);
+	}
 
 	_setLocale(keepUsing);
 }
@@ -117,9 +121,19 @@ void CsvPreviewModel::resetLocaleToInterface()
 {
 	QScopedValueRollback<bool> settingLocale(_settingLocale, true); //See _setLocale
 
+	const QLocale interfaceLocale = _interfaceLocale();
+
+	//An alternative locale that is not the locale of an entry in the short list (Deutsch/Schweiz say) would hide there behind the name
+	//of an entry ("de - Deutsch"), so then the dialog opens on the complete list, which shows its territory as well.
+	if(!_moreLanguages && LanguageModel::lang() && LanguageModel::lang()->localeForEntryName(LanguageModel::lang()->entryNameForLocale(interfaceLocale)) != interfaceLocale)
+	{
+		_moreLanguages = true;
+		emit moreLanguagesChanged();
+	}
+
 	emit languagesChanged(); //Preferences may have been given another language since the previous import
 
-	_setLocale(_interfaceLocale());
+	_setLocale(interfaceLocale);
 }
 
 QLocale CsvPreviewModel::_interfaceLocale() const
@@ -180,8 +194,7 @@ void CsvPreviewModel::setTerritory(const QString & territory)
 
 bool CsvPreviewModel::_readNumber(const QString & text, double & number) const
 {
-	//Exactly what CSVImportColumn::valueLookup does with it during the import
-	return QColumnUtils::stringToDoubleFor(_importLocale)(fq(text), number) || QColumnUtils::getDoubleValue(text, number, true);
+	return QColumnUtils::readNumber(fq(text), number, QColumnUtils::stringToDoubleFor(_importLocale)); //Just like CSVImportColumn::valueLookup
 }
 
 QString CsvPreviewModel::parseExample() const

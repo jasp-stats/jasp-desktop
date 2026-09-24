@@ -1,5 +1,6 @@
 #include "databaseimportcolumn.h"
 #include "utilities/qutils.h"
+#include "columnutils.h"
 
 DatabaseImportColumn::DatabaseImportColumn(ImportDataSet* importDataSet, std::string name, QMetaType type) 
 	: ImportColumn(importDataSet, name), _type(type)
@@ -29,7 +30,17 @@ const stringvec  DatabaseImportColumn::allValuesAsStrings() const
 
 std::string DatabaseImportColumn::valueLookup(size_t row) const
 {
-	return _data.size() <= row ? "" : fq(_data[row].toString());
+	if(_data.size() <= row)
+		return "";
+
+	//A number from the database is not text written in some locale, QVariant::toString writes it the way C does
+	//while the column reads it in the locale of the interface, so it is handed on written that way (like ExcelImporter does)
+	const QVariant & value = _data[row];
+
+	if(value.typeId() == QMetaType::Double || value.typeId() == QMetaType::Float)
+		return ColumnUtils::doubleToStringMaxPrec(value.toDouble(), false);
+
+	return fq(value.toString());
 }
 
 void DatabaseImportColumn::addValue(const QVariant & value)
