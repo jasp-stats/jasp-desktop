@@ -1568,11 +1568,17 @@ stringvec Column::dataAsRLevels(intvec & values, const boolvec & filter)
 		
 		for(size_t r=0; r<strs.size(); r++)
 			if(!useFilter || filter[r])
+			{
 				if(strs[r] == "")
 				{
-					strs[r] = doubleToDisplayString(_dbls[r], false, false, false);
-					weWereDoublesToBeginWith[strs[r]] = _dbls[r];
+					strs[r] = doubleToDisplayString(_dbls[r], false, false, false); //An empty value gives "", so it stays missing
+					
+					if(strs[r] != "")
+						weWereDoublesToBeginWith[strs[r]] = _dbls[r];
 				}
+				else if(isEmptyValue(strs[r]))
+					strs[r] = ""; //Without labels a text empty value (like "NA") is kept as it is, so it must be turned into a missing value here: https://github.com/jasp-stats/jasp-issues/issues/4536
+			}
 		
 		for(size_t r=0; r<strs.size(); r++)
 			if(!useFilter || filter[r])
@@ -1611,27 +1617,23 @@ doublevec Column::dataAsRDoubles(const boolvec &filter) const
 {
 	JASPTIMER_SCOPE(Column::dataAsRDoubles);
 	
-	if(!_hasLabels)
-	{
-		if(filter.size() == 0)
-			return _dbls;
-		
-		assert(filter.size() == rowCount());
-		
-		doublevec dbls;
-		for(size_t row=0; row<rowCount(); row++)
-			if(filter[row])
-				dbls.push_back(_dbls[row]);
-		return dbls;
-	}
-	
 	doublevec doubles;
 		
 	assert(filter.size() == rowCount() || filter.size() == 0);
 
 	//depending on whether filter is usable (length is data length) we filter out rows we dont need
 	bool useFilter = filter.size() == rowCount();
-	doubles.reserve(_ints.size());
+	doubles.reserve(rowCount());
+	
+	if(!_hasLabels)
+	{
+		//Without labels the values are kept as they are, so an empty value (like 9999) must be turned into a missing value here: https://github.com/jasp-stats/jasp-issues/issues/4536
+		for(size_t row=0; row<rowCount(); row++)
+			if(!useFilter || filter[row])
+				doubles.push_back(isEmptyValue(_dbls[row]) ? EmptyValues::missingValueDouble : _dbls[row]);
+		
+		return doubles;
+	}
 	
 	for(size_t row=0; row<rowCount(); row++)
 		if(!useFilter || filter[row])
