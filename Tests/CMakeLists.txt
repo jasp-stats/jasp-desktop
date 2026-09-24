@@ -12,6 +12,7 @@ qt_add_executable(
   ${SYSTEM_TYPE}
   testall.h
   testall.cpp
+  numbersinlocales.h
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
   testinfo.h
@@ -47,6 +48,7 @@ qt_add_executable(
   ${SYSTEM_TYPE}
   testcsvpreviewmodel.h
   testcsvpreviewmodel.cpp
+  numbersinlocales.h
   $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )

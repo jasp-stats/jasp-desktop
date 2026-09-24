@@ -136,10 +136,6 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 				"ALTER TABLE Columns  ADD COLUMN hasLabels		INT DEFAULT 0;\n"
 				"UPDATE Columns SET hasLabels=1;" //Make sure old columns all "hasLabels" enabled
 			);
-		
-		
-		if(!tableHasColumn("DataSets", "csvDelimiter"))
-			runStatements("ALTER TABLE DataSets ADD COLUMN csvDelimiter INT DEFAULT 0;");
 	}
 
 	//Multi-dataset schema (Workspace table, DataSets.title and Filters.invalidated, together with
@@ -187,6 +183,12 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 		runStatements("ALTER TABLE DataSets  ADD COLUMN error				TEXT NULL;");
 	if(!tableHasColumn("DataSets", "defaultInputFilter"))
 		runStatements("ALTER TABLE DataSets  ADD COLUMN defaultInputFilter INT NULL;");
+	//Not tied to a version: both were added while jaspfiles were already being written with the version number of their release
+	if(!tableHasColumn("DataSets", "csvDelimiter"))
+		runStatements("ALTER TABLE DataSets ADD COLUMN csvDelimiter INT DEFAULT 0;");
+	if(!tableHasColumn("DataSets", "importLocale"))
+		runStatements("ALTER TABLE DataSets ADD COLUMN importLocale TEXT DEFAULT \"\";");
+
 
 }
 
@@ -208,7 +210,7 @@ DatabaseInterface::~DatabaseInterface()
 }
 
 
-int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter)
+int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter, const std::string & importLocale)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetInsert);
 	
@@ -222,13 +224,15 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 		sqlite3_bind_text(stmt, 5, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
 		sqlite3_bind_int(stmt,	6, dataSynch);
 		sqlite3_bind_int(stmt,	7, csvDelimiter);
+		sqlite3_bind_text(stmt, 8, importLocale.c_str(),	importLocale.length(),		SQLITE_TRANSIENT);
+
 	};
 
 	transactionWriteBegin();
 	int id = -1;
 	try
 	{
-		id = runStatementsId("INSERT INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch, csvDelimiter) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", prepare);
+		id = runStatementsId("INSERT INTO DataSets (dataFilePath, dataFileTimestamp, description, databaseJson, emptyValuesJson, dataFileSynch, csvDelimiter, importLocale) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;", prepare);
 
 		if(tableExists(dataSetName(id)))
 			throw std::runtime_error("Table '" + dataSetName(id) + "' already exists!");
@@ -252,7 +256,7 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 	return id;
 }
 
-void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & title, const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter)
+void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & title, const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter, const std::string & importLocale)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetUpdate);
 	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
@@ -265,15 +269,16 @@ void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & title, 
 		sqlite3_bind_text(stmt, 6, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
 		sqlite3_bind_int(stmt,	7, dataSynch);
 		sqlite3_bind_int(stmt,	8, csvDelimiter);
-		sqlite3_bind_int(stmt,	9, dataSetId);
+		sqlite3_bind_text(stmt, 9, importLocale.c_str(),	importLocale.length(),		SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 10, dataSetId);
 	};
 
 	//Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
 
-runStatements("UPDATE DataSets SET dataFilePath=?, title=?, dataFileTimestamp=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, csvDelimiter=?, revision=revision+1 WHERE id = ?;", prepare);
+	runStatements("UPDATE DataSets SET dataFilePath=?, title=?, dataFileTimestamp=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, csvDelimiter=?, importLocale=?, revision=revision+1 WHERE id = ?;", prepare);
 }
 
-void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::string & dataFilePath, long & dataFileTimestamp, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter)
+void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::string & dataFilePath, long & dataFileTimestamp, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter, std::string & importLocale)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetLoad);
 
@@ -286,7 +291,7 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::str
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		assert(colCount == 9);
+		assert(colCount == 10);
 
 		dataFilePath		= _wrap_sqlite3_column_text(stmt, 0);
 		title				= _wrap_sqlite3_column_text(stmt, 1);
@@ -297,11 +302,12 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::str
 		revision			= sqlite3_column_int(	stmt, 6);
 		dataSynch			= sqlite3_column_int(	stmt, 7);
 		csvDelimiter		= static_cast<char>(sqlite3_column_int(stmt, 8));
+		importLocale		= _wrap_sqlite3_column_text(stmt, 9);
 
 		//Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
 	};
 
-runStatements("SELECT dataFilePath, title, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataFileSynch, csvDelimiter FROM DataSets WHERE id = ?;", prepare, processRow);
+	runStatements("SELECT dataFilePath, title, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataFileSynch, csvDelimiter, importLocale FROM DataSets WHERE id = ?;", prepare, processRow);
 }
 
 void DatabaseInterface::dataSetSetComputedInfo(int dataSetId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, int defaultInputFilter)
@@ -1213,7 +1219,7 @@ double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI, st
 	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader);
 
 	const std::string strVal = _wrap_sqlite3_column_text(stmt, colI);
-	
+
 	if(textReturn)
 		*textReturn = "";
 	
@@ -1234,7 +1240,7 @@ double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI, st
 	
 	double dbl = EmptyValues::missingValueDouble;
 	
-	if(ColumnUtils::getDoubleValue(strVal, dbl))
+	if(ColumnUtils::getDoubleValue(strVal, dbl, false)) //Never use the locale of the user here, the database is always written in the C-locale
 		return dbl;		// we can return the double because the textReturn is already set to empty
 	
 	if(textReturn)

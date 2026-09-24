@@ -22,6 +22,8 @@
 #include <condition_variable>
 #include <mutex>
 #include <QString>
+#include <QLocale>
+#include <optional>
 
 ///This class only exists to allow signal-slot connections to be made between certain classes in Desktop and in QMLComponents.
 /// And to easily split that off for R-only
@@ -39,6 +41,10 @@ public:
 	bool queryEncryptionSettings(bool readingMode = false);
 	char knownCsvDelimiter() const	{ return _knownCsvDelimiter; }
 	void setKnownCsvDelimiter(char d)	{ _knownCsvDelimiter = d; }
+	
+	///The locale the numbers of the file being imported are written in, as picked in the csv preview (see CsvPreviewModel); nothing when none was picked
+	const std::optional<QLocale> &	knownImportLocale() const							{ return _knownImportLocale;	}
+	void							setKnownImportLocale(std::optional<QLocale> locale)	{ _knownImportLocale = locale;	}
 	
 signals:
 	void queryEncryptionSettingsSignal(bool readingMode);
@@ -61,6 +67,7 @@ private:
 	bool _csvCondition = false;
 	char _csvSubmitted = '\0';
 	char _knownCsvDelimiter = '\0';
+	std::optional<QLocale> _knownImportLocale;
 
 	std::mutex _queryLock;
 	std::mutex _csvLock;

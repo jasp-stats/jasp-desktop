@@ -138,7 +138,6 @@ public:
 				void				setWorkspaceShowRSyntax(bool show);
 				void				dbDelete();
 				void				resetVariableTypes();
-
 				
 				bool				manualEdits() const;
 				void				setManualEdits(bool newManualEdits);

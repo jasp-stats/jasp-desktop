@@ -17,8 +17,10 @@
 //
 #include "importer.h"
 #include "qutils.h"
+#include "columnutils.h"
 #include "log.h"
 #include <QVariant>
+#include <QScopeGuard>
 #include "../datasetpackage.h"
 #include "timers.h"
 #include <QThreadPool>
@@ -69,7 +71,8 @@ public:
 					_importColumn->getColumnType(),
 					_importColumn->allEmptyValuesAsStrings(),
 					DataSetPackage::thresholdScale(),
-					DataSetPackage::orderByValueByDefault());
+					DataSetPackage::orderByValueByDefault(),
+					_importColumn->valuesUseLocale());
 		
 		_importColumn->finish(!_progressCells);
 	}
@@ -111,7 +114,6 @@ void Importer::loadDataSet(const std::string &locator, DataSet * dataSet, std::f
 	int64_t timeBeginS = Utils::currentSeconds();
 	_progressCallback=progressCallback;
 	
-
 	_synching = false;
 
 	JASPTIMER_RESUME(Importer::loadDataSet loadFile);
@@ -262,7 +264,8 @@ void Importer::syncDataSet(const std::string &locator, DataSet * dataSet, std::f
 			if(dataSetColumn->isColumnDifferentFromStringLookUps(
 				importColumn->title(),
 				importColumn->size(),
-				[&importColumn](size_t r){ return importColumn->valueLookup(r); }, 
+				[&importColumn](size_t r){ return importColumn->valueLookupAsShown(r); },
+				[&importColumn](size_t r, double & number){ return ColumnUtils::getDoubleValue(importColumn->valueLookup(r), number, importColumn->valuesUseLocale()); }, //Just like Column::setValues reads it
 				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
 				importColumn->allEmptyValuesAsStrings()
 				))
