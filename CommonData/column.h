@@ -83,7 +83,7 @@ public:
 			bool					setAsNominalOrOrdinal(	const intvec	& values,									bool	is_ordinal = false);
 			bool					setAsNominalOrOrdinal(	const intvec	& values, intstrmap uniqueValues,			bool	is_ordinal = false);
 
-			bool					initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue);
+			bool					initFromLookups(const std::string & newName, size_t rows, const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const std::string & title, columnType desiredType, const stringset & emptyValues, int threshold, bool orderLabelsByValue, bool useLocale = true); ///< useLocale false: numbers in valueLookup are written the way C writes them
 			bool					overwriteDataAndType(	stringvec		data, columnType colType, bool computed);
 			void					labelsToNoLabels(bool signalOthers = true);
 			void					noLabelsToLabels();
@@ -94,7 +94,7 @@ public:
 			void					incRevision() override;
 			bool					checkForUpdates();
 
-			bool					isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const;
+			bool					isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<bool(size_t, double &)> numberLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const; ///< valueLookup as the data shows it, numberLookup the number an import reads there (false for text)
 
 			columnType				type()					const	{ return _type;				}
 			int						id()					const	{ return _id;				}
@@ -118,6 +118,7 @@ public:
 			size_t					rowCount()				const	{ return std::max(_ints.size(), _dbls.size()); }
 			const intvec		&	ints()					const	{ return _ints; }
 			const doublevec		&	dbls()					const	{ return _dbls; }
+			bool					numberAt(size_t row, double & number)	const;	///< The number row holds, false when it holds text or nothing
 			const stringvec		&	strs()					const	{ return _strs;	}
 			
 			void					labelsClear(bool doIncRevision=true);

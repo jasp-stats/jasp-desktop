@@ -20,6 +20,8 @@
 #include "csv/csv.h"
 #include "timers.h"
 #include "utilities/desktopcommunicator.h"
+#include "utilities/qutils.h"
+#include "columnutils.h"
 
 using namespace std;
 
@@ -61,6 +63,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 			delimiter = knownDelimiter;
 	}
 
+	//The preview dialog also picked the locale the numbers of this file are written in (see CsvPreviewModel), and every column reads its numbers that way
+	const std::optional<QLocale> &	importLocale	= DesktopCommunicator::singleton()->knownImportLocale();
+	ColumnUtils::toDoubleF			readNumbersAs	= importLocale ? QColumnUtils::stringToDoubleFor(*importLocale) : nullptr;
 
 	csv.setDelimiter(delimiter);
 	csv.readLine(colNames);
@@ -90,7 +95,7 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 
 		*it = colName;
 
-		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows()));
+		importColumns.push_back(new CSVImportColumn(result, colName, csv.numRows(), readNumbersAs));
 	}
 
 	unsigned long long progress;

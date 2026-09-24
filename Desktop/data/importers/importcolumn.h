@@ -25,6 +25,8 @@ public:
 	virtual const	stringvec			allLabelsAsStrings()					const	{ return {}; };
 	virtual			std::string			valueLookup(size_t row)					const = 0;
 	virtual			std::string			labelLookup(size_t row)					const	{ return ""; }
+	virtual			bool				valuesUseLocale()						const	{ return true; } ///< False when valueLookup writes numbers the way C does, see CSVImportColumn
+	virtual			std::string			valueLookupAsShown(size_t row)			const	{ return valueLookup(row); } ///< valueLookup(row) with numbers written the way the data shows them, for a sync to compare with Column::getValue (see Column::isColumnDifferentFromStringLookUps)
 	virtual const	stringset		&	allEmptyValuesAsStrings()				const	{ static stringset a; return a; }
 	virtual			columnType			getColumnType()							const	{ return columnType::unknown; }
 			const	std::string		&	title()									const;

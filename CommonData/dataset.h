@@ -82,8 +82,11 @@ public:
 			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }
 			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
 			void			setShowRSyntax(		bool showRSyntax)					{ _showRSyntax		= showRSyntax;			dbUpdate(); }
+			///What the csv preview chose for dataFilePath (see CsvPreviewModel), so that synchronising it reads it the same way again:
+			///its delimiter ('\0' detects it) and the BCP 47 name of the locale its numbers are written in ("" reads them like the interface does)
 			char			csvDelimiter()		const								{ return _csvDelimiter; }
-			void			setCsvDelimiter(	char delimiter)						{ _csvDelimiter		= delimiter;			dbUpdate(); }
+	const	std::string	&	importLocale()		const								{ return _importLocale; }
+			void			setCsvChoices(		char delimiter, const std::string & importLocale)	{ _csvDelimiter	= delimiter; _importLocale = importLocale; dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);
@@ -132,6 +135,7 @@ private:
 	bool						_dataFileSynch			= false,
 								_showRSyntax			= false;
 	char						_csvDelimiter			= '\0';
+	std::string					_importLocale			= "";
 	static stringset			_defaultEmptyvalues;	// Default empty values if workspace do not have its own empty values (used for backward compatibility)
 	std::string					_description;
 };

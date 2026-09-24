@@ -1569,16 +1569,6 @@ std::map<std::string,columnType> DataSetPackage::getColumnTypesMap()
 	return _dataSet ? _dataSet->getColumnTypesMap() : std::map<std::string,columnType>();
 }
 
-bool DataSetPackage::isColumnDifferentFromStringLookUps(const std::string & columnName, const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals)
-{
-	Column * col = _dataSet->column(columnName);
-	
-	if(col)
-		return col->isColumnDifferentFromStringLookUps(title, rows, valueLookup, labelLookup, strEmptyVals);
-
-	return true;
-}
-
 void DataSetPackage::renameColumn(const std::string & oldColumnName, const std::string & newColumnName)
 {
 	try

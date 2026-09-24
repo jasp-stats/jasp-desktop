@@ -1932,20 +1932,32 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 			else if(_reporter && !_reporter->isJaspFileNotDabaseOrSynching())
 					emit exitSignal(12);
 		}
-		else if (!event->isCancelled()) //A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current data/analyses to survive. A failed open still has to, silent or not, since the loader already tore the workspace down.
+		else
 		{
-			_package->reset();
-			setWelcomePageVisible(true);
-
-			if (!event->isSilent())
-				MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
-
-			if (_batchRunning)
+			//A cancelled Open dialog must NOT reset the workspace: the user merely dismissed the dialog and expects their current
+			//data/analyses to survive. A failed open still has to, silent or not, since the loader already tore the workspace down.
+			//And so does a cancel from inside the loader itself (the csv preview, the encryption question): the loader deleted the
+			//dataset, so there is nothing left to return to and leaving it be would strand JASP on a blank page.
+			//Analyses that run without data survive though, and as long as there are some the welcome page stays hidden.
+			if (!event->isCancelled() || !_package->hasDataSet())
 			{
-				_batchResult.addError(tr("Unable to open template: %1").arg(event->message()));
-				finishBatchRun();
+				_package->reset();
+				if (!_analysesAvailable)
+					setWelcomePageVisible(true);
 			}
-			else if (_openedUsingArgs) emit exitSignal(3);
+
+			if (!event->isCancelled()) //The user knows they cancelled, no need to tell them it failed
+			{
+				if (!event->isSilent())
+					MessageForwarder::showWarning(tr("Unable to open file because:\n%1").arg(event->message()));
+
+				if (_batchRunning)
+				{
+					_batchResult.addError(tr("Unable to open template: %1").arg(event->message()));
+					finishBatchRun();
+				}
+				else if (_openedUsingArgs) emit exitSignal(3);
+			}
 		}
 	}
 	else if (event->operation() == FileEvent::FileSave)
