@@ -188,7 +188,8 @@ bool CsvPreviewModel::_readNumber(const QString & text, double & number) const
 
 QString CsvPreviewModel::parseExample() const
 {
-	//Values picked to show what the decimal- and group-separators of the chosen locale do to a number
+	//Values picked to show what the decimal- and group-separators of the chosen locale do to a number. What they are is written the way
+	//the interface writes numbers, like the table does, but without thousand separators: "86,298" and "86298" can only be read one way.
 	static const QStringList samples = { "86.298", "86,298", "1.234,56", "1,234.56" };
 
 	QStringList lines;
@@ -198,7 +199,7 @@ QString CsvPreviewModel::parseExample() const
 		double	value		= 0;
 		bool	isNumber	= _readNumber(sample, value);
 
-		lines.push_back(sample + "  \u2192  " + (isNumber ? QLocale::c().toString(value, 'g', 12) : tr("text")));
+		lines.push_back(sample + "  \u2192  " + (isNumber ? QColumnUtils::doubleToString(value, false) : tr("text")));
 	}
 
 	return lines.join("\n");

@@ -286,6 +286,26 @@ void TestCsvPreviewModel::testRegionalLanguageNames()
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("1.234"));
 }
 
+///The example tells what the picked locale makes of a few numbers, written the way the interface writes numbers like the table above it,
+///but without thousand separators: a German reader can take "86,298" and "86298" one way only, not so "86.298" or "86.298,0".
+void TestCsvPreviewModel::testParseExampleIsWrittenLikeTheInterface()
+{
+	QColumnUtils::setCallbacksAndDefaultLocale(QLocale(QLocale::German, QLocale::Germany), true);
+	auto backToTheInterface = qScopeGuard([]{ LanguageModel::lang()->setDefaultLocaleFromCurrent(); });
+
+	CsvPreviewModel model;
+
+	model.preparePreview("Col1\n86.298", ';');
+
+	model.setLanguage(LanguageModel::lang()->entryNameForLocale(QLocale(QLocale::English)));
+	QVERIFY2(model.parseExample().contains("86.298  \u2192  86,298"),		qPrintable(model.parseExample()));
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(),	QString("86,298")); //What the table shows
+
+	model.setLanguage(LanguageModel::lang()->entryNameForLocale(QLocale(QLocale::German)));
+	QVERIFY2(model.parseExample().contains("86.298  \u2192  86298"),		qPrintable(model.parseExample()));
+	QVERIFY2(model.parseExample().contains("1.234,56  \u2192  1234,56"),	qPrintable(model.parseExample()));
+}
+
 ///Every combination of an interface in English, German or French, with and without thousand separators, and a file picked to be written in English, German or French
 void TestCsvPreviewModel::testNumbersInEveryLanguage_data()
 {

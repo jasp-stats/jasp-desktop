@@ -34,6 +34,7 @@ private slots:
 	void testMoreLanguagesWidensTheLanguageList();
 	void testChosenLocaleIsNotOverruledByTheInterface();
 	void testRegionalLanguageNames();
+	void testParseExampleIsWrittenLikeTheInterface();
 	void testNumbersInEveryLanguage_data();
 	void testNumbersInEveryLanguage();
 
