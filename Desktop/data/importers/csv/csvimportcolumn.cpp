@@ -43,6 +43,19 @@ std::string CSVImportColumn::valueLookup(size_t row) const
 	return _data[row];
 }
 
+std::string CSVImportColumn::valueLookupAsShown(size_t row) const
+{
+	if(!_readNumbersAs || _data.size() <= row)
+		return valueLookup(row);
+
+	//Read like valueLookup does, but written the way the column shows the number once it is imported
+	double number;
+	if(QColumnUtils::readNumber(_data[row], number, _readNumbersAs) && std::isfinite(number))
+		return ColumnUtils::doubleToString(number);
+
+	return _data[row];
+}
+
 void CSVImportColumn::addValue(const std::string &value)
 {
 	_data.push_back(value);

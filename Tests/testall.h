@@ -18,6 +18,7 @@ private slots:
 	void	testJaspRoundRobin_data();
 	void	testJaspRoundRobin();
 	void	testCancelledImportLeavesTheModelUsable();
+	void	testDatabaseImportNulls();
 	void	testCsvImportLocale();
 	void	testOdsImportLocale();
 	void	testDataSetsTableUpgrade();

@@ -33,6 +33,7 @@ private slots:
 	void testLocaleFallsBackOnTheInterface();
 	void testMoreLanguagesWidensTheLanguageList();
 	void testChosenLocaleIsNotOverruledByTheInterface();
+	void testRegionalLanguageNames();
 
 private:
 	LanguageModel * _languageModel = nullptr;	///< CsvPreviewModel gets its languages and territories from here

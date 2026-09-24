@@ -184,12 +184,10 @@ void CsvPreviewModel::setTerritory(const QString & territory)
 	if(_settingLocale || _territory == territory || territory == "")
 		return;
 
-	_territory		= territory;
-	_importLocale	= _localeForLanguage();
-
-	emit territoryChanged();
-
-	_applyImportLocale();
+	//The language shown, as spoken in the territory picked, which can give it another (regional) name: español and México make español de México.
+	//Territories are only offered next to the complete list, the short list holds the locales of its entries (see setMoreLanguages).
+	if(_moreLanguages && LanguageModel::lang())
+		_setLocale(LanguageModel::lang()->localeForTerritory(_importLocale.language(), territory));
 }
 
 bool CsvPreviewModel::_readNumber(const QString & text, double & number) const

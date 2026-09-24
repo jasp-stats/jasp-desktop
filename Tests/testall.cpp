@@ -31,6 +31,7 @@
 #include "data/importers/rdataimporter.h"
 
 #include "data/importers/readstatimporter.h"
+#include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
@@ -336,6 +337,10 @@ void TestAll::testCancelledImportLeavesTheModelUsable()
 	QSignalSpy resetStarted(	_pkg, &QAbstractItemModel::modelAboutToBeReset);
 	QSignalSpy resetFinished(	_pkg, &QAbstractItemModel::modelReset);
 
+	//When the model shows again the aborted import must already be gone, so nothing can look at it while it is deleted
+	bool hadDataSetWhenShownAgain = false;
+	QMetaObject::Connection watching = connect(_pkg, &QAbstractItemModel::modelReset, this, [&]{ hadDataSetWhenShownAgain = _pkg->hasDataSet(); });
+
 	DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); //Otherwise it would not ask at all
 
 	//Answering with '\0' is what pressing Cancel in the preview window comes down to
@@ -357,10 +362,24 @@ void TestAll::testCancelledImportLeavesTheModelUsable()
 	}
 
 	disconnect(cancelling);
+	disconnect(watching);
 
 	QVERIFY2(threw, "cancelling the preview should abort the import");
 	QVERIFY2(resetStarted.count() > 0, "the import should have started a model reset at all");
 	QCOMPARE(resetFinished.count(), resetStarted.count()); //Every begin got its end, so the model is usable again
+	QVERIFY2(!hadDataSetWhenShownAgain, "the aborted import should be thrown away before the model shows again");
+}
+
+///A NULL in a numeric column of a database is missing, not 0: PostgreSQL, MySQL and ODBC hand it over as a number that is not there
+void TestAll::testDatabaseImportNulls()
+{
+	DatabaseImportColumn column(nullptr, "x", QMetaType::fromType<double>());
+
+	column.addValue(QVariant(1.5));
+	column.addValue(QVariant(QMetaType::fromType<double>()));	//That NULL
+
+	QCOMPARE(column.valueLookup(0), std::string("1.5"));
+	QCOMPARE(column.valueLookup(1), std::string(""));
 }
 
 ///Has (Q)ColumnUtils read and write numbers the way JASP does with its interface set to locale, until what is returned goes out of scope.

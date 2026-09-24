@@ -79,7 +79,7 @@ void TestCsvPreviewModel::testDifferentDelimiters()
     model.preparePreview(semicolonData.toStdString().c_str(), ';');
     QCOMPARE(model.columnCount(), 3);
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("\"1,2\""));
-	//A comma with three digits behind it is a thousands separator in C and in English alike, so this is a number and not a label
+	//A comma with three digits behind it groups thousands in English, the language of the interface these tests run with, so this is a number and not a label
 	QCOMPARE(model.data(model.index(1, 1), Qt::DisplayRole).toString(), QString("1234"));
 	QCOMPARE(model.data(model.index(1, 2), Qt::DisplayRole).toString(), QString("1.2"));
 
@@ -257,6 +257,32 @@ void TestCsvPreviewModel::testChosenLocaleIsNotOverruledByTheInterface()
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("\"1,234.56\""));
 	QCOMPARE(model.data(model.index(2, 0), Qt::DisplayRole).toString(), QString("1234.56"));
 	QVERIFY (model.parseExample().contains("1,234.56  \u2192  text"));
+}
+
+///Some names in the complete list stand for a single territory: "español de México" is es_MX, where a comma groups thousands,
+///not es_ES where it is the decimal point. Picking another territory afterwards gives that territory, under whatever name it goes by there.
+void TestCsvPreviewModel::testRegionalLanguageNames()
+{
+	CsvPreviewModel model;
+
+	model.preparePreview("Col1\n1,234", ';');
+	model.setMoreLanguages(true);
+
+	const QLocale mexico(QLocale::Spanish, QLocale::Mexico),
+				  spain( QLocale::Spanish, QLocale::Spain);
+
+	model.setLanguage(mexico.nativeLanguageName());
+
+	QCOMPARE(model.importLocale(),	mexico);
+	QCOMPARE(model.language(),		mexico.nativeLanguageName());
+	QCOMPARE(model.territory(),		mexico.nativeTerritoryName());
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("1234"));
+
+	model.setTerritory(spain.nativeTerritoryName());
+
+	QCOMPARE(model.importLocale(),	spain);
+	QCOMPARE(model.language(),		spain.nativeLanguageName());
+	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("1.234"));
 }
 
 QTEST_MAIN(TestCsvPreviewModel)

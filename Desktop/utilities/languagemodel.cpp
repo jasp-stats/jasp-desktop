@@ -8,6 +8,7 @@
 #include "columnutils.h"
 #include <QDirIterator>
 #include <QDebug>
+#include <optional>
 #include "dirs.h"
 #include <QDir>
 #include "log.h"
@@ -197,13 +198,35 @@ QStringList LanguageModel::territoriesForLanguage(const QString & nativeLanguage
 
 QLocale LanguageModel::localeForNames(const QString & nativeLanguageName, const QString & nativeTerritoryName) const
 {
-	const QLocale::Language languageChosen = _nativeLanguageNameToEnum.count(nativeLanguageName) ? _nativeLanguageNameToEnum.at(nativeLanguageName) : _defaultLocale.language();
+	const QLocale::Language	languageChosen	= _nativeLanguageNameToEnum.count(nativeLanguageName) ? _nativeLanguageNameToEnum.at(nativeLanguageName) : _defaultLocale.language();
+	const QLocale			byDefault		= QLocale(languageChosen);
+	std::optional<QLocale>	named;
 
+	//Some names stand for a single territory ("español de México", "British English"), so the name decides first: in the territory
+	//asked for when it goes by that name there, else the default of the language when that one does, else wherever it goes by that name.
 	for(const QLocale & l : QLocale::matchingLocales(languageChosen, QLocale::AnyScript, QLocale::AnyTerritory))
+		if(l.nativeLanguageName() == nativeLanguageName)
+		{
+			if(l.nativeTerritoryName() == nativeTerritoryName)
+				return l;
+
+			if(!named)
+				named = l;
+		}
+
+	if(byDefault.nativeLanguageName() == nativeLanguageName)
+		return byDefault;
+
+	return named ? *named : localeForTerritory(languageChosen, nativeTerritoryName);
+}
+
+QLocale LanguageModel::localeForTerritory(QLocale::Language language, const QString & nativeTerritoryName) const
+{
+	for(const QLocale & l : QLocale::matchingLocales(language, QLocale::AnyScript, QLocale::AnyTerritory))
 		if(l.nativeTerritoryName() == nativeTerritoryName)
 			return l;
 
-	return QLocale(languageChosen);
+	return QLocale(language);
 }
 
 void LanguageModel::fillAltTerritories()
