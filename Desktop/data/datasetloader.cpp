@@ -76,16 +76,21 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 	if (importer)
 	{
-		DesktopCommunicator::singleton()->clearKnownImportLocale(); //Whatever an earlier, possibly aborted, import left behind has nothing to do with this file
+		DesktopCommunicator * communicator = DesktopCommunicator::singleton();
+
+		communicator->setKnownImportLocale(std::nullopt); //The csv preview picks it for this file, whatever an earlier (possibly aborted) import left behind has nothing to do with it
+
 		importer->loadDataSet(locator, progress);
-		char chosenDelimiter = DesktopCommunicator::singleton()->knownCsvDelimiter();
-		if (chosenDelimiter != '\0' && DataSetPackage::pkg()->dataSet())
-			DataSetPackage::pkg()->dataSet()->setCsvDelimiter(chosenDelimiter);
-		//Remember which locale the numbers were read with, so synchronising this same file later does not suddenly read them differently
-		if (DesktopCommunicator::singleton()->hasKnownImportLocale() && DataSetPackage::pkg()->dataSet())
-			DataSetPackage::pkg()->dataSet()->setImportLocale(fq(DesktopCommunicator::singleton()->knownImportLocale().bcp47Name()));
-		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
-		DesktopCommunicator::singleton()->clearKnownImportLocale();
+
+		//Remember what the csv preview chose, so that synchronising the data later reads the file the same way again
+		const char						delimiter	= communicator->knownCsvDelimiter();
+		const std::optional<QLocale>	locale		= communicator->knownImportLocale();
+
+		if ((delimiter != '\0' || locale) && DataSetPackage::pkg()->dataSet())
+			DataSetPackage::pkg()->dataSet()->setCsvChoices(delimiter, locale ? fq(locale->bcp47Name()) : "");
+
+		communicator->setKnownCsvDelimiter('\0');
+		communicator->setKnownImportLocale(std::nullopt);
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
@@ -103,21 +108,18 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 
 	if (importer)
 	{
-		if (DataSetPackage::pkg()->dataSet())
-		{
-			DesktopCommunicator::singleton()->setKnownCsvDelimiter(DataSetPackage::pkg()->dataSet()->csvDelimiter());
+		DesktopCommunicator	*	communicator	= DesktopCommunicator::singleton();
+		const DataSet		*	dataSet			= DataSetPackage::pkg()->dataSet();
 
-			//Read the file the way it was read when it was imported, otherwise a sync would silently reinterpret every number in it
-			const std::string & importLocale = DataSetPackage::pkg()->dataSet()->importLocale();
+		//Read the file the way the csv preview chose when the data was imported: split differently, or with its numbers read in another locale,
+		//a sync would silently change the data. That holds for any file synchronised into this data, a batch run feeds its template files like the first.
+		communicator->setKnownCsvDelimiter(dataSet ? dataSet->csvDelimiter() : '\0');
+		communicator->setKnownImportLocale(dataSet && !dataSet->importLocale().empty() ? std::optional<QLocale>(QLocale(tq(dataSet->importLocale()))) : std::nullopt);
 
-			if(!importLocale.empty())	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(tq(importLocale)));
-			else						DesktopCommunicator::singleton()->clearKnownImportLocale(); //No locale was ever chosen for this file, so read it like the rest of JASP does
-		}
-		else
-			DesktopCommunicator::singleton()->clearKnownImportLocale();
 		importer->syncDataSet(locator, progress);
-		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
-		DesktopCommunicator::singleton()->clearKnownImportLocale();
+
+		communicator->setKnownCsvDelimiter('\0');
+		communicator->setKnownImportLocale(std::nullopt);
 		delete importer;
 	}
 }

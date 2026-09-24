@@ -20,6 +20,7 @@ private slots:
 	void	testCancelledImportLeavesTheModelUsable();
 	void	testDatabaseImportNulls();
 	void	testCsvImportLocale();
+	void	testCsvImportLocaleColumnWidth();
 	void	testOdsImportLocale();
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();

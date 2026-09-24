@@ -384,11 +384,11 @@ void TestAll::testDatabaseImportNulls()
 
 ///Has (Q)ColumnUtils read and write numbers the way JASP does with its interface set to locale, until what is returned goes out of scope.
 ///The tests here otherwise run without any locale of the interface, just like the numbers in C.
-static auto interfaceLocale(const QLocale & locale)
+static auto interfaceLocale(const QLocale & locale, bool useThousandSeparators = false)
 {
 	const QLocale defaultBefore;
 
-	QColumnUtils::setCallbacksAndDefaultLocale(locale, false);
+	QColumnUtils::setCallbacksAndDefaultLocale(locale, useThousandSeparators);
 
 	return qScopeGuard([defaultBefore]
 	{
@@ -420,7 +420,7 @@ void TestAll::testCsvImportLocale()
 
 	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
 	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
-	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->clearKnownImportLocale(); });
+	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt); });
 
 	_importer->loadDataSet(fq(csv.fileName()), [](int){});
 
@@ -435,6 +435,38 @@ void TestAll::testCsvImportLocale()
 	QCOMPARE(values[3],		1234.56);
 
 	QCOMPARE(_pkg->dataSet()->column(1)->getValue(0), std::string("1,234.56")); //Text, not the number the interface would make of it
+}
+
+///A csv with a locale of its own hands its numbers over written the way C does (see CSVImportColumn), but the data shows them the way the interface
+///writes them, so that is the width the column needs: with thousand separators 1234567.5 takes up 11 characters, not 9
+void TestAll::testCsvImportLocaleColumnWidth()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+	QVERIFY(csv.open(QIODevice::WriteOnly));
+	csv.write("x\n1234567,5\n");
+	csv.close();
+
+	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates), true);
+
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
+	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
+	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt); });
+
+	_importer->loadDataSet(fq(csv.fileName()), [](int){});
+
+	QVERIFY(_pkg->dataSet() && _pkg->dataSet()->columnCount() == 1);
+
+	Column * column = _pkg->dataSet()->column(0);
+
+	QCOMPARE(column->getValue(0),										std::string("1,234,567.5"));
+	QCOMPARE(column->getMaximumWidthInCharacters(true, true, 0),		size_t(11));
 }
 
 ///The numbers in an .ods file are written the way C writes them (office:value), whatever the locale of the spreadsheet or of JASP,

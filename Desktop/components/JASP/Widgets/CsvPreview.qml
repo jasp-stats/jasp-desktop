@@ -120,8 +120,8 @@ Window
 		}
 	}
 
-	// Which locale the numbers in this file are written in. It starts out as the language JASP itself is set to
-	// but only applies to this import, the preferences are left alone. See CsvPreviewModel.
+	// Which locale the numbers in this file are written in. It starts out as the locale JASP reads numbers with (the alternative
+	// locale of the preferences when one is set) but only applies to this import, the preferences are left alone. See CsvPreviewModel.
 	Rectangle
 	{
 		id:					importLocaleRect

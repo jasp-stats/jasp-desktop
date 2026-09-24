@@ -36,16 +36,6 @@ QStringList CsvPreviewModel::languages() const
 	return _moreLanguages ? LanguageModel::lang()->altLanguages() : LanguageModel::lang()->languageEntryNames();
 }
 
-QLocale CsvPreviewModel::_localeForLanguage() const
-{
-	if(!LanguageModel::lang())
-		return QLocale::c();
-
-	//The two lists name their languages differently: Preferences writes "en - American English", the complete range uses native names only
-	return _moreLanguages	? LanguageModel::lang()->localeForNames(_language, _territory)
-						: LanguageModel::lang()->localeForEntryName(_language);
-}
-
 QString CsvPreviewModel::_languageNameFor(const QLocale & locale) const
 {
 	if(!LanguageModel::lang())
@@ -159,10 +149,10 @@ void CsvPreviewModel::_setLocale(const QLocale & locale)
 	emit territoriesChanged();
 	emit territoryChanged();
 
-	_applyImportLocale();
+	_refreshPreview();
 }
 
-void CsvPreviewModel::_applyImportLocale()
+void CsvPreviewModel::_refreshPreview()
 {
 	updateInternalStructure();
 
@@ -171,12 +161,13 @@ void CsvPreviewModel::_applyImportLocale()
 
 void CsvPreviewModel::setLanguage(const QString & language)
 {
-	if(_settingLocale || _language == language || language == "")
+	if(_settingLocale || _language == language || language == "" || !LanguageModel::lang())
 		return;
 
-	_language = language;
-
-	_setLocale(_localeForLanguage());	//Which also picks the default territory of that language, a territory belongs to a language
+	//The two lists name languages differently: the short one like the preferences do ("en - American English"), the complete one natively,
+	//where some names stand for a territory of their own ("español de México") and others keep the territory picked when they are spoken there
+	_setLocale(_moreLanguages	? LanguageModel::lang()->localeForNames(language, _territory)
+								: LanguageModel::lang()->localeForEntryName(language));
 }
 
 void CsvPreviewModel::setTerritory(const QString & territory)

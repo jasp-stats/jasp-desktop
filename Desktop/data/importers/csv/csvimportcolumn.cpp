@@ -33,27 +33,23 @@ std::string CSVImportColumn::valueLookup(size_t row) const
 	if(!_readNumbersAs)
 		return ColumnUtils::doubleToLocale(_data[row]);
 
-	//The numbers of this file are written in the locale chosen for it in the csv preview: read them that way (or the way C writes them)
-	//but never the way the interface does, so text that locale does not take for a number stays text. They are handed on written the way
-	//C writes them, with the precision doubleToLocale has, because the column reads them without the locale of the interface (valuesUseLocale).
 	double number;
-	if(QColumnUtils::readNumber(_data[row], number, _readNumbersAs) && std::isfinite(number))
-		return QLocale::c().toString(number, 'g', 10).toStdString();
-
-	return _data[row];
+	return _readNumber(_data[row], number) ? QLocale::c().toString(number, 'g', 10).toStdString() : _data[row]; //As many digits as doubleToLocale keeps
 }
 
 std::string CSVImportColumn::valueLookupAsShown(size_t row) const
 {
-	if(!_readNumbersAs || _data.size() <= row)
+	if(_data.size() <= row || !_readNumbersAs)
 		return valueLookup(row);
 
-	//Read like valueLookup does, but written the way the column shows the number once it is imported
 	double number;
-	if(QColumnUtils::readNumber(_data[row], number, _readNumbersAs) && std::isfinite(number))
-		return ColumnUtils::doubleToString(number);
+	return _readNumber(_data[row], number) ? ColumnUtils::doubleToString(number) : _data[row];
+}
 
-	return _data[row];
+bool CSVImportColumn::_readNumber(const std::string & text, double & number) const
+{
+	//Infinity and NaN go on as the text they were, the column reads those itself
+	return QColumnUtils::readNumber(text, number, _readNumbersAs) && std::isfinite(number);
 }
 
 void CSVImportColumn::addValue(const std::string &value)

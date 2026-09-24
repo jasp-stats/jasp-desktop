@@ -82,11 +82,11 @@ public:
 			void			setDatabaseJson(	const std::string & databaseJson)	{ _databaseJson		= databaseJson;			dbUpdate(); }
 			void			setDataFileSynch(	bool synchronizing)					{ _dataFileSynch	= synchronizing;		dbUpdate(); }
 			void			setShowRSyntax(		bool showRSyntax)					{ _showRSyntax		= showRSyntax;			dbUpdate(); }
+			///What the csv preview chose for dataFilePath (see CsvPreviewModel), so that synchronising it reads it the same way again:
+			///its delimiter ('\0' detects it) and the BCP 47 name of the locale its numbers are written in ("" reads them like the interface does)
 			char			csvDelimiter()		const								{ return _csvDelimiter; }
-			void			setCsvDelimiter(	char delimiter)						{ _csvDelimiter		= delimiter;			dbUpdate(); }
-			///Name of the locale the numbers of dataFilePath were read with, "" meaning none was chosen and the locale of the interface applies. See CsvPreviewModel.
 	const	std::string	&	importLocale()		const								{ return _importLocale; }
-			void			setImportLocale(	const std::string & localeName)		{ _importLocale		= localeName;			dbUpdate(); }
+			void			setCsvChoices(		char delimiter, const std::string & importLocale)	{ _csvDelimiter	= delimiter; _importLocale = importLocale; dbUpdate(); }
 
 			void			setColumnCount(	size_t colCount);
 			void			setRowCount(	size_t rowCount, bool alsoLoadData = true);

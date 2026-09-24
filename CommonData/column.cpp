@@ -685,9 +685,10 @@ columnType Column::setValues(size_t rows, const std::function<std::string(size_t
 		{
 			std::string	valueStr = valueLookup(i);
 			double		valueDbl = EmptyValues::missingValueDouble;
-			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl, useLocale); //useLocale is false whenever the values do not come from the user but from R or the database, and those always use the C-locale
+			bool		isDouble = ColumnUtils::getDoubleValue(valueStr, valueDbl, useLocale); //useLocale is false whenever the values are not written the way the interface writes numbers but the way C does (R, the database, a csv with a locale of its own)
 
-			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(valueStr)));
+			//The width is that of the value as the data shows it, and a number written the way C does is shown written differently
+			_maxWidthValue = std::max(_maxWidthValue, int(stringUtils::approximateVisualLength(isDouble && !useLocale ? doubleToDisplayString(valueDbl) : valueStr)));
 		
 			if(setValue(i, valueDbl, isDouble ? "" : valueStr, false) && aChange)
 				(*aChange) = true;
@@ -2935,13 +2936,21 @@ void Column::noLabelsToLabels()
 	_ints.clear();
 	_ints.reserve(size);
 	
-	//Text without a number next to it is what setValues kept as text, and it stays text: reading it again here (as labelsAdd(display) does)
-	//could take it for a number after all when setValues read it without the locale of the interface (see initFromLookups).
-	//Text with a number next to it is the display of a label (see labelsToNoLabels), which is read again to recover its value.
 	for(size_t row=0; row<size; row++)
-		_ints.push_back(	_strs[row].empty()			? labelsAdd(_dbls[row])
-						:	std::isnan(_dbls[row])		? labelsAdd(_strs[row], "", Json::Value(_strs[row]))
-						:								  labelsAdd(_strs[row]));
+	{
+		//A number
+		if(_strs[row].empty())
+			_ints.push_back(labelsAdd(_dbls[row]));
+
+		//Text that setValues kept as text, and so it stays: reading it again (as labelsAdd(display) does) could take it
+		//for a number after all, when setValues read it without the locale of the interface (see initFromLookups)
+		else if(std::isnan(_dbls[row]))
+			_ints.push_back(labelsAdd(_strs[row], "", Json::Value(_strs[row])));
+
+		//The display of a label next to its value (see labelsToNoLabels), read again to get that value back
+		else
+			_ints.push_back(labelsAdd(_strs[row]));
+	}
 	
 	_dbls.clear();
 	_strs.clear();

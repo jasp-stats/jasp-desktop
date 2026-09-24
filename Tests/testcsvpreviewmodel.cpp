@@ -137,18 +137,18 @@ void TestCsvPreviewModel::testImportLocaleIsHandedToTheImporter()
 {
 	CsvPreviewModel model;
 
-	DesktopCommunicator::singleton()->clearKnownImportLocale();
-	QVERIFY(!DesktopCommunicator::singleton()->hasKnownImportLocale());
+	DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt);
+	QVERIFY(!DesktopCommunicator::singleton()->knownImportLocale());
 
 	model.preparePreview("Col1,Col2\n86.298,1.2", ',');
 	model.setLanguage(LanguageModel::lang()->entryNameForLocale(QLocale(QLocale::German)));
 
 	model.setVisible(false); //What pressing Load or Cancel comes down to
 
-	QVERIFY(DesktopCommunicator::singleton()->hasKnownImportLocale());
-	QCOMPARE(DesktopCommunicator::singleton()->knownImportLocale().language(), QLocale::German);
+	QVERIFY(DesktopCommunicator::singleton()->knownImportLocale());
+	QCOMPARE(DesktopCommunicator::singleton()->knownImportLocale()->language(), QLocale::German);
 
-	DesktopCommunicator::singleton()->clearKnownImportLocale();
+	DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt);
 }
 
 ///The dialog opens on whatever language the preferences are set to, also when they were changed since the previous import

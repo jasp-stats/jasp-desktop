@@ -63,11 +63,9 @@ ImportDataSet* CSVImporter::loadFile(const string &locator, std::function<void(i
 			delimiter = knownDelimiter;
 	}
 
-	//The preview dialog also decides in which locale the numbers of this file are written, see CsvPreviewModel.
-	//Every column below reads its numbers with it, see CSVImportColumn::valueLookup.
-	ColumnUtils::toDoubleF readNumbersAs;
-	if (DesktopCommunicator::singleton()->hasKnownImportLocale())
-		readNumbersAs = QColumnUtils::stringToDoubleFor(DesktopCommunicator::singleton()->knownImportLocale());
+	//The preview dialog also picked the locale the numbers of this file are written in (see CsvPreviewModel), and every column reads its numbers that way
+	const std::optional<QLocale> &	importLocale	= DesktopCommunicator::singleton()->knownImportLocale();
+	ColumnUtils::toDoubleF			readNumbersAs	= importLocale ? QColumnUtils::stringToDoubleFor(*importLocale) : nullptr;
 
 	csv.setDelimiter(delimiter);
 	csv.readLine(colNames);

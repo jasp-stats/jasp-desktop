@@ -91,9 +91,8 @@ signals:
 private:
 	void					updateInternalStructure();
 	void					_setLocale(const QLocale & locale);			///< The one place the chosen locale changes, everything shown follows from it
-	QLocale					_localeForLanguage()				const;	///< Resolves whatever the language dropdown currently shows
 	QString					_languageNameFor(const QLocale & l)	const;	///< How that locale is named in the list the dropdown currently offers
-	void					_applyImportLocale();			///< Shows what _importLocale does to the numbers of the preview
+	void					_refreshPreview();				///< Shows the table and the example again the way _importLocale reads them
 	QLocale					_interfaceLocale()					const;	///< The locale the rest of JASP reads numbers with
 	bool					_readNumber(const QString & text, double & number) const;	///< Reads a number of the preview the way the import will, see CSVImportColumn::valueLookup
 

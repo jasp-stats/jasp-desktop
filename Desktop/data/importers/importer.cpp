@@ -108,9 +108,9 @@ void Importer::importColumnFinished(ImportColumn * column, bool doCallback)
 
 }
 
-///A failed import is thrown away (as AsyncLoader::loadPackage does right after) before the model reset it runs in ends,
-///otherwise the other thread, which starts looking at the model again then, could be looking at a dataset while it is deleted.
-static void throwAwayFailedImport()
+///A load or sync that fails leaves no usable data: AsyncLoader::loadPackage deletes the dataset then. That is done here already, before the
+///model reset the failure happened in ends, because the other thread looks at the model again as soon as it does and must not find a dataset being deleted.
+static void deleteDataSetAfterFailure()
 {
 	try
 	{
@@ -119,7 +119,7 @@ static void throwAwayFailedImport()
 	}
 	catch(const std::exception & e)
 	{
-		Log::log() << "Could not throw away the failed import: " << e.what() << std::endl;
+		Log::log() << "Could not delete the dataset after a failed load or sync: " << e.what() << std::endl;
 	}
 }
 
@@ -130,10 +130,9 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	
 	DataSetPackage::pkg()->beginLoadingData();
 
-	//beginLoadingData opens a model reset that only endLoadingData closes again. Cancelling the csv preview throws right
-	//between the two (see the LoaderException below), and a model left inside its reset draws nothing at all: a blank JASP.
-	//So whichever way we leave the import, the pair is balanced.
-	auto endLoadingData = qScopeGuard([]{ throwAwayFailedImport(); DataSetPackage::pkg()->endLoadingData(); });
+	//beginLoadingData opens a model reset that only endLoadingData closes again, and a model left inside its reset draws nothing at all: a blank JASP.
+	//So when the import fails before it gets there, cancelling the csv preview for instance (see the LoaderException below), it is closed all the same.
+	auto whenTheImportFails = qScopeGuard([]{ deleteDataSetAfterFailure(); DataSetPackage::pkg()->endLoadingData(); });
 
 	DataSetPackage::pkg()->createDataSet();
 	
@@ -200,7 +199,7 @@ void Importer::loadDataSet(const std::string &locator, std::function<void(int)> 
 	}
 	JASPTIMER_STOP(Importer::loadDataSet createDataSetAndLoad);
 	
-	endLoadingData.dismiss();
+	whenTheImportFails.dismiss();
 	DataSetPackage::pkg()->endLoadingData();
 	
 	_importDataSet->clearColumns();
@@ -243,8 +242,8 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 
 	DataSetPackage::pkg()->beginSynchingData();
 
-	//Just like in loadDataSet: whichever way we leave, the model reset beginSynchingData opened is closed again
-	auto endSynchingData = qScopeGuard([]{ throwAwayFailedImport(); DataSetPackage::pkg()->endSynchingData({}, {}, {}, false, false); });
+	//Just like in loadDataSet, the model reset beginSynchingData opens is closed as well when the sync fails before endSynchingData
+	auto whenTheSyncFails = qScopeGuard([]{ deleteDataSetAfterFailure(); DataSetPackage::pkg()->endSynchingData({}, {}, {}, false, false); });
 		
 	int		rowCount		= _importDataSet->rowCount(),
 			totalCells		= rowCount * _importDataSet->columnCount(),
@@ -378,7 +377,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 		}
 	}
 	
-	endSynchingData.dismiss();
+	whenTheSyncFails.dismiss();
 	DataSetPackage::pkg()->endSynchingData(changedColumns, missingColumns, changeNameColumns, rowCountChanged, newColumns.size() > 0);
 	
 	if(newColumnOrder.size() > 0)
