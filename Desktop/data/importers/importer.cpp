@@ -17,6 +17,7 @@
 //
 #include "importer.h"
 #include "utilities/qutils.h"
+#include "columnutils.h"
 #include "log.h"
 #include <QVariant>
 #include <QScopeGuard>
@@ -290,6 +291,7 @@ void Importer::syncDataSet(const std::string &locator, std::function<void(int)> 
 				importColumn->title(),
 				importColumn->size(),
 				[&importColumn](size_t r){ return importColumn->valueLookupAsShown(r); },
+				[&importColumn](size_t r, double & number){ return ColumnUtils::getDoubleValue(importColumn->valueLookup(r), number, importColumn->valuesUseLocale()); }, //Just like Column::setValues reads it
 				[&importColumn](size_t r){ return importColumn->labelLookup(r); }, 
 				importColumn->allEmptyValuesAsStrings()
 				))

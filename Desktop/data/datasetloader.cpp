@@ -30,6 +30,7 @@
 #include "asyncloader.h"
 
 #include <QFileInfo>
+#include <QScopeGuard>
 
 #include "timers.h"
 #include "utils.h"
@@ -68,17 +69,29 @@ Importer* DataSetLoader::getImporter(const string & locator, const string &ext)
 	return nullptr; //If NULL then JASP will try to load it as a .jasp file (if the extension matches)
 }
 
+///The delimiter and locale of a csv reach its importer through DesktopCommunicator, and hold for that one load or sync only. So they are forgotten
+///afterwards, whichever way it ends: left behind, the next csv opened would not show the preview but take them over (see DesktopCommunicator::askCsvDelimiter)
+static auto forgetCsvChoicesAfterwards()
+{
+	return qScopeGuard([]
+	{
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
+		DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt);
+	});
+}
+
 void DataSetLoader::loadPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
 	JASPTIMER_RESUME(DataSetLoader::loadPackage);
+
+	//Also after a .jasp file: a delimiter can be known beforehand, to open a csv without its preview (see data_load in MainWindow)
+	auto forgetThem = forgetCsvChoicesAfterwards();
 
 	Importer* importer = getImporter(locator, extension);
 
 	if (importer)
 	{
 		DesktopCommunicator * communicator = DesktopCommunicator::singleton();
-
-		communicator->setKnownImportLocale(std::nullopt); //The csv preview picks it for this file, whatever an earlier (possibly aborted) import left behind has nothing to do with it
 
 		importer->loadDataSet(locator, progress);
 
@@ -89,8 +102,6 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 		if ((delimiter != '\0' || locale) && DataSetPackage::pkg()->dataSet())
 			DataSetPackage::pkg()->dataSet()->setCsvChoices(delimiter, locale ? fq(locale->bcp47Name()) : "");
 
-		communicator->setKnownCsvDelimiter('\0');
-		communicator->setKnownImportLocale(std::nullopt);
 		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
@@ -110,6 +121,7 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 	{
 		DesktopCommunicator	*	communicator	= DesktopCommunicator::singleton();
 		const DataSet		*	dataSet			= DataSetPackage::pkg()->dataSet();
+		auto					forgetThem		= forgetCsvChoicesAfterwards();
 
 		//Read the file the way the csv preview chose when the data was imported: split differently, or with its numbers read in another locale,
 		//a sync would silently change the data. That holds for any file synchronised into this data, a batch run feeds its template files like the first.
@@ -118,8 +130,6 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 
 		importer->syncDataSet(locator, progress);
 
-		communicator->setKnownCsvDelimiter('\0');
-		communicator->setKnownImportLocale(std::nullopt);
 		delete importer;
 	}
 }

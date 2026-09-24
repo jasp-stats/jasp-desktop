@@ -2394,16 +2394,31 @@ void Column::deleteLabelManually(int labelIndex)
 }
 
 
-///Whether two values written the way the data shows values are the same value. A number is shown with thousand separators or without them
-///depending on where it is (a label writes a whole number without, see Label::originalValueAsString), so numbers are compared as numbers.
-static bool sameValueShown(const std::string & oneValue, const std::string & otherValue)
+bool Column::numberAt(size_t row, double & number) const
 {
-	double oneNumber, otherNumber;
+	if(!_hasLabels)
+	{
+		if(row >= _dbls.size())
+			return false;
 
-	return oneValue == otherValue || (ColumnUtils::getDoubleValue(oneValue, oneNumber) && ColumnUtils::getDoubleValue(otherValue, otherNumber) && oneNumber == otherNumber);
+		number = _dbls[row];
+		return (row >= _strs.size() || _strs[row].empty()) && !isEmptyValue(number);
+	}
+
+	if(row >= _ints.size())
+		return false;
+
+	//The value a label keeps says whether it is a number, its double does not: that one is also read from text, and in the locale of the interface
+	const Label * label = labelByRow(row);
+
+	if(!label || label->isEmptyValue() || !label->originalValue().isNumeric())
+		return false;
+
+	number = label->originalValue().asDouble();
+	return !isEmptyValue(number);
 }
 
-bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const 
+bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<bool(size_t, double &)> numberLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const
 {
 	if(!(title == _title && strEmptyVals == emptyValues()->emptyStrings() || rows != rowCount()))
 			return true;
@@ -2418,7 +2433,13 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 		impoLab	= labelLookup(r);
 		dataLab = getLabel(r, false, true);
 
-		if(!sameValueShown(impoVal, dataVal) || (impoLab != "" && impoLab != dataLab))
+		//A number is shown with thousand separators or without them depending on where it is (a label writes a whole number without,
+		//see Label::originalValueAsString), so two numbers are compared as numbers. Only numbers though: text is compared as text, also
+		//when the interface would read it as that number, because the import did not.
+		double impoNumber, dataNumber;
+		bool   sameValue	= impoVal == dataVal || (numberLookup(r, impoNumber) && numberAt(r, dataNumber) && impoNumber == dataNumber);
+
+		if(!sameValue || (impoLab != "" && impoLab != dataLab))
 			return true;
 
 	}

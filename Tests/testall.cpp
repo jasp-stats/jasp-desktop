@@ -43,6 +43,7 @@
 #include <cmath>
 #include "dataset.h"
 #include "data/asyncloader.h"
+#include "data/datasetloader.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -532,7 +533,13 @@ static QString writeNumberSamples(const QTemporaryDir & dir, int rows = 1)
 	return csv.fileName();
 }
 
-///Every sample in the data (see writeNumberSamples) that is not the number, or the text, it is in the language readIn
+///Where a sample is in the data (see writeNumberSamples), for a message
+static QString sampleAt(const NumbersInLocales::Sample & sample, size_t row)
+{
+	return QString("\"%1\" in row %2").arg(QString::fromUtf8(sample.written)).arg(row + 1);
+}
+
+///Every sample in every row of the data (see writeNumberSamples) that is not the number, or the text, it is in the language readIn
 static QStringList numberSamplesReadWrong(DataSet * data, const QLocale & readIn)
 {
 	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
@@ -543,18 +550,20 @@ static QStringList numberSamplesReadWrong(DataSet * data, const QLocale & readIn
 	QStringList readWrong;
 
 	for(size_t i=0; i<samples.size(); i++)
-	{
-		const double	number	= samples[i].readIn(readIn),
-						read	= data->column(i)->dbls()[0];
+		for(size_t row=0; row<data->column(i)->rowCount(); row++)
+		{
+			const double	number		= samples[i].readIn(readIn);
+			double			read		= 0;
+			const bool		readNumber	= data->column(i)->numberAt(row, read);
 
-		if(std::isnan(number) ? !std::isnan(read) : !qFuzzyCompare(read, number))
-			readWrong.push_back(QString("\"%1\" should be %2, but is %3").arg(QString::fromUtf8(samples[i].written), std::isnan(number) ? "text" : QString::number(number, 'g', 12), QString::number(read, 'g', 12)));
-	}
+			if(std::isnan(number) ? readNumber : !readNumber || !qFuzzyCompare(read, number))
+				readWrong.push_back(QString("%1 should be %2, but is %3").arg(sampleAt(samples[i], row), std::isnan(number) ? "text" : QString::number(number, 'g', 12), readNumber ? QString::number(read, 'g', 12) : "text"));
+		}
 
 	return readWrong;
 }
 
-///Every sample in the data (see writeNumberSamples) that is not shown the way the interface shows what it is in the language readIn
+///Every sample in every row of the data (see writeNumberSamples) that is not shown the way the interface shows what it is in the language readIn
 static QStringList numberSamplesShownWrong(DataSet * data, const QLocale & readIn, const QLocale & interface, bool thousandSeparators)
 {
 	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
@@ -567,17 +576,20 @@ static QStringList numberSamplesShownWrong(DataSet * data, const QLocale & readI
 	for(size_t i=0; i<samples.size(); i++)
 	{
 		Column		*	column	= data->column(i);
-		const QString	written	= QString::fromUtf8(samples[i].written);
 		const double	number	= samples[i].readIn(readIn);
 
 		//Text stays as it was written, and a column of whole numbers comes out nominal, where the label writes its number plainly: without thousand separators
-		const QString	shouldShow	= std::isnan(number)					? written
+		const QString	shouldShow	= std::isnan(number)					? QString::fromUtf8(samples[i].written)
 									: column->type() == columnType::scale	? NumbersInLocales::shownIn(interface, number, thousandSeparators)
-																			: QString::number(number, 'g', 10),
-						shows		= tq(column->getValue(0));
+																			: QString::number(number, 'g', 10);
 
-		if(shows != shouldShow)
-			shownWrong.push_back(QString("\"%1\" should show as \"%2\", but shows as \"%3\"").arg(written, shouldShow, shows));
+		for(size_t row=0; row<column->rowCount(); row++)
+		{
+			const QString shows = tq(column->getValue(row));
+
+			if(shows != shouldShow)
+				shownWrong.push_back(QString("%1 should show as \"%2\", but shows as \"%3\"").arg(sampleAt(samples[i], row), shouldShow, shows));
+		}
 	}
 
 	return shownWrong;
@@ -704,12 +716,98 @@ void TestAll::testCsvSyncNumbers()
 
 	QCOMPARE(changed.count(),		2);
 	QCOMPARE(samplesChanged().size(),	int(NumbersInLocales::samples().size()));
+	QCOMPARE(_pkg->dataSet()->rowCount(),	2);
 
 	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn);
 	shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
 
 	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
 	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+}
+
+///A sync compares numbers as numbers (however they are shown), but text as text: also text the interface would read as that same number,
+///because the import did not. "1,234.56" is no German number, so in a German file it is text, even if JASP shows 1234.56 just like that in English.
+void TestAll::testCsvSyncTextAndNumbersStayApart()
+{
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	QFile			csv(dir.filePath("german.csv"));
+
+	auto writeCsv = [&](const QByteArray & content)
+	{
+		if(!csv.open(QIODevice::WriteOnly))
+			return false;
+		csv.write(content);
+		csv.close();
+		return true;
+	};
+
+	auto english	= interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates));
+	auto german		= csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
+
+	QVERIFY(writeCsv("becomesNumber;becomesText\n1,234.56;1234,56\n"));
+	_importer->loadDataSet(fq(csv.fileName()), [](int){});
+
+	double number;
+	QVERIFY(!_pkg->dataSet()->column("becomesNumber")	->numberAt(0, number));
+	QVERIFY( _pkg->dataSet()->column("becomesText")		->numberAt(0, number));
+
+	//The same number the other way around, and read the way the interface does, the file would be the same
+	QVERIFY(writeCsv("becomesNumber;becomesText\n1234,56;1,234.56\n"));
+
+	QMetaObject::Connection syncing = connect(_pkg, &DataSetPackage::checkDoSync, this, []{ return true; });
+	auto stopSyncing = qScopeGuard([syncing]{ disconnect(syncing); });
+
+	QSignalSpy changed(_pkg, &DataSetPackage::datasetChanged);
+
+	CSVImporter syncer(false);
+	syncer.syncDataSet(fq(csv.fileName()), [](int){});
+
+	QCOMPARE(changed.count(), 1);
+
+	QStringList changedColumns = changed[0][0].toStringList();
+	changedColumns.sort();
+	QCOMPARE(changedColumns, QStringList({ "becomesNumber", "becomesText" }));
+
+	QVERIFY( _pkg->dataSet()->column("becomesNumber")	->numberAt(0, number));
+	QCOMPARE(number, 1234.56);
+	QVERIFY(!_pkg->dataSet()->column("becomesText")		->numberAt(0, number));
+	QCOMPARE(_pkg->dataSet()->column("becomesText")->strs()[0], std::string("1,234.56")); //Still a scale column, which shows text as missing
+}
+
+///The delimiter and locale of a csv hold for a single load or sync, also one that fails: left behind, the next csv opened
+///would not show its preview but be split with that delimiter (see DesktopCommunicator::askCsvDelimiter)
+void TestAll::testFailedLoadOrSyncForgetsCsvChoices()
+{
+	if(_pkg) delete _pkg;
+
+	_pkg = new DataSetPackage(this);
+	_pkg->createDataSet();
+
+	DesktopCommunicator * communicator = DesktopCommunicator::singleton();
+
+	//An empty csv cannot be read (CSV::open throws), as happens when a synchronised file is being written just then
+	QTemporaryDir	dir;
+	QFile			empty(dir.filePath("empty.csv"));
+	QVERIFY(empty.open(QIODevice::WriteOnly));
+	empty.close();
+
+	_pkg->dataSet()->setCsvChoices(';', "de");
+
+	QVERIFY_THROWS_EXCEPTION(std::exception, DataSetLoader::syncPackage(fq(empty.fileName()), ".csv"));
+	QCOMPARE(communicator->knownCsvDelimiter(), '\0');
+	QVERIFY (!communicator->knownImportLocale());
+
+	communicator->setKnownCsvDelimiter(';'); //Which is how data_load in MainWindow opens a csv without its preview
+
+	QVERIFY_THROWS_EXCEPTION(std::exception, DataSetLoader::loadPackage(fq(empty.fileName()), ".csv"));
+	QCOMPARE(communicator->knownCsvDelimiter(), '\0');
+	QVERIFY (!communicator->knownImportLocale());
 }
 
 ///The numbers in an .ods file are written the way C writes them (office:value), whatever the locale of the spreadsheet or of JASP,

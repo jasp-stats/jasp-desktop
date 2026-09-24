@@ -248,7 +248,7 @@ void TestCsvPreviewModel::testMoreLanguagesWidensTheLanguageList()
 void TestCsvPreviewModel::testChosenLocaleIsNotOverruledByTheInterface()
 {
 	ColumnUtils::setExtraStringToNumber(QColumnUtils::stringToDoubleFor(QLocale(QLocale::English, QLocale::UnitedStates)), nullptr); //An interface reading "1,234.56" just fine
-	auto noInterfaceLocale = qScopeGuard([]{ ColumnUtils::setExtraStringToNumber(nullptr, nullptr); });
+	auto backToTheInterface = qScopeGuard([]{ LanguageModel::lang()->setDefaultLocaleFromCurrent(); });
 
 	CsvPreviewModel model;
 

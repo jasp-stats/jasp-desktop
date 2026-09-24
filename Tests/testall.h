@@ -26,6 +26,8 @@ private slots:
 	void	testCsvImportNumbers();
 	void	testCsvSyncNumbers_data();
 	void	testCsvSyncNumbers();
+	void	testCsvSyncTextAndNumbersStayApart();
+	void	testFailedLoadOrSyncForgetsCsvChoices();
 	void	testOdsImportLocale();
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();

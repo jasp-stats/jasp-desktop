@@ -9,7 +9,7 @@
 /// When the csv preview picked the locale the numbers of the file are written in (readNumbersAs, see CsvPreviewModel), a value is read
 /// in that locale or else the way C writes numbers, but never in the locale of the interface: text that locale does not take for a number
 /// stays text. valueLookup then hands a number over written the way C writes it, which the column reads without any locale (valuesUseLocale),
-/// and valueLookupAsShown writes it the way the column shows it once imported, for a sync to compare with.
+/// and valueLookupAsShown writes it the way the data shows numbers, for a sync to compare with.
 class CSVImportColumn : public ImportColumn
 {
 public:
