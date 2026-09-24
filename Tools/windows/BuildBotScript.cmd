@@ -6,7 +6,7 @@ rem Todo:
 rem   - [ ] It would be nice if we find a way to consistently read these path variables, so
 rem         that we don't have to adjust the script for each VC, or Qt update.
 
-set MSVCDIR_DEFAULT=C:\Program Files\Microsoft Visual Studio\18\Community
+set MSVCDIR_DEFAULT=C:\Program Files\Microsoft Visual Studio\2022\Community
 
 if "%MSVCDIR%"=="" (
     set "MSVCDIR=%MSVCDIR_DEFAULT%"

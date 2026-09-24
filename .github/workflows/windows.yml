@@ -75,10 +75,10 @@ jobs:
             -DCMAKE_BUILD_TYPE="Release" `
             -DCMAKE_PREFIX_PATH="${QT_ROOT_DIR}" `
             -DBUILD_TESTS=ON `
-            -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC" `
+            -DVS_PATH="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC" `
             -DRTOOLS_PATH="C:/rtools45/ucrt64"
         env:
-            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC"
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC"
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
@@ -87,7 +87,7 @@ jobs:
         run: |
              & "$env:IQTA_TOOLS\CMake_64\bin\cmake.exe" --build jasp-build --target all
         env: 
-            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC/"
+            VCINSTALLDIR: "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/"
 
       - name: Run Tests
         shell: pwsh
