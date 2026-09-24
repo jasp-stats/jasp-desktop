@@ -18,6 +18,13 @@
 #include "settings.h"
 #include "resultstesting/compareresults.h"
 #include "gui/pdfdefinition.h"
+#include "log.h"
+
+#include <QCoreApplication>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QStringList>
 
 static bool _thisIsATest = false;
 
@@ -160,12 +167,71 @@ const Settings::Setting Settings::Values[] = {
 	{"rpcServerIp",					"127.0.0.1"},
 	{"rpcServerPort",				48164},
 	{"syncDroppedDatafile",			true},
-	// 'Report bugs' link on the welcome page — empty (default) hides the link.
-	// Enterprise admins push it through group policy (bugReportUrl), so no
-	// build needs to be company-specific to carry the URL. Read once at
-	// startup by MainWindow::bugReportUrl().
-	{"bugReportUrl",				""}
+	// 'Report bugs' link on the welcome page — shown by default, pointing at
+	// the public issue tracker; empty hides the link. Enterprise admins push a
+	// different URL through group policy (bugReportUrl), so no build needs to
+	// be company-specific to carry the URL. Read once at startup by
+	// MainWindow::bugReportUrl().
+	{"bugReportUrl",				"https://github.com/jasp-stats/jasp-issues/issues/new/choose"},
+	// Module store (the browser pane in the + menu). Enterprise admins can
+	// hide it by policy (moduleStoreEnabled) to pin the module set shipped by
+	// the installer. Bound by ModulesMenu.qml; a policy change needs a restart.
+	{"moduleStoreEnabled",			true}
 };
+
+// Shipped defaults (defaults.json beside the application): the per-client
+// MSI layer. Soft defaults — policy and the user's own settings override
+// them. Read live and never copied into user settings, so a newer
+// installer's file updates defaults for settings the user never touched.
+static const QJsonObject& shippedDefaults()
+{
+	static QJsonObject shipped;
+	static bool loaded = false;		// latched only once a file was actually read (valid or not)
+	static bool reportedMissing = false;
+	if (loaded)
+		return shipped;
+	if (QCoreApplication::instance() == nullptr)
+		return shipped;		// too early: applicationDirPath() is empty; retry on a later call
+
+	const QStringList candidates = {
+		QCoreApplication::applicationDirPath() + "/defaults.json",
+		QCoreApplication::applicationDirPath() + "/Resources/defaults.json"
+	};
+	for (const QString& path : candidates)
+	{
+		QFile f(path);
+		if (!f.exists())
+			continue;
+		if (!f.open(QIODevice::ReadOnly))
+		{
+			qWarning() << "Settings: cannot open" << path << "(shipped defaults ignored)";
+			Log::log() << "Settings: cannot open " << path.toStdString() << " (shipped defaults ignored)" << std::endl;
+			loaded = true;
+			break;
+		}
+		QJsonParseError err;
+		const QJsonDocument doc = QJsonDocument::fromJson(f.readAll(), &err);
+		if (err.error != QJsonParseError::NoError || !doc.isObject())
+		{
+			qWarning() << "Settings:" << path << "is not a valid JSON object (shipped defaults ignored):" << err.errorString();
+			Log::log() << "Settings: " << path.toStdString() << " is not a valid JSON object (shipped defaults ignored): "
+			           << err.errorString().toStdString() << std::endl;
+			loaded = true;
+			break;
+		}
+		shipped = doc.object();
+		loaded = true;
+		qDebug() << "Settings: loaded" << shipped.size() << "shipped default(s) from" << path;
+		Log::log() << "Settings: loaded " << shipped.size() << " shipped default(s) from " << path.toStdString() << std::endl;
+		break;
+	}
+	if (!loaded && !reportedMissing)
+	{
+		reportedMissing = true;
+		qWarning() << "Settings: no defaults.json found; checked:" << candidates;
+	}
+	return shipped;
+}
 
 QVariant Settings::value(Settings::Type key) {
 
@@ -208,14 +274,20 @@ QVariant Settings::value(Settings::Type key) {
     QSettings oldRegistry(QSettings::NativeFormat, QSettings::UserScope, "JASP", "JASP");
     if (oldRegistry.contains(settingStringName)) {
         QVariant oldVal = oldRegistry.value(settingStringName);
-        
+
         // Migrate it to the new INI format
-        settings->setValue(settingStringName, oldVal); 
+        settings->setValue(settingStringName, oldVal);
         return oldVal;
     }
 #endif
 
-    // 5. Fallback to hardcoded application defaults
+    // 5. Shipped defaults (defaults.json beside the app; per-client MSI)
+    const QJsonObject& shipped = shippedDefaults();
+    if (shipped.contains(settingStringName)) {
+        return shipped.value(settingStringName).toVariant();
+    }
+
+    // 6. Fallback to hardcoded application defaults
     return defaultValue(key);
 }
 

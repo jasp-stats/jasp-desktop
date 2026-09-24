@@ -186,9 +186,9 @@ FocusScope
 		Item
 		{
 			id:						moduleStoreContainer
-			visible:                !ribbonModel.dataMode
+			visible:                !ribbonModel.dataMode && preferencesModel.checkUpdates && preferencesModel.moduleStoreEnabled
 			clip:                   true
-			width:                  !ribbonModel.dataMode ? 500 * preferencesModel.uiScale : 0
+			width:                  !ribbonModel.dataMode && preferencesModel.checkUpdates && preferencesModel.moduleStoreEnabled ? 500 * preferencesModel.uiScale : 0
 			anchors
 			{
 				top:				modulesFlick.top

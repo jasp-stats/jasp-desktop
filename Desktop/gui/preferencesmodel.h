@@ -74,7 +74,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			ALTNavModeActive		READ ALTNavModeActive			WRITE setALTNavModeActive			NOTIFY ALTNavModeActiveChanged			)
 	Q_PROPERTY(bool			orderByValueByDefault	READ orderByValueByDefault		WRITE setOrderByValueByDefault		NOTIFY orderByValueByDefaultChanged		)
 	Q_PROPERTY(bool			checkUpdatesAskUser		READ checkUpdatesAskUser		WRITE setCheckUpdatesAskUser		NOTIFY checkUpdatesAskUserChanged		)
-	Q_PROPERTY(bool			checkUpdates			READ checkUpdates				WRITE setCheckUpdates				NOTIFY checkUpdatesChanged				)
+	Q_PROPERTY(bool			checkUpdates			READ checkUpdates			WRITE setCheckUpdates				NOTIFY checkUpdatesChanged			)
+	Q_PROPERTY(bool			moduleStoreEnabled		READ moduleStoreEnabled			WRITE setModuleStoreEnabled			NOTIFY moduleStoreEnabledChanged			)
 	Q_PROPERTY(int			maxScaleLevels			READ maxScaleLevels				WRITE setMaxScaleLevels				NOTIFY maxScaleLevelsChanged			)
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
@@ -185,7 +186,8 @@ class PreferencesModel : public PreferencesModelBase
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
 	bool			useConfigurationFile()					const;
-	bool			checkUpdates()							const;
+	bool			checkUpdates()								const;
+	bool			moduleStoreEnabled()						const;
 	bool			startMaximized()						const;
 	int				autoSaveIntervalSec()					const;
 	bool			autoSaveAtAll()							const;
@@ -194,6 +196,7 @@ class PreferencesModel : public PreferencesModelBase
 	
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
 	void			setCheckUpdates(		bool	newCheckUpdates);
+	void			setModuleStoreEnabled(	bool	newModuleStoreEnabled);
 	void			setStartMaximized(		bool	newStartMaximized);
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
@@ -359,6 +362,7 @@ signals:
 	void orderByValueByDefaultChanged(	bool		orderByValueByDefault);
 	void checkUpdatesAskUserChanged(	bool		checkAsk);
 	void checkUpdatesChanged(			bool		check);
+	void moduleStoreEnabledChanged(	bool		enabled);
 	void maxScaleLevelsChanged(			int			maxScaleLevels);
 	void pdfPageSizeChanged(			int			pdfPageSize);
 	void pdfLandscapeChanged(			bool		pdfLandscape);

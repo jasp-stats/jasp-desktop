@@ -115,7 +115,8 @@ public:
 		RPC_SERVER_IP,
 		RPC_SERVER_PORT,
 		SYNC_DROPPED_DATAFILE,
-		BUG_REPORT_URL
+		BUG_REPORT_URL,
+		MODULE_STORE_ENABLED
 	};
 
 	static QVariant value(Settings::Type key);

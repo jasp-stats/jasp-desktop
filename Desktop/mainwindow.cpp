@@ -387,8 +387,8 @@ QString MainWindow::bugReportUrl() const
 {
 	// Settings-sourced (not a compile-time define): enterprise admins push
 	// `bugReportUrl` via group policy — machine policy wins over user policy
-	// wins over the INI — and one build serves every customer. Empty (default)
-	// hides the welcome-page link entirely. Read once per launch; the property
+	// wins over the INI — and one build serves every customer. Empty hides the
+	// welcome-page link entirely. Read once per launch; the property
 	// is CONSTANT, so a policy change needs a restart to take effect.
 	return Settings::value(Settings::BUG_REPORT_URL).toString();
 }
