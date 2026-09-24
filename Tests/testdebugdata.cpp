@@ -295,6 +295,96 @@ void TestDebugData::testEmptyValues()
 	QVERIFY2(contBinom->nonEmptyLevelsStrings().size() == 0,	"There should be no labels anymore!");
 }
 
+void TestDebugData::testEmptyValuesWithoutLabels()
+{
+	//Without labels a column keeps its values as they are, so what goes to R must still leave out the empty values: https://github.com/jasp-stats/jasp-issues/issues/4536
+	QVERIFY2(_data,		"No dataset!");
+
+	Column	* contBinom = _data->column("contBinom"),
+			* debString = _data->column("debString");
+
+	QVERIFY2(contBinom && debString,	"No contBinom or debString!");
+
+	contBinom->setHasLabels(false);
+	debString->setHasLabels(false);
+
+	//What R gets, row by row, with "NA" for a missing value, so that it can be compared with and without labels
+	auto asScale = [](Column * column, const boolvec & filter)
+	{
+		stringvec	rows;
+		for(double dbl : column->dataAsRDoubles(filter))
+			rows.push_back(std::isnan(dbl) ? "NA" : std::to_string(dbl));
+		return rows;
+	};
+
+	auto asLevels = [](Column * column, const boolvec & filter)
+	{
+		intvec		values;
+		stringvec	levels = column->dataAsRLevels(values, filter),
+					rows;
+		for(int value : values)
+			rows.push_back(value == EmptyValues::missingValueInteger ? "NA" : levels[value - 1]);
+		return rows;
+	};
+
+	auto missing = [](const stringvec & rows) { return std::count(rows.begin(), rows.end(), "NA"); };
+
+	boolvec everyOtherRow(contBinom->rowCount(), false);
+	for(size_t row=0; row<everyOtherRow.size(); row+=2)
+		everyOtherRow[row] = true;
+
+	QVERIFY2(missing(asScale (contBinom, {})) == 0,		"contBinom should not have missing values yet!");
+	QVERIFY2(missing(asLevels(contBinom, {})) == 0,		"contBinom should not have missing levels yet!");
+
+	//An empty value of the column itself
+	contBinom->setHasCustomEmptyValues(true);
+	contBinom->setCustomEmptyValues({"1"});
+	QVERIFY2(missing(asScale (contBinom, {})) == 42,	"The 1s of contBinom should be missing as scale!");
+	QVERIFY2(missing(asLevels(contBinom, {})) == 42,	"The 1s of contBinom should be missing as nominal!");
+
+	intvec		values;
+	stringvec	levels = contBinom->dataAsRLevels(values, {});
+	QVERIFY2(levels == stringvec({"0"}),				"contBinom should only have the level 0 left!");
+
+	//An empty value of the data set, as set in the preferences
+	contBinom->setHasCustomEmptyValues(false);
+	QVERIFY2(missing(asScale(contBinom, {})) == 0,		"contBinom should not have missing values after disabling custom empty values!");
+
+	_data->setEmptyValuesFromStrings({"1"});
+	QVERIFY2(missing(asScale (contBinom, {})) == 42,	"The 1s of contBinom should be missing as scale with 1 as data set empty value!");
+	QVERIFY2(missing(asLevels(contBinom, {})) == 42,	"The 1s of contBinom should be missing as nominal with 1 as data set empty value!");
+
+	//An empty value that is text
+	debString->setHasCustomEmptyValues(true);
+	debString->setCustomEmptyValues({"z"});
+
+	stringvec debStringLevels = asLevels(debString, {});
+	QVERIFY2(missing(debStringLevels) == 9,																"The z's of debString should be missing!");
+	QVERIFY2(std::count(debStringLevels.begin(), debStringLevels.end(), "z") == 0,						"z should not be a level of debString!");
+
+	levels = debString->dataAsRLevels(values, {});
+	QVERIFY2(std::find(levels.begin(), levels.end(), "z") == levels.end(),								"z should not be a level of debString!");
+
+	//Using labels or not should not change what an analysis gets
+	const stringvec	contBinomScale				= asScale (contBinom, {}),
+					contBinomLevels				= asLevels(contBinom, {}),
+					contBinomScaleFiltered		= asScale (contBinom, everyOtherRow),
+					contBinomLevelsFiltered		= asLevels(contBinom, everyOtherRow),
+					debStringLevelsFiltered		= asLevels(debString, everyOtherRow);
+
+	QVERIFY2(contBinomScaleFiltered.size() == 50 && missing(contBinomScaleFiltered) > 0,				"The filter should leave half of contBinom, with some missing values!");
+
+	contBinom->setHasLabels(true);
+	debString->setHasLabels(true);
+
+	QVERIFY2(asScale (contBinom, {})				== contBinomScale,				"contBinom as scale should be the same with labels!");
+	QVERIFY2(asLevels(contBinom, {})				== contBinomLevels,				"contBinom as nominal should be the same with labels!");
+	QVERIFY2(asScale (contBinom, everyOtherRow)		== contBinomScaleFiltered,		"Filtered contBinom as scale should be the same with labels!");
+	QVERIFY2(asLevels(contBinom, everyOtherRow)		== contBinomLevelsFiltered,		"Filtered contBinom as nominal should be the same with labels!");
+	QVERIFY2(asLevels(debString, {})				== debStringLevels,				"debString should be the same with labels!");
+	QVERIFY2(asLevels(debString, everyOtherRow)		== debStringLevelsFiltered,		"Filtered debString should be the same with labels!");
+}
+
 void TestDebugData::testChangeLabelValueTwice()
 {
 	QVERIFY2(_data,		"No dataset!");
