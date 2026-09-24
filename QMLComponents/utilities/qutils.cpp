@@ -495,12 +495,28 @@ QString QColumnUtils::decimalPoint()
 }
 
 
+///A locale that groups thousands with a space (French with U+202F, Russian or Swedish with U+00A0) is written with any kind of space,
+///because keyboards and older software do not know the one it prescribes. QLocale reads only that one and a plain space, so every other space becomes it.
+static QString withTheGroupSpaceOf(const QLocale & locale, QString number)
+{
+	const QString groupSeparator = locale.groupSeparator();
+
+	if(groupSeparator.size() != 1 || groupSeparator[0].category() != QChar::Separator_Space)
+		return number;
+
+	for(QChar & character : number)
+		if(character.category() == QChar::Separator_Space && character != u' ')
+			character = groupSeparator[0];
+
+	return number;
+}
+
 ColumnUtils::toDoubleF QColumnUtils::stringToDoubleFor(const QLocale & locale)
 {
 	return [locale](const std::string & str, double & dbl)
 	{
 		bool	isDouble	= false;
-				dbl			= locale.toDouble(tq(str), &isDouble);
+				dbl			= locale.toDouble(withTheGroupSpaceOf(locale, tq(str)), &isDouble);
 		
 		if(!isDouble)
 			dbl = EmptyValues::missingValueDouble;
@@ -519,7 +535,7 @@ static ColumnUtils::toIntF stringToIntFor(const QLocale & locale)
 	return [locale](const std::string & str, int & intVal)
 	{
 		bool isInt = false;
-		intVal = locale.toInt(tq(str), &isInt);
+		intVal = locale.toInt(withTheGroupSpaceOf(locale, tq(str)), &isInt);
 
 		if(!isInt)
 			intVal = EmptyValues::missingValueInteger;

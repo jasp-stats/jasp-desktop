@@ -1945,10 +1945,19 @@ bool Column::setValue(size_t row, std::string value, const std::string & label, 
 	}
 
 
-	Label	* newLabel		= justAValue ? labelByValue(value) : labelByValueAndDisplay(value, label);
+	auto labelFor = [&](const std::string & labelValue) { return justAValue ? labelByValue(labelValue) : labelByValueAndDisplay(labelValue, label); };
+
+	//Just like labelsAdd does, a label keeps a whole number as an int, and writes it without thousand separators (see Label::originalValueAsString).
+	//A label that was given one as a double before writes it the way the data writes numbers, which is how value is written.
+	int		wholeNumber;
+	bool	itsWhole		= itsADouble && ColumnUtils::getIntValue(newDoubleToSet, wholeNumber);
+	Label	* newLabel		= itsWhole ? labelFor(std::to_string(wholeNumber)) : nullptr;
 
 	if(!newLabel)
-		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsADouble ? Json::Value(newDoubleToSet) : value));
+		newLabel = labelFor(value);
+
+	if(!newLabel)
+		newLabel = labelByIntsId(labelsAdd((justAValue || labelIsValue) ? value : label, "", itsWhole ? Json::Value(wholeNumber) : itsADouble ? Json::Value(newDoubleToSet) : Json::Value(value)));
 
 	return setValue(row, newLabel->intsId(), writeToDB);
 }
@@ -2385,6 +2394,15 @@ void Column::deleteLabelManually(int labelIndex)
 }
 
 
+///Whether two values written the way the data shows values are the same value. A number is shown with thousand separators or without them
+///depending on where it is (a label writes a whole number without, see Label::originalValueAsString), so numbers are compared as numbers.
+static bool sameValueShown(const std::string & oneValue, const std::string & otherValue)
+{
+	double oneNumber, otherNumber;
+
+	return oneValue == otherValue || (ColumnUtils::getDoubleValue(oneValue, oneNumber) && ColumnUtils::getDoubleValue(otherValue, otherNumber) && oneNumber == otherNumber);
+}
+
 bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals) const 
 {
 	if(!(title == _title && strEmptyVals == emptyValues()->emptyStrings() || rows != rowCount()))
@@ -2400,7 +2418,7 @@ bool Column::isColumnDifferentFromStringLookUps(const std::string & title, size_
 		impoLab	= labelLookup(r);
 		dataLab = getLabel(r, false, true);
 
-		if(impoVal != dataVal || (impoLab != "" && impoLab != dataLab))
+		if(!sameValueShown(impoVal, dataVal) || (impoLab != "" && impoLab != dataLab))
 			return true;
 
 	}

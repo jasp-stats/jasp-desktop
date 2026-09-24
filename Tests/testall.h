@@ -21,6 +21,11 @@ private slots:
 	void	testDatabaseImportNulls();
 	void	testCsvImportLocale();
 	void	testCsvImportLocaleColumnWidth();
+	void	testNumbersGroupedWithSpaces();
+	void	testCsvImportNumbers_data();
+	void	testCsvImportNumbers();
+	void	testCsvSyncNumbers_data();
+	void	testCsvSyncNumbers();
 	void	testOdsImportLocale();
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();

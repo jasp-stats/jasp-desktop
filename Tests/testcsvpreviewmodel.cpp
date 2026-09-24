@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 #include "testcsvpreviewmodel.h"
+#include "numbersinlocales.h"
 #include "utilities/csvpreviewmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "utilities/languagemodel.h"
@@ -283,6 +284,63 @@ void TestCsvPreviewModel::testRegionalLanguageNames()
 	QCOMPARE(model.importLocale(),	spain);
 	QCOMPARE(model.language(),		spain.nativeLanguageName());
 	QCOMPARE(model.data(model.index(1, 0), Qt::DisplayRole).toString(), QString("1.234"));
+}
+
+///Every combination of an interface in English, German or French, with and without thousand separators, and a file picked to be written in English, German or French
+void TestCsvPreviewModel::testNumbersInEveryLanguage_data()
+{
+	QTest::addColumn<QLocale>(	"interface");
+	QTest::addColumn<bool>(		"thousandSeparators");
+	QTest::addColumn<QLocale>(	"file");
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+			for(const QLocale & file : NumbersInLocales::locales())
+				QTest::addRow("%s interface%s, %s file", qPrintable(QLocale::languageToString(interface.language())), thousandSeparators ? " with thousand separators" : "", qPrintable(QLocale::languageToString(file.language())))
+					<< interface << thousandSeparators << file;
+}
+
+///The preview reads every number in the language picked for the file, exactly like the import will (see TestAll::testCsvImportNumbers),
+///and shows it the way the interface does, whichever combination of the two it is. What is no number is shown between quotes, as text.
+void TestCsvPreviewModel::testNumbersInEveryLanguage()
+{
+	QFETCH(QLocale,	interface);
+	QFETCH(bool,	thousandSeparators);
+	QFETCH(QLocale,	file);
+
+	QColumnUtils::setCallbacksAndDefaultLocale(interface, thousandSeparators);
+	auto backToTheInterface = qScopeGuard([]{ LanguageModel::lang()->setDefaultLocaleFromCurrent(); });
+
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	QString csv = "sample";
+	for(const NumbersInLocales::Sample & sample : samples)
+		csv += "\n" + QString::fromUtf8(sample.written);
+
+	CsvPreviewModel model;
+
+	model.preparePreview(csv, ';');
+
+	const QString language = LanguageModel::lang()->entryNameForLocale(file);
+	QVERIFY2(!language.isEmpty(), qPrintable("JASP speaks no " + QLocale::languageToString(file.language())));
+
+	model.setLanguage(language);
+	QCOMPARE(model.importLocale().language(), file.language());
+
+	QStringList misread;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		const QString	written		= QString::fromUtf8(samples[i].written);
+		const double	number		= samples[i].readIn(file);
+		const QString	shouldShow	= std::isnan(number) ? "\"" + written + "\"" : NumbersInLocales::shownIn(interface, number, thousandSeparators),
+						shows		= model.data(model.index(int(i) + 1, 0), Qt::DisplayRole).toString();
+
+		if(shows != shouldShow)
+			misread.push_back(QString("\"%1\" should show as %2, but shows as %3").arg(written, shouldShow, shows));
+	}
+
+	QVERIFY2(misread.isEmpty(), qPrintable("\n" + misread.join("\n")));
 }
 
 QTEST_MAIN(TestCsvPreviewModel)

@@ -17,6 +17,7 @@
 //
 #include "testall.h"
 #include "testinfo.h"
+#include "numbersinlocales.h"
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "utilities/qutils.h"
@@ -400,6 +401,20 @@ static auto interfaceLocale(const QLocale & locale, bool useThousandSeparators =
 	});
 }
 
+///Has a csv import take ';' as delimiter and read its numbers as picked (nothing picked: the way the interface does),
+///as if the csv preview just closed, until what is returned goes out of scope
+static auto csvPreviewPicked(std::optional<QLocale> picked)
+{
+	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
+	DesktopCommunicator::singleton()->setKnownImportLocale(picked);
+
+	return qScopeGuard([]
+	{
+		DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0');
+		DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt);
+	});
+}
+
 ///The locale picked in the csv preview decides how the numbers of that file are read, whatever the locale of the interface:
 ///"1,234" in a German file is one point two three four, and "1,234.56" is no German number at all even though English reads it fine.
 void TestAll::testCsvImportLocale()
@@ -418,9 +433,7 @@ void TestAll::testCsvImportLocale()
 
 	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 
-	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
-	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
-	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt); });
+	auto german = csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
 
 	_importer->loadDataSet(fq(csv.fileName()), [](int){});
 
@@ -455,9 +468,7 @@ void TestAll::testCsvImportLocaleColumnWidth()
 
 	auto english = interfaceLocale(QLocale(QLocale::English, QLocale::UnitedStates), true);
 
-	DesktopCommunicator::singleton()->setKnownCsvDelimiter(';');
-	DesktopCommunicator::singleton()->setKnownImportLocale(QLocale(QLocale::German, QLocale::Germany));
-	auto forgetThem = qScopeGuard([]{ DesktopCommunicator::singleton()->setKnownCsvDelimiter('\0'); DesktopCommunicator::singleton()->setKnownImportLocale(std::nullopt); });
+	auto german = csvPreviewPicked(QLocale(QLocale::German, QLocale::Germany));
 
 	_importer->loadDataSet(fq(csv.fileName()), [](int){});
 
@@ -469,8 +480,240 @@ void TestAll::testCsvImportLocaleColumnWidth()
 	QCOMPARE(column->getMaximumWidthInCharacters(true, true, 0),		size_t(11));
 }
 
+///A locale that groups thousands with a space reads numbers grouped with any kind of space: French prescribes U+202F and Russian U+00A0,
+///but a file has whichever one the software that wrote it knew, or the plain space of a keyboard
+void TestAll::testNumbersGroupedWithSpaces()
+{
+	const QList<QChar> spaces = { u' ', QChar(0x00A0), QChar(0x202F), QChar(0x2009) }; //Plain, no-break, narrow no-break and thin
+
+	for(const QLocale & locale : { QLocale(QLocale::French, QLocale::France), QLocale(QLocale::French, QLocale::Canada), QLocale(QLocale::Russian, QLocale::Russia), QLocale(QLocale::Swedish, QLocale::Sweden) })
+	{
+		auto interfaceIsSet	= interfaceLocale(locale); //For reading whole numbers, ColumnUtils::getIntValue
+		auto readNumbersAs	= QColumnUtils::stringToDoubleFor(locale);
+
+		for(QChar space : spaces)
+		{
+			const QString	wholeNumber	= "1" + QString(space) + "234",
+							number		= wholeNumber + locale.decimalPoint() + "5",
+							what		= " in " + locale.bcp47Name() + " with U+" + QString::number(space.unicode(), 16).toUpper().rightJustified(4, u'0');
+			double			read		= 0;
+			int				readWhole	= 0;
+
+			QVERIFY2(readNumbersAs(fq(number), read) && read == 1234.5,						qPrintable(number		+ what));
+			QVERIFY2(ColumnUtils::getIntValue(fq(wholeNumber), readWhole) && readWhole == 1234,	qPrintable(wholeNumber	+ what));
+		}
+	}
+
+	//A locale that groups with something else does not take a space for its group separator
+	double read;
+	QVERIFY(!QColumnUtils::stringToDoubleFor(QLocale(QLocale::English, QLocale::UnitedStates))(fq("1" + QString(QChar(0x00A0)) + "234.5"), read));
+}
+
+///Writes NumbersInLocales::samples() to a csv, each in a column of its own so that no sample decides what the others are, rows times
+static QString writeNumberSamples(const QTemporaryDir & dir, int rows = 1)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	QByteArray names, values;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		names	+= (i ? ";" : "") + QByteArray("sample") + QByteArray::number(qulonglong(i));
+		values	+= (i ? ";" : "") + QByteArray(samples[i].written);
+	}
+
+	QFile csv(dir.filePath("numbers.csv"));
+
+	if(!csv.open(QIODevice::WriteOnly))
+		return "";
+
+	csv.write(names + "\n" + QByteArray(values + "\n").repeated(rows));
+
+	return csv.fileName();
+}
+
+///Every sample in the data (see writeNumberSamples) that is not the number, or the text, it is in the language readIn
+static QStringList numberSamplesReadWrong(DataSet * data, const QLocale & readIn)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	if(!data || data->columnCount() != int(samples.size()))
+		return { "the data should have a column for every sample" };
+
+	QStringList readWrong;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		const double	number	= samples[i].readIn(readIn),
+						read	= data->column(i)->dbls()[0];
+
+		if(std::isnan(number) ? !std::isnan(read) : !qFuzzyCompare(read, number))
+			readWrong.push_back(QString("\"%1\" should be %2, but is %3").arg(QString::fromUtf8(samples[i].written), std::isnan(number) ? "text" : QString::number(number, 'g', 12), QString::number(read, 'g', 12)));
+	}
+
+	return readWrong;
+}
+
+///Every sample in the data (see writeNumberSamples) that is not shown the way the interface shows what it is in the language readIn
+static QStringList numberSamplesShownWrong(DataSet * data, const QLocale & readIn, const QLocale & interface, bool thousandSeparators)
+{
+	const std::vector<NumbersInLocales::Sample> & samples = NumbersInLocales::samples();
+
+	if(!data || data->columnCount() != int(samples.size()))
+		return { "the data should have a column for every sample" };
+
+	QStringList shownWrong;
+
+	for(size_t i=0; i<samples.size(); i++)
+	{
+		Column		*	column	= data->column(i);
+		const QString	written	= QString::fromUtf8(samples[i].written);
+		const double	number	= samples[i].readIn(readIn);
+
+		//Text stays as it was written, and a column of whole numbers comes out nominal, where the label writes its number plainly: without thousand separators
+		const QString	shouldShow	= std::isnan(number)					? written
+									: column->type() == columnType::scale	? NumbersInLocales::shownIn(interface, number, thousandSeparators)
+																			: QString::number(number, 'g', 10),
+						shows		= tq(column->getValue(0));
+
+		if(shows != shouldShow)
+			shownWrong.push_back(QString("\"%1\" should show as \"%2\", but shows as \"%3\"").arg(written, shouldShow, shows));
+	}
+
+	return shownWrong;
+}
+
+///Every combination of an interface in English, German or French, with and without thousand separators, and a csv whose numbers are written in
+///English, German or French, or in a language nobody picked (the csv preview was never shown, as when synchronising a file imported before it existed)
+void TestAll::testCsvImportNumbers_data()
+{
+	QTest::addColumn<QLocale>(	"interface");
+	QTest::addColumn<bool>(		"thousandSeparators");
+	QTest::addColumn<bool>(		"picked");
+	QTest::addColumn<QLocale>(	"readIn");
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			const QString interfaceIs = QLocale::languageToString(interface.language()) + " interface" + (thousandSeparators ? " with thousand separators" : "");
+
+			for(const QLocale & file : NumbersInLocales::locales())
+				QTest::addRow("%s, %s file", qPrintable(interfaceIs), qPrintable(QLocale::languageToString(file.language())))
+					<< interface << thousandSeparators << true << file;
+
+			//Nothing picked: read the way the interface reads
+			QTest::addRow("%s, nothing picked", qPrintable(interfaceIs))
+				<< interface << thousandSeparators << false << interface;
+		}
+}
+
+///A number is read in the language of its file and shown in the language of the interface, whichever combination of the two it is
+void TestAll::testCsvImportNumbers()
+{
+	QFETCH(QLocale,	interface);
+	QFETCH(bool,	thousandSeparators);
+	QFETCH(bool,	picked);
+	QFETCH(QLocale,	readIn);
+
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	const QString	csv = writeNumberSamples(dir);
+	QVERIFY(!csv.isEmpty());
+
+	auto interfaceIsSet	= interfaceLocale(interface, thousandSeparators);
+	auto fileIsPicked	= csvPreviewPicked(picked ? std::optional<QLocale>(readIn) : std::nullopt);
+
+	_importer->loadDataSet(fq(csv), [](int){});
+
+	const QStringList	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn),
+						shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+}
+
+void TestAll::testCsvSyncNumbers_data()
+{
+	testCsvImportNumbers_data();
+}
+
+///Synchronising reads the file with the same choices again (see DataSetLoader::syncPackage), so an unchanged file changes nothing:
+///the values read are compared with the values shown (see ImportColumn::valueLookupAsShown), in whichever language each of them is.
+///A file that did change fills its columns again, and then every value has to find back the label it had (see Column::setValue).
+void TestAll::testCsvSyncNumbers()
+{
+	QFETCH(QLocale,	interface);
+	QFETCH(bool,	thousandSeparators);
+	QFETCH(bool,	picked);
+	QFETCH(QLocale,	readIn);
+
+	if(_pkg)		delete _pkg;
+	if(_importer)	delete _importer;
+
+	_pkg		= new DataSetPackage(this);
+	_importer	= new CSVImporter(false);
+
+	QTemporaryDir	dir;
+	const QString	csv = writeNumberSamples(dir);
+	QVERIFY(!csv.isEmpty());
+
+	auto interfaceIsSet	= interfaceLocale(interface, thousandSeparators);
+	auto fileIsPicked	= csvPreviewPicked(picked ? std::optional<QLocale>(readIn) : std::nullopt);
+
+	_importer->loadDataSet(fq(csv), [](int){});
+
+	//MainWindow asks the user whether to synchronise, here the answer is always yes
+	QMetaObject::Connection syncing = connect(_pkg, &DataSetPackage::checkDoSync, this, []{ return true; });
+	auto stopSyncing = qScopeGuard([syncing]{ disconnect(syncing); });
+
+	QSignalSpy changed(_pkg, &DataSetPackage::datasetChanged);
+
+	auto synchronise = [&]
+	{
+		CSVImporter syncer(false);
+		syncer.syncDataSet(fq(csv), [](int){});
+	};
+
+	auto samplesChanged = [&]
+	{
+		QStringList samples;
+		for(const QString & column : changed.last()[0].toStringList()) //changedColumns, named by writeNumberSamples
+			samples.push_back(QString::fromUtf8(NumbersInLocales::samples()[column.mid(QString("sample").size()).toULongLong()].written));
+		return samples;
+	};
+
+	synchronise();
+
+	QCOMPARE(changed.count(), 1);
+	QVERIFY2(samplesChanged().isEmpty(), qPrintable("these samples count as changed: " + samplesChanged().join(", ")));
+
+	QStringList	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn),
+				shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+
+	QVERIFY(!writeNumberSamples(dir, 2).isEmpty()); //One row more changes every column
+
+	synchronise();
+
+	QCOMPARE(changed.count(),		2);
+	QCOMPARE(samplesChanged().size(),	int(NumbersInLocales::samples().size()));
+
+	readWrong	= numberSamplesReadWrong(	_pkg->dataSet(), readIn);
+	shownWrong	= numberSamplesShownWrong(	_pkg->dataSet(), readIn, interface, thousandSeparators);
+
+	QVERIFY2(readWrong	.isEmpty(), qPrintable("\n" + readWrong	.join("\n")));
+	QVERIFY2(shownWrong	.isEmpty(), qPrintable("\n" + shownWrong	.join("\n")));
+}
+
 ///The numbers in an .ods file are written the way C writes them (office:value), whatever the locale of the spreadsheet or of JASP,
-///so an interface in German must not read 0.111 as one hundred and eleven.
+///so an interface in whatever language must read them just like C does: a German one must not read 0.111 as one hundred and eleven.
 void TestAll::testOdsImportLocale()
 {
 	QDir odsDir(_testLibrary());
@@ -496,19 +739,24 @@ void TestAll::testOdsImportLocale()
 
 	const std::vector<doublevec> inC = importIt();
 
-	auto german = interfaceLocale(QLocale(QLocale::German, QLocale::Germany));
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			auto interfaceIsSet = interfaceLocale(interface, thousandSeparators);
 
-	const std::vector<doublevec> inGerman = importIt();
+			const std::vector<doublevec>	inInterface	= importIt();
+			const QString					interfaceIs	= QLocale::languageToString(interface.language()) + (thousandSeparators ? " with thousand separators" : "");
 
-	QCOMPARE(inGerman.size(), inC.size());
+			QCOMPARE(inInterface.size(), inC.size());
 
-	for(size_t c=0; c<inC.size(); c++)
-	{
-		QCOMPARE(inGerman[c].size(), inC[c].size());
+			for(size_t c=0; c<inC.size(); c++)
+			{
+				QCOMPARE(inInterface[c].size(), inC[c].size());
 
-		for(size_t r=0; r<inC[c].size(); r++)
-			QVERIFY2((std::isnan(inC[c][r]) && std::isnan(inGerman[c][r])) || inC[c][r] == inGerman[c][r], qPrintable(QString("column %1 row %2: %3 in C but %4 in German").arg(c).arg(r).arg(inC[c][r]).arg(inGerman[c][r])));
-	}
+				for(size_t r=0; r<inC[c].size(); r++)
+					QVERIFY2((std::isnan(inC[c][r]) && std::isnan(inInterface[c][r])) || inC[c][r] == inInterface[c][r], qPrintable(QString("column %1 row %2: %3 in C but %4 in %5").arg(c).arg(r).arg(inC[c][r]).arg(inInterface[c][r]).arg(interfaceIs)));
+			}
+		}
 }
 
 ///A jaspfile saved before csvDelimiter and importLocale existed gets them when it is opened, also when it says it was saved by the version this is

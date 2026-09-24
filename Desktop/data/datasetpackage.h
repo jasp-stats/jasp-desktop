@@ -206,8 +206,7 @@ public:
 				void						columnsReorder(			const stringvec		& order);
 
 				stringvec					getColumnNames();
-		std::map<std::string, columnType>	getColumnTypesMap();
-				bool						isColumnDifferentFromStringLookUps(const std::string & columnName, const std::string & title, size_t rows,	const std::function<std::string(size_t)> valueLookup, const std::function<std::string(size_t)> labelLookup, const stringset & strEmptyVals);
+				std::map<std::string, columnType>	getColumnTypesMap();
 				int							findIndexByName(const std::string & name)	const;
 
 				bool						getRowFilter(				int						row)		const;
