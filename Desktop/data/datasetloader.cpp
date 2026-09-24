@@ -31,6 +31,7 @@
 
 #include <QFileInfo>
 #include <QScopeGuard>
+#include <memory>
 
 #include "timers.h"
 #include "utils.h"
@@ -87,7 +88,7 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 	//Also after a .jasp file: a delimiter can be known beforehand, to open a csv without its preview (see data_load in MainWindow)
 	auto forgetThem = forgetCsvChoicesAfterwards();
 
-	Importer* importer = getImporter(locator, extension);
+	std::unique_ptr<Importer> importer(getImporter(locator, extension)); //Also freed when the load fails, with the ImportDataSet it holds (a child of it)
 
 	if (importer)
 	{
@@ -101,8 +102,6 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 		if ((delimiter != '\0' || locale) && DataSetPackage::pkg()->dataSet())
 			DataSetPackage::pkg()->dataSet()->setCsvChoices(delimiter, locale ? fq(locale->bcp47Name()) : "");
-
-		delete importer;
 	}
 	else if(extension == ".jasp" || extension == "jasp")
 		JASPImporter::loadDataSet(locator, progress);
@@ -115,7 +114,7 @@ void DataSetLoader::loadPackage(const string &locator, const string &extension, 
 
 void DataSetLoader::syncPackage(const string &locator, const string &extension, std::function<void(int)> progress)
 {
-	Importer* importer = getImporter(locator, extension);
+	std::unique_ptr<Importer> importer(getImporter(locator, extension)); //Also freed when the sync fails
 
 	if (importer)
 	{
@@ -129,7 +128,5 @@ void DataSetLoader::syncPackage(const string &locator, const string &extension, 
 		communicator->setKnownImportLocale(dataSet && !dataSet->importLocale().empty() ? std::optional<QLocale>(QLocale(tq(dataSet->importLocale()))) : std::nullopt);
 
 		importer->syncDataSet(locator, progress);
-
-		delete importer;
 	}
 }

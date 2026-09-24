@@ -29,6 +29,7 @@ private slots:
 	void	testCsvSyncTextAndNumbersStayApart();
 	void	testFailedLoadOrSyncForgetsCsvChoices();
 	void	testOdsImportLocale();
+	void	testMinitabImportLocale();
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();
 	void	testFilterLabels();

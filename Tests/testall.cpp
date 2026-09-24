@@ -32,6 +32,7 @@
 #include "data/importers/rdataimporter.h"
 
 #include "data/importers/readstatimporter.h"
+#include "data/importers/minitabimporter.h"
 #include "data/importers/database/databaseimportcolumn.h"
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
@@ -53,6 +54,8 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <sqlite3.h>
+#include <archive.h>
+#include <archive_entry.h>
 
 
 void TestAll::initTestCase()
@@ -853,6 +856,77 @@ void TestAll::testOdsImportLocale()
 
 				for(size_t r=0; r<inC[c].size(); r++)
 					QVERIFY2((std::isnan(inC[c][r]) && std::isnan(inInterface[c][r])) || inC[c][r] == inInterface[c][r], qPrintable(QString("column %1 row %2: %3 in C but %4 in %5").arg(c).arg(r).arg(inC[c][r]).arg(inInterface[c][r]).arg(interfaceIs)));
+			}
+		}
+}
+
+///Writes a Minitab worksheet (.mwx): a zip holding a metadata file and the sheet it points to, both json (see Minitab::findMetadataPath)
+static bool writeMinitabWorksheet(const QString & path, const std::string & sheetJson)
+{
+	const std::map<std::string, std::string> files =
+	{
+		{ "sheet_metadata.json",	R"({ "Worksheet": { "Uri": "sheets/0/sheet" } })"	},
+		{ "sheets/0/sheet.json",	sheetJson											}
+	};
+
+	struct archive * zip = archive_write_new();
+	archive_write_set_format_zip(zip);
+
+	bool written = archive_write_open_filename(zip, fq(path).c_str()) == ARCHIVE_OK;
+
+	for(const auto & [name, content] : files)
+	{
+		struct archive_entry * entry = archive_entry_new();
+		archive_entry_set_pathname(	entry, name.c_str());
+		archive_entry_set_size(		entry, content.size());
+		archive_entry_set_filetype(	entry, AE_IFREG);
+		archive_entry_set_perm(		entry, 0644);
+
+		written = written && archive_write_header(zip, entry) == ARCHIVE_OK && archive_write_data(zip, content.data(), content.size()) == la_ssize_t(content.size());
+
+		archive_entry_free(entry);
+	}
+
+	written = archive_write_close(zip) == ARCHIVE_OK && written;
+	archive_write_free(zip);
+
+	return written;
+}
+
+///A Minitab worksheet stores numbers, not text written in some locale, so whatever the interface a number is read as the number it is:
+///one with three decimals is what an interface grouping thousands with a dot would take for a thousand times as much (1.234 in German).
+void TestAll::testMinitabImportLocale()
+{
+	QTemporaryDir	dir;
+	const QString	worksheet	= dir.filePath("numbers.mwx");
+	const doublevec	numbers		= { 1.234, 0.125, 12.375, 1234.5, 2 };
+
+	QVERIFY(writeMinitabWorksheet(worksheet, R"({ "MaxRows_DEP": 5, "MaxColumns_DEP": 1, "Data": { "Columns": [
+		{ "WorksheetVarBody": { "Name": "x", "VarData": { "VarDataBody": { "NumericData": [ 1.234, 0.125, 12.375, 1234.5, 2 ] } } } } ] } })"));
+
+	for(const QLocale & interface : NumbersInLocales::locales())
+		for(bool thousandSeparators : { false, true })
+		{
+			auto interfaceIsSet = interfaceLocale(interface, thousandSeparators);
+
+			DatabaseInterface::closeInterfaces(); //Like cleanup() does, a DataSetPackage wants a database of its own
+			delete _pkg;
+			delete _importer;
+
+			_pkg		= new DataSetPackage(this);
+			_importer	= new MinitabImporter();
+
+			_importer->loadDataSet(fq(worksheet), [](int){});
+
+			Column * column = _pkg->dataSet() ? _pkg->dataSet()->column("x") : nullptr;
+			QVERIFY(column);
+			QCOMPARE(column->rowCount(), numbers.size());
+
+			for(size_t row=0; row<numbers.size(); row++)
+			{
+				double read = 0;
+				QVERIFY2(column->numberAt(row, read) && read == numbers[row], qPrintable(QString("%1 in row %2 is read as %3 by an interface in %4%5")
+					.arg(numbers[row]).arg(row + 1).arg(read, 0, 'g', 12).arg(QLocale::languageToString(interface.language()), thousandSeparators ? " with thousand separators" : "")));
 			}
 		}
 }
