@@ -38,7 +38,11 @@
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
 #include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
 #include "ai/agentstatetracker.h"
+#include <QNetworkAccessManager>
+#include <QNetworkProxy>
+#include <QNetworkReply>
 #include <QTemporaryDir>
 #include <QScopeGuard>
 #include "columnutils.h"
@@ -1227,6 +1231,117 @@ void TestAll::testRpcScriptCallerLeavesTheAgentViewAlone()
 	QVERIFY (handlerSaw == RpcCaller::Ai && !scriptWasSeen);
 	QVERIFY2(reply["result"].isMember("_stateUpdate"),		"the AI should get what changed");
 	QVERIFY (!tracker->isDirty());
+}
+
+///A call made while another waits for R in a nested event loop sits on top of that call's stack, so it cannot wait there:
+///dispatch() refuses it (-32000), dispatchWhenFree() runs it once the dispatcher is free, in the order the calls came in.
+void TestAll::testRpcDispatchWhenFreeWaitsItsTurn()
+{
+	JaspRpcDispatcher dispatcher;
+
+	QStringList ran, answered;
+
+	dispatcher.registerMethod("test_record", [&](const Json::Value & params)
+	{
+		ran.push_back(tq(params["name"].asString()) + (JaspRpcDispatcher::scriptIsCalling() ? " by a script" : " by the AI"));
+		return JaspRpcDispatcher::successResult();
+	});
+
+	auto request = [](const std::string & method, const std::string & name = "")
+	{
+		return R"({"jsonrpc":"2.0","id":1,"method":")" + method + R"(","params":{"name":")" + name + R"("}})";
+	};
+
+	auto answer = [&](const QString & name)
+	{
+		return [&answered, name](const std::string & response)
+		{
+			Json::Value parsed;
+			Json::Reader().parse(response, parsed);
+			answered.push_back(name + (parsed.isMember("result") ? "" : " refused"));
+		};
+	};
+
+	dispatcher.dispatchWhenFree(request("test_record", "free"), RpcCaller::Script, answer("free"));
+	QCOMPARE(answered, QStringList({ "free" })); //Right away, when nothing is in flight
+
+	size_t		waitingDuringWait	= 0;
+	Json::Value	refused;
+
+	//Like analysis_run while R runs: calls come in during the nested event loop
+	dispatcher.registerMethod("test_wait", [&](const Json::Value &)
+	{
+		dispatcher.dispatchWhenFree(request("test_record", "first"),	RpcCaller::Script,	answer("first"));
+		dispatcher.dispatchWhenFree(request("test_record", "second"),	RpcCaller::Ai,		answer("second"));
+		Json::Reader().parse(dispatcher.dispatch(request("test_record", "direct")), refused);
+
+		JaspRpcDispatcher::waitAndProcessEvents(50, [](QEventLoop &, QTimer &){});
+		waitingDuringWait = dispatcher.waitingCount();
+
+		return JaspRpcDispatcher::successResult();
+	});
+
+	dispatcher.dispatch(request("test_wait"));
+
+	QCOMPARE(waitingDuringWait,						size_t(2));	//Events ran, but the calls stayed queued on top of the one in flight
+	QCOMPARE(refused["error"]["code"].asInt(),		-32000);
+	QCOMPARE(ran,									QStringList({ "free by a script" }));
+
+	QTRY_COMPARE(answered,	QStringList({ "free", "first", "second" }));	//From the event loop, once the call in flight is done
+	QCOMPARE(ran,			QStringList({ "free by a script", "first by a script", "second by the AI" }));
+	QCOMPARE(dispatcher.waitingCount(), size_t(0));
+}
+
+///The HTTP server answers a call made while another waits for R once its turn comes, instead of refusing it with -32000
+void TestAll::testRpcServerQueuesBusyCalls()
+{
+	JaspRpcDispatcher	dispatcher;
+	JaspRpcServer		server(dispatcher, nullptr, "127.0.0.1", 0);
+	QVERIFY(server.start());
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	auto post = [&](const QByteArray & body)
+	{
+		QNetworkRequest request(QUrl(QString("http://127.0.0.1:%1/rpc").arg(server.serverPort())));
+		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+		return network.post(request, body);
+	};
+
+	size_t							waitingSeen = 0;
+	std::unique_ptr<QNetworkReply>	queued;
+
+	//Sends another request and waits, like analysis_run does for R, until that one has come in and is waiting its turn
+	dispatcher.registerMethod("test_wait", [&](const Json::Value &)
+	{
+		queued.reset(post(R"({"jsonrpc":"2.0","id":2,"method":"ping"})"));
+
+		JaspRpcDispatcher::waitAndProcessEvents(10000, [&](QEventLoop & loop, QTimer &)
+		{
+			QTimer * poll = new QTimer(&loop);
+			QObject::connect(poll, &QTimer::timeout, &loop, [&]
+			{
+				if ((waitingSeen = dispatcher.waitingCount()) > 0)
+					loop.quit();
+			});
+			poll->start(5);
+		});
+
+		return JaspRpcDispatcher::successResult();
+	});
+
+	std::unique_ptr<QNetworkReply> waiting(post(R"({"jsonrpc":"2.0","id":1,"method":"test_wait"})"));
+
+	QTRY_VERIFY_WITH_TIMEOUT(waiting->isFinished() && queued && queued->isFinished(), 15000);
+	QCOMPARE(waitingSeen, size_t(1));
+
+	Json::Value waitingAnswer, queuedAnswer;
+	Json::Reader().parse(waiting	->readAll().toStdString(), waitingAnswer);
+	Json::Reader().parse(queued		->readAll().toStdString(), queuedAnswer);
+
+	QCOMPARE(waitingAnswer	["result"]["status"]	.asString(), std::string("success"));
+	QCOMPARE(queuedAnswer	["result"]["message"]	.asString(), std::string("pong"));
 }
 
 

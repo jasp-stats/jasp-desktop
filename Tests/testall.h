@@ -34,6 +34,8 @@ private slots:
 	void	testSavLabels();
 	void	testFilterLabels();
 	void	testRpcScriptCallerLeavesTheAgentViewAlone();
+	void	testRpcDispatchWhenFreeWaitsItsTurn();
+	void	testRpcServerQueuesBusyCalls();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

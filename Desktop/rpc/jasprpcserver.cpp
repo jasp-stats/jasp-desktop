@@ -13,6 +13,7 @@
 #include <QHttpServerRequest>
 #include <QHttpServerResponse>
 #include <QHostAddress>
+#include <QPointer>
 #include "log.h"
 
 JaspRpcServer::JaspRpcServer(JaspRpcDispatcher& dispatcher,
@@ -36,18 +37,25 @@ JaspRpcServer::~JaspRpcServer()
 bool JaspRpcServer::start()
 {
 	// ---- POST /rpc — main JSON-RPC endpoint ----
+	// A call arriving while another is in flight (waiting for R in a nested
+	// event loop) waits its turn rather than being refused: the responder is
+	// kept, and the client gets its answer once its call has run.
 	_httpServer.route(_endpointPath,
 					  QHttpServerRequest::Method::Post,
-					  [this](const QHttpServerRequest& request)
+					  [this](const QHttpServerRequest& request, QHttpServerResponder&& responder)
 	{
 		const QByteArray body    = request.body();
 		const std::string input(body.constData(), body.size());
 
-		const std::string output = _dispatcher.dispatch(input);
+		const quint64 requestId = _nextRequestId++;
+		_waiting.emplace(requestId, std::move(responder));
 
-		return QHttpServerResponse(
-			QByteArray::fromStdString(output),
-			QHttpServerResponse::StatusCode::Ok);
+		_dispatcher.dispatchWhenFree(input, RpcCaller::Ai,
+			[server = QPointer<JaspRpcServer>(this), requestId](const std::string& output)
+			{
+				if (server) // Gone when JASP closed before this call's turn came
+					server->respond(requestId, output);
+			});
 	});
 
 	// ---- OPTIONS /rpc — CORS pre-flight for browser-based clients ----
@@ -107,4 +115,16 @@ void JaspRpcServer::stop()
 quint16 JaspRpcServer::serverPort() const
 {
 	return _tcpServer ? _tcpServer->serverPort() : 0;
+}
+
+void JaspRpcServer::respond(quint64 requestId, const std::string& output)
+{
+	auto it = _waiting.find(requestId);
+	if (it == _waiting.end())
+		return;
+
+	if (!it->second.isResponseCanceled()) // The client may have given up waiting
+		it->second.write(QByteArray::fromStdString(output), "application/json");
+
+	_waiting.erase(it);
 }

@@ -21,12 +21,14 @@
 #ifndef JASPRPCDISPATCHER_H
 #define JASPRPCDISPATCHER_H
 
+#include <deque>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <QEventLoop>
+#include <QObject>
 #include <QTimer>
 
 #include "json/json.h"
@@ -153,6 +155,21 @@ public:
 	/// has seen (AgentStateTracker, _lastSentMeta) checks this to leave it alone.
 	static bool scriptIsCalling() { return _singleton && _singleton->currentCaller() == RpcCaller::Script; }
 
+	using RpcReply = std::function<void(const std::string& responseJson)>;
+
+	/// Like dispatch(), but a call made while another is in flight waits its
+	/// turn instead of being refused with -32000: it runs from the event loop
+	/// once the dispatcher is free, in the order the calls came in.  A free
+	/// dispatcher runs it right away, before this returns.
+	/// dispatch() itself cannot wait: a call arriving during another's nested
+	/// event loop sits on top of that call's stack, so the call below can only
+	/// finish once the one on top has returned.  For callers that can get
+	/// their answer later, such as JaspRpcServer's clients.
+	void dispatchWhenFree(const std::string& requestJson, RpcCaller caller, RpcReply reply);
+
+	/// The calls waiting for their turn in dispatchWhenFree().
+	size_t waitingCount() const { return _waiting.size(); }
+
 	// ------------------------------------------------------------------
 	// Re-entrancy
 	// ------------------------------------------------------------------
@@ -237,9 +254,24 @@ private:
 	static Json::Value makeResponse(const Json::Value& result,
 									const Json::Value& id);
 
+	/// Runs the waiting calls, in order, for as long as nothing is in flight.
+	void runWaiting();
+
+	/// Has the event loop call runWaiting(), once the call in flight has unwound.
+	void runWaitingLater();
+
+	struct WaitingCall
+	{
+		std::string	request;
+		RpcCaller	caller;
+		RpcReply	reply;
+	};
+
 	static JaspRpcDispatcher* _singleton;
 	bool m_inFlight = false;
 	RpcCaller m_caller = RpcCaller::Ai;
+	std::deque<WaitingCall> _waiting;
+	QObject _waitingContext; ///< Context for runWaitingLater(), so it never runs after the dispatcher is gone
 	std::unordered_map<std::string, RpcHandler> _handlers;
 
 	/// Spec registry: method name -> parsed RpcMethodSpec.

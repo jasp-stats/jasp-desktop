@@ -593,6 +593,9 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request, RpcCaller ca
 		Json::Value result = it->second(params);
 		m_inFlight = false;
 
+		if (!_waiting.empty())
+			runWaitingLater();
+
 		// If the handler returned an error, wrap it properly.
 		if (result.isObject() && result.isMember("code") &&
 			result.isMember("message"))
@@ -642,6 +645,10 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request, RpcCaller ca
 	catch (const std::exception& e)
 	{
 		m_inFlight = false;
+
+		if (!_waiting.empty())
+			runWaitingLater();
+
 		return makeError(-32603, std::string("Internal error: ") + e.what(), id);
 	}
 }
@@ -668,4 +675,28 @@ std::string JaspRpcDispatcher::dispatch(const std::string& requestJson, RpcCalle
 	Json::StreamWriterBuilder builder;
 	builder["indentation"] = "";
 	return Json::writeString(builder, resp);
+}
+
+void JaspRpcDispatcher::dispatchWhenFree(const std::string& requestJson, RpcCaller caller, RpcReply reply)
+{
+	_waiting.push_back({ requestJson, caller, std::move(reply) });
+	runWaiting();
+}
+
+void JaspRpcDispatcher::runWaiting()
+{
+	// A handler waiting in a nested event loop keeps m_inFlight set: the calls
+	// behind it stay queued until dispatch() has returned and asks again.
+	while (!m_inFlight && !_waiting.empty())
+	{
+		WaitingCall call = std::move(_waiting.front());
+		_waiting.pop_front();
+
+		call.reply(dispatch(call.request, call.caller));
+	}
+}
+
+void JaspRpcDispatcher::runWaitingLater()
+{
+	QTimer::singleShot(0, &_waitingContext, [this]{ runWaiting(); });
 }

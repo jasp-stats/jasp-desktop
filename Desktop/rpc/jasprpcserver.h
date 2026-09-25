@@ -11,9 +11,11 @@
 
 #include <QObject>
 #include <QHttpServer>
+#include <QHttpServerResponder>
 #include <QTcpServer>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 class JaspRpcDispatcher;
 
@@ -42,12 +44,19 @@ public:
 	quint16 serverPort() const;
 
 private:
+	/// Answers a request whose call has run (see JaspRpcDispatcher::dispatchWhenFree).
+	void respond(quint64 requestId, const std::string& output);
+
 	JaspRpcDispatcher& _dispatcher;
 	QString             _host;
 	quint16             _port;
 	QString             _endpointPath;
 	QHttpServer         _httpServer;
 	QTcpServer*         _tcpServer = nullptr;
+
+	/// Requests whose call waits for its turn, by request id.
+	std::unordered_map<quint64, QHttpServerResponder> _waiting;
+	quint64             _nextRequestId = 0;
 };
 
 #endif // JASPRPCSERVER_H
