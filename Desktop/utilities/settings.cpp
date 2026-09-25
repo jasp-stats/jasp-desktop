@@ -159,7 +159,9 @@ const Settings::Setting Settings::Values[] = {
 	{"rpcServerEnabled",			false},
 	{"rpcServerIp",					"127.0.0.1"},
 	{"rpcServerPort",				48164},
-	{"syncDroppedDatafile",			false}
+	{"syncDroppedDatafile",			false},
+  {"onboardingCompleted",	false},
+  {"onboardingStep",			0}
 };
 
 QVariant Settings::value(Settings::Type key) {
