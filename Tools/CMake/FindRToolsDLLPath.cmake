@@ -31,7 +31,7 @@ macro(copy_rtools_header headerVar headerName headerDestination)
 
 	if(EXISTS ${${headerVar}})
 		message(CHECK_PASS "found")
-	  message(STATUS "Now copy ${${headerVar}} to ${headerDestination}.")
+	  message(STATUS "Copying ${${headerVar}} to ${headerDestination}.")
 	  configure_file("${${headerVar}}" "${headerDestination}" COPYONLY)
 
     else()
