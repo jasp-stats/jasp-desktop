@@ -37,6 +37,8 @@
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
+#include "rpc/jasprpcdispatcher.h"
+#include "ai/agentstatetracker.h"
 #include <QTemporaryDir>
 #include <QScopeGuard>
 #include "columnutils.h"
@@ -1147,6 +1149,84 @@ void TestAll::testSyncKeepMissingColumns()
 	//The singleton registers globally (PreferencesModelBase::_singleton) and is parented to this
 	//test, so it would survive this test and then make MainWindow's own PreferencesModel assert.
 	delete PreferencesModel::prefs();
+}
+
+///A script run from JASP calls the same methods as the AI, but it is the user's own code, so its calls leave the AI's view of the workspace alone
+///(see RpcCaller): otherwise the AI would never hear what a script read or changed, and a script would get the AI's divergence error.
+void TestAll::testRpcScriptCallerLeavesTheAgentViewAlone()
+{
+	JaspRpcDispatcher dispatcher;
+
+	//A method reading the workspace and one changing it (x-failOnStateDiverged), both marking what they show as observed, like data_info and get_analyses_state do
+	QCOMPARE(dispatcher.loadSpecFromString(R"({"openrpc":"1.2.6","methods":[
+		{"name":"test_read",	"params":[]},
+		{"name":"test_change",	"params":[],	"x-failOnStateDiverged":true} ]})"), 2);
+
+	const size_t	analysisId		= 1;
+	RpcCaller		handlerSaw		= RpcCaller::Ai;
+	bool			scriptWasSeen	= false;
+
+	auto handler = [&](const Json::Value &)
+	{
+		handlerSaw		= dispatcher.currentCaller();
+		scriptWasSeen	= JaspRpcDispatcher::scriptIsCalling();
+		AgentStateTracker::notifyDataObserved();
+		AgentStateTracker::notifyAnalysisObserved(analysisId);
+		return JaspRpcDispatcher::successResult();
+	};
+
+	QVERIFY(dispatcher.registerMethodByName("test_read",	handler));
+	QVERIFY(dispatcher.registerMethodByName("test_change",	handler));
+
+	auto call = [&](const std::string & method, RpcCaller caller)
+	{
+		Json::Value request;
+		request["jsonrpc"]	= "2.0";
+		request["id"]		= 1;
+		request["method"]	= method;
+		return dispatcher.dispatch(request, caller);
+	};
+
+	AgentStateTracker::init();
+	AgentStateTracker * tracker = AgentStateTracker::tracker();
+	QVERIFY(tracker);
+	auto forgetChanges = qScopeGuard([tracker]{ tracker->clearAll(); }); //The tracker is a singleton that outlives this test
+
+	tracker->clearAll();
+
+	//The user added a column, which the AI has not seen yet: a script reading the data leaves it unseen
+	tracker->markDataChanged({ "added" }, {}, {}, {});
+
+	Json::Value reply = call("test_read", RpcCaller::Script);
+	QVERIFY (handlerSaw == RpcCaller::Script && scriptWasSeen);
+	QVERIFY2(tracker->isDirty(),							"what a script reads of the data, the AI still has to see");
+
+	//The user changed an option: a script reading the analysis gets no state update, and leaves it unseen as well
+	tracker->clearAll();
+	tracker->markAnalysisOptionsChanged(analysisId);
+
+	reply = call("test_read", RpcCaller::Script);
+	QVERIFY2(!reply["result"].isMember("_stateUpdate"),	"a script should not get the AI's state update");
+	QVERIFY2(tracker->isDirty(),							"what a script reads of an analysis, the AI still has to see");
+
+	//Where the AI's change would fail, a script's goes ahead and leaves the change for the AI to see
+	reply = call("test_change", RpcCaller::Script);
+	QVERIFY2(reply.isMember("result"),						"a script's change should not fail because the AI has not seen the workspace");
+	QVERIFY2(tracker->isUserDiverged(),						"a script's change should not clear what the AI has not seen");
+
+	QVERIFY(dispatcher.currentCaller() == RpcCaller::Ai && !JaspRpcDispatcher::scriptIsCalling()); //Only while a script's call runs
+
+	//The AI still learns the workspace changed under it
+	reply = call("test_change", RpcCaller::Ai);
+	QCOMPARE(reply["error"]["code"].asInt(), -32001); //Refused before its handler runs
+	QVERIFY (!tracker->isDirty());
+
+	tracker->markAnalysisOptionsChanged(analysisId + 1); //Another analysis than the handler observes, so it is left for _stateUpdate
+
+	reply = call("test_read", RpcCaller::Ai);
+	QVERIFY (handlerSaw == RpcCaller::Ai && !scriptWasSeen);
+	QVERIFY2(reply["result"].isMember("_stateUpdate"),		"the AI should get what changed");
+	QVERIFY (!tracker->isDirty());
 }
 
 

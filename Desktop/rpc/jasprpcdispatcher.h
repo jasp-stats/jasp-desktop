@@ -39,6 +39,18 @@
 using RpcHandler = std::function<Json::Value(const Json::Value& params)>;
 
 // =========================================================================
+//  Caller
+// =========================================================================
+
+/// Who a dispatch() is for.  The AI (AiBridge, or an agent through
+/// JaspRpcServer) keeps a view of the workspace: AgentStateTracker's dirty
+/// flags and each analysis's _lastSentMeta record what it has seen.  A script
+/// is the user's own code, so its calls leave that view alone: no divergence
+/// error, no _stateUpdate, no baseline moved.  The AI then hears about what a
+/// script changed just like about what the user changed.
+enum class RpcCaller { Ai, Script };
+
+// =========================================================================
 //  Dispatcher
 // =========================================================================
 
@@ -131,8 +143,15 @@ public:
 	// Dispatch
 	// ------------------------------------------------------------------
 
-	std::string dispatch(const std::string& requestJson);
-	Json::Value dispatch(const Json::Value& request);
+	std::string dispatch(const std::string& requestJson, RpcCaller caller = RpcCaller::Ai);
+	Json::Value dispatch(const Json::Value& request,     RpcCaller caller = RpcCaller::Ai);
+
+	/// The caller of the dispatch() on the call stack, Ai when there is none.
+	RpcCaller currentCaller() const { return m_inFlight ? m_caller : RpcCaller::Ai; }
+
+	/// True while a handler runs for a script: code that records what the AI
+	/// has seen (AgentStateTracker, _lastSentMeta) checks this to leave it alone.
+	static bool scriptIsCalling() { return _singleton && _singleton->currentCaller() == RpcCaller::Script; }
 
 	// ------------------------------------------------------------------
 	// Re-entrancy
@@ -220,6 +239,7 @@ private:
 
 	static JaspRpcDispatcher* _singleton;
 	bool m_inFlight = false;
+	RpcCaller m_caller = RpcCaller::Ai;
 	std::unordered_map<std::string, RpcHandler> _handlers;
 
 	/// Spec registry: method name -> parsed RpcMethodSpec.

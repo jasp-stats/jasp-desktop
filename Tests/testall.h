@@ -33,6 +33,7 @@ private slots:
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();
 	void	testFilterLabels();
+	void	testRpcScriptCallerLeavesTheAgentViewAlone();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;
