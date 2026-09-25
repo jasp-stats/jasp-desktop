@@ -243,13 +243,51 @@ private:
 	std::mutex                              _loadMutex,
 											_dbCheckMutex;
 
-	static			std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
+	static				std::string _wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol);
 	static const	std::string _dbConstructionSql;
 	static const	std::string _dbIndexesSql;
 	
 	static DatabaseInterface * _singleton;
 
 	friend class DataSetPackage;
+	
+	
+	//chunk
+	static const int CHUNK_SIZE = 1000;		// Number of rows contained in each chunks
+	
+	// chunk serialization/deserialization
+	static std::vector<unsigned char>			serializeIntChunk(const intvec &ints,						size_t startRow,					size_t count);
+	static std::vector<unsigned char>			serializeDoubleChunk(const doublevec &dbls,			const stringvec &strs,		size_t startRow,	size_t count);
+	static void														deserializeIntChunk(const unsigned char *data,	size_t dataSize,					intvec &ints,			size_t startRow, size_t expectedCount);
+	static void														deserializeDoubleChunk(const unsigned char *data, size_t dataSize,				doublevec &dbls, stringvec &strs, size_t startRow, size_t expectedCount);
+	
+	// read/write column chunks
+	void					writeColumnChunks		(	int columnId,		const intvec		&ints);
+	void					writeColumnChunks		(	int columnId,		const doublevec &dbls,	const stringvec &strs);
+	void					readColumnChunks		(	int columnId,		intvec &ints);
+	void					readColumnChunks		(	int columnId,		doublevec &dbls,				stringvec &strs);
+	void					deleteColumnChunks	(	int columnId);
+	
+	// update single value
+	void					setIntChunkValue		(	int columnId,		size_t row,			int value													);
+	void					setDoubleChunkValue	(	int columnId,		size_t row,			double val, const std::string &str);
+	
+	// adjust column row count
+	void					adjustIntColumnRowCount		(	int columnId, size_t oldRowCount, size_t newRowCount);
+	void					adjustDoubleColumnRowCount(	int columnId, size_t oldRowCount, size_t newRowCount);
+	
+	// helper: get IDs and types of all columns in a dataset
+	std::vector<std::pair<int, bool>> getColumnsForDataSet(int dataSetId);
+	
+	bool				readChunkBlob				(	int columnId,			int chunkId,				std::vector<unsigned char> &blob);
+	void				writeChunkBlob				(	int columnId,			int chunkId,				const std::vector<unsigned char> &blob);
+	void				growIntColumnChunks	(	int columnId,			size_t oldRowCount, size_t newRowCount);
+	void				shrinkIntColumnChunks(	int columnId,			size_t newRowCount);
+	
+	//	migrate these DataSet_# to DataChunks table
+	bool				hasDataChunksTable();
+	void				migrateLegacyWideTableToDataChunks();
+	
 	
 };
 

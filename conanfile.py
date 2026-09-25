@@ -13,7 +13,6 @@ class JaspConanConfig(ConanFile):
     options = {"syntax_interface_only": [True, False]}
     default_options = {
         "brotli*:shared": True,
-        "sqlite3*:max_column": 32767,
         "syntax_interface_only": False,
     }
 

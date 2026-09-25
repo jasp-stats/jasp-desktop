@@ -29,22 +29,21 @@
 #include <ranges>
 #include "log.h"
 
-DatabaseInterface * DatabaseInterface::_singleton	= nullptr;
+DatabaseInterface *DatabaseInterface::_singleton = nullptr;
 
-thread_local 	int			_transactionWriteDepth	= 0,
-							_transactionReadDepth	= 0;
+thread_local int _transactionWriteDepth = 0,
+				 _transactionReadDepth = 0;
 
-
-//#define SIR_LOG_A_LOT
+// #define SIR_LOG_A_LOT
 
 const std::string DatabaseInterface::_dbConstructionSql =
 // The actual definition can be found in "internalDbDefinition.sql"!
 #include "internalDbDefinition.h"
-;
+	;
 
 const std::string DatabaseInterface::_dbIndexesSql =
 #include "createIndexes.h"
-;
+	;
 
 void DatabaseInterface::upgradeDBFromVersion(Version originalVersion)
 {
@@ -76,10 +75,10 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 	if((originalVersion < "0.18.2") && !tableHasColumn("DataSets", "description"))
 		runStatements("ALTER TABLE DataSets ADD COLUMN description     TEXT;");
 
-	if((originalVersion < "0.19.0") && tableHasColumn("Columns", "isComputed"))
-		runStatements("ALTER TABLE Columns  DROP 	COLUMN isComputed;");		// was removed in 0.18.3
-	
-	if(originalVersion <= "0.19.0")
+	if ((originalVersion < "0.19.0") && tableHasColumn("Columns", "isComputed"))
+		runStatements("ALTER TABLE Columns  DROP 	COLUMN isComputed;"); // was removed in 0.18.3
+
+	if (originalVersion <= "0.19.0")
 	{
 		if (!tableHasColumn("Columns", "emptyValuesJson"))
 			runStatements("ALTER TABLE Columns  ADD 	COLUMN emptyValuesJson		TEXT;");
@@ -93,52 +92,51 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 		if (!tableHasColumn("DataSets", "dataFileTimestamp"))
 			runStatements("ALTER TABLE DataSets  ADD 	COLUMN dataFileTimestamp	INT;");
 	}
-	
-	if(originalVersion <= "0.19.2")
+
+	if (originalVersion <= "0.19.2")
 	{
 		if (tableHasColumn("Columns", "forceSourceColType"))
 			runStatements("ALTER TABLE Columns  DROP 	COLUMN forceSourceColType;");
 	}
 
-	if(originalVersion < "0.19.2" && !tableHasColumn("Filters", "name"))	
+	if (originalVersion < "0.19.2" && !tableHasColumn("Filters", "name"))
 		runStatements("ALTER TABLE Filters  ADD COLUMN name		TEXT;");
-	
-	if(originalVersion <= "0.19.3")
+
+	if (originalVersion <= "0.19.3")
 	{
-		if(!tableHasColumn("Columns", "dropLevels"))
+		if (!tableHasColumn("Columns", "dropLevels"))
 		{
 			runStatements("ALTER TABLE Columns  ADD COLUMN dropLevels		INT;");
-			runStatements("UPDATE Columns SET dropLevels = 1;"); //Previously dropLevels was always on, so loading an older jasp-file should have this enabled
+			runStatements("UPDATE Columns SET dropLevels = 1;"); // Previously dropLevels was always on, so loading an older jasp-file should have this enabled
 		}
-		
-		runStatements(std::string("UPDATE Filters SET name = '") + DEFAULT_FILTER_NAME + "' WHERE trim(name) = '' OR name IS NULL;"); //Previously the "default filter" didnt have a name, but this is actually not very practical for computeFilter, so lets set it to something on load. Filters will always have a name now.
 
-		if(!tableHasColumn("Columns", "computeFilter"))
+		runStatements(std::string("UPDATE Filters SET name = '") + DEFAULT_FILTER_NAME + "' WHERE trim(name) = '' OR name IS NULL;"); // Previously the "default filter" didnt have a name, but this is actually not very practical for computeFilter, so lets set it to something on load. Filters will always have a name now.
+
+		if (!tableHasColumn("Columns", "computeFilter"))
 			runStatements("ALTER TABLE Columns  ADD COLUMN computeFilter		TEXT DEFAULT \"\";");
-		
-		if(!tableHasColumn("Labels", "userAdded"))
+
+		if (!tableHasColumn("Labels", "userAdded"))
 			runStatements("ALTER TABLE Labels  ADD COLUMN userAdded	INT DEFAULT 0;");
-		
-		//Create indexes cause they dont exist yet
+
+		// Create indexes cause they dont exist yet
 		runStatements(_dbIndexesSql);
 	}
 
-	if(originalVersion <= "0.95.4")
+	if (originalVersion <= "0.95.4")
 	{
-		if(!tableHasColumn("DataSets", "showRSyntax"))
+		if (!tableHasColumn("DataSets", "showRSyntax"))
 			runStatements("ALTER TABLE DataSets  ADD COLUMN showRSyntax	INT;");
 	}
 
 	if(originalVersion < "0.97.0")
 	{
-		if(!tableHasColumn("Columns", "hasLabels"))
+		if (!tableHasColumn("Columns", "hasLabels"))
 			runStatements(
 				"ALTER TABLE Columns  ADD COLUMN hasLabels		INT DEFAULT 0;\n"
-				"UPDATE Columns SET hasLabels=1;" //Make sure old columns all "hasLabels" enabled
+				"UPDATE Columns SET hasLabels=1;" // Make sure old columns all "hasLabels" enabled
 			);
-		
-		
-		if(!tableHasColumn("DataSets", "csvDelimiter"))
+
+		if (!tableHasColumn("DataSets", "csvDelimiter"))
 			runStatements("ALTER TABLE DataSets ADD COLUMN csvDelimiter INT DEFAULT 0;");
 	}
 
@@ -188,6 +186,10 @@ void DatabaseInterface::_upgradeDBStatements(Version originalVersion)
 	if(!tableHasColumn("DataSets", "defaultInputFilter"))
 		runStatements("ALTER TABLE DataSets  ADD COLUMN defaultInputFilter INT NULL;");
 
+	if (!hasDataChunksTable())
+		migrateLegacyWideTableToDataChunks();
+	
+	// transactionWriteEnd();
 }
 
 DatabaseInterface::DatabaseInterface(bool createDb, bool inMemory)
@@ -195,9 +197,9 @@ DatabaseInterface::DatabaseInterface(bool createDb, bool inMemory)
 {
 	assert(!_singleton);
 	_singleton = this;
-	
-	if(createDb)	create();
-	else			load();
+
+	if (createDb)	create();
+	else					load();
 }
 
 DatabaseInterface::~DatabaseInterface()
@@ -207,21 +209,19 @@ DatabaseInterface::~DatabaseInterface()
 	_singleton = nullptr;
 }
 
-
-int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter)
+int DatabaseInterface::dataSetInsert(const std::string &dataFilePath, long dataFileTimestamp, const std::string &description, const std::string &databaseJson, const std::string &emptyValuesJson, bool dataSynch, bool showRSyntax, char csvDelimiter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetInsert);
-	
-	
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
-		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(),	dataFilePath.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_int64(stmt,	2, dataFileTimestamp);
-		sqlite3_bind_text(stmt, 3, description.c_str(),		description.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 4, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	6, dataSynch);
-		sqlite3_bind_int(stmt,	7, csvDelimiter);
+		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(), 	dataFilePath.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 	2, dataFileTimestamp);
+		sqlite3_bind_text(stmt, 3, description.c_str(), 	description.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, databaseJson.c_str(), 	databaseJson.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, emptyValuesJson.c_str(), emptyValuesJson.length(), 			SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 	6, dataSynch);
+		sqlite3_bind_int(stmt, 	7, showRSyntax);
+		sqlite3_bind_int(stmt, 	8, csvDelimiter);
 	};
 
 	transactionWriteBegin();
@@ -252,32 +252,33 @@ int DatabaseInterface::dataSetInsert(const std::string & dataFilePath, long data
 	return id;
 }
 
-void DatabaseInterface::dataSetUpdate(int dataSetId,	const std::string & title, const std::string & dataFilePath, long dataFileTimestamp, const std::string & description, const std::string & databaseJson, const std::string & emptyValuesJson, bool dataSynch, char csvDelimiter)
+void DatabaseInterface::dataSetUpdate(int dataSetId, const std::string & title,const std::string &dataFilePath, long dataFileTimestamp, const std::string &description, const std::string &databaseJson, const std::string &emptyValuesJson, bool dataSynch, bool showRSyntax, char csvDelimiter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetUpdate);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
-		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(),	dataFilePath.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 2, title.c_str(),			title.length(),				SQLITE_TRANSIENT);
-		sqlite3_bind_int64(stmt, 3, dataFileTimestamp);
-		sqlite3_bind_text(stmt, 4, description.c_str(),		description.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, databaseJson.c_str(),	databaseJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 6, emptyValuesJson.c_str(), emptyValuesJson.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	7, dataSynch);
-		sqlite3_bind_int(stmt,	8, csvDelimiter);
-		sqlite3_bind_int(stmt,	9, dataSetId);
+		sqlite3_bind_text(stmt, 1, dataFilePath.c_str(), 	dataFilePath.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 2, title.c_str(),			title.length(),						SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 	3, dataFileTimestamp);
+		sqlite3_bind_text(stmt, 4, description.c_str(), 	description.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, databaseJson.c_str(), 	databaseJson.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 6, emptyValuesJson.c_str(), emptyValuesJson.length(), 			SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 	7, dataSynch);
+		sqlite3_bind_int(stmt, 	8, showRSyntax);
+		sqlite3_bind_int(stmt, 	9, csvDelimiter);
+		sqlite3_bind_int(stmt, 	10, dataSetId);
 	};
 
-	//Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
+	// Log::log() << "UPDATE DataSet " << dataSetId << " with Empty Values: " << emptyValuesJson << std::endl;
 
 runStatements("UPDATE DataSets SET dataFilePath=?, title=?, dataFileTimestamp=?, description=?, databaseJson=?, emptyValuesJson=?, dataFileSynch=?, csvDelimiter=?, revision=revision+1 WHERE id = ?;", prepare);
 }
 
-void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::string & dataFilePath, long & dataFileTimestamp, std::string & description, std::string & databaseJson, std::string & emptyValuesJson, int & revision, bool & dataSynch, char & csvDelimiter)
+void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::string &dataFilePath, long &dataFileTimestamp, std::string &description, std::string &databaseJson, std::string &emptyValuesJson, int &revision, bool &dataSynch, bool &showRSyntax, char &csvDelimiter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetLoad);
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, dataSetId);
 	};
@@ -288,17 +289,18 @@ void DatabaseInterface::dataSetLoad(int dataSetId, std::string & title, std::str
 
 		assert(colCount == 9);
 
-		dataFilePath		= _wrap_sqlite3_column_text(stmt, 0);
-		title				= _wrap_sqlite3_column_text(stmt, 1);
-		dataFileTimestamp	= sqlite3_column_int64(stmt, 2);
-		description			= _wrap_sqlite3_column_text(stmt, 3);
-		databaseJson		= _wrap_sqlite3_column_text(stmt, 4);
-		emptyValuesJson		= _wrap_sqlite3_column_text(stmt, 5);
-		revision			= sqlite3_column_int(	stmt, 6);
-		dataSynch			= sqlite3_column_int(	stmt, 7);
-		csvDelimiter		= static_cast<char>(sqlite3_column_int(stmt, 8));
+		dataFilePath				= _wrap_sqlite3_column_text				(stmt, 0);
+		title						= _wrap_sqlite3_column_text				(stmt, 1);
+		dataFileTimestamp 			= sqlite3_column_int					(stmt, 2);
+		description					= _wrap_sqlite3_column_text				(stmt, 3);
+		databaseJson				= _wrap_sqlite3_column_text				(stmt, 4);
+		emptyValuesJson				= _wrap_sqlite3_column_text				(stmt, 5);
+		revision					= sqlite3_column_int					(stmt, 6);
+		dataSynch					= sqlite3_column_int					(stmt, 7);
+		showRSyntax					= sqlite3_column_int					(stmt, 8);
+		csvDelimiter				= static_cast<char>(sqlite3_column_int	(stmt, 9));
 
-		//Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
+		Log::log() << "Output loadDataset(dataSetId="<<dataSetId<<") had (dataFilePath='"<<dataFilePath<<"', databaseJson='"<<databaseJson<<"', emptyValuesJson='"<<emptyValuesJson<<"')" << std::endl;
 	};
 
 runStatements("SELECT dataFilePath, title, dataFileTimestamp, description, databaseJson, emptyValuesJson, revision, dataFileSynch, csvDelimiter FROM DataSets WHERE id = ?;", prepare, processRow);
@@ -356,39 +358,62 @@ void DatabaseInterface::dataSetGetComputedInfo(int dataSetId, bool & invalidated
 int DatabaseInterface::dataSetColCount(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetColCount);
-	return singleton()->runStatementsId("SELECT COUNT(id) FROM Columns WHERE dataSet="+std::to_string(dataSetId));
+	return singleton()->runStatementsId("SELECT COUNT(id) FROM Columns WHERE dataSet=" + std::to_string(dataSetId));
 }
 
 int DatabaseInterface::dataSetRowCount(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetRowCount);
-	return singleton()->runStatementsId("SELECT COUNT(*) FROM DataSet_"+std::to_string(dataSetId));
+	return singleton()->runStatementsId("SELECT COUNT(*) FROM DataSet_" + std::to_string(dataSetId));
 }
 
 void DatabaseInterface::dataSetSetRowCount(int dataSetId, size_t rowCount)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetSetRowCount);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
 	transactionWriteBegin();
 
 	int curCount = dataSetRowCount(dataSetId);
-
 	const std::string DS = dataSetName(dataSetId);
 
-	if(rowCount >= curCount)
+	if (rowCount >= curCount)
 	{
-		const std::string & insertDefaultVals = "INSERT INTO "+DS+" DEFAULT VALUES;";
-
-		_runStatementsRepeatedly(insertDefaultVals, 
-			[&](bindParametersType ** bindParam, size_t row)
-			{ 
-				(*bindParam) = nullptr; 
-				return curCount + row < rowCount; 
-			});
+		const std::string insertDefaultVals = "INSERT INTO " + DS + " DEFAULT VALUES;";
+		_runStatementsRepeatedly(insertDefaultVals,
+								 [&](bindParametersType **bindParam, size_t row)
+								 {
+									 (*bindParam) = nullptr;
+									 return curCount + row < rowCount;
+								 });
 	}
 	else
-		runStatements("DELETE FROM "+DS+" WHERE rowNumber > " + std::to_string(rowCount) + ";");
-	
+	{
+		runStatements("DELETE FROM " + DS + " WHERE rowNumber > " + std::to_string(rowCount) + ";");
+	}
+
+	auto columnsInfo = getColumnsForDataSet(dataSetId);
+	for (auto &[colId, hasLabels] : columnsInfo)
+	{
+		if (hasLabels)
+			adjustIntColumnRowCount(colId, curCount, rowCount);
+		else
+			adjustDoubleColumnRowCount(colId, curCount, rowCount);
+	}
+
 	transactionWriteEnd();
+}
+
+std::vector<std::pair<int, bool>> DatabaseInterface::getColumnsForDataSet(int dataSetId)
+{
+	std::vector<std::pair<int, bool>> result;
+	runStatements("SELECT id, hasLabels FROM Columns WHERE dataSet = ?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, dataSetId); }, [&](size_t, sqlite3_stmt *stmt)
+				  {
+            int id = sqlite3_column_int(stmt, 0);
+            bool hasLabels = sqlite3_column_int(stmt, 1) != 0;
+            result.emplace_back(id, hasLabels); });
+	return result;
 }
 
 void DatabaseInterface::filterClear(int id)
@@ -406,48 +431,45 @@ void DatabaseInterface::filterDelete(int filterIndex)
 
 	int dataSetId = filterGetDataSetId(filterIndex);
 
-	if(dataSetId != -1)
+	if (dataSetId != -1)
 		runStatements("ALTER TABLE " + dataSetName(dataSetId) + " DROP COLUMN " + filterTableName(filterIndex) + ";");
 	runStatements("DELETE FROM Filters WHERE id = " + std::to_string(filterIndex) + ";");
 
 	transactionWriteEnd();
 }
 
-
-int DatabaseInterface::filterInsert(int dataSetId, const std::string & rFilter, const std::string & generatedFilter, const std::string & constructorJson, const std::string & constructorR, const std::string & name)
+int DatabaseInterface::filterInsert(int dataSetId, const std::string &rFilter, const std::string &generatedFilter, const std::string &constructorJson, const std::string &constructorR, const std::string &name)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterInsertDataSet);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
-		sqlite3_bind_int( stmt, 1, dataSetId);
-		sqlite3_bind_text(stmt, 2, rFilter.c_str(),				rFilter.length(),			SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 3, generatedFilter.c_str(),		generatedFilter.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 4, constructorJson.c_str(),		constructorJson.length(),	SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 5, constructorR.c_str(),		constructorR.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 6, name.c_str(),				name.length(),				SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt,	1, dataSetId);
+		sqlite3_bind_text(stmt, 2, rFilter.c_str(),					rFilter.length(),									SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 3, generatedFilter.c_str(), generatedFilter.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 4, constructorJson.c_str(), constructorJson.length(),					SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 5, constructorR.c_str(),		constructorR.length(),						SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 6, name.c_str(),						name.length(),										SQLITE_TRANSIENT);
 	};
 
 	transactionWriteBegin();
-	
+
 	int id = runStatementsId("INSERT INTO Filters (dataSet, rFilter, generatedFilter, constructorJson, constructorR, name) VALUES (?, ?, ?, ?, ?, ?) RETURNING rowid;", prepare);
-	runStatements("ALTER TABLE " + dataSetName(dataSetId) + " ADD " + filterTableName(id) +" INT NOT NULL DEFAULT 1;");
-	
+	runStatements("ALTER TABLE " + dataSetName(dataSetId) + " ADD " + filterTableName(id) + " INT NOT NULL DEFAULT 1;");
+
 	transactionWriteEnd();
 
 	return id;
 }
 
-
-//This one only works when there is but 1 filter per dataset, this might change later
-int DatabaseInterface::filterGetId(	int dataSetId)
+// This one only works when there is but 1 filter per dataset, this might change later
+int DatabaseInterface::filterGetId(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterGetId);
 	int filterId = -1;
 
-	runStatements("SELECT id FROM Filters WHERE dataSet = ? AND name = ''",
-		[&](sqlite3_stmt *stmt)				{ sqlite3_bind_int(stmt,	1, dataSetId); },
-		[&](size_t row, sqlite3_stmt *stmt)	{ filterId = sqlite3_column_int(stmt, 0); }
-	);
+	runStatements("SELECT id FROM Filters WHERE dataSet = ? AND name = ''", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, dataSetId); }, [&](size_t row, sqlite3_stmt *stmt)
+				  { filterId = sqlite3_column_int(stmt, 0); });
 
 	return filterId;
 }
@@ -458,7 +480,7 @@ int DatabaseInterface::filterGetId(int dataSetId, const std::string &name)
 	int filterId = -1;
 
 	runStatements("SELECT id FROM Filters WHERE name = ? and dataSet = ?",
-		[&](sqlite3_stmt *stmt)				{ 
+		[&](sqlite3_stmt *stmt)	{ 
 			sqlite3_bind_text(	stmt, 1, name.c_str(), name.length(), SQLITE_TRANSIENT);	
 			sqlite3_bind_int(	stmt, 2, dataSetId);
 		},
@@ -479,7 +501,7 @@ std::string DatabaseInterface::filterGetName(int filterIndex)
 	JASPTIMER_SCOPE(DatabaseInterface::filterGetName);
 	std::string errorMsg;
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, filterIndex);
 	};
@@ -489,7 +511,7 @@ std::string DatabaseInterface::filterGetName(int filterIndex)
 		int colCount = sqlite3_column_count(stmt);
 
 		assert(colCount == 1);
-		errorMsg		= _wrap_sqlite3_column_text(stmt, 0);
+		errorMsg = _wrap_sqlite3_column_text(stmt, 0);
 	};
 
 	runStatements("SELECT name FROM Filters WHERE id = ?;", prepare, processRow);
@@ -497,7 +519,7 @@ std::string DatabaseInterface::filterGetName(int filterIndex)
 	return errorMsg;
 }
 
-bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
+bool DatabaseInterface::filterSelect(int filterIndex, boolvec &bools)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterSelect);
 	bool changed = false;
@@ -506,7 +528,7 @@ bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
 
 	int dataSet = filterGetDataSetId(filterIndex);
 
-	if(dataSet != -1)
+	if (dataSet != -1)
 	{
 
 		const size_t rows = dataSetRowCount(dataSet);
@@ -515,13 +537,11 @@ bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
 
 		bools.resize(rows);
 
-		runStatements("SELECT " + filterTableName(filterIndex) + " FROM " + dataSetName(dataSet) + " ORDER BY rowNumber;",
-		[&](sqlite3_stmt *){ }, [&](size_t row, sqlite3_stmt * stmt)
-		{
+		runStatements("SELECT " + filterTableName(filterIndex) + " FROM " + dataSetName(dataSet) + " ORDER BY rowNumber;", [&](sqlite3_stmt *) {}, [&](size_t row, sqlite3_stmt *stmt)
+					  {
 			int val			= sqlite3_column_int(stmt, 0);
 				changed		= changed || bools[row] != bool(val);
-				bools[row]	= val;
-		});
+				bools[row]	= val; });
 	}
 
 	transactionReadEnd();
@@ -532,7 +552,7 @@ bool DatabaseInterface::filterSelect(int filterIndex, boolvec & bools)
 void DatabaseInterface::filterUpdate(int filterIndex, const std::string & rFilter, const std::string & generatedFilter, const std::string & constructorJson, const std::string & constructorR, const std::string & name, bool invalidated)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterUpdate);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_text(stmt, 1, rFilter.c_str(),			rFilter.length(),			SQLITE_TRANSIENT);
 		sqlite3_bind_text(stmt, 2, generatedFilter.c_str(),	generatedFilter.length(),	SQLITE_TRANSIENT);
@@ -549,7 +569,7 @@ void DatabaseInterface::filterUpdate(int filterIndex, const std::string & rFilte
 void DatabaseInterface::filterLoad(int filterIndex, std::string & rFilter, std::string & generatedFilter, std::string & constructorJson, std::string & constructorR, int & revision, std::string & name, bool & invalidated)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterLoad);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, filterIndex);
 	};
@@ -575,8 +595,8 @@ std::string DatabaseInterface::filterLoadErrorMsg(int filterIndex)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterLoadErrorMsg);
 	std::string errorMsg;
-	
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, filterIndex);
 	};
@@ -590,17 +610,17 @@ std::string DatabaseInterface::filterLoadErrorMsg(int filterIndex)
 	};
 
 	runStatements("SELECT errorMsg FROM Filters WHERE id = ?;", prepare, processRow);
-	
+
 	return errorMsg;
 }
 
-void DatabaseInterface::filterUpdateErrorMsg(int filterIndex, const std::string & errorMsg)
+void DatabaseInterface::filterUpdateErrorMsg(int filterIndex, const std::string &errorMsg)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterUpdateErrorMsg);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
-		sqlite3_bind_text(stmt, 1, errorMsg.c_str(),	errorMsg.length(),			SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, filterIndex);
+		sqlite3_bind_text(stmt, 1, errorMsg.c_str(), errorMsg.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_int(stmt, 2, filterIndex);
 	};
 
 	runStatements("UPDATE Filters SET errorMsg=? WHERE id = ?;", prepare);
@@ -611,13 +631,13 @@ int DatabaseInterface::filterIncRevision(int filterIndex)
 	JASPTIMER_SCOPE(DatabaseInterface::filterIncRevision);
 	transactionWriteBegin();
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, filterIndex);
 	};
 
-				runStatements(	"UPDATE Filters SET revision=revision+1	WHERE id=?;", prepare);
-	int rev =	runStatementsId("SELECT revision FROM Filters			WHERE id=?;", prepare);
+						runStatements("UPDATE Filters SET revision=revision+1	WHERE id=?;", prepare);
+	int rev = runStatementsId("SELECT revision FROM Filters					WHERE id=?;", prepare);
 
 	transactionWriteEnd();
 
@@ -627,124 +647,101 @@ int DatabaseInterface::filterIncRevision(int filterIndex)
 int DatabaseInterface::filterGetRevision(int filterIndex)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterGetRevision);
-	return runStatementsId("SELECT revision FROM Filters	WHERE id=?;", [&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, filterIndex); });
+	return runStatementsId("SELECT revision FROM Filters	WHERE id=?;", [&](sqlite3_stmt *stmt)
+						   { sqlite3_bind_int(stmt, 1, filterIndex); });
 }
 
-void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> & values)
+void DatabaseInterface::filterWrite(int filterIndex, const std::vector<bool> &values)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterWrite);
 
 	transactionWriteBegin();
-	
+
 	int dataSet = filterGetDataSetId(filterIndex);
 
-	const std::string updateFilterPrefix = "UPDATE " + dataSetName(dataSet) + " SET " + filterTableName(filterIndex) + "= ?  WHERE rowNumber = ?;" ;
+	const std::string updateFilterPrefix = "UPDATE " + dataSetName(dataSet) + " SET " + filterTableName(filterIndex) + "= ?  WHERE rowNumber = ?;";
 
 	size_t rowOutside;
-	
+
 	bindParametersType _bindParams = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, values[rowOutside]);
-		sqlite3_bind_int(stmt, 2, rowOutside+1);
+		sqlite3_bind_int(stmt, 2, rowOutside + 1);
 	};
-	
-	_runStatementsRepeatedly(updateFilterPrefix, [&](bindParametersType ** bindParams, size_t row)
-	{
+
+	_runStatementsRepeatedly(updateFilterPrefix, [&](bindParametersType **bindParams, size_t row)
+							 {
 		rowOutside = row;
 		(*bindParams) = &_bindParams;
 		
-		return row < values.size();
-	});
+		return row < values.size(); });
 
 	filterIncRevision(filterIndex);
 
 	transactionWriteEnd();
 }
 
-int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string & name, columnType colType, bool alterTable)
+int DatabaseInterface::columnInsert(int dataSetId, int index, const std::string &name, columnType colType, bool alterTable)
 {
 	intvec ids = columnsInsert(dataSetId, 1, index, name, colType, alterTable);
 	return ids.front();
 }
 
-intvec DatabaseInterface::columnsInsert(int dataSetId, int count, int index, const std::string & name, columnType colType, bool alterTable)
+intvec DatabaseInterface::columnsInsert(int dataSetId, int count, int index, const std::string &name, columnType colType, bool alterTable)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnInsert);
-	transactionWriteBegin();
-	
-	if(index == -1)	index = columnLastFreeIndex(dataSetId);
-	else			columnIndexIncrements(dataSetId, index, count);
 
-#ifdef SIR_LOG_A_LOT
-	Log::log() << "columnIndex for insert: " << index << " and dataSet: " << dataSetId << std::endl;
-#endif
-	
+	transactionWriteBegin();
+
+	if (index == -1)
+		index = columnLastFreeIndex(dataSetId);
+	else
+		columnIndexIncrements(dataSetId, index, count);
+
 	intvec ids;
 	int curCol = 0;
-	
-	bindParametersType _bindParams =  [&](sqlite3_stmt * stmt)
+	bindParametersType _bindParams = [&](sqlite3_stmt *stmt)
 	{
-		sqlite3_bind_int(stmt,	1, dataSetId);
-		sqlite3_bind_text(stmt, 2, name.c_str(), name.length(), SQLITE_TRANSIENT);
-
+		sqlite3_bind_int	(stmt, 1, dataSetId);
+		sqlite3_bind_text	(stmt, 2, name.c_str(),				name.length(), SQLITE_TRANSIENT);
 		std::string colT = columnTypeToString(colType);
-		sqlite3_bind_text(stmt, 3, colT.c_str(), colT.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	4, index+curCol++);
+		sqlite3_bind_text	(stmt, 3, colT.c_str(),				colT.length(), SQLITE_TRANSIENT);
+		sqlite3_bind_int	(stmt, 4, index + curCol++);
 	};
 
-	std::function<void(size_t,size_t, sqlite3_stmt*)> processRow = [&](size_t row, size_t rep, sqlite3_stmt * stmt)
+	std::function<void(size_t, size_t, sqlite3_stmt *)> processRow = [&](size_t, size_t, sqlite3_stmt *stmt)
 	{
-		assert(sqlite3_column_count(stmt) == 1);
-
 		ids.push_back(sqlite3_column_int(stmt, 0));
 	};
-	
-	_runStatementsRepeatedly("INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
+
+	_runStatementsRepeatedly(
+		"INSERT INTO Columns (dataSet, name, columnType, colIdx, analysisId) VALUES (?, ?, ?, ?, -1) RETURNING id",
+		[&](bindParametersType **bindParams, size_t)
 		{
 			(*bindParams) = &_bindParams;
-			
 			return curCol < count;
-		}, & processRow);
-	
-
-	if(alterTable) //If not then via dataSetCreateTable
-	{
-		std::stringstream statement;
-		
-		for(int id : ids)
-			statement	<< "ALTER TABLE " << dataSetName(dataSetId)
-						<< " ADD  "		<< columnBaseName(id)
-						<< " NUM  NULL;\n";
-		
-		runStatements(statement.str());
-	}
-	
-	//The labels will be added separately later
+		},
+		&processRow);
 
 	transactionWriteEnd();
 	return ids;
 }
 
-
-void DatabaseInterface::dataSetCreateTable(DataSet * dataSet)
+void DatabaseInterface::dataSetCreateTable(DataSet *dataSet)
 {
 	intset filters = dataSetGetFilters(dataSet->id());
 	assert(filters.size() > 0);
-	
-	runStatements("DROP TABLE " + dataSetName(dataSet->id()) + ";");
-		
+
+	runStatements("DROP TABLE IF EXISTS " + dataSetName(dataSet->id()) + ";");
+
 	std::stringstream statements;
-	statements		<<  "CREATE TABLE " + dataSetName(dataSet->id())
-					<<	" (rowNumber INTEGER PRIMARY KEY";
-	
-	for(int id : filters)
-		statements	<<	", "+ filterTableName(id) + " INT NOT NULL DEFAULT 1";
-	
-	for(Column * column : dataSet->columns())
-		statements << ", " << columnBaseName(column->id()) << " NUM NULL";
+	statements << "CREATE TABLE " << dataSetName(dataSet->id())
+			   << " (rowNumber INTEGER PRIMARY KEY";
+
+	for (int id : filters)
+		statements << ", " << filterTableName(id) << " INT NOT NULL DEFAULT 1";
 
 	statements << ");";
-	
 	runStatements(statements.str());
 }
 
@@ -754,7 +751,7 @@ int DatabaseInterface::columnGetDataSetId(int columnId)
 	return runStatementsId("SELECT dataSet from Columns WHERE id=" + std::to_string(columnId));
 }
 
-int	DatabaseInterface::columnLastFreeIndex(int dataSetId)
+int DatabaseInterface::columnLastFreeIndex(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnLastFreeIndex);
 	return 1 + runStatementsId("SELECT MAX(colIdx) from Columns WHERE dataSet=" + std::to_string(dataSetId) + ";");
@@ -763,62 +760,81 @@ int	DatabaseInterface::columnLastFreeIndex(int dataSetId)
 void DatabaseInterface::columnIndexIncrements(int dataSetId, int index, int count)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnIndexIncrements);
-	if(columnIdForIndex(dataSetId, index) != -1)
-		runStatements("UPDATE Columns SET colIdx=colIdx+"+std::to_string(count)+ " WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx >= " + std::to_string(index) +";");
-//Actually the following else is not necessary
-//	else
-//		throw std::runtime_error("columnIndexIncrements has a problem: index " + std::to_string(index) + " in dataSet " + std::to_string(dataSetId) + " already exists!");
+	if (columnIdForIndex(dataSetId, index) != -1)
+		runStatements("UPDATE Columns SET colIdx=colIdx+" + std::to_string(count) + " WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx >= " + std::to_string(index) + ";");
+	//Actually the following else is not necessary
+	//	else
+	//		throw std::runtime_error("columnIndexIncrements has a problem: index " + std::to_string(index) + " in dataSet " + std::to_string(dataSetId) + " already exists!");
 }
 
 void DatabaseInterface::columnIndexDecrements(int dataSetId, int index)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnIndexDecrements);
-	if(columnIdForIndex(dataSetId, index) == -1)
-		runStatements("UPDATE Columns SET colIdx=colIdx-1 WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx > " + std::to_string(index) +";");
+	if (columnIdForIndex(dataSetId, index) == -1)
+		runStatements("UPDATE Columns SET colIdx=colIdx-1 WHERE dataSet=" + std::to_string(dataSetId) + " AND colIdx > " + std::to_string(index) + ";");
 }
 
 int DatabaseInterface::columnIdForIndex(int dataSetId, int index)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnIdForIndex);
-	return runStatementsId("SELECT id FROM Columns WHERE dataSet=? AND colIdx=?", [&](sqlite3_stmt * stmt)
-	{
+	return runStatementsId("SELECT id FROM Columns WHERE dataSet=? AND colIdx=?", [&](sqlite3_stmt *stmt)
+						   {
 		sqlite3_bind_int(stmt,	1, dataSetId);
-		sqlite3_bind_int(stmt,	2, index);
-	});
+		sqlite3_bind_int(stmt,	2, index); });
 }
 
 int DatabaseInterface::columnIndexForId(int columnId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnIndexForId);
-	return runStatementsId("SELECT colIdx FROM Columns WHERE id=?", [&](sqlite3_stmt * stmt)
-	{
-		sqlite3_bind_int(stmt,	1, columnId);
-	});
+	return runStatementsId("SELECT colIdx FROM Columns WHERE id=?", [&](sqlite3_stmt *stmt)
+						   { sqlite3_bind_int(stmt, 1, columnId); });
 }
 
-void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns columns, std::function<void(float)> progressCallback)
+void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet *data, Columns columns, std::function<void(float)> progressCallback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetBatchedValuesUpdate);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
 
 	transactionWriteBegin();
 
-	// But maybe we should update instead, maybe it speeds up the application?
-	//As this data isnt synced anyway this shouldnt be a problem because it'd be invalidated after a single edit anyway
-	runStatements("DELETE FROM " + dataSetName(data->id()) + " WHERE rowNumber > " + std::to_string(columns.size() == 0 ? 0 : columns.front()->rowCount()));
+	size_t rowCount = columns.empty() ? 0 : columns.front()->rowCount();
+	dataSetSetRowCount(data->id(), rowCount);
 
-	std::stringstream statement;
-	
-	statement << "INSERT OR REPLACE INTO " << dataSetName(data->id()) << " (";
-
-	//Add columnnames for data we want to insert
-	for(Column * col : columns)
 	{
-		assert(col->data() == data); //Little sanity check
-		statement << "Column_" << col->id() << ", ";
+		std::stringstream statement;
+		statement << "INSERT OR REPLACE INTO " << dataSetName(data->id()) << " ("
+				  << filterTableName(data->filter()->id()) << ", rowNumber) VALUES (?, ?)";
+
+		size_t rowOutside = 0;
+		bindParametersType bindParamStore = [&](sqlite3_stmt *stmt)
+		{
+			sqlite3_bind_int(stmt, 1, data->filter()->filtered()[rowOutside]);
+			sqlite3_bind_int(stmt, 2, rowOutside + 1);
+		};
+
+		const float rowsInverse = 1.0f / rowCount;
+		const int updateInterval = std::max(1, int(rowCount) / 100);
+		int prevUpdate = 0;
+
+		_runStatementsRepeatedly(
+			statement.str(),
+			[&](bindParametersType **bindParams, size_t row)
+			{
+				if (row >= rowCount)
+					return false;
+				rowOutside = row;
+				if (prevUpdate + updateInterval <= rowOutside)
+				{
+					progressCallback(float(rowOutside) * rowsInverse * 0.1f);
+					prevUpdate = rowOutside;
+				}
+				(*bindParams) = &bindParamStore;
+				return true;
+			});
 	}
 
 	//And the filtername and rowNumber
-        statement << filterTableName(data->defaultFilter()->id()) << ", " << "rowNumber) VALUES (";
+	statement << filterTableName(data->defaultFilter()->id()) << ", " << "rowNumber) VALUES (";
 
 	for(size_t i=0; i<columns.size(); i++)
 		statement << "?, ";
@@ -828,20 +844,13 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 	size_t rowOutside=0;
 	bindParametersType bindParamStore = [&](sqlite3_stmt * stmt)
 	{
-		size_t i=1;
-		for(Column * col : columns)
-			if(col->hasLabels())
-			{
-				sqlite3_bind_int(		stmt,	i++, col->ints()[rowOutside]);
-			}
-			else
-			{
-				const std::string & str = col->strs()[rowOutside];
-				if(str.empty())
-					_doubleTroubleBinder(stmt, i++, col->dbls()[rowOutside]);
-				else
-					sqlite3_bind_text(stmt, i++, str.c_str(), str.length(), SQLITE_TRANSIENT);
-			}
+		Column *col = columns[i];
+		if (col->hasLabels())
+			writeColumnChunks(col->id(), col->ints());
+		else
+			writeColumnChunks(col->id(), col->dbls(), col->strs());
+		progressCallback(colProgressBase + colProgressStep * (i + 1));
+	}
 
 		sqlite3_bind_int(stmt,	i++, data->defaultFilter()->filtered()[rowOutside]);
 		sqlite3_bind_int(stmt,	i++, rowOutside+1);
@@ -877,6 +886,7 @@ void DatabaseInterface::dataSetBatchedValuesUpdate(DataSet * data, Columns colum
 void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<void(float)> progressCallback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetBatchedValuesLoad);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
 
 	if(data->defaultFilter()->id() == -1)
 		data->defaultFilter()->setId(dataSetGetDefaultFilter(data->id()));
@@ -906,10 +916,30 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 			lastRow = progressRow;
 		}
 
-		progressMutex.unlock();
-	};
-	
-	auto loadBatchOfColumns = [this, data, &localProgressBar](Columns group, size_t groupNum)
+	size_t rowCount = dataSetRowCount(data->id());
+	for (Column *col : data->columns())
+		col->setRowCount(rowCount);
+	data->filter()->setRowCount(rowCount);
+
+	std::atomic<size_t> progressRow(0);
+	size_t totalRows = rowCount;
+
+	std::thread filterThread([&]()
+							 {
+        std::function<void(size_t, sqlite3_stmt *)> processRow = [&](size_t row, sqlite3_stmt *stmt) {
+            data->filter()->setFilterValueNoDB(row, sqlite3_column_int(stmt, 0));
+            progressRow++;
+            if (progressRow % 100 == 0)
+                progressCallback(float(progressRow) / totalRows * 0.1f);
+        };
+        runStatements("SELECT " + filterTableName(data->filter()->id()) + " FROM " + dataSetName(data->id()) + " ORDER BY rowNumber",
+                      nullptr, processRow); });
+
+	std::vector<std::thread> columnThreads;
+	size_t groupCount = std::max<size_t>(1, std::thread::hardware_concurrency());
+	size_t groupSize = data->columns().size() / groupCount;
+
+	for (size_t g = 0, start = 0; g < groupCount; ++g)
 	{
 		std::stringstream statement;
 	
@@ -956,9 +986,8 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 				
 				if(col->hasLabels())
 				{
-					int valueDb = !sqlite3_column_text(	stmt, colI) ? EmptyValues::missingValueInteger : sqlite3_column_int(stmt, colI);
-					
-					col->setValue(row, valueDb,		false);
+					col->_ints.resize(rowCount);
+					readColumnChunks(col->id(), col->_ints);
 				}
 				else
 				{
@@ -1005,19 +1034,19 @@ void DatabaseInterface::dataSetBatchedValuesLoad(DataSet *data, std::function<vo
 		
 		nextEnd += groupSize;
 	}
-	
-	for(std::thread & t : threads)
+
+	filterThread.join();
+	for (auto &t : columnThreads)
 		t.join();
-		
+
 	transactionReadEnd();
 }
 
-//Shouldve probably been more generic here
-void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<void (float)> progressCallback)
+void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<void(float)> progressCallback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetBatchedLabelsLoad);
 
-	if(data->columns().size() == 0)
+	if (data->columns().size() == 0)
 		return;
 
 	transactionReadBegin();
@@ -1033,7 +1062,7 @@ void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<vo
 	{
 		progressMutex.lock();
 		progressCol += rows;
-		
+
 		const size_t rowPercent = std::max(1, int(totalCols) / 100);
 		
 		if(progressCol - lastCol > rowPercent || progressCol >= totalCols - 1)
@@ -1043,213 +1072,142 @@ void DatabaseInterface::dataSetBatchedLabelsLoad(DataSet *data, std::function<vo
 		}
 		progressMutex.unlock();
 	};
-	
+
 	auto loadBatchOfColumns = [this, data, &localProgressBar](Columns group, size_t groupNum)
 	{
 		labelsLoad(group);
 		localProgressBar(groupNum);
 	};
-	
-	//Ok, split up columns into some groups so we can use multiple threads
+
+	// Ok, split up columns into some groups so we can use multiple threads
 	Columns columnsWithLabels;
-	std::copy_if(data->columns().begin(), data->columns().end(), std::back_inserter(columnsWithLabels), 
-				 [](Column * col){return col->hasLabels();});
-	
-	if(columnsWithLabels.size() == 0)
+	std::copy_if(data->columns().begin(), data->columns().end(), std::back_inserter(columnsWithLabels),
+				 [](Column *col)
+				 { return col->hasLabels(); });
+
+	if (columnsWithLabels.size() == 0)
 	{
 		transactionReadEnd();
 		return;
 	}
-		
-	
-	size_t	groupCount	= std::max((unsigned int)1, std::thread::hardware_concurrency()),
-			groupSize	= columnsWithLabels.size() / groupCount,
-			groupSize0	= columnsWithLabels.size() - groupSize * (groupCount-1);
-			
 
-	std::vector<std::thread>	threads;
-	
-	size_t	curCol	= 0,
-			nextEnd = groupSize0;
-	
-	for(size_t group=0; group < groupCount; group++)
+	size_t groupCount = std::max((unsigned int)1, std::thread::hardware_concurrency()),
+		   groupSize = columnsWithLabels.size() / groupCount,
+		   groupSize0 = columnsWithLabels.size() - groupSize * (groupCount - 1);
+
+	std::vector<std::thread> threads;
+
+	size_t curCol = 0,
+		   nextEnd = groupSize0;
+
+	for (size_t group = 0; group < groupCount; group++)
 	{
 		Columns cols;
-		for(; curCol < nextEnd; curCol++)
+		for (; curCol < nextEnd; curCol++)
 			cols.push_back(columnsWithLabels[curCol]);
-		
-		
+
 		threads.push_back(std::thread([cols, group, &loadBatchOfColumns]()
-		{
-			loadBatchOfColumns(cols, group);
-		}));
-		
+									  { loadBatchOfColumns(cols, group); }));
+
 		nextEnd += groupSize;
 	}
-	
-	for(std::thread & t : threads)
+
+	for (std::thread &t : threads)
 		t.join();
-		
+
 	transactionReadEnd();
+}
+
+void DatabaseInterface::columnSetValue(int columnId, size_t row, int valueInt)
+{
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+	setIntChunkValue(columnId, row, valueInt);
+}
+
+void DatabaseInterface::columnSetValue(int columnId, size_t row, double valueDbl, const std::string &valueStr)
+{
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+	setDoubleChunkValue(columnId, row, valueDbl, valueStr);
 }
 
 void DatabaseInterface::columnSetValues(int columnId, const intvec &ints)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetValues ints);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
 	transactionWriteBegin();
-	
-	const int			dataSetId = columnGetDataSetId(columnId);
-	
-	const std::string	updateStatement = "UPDATE Dataset_" + std::to_string(dataSetId)	+ " SET Column_"  + std::to_string(columnId) + "=? WHERE rowNumber=?";
-
-	size_t				rowOutside;
-	bindParametersType	bindParamStore;
-
-	_runStatementsRepeatedly(
-		updateStatement,
-		[&](bindParametersType ** bindParameters, size_t row)
-		{
-			if(row == ints.size())
-				return false;
-
-			rowOutside = row;
-
-			bindParamStore = [&](sqlite3_stmt * stmt)
-			{
-				sqlite3_bind_int(	stmt,	1, ints[rowOutside]);
-				sqlite3_bind_int(	stmt,	2, rowOutside+1);
-			};
-
-			(*bindParameters) = &bindParamStore;
-
-			return true;
-		});
-
+	writeColumnChunks(columnId, ints);
 	transactionWriteEnd();
 }
 
 void DatabaseInterface::columnSetValues(int columnId, const doublevec &dbls, const stringvec &strs)
 {
-	JASPTIMER_SCOPE(DatabaseInterface::columnSetValues ints);
+	JASPTIMER_SCOPE(DatabaseInterface::columnSetValues dbls);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
 	transactionWriteBegin();
-	
-	const int			dataSetId = columnGetDataSetId(columnId);
-	
-	const std::string	updateStatement = "UPDATE Dataset_" + std::to_string(dataSetId)	+ " SET Column_"  + std::to_string(columnId) + "=? WHERE rowNumber=?";
-
-	size_t				rowOutside;
-	bindParametersType	bindParamStore;
-
-	_runStatementsRepeatedly(
-		updateStatement,
-		[&](bindParametersType ** bindParameters, size_t row)
-		{
-			if(row == dbls.size())
-				return false;
-
-			rowOutside = row;
-
-			bindParamStore = [&](sqlite3_stmt * stmt)
-			{
-				if(!std::isnan(dbls[rowOutside]))
-					_doubleTroubleBinder(	stmt,	1, dbls[rowOutside]);
-				else
-					sqlite3_bind_text(		stmt,	1, strs[rowOutside].c_str(), strs[rowOutside].size(), SQLITE_TRANSIENT);
-				sqlite3_bind_int(			stmt,	2, rowOutside+1);
-			};
-
-			(*bindParameters) = &bindParamStore;
-
-			return true;
-		});
-
+	writeColumnChunks(columnId, dbls, strs);
 	transactionWriteEnd();
 }
 
-void DatabaseInterface::columnSetValue(int columnId, size_t row, int valueInt)
-{
-	const int dataSetId = columnGetDataSetId(columnId);
-	
-	const std::string updateStatement = "UPDATE Dataset_" + std::to_string(dataSetId)	+ " SET Column_"  + std::to_string(columnId) + "=? WHERE rowNumber=?";
-
-	runStatements(updateStatement, [&](sqlite3_stmt * stmt)
-	{
-		sqlite3_bind_int(		stmt,	1, valueInt);
-		sqlite3_bind_int(		stmt,	2, row+1);
-	});
-}
-
-void DatabaseInterface::columnSetValue(int columnId, size_t row, double valueDbl, const std::string & valueStr)
-{
-	const int dataSetId = columnGetDataSetId(columnId);
-	
-	const std::string updateStatement = "UPDATE Dataset_" + std::to_string(dataSetId)	+ " SET Column_"  + std::to_string(columnId) + "=? WHERE rowNumber=?";
-
-	runStatements(updateStatement, [&](sqlite3_stmt * stmt)
-	{
-		if(!std::isnan(valueDbl))
-			_doubleTroubleBinder(	stmt,	1, valueDbl);
-		else
-			sqlite3_bind_text(		stmt,	1, valueStr.c_str(), valueStr.size(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(			stmt,	2, row+1);
-	});
-}
-
-void DatabaseInterface::_doubleTroubleBinder(sqlite3_stmt * stmt, int param, double dbl)
+void DatabaseInterface::_doubleTroubleBinder(sqlite3_stmt *stmt, int param, double dbl)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleBinder);
-	
-	if(std::isnan(dbl)	|| std::isinf(dbl))
+
+	if (std::isnan(dbl) || std::isinf(dbl))
 	{
-		const std::string storeThis = dbDblToString(std::isnan(dbl) ? dbDbl::nan : dbl < 0 ? dbDbl::neg_inf : dbDbl::inf);
+		const std::string storeThis = dbDblToString(std::isnan(dbl) ? dbDbl::nan : dbl < 0 ? dbDbl::neg_inf
+																						   : dbDbl::inf);
 		sqlite3_bind_text(stmt, param, storeThis.c_str(), storeThis.size(), SQLITE_TRANSIENT);
 	}
 	else
 		sqlite3_bind_double(stmt, param, dbl);
 }
 
-double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt * stmt, int colI, std::string * textReturn)
-{	
+double DatabaseInterface::_doubleTroubleReader(sqlite3_stmt *stmt, int colI, std::string *textReturn)
+{
 	JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader);
 
 	const std::string strVal = _wrap_sqlite3_column_text(stmt, colI);
-	
-	if(textReturn)
+
+	if (textReturn)
 		*textReturn = "";
-	
-	if(!strVal.empty())
+
+	if (!strVal.empty())
 	{
-		JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader-TRY);
-		
-		//Optimization:
-		static const std::string _inf		= dbDblToString(dbDbl::inf);
-		static const std::string _neg_inf	= dbDblToString(dbDbl::neg_inf);
-		static const std::string _nan		= dbDblToString(dbDbl::nan);
-		
-		if(strVal == _inf)				return std::numeric_limits<double>::infinity();
-		else if(strVal == _neg_inf)		return -1 * std::numeric_limits<double>::infinity();
-		else if(strVal == _nan)			return EmptyValues::missingValueDouble;
-		
+		JASPTIMER_SCOPE(DatabaseInterface::_doubleTroubleReader - TRY);
+
+		// Optimization:
+		static const std::string _inf = dbDblToString(dbDbl::inf);
+		static const std::string _neg_inf = dbDblToString(dbDbl::neg_inf);
+		static const std::string _nan = dbDblToString(dbDbl::nan);
+
+		if (strVal == _inf)
+			return std::numeric_limits<double>::infinity();
+		else if (strVal == _neg_inf)
+			return -1 * std::numeric_limits<double>::infinity();
+		else if (strVal == _nan)
+			return EmptyValues::missingValueDouble;
 	}
-	
+
 	double dbl = EmptyValues::missingValueDouble;
-	
-	if(ColumnUtils::getDoubleValue(strVal, dbl))
-		return dbl;		// we can return the double because the textReturn is already set to empty
-	
-	if(textReturn)
+
+	if (ColumnUtils::getDoubleValue(strVal, dbl))
+		return dbl; // we can return the double because the textReturn is already set to empty
+
+	if (textReturn)
 		*textReturn = strVal;
-	
+
 	return EmptyValues::missingValueDouble;
 }
 
 size_t DatabaseInterface::columnGetLabelCount(int columnId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetLabelCount);
-	
+
 	size_t out;
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, columnId);
 	};
@@ -1260,7 +1218,6 @@ size_t DatabaseInterface::columnGetLabelCount(int columnId)
 
 		assert(colCount == 1);
 		out = sqlite3_column_int(stmt, 0);
-
 	};
 
 	runStatements("SELECT COUNT(id) FROM Labels WHERE columnId = ?;", prepare, processRow);
@@ -1268,73 +1225,44 @@ size_t DatabaseInterface::columnGetLabelCount(int columnId)
 	return out;
 }
 
-
-void DatabaseInterface::columnGetValues(int columnId, intvec & ints,	const std::string & postFix)
+void DatabaseInterface::columnGetValues(int columnId, doublevec &dbls, stringvec &strs, const std::string &postFix)
 {
-	JASPTIMER_SCOPE(DatabaseInterface::columnGetValues);
+	JASPTIMER_SCOPE(DatabaseInterface::columnGetValues dbls);
+	(void)postFix; // postFix is not needed anymore,just keep it for backwards compatibility
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
 	transactionReadBegin();
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int(stmt, 1, columnId);
-	};
-
-	int				dataSet		= columnGetDataSetId(columnId);
-	const size_t	rowCount	= dataSetRowCount(dataSet);
-
-	ints.resize(rowCount);
-
-	std::function<void(size_t, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
-	{
-		int colCount = sqlite3_column_count(stmt);
-
-		assert(colCount == 1);
-
-		ints[row] = sqlite3_column_int(		stmt, 0);
-	};
-
-	runStatements("SELECT " + columnBaseName(columnId, postFix) + " FROM " + dataSetName(dataSet) + " ORDER BY rowNumber;", prepare, processRow);
-
-	transactionReadEnd();
-}
-
-void DatabaseInterface::columnGetValues(int columnId, doublevec &dbls, stringvec &strs,	const std::string & postFix)
-{
-	JASPTIMER_SCOPE(DatabaseInterface::columnGetValues);
-	transactionReadBegin();
-
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int(stmt, 1, columnId);
-	};
-
-	int				dataSet		= columnGetDataSetId(columnId);
-	const size_t	rowCount	= dataSetRowCount(dataSet);
-
+	int dataSet = columnGetDataSetId(columnId);
+	size_t rowCount = dataSetRowCount(dataSet);
 	dbls.resize(rowCount);
 	strs.resize(rowCount);
 
-	std::function<void(size_t, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
-	{
-		int colCount = sqlite3_column_count(stmt);
-
-		assert(colCount == 1);
-		
-		double				dbl = _doubleTroubleReader(		stmt, 0);
-		const std::string & str = _wrap_sqlite3_column_text(stmt, 0);
-
-		strs[row] = !std::isnan(dbl) ? "" : str;
-		dbls[row] = dbl;
-	};
-
-	runStatements("SELECT " + columnBaseName(columnId, postFix) + " FROM " + dataSetName(dataSet) + " ORDER BY rowNumber;", prepare, processRow);
+	readColumnChunks(columnId, dbls, strs);
 
 	transactionReadEnd();
 }
 
 std::string DatabaseInterface::columnBaseName(int columnId,	const std::string & postFix) const
 {
-	return "Column_"  + std::to_string(columnId) + (postFix.empty() ? "" : "_" + postFix);
+	JASPTIMER_SCOPE(DatabaseInterface::columnGetValues ints);
+	(void)postFix;
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
+	transactionReadBegin();
+
+	int dataSet = columnGetDataSetId(columnId);
+	size_t rowCount = dataSetRowCount(dataSet);
+	ints.resize(rowCount);
+
+	readColumnChunks(columnId, ints);
+
+	transactionReadEnd();
+}
+
+std::string DatabaseInterface::columnBaseName(int columnId, const std::string &postFix) const
+{
+	return "Column_" + std::to_string(columnId) + (postFix.empty() ? "" : "_" + postFix);
 }
 
 std::string DatabaseInterface::dataSetName(int dataSetId) const
@@ -1348,13 +1276,13 @@ int DatabaseInterface::dataSetIncRevision(int dataSetId)
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetIncRevision);
 	transactionWriteBegin();
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, dataSetId);
 	};
 
-				runStatements(	"UPDATE DataSets SET revision=revision+1	WHERE id=?;", prepare);
-	int rev =	runStatementsId("SELECT revision FROM DataSets				WHERE id=?;", prepare);
+	runStatements("UPDATE DataSets SET revision=revision+1	WHERE id=?;", prepare);
+	int rev = runStatementsId("SELECT revision FROM DataSets				WHERE id=?;", prepare);
 
 	transactionWriteEnd();
 
@@ -1364,7 +1292,8 @@ int DatabaseInterface::dataSetIncRevision(int dataSetId)
 int DatabaseInterface::dataSetGetRevision(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetGetRevision);
-	return runStatementsId("SELECT revision FROM DataSets WHERE id=?;", [&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, dataSetId); });
+	return runStatementsId("SELECT revision FROM DataSets WHERE id=?;", [&](sqlite3_stmt *stmt)
+						   { sqlite3_bind_int(stmt, 1, dataSetId); });
 }
 
 int DatabaseInterface::dataSetGetDefaultFilter(int dataSetId)
@@ -1385,12 +1314,14 @@ intset DatabaseInterface::dataSetGetFilters(int dataSetId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::dataSetGetFilters);
 	intset ints;
-			
+
 	runStatements(
-				"SELECT id FROM Filters WHERE dataSet=?;", 
-				[&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, dataSetId); },
-				[&](size_t row, sqlite3_stmt * stmt){ ints.insert( sqlite3_column_int(stmt, 0)); });
-	
+							"SELECT id FROM Filters WHERE dataSet=?;",
+							[&](sqlite3_stmt *stmt)
+							{ sqlite3_bind_int(stmt, 1, dataSetId); },
+							[&](size_t row, sqlite3_stmt *stmt)
+							{ ints.insert(sqlite3_column_int(stmt, 0)); });
+
 	return ints;
 }
 
@@ -1416,36 +1347,26 @@ stringset DatabaseInterface::dataSetFilterNames(int dataSetId)
 std::string DatabaseInterface::filterTableName(int filterIndex) const
 {
 	JASPTIMER_SCOPE(DatabaseInterface::filterName);
-	return "Filter_"  + std::to_string(filterIndex);
+	return "Filter_" + std::to_string(filterIndex);
 }
-
 
 void DatabaseInterface::columnDelete(int columnId, bool cleanUpRest)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnDelete);
+	assert(hasDataChunksTable() && "Database should have been migrated to DataChunks by upgradeDBFromVersion!");
+
 	transactionWriteBegin();
 
-	//First lets drop the columns in the dataSet
-	int dataSetId	= columnGetDataSetId(columnId),
-		columnIndex	= columnIndexForId(columnId);
+	int dataSetId = columnGetDataSetId(columnId);
+	int columnIndex = columnIndexForId(columnId);
 
-	if(cleanUpRest)
-	{
+	if (cleanUpRest)
+		deleteColumnChunks(columnId);
 
-		const std::string & alterDatasetPrefix = "ALTER TABLE Dataset_"  + std::to_string(dataSetId)	+ " ";
-		const std::string & addColumnFragment  = "DROP COLUMN  " + columnBaseName(columnId);
+	runStatements("DELETE FROM Columns WHERE id=?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); });
 
-		runStatements(alterDatasetPrefix + addColumnFragment + ";");
-	}
-
-	//Delete column entry
-	runStatements("DELETE FROM Columns WHERE dataSet=? AND id=?;", [&](sqlite3_stmt * stmt)
-	{
-		sqlite3_bind_int(stmt,	1, dataSetId);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
-	
-	if(cleanUpRest)
+	if (cleanUpRest)
 		columnIndexDecrements(dataSetId, columnIndex);
 
 	transactionWriteEnd();
@@ -1455,62 +1376,56 @@ void DatabaseInterface::columnSetType(int columnId, columnType colType)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetType);
 	std::string colT = columnTypeToString(colType);
-	runStatements("UPDATE Columns SET columnType=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET columnType=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, colT.c_str(), colT.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
 void DatabaseInterface::columnSetAutoSort(int columnId, bool sort)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetAutoSort);
-	runStatements("UPDATE Columns SET autoSortByValue=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET autoSortByValue=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt,	1,	sort);
-		sqlite3_bind_int(stmt,	2,	columnId);
-	});
+		sqlite3_bind_int(stmt,	2,	columnId); });
 }
 
 void DatabaseInterface::columnSetHasLabels(int columnId, bool hasLabels)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetHasLabels);
-	runStatements("UPDATE Columns SET hasLabels=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET hasLabels=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt,	1,	hasLabels);
-		sqlite3_bind_int(stmt,	2,	columnId);
-	});
+		sqlite3_bind_int(stmt,	2,	columnId); });
 }
 
 void DatabaseInterface::columnSetInvalidated(int columnId, bool invalidated)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetInvalidated);
-	runStatements("UPDATE Columns SET invalidated=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET invalidated=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt,	1,	invalidated);
-		sqlite3_bind_int(stmt,	2,	columnId);
-	});
+		sqlite3_bind_int(stmt,	2,	columnId); });
 }
 
 void DatabaseInterface::columnSetDropLevels(int columnId, int dropLevels)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetDropLevels);
-	runStatements("UPDATE Columns SET dropLevels=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET dropLevels=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt,	1,	dropLevels);
-		sqlite3_bind_int(stmt,	2,	columnId);
-	});
+		sqlite3_bind_int(stmt,	2,	columnId); });
 }
 
 void DatabaseInterface::columnSetIndex(int columnId, int index)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetIndex);
 
-	runStatements("UPDATE Columns SET colIdx=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET colIdx=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt,	1, index);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
 int DatabaseInterface::columnIncRevision(int columnId)
@@ -1518,13 +1433,13 @@ int DatabaseInterface::columnIncRevision(int columnId)
 	JASPTIMER_SCOPE(DatabaseInterface::columnIncRevision);
 	transactionWriteBegin();
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, columnId);
 	};
 
-				runStatements(	"UPDATE Columns SET revision=revision+1	WHERE id=?;", prepare);
-	int rev =	runStatementsId("SELECT revision FROM Columns			WHERE id=?;", prepare);
+	runStatements("UPDATE Columns SET revision=revision+1	WHERE id=?;", prepare);
+	int rev = runStatementsId("SELECT revision FROM Columns			WHERE id=?;", prepare);
 
 	transactionWriteEnd();
 
@@ -1534,66 +1449,61 @@ int DatabaseInterface::columnIncRevision(int columnId)
 int DatabaseInterface::columnGetRevision(int columnId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetRevision);
-	return runStatementsId("SELECT revision FROM Columns WHERE id=?;", [&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, columnId); });
+	return runStatementsId("SELECT revision FROM Columns WHERE id=?;", [&](sqlite3_stmt *stmt)
+						   { sqlite3_bind_int(stmt, 1, columnId); });
 }
-
 
 void DatabaseInterface::columnSetName(int columnId, const std::string &name)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetName);
-	runStatements("UPDATE Columns SET name=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET name=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, name.c_str(), name.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
-void DatabaseInterface::columnSetTitle(int columnId, const std::string & title)
+void DatabaseInterface::columnSetTitle(int columnId, const std::string &title)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetTitle);
-	runStatements("UPDATE Columns SET title=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET title=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, title.c_str(), title.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
-void DatabaseInterface::columnSetEmptyVals(int columnId, const std::string & emptyValsJson)
+void DatabaseInterface::columnSetEmptyVals(int columnId, const std::string &emptyValsJson)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetTitle);
-	runStatements("UPDATE Columns SET emptyValuesJson=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET emptyValuesJson=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, emptyValsJson.c_str(), emptyValsJson.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
-void DatabaseInterface::columnSetDescription(int columnId, const std::string & description)
+void DatabaseInterface::columnSetDescription(int columnId, const std::string &description)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetDescription);
-	runStatements("UPDATE Columns SET description=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET description=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, description.c_str(), description.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
 void DatabaseInterface::columnSetComputeFilter(int columnId, const std::string &filter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputeFilter);
-	runStatements("UPDATE Columns SET computeFilter=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET computeFilter=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_text(stmt, 1, filter.c_str(), filter.length(), SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,	2, columnId);
-	});
+		sqlite3_bind_int(stmt,	2, columnId); });
 }
 
-void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool invalidated, computedColumnType codeType, const std::string & rCode, const std::string & error, const std::string & constructorJsonStr, const std::string & computeFilter)
+void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool invalidated, computedColumnType codeType, const std::string &rCode, const std::string &error, const std::string &constructorJsonStr, const std::string &computeFilter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnSetComputedInfo);
 
-	runStatements("UPDATE Columns SET invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=?, computeFilter=? WHERE id=?;", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Columns SET invalidated=?, codeType=?, rCode=?, error=?, constructorJson=?, analysisId=?, computeFilter=? WHERE id=?;", [&](sqlite3_stmt *stmt)
+				  {
 		std::string codeT = computedColumnTypeToString(codeType);
 
 		sqlite3_bind_int(stmt,  1, int(invalidated));
@@ -1603,62 +1513,59 @@ void DatabaseInterface::columnSetComputedInfo(int columnId, int analysisId, bool
 		sqlite3_bind_text(stmt, 5, constructorJsonStr.c_str(),	constructorJsonStr.length(),	SQLITE_TRANSIENT);
 		sqlite3_bind_int(stmt,  6, analysisId);
 		sqlite3_bind_text(stmt, 7, computeFilter.c_str(),		computeFilter.length(),			SQLITE_TRANSIENT);
-		sqlite3_bind_int(stmt,  8, columnId);
-	});
+		sqlite3_bind_int(stmt,  8, columnId); });
 }
 
-void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std::string &title, std::string &description, columnType &colType, int & revision, Json::Value & emptyValuesJson, bool & autoSort, int & dropLevels, bool & hasLabels)
+void DatabaseInterface::columnGetBasicInfo(int columnId, std::string &name, std::string &title, std::string &description, columnType &colType, int &revision, Json::Value &emptyValuesJson, bool &autoSort, int &dropLevels, bool &hasLabels)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetBasicInfo);
-	
+
 	emptyValuesJson = Json::nullValue;
-	
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, columnId);
 	};
-	
+
 	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
 	{
 		int colCount = sqlite3_column_count(stmt);
 
 		assert(colCount == 9);
-					name			= _wrap_sqlite3_column_text(stmt, 0);
-					title			= _wrap_sqlite3_column_text(stmt, 1);
-					description		= _wrap_sqlite3_column_text(stmt, 2);
-		std::string colTypeStr		= _wrap_sqlite3_column_text(stmt, 3);
-					revision		= sqlite3_column_int(		stmt, 4);
-		std::string	emptyValuesStr	= _wrap_sqlite3_column_text(stmt, 5);
-					autoSort		= sqlite3_column_int(		stmt, 6);
-					dropLevels		= sqlite3_column_int(		stmt, 7);
-					hasLabels		= sqlite3_column_int(		stmt, 8);
-					
+		name												= _wrap_sqlite3_column_text(stmt, 0);
+		title												= _wrap_sqlite3_column_text(stmt, 1);
+		description									= _wrap_sqlite3_column_text(stmt, 2);
+		std::string colTypeStr			= _wrap_sqlite3_column_text(stmt, 3);
+		revision										= sqlite3_column_int(				stmt, 4);
+		std::string emptyValuesStr	= _wrap_sqlite3_column_text(stmt, 5);
+		autoSort										= sqlite3_column_int(				stmt, 6);
+		dropLevels									= sqlite3_column_int(				stmt, 7);
+		hasLabels										= sqlite3_column_int(				stmt, 8);
 
 		colType = colTypeStr.empty() ? columnType::unknown : columnTypeFromString(colTypeStr);
-		
-		if(colType == columnType::nominalText)
+
+		if (colType == columnType::nominalText)
 			colType = columnType::nominal;
-		
+
 		Json::Reader().parse(emptyValuesStr, emptyValuesJson);
 	};
 
 	runStatements("SELECT name, title, description, columnType, revision, emptyValuesJson, autoSortByValue, dropLevels, hasLabels FROM Columns WHERE id = ?;", prepare, processRow);
 }
 
-
-std::string DatabaseInterface::_wrap_sqlite3_column_text(sqlite3_stmt * stmt, int iCol)
+std::string DatabaseInterface::_wrap_sqlite3_column_text(sqlite3_stmt *stmt, int iCol)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_wrap_sqlite3_column_text);
-	const unsigned char * col = sqlite3_column_text(stmt,	iCol);
-	
-	return !col ? "" : std::string(reinterpret_cast<const char*>(col));	
+	const unsigned char *col = sqlite3_column_text(stmt, iCol);
+
+	return !col ? "" : std::string(reinterpret_cast<const char *>(col));
 }
 
-void DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson, std::string & computeFilter)
+void DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, bool &invalidated, computedColumnType &codeType, std::string &rCode, std::string &error, Json::Value &constructorJson, std::string &computeFilter)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::columnGetComputedInfo);
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, columnId);
 	};
@@ -1669,13 +1576,13 @@ void DatabaseInterface::columnGetComputedInfo(int columnId, int &analysisId, boo
 
 		assert(colCount == 7);
 
-					invalidated			= sqlite3_column_int(		stmt,	0);
-		std::string codeTypeStr			= _wrap_sqlite3_column_text(stmt,	1);
-					rCode				= _wrap_sqlite3_column_text(stmt,	2);
-					error				= _wrap_sqlite3_column_text(stmt,	3);
-		std::string constructorJsonStr	= _wrap_sqlite3_column_text(stmt,	4);
-					analysisId			= sqlite3_column_int(		stmt,	5);
-					computeFilter		= _wrap_sqlite3_column_text(stmt,	6);
+		invalidated = sqlite3_column_int(stmt, 0);
+		std::string codeTypeStr = _wrap_sqlite3_column_text(stmt, 1);
+		rCode = _wrap_sqlite3_column_text(stmt, 2);
+		error = _wrap_sqlite3_column_text(stmt, 3);
+		std::string constructorJsonStr = _wrap_sqlite3_column_text(stmt, 4);
+		analysisId = sqlite3_column_int(stmt, 5);
+		computeFilter = _wrap_sqlite3_column_text(stmt, 6);
 
 		codeType = computedColumnType::notComputed;
 		if (!codeTypeStr.empty())
@@ -1695,19 +1602,16 @@ void DatabaseInterface::labelsClear(int columnId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelsClear);
 	runStatements("DELETE FROM Labels WHERE columnId = ?;", [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int(stmt,	1, columnId);
-	});
+				  { sqlite3_bind_int(stmt, 1, columnId); });
 }
 
-bool DatabaseInterface::labelExists(int	columnId, int intsId)
+bool DatabaseInterface::labelExists(int columnId, int intsId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelExists);
 	return -1 != runStatementsId("SELECT id FROM Labels WHERE columnId = ? and value = ?;", [&](sqlite3_stmt *stmt)
-	{
+								 {
 		sqlite3_bind_int(stmt,	1, columnId);
-		sqlite3_bind_int(stmt,  2, intsId);
-	});
+		sqlite3_bind_int(stmt,  2, intsId); });
 }
 
 intset DatabaseInterface::labelsExisting(int columnId)
@@ -1723,51 +1627,51 @@ intset DatabaseInterface::labelsExisting(int columnId)
 	return ints;
 }
 
-int DatabaseInterface::labelAdd(int columnId, int value, const std::string & label, bool filterAllows, const	std::string & description, const std::string & originalValueJson)
+int DatabaseInterface::labelAdd(int columnId, int value, const std::string &label, bool filterAllows, const std::string &description, const std::string &originalValueJson)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelAdd);
 	return runStatementsId("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson) "
-						   "VALUES (?, ?, ?, ?, ?, ?) RETURNING rowid;", [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int( stmt,	1, columnId);
-		sqlite3_bind_int( stmt,	2, value);
-		sqlite3_bind_text(stmt, 3, label.c_str(),				label.length(),				SQLITE_TRANSIENT);
-		sqlite3_bind_int( stmt,	4, filterAllows);
-		sqlite3_bind_text(stmt, 5, description.c_str(),			description.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 6, originalValueJson.c_str(),	originalValueJson.length(),	SQLITE_TRANSIENT);
-	});
+						   "VALUES (?, ?, ?, ?, ?, ?) RETURNING rowid;",
+						   [&](sqlite3_stmt *stmt)
+						   {
+							   sqlite3_bind_int(stmt, 1, columnId);
+							   sqlite3_bind_int(stmt, 2, value);
+							   sqlite3_bind_text(stmt, 3, label.c_str(), label.length(), SQLITE_TRANSIENT);
+							   sqlite3_bind_int(stmt, 4, filterAllows);
+							   sqlite3_bind_text(stmt, 5, description.c_str(), description.length(), SQLITE_TRANSIENT);
+							   sqlite3_bind_text(stmt, 6, originalValueJson.c_str(), originalValueJson.length(), SQLITE_TRANSIENT);
+						   });
 }
 
-void DatabaseInterface::labelSet(int id, int columnId, int value, const std::string & label, bool filterAllows, const	std::string & description, const std::string & originalValueJson, bool userAdded)
+void DatabaseInterface::labelSet(int id, int columnId, int value, const std::string &label, bool filterAllows, const std::string &description, const std::string &originalValueJson, bool userAdded)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelSet);
 	runStatements("UPDATE Labels SET columnId=?, value=?, label=?, filterAllows=?, description=?, originalValueJson=?, userAdded=? "
-						   "WHERE id = ?;", [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int( stmt,	1, columnId);
-		sqlite3_bind_int( stmt,	2, value);
-		sqlite3_bind_text(stmt, 3, label.c_str(),				label.length(),					SQLITE_TRANSIENT);
-		sqlite3_bind_int( stmt,	4, filterAllows);
-		sqlite3_bind_text(stmt, 5, description.c_str(),			description.length(),			SQLITE_TRANSIENT);
-		sqlite3_bind_text(stmt, 6, originalValueJson.c_str(),	originalValueJson.length(),		SQLITE_TRANSIENT);
-		sqlite3_bind_int( stmt,	7, userAdded);
-		sqlite3_bind_int( stmt,	8, id);
-	});
+				  "WHERE id = ?;",
+				  [&](sqlite3_stmt *stmt)
+				  {
+					  sqlite3_bind_int(stmt, 1, columnId);
+					  sqlite3_bind_int(stmt, 2, value);
+					  sqlite3_bind_text(stmt, 3, label.c_str(), label.length(), SQLITE_TRANSIENT);
+					  sqlite3_bind_int(stmt, 4, filterAllows);
+					  sqlite3_bind_text(stmt, 5, description.c_str(), description.length(), SQLITE_TRANSIENT);
+					  sqlite3_bind_text(stmt, 6, originalValueJson.c_str(), originalValueJson.length(), SQLITE_TRANSIENT);
+					  sqlite3_bind_int(stmt, 7, userAdded);
+					  sqlite3_bind_int(stmt, 8, id);
+				  });
 }
 
 void DatabaseInterface::labelDelete(int id)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelDelete);
 	runStatements("DELETE FROM Labels WHERE id = ?;", [&](sqlite3_stmt *stmt)
-	{
-		sqlite3_bind_int( stmt,	1, id);
-	});
+								{ sqlite3_bind_int(stmt, 1, id); });
 }
 
-void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::string & label, bool & filterAllows, std::string & description, std::string & originalValueJson, int & order, bool & userAdded)
+void DatabaseInterface::labelLoad(int id, int &columnId, int &value, std::string &label, bool &filterAllows, std::string &description, std::string &originalValueJson, int &order, bool &userAdded)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelLoad);
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, id);
 	};
@@ -1778,44 +1682,41 @@ void DatabaseInterface::labelLoad(int id, int & columnId, int & value, std::stri
 
 		assert(colCount == 8);
 
-					columnId			= sqlite3_column_int(stmt,			0);
-					value				= sqlite3_column_int(stmt,			1);
-					label				= _wrap_sqlite3_column_text(stmt,	2);
-					order				= sqlite3_column_int(stmt,			3);
-					filterAllows		= sqlite3_column_int(stmt,			4);
-					description			= _wrap_sqlite3_column_text(stmt,	5);
-					originalValueJson	= _wrap_sqlite3_column_text(stmt,	6);
-					userAdded			= sqlite3_column_int(stmt,			7);
-
+		columnId					= sqlite3_column_int(stmt,				0);
+		value							= sqlite3_column_int(stmt,				1);
+		label							= _wrap_sqlite3_column_text(stmt, 2);
+		order							= sqlite3_column_int(stmt,				3);
+		filterAllows			= sqlite3_column_int(stmt,				4);
+		description				= _wrap_sqlite3_column_text(stmt, 5);
+		originalValueJson = _wrap_sqlite3_column_text(stmt, 6);
+		userAdded					= sqlite3_column_int(stmt,				7);
 	};
 
 	runStatements("SELECT columnId, value, label, ordering, filterAllows, description, originalValueJson, userAdded FROM Labels WHERE id = ?;", prepare, processRow);
 }
 
-void DatabaseInterface::labelsSetOrder(const intintmap & orderPerDbId)
+void DatabaseInterface::labelsSetOrder(const intintmap &orderPerDbId)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelsSetOrder);
-	
+
 	auto iter = orderPerDbId.begin();
-	if(iter == orderPerDbId.end())
+	if (iter == orderPerDbId.end())
 		return;
-	
+
 	transactionWriteBegin();
-	
-	bindParametersType _bindParams = [&](sqlite3_stmt * stmt)
+
+	bindParametersType _bindParams = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, iter->second);
 		sqlite3_bind_int(stmt, 2, iter->first);
 		iter++;
 	};
 
-	_runStatementsRepeatedly("UPDATE Labels SET ordering=? WHERE id=?", [&](bindParametersType ** bindParams, size_t)
-	{
+	_runStatementsRepeatedly("UPDATE Labels SET ordering=? WHERE id=?", [&](bindParametersType **bindParams, size_t)
+							 {
 		(*bindParams) = &_bindParams;
 				
-		return iter != orderPerDbId.end();
-	});
-
+		return iter != orderPerDbId.end(); });
 
 	transactionWriteEnd();
 }
@@ -1825,33 +1726,31 @@ void DatabaseInterface::labelSetOrder(int id, int order)
 	JASPTIMER_SCOPE(DatabaseInterface::labelSetOrder);
 	transactionWriteBegin();
 
-	runStatements("UPDATE Labels SET ordering=? WHERE id=?", [&](sqlite3_stmt * stmt)
-	{
+	runStatements("UPDATE Labels SET ordering=? WHERE id=?", [&](sqlite3_stmt *stmt)
+				  {
 		sqlite3_bind_int(stmt, 1, order);
-		sqlite3_bind_int(stmt, 2, id);
-	});
+		sqlite3_bind_int(stmt, 2, id); });
 
 	transactionWriteEnd();
 }
 
-
-void DatabaseInterface::labelsLoad(Column * column)
+void DatabaseInterface::labelsLoad(Column *column)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelsLoad);
-	
+
 	transactionReadBegin();
-	
+
 	column->beginBatchedLabelsDB();
-	
+
 	int labelsSize = 0;
 
 	column->_resetLabelValueMap();
-	
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
+
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt)
 	{
 		sqlite3_bind_int(stmt, 1, column->id());
 	};
-	
+
 	Json::Reader reader;
 
 	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t, sqlite3_stmt *stmt)
@@ -1860,65 +1759,63 @@ void DatabaseInterface::labelsLoad(Column * column)
 
 		assert(colCount == 7);
 
-		int			id						= sqlite3_column_int(stmt,			0);
-		int			value					= sqlite3_column_int(stmt,			1);
-		std::string	label					= _wrap_sqlite3_column_text(stmt,	2);
-		int			order					= sqlite3_column_int(stmt,			3);
-		bool		filterAllows			= sqlite3_column_int(stmt,			4);
-		std::string	description				= _wrap_sqlite3_column_text(stmt,	5);
-		std::string	originalValueJsonStr	= _wrap_sqlite3_column_text(stmt,	6);
-		
+		int id														= sqlite3_column_int(stmt,				0);
+		int value													= sqlite3_column_int(stmt,				1);
+		std::string label									= _wrap_sqlite3_column_text(stmt, 2);
+		int order													= sqlite3_column_int(stmt,				3);
+		bool filterAllows									= sqlite3_column_int(stmt,				4);
+		std::string description						= _wrap_sqlite3_column_text(stmt, 5);
+		std::string originalValueJsonStr	= _wrap_sqlite3_column_text(stmt, 6);
+
 		Json::Value originalValueJson;
-		
+
 		reader.parse(originalValueJsonStr, originalValueJson);
 
 		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
 			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
 
-		column->labelsSet(labelsSize++,	value, label, filterAllows, description, originalValueJson, order, id);
+		column->labelsSet(labelsSize++, value, label, filterAllows, description, originalValueJson, order, id);
 	};
 
 	runStatements("SELECT id, value, label, ordering, filterAllows, description, originalValueJson FROM Labels WHERE columnId = ? ORDER BY ordering;", prepare, processRow);
 
 	column->labelsShrinkOnlyToSize(labelsSize);
-	 
+
 	column->endBatchedLabelsDB(false);
-	
+
 	transactionReadEnd();
 }
 
-void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void (float)> progressCallback)
+void DatabaseInterface::labelsLoad(const Columns &columns) //, std::function<void (float)> progressCallback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::labelsLoad);
-	
+
 	transactionReadBegin();
-	
-	std::map<int,Column*>	localColMap;
-	intintmap				labelsPerCol;
-	std::stringstream		statement;
-	
+
+	std::map<int, Column *> localColMap;
+	intintmap labelsPerCol;
+	std::stringstream statement;
+
 	statement << "SELECT id, value, label, ordering, filterAllows, description, originalValueJson, columnId FROM Labels WHERE columnId IN (";
-	
-	for(Column * column : columns)
+
+	for (Column *column : columns)
 	{
 		column->beginBatchedLabelsDB();
-		
-		if(localColMap.size() > 0)
+
+		if (localColMap.size() > 0)
 			statement << ", ";
 		statement << column->id();
-		
-		localColMap [column->id()] = column;
+
+		localColMap[column->id()] = column;
 		labelsPerCol[column->id()] = 0;
 
 		column->_resetLabelValueMap();
 	}
-	
+
 	statement << ")  ORDER BY columnId, ordering;";
 
-	std::function<void(sqlite3_stmt *stmt)>  prepare = [&](sqlite3_stmt *stmt)
-	{
-	};
-	
+	std::function<void(sqlite3_stmt *stmt)> prepare = [&](sqlite3_stmt *stmt) {};
+
 	Json::Reader reader;
 
 	std::function<void(size_t row, sqlite3_stmt *stmt)> processRow = [&](size_t row, sqlite3_stmt *stmt)
@@ -1927,51 +1824,38 @@ void DatabaseInterface::labelsLoad(const Columns &columns)//, std::function<void
 
 		assert(colCount == 8);
 
-		int			id						= sqlite3_column_int(stmt,			0);
-		int			value					= sqlite3_column_int(stmt,			1);
-		std::string	label					= _wrap_sqlite3_column_text(stmt,	2);
-		int			order					= sqlite3_column_int(stmt,			3);
-		bool		filterAllows			= sqlite3_column_int(stmt,			4);
-		std::string	description				= _wrap_sqlite3_column_text(stmt,	5);
-		std::string	originalValueJsonStr	= _wrap_sqlite3_column_text(stmt,	6);
-		int			columnId				= sqlite3_column_int(stmt,			7);
-		
+		int id														= sqlite3_column_int(stmt,				0);
+		int value													= sqlite3_column_int(stmt,				1);
+		std::string label									= _wrap_sqlite3_column_text(stmt, 2);
+		int order													= sqlite3_column_int(stmt,				3);
+		bool filterAllows									= sqlite3_column_int(stmt,				4);
+		std::string description						= _wrap_sqlite3_column_text(stmt, 5);
+		std::string originalValueJsonStr	= _wrap_sqlite3_column_text(stmt, 6);
+		int columnId											= sqlite3_column_int(stmt,				7);
+
 		Json::Value originalValueJson;
-		
+
 		assert(id != -1);
-		
+
 		reader.parse(originalValueJsonStr, originalValueJson);
 
 		if (originalValueJson.isNull() && !originalValueJsonStr.empty())
 			originalValueJson = originalValueJsonStr; // For backward compatibility: in some JASP files the originalValueJson is not a json string but just the original string.
 
-		if(localColMap.count(columnId))
+		if (localColMap.count(columnId))
 		{
-			//std::stringstream str;
-			//str << "labelsLoad for column " << localColMap.at(columnId)->name() << " in thread " << std::this_thread::get_id() << " got "
-			//	<< "labelsSet(row='"		<< order
-			//	<< "', value='"				<< value
-			//	<< "', label='"				<< label
-			//	<< "', filterAllows='"		<< filterAllows
-			//	<< "', description='"		<< description
-			//	<< "', originalValueJson='"	<< originalValueJson
-			//	<< "', order='"				<< order
-			//	<< "', id='"				<< id
-			//	<< "')\n";
-			//Log::log() << str.str() << std::flush;
-
-			localColMap.at(columnId)->labelsSet(labelsPerCol[columnId]++,	value, label, filterAllows, description, originalValueJson, order, id);
+			localColMap.at(columnId)->labelsSet(labelsPerCol[columnId]++, value, label, filterAllows, description, originalValueJson, order, id);
 		}
 	};
 
 	runStatements(statement.str(), prepare, processRow);
 
-	for(Column * column : columns)
+	for (Column *column : columns)
 	{
 		column->labelsShrinkOnlyToSize(labelsPerCol[column->id()]);
 		column->endBatchedLabelsDB(false);
 	}
-	
+
 	transactionReadEnd();
 }
 
@@ -1980,134 +1864,131 @@ void DatabaseInterface::labelsWrite(Column *column)
 	JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Column);
 	transactionWriteBegin();
 
-	runStatements("DELETE From Labels WHERE columnId=?", [&](sqlite3_stmt *stmt) { sqlite3_bind_int( stmt,	1, column->id()); });
-	
+	runStatements("DELETE From Labels WHERE columnId=?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, column->id()); });
+
 	auto labelIter = column->labels().begin();
-	
-	if(labelIter != column->labels().end())
+
+	if (labelIter != column->labels().end())
 	{
 
-		bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
+		bindParametersType _bindParams = [&](sqlite3_stmt *stmt)
 		{
-			const Label			*	label			= *labelIter;
-			const std::string		labelDisplay	= label->label(),
-									origValJson		= label->originalValue().toStyledString();
-					
-			sqlite3_bind_int( stmt,	1, column->id());
-			sqlite3_bind_int( stmt,	2, label->intsId());
-			sqlite3_bind_text(stmt, 3, labelDisplay.c_str(),			labelDisplay.length(),				SQLITE_TRANSIENT);
-			sqlite3_bind_int( stmt,	4, label->filterAllows());
-			sqlite3_bind_text(stmt, 5, label->description().c_str(),	label->description().length(),		SQLITE_TRANSIENT);
-			sqlite3_bind_text(stmt, 6, origValJson.c_str(),				origValJson.length(),				SQLITE_TRANSIENT);
-			sqlite3_bind_int( stmt,	7, label->order());
+			const Label				*label				= *labelIter;
+			const std::string labelDisplay	= label->label(),
+												origValJson		= label->originalValue().toStyledString();
+
+			sqlite3_bind_int(stmt,	1, column->id());
+			sqlite3_bind_int(stmt,	2, label->intsId());
+			sqlite3_bind_text(stmt, 3, labelDisplay.c_str(),					labelDisplay.length(),					SQLITE_TRANSIENT);
+			sqlite3_bind_int(stmt,	4, label->filterAllows());
+			sqlite3_bind_text(stmt, 5, label->description().c_str(),	label->description().length(),	SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt, 6, origValJson.c_str(),						origValJson.length(),						SQLITE_TRANSIENT);
+			sqlite3_bind_int(stmt,	7, label->order());
 		};
-	
-		std::function<void(size_t,size_t, sqlite3_stmt*)> processRow = [&](size_t row, size_t rep, sqlite3_stmt * stmt)
+
+		std::function<void(size_t, size_t, sqlite3_stmt *)> processRow = [&](size_t row, size_t rep, sqlite3_stmt *stmt)
 		{
 			assert(sqlite3_column_count(stmt) == 1);
-	
-			Label * label = *labelIter;
+
+			Label *label = *labelIter;
 
 			label->setDbId(sqlite3_column_int(stmt, 0));
-	
+
 			labelIter++;
 		};
-		
-		_runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
-			{
+
+		_runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType **bindParams, size_t)
+								 {
 				(*bindParams) = &_bindParams;
 				
-				return labelIter != column->labels().end();
-			}, & processRow);
+				return labelIter != column->labels().end(); }, &processRow);
 	}
-	
+
 	transactionWriteEnd();
 }
 
-void DatabaseInterface::labelsWrite(const Columns & columns, std::function<void(float)> progressCallback)
+void DatabaseInterface::labelsWrite(const Columns &columns, std::function<void(float)> progressCallback)
 {
-	 JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Columns);
-	 transactionWriteBegin();
-	 
-	 Labels allLabels;
-	 
-	 if(columns.size() > 0)
-	 {
-		 std::stringstream statement;
-		 int count=0;
-		 
-		 statement << "(";
-		 for(Column * column : columns)
-		 {
-			 if(count > 0)
-				 statement << ", ";
-			 statement << column->id();
-			 
-			 for(Label * label : column->labels())
-				 allLabels.push_back(label);
-			 
-			 count++;
-		 }
-		 statement << ")";
-		 
-		 runStatements("DELETE From Labels WHERE columnId in " + statement.str());
-	}
-	 
-	auto labelIter = allLabels.begin();
-	
-	if(labelIter != allLabels.end())
+	JASPTIMER_SCOPE(DatabaseInterface::labelsWrite Columns);
+	transactionWriteBegin();
+
+	Labels allLabels;
+
+	if (columns.size() > 0)
 	{
-		const size_t	totalRows	= allLabels.size();
-		size_t			curRow		= 0,
-						lastRow		= 0;
- 
-		 bindParametersType _bindParams =  [&](sqlite3_stmt *stmt)
-		 {
-			 const Label			*	label			= *labelIter;
-			 const std::string			labelDisplay	= label->label(false),
-										origValJson		= label->originalValue().toStyledString();
-			 
-			 Column					*	column			= static_cast<Column*>(label->parent());
+		std::stringstream statement;
+		int count = 0;
 
-			 sqlite3_bind_int( stmt,	1, column->id());
-			 sqlite3_bind_int( stmt,	2, label->intsId());
-			 sqlite3_bind_text(stmt,	3, labelDisplay.c_str(),			labelDisplay.length(),				SQLITE_TRANSIENT);
-			 sqlite3_bind_int( stmt,	4, label->filterAllows());
-			 sqlite3_bind_text(stmt,	5, label->description().c_str(),	label->description().length(),		SQLITE_TRANSIENT);
-			 sqlite3_bind_text(stmt,	6, origValJson.c_str(),				origValJson.length(),				SQLITE_TRANSIENT);
-			 sqlite3_bind_int( stmt,	7, label->order());
-		 };
-	 
-		 std::function<void(size_t,size_t, sqlite3_stmt*)> processRow = [&](size_t row, size_t rep, sqlite3_stmt * stmt)
-		 {
-			 assert(sqlite3_column_count(stmt) == 1);
-	 
-			 Label * label = *labelIter;
+		statement << "(";
+		for (Column *column : columns)
+		{
+			if (count > 0)
+				statement << ", ";
+			statement << column->id();
 
-			 label->setDbId(sqlite3_column_int(stmt, 0));
-	 
-			 labelIter++;
-			 curRow++;
-			 
-			 if(curRow-lastRow > 100 || curRow-lastRow > totalRows / 100 || curRow >= totalRows-1)
-			 {
-				 progressCallback(float(curRow) / float(totalRows));
-				 lastRow = curRow;
+			for (Label *label : column->labels())
+				allLabels.push_back(label);
+
+			count++;
+		}
+		statement << ")";
+
+		runStatements("DELETE From Labels WHERE columnId in " + statement.str());
+	}
+
+	auto labelIter = allLabels.begin();
+
+	if (labelIter != allLabels.end())
+	{
+		const size_t totalRows = allLabels.size();
+		size_t curRow = 0,
+			   lastRow = 0;
+
+		bindParametersType _bindParams = [&](sqlite3_stmt *stmt)
+		{
+			const Label *label = *labelIter;
+			const std::string labelDisplay = label->label(false),
+							  origValJson = label->originalValue().toStyledString();
+
+			Column *column = static_cast<Column *>(label->parent());
+
+			sqlite3_bind_int(stmt,	1, column->id());
+			sqlite3_bind_int(stmt,	2, label->intsId());
+			sqlite3_bind_text(stmt,	3, labelDisplay.c_str(),					labelDisplay.length(),					SQLITE_TRANSIENT);
+			sqlite3_bind_int(stmt,	4, label->filterAllows());
+			sqlite3_bind_text(stmt,	5, label->description().c_str(),	label->description().length(),	SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmt,	6, origValJson.c_str(),						origValJson.length(),						SQLITE_TRANSIENT);
+			sqlite3_bind_int(stmt,	7, label->order());
+		};
+
+		std::function<void(size_t, size_t, sqlite3_stmt *)> processRow = [&](size_t row, size_t rep, sqlite3_stmt *stmt)
+		{
+			assert(sqlite3_column_count(stmt) == 1);
+
+			Label *label = *labelIter;
+
+			label->setDbId(sqlite3_column_int(stmt, 0));
+
+			labelIter++;
+			curRow++;
+
+			if (curRow - lastRow > 100 || curRow - lastRow > totalRows / 100 || curRow >= totalRows - 1)
+			{
+				progressCallback(float(curRow) / float(totalRows));
+				lastRow = curRow;
 			}
-		 };
-		 
-		 _runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType ** bindParams, size_t)
-			 {
+		};
+
+		_runStatementsRepeatedly("INSERT INTO Labels (columnId, value, label, filterAllows, description, originalValueJson, ordering) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id;", [&](bindParametersType **bindParams, size_t)
+								 {
 				 (*bindParams) = &_bindParams;
 				 
-				 return labelIter != allLabels.end();
-			 }, & processRow);
-	 }
-	 
-	 transactionWriteEnd();
+				 return labelIter != allLabels.end(); }, &processRow);
+	}
+
+	transactionWriteEnd();
 }
-
-
 
 std::string DatabaseInterface::dbFile(bool onlyName) const
 {
@@ -2122,15 +2003,15 @@ std::string DatabaseInterface::dbFile(bool onlyName) const
 	return onlyName ? fileName : std::filesystem::path(TempFiles::sessionDirName() + "/" + fileName).generic_string();
 }
 
-DatabaseInterface *DatabaseInterface::singleton() 
-{ 
-	if(!_singleton)
+DatabaseInterface *DatabaseInterface::singleton()
+{
+	if (!_singleton)
 	{
 		Log::log() << "No DatabaseInterface::singleton available here yet, creating an interface for internal.sqlite without recreating the dbstructure" << std::endl;
 		_singleton = new DatabaseInterface(false);
 	}
-	
-	return _singleton; 
+
+	return _singleton;
 }
 
 void DatabaseInterface::closeInterfaces()
@@ -2138,25 +2019,25 @@ void DatabaseInterface::closeInterfaces()
 	delete _singleton;
 }
 
-void DatabaseInterface::runQuery(const std::string & query, std::function<void(sqlite3_stmt *stmt)> bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> processRow)
+void DatabaseInterface::runQuery(const std::string &query, std::function<void(sqlite3_stmt *stmt)> bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> processRow)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runQuery);
 	runStatements(query, bindParameters, processRow);
 }
 
-void DatabaseInterface::runStatements(	const std::string & statements, bool ignoreFails)
+void DatabaseInterface::runStatements(const std::string &statements, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatements);
 	_runStatements(statements, nullptr, nullptr, ignoreFails);
 }
 
-void DatabaseInterface::runStatements(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails)
+void DatabaseInterface::runStatements(const std::string &statements, std::function<void(sqlite3_stmt *stmt)> bindParameters, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatements);
 	_runStatements(statements, &bindParameters, nullptr, ignoreFails);
 }
 
-int DatabaseInterface::runStatementsId(	const std::string & statements, std::function<void(sqlite3_stmt *stmt)>	bindParameters, bool ignoreFails)
+int DatabaseInterface::runStatementsId(const std::string &statements, std::function<void(sqlite3_stmt *stmt)> bindParameters, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::runStatementsId);
 	int id = -1;
@@ -2164,9 +2045,8 @@ int DatabaseInterface::runStatementsId(	const std::string & statements, std::fun
 	{
 		int colCount = sqlite3_column_count(stmt);
 
-		if(colCount)
+		if (colCount)
 			id = sqlite3_column_int(stmt, 0);
-
 	};
 
 	_runStatements(statements, &bindParameters, &processId, ignoreFails);
@@ -2197,7 +2077,7 @@ intset DatabaseInterface::runStatementsIds(	const std::string & statements, std:
 
 int DatabaseInterface::runStatementsId(const std::string & statements, bool ignoreFails) 
 {
-	return runStatementsId(statements, [](sqlite3_stmt *stmt){}, ignoreFails);
+	return runStatementsId(statements, [](sqlite3_stmt *stmt) {}, ignoreFails);
 }
 
 intset DatabaseInterface::runStatementsIds(const std::string &statements, bool ignoreFails)
@@ -2271,68 +2151,68 @@ void DatabaseInterface::dataSetDelete(int dataSetId)
 #define BUSY_MAX_SECS 90
 #define BUSY_INTERVAL std::chrono::nanoseconds(1000000)
 
-void DatabaseInterface::_runStatements(const std::string & statements, bindParametersType * bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
+void DatabaseInterface::_runStatements(const std::string &statements, bindParametersType *bindParameters, std::function<void(size_t row, sqlite3_stmt *stmt)> *processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_runStatements);
 #ifdef SIR_LOG_A_LOT
 	Log::log() << "Running statements: '" << statements << "'" << std::endl;
 #endif
-	
+
 	int64_t epochIdle = Utils::currentSeconds();
 
-	sqlite3_stmt * dbStmt = nullptr;
+	sqlite3_stmt *dbStmt = nullptr;
 
-	const char	*	start	= statements.c_str(),
-				*	current	= start,
-				*	tail;
-	size_t			total	= statements.size(),
-					remain,
-					row;
-	int				ret		= SQLITE_OK;
+	const char	*start		= statements.c_str(),
+							*current	= start,
+							*tail;
+	size_t			total			= statements.size(),
+							remain,
+							row;
+	int					ret				= SQLITE_OK;
 
 	do
 	{
 		JASPTIMER_RESUME(DatabaseInterface::_runStatements prepare);
-		ret	= sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
+		ret = sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
 		JASPTIMER_STOP(DatabaseInterface::_runStatements prepare);
 		row = 0;
 
-		if(bindParameters)
+		if (bindParameters && *bindParameters)
 			(*bindParameters)(dbStmt);
 
 		JASPTIMER_RESUME(DatabaseInterface::_runStatements run statements);
-		if(ret == SQLITE_OK && dbStmt)
+		if (ret == SQLITE_OK && dbStmt)
 		{
 			do
 			{
 				ret = sqlite3_step(dbStmt);
-				
-				switch(ret)
+
+				switch (ret)
 				{
 				case SQLITE_ERROR:
 				{
-					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` failed because of: `" + sqlite3_errmsg(_db());
+					std::string errorMsg = "Running ```\n" + statements.substr(current - start) + "\n``` failed because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
-					if(!ignoreFails)
+					if (!ignoreFails)
 						throw std::runtime_error(errorMsg);
 				}
-				 
-			   case SQLITE_ROW:
+
+				case SQLITE_ROW:
 					epochIdle = Utils::currentSeconds();
-					if(processRow)
+					if (processRow && *processRow)
 						(*processRow)(row, dbStmt);
 					row++;
 					break;
-					
+
 				case SQLITE_BUSY:
-					if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
+					if (Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
 						throw std::runtime_error("Sqlite was busy for too long!");
 					std::this_thread::sleep_for(BUSY_INTERVAL);
 					break;
-					
+
 				case SQLITE_DONE:
 					break;
-				
+
 				case SQLITE_NOTADB:
 				case SQLITE_CORRUPT:
 				{
@@ -2340,27 +2220,23 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 					throw dbMalformedException();
 				}
 
-					
-				//case SQLITE_CORRUPT:
-				//{
-				//	std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
-				//	Log::log() << errorMsg << std::endl;
-				//	throw std::runtime_error(errorMsg);
-				//}
-				//	break;
-					
+					// case SQLITE_CORRUPT:
+					//{
+					//	std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
+					//	Log::log() << errorMsg << std::endl;
+					//	throw std::runtime_error(errorMsg);
+					// }
+					//	break;
+
 				default:
 				{
-					std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` had unchecked status "+std::to_string(ret)+" because of: `" + sqlite3_errmsg(_db());
+					std::string errorMsg = "Running ```\n" + statements.substr(current - start) + "\n``` had unchecked status " + std::to_string(ret) + " because of: `" + sqlite3_errmsg(_db());
 					Log::log() << errorMsg << std::endl;
 					break;
 				}
-			   }
-				
-				
+				}
 
-			}
-			while((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
+			} while ((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
 
 			JASPTIMER_STOP(DatabaseInterface::_runStatements run statements);
 
@@ -2368,30 +2244,29 @@ void DatabaseInterface::_runStatements(const std::string & statements, bindParam
 			dbStmt = nullptr;
 		}
 
-		remain	= total - (tail - start);
-		//Log::log() << "Just ran `" + std::string(current, tail) + "` which returned " << ret << " and " << remain << " remaining." << std::endl;
-		current	= tail;
-	}
-	while(remain > 1 && (ret == SQLITE_OK && ret != SQLITE_DONE));
+		remain = total - (tail - start);
+		// Log::log() << "Just ran `" + std::string(current, tail) + "` which returned " << ret << " and " << remain << " remaining." << std::endl;
+		current = tail;
+	} while (remain > 1 && (ret == SQLITE_OK && ret != SQLITE_DONE));
 
 	const int maxLenStatementError = 200;
 	std::string shortStatements = statements.size() <= maxLenStatementError ? statements : statements.substr(0, maxLenStatementError);
-	
-	if(ret == SQLITE_ERROR)
+
+	if (ret == SQLITE_ERROR)
 	{
-		Log::log() <<					"Running ```\n"+statements		+"\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
-		if(!ignoreFails)
-			throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because of: `" + sqlite3_errmsg(_db()));
+		Log::log() <<							"Running ```\n" + statements + "\n``` failed because of: `" + sqlite3_errmsg(_db()) << std::endl;
+		if (!ignoreFails)
+			throw std::runtime_error("Running ```\n" + shortStatements + "\n``` failed because of: `" + sqlite3_errmsg(_db()));
 	}
 
-	if(ret == SQLITE_READONLY)
+	if (ret == SQLITE_READONLY)
 	{
-		Log::log() <<				"Running ```\n"+statements		+"\n``` failed because the database is readonly..." << std::endl;
-		throw std::runtime_error(	"Running ```\n"+shortStatements	+"\n``` failed because the database is readonly...");
+		Log::log() <<							"Running ```\n" + statements + "\n``` failed because the database is readonly..." << std::endl;
+		throw std::runtime_error(	"Running ```\n" + shortStatements + "\n``` failed because the database is readonly...");
 	}
 }
 
-void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements, std::function<bool(bindParametersType ** bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> * processRow, bool ignoreFails)
+void DatabaseInterface::_runStatementsRepeatedly(const std::string &statements, std::function<bool(bindParametersType **bindParameters, size_t row)> bindParameterFactory, std::function<void(size_t row, size_t repetition, sqlite3_stmt *stmt)> *processRow, bool ignoreFails)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::_runStatementsRepeatedly);
 #ifdef SIR_LOG_A_LOT
@@ -2399,97 +2274,95 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 #endif
 
 	int64_t epochIdle = Utils::currentSeconds();
-	
-	sqlite3_stmt * dbStmt = nullptr;
 
-	const char	*	start		= statements.c_str(),
-				*	current		= start,
-				*	tail;
-	size_t			total		= statements.size(),
-					remain,
-					row			= 0,
-					repetition	=  0;
-	int				ret			= SQLITE_OK;
+	sqlite3_stmt *dbStmt = nullptr;
 
-	std::function<void(sqlite3_stmt *stmt)> * bindParameters = nullptr;
+	const char	*start			= statements.c_str(),
+							*current		= start,
+							*tail;
+	size_t			total				= statements.size(),
+							remain,
+							row					= 0,
+							repetition	= 0;
+	int					ret					= SQLITE_OK;
+
+	std::function<void(sqlite3_stmt *stmt)> *bindParameters = nullptr;
 
 	do
 	{
-		ret	= sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
+		ret = sqlite3_prepare_v2(_db(), current, total - (current - start), &dbStmt, &tail);
 
 		row = 0;
 
-		while((ret == SQLITE_OK || ret == SQLITE_DONE) && dbStmt && bindParameterFactory(&bindParameters, row))
+		while ((ret == SQLITE_OK || ret == SQLITE_DONE) && dbStmt && bindParameterFactory(&bindParameters, row))
 		{
-			if(bindParameters)
+			if (bindParameters)
 				(*bindParameters)(dbStmt);
 
-			if((ret == SQLITE_OK || ret == SQLITE_DONE) && dbStmt)
+			if ((ret == SQLITE_OK || ret == SQLITE_DONE) && dbStmt)
 			{
 				do
 				{
 					ret = sqlite3_step(dbStmt);
 
-					switch(ret)
+					switch (ret)
 					{
 					case SQLITE_ERROR:
 					{
-						std::string errorMsg = "Running `\n"+statements.substr(current - start)+"\n` repeatedly failed because of: `" + sqlite3_errmsg(_db());
+						std::string errorMsg = "Running `\n" + statements.substr(current - start) + "\n` repeatedly failed because of: `" + sqlite3_errmsg(_db());
 						Log::log() << errorMsg << std::endl;
-						
-						if(!ignoreFails)
+
+						if (!ignoreFails)
 							throw std::runtime_error(errorMsg);
 					}
 
 					case SQLITE_ROW:
-						if(processRow)
+						if (processRow)
 							(*processRow)(row, repetition, dbStmt);
 						row++;
 						epochIdle = Utils::currentSeconds();
 						break;
-						
+
 					case SQLITE_BUSY:
-						if(Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
+						if (Utils::currentSeconds() - epochIdle > BUSY_MAX_SECS)
 							throw std::runtime_error("Sqlite was busy for too long!");
 						std::this_thread::sleep_for(BUSY_INTERVAL);
 						break;
-						
+
 					case SQLITE_DONE:
 						row++;
 						break;
-					
+
 					case SQLITE_NOTADB:
 					case SQLITE_CORRUPT:
 					{
 						Log::log() << "Database is malformed..." << std::endl;
 						throw dbMalformedException();
 					}
-						
-					//case SQLITE_CORRUPT:
+
+					// case SQLITE_CORRUPT:
 					//{
 					//	std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` with status "+std::to_string(ret)+" failed  because of: `" + sqlite3_errmsg(_db());
 					//	Log::log() << errorMsg << std::endl;
 					//	throw std::runtime_error(errorMsg);
-					//}
-						break;
-						
+					// }
+					break;
+
 					default:
 					{
-						std::string errorMsg = "Running ```\n"+statements.substr(current - start)+"\n``` had unchecked status "+std::to_string(ret)+" because of: `" + sqlite3_errmsg(_db());
+						std::string errorMsg = "Running ```\n" + statements.substr(current - start) + "\n``` had unchecked status " + std::to_string(ret) + " because of: `" + sqlite3_errmsg(_db());
 						Log::log() << errorMsg << std::endl;
 					}
 					}
-				
-					
-				}
-				while((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
+
+				} while ((ret == SQLITE_BUSY || ret == SQLITE_ROW) && ret != SQLITE_DONE);
 			}
-			
+
 			sqlite3_reset(dbStmt);
 			repetition++;
 		}
-		
-		if(ret == SQLITE_ERROR)
+
+		if (ret == SQLITE_ERROR)
 		{
 			std::string errorMsg = "A problem occured trying to prepare statement `" + statements + "` and the error was: : `" + sqlite3_errmsg(_db());
 			Log::log() << errorMsg << std::endl;
@@ -2499,46 +2372,44 @@ void DatabaseInterface::_runStatementsRepeatedly(const std::string & statements,
 		ret = sqlite3_finalize(dbStmt);
 		dbStmt = nullptr;
 
+		remain = total - (tail - start);
+		// Log::log() << "Just ran `" + std::string(current, tail) + "` which returned " << ret << " and " << remain << " remaining." << std::endl;
+		current = tail;
+	} while (remain > 1 && (ret == SQLITE_OK && ret != SQLITE_DONE));
 
-		remain	= total - (tail - start);
-		//Log::log() << "Just ran `" + std::string(current, tail) + "` which returned " << ret << " and " << remain << " remaining." << std::endl;
-		current	= tail;
-	}
-	while(remain > 1 && (ret == SQLITE_OK && ret != SQLITE_DONE));
-
-	if(ret == SQLITE_ERROR)
+	if (ret == SQLITE_ERROR)
 	{
-		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because of: `" + sqlite3_errmsg(_db());
+		std::string errorMsg = "Running ```\n" + statements + "\n``` failed because of: `" + sqlite3_errmsg(_db());
 		Log::log() << errorMsg << std::endl;
 
-		if(!ignoreFails)
+		if (!ignoreFails)
 			throw std::runtime_error(errorMsg);
 	}
 
-	if(ret == SQLITE_READONLY)
+	if (ret == SQLITE_READONLY)
 	{
-		std::string errorMsg = "Running ```\n"+statements+"\n``` failed because the database is readonly...";
+		std::string errorMsg = "Running ```\n" + statements + "\n``` failed because the database is readonly...";
 		Log::log() << errorMsg << std::endl;
 		throw std::runtime_error(errorMsg);
 	}
 }
 
-sqlite3 * DatabaseInterface::_db()
-{	
+sqlite3 *DatabaseInterface::_db()
+{
 	const auto id = std::this_thread::get_id();
 
-	if(_dbCreated && _dbCreator == id)
+	if (_dbCreated && _dbCreator == id)
 		return _dbCreated;
 
 	_dbCheckMutex.lock();
-	bool itsNotThereYet = !_dbs.count(id); //tip toe around the map
+	bool itsNotThereYet = !_dbs.count(id); // tip toe around the map
 	_dbCheckMutex.unlock();
 
-	if(itsNotThereYet)
+	if (itsNotThereYet)
 		load();
 
 	_dbCheckMutex.lock();
-	sqlite3 * dbFound = _dbs.at(id);
+	sqlite3 *dbFound = _dbs.at(id);
 	_dbCheckMutex.unlock();
 
 	return dbFound;
@@ -2549,65 +2420,65 @@ void DatabaseInterface::create()
 	JASPTIMER_SCOPE(DatabaseInterface::create);
 	assert(!_dbCreated);
 
-	if(!_inMemory && std::filesystem::exists(dbFile()))
+	if (!_inMemory && std::filesystem::exists(dbFile()))
 	{
 		Log::log() << "DatabaseInterface::create: Removing existing sqlite internal db at " << dbFile() << std::endl;
 		std::filesystem::remove(dbFile());
 	}
-	
+
 	int ret = sqlite3_open_v2(dbFile().c_str(), &_dbCreated, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX, NULL);
-	
+
 	_transactionWriteDepth = 0;
 	_transactionReadDepth = 0;
 
-	if(ret != SQLITE_OK)
+	if (ret != SQLITE_OK)
 	{
-		Log::log() << "Couldnt open sqlite internal db (" << dbFile() << "), because of: " << (_dbCreated ? sqlite3_errmsg(_dbCreated) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		Log::log() << "Couldnt open sqlite internal db (" << dbFile() << "), because of: " << (_dbCreated ? sqlite3_errmsg(_dbCreated) : "not even a broken sqlite3 obj was returned...") << std::endl;
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
 		Log::log() << "Opened internal sqlite database for creation at '" << dbFile() << "'.  This is for thread " << std::this_thread::get_id() << std::endl;
-	
-	//runStatements("pragma journal_mode=wal;");
-	//runStatements("pragma synchronous=full;");
-	
+
+	// runStatements("pragma journal_mode=wal;");
+	// runStatements("pragma synchronous=full;");
+
 	sqlite3_busy_timeout(_dbCreated, 100);
-	
-	bool	constructionWorked	= false;
-	size_t	constructionAttempt = 0; 
+
+	bool constructionWorked = false;
+	size_t constructionAttempt = 0;
 isItReallyALabel:
-	
+
 	try
 	{
 		transactionWriteBegin();
 		runStatements(_dbConstructionSql);
 		runStatements(_dbIndexesSql);
 		transactionWriteEnd();
-		
+
 		constructionWorked = true;
 	}
-	catch(dbMalformedException & e)
+	catch (dbMalformedException &e)
 	{
-		//Unfortunate, but perhaps we were too quick?	
+		// Unfortunate, but perhaps we were too quick?
 		constructionWorked = false;
 		constructionAttempt++;
 	}
-	
-	if(!constructionWorked)
+
+	if (!constructionWorked)
 	{
-		if(constructionAttempt > 10)
+		if (constructionAttempt > 10)
 			throw dbMalformedException();
-		
+
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1000000));
 		goto isItReallyALabel;
 	}
-	
+
 	_dbCreator = std::this_thread::get_id();
 }
 
 void DatabaseInterface::preloadInterfaceForThread()
 {
-	//Load the interface by asking for it
+	// Load the interface by asking for it
 	_db();
 }
 
@@ -2617,25 +2488,25 @@ void DatabaseInterface::load()
 	assert(!_dbCreated || std::this_thread::get_id() != _dbCreator);
 
 	_loadMutex.lock();
-	if(_dbs.count(std::this_thread::get_id()))
+	if (_dbs.count(std::this_thread::get_id()))
 	{
-		sqlite3* connection = _dbs.at(std::this_thread::get_id());
+		sqlite3 *connection = _dbs.at(std::this_thread::get_id());
 		_loadMutex.unlock();
 		return;
 	}
 
-	if(!std::filesystem::exists(dbFile()))
+	if (!std::filesystem::exists(dbFile()))
 		throw std::runtime_error("Trying to load '" + dbFile() + "' but it doesn't exist!");
 
-	bool        loadingWorked	= false;
-	size_t      loadingAttempt	= 0;
-	sqlite3 *   db              = nullptr;
+	bool loadingWorked = false;
+	size_t loadingAttempt = 0;
+	sqlite3 *db = nullptr;
 
 	int ret = sqlite3_open_v2(dbFile().c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_NOMUTEX, NULL);
 
-	if(ret != SQLITE_OK)
+	if (ret != SQLITE_OK)
 	{
-		Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned..." ) << std::endl;
+		Log::log() << "Couldnt open sqlite internal db, because of: " << (db ? sqlite3_errmsg(db) : "not even a broken sqlite3 obj was returned...") << std::endl;
 		throw std::runtime_error("JASP cannot run without an internal database and it cannot be created. Contact the JASP team for help.");
 	}
 	else
@@ -2648,29 +2519,29 @@ void DatabaseInterface::load()
 	_dbCheckMutex.unlock();
 	_loadMutex.unlock();
 
-	for(bool loadingWorked = false; !loadingWorked; )
+	for (bool loadingWorked = false; !loadingWorked;)
 	{
 		sqlite3_busy_timeout(db, 100);
 
 		try
 		{
 			int tableCount = runStatementsId("SELECT COUNT(*) FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';");
-			if(tableCount < 0)
+			if (tableCount < 0)
 				throw dbMalformedException();
 
 			Log::log() << "Loaded a database with #" << tableCount << " tables." << std::endl;
 			loadingWorked = true;
 		}
-		catch(dbMalformedException & e)
+		catch (dbMalformedException &e)
 		{
-			//Unfortunate, but perhaps we were too quick?
+			// Unfortunate, but perhaps we were too quick?
 			loadingWorked = false;
 			loadingAttempt++;
 		}
 
-		if(!loadingWorked)
+		if (!loadingWorked)
 		{
-			if(loadingAttempt > 10 * 60) //Timeout is 0.1 sec, so this lets the db try for 1 minute to connect...
+			if (loadingAttempt > 10 * 60) // Timeout is 0.1 sec, so this lets the db try for 1 minute to connect...
 				throw dbMalformedException();
 
 			Log::log() << "There was a problem loading the database, retrying for the #" << loadingAttempt << " time" << std::endl;
@@ -2684,35 +2555,34 @@ void DatabaseInterface::load()
 void DatabaseInterface::close()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::close);
-	
-	std::set<sqlite3*> waitingFor;
-	
+
+	std::set<sqlite3 *> waitingFor;
+
 	_dbCheckMutex.lock();
 
-	for(auto & idDb : _dbs)
+	for (auto &idDb : _dbs)
 		waitingFor.insert(idDb.second);
-					
+
 	do
 	{
-		for(auto & idDb : _dbs)
-			if(waitingFor.count(idDb.second))
+		for (auto &idDb : _dbs)
+			if (waitingFor.count(idDb.second))
 			{
 				int ret = sqlite3_close(idDb.second);
-				
-				if(ret == SQLITE_OK)
+
+				if (ret == SQLITE_OK)
 					waitingFor.erase(idDb.second);
 			}
-		
-		if(waitingFor.size() > 0)
+
+		if (waitingFor.size() > 0)
 			std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
-	}
-	while(waitingFor.size() > 0);
-		
+	} while (waitingFor.size() > 0);
+
 	_dbs.clear();
 
 	_dbCheckMutex.unlock();
-	
-	while(_dbCreated && sqlite3_close(_dbCreated) != SQLITE_OK)
+
+	while (_dbCreated && sqlite3_close(_dbCreated) != SQLITE_OK)
 	{
 		std::this_thread::sleep_for(std::chrono::nanoseconds(10000000));
 	}
@@ -2722,16 +2592,15 @@ void DatabaseInterface::close()
 bool DatabaseInterface::tableHasColumn(const std::string &tableName, const std::string &columnName)
 {
 	return SQLITE_OK == sqlite3_table_column_metadata(
-	  _db(),
-	  NULL,     
-	  tableName.c_str(), 
-	  columnName.c_str(),
-	  NULL,
-	  NULL,
-	  NULL,
-	  NULL,
-	  NULL
-				);
+							_db(),
+							NULL,
+							tableName.c_str(),
+							columnName.c_str(),
+							NULL,
+							NULL,
+							NULL,
+							NULL,
+							NULL);
 }
 
 bool DatabaseInterface::tableExists(const std::string &name)
@@ -2752,52 +2621,53 @@ int DatabaseInterface::transactionReadDepth()
 void DatabaseInterface::transactionWriteBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteBegin);
-	
-	if(_transactionReadDepth > 0)
+
+	if (_transactionReadDepth > 0)
 	{
 		Log::log() << "A read transaction seems to be still going during DatabaseInterface::transactionWriteBegin, however, instead of crashing directly we will just try to unwind it." << std::endl;
-		while(_transactionReadDepth > 0) transactionReadEnd();
+		while (_transactionReadDepth > 0)
+			transactionReadEnd();
 	}
-	
-	if(_transactionWriteDepth++ == 0)
-		runStatements("BEGIN EXCLUSIVE", true); //runStatements already has a while loop handling SQLITE_BUSY so this should work?
+
+	if (_transactionWriteDepth++ == 0)
+		runStatements("BEGIN EXCLUSIVE", true); // runStatements already has a while loop handling SQLITE_BUSY so this should work?
 }
 
 void DatabaseInterface::transactionReadBegin()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadBegin);
-	
-	if(_transactionWriteDepth > 0)
+
+	if (_transactionWriteDepth > 0)
 	{
 		Log::log() << "A write transaction seems to be still going during DatabaseInterface::transactionReadBegin, however, instead of crashing directly we will just try to unwind it." << std::endl;
-		while(_transactionWriteDepth > 0) transactionWriteEnd();
+		while (_transactionWriteDepth > 0)
+			transactionWriteEnd();
 	}
-	
-	if(_transactionReadDepth++ == 0)
+
+	if (_transactionReadDepth++ == 0)
 		runStatements("BEGIN DEFERRED", true);
 }
 
 void DatabaseInterface::transactionWriteEnd(bool rollback)
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionWriteEnd);
-	
-	if(rollback)	
+
+	if (rollback)
 	{
 		runStatements("ROLLBACK");
 		_transactionWriteDepth = 0;
-		throw std::runtime_error("Rollback!"); //Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
-	}	
-	else if(_transactionWriteDepth == 0 || --_transactionWriteDepth == 0)
+		throw std::runtime_error("Rollback!"); // Might be better to use a subclass of std::runtime_error but for now this isnt even used anyway.
+	}
+	else if (_transactionWriteDepth == 0 || --_transactionWriteDepth == 0)
 		runStatements("COMMIT", true);
-
 }
 
 void DatabaseInterface::transactionReadEnd()
 {
 	JASPTIMER_SCOPE(DatabaseInterface::transactionReadEnd);
-	
-	if(_transactionReadDepth == 0 || --_transactionReadDepth == 0)
-		runStatements("COMMIT", true); //ignore fails cause it fails sometimes, probably because no statements was done and so nothing to commit. this is ok
+
+	if (_transactionReadDepth == 0 || --_transactionReadDepth == 0)
+		runStatements("COMMIT", true); // ignore fails cause it fails sometimes, probably because no statements was done and so nothing to commit. this is ok
 }
 
 void DatabaseInterface::truncateAllTables()
@@ -2811,9 +2681,446 @@ void DatabaseInterface::truncateAllTables()
 	DELETE FROM Workspace;
 	VACUUM;
 )MultiPower");
-	
-	
-	
 }
 
+std::vector<unsigned char> DatabaseInterface::serializeIntChunk(const intvec &ints, size_t startRow, size_t count)
+{
+	std::vector<unsigned char> blob(count * sizeof(int32_t));
+	auto *dst = reinterpret_cast<int32_t *>(blob.data());
+	for (size_t i = 0; i < count; ++i)
+		dst[i] = ints[startRow + i];
+	return blob;
+}
 
+void DatabaseInterface::deserializeIntChunk(const unsigned char *data, size_t dataSize, intvec &ints, size_t startRow, size_t expectedCount)
+{
+	if (dataSize != expectedCount * sizeof(int32_t))
+		throw std::runtime_error("Invalid chunk size for integer column");
+	const auto *src = reinterpret_cast<const int32_t *>(data);
+	for (size_t i = 0; i < expectedCount; ++i)
+		ints[startRow + i] = src[i];
+}
+
+std::vector<unsigned char> DatabaseInterface::serializeDoubleChunk(const doublevec &dbls, const stringvec &strs, size_t startRow, size_t count)
+{
+	std::vector<unsigned char> blob;
+	blob.reserve(count * (1 + 8 + 20));
+	for (size_t i = 0; i < count; ++i)
+	{
+		double val = dbls[startRow + i];
+		const std::string &str = strs[startRow + i];
+		if (!str.empty())
+		{
+			blob.push_back(2); // String
+			uint16_t len = str.size();
+			blob.insert(blob.end(), reinterpret_cast<const unsigned char *>(&len), reinterpret_cast<const unsigned char *>(&len) + 2);
+			blob.insert(blob.end(), str.begin(), str.end());
+		}
+		else if (std::isnan(val))
+		{
+			blob.push_back(0); // Missing value
+		}
+		else
+		{
+			blob.push_back(1); // double
+			uint64_t raw;
+			memcpy(&raw, &val, 8);
+			blob.insert(blob.end(), reinterpret_cast<const unsigned char *>(&raw), reinterpret_cast<const unsigned char *>(&raw) + 8);
+		}
+	}
+	return blob;
+}
+
+void DatabaseInterface::deserializeDoubleChunk(const unsigned char *data, size_t dataSize, doublevec &dbls, stringvec &strs, size_t startRow, size_t expectedCount)
+{
+	const unsigned char *p = data;
+	const unsigned char *end = data + dataSize;
+	for (size_t i = 0; i < expectedCount; ++i)
+	{
+		if (p >= end)
+			throw std::runtime_error("Premature end of chunk");
+		unsigned char type = *p++;
+		if (type == 0)
+		{
+			dbls[startRow + i] = std::numeric_limits<double>::quiet_NaN();
+			strs[startRow + i].clear();
+		}
+		else if (type == 1)
+		{
+			if (p + 8 > end)
+				throw std::runtime_error("Invalid double in chunk");
+			double val;
+			memcpy(&val, p, 8);
+			dbls[startRow + i] = val;
+			strs[startRow + i].clear();
+			p += 8;
+		}
+		else if (type == 2)
+		{
+			if (p + 2 > end)
+				throw std::runtime_error("Invalid string length in chunk");
+			uint16_t len;
+			memcpy(&len, p, 2);
+			p += 2;
+			if (p + len > end)
+				throw std::runtime_error("Invalid string data in chunk");
+			strs[startRow + i].assign(reinterpret_cast<const char *>(p), len);
+			dbls[startRow + i] = std::numeric_limits<double>::quiet_NaN();
+			p += len;
+		}
+		else
+			throw std::runtime_error("Unknown type flag in chunk");
+	}
+}
+
+void DatabaseInterface::writeColumnChunks(int columnId, const intvec &ints)
+{
+	runStatements("DELETE FROM DataChunks WHERE columnId = ?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); });
+
+	size_t rows = ints.size();
+	for (size_t start = 0; start < rows; start += CHUNK_SIZE)
+	{
+		size_t count = std::min<size_t>(CHUNK_SIZE, rows - start);
+		auto blob = serializeIntChunk(ints, start, count);
+		int chunkId = start / CHUNK_SIZE;
+
+		runStatements("INSERT OR REPLACE INTO DataChunks (columnId, chunkId, data) VALUES (?, ?, ?)",
+					  [&](sqlite3_stmt *stmt)
+					  {
+						  sqlite3_bind_int(stmt, 1, columnId);
+						  sqlite3_bind_int(stmt, 2, chunkId);
+						  sqlite3_bind_blob(stmt, 3, blob.data(), blob.size(), SQLITE_TRANSIENT);
+					  });
+	}
+}
+
+void DatabaseInterface::writeColumnChunks(int columnId, const doublevec &dbls, const stringvec &strs)
+{
+	runStatements("DELETE FROM DataChunks WHERE columnId = ?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); });
+
+	size_t rows = dbls.size();
+	for (size_t start = 0; start < rows; start += CHUNK_SIZE)
+	{
+		size_t count = std::min<size_t>(CHUNK_SIZE, rows - start);
+		auto blob = serializeDoubleChunk(dbls, strs, start, count);
+		int chunkId = start / CHUNK_SIZE;
+
+		runStatements("INSERT OR REPLACE INTO DataChunks (columnId, chunkId, data) VALUES (?, ?, ?)",
+					  [&](sqlite3_stmt *stmt)
+					  {
+						  sqlite3_bind_int(stmt, 1, columnId);
+						  sqlite3_bind_int(stmt, 2, chunkId);
+						  sqlite3_bind_blob(stmt, 3, blob.data(), blob.size(), SQLITE_TRANSIENT);
+					  });
+	}
+}
+
+void DatabaseInterface::readColumnChunks(int columnId, intvec &ints)
+{
+	size_t expectedRows = ints.size();
+	std::fill(ints.begin(), ints.end(), 0);
+
+	runStatements("SELECT chunkId, data FROM DataChunks WHERE columnId = ? ORDER BY chunkId", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); }, [&](size_t, sqlite3_stmt *stmt)
+				  {
+            int chunkId = sqlite3_column_int(stmt, 0);
+            const void *blob = sqlite3_column_blob(stmt, 1);
+            int blobSize = sqlite3_column_bytes(stmt, 1);
+            size_t startRow = chunkId * CHUNK_SIZE;
+            size_t count = std::min<size_t>(CHUNK_SIZE, expectedRows - startRow);
+            deserializeIntChunk(static_cast<const unsigned char *>(blob), blobSize, ints, startRow, count); });
+}
+
+void DatabaseInterface::readColumnChunks(int columnId, doublevec &dbls, stringvec &strs)
+{
+	size_t expectedRows = dbls.size();
+	std::fill(dbls.begin(), dbls.end(), std::numeric_limits<double>::quiet_NaN());
+	std::fill(strs.begin(), strs.end(), "");
+
+	runStatements("SELECT chunkId, data FROM DataChunks WHERE columnId = ? ORDER BY chunkId", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); }, [&](size_t, sqlite3_stmt *stmt)
+				  {
+            int chunkId = sqlite3_column_int(stmt, 0);
+            const void *blob = sqlite3_column_blob(stmt, 1);
+            int blobSize = sqlite3_column_bytes(stmt, 1);
+            size_t startRow = chunkId * CHUNK_SIZE;
+            size_t count = std::min<size_t>(CHUNK_SIZE, expectedRows - startRow);
+            deserializeDoubleChunk(static_cast<const unsigned char *>(blob), blobSize, dbls, strs, startRow, count); });
+}
+
+void DatabaseInterface::deleteColumnChunks(int columnId)
+{
+	runStatements("DELETE FROM DataChunks WHERE columnId = ?", [&](sqlite3_stmt *stmt)
+				  { sqlite3_bind_int(stmt, 1, columnId); });
+}
+
+void DatabaseInterface::setIntChunkValue(int columnId, size_t row, int value)
+{
+	int chunkId = row / CHUNK_SIZE;
+	size_t offset = row % CHUNK_SIZE;
+
+	std::vector<unsigned char> blob;
+	runStatements("SELECT data FROM DataChunks WHERE columnId = ? AND chunkId = ?", [&](sqlite3_stmt *stmt)
+				  {
+            sqlite3_bind_int(stmt, 1, columnId);
+            sqlite3_bind_int(stmt, 2, chunkId); }, [&](size_t, sqlite3_stmt *stmt)
+				  {
+            const void *p = sqlite3_column_blob(stmt, 0);
+            int size = sqlite3_column_bytes(stmt, 0);
+            blob.assign(static_cast<const unsigned char *>(p), static_cast<const unsigned char *>(p) + size); });
+
+	if (blob.size() < (offset + 1) * sizeof(int32_t))
+		throw std::runtime_error("Chunk too small");
+
+	reinterpret_cast<int32_t *>(blob.data())[offset] = value;
+
+	runStatements("UPDATE DataChunks SET data = ? WHERE columnId = ? AND chunkId = ?",
+				  [&](sqlite3_stmt *stmt)
+				  {
+					  sqlite3_bind_blob(stmt, 1, blob.data(), blob.size(), SQLITE_TRANSIENT);
+					  sqlite3_bind_int(stmt, 2, columnId);
+					  sqlite3_bind_int(stmt, 3, chunkId);
+				  });
+}
+
+void DatabaseInterface::setDoubleChunkValue(int columnId, size_t row, double valueDbl, const std::string &valueStr)
+{
+	int				chunkId			= row / CHUNK_SIZE;
+	size_t		offset			= row % CHUNK_SIZE;
+
+	int				dataSetId		= columnGetDataSetId(columnId);
+	size_t		totalRows		= dataSetRowCount(dataSetId);
+	size_t		rowsInChunk = std::min<size_t>(CHUNK_SIZE, totalRows - chunkId * CHUNK_SIZE);
+
+	doublevec tempDbls(rowsInChunk);
+	stringvec tempStrs(rowsInChunk);
+
+	std::vector<unsigned char> blob;
+	bool chunkExists = false;
+	runStatements("SELECT data FROM DataChunks WHERE columnId = ? AND chunkId = ?", [&](sqlite3_stmt *stmt)
+							{
+								sqlite3_bind_int(stmt, 1, columnId);
+								sqlite3_bind_int(stmt, 2, chunkId); }, [&](size_t, sqlite3_stmt *stmt)
+							{
+								chunkExists = true;
+								const void *p = sqlite3_column_blob(stmt, 0);
+								int size = sqlite3_column_bytes(stmt, 0);
+								blob.assign(static_cast<const unsigned char *>(p), static_cast<const unsigned char *>(p) + size); });
+
+	if (chunkExists)
+		deserializeDoubleChunk(blob.data(), blob.size(), tempDbls, tempStrs, 0, rowsInChunk);
+
+	tempDbls[offset] = valueDbl;
+	tempStrs[offset] = valueStr;
+
+	auto newBlob = serializeDoubleChunk(tempDbls, tempStrs, 0, rowsInChunk);
+
+	if (chunkExists)
+		runStatements("UPDATE DataChunks SET data = ? WHERE columnId = ? AND chunkId = ?",
+					  [&](sqlite3_stmt *stmt)
+					  {
+						  sqlite3_bind_blob(stmt, 1, newBlob.data(), newBlob.size(), SQLITE_TRANSIENT);
+						  sqlite3_bind_int(stmt, 2, columnId);
+						  sqlite3_bind_int(stmt, 3, chunkId);
+					  });
+	else
+		runStatements("INSERT INTO DataChunks (columnId, chunkId, data) VALUES (?, ?, ?)",
+					  [&](sqlite3_stmt *stmt)
+					  {
+						  sqlite3_bind_int(stmt, 1, columnId);
+						  sqlite3_bind_int(stmt, 2, chunkId);
+						  sqlite3_bind_blob(stmt, 3, newBlob.data(), newBlob.size(), SQLITE_TRANSIENT);
+					  });
+}
+
+bool DatabaseInterface::readChunkBlob(int columnId, int chunkId, std::vector<unsigned char> &blob)
+{
+	bool found = false;
+
+	runStatements("SELECT data FROM DataChunks WHERE columnId = ? AND chunkId = ?",
+				  [&](sqlite3_stmt *stmt)
+				  {
+					  sqlite3_bind_int(stmt, 1, columnId);
+					  sqlite3_bind_int(stmt, 2, chunkId);
+				  },
+				  [&](size_t, sqlite3_stmt *stmt)
+				  {
+					  found = true;
+					  const void *p    = sqlite3_column_blob(stmt, 0);
+					  int        size  = sqlite3_column_bytes(stmt, 0);
+					  blob.assign(static_cast<const unsigned char *>(p), static_cast<const unsigned char *>(p) + size);
+				  });
+
+	return found;
+}
+
+void DatabaseInterface::writeChunkBlob(int columnId, int chunkId, const std::vector<unsigned char> &blob)
+{
+	runStatements("INSERT OR REPLACE INTO DataChunks (columnId, chunkId, data) VALUES (?, ?, ?)",
+				  [&](sqlite3_stmt *stmt)
+				  {
+					  sqlite3_bind_int(stmt, 1, columnId);
+					  sqlite3_bind_int(stmt, 2, chunkId);
+					  sqlite3_bind_blob(stmt, 3, blob.data(), blob.size(), SQLITE_TRANSIENT);
+				  });
+}
+
+void DatabaseInterface::adjustIntColumnRowCount(int columnId, size_t oldRowCount, size_t newRowCount)
+{
+	if (newRowCount == oldRowCount)		return;
+	if (oldRowCount == 0)							return;
+
+	if (newRowCount > oldRowCount)
+		growIntColumnChunks(columnId, oldRowCount, newRowCount);
+	else
+		shrinkIntColumnChunks(columnId, newRowCount);
+}
+
+void DatabaseInterface::growIntColumnChunks(int columnId, size_t oldRowCount, size_t newRowCount)
+{
+	const int    lastChunkId            = int(oldRowCount / CHUNK_SIZE);
+	const size_t lastChunkStart         = size_t(lastChunkId) * CHUNK_SIZE;
+	const size_t rowsAlreadyInLastChunk = oldRowCount - lastChunkStart;
+	const size_t rowsWantedInLastChunk  = std::min<size_t>(CHUNK_SIZE, newRowCount - lastChunkStart);
+
+	std::vector<unsigned char> blob;
+	
+	if (rowsAlreadyInLastChunk > 0)
+		readChunkBlob(columnId, lastChunkId, blob);
+
+	blob.resize(rowsWantedInLastChunk * sizeof(int32_t));
+
+	int32_t *vals = reinterpret_cast<int32_t *>(blob.data());
+	std::fill(vals + rowsAlreadyInLastChunk, vals + rowsWantedInLastChunk, EmptyValues::missingValueInteger);
+
+	writeChunkBlob(columnId, lastChunkId, blob);
+
+	for (size_t start = lastChunkStart + CHUNK_SIZE; start < newRowCount; start += CHUNK_SIZE)
+	{
+		const size_t count = std::min<size_t>(CHUNK_SIZE, newRowCount - start);
+
+		std::vector<unsigned char> missingBlob(count * sizeof(int32_t));
+		std::fill(reinterpret_cast<int32_t *>(missingBlob.data()),
+				  reinterpret_cast<int32_t *>(missingBlob.data()) + count,
+				  EmptyValues::missingValueInteger);
+
+		writeChunkBlob(columnId, int(start / CHUNK_SIZE), missingBlob);
+	}
+}
+
+void DatabaseInterface::shrinkIntColumnChunks(int columnId, size_t newRowCount)
+{
+	if (newRowCount == 0)
+	{
+		runStatements("DELETE FROM DataChunks WHERE columnId = ?",
+					  [&](sqlite3_stmt *stmt) { sqlite3_bind_int(stmt, 1, columnId); });
+		return;
+	}
+
+	const int lastChunkId = int((newRowCount - 1) / CHUNK_SIZE);
+
+	// Delete all chunks that are completely outside the range of the new line number.
+	runStatements("DELETE FROM DataChunks WHERE columnId = ? AND chunkId > ?",
+				  [&](sqlite3_stmt *stmt)
+				  {
+					  sqlite3_bind_int(stmt, 1, columnId);
+					  sqlite3_bind_int(stmt, 2, lastChunkId);
+				  });
+
+	// Truncate the last remaining chunk
+	const size_t rowsToKeep = newRowCount - size_t(lastChunkId) * CHUNK_SIZE;
+
+	std::vector<unsigned char> blob;
+	if (readChunkBlob(columnId, lastChunkId, blob))
+	{
+		blob.resize(rowsToKeep * sizeof(int32_t));
+		writeChunkBlob(columnId, lastChunkId, blob);
+	}
+}
+
+void DatabaseInterface::adjustDoubleColumnRowCount(int columnId, size_t oldRowCount, size_t newRowCount)
+{
+	if (newRowCount == oldRowCount)		return;
+	if (oldRowCount == 0					)		return; // New columns do not need to be pre-filled.
+
+	doublevec dbls;
+	stringvec strs;
+	dbls.resize(oldRowCount, std::numeric_limits<double>::quiet_NaN());
+	strs.resize(oldRowCount, "");
+	readColumnChunks(columnId, dbls, strs);
+
+	dbls.resize(newRowCount, std::numeric_limits<double>::quiet_NaN());
+	strs.resize(newRowCount, "");
+
+	writeColumnChunks(columnId, dbls, strs);
+}
+
+bool DatabaseInterface::hasDataChunksTable()
+{
+	return tableExists("DataChunks");
+}
+
+void DatabaseInterface::migrateLegacyWideTableToDataChunks()
+{
+	Log::log() << "Detected legacy wide-table storage, migrating to DataChunks storage..." << std::endl;
+
+	// pre-create _dbConstructionSql for legacy db.
+	runStatements(
+		"CREATE TABLE IF NOT EXISTS DataChunks ("
+		"    columnId   INTEGER,"
+		"    chunkId    INTEGER,"
+		"    data       BLOB,"
+		"    PRIMARY KEY (columnId, chunkId)"
+		") WITHOUT ROWID;"
+	);
+
+	int dataSetId = dataSetGetId(); // The current implementation only supports a single dataSet.
+	if (dataSetId == -1)
+		return;
+
+	size_t rowCount = dataSetRowCount(dataSetId);
+	if (rowCount == 0)
+		return;
+
+	auto columnsInfo = getColumnsForDataSet(dataSetId);
+
+	for (auto &[colId, hasLabels] : columnsInfo)
+	{
+		const std::string colName = columnBaseName(colId);
+		const std::string query		= "SELECT " + colName + " FROM " + dataSetName(dataSetId) + " ORDER BY rowNumber;";
+
+		if (hasLabels)
+		{
+			intvec ints(rowCount);
+			runStatements(query, nullptr, [&](size_t row, sqlite3_stmt *stmt)
+						  {
+				ints[row] = sqlite3_column_type(stmt, 0) == SQLITE_NULL
+								? EmptyValues::missingValueInteger
+								: sqlite3_column_int(stmt, 0); });
+			writeColumnChunks(colId, ints);
+		}
+		else
+		{
+			doublevec dbls(rowCount);
+			stringvec strs(rowCount);
+			runStatements(query, nullptr, [&](size_t row, sqlite3_stmt *stmt)
+						  {
+				std::string tmpStr;
+				double dbl = _doubleTroubleReader(stmt, 0, &tmpStr);
+				dbls[row] = dbl;
+				strs[row] = tmpStr; });
+			writeColumnChunks(colId, dbls, strs);
+		}
+
+		Log::log() << "  migrated column " << colId << " (" << colName << ")" << std::endl;
+	}
+
+	// the DROP COLUMN needs sqlite >= 3.35.0 !!
+	for (auto &[colId, hasLabels] : columnsInfo)
+		runStatements("ALTER TABLE " + dataSetName(dataSetId) + " DROP COLUMN " + columnBaseName(colId) + ";", true);
+
+	Log::log()	<< "Migration to DataChunks storage finished, dataset " << dataSetId
+							<< " now has " << columnsInfo.size() << " columns in DataChunks." << std::endl;
+}

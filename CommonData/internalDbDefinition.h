@@ -1,34 +1,25 @@
+R"for_c++_include(
 -- This file is automatically converted to an includable string at internalDbDefintion.h for inclusion
 
-CREATE TABLE Workspace ( 
-	id					INTEGER PRIMARY KEY,
-	showRSyntax			INT DEFAULT 0	
-);
-
-CREATE TABLE DataSets (
-	id					INTEGER PRIMARY KEY,
-	dataFilePath		TEXT,
-	dataFileTimestamp	INT DEFAULT 0,
-	description			TEXT,
-	title				TEXT DEFAULT '',
-	databaseJson		TEXT, 
-	emptyValuesJson		TEXT, 
-	revision			INT DEFAULT 0, 
-	dataFileSynch		INT,
-	csvDelimiter		INT DEFAULT 0,
-	codeType			TEXT NULL, 
-	rCode				TEXT NULL, 
-	invalidated			INT NULL,
-	error				TEXT NULL, 
-	defaultInputFilter	INT NULL
-);
-
 CREATE TABLE IF NOT EXISTS DataChunks (
-	columnId	INTEGER,
-	chunkId		INTEGER,
-	data		BLOB,
-	PRIMARY KEY (columnId, chunkId)
-) WITHOUT ROWID;
+    columnId   INTEGER,
+    chunkId    INTEGER,
+    data       BLOB,
+    PRIMARY KEY (columnId, chunkId)
+) WITHOUT ROWID; 
+
+CREATE TABLE DataSets ( 
+	id				INTEGER PRIMARY KEY, 
+	dataFilePath	TEXT, 
+	dataFileTimestamp INT DEFAULT 0,
+	description		TEXT,
+	databaseJson	TEXT, 
+	emptyValuesJson TEXT, 
+	revision		INT DEFAULT 0, 
+	dataFileSynch	INT,
+	showRSyntax		INT DEFAULT 0,
+	csvDelimiter	INT DEFAULT 0
+);
 
 CREATE TABLE Filters ( 
 	id				INTEGER PRIMARY KEY, 
@@ -39,7 +30,6 @@ CREATE TABLE Filters (
 	constructorJson TEXT, 
 	constructorR	TEXT, 
 	errorMsg		TEXT,
-	invalidated		INT DEFAULT 1,
 	revision		INT DEFAULT 0, 
 	
 	FOREIGN KEY(dataSet) REFERENCES DataSets(id)
@@ -86,3 +76,4 @@ CREATE TABLE Labels
 );
 
 
+)for_c++_include"
