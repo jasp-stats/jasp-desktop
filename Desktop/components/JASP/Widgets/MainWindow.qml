@@ -25,14 +25,17 @@ Window
 {
     id:					mainWindowRoot
     title:				mainWindow.windowTitle
-	visible:			true
+	visible:			!mainWindow.startedForBatch
 	width:				1280
 	height:				720
 	flags:				Qt.Window | Qt.WindowFullscreenButtonHint
 	color:				mainWindow.hadFatalError ? jaspTheme.red : jaspTheme.white
 	minimumWidth:		jaspTheme.formWidth + 2 * jaspTheme.splitHandleWidth + jaspTheme.scrollbarBoxWidthBig + 3
 	minimumHeight:		400 * jaspTheme.uiScale
-	visibility:			!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized
+	visibility:			mainWindow.startedForBatch ? Window.Hidden : (!preferencesModel.startMaximized ? Window.Windowed : Window.Maximized)
+
+	//Keep unattended workers hidden on the normal platform: the minimal platform used by --hide
+	//does not support the results view on all operating systems.
 
 	onVisibleChanged:
 		if(!visible)
@@ -94,12 +97,26 @@ Window
 		return (a + n) % n;
 	}
 
+	//This DropArea must stay a plain sibling *before* the contents below, at the default z.
+	//Qt hands a drag to the topmost DropArea that accepts it, and this one accepts anything
+	//(it sets no keys), so as soon as it sits on top it swallows every drag inside the app as well
+	//- the drag & drop of a variable from one VariablesList to another included. Being declared
+	//first and at z 0 makes it the bottom-most one, so it only gets the drags nothing else wants.
 	DropArea
 	{
-		id: drop
-		enabled: true
-		anchors.fill: parent
-		onDropped: (drop) => mainWindow.openURLFile(drop.text)
+		id:				drop
+		enabled:		true
+		anchors.fill:	parent
+
+		onDropped: (drop) =>
+		{
+			if (mainWindow.openURLFile(drop.text))
+				drop.accepted = true
+			warningRect.droppingText = false
+		}
+
+		onExited:	warningRect.droppingText = false
+		onEntered:	(drag) => warningRect.droppingText = drag.hasText
 	}
 
 	Item
@@ -108,11 +125,42 @@ Window
 		
 		Rectangle
 		{
+			id:				warningRect
 			z:				1
-			visible:		mainWindow.hadFatalError
-			color:			jaspTheme.red
+			color:			"transparent"
 			opacity:		0.75
 			anchors.fill:	parent
+
+			//Both colours this rectangle can take are states, so a drop can never strand it on the wrong
+			//one: the state is a binding, and dropping simply clears droppingText again.
+			property bool droppingText: false
+
+			state: droppingText ? "droppingData" : (mainWindow.hadFatalError ? "fatalError" : "")
+
+			states: [
+					State {
+						name: "droppingData"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.blueLighter
+							}
+						}
+					},
+					State {
+						name: "fatalError"
+						PropertyChanges {
+							warningRect {
+								color: jaspTheme.red
+							}
+						}
+					}
+				]
+
+			transitions: [
+					Transition {
+						ColorAnimation { properties: "color"; duration: 150; easing.type: Easing.InOutQuad }
+					}
+				]
 		}
 
 		Shortcut { onActivated: mainWindow.showEnginesWindow();					sequences: ["Ctrl+Alt+Shift+E"];								context: Qt.ApplicationShortcut; }

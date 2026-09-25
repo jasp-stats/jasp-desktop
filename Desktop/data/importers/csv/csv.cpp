@@ -27,7 +27,6 @@
 #include "utils.h"
 
 using namespace std;
-using boost::algorithm::trim;
 
 CSV::CSV(const string &path)
 	: CSVParser(',', true)

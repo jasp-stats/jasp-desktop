@@ -31,8 +31,8 @@ class FileMenuObject : public QObject
 public:
 	explicit			FileMenuObject(FileMenu *parent);
 
-signals:
-	void				dataSetIORequest(FileEvent *event);
+public slots:
+	virtual void		openFile(const QString & path);
 
 protected:
 	FileEvent::FileMode mode();

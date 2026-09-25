@@ -267,9 +267,7 @@ signals:
 			void			filtersCountChanged();
 			void			shownFilterChanged(DataSet * data);
 			void			filterRemoved(Filter * f);
-			void			synchronizeStart(DataSet *);
-			void			synchronizeDo(DataSet *);
-			void			syncRequired(int dataSetId, DataSet * dataSet, QString locator, QString extension, QString databaseJson);
+			void			syncRequired(DataSet * dataSet, QString locator, QString extension, QString databaseJson);
 			void			labelChanged(		const Column * column, QString originalLabel, QString newLabel);
 			QString			askPassword(	QString title, QString message);
 			bool			showYesNo(		QString title, QString message);
@@ -288,9 +286,6 @@ public slots:
 			void			handleLabelsReordered(		const Column * column);
 			bool			setColumnTypes(stringset columnIndexes, columnType newColumnType);
 			void			filterByNameDone(int dataSetID, const QString & name, const QString & error);
-			void			synchronize();
-			void			synchronizeFromDatabase();
-			void			synchronizeFromDataFile();
 			
 
 public:

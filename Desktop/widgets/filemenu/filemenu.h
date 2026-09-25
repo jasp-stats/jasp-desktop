@@ -30,9 +30,11 @@
 #include "widgets/filemenu/computer.h"
 #include "widgets/filemenu/osf.h"
 #include "widgets/filemenu/databasefilemenu.h"
+#include "widgets/filemenu/batchfilemenu.h"
 #include "widgets/filemenu/datalibrary.h"
 
 #include "data/fileevent.h"
+#include "data/fileeventrouter.h"
 #include "filemenulistitem.h"
 #include "actionbuttons.h"
 #include "resourcebuttonsvisible.h"
@@ -42,10 +44,10 @@
 class MainWindow;
 class DataSetPackage;
 
-class FileMenu : public QObject
+class FileMenu : public FileEventRouter
 {
 	friend FileMenuObject;
-	
+
 	typedef ActionButtons::FileOperation FileOperation;
 	Q_OBJECT
 
@@ -57,6 +59,7 @@ class FileMenu : public QObject
 	Q_PROPERTY(Computer					*	computer				READ computer														CONSTANT						)
 	Q_PROPERTY(OSF						*	osf						READ osf															CONSTANT						)
 	Q_PROPERTY(DatabaseFileMenu			*	database				READ database														CONSTANT						)
+	Q_PROPERTY(BatchFileMenu			*	batch					READ batch															CONSTANT						)
 	Q_PROPERTY(ActionButtons			*	actionButtons			READ actionButtons													CONSTANT						)
 	Q_PROPERTY(ResourceButtons			*	resourceButtons			READ resourceButtons												CONSTANT						)
 	Q_PROPERTY(ResourceButtonsVisible	*	resourceButtonsVisible	READ resourceButtonsVisible											CONSTANT						)
@@ -69,8 +72,7 @@ public:
 	Q_ENUM(FileMenuListItemType)
 
 	explicit FileMenu(QObject *parent = nullptr);
-	virtual ~FileMenu() {}
-	
+	virtual ~FileMenu() override;
 
 	void		setResourceButtonsVisibleFor(FileOperation fo);
 
@@ -84,7 +86,7 @@ public:
 
 	void			setCurrentDataFile(const QString		& path);
 	void			setDataFileWatcher(bool watch);
-	
+
 	void			setMode(FileEvent::FileMode mode);
 	Utils::FileType getCurrentFileType()	const { return _currentFileType; }
 	QString			getCurrentFilePath()	const { return _currentFilePath; }
@@ -100,6 +102,7 @@ public:
 	Computer						*	computer()					const	{ return _computer;					}
 	OSF								*	osf()						const	{ return _OSF;						}
 	DatabaseFileMenu				*	database()					const	{ return _database;					}
+	BatchFileMenu					*	batch()						const	{ return _batch;					}
 	bool								visible()					const	{ return _visible;					}
 	ActionButtons					*	actionButtons()				const	{ return _actionButtons;			}
 	ResourceButtons					*	resourceButtons()			const	{ return _resourceButtons;			}
@@ -110,7 +113,6 @@ public:
 	
 signals:
 	void fileoperationChanged();
-	void dataSetIORequest(FileEvent *event);
 	void exportSelected(QString filename);
 	void visibleChanged(bool visible);
 	void dummyChangedNotifier();
@@ -124,8 +126,8 @@ public slots:
 	void workspaceModified();
 	void setSyncFile(FileEvent *event);
 	void dataAutoSynchronizationChanged(bool on) { setDataFileWatcher(on); }
-	void dataSetIOCompleted(FileEvent *event);
-	void dataFileModifiedHandler(QString path);
+	void startFileEvent()	override;
+	void finalizeFileEvent()	override;
 	void setFileoperation(const ActionButtons::FileOperation fo);
 	void actionButtonClicked(const ActionButtons::FileOperation action);
 	void setVisible(bool visible);
@@ -138,10 +140,6 @@ public slots:
 	void close();
 	void enableButtonsForOpenedWorkspace(bool enableSaveButton = false);
 	void buttonsForEmptyWorkspace();
-
-
-private slots:
-			void dataSetIORequestHandler(FileEvent *event);
 
 private:
 			bool checkSyncFileExists(const QString &path, bool waitForExistence = false);
@@ -158,6 +156,7 @@ private:
 	Computer					*	_computer					= nullptr;
 	OSF							*	_OSF						= nullptr;
 	DatabaseFileMenu			*	_database					= nullptr;
+	BatchFileMenu				*	_batch						= nullptr;
 	DataLibrary					*	_dataLibrary				= nullptr;
 	ActionButtons				*	_actionButtons				= nullptr;
 	ResourceButtons				*	_resourceButtons			= nullptr;

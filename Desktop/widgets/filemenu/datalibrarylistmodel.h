@@ -13,12 +13,9 @@ class DataLibraryListModel : public FileMenuBasicListModel
 	Q_OBJECT
 
 public:
-	explicit DataLibraryListModel(QObject *parent, DataLibraryBreadCrumbsListModel* crumbs);	
+	explicit DataLibraryListModel(FileMenuObject *parent, DataLibraryBreadCrumbsListModel* crumbs);
 	void setBreadCrumbsListModel (DataLibraryBreadCrumbsListModel *dataLibraryBreadCrumbsModel);
 	void refresh();
-
-signals:
-	void openFileEvent(FileEvent *event);
 
 public slots:
 	void changePath(const QString& name, const QString& path)	override;

@@ -289,7 +289,10 @@ void Analysis::setResults(const Json::Value & results, Status status, const Json
 
 	setStatus(status);
 
-	if (status == Analysis::Complete && !reEditNames.empty())
+	if (!reEditNames.empty() && _restoringFromJaspFile)
+		Log::log() << "setResults: restoring from .jasp file — skipping engine re-edits for " << reEditNames.size() << " plot(s); saved results already contain the edited plots" << std::endl;
+
+	if (status == Analysis::Complete && !reEditNames.empty() && !_restoringFromJaspFile)
 		applyPlotReEdits(reEditNames);
 
 	emit resultsChangedSignal(this);
@@ -575,19 +578,23 @@ std::set<std::string> Analysis::applyPlotEdits()
 		{
 			// _plotEdits is now the sole authority for editOptions.
 			// _results stays pure engine output — never patched by us.
-			// Merge new top-level keys from the engine's fresh editOptions
-			// into _plotEdits so it stays complete without overwriting
-			// user-set values.
+			// Merge only the keys the stored edits do not have yet, so a fresh run can add what
+			// it newly describes (a "reasonNotEditable" for instance) while everything the user
+			// set stays theirs. Taking the engine's value whenever it differs would undo exactly
+			// the keys the user changed, which is what an edit is.
 			Json::Value engineEditOpts;
 			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
-			{
 				for (const std::string & key : engineEditOpts.getMemberNames())
-					if (!_plotEdits[uniqueName]["editOptions"].isMember(key) || _plotEdits[uniqueName]["editOptions"][key] != engineEditOpts[key])
-					{
+					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
 						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
-						reEditNames.insert(uniqueName);
-					}
-			}
+
+			// A re-run hands us a plain plot: jaspBase deliberately does not re-apply earlier
+			// edits to a freshly drawn figure (see the disabled block in writeImage.R), so every
+			// edited plot needs its edits rendered onto the new one again. Flagging only the plots
+			// whose options differ from the engine's would miss precisely the edits the engine
+			// knows nothing about: reference lines exist only in the editOptions the desktop
+			// sends, never in the ones it receives, so nothing about them can ever differ.
+			reEditNames.insert(uniqueName);
 		}
 
 		if (edit.isMember("width") && edit.isMember("height"))
@@ -873,6 +880,13 @@ void Analysis::loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & an
 	}
 	else
 		Log::log() << "loadResultsUserdata: no plotEdits key in saved data (or null)" << std::endl;
+
+	// Suppress engine re-edits while restoring: on file-open the engine has no
+	// state for this analysis yet, so editImage requests would crash it. The
+	// saved results already contain the edited/resized plots, so skipping the
+	// re-render here is safe (and faster — no roundtrip per plot).
+	_restoringFromJaspFile = true;
+	auto restoringGuard = qScopeGuard([&]{ _restoringFromJaspFile = false; });
 	setResults(analysisData["results"], status);
 	setRSources(analysisData["rSources"]);
 

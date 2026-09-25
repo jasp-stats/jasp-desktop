@@ -23,6 +23,7 @@
 #include <QPointer>
 #include "json/json.h"
 #include "utilenums.h"
+#include "fileeventstatus.h"
 
 class Exporter;
 class DataSet;
@@ -37,8 +38,8 @@ class FileEvent : public QObject
 public:
 	enum FileMode { FileSave, FileNew, FileOpen, FileExportResults, FileExportData, FileGenerateData, FileSyncData, FileClose };
 
-	FileEvent(QObject *parent = nullptr, FileMode fileMode = FileEvent::FileOpen);
-	virtual ~FileEvent();
+	FileEvent(QObject *parent, FileMode fileMode = FileEvent::FileOpen, bool routeThroughFileMenu = true); ///< routeThroughFileMenu=false for UI-independent events (the data-syncer path) that drive the loader themselves.
+	virtual	~FileEvent();
 
 	bool				setPath(		const QString & path);
 	QString path() const { return !_tmp ? _path : pathTmp(); }
@@ -48,24 +49,26 @@ public:
 	void				setOsfPath(const QString & path)		{ _osfPath = path; }
 	const QString &		osfPath() const { return _osfPath;		}
 	void				setDatabase(	const Json::Value & dbInfo);
-	void				setSyncDataSetId(int id)				{ _syncDataSetId = id; }
-	int					syncDataSetId()							const { return _syncDataSetId; }
-	void				setSyncDataSet(DataSet * ds);		///< defined in fileevent.cpp (needs a complete DataSet)
-	DataSet		*		syncDataSet()							const;
+	void				setDataSet(DataSet * ds);		///< defined in fileevent.cpp (needs a complete DataSet)
+	DataSet		*		dataSet()							const;
+	int					dataSetId()							const { return _dataSetId; }
 	void				setFileType(	Utils::FileType	type)			{ _type = type; }
 	void				setTmp(			bool saveTmp)					{ _tmp  = saveTmp; }
 
+	void				starts();
 	void				setComplete(bool success = true, const QString &message = "", bool cancelled = false);
-	void				chain(FileEvent *event);
+	void				cleanUp();
+	void				chain(FileEvent *event, bool resetDataSet = false);
 
 	bool				isDatabase()	const { return _database != Json::nullValue;	}
 	bool				isOnlineNode()	const { return _path.startsWith("http");		}
-	void				setOnlineNode(bool online) { _isOnlineNode = online; }
 	bool				isExample()		const;
 	bool				isReadOnly()	const { return isExample() || isDatabase();		}
-	bool				isCompleted()	const { return _completed;						}
-	bool				isCancelled()	const { return _cancelled;						}
-	bool				isSuccessful()	const { return _success;						}
+	bool				isStarted()		const { return _status != FileEventStatus::Initialized;	}
+	bool				isCompleted()	const { return _status == FileEventStatus::Completed;		}
+	bool				isSuccessful()	const { return isCompleted() && _success;					}
+	bool				isCancelled()	const { return _cancelled;									} ///< The user aborted this themselves (a dismissed dialog), so the workspace must be left alone.
+	bool				isSilent()		const { return _silent;										} ///< Report failure without bothering the user with a dialog (used for events JASP starts on its own).
 	bool				isTmp()			const { return _tmp; }
 	static bool			autoSaveExists();
 	static void			removeAutoSaveIfItExists();
@@ -82,27 +85,25 @@ public:
 	void				setSilent(bool newSilent);
 
 signals:
-	void completed(FileEvent *event);
-
-private slots:
-	void chainedComplete(FileEvent *event) { setComplete(event->isSuccessful(), event->message()); }
+	void started();
+	void completed();
+	void finalized();
 
 private:
 	FileMode			_operation;
-	int					_syncDataSetId		= -1;
-	QPointer<QObject>	_syncDataSet;		///< Auto-nulls if the target dataset is destroyed before the sync runs
+	QPointer<DataSet>	_dataSet;			///< Auto-nulls if the target dataset is destroyed before the event runs
+	int					_dataSetId	= -1;	///< id snapshot taken at bind time, survives destruction of the DataSet
 	Utils::FileType		_type			= Utils::FileType::unknown;
 	QString				_path,
 						_osfPath		= "", //To show the user a friendly path
 						_dataFilePath,
 						_last_error		= "Unknown error",
 						_message;
-	bool				_completed		= false,
-						_success		= false,
+	FileEventStatus		_status			= FileEventStatus::Initialized;
+	bool				_success		= false,
 						_cancelled		= false,
-						_tmp			= false,
-						_isOnlineNode		= false;
-	FileEvent		*	_chainedTo		= nullptr;
+						_silent			= false,
+						_tmp			= false;
 	Exporter		*	_exporter		= nullptr;
 	Json::Value			_database		= Json::nullValue;
 };
