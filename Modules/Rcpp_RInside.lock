@@ -1,10 +1,14 @@
 {
   "R": {
-    "Version": "4.3.3",
+    "Version": "4.6.1",
     "Repositories": [
       {
+        "Name": "p3m",
+        "URL": "https://p3m.dev/cran/2026-08-15"
+      },
+      {
         "Name": "CRAN",
-        "URL": "https://packagemanager.posit.co/cran/2026-03-31"
+        "URL": "https://cloud.r-project.org"
       }
     ]
   },
@@ -16,7 +20,7 @@
     },
     "Rcpp": {
       "Package": "Rcpp",
-      "Version": "1.1.1",
+      "Version": "1.1.2",
       "Source": "Repository"
     }
   }
