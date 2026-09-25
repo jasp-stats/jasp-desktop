@@ -36,6 +36,7 @@ private slots:
 	void	testRpcScriptCallerLeavesTheAgentViewAlone();
 	void	testRpcDispatchWhenFreeWaitsItsTurn();
 	void	testRpcServerQueuesBusyCalls();
+	void	testRpcScriptServerNeedsItsToken();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

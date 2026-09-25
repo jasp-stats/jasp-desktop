@@ -1344,5 +1344,74 @@ void TestAll::testRpcServerQueuesBusyCalls()
 	QCOMPARE(queuedAnswer	["result"]["message"]	.asString(), std::string("pong"));
 }
 
+///A script gets a server of its own for its run: on a free port, answering only requests with its own token, and its calls count as a script's
+void TestAll::testRpcScriptServerNeedsItsToken()
+{
+	JaspRpcDispatcher dispatcher;
+
+	int		ran				= 0;
+	bool	ranForScript	= false;
+
+	dispatcher.registerMethod("test_who", [&](const Json::Value &)
+	{
+		ran++;
+		ranForScript = JaspRpcDispatcher::scriptIsCalling();
+		return JaspRpcDispatcher::successResult();
+	});
+
+	std::unique_ptr<JaspRpcServer>	server	= JaspRpcServer::startForScript(dispatcher),
+									other	= JaspRpcServer::startForScript(dispatcher);
+
+	QVERIFY (server && other);
+	QVERIFY (server->serverPort() != 0);
+	QCOMPARE(server->url(),				QString("http://127.0.0.1:%1/rpc").arg(server->serverPort()));
+	QCOMPARE(server->token().size(),	64);
+	QVERIFY2(server->token() != other->token() && server->serverPort() != other->serverPort(), "every run should get a port and token of its own");
+	other.reset();
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	const QString url = server->url();
+
+	auto send = [&](const QByteArray & verb, const QString & token)
+	{
+		QNetworkRequest request{ QUrl(url) };
+		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+		if (!token.isEmpty())
+			request.setRawHeader("Authorization", "Bearer " + token.toLatin1());
+
+		return std::unique_ptr<QNetworkReply>(network.sendCustomRequest(request, verb, R"({"jsonrpc":"2.0","id":1,"method":"test_who"})"));
+	};
+
+	auto status = [](const std::unique_ptr<QNetworkReply> & reply) { return reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(); };
+
+	std::unique_ptr<QNetworkReply> reply = send("POST", "");
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 401);
+
+	reply = send("POST", JaspRpcServer::newToken());
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 401);
+	QCOMPARE(ran, 0); //Refused before it reached the dispatcher
+
+	reply = send("POST", server->token());
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 200);
+	QVERIFY2(ran == 1 && ranForScript, "a call through a script's server should count as a script's");
+
+	//No answer to a browser's pre-check, so a web page's call is not even sent
+	reply = send("OPTIONS", "");
+	QTRY_VERIFY(reply->isFinished());
+	QVERIFY(!reply->hasRawHeader("Access-Control-Allow-Origin"));
+
+	//Gone with the run
+	server.reset();
+	reply = send("POST", "");
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(reply->error(), QNetworkReply::ConnectionRefusedError);
+}
+
 
 QTEST_MAIN(TestAll)
