@@ -54,6 +54,14 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/Upload.cmd.in
                  ${CMAKE_BINARY_DIR}/Upload.cmd @ONLY)
 
+  # BuildBotScript.cmd checks for this file to decide whether the msix-artifacts
+  # should be built, don't rely on the spelling of PRO in CMakeCache.txt there.
+  if(PRO)
+    file(TOUCH ${CMAKE_BINARY_DIR}/pro-build)
+  else()
+    file(REMOVE ${CMAKE_BINARY_DIR}/pro-build)
+  endif()
+
   add_custom_target(
     collect-junctions
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}

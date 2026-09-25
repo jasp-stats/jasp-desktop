@@ -38,13 +38,12 @@ cmake --build build --target collect-junctions
 
 cmake --build build --target zip
 
-rem The msix-artifacts are only built for non-pro builds.
-findstr /B /C:"PRO:BOOL=ON" build\CMakeCache.txt >nul 2>&1
-if errorlevel 1 (
+rem The msix-artifacts are only built for non-pro builds; CMake creates build\pro-build when PRO is on.
+if exist build\pro-build (
+    echo PRO is on, skipping the msix targets
+) else (
     cmake --install build --component MSIX
     cmake --build build --target msix
-) else (
-    echo PRO is on, skipping the msix targets
 )
 
 cmake --build build --target upload
