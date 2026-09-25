@@ -371,7 +371,14 @@ ComponentsListBase
 		}
 
 		currentIndex		: itemTabBar.currentIndex
-		onCurrentIndexChanged: height = Qt.binding( function() { return currentIndex >= 0 ? rep.itemAt(currentIndex).height : 0; });
+
+		// Height of the currently shown tab, pushed by the wrappers below.
+		// Do not pull it via rep.itemAt(currentIndex).height in a binding: itemAt() is not
+		// notifiable, so after a model reset (which destroys and recreates the delegates
+		// without necessarily changing currentIndex) such a binding would keep referencing
+		// a destroyed item and the whole TabView would collapse to height 0.
+		property real currentTabHeight: 0
+		height				: (rep.count > 0 && itemStack.currentIndex >= 0) ? currentTabHeight : 0
 
 		Repeater
 		{
@@ -385,10 +392,15 @@ ComponentsListBase
 				width	: itemStack.width
 				height	: rowComponentItem ? rowComponentItem.height : 0
 
+				readonly property bool isCurrent: StackLayout.isCurrentItem
+				onIsCurrentChanged	: if (isCurrent) itemStack.currentTabHeight = height
+				onHeightChanged		: if (isCurrent) itemStack.currentTabHeight = height
+
 				Component.onCompleted:
 				{
 					rowComponentItem.parent = tabViewWrapper
 					rowComponentItem.width = Qt.binding(function() {return itemStack.width})
+					if (isCurrent) itemStack.currentTabHeight = height
 				}
 			}
 		}
