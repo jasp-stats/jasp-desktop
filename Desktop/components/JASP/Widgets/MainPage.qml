@@ -251,10 +251,10 @@ Item
 				bottom:			parent.bottom
 			}
 			visible:			false
-			color:				jaspTheme.uiBackground 
+			color:				jaspTheme.uiBackground
 			border.color:		jaspTheme.uiBorder
 			border.width:		1
-			
+
 			JC.TextField
 			{
 				id:						searchBar
@@ -266,21 +266,21 @@ Item
 				onDisplayValueChanged:	search(displayValue)
 				onVisibleChanged:		search("")
 				moveFocusOnEdit:		false
-				
+
 				function startSearching()
 				{
 					searchRectangle.visible = true
 					forceActiveFocus();
 				}
-	
-				Shortcut 
+
+				Shortcut
 				{
 					sequences:		["Ctrl+F"]
 					onActivated: 	searchBar.startSearching()
 				}
-	
+
 				function search(thisText) { if(resultsView) resultsView.findText(thisText); }
-				
+
 				anchors
 				{
 					left:			parent.left
@@ -290,7 +290,7 @@ Item
 				}
 				fieldWidth:				parent.width - (jaspTheme.scrollbarBoxWidthBig + closeButton.width)
 			}
-	
+
 			JC.MenuButton
 			{
 				id:					closeButton
@@ -343,7 +343,7 @@ Item
 					if (pattern === hostname)
 					{
 						return true;
-					} 
+					}
 					else if (pattern.indexOf('*') !== -1)
 					{
 						var regex = new RegExp(`^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`);
@@ -356,7 +356,7 @@ Item
 				return false;
 			}
 
-			onFullScreenRequested: function(request) 
+			onFullScreenRequested: function(request)
 			{
 				request.accept()
 
@@ -473,23 +473,24 @@ Item
 
 			// Defined the elements that need to be translated in the html/js interface
 			// where use i18n(...) to return  translations
-			property var i18nObject: 
+			property var i18nObject:
 			{
-				"Bold":					qsTr("Bold"),					"Italic":			qsTr("Italic"),			"Underline":		qsTr("Underline"),			"Link":						qsTr("Link"),					
-				"Formula":				qsTr("Formula"),				"Font Color":		qsTr("Font Color"),		"Add Indent":		qsTr("Add Indent"),			"Embed web video" :			qsTr("Embed web video"), 
-				"Code Block":			qsTr("Code Block"),				"Header":			qsTr("Header"),			"Ordered List":		qsTr("Ordered List"),		"Unordered List":			qsTr("Unordered List"),			
-				"Background Color":		qsTr("Background Color"),		"Subscript":		qsTr("Subscript"),		"Superscript":		qsTr("Superscript"),		"Blockquote":				qsTr("Blockquote"),				
+				"Bold":					qsTr("Bold"),					"Italic":			qsTr("Italic"),			"Underline":		qsTr("Underline"),			"Link":						qsTr("Link"),
+				"Formula":				qsTr("Formula"),				"Font Color":		qsTr("Font Color"),		"Add Indent":		qsTr("Add Indent"),			"Embed web video" :			qsTr("Embed web video"),
+				"Code Block":			qsTr("Code Block"),				"Header":			qsTr("Header"),			"Ordered List":		qsTr("Ordered List"),		"Unordered List":			qsTr("Unordered List"),
+				"Background Color":		qsTr("Background Color"),		"Subscript":		qsTr("Subscript"),		"Superscript":		qsTr("Superscript"),		"Blockquote":				qsTr("Blockquote"),
 				"Remove Indent":		qsTr("Remove Indent"),			"Font Size":		qsTr("Font Size"),		"Clear Formatting":	qsTr("Clear Formatting"),	"Click here to add text" :	qsTr("Click here to add text"),
-				"Copied to clipboard":	qsTr("Copied to clipboard"),	"Introduction:":	qsTr("Introduction:"),	"Conclusion:" :		qsTr("Conclusion:"),		"Image" :					qsTr("Image"),					
-				
-				"Unsupported video services":			qsTr("Unsupported video services"),			"Input LaTeX here:":				qsTr("Input LaTeX here:"),		
-				"Press `Cmd/Ctrl + Enter` to apply;":	qsTr("Press `Cmd/Ctrl + Enter` to apply;"),	"Click to apply formula":			qsTr("Click to apply formula"), 
-				"Click to edit this formula":			qsTr("Click to edit this formula"),			"Citations copied to clipboard":	qsTr("Citations copied to clipboard"), 	
+				"Copied to clipboard":	qsTr("Copied to clipboard"),	"Introduction:":	qsTr("Introduction:"),	"Conclusion:" :		qsTr("Conclusion:"),		"Image" :					qsTr("Image"),
+
+				"Unsupported video services":			qsTr("Unsupported video services"),			"Input LaTeX here:":				qsTr("Input LaTeX here:"),
+				"Press `Cmd/Ctrl + Enter` to apply;":	qsTr("Press `Cmd/Ctrl + Enter` to apply;"),	"Click to apply formula":			qsTr("Click to apply formula"),
+				"Click to edit this formula":			qsTr("Click to edit this formula"),			"Citations copied to clipboard":	qsTr("Citations copied to clipboard"),
 				"LaTeX code copied to clipboard":		qsTr("LaTeX code copied to clipboard"),		"Remove this note":					qsTr("Remove this note"),
-				
-				"JASP only allows the following videoservices:":								qsTr("JASP only allows the following videoservices:"), 
-				"Contact the JASP team to request adding another videoservice to the list." :	qsTr("Contact the JASP team to request adding another videoservice to the list.")
-				
+
+				"JASP only allows the following videoservices:":								qsTr("JASP only allows the following videoservices:"),
+				"Contact the JASP team to request adding another videoservice to the list." :	qsTr("Contact the JASP team to request adding another videoservice to the list."),
+				"Markdown \u2022 click away or Ctrl+Enter to save \u2022 Esc to cancel" 	:	qsTr("Markdown \u2022 click away or Ctrl+Enter to save \u2022 Esc to cancel"),
+
 			}
 
 			function setTranslatedResultsString()
@@ -500,7 +501,7 @@ Item
 
 					// To parse the QML i18n object to js object
 					// will also make the js i18n follow changes of JASP GUI language
-					runJavaScript(`window.setI18nStrings(${JSON.stringify(i18nObject)})`) 
+					runJavaScript(`window.setI18nStrings(${JSON.stringify(i18nObject)})`)
 				}
 			}
 
