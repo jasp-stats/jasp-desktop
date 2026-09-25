@@ -43,6 +43,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
 #include <QNetworkReply>
+#include <QProcess>
+#include <QStandardPaths>
 #include <QTemporaryDir>
 #include <QScopeGuard>
 #include "columnutils.h"
@@ -1411,6 +1413,117 @@ void TestAll::testRpcScriptServerNeedsItsToken()
 	reply = send("POST", "");
 	QTRY_VERIFY(reply->isFinished());
 	QCOMPARE(reply->error(), QNetworkReply::ConnectionRefusedError);
+}
+
+///The jasp Python module (Resources/python/jasp) turns every method of the dispatcher into a Python function, run here against a script's own server
+void TestAll::testPythonModuleCallsJasp()
+{
+	const QString python = QStandardPaths::findExecutable("python3");
+	if (python.isEmpty())
+		QSKIP("No python3 to run the jasp module with");
+
+	JaspRpcDispatcher dispatcher;
+
+	QCOMPARE(dispatcher.loadSpecFromString(R"({"openrpc":"1.2.6","methods":[
+		{"name":"test_echo", "summary":"Echoes text a number of times.", "params":[
+			{"name":"text",		"required":true,	"schema":{"type":"string"}},
+			{"name":"times",	"required":false,	"schema":{"type":"integer", "default":2}} ]},
+		{"name":"test_fail", "params":[]} ]})"), 2);
+
+	dispatcher.registerMethodByName("test_echo", [](const Json::Value & params)
+	{
+		Json::Value result = JaspRpcDispatcher::successResult();
+
+		for (int i = 0; i < params["times"].asInt(); i++)
+			result["echo"] = result["echo"].asString() + params["text"].asString();
+
+		result["byScript"] = JaspRpcDispatcher::scriptIsCalling();
+		return result;
+	});
+
+	dispatcher.registerMethodByName("test_fail", [](const Json::Value &) { return JaspRpcDispatcher::errorResult("It went wrong"); });
+
+	std::unique_ptr<JaspRpcServer> server = JaspRpcServer::startForScript(dispatcher);
+	QVERIFY(server);
+
+	QTemporaryDir	dir;
+	QFile			script(dir.filePath("script.py"));
+	QVERIFY(script.open(QIODevice::WriteOnly));
+	script.write(R"(
+import inspect, os, pydoc, jasp
+
+def raises(error, run):
+    try:
+        run()
+    except error as raised:
+        return raised
+    raise AssertionError("no " + error.__name__)
+
+assert jasp.connected()
+assert jasp.ping() == {"message": "pong"}
+
+assert jasp.test_echo("ab")                 == {"status": "success", "echo": "abab", "byScript": True}, "JASP fills in the default"
+assert jasp.test_echo(text="x", times=3)    == {"status": "success", "echo": "xxx",  "byScript": True}
+assert jasp.call("test_echo", text="y")["echo"] == "yy"
+
+raises(TypeError, lambda: jasp.test_echo())
+raises(TypeError, lambda: jasp.test_echo("a", colour="red"))
+
+assert list(inspect.signature(jasp.test_echo).parameters) == ["text", "times"]
+assert jasp.test_echo.__doc__.startswith("Echoes text a number of times.")
+
+assert 'test_echo(text, times=2)' in pydoc.render_doc(jasp, renderer=pydoc.plaintext), "help(jasp) lists the methods"
+
+imported = {}
+exec("from jasp import *", imported)
+assert imported["test_echo"] is jasp.test_echo and imported["connect"] is jasp.connect
+
+jasp.connect()
+assert jasp.__all__.count("test_echo") == 1, "connecting again lists a method once"
+
+failed = raises(jasp.RpcError, jasp.test_fail)
+assert str(failed) == "It went wrong" and failed.code is None
+
+assert raises(jasp.RpcError, lambda: jasp.call("no_such_method")).code == -32601
+
+raises(PermissionError, lambda: jasp.connect(os.environ["JASP_RPC_URL"], "not the token"))
+assert not jasp.connected()
+
+print("all good")
+)");
+	script.close();
+
+	auto run = [&](const QStringList & arguments, bool connectToJasp)
+	{
+		QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+		environment.insert("PYTHONPATH",				QDir::cleanPath(_testLibrary().absoluteFilePath("../../Resources/python")));
+		environment.insert("PYTHONDONTWRITEBYTECODE",	"1"); //Leave no __pycache__ in the source tree
+		environment.remove("JASP_RPC_URL");
+		environment.remove("JASP_RPC_TOKEN");
+
+		if (connectToJasp)
+		{
+			environment.insert("JASP_RPC_URL",		server->url());
+			environment.insert("JASP_RPC_TOKEN",	server->token());
+		}
+
+		auto process = std::make_unique<QProcess>();
+		process->setProcessEnvironment(environment);
+		process->start(python, arguments);
+		return process;
+	};
+
+	//The script's calls are answered in this event loop, so wait for it without blocking that
+	std::unique_ptr<QProcess> process = run({ script.fileName() }, true);
+	QTRY_VERIFY_WITH_TIMEOUT(process->state() == QProcess::NotRunning, 30000);
+
+	const QString output = QString::fromUtf8(process->readAllStandardOutput() + process->readAllStandardError());
+	QVERIFY2(process->exitCode() == 0 && output.trimmed() == "all good", qPrintable(output));
+
+	//Outside JASP it can still be imported, it is just not connected yet
+	process = run({ "-c", "import jasp; print(jasp.connected())" }, false);
+	QTRY_VERIFY_WITH_TIMEOUT(process->state() == QProcess::NotRunning, 30000);
+	QCOMPARE(QString::fromUtf8(process->readAllStandardOutput()).trimmed(), QString("False"));
 }
 
 

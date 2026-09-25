@@ -37,6 +37,7 @@ private slots:
 	void	testRpcDispatchWhenFreeWaitsItsTurn();
 	void	testRpcServerQueuesBusyCalls();
 	void	testRpcScriptServerNeedsItsToken();
+	void	testPythonModuleCallsJasp();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;
