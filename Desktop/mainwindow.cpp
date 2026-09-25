@@ -56,6 +56,7 @@
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
+#include "python/pythonscriptrunner.h"
 
 #include "resultstesting/compareresults.h"
 
@@ -177,6 +178,7 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 	qmlRegisterType<DataSetView>								("JASP",			1, 0, "DataSetView"						);
 	qmlRegisterType<JaspTheme>									("JASP",			1, 0, "JaspTheme"						);
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
+	qmlRegisterType<PythonScriptRunner>							("JASP",			1, 0, "PythonScriptRunner"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");

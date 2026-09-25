@@ -40,6 +40,8 @@
 #include "rpc/jasprpcdispatcher.h"
 #include "rpc/jasprpcserver.h"
 #include "ai/agentstatetracker.h"
+#include "python/pythonscriptrunner.h"
+#include <QRegularExpression>
 #include <QNetworkAccessManager>
 #include <QNetworkProxy>
 #include <QNetworkReply>
@@ -1524,6 +1526,77 @@ print("all good")
 	process = run({ "-c", "import jasp; print(jasp.connected())" }, false);
 	QTRY_VERIFY_WITH_TIMEOUT(process->state() == QProcess::NotRunning, 30000);
 	QCOMPARE(QString::fromUtf8(process->readAllStandardOutput()).trimmed(), QString("False"));
+}
+
+///What the Python window runs a script with: the script calls JASP as a script, what it prints shows as it comes,
+///Stop ends it, and its connection to JASP is gone with the run
+void TestAll::testPythonScriptRunner()
+{
+	if (PythonScriptRunner::findInterpreter().isEmpty())
+		QSKIP("No Python 3 on this computer");
+
+	JaspRpcDispatcher dispatcher;
+
+	dispatcher.registerMethod("test_who", [](const Json::Value &)
+	{
+		Json::Value result = JaspRpcDispatcher::successResult();
+		result["byScript"] = JaspRpcDispatcher::scriptIsCalling();
+		return result;
+	});
+
+	PythonScriptRunner runner;
+	runner.setModuleDir(QDir::cleanPath(_testLibrary().absoluteFilePath("../../Resources/python"))); //The build's copy of Resources is only updated with JASP itself
+
+	QSignalSpy finished(&runner, &PythonScriptRunner::finished);
+
+	QVERIFY (runner.run(R"(
+import os, sys, jasp
+print("by script:", jasp.test_who()["byScript"])
+print("no bytecode:", sys.dont_write_bytecode)
+print("url:", os.environ["JASP_RPC_URL"])
+print("héllo ✓")
+raise SystemExit(3)
+)"));
+	QVERIFY (runner.running());
+	QVERIFY2(!runner.run("print(1)"), "there is one script at a time");
+
+	QTRY_COMPARE_WITH_TIMEOUT(finished.count(), 1, 30000);
+	QCOMPARE(finished.last()[0].toInt(), 3);
+	QVERIFY (!runner.running());
+
+	const QString output = runner.output();
+	QVERIFY2(output.contains("by script: True"),		qPrintable(output));
+	QVERIFY2(output.contains("no bytecode: True"),		qPrintable(output));
+	QVERIFY2(output.contains("héllo ✓"),				qPrintable(output));
+
+	//The script's connection to JASP went with the run
+	const QString url = QRegularExpression("url: (\\S+)").match(output).captured(1);
+	QVERIFY(!url.isEmpty());
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	std::unique_ptr<QNetworkReply> reply(network.post(QNetworkRequest{ QUrl(url) }, QByteArray("{}")));
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(reply->error(), QNetworkReply::ConnectionRefusedError);
+
+	//What a script prints shows while it runs, and Stop ends it
+	runner.clearOutput();
+	QVERIFY(runner.run("import time\nprint('started')\ntime.sleep(60)"));
+	QTRY_VERIFY_WITH_TIMEOUT(runner.output().contains("started"), 30000);
+	QVERIFY(runner.running());
+
+	runner.stop();
+	QTRY_COMPARE_WITH_TIMEOUT(finished.count(), 2, 10000);
+	QCOMPARE(finished.last()[0].toInt(), -1);
+	QVERIFY (runner.output().contains("The script was stopped."));
+
+	//A Python that is not there
+	runner.clearOutput();
+	runner.setInterpreter("/no/such/python3");
+	QVERIFY (!runner.run("print(1)"));
+	QVERIFY2(runner.output().contains("/no/such/python3"), qPrintable(runner.output()));
+	QCOMPARE(finished.count(), 2);
 }
 
 
