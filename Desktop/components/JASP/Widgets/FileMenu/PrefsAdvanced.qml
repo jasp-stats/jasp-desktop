@@ -632,4 +632,53 @@ PrefsScrollView
 			}
 		}
 	}
+
+	PrefsGroupRect
+	{
+		title: qsTr("Python scripts")
+
+		Item
+		{
+			width:				parent.width
+			height:				browsePythonButton.height
+
+			RoundedButton
+			{
+				id:					browsePythonButton
+				text:				qsTr("Python:")
+				onClicked:			preferencesModel.browsePythonInterpreter()
+				anchors.left:		parent.left
+				toolTip:			qsTr("Browse to the Python 3 that the Python window runs scripts with.")
+				activeFocusOnTab:	true
+				KeyNavigation.tab:	pythonInterpreterText.textInput
+			}
+
+			PrefsTextInput
+			{
+				id:					pythonInterpreterText
+				text:				preferencesModel.pythonInterpreter
+				onEditingFinished:	preferencesModel.pythonInterpreter = text
+				height:				browsePythonButton.height
+				anchors
+				{
+					left:			browsePythonButton.right
+					right:			parent.right
+					margins:		jaspTheme.generalAnchorMargin
+				}
+			}
+		}
+
+		Text
+		{
+			readonly property string found:	preferencesModel.foundPythonInterpreter()
+
+			text:		found !== "" ? qsTr("Left empty, scripts run with %1.").arg(found)
+									 : qsTr("Left empty, JASP looks for a Python 3 itself, but there is none on this computer.")
+			visible:	preferencesModel.pythonInterpreter === ""
+			width:		parent.width
+			wrapMode:	Text.Wrap
+			font:		jaspTheme.font
+			color:		jaspTheme.textEnabled
+		}
+	}
 }

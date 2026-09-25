@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QStringDecoder>
 #include <QTemporaryDir>
+#include <QVariant>
 #include <memory>
 
 class JaspRpcServer;
@@ -49,6 +50,12 @@ public slots:
 
 	/// Ends the running script at once.
 	void					stop();
+
+	/// The contents of a script file, or nothing (undefined in QML) with the reason in output when it cannot be read.
+	QVariant				readScript(const QString & path);
+
+	/// Writes a script to a file, UTF-8 as Python reads it. False, with the reason in output, when that fails.
+	bool					writeScript(const QString & path, const QString & code);
 
 	void					clearOutput();
 	void					setInterpreter(const QString & interpreter);

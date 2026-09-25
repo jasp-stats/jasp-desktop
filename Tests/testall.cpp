@@ -1597,6 +1597,18 @@ raise SystemExit(3)
 	QVERIFY (!runner.run("print(1)"));
 	QVERIFY2(runner.output().contains("/no/such/python3"), qPrintable(runner.output()));
 	QCOMPARE(finished.count(), 2);
+
+	//Opening and saving a script, in UTF-8 as Python reads it
+	QTemporaryDir	dir;
+	const QString	path	= dir.filePath("script.py"),
+					code	= "print(\"héllo ✓\")\n";
+
+	QVERIFY (runner.writeScript(path, code));
+	QCOMPARE(runner.readScript(path), QVariant(code));
+
+	runner.clearOutput();
+	QVERIFY2(!runner.readScript(dir.filePath("missing.py")).isValid(),	"nothing, so the window keeps the script it has");
+	QVERIFY2(runner.output().contains("missing.py"),					qPrintable(runner.output()));
 }
 
 

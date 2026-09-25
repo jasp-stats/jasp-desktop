@@ -171,6 +171,7 @@ public slots:
     void setAiChatVisible(bool visible) { if(_aiChatVisible != visible) { _aiChatVisible = visible; emit aiChatVisibleChanged(); } }
 
 	void showRCommander();
+	void showPythonScriptWindow();
 
 	bool checkPackageModifiedBeforeClosing();
 	bool startDataEditorHandler();
@@ -398,6 +399,7 @@ private:
 									_startedForBatch		= false;
 	QFont							_defaultFont;
 	QPointer<QWindow>				_chatWindow				= nullptr;
+	QPointer<QWindow>				_pythonScriptWindow		= nullptr;
 	QTimer					*		_progressBarTimer		= nullptr;
 	JaspRpcDispatcher		*		_rpcDispatcher			= nullptr;
 	JaspRpcServer			*		_rpcServer				= nullptr;

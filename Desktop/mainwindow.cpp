@@ -588,6 +588,7 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
+	connect(_ribbonModel,			&RibbonModel::showPythonScriptWindow,				this,					&MainWindow::showPythonScriptWindow							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
 	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
@@ -966,6 +967,27 @@ void MainWindow::showRCommander()
 
 		//To reload page because of https://github.com/jasp-stats/INTERNAL-jasp/issues/1280
 		reloadResults();
+	}
+}
+
+void MainWindow::showPythonScriptWindow()
+{
+	if (!_pythonScriptWindow)
+	{
+		Log::log() << "Loading PythonScriptWindow" << std::endl;
+		_qml->load(QUrl("qrc:///components/JASP/Widgets/PythonScriptWindow.qml"));
+
+		for (QObject * obj : _qml->rootObjects())
+			if (obj->objectName() == "pythonScriptWindow")
+				_pythonScriptWindow = qobject_cast<QWindow*>(obj);
+	}
+
+	// Loaded once and shown again after that, so the script and its output are still there
+	if (_pythonScriptWindow)
+	{
+		_pythonScriptWindow->show();
+		_pythonScriptWindow->raise();
+		_pythonScriptWindow->requestActivate();
 	}
 }
 

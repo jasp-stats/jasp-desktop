@@ -161,6 +161,32 @@ void PythonScriptRunner::stop()
 	_process->kill(); // At once: a script can take as long as it likes to end by itself
 }
 
+QVariant PythonScriptRunner::readScript(const QString & path)
+{
+	QFile file(path);
+
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		appendMessage(tr("%1 could not be opened: %2").arg(path, file.errorString()));
+		return QVariant();
+	}
+
+	return QString::fromUtf8(file.readAll());
+}
+
+bool PythonScriptRunner::writeScript(const QString & path, const QString & code)
+{
+	QFile file(path);
+
+	if (!file.open(QIODevice::WriteOnly) || file.write(code.toUtf8()) < 0)
+	{
+		appendMessage(tr("%1 could not be saved: %2").arg(path, file.errorString()));
+		return false;
+	}
+
+	return true;
+}
+
 void PythonScriptRunner::clearOutput()
 {
 	_output.clear();

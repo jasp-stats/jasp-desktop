@@ -111,7 +111,8 @@ public:
 		RPC_SERVER_ENABLED,
 		RPC_SERVER_IP,
 		RPC_SERVER_PORT,
-		SYNC_DROPPED_DATAFILE
+		SYNC_DROPPED_DATAFILE,
+		PYTHON_INTERPRETER
 	};
 
 	static QVariant value(Settings::Type key);
