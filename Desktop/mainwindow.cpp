@@ -56,6 +56,7 @@
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
+#include "python/pythonscriptrunner.h"
 
 #include "resultstesting/compareresults.h"
 
@@ -177,6 +178,7 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 	qmlRegisterType<DataSetView>								("JASP",			1, 0, "DataSetView"						);
 	qmlRegisterType<JaspTheme>									("JASP",			1, 0, "JaspTheme"						);
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
+	qmlRegisterType<PythonScriptRunner>							("JASP",			1, 0, "PythonScriptRunner"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
@@ -586,6 +588,7 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
+	connect(_ribbonModel,			&RibbonModel::showPythonScriptWindow,				this,					&MainWindow::showPythonScriptWindow							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
 	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
@@ -964,6 +967,27 @@ void MainWindow::showRCommander()
 
 		//To reload page because of https://github.com/jasp-stats/INTERNAL-jasp/issues/1280
 		reloadResults();
+	}
+}
+
+void MainWindow::showPythonScriptWindow()
+{
+	if (!_pythonScriptWindow)
+	{
+		Log::log() << "Loading PythonScriptWindow" << std::endl;
+		_qml->load(QUrl("qrc:///components/JASP/Widgets/PythonScriptWindow.qml"));
+
+		for (QObject * obj : _qml->rootObjects())
+			if (obj->objectName() == "pythonScriptWindow")
+				_pythonScriptWindow = qobject_cast<QWindow*>(obj);
+	}
+
+	// Loaded once and shown again after that, so the script and its output are still there
+	if (_pythonScriptWindow)
+	{
+		_pythonScriptWindow->show();
+		_pythonScriptWindow->raise();
+		_pythonScriptWindow->requestActivate();
 	}
 }
 

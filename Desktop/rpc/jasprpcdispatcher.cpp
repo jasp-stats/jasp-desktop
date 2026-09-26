@@ -540,7 +540,7 @@ Json::Value JaspRpcDispatcher::makeResponse(const Json::Value& result,
 //  Dispatch
 // =========================================================================
 
-Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
+Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request, RpcCaller caller)
 {
 	Json::Value id = request.get("id", Json::nullValue);
 
@@ -572,7 +572,8 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 	// Only USER-INDUCED changes (options, data, add/remove) block mutations.
 	// Background evolution (status transitions, results completing) does not —
 	// those are reported via _stateUpdate on read calls.
-	if (failOnDiverged)
+	// A script has no view of the workspace to diverge from (see RpcCaller).
+	if (failOnDiverged && caller == RpcCaller::Ai)
 	{
 		if (auto * t = AgentStateTracker::tracker(); t && t->isUserDiverged())
 		{
@@ -586,10 +587,14 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 	}
 
 	m_inFlight = true;
+	m_caller   = caller;
 	try
 	{
 		Json::Value result = it->second(params);
 		m_inFlight = false;
+
+		if (!_waiting.empty())
+			runWaitingLater();
 
 		// If the handler returned an error, wrap it properly.
 		if (result.isObject() && result.isMember("code") &&
@@ -598,6 +603,11 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 			return makeError(result["code"].asInt(),
 							 result["message"].asString(), id);
 		}
+
+		// A script leaves the AI's view alone: what it read or changed stays
+		// dirty, so the AI still gets it in its next _stateUpdate (see RpcCaller).
+		if (caller == RpcCaller::Script)
+			return makeResponse(result, id);
 
 		// --- Read methods: attach _stateUpdate if workspace is dirty ------
 		// The snapshot piggybacks on the normal result.  After delivery the
@@ -635,11 +645,15 @@ Json::Value JaspRpcDispatcher::dispatch(const Json::Value& request)
 	catch (const std::exception& e)
 	{
 		m_inFlight = false;
+
+		if (!_waiting.empty())
+			runWaitingLater();
+
 		return makeError(-32603, std::string("Internal error: ") + e.what(), id);
 	}
 }
 
-std::string JaspRpcDispatcher::dispatch(const std::string& requestJson)
+std::string JaspRpcDispatcher::dispatch(const std::string& requestJson, RpcCaller caller)
 {
 	Json::Value  req;
 	Json::Reader reader;
@@ -656,9 +670,33 @@ std::string JaspRpcDispatcher::dispatch(const std::string& requestJson)
 		return Json::writeString(builder, err);
 	}
 
-	Json::Value resp = dispatch(req);
+	Json::Value resp = dispatch(req, caller);
 
 	Json::StreamWriterBuilder builder;
 	builder["indentation"] = "";
 	return Json::writeString(builder, resp);
+}
+
+void JaspRpcDispatcher::dispatchWhenFree(const std::string& requestJson, RpcCaller caller, RpcReply reply)
+{
+	_waiting.push_back({ requestJson, caller, std::move(reply) });
+	runWaiting();
+}
+
+void JaspRpcDispatcher::runWaiting()
+{
+	// A handler waiting in a nested event loop keeps m_inFlight set: the calls
+	// behind it stay queued until dispatch() has returned and asks again.
+	while (!m_inFlight && !_waiting.empty())
+	{
+		WaitingCall call = std::move(_waiting.front());
+		_waiting.pop_front();
+
+		call.reply(dispatch(call.request, call.caller));
+	}
+}
+
+void JaspRpcDispatcher::runWaitingLater()
+{
+	QTimer::singleShot(0, &_waitingContext, [this]{ runWaiting(); });
 }

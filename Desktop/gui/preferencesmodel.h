@@ -101,6 +101,7 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
+	Q_PROPERTY(QString		pythonInterpreter		READ pythonInterpreter			WRITE setPythonInterpreter			NOTIFY pythonInterpreterChanged			)
 
 	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
 
@@ -232,6 +233,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setRpcServerIp(QString v);
 	int rpcServerPort() const;
 	void setRpcServerPort(int v);
+	QString pythonInterpreter() const;
+	void setPythonInterpreter(QString v);
 
 	bool syncDroppedDatafile() const;
 		
@@ -255,6 +258,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setUseDefaultEditor(			bool		useDefaultEditor);
 	void browseSpreadsheetEditor();
 	void browseDeveloperFolder();
+	void browsePythonInterpreter();
+	QString foundPythonInterpreter() const; ///< The Python the Python window uses when pythonInterpreter is empty, "" when there is none
 	void browseDeveloperLibPathFolder();
 	void browseConfigurationFile();
 	void removeEmptyValue(				QString		value);
@@ -385,6 +390,7 @@ signals:
 	void rpcServerEnabledChanged(		bool		rpcServerEnabled);
 	void rpcServerIpChanged(			QString		rpcServerIp);
 	void rpcServerPortChanged(			int			rpcServerPort);
+	void pythonInterpreterChanged(		QString		pythonInterpreter);
 
 	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
 

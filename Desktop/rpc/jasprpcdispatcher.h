@@ -21,12 +21,14 @@
 #ifndef JASPRPCDISPATCHER_H
 #define JASPRPCDISPATCHER_H
 
+#include <deque>
 #include <functional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <QEventLoop>
+#include <QObject>
 #include <QTimer>
 
 #include "json/json.h"
@@ -37,6 +39,18 @@
 // =========================================================================
 
 using RpcHandler = std::function<Json::Value(const Json::Value& params)>;
+
+// =========================================================================
+//  Caller
+// =========================================================================
+
+/// Who a dispatch() is for.  The AI (AiBridge, or an agent through
+/// JaspRpcServer) keeps a view of the workspace: AgentStateTracker's dirty
+/// flags and each analysis's _lastSentMeta record what it has seen.  A script
+/// is the user's own code, so its calls leave that view alone: no divergence
+/// error, no _stateUpdate, no baseline moved.  The AI then hears about what a
+/// script changed just like about what the user changed.
+enum class RpcCaller { Ai, Script };
 
 // =========================================================================
 //  Dispatcher
@@ -131,8 +145,30 @@ public:
 	// Dispatch
 	// ------------------------------------------------------------------
 
-	std::string dispatch(const std::string& requestJson);
-	Json::Value dispatch(const Json::Value& request);
+	std::string dispatch(const std::string& requestJson, RpcCaller caller = RpcCaller::Ai);
+	Json::Value dispatch(const Json::Value& request,     RpcCaller caller = RpcCaller::Ai);
+
+	/// The caller of the dispatch() on the call stack, Ai when there is none.
+	RpcCaller currentCaller() const { return m_inFlight ? m_caller : RpcCaller::Ai; }
+
+	/// True while a handler runs for a script: code that records what the AI
+	/// has seen (AgentStateTracker, _lastSentMeta) checks this to leave it alone.
+	static bool scriptIsCalling() { return _singleton && _singleton->currentCaller() == RpcCaller::Script; }
+
+	using RpcReply = std::function<void(const std::string& responseJson)>;
+
+	/// Like dispatch(), but a call made while another is in flight waits its
+	/// turn instead of being refused with -32000: it runs from the event loop
+	/// once the dispatcher is free, in the order the calls came in.  A free
+	/// dispatcher runs it right away, before this returns.
+	/// dispatch() itself cannot wait: a call arriving during another's nested
+	/// event loop sits on top of that call's stack, so the call below can only
+	/// finish once the one on top has returned.  For callers that can get
+	/// their answer later, such as JaspRpcServer's clients.
+	void dispatchWhenFree(const std::string& requestJson, RpcCaller caller, RpcReply reply);
+
+	/// The calls waiting for their turn in dispatchWhenFree().
+	size_t waitingCount() const { return _waiting.size(); }
 
 	// ------------------------------------------------------------------
 	// Re-entrancy
@@ -218,8 +254,24 @@ private:
 	static Json::Value makeResponse(const Json::Value& result,
 									const Json::Value& id);
 
+	/// Runs the waiting calls, in order, for as long as nothing is in flight.
+	void runWaiting();
+
+	/// Has the event loop call runWaiting(), once the call in flight has unwound.
+	void runWaitingLater();
+
+	struct WaitingCall
+	{
+		std::string	request;
+		RpcCaller	caller;
+		RpcReply	reply;
+	};
+
 	static JaspRpcDispatcher* _singleton;
 	bool m_inFlight = false;
+	RpcCaller m_caller = RpcCaller::Ai;
+	std::deque<WaitingCall> _waiting;
+	QObject _waitingContext; ///< Context for runWaitingLater(), so it never runs after the dispatcher is gone
 	std::unordered_map<std::string, RpcHandler> _handlers;
 
 	/// Spec registry: method name -> parsed RpcMethodSpec.

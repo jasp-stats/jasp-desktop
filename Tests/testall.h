@@ -33,6 +33,12 @@ private slots:
 	void	testDataSetsTableUpgrade();
 	void	testSavLabels();
 	void	testFilterLabels();
+	void	testRpcScriptCallerLeavesTheAgentViewAlone();
+	void	testRpcDispatchWhenFreeWaitsItsTurn();
+	void	testRpcServerQueuesBusyCalls();
+	void	testRpcScriptServerNeedsItsToken();
+	void	testPythonModuleCallsJasp();
+	void	testPythonScriptRunner();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

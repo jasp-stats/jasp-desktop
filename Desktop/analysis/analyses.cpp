@@ -1006,10 +1006,14 @@ void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool in
 
 	Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 
-	if (forceFull)
+	// _lastSentMeta is what the AI has seen: a script has no such baseline and leaves the AI's alone, so it gets the full meta (see RpcCaller)
+	const bool forAgent = !JaspRpcDispatcher::scriptIsCalling();
+
+	if (forceFull || !forAgent)
 	{
 		response["optionMeta"] = fullMeta;
-		a->_lastSentMeta        = fullMeta;
+		if (forAgent)
+			a->_lastSentMeta    = fullMeta;
 		return;
 	}
 
@@ -1256,8 +1260,12 @@ void Analyses::registerRpcHandlers()
 				"Failed to create analysis: " + module.toStdString() +
 				"::" + analysis.toStdString());
 
+		// A script is the user's own code, its analyses are not the AI's (see RpcCaller)
+		const bool forAgent = !JaspRpcDispatcher::scriptIsCalling();
+
 		// Mark AI-created analyses in the title
-		a->setTitle(a->title() + " (AI)");
+		if (forAgent)
+			a->setTitle(a->title() + " (AI)");
 
 		Json::Value response = JaspRpcDispatcher::successResult();
 		_rpcWriteIdentity(response, a);
@@ -1265,7 +1273,8 @@ void Analyses::registerRpcHandlers()
 		_rpcWriteOptions(response, a, true);
 		// Seed the delta baseline with the stripped version (no descriptions)
 		// so the very first analysis_run only sends actual shape changes.
-		a->_lastSentMeta = a->form() ? a->form()->optionMeta(false) : Json::Value(Json::objectValue);
+		if (forAgent)
+			a->_lastSentMeta = a->form() ? a->form()->optionMeta(false) : Json::Value(Json::objectValue);
 
 		// Agent just observed this analysis's full state — clear dirty flags
 		AgentStateTracker::notifyAnalysisObserved(a->id());

@@ -37,6 +37,16 @@
 #include "utilities/settings.h"
 #include "gui/preferencesmodel.h"
 #include "utilities/desktopcommunicator.h"
+#include "rpc/jasprpcdispatcher.h"
+#include "rpc/jasprpcserver.h"
+#include "ai/agentstatetracker.h"
+#include "python/pythonscriptrunner.h"
+#include <QRegularExpression>
+#include <QNetworkAccessManager>
+#include <QNetworkProxy>
+#include <QNetworkReply>
+#include <QProcess>
+#include <QStandardPaths>
 #include <QTemporaryDir>
 #include <QScopeGuard>
 #include "columnutils.h"
@@ -1147,6 +1157,458 @@ void TestAll::testSyncKeepMissingColumns()
 	//The singleton registers globally (PreferencesModelBase::_singleton) and is parented to this
 	//test, so it would survive this test and then make MainWindow's own PreferencesModel assert.
 	delete PreferencesModel::prefs();
+}
+
+///A script run from JASP calls the same methods as the AI, but it is the user's own code, so its calls leave the AI's view of the workspace alone
+///(see RpcCaller): otherwise the AI would never hear what a script read or changed, and a script would get the AI's divergence error.
+void TestAll::testRpcScriptCallerLeavesTheAgentViewAlone()
+{
+	JaspRpcDispatcher dispatcher;
+
+	//A method reading the workspace and one changing it (x-failOnStateDiverged), both marking what they show as observed, like data_info and get_analyses_state do
+	QCOMPARE(dispatcher.loadSpecFromString(R"({"openrpc":"1.2.6","methods":[
+		{"name":"test_read",	"params":[]},
+		{"name":"test_change",	"params":[],	"x-failOnStateDiverged":true} ]})"), 2);
+
+	const size_t	analysisId		= 1;
+	RpcCaller		handlerSaw		= RpcCaller::Ai;
+	bool			scriptWasSeen	= false;
+
+	auto handler = [&](const Json::Value &)
+	{
+		handlerSaw		= dispatcher.currentCaller();
+		scriptWasSeen	= JaspRpcDispatcher::scriptIsCalling();
+		AgentStateTracker::notifyDataObserved();
+		AgentStateTracker::notifyAnalysisObserved(analysisId);
+		return JaspRpcDispatcher::successResult();
+	};
+
+	QVERIFY(dispatcher.registerMethodByName("test_read",	handler));
+	QVERIFY(dispatcher.registerMethodByName("test_change",	handler));
+
+	auto call = [&](const std::string & method, RpcCaller caller)
+	{
+		Json::Value request;
+		request["jsonrpc"]	= "2.0";
+		request["id"]		= 1;
+		request["method"]	= method;
+		return dispatcher.dispatch(request, caller);
+	};
+
+	AgentStateTracker::init();
+	AgentStateTracker * tracker = AgentStateTracker::tracker();
+	QVERIFY(tracker);
+	auto forgetChanges = qScopeGuard([tracker]{ tracker->clearAll(); }); //The tracker is a singleton that outlives this test
+
+	tracker->clearAll();
+
+	//The user added a column, which the AI has not seen yet: a script reading the data leaves it unseen
+	tracker->markDataChanged({ "added" }, {}, {}, {});
+
+	Json::Value reply = call("test_read", RpcCaller::Script);
+	QVERIFY (handlerSaw == RpcCaller::Script && scriptWasSeen);
+	QVERIFY2(tracker->isDirty(),							"what a script reads of the data, the AI still has to see");
+
+	//The user changed an option: a script reading the analysis gets no state update, and leaves it unseen as well
+	tracker->clearAll();
+	tracker->markAnalysisOptionsChanged(analysisId);
+
+	reply = call("test_read", RpcCaller::Script);
+	QVERIFY2(!reply["result"].isMember("_stateUpdate"),	"a script should not get the AI's state update");
+	QVERIFY2(tracker->isDirty(),							"what a script reads of an analysis, the AI still has to see");
+
+	//Where the AI's change would fail, a script's goes ahead and leaves the change for the AI to see
+	reply = call("test_change", RpcCaller::Script);
+	QVERIFY2(reply.isMember("result"),						"a script's change should not fail because the AI has not seen the workspace");
+	QVERIFY2(tracker->isUserDiverged(),						"a script's change should not clear what the AI has not seen");
+
+	QVERIFY(dispatcher.currentCaller() == RpcCaller::Ai && !JaspRpcDispatcher::scriptIsCalling()); //Only while a script's call runs
+
+	//The AI still learns the workspace changed under it
+	reply = call("test_change", RpcCaller::Ai);
+	QCOMPARE(reply["error"]["code"].asInt(), -32001); //Refused before its handler runs
+	QVERIFY (!tracker->isDirty());
+
+	tracker->markAnalysisOptionsChanged(analysisId + 1); //Another analysis than the handler observes, so it is left for _stateUpdate
+
+	reply = call("test_read", RpcCaller::Ai);
+	QVERIFY (handlerSaw == RpcCaller::Ai && !scriptWasSeen);
+	QVERIFY2(reply["result"].isMember("_stateUpdate"),		"the AI should get what changed");
+	QVERIFY (!tracker->isDirty());
+}
+
+///A call made while another waits for R in a nested event loop sits on top of that call's stack, so it cannot wait there:
+///dispatch() refuses it (-32000), dispatchWhenFree() runs it once the dispatcher is free, in the order the calls came in.
+void TestAll::testRpcDispatchWhenFreeWaitsItsTurn()
+{
+	JaspRpcDispatcher dispatcher;
+
+	QStringList ran, answered;
+
+	dispatcher.registerMethod("test_record", [&](const Json::Value & params)
+	{
+		ran.push_back(tq(params["name"].asString()) + (JaspRpcDispatcher::scriptIsCalling() ? " by a script" : " by the AI"));
+		return JaspRpcDispatcher::successResult();
+	});
+
+	auto request = [](const std::string & method, const std::string & name = "")
+	{
+		return R"({"jsonrpc":"2.0","id":1,"method":")" + method + R"(","params":{"name":")" + name + R"("}})";
+	};
+
+	auto answer = [&](const QString & name)
+	{
+		return [&answered, name](const std::string & response)
+		{
+			Json::Value parsed;
+			Json::Reader().parse(response, parsed);
+			answered.push_back(name + (parsed.isMember("result") ? "" : " refused"));
+		};
+	};
+
+	dispatcher.dispatchWhenFree(request("test_record", "free"), RpcCaller::Script, answer("free"));
+	QCOMPARE(answered, QStringList({ "free" })); //Right away, when nothing is in flight
+
+	size_t		waitingDuringWait	= 0;
+	Json::Value	refused;
+
+	//Like analysis_run while R runs: calls come in during the nested event loop
+	dispatcher.registerMethod("test_wait", [&](const Json::Value &)
+	{
+		dispatcher.dispatchWhenFree(request("test_record", "first"),	RpcCaller::Script,	answer("first"));
+		dispatcher.dispatchWhenFree(request("test_record", "second"),	RpcCaller::Ai,		answer("second"));
+		Json::Reader().parse(dispatcher.dispatch(request("test_record", "direct")), refused);
+
+		JaspRpcDispatcher::waitAndProcessEvents(50, [](QEventLoop &, QTimer &){});
+		waitingDuringWait = dispatcher.waitingCount();
+
+		return JaspRpcDispatcher::successResult();
+	});
+
+	dispatcher.dispatch(request("test_wait"));
+
+	QCOMPARE(waitingDuringWait,						size_t(2));	//Events ran, but the calls stayed queued on top of the one in flight
+	QCOMPARE(refused["error"]["code"].asInt(),		-32000);
+	QCOMPARE(ran,									QStringList({ "free by a script" }));
+
+	QTRY_COMPARE(answered,	QStringList({ "free", "first", "second" }));	//From the event loop, once the call in flight is done
+	QCOMPARE(ran,			QStringList({ "free by a script", "first by a script", "second by the AI" }));
+	QCOMPARE(dispatcher.waitingCount(), size_t(0));
+}
+
+///The HTTP server answers a call made while another waits for R once its turn comes, instead of refusing it with -32000
+void TestAll::testRpcServerQueuesBusyCalls()
+{
+	JaspRpcDispatcher	dispatcher;
+	JaspRpcServer		server(dispatcher, nullptr, "127.0.0.1", 0);
+	QVERIFY(server.start());
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	auto post = [&](const QByteArray & body)
+	{
+		QNetworkRequest request(QUrl(QString("http://127.0.0.1:%1/rpc").arg(server.serverPort())));
+		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+		return network.post(request, body);
+	};
+
+	size_t							waitingSeen = 0;
+	std::unique_ptr<QNetworkReply>	queued;
+
+	//Sends another request and waits, like analysis_run does for R, until that one has come in and is waiting its turn
+	dispatcher.registerMethod("test_wait", [&](const Json::Value &)
+	{
+		queued.reset(post(R"({"jsonrpc":"2.0","id":2,"method":"ping"})"));
+
+		JaspRpcDispatcher::waitAndProcessEvents(10000, [&](QEventLoop & loop, QTimer &)
+		{
+			QTimer * poll = new QTimer(&loop);
+			QObject::connect(poll, &QTimer::timeout, &loop, [&]
+			{
+				if ((waitingSeen = dispatcher.waitingCount()) > 0)
+					loop.quit();
+			});
+			poll->start(5);
+		});
+
+		return JaspRpcDispatcher::successResult();
+	});
+
+	std::unique_ptr<QNetworkReply> waiting(post(R"({"jsonrpc":"2.0","id":1,"method":"test_wait"})"));
+
+	QTRY_VERIFY_WITH_TIMEOUT(waiting->isFinished() && queued && queued->isFinished(), 15000);
+	QCOMPARE(waitingSeen, size_t(1));
+
+	Json::Value waitingAnswer, queuedAnswer;
+	Json::Reader().parse(waiting	->readAll().toStdString(), waitingAnswer);
+	Json::Reader().parse(queued		->readAll().toStdString(), queuedAnswer);
+
+	QCOMPARE(waitingAnswer	["result"]["status"]	.asString(), std::string("success"));
+	QCOMPARE(queuedAnswer	["result"]["message"]	.asString(), std::string("pong"));
+}
+
+///A script gets a server of its own for its run: on a free port, answering only requests with its own token, and its calls count as a script's
+void TestAll::testRpcScriptServerNeedsItsToken()
+{
+	JaspRpcDispatcher dispatcher;
+
+	int		ran				= 0;
+	bool	ranForScript	= false;
+
+	dispatcher.registerMethod("test_who", [&](const Json::Value &)
+	{
+		ran++;
+		ranForScript = JaspRpcDispatcher::scriptIsCalling();
+		return JaspRpcDispatcher::successResult();
+	});
+
+	std::unique_ptr<JaspRpcServer>	server	= JaspRpcServer::startForScript(dispatcher),
+									other	= JaspRpcServer::startForScript(dispatcher);
+
+	QVERIFY (server && other);
+	QVERIFY (server->serverPort() != 0);
+	QCOMPARE(server->url(),				QString("http://127.0.0.1:%1/rpc").arg(server->serverPort()));
+	QCOMPARE(server->token().size(),	64);
+	QVERIFY2(server->token() != other->token() && server->serverPort() != other->serverPort(), "every run should get a port and token of its own");
+	other.reset();
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	const QString url = server->url();
+
+	auto send = [&](const QByteArray & verb, const QString & token)
+	{
+		QNetworkRequest request{ QUrl(url) };
+		request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+		if (!token.isEmpty())
+			request.setRawHeader("Authorization", "Bearer " + token.toLatin1());
+
+		return std::unique_ptr<QNetworkReply>(network.sendCustomRequest(request, verb, R"({"jsonrpc":"2.0","id":1,"method":"test_who"})"));
+	};
+
+	auto status = [](const std::unique_ptr<QNetworkReply> & reply) { return reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(); };
+
+	std::unique_ptr<QNetworkReply> reply = send("POST", "");
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 401);
+
+	reply = send("POST", JaspRpcServer::newToken());
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 401);
+	QCOMPARE(ran, 0); //Refused before it reached the dispatcher
+
+	reply = send("POST", server->token());
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(status(reply), 200);
+	QVERIFY2(ran == 1 && ranForScript, "a call through a script's server should count as a script's");
+
+	//No answer to a browser's pre-check, so a web page's call is not even sent
+	reply = send("OPTIONS", "");
+	QTRY_VERIFY(reply->isFinished());
+	QVERIFY(!reply->hasRawHeader("Access-Control-Allow-Origin"));
+
+	//Gone with the run
+	server.reset();
+	reply = send("POST", "");
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(reply->error(), QNetworkReply::ConnectionRefusedError);
+}
+
+///The jasp Python module (Resources/python/jasp) turns every method of the dispatcher into a Python function, run here against a script's own server
+void TestAll::testPythonModuleCallsJasp()
+{
+	const QString python = QStandardPaths::findExecutable("python3");
+	if (python.isEmpty())
+		QSKIP("No python3 to run the jasp module with");
+
+	JaspRpcDispatcher dispatcher;
+
+	QCOMPARE(dispatcher.loadSpecFromString(R"({"openrpc":"1.2.6","methods":[
+		{"name":"test_echo", "summary":"Echoes text a number of times.", "params":[
+			{"name":"text",		"required":true,	"schema":{"type":"string"}},
+			{"name":"times",	"required":false,	"schema":{"type":"integer", "default":2}} ]},
+		{"name":"test_fail", "params":[]} ]})"), 2);
+
+	dispatcher.registerMethodByName("test_echo", [](const Json::Value & params)
+	{
+		Json::Value result = JaspRpcDispatcher::successResult();
+
+		for (int i = 0; i < params["times"].asInt(); i++)
+			result["echo"] = result["echo"].asString() + params["text"].asString();
+
+		result["byScript"] = JaspRpcDispatcher::scriptIsCalling();
+		return result;
+	});
+
+	dispatcher.registerMethodByName("test_fail", [](const Json::Value &) { return JaspRpcDispatcher::errorResult("It went wrong"); });
+
+	std::unique_ptr<JaspRpcServer> server = JaspRpcServer::startForScript(dispatcher);
+	QVERIFY(server);
+
+	QTemporaryDir	dir;
+	QFile			script(dir.filePath("script.py"));
+	QVERIFY(script.open(QIODevice::WriteOnly));
+	script.write(R"(
+import inspect, os, pydoc, jasp
+
+def raises(error, run):
+    try:
+        run()
+    except error as raised:
+        return raised
+    raise AssertionError("no " + error.__name__)
+
+assert jasp.connected()
+assert jasp.ping() == {"message": "pong"}
+
+assert jasp.test_echo("ab")                 == {"status": "success", "echo": "abab", "byScript": True}, "JASP fills in the default"
+assert jasp.test_echo(text="x", times=3)    == {"status": "success", "echo": "xxx",  "byScript": True}
+assert jasp.call("test_echo", text="y")["echo"] == "yy"
+
+raises(TypeError, lambda: jasp.test_echo())
+raises(TypeError, lambda: jasp.test_echo("a", colour="red"))
+
+assert list(inspect.signature(jasp.test_echo).parameters) == ["text", "times"]
+assert jasp.test_echo.__doc__.startswith("Echoes text a number of times.")
+
+assert 'test_echo(text, times=2)' in pydoc.render_doc(jasp, renderer=pydoc.plaintext), "help(jasp) lists the methods"
+
+imported = {}
+exec("from jasp import *", imported)
+assert imported["test_echo"] is jasp.test_echo and imported["connect"] is jasp.connect
+
+jasp.connect()
+assert jasp.__all__.count("test_echo") == 1, "connecting again lists a method once"
+
+failed = raises(jasp.RpcError, jasp.test_fail)
+assert str(failed) == "It went wrong" and failed.code is None
+
+assert raises(jasp.RpcError, lambda: jasp.call("no_such_method")).code == -32601
+
+raises(PermissionError, lambda: jasp.connect(os.environ["JASP_RPC_URL"], "not the token"))
+assert not jasp.connected()
+
+print("all good")
+)");
+	script.close();
+
+	auto run = [&](const QStringList & arguments, bool connectToJasp)
+	{
+		QProcessEnvironment environment = QProcessEnvironment::systemEnvironment();
+		environment.insert("PYTHONPATH",				QDir::cleanPath(_testLibrary().absoluteFilePath("../../Resources/python")));
+		environment.insert("PYTHONDONTWRITEBYTECODE",	"1"); //Leave no __pycache__ in the source tree
+		environment.remove("JASP_RPC_URL");
+		environment.remove("JASP_RPC_TOKEN");
+
+		if (connectToJasp)
+		{
+			environment.insert("JASP_RPC_URL",		server->url());
+			environment.insert("JASP_RPC_TOKEN",	server->token());
+		}
+
+		auto process = std::make_unique<QProcess>();
+		process->setProcessEnvironment(environment);
+		process->start(python, arguments);
+		return process;
+	};
+
+	//The script's calls are answered in this event loop, so wait for it without blocking that
+	std::unique_ptr<QProcess> process = run({ script.fileName() }, true);
+	QTRY_VERIFY_WITH_TIMEOUT(process->state() == QProcess::NotRunning, 30000);
+
+	const QString output = QString::fromUtf8(process->readAllStandardOutput() + process->readAllStandardError());
+	QVERIFY2(process->exitCode() == 0 && output.trimmed() == "all good", qPrintable(output));
+
+	//Outside JASP it can still be imported, it is just not connected yet
+	process = run({ "-c", "import jasp; print(jasp.connected())" }, false);
+	QTRY_VERIFY_WITH_TIMEOUT(process->state() == QProcess::NotRunning, 30000);
+	QCOMPARE(QString::fromUtf8(process->readAllStandardOutput()).trimmed(), QString("False"));
+}
+
+///What the Python window runs a script with: the script calls JASP as a script, what it prints shows as it comes,
+///Stop ends it, and its connection to JASP is gone with the run
+void TestAll::testPythonScriptRunner()
+{
+	if (PythonScriptRunner::findInterpreter().isEmpty())
+		QSKIP("No Python 3 on this computer");
+
+	JaspRpcDispatcher dispatcher;
+
+	dispatcher.registerMethod("test_who", [](const Json::Value &)
+	{
+		Json::Value result = JaspRpcDispatcher::successResult();
+		result["byScript"] = JaspRpcDispatcher::scriptIsCalling();
+		return result;
+	});
+
+	PythonScriptRunner runner;
+	runner.setModuleDir(QDir::cleanPath(_testLibrary().absoluteFilePath("../../Resources/python"))); //The build's copy of Resources is only updated with JASP itself
+
+	QSignalSpy finished(&runner, &PythonScriptRunner::finished);
+
+	QVERIFY (runner.run(R"(
+import os, sys, jasp
+print("by script:", jasp.test_who()["byScript"])
+print("no bytecode:", sys.dont_write_bytecode)
+print("url:", os.environ["JASP_RPC_URL"])
+print("héllo ✓")
+raise SystemExit(3)
+)"));
+	QVERIFY (runner.running());
+	QVERIFY2(!runner.run("print(1)"), "there is one script at a time");
+
+	QTRY_COMPARE_WITH_TIMEOUT(finished.count(), 1, 30000);
+	QCOMPARE(finished.last()[0].toInt(), 3);
+	QVERIFY (!runner.running());
+
+	const QString output = runner.output();
+	QVERIFY2(output.contains("by script: True"),		qPrintable(output));
+	QVERIFY2(output.contains("no bytecode: True"),		qPrintable(output));
+	QVERIFY2(output.contains("héllo ✓"),				qPrintable(output));
+
+	//The script's connection to JASP went with the run
+	const QString url = QRegularExpression("url: (\\S+)").match(output).captured(1);
+	QVERIFY(!url.isEmpty());
+
+	QNetworkAccessManager network;
+	network.setProxy(QNetworkProxy::NoProxy);
+
+	std::unique_ptr<QNetworkReply> reply(network.post(QNetworkRequest{ QUrl(url) }, QByteArray("{}")));
+	QTRY_VERIFY(reply->isFinished());
+	QCOMPARE(reply->error(), QNetworkReply::ConnectionRefusedError);
+
+	//What a script prints shows while it runs, and Stop ends it
+	runner.clearOutput();
+	QVERIFY(runner.run("import time\nprint('started')\ntime.sleep(60)"));
+	QTRY_VERIFY_WITH_TIMEOUT(runner.output().contains("started"), 30000);
+	QVERIFY(runner.running());
+
+	runner.stop();
+	QTRY_COMPARE_WITH_TIMEOUT(finished.count(), 2, 10000);
+	QCOMPARE(finished.last()[0].toInt(), -1);
+	QVERIFY (runner.output().contains("The script was stopped."));
+
+	//A Python that is not there
+	runner.clearOutput();
+	runner.setInterpreter("/no/such/python3");
+	QVERIFY (!runner.run("print(1)"));
+	QVERIFY2(runner.output().contains("/no/such/python3"), qPrintable(runner.output()));
+	QCOMPARE(finished.count(), 2);
+
+	//Opening and saving a script, in UTF-8 as Python reads it
+	QTemporaryDir	dir;
+	const QString	path	= dir.filePath("script.py"),
+					code	= "print(\"héllo ✓\")\n";
+
+	QVERIFY (runner.writeScript(path, code));
+	QCOMPARE(runner.readScript(path), QVariant(code));
+
+	runner.clearOutput();
+	QVERIFY2(!runner.readScript(dir.filePath("missing.py")).isValid(),	"nothing, so the window keeps the script it has");
+	QVERIFY2(runner.output().contains("missing.py"),					qPrintable(runner.output()));
 }
 
 

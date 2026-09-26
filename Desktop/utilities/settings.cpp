@@ -156,7 +156,8 @@ const Settings::Setting Settings::Values[] = {
 	{"rpcServerEnabled",			false},
 	{"rpcServerIp",					"127.0.0.1"},
 	{"rpcServerPort",				48164},
-	{"syncDroppedDatafile",			true}
+	{"syncDroppedDatafile",			true},
+	{"pythonInterpreter",			""}		//Empty: PythonScriptRunner::findInterpreter() picks one
 };
 
 QVariant Settings::value(Settings::Type key) {
