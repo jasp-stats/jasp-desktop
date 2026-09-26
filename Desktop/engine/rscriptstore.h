@@ -19,6 +19,8 @@ struct RScriptStore
 	bool		whiteListedVersion,
 				returnLog;
 
+	/// Optional working directory for the R Commander console. Sent to the engine as a SEPARATE field so it is applied (setwd) unencoded and defensively;
+	QString		workingDirectory = "";
 };
 
 ///
