@@ -5604,10 +5604,6 @@ msgid "Tab"
 msgstr ""
 
 msgctxt "CsvPreview|"
-msgid "Advanced"
-msgstr ""
-
-msgctxt "CsvPreview|"
 msgid "Load"
 msgstr ""
 
@@ -8340,4 +8336,26 @@ msgstr ""
 
 msgctxt "ResourceButtons|"
 msgid "Batch"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "Read numbers as written in"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "More languages"
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid ""
+"Offer every language instead of the ones JASP is translated into, and let "
+"the territory be chosen as well."
+msgstr ""
+
+msgctxt "CsvPreview|"
+msgid "Territory"
+msgstr ""
+
+msgctxt "CsvPreviewModel|"
+msgid "text"
 msgstr ""
