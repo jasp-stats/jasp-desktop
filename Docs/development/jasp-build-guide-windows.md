@@ -88,7 +88,7 @@ make install
 To build librdata
 ```
 git clone https://github.com/WizardMac/librdata.git
-git checkout 33bd276
+git checkout 7ae01f6
 cd librdata
 ./autogen.sh
 ./configure
