@@ -43,6 +43,11 @@ public:
 	/// WindowsApps that opens the Microsoft Store.
 	static QString			findInterpreter();
 
+	/// Runs a script file where it is, from JASP's working directory, with what it prints going straight to
+	/// JASP's own stdout and stderr instead of into output: how a script given on JASP's command line runs.
+	/// False as for run().
+	bool					runFile(const QString & path);
+
 public slots:
 	/// Runs code as a Python script. False when it cannot start, with the reason in output,
 	/// and while another script still runs: there is one at a time.
@@ -69,6 +74,7 @@ signals:
 	void					finished(int exitCode);
 
 private:
+	bool					start(const QString & script, const QString & workingDir, QProcess::ProcessChannelMode channels);
 	void					readOutput();
 	void					appendOutput(const QString & text);
 	void					appendMessage(const QString & message); ///< A line of JASP's own, not the script's

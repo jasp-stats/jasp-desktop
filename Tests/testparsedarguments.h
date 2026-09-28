@@ -39,6 +39,7 @@ private slots:
 	void testOutputDir();
 	void testUnitTestFlag();
 	void testUnitTestRecursiveFlag();
+	void testPythonScript();
 	void testCombinedOutputFlags();
 	void testMultipleFlagsIndependent();
 };

@@ -39,6 +39,7 @@ private slots:
 	void	testRpcScriptServerNeedsItsToken();
 	void	testPythonModuleCallsJasp();
 	void	testPythonScriptRunner();
+	void	testPythonScriptRunnerRunsAFile();
 	void	testFileEventAddsDefaultExtension();
 
 private:

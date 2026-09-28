@@ -1612,6 +1612,55 @@ raise SystemExit(3)
 	QVERIFY2(runner.output().contains("missing.py"),					qPrintable(runner.output()));
 }
 
+///A script given on JASP's command line runs where it is and from JASP's working directory, with what it prints going
+///straight to JASP's own output instead of into the runner's
+void TestAll::testPythonScriptRunnerRunsAFile()
+{
+	if (PythonScriptRunner::findInterpreter().isEmpty())
+		QSKIP("No Python 3 on this computer");
+
+	JaspRpcDispatcher dispatcher;
+
+	dispatcher.registerMethod("test_who", [](const Json::Value &)
+	{
+		Json::Value result = JaspRpcDispatcher::successResult();
+		result["byScript"] = JaspRpcDispatcher::scriptIsCalling();
+		return result;
+	});
+
+	QTemporaryDir	dir;
+	const QString	path = dir.filePath("my script.py");
+
+	QFile script(path);
+	QVERIFY(script.open(QIODevice::WriteOnly));
+	script.write(R"(
+import os, jasp
+with open(os.path.join(os.path.dirname(__file__), "ran.txt"), "w", encoding="utf-8") as ran:
+    print(__file__, os.getcwd(), jasp.test_who()["byScript"], sep="\n", file=ran)
+print("this goes to JASP's own output")
+raise SystemExit(4)
+)");
+	script.close();
+
+	PythonScriptRunner runner;
+	runner.setModuleDir(QDir::cleanPath(_testLibrary().absoluteFilePath("../../Resources/python"))); //The build's copy of Resources is only updated with JASP itself
+
+	QSignalSpy finished(&runner, &PythonScriptRunner::finished);
+
+	QVERIFY(runner.runFile(path));
+	QTRY_COMPARE_WITH_TIMEOUT(finished.count(), 1, 30000);
+	QCOMPARE(finished.last()[0].toInt(), 4);
+	QVERIFY2(runner.output().isEmpty(), qPrintable(runner.output()));
+
+	QFile ran(dir.filePath("ran.txt"));
+	QVERIFY(ran.open(QIODevice::ReadOnly));
+	const QStringList lines = QString::fromUtf8(ran.readAll()).split('\n');
+
+	QCOMPARE(QFileInfo(lines.value(0)).canonicalFilePath(),	QFileInfo(path).canonicalFilePath());
+	QCOMPARE(QFileInfo(lines.value(1)).canonicalFilePath(),	QFileInfo(QDir::currentPath()).canonicalFilePath());
+	QCOMPARE(lines.value(2),									QString("True"));
+}
+
 ///A file to save or export gets its exporter's own extension when it has none, also when there is no dot in its path at all
 void TestAll::testFileEventAddsDefaultExtension()
 {

@@ -47,6 +47,9 @@ void Application::init(const ParsedArguments& arguments)
 	if (!arguments.dataFiles.empty())
 		_mainWindow->configureBatchRun(arguments.timeOut);
 
+	if (!arguments.pythonScript.filePath().isEmpty())
+		_mainWindow->setCommandLineScript(arguments.pythonScript.absoluteFilePath(), arguments.keepJASPOpenAfterExporting);
+
 	connect(_mainWindow, &MainWindow::qmlLoadedChanged, _mainWindow, [=,this]() {
 		// The QML files are not yet laoded when MainWindow is just created (loadQML is called via a QTmer::singleShot)
 		// But to correctly work, the following calls need the QML files to be loaded.
@@ -90,6 +93,9 @@ void Application::init(const ParsedArguments& arguments)
 				_mainWindow->open(arguments.dbJson);
 		}
 
+		//Opening a file runs the Python script once the file is loaded, without one it can run right away
+		if (arguments.newData || !(arguments.mainFilePath.exists() || arguments.mainFileIsOnline || !arguments.dbJson.isNull()))
+			_mainWindow->runCommandLineScriptOnceLoaded(nullptr);
 	});
 
 	if(arguments.reportingDir.exists())

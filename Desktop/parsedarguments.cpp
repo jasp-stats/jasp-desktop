@@ -43,6 +43,7 @@ const std::string
 	ParsedArguments::outputDirArg			= "--outputDir",
 	ParsedArguments::exportTypeArg			= "--exportType=",
 	ParsedArguments::keepJASPOpenArg		= "--keepJASPOpen",
+	ParsedArguments::pythonScriptArg		= "--pythonScript",
 	ParsedArguments::keepMissingColsWhenSyncingArg = "--keepMissingColsWhenSyncing",
 	ParsedArguments::platformQtArg			= "-platform",
 	ParsedArguments::remoteDebuggingPortArg	= "--remote-debugging-port=",
@@ -68,7 +69,7 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		else if(arg == hideArg)									hideJASP					= true;
 		else if(arg == safeGraphicsArg)							safeGraphics				= true;
 		else if(arg == newDataArg)								newData						= true;
-		else if(AppInfo::proMode() && arg == keepJASPOpenArg)	keepJASPOpenAfterExporting	= true;
+		else if(arg == keepJASPOpenArg)							keepJASPOpenAfterExporting	= true; //Also after a --pythonScript, so not only in PRO mode
 		else if(AppInfo::proMode() && arg == keepMissingColsWhenSyncingArg)	keepMissingColsWhenSyncing	= true;
 #ifdef _WIN32
 		else if(arg == sandboxArg)			{				containerSettingForced	= true;		container = true; }
@@ -95,6 +96,17 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 			argNr++;
 			if (!checkFolder(args, argNr, reportingDir, true))
 				letsExplainSomeThings = true;
+		}
+		else if(arg == pythonScriptArg)
+		{
+			argNr++;
+			if (argNr < args.size() && QFileInfo(tq(args[argNr])).isFile())
+				pythonScript = QFileInfo(tq(args[argNr]));
+			else
+			{
+				std::cerr << "There is no Python script to run with " << pythonScriptArg << (argNr < args.size() ? " at " + args[argNr] : "") << "." << std::endl;
+				letsExplainSomeThings = true;
+			}
 		}
 		else if(AppInfo::proMode() && arg.size() > exportTypeArg.size() && arg.substr(0, exportTypeArg.size()) == exportTypeArg)
 		{
@@ -215,14 +227,21 @@ ParsedArguments::ParsedArguments(int argc, char *argv[])
 		letsExplainSomeThings = true;
 	}
 
+	if(!pythonScript.filePath().isEmpty() && (unitTest || unitTestRecursive || reportingDir.exists() || !dataFiles.empty() || !inputDataDirs.empty()))
+	{
+		std::cerr << "A Python script cannot run while JASP tests, reports or synchronizes data files." << std::endl;
+		letsExplainSomeThings = true;
+	}
+
 	if(letsExplainSomeThings)
 	{
 		std::cerr	<< "JASP can be started without arguments, or the following: ";
 		if(AppInfo::proMode())
-			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --export=<Html/Pdf/No/Jasp> | --inputDataDir | --keepMissingColsWhenSyncing | --keepJASPOpen } \n";
+			std::cerr	<< "{ --help | -h | filename (filedata1 filedata2 ...) | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --outputDir | --export=<Html/Pdf/No/Jasp> | --inputDataDir | --keepMissingColsWhenSyncing | --pythonScript script.py | --keepJASPOpen } \n";
 		else
-			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide } \n";
-		std::cerr	<< "If a filename is supplied JASP will try to load it. \n";
+			std::cerr	<< "{ --help | -h | filename | --unitTest filename | --unitTestRecursive folder | --save | --timeOut=10 | --logToFile | --hide | --pythonScript script.py | --keepJASPOpen } \n";
+		std::cerr	<< "If a filename is supplied JASP will try to load it. \n"
+					<< "If --pythonScript is specified JASP runs that Python script once the file to open, if any, is loaded and its analyses are done. The script can call JASP with the jasp module (help(jasp) lists what it offers), and what it prints shows here. Then JASP closes with the exit code of the script, except if --keepJASPOpen is specified.\n";
 		if(AppInfo::proMode())
 		{
 			std::cerr	<< "If a filedata or several filedata are supplied, then JASP will synchronize the JASP file with the new data. In this case it will per default export the results in HTML format (to export it on other format use the --export argument)\n"

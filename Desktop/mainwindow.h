@@ -74,6 +74,7 @@ class Application;
 class AllHelp;
 class QTimer;
 class QQuickWebEngineDownloadRequest;
+class PythonScriptRunner;
 ///
 /// Not only the main window of the application but also the main class.
 /// Instantiates relevant models and loads QML (see loadQml)
@@ -119,6 +120,11 @@ public:
 	void				open(const Json::Value & dbJson);
 	void				testLoadedJaspFile(int timeOut, bool save);
 	void				reportHere(QString dir);
+
+	/// A Python script given on the command line. It runs once what the command line opens is loaded, after which
+	/// JASP closes with the exit code of the script, unless keepJASPOpen.
+	void				setCommandLineScript(const QString & path, bool keepJASPOpen);
+	void				runCommandLineScriptOnceLoaded(FileEvent * openEvent); ///< openEvent opens what the command line gives, nullptr when that is nothing
 
 	bool				progressBarVisible()	const	{ return _progressBarVisible;	}
 	int					progressBarProgress()	const	{ return _progressBarProgress;	}
@@ -215,6 +221,9 @@ public slots:
 	void	waitForAllAnalysesFinishedBeforeStartingEvent();
 	void	_startWaitingEventIfAnalysesStillFinished();
 	void	waitingEventTimedOut();
+	void	runCommandLineScriptOnceAnalysesSettle();
+	void	runCommandLineScript();
+	void	commandLineScriptFinished(int exitCode);
 
 private slots:
 	void _setProgressBarVisible(bool progressBarVisible);
@@ -420,6 +429,10 @@ private:
 	BatchResult _batchResult;
 	bool _batchRunning = false, _batchKeepOpen = false, _batchWaitingForAnalyses = false;
 	void finishBatchRun();
+
+	QString							_commandLineScript;							///< Until it runs
+	bool							_keepOpenAfterCommandLineScript	= false;
+	PythonScriptRunner			*	_commandLineScriptRunner		= nullptr;
 };
 
 #endif // MAINWIDGET_H

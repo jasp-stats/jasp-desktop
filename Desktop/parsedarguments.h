@@ -52,7 +52,8 @@ public:
 	Json::Value			dbJson;
 	QFileInfo			mainFilePath,
 						reportingDir,
-						outputDir;
+						outputDir,
+						pythonScript;	///< run once the file to open, if any, is loaded
 	std::vector<QFileInfo>	dataFiles,
 							inputDataDirs;	///< one per --inputDataDir, which can be given more than once
 
@@ -74,6 +75,7 @@ public:
 		outputDirArg,
 		exportTypeArg,
 		keepJASPOpenArg,
+		pythonScriptArg,
 		platformQtArg,
 		remoteDebuggingPortArg,
 		webEngineArgs,

@@ -74,6 +74,37 @@ bool PythonScriptRunner::run(const QString & code)
 	if (_process)
 		return false;
 
+	_scriptDir = std::make_unique<QTemporaryDir>();
+	QFile script(_scriptDir->filePath("script.py"));
+
+	if (!_scriptDir->isValid() || !script.open(QIODevice::WriteOnly))
+	{
+		appendMessage(tr("JASP could not write the script to a temporary file."));
+		_scriptDir.reset();
+		return false;
+	}
+
+	script.write(code.toUtf8());
+	script.close();
+
+	const bool started = start(script.fileName(), QDir::homePath(), QProcess::MergedChannels); // Merged: a traceback then stays in its place after what was printed before it
+
+	if (!started)
+		_scriptDir.reset();
+
+	return started;
+}
+
+bool PythonScriptRunner::runFile(const QString & path)
+{
+	if (_process)
+		return false;
+
+	return start(path, QDir::currentPath(), QProcess::ForwardedChannels);
+}
+
+bool PythonScriptRunner::start(const QString & script, const QString & workingDir, QProcess::ProcessChannelMode channels)
+{
 	const QString python = _interpreter.isEmpty() ? findInterpreter() : _interpreter;
 
 	if (python.isEmpty())
@@ -97,20 +128,6 @@ bool PythonScriptRunner::run(const QString & code)
 		return false;
 	}
 
-	_scriptDir = std::make_unique<QTemporaryDir>();
-	QFile script(_scriptDir->filePath("script.py"));
-
-	if (!_scriptDir->isValid() || !script.open(QIODevice::WriteOnly))
-	{
-		appendMessage(tr("JASP could not write the script to a temporary file."));
-		_server.reset();
-		_scriptDir.reset();
-		return false;
-	}
-
-	script.write(code.toUtf8());
-	script.close();
-
 	QProcessEnvironment	environment	= QProcessEnvironment::systemEnvironment();
 	const QString		pythonPath	= environment.value("PYTHONPATH");
 
@@ -126,8 +143,8 @@ bool PythonScriptRunner::run(const QString & code)
 
 	_process = new QProcess(this);
 	_process->setProcessEnvironment(environment);
-	_process->setProcessChannelMode(QProcess::MergedChannels); // A traceback then stays in its place after what was printed before it
-	_process->setWorkingDirectory(QDir::homePath());
+	_process->setProcessChannelMode(channels);
+	_process->setWorkingDirectory(workingDir);
 
 	connect(_process, &QProcess::readyReadStandardOutput, this, &PythonScriptRunner::readOutput);
 
@@ -147,7 +164,7 @@ bool PythonScriptRunner::run(const QString & code)
 
 	emit runningChanged();
 
-	_process->start(python, { script.fileName() });
+	_process->start(python, { script });
 
 	return _process != nullptr; // Already gone when it failed to start right away
 }

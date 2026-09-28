@@ -1115,6 +1115,8 @@ void MainWindow::open(const QString & mainFilePath, const QString & inputDataFil
 void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	FileEvent * openEvent = _fileMenu->open(mainFilePath);
+	runCommandLineScriptOnceLoaded(openEvent);
+
 	if (!inputDataFile.isEmpty())
 	{
 		_batchKeepOpen = keepJASPOpen;
@@ -1229,6 +1231,93 @@ void MainWindow::waitingEventTimedOut()
 	finishBatchRun();
 }
 
+void MainWindow::setCommandLineScript(const QString & path, bool keepJASPOpen)
+{
+	_commandLineScript				= path;
+	_keepOpenAfterCommandLineScript	= keepJASPOpen;
+}
+
+void MainWindow::runCommandLineScriptOnceLoaded(FileEvent * openEvent)
+{
+	if (_commandLineScript.isEmpty())
+		return;
+
+	if (!openEvent)
+	{
+		//Nothing to load, but what the script does has to show in the results
+		if (_resultsJsInterface->resultsLoaded())	runCommandLineScriptOnceAnalysesSettle();
+		else										connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, &MainWindow::runCommandLineScriptOnceAnalysesSettle, Qt::SingleShotConnection);
+		return;
+	}
+
+	connect(openEvent, &FileEvent::finalized, this, [this, openEvent]()
+	{
+		if (openEvent->isSuccessful())
+			runCommandLineScriptOnceAnalysesSettle();
+		else
+		{
+			std::cerr << "The Python script " << fq(_commandLineScript) << " did not run, as " << fq(openEvent->path()) << " could not be loaded." << std::endl;
+
+			if (!_keepOpenAfterCommandLineScript)
+				emit exitSignal(3); //As when the file fails to open without a script
+		}
+	});
+}
+
+void MainWindow::runCommandLineScriptOnceAnalysesSettle()
+{
+	//The analyses of a JASP file that just opened can still be computing, or start to shortly after (see
+	//waitForAllAnalysesFinishedBeforeStartingEvent), so the script runs once they have all been finished for a second.
+	QTimer * settled = new QTimer(this);
+	settled->setSingleShot(true);
+	settled->setInterval(1000);
+
+	connect(_analyses,	&Analyses::analysisStatusChanged,	settled,	[settled]() { settled->start(); });
+	connect(_analyses,	&Analyses::analysisResultsChanged,	settled,	[settled]() { settled->start(); });
+	connect(settled,	&QTimer::timeout,					this,		[this, settled]()
+	{
+		if (!_analyses->allFinished())
+			return; //The one still busy changes its status once it is done, which starts the timer again
+
+		settled->deleteLater();
+		runCommandLineScript();
+	});
+
+	settled->start();
+}
+
+void MainWindow::runCommandLineScript()
+{
+	if (_commandLineScript.isEmpty()) //It already ran
+		return;
+
+	const QString script = _commandLineScript;
+	_commandLineScript.clear();
+
+	_commandLineScriptRunner = new PythonScriptRunner(this);
+	_commandLineScriptRunner->setInterpreter(_preferences->pythonInterpreter());
+
+	std::cout << "Running the Python script " << fq(script) << std::endl;
+
+	//finished() comes once the script ends, also when Python then fails to start, but not when the run cannot even begin
+	QMetaObject::Connection finished = connect(_commandLineScriptRunner, &PythonScriptRunner::finished, this, &MainWindow::commandLineScriptFinished, Qt::SingleShotConnection);
+
+	if (!_commandLineScriptRunner->runFile(script) && disconnect(finished)) //Still connected: finished() did not come
+		commandLineScriptFinished(-1);
+}
+
+void MainWindow::commandLineScriptFinished(int exitCode)
+{
+	//What the script printed went straight to JASP's own output, this is what JASP said about the run, such as why Python did not start
+	if (!_commandLineScriptRunner->output().isEmpty())
+		std::cerr << fq(_commandLineScriptRunner->output()) << std::flush;
+
+	std::cout << "The Python script ended with exit code " << exitCode << std::endl;
+
+	if (!_keepOpenAfterCommandLineScript)
+		emit exitSignal(exitCode < 0 ? 1 : exitCode);
+}
+
 void MainWindow::showNewData()
 {
 	_package->generateEmptyData();
@@ -1238,7 +1327,7 @@ void MainWindow::showNewData()
 void MainWindow::open(const Json::Value & dbJson)
 {
 	_openedUsingArgs = true;
-	if (_resultsJsInterface->resultsLoaded())	_fileMenu->open(dbJson);
+	if (_resultsJsInterface->resultsLoaded())	runCommandLineScriptOnceLoaded(_fileMenu->open(dbJson));
 	else										_openOnLoadDbJson = dbJson;
 }
 
@@ -2198,7 +2287,7 @@ void MainWindow::qmlLoaded()
 
 void MainWindow::_openDbJson()
 {
-	_fileMenu->open(_openOnLoadDbJson);
+	runCommandLineScriptOnceLoaded(_fileMenu->open(_openOnLoadDbJson));
 	_openOnLoadDbJson = Json::nullValue;
 }
 

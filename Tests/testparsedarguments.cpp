@@ -134,6 +134,7 @@ void TestParsedArguments::testNoArguments()
 	QCOMPARE(pa.timeOut,				10);
 	QVERIFY(!pa.mainFilePath.exists());
 	QVERIFY(pa.dataFiles.empty());
+	QVERIFY(pa.pythonScript.filePath().isEmpty());
 }
 
 // ── boolean flags ──────────────────────────────────────────────────────────
@@ -152,11 +153,7 @@ void TestParsedArguments::testBooleanFlags()
 	check("--hide",				&ParsedArguments::hideJASP);
 	check("--safeGraphics",		&ParsedArguments::safeGraphics);
 	check("--newData",			&ParsedArguments::newData);
-
-	//These flags only exist in PRO mode; elsewhere they are passed on to Qt as unrecognized options.
-	AppInfo::setProMode(true);
-	check("--keepJASPOpen",		&ParsedArguments::keepJASPOpenAfterExporting);
-	AppInfo::setProMode(false);
+	check("--keepJASPOpen",		&ParsedArguments::keepJASPOpenAfterExporting); //Not only in PRO mode, as it also keeps JASP open after a --pythonScript
 }
 
 // ── --timeOut=N ────────────────────────────────────────────────────────────
@@ -360,6 +357,37 @@ void TestParsedArguments::testUnitTestRecursiveFlag()
 
 	QCOMPARE(pa.unitTestRecursive, true);
 	QCOMPARE(pa.mainFilePath.absoluteFilePath(), QFileInfo(dir.path()).absoluteFilePath());
+}
+
+// ── --pythonScript ────────────────────────────────────────────────────────
+
+void TestParsedArguments::testPythonScript()
+{
+	QTemporaryDir dir;
+	QVERIFY(dir.isValid());
+	QString scriptPath	= dir.path() + "/analyse.py",
+			dataPath	= createTempDataFile(dir);
+
+	QFile script(scriptPath);
+	QVERIFY(script.open(QIODevice::WriteOnly));
+	script.close();
+
+	{
+		ArgArray a({"--pythonScript", scriptPath});
+		ParsedArguments pa(a.argc, a.argv());
+
+		QCOMPARE(pa.pythonScript.absoluteFilePath(),	QFileInfo(scriptPath).absoluteFilePath());
+		QVERIFY(!pa.mainFilePath.exists());
+		QCOMPARE(pa.keepJASPOpenAfterExporting,		false);
+	}
+
+	//With a file to open first, and kept open afterwards, also outside PRO mode
+	ArgArray a({dataPath, "--pythonScript", scriptPath, "--keepJASPOpen"});
+	ParsedArguments pa(a.argc, a.argv());
+
+	QCOMPARE(pa.pythonScript.absoluteFilePath(),	QFileInfo(scriptPath).absoluteFilePath());
+	QCOMPARE(pa.mainFilePath.absoluteFilePath(),	QFileInfo(dataPath).absoluteFilePath());
+	QCOMPARE(pa.keepJASPOpenAfterExporting,		true);
 }
 
 // ── combined output flags ─────────────────────────────────────────────────
