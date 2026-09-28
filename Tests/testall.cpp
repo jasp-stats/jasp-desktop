@@ -55,6 +55,7 @@
 #include "dataset.h"
 #include "data/asyncloader.h"
 #include "data/datasetloader.h"
+#include "data/fileevent.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 
@@ -1609,6 +1610,27 @@ raise SystemExit(3)
 	runner.clearOutput();
 	QVERIFY2(!runner.readScript(dir.filePath("missing.py")).isValid(),	"nothing, so the window keeps the script it has");
 	QVERIFY2(runner.output().contains("missing.py"),					qPrintable(runner.output()));
+}
+
+///A file to save or export gets its exporter's own extension when it has none, also when there is no dot in its path at all
+void TestAll::testFileEventAddsDefaultExtension()
+{
+	FileEvent	exportResults(nullptr, FileEvent::FileExportResults, false),
+				save(nullptr, FileEvent::FileSave, false);
+
+	QVERIFY(exportResults.setPath("/tmp/results"));
+	QCOMPARE(exportResults.path(), QString("/tmp/results.html"));
+
+	QVERIFY(exportResults.setPath("/tmp/some.folder/results"));
+	QCOMPARE(exportResults.path(), QString("/tmp/some.folder/results.html"));
+
+	QVERIFY(exportResults.setPath("/tmp/results.pdf"));
+	QVERIFY(exportResults.type() == Utils::FileType::pdf);
+
+	QVERIFY(!exportResults.setPath("/tmp/results.csv"));
+
+	QVERIFY(save.setPath("/tmp/analysis"));
+	QCOMPARE(save.path(), QString("/tmp/analysis.jasp"));
 }
 
 

@@ -39,6 +39,7 @@ private slots:
 	void	testRpcScriptServerNeedsItsToken();
 	void	testPythonModuleCallsJasp();
 	void	testPythonScriptRunner();
+	void	testFileEventAddsDefaultExtension();
 
 private:
 	DataSetPackage		*	_pkg		= nullptr;

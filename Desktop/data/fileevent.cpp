@@ -81,7 +81,7 @@ bool FileEvent::setPath(const QString & path)
 
 	if(_exporter != nullptr)
 	{
-		if (_type == Utils::FileType::unknown)
+		if (_type == Utils::FileType::unknown || _type == Utils::FileType::empty) //empty: no dot in the path at all
 		{
 			_type = _exporter->getDefaultFileType();
 			_path.append('.' + FileTypeBaseToQString(_type));
