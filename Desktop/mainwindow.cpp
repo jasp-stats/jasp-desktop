@@ -1744,7 +1744,78 @@ void MainWindow::registerRpcHandlers()
 	   return response;
 	});
 
-	Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
+	// --- results_export and file_save ---
+	// Both write their file through a FileEvent, as the File menu does, and answer once it is finalized:
+	// by then JASP has also taken a saved file as the one it has open.
+	auto writeFile = [this](FileEvent::FileMode mode, const QString & path, int timeoutMs) -> Json::Value
+	{
+		if (!dataAvailable() && !analysesAvailable())
+			return JaspRpcDispatcher::errorResult("There is nothing to write yet: load data or create an analysis first.");
+
+		if (QFileInfo(path).isRelative())
+			return JaspRpcDispatcher::errorResult("The path must be absolute: '" + fq(path) + "'");
+
+		FileEvent * event = new FileEvent(this, mode);
+		event->setSilent(true); // A failure goes back to the caller instead of into a message box
+
+		if (!event->setPath(path))
+		{
+			Json::Value error = JaspRpcDispatcher::errorResult(fq(event->getLastError()));
+			delete event;
+			return error;
+		}
+
+		const std::string	written	= fq(event->path()); // setPath adds the extension when there is none
+		auto				answer	= std::make_shared<Json::Value>(); // Null until the event is finalized
+
+		connect(event, &FileEvent::finalized, this, [event, answer, written]()
+		{
+			if (event->isSuccessful())	*answer = JaspRpcDispatcher::successResult();
+			else						*answer = JaspRpcDispatcher::errorResult(event->message().isEmpty() ? "Could not write '" + written + "'" : fq(event->message()));
+
+			(*answer)["path"] = written;
+		});
+
+		event->starts();
+
+		if (answer->isNull())
+			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs, [&](QEventLoop& loop, QTimer&)
+			{
+				QObject::connect(event, &FileEvent::finalized, &loop, &QEventLoop::quit);
+			});
+
+		if (!answer->isNull())
+			return *answer;
+
+		// Not done yet: JASP finishes the file in the background
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["status"]	= "running";
+		response["path"]	= written;
+		return response;
+	};
+
+	disp->registerMethodByName("results_export", [writeFile](const Json::Value& params) -> Json::Value
+	{
+		return writeFile(FileEvent::FileExportResults, tq(params["path"].asString()), params["timeoutMs"].asInt());
+	});
+
+	disp->registerMethodByName("file_save", [this, writeFile](const Json::Value& params) -> Json::Value
+	{
+		QString path = tq(params.get("path", "").asString());
+
+		// Without a path, to the JASP file that is open, as File > Save does
+		if (path.isEmpty())
+		{
+			path = _package->currentFile();
+
+			if (Utils::getTypeFromFileName(fq(path)) != Utils::FileType::jasp || _package->currentJaspFileIsNonSaveable())
+				return JaspRpcDispatcher::errorResult("No JASP file is open to save to: give a path.");
+		}
+
+		return writeFile(FileEvent::FileSave, path, params["timeoutMs"].asInt());
+	});
+
+	Log::log() << "[RPC] Registered data_load, data_load_status, data_info, results_export and file_save handlers." << std::endl;
 }
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const

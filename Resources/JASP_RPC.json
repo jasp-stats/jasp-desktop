@@ -979,6 +979,90 @@
 			}
 		},
 		{
+			"name": "results_export",
+			"summary": "Export the results, as the results panel shows them, to an HTML or PDF file, like File > Export Results. An existing file is overwritten.",
+			"x-displayName": "Export Results",
+			"params": [
+				{
+					"name": "path",
+					"required": true,
+					"description": "Absolute path of the file to write. Its extension, .html or .pdf, chooses the format; without one, .html is added.",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait for the file to be written. If it takes longer, status is 'running' and JASP finishes the file in the background.",
+					"schema": {
+						"type": "integer",
+						"default": 60000
+					}
+				}
+			],
+			"result": {
+				"name": "results_export_result",
+				"description": "The file the results were written to.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' once the file is written, or 'running' when timeoutMs elapsed first."
+						},
+						"path": {
+							"type": "string",
+							"description": "Path of the file, with the extension that was added if any."
+						}
+					},
+					"required": ["status", "path"]
+				}
+			}
+		},
+		{
+			"name": "file_save",
+			"summary": "Save the data, analyses and results in a JASP file, like File > Save, or File > Save As when a path is given. An existing file is overwritten.",
+			"x-displayName": "Save JASP File",
+			"params": [
+				{
+					"name": "path",
+					"required": false,
+					"description": "Absolute path of the .jasp file to write; without an extension, .jasp is added. Leave it out to save to the JASP file that is open. Afterwards JASP has this file open.",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "timeoutMs",
+					"required": false,
+					"description": "Maximum milliseconds to wait for the file to be written. If it takes longer, status is 'running' and JASP finishes the file in the background.",
+					"schema": {
+						"type": "integer",
+						"default": 60000
+					}
+				}
+			],
+			"result": {
+				"name": "file_save_result",
+				"description": "The JASP file that was written.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "'success' once the file is written, or 'running' when timeoutMs elapsed first."
+						},
+						"path": {
+							"type": "string",
+							"description": "Path of the JASP file, with the extension that was added if any."
+						}
+					},
+					"required": ["status", "path"]
+				}
+			}
+		},
+		{
 			"name": "ping",
 			"summary": "Simple connectivity check. Always returns pong.",
 			"x-displayName": "Ping",
