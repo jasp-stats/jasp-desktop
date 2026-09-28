@@ -645,7 +645,7 @@ PrefsScrollView
 			RoundedButton
 			{
 				id:					browsePythonButton
-				text:				qsTr("Python:")
+				text:				"Python:"
 				onClicked:			preferencesModel.browsePythonInterpreter()
 				anchors.left:		parent.left
 				toolTip:			qsTr("Browse to the Python 3 that the Python window runs scripts with.")
