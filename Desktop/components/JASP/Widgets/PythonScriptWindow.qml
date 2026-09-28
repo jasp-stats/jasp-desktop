@@ -134,7 +134,11 @@ Window
 						anchors.left:		parent.left
 						anchors.margins:	8 * preferencesModel.uiScale
 						anchors.leftMargin:	3 * jaspTheme.itemPadding
-						text:				qsTr("Write a Python script here. With 'import jasp' it can call JASP, for instance:\n\nimport jasp\nprint(jasp.data_info())\n\nhelp(jasp) lists what it can do. Ctrl+Enter or F5 runs the script.")
+						text:				qsTr("Write a Python script here. With %1 it can call JASP, for instance:%2 lists what it can do. %3 or %4 runs the script.")
+    .arg("'import jasp'")
+    .arg("\n\nimport jasp\nprint(jasp.data_info())\n\nhelp(jasp)")
+    .arg("Ctrl+Enter")
+    .arg("F5")
 						font:				jaspTheme.font
 						color:				jaspTheme.grayDarker
 						wrapMode:			Text.Wrap
