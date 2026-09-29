@@ -1816,6 +1816,38 @@ void TestAll::testStartFileSyncingDirectlyAlsoClearsManualEdits()
 	ds->syncer().stopFileSyncing();
 }
 
+void TestAll::testSynchingExternallyRequiresWatcher()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("stale_flag.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	//What loading a workspace that was saved *while synching* looks like: the dataFileSynch flag
+	//comes back from the database, but the file watcher died with the previous session and is only
+	//re-registered on open (MainWindow::fileEventRequestFinalize). Until then the ribbon must not
+	//claim the data file is leading - nothing is watching it.
+	ds->setDataFile(fq(csvPath));
+	ds->setDataFileSynch(true);
+
+	QVERIFY(ds->dataFileSynch());
+	QVERIFY(!ds->syncer().isFileSyncing());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Re-arming the watcher makes the answer honest again...
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	//...and stopping it takes the flag out of the picture entirely.
+	ds->syncer().stopFileSyncing();
+	QVERIFY(!_pkg->synchingExternally());
+}
+
 void TestAll::testUndoChangedSurvivesWorkspaceRecreation()
 {
 	_pkg = new DataSetPackage(this);

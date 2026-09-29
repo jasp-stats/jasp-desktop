@@ -635,7 +635,11 @@ bool DataSetPackage::synchingExternally() const
 {
 	DataSet * ds = dataSet();
 
-	return ds && ds->dataFileSynch() && (!ds->dataFilePath().empty() || ds->syncer().isDatabaseSyncing());
+	//The flag survives a workspace teardown, but the watcher does not: a workspace saved while
+	//synching comes back with dataFileSynch still on even though nobody is watching the file
+	//anymore. So only answer yes when the syncer is actually doing something (the data-file path
+	//re-arms the watcher on open, see MainWindow::fileEventRequestFinalize).
+	return ds && ds->dataFileSynch() && (ds->syncer().isFileSyncing() || ds->syncer().isDatabaseSyncing());
 }
 
 void DataSetPackage::setSynchingExternally(bool synchingExternally)

@@ -2065,6 +2065,12 @@ void MainWindow::fileEventRequestFinalize(FileEvent *event)
 							setCheckAutomaticSync(true);
 							_package->dataSet()->syncer().startFileSyncing(dataFilePath);
 						}
+						else if (_package->dataSet()->dataFileSynch())
+							//This workspace was saved while synching, but the watcher died with the previous
+							//session and the file has not changed since. Re-arm it anyway, or the
+							//Synchronisation button would (rightly) show "not synching" while the saved
+							//state promises the data file is leading.
+							_package->dataSet()->syncer().startFileSyncing(dataFilePath);
 					}
 					else
 					{
@@ -2457,7 +2463,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 bool MainWindow::startDataEditorHandler()
 {
 	setCheckAutomaticSync(false);
-	QString dataFilePath = QString::fromStdString(_package->dataSet()->dataFilePath());
+	QString dataFilePath = _package->dataSet() ? QString::fromStdString(_package->dataSet()->dataFilePath()) : QString();
 
 	if (
 			(dataFilePath.isEmpty() || _package->manualEdits())

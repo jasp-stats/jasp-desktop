@@ -83,6 +83,10 @@ private slots:
 	// leaves the synching on and the watcher silently reverts it.
 	void	testStartFileSyncingDirectlyAlsoClearsManualEdits();
 
+	// The dataFileSynch flag outlives the session (it is saved in the workspace), the file watcher does
+	// not. synchingExternally() must not report a synch that nobody is actually doing.
+	void	testSynchingExternallyRequiresWatcher();
+
 	// DataExporter tests
 	void	testDataExporterShownDataSetOnly();
 

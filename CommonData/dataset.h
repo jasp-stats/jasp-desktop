@@ -185,7 +185,6 @@ public:
 			bool			synchingData()		const { return _synchingDataNow; }
 			///While this is on the data is being replaced by the contents of the data file, so the changes that causes are not edits by the user.
 			void			setSynchingData(	bool synching)	{ _synchingDataNow = synching; }
-			void			startSynching(		bool synchImmediately = true);
 			
 			void			emitColumnChanged(		const QString		& name);
 
