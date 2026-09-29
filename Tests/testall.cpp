@@ -3,6 +3,8 @@
 #include "numbersinlocales.h"
 #include "tempfiles.h"
 #include "processinfo.h"
+#include "dirs.h"
+#include <QDir>
 #include "qutils.h"
 #include "databaseinterface.h"
 #include "data/datasetpackage.h"
@@ -47,6 +49,10 @@
 
 void TestAll::initTestCase()
 {
+	//Dirs::tempDir() falls back to "./" when the appdata dir is never set (main.cpp does it for the
+	//real UI), so without this every run drops <pid>/internal.sqlite + <pid>/status in whatever the
+	//CWD happens to be - the repo root when run from a build shell.
+	Dirs::setLocalAppdataDir(QDir::tempPath().toStdString() + "/jasp-test-runs");
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 }
 
