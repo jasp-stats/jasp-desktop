@@ -78,6 +78,11 @@ private slots:
 	// even though another dataset was already edited by hand.
 	void	testManualEditsAreTrackedPerDataSet();
 
+	// The synching can also be switched back on straight on the syncer (FileMenu::setCurrentDataFile when
+	// a generated data file lands). That must clear the manual-edits flag too, or the *next* hand edit
+	// leaves the synching on and the watcher silently reverts it.
+	void	testStartFileSyncingDirectlyAlsoClearsManualEdits();
+
 	// DataExporter tests
 	void	testDataExporterShownDataSetOnly();
 

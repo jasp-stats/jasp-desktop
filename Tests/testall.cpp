@@ -1769,6 +1769,47 @@ void TestAll::testLabelEditDoesNotStopSynching()
 	ds->syncer().stopFileSyncing();
 }
 
+void TestAll::testStartFileSyncingDirectlyAlsoClearsManualEdits()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	QTemporaryDir tempDir;
+	QVERIFY(tempDir.isValid());
+	const QString csvPath = tempDir.filePath("regen.csv");
+	QVERIFY(_writeTextFile(csvPath, "a,b\n1,2\n"));
+
+	ds->syncer().startFileSyncing(csvPath);
+	QVERIFY(_pkg->synchingExternally());
+
+	const QModelIndex cell = ds->index(0, 0);
+	QVERIFY(ds->setData(cell, QVariant("9"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	//Turning the synching back on *directly on the syncer*, not through
+	//DataSetPackage::setSynchingExternally, has to clear the manual-edits flag as well. That is what
+	//FileMenu::setCurrentDataFile does when a generated data file lands (and FileMenu::
+	//setDataFileWatcher(true) on the way back). A stale flag would block the next edit from switching
+	//the synching off again: DataSet::setManualEdits(true) would see no change and return early.
+	ds->syncer().startFileSyncing(csvPath);
+
+	QVERIFY(_pkg->synchingExternally());
+	QVERIFY(!_pkg->manualEdits());
+
+	//...so a next hand edit must again switch the synching off, instead of leaving it on while the
+	//data diverges from the file that the watcher will then sync over.
+	QVERIFY(ds->setData(cell, QVariant("8"), int(dataPkgRoles::value)));
+
+	QVERIFY(_pkg->manualEdits());
+	QVERIFY(!_pkg->synchingExternally());
+
+	ds->syncer().stopFileSyncing();
+}
+
 void TestAll::testUndoChangedSurvivesWorkspaceRecreation()
 {
 	_pkg = new DataSetPackage(this);

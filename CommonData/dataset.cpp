@@ -628,6 +628,12 @@ void DataSet::setDataFileSynch(bool synchronizing)
 	{
 		_synchTurnedOffByManualEdits = false;
 
+		//Clear the flag here and not just in DataSetPackage::setSynchingExternally: the synching can also
+		//come back on straight through the syncer (FileMenu::setCurrentDataFile when a generated data
+		//file lands). A stale true would make the *next* setManualEdits(true) return early, leaving the
+		//synching on while the data diverges from the file again.
+		setManualEdits(false);
+
 		if(_undoStack)
 			_undoStack->setClean();
 	}
