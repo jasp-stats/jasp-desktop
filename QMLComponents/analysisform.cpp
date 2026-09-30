@@ -96,6 +96,16 @@ Filter *AnalysisForm::filter()
 	return _analysis ? _analysis->filter() : nullptr;
 }
 
+VariableInfoProvider *AnalysisForm::variableInfoProvider()
+{
+	Filter * analysisFilter = filter();
+
+	if (analysisFilter)
+		return analysisFilter;
+
+	return _varInfo ? _varInfo->provider() : nullptr;
+}
+
 void AnalysisForm::refreshAnalysis()
 {
 	_analysis->refresh();

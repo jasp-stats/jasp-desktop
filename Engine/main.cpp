@@ -23,8 +23,6 @@
 #include <codecvt>
 #include "otoolstuff.h"
 #include "dirs.h"
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
 #include "rbridge.h"
 
 #ifdef _WIN32
@@ -78,9 +76,8 @@ int main(int argc, char *argv[])
             Dirs::setReportingDir(argv[5]);
 
 #endif
-		static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
 		Log::logFileNameBase = logFileBase;
-		Log::init(&nullstream);
+		Log::init(&Log::nullStream());
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
 		Log::setWhere(logTypeFromString(logFileWhere));
 		Log::setEngineNo(slaveNo);

@@ -74,9 +74,6 @@
 #include "rpc/jasprpcserver.h"
 #include "ai/agentstatetracker.h"
 
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
-
 #include "communitydefs.h"
 
 using namespace std;
@@ -1117,10 +1114,8 @@ void MainWindow::initLog()
 {
 	assert(_engineSync != nullptr && _preferences != nullptr);
 
-	static boost::iostreams::stream<boost::iostreams::null_sink> nullstream((boost::iostreams::null_sink())); //https://stackoverflow.com/questions/8243743/is-there-a-null-stdostream-implementation-in-c-or-libraries
-
 	Log::logFileNameBase = (AppDirs::logDir() + "JASP "  + getSortableTimestamp()).toStdString();
-	Log::init(&nullstream);
+	Log::init(&Log::nullStream());
 	Log::setLogFileName(Log::logFileNameBase + " Desktop.log");
 	Log::setLoggingToFile(_preferences->logToFile());
 	logRemoveSuperfluousFiles(_preferences->logFilesMax());

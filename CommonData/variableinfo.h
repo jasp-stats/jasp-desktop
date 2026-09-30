@@ -20,6 +20,7 @@
 #define VARIABLEINFO_H
 
 #include <QVariant>
+#include <QPointer>
 #include <QIcon>
 #include <QAbstractItemModel>
 #include <QQmlContext>
@@ -135,7 +136,12 @@ public:
 	void					setVarInfo(VariableInfo * info) { _varInfo = info; }
 
 private:
-	VariableInfo *	_varInfo = nullptr;
+	///A QPointer and not a raw one, because we do not own this. AnalysisForm parents a VariableInfo to
+	///itself and hands it to every control on the form, and QObject destroys its children in the order
+	///they were added - so that VariableInfo, made in the form's constructor, dies before the controls
+	///that consume it. Their destructors still run (cleanUp() -> disconnectModels()), and a raw pointer
+	///there is a use-after-free. A QPointer nulls itself instead, which every accessor above handles.
+	QPointer<VariableInfo>	_varInfo = nullptr;
 };
 
 #endif // VARIABLEINFO_H

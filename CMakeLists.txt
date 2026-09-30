@@ -199,23 +199,28 @@ else()
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll
                ${CMAKE_BINARY_DIR}/R-Interface/libR-InterfaceNoRInside.dll.a
         COMMAND
-      ${CMAKE_COMMAND} -G "MinGW Makefiles" -S . -B
-      ${CMAKE_BINARY_DIR}/R-Interface "-DRTOOLS_PATH:PATH=${RTOOLS_PATH}"
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} -G "${RTOOLS_R_INTERFACE_GENERATOR}" -S . -B
+      ${CMAKE_BINARY_DIR}/R-Interface
       "-DCMAKE_C_COMPILER:PATH=${RTOOLS_C_COMPILER}"
       "-DCMAKE_CXX_COMPILER:PATH=${RTOOLS_CXX_COMPILER}"
       "-DCMAKE_MAKE_PROGRAM:PATH=${RTOOLS_MAKE_PROGRAM}"
       "-DJASP_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}"
       "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
       "-DR_VERSION:STRING=${R_VERSION}"
-    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
-    USES_TERMINAL
+    COMMAND
+      ${CMAKE_COMMAND} -E env
+      "PATH=${RTOOLS_STATIC_TOOLCHAIN_BIN};${RTOOLS_BUILD_TOOLS_BIN};$ENV{PATH}"
+      ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}/R-Interface
+    VERBATIM
     COMMENT "------ Configuring and Building the libR-Interface")
 
   add_dependencies(SyntaxInterface R-Interface)
 
 endif()
 
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   add_subdirectory(Engine)
   add_subdirectory(Desktop)
 endif()
@@ -229,12 +234,12 @@ endif()
 include(Modules)
 
 # Install logic, usually staging a deploy-able JASP in Build/Install/ folder
-if(NOT USE_QT_STATIC_LIBS)
+if(NOT USE_QT_STATIC_LIBS AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   include(Install)
 endif()
 
 # Packs and creates installer executable for Windows, and macOS
-if(NOT LINUX)
+if(NOT LINUX AND NOT JASP_SYNTAX_INTERFACE_ONLY)
   if("${NIGHTLY_BUILD}" STREQUAL "ON")
     SET(MACOS_JENKINS_SKIPPER "--skip-jenkins")
   else()

@@ -90,6 +90,7 @@ public:
 	std::string dbFile(bool onlyPostfix = false) const;									///< Convenience function for getting the filename where sqlite db should be
 
 	static		DatabaseInterface * singleton();					///< There can be only one! https://www.youtube.com/watch?v=sqcLjcSloXs
+	static		DatabaseInterface * singletonOrNull()	{ return _singleton; }	///< Like singleton() but *without* creating one when there is none, for code that must know whether somebody else already made it before claiming ownership.
 	static		void				closeInterfaces();
 
 	bool		hasConnection() { return _db(); }

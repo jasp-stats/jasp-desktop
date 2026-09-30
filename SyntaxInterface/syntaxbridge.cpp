@@ -46,13 +46,10 @@
 #include "columnencoder.h"
 #include "columnencodercontext.h"
 
-#include "boost/iostreams/stream.hpp"
-#include <boost/iostreams/device/null.hpp>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <ostream>
-#include <streambuf>
 
 #include <QtPlugin>
 #ifdef USE_QT_STATIC_LIBS
@@ -84,15 +81,6 @@ static bool									gl_verbose						=
 static bool									gl_logInitialized				= false;
 static bool									gl_qtMessageHandlerInstalled	= false;
 
-class NullBuffer : public std::streambuf
-{
-protected:
-	int_type overflow(int_type c) override { return traits_type::not_eof(c); }
-};
-
-static NullBuffer							gl_nullBuffer;
-static std::ostream							gl_nullStream(&gl_nullBuffer);
-
 static std::string							gl_param_resultFont				=
 #ifdef WIN32
 	"Arial,sans-serif,freesans,\"Segoe UI\"";
@@ -104,15 +92,14 @@ static std::string							gl_param_resultFont				=
 
 namespace
 {
-	boost::iostreams::stream<boost::iostreams::null_sink>	gl_nullLogStream((boost::iostreams::null_sink()));
-	bool													gl_loggingInitialized = false;
+	bool	gl_loggingInitialized = false;
 }
 
 static void configureBridgeLogging(bool verbose)
 {
 	if(!gl_loggingInitialized)
 	{
-		Log::init(&gl_nullLogStream);
+		Log::init(&Log::nullStream());
 		gl_loggingInitialized = true;
 	}
 
@@ -195,7 +182,7 @@ static void configureLogging()
 	if (!gl_logInitialized)
 	{
 		gl_verbose = envFlagEnabled("JASP_SYNTAX_VERBOSE");
-		Log::init(&gl_nullStream);
+		Log::init(&Log::nullStream());
 		gl_logInitialized = true;
 	}
 
@@ -580,6 +567,13 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	std::string errorMsg;
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
+
+	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
+	//process-global ColumnEncoder at the loaded dataset. Without it encodeColumnNamesinOptions() below
+	//falls back to the empty default encoder, the options keep their original column names, and the
+	//analysis then gets a dataset whose columns *are* encoded - so it finds no data at all.
+	if (gl_dataBridge)
+		gl_dataBridge->provideAndUpdateDataSet();
 
 	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);

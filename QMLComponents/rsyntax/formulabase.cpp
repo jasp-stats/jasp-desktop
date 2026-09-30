@@ -156,7 +156,9 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error, form()->filter()) || !FormulaParser::parse(rhs, false, rightParsedTerms, error, form()->filter()))
+	VariableInfoProvider * provider = form()->variableInfoProvider();
+
+	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error, provider) || !FormulaParser::parse(rhs, false, rightParsedTerms, error, provider))
 	{
 		_rSyntax->addError(error);
 		return false;

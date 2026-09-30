@@ -57,10 +57,16 @@ public:
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
 	void					reloadColumnNames();
+	///The Workspace to work against: adopts the process-wide one another owner made, or creates ours.
+	Workspace			*	resolveWorkspace();
+	///The DatabaseInterface to work against: adopts the process-wide one another owner made, or keeps the one we made ourselves.
+	DatabaseInterface	*	resolveDb();
 
 
 	Workspace			*	_workspace		= nullptr;
+	bool					_ownsWorkspace	= false;	///< False when we adopted a Workspace that another owner (DataSetProvider, DataSetPackage) created.
 	DatabaseInterface	*	_db				= nullptr;
+	bool					_ownsDb			= false;	///< False when we adopted a DatabaseInterface that another owner (DataSetProvider, DataSetPackage) created.
 	int						_analysisId		= -1;
 	std::function<void()>	_datasetProvidedCallback;
 
