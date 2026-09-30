@@ -21,27 +21,9 @@
 #include <iostream>
 #include <fstream>
 #include <codecvt>
-#include <streambuf>
 #include "otoolstuff.h"
 #include "dirs.h"
 #include "rbridge.h"
-
-namespace
-{
-class NullBuffer : public std::streambuf
-{
-protected:
-	int_type overflow(int_type ch) override { return traits_type::not_eof(ch); }
-	std::streamsize xsputn(const char *, std::streamsize count) override { return count; }
-};
-
-std::ostream & nullOutputStream()
-{
-	static NullBuffer buffer;
-	static std::ostream stream(&buffer);
-	return stream;
-}
-}
 
 #ifdef _WIN32
 void openConsoleOutput(unsigned long slaveNo, unsigned parentPID)
@@ -94,9 +76,8 @@ int main(int argc, char *argv[])
             Dirs::setReportingDir(argv[5]);
 
 #endif
-		std::ostream & nullstream = nullOutputStream();
 		Log::logFileNameBase = logFileBase;
-		Log::init(&nullstream);
+		Log::init(&Log::nullStream());
 		Log::setLogFileName(logFileBase + " Engine " + std::to_string(slaveNo) + ".log");
 		Log::setWhere(logTypeFromString(logFileWhere));
 		Log::setEngineNo(slaveNo);

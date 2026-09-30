@@ -83,6 +83,24 @@ void Log::init(std::ostream* nullStream)
 	_nullStream		= nullStream;
 }
 
+namespace
+{
+///Claims to have written everything while dropping it, so the stream stays good (unlike std::ostream(nullptr), which sets badbit).
+class NullBuffer : public std::streambuf
+{
+protected:
+	int_type		overflow(int_type ch)							override { return traits_type::not_eof(ch); }
+	std::streamsize	xsputn(const char *, std::streamsize count)		override { return count; }
+};
+}
+
+std::ostream & Log::nullStream()
+{
+	static NullBuffer	buffer;
+	static std::ostream	stream(&buffer);
+	return stream;
+}
+
 void Log::redirectStdOut()
 {
 	switch(_where)
