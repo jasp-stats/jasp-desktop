@@ -177,7 +177,7 @@ jobs:
                  exit 1
              }
              C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "tar -xzf readstat-1.1.9.tar.gz"
-             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=`$MINGW_CHOST --build=`$MINGW_CHOST --prefix=`$MINGW_PREFIX && make -j2 CFLAGS=-Wno-error=use-after-free CXXFLAGS=-Wno-error=use-after-free && make install"
+             C:\rtools45\msys2_shell.cmd -defterm -here -no-start -ucrt64 -lc "cd readstat-1.1.9 && ./configure --disable-dependency-tracking --host=`$MINGW_CHOST --build=`$MINGW_CHOST --prefix=`$MINGW_PREFIX CFLAGS='-g -O2 -Wno-error=use-after-free' CXXFLAGS='-g -O2 -Wno-error=use-after-free' && make -j2 && make install"
 
       - name: Download and build rdata
         shell: pwsh
