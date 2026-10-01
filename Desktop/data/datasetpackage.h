@@ -28,7 +28,6 @@
 #include "workspace.h"
 #include "databaseinterface.h"
 #include <QSortFilterProxyModel>
-#include <QPointer>
 
 class EngineSync;
 
@@ -215,7 +214,6 @@ public slots:
 private:
 				void				onUndoCleanChanged(bool clean);	///< Undone back to the point where the data still matched the data file? Then the synching can go back on.
 				void				emitSynchingExternallyChanged();
-				void				trackShownDataSet();			///< Follows the synch- and edit-state of whichever dataset is shown, so this class keeps reflecting reality
 				bool				isThisTheSameThreadAsEngineSync();
 				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);
 				void				columnsApply(int dataSetId, stringset	columnNames, std::function<bool (Column *)>			applyThis);
@@ -243,7 +241,6 @@ private:
 								_hasAnalysesWithoutData		= false,
 								_analysesHTMLReady			= false,
 								_waitingForLanguageChange	= false;
-	QPointer<DataSet>			_synchTrackedDataSet;
 	Json::Value					_analysesData;
 	Version						_archiveVersion,
 								_jaspVersion;

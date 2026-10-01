@@ -32,7 +32,6 @@
 #include <ranges>
 #include "variableinfo.h"
 #include "fileevent.h"
-#include "undostack.h"
 
 
 DataSetPackage * DataSetPackage::_singleton = nullptr;
@@ -54,7 +53,10 @@ DataSetPackage::DataSetPackage(QObject * parent) : QObject(parent)
 	connect(this, &DataSetPackage::isModifiedAfterAutoSaveChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::nameChanged);
 	connect(this, &DataSetPackage::dataModeChanged,						this, &DataSetPackage::onDataModeChanged);
-	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::trackShownDataSet);
+	//The manualEdits- and synchingExternally answers are about the shown dataset, so switching that
+	//can change both. The signals themselves are relayed from it via Workspace (connectWorkspace).
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::manualEditsChanged);
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::emitSynchingExternallyChanged);
 	
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveAtAllChanged,			this, &DataSetPackage::handleAutoSavePrefChange);
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveIntervalSecChanged,	this, &DataSetPackage::handleAutoSavePrefChange);
@@ -184,6 +186,13 @@ void DataSetPackage::connectWorkspace()
 	Workspace		::connect(workspace(),	&Workspace::runComputedDataSet,					this,			&DataSetPackage::runComputedDataSet					);	
 	Workspace		::connect(workspace(),	&Workspace::checkForDependentAnalyses,			this,			&DataSetPackage::checkForDependentAnalyses			);	
 	Workspace		::connect(workspace(),	&Workspace::emptyValuesChanged,					this,			&DataSetPackage::workspaceEmptyValuesChanged		);	
+
+	//Synch- and hand-edit state of the shown dataset (Workspace only relays these from the one shown,
+	//see Workspace::setShownDataSet), so the ribbon and the QML properties keep reflecting reality.
+	Workspace		::connect(workspace(),	&Workspace::dataFileSynchChanged,				this,			&DataSetPackage::emitSynchingExternallyChanged		);
+	Workspace		::connect(workspace(),	&Workspace::dataFileChanged,					this,			&DataSetPackage::emitSynchingExternallyChanged		);
+	Workspace		::connect(workspace(),	&Workspace::manualEditsChanged,				this,			&DataSetPackage::manualEditsChanged					);
+	Workspace		::connect(workspace(),	&Workspace::undoCleanChanged,					this,			&DataSetPackage::onUndoCleanChanged					);
 
 	DataSetPackage	::connect(this,			&DataSetPackage::filterByNameDone,				workspace(),	&Workspace::filterByNameDone						);
 	
@@ -693,36 +702,5 @@ void DataSetPackage::onUndoCleanChanged(bool clean)
 void DataSetPackage::emitSynchingExternallyChanged()
 {
 	emit synchingExternallyChanged(synchingExternally());
-}
-
-void DataSetPackage::trackShownDataSet()
-{
-	DataSet * shown = dataSet();
-
-	if(_synchTrackedDataSet != shown)
-	{
-		if(_synchTrackedDataSet)
-		{
-			disconnect(_synchTrackedDataSet,				&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
-			disconnect(_synchTrackedDataSet,				&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
-			disconnect(_synchTrackedDataSet,				&DataSet::manualEditsChanged,	this,	&DataSetPackage::manualEditsChanged);
-			disconnect(_synchTrackedDataSet->undoStack(),	&QUndoStack::cleanChanged,		this,	&DataSetPackage::onUndoCleanChanged);
-		}
-
-		_synchTrackedDataSet = shown;
-
-		if(_synchTrackedDataSet)
-		{
-			connect(_synchTrackedDataSet,					&DataSet::dataFileSynchChanged,	this,	&DataSetPackage::emitSynchingExternallyChanged);
-			connect(_synchTrackedDataSet,					&DataSet::dataFileChanged,		this,	&DataSetPackage::emitSynchingExternallyChanged);
-			connect(_synchTrackedDataSet,					&DataSet::manualEditsChanged,	this,	&DataSetPackage::manualEditsChanged);
-			connect(_synchTrackedDataSet->undoStack(),		&QUndoStack::cleanChanged,		this,	&DataSetPackage::onUndoCleanChanged);
-		}
-
-		//Another dataset is shown, so both answers can be different now.
-		emit manualEditsChanged();
-	}
-
-	emitSynchingExternallyChanged();
 }
 

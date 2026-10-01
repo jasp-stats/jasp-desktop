@@ -114,9 +114,14 @@ signals:
 			void					allFiltersReset();
 			void					showWarning(						QString title, QString msg);
 			void					descriptionChanged();
+			//dataFileChanged, dataFileSynchChanged, manualEditsChanged and undoCleanChanged are relayed
+			//from the *shown* dataset only (see setShownDataSet), so consumers can watch "the data"
+			//without having to re-hook on every dataset switch themselves.
 			void					dataFileChanged();
 			void					databaseJsonChanged();
 			void					dataFileSynchChanged();
+			void					manualEditsChanged();
+			void					undoCleanChanged(	bool clean);	///< The shown dataset's undo stack went clean (or not): everything is undone back to the saved/synced state?
 			void					dataTimestampChanged();
 			void					columnsLabelFilteredCountChanged();
 			void					refreshAllAnalyses(Filter * f);
