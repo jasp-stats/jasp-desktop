@@ -48,12 +48,12 @@ private slots:
 private:
 	void					doSync();
 
-	DataSet				*	_dataSet			= nullptr;
-	QFileSystemWatcher	*	_fileWatcher		= nullptr;
+    DataSet                 *	_dataSet			= nullptr;
+    QFileSystemWatcher      *	_fileWatcher		= nullptr;
 	DatabaseConnectionInfo	*	_dbInfo			= nullptr;
-	Json::Value				_databaseJson		= Json::nullValue;
-	bool					_isSyncing			= false;
-	bool					_isPendingFileSync	= false; //a file change arrived while a sync was in flight
+    Json::Value                 _databaseJson		= Json::nullValue;
+    bool                        _isSyncing			= false;
+    bool                        _isPendingFileSync	= false; //a file change arrived while a sync was in flight
 };
 
 #endif // DATASETSYNCER_H
