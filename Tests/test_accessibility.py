@@ -25,7 +25,7 @@ class TestJASPAccessibility(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.app, cls.main_window = setup_jasp_app(timeout=30)
+        cls.app, cls.main_window = setup_jasp_app(timeout=30, main_window_names=("JASP", "Sleep"))
         if not cls.main_window:
             sys.exit(1)
         cls._native_dialogs_disabled = False
