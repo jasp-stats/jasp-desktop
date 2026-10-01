@@ -446,6 +446,12 @@ int main(int argc, char *argv[])
 
 	JASPTIMER_START("JASP");
 
+#ifdef JASP_DEBUG
+	//The Chromium sandbox does not work for debug builds run straight from the Qt kit: it kills QtWebEngineProcessd.exe
+	//with STATUS_DLL_NOT_FOUND (0xC0000135), so nothing renders. Release/deployed builds keep the sandbox enabled.
+	qputenv("QTWEBENGINE_DISABLE_SANDBOX", "1");
+#endif
+
 	QtWebEngineQuick::initialize(); // We can do this here and not in MainWindow::loadQML() (before QQmlApplicationEngine is instantiated) because that is called from a singleshot timer. And will only be executed once we enter a.exec() below!
 	std::cout << "QtWebEngineQuick initialized" << std::endl;
 
