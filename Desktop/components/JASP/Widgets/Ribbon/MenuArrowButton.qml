@@ -54,8 +54,6 @@ Rectangle
 	Accessible.description:		toolTip != "" ? toolTip : Accessible.name
 	Accessible.onPressAction:	clicked()
 
-	onActiveFocusChanged:		console.warn("[FOCUSDBG] ribbonButton accName=" + ribbonButton.Accessible.name + " activeFocus=" + ribbonButton.activeFocus + " focusReason=" + ribbonButton.focusReason)
-
 	ToolTip.text:				toolTip
 	ToolTip.visible:			toolTip !== "" && mice.containsMouse
 
