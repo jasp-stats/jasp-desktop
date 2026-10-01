@@ -247,7 +247,8 @@ void TestAll::testJaspRoundRobin()
 
 	std::cerr << "Storing jasp file temporarily to: " << jaspFile << std::endl;
 	// Create snapshot before exporting
-	JASPExporter::createSnapshot("testjasp_snapshot_");
+	std::string snapshotError;
+	QVERIFY2(JASPExporter::createSnapshot("testjasp_snapshot_", &snapshotError), ("Could not create snapshot: " + snapshotError).c_str());
 	JASPExporter().saveDataSet(jaspFile, [](int){});
 
 	_pkg->reset();

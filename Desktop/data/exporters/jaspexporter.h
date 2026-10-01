@@ -42,7 +42,7 @@ public:
 
 // Snapshot management functions
 public:
-	static void createSnapshot(const std::string &snapshotPrefix = "jasp_snapshot_");
+	static bool createSnapshot(const std::string &snapshotPrefix = "jasp_snapshot_", std::string *errorOut = nullptr);
 	static void cleanupSnapshot(const std::string &snapshotPath);
 	static void printSnapshotContents(const std::string &snapshotPath);
 	static bool isSaveInProgress();

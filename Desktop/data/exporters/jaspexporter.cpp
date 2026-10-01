@@ -52,8 +52,16 @@ JASPExporter::JASPExporter()
 	_allowedFileTypes.push_back(Utils::FileType::jasp);
 }
 
-void JASPExporter::createSnapshot(const std::string &snapshotPrefix)
+bool JASPExporter::createSnapshot(const std::string &snapshotPrefix, std::string *errorOut)
 {
+	auto fail = [errorOut](const std::string &error)
+	{
+		Log::log() << "JASP Export: " << error << std::endl;
+		if (errorOut != nullptr)
+			*errorOut = error;
+		return false;
+	};
+
 	auto now = std::chrono::system_clock::now().time_since_epoch();
 	auto sec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
 	auto ns  = std::chrono::duration_cast<std::chrono::nanoseconds>(now).count() % 1'000'000'000;
@@ -65,24 +73,83 @@ void JASPExporter::createSnapshot(const std::string &snapshotPrefix)
 	std::filesystem::create_directories(fullSnapshotPath, ec);
 
 	if (ec)
-	{
-		Log::log() << "JASP Export: Failed to create snapshot directory: " << ec.message() << std::endl;
-		throw LoaderException("JASP Export: Failed to create snapshot directory.");
-	}
+		return fail("Failed to create snapshot directory (" + ec.message() + ")");
 
 	std::string sessionDir = TempFiles::sessionDirName();
 	if (!sessionDir.empty())
 	{
-		std::filesystem::copy(sessionDir, fullSnapshotPath,
-			std::filesystem::copy_options::recursive |
-			std::filesystem::copy_options::overwrite_existing,
-			ec);
+		//Stream every file instead of using std::filesystem::copy (which is CopyFile-based): the session directory can
+		//live in a tree Windows EFS-encrypts (MSIX "Application Protected", see jasp-issues#4566) and CopyFile then fails
+		//with ERROR_ENCRYPTION_FAILED while plain reads still decrypt transparently. A .jasp without the database is no
+		//save at all, so failing to copy that one file is fatal; other files are skipped and logged, just like the release
+		//build treats missing files when zipping.
+		const std::string		dbFileName	= DatabaseInterface::singleton()->dbFile(true);
+		std::filesystem::path	sessionPath(sessionDir);
 
-		if (ec)
+		std::error_code walkEc;
+		std::filesystem::recursive_directory_iterator dirIt(sessionPath, walkEc);
+
+		if (walkEc)
 		{
-			Log::log() << "JASP Export: Failed to copy session to snapshot: " << ec.message() << std::endl;
-			throw LoaderException("JASP Export: Failed to copy session directory to snapshot.");
+			std::filesystem::remove_all(fullSnapshotPath, ec);
+			return fail("Failed to open session directory '" + sessionDir + "' (" + walkEc.message() + ")");
 		}
+
+		bool dbCopied = false;
+
+		while (dirIt != std::filesystem::recursive_directory_iterator())
+		{
+			const std::filesystem::directory_entry entry = *dirIt;
+
+			std::error_code entryEc;
+			if (!entry.is_directory(entryEc) && entry.is_regular_file(entryEc))
+			{
+				std::error_code relEc;
+				std::filesystem::path relativePath = std::filesystem::relative(entry.path(), sessionPath, relEc);
+
+				if (relEc)
+				{
+					Log::log() << "JASP Export: Skipping '" << entry.path().string() << "' (" << relEc.message() << ")" << std::endl;
+				}
+				else
+				{
+					const bool			isDb		= relativePath.filename().string() == dbFileName;
+					std::filesystem::path destination	= fullSnapshotPath / relativePath;
+
+					std::error_code dirEc;
+					std::filesystem::create_directories(destination.parent_path(), dirEc);
+
+					std::string copyError;
+					if (!dirEc && Utils::copyFileStreamed(entry.path().string(), destination.string(), copyError))
+					{
+						if (isDb)
+							dbCopied = true;
+					}
+					else
+					{
+						std::string reason = dirEc ? dirEc.message() : copyError;
+
+						if (isDb)
+						{
+							std::filesystem::remove_all(fullSnapshotPath, ec);
+							return fail("Could not copy the database file '" + relativePath.string() + "' (" + reason + ")");
+						}
+
+						Log::log() << "JASP Export: Skipping '" << relativePath.string() << "': " << reason << std::endl;
+					}
+				}
+			}
+
+			dirIt.increment(walkEc);
+			if (walkEc)
+			{
+				std::filesystem::remove_all(fullSnapshotPath, ec);
+				return fail("Failed to enumerate session directory '" + sessionDir + "' (" + walkEc.message() + ")");
+			}
+		}
+
+		if (!dbCopied)
+			Log::log() << "JASP Export: No database file '" << dbFileName << "' found in the session directory" << std::endl;
 
 		Log::log() << "JASP Export: Created snapshot at " << fullSnapshotPath << std::endl;
 		printSnapshotContents(fullSnapshotPath.string());
@@ -94,6 +161,8 @@ void JASPExporter::createSnapshot(const std::string &snapshotPrefix)
 
 	std::lock_guard<std::mutex> lock(_snapshotMutex);
 	_snapshotQueue.push(fullSnapshotPath.string());
+
+	return true;
 }
 
 bool JASPExporter::isSaveInProgress()
@@ -163,6 +232,10 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 		_snapshotQueue.pop();
 	}
 
+	//The snapshot was popped, so from here on we own it: clean it up when leaving this function,
+	//including on exceptions, otherwise the popped directory leaks in the temp dir forever.
+	struct ScopedSnapshotCleanup { std::string dir; ~ScopedSnapshotCleanup() { JASPExporter::cleanupSnapshot(dir); } } snapshotCleanup{sourceDir};
+
 	std::filesystem::path tmpPath = path;
 	bool encrypt = JaspEncryptionData::getInstance()->encryptionActive();
 	if(encrypt) {
@@ -214,8 +287,6 @@ void JASPExporter::saveDataSet(const std::string &path, std::function<void(int)>
 	}
 
 	DataSetPackage::pkg()->setLoaded(true);
-
-	cleanupSnapshot(sourceDir);
 }
 
 void JASPExporter::saveManifest(archive * a)
@@ -242,7 +313,7 @@ void JASPExporter::saveSnapshotFile(archive *a, const std::string & fileName, co
 
 	std::string fullPath = sourceDir + "/" + fileName;
 	std::ifstream readTempFile(fullPath, std::ios::ate | std::ios::binary);
-	char fileBuff[8192];
+	char fileBuff[1 << 16]; //64KB: big files (300MB+ .jasp) go through here, keep the syscall count down
 
 	if (readTempFile.is_open())
 	{

@@ -60,6 +60,7 @@ public:
 	static int64_t					getFileSize(			const std::string &filename);  // see: https://github.com/jasp-stats/jasp-issues/issues/3191
 	static void						touch(					const std::string &filename);
 	static bool						renameOverwrite(		const std::string &oldName, const std::string &newName);
+	static bool						copyFileStreamed(		const std::string &src, const std::string &dst, std::string &error);
 	static bool						removeFile(				const std::string &path);
 
 	static void						remove(stringvec &target, const stringvec &toRemove);

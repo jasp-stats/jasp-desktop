@@ -30,6 +30,7 @@
 #include "utilenums.h"
 #include <iomanip>
 #include <chrono>
+#include <fstream>
 
 #ifdef BUILDING_JASP
 #include "log.h"
@@ -256,6 +257,33 @@ bool Utils::renameOverwrite(const string &oldName, const string &newName)
 	std::filesystem::rename(o, n, ec);
 
 	return !ec;
+}
+
+bool Utils::copyFileStreamed(const string &src, const string &dst, string &error)
+{
+	//Copy by reading bytes and writing a fresh file, instead of the CopyFile-based copying that
+	//std::filesystem::copy / QFile::copy do. CopyFile tries to preserve EFS encryption at the
+	//destination and fails against Windows "Application Protected" sources (ERROR_ENCRYPTION_FAILED),
+	//while plain reads decrypt transparently for the rightful identity. See jasp-issues#4566.
+	std::ifstream	in(std::filesystem::path(src),	std::ios::binary);
+	std::ofstream	out(std::filesystem::path(dst),	std::ios::binary | std::ios::trunc);
+
+	if (!in)	{ error = "cannot open source '" + src + "'";			return false; }
+	if (!out)	{ error = "cannot create destination '" + dst + "'";	return false; }
+
+	std::vector<char> buffer(1 << 20);
+
+	while (in.read(buffer.data(), static_cast<std::streamsize>(buffer.size())) || in.gcount() > 0)
+	{
+		out.write(buffer.data(), in.gcount());
+		if (!out)
+		{
+			error = "write error on '" + dst + "' (disk full?)";
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool Utils::removeFile(const string &path)
