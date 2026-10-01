@@ -696,6 +696,13 @@ if (newTitle == oldTitle) {
 			tableProgress[i] = { from: 0, to: 0 }
 		}
 
+		// Accessibility: many JASP result tables use the first column as a
+		// label column with an empty column header. Mark those non-empty first
+		// cells as rowheaders so VoiceOver can announce row context.
+		var firstHeaderContent = (typeof columnHeaders[0] !== "undefined" && columnHeaders[0].content) ? String(columnHeaders[0].content) : "";
+		firstHeaderContent = firstHeaderContent.replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
+		var treatFirstColumnAsRowHeaders = columnCount > 1 && firstHeaderContent === "";
+
 		for (var rowNo = 0; rowNo < rowCount; rowNo++) {
 
 			var rowAriaLabel = 'Row ' + (rowNo + 1);
@@ -725,11 +732,14 @@ if (newTitle == oldTitle) {
 					cellClass += (cell.span > 1 ? " row-span" : "")
 
 					var isHeader = cell.header;
+					var cellTextForA11y = (typeof cell.content != "undefined") ? String(cell.content) : "";
+					cellTextForA11y = cellTextForA11y.replace(/&nbsp;/gi, ' ').replace(/\u00a0/g, ' ').trim();
+					var isRowHeader = isHeader || (treatFirstColumnAsRowHeaders && colNo === 0 && cellTextForA11y !== "");
 					var cellTag = isHeader ? 'th' : 'td';
-					var cellRole = isHeader ? 'rowheader' : 'gridcell';
+					var cellRole = isRowHeader ? 'rowheader' : 'gridcell';
 					var cellId = 'cell-' + rowNo + '-' + colNo;
 
-					if (isHeader)
+					if (isRowHeader)
 						rowHeaderIds.push(cellId)
 
 					var ariaLabel = '';
@@ -738,7 +748,7 @@ if (newTitle == oldTitle) {
 					}
 
 					var headersAttr = ' headers="header-' + colNo;
-					if (rowHeaderIds.length > 0 && !isHeader)
+					if (rowHeaderIds.length > 0 && !isRowHeader)
 						headersAttr += ' ' + rowHeaderIds.join(' ');
 					headersAttr += '"';
 

@@ -33,6 +33,7 @@ try:
         kAXMainWindowAttribute,
         kAXWindowsAttribute,
     )
+    from CoreFoundation import kCFBooleanTrue
 except ImportError as e:
     raise A11yError(f"pyobjc ApplicationServices not available: {e}")
 
@@ -128,8 +129,26 @@ class AxNode:
         return "press"
 
     def do_action(self, index=0):
+        # Do NOT use AXUIElementPerformAction here: on macOS 26 an AXPress
+        # that opens one of JASP's popups can wedge the app's entire AX
+        # bridge (kAXErrorNotImplemented forever, VoiceOver loses the app).
+        # A synthesized click on the element performs the same UI action and
+        # is immune. See Tests/qt-ax-repro/README.md.
         try:
-            return AXUIElementPerformAction(self._e, kAXPressAction) == 0
+            x, y, w, h = self.get_rect()
+            if w <= 0 or h <= 0:
+                return False
+            import Quartz
+            cx, cy = x + w / 2.0, y + h / 2.0
+            move = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventMouseMoved, (cx, cy), Quartz.kCGMouseButtonLeft)
+            Quartz.CGEventPost(Quartz.kCGHIDEventTap, move)
+            time.sleep(0.05)
+            for down in (True, False):
+                ev_type = Quartz.kCGEventLeftMouseDown if down else Quartz.kCGEventLeftMouseUp
+                ev = Quartz.CGEventCreateMouseEvent(None, ev_type, (cx, cy), Quartz.kCGMouseButtonLeft)
+                Quartz.CGEventPost(Quartz.kCGHIDEventTap, ev)
+                time.sleep(0.05)
+            return True
         except Exception:
             return False
 
@@ -152,9 +171,18 @@ class AxNode:
         pos = _copy_attr(self._e, "AXPosition")
         size = _copy_attr(self._e, "AXSize")
         try:
-            return (int(pos.x), int(pos.y), int(size.width), int(size.height))
+            from ApplicationServices import (
+                AXValueGetValue,
+                kAXValueCGPointType,
+                kAXValueCGSizeType,
+            )
+            okp, p = AXValueGetValue(pos, kAXValueCGPointType, None)
+            oks, s = AXValueGetValue(size, kAXValueCGSizeType, None)
+            if okp and oks:
+                return (int(p.x), int(p.y), int(s.width), int(s.height))
         except Exception:
-            return (0, 0, 0, 0)
+            pass
+        return (0, 0, 0, 0)
 
     def __repr__(self):
         try:
@@ -177,7 +205,15 @@ class AxBackend:
     def _app_element(self):
         if self._pid is None:
             return None
-        return AXUIElementCreateApplication(self._pid)
+        app = AXUIElementCreateApplication(self._pid)
+        # Engage Qt's accessibility bridge the way VoiceOver does: without
+        # this the app exposes an empty tree (just the window frame).
+        for attr in ("AXManualAccessibility", "AXEnhancedUserInterface"):
+            try:
+                AXUIElementSetAttributeValue(app, attr, kCFBooleanTrue)
+            except Exception:
+                pass
+        return app
 
     # ── application discovery ────────────────────────────────────────
 
@@ -193,14 +229,35 @@ class AxBackend:
             return None, None
         app = AxNode(app_elem)
         deadline = time.time() + timeout
+        win = None
         while time.time() < deadline:
-            win = _copy_attr(app_elem, kAXMainWindowAttribute)
-            if win:
-                node = AxNode(win)
-                if node.get_name() in main_window_names:
-                    return app, node
+            w = _copy_attr(app_elem, kAXMainWindowAttribute)
+            if w:
+                name = (AxNode(w).get_name() or "").lower()
+                if any(m.lower() in name for m in main_window_names):
+                    win = w
+                    break
             time.sleep(1)
-        return app, None
+        if win is None:
+            return app, None
+        # Engage the AX bridge the way an assistive client does: Qt builds
+        # its QML tree lazily on the first attribute queries that reach the
+        # QNSView (activateQtAccessibility). Querying the focused element
+        # pokes that path; keep poking until children materialize.
+        try:
+            AXUIElementSetAttributeValue(app_elem, "AXManualAccessibility", kCFBooleanTrue)
+        except Exception:
+            pass
+        deadline = time.time() + 10
+        while time.time() < deadline:
+            _copy_attr(app_elem, kAXFocusedUIElementAttribute)
+            w = _copy_attr(app_elem, kAXMainWindowAttribute)
+            if w:
+                node = AxNode(w)
+                if node.get_child_count() > 0:
+                    return app, node
+            time.sleep(0.5)
+        return app, AxNode(win)
 
     def get_jasp_app(self):
         app_elem = self._app_element()
@@ -318,6 +375,14 @@ class AxBackend:
     def is_focused(self, node):
         v = _copy_attr(node.raw, kAXFocusedAttribute)
         return bool(v)
+
+    def is_checked(self, node):
+        v = _copy_attr(node.raw, kAXValueAttribute)
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, (int, float)):
+            return v != 0
+        return None
 
     def set_editable_text(self, node, text):
         try:

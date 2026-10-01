@@ -246,7 +246,7 @@ Item
 
 		JC.ALTNavigation.enabled:				true
 		JC.ALTNavigation.requestedPostfix:		"R"
-		JC.ALTNavigation.onTagMatch:			{ resultsView.nextItemInFocusChain().forceActiveFocus(); }
+		JC.ALTNavigation.onTagMatch:			{ resultsView.forceActiveFocus(); }
 
 		Rectangle
 		{
@@ -324,6 +324,13 @@ Item
 			clip:                   true
 			anchors.fill:			parent
 			anchors.leftMargin:		1
+
+			focus:					true
+			activeFocusOnTab:		true
+
+			onActiveFocusChanged: console.log("[FOCUSDBG] resultsView activeFocus=" + resultsView.activeFocus)
+			Keys.onReturnPressed: (event) => { console.log("[FOCUSDBG] resultsView Return key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted); }
+			Keys.onEnterPressed: (event) => { console.log("[FOCUSDBG] resultsView Enter key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted); }
 			
 			Accessible.role:			Accessible.WebDocument
 			Accessible.name:			qsTr("Results")

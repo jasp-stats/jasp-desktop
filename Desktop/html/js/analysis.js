@@ -666,9 +666,12 @@ JASPWidgets.AnalysisView = JASPWidgets.View.extend({
 		$tempClone.empty();
 
 		// Accessibility: now that the tree is attached, give plots their
-		// narratable role/label (container -> analysis title -> position).
-		if (JASPWidgets.a11y)
+		// narratable role/label (container -> analysis title -> position),
+		// and bind AT activation handlers to the narratable blocks.
+		if (JASPWidgets.a11y) {
 			JASPWidgets.a11y.enrichPlots($innerElement, titleAnalysis);
+			JASPWidgets.a11y.enrichActions($innerElement);
+		}
 
 		if (results.error)
 			this.setHeightErroredAnalysis($innerElement);

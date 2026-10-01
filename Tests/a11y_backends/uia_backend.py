@@ -363,6 +363,12 @@ class UiaBackend:
 
     # ── node-level platform ops ──────────────────────────────────────
 
+    def is_checked(self, node):
+        try:
+            return node.raw.get_toggle_state() == 1
+        except Exception:
+            return None
+
     def is_focused(self, node):
         try:
             return bool(node.raw.has_focus())

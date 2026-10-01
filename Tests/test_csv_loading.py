@@ -5,7 +5,7 @@ import unittest
 import time
 import sys
 from accessibility_common import (
-    Atspi, click_element, close_menu,
+    click_element, close_menu,
     find_all_by_role, get_jasp_app,
     find_window_by_name, generate_key_event, type_text,
     has_focus, find_focused, find_by_role_and_name,
@@ -97,7 +97,7 @@ class TestCSVLoading(unittest.TestCase):
             # Close it with Escape key events via AT-SPI.
             for _ in range(3):
                 try:
-                    Atspi.generate_keyboard_event(KEY_ESCAPE, None, Atspi.KeySynthType.SYM)
+                    generate_key_event(KEY_ESCAPE)
                 except Exception:
                     pass
                 time.sleep(0.3)

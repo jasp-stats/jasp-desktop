@@ -149,12 +149,20 @@ FocusScope
 		menu.menuOffset.x	= x_offset !== 0 ? x_offset : (menu.isSubMenu ? Qt.binding(function() { return item.width; }) : 0)
 		menu.menuOffset.y	= y_offset !== 0 ? y_offset : (menu.isSubMenu ? 0 : Qt.binding(function() { return item.height; }))
 		menu.menuScroll		= "0,0";
-		menu.showMe			= true;
 		menu.sceneWidth		= Qt.binding(function() { return mainWindowRoot.width })
 		menu.sceneHeight	= Qt.binding(function() { return mainWindowRoot.height })
 
-		menu.forceActiveFocus();
-		navigate(1)
+		// Defer the visibility flip: when the request arrives through the
+		// macOS accessibility bridge (AXPress), instantiating the menu
+		// delegates synchronously inside the AX callback wedges Qt's entire
+		// AX connection (kAXErrorNotImplemented forever). One event-loop hop
+		// takes this out of the AX callback's call stack.
+		Qt.callLater(function()
+		{
+			menu.showMe			= true;
+			menu.forceActiveFocus();
+			navigate(1)
+		})
 	}
 
 	function hide()
@@ -316,6 +324,15 @@ FocusScope
 
 						delegate: Loader
 						{
+							// Instantiate menu entries across several event loop
+							// passes instead of one synchronous burst: a long
+							// main-thread block right after an accessibility
+							// action makes the macOS AX host time out and drop
+							// the connection (kAXErrorNotImplemented forever).
+							asynchronous		: true
+
+							onLoaded: column.columnWidth = Math.max(column.columnWidth, item?.implicitWidth ?? 0)
+
 							sourceComponent :
 							{
 								if(model.modelData !== undefined)

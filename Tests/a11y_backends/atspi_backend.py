@@ -191,6 +191,12 @@ class AtspiBackend:
         except Exception:
             return False
 
+    def is_checked(self, node):
+        try:
+            return node.get_state_set().contains(Atspi.StateType.CHECKED)
+        except Exception:
+            return None
+
     def set_editable_text(self, node, text):
         try:
             ei = node.get_editable_text_iface()

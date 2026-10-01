@@ -588,6 +588,11 @@ $(document).ready(function () {
 
       analyses.render();
 
+      // Top-level noteboxes are rendered by AnalysesView itself, not by an
+      // individual analysis, so enrich the whole results tree once here too.
+      if (JASPWidgets.a11y && JASPWidgets.a11y.enrichActions)
+        JASPWidgets.a11y.enrichActions(analyses.$el);
+
       analyses.$el.css("opacity", 0);
       spacer.before(analyses.$el);
       analyses.$el.animate({ opacity: 1 }, 400, "easeOutCubic");

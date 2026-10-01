@@ -24,6 +24,13 @@ except A11yError as e:
     print(f"Accessibility backend not available: {e}")
     sys.exit(77)
 
+# Platform flags so tests can branch on accessibility-tree differences that are
+# inherent to the platform (role naming, menus that only exist when open, etc.)
+# without regressing the platforms they were written for.
+IS_LINUX = backend.platform == "atspi"
+IS_WIN   = backend.platform == "uia"
+IS_MAC   = backend.platform == "ax"
+
 
 class JASPCrashed(Exception):
     """Raised when the JASP process has died."""
@@ -507,6 +514,22 @@ def find_menu_items_global(app, timeout=3):
 def generate_key_event(keyval):
     """Send a key event via the platform backend."""
     return backend.generate_key_event(keyval)
+
+
+def app_nodes():
+    """Top-level application nodes known to the backend."""
+    return backend.app_nodes()
+
+
+def is_checked(node):
+    """Checked state of a check box / radio button node, or None if unknown."""
+    try:
+        fn = getattr(backend, "is_checked", None)
+        if fn is None:
+            return None
+        return fn(node)
+    except Exception:
+        return None
 
 
 def type_text(text, delay=0.01):

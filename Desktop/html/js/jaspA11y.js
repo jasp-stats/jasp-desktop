@@ -167,34 +167,170 @@ JASPWidgets.a11y = {
 		});
 	},
 
+	// ── AT activation support ───────────────────────────────────────────
+	// VoiceOver invokes AXPress as a Blink default action. Qt's generic
+	// accessibility bridge can expose that as an AXPress action, but JASP
+	// still needs DOM activation handlers. Real mouse clicks remain trusted;
+	// accessibility-simulated clicks are untrusted, so we can support both
+	// without hijacking normal table interaction.
+
+	_activationSelector: 'table[role="table"], .in-toolbar, .jasp-notes',
+	_cellRolesSelector: '[role="rowheader"], [role="columnheader"], [role="gridcell"]',
+
+	// Blink marks accessibility-simulated clicks as trusted, but it does not
+	// attach an input-device sourceCapabilities object to them. Real mouse,
+	// touch, and pen clicks do have sourceCapabilities. If a browser/engine
+	// does not expose that property, fall back to the older untrusted-click
+	// signal so we never hijack a normal pointer click.
+	_isATActivationClick: function (event) {
+		if (!event)
+			return false;
+		if (!('sourceCapabilities' in event))
+			return event.isTrusted === false;
+		return !event.sourceCapabilities;
+	},
+
+	activateElement: function (el) {
+		var a = JASPWidgets.a11y;
+		if (!el || !el.closest)
+			return false;
+
+		var table = el.closest('table[role="table"]');
+		if (table) {
+			a.exitDrill();
+			var cell = el.matches && el.matches(a._cellRolesSelector) ? el : null;
+			a.drillCells(table, cell);
+			return true;
+		}
+
+		if (el.matches && el.matches('.in-toolbar')) {
+			$(el).trigger({
+				type: 'keydown', which: 13, keyCode: 13, key: 'Enter', target: el
+			});
+			return true;
+		}
+
+		var note = el.closest('.jasp-notes');
+		if (note) {
+			$(note).trigger({
+				type: 'keydown', which: 13, keyCode: 13, key: 'Enter', target: note
+			});
+			return true;
+		}
+
+		return false;
+	},
+
+	_bindActivationHandler: function (el) {
+		if (!el || el.dataset.jaspA11yActivated === '1')
+			return;
+
+		el.dataset.jaspA11yActivated = '1';
+		el.addEventListener('click', function (event) {
+			if (!JASPWidgets.a11y._isATActivationClick(event))
+				return;
+			JASPWidgets.a11y.activateElement(event.target && event.target.closest ? event.target : event.currentTarget);
+			event.preventDefault();
+		});
+	},
+
+	enrichActions: function (root) {
+		var rootEl = root && root.length ? root[0] : root;
+		if (!rootEl || !rootEl.querySelectorAll)
+			return;
+
+		var els = rootEl.querySelectorAll(JASPWidgets.a11y._activationSelector);
+		for (var i = 0; i < els.length; i++) {
+			if (!els[i].classList.contains('jasp-hide'))
+				JASPWidgets.a11y._bindActivationHandler(els[i]);
+		}
+
+		// Make cells programmatically focusable without adding every cell to
+		// the Tab order. VoiceOver needs to be able to place focus on a table
+		// cell after it has entered the results area.
+		var tables = rootEl.querySelectorAll('table[role="table"]');
+		for (var t = 0; t < tables.length; t++) {
+			var cellEls = tables[t].querySelectorAll(JASPWidgets.a11y._cellRolesSelector);
+			for (var c = 0; c < cellEls.length; c++) {
+				if (cellEls[c].tabIndex < 0)
+					cellEls[c].tabIndex = -1;
+			}
+		}
+	},
+
 	// ── table cell drill-in ─────────────────────────────────────────────
 
 	drillTable: null,
 	_drillGrid: null,
 	drillPos: null,
 
+	_normalizeCellText: function (cell) {
+		if (!cell)
+			return '';
+		var text = cell.getAttribute('aria-label') || cell.textContent || '';
+		return text.replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+	},
+
+	_visibleCellText: function (cell) {
+		if (!cell)
+			return '';
+		var text = cell.textContent || '';
+		return text.replace(/\u00a0/g, ' ').replace(/&nbsp;/gi, ' ').trim();
+	},
+
 	_tableGrid: function (table) {
 		var grid = [];
 		var rows = table.querySelectorAll('tr');
 		for (var i = 0; i < rows.length; i++) {
-			var rowCells = rows[i].querySelectorAll('[role="rowheader"], [role="columnheader"], [role="gridcell"]');
-			if (rowCells.length > 0) {
-				var arr = [];
-				for (var j = 0; j < rowCells.length; j++)
-					arr.push(rowCells[j]);
-				grid.push(arr);
+			var rowCells = [];
+			var cells = rows[i].querySelectorAll('[role="rowheader"], [role="columnheader"], [role="gridcell"]');
+			for (var j = 0; j < cells.length; j++) {
+				// Skip invisible spacers; VoiceOver gets stuck on them and
+				// announces nothing useful when the drill starts there.
+				if (JASPWidgets.a11y._normalizeCellText(cells[j]) !== '')
+					rowCells.push(cells[j]);
 			}
+			if (rowCells.length > 0)
+				grid.push(rowCells);
 		}
 		return grid;
 	},
 
-	drillCells: function (table) {
+	drillCells: function (table, startCell) {
 		var a = JASPWidgets.a11y;
 		a._drillGrid = a._tableGrid(table);
 		if (a._drillGrid.length === 0)
 			return;
+
+		var pos = { r: 0, c: 0 };
+		if (startCell) {
+			var found = false;
+			for (var r = 0; r < a._drillGrid.length && !found; r++) {
+				for (var c = 0; c < a._drillGrid[r].length; c++) {
+					if (a._drillGrid[r][c] === startCell) {
+						pos = { r: r, c: c };
+						found = true;
+						break;
+					}
+				}
+			}
+		} else {
+			// Prefer the first cell with readable content so pressing Enter
+			// on a table does not land on empty header spacers.
+			var foundVisible = false;
+			for (var r = 0; r < a._drillGrid.length && !foundVisible; r++) {
+				for (var c = 0; c < a._drillGrid[r].length; c++) {
+					if (a._visibleCellText(a._drillGrid[r][c]) !== '') {
+						pos = { r: r, c: c };
+						foundVisible = true;
+						break;
+					}
+				}
+			}
+		}
+
 		a.drillTable = table;
-		a.drillPos = { r: 0, c: 0 };
+		a.drillPos = pos;
 		a._focusDrillCell();
 	},
 
