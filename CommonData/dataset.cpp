@@ -46,6 +46,10 @@ DataSet::DataSet(Workspace * workspace, int id)
 	
 	_undoStack = new UndoStack(this);
 	
+	//Undoing the hand-made edits all the way back to the synced point (setDataFileSynch marks that
+	//spot on the stack) means the data matches its data file again, so the synching can go back on.
+	connect(_undoStack,			&QUndoStack::cleanChanged,	this,		&DataSet::handleUndoCleanChanged			);
+	
 	connect(this,			&DataSet::datasetChanged,			this,		&DataSet::handleDataSetChanged			);
 	
 	connect(this,			&DataSet::showYesNo,				_workspace, &Workspace::showYesNo					);
@@ -604,8 +608,8 @@ void DataSet::setManualEdits(bool manualEdits)
 
 	//Changing the data by hand means the data file no longer describes this dataset, so stop synching
 	//with it: otherwise the next change of that file silently reverts those edits. Remembering whether
-	//the synching was on at all is what lets undoing the edits (DataSetPackage::onUndoCleanChanged)
-	//turn it back on, and only then.
+	//the synching was on at all is what lets undoing the edits (handleUndoCleanChanged) turn it back
+	//on, and only then.
 	if(_manualEdits)
 	{
 		_synchTurnedOffByManualEdits = _dataFileSynch;
@@ -623,7 +627,7 @@ void DataSet::setDataFileSynch(bool synchronizing)
 	
 	//Synching on means the data matches the data file as it is right now, so whatever hand-made edits
 	//switched it off before are water under the bridge. Marking that spot in the undo stack lets undoing
-	//edits back to it tell that the data matches the file again (see DataSetPackage::onUndoCleanChanged).
+	//edits back to it tell that the data matches the file again (see handleUndoCleanChanged).
 	if(synchronizing)
 	{
 		_synchTurnedOffByManualEdits = false;
@@ -640,6 +644,20 @@ void DataSet::setDataFileSynch(bool synchronizing)
 
 	if(isChange)
 		emit dataFileSynchChanged();
+}
+
+void DataSet::handleUndoCleanChanged(bool clean)
+{
+	//Undone back to the point where the data still matched the data file (see setDataFileSynch), so
+	//the edits that switched the synching off are gone and it can go back on. Only when those edits
+	//were what switched it off, of course.
+	if(!clean || !_manualEdits || !_synchTurnedOffByManualEdits)
+		return;
+
+	//startFileSyncing() re-arms the watcher and flips dataFileSynch back on, which clears the
+	//manual-edits bookkeeping and announces itself (via Workspace's shown-dataset relays). It is a
+	//no-op when the file is gone, which leaves everything as it was.
+	_syncer->startFileSyncing(tq(_dataFilePath));
 }
 
 void DataSet::dbCreate()

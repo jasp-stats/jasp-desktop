@@ -221,7 +221,6 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 		disconnect(_shownDataSet,					&DataSet::dataFileSynchChanged,	this,	&Workspace::dataFileSynchChanged);
 		disconnect(_shownDataSet,					&DataSet::dataFileChanged,		this,	&Workspace::dataFileChanged);
 		disconnect(_shownDataSet,					&DataSet::manualEditsChanged,	this,	&Workspace::manualEditsChanged);
-		disconnect(_shownDataSet->undoStack(),		&QUndoStack::cleanChanged,		this,	&Workspace::undoCleanChanged);
 	}
 	
 	_shownDataSet = dataSet;
@@ -242,7 +241,6 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	connect(_shownDataSet,					&DataSet::dataFileSynchChanged,	this,	&Workspace::dataFileSynchChanged,	Qt::UniqueConnection);
 	connect(_shownDataSet,					&DataSet::dataFileChanged,		this,	&Workspace::dataFileChanged,		Qt::UniqueConnection);
 	connect(_shownDataSet,					&DataSet::manualEditsChanged,	this,	&Workspace::manualEditsChanged,		Qt::UniqueConnection);
-	connect(_shownDataSet->undoStack(),		&QUndoStack::cleanChanged,		this,	&Workspace::undoCleanChanged,		Qt::UniqueConnection);
 	
 	_varInfo->setProvider(_shownDataSet->shownFilter());
 			

@@ -212,7 +212,6 @@ public slots:
 				void				setSynchingExternallyFriendly(	bool synchingExternally);	///< Same, but lets the user generate or find a data file first when there is none (or when it was edited by hand)
 				
 private:
-				void				onUndoCleanChanged(bool clean);	///< Undone back to the point where the data still matched the data file? Then the synching can go back on.
 				void				emitSynchingExternallyChanged();
 				bool				isThisTheSameThreadAsEngineSync();
 				void				columnsApply(int dataSetId, intset		columnIndxs, std::function<bool (Column *)>			applyThis);

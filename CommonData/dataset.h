@@ -320,6 +320,7 @@ private slots:
 													QMap<QString, QString>	changeNameColumns,
 													bool					rowCountChanged,
 													bool					hasNewColumns);
+			void			handleUndoCleanChanged(	bool clean);		///< Undone all the way back to the point where the data matched its data file? Then the synching can go back on.
 
 public:
 	static QVariant			getDataSetViewLines(bool up, bool left, bool down, bool right)									;

@@ -31,7 +31,7 @@ void DataSetSyncer::startFileSyncing(const QString & filePath)
 	{
 		_dataSet->setDataFile(absPath.toStdString(), fi.lastModified().toSecsSinceEpoch());
 		//The watcher can still be in place while the synching itself was turned off (a manual edit does
-		//exactly that, see DataSetPackage::setManualEdits), so turn it back on instead of doing nothing.
+		//exactly that, see DataSet::setManualEdits), so turn it back on instead of doing nothing.
 		_dataSet->setDataFileSynch(true);
 
         doSync(); //The file mightve actually changed in the meantime while this was ignored, so lets sync to be sure we are up to date/data

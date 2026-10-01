@@ -192,7 +192,6 @@ void DataSetPackage::connectWorkspace()
 	Workspace		::connect(workspace(),	&Workspace::dataFileSynchChanged,				this,			&DataSetPackage::emitSynchingExternallyChanged		);
 	Workspace		::connect(workspace(),	&Workspace::dataFileChanged,					this,			&DataSetPackage::emitSynchingExternallyChanged		);
 	Workspace		::connect(workspace(),	&Workspace::manualEditsChanged,				this,			&DataSetPackage::manualEditsChanged					);
-	Workspace		::connect(workspace(),	&Workspace::undoCleanChanged,					this,			&DataSetPackage::onUndoCleanChanged					);
 
 	DataSetPackage	::connect(this,			&DataSetPackage::filterByNameDone,				workspace(),	&Workspace::filterByNameDone						);
 	
@@ -688,15 +687,6 @@ void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
 		setSynchingExternally(false);
 
 	setModified(true); //Perhaps someone would like to save the fact that it should (not) be synchronized
-}
-
-void DataSetPackage::onUndoCleanChanged(bool clean)
-{
-	//Undone all the way back to the point where the data still matched the data file (see
-	//DataSet::setDataFileSynch), so the edits that switched the synching off are gone and it can go
-	//back on. Only when those edits were what switched it off, of course.
-	if(clean && dataSet() && dataSet()->manualEdits() && dataSet()->synchTurnedOffByManualEdits())
-		setSynchingExternally(true);
 }
 
 void DataSetPackage::emitSynchingExternallyChanged()
