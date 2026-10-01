@@ -17,6 +17,7 @@
 //
 
 import QtQuick
+import QtQuick.Window
 import QtWebEngine
 import QtWebChannel
 import JASP
@@ -328,9 +329,27 @@ Item
 			focus:					true
 			activeFocusOnTab:		true
 
-			onActiveFocusChanged: console.log("[FOCUSDBG] resultsView activeFocus=" + resultsView.activeFocus)
-			Keys.onReturnPressed: (event) => { console.log("[FOCUSDBG] resultsView Return key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted); }
-			Keys.onEnterPressed: (event) => { console.log("[FOCUSDBG] resultsView Enter key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted); }
+			onActiveFocusChanged:
+			{
+				console.warn("[FOCUSDBG] resultsView activeFocus=" + resultsView.activeFocus + " focusReason=" + resultsView.focusReason);
+				var w = Window.window;
+				if (w && w.logActiveFocus)
+					w.logActiveFocus("resultsViewActiveFocusChanged");
+			}
+			Keys.onReturnPressed: (event) =>
+			{
+				console.warn("[FOCUSDBG] resultsView Return key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted);
+				var w = Window.window;
+				if (w && w.logActiveFocus)
+					w.logActiveFocus("resultsViewReturnKey");
+			}
+			Keys.onEnterPressed: (event) =>
+			{
+				console.warn("[FOCUSDBG] resultsView Enter key; activeFocus=" + resultsView.activeFocus + " accepted=" + event.accepted);
+				var w = Window.window;
+				if (w && w.logActiveFocus)
+					w.logActiveFocus("resultsViewEnterKey");
+			}
 			
 			Accessible.role:			Accessible.WebDocument
 			Accessible.name:			qsTr("Results")

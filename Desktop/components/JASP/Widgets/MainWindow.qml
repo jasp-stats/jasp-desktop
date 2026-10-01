@@ -63,6 +63,41 @@ Window
 		mainWindowRoot.visibility = mainWindowRoot.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen;
 	}
 
+	function safeAccessibleName(item)
+	{
+		try { return item.Accessible.name; } catch (e) { return ""; }
+	}
+
+	function logActiveFocus(reason)
+	{
+		var item = mainWindowRoot.activeFocusItem;
+		if (!item)
+		{
+			console.warn("[FOCUSDBG] mainWindow activeFocusItem reason=" + reason + " null");
+			return;
+		}
+
+		var className = "";
+		try { className = item.metaObject ? item.metaObject.className : ""; } catch (e) {}
+		if (className === "")
+		{
+			try { className = item.toString(); } catch (e) {}
+		}
+
+		var accName = safeAccessibleName(item);
+		var accRole = "";
+		try { accRole = item.Accessible.role; } catch (e) {}
+
+		console.warn("[FOCUSDBG] mainWindow activeFocusItem reason=" + reason
+			+ " class=" + className
+			+ " objectName=" + (item.objectName || "")
+			+ " accName=" + (accName || "")
+			+ " accRole=" + (accRole !== undefined ? accRole : "")
+			+ " visible=" + item.visible);
+	}
+
+	onActiveFocusItemChanged: logActiveFocus("changed")
+
 	function changeFocusToRibbon()
 	{
 		ribbon.focus = true;
