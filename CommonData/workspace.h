@@ -100,7 +100,6 @@ signals:
 			void					showRSyntaxChanged(bool showIt);
 			void					shownDataSetChanged(DataSet * dataSet);
 			void					shownFilterChanged();
-			void					manualEditMade(); 
 			void					datasetChanged(				int						dataSetId,
 																QStringList				changedColumns,
 																QStringList				missingColumns,

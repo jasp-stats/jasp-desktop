@@ -63,7 +63,6 @@ DataSet::DataSet(Workspace * workspace, int id)
 			return;
 
 		setManualEdits(true);
-		emit _workspace->manualEditMade();
 	});
 	connect(this,			&DataSet::datasetChanged,			_workspace, &Workspace::datasetChanged				);
 	connect(this,			&DataSet::labelsReordered,			_workspace, &Workspace::labelsReordered				);

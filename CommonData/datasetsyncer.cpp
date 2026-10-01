@@ -34,7 +34,7 @@ void DataSetSyncer::startFileSyncing(const QString & filePath)
 		//exactly that, see DataSet::setManualEdits), so turn it back on instead of doing nothing.
 		_dataSet->setDataFileSynch(true);
 
-        doSync(); //The file mightve actually changed in the meantime while this was ignored, so lets sync to be sure we are up to date/data
+		doSync(); //The file might've actually changed in the meantime while this was ignored, so let's sync to be sure we are up to date/data
 		return;
 	}
 

@@ -659,14 +659,10 @@ void DataSetPackage::setSynchingExternally(bool synchingExternally)
 		if(!synchingExternally)
 			ds->syncer().stopFileSyncing();
 		else
-		{
+			//startFileSyncing flips dataFileSynch back on (when the file is there), which in turn
+			//clears the manual-edits flag: the data file leads again, so a *next* hand edit can and
+			//must be able to switch the synching off.
 			ds->syncer().startFileSyncing(tq(ds->dataFilePath()));
-
-			//The data file is leading again, so the edits made by hand no longer block it.
-			//Clearing the flag also makes sure a *next* manual edit can disable the synching again.
-			if(ds->dataFileSynch())
-				setManualEdits(false);
-		}
 	}
 
 	emitSynchingExternallyChanged();
