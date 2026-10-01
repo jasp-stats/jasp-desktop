@@ -59,6 +59,11 @@ AIPersonaModel* PreferencesModel::aiPersonaModel() const { return _aiPersonaMode
 
 AIConfigModel* PreferencesModel::aiConfigModel() const { return AIConfigModel::config(); }
 
+bool PreferencesModel::settingIsForced(const QString& settingName) const
+{
+	return Settings::isForced(settingName);
+}
+
 void PreferencesModel::browseSpreadsheetEditor()
 {
 	

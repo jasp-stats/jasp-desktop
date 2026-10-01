@@ -179,23 +179,36 @@ const Settings::Setting Settings::Values[] = {
 	{"moduleStoreEnabled",			true}
 };
 
-// Shipped defaults (defaults.json beside the application): the per-client
-// MSI layer. Soft defaults — policy and the user's own settings override
-// them. Read live and never copied into user settings, so a newer
-// installer's file updates defaults for settings the user never touched.
-static const QJsonObject& shippedDefaults()
+// Shipped JSON files beside the application: the per-client MSI layer.
+//
+//   defaults.json : soft defaults — policy, the user's own settings and the
+//                   legacy registry all override them.
+//   forced.json   : enforced settings — they overrule the user and everything
+//                   below policy, and Settings::setValue() refuses to change
+//                   them. Only an administrator can: through group policy
+//                   (which outranks the file) or by shipping another file.
+//
+// Both are read live and never copied into user settings, so a newer
+// installer's file updates values for settings the user never touched.
+// Not shipping a file at all is the normal case and stays quiet — except for
+// defaults.json, whose absence is reported once because the MSI layer is
+// expected to provide one.
+static const QJsonObject& shippedSettings(bool forced)
 {
-	static QJsonObject shipped;
-	static bool loaded = false;		// latched only once a file was actually read (valid or not)
-	static bool reportedMissing = false;
-	if (loaded)
-		return shipped;
+	// [0] = defaults.json (soft), [1] = forced.json (enforced)
+	static QJsonObject shipped[2];
+	static bool loaded[2] = { false, false };		// latched only once a file was actually read (valid or not)
+	static bool reportedMissing[2] = { false, false };
+	const int idx = forced ? 1 : 0;
+	if (loaded[idx])
+		return shipped[idx];
 	if (QCoreApplication::instance() == nullptr)
-		return shipped;		// too early: applicationDirPath() is empty; retry on a later call
+		return shipped[idx];		// too early: applicationDirPath() is empty; retry on a later call
 
+	const QString fileName = forced ? "forced.json" : "defaults.json";
 	const QStringList candidates = {
-		QCoreApplication::applicationDirPath() + "/defaults.json",
-		QCoreApplication::applicationDirPath() + "/Resources/defaults.json"
+		QCoreApplication::applicationDirPath() + "/" + fileName,
+		QCoreApplication::applicationDirPath() + "/Resources/" + fileName
 	};
 	for (const QString& path : candidates)
 	{
@@ -204,33 +217,34 @@ static const QJsonObject& shippedDefaults()
 			continue;
 		if (!f.open(QIODevice::ReadOnly))
 		{
-			qWarning() << "Settings: cannot open" << path << "(shipped defaults ignored)";
-			Log::log() << "Settings: cannot open " << path.toStdString() << " (shipped defaults ignored)" << std::endl;
-			loaded = true;
+			qWarning() << "Settings: cannot open" << path << "(" << (forced ? "forced settings" : "shipped defaults") << "ignored)";
+			Log::log() << "Settings: cannot open " << path.toStdString() << " (" << (forced ? "forced settings" : "shipped defaults") << " ignored)" << std::endl;
+			loaded[idx] = true;
 			break;
 		}
 		QJsonParseError err;
 		const QJsonDocument doc = QJsonDocument::fromJson(f.readAll(), &err);
 		if (err.error != QJsonParseError::NoError || !doc.isObject())
 		{
-			qWarning() << "Settings:" << path << "is not a valid JSON object (shipped defaults ignored):" << err.errorString();
-			Log::log() << "Settings: " << path.toStdString() << " is not a valid JSON object (shipped defaults ignored): "
+			qWarning() << "Settings:" << path << "is not a valid JSON object (" << (forced ? "forced settings" : "shipped defaults") << "ignored):" << err.errorString();
+			Log::log() << "Settings: " << path.toStdString() << " is not a valid JSON object (" << (forced ? "forced settings" : "shipped defaults") << " ignored): "
 			           << err.errorString().toStdString() << std::endl;
-			loaded = true;
+			loaded[idx] = true;
 			break;
 		}
-		shipped = doc.object();
-		loaded = true;
-		qDebug() << "Settings: loaded" << shipped.size() << "shipped default(s) from" << path;
-		Log::log() << "Settings: loaded " << shipped.size() << " shipped default(s) from " << path.toStdString() << std::endl;
+		shipped[idx] = doc.object();
+		loaded[idx] = true;
+		qDebug() << "Settings: loaded" << shipped[idx].size() << (forced ? "forced setting(s) from" : "shipped default(s) from") << path;
+		Log::log() << "Settings: loaded " << shipped[idx].size() << " " << (forced ? "forced setting(s)" : "shipped default(s)") << " from " << path.toStdString() << std::endl;
 		break;
 	}
-	if (!loaded && !reportedMissing)
+	if (!loaded[idx] && !reportedMissing[idx])
 	{
-		reportedMissing = true;
-		qWarning() << "Settings: no defaults.json found; checked:" << candidates;
+		reportedMissing[idx] = true;
+		if (!forced)
+			qWarning() << "Settings: no defaults.json found; checked:" << candidates;
 	}
-	return shipped;
+	return shipped[idx];
 }
 
 QVariant Settings::value(Settings::Type key) {
@@ -263,14 +277,21 @@ QVariant Settings::value(Settings::Type key) {
     }
 #endif
 
-    // 3. Current User Settings (Active INI)
+    // 3. Enforced settings (forced.json beside the app; per-client MSI)
+    //    Overrule the user; only group policy (checked above) outranks them.
+    const QJsonObject& forced = shippedSettings(true);
+    if (forced.contains(settingStringName)) {
+        return forced.value(settingStringName).toVariant();
+    }
+
+    // 4. Current User Settings (Active INI)
     QSettings* settings = getSettings();
     if (settings->contains(settingStringName)) {
         return settings->value(settingStringName);
     }
 
 #ifdef WIN32
-    // 4. Legacy Migration (Old MSI User Preferences in HKCU)
+    // 5. Legacy Migration (Old MSI User Preferences in HKCU)
     QSettings oldRegistry(QSettings::NativeFormat, QSettings::UserScope, "JASP", "JASP");
     if (oldRegistry.contains(settingStringName)) {
         QVariant oldVal = oldRegistry.value(settingStringName);
@@ -281,13 +302,13 @@ QVariant Settings::value(Settings::Type key) {
     }
 #endif
 
-    // 5. Shipped defaults (defaults.json beside the app; per-client MSI)
-    const QJsonObject& shipped = shippedDefaults();
+    // 6. Shipped defaults (defaults.json beside the app; per-client MSI)
+    const QJsonObject& shipped = shippedSettings(false);
     if (shipped.contains(settingStringName)) {
         return shipped.value(settingStringName).toVariant();
     }
 
-    // 6. Fallback to hardcoded application defaults
+    // 7. Fallback to hardcoded application defaults
     return defaultValue(key);
 }
 
@@ -296,8 +317,27 @@ QVariant Settings::defaultValue(Settings::Type key)
 	return Settings::Values[key].defaultValue;
 }
 
+bool Settings::isForced(Settings::Type key)
+{
+	return shippedSettings(true).contains(Settings::Values[key].type);
+}
+
+bool Settings::isForced(const QString& settingName)
+{
+	return shippedSettings(true).contains(settingName);
+}
+
 void Settings::setValue(Settings::Type key, const QVariant &value)
 {
+	if (isForced(key))
+	{
+		// The user cannot override enforced settings; refusing the write also
+		// keeps a zombie value out of the INI that would resurface the moment
+		// the admin removes the file again.
+		qWarning() << "Settings:" << Settings::Values[key].type << "is enforced by forced.json; change refused";
+		Log::log() << "Settings: " << Settings::Values[key].type.toStdString() << " is enforced by forced.json; change refused" << std::endl;
+		return;
+	}
 	getSettings()->setValue(Settings::Values[key].type, value);
 }
 

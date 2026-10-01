@@ -201,6 +201,10 @@ class PreferencesModel : public PreferencesModelBase
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
 	Q_INVOKABLE void resetAiDefaults();
+	/// True when the setting is enforced by forced.json (or by policy above
+	/// it): bind it to `enabled:` so the control greys out instead of merely
+	/// snapping back on click.
+	Q_INVOKABLE bool settingIsForced(const QString& settingName) const;
 	
 	bool storeStateEtc() const;
 	void setStoreStateEtc(bool newStoreStateEtc);
