@@ -49,8 +49,6 @@ void DataSetSyncer::startFileSyncing(const QString & filePath)
 	_fileWatcher->addPath(absPath);
 	_dataSet->setDataFile(absPath.toStdString(), fi.lastModified().toSecsSinceEpoch());
 	_dataSet->setDataFileSynch(true);
-
-
 }
 
 void DataSetSyncer::stopFileSyncing(bool isExit)
