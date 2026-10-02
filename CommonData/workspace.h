@@ -100,7 +100,6 @@ signals:
 			void					showRSyntaxChanged(bool showIt);
 			void					shownDataSetChanged(DataSet * dataSet);
 			void					shownFilterChanged();
-			void					manualEditMade(); 
 			void					datasetChanged(				int						dataSetId,
 																QStringList				changedColumns,
 																QStringList				missingColumns,
@@ -114,9 +113,13 @@ signals:
 			void					allFiltersReset();
 			void					showWarning(						QString title, QString msg);
 			void					descriptionChanged();
+			//dataFileChanged, dataFileSynchChanged and manualEditsChanged are relayed from the *shown*
+			//dataset only (see setShownDataSet), so consumers can watch "the data" without having to
+			//re-hook on every dataset switch themselves.
 			void					dataFileChanged();
 			void					databaseJsonChanged();
 			void					dataFileSynchChanged();
+			void					manualEditsChanged();
 			void					dataTimestampChanged();
 			void					columnsLabelFilteredCountChanged();
 			void					refreshAllAnalyses(Filter * f);

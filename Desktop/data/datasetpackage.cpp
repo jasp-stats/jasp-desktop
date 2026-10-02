@@ -53,6 +53,10 @@ DataSetPackage::DataSetPackage(QObject * parent) : QObject(parent)
 	connect(this, &DataSetPackage::isModifiedAfterAutoSaveChanged,		this, &DataSetPackage::windowTitleChanged);
 	connect(this, &DataSetPackage::currentFileChanged,					this, &DataSetPackage::nameChanged);
 	connect(this, &DataSetPackage::dataModeChanged,						this, &DataSetPackage::onDataModeChanged);
+	//The manualEdits- and synchingExternally answers are about the shown dataset, so switching that
+	//can change both. The signals themselves are relayed from it via Workspace (connectWorkspace).
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::manualEditsChanged);
+	connect(this, &DataSetPackage::shownDataSetChanged,					this, &DataSetPackage::emitSynchingExternallyChanged);
 	
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveAtAllChanged,			this, &DataSetPackage::handleAutoSavePrefChange);
 	connect(PreferencesModel::prefs(), &PreferencesModel::autoSaveIntervalSecChanged,	this, &DataSetPackage::handleAutoSavePrefChange);
@@ -178,12 +182,16 @@ void DataSetPackage::connectWorkspace()
 	Workspace		::connect(workspace(),	&Workspace::shownDataSetChanged,				this,			&DataSetPackage::shownDataSetChanged				);	
 	Workspace		::connect(workspace(),	&Workspace::dataSetCreated,						this,			&DataSetPackage::dataSetCreated					);	
 	Workspace		::connect(workspace(),	&Workspace::dataSetRemoved,						this,			&DataSetPackage::dataSetRemoved					);	
-	//A manual edit by the user (in the data grid / paste) means external-file syncing should be disabled.
-	Workspace		::connect(workspace(),	&Workspace::manualEditMade,						this,			[this]{ setManualEdits(true); }					);
 	Workspace		::connect(workspace(),	&Workspace::runComputedColumn,					this,			&DataSetPackage::runComputedColumn					);	
 	Workspace		::connect(workspace(),	&Workspace::runComputedDataSet,					this,			&DataSetPackage::runComputedDataSet					);	
 	Workspace		::connect(workspace(),	&Workspace::checkForDependentAnalyses,			this,			&DataSetPackage::checkForDependentAnalyses			);	
 	Workspace		::connect(workspace(),	&Workspace::emptyValuesChanged,					this,			&DataSetPackage::workspaceEmptyValuesChanged		);	
+
+	//Synch- and hand-edit state of the shown dataset (Workspace only relays these from the one shown,
+	//see Workspace::setShownDataSet), so the ribbon and the QML properties keep reflecting reality.
+	Workspace		::connect(workspace(),	&Workspace::dataFileSynchChanged,				this,			&DataSetPackage::emitSynchingExternallyChanged		);
+	Workspace		::connect(workspace(),	&Workspace::dataFileChanged,					this,			&DataSetPackage::emitSynchingExternallyChanged		);
+	Workspace		::connect(workspace(),	&Workspace::manualEditsChanged,				this,			&DataSetPackage::manualEditsChanged					);
 
 	DataSetPackage	::connect(this,			&DataSetPackage::filterByNameDone,				workspace(),	&Workspace::filterByNameDone						);
 	
@@ -617,24 +625,68 @@ void DataSetPackage::checkDataSetForUpdates()
 	_workspace->checkForUpdates();
 }
 
+//Editing by hand, and what that does to the external synching, is per-dataset bookkeeping and lives on
+//DataSet: another dataset can be shown, and edited, in the meantime. These two only pass the question on
+//to whichever dataset is shown, for the QML property and for everybody who thinks in terms of "the" data.
 bool DataSetPackage::manualEdits() const
 {
-	return _manualEdits;
+	return dataSet() && dataSet()->manualEdits();
 }
 
 void DataSetPackage::setManualEdits(bool newManualEdits)
 {
-	if (_manualEdits == newManualEdits)
-		return;
+	if(dataSet())
+		dataSet()->setManualEdits(newManualEdits);
+}
 
-	_manualEdits = newManualEdits;
+bool DataSetPackage::synchingExternally() const
+{
+	DataSet * ds = dataSet();
 
-	//Editing the data by hand means the external data file no longer reflects the workspace: disable
-	//external synching for the (shown) dataset so the next file change doesn't silently revert the
-	//user's edits. This is per-dataset now (the shown dataset owns its own DataSetSyncer).
-	if(_manualEdits && dataSet())
-		dataSet()->setDataFileSynch(false);
+	//The flag survives a workspace teardown, but the watcher does not: a workspace saved while
+	//synching comes back with dataFileSynch still on even though nobody is watching the file
+	//anymore. So only answer yes when the syncer is actually doing something (the data-file path
+	//re-arms the watcher on open, see MainWindow::fileEventRequestFinalize).
+	return ds && ds->dataFileSynch() && (ds->syncer().isFileSyncing() || ds->syncer().isDatabaseSyncing());
+}
 
-	emit manualEditsChanged();
+void DataSetPackage::setSynchingExternally(bool synchingExternally)
+{
+	DataSet * ds = dataSet();
+
+	if(ds)
+	{
+		if(!synchingExternally)
+			ds->syncer().stopFileSyncing();
+		else
+			//startFileSyncing flips dataFileSynch back on (when the file is there), which in turn
+			//clears the manual-edits flag: the data file leads again, so a *next* hand edit can and
+			//must be able to switch the synching off.
+			ds->syncer().startFileSyncing(tq(ds->dataFilePath()));
+	}
+
+	emitSynchingExternallyChanged();
+}
+
+void DataSetPackage::setSynchingExternallyFriendly(bool synchingExternally)
+{
+	if(synchingExternally)
+	{
+		//There might not be a (usable) data file to synch with, for instance because the data was
+		//entered or edited by hand. So let the user generate or find one first.
+		if(!emit askUserForExternalDataFile())
+			return;
+
+		setSynchingExternally(true);
+	}
+	else if(dataSet() && dataSet()->dataFileSynch())
+		setSynchingExternally(false);
+
+	setModified(true); //Perhaps someone would like to save the fact that it should (not) be synchronized
+}
+
+void DataSetPackage::emitSynchingExternallyChanged()
+{
+	emit synchingExternallyChanged(synchingExternally());
 }
 

@@ -2,6 +2,8 @@
 #include <QQmlEngine>
 #include "tempfiles.h"
 #include "processinfo.h"
+#include "dirs.h"
+#include <QDir>
 #include "datasetprovider.h"
 #include "utilities/qmlutils.h"
 #include "utilities/settings.h"
@@ -9,6 +11,8 @@
 TestQml::TestQml(QObject *parent)
 	: QObject{parent}
 {
+	//Keep the session dir out of the CWD, see TestAll::initTestCase.
+	Dirs::setLocalAppdataDir(QDir::tempPath().toStdString() + "/jasp-test-runs");
 	TempFiles::init(ProcessInfo::currentPID());
 	TempFiles::clearSessionDir();
 	

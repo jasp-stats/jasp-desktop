@@ -3,6 +3,8 @@
 #include "tempfiles.h"
 #include "columnutils.h"
 #include "processinfo.h"
+#include "dirs.h"
+#include <QDir>
 #include "testdebugdata.h"
 #include "databaseinterface.h"
 #include "utilities/settings.h"
@@ -16,6 +18,8 @@ static int _labelRow(Column * column, Label * label)
 
 void TestDebugData::initTestCase()
 {
+	//Keep the session dir out of the CWD, see TestAll::initTestCase.
+	Dirs::setLocalAppdataDir(QDir::tempPath().toStdString() + "/jasp-test-runs");
 	TempFiles::init(ProcessInfo::currentPID()); // needed here so that the LRNAM can be passed the session directory
 
 }
