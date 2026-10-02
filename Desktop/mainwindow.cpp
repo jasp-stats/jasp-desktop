@@ -1645,6 +1645,7 @@ void MainWindow::registerRpcHandlers()
 		}
 
 		info["loaded"]      = true;
+		info["dataSetId"]   = ds->id();
 		info["path"]        = tq(ds->dataFilePath()).toStdString();
 		info["rowCount"]    = static_cast<int>(ds->rowCount());
 
@@ -1668,6 +1669,27 @@ void MainWindow::registerRpcHandlers()
 			columns.append(col);
 		}
 		info["columns"] = columns;
+
+		//Every filter of this dataset, so an RPC client can bind analyses to a specific dataset/filter
+		//("selecting a dataset is selecting one of its filters") via analysis_create's filterId.
+		Json::Value filters(Json::arrayValue);
+
+		auto appendFilter = [&filters](const Filter * filter, bool isDefault)
+		{
+			Json::Value f;
+			f["filterId"] = filter->id();
+			f["name"]     = fq(filter->title());
+			f["isDefault"] = isDefault;
+			filters.append(f);
+		};
+
+		if (ds->defaultFilter())
+			appendFilter(ds->defaultFilter(), true);
+		for (const Filter * f : ds->filters())
+			if (f != ds->defaultFilter())
+				appendFilter(f, false);
+
+		info["filters"] = filters;
 
 		return info;
 	};

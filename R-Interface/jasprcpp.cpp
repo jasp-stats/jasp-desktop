@@ -371,7 +371,7 @@ void STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int 
 }
 
 const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options,
-										   const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData)
+										   const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData, const char* multiDataSetJson)
 {
 	auto rEnvironment = Rcpp::Environment::global_env();
 
@@ -382,6 +382,7 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 	rEnvironment["stateKey"]			= stateKey;
 	rEnvironment["moduleCall"]			= moduleCall;
 	rEnvironment["preloadData"]			= preloadData;
+	rEnvironment["multiDataSetJson"]	= multiDataSetJson == nullptr ? "" : multiDataSetJson;
 	rEnvironment["resultsMeta"]			= "null";
 	rEnvironment["requiresInit"]		= false;
 
@@ -391,7 +392,13 @@ const char* STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, 
 
 	try
 	{
-		SEXP results = jaspRCPP_parseEval("jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall, preloadData=preloadData)", true);
+		//Only hand multiDataSetJson to jaspBase when there actually is one: older jaspBase versions do not
+		//know the parameter and would choke on it.
+		std::string runCall = (multiDataSetJson != nullptr && multiDataSetJson[0] != '\0')
+			? "jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall, preloadData=preloadData, multiDataSetJson=multiDataSetJson)"
+			: "jaspBase::runJaspResults(name=name, title=title, dataKey=dataKey, options=options, stateKey=stateKey, functionCall=moduleCall, preloadData=preloadData)";
+
+		SEXP results = jaspRCPP_parseEval(runCall.c_str(), true);
 
 		if(results != NULL && Rcpp::is<std::string>(results))	str = Rcpp::as<Rcpp::String>(results);
 		else													str = "error!";

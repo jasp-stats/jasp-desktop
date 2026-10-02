@@ -296,13 +296,20 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 			{
 				const std::string	colName = loadFilteredData["column"].asString(),
 									filterN	= loadFilteredData["filter"].asString();
-				DataSet			*	data	= provideAndUpdateDataSet();
+
+				//A multi-dataset aware analysis records on the option (next to loadFilteredData) which
+				//dataset and filter its values were selected from; honour that, otherwise just use the
+				//dataset this request is anchored at (the old behaviour).
+				DataSet			*	data	= provideAndUpdateDataSet(meta.isObject() ? meta.get("dataSetId", -1).asInt() : -1);
 				Column			*	col		= data->column(colName);
 
 				if(!col)
 					return;
 
 				Filter			*	filter	= data->filter(filterN);
+
+				if(!filter && meta.isObject() && meta.isMember("filterId") && meta["filterId"].isInt() && data->workspace())
+					filter = data->workspace()->filterById(meta["filterId"].asInt());
 
 				if(col && filter)
 				{

@@ -121,6 +121,17 @@ void EntryBase::setRequiresData(bool requiresData)
 	emit requiresDataChanged();
 }
 
+void EntryBase::setMultiDataSetAware(bool multiDataSetAware)
+{
+	_useDefaultMultiDataSetAware = false;
+
+	if (_multiDataSetAware == multiDataSetAware)
+		return;
+
+	_multiDataSetAware = multiDataSetAware;
+	emit multiDataSetAwareChanged();
+}
+
 void EntryBase::setEnabled(bool enabled)
 {
 	if (_enabled == enabled)
@@ -160,7 +171,7 @@ void EntryBase::setHasWrapper(bool hasWrapper)
 	emit hasWrapperChanged();
 }
 
-AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault) const
+AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool preloadDataDefault, bool multiDataSetAwareDefault) const
 {
 	AnalysisEntry * entry = new AnalysisEntry();
 
@@ -169,8 +180,9 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 	entry->_icon			= fq(icon());
 	entry->_title			= fq(title());
 	entry->_function		= fq(function());
-	entry->_requiresData	= _useDefaultRequiresData ? requiresDataDefault : requiresData();
-	entry->_preloadData		= _useDefaultPreloadData  ? preloadDataDefault  : preloadData();
+	entry->_requiresData	= _useDefaultRequiresData 		? requiresDataDefault 		: requiresData();
+	entry->_preloadData		= _useDefaultPreloadData			? preloadDataDefault		: preloadData();
+	entry->_multiDataSetAware = _useDefaultMultiDataSetAware	? multiDataSetAwareDefault	: multiDataSetAware();
 
 	entry->_isEnabled		= _enabled;
 	entry->_isAnalysis		= _entryType == EntryType::analysis;

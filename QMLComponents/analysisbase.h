@@ -23,6 +23,11 @@ class AnalysisBase : public QObject
 	Q_PROPERTY(QString	filterName	READ filterName							NOTIFY filterChanged)
 	Q_PROPERTY(int		filterId	READ filterId		WRITE setFilterId	NOTIFY filterChanged)
 	Q_PROPERTY(QString	dataSpec	READ dataSpec							NOTIFY dataSpecChanged)
+	///< Multi-dataset aware analyses let the user pick another dataset/filter per selection (see
+	///< VariablesForm::dataSetSelection), and their variable options carry dataSetId/filterId provenance
+	///< in their .meta. Desktop::Analysis derives this from the module entry; the base stores what is
+	///< set here (used by the dummy analysis of R-syntax / unit-test mode).
+	Q_PROPERTY(bool		multiDataSetAware READ multiDataSetAware WRITE setMultiDataSetAware NOTIFY multiDataSetAwareChanged)
 	
 
 public:
@@ -83,6 +88,17 @@ public:
 						///Whether this analysis operates on the given dataset. An analysis without an explicit dataset
 						///binding (e.g. reports, or before a dataset is selected) is treated as using any dataset.
 						bool				usesDataSet(int dataSetId)						const;
+	virtual				bool				multiDataSetAware()								const	{ return _multiDataSetAware;		}
+	void					setMultiDataSetAware(bool multiDataSetAware);
+	///< The dataSetId -> filterId pairs referenced through the .meta of the bound values (see
+	///< ColumnEncoder::collectDataSetIdsFromMeta); the primary dataset/filter of the analysis itself is
+	///< not necessarily part of it, that comes from filter()/dataSet().
+	std::map<int, int>	referencedDataSets()												const;
+	/// Re-apply the dataSetId/filterId provenance from a loaded set of bound values onto the freshly
+	/// (re)generated .meta of the current bound values (AnalysisForm::setAnalysisUp re-binds every
+	/// control, which restamps its meta with the analysis' current filter - for a multi-dataset aware
+	/// analysis the provenance of the file must win, unless the value itself changed).
+	void					restoreProvenanceFromBoundValues(const Json::Value & savedBoundValues);
 
 						QString				filterName()	const;
 						int					filterId()		const;
@@ -107,6 +123,7 @@ public slots:
 
 
 signals:
+	void			multiDataSetAwareChanged();
 	void			sendRScriptSignal(QString script, QString controlName, bool whiteListedVersion, QString module);
 	void			sendFilterSignal( QString  name,  QString module);
 	void			formItemChanged();
@@ -126,6 +143,7 @@ protected:
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
 	bool			_isAnnotated		= false;
+	bool			_multiDataSetAware	= false;	///< See the multiDataSetAware Q_PROPERTY; Desktop::Analysis overrides the getter with the module entry's value.
 	//Guarded pointers: a Filter/DataSet is owned by a DataSet/Workspace that may be destroyed (e.g.
 	//multi-dataset teardown) while the analysis lives on; the guard auto-nulls on destruction so the
 	//analysis never dereferences freed memory. _filterDataSet also derives from the (possibly null)

@@ -31,6 +31,10 @@ private slots:
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
 	void currentEncoderReTargetsOnSwitchAndClearsOnDestruction();
+	void encodePerDataSetRoutesOptionsToEncoderOfTheirDataSet();
+	void encodePerDataSetAttributedToPrimaryWithoutProvenance();
+	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
+	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

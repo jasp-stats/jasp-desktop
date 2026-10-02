@@ -37,6 +37,9 @@ import JASP.Controls
     \list
     \li \b listWidth (int) - Width of each variable list. Default: width * 2 / 5.
     \li \b removeInvisibles (bool) - Remove invisible controls from the layout. Default: false.
+    \li \b dataSetSelection (bool) - Show a dataset/filter selection above the available variables list;
+        selecting an entry switches the whole form (and analysis) to that dataset/filter. Only functional
+        for multiDataSetAware analyses (see the module Description). Default: false.
     \endlist
 
     \section1 Example
@@ -86,6 +89,65 @@ VariablesFormBase
 
 	Item { id: items }
 
+	// Dataset/filter selection for multi-dataset aware analyses. Wrapping Item keeps it out of the
+	// JASPControl scan of VariablesFormBase::componentComplete(): it is form furniture, not an option.
+	Item
+	{
+		id:					dataSetSelectionArea
+		x:					0
+		y:					0
+		width:				variablesForm.listWidth
+		visible:			variablesForm.dataSetSelection && variablesForm.dataSetSelectionAllowed
+		height:				visible ? dataSetDropDown.height : 0
+
+		DropDown
+		{
+			id:				dataSetDropDown
+			isBound:		false
+			anchors.left:	dataSetSelectionArea.left
+			anchors.right:	dataSetSelectionArea.right
+			title:			qsTr("Data")
+			toolTip:		qsTr("Select the dataset (and filter) to use for this analysis")
+			values:			variablesForm.dataSetSelectionValues
+
+			function syncToSelection()
+			{
+				var entries = variablesForm.dataSetSelectionValues
+				var selected = variablesForm.selectedFilterId
+
+				for (var i = 0; i < entries.length; i++)
+					if (parseInt(entries[i].value) === selected)
+					{
+						if (currentIndex !== i)
+							currentIndex = i
+						return
+					}
+			}
+
+			onCurrentValueChanged:
+			{
+				var filterId = parseInt(currentValue)
+				if (!isNaN(filterId))
+					variablesForm.setSelectedFilterId(filterId)
+			}
+
+			Component.onCompleted:	syncToSelection()
+		}
+	}
+
+	Connections
+	{
+		target:	variablesForm
+
+		function onSelectedFilterIdChanged()			{ dataSetDropDown.syncToSelection() }
+		function onDataSetSelectionValuesChanged()	{ dataSetDropDown.syncToSelection() }
+		function onDataSetSelectionAllowedChanged()	{ dataSetDropDown.syncToSelection() }
+	}
+
+	// The lists and the assigned column start below the selection; _selectorHeight is 0 without one,
+	// so all pre-existing bindings behave exactly as before.
+	readonly property real _selectorHeight: dataSetSelectionArea.visible ? dataSetSelectionArea.height + marginBetweenVariablesLists : 0
+
 	Connections
 	{
 		target:					preferencesModel
@@ -126,12 +188,21 @@ VariablesFormBase
 		}
 	}
 
-	// The available list takes the height of the form, and the list width if its width is not set explicitly
+	// The available list takes the height of the form (minus the dataset/filter selection above it),
+	// and the list width if its width is not set explicitly
 	Binding
 	{
 		target:			variablesForm.availableVariablesList
 		property:		"height"
-		value:			variablesForm.height
+		value:			variablesForm.height - variablesForm._selectorHeight
+		restoreMode:	Binding.RestoreNone
+	}
+
+	Binding
+	{
+		target:			variablesForm.availableVariablesList
+		property:		"y"
+		value:			variablesForm._selectorHeight
 		restoreMode:	Binding.RestoreNone
 	}
 
@@ -178,7 +249,7 @@ VariablesFormBase
 			{
 				target:			controlLayout.control
 				property:		"anchors.topMargin"
-				value:			controlLayout.position > 0 ? variablesForm.marginBetweenVariablesLists : 0
+				value:			controlLayout.position > 0 ? variablesForm.marginBetweenVariablesLists : variablesForm._selectorHeight
 				restoreMode:	Binding.RestoreNone
 			}
 

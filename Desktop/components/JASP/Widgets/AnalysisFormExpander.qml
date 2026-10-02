@@ -435,7 +435,9 @@ DropArea
 						toolTip:			qsTr("Select filter/data to use for this analysis")
 						radius:				height
 						opacity:			editButton.opacity
-						visible:			formParent.myForm
+						//Multi-dataset aware analyses select their dataset/filter inside the form itself
+						//(VariablesForm::dataSetSelection), so this button is for the others only.
+						visible:			formParent.myForm && !formParent.myForm.analysis.multiDataSetAware
 						onClicked:			showPopupMenu(filterButton, filterButton.mapToGlobal(0,height))
 						
 						function showPopupMenu(fromItem, globalPos)

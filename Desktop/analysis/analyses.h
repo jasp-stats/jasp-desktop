@@ -63,6 +63,16 @@ public:
 
 	static void			registerRpcHandlers();
 
+	/// Re-resolve the multi-dataset aware option provenance (dataSetId/filterId in options .meta) that
+	/// was saved with a .jasp file: those ids belong to the session that wrote the file, the name-based
+	/// "dataSetProvenance" side table (see Analysis::asJSON) maps them onto this workspace.
+	static void			remapSavedProvenance(Json::Value & analysisData, Workspace * workspace);
+
+private:
+	static void			_walkRewriteProvenance(Json::Value & metaNode, const std::map<int, int> & dataSetIds, const std::map<int, int> & filterIds);
+
+public:
+
 	/// Strip internal-only keys (e.g. "editOptions") from results before
 	/// sending them over RPC. Add more keys here as needed.
 	static void			stripResults(Json::Value& val);

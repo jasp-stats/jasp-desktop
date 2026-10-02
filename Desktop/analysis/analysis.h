@@ -115,6 +115,8 @@ public:
 	const	std::string		&	titleDefault()		const	override	{ return _titleDefault;						}
 	const	std::string		&	rfile()				const				{ return _rfile;							}
 	const	std::string			module()			const	override	{ return _moduleData && _moduleData->dynamicModule() ? _moduleData->dynamicModule()->name() : "???";	}
+	///< Derived from the module entry: module-level Description::multiDataSetAware with per-analysis override.
+	bool						multiDataSetAware()	const	override	{ return _moduleData && _moduleData->multiDataSetAware();	}
 			size_t				id()				const				{ return _id;								}
 			Status				status()			const				{ return _status;							}
 			QString				statusQ()			const				{ return tq(statusToString(_status));		}

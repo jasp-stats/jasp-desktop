@@ -738,7 +738,7 @@ ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
 	return columnEncoder() ? columnEncoder()->_encodedNames : colVec();
 }
 
-void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes)
+void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes, ColumnEncoder * encoder)
 {
 	std::string		optionKey	= options[optionName].isMember("optionKey") ? options[optionName]["optionKey"].asString() : "";
 	bool			keepOriginalOption = (!optionKey.empty() && options[optionName].size() > 3); // The option has other members: this must be kept
@@ -785,9 +785,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 			bool hasType = type != "unknown" && columnTypeValidName(type);
 
 			std::string columnName = jsonValue.asString();
-			if(!hasType && columnName != "" && columnEncoder()->_dataSetTypes.count(columnName))
+			if(!hasType && columnName != "" && encoder->_dataSetTypes.count(columnName))
 			{
-				type = columnTypeToString(columnEncoder()->_dataSetTypes.at(columnName));
+				type = columnTypeToString(encoder->_dataSetTypes.at(columnName));
 				hasType = type != "unknown";
 			}
 
@@ -819,9 +819,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				bool hasType = type != "unknown" && columnTypeValidName(type);
 				std::string columnName = jsonColumnName.asString();
 
-				if(!hasType && columnName != "" && columnEncoder()->_dataSetTypes.count(columnName))
+				if(!hasType && columnName != "" && encoder->_dataSetTypes.count(columnName))
 				{
-					type = columnTypeToString(columnEncoder()->_dataSetTypes.at(columnName));
+					type = columnTypeToString(encoder->_dataSetTypes.at(columnName));
 					hasType = type != "unknown";
 				}
 
@@ -849,16 +849,22 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 	options[optionName] = !useSingleVal ? newOption : newOption[0];
 }
 
-void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, bool preloadingData, colsPlusTypes& colTypes)
+void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor)
 {
 	if (options.isObject())
 	{
 		for (const std::string& optionName : options.getMemberNames())
 		{
+			//The meta tree mirrors the options tree, so the dataSetId recorded on an option's meta node (or on an
+			//enclosing node) tells us which dataset this option's terms belong to. Options without meta (or without
+			//a dataSetId anywhere up their path) keep belonging to the dataset they inherited: the primary one.
+			const Json::Value & childMeta	= (meta.isObject() && meta.isMember(optionName)) ? meta[optionName] : Json::Value::null;
+			const int			childDsId	= _dataSetIdFromMetaNode(childMeta, dataSetId);
+
 			if (options[optionName].isObject() && options[optionName].isMember("value") && options[optionName].isMember("types"))
 			{
 				if(preloadingData)
-					_convertPreloadingDataOption(options, optionName, colTypes);
+					_convertPreloadingDataOption(options, optionName, colTypesPerDataSet[childDsId], _encoderForDataSetId(childDsId, encoderFor));
 				else //make sure "optionname".types is available for analyses incapable of preloadingData, this should be considered deprecated
 				{
 					options[optionName + ".types"] = options[optionName]["types"];
@@ -871,70 +877,143 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 				}
 			}
 			else
-				_addTypeToColumnNamesInOptionsRecursively(options[optionName], preloadingData, colTypes);
+				_addTypeToColumnNamesInOptionsRecursively(options[optionName], childMeta, childDsId, preloadingData, colTypesPerDataSet, encoderFor);
 		}
 	}
 	else if (options.isArray())
 	{
-		for (Json::Value& oneOption : options)
-			_addTypeToColumnNamesInOptionsRecursively(oneOption, preloadingData, colTypes);
+		//Meta for an array is either an array (element-wise) or a single object shared by all elements,
+		//exactly like _encodeColumnNamesinOptions() below treats it.
+		const bool metaIsArray = meta.isArray();
+
+		for (Json::ArrayIndex i = 0; i < options.size(); i++)
+		{
+			const Json::Value & elementMeta	= metaIsArray && i < meta.size() ? meta[i] : meta;
+
+			_addTypeToColumnNamesInOptionsRecursively(options[i], elementMeta, _dataSetIdFromMetaNode(elementMeta, dataSetId), preloadingData, colTypesPerDataSet, encoderFor);
+		}
 	}
 	else if (options.isString())
 	{
 		const std::string possibleCol = options.asString();
-		
-		if(columnEncoder()->_dataSetTypes.count(possibleCol))
+
+		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
+
+		if(encoder->_dataSetTypes.count(possibleCol))
 		{
-			columnType possType = columnEncoder()->_dataSetTypes.at(possibleCol);
+			columnType possType = encoder->_dataSetTypes.at(possibleCol);
 			if(possType != columnType::unknown)
-				colTypes.insert(std::make_pair(possibleCol + "." + columnTypeToString(possType) , possType));
+				colTypesPerDataSet[dataSetId].insert(std::make_pair(possibleCol + "." + columnTypeToString(possType) , possType));
 		}
-		
+
 	}
 }
 
 ColumnEncoder::colsPlusTypes ColumnEncoder::encodeColumnNamesinOptions(Json::Value & options, bool preloadingData)
 {
-	columnEncoder();
+	perDataSetColsPlusTypes getTheseColsPerDataSet = encodeColumnNamesinOptionsPerDataSet(options, preloadingData, nullptr, 0);
+
 	colsPlusTypes getTheseCols;
 
-	_addTypeToColumnNamesInOptionsRecursively(options, preloadingData, getTheseCols);
+	//Without a resolver everything is attributed to the single (primary) dataset, so normally there is just
+	//one entry; merging is just to be thorough.
+	for (const auto & colsPerDataSet : getTheseColsPerDataSet)
+		getTheseCols.insert(colsPerDataSet.second.begin(), colsPerDataSet.second.end());
 
-	//LOGGER << "Options before encoding: " << options.toStyledString() << std::endl;
-
-	_encodeColumnNamesinOptions(options, options[".meta"]);
-
-	//LOGGER << "Options after encoding: " << options.toStyledString() << std::endl;
 	return getTheseCols;
 }
 
-void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta)
+ColumnEncoder::perDataSetColsPlusTypes ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId)
+{
+	columnEncoder();
+	perDataSetColsPlusTypes getTheseColsPerDataSet;
+
+	//LOGGER << "Options before encoding: " << options.toStyledString() << std::endl;
+
+	_addTypeToColumnNamesInOptionsRecursively(options, options[".meta"], primaryDataSetId, preloadingData, getTheseColsPerDataSet, encoderFor);
+
+	_encodeColumnNamesinOptions(options, options[".meta"], primaryDataSetId, encoderFor);
+
+	//LOGGER << "Options after encoding: " << options.toStyledString() << std::endl;
+	return getTheseColsPerDataSet;
+}
+
+int ColumnEncoder::_dataSetIdFromMetaNode(const Json::Value & metaNode, int inherited)
+{
+	if(metaNode.isObject() && metaNode.isMember("dataSetId") && metaNode["dataSetId"].isInt())
+		return metaNode["dataSetId"].asInt();
+
+	return inherited;
+}
+
+ColumnEncoder * ColumnEncoder::_encoderForDataSetId(int dataSetId, const EncoderFor & encoderFor)
+{
+	if(encoderFor)
+		if(ColumnEncoder * encoder = encoderFor(dataSetId))
+			return encoder;
+
+	return columnEncoder();
+}
+
+void ColumnEncoder::collectDataSetIdsFromMeta(const Json::Value & meta, std::map<int, int> & dataSetFilterIds)
+{
+	if(meta.isObject())
+	{
+		if(meta.isMember("dataSetId") && meta["dataSetId"].isInt())
+		{
+			const int dataSetId	= meta["dataSetId"].asInt(),
+						filterId	= (meta.isMember("filterId") && meta["filterId"].isInt()) ? meta["filterId"].asInt() : -1;
+
+			auto existing = dataSetFilterIds.find(dataSetId);
+
+			if(existing == dataSetFilterIds.end() || (existing->second == -1 && filterId != -1))
+				dataSetFilterIds[dataSetId] = filterId;
+		}
+
+		for(const std::string & memberName : meta.getMemberNames())
+			collectDataSetIdsFromMeta(meta[memberName], dataSetFilterIds);
+	}
+	else if(meta.isArray())
+		for(const Json::Value & element : meta)
+			collectDataSetIdsFromMeta(element, dataSetFilterIds);
+}
+
+void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, const EncoderFor & encoderFor)
 {
 	if(meta.isNull())
 		return;
-	
+
+	//A node can either record its own dataSetId or inherit the one from the node enclosing it.
+	dataSetId	= _dataSetIdFromMetaNode(meta, dataSetId);
+
 	bool	encodePlease	= meta.isObject() && meta.get("shouldEncode",	false).asBool(),
 			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
+
+	//Every dataset has its own encoder and DataSet::setupEncoderPrefix() makes its encoded names globally unique
+	//by embedding the dataset id, so a multi-dataset options blob can be encoded slice by slice: every option
+	//against the encoder of the dataset its terms come from. Without a resolver this is the old behaviour:
+	//everything against the process-global current encoder.
+	ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
 
 	switch(options.type())
 	{
 	case Json::arrayValue:
 		if(encodePlease)
-			columnEncoder()->encodeJson(options, false, true); //If we already think we have columnNames just change it all
-		
+			encoder->encodeJson(options, false, true); //If we already think we have columnNames just change it all
+
 		else if(meta.type() == Json::arrayValue)
 			for(int i=0; i<options.size() && i < meta.size(); i++)
-				_encodeColumnNamesinOptions(options[i], meta[i]);
+				_encodeColumnNamesinOptions(options[i], meta[i], dataSetId, encoderFor);
 
 		else if(isRCode)
 		{
 			for(int i=0; i<options.size(); i++)
 				if(options[i].isString())
-					options[i] = columnEncoder()->encodeRScript(options[i].asString());
+					options[i] = encoder->encodeRScript(options[i].asString());
 		}
 		else if(meta.type() == Json::objectValue) // The option is an array, and the meta is an object: each option element in the array must be encoded with the same meta
 			for(int i=0; i<options.size(); i++)
-				_encodeColumnNamesinOptions(options[i], meta);
+				_encodeColumnNamesinOptions(options[i], meta, dataSetId, encoderFor);
 
 
 		return;
@@ -942,21 +1021,21 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	case Json::objectValue:
 		for(const std::string & memberName : options.getMemberNames())
 			if(memberName != ".meta" && meta.isMember(memberName))
-				_encodeColumnNamesinOptions(options[memberName], meta[memberName]);
-		
+				_encodeColumnNamesinOptions(options[memberName], meta[memberName], dataSetId, encoderFor);
+
 			else if(isRCode && options[memberName].isString())
-				options[memberName] = columnEncoder()->encodeRScript(options[memberName].asString());
-		
+				options[memberName] = encoder->encodeRScript(options[memberName].asString());
+
 			else if(encodePlease)
-				columnEncoder()->encodeJson(options, false, true); //If we already think we have columnNames just change it all I guess?
-		
+				encoder->encodeJson(options, false, true); //If we already think we have columnNames just change it all I guess?
+
 		return;
 
 	case Json::stringValue:
-			
-			if(isRCode)				options = columnEncoder()->encodeRScript(options.asString());
-			else if(encodePlease)	options = columnEncoder()->encodeAll(options.asString());
-			
+
+			if(isRCode)				options = encoder->encodeRScript(options.asString());
+			else if(encodePlease)	options = encoder->encodeAll(options.asString());
+
 		return;
 
 	default:

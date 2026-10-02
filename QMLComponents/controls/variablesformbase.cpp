@@ -19,11 +19,34 @@
 #include "variablesformbase.h"
 #include "variableslistbase.h"
 #include "jasptheme.h"
+#include "analysisform.h"
+#include "analysisbase.h"
+#include "workspace.h"
+#include "log.h"
 
 VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 {
 	_controlType			= ControlType::VariablesForm;
 	_useControlMouseArea	= false;
+
+	//The analysis (and with it whether dataSetSelection is allowed) can only become known after
+	//construction, AnalysisForm hands it out later on; formIsKnown tells us when that happened.
+	connect(this, &JASPControl::formIsKnown, this, &VariablesFormBase::handleFormIsKnown);
+}
+
+void VariablesFormBase::handleFormIsKnown(AnalysisForm * form)
+{
+	if(!form)
+		return;
+
+	if(Workspace::singleton())
+		connect(Workspace::singleton(), &Workspace::dataSetFilterDropDownListChanged, this, &VariablesFormBase::dataSetSelectionValuesChanged, Qt::UniqueConnection);
+
+	//AnalysisForm::setAnalysisUp() re-runs whenever the analysis or its filter changes; keep the
+	//selection properties in sync with whatever the analysis is doing elsewhere (filter button, RPC, ...).
+	connect(form, &AnalysisForm::analysisChanged,				this, &VariablesFormBase::handleAnalysisChanged,		Qt::UniqueConnection);
+	connect(form, &AnalysisForm::filterChanged,					this, &VariablesFormBase::handleAnalysisFilterChanged,	Qt::UniqueConnection);
+	emit dataSetSelectionAllowedChanged();
 }
 
 void VariablesFormBase::componentComplete()
@@ -127,4 +150,80 @@ void VariablesFormBase::setMinimumHeightVariablesLists(qreal value)
 JASPControl* VariablesFormBase::availableVariablesList() const
 {
 	return _availableVariablesList;
+}
+
+void VariablesFormBase::handleAnalysisChanged()
+{
+	//The awareness of the analysis drives dataSetSelectionAllowed, so follow its changes too (the
+	//QML bindings of the selection widget lean on that signal to stay up-to-date).
+	if(AnalysisBase * analysis = _owningAnalysis())
+		connect(analysis, &AnalysisBase::multiDataSetAwareChanged, this, &VariablesFormBase::handleAnalysisChanged, Qt::UniqueConnection);
+
+	emit dataSetSelectionAllowedChanged();
+	emit selectedFilterIdChanged();
+	emit dataSetSelectionValuesChanged();
+}
+
+void VariablesFormBase::handleAnalysisFilterChanged()
+{
+	emit selectedFilterIdChanged();
+}
+
+AnalysisBase * VariablesFormBase::_owningAnalysis() const
+{
+	return form() ? form()->analysisObj() : nullptr;
+}
+
+QVariantList VariablesFormBase::dataSetSelectionValues() const
+{
+	Workspace * workspace = Workspace::singleton();
+
+	return workspace ? workspace->dataSetFilterDropDownList() : QVariantList();
+}
+
+bool VariablesFormBase::dataSetSelectionAllowed() const
+{
+	AnalysisBase * analysis = _owningAnalysis();
+
+	//Inert (but not an error) for analyses that are not multiDataSetAware, like the dummy analysis of
+	//R-syntax mode; only a real aware analysis lets the user select another dataset/filter here.
+	return analysis ? analysis->multiDataSetAware() : false;
+}
+
+int VariablesFormBase::selectedFilterId() const
+{
+	AnalysisBase * analysis = _owningAnalysis();
+
+	return analysis ? analysis->filterId() : -1;
+}
+
+void VariablesFormBase::setSelectedFilterId(int filterId)
+{
+	AnalysisBase * analysis = _owningAnalysis();
+
+	if(!analysis || !dataSetSelectionAllowed() || analysis->filterId() == filterId)
+		return;
+
+	//Selecting a dataset is selecting one of its filters: hand it to the analysis and everything
+	//follows - the form's VariableInfo provider, the revalidation of all lists and the rerun.
+	analysis->setFilterId(filterId);
+}
+
+void VariablesFormBase::setDataSetSelection(bool dataSetSelection)
+{
+	if (_dataSetSelection == dataSetSelection)
+		return;
+
+	_dataSetSelection = dataSetSelection;
+
+	if(_dataSetSelection)
+	{
+		if(Workspace::singleton())
+			connect(Workspace::singleton(), &Workspace::dataSetFilterDropDownListChanged, this, &VariablesFormBase::dataSetSelectionValuesChanged, Qt::UniqueConnection);
+
+		emit dataSetSelectionValuesChanged();
+		emit dataSetSelectionAllowedChanged();
+	}
+
+	emit dataSetSelectionChanged();
 }

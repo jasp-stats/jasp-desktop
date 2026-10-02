@@ -122,6 +122,43 @@ std::string captureError(const std::function<void()> & function)
 
 	return "";
 }
+
+// The two datasets carry the same raw column name ("Score"); DataSet::setupEncoderPrefix() makes
+// their encoded names differ by embedding the dataset id, the distinct prefixes simulate that.
+void makeTwoDataSets(ColumnEncoder & one, ColumnEncoder & two)
+{
+	one.setCurrentNames(names({{"Score", columnType::scale}, {"Group", columnType::nominal}}));
+	two.setCurrentNames(names({{"Score", columnType::scale}, {"Response", columnType::nominal}}));
+}
+
+Json::Value twoDataSetOptions()
+{
+	Json::Value options(Json::objectValue);
+
+	options["dependent"]	= Json::Value(Json::objectValue);
+	options["dependent"]["value"]	= Json::Value(Json::arrayValue);
+	options["dependent"]["value"].append("Score");
+	options["dependent"]["types"]	= Json::Value(Json::arrayValue);
+	options["dependent"]["types"].append("scale");
+
+	options["covariate"]	= Json::Value(Json::objectValue);
+	options["covariate"]["value"]	= Json::Value(Json::arrayValue);
+	options["covariate"]["value"].append("Score");
+	options["covariate"]["types"]	= Json::Value(Json::arrayValue);
+	options["covariate"]["types"].append("scale");
+
+	options[".meta"]				= Json::Value(Json::objectValue);
+	options[".meta"]["dependent"]	= Json::Value(Json::objectValue);
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["dependent"]["dataSetId"]		= 1;
+	options[".meta"]["dependent"]["filterId"]		= 11;
+	options[".meta"]["covariate"]	= Json::Value(Json::objectValue);
+	options[".meta"]["covariate"]["shouldEncode"]	= true;
+	options[".meta"]["covariate"]["dataSetId"]		= 2;
+	options[".meta"]["covariate"]["filterId"]		= 22;
+
+	return options;
+}
 }
 
 void TestColumnEncoderContext::init()
@@ -259,6 +296,135 @@ void TestColumnEncoderContext::currentEncoderReTargetsOnSwitchAndClearsOnDestruc
 
 	//Leave the global pointing at the default so init/cleanup expectations hold for later tests.
 	ColumnEncoder::setCurrentEncoder(defaultEncoder);
+}
+
+void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirDataSet()
+{
+	ColumnEncoder dsOne("JASPColumn_1_"), dsTwo("JASPColumn_2_");
+	makeTwoDataSets(dsOne, dsTwo);
+
+	Json::Value options = twoDataSetOptions();
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[&dsOne, &dsTwo](int dataSetId) -> ColumnEncoder *
+			{
+				if(dataSetId == 1)	return &dsOne;
+				if(dataSetId == 2)	return &dsTwo;
+				return nullptr;
+			},
+			1);
+
+	//Both options referred to a column called "Score", but each got the encoded name of its own dataset:
+	const std::string encodedOne = dsOne.encode("Score.scale");
+	const std::string encodedTwo = dsTwo.encode("Score.scale");
+
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),  QString::fromStdString(encodedOne));
+	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),  QString::fromStdString(encodedTwo));
+	QVERIFY2(encodedOne != encodedTwo, "The same raw name in two datasets must not encode to the same name.");
+
+	//And the requested cols+types are attributed per dataset:
+	QCOMPARE(colsPerDataSet.size(), size_t(2));
+	QVERIFY(colsPerDataSet.count(1) == 1 && colsPerDataSet.count(2) == 1);
+	QCOMPARE(colsPerDataSet[1].size(), size_t(1));
+	QCOMPARE(colsPerDataSet[2].size(), size_t(1));
+	QVERIFY(colsPerDataSet[1].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
+	QVERIFY(colsPerDataSet[2].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
+}
+
+void TestColumnEncoderContext::encodePerDataSetAttributedToPrimaryWithoutProvenance()
+{
+	ColumnEncoder dsOne("JASPColumn_1_"), dsTwo("JASPColumn_2_");
+	makeTwoDataSets(dsOne, dsTwo);
+
+	Json::Value options = twoDataSetOptions();
+	options[".meta"]["covariate"].removeMember("dataSetId"); //provenance lost: it must fall back to the primary dataset
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[&dsOne, &dsTwo](int dataSetId) -> ColumnEncoder *
+			{
+				if(dataSetId == 1)	return &dsOne;
+				if(dataSetId == 2)	return &dsTwo;
+				return nullptr;
+			},
+			1);
+
+	QCOMPARE(colsPerDataSet.size(), size_t(1));
+	QVERIFY(colsPerDataSet.count(1) == 1);
+	QCOMPARE(colsPerDataSet[1].size(), size_t(1)); //dependent and covariate ask for the same Score.scale, and the set deduplicates
+
+	//Without a dataSetId the option is encoded against the primary dataset's encoder as well:
+	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()), QString::fromStdString(dsOne.encode("Score.scale")));
+}
+
+void TestColumnEncoderContext::encodePerDataSetWithoutResolverIsLegacyEquivalent()
+{
+	ColumnEncoder * current = ColumnEncoder::columnEncoder();
+	current->setCurrentNames(names({{"Score", columnType::scale}, {"Group", columnType::nominal}}));
+
+	Json::Value legacyOptions	= twoDataSetOptions(),
+				newOptions		= twoDataSetOptions();
+
+	//Drop provenance: legacy JASP files have no dataSetId in their meta at all.
+	legacyOptions[".meta"]["dependent"].removeMember("dataSetId");
+	legacyOptions[".meta"]["dependent"].removeMember("filterId");
+	legacyOptions[".meta"]["covariate"].removeMember("dataSetId");
+	legacyOptions[".meta"]["covariate"].removeMember("filterId");
+	newOptions[".meta"]["dependent"].removeMember("dataSetId");
+	newOptions[".meta"]["dependent"].removeMember("filterId");
+	newOptions[".meta"]["covariate"].removeMember("dataSetId");
+	newOptions[".meta"]["covariate"].removeMember("filterId");
+
+	ColumnEncoder::colsPlusTypes legacyCols = ColumnEncoder::encodeColumnNamesinOptions(legacyOptions, true);
+
+	ColumnEncoder::perDataSetColsPlusTypes newColsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(newOptions, true, nullptr, 0);
+
+	QCOMPARE(newColsPerDataSet.size(), size_t(1)); //everything attributed to the single (primary) dataset
+	QVERIFY(newColsPerDataSet.count(0) == 1);
+
+	ColumnEncoder::colsPlusTypes newCols = newColsPerDataSet[0];
+
+	QVERIFY2(newCols == legacyCols, "Per-dataset encoding without resolver must collect the very same cols+types as the legacy function.");
+	QCOMPARE(QString::fromStdString(newOptions.toStyledString()), QString::fromStdString(legacyOptions.toStyledString()));
+
+	//And the merged-map variant of the new function must match the legacy output too:
+	Json::Value mergedOptions = twoDataSetOptions();
+	mergedOptions[".meta"]["dependent"].removeMember("dataSetId");
+	mergedOptions[".meta"]["dependent"].removeMember("filterId");
+	mergedOptions[".meta"]["covariate"].removeMember("dataSetId");
+	mergedOptions[".meta"]["covariate"].removeMember("filterId");
+
+	ColumnEncoder::perDataSetColsPlusTypes stillLegacy = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(mergedOptions, true, nullptr, 0);
+	QCOMPARE(QString::fromStdString(mergedOptions.toStyledString()), QString::fromStdString(legacyOptions.toStyledString()));
+	(void) stillLegacy;
+}
+
+void TestColumnEncoderContext::collectDataSetIdsFromMetaGathersPairsAndUpgrades()
+{
+	Json::Value meta(Json::objectValue);
+
+	meta["dependent"]["shouldEncode"]	= true;
+	meta["dependent"]["dataSetId"]		= 3;
+	meta["dependent"]["filterId"]		= 31;
+	meta["fixedFactors"]["shouldEncode"]	= true;
+	meta["fixedFactors"]["dataSetId"]	= 4;                       //no filterId yet
+	meta["nested"][0]["dataSetId"]		= 4;                       //duplicate, no filter
+	meta["nested"][1]["dataSetId"]		= 4;
+	meta["nested"][1]["filterId"]		= 42;                      //upgrades the -1 of dataset 4
+	meta["nested"][2]["dataSetId"]		= 5;
+	meta["nested"][2]["filterId"]		= 51;
+	meta["nested"][2]["filterId"]		= 51;
+	meta["bogus"]["dataSetId"]			= "seven";                 //not an int: ignored
+	meta["someString"]					= "hello";
+
+	std::map<int, int> dataSetFilterIds;
+	ColumnEncoder::collectDataSetIdsFromMeta(meta, dataSetFilterIds);
+
+	QCOMPARE(dataSetFilterIds.size(), size_t(3));
+	QCOMPARE(dataSetFilterIds[3], 31);
+	QCOMPARE(dataSetFilterIds[4], 42); //first seen without filter (-1), upgraded by the later occurrence
+	QCOMPARE(dataSetFilterIds[5], 51);
 }
 
 QTEST_MAIN(TestColumnEncoderContext)
