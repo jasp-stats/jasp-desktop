@@ -22,12 +22,40 @@
 #include "workspace.h"
 
 #include <memory>
+#include <vector>
 
 class ColumnEncoder;
+
+/// Ordered handout of the per-dataset slices of a multi-dataset aware analysis run: the Engine fills it,
+/// rbridge_readDataSetRequested() consumes it one read per dataset (see DataBridge::takeMultiDataSetSlice).
+class MultiDataSetSliceQueue
+{
+public:
+	/// One dataset of a multi-dataset aware analysis run: which dataset, which of its filters to
+	/// honour, and the columns+types (in that dataset's encoded names) the analysis requested from it.
+	struct Slice
+	{
+		int								dataSetId	= -1;
+		int								filterId	= -1;	///< -1: use the dataset's default filter
+		ColumnEncoder::colsPlusTypes	cols;
+	};
+
+	/// Replace the whole queue (an empty vector disables the multi-dataset read-path again); the
+	/// position restarts, so a stale queue can never leak into a next request.
+	void	set(std::vector<Slice> queue)	{ _queue = std::move(queue); _pos = 0; }
+	///< nullptr when no (further) slice is queued, advances the position otherwise.
+	const Slice	*	take()					{ return _pos < _queue.size() ? &(_queue[_pos++]) : nullptr; }
+
+private:
+	std::vector<Slice>	_queue;
+	size_t				_pos = 0;
+};
 
 class DataBridge
 {
 public:
+	using MultiDataSetSlice = MultiDataSetSliceQueue::Slice;
+
 	DataBridge(unsigned long sessionID, bool useMemory = false);
 	~DataBridge();
 	DataBridge(const DataBridge &) = delete;
@@ -53,6 +81,12 @@ public:
 	void 					updateOptionsAccordingToMeta(Json::Value & options);
 	ColumnEncoder		*	extraEncodings()		{ return _extraEncodings.get(); }
 	const ColumnEncoder	*	extraEncodings() const	{ return _extraEncodings.get(); }
+	Workspace			*	workspace()				{ return resolveWorkspace(); }
+
+	/// Load the per-dataset slices for the next analysis run (empty to disable the multi-dataset
+	/// read-path again; every request sets this explicitly so a stale queue can never leak).
+	void					setMultiDataSetQueue(std::vector<MultiDataSetSlice> queue)	{ _multiDataSetQueue.set(std::move(queue)); }
+	const MultiDataSetSlice	*	takeMultiDataSetSlice()										{ return _multiDataSetQueue.take(); }
 
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
@@ -73,6 +107,7 @@ protected:
 private:
 	static constexpr const char * ExtraOptionsPrefix = "JaspExtraOptions_";
 	std::unique_ptr<ColumnEncoder>	_extraEncodings;
+	MultiDataSetSliceQueue			_multiDataSetQueue;
 };
 
 #endif // DATABRIDGE_H

@@ -22,6 +22,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <functional>
 #include "columntype.h"
 #ifdef BUILDING_JASP
 #include <json/json.h>
@@ -43,6 +44,9 @@ public:
 	typedef std::vector<std::string>							colVec;
 	typedef std::set<ColumnEncoder *>							ColumnEncoders;
 	typedef std::set<std::pair<std::string, columnType>>		colsPlusTypes;
+	typedef std::map<int, colsPlusTypes>						perDataSetColsPlusTypes;
+	///< Resolves the encoder to use for a given dataSetId, or nullptr to fall back to the current encoder.
+	typedef std::function<ColumnEncoder *(int dataSetId)>		EncoderFor;
 
 private:						ColumnEncoder() { invalidateAll(); }
 public:
@@ -110,10 +114,27 @@ public:
 
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
 
+	/// Multi-dataset aware version of encodeColumnNamesinOptions(): walks options and their .meta in lockstep and
+	/// encodes every option against the encoder that `encoderFor` resolves for the `dataSetId` recorded in that
+	/// option's meta (falling back to the process-global current encoder when the resolver has none or the option
+	/// carries no dataSetId). Because DataSet::setupEncoderPrefix() makes every dataset's encoded names globally
+	/// unique (they embed the dataset id), the slices of different datasets can safely coexist in one options blob.
+	/// The collected cols+types are returned per dataSetId; options without a dataSetId in their meta are
+	/// attributed to `primaryDataSetId`. A null `encoderFor` reproduces encodeColumnNamesinOptions() exactly.
+	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
+
+	/// Collects the dataSetId -> filterId pairs referenced from an options .meta subtree (see
+	/// BoundControlBase::createMeta(), which stamps both onto options that contain variables when the
+	/// analysis is multi-dataset aware). A dataSetId seen without filterId is registered as -1 and only
+	/// upgraded by a later non -1 occurrence, never downgraded.
+	static	void				collectDataSetIdsFromMeta(const Json::Value & meta, std::map<int, int> & dataSetFilterIds);
+
 private:
-	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, colsPlusTypes& colTypes);
-	static	void				_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, bool preloadingData, colsPlusTypes& colTypes);
-	static	void				_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta);
+	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, colsPlusTypes& colTypes, ColumnEncoder * encoder);
+	static	void				_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor);
+	static	void				_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, const EncoderFor & encoderFor);
+	static	ColumnEncoder	*	_encoderForDataSetId(int dataSetId, const EncoderFor & encoderFor);
+	static	int					_dataSetIdFromMetaNode(const Json::Value & metaNode, int inherited);
 
 private:
 	static	std::string			replaceAll(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names);

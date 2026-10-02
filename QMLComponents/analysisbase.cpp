@@ -1,6 +1,7 @@
 #include "log.h"
 #include "filter.h"
 #include "workspace.h"
+#include "columnencoder.h"
 #include "analysisbase.h"
 #include "analysisform.h"
 #include "utilities/qmlutils.h"
@@ -287,7 +288,14 @@ void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &val
 		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
 
 	if (_analysisForm->initialized())
+	{
 		emit boundValuesChanged();
+
+		//For multi-dataset aware analyses the referenced datasets (and thus dataSpec) come from the bound
+		//values' .meta, so a changed option can change what the analysis runs on.
+		if (multiDataSetAware())
+			emit dataSpecChanged();
+	}
 }
 
 void AnalysisBase::setBoundValues(const Json::Value &boundValues)
@@ -315,7 +323,95 @@ Filter *AnalysisBase::filter() const
 bool AnalysisBase::usesDataSet(int dataSetId) const
 {
 	//An analysis without an explicit dataset binding applies to any dataset (e.g. reports, unbound analyses).
-	return !_filterDataSet || _filterDataSet->id() == dataSetId;
+	if(!_filterDataSet || _filterDataSet->id() == dataSetId)
+		return true;
+
+	//A multi-dataset aware analysis may also have options that reference other datasets, and those
+	//datasets are loaded for it when it runs; deleting one therefore affects this analysis too.
+	if(multiDataSetAware() && referencedDataSets().count(dataSetId))
+		return true;
+
+	return false;
+}
+
+std::map<int, int> AnalysisBase::referencedDataSets() const
+{
+	std::map<int, int> dataSetFilterIds;
+
+	if(_boundValues.isObject() && _boundValues.isMember(".meta"))
+		ColumnEncoder::collectDataSetIdsFromMeta(_boundValues[".meta"], dataSetFilterIds);
+
+	return dataSetFilterIds;
+}
+
+namespace
+{
+	/// Copy the dataSetId/filterId from savedMeta onto currentMeta (the .meta of freshly rebound options)
+	/// for every option whose value is unchanged - changed values were (re)stamped by their control and
+	/// that stamp is the truth, unchanged ones keep the provenance of where they were really selected.
+	/// The .meta tree mirrors the options tree, so the value nodes are walked along with the meta nodes.
+	void _overlayProvenance(Json::Value & currentMeta, const Json::Value & savedMeta, Json::Value & currentValues, const Json::Value & savedValues)
+	{
+		if(!currentMeta.isObject() || !savedMeta.isObject())
+			return;
+
+		for(const std::string & memberName : currentMeta.getMemberNames())
+		{
+			if(!savedMeta.isMember(memberName))
+				continue;
+
+			const Json::Value & savedMember	= savedMeta[memberName];
+			Json::Value &		currentMember	= currentMeta[memberName];
+
+			Json::Value	  *	currentValue	= (currentValues.isObject() && currentValues.isMember(memberName)) ? &currentValues[memberName] : nullptr;
+			const Json::Value *	savedValue	= (savedValues.isObject() && savedValues.isMember(memberName)) ? &savedValues[memberName] : nullptr;
+
+			auto copyIfUnchanged = [&](Json::Value & to, const Json::Value & from)
+			{
+				if((!currentValue || !savedValue || *currentValue == *savedValue) && from.isObject())
+				{
+					if(from.isMember("dataSetId") && from["dataSetId"].isInt())
+						to["dataSetId"] = from["dataSetId"];
+					if(from.isMember("filterId") && from["filterId"].isInt())
+						to["filterId"] = from["filterId"];
+				}
+			};
+
+			if(savedMember.isArray() && currentMember.isArray())
+			{
+				for(Json::ArrayIndex i = 0; i < currentMember.size() && i < savedMember.size(); i++)
+				{
+					Json::Value	  *	elementCurrentValue	= (currentValue && currentValue->isArray() && i < currentValue->size()) ? &(*currentValue)[i] : currentValue;
+					const Json::Value *	elementSavedValue		= (savedValue  && savedValue->isArray()  && i < savedValue->size())  ? &(*savedValue)[i]  : savedValue;
+
+					copyIfUnchanged(currentMember[i], savedMember[i]);
+
+					if(elementCurrentValue && elementSavedValue)
+						_overlayProvenance(currentMember[i], savedMember[i], *elementCurrentValue, *elementSavedValue);
+				}
+			}
+			else if(savedMember.isObject())
+			{
+				copyIfUnchanged(currentMember, savedMember);
+
+				if(currentValue && savedValue)
+					_overlayProvenance(currentMember, savedMember, *currentValue, *savedValue);
+			}
+		}
+	}
+}
+
+void AnalysisBase::restoreProvenanceFromBoundValues(const Json::Value & savedBoundValues)
+{
+	if(!multiDataSetAware() || !savedBoundValues.isObject() || !savedBoundValues.isMember(".meta") || !_boundValues.isObject())
+		return;
+
+	Json::Value & currentMeta = _boundValues[".meta"];
+
+	if(!currentMeta.isObject())
+		return;
+
+	_overlayProvenance(currentMeta, savedBoundValues[".meta"], _boundValues, savedBoundValues);
 }
 
 QString AnalysisBase::filterName() const
@@ -338,10 +434,36 @@ QString AnalysisBase::dataSpec() const
 	bool showDataSet	= data->workspace() && data->workspace()->dataSets().size()	> 1,
 		 showFilter		= _filter			&& data->filters().size()				> 1;
 
-	return	showDataSet && showFilter	?	QString("%1 - %2").arg(data->title(), _filter->title())
+	QString spec =	showDataSet && showFilter	?	QString("%1 - %2").arg(data->title(), _filter->title())
 		:	showDataSet					?	data->title()
 		:	showFilter					?	_filter->title()
 		:									"";
+
+	//A multi-dataset aware analysis may reference more datasets than its own; show those too, deleting one
+	//has consequences for this analysis as well.
+	if(multiDataSetAware() && data->workspace())
+	{
+		QStringList otherTitles;
+
+		for(const auto & dataSetFilter : referencedDataSets())
+			if(dataSetFilter.first != data->id())
+				if(DataSet * other = data->workspace()->dataSetById(dataSetFilter.first))
+					otherTitles.append(other->title());
+
+		if(!otherTitles.isEmpty())
+			spec = spec.isEmpty() ? otherTitles.join(", ") : QString("%1 + %2").arg(spec, otherTitles.join(", "));
+	}
+
+	return spec;
+}
+
+void AnalysisBase::setMultiDataSetAware(bool multiDataSetAware)
+{
+	if (_multiDataSetAware == multiDataSetAware)
+		return;
+
+	_multiDataSetAware = multiDataSetAware;
+	emit multiDataSetAwareChanged();
 }
 
 void AnalysisBase::setFilterId(int filterId)

@@ -61,6 +61,77 @@ void Analyses::destroyAllForms()
 }
 
 
+void Analyses::_walkRewriteProvenance(Json::Value & metaNode, const std::map<int, int> & dataSetIds, const std::map<int, int> & filterIds)
+{
+	if(metaNode.isObject())
+	{
+		if(metaNode.isMember("dataSetId") && metaNode["dataSetId"].isInt())
+		{
+			auto found = dataSetIds.find(metaNode["dataSetId"].asInt());
+			if(found != dataSetIds.end())
+				metaNode["dataSetId"] = found->second;
+		}
+
+		if(metaNode.isMember("filterId") && metaNode["filterId"].isInt())
+		{
+			auto found = filterIds.find(metaNode["filterId"].asInt());
+			if(found != filterIds.end())
+				metaNode["filterId"] = found->second;
+		}
+
+		for(const std::string & memberName : metaNode.getMemberNames())
+			_walkRewriteProvenance(metaNode[memberName], dataSetIds, filterIds);
+	}
+	else if(metaNode.isArray())
+		for(Json::ArrayIndex i = 0; i < metaNode.size(); i++)
+			_walkRewriteProvenance(metaNode[i], dataSetIds, filterIds);
+}
+
+void Analyses::remapSavedProvenance(Json::Value & analysisData, Workspace * workspace)
+{
+	//The dataSetId/filterId provenance in an aware analysis' .meta points at the datasets and filters of
+	//the session that saved the file; dataset/filter ids are not stable across sessions. The name-based
+	//side table written next to the options (Analysis::asJSON) re-resolves them in this workspace.
+	const Json::Value & provenance = analysisData["dataSetProvenance"];
+	Json::Value			  & options  = analysisData["options"];
+
+	if(!provenance.isObject() || !options.isObject() || !options.isMember(".meta") || !workspace)
+		return;
+
+	std::map<int, int> dataSetIds, filterIds;
+
+	for(const std::string & savedDataSetId : provenance.getMemberNames())
+	{
+		bool		isNumeric	= false;
+		const int	oldDataSetId = tq(savedDataSetId).toInt(&isNumeric);
+
+		if(!isNumeric)
+			continue;
+
+		const Json::Value & entry = provenance[savedDataSetId];
+
+		DataSet * dataSet = workspace->dataSetByName(entry.get("name", "").asString());
+
+		if(!dataSet)
+		{
+			Log::log() << "Analyses::remapSavedProvenance: dataset '" << entry.get("name", "").asString()
+					   << "' of saved provenance is gone; its option slices keep the stale id (and will be skipped by the engine)." << std::endl;
+			continue;
+		}
+
+		dataSetIds[oldDataSetId] = dataSet->id();
+
+		const int	 oldFilterId	= entry.get("filterId", -1).asInt();
+		std::string  filterName		= entry.get("filter", "").asString();
+		Filter	 *	 filter		= filterName.empty() ? dataSet->defaultFilter() : dataSet->filter(filterName);
+
+		if(oldFilterId >= 0 && filter)
+			filterIds[oldFilterId] = filter->id();
+	}
+
+	_walkRewriteProvenance(options[".meta"], dataSetIds, filterIds);
+}
+
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
 	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
@@ -77,6 +148,10 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Modules::UpgradeMsgs		msgs;
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
+
+	//Re-resolve multi-dataset aware option provenance (dataSetId/filterId in the .meta) at this session,
+	//before anything binds to it: those ids come from the session that saved the file.
+	remapSavedProvenance(analysisData, DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr);
 	std::string					title			= analysisData.get("title", "").asString();
 
 	// Reports have no module — create via report constructor, no module resolution needed
@@ -951,6 +1026,26 @@ void Analyses::_rpcWriteIdentity(Json::Value& response, Analysis* a)
 	response["module"]     = a->module();
 	response["analysis"]   = a->name();
 	response["dataSetId"]  = a->dataSet() ? a->dataSet()->id() : -1;
+	response["filterId"]   = a->filterId();
+
+	//For multi-dataset aware analyses: which datasets does this one actually run on (primary plus every
+	//one referenced through the .meta provenance of its options)?
+	if (a->multiDataSetAware())
+	{
+		response["multiDataSetAware"] = true;
+
+		Json::Value dataSetIds(Json::arrayValue);
+		int primaryDataSetId = a->dataSet() ? a->dataSet()->id() : -1;
+
+		if (primaryDataSetId >= 0)
+			dataSetIds.append(primaryDataSetId);
+
+		for (const auto & dataSetFilter : a->referencedDataSets())
+			if (dataSetFilter.first != primaryDataSetId)
+				dataSetIds.append(dataSetFilter.first);
+
+		response["dataSetIds"] = dataSetIds;
+	}
 }
 
 void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
@@ -1287,7 +1382,23 @@ void Analyses::registerRpcHandlers()
 		// Resolve and validate the target dataset up front so we never create (and register) an
 		// analysis and then delete it, which would leave a dangling pointer in the inventory.
 		Filter * bindFilter = nullptr;
-		if (params.isMember("dataSetId"))
+		if (params.isMember("filterId"))
+		{
+			//Selecting a dataset is selecting one of its filters; multi-dataset aware analyses (and any
+			//other analysis that should run on a non-default filter) pass the filter id to bind to here.
+			Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+			bindFilter = ws ? ws->filterById(params["filterId"].asInt()) : nullptr;
+			if (!bindFilter)
+				return JaspRpcDispatcher::errorResult(
+					"Filter not found for filterId: " + std::to_string(params["filterId"].asInt()));
+
+			if (params.isMember("dataSetId") && bindFilter->data()->id() != params["dataSetId"].asInt())
+				return JaspRpcDispatcher::errorResult(
+					"filterId " + std::to_string(params["filterId"].asInt()) + " belongs to dataset " +
+					std::to_string(bindFilter->data()->id()) + ", not the requested dataSetId " +
+					std::to_string(params["dataSetId"].asInt()));
+		}
+		else if (params.isMember("dataSetId"))
 		{
 			Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
 			DataSet   * ds = ws ? ws->dataSetById(params["dataSetId"].asInt()) : nullptr;
@@ -1325,6 +1436,30 @@ void Analyses::registerRpcHandlers()
 		// Agent just observed this analysis's full state — clear dirty flags
 		AgentStateTracker::notifyAnalysisObserved(a->id());
 
+		return response;
+	});
+
+	disp->registerMethodByName("analysis_setFilter", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		//Selecting a dataset is selecting one of its filters (filter ids are workspace-wide unique);
+		//this mirrors what the VariablesForm dataset/filter selection does in the UI and what
+		//analysis_create's filterId does at creation time.
+		Workspace * ws = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+		Filter * filter = ws ? ws->filterById(params["filterId"].asInt()) : nullptr;
+		if (!filter)
+			return JaspRpcDispatcher::errorResult(
+				"Filter not found for filterId: " + std::to_string(params["filterId"].asInt()));
+
+		a->setFilterId(filter->id());
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		_rpcWriteIdentity(response, a);
 		return response;
 	});
 
@@ -1703,6 +1838,8 @@ void Analyses::registerRpcHandlers()
 					Json::Value a;
 					a["name"]  = entry->function();
 					a["title"] = entry->title();
+					if (entry->multiDataSetAware())
+						a["multiDataSetAware"] = true;	//can be created on / switched to any dataset (filterId)
 					analyses.append(a);
 				}
 				m["analyses"] = analyses;
@@ -1735,6 +1872,21 @@ void Analyses::registerRpcHandlers()
 			entry["analysis"]   = a->name();
 			entry["title"]      = a->title();
 			entry["dataSetId"]  = dataSetId;
+
+			//Multi-dataset aware analyses may run on more than their own dataset: report the full set.
+			if (a->multiDataSetAware())
+			{
+				entry["multiDataSetAware"] = true;
+
+				Json::Value dataSetIds(Json::arrayValue);
+				if (dataSetId >= 0)
+					dataSetIds.append(dataSetId);
+				for (const auto & dataSetFilter : a->referencedDataSets())
+					if (dataSetFilter.first != dataSetId)
+						dataSetIds.append(dataSetFilter.first);
+
+				entry["dataSetIds"] = dataSetIds;
+			}
 			analysesArr.append(entry);
 		});
 

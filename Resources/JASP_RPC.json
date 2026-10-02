@@ -34,6 +34,14 @@
 					"schema": {
 						"type": "integer"
 					}
+				},
+				{
+					"name": "filterId",
+					"required": false,
+					"description": "Optional id of the filter to bind the new analysis to (filter ids are workspace-wide unique). Selecting a dataset is selecting one of its filters, so multi-dataset aware analyses can be created on any dataset in the workspace this way. Takes precedence over, and must agree with, dataSetId when both are given (see data_info's filters).",
+					"schema": {
+						"type": "integer"
+					}
 				}
 			],
 			"result": {
@@ -65,6 +73,23 @@
 						"optionMeta": {
 							"type": "object",
 							"description": "Metadata describing each option: its kind (checkbox/combo/variables/number/string), valid choices for combos, allowed column types for variable lists, whether a variable list accepts single or multiple variables, and a shape example showing valid input."
+						},
+						"dataSetId": {
+							"type": "integer",
+							"description": "Id of the dataset the analysis is bound to."
+						},
+						"filterId": {
+							"type": "integer",
+							"description": "Id of the filter the analysis is bound to."
+						},
+						"multiDataSetAware": {
+							"type": "boolean",
+							"description": "Present (true) when the analysis is multi-dataset aware: it lets the user select another dataset/filter and receives its datasets as a parameter instead of through readDataSet()."
+						},
+						"dataSetIds": {
+							"type": "array",
+							"items": { "type": "integer" },
+							"description": "For multi-dataset aware analyses: every dataset this analysis runs on (its own first, then all datasets referenced through the provenance in the option metadata)."
 						}
 					},
 					"required": [
@@ -75,6 +100,63 @@
 						"options",
 						"optionMeta"
 					]
+				}
+			}
+		},
+		{
+			"name": "analysis_setFilter",
+			"summary": "Switch which dataset/filter an analysis runs on: selecting a dataset is selecting one of its filters (see data_info's filters). Mirrors the dataset/filter selection in the UI; options keep the provenance they were selected with.",
+			"x-displayName": "Set Analysis Dataset/Filter",
+			"params": [
+				{
+					"name": "analysisId",
+					"required": true,
+					"description": "The integer identifier of the analysis.",
+					"schema": {
+						"type": "integer"
+					}
+				},
+				{
+					"name": "filterId",
+					"required": true,
+					"description": "Workspace-wide unique id of the filter (of any dataset in the workspace) to run the analysis on.",
+					"schema": {
+						"type": "integer"
+					}
+				}
+			],
+			"result": {
+				"name": "analysis_setFilter_result",
+				"description": "Identity of the analysis and the dataset/filter it now runs on.",
+				"schema": {
+					"type": "object",
+					"properties": {
+						"status": {
+							"type": "string",
+							"description": "Always 'success' when the filter was set."
+						},
+						"analysisId": {
+							"type": "integer",
+							"description": "The analysis id, echoed back."
+						},
+						"module": {
+							"type": "string",
+							"description": "The module name."
+						},
+						"analysis": {
+							"type": "string",
+							"description": "The analysis name."
+						},
+						"dataSetId": {
+							"type": "integer",
+							"description": "Id of the dataset the analysis now runs on."
+						},
+						"filterId": {
+							"type": "integer",
+							"description": "Id of the filter the analysis now runs on."
+						}
+					},
+					"required": ["status", "analysisId"]
 				}
 			}
 		},
@@ -437,6 +519,10 @@
 												"title": {
 													"type": "string",
 													"description": "Human-readable analysis title, e.g. 'Independent Samples T-Test'."
+												},
+												"multiDataSetAware": {
+													"type": "boolean",
+													"description": "Present (true) when the analysis is multi-dataset aware: it can be created on any dataset (analysis_create's filterId) and switched later (analysis_setFilter)."
 												}
 											},
 											"required": ["name", "title"]
@@ -499,6 +585,15 @@
 									"dataSetId": {
 										"type": "integer",
 										"description": "Id of the dataset this analysis belongs to."
+									},
+									"multiDataSetAware": {
+										"type": "boolean",
+										"description": "Present (true) when the analysis is multi-dataset aware."
+									},
+									"dataSetIds": {
+										"type": "array",
+										"items": { "type": "integer" },
+										"description": "For multi-dataset aware analyses: every dataset the analysis runs on (own dataset first)."
 									}
 								},
 								"required": [
@@ -740,6 +835,31 @@
 						"columnCount": {
 							"type": "integer",
 							"description": "Number of columns."
+						},
+						"dataSetId": {
+							"type": "integer",
+							"description": "Id of the described dataset."
+						},
+						"filters": {
+							"type": "array",
+							"description": "Every filter of the dataset; filter ids are workspace-wide unique and can be used as the filterId parameter of analysis_create (selecting a dataset is selecting one of its filters).",
+							"items": {
+								"type": "object",
+								"properties": {
+									"filterId": {
+										"type": "integer",
+										"description": "Workspace-wide unique id of the filter."
+									},
+									"name": {
+										"type": "string",
+										"description": "Human-readable filter title."
+									},
+									"isDefault": {
+										"type": "boolean",
+										"description": "True for the dataset's default (unnamed) filter."
+									}
+								}
+							}
 						},
 						"columns": {
 							"type": "array",

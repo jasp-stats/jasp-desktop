@@ -144,7 +144,7 @@ RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init(const char* buildYear, co
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_init_jaspBase();
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setDecimalSettings(int numDecimals, bool fixedDecimals, bool normalizedNotation, bool exactPValues);
 RBRIDGE_TO_JASP_INTERFACE void			STDCALL jaspRCPP_setFontAndPlotSettings(const char * resultFont, const int ppi, const char* imageBackground);
-RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData);
+RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_runModuleCall(const char* name, const char* title, const char* moduleCall, const char* dataKey, const char* options, const char* stateKey, int analysisID, int analysisRevision, bool developerMode, bool preloadData, const char* multiDataSetJson);
 
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_saveImage(const char *data, const char *type, const int height, const int width);
 RBRIDGE_TO_JASP_INTERFACE const char*	STDCALL jaspRCPP_editImage(const char *name, const char *optionsJson, int analysisID);

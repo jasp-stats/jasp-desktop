@@ -31,14 +31,15 @@ AnalysisEntry::AnalysisEntry(std::string menuTitle, std::string icon, bool small
 	: _title(menuTitle), _menu(menuTitle), _isSeparator(false), _isGroupTitle(true), _icon(icon), _smallIcon(smallIcon)
 {}
 
-AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData) :
+AnalysisEntry::AnalysisEntry(Json::Value & analysisEntry, DynamicModule * dynamicModule, bool defaultRequiresData, bool defaultMultiDataSetAware) :
 	_title(				analysisEntry.get("title",			"???").asString()				),
 	_function(			analysisEntry.get("function",		"???").asString()				),
 	_qml(				analysisEntry.get("qml",			_function != "???" ? _function + ".qml" : "???").asString()			),
 	_menu(				analysisEntry.get("menu",			_title).asString()				),
 	_dynamicModule(		dynamicModule														),
 	_isSeparator(		true),
-	_requiresData(		analysisEntry.get("requiresData",	defaultRequiresData).asBool()	),
+	_requiresData(		analysisEntry.get("requiresData",		defaultRequiresData).asBool()		),
+	_multiDataSetAware(	analysisEntry.get("multiDataSetAware",	defaultMultiDataSetAware).asBool()	),
 	_icon(				analysisEntry.get("icon",			"").asString()					)
 {
 	for (size_t i = 0; i < _title.length(); ++i)

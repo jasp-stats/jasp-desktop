@@ -23,6 +23,21 @@ TestQml::TestQml(QObject *parent)
 	dataSet["TestNominal"] = {"1", "1", "1", "2", "2"};
 
 	prov->loadDataSet(dataSet);
+
+	//A second dataset with its own filter: enough for the multi-dataset dataset/filter selection
+	//(VariablesForm::dataSetSelection, see tst_dataSetSelectionVariablesForm.qml) to select between.
+	//The first dataset is shown again right away, so all other QML tests keep looking at their data.
+	if(DataSet * first = prov->dataSet())
+	{
+		Workspace * ws = first->workspace();
+		DataSet * second = ws ? ws->createDataSet() : nullptr;
+
+		if(second)
+		{
+			second->addFilter();
+			ws->setShownDataSet(first);
+		}
+	}
 }
 
 void TestQml::applicationAvailable()

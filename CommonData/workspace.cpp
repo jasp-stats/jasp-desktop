@@ -20,6 +20,12 @@ Workspace::Workspace(QObject *parent)
 	connect(this, &Workspace::dataSetRemoved,			this, &Workspace::inputFilterDropDownListChanged);
 	connect(this, &Workspace::shownDataSetChanged,		this, &Workspace::inputFilterDropDownListChanged);
 	connect(this, &Workspace::filtersCountChanged,		this, &Workspace::inputFilterDropDownListChanged);
+
+	//Same reactivity for the dataset/filter selection list, plus dataset renames because they change its labels.
+	connect(this, &Workspace::dataSetCreated,			this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::dataSetRemoved,			this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::dataSetTitleChanged,		this, &Workspace::dataSetFilterDropDownListChanged);
+	connect(this, &Workspace::filtersCountChanged,		this, &Workspace::dataSetFilterDropDownListChanged);
 }
 
 Workspace::~Workspace()
@@ -459,12 +465,22 @@ QStringList Workspace::dataSetNames() const
 
 QVariantList Workspace::inputFilterDropDownList() const
 {
-	typedef QMap<QString, QVariant> localMap;
-
 	//The filters available as *input* for the currently-shown computed dataset: every dataset's
 	//filters except the shown dataset's own. A computed dataset must not read from its own output,
 	//and setDefaultInputFilterId would refuse it as a loop anyway, so hide it here too.
-	const int excludeDataSetId = _shownDataSet ? _shownDataSet->id() : -1;
+	return _filterDropDownList(_shownDataSet ? _shownDataSet->id() : -1);
+}
+
+QVariantList Workspace::dataSetFilterDropDownList() const
+{
+	//Every filter of every dataset, for the multi-dataset aware selection: choosing a dataset means
+	//choosing one of its filters, so these are the entries the user picks between.
+	return _filterDropDownList(-1);
+}
+
+QVariantList Workspace::_filterDropDownList(int excludeDataSetId) const
+{
+	typedef QMap<QString, QVariant> localMap;
 
 	QVariantList out;
 

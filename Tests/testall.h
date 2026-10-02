@@ -72,6 +72,30 @@ private slots:
 	// colliding column names across datasets cannot encode to the same name.
 	void	testEncoderPrefixPerDataset();
 
+	// Multi-dataset selection: the workspace must offer every filter of every dataset (value =
+	// globally unique filterId, label = "DataSet - Filter") for VariablesForm::dataSetSelection.
+	void	testDataSetFilterDropDownList();
+
+	// Multi-dataset encoding: the same column in two different datasets must be encoded (and
+	// attributed) against the encoder of its own dataset, per the .meta dataSetId provenance.
+	void	testPerDataSetEncodingUsesOwnDatasetEncoder();
+
+	// Option provenance: AnalysisBase must gather the dataSetId -> filterId pairs from the .meta
+	// of its bound values (with -1 for options that carry no filterId).
+	void	testAnalysisBaseReferencedDataSets();
+
+	// Engine read-queue: the per-dataset slices are handed out exactly once, in order, and an empty
+	// queue restores the legacy single-dataset read-path.
+	void	testMultiDataSetQueueHandout();
+
+	// File round-trip 1/2: rebinding an aware analysis' options restamps meta from the current
+	// filter, so the loaded provenance must be restored - but only for unchanged values.
+	void	testRestoreProvenanceFromBoundValues();
+
+	// File round-trip 2/2: dataSetId/filterId provenance saved by another session is re-resolved
+	// through the name-based side table; unknown datasets keep the stale id.
+	void	testRemapSavedProvenance();
+
 	// Filter ownership: removeFilter must unregister (no dangling pointer in _filters) and
 	// runFilters() must stay safe afterwards.
 	void	testFilterRemoveFilter();

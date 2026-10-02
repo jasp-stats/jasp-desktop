@@ -718,6 +718,13 @@ void AnalysisForm::setAnalysisUp()
 
 	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
 	bindTo(initialOptions);
+
+	//Rebinding restamped every control's meta with the analysis' current filter; for a multi-dataset
+	//aware analysis the provenance from the file must win, so restore it for all unchanged values
+	//(Analyses::remapSavedProvenance has already re-resolved those ids at this session).
+	if (_analysis->multiDataSetAware())
+		_analysis->restoreProvenanceFromBoundValues(initialOptions);
+
 	lockOptions();
 
 	blockValueChangeSignal(false, false);

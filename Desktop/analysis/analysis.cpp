@@ -839,6 +839,44 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;
 	analysisAsJson["saveState"]     = (_dynamicModule && _dynamicModule->descriptionQml()) ? (_dynamicModule->descriptionQml()->alwaysSaveState()  ? "always" : _dynamicModule->descriptionQml()->neverSaveState() ? "never" : "default") : "default";
+
+	//Marker for older JASP versions (and for the file itself) that this analysis depends on the
+	//multi-dataset machinery: its options carry dataSetId/filterId provenance in their .meta.
+	if (multiDataSetAware())
+	{
+		analysisAsJson["multiDataSetAware"] = true;
+
+		//The provenance ids are only meaningful in this session, so store a name-based side table with
+		//which they can be re-resolved when the file is loaded again (Analyses::remapSavedProvenance).
+		Json::Value provenance(Json::objectValue);
+		Workspace * workspace	= DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+		std::map<int, int>	 	refs			= referencedDataSets();
+		const int 				  primaryId		= dataSet() ? dataSet()->id() : -1;
+
+		if (primaryId >= 0 && (refs.count(primaryId) == 0 || refs[primaryId] < 0))
+			refs[primaryId] = filterId();
+
+		if (workspace)
+			for (const auto & ref : refs)
+			{
+				DataSet * ds = workspace->dataSetById(ref.first);
+
+				if (!ds)
+					continue;
+
+				Json::Value entry;
+				entry["name"]		= fq(ds->name());
+				entry["filterId"]	= ref.second;
+
+				if (ref.second >= 0)
+					if (Filter * f = workspace->filterById(ref.second))
+						entry["filter"]	= f->name();
+
+				provenance[std::to_string(ref.first)] = entry;
+			}
+
+		analysisAsJson["dataSetProvenance"] = provenance;
+	}
 	
 
 	if (withRSource)
@@ -1041,6 +1079,11 @@ Json::Value Analysis::createAnalysisRequestJson()
 		json["title"]			= title();
 		json["filter"]			= fq(filterName());
 		json["dataSetId"]		= _filter ? _filter->data()->id() : -1;
+
+		//A multi-dataset aware analysis encodes and loads per option: the .meta of the bound values carries
+		//the dataSetId/filterId each option was selected from (BoundControlBase::createMeta).
+		if (multiDataSetAware())
+			json["multiDataSetAware"]	= true;
 
 		if (perform == performType::saveImg || perform == performType::editImg)	
 			json["image"]		= imgOptions();

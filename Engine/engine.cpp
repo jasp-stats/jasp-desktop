@@ -25,6 +25,7 @@
 #include "qutils.h"
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
+#include <algorithm>
 
 void SendFunctionForJaspresults(const char * msg) 
 {
@@ -790,7 +791,12 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_dynamicModuleCall		= jsonRequest.get("dynamicModuleCall",	"").asString();
 		_resultFont				= jsonRequest.get("resultFont",			"").asString();
 		_analysisPreloadData	= jsonRequest.get("preloadData",		false).asBool();
+		_analysisMultiDataSet	= jsonRequest.get("multiDataSetAware",	false).asBool();
 		_engineState			= engineState::analysis;
+
+		//Never let a queue or encoder set from a previous run leak into this one:
+		setMultiDataSetQueue({});
+		_analysisDataSetEncoders.clear();
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
 		
@@ -810,7 +816,24 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(message); // decode all columnnames as far as you can
+		if(_analysisMultiDataSet && _engineState == engineState::analysis && _analysisDataSetEncoders.size() > 1)
+		{
+			//Multi-dataset aware run: an encoded name in the results can come from any dataset this
+			//analysis runs on (each name embeds its dataset id, see DataSet::setupEncoderPrefix), so we
+			//decode against every involved dataset's encoder rather than only the current one.
+			ColumnEncoder * restoreTo = ColumnEncoder::currentEncoder();
+
+			for(ColumnEncoder * encoder : _analysisDataSetEncoders)
+			{
+				ColumnEncoder::setCurrentEncoder(encoder);
+				ColumnEncoder::decodeJsonSafeHtml(message);
+			}
+
+			ColumnEncoder::setCurrentEncoder(restoreTo);
+		}
+		else
+			ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(message); // decode all columnnames as far as you can
+
 		msgStr = message.toStyledString();
 	}
 	else if(message.isString())
@@ -849,7 +872,94 @@ void Engine::runAnalysis()
 	
 	updateOptionsAccordingToMeta(encodedAnalysisOptions);
 
-	_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	std::string multiDataSetJson;
+
+	if(_analysisMultiDataSet && _analysisPreloadData)
+	{
+		//Multi-dataset aware run: every variable option records in its .meta which dataset (and which
+		//filter of that dataset) it was selected from (BoundControlBase::createMeta), so encoding and
+		//loading happen per dataset. Encoded names embed their dataset id (DataSet::setupEncoderPrefix),
+		//so the per-dataset slices coexist in one options blob without ever colliding.
+		Workspace * workspace = resolveWorkspace();
+
+		std::map<int, int> dataSetFilterIds;
+		ColumnEncoder::collectDataSetIdsFromMeta(encodedAnalysisOptions[".meta"], dataSetFilterIds);
+
+		if(_analysisDataSetId >= 0 && dataSetFilterIds.find(_analysisDataSetId) == dataSetFilterIds.end())
+			dataSetFilterIds[_analysisDataSetId] = -1; //Options without own provenance belong to the primary dataset
+
+		//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
+		//against them, then anchor the shown dataset back at the analyses own one.
+		for(const auto & dataSetFilter : dataSetFilterIds)
+			if(dataSetFilter.first != _analysisDataSetId && workspace->dataSetById(dataSetFilter.first))
+				provideAndUpdateDataSet(dataSetFilter.first);
+
+		dataset = provideAndUpdateDataSet(_analysisDataSetId);
+
+		ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+				encodedAnalysisOptions, _analysisPreloadData,
+				[workspace](int dataSetId) -> ColumnEncoder *
+				{
+					DataSet * ds = workspace->dataSetById(dataSetId);
+					return ds ? &ds->encoder() : nullptr;
+				},
+				_analysisDataSetId);
+
+		Filter * analysisFilterObj = dataset && !_analysisFilter.empty() ? dataset->filter(_analysisFilter) : nullptr;
+		int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
+
+		std::vector<MultiDataSetSlice> queue;
+		Json::Value dataSetIds(Json::arrayValue), dataSetNames(Json::objectValue);
+
+		for(const auto & cols : colsPerDataSet)
+		{
+			const int dataSetId = cols.first;
+			DataSet * ds = workspace->dataSetById(dataSetId);
+
+			if(!ds)
+			{
+				Log::log() << "Engine::runAnalysis: '" << _analysisTitle << "' references dataset " << dataSetId
+						   << " which no longer exists; this slice is skipped." << std::endl;
+				continue;
+			}
+
+			int filterId = dataSetFilterIds.count(dataSetId) ? dataSetFilterIds[dataSetId] : -1;
+
+			if(filterId < 0 && ds == dataset)
+				filterId = primaryFilterId;
+
+			queue.push_back({ dataSetId, filterId, cols.second });
+
+			dataSetIds.append(std::to_string(dataSetId));
+			dataSetNames[std::to_string(dataSetId)] = fq(ds->title());
+		}
+
+		setMultiDataSetQueue(std::move(queue));
+
+		Json::Value multiInfo(Json::objectValue);
+		multiInfo["ids"]		= dataSetIds;
+		multiInfo["names"]	= dataSetNames;
+		multiDataSetJson	= multiInfo.toStyledString();
+
+		auto primaryCols = colsPerDataSet.find(_analysisDataSetId);
+		_analysisColsTypes = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
+
+		//Results can carry encoded names from any involved dataset, keep those encoders around for sendString():
+		_analysisDataSetEncoders.clear();
+		if(dataset)
+			_analysisDataSetEncoders.push_back(&dataset->encoder());
+		for(const auto & dataSetFilter : dataSetFilterIds)
+			if(DataSet * ds = workspace->dataSetById(dataSetFilter.first))
+				if(std::find(_analysisDataSetEncoders.begin(), _analysisDataSetEncoders.end(), &ds->encoder()) == _analysisDataSetEncoders.end())
+					_analysisDataSetEncoders.push_back(&ds->encoder());
+	}
+	else
+	{
+		if(_analysisMultiDataSet)
+			Log::log() << "Engine::runAnalysis: multiDataSetAware analysis '" << _analysisTitle << "' requested without preloadData; it will get its data like a non-aware analysis then." << std::endl;
+
+		_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
+	}
 
 	if(dataset && !_analysisFilter.empty() && dataset->filter(_analysisFilter))
 		dataset->showFilter(_analysisFilter); //Only show a filter that actually exists: showFilter(name)
@@ -858,7 +968,7 @@ void Engine::runAnalysis()
 	
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
 								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 
-								_developerMode, _analysisColsTypes, _analysisPreloadData);
+								_developerMode, _analysisColsTypes, _analysisPreloadData, multiDataSetJson);
 
 	switch(_analysisStatus)
 	{

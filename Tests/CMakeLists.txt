@@ -262,6 +262,13 @@ add_test(NAME testEngine                   COMMAND JASPTestEngine)
 add_test(NAME testQuick                    COMMAND JASPQuickTest)
 add_test(NAME testColumnEncoderContext     COMMAND JASPTestColumnEncoderContext)
 
+# Multi-dataset mode logic lives in jaspBase's R; check it directly with Rscript (no package install needed).
+find_program(RSCRIPT_EXECUTABLE Rscript)
+if(RSCRIPT_EXECUTABLE)
+  add_test(NAME testMultiDataSetRLogic     COMMAND ${RSCRIPT_EXECUTABLE} --slave --file ${CMAKE_CURRENT_SOURCE_DIR}/R/test_multidataset_rlogic.R)
+  set_tests_properties(testMultiDataSetRLogic PROPERTIES ENVIRONMENT "JASP_SOURCE_DIR=${CMAKE_SOURCE_DIR}")
+endif()
+
 
 
 endif()

@@ -28,6 +28,10 @@
 #include "dataset.h"
 #include "workspace.h"
 #include "undostack.h"
+#include "filter.h"
+#include "columnencoder.h"
+#include "databridge.h"
+#include "analysisbase.h"
 #include "data/asyncloader.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
@@ -1604,6 +1608,290 @@ void TestAll::testEncoderPrefixPerDataset()
 	json["axis"] = encodedA;
 	a->encoder().decodeJson(json);
 	QCOMPARE(json["axis"].asString(), colName);
+}
+
+void TestAll::testDataSetFilterDropDownList()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	a->addFilter(); //"Filter 0", shown on a (b stays the shown dataset)
+	const int aExtraFilterId = a->shownFilter()->id();
+	QVERIFY(a->defaultFilter());
+	QVERIFY(aExtraFilterId != a->defaultFilter()->id());
+	QVERIFY(b->defaultFilter());
+
+	const QVariantList entries = ws->dataSetFilterDropDownList();
+
+	QCOMPARE(entries.size(), 3); //a-default, a-"Filter 0", b-default
+
+	for(const QVariant & entryVar : entries)
+	{
+		const QVariantMap entry = entryVar.toMap();
+		const QString value		= entry["value"].toString();
+		const QString label		= entry["label"].toString();
+
+		Filter * f = ws->filterById(value.toInt());
+		QVERIFY2(f, qPrintable("Every dropdown value must be a (workspace-wide unique) filterId, got: " + value));
+		QCOMPARE(label, f->data()->title() + " - " + f->title());
+	}
+
+	QSet<QString> values;
+	for(const QVariant & entryVar : entries)
+		values.insert(entryVar.toMap()["value"].toString());
+
+	QVERIFY(values.contains(QString::number(a->defaultFilter()->id())));
+	QVERIFY(values.contains(QString::number(aExtraFilterId)));
+	QVERIFY(values.contains(QString::number(b->defaultFilter()->id())));
+
+	//The computed-dataset input list keeps excluding the shown dataset; the selection list never does:
+	for(const QVariant & entryVar : ws->inputFilterDropDownList())
+	{
+		Filter * f = ws->filterById(entryVar.toMap()["value"].toString().toInt());
+		QVERIFY(f);
+		QVERIFY2(f->data()->id() != ws->shownDataSetId(), "inputFilterDropDownList must keep excluding the shown dataset");
+	}
+}
+
+void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	//Same csv, so the very same column exists in both datasets (contNormal is a scale column):
+	const std::string colName	= "contNormal";
+	Column			*	colInA	= a->column(colName);
+	Column			*	colInB	= b->column(colName);
+	QVERIFY2(colInA, qPrintable(tq("First dataset should have column " + colName)));
+	QVERIFY2(colInB, qPrintable(tq("Second dataset should have column " + colName)));
+
+	const std::string qualified	= colName + "." + columnTypeToString(colInB->type());
+
+	//The engine always refreshes each dataset's encoder (with types!) via provideAndUpdateDataSet before
+	//encoding against it; do the same here because the desktop import path may have left untyped names.
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+
+	Json::Value options(Json::objectValue);
+
+	options["dependent"]					= Json::Value(Json::objectValue);
+	options["dependent"]["value"].append(colName);
+	options["dependent"]["types"].append(columnTypeToString(colInA->type()));
+	options["covariate"]					= Json::Value(Json::objectValue);
+	options["covariate"]["value"].append(colName);
+	options["covariate"]["types"].append(columnTypeToString(colInB->type()));
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["dependent"]["dataSetId"]		= a->id();
+	options[".meta"]["dependent"]["filterId"]		= a->shownFilter()->id();
+	options[".meta"]["covariate"]["shouldEncode"]	= true;
+	options[".meta"]["covariate"]["dataSetId"]		= b->id();
+	options[".meta"]["covariate"]["filterId"]		= b->shownFilter()->id();
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[ws](int dataSetId) -> ColumnEncoder *
+			{
+				DataSet * ds = ws->dataSetById(dataSetId);
+				return ds ? &ds->encoder() : nullptr;
+			},
+			a->id());
+
+	QCOMPARE(colsPerDataSet.size(), size_t(2));
+	QVERIFY(colsPerDataSet.count(a->id()) == 1);
+	QVERIFY(colsPerDataSet.count(b->id()) == 1);
+
+	const std::string encodedInA = a->encoder().encode(qualified),
+					encodedInB = b->encoder().encode(qualified);
+
+	QVERIFY2(encodedInA != encodedInB, "The same column in two datasets must not encode to the same name");
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),	QString::fromStdString(encodedInA));
+	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),	QString::fromStdString(encodedInB));
+
+	//And each slice is only decodable by the encoder of the dataset it belongs to:
+	Json::Value fromA(encodedInA), fromB(encodedInB);
+	a->encoder().decodeJson(fromA);
+	b->encoder().decodeJson(fromB);
+	QCOMPARE(QString::fromStdString(fromA.asString()), QString::fromStdString(colName));
+	QCOMPARE(QString::fromStdString(fromB.asString()), QString::fromStdString(colName));
+
+	Json::Value wrongWay(encodedInA);
+	b->encoder().decodeJson(wrongWay);
+	QVERIFY2(wrongWay.asString() == encodedInA, "Another dataset's encoder must not decode this slice");
+}
+
+void TestAll::testMultiDataSetQueueHandout()
+{
+	MultiDataSetSliceQueue	queue;
+
+	//No queue: nothing to hand out (legacy read-path):
+	QVERIFY(queue.take() == nullptr);
+
+	std::vector<MultiDataSetSliceQueue::Slice> slices;
+	slices.push_back({ 11, 111, ColumnEncoder::colsPlusTypes() });
+	slices.push_back({ 12, 112, ColumnEncoder::colsPlusTypes() });
+	slices.push_back({ 13,  13, ColumnEncoder::colsPlusTypes() });
+
+	queue.set(std::move(slices));
+
+	//Slices are handed out in order, once each, then the queue is empty again:
+	const MultiDataSetSliceQueue::Slice * first = queue.take();
+	QVERIFY(first);
+	QCOMPARE(first->dataSetId, 11);
+	QCOMPARE(first->filterId, 111);
+
+	const MultiDataSetSliceQueue::Slice * second = queue.take();
+	QVERIFY(second);
+	QCOMPARE(second->dataSetId, 12);
+	QCOMPARE(second->filterId, 112);
+
+	const MultiDataSetSliceQueue::Slice * third = queue.take();
+	QVERIFY(third);
+	QCOMPARE(third->dataSetId, 13);
+
+	QVERIFY(queue.take() == nullptr);
+
+	//And a new request (empty queue) fully disables the multi-dataset read-path again:
+	queue.set({});
+	QVERIFY(queue.take() == nullptr);
+}
+
+void TestAll::testAnalysisBaseReferencedDataSets()
+{
+	AnalysisBase analysis;
+
+	Json::Value boundValues(Json::objectValue);
+	boundValues["dependent"] = "Score.scale";
+
+	Json::Value meta(Json::objectValue);
+	meta["dependent"]["shouldEncode"]	= true;
+	meta["dependent"]["dataSetId"]		= 7;
+	meta["dependent"]["filterId"]		= 71;
+	meta["nested"]["group"]["dataSetId"]	= 9;   //no filterId here
+	boundValues[".meta"] = meta;
+
+	analysis.setBoundValues(boundValues);
+
+	std::map<int, int> refs = analysis.referencedDataSets();
+
+	QCOMPARE(refs.size(), size_t(2));
+	QCOMPARE(refs[7], 71);
+	QCOMPARE(refs[9], -1);
+
+	//The plain base class is never aware; Desktop::Analysis derives it from the module entry:
+	QCOMPARE(analysis.multiDataSetAware(), false);
+}
+
+void TestAll::testRestoreProvenanceFromBoundValues()
+{
+	AnalysisBase analysis;
+	analysis.setMultiDataSetAware(true);
+
+	Json::Value saved(Json::objectValue);
+	saved["dependent"]	= Json::Value(Json::objectValue);
+	saved["dependent"]["value"].append("Score");
+	saved["dependent"]["types"].append("scale");
+	saved[".meta"]["dependent"]["shouldEncode"]	= true;
+	saved[".meta"]["dependent"]["dataSetId"]		= 3;
+	saved[".meta"]["dependent"]["filterId"]		= 30;
+	saved["covariate"]	= Json::Value(Json::objectValue);
+	saved["covariate"]["value"].append("Other");
+	saved["covariate"]["types"].append("scale");
+	saved[".meta"]["covariate"]["shouldEncode"]	= true;
+	saved[".meta"]["covariate"]["dataSetId"]		= 4;
+	saved[".meta"]["covariate"]["filterId"]		= 40;
+
+	Json::Value current(Json::objectValue);
+	current["dependent"]	= saved["dependent"];	//unchanged: provenance must be restored
+	current[".meta"]["dependent"]["shouldEncode"]	= true;
+	current[".meta"]["dependent"]["dataSetId"]		= 9;	//restamped onto the current dataset by the rebind
+	current["covariate"]	= Json::Value(Json::objectValue);	//changed value: restamp must be kept
+	current["covariate"]["value"].append("Changed");
+	current["covariate"]["types"].append("scale");
+	current[".meta"]["covariate"]["shouldEncode"]	= true;
+	current[".meta"]["covariate"]["dataSetId"]		= 9;
+
+	analysis.setBoundValues(current);
+	analysis.restoreProvenanceFromBoundValues(saved);
+
+	std::map<int, int> refs = analysis.referencedDataSets();
+
+	QCOMPARE(refs.count(3), size_t(1));		//dependent back where it came from
+	QCOMPARE(refs[3], 30);
+	QCOMPARE(refs.count(4), size_t(0));
+	QCOMPARE(refs.count(9), size_t(1));		//covariate keeps its fresh stamp
+}
+
+void TestAll::testRemapSavedProvenance()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	DataSet * first = ws->shownDataSet();
+	QVERIFY(first);
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), second, [](int){});
+	second->addFilter();	//so the second dataset has a named non-default filter too
+
+	//"Saved by another session" ids that mean nothing here:
+	const int oldIdOne		= first->id()	+ 1000,
+			  oldIdTwo		= second->id()	+ 1000,
+			  oldFilterOne	= first->defaultFilter()->id()	+ 1000,
+			  oldFilterTwo	= second->shownFilter()->id()		+ 1000;
+
+	Json::Value analysisData(Json::objectValue);
+	Json::Value & options = analysisData["options"];
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["dependent"]["dataSetId"]		= oldIdOne;
+	options[".meta"]["dependent"]["filterId"]		= oldFilterOne;
+	options[".meta"]["covariate"]["shouldEncode"]	= true;
+	options[".meta"]["covariate"]["dataSetId"]		= oldIdTwo;
+	options[".meta"]["covariate"]["filterId"]		= oldFilterTwo;
+	options[".meta"]["dangling"]["shouldEncode"]	= true;
+	options[".meta"]["dangling"]["dataSetId"]		= 424242;	//not in the side table
+
+	Json::Value & provenance = analysisData["dataSetProvenance"];
+	provenance[std::to_string(oldIdOne)]["name"]		= fq(first->name());
+	provenance[std::to_string(oldIdOne)]["filterId"]	= oldFilterOne;
+	provenance[std::to_string(oldIdOne)]["filter"]		= first->defaultFilter()->name();
+	provenance[std::to_string(oldIdTwo)]["name"]		= fq(second->name());
+	provenance[std::to_string(oldIdTwo)]["filterId"]	= oldFilterTwo;
+	provenance[std::to_string(oldIdTwo)]["filter"]		= second->shownFilter()->name();
+
+	Analyses::remapSavedProvenance(analysisData, ws);
+
+	QCOMPARE(options[".meta"]["dependent"]["dataSetId"].asInt(),	first->id());
+	QCOMPARE(options[".meta"]["dependent"]["filterId"].asInt(),		first->defaultFilter()->id());
+	QCOMPARE(options[".meta"]["covariate"]["dataSetId"].asInt(),		second->id());
+	QCOMPARE(options[".meta"]["covariate"]["filterId"].asInt(),		second->shownFilter()->id());
+
+	//Unknown datasets are left alone (the engine will report and skip that slice):
+	QCOMPARE(options[".meta"]["dangling"]["dataSetId"].asInt(), 424242);
 }
 
 void TestAll::testFilterRemoveFilter()

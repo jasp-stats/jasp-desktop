@@ -19,6 +19,9 @@
 #include "controls/jaspcontrol.h"
 #include "controls/jasplistcontrol.h"
 #include "analysisform.h"
+#include "analysisbase.h"
+#include "filter.h"
+#include "dataset.h"
 #include "log.h"
 #include "models/listmodel.h"
 #include "controls/rowcontrols.h"
@@ -28,13 +31,27 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 }
 
 
-//To do: define these fields (isRCode, shouldEncode, etc) somewhere centrally through an enum or something
+//To do: define these fields (isRCode, shouldEncode, dataSetId, etc) somewhere centrally through an enum or something
 Json::Value BoundControlBase::createMeta()  const
 { 
 	Json::Value meta(Json::objectValue);
 	
-	if (_control->encodeValue())	
+	if (_control->encodeValue())
+	{
 		meta["shouldEncode"] = true;
+
+		//A multi-dataset aware analysis can be pointed at any dataset, so its variable options record which
+		//dataset (and which filter of that dataset) the current value was selected from. The engine encodes
+		//and loads each option against the encoder/slice of that dataset instead of assuming the shown one;
+		//see ColumnEncoder::encodeColumnNamesinOptionsPerDataSet() and Engine::runAnalysis().
+		AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+
+		if (analysis && analysis->multiDataSetAware() && analysis->filter() && analysis->filter()->data())
+		{
+			meta["dataSetId"]	= analysis->filter()->data()->id();
+			meta["filterId"]	= analysis->filter()->id();
+		}
+	}
 	
 	for(const std::string & key : _isRCode)
 		if(key.empty())		meta	 ["isRCode"] = true;

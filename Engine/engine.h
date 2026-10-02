@@ -112,7 +112,8 @@ private: // Data:
 									_exactPValues			= false,
 									_normalizedNotation		= true,
 									_useThousandSeps		= false,
-									_analysisPreloadData;
+									_analysisPreloadData,
+									_analysisMultiDataSet	= false;	///< The analysis may run on multiple datasets; per-option .meta says which (see runAnalysis)
 	std::string						_analysisName,
 									_analysisTitle,
 									_analysisFilter,
@@ -130,6 +131,9 @@ private: // Data:
 									_analysisOptions		= Json::nullValue,
 									_analysisResults;
 	ColumnEncoder::colsPlusTypes	_analysisColsTypes;
+	///Every dataset encoder involved in the current multi-dataset aware analysis run (primary first);
+	///results can contain encoded names from any of them, so sendString() decodes against all.
+	std::vector<ColumnEncoder *>	_analysisDataSetEncoders;
 
 
 };

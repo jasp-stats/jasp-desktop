@@ -17,6 +17,10 @@ class Workspace : public DataSetBaseNode
 	Q_PROPERTY(Filter		*	shownFilter			READ shownFilter		WRITE setShownFilter		NOTIFY shownFilterChanged	)
 	Q_PROPERTY(VariableInfo *	varInfo				READ varInfo										CONSTANT					)
 	Q_PROPERTY(QVariantList	inputFilterDropDownList READ inputFilterDropDownList						NOTIFY inputFilterDropDownListChanged	)
+	///Every filter of every dataset in the workspace as {value: filterId, label: "DataSet - Filter"} entries,
+	///for the multi-dataset aware dataset/filter selection (see VariablesForm::dataSetSelection). Selecting a
+	///dataset always means selecting one of its filters, hence filters and not just datasets here.
+	Q_PROPERTY(QVariantList	dataSetFilterDropDownList READ dataSetFilterDropDownList					NOTIFY dataSetFilterDropDownListChanged	)
 	
 	// Emit signals also in refresh
 	
@@ -78,6 +82,7 @@ public slots:
 			Q_INVOKABLE QString					dataSetNameById(int id) const				{ DataSet * ds = dataSetById(id); return ds ? ds->name() : QString(); }
 			Q_INVOKABLE QStringList				dataSetNames() const;
 			QVariantList						inputFilterDropDownList() const;
+			QVariantList						dataSetFilterDropDownList() const;
 			Q_INVOKABLE void					setDataSetComputed(const QString & name, bool computed);
 			void					setShownDataSet(QString	  name);
 			void					setShownDataSet(DataSet * dataSet);
@@ -131,6 +136,7 @@ void					enableModified();
 			void					showAnalysis(			int			analysisId);
 			void					emptyValuesChanged();
 			void					inputFilterDropDownListChanged();
+			void					dataSetFilterDropDownListChanged();
 			
 	
 			
@@ -138,6 +144,9 @@ private:
 	std::map<int,DataSet*>			_dataSets;
 	DataSet						*	_shownDataSet			= nullptr;
 	VariableInfo				*	_varInfo				= nullptr;
+	///Shared builder for inputFilterDropDownList()/dataSetFilterDropDownList(); the filter of the dataset
+	///with excludeDataSetId (-1 for none) is left out.
+	QVariantList					_filterDropDownList(int excludeDataSetId) const;
 	bool							_showRSyntax			= false,
 									_dataMode				= false,
 									_inRefresh				= false; //instance flag (not static): works across Workspace instances

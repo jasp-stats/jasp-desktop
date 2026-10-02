@@ -317,7 +317,7 @@ void rbridge_setWantedCols(const ColumnEncoder::colsPlusTypes& datasetColsTypes)
 	datasetWanted = datasetColsTypes;
 }
 
-std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData)
+std::string rbridge_runModuleCall(const std::string &name, const std::string &title, const std::string &moduleCall, const std::string &dataKey, const std::string &options, const std::string &stateKey, int analysisID, int analysisRevision, bool developerMode, ColumnEncoder::colsPlusTypes datasetColsTypes, bool preloadData, const std::string & multiDataSetJson)
 {
 	rbridge_callback	= NULL; //Only jaspResults here so callback is not needed
 	if (data_bridge != nullptr)
@@ -325,7 +325,7 @@ std::string rbridge_runModuleCall(const std::string &name, const std::string &ti
 	
 	datasetWanted = datasetColsTypes;
 
-	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), analysisID, analysisRevision, developerMode, preloadData);
+	return jaspRCPP_runModuleCall(name.c_str(), title.c_str(), moduleCall.c_str(), dataKey.c_str(), options.c_str(), stateKey.c_str(), analysisID, analysisRevision, developerMode, preloadData, multiDataSetJson.c_str());
 }
 
 extern "C" RBridgeColumn* STDCALL rbridge_readFullDataSet(size_t * colMax)
@@ -513,7 +513,32 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 	//below. rbridge_readDataSet() at the end of this function does this too, but by then the names
 	//have already been encoded - against the empty fallback encoder if nothing else provided the
 	//dataset first. See the invariant documented in DataBridge::provideAndUpdateDataSet().
-	if(data_bridge)
+	//
+	//In a multi-dataset aware run the queued slices are handed out one read at a time: jaspBase's
+	//runJaspResults calls this once per referenced dataset and we switch the engine over to that
+	//dataset, its selected filter and its wanted columns before reading.
+	const DataBridge::MultiDataSetSlice * slice = data_bridge ? data_bridge->takeMultiDataSetSlice() : nullptr;
+
+	if(slice)
+	{
+		rbridge_dataSet = data_bridge->provideAndUpdateDataSet(slice->dataSetId);
+
+		if(rbridge_dataSet)
+		{
+			Filter * filter = slice->filterId >= 0 && data_bridge->workspace() ? data_bridge->workspace()->filterById(slice->filterId) : nullptr;
+
+			//Apply the filter recorded for this slice explicitly (and fall back to the default one):
+			//the dataset may still have some other filter shown from a previous run. Only show
+			//filters that exist; showFilter(name) would fabricate unknown ones (see Engine::runAnalysis).
+			if(filter && filter->data() == rbridge_dataSet && rbridge_dataSet->filter(filter->name()))
+				rbridge_dataSet->showFilter(filter->name());
+			else if(rbridge_dataSet->defaultFilter())
+				rbridge_dataSet->showFilter(rbridge_dataSet->defaultFilter());
+
+			datasetWanted = slice->cols;
+		}
+	}
+	else if(data_bridge)
 		rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
 	*colMax = 0;
