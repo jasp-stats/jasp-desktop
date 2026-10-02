@@ -7,6 +7,7 @@
 #include "analysis/analysis.h"
 #include "analysis/analyses.h"
 #include "data/datasetpackage.h"
+#include "rpc/jasprpcdispatcher.h"
 
 AgentStateTracker * AgentStateTracker::_singleton = nullptr;
 
@@ -28,15 +29,16 @@ void AgentStateTracker::init()
 	_singleton->connectHooks();
 }
 
+// What a script observes, the agent has not seen (see RpcCaller).
 void AgentStateTracker::notifyAnalysisObserved(size_t analysisId)
 {
-	if (_singleton)
+	if (_singleton && !JaspRpcDispatcher::scriptIsCalling())
 		_singleton->afterAnalysisObserved(analysisId);
 }
 
 void AgentStateTracker::notifyDataObserved()
 {
-	if (_singleton)
+	if (_singleton && !JaspRpcDispatcher::scriptIsCalling())
 		_singleton->afterDataObserved();
 }
 

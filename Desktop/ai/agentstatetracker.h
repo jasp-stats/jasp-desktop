@@ -22,7 +22,8 @@
 //   the agent observes state — either by receiving a snapshot (dispatcher
 //   calls markClean) or by calling get_analyses_state / analysis_run /
 //   analysis_results / analysis_create (handlers call notifyAnalysisObserved
-//   / notifyDataObserved).
+//   / notifyDataObserved).  Calls from a script (RpcCaller::Script) never
+//   clear them: the agent still has to see what a script read or changed.
 //
 // Singleton lifetime: created in MainWindow (always) and AiBridge.
 //

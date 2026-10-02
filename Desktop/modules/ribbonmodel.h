@@ -103,6 +103,7 @@ signals:
 				void analysisClickedSignal(QString analysisFunction, QString analysisQML, QString analysisTitle, QString module);
 				void highlightedModuleIndexChanged(int highlightedModuleIndex);
 				void showRCommander();
+				void showPythonScriptWindow();
 				void invalidateFilterModel();
 				void currentRowChanged();
 				void dataLoadedChanged(bool loaded);

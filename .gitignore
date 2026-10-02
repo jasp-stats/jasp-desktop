@@ -91,3 +91,6 @@ Modules/local
 
 # User configurations
 .qmlls.ini
+
+# Python bytecode, e.g. from running Resources/python/jasp
+__pycache__/

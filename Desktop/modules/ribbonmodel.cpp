@@ -184,6 +184,7 @@ void RibbonModel::addSpecialRibbonButtonsEarly()
 void RibbonModel::addSpecialRibbonButtonsLate()
 {
 	addRibbonButtonModel(new RibbonButton(this, "R", [&](){return fq(tr("R console")); }, "Rlogo.svg", false, [&](){ emit showRCommander(); }, [&](){ return tr("Execute R code in a console");}, false, true), size_t(RowType::Analyses));
+	addRibbonButtonModel(new RibbonButton(this, "Python", [&](){return fq(tr("Python scripts")); }, "python-script.svg", false, [&](){ emit showPythonScriptWindow(); }, [&](){ return tr("Run Python scripts that use JASP");}, false, true), size_t(RowType::Analyses));
 }
 
 void RibbonModel::setDataMode(bool data)

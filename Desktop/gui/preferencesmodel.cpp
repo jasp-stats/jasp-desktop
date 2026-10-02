@@ -6,6 +6,7 @@
 #include "jasptheme.h"
 #include "utilities/languagemodel.h"
 #include <QFontDatabase>
+#include <QDir>
 #include "modules/ribbonmodel.h"
 #include "emptyvalues.h"
 #include "preferencesmodelbase.h"
@@ -14,6 +15,7 @@
 #include "gui/jaspConfiguration/jaspconfiguration.h"
 #include "gui/aipersonamodel.h"
 #include "gui/aiconfigmodel.h"
+#include "python/pythonscriptrunner.h"
 
 using namespace std;
 
@@ -99,6 +101,24 @@ void PreferencesModel::browseDeveloperFolder()
 		setDeveloperFolder(folder);	
 }
 
+
+void PreferencesModel::browsePythonInterpreter()
+{
+	QString start = pythonInterpreter().isEmpty() ? foundPythonInterpreter() : pythonInterpreter();
+
+	if (start.isEmpty())
+		start = QDir::homePath();
+
+	QString python = MessageForwarder::browseOpenFile(tr("Select the Python to run scripts with..."), start, "");
+
+	if (!python.isEmpty())
+		setPythonInterpreter(python);
+}
+
+QString PreferencesModel::foundPythonInterpreter() const
+{
+	return PythonScriptRunner::findInterpreter();
+}
 
 void PreferencesModel::browseDeveloperLibPathFolder()
 {
@@ -215,6 +235,7 @@ GET_PREF_FUNC_BOOL(	aiEnabled,					Settings::AI_ENABLED								)
 GET_PREF_FUNC_BOOL(	rpcServerEnabled,			Settings::RPC_SERVER_ENABLED						)
 GET_PREF_FUNC_STR(	rpcServerIp,				Settings::RPC_SERVER_IP								)
 GET_PREF_FUNC_INT(	rpcServerPort,				Settings::RPC_SERVER_PORT							)
+GET_PREF_FUNC_STR(	pythonInterpreter,			Settings::PYTHON_INTERPRETER						)
 GET_PREF_FUNC_BOOL(	syncDroppedDatafile,		Settings::SYNC_DROPPED_DATAFILE						)
 
 bool PreferencesModel::engineSandbox() const
@@ -436,6 +457,7 @@ SET_PREF_FUNCTION(				bool,		setAiEnabled,				aiEnabled,					aiEnabledChanged,		
 SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,		rpcServerEnabled,			rpcServerEnabledChanged,		Settings::RPC_SERVER_ENABLED						)
 SET_PREF_FUNCTION(				QString,	setRpcServerIp,				rpcServerIp,				rpcServerIpChanged,				Settings::RPC_SERVER_IP								)
 SET_PREF_FUNCTION(				int,		setRpcServerPort,			rpcServerPort,				rpcServerPortChanged,			Settings::RPC_SERVER_PORT							)
+SET_PREF_FUNCTION(				QString,	setPythonInterpreter,		pythonInterpreter,			pythonInterpreterChanged,		Settings::PYTHON_INTERPRETER						)
 SET_PREF_FUNCTION(				bool,		setSyncDroppedDatafile,		syncDroppedDatafile,		syncDroppedDatafileChanged,		Settings::SYNC_DROPPED_DATAFILE						)
 
 void PreferencesModel::resetAiDefaults()

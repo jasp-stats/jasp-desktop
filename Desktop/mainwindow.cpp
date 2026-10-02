@@ -56,6 +56,7 @@
 
 #include "qquick/datasetview.h"
 #include "qquick/rcommander.h"
+#include "python/pythonscriptrunner.h"
 
 #include "resultstesting/compareresults.h"
 
@@ -177,6 +178,7 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 	qmlRegisterType<DataSetView>								("JASP",			1, 0, "DataSetView"						);
 	qmlRegisterType<JaspTheme>									("JASP",			1, 0, "JaspTheme"						);
 	qmlRegisterType<RCommander>									("JASP",			1, 0, "RCommander"						);
+	qmlRegisterType<PythonScriptRunner>							("JASP",			1, 0, "PythonScriptRunner"				);
 	qmlRegisterType<ResultsJsInterface>							("JASP",			1, 0, "ResultsJsInterface"				);
 	qmlRegisterType<ColumnModel>								("JASP",			1, 0, "ColumnModel"						);
 	qmlRegisterUncreatableType<PlotEditor::AxisModel>			("JASP.PlotEditor",	1, 0, "AxisModel",					"Can't make it");
@@ -586,6 +588,7 @@ void MainWindow::makeConnections()
 
 	connect(_ribbonModel,			&RibbonModel::analysisClickedSignal,				_analyses,				&Analyses::analysisClickedHandler							);
 	connect(_ribbonModel,			&RibbonModel::showRCommander,						this,					&MainWindow::showRCommander									);
+	connect(_ribbonModel,			&RibbonModel::showPythonScriptWindow,				this,					&MainWindow::showPythonScriptWindow							);
 	connect(_ribbonModel,			&RibbonModel::dataModeChanged,						_package,				&DataSetPackage::dataModeChanged							);
 	connect(_ribbonModel,			&RibbonModel::setDataSynchronisation,				_package,				&DataSetPackage::setSynchingExternallyFriendly				);
 
@@ -967,6 +970,27 @@ void MainWindow::showRCommander()
 	}
 }
 
+void MainWindow::showPythonScriptWindow()
+{
+	if (!_pythonScriptWindow)
+	{
+		Log::log() << "Loading PythonScriptWindow" << std::endl;
+		_qml->load(QUrl("qrc:///components/JASP/Widgets/PythonScriptWindow.qml"));
+
+		for (QObject * obj : _qml->rootObjects())
+			if (obj->objectName() == "pythonScriptWindow")
+				_pythonScriptWindow = qobject_cast<QWindow*>(obj);
+	}
+
+	// Loaded once and shown again after that, so the script and its output are still there
+	if (_pythonScriptWindow)
+	{
+		_pythonScriptWindow->show();
+		_pythonScriptWindow->raise();
+		_pythonScriptWindow->requestActivate();
+	}
+}
+
 void MainWindow::reloadResults() const
 {
 	_resultsJsInterface->resetResults();//To reload page
@@ -1091,6 +1115,8 @@ void MainWindow::open(const QString & mainFilePath, const QString & inputDataFil
 void MainWindow::_open(const QString & mainFilePath, const QString & inputDataFile, const QString & exportFile, bool keepJASPOpen, bool save)
 {
 	FileEvent * openEvent = _fileMenu->open(mainFilePath);
+	runCommandLineScriptOnceLoaded(openEvent);
+
 	if (!inputDataFile.isEmpty())
 	{
 		_batchKeepOpen = keepJASPOpen;
@@ -1205,6 +1231,93 @@ void MainWindow::waitingEventTimedOut()
 	finishBatchRun();
 }
 
+void MainWindow::setCommandLineScript(const QString & path, bool keepJASPOpen)
+{
+	_commandLineScript				= path;
+	_keepOpenAfterCommandLineScript	= keepJASPOpen;
+}
+
+void MainWindow::runCommandLineScriptOnceLoaded(FileEvent * openEvent)
+{
+	if (_commandLineScript.isEmpty())
+		return;
+
+	if (!openEvent)
+	{
+		//Nothing to load, but what the script does has to show in the results
+		if (_resultsJsInterface->resultsLoaded())	runCommandLineScriptOnceAnalysesSettle();
+		else										connect(_resultsJsInterface, &ResultsJsInterface::resultsPageLoadedSignal, this, &MainWindow::runCommandLineScriptOnceAnalysesSettle, Qt::SingleShotConnection);
+		return;
+	}
+
+	connect(openEvent, &FileEvent::finalized, this, [this, openEvent]()
+	{
+		if (openEvent->isSuccessful())
+			runCommandLineScriptOnceAnalysesSettle();
+		else
+		{
+			std::cerr << "The Python script " << fq(_commandLineScript) << " did not run, as " << fq(openEvent->path()) << " could not be loaded." << std::endl;
+
+			if (!_keepOpenAfterCommandLineScript)
+				emit exitSignal(3); //As when the file fails to open without a script
+		}
+	});
+}
+
+void MainWindow::runCommandLineScriptOnceAnalysesSettle()
+{
+	//The analyses of a JASP file that just opened can still be computing, or start to shortly after (see
+	//waitForAllAnalysesFinishedBeforeStartingEvent), so the script runs once they have all been finished for a second.
+	QTimer * settled = new QTimer(this);
+	settled->setSingleShot(true);
+	settled->setInterval(1000);
+
+	connect(_analyses,	&Analyses::analysisStatusChanged,	settled,	[settled]() { settled->start(); });
+	connect(_analyses,	&Analyses::analysisResultsChanged,	settled,	[settled]() { settled->start(); });
+	connect(settled,	&QTimer::timeout,					this,		[this, settled]()
+	{
+		if (!_analyses->allFinished())
+			return; //The one still busy changes its status once it is done, which starts the timer again
+
+		settled->deleteLater();
+		runCommandLineScript();
+	});
+
+	settled->start();
+}
+
+void MainWindow::runCommandLineScript()
+{
+	if (_commandLineScript.isEmpty()) //It already ran
+		return;
+
+	const QString script = _commandLineScript;
+	_commandLineScript.clear();
+
+	_commandLineScriptRunner = new PythonScriptRunner(this);
+	_commandLineScriptRunner->setInterpreter(_preferences->pythonInterpreter());
+
+	std::cout << "Running the Python script " << fq(script) << std::endl;
+
+	//finished() comes once the script ends, also when Python then fails to start, but not when the run cannot even begin
+	QMetaObject::Connection finished = connect(_commandLineScriptRunner, &PythonScriptRunner::finished, this, &MainWindow::commandLineScriptFinished, Qt::SingleShotConnection);
+
+	if (!_commandLineScriptRunner->runFile(script) && disconnect(finished)) //Still connected: finished() did not come
+		commandLineScriptFinished(-1);
+}
+
+void MainWindow::commandLineScriptFinished(int exitCode)
+{
+	//What the script printed went straight to JASP's own output, this is what JASP said about the run, such as why Python did not start
+	if (!_commandLineScriptRunner->output().isEmpty())
+		std::cerr << fq(_commandLineScriptRunner->output()) << std::flush;
+
+	std::cout << "The Python script ended with exit code " << exitCode << std::endl;
+
+	if (!_keepOpenAfterCommandLineScript)
+		emit exitSignal(exitCode < 0 ? 1 : exitCode);
+}
+
 void MainWindow::showNewData()
 {
 	_package->generateEmptyData();
@@ -1214,7 +1327,7 @@ void MainWindow::showNewData()
 void MainWindow::open(const Json::Value & dbJson)
 {
 	_openedUsingArgs = true;
-	if (_resultsJsInterface->resultsLoaded())	_fileMenu->open(dbJson);
+	if (_resultsJsInterface->resultsLoaded())	runCommandLineScriptOnceLoaded(_fileMenu->open(dbJson));
 	else										_openOnLoadDbJson = dbJson;
 }
 
@@ -1720,7 +1833,78 @@ void MainWindow::registerRpcHandlers()
 	   return response;
 	});
 
-	Log::log() << "[RPC] Registered data_load, data_load_status, and data_info handlers." << std::endl;
+	// --- results_export and file_save ---
+	// Both write their file through a FileEvent, as the File menu does, and answer once it is finalized:
+	// by then JASP has also taken a saved file as the one it has open.
+	auto writeFile = [this](FileEvent::FileMode mode, const QString & path, int timeoutMs) -> Json::Value
+	{
+		if (!dataAvailable() && !analysesAvailable())
+			return JaspRpcDispatcher::errorResult("There is nothing to write yet: load data or create an analysis first.");
+
+		if (QFileInfo(path).isRelative())
+			return JaspRpcDispatcher::errorResult("The path must be absolute: '" + fq(path) + "'");
+
+		FileEvent * event = new FileEvent(this, mode);
+		event->setSilent(true); // A failure goes back to the caller instead of into a message box
+
+		if (!event->setPath(path))
+		{
+			Json::Value error = JaspRpcDispatcher::errorResult(fq(event->getLastError()));
+			delete event;
+			return error;
+		}
+
+		const std::string	written	= fq(event->path()); // setPath adds the extension when there is none
+		auto				answer	= std::make_shared<Json::Value>(); // Null until the event is finalized
+
+		connect(event, &FileEvent::finalized, this, [event, answer, written]()
+		{
+			if (event->isSuccessful())	*answer = JaspRpcDispatcher::successResult();
+			else						*answer = JaspRpcDispatcher::errorResult(event->message().isEmpty() ? "Could not write '" + written + "'" : fq(event->message()));
+
+			(*answer)["path"] = written;
+		});
+
+		event->starts();
+
+		if (answer->isNull())
+			JaspRpcDispatcher::waitAndProcessEvents(timeoutMs, [&](QEventLoop& loop, QTimer&)
+			{
+				QObject::connect(event, &FileEvent::finalized, &loop, &QEventLoop::quit);
+			});
+
+		if (!answer->isNull())
+			return *answer;
+
+		// Not done yet: JASP finishes the file in the background
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["status"]	= "running";
+		response["path"]	= written;
+		return response;
+	};
+
+	disp->registerMethodByName("results_export", [writeFile](const Json::Value& params) -> Json::Value
+	{
+		return writeFile(FileEvent::FileExportResults, tq(params["path"].asString()), params["timeoutMs"].asInt());
+	});
+
+	disp->registerMethodByName("file_save", [this, writeFile](const Json::Value& params) -> Json::Value
+	{
+		QString path = tq(params.get("path", "").asString());
+
+		// Without a path, to the JASP file that is open, as File > Save does
+		if (path.isEmpty())
+		{
+			path = _package->currentFile();
+
+			if (Utils::getTypeFromFileName(fq(path)) != Utils::FileType::jasp || _package->currentJaspFileIsNonSaveable())
+				return JaspRpcDispatcher::errorResult("No JASP file is open to save to: give a path.");
+		}
+
+		return writeFile(FileEvent::FileSave, path, params["timeoutMs"].asInt());
+	});
+
+	Log::log() << "[RPC] Registered data_load, data_load_status, data_info, results_export and file_save handlers." << std::endl;
 }
 
 bool MainWindow::startDetached(const QString & applicationPath, const QStringList & args) const
@@ -2103,7 +2287,7 @@ void MainWindow::qmlLoaded()
 
 void MainWindow::_openDbJson()
 {
-	_fileMenu->open(_openOnLoadDbJson);
+	runCommandLineScriptOnceLoaded(_fileMenu->open(_openOnLoadDbJson));
 	_openOnLoadDbJson = Json::nullValue;
 }
 
