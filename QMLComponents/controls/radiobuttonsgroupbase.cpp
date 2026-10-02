@@ -92,7 +92,7 @@ void RadioButtonsGroupBase::_setCheckedButtonHandler()
 		}
 
 	if (!checkedButton() && _buttons.size() > 0)
-		_setCheckedButton(*(_buttons.begin()));
+		_setCheckedButton(_buttons.first());
 
 }
 
@@ -103,7 +103,8 @@ void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 		addControlError(tr("A RadioButton inside RadioButtonGroup element (name: %1) does not have any name").arg(name()));
 	else
 	{
-		_buttons.insert(button);
+		if (!_buttons.contains(button))
+			_buttons.append(button);
 		if(initialized())
 		{
 			// Case when Radio Button is dynamically added
@@ -116,10 +117,10 @@ void RadioButtonsGroupBase::registerRadioButton(RadioButtonBase* button)
 
 void RadioButtonsGroupBase::unregisterRadioButton(RadioButtonBase* button)
 {
-	if (_buttons.remove(button))
+	if (_buttons.removeOne(button))
 	{
 		if (button == _selectedButton && _buttons.size() > 0 && initialized())
-			_setCheckedButton(*_buttons.begin());
+			_setCheckedButton(_buttons.first());
 		emit buttonsChanged();
 	}
 }
