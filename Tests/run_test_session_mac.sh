@@ -71,7 +71,6 @@ if [[ ${#JASP_CONFIG_VARS[@]} -gt 0 ]]; then
 fi
 
 # ── a11y / webengine environment ─────────────────────────────────────
-export QTWEBENGINE_AX_DEBUG="${QTWEBENGINE_AX_DEBUG:-1}"
 export QT_ACCESSIBILITY=1
 # CDP debugging port for DOM-level checks (harmless if unused)
 export QTWEBENGINE_CHROMIUM_FLAGS="${QTWEBENGINE_CHROMIUM_FLAGS:---remote-debugging-port=9223}"
