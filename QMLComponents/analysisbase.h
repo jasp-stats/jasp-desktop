@@ -59,7 +59,8 @@ public:
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
-	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
+	virtual	const Version	  &	moduleVersion()																									const	{ return _moduleVersion;	}
+			void				setModuleVersion(const Version & version)																				{ _moduleVersion = version;	}
 
 						const Json::Value &	boundValues()												const	{ return _boundValues;		}
 						const Json::Value &	boundValue(const std::string& name,
@@ -126,6 +127,7 @@ protected:
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
 	bool			_isAnnotated		= false;
+	Version			_moduleVersion		= AppInfo::version; ///< Without a module (R syntax, tests) the version of JASP itself; Analysis reports its module's version
 	//Guarded pointers: a Filter/DataSet is owned by a DataSet/Workspace that may be destroyed (e.g.
 	//multi-dataset teardown) while the analysis lives on; the guard auto-nulls on destruction so the
 	//analysis never dereferences freed memory. _filterDataSet also derives from the (possibly null)

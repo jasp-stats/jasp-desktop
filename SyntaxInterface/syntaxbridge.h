@@ -55,7 +55,7 @@ void				sendMessage(			const char * msg);
 bool				init(					bool dbInMemory = false);
 void				sendRScriptHandler(		AnalysisForm* form, QString script, QString controlName, bool whiteListedVersion);
 AnalysisForm*		getQmlForm(				const QString & qmlFileStr);
-bool				generateWrapper(		const QString & modulePath, const QString & analysisName, const QString & qmlFileName, const QString & analysisTitle, bool preloadData);
+bool				generateWrapper(		const QString & modulePath, const QString & analysisName, const QString & qmlFileName, const QString & analysisTitle, bool preloadData, const Version & moduleVersion);
 ModuleInfo			parseDescription(		const QString & modulePath);
 
 #endif // SYNTAXBRIDGE_H

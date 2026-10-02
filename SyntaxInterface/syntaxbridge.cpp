@@ -624,7 +624,7 @@ const char* STDCALL syntaxBridgeGenerateModuleWrappers(const char* modulePath)
 	for (const AnalysisInfo & analysis : description.analyses)
 	{
 		Log::log() << "Analysis " << analysis.analysisName << " with qml file " << analysis.qmlFileName << std::endl;
-		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData))
+		if (!generateWrapper(modulePathQ, analysis.analysisName, analysis.qmlFileName, analysis.analysisTitle, analysis.preloadData, description.version))
 		{
 			result = "Error when generating wrapper of " + fq(analysis.analysisName);
 			return result.c_str();
@@ -654,7 +654,7 @@ const char* STDCALL syntaxBridgeGenerateAnalysisWrapper(const char* modulePath, 
 	{
 		if (analysisEntry->isAnalysis() && analysisEntry->function() == analysisNameStr)
 		{
-			if (!generateWrapper(tq(modulePathStr), tq(analysisNameStr), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData()))
+			if (!generateWrapper(tq(modulePathStr), tq(analysisNameStr), tq(analysisEntry->qml()), tq(analysisEntry->title()), analysisEntry->preloadData(), module->version()))
 			{
 				result = "Error when generating wrapper of " + analysisNameStr;
 				return result.c_str();
@@ -970,7 +970,7 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 }
 
 
-bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
+bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, const Version & moduleVersion)
 {
 	QString qmlFilePath = modulePath + "/inst/qml/" + qmlFileName;
 
@@ -980,6 +980,10 @@ bool generateWrapper(const QString& modulePath, const QString& analysisName, con
 		Log::log() << "Cannot create the QML form " << qmlFilePath << std::endl;
 		return false;
 	}
+
+	// The wrapper's version argument defaults to the version of the module, as in JASP Desktop
+	if (form->analysisObj())
+		form->analysisObj()->setModuleVersion(moduleVersion);
 
 	QString returnedValue = form->generateWrapper(QDir(modulePath).dirName(), analysisName, qmlFileName, analysisTitle, preloadData);
 
