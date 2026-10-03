@@ -79,8 +79,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QVariantList	pdfPageSizeModel		READ pdfPageSizeModel			CONSTANT																	)
 	Q_PROPERTY(int			pdfPageSize				READ pdfPageSize				WRITE setPdfPageSize				NOTIFY pdfPageSizeChanged				)
 	Q_PROPERTY(bool			pdfLandscape			READ pdfLandscape				WRITE setPdfLandscape				NOTIFY pdfLandscapeChanged				)
-	Q_PROPERTY(bool			engineSandbox			READ engineSandbox			WRITE setEngineSandbox			NOTIFY engineSandboxChanged			)
-	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir		WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
+	Q_PROPERTY(bool			engineSandbox			READ engineSandbox				WRITE setEngineSandbox				NOTIFY engineSandboxChanged				)
+	Q_PROPERTY(QString		engineSandboxDir		READ engineSandboxDir			WRITE setEngineSandboxDir		NOTIFY engineSandboxDirChanged		)
 	Q_PROPERTY(QString 		localConfigurationPATH 	READ localConfigurationPATH		WRITE setLocalConfigurationPATH		NOTIFY localConfigurationPATHChanged	)
 	Q_PROPERTY(bool 		remoteConfiguration 	READ remoteConfiguration		WRITE setRemoteConfiguration		NOTIFY remoteConfigurationChanged		)
 	Q_PROPERTY(QString		remoteConfigurationURL	READ remoteConfigurationURL		WRITE setRemoteConfigurationURL		NOTIFY remoteConfigurationURLChanged	)
@@ -98,15 +98,17 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
 	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
 	Q_PROPERTY(QObject*		aiConfigModel			READ aiConfigModel													CONSTANT								)
+	Q_PROPERTY(bool         onboardingCompleted     READ onboardingCompleted		WRITE setOnboardingCompleted        NOTIFY onboardingCompletedChanged       )
+	Q_PROPERTY(int          onboardingStep			READ onboardingStep				WRITE setOnboardingStep             NOTIFY onboardingStepChanged            )
 
 	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
-
 	Q_PROPERTY(bool			syncDroppedDatafile		READ syncDroppedDatafile		WRITE setSyncDroppedDatafile		NOTIFY syncDroppedDatafileChanged		)
 
 
-	public:
+
+public:
 	explicit	 PreferencesModel(QObject *parent = 0);
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
@@ -173,7 +175,7 @@ class PreferencesModel : public PreferencesModelBase
 	bool			developerMode()							const override;
 	QString			developerModeName()						const override;
 	bool			ALTNavModeActive()						const override;
-    bool			orderByValueByDefault()					const;
+	bool			orderByValueByDefault()					const;
 	int				maxScaleLevels()						const override;
 	QVariantList	pdfPageSizeModel()						const { return _pdfPageSizeModel; }
 	int				pdfPageSize()							const;
@@ -181,7 +183,7 @@ class PreferencesModel : public PreferencesModelBase
 	bool			directLibpathEnabled()					const;
 	QString			directLibpathFolder()					const;
 	QString			directDevModName()						const;
-	
+
 	QString			localConfigurationPATH()				const;
 	QString			remoteConfigurationURL()				const;
 	bool			remoteConfiguration()					const;
@@ -191,6 +193,9 @@ class PreferencesModel : public PreferencesModelBase
 	int				autoSaveIntervalSec()					const;
 	bool			autoSaveAtAll()							const;
 	bool			checkUpdatesAskUser()					const;
+	bool			onboardingCompleted()					const;
+	int				onboardingStep()						const;
+
 	bool			keepMissingColsWhenSyncing()			const { return _keepMissingColsWhenSyncing; }
 	
 	void			setCheckUpdatesAskUser(	bool	newCheckUpdatesAskUser);
@@ -199,36 +204,36 @@ class PreferencesModel : public PreferencesModelBase
 	void			setAutoSaveIntervalSec(	int		newAutoSaveIntervalSec);
 	void			setAutoSaveAtAll(		bool	newAutoSaveAtAll);
 	Q_INVOKABLE void resetAiDefaults();
-	
-	bool storeStateEtc() const;
-	void setStoreStateEtc(bool newStoreStateEtc);
 
-	bool showInteractiveDefault() const;
-	void setShowInteractiveDefault(bool newShowInteractiveDefault);
+	bool	storeStateEtc() const;
+	void	setStoreStateEtc(bool newStoreStateEtc);
+
+	bool	showInteractiveDefault() const;
+	void	setShowInteractiveDefault(bool newShowInteractiveDefault);
 
 	AIPersonaModel* aiPersonaModel() const;
 	AIConfigModel* aiConfigModel() const;
 
 	QString aiCommonSystemPrompt() const;
-	void setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
+	void	setAiCommonSystemPrompt(QString newAiCommonSystemPrompt);
 
-	bool aiCommonSystemPromptUseCustom() const;
-	void setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
+	bool	aiCommonSystemPromptUseCustom() const;
+	void	setAiCommonSystemPromptUseCustom(bool newAiCommonSystemPromptUseCustom);
 
-	bool aiEnabled() const;
-	void setAiEnabled(bool newAiEnabled);
+	bool	aiEnabled() const;
+	void	setAiEnabled(bool newAiEnabled);
 
-	bool aiAnnotationUseCustom() const;
-	void setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
+	bool	aiAnnotationUseCustom() const;
+	void	setAiAnnotationUseCustom(bool newAiAnnotationUseCustom);
 
 	QString aiAnnotationPrompt() const;
-	void setAiAnnotationPrompt(QString newAiAnnotationPrompt);
+	void	setAiAnnotationPrompt(QString newAiAnnotationPrompt);
 
-	QString aiUserAvatar() const;
-	void setAiUserAvatar(QString newAiUserAvatar);
+	QString	aiUserAvatar() const;
+	void	setAiUserAvatar(QString newAiUserAvatar);
 
-	bool rpcServerEnabled() const;
-	void setRpcServerEnabled(bool v);
+	bool	rpcServerEnabled() const;
+	void	setRpcServerEnabled(bool v);
 	QString rpcServerIp() const;
 	void setRpcServerIp(QString v);
 	int rpcServerPort() const;
@@ -314,6 +319,8 @@ class PreferencesModel : public PreferencesModelBase
 	void setUseConfigurationFile(		bool		newUseConfigurationFile);
 	void setKeepMissingColsWhenSyncing(	bool		keepMissingColsWhenSyncing) { _keepMissingColsWhenSyncing = keepMissingColsWhenSyncing; }
 	void setSyncDroppedDatafile(		bool		syncDroppedDatafile);
+  void	setOnboardingCompleted(        bool        newOnboardingCompleted);
+	void	setOnboardingStep(             int         newOnboardingStep);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -392,10 +399,10 @@ signals:
 	void rpcServerPortChanged(			int			rpcServerPort);
 
 	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
+  
+  void	onboardingCompletedChanged(	bool	onboardingCompleted);
+	void	onboardingStepChanged(		int		onboardingStep);
 
-	private slots:
-	void dataLabelNAChangedSlot(QString label);
-	
 private:
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
