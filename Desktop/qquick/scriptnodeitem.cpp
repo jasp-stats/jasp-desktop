@@ -1247,8 +1247,9 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 			// When the column sits in a restrictive drop slot (e.g. a numeric argument of a
 			// function) its type is constrained to what the slot accepts; tell the user instead
 			// of silently cycling to a type that would just be reverted.
-			const std::vector<int> allowed = _view->model()->allowedColumnTypes(_node);
-			if(allowed.size() < 3)
+			auto whyNotASet = _view->model()->allowedColumnTypes(_node);
+			const auto allowed = intset(whyNotASet.begin(), whyNotASet.end());
+			if(allowed.size() < 2)
 			{
 				QStringList names;
 				for(int t : allowed)
@@ -1263,15 +1264,18 @@ void ScriptNodeItem::mousePressEvent(QMouseEvent * event)
 			}
 
 			// Cycle scale -> ordinal -> nominal -> scale; unset or out-of-range starts at scale.
-			int next;
-			switch(static_cast<columnType>(col->columnTypeUser()))
+			int next = col->columnTypeUser();
+			do
 			{
-			case columnType::scale:		next = int(columnType::ordinal);	break;
-			case columnType::ordinal:	next = int(columnType::nominal);	break;
-			case columnType::nominal:	next = int(columnType::scale);		break;
-			default:					next = int(columnType::scale);		break;
+				switch(static_cast<columnType>(next))
+				{
+				case columnType::scale:		next = int(columnType::ordinal);	break;
+				case columnType::ordinal:	next = int(columnType::nominal);	break;
+				default:					next = int(columnType::scale);		break;
+				}
 			}
-
+			while(!allowed.count(next));
+			
 			_view->model()->setColumnTypeUser(col, next);
 			_view->refresh();
 			_view->nodeEdited();
