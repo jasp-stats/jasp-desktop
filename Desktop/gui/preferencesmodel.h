@@ -235,15 +235,15 @@ public:
 	bool	rpcServerEnabled() const;
 	void	setRpcServerEnabled(bool v);
 	QString rpcServerIp() const;
-	void setRpcServerIp(QString v);
-	int rpcServerPort() const;
-	void setRpcServerPort(int v);
+	void	setRpcServerIp(QString v);
+	int		rpcServerPort() const;
+	void	setRpcServerPort(int v);
 
-	bool syncDroppedDatafile() const;
+	bool	syncDroppedDatafile() const;
 		
 	public slots:
-	bool engineSandbox()								const;
-	QString		engineSandboxDir()						const;
+	bool	engineSandbox()								const;
+	QString	engineSandboxDir()						const;
 	bool useNativeFileDialog()						const;
 	void setUiScale(					double		uiScale);
 	void setCustomPPI(					int			customPPI);
@@ -319,8 +319,8 @@ public:
 	void setUseConfigurationFile(		bool		newUseConfigurationFile);
 	void setKeepMissingColsWhenSyncing(	bool		keepMissingColsWhenSyncing) { _keepMissingColsWhenSyncing = keepMissingColsWhenSyncing; }
 	void setSyncDroppedDatafile(		bool		syncDroppedDatafile);
-  void	setOnboardingCompleted(        bool        newOnboardingCompleted);
-	void	setOnboardingStep(             int         newOnboardingStep);
+	void setOnboardingCompleted(		bool		newOnboardingCompleted);
+	void setOnboardingStep(				int			newOnboardingStep);
 	
 signals:
 	void fixedDecimalsChanged(			bool		fixedDecimals);
@@ -400,9 +400,12 @@ signals:
 
 	void syncDroppedDatafileChanged(	bool		syncDroppedDatafile);
   
-  void	onboardingCompletedChanged(	bool	onboardingCompleted);
-	void	onboardingStepChanged(		int		onboardingStep);
+	void onboardingCompletedChanged(	bool	onboardingCompleted);
+	void onboardingStepChanged(			int		onboardingStep);
 
+private slots:
+	void dataLabelNAChangedSlot(QString label);
+	
 private:
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
