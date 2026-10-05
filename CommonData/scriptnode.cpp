@@ -556,7 +556,16 @@ std::string ScriptNodeColumn::toR(const ScriptColumnTypeProvider * typeProvider)
 	int actualType = typeProvider ? typeProvider->columnType(_columnName) : 1;
 	int effective = effectiveColumnType(actualType);
 
-	return _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
+	std::string baseStr = _columnName + "." + columnTypeToString(static_cast<columnType>(effective));
+	
+	// Its very hard to compare different levels with each other. 
+	switch(effective)
+	{
+	default:							[[fallthrough]]								;
+	case int(columnType::nominal):		return "as.character(" +	baseStr + ")"	;
+	case int(columnType::ordinal):		return "as.integer("   +	baseStr + ")"	;
+	case int(columnType::scale):		return						baseStr			;
+	}
 }
 
 stringvec ScriptNodeColumn::dragKeys(ScriptConstructorMode) const
