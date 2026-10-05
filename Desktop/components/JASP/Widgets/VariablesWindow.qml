@@ -31,6 +31,18 @@ FocusScope
 	id:			variablesContainer
 	visible:	columnModel.visible
 
+	// Close through the usual apply/discard/cancel route (guard unsaved computed-column edits):
+	// stays open when the user cancels or the edits cannot be applied, and returns whether it
+	// closed. Used by both close buttons and by the Filter/Variables exclusivity logic.
+	function requestClose()
+	{
+		if(!computedColumnWindow.askIfChangedOrClose())
+			return false
+
+		columnModel.visible = false
+		return true
+	}
+
 	property real calculatedBaseHeight:			(columnInfoTop.height + jaspTheme.generalAnchorMargin * 2)
 	property real calculatedMinimumHeight:		calculatedBaseHeight * 1.5
 	property real calculatedPreferredHeight:	calculatedBaseHeight * 4
@@ -198,7 +210,7 @@ FocusScope
 				height:				33 * jaspTheme.uiScale
 				width:				columnModel.compactMode ? height : 0
 				iconSource:			jaspTheme.iconPath + "collapse.png"
-				onClicked:			{ computedColumnWindow.askIfChangedOrClose(); columnModel.visible = false }
+				onClicked:			variablesContainer.requestClose()
 				toolTip:			qsTr("Close variable window")
 				radius:				height
 				visible:			columnModel.compactMode

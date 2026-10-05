@@ -164,14 +164,13 @@ private:
 class SetComputedColumnCodeCommand: public UndoModelCommandSingleColumn
 {
 public:
-	SetComputedColumnCodeCommand(Filter * f, Column * column, const QString& rCode, const QString& jsonCode);
+	SetComputedColumnCodeCommand(Column * column, const QString& rCode, const QString& jsonCode);
 
 	void undo()					override;
 	void redo()					override;
 
 private:
-	QString					_filterName,
-							_oldRCode,
+	QString					_oldRCode,
 							_newRCode,
 							_oldJsonCode,
 							_newJsonCode;

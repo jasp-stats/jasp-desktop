@@ -4,6 +4,7 @@
 #include "dataenums.h"
 #include "mainwindow.h"
 #include "columnsmodel.h"
+#include "timers.h"
 
 ColumnsModel * ColumnsModel::_singleton = nullptr;
 
@@ -157,6 +158,26 @@ QVariant ColumnsModel::provideInfo(varInfoType info, const QString& colName, int
 		if (colIndex < 0)
 			return QVariant();
 
+		return provideInfoAt(info, colIndex, row);
+	}
+	catch(std::exception & e)
+	{
+		Log::log() << "AnalysisForm::requestInfo had an exception! " << e.what() << std::flush;
+		throw e;
+	}
+
+	return QVariant();
+}
+
+QVariant ColumnsModel::provideInfoAt(varInfoType info, int colIndex, int row) const
+{
+	JASPTIMER_SCOPE(ColumnsModel provideInfoAt);
+
+	if (!ColumnsModel::singleton())
+		return QVariant();
+
+	try
+	{
 		QModelIndex qColIndex	= index(colIndex, 0),
 					tableCIndex	= _tableModel->index(0, colIndex),
 					tableVIndex	= _tableModel->index(row, colIndex);
