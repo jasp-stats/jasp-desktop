@@ -38,22 +38,22 @@ PreferencesModel::PreferencesModel(QObject *parent) :
 	connect(this,					&PreferencesModel::developerModeChanged,		this, [&](){ this->setEngineSandbox(!this->developerMode()); } );
 	
 	connect(LanguageModel::lang(),	&LanguageModel::currentLanguageChanged,			this, &PreferencesModel::languageCodeChanged			);
-
+	
 	_loadDatabaseFont();
-
+	
 	for(auto pdfPageSizeElt : pdfPageSizeToVector())
 	{
 		QMap<QString, QVariant> map =
-		{
-			std::make_pair("value", int(pdfPageSizeElt)),
-			std::make_pair("label", pdfPageSizeToQString(pdfPageSizeElt)),
-		};
-
+			{
+				std::make_pair("value", int(pdfPageSizeElt)),
+				std::make_pair("label", pdfPageSizeToQString(pdfPageSizeElt)),
+			};
+		
 		_pdfPageSizeModel.append(map);
 	}
-
+	
 	dataLabelNAChangedSlot(dataLabelNA());
-
+	
 	_aiPersonaModel = new AIPersonaModel(this);
 }
 
@@ -74,9 +74,9 @@ void PreferencesModel::browseSpreadsheetEditor()
 #else
 	applicationfolder = "/usr/bin";
 #endif
-
+	
 	QString filename = MessageForwarder::browseOpenFile(tr("Select a file..."), applicationfolder, filter);
-
+	
 	if (filename != "")
 		setCustomEditor(filename);
 	
@@ -93,9 +93,9 @@ void PreferencesModel::browseDeveloperFolder()
 		defaultfolder = "~";
 #endif
 	}
-
+	
 	QString folder = MessageForwarder::browseOpenFolder(tr("Select a folder..."), defaultfolder);
-
+	
 	if (!folder.isEmpty())
 		setDeveloperFolder(folder);	
 }
@@ -112,9 +112,9 @@ void PreferencesModel::browseDeveloperLibPathFolder()
 		defaultfolder = "~";
 #endif
 	}
-
+	
 	QString folder = MessageForwarder::browseOpenFolder(tr("Select a R-library..."), defaultfolder);
-
+	
 	if (!folder.isEmpty())
 		setDirectLibpathFolder(folder);
 }
@@ -142,15 +142,15 @@ void PreferencesModel::browseConfigurationFile()
 		defaultfolder = "~";
 #endif
 	}
-
+	
 	QString folder = MessageForwarder::browseOpenFile(tr("Select a file..."), defaultfolder, "");
-
+	
 	if (!folder.isEmpty())
 	{
 		setLocalConfigurationPATH(folder);
 		JASPConfiguration::getInstance()->processConfiguration();
 	}
-
+	
 }
 
 
@@ -163,72 +163,74 @@ void PreferencesModel::browseConfigurationFile()
 #define GET_PREF_FUNC_WHT(NAME, SETTING)					GET_PREF_FUNC(bool,		NAME, SETTING, toString() == "white")
 
 
-GET_PREF_FUNC_BOOL(	fixedDecimals,				Settings::FIXED_DECIMALS							)
-GET_PREF_FUNC_INT(	numDecimals,				Settings::NUM_DECIMALS								)
-GET_PREF_FUNC_BOOL(	exactPValues,				Settings::EXACT_PVALUES								)
-GET_PREF_FUNC_BOOL(	normalizedNotation,			Settings::NORMALIZED_NOTATION						)
-GET_PREF_FUNC_FLT(	ribbonBarHeightScale,		Settings::RIBBON_BAR_HEIGHT_SCALE					)
-GET_PREF_FUNC_BOOL(	useDefaultEditor,			Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
-GET_PREF_FUNC_STR(	customEditor,				Settings::SPREADSHEET_EDITOR_NAME					)
-GET_PREF_FUNC_STR(	developerFolder,			Settings::DEVELOPER_FOLDER							)
-GET_PREF_FUNC_BOOL(	useDefaultPPI,				Settings::PPI_USE_DEFAULT							)
-GET_PREF_FUNC_INT(	customPPI,					Settings::PPI_CUSTOM_VALUE							)
-GET_PREF_FUNC_WHT(	whiteBackground,			Settings::IMAGE_BACKGROUND							)
-GET_PREF_FUNC_STR(	plotBackground,				Settings::IMAGE_BACKGROUND							)
-GET_PREF_FUNC_BOOL(	developerMode,				Settings::DEVELOPER_MODE							)
-GET_PREF_FUNC_STR(	developerModeName,			Settings::DIRECT_DEVMOD_NAME						)
-GET_PREF_FUNC_INT(	thresholdScale,				Settings::THRESHOLD_SCALE							)
-GET_PREF_FUNC_BOOL(	logToFile,					Settings::LOG_TO_FILE								)
-GET_PREF_FUNC_INT(	logFilesMax,				Settings::LOG_FILES_MAX								)
-GET_PREF_FUNC_INT(	maxFlickVelocity,			Settings::QML_MAX_FLICK_VELOCITY					)
-GET_PREF_FUNC_BOOL(	modulesRemember,			Settings::MODULES_REMEMBER							)
-GET_PREF_FUNC_BOOL(	safeGraphics,				Settings::SAFE_GRAPHICS_MODE						)
-GET_PREF_FUNC_STR(	cranRepoURL,				Settings::CRAN_REPO_URL								)
-GET_PREF_FUNC_STR(	moduleLibraryURL,			Settings::MODULE_LIBRARY_URL						)
-GET_PREF_FUNC_BOOL(	githubPatUseDefault,		Settings::GITHUB_PAT_USE_DEFAULT					)
-GET_PREF_FUNC_STR(	currentThemeName,			Settings::THEME_NAME								)
-GET_PREF_FUNC_BOOL(	useNativeFileDialog,		Settings::USE_NATIVE_FILE_DIALOG					)
-GET_PREF_FUNC_BOOL(	disableAnimations,			Settings::DISABLE_ANIMATIONS						)
-GET_PREF_FUNC_BOOL(	generateMarkdown,			Settings::GENERATE_MARKDOWN_HELP					)
-GET_PREF_FUNC_INT(	maxEnginesAdmin,            Settings::MAX_ENGINE_COUNT_ADMIN                    )
-GET_PREF_FUNC_BOOL( windowsNoBomNative,			Settings::WINDOWS_NO_BOM_NATIVE						)
-GET_PREF_FUNC_INT(	windowsChosenCodePage,      Settings::WINDOWS_CHOSEN_CODEPAGE                   )
-GET_PREF_FUNC_BOOL( dbShowWarning,				Settings::DB_SHOW_WARNING							)
-GET_PREF_FUNC_STR(  dataLabelNA,				Settings::DATA_LABEL_NA								)
-GET_PREF_FUNC_BOOL( guiQtTextRender,			Settings::GUI_USE_QT_TEXTRENDER						)
-GET_PREF_FUNC_BOOL( reportingMode,				Settings::REPORT_SHOW								)
-GET_PREF_FUNC_BOOL( showRSyntax,				Settings::SHOW_RSYNTAX								)
-GET_PREF_FUNC_BOOL( showAllROptions,			Settings::SHOW_ALL_R_OPTIONS						)
-GET_PREF_FUNC_BOOL( showRSyntaxInResults,		Settings::SHOW_RSYNTAX_IN_RESULTS					)
-GET_PREF_FUNC_BOOL( ALTNavModeActive,			Settings::ALTNAVMODE_ACTIVE							)
-GET_PREF_FUNC_BOOL( orderByValueByDefault,		Settings::ORDER_BY_VALUE_BY_DEFAULT					)
-GET_PREF_FUNC_BOOL( checkUpdatesAskUser,		Settings::CHECK_UPDATES_ASK_USER					)
-GET_PREF_FUNC_BOOL( checkUpdates,				Settings::CHECK_UPDATES								)
-GET_PREF_FUNC_INT(	maxScaleLevels,				Settings::MAX_SCALE_LEVELS							)
-GET_PREF_FUNC_BOOL(	pdfLandscape,				Settings::PDF_LANDSCAPE								)
-GET_PREF_FUNC_INT(	pdfPageSize,				Settings::PDF_PAGESIZE								)
-GET_PREF_FUNC_BOOL( directLibpathEnabled,		Settings::DIRECT_LIBPATH_ENABLED					)
-GET_PREF_FUNC_STR(	directLibpathFolder,		Settings::DIRECT_LIBPATH_FOLDER						)
-GET_PREF_FUNC_STR(	directDevModName,			Settings::DIRECT_DEVMOD_NAME						)
-GET_PREF_FUNC_STR(	localConfigurationPATH,		Settings::LOCAL_CONFIGURATION_PATH              	)
-GET_PREF_FUNC_BOOL(	remoteConfiguration,		Settings::REMOTE_CONFIGURATION                     	)
-GET_PREF_FUNC_STR(	remoteConfigurationURL,		Settings::REMOTE_CONFIGURATION_URL					)
-GET_PREF_FUNC_BOOL(	useConfigurationFile,		Settings::USE_CONFIGURATION_FILE					)
-GET_PREF_FUNC_BOOL(	startMaximized,				Settings::START_MAXIMIZED							)
-GET_PREF_FUNC_BOOL(	storeStateEtc,				Settings::STORE_STATE_ETC							)
-GET_PREF_FUNC_BOOL(	showInteractiveDefault,		Settings::SHOW_INTERACTIVE_DEFAULT					)
-GET_PREF_FUNC_BOOL(	autoSaveAtAll,				Settings::AUTOSAVE_ON								)
-GET_PREF_FUNC_INT(	autoSaveIntervalSec,		Settings::AUTOSAVE_INTERVAL_SEC						)
-GET_PREF_FUNC_STR(	aiCommonSystemPrompt,		Settings::AI_COMMON_SYSTEM_PROMPT					)
-GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM	)
-GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,		Settings::AI_ANNOTATION_USE_CUSTOM					)
-GET_PREF_FUNC_STR(	aiAnnotationPrompt,			Settings::AI_ANNOTATION_PROMPT						)
-GET_PREF_FUNC_STR(	aiUserAvatar,				Settings::AI_USER_AVATAR							)
-GET_PREF_FUNC_BOOL(	aiEnabled,					Settings::AI_ENABLED								)
-GET_PREF_FUNC_BOOL(	rpcServerEnabled,			Settings::RPC_SERVER_ENABLED						)
-GET_PREF_FUNC_STR(	rpcServerIp,				Settings::RPC_SERVER_IP								)
-GET_PREF_FUNC_INT(	rpcServerPort,				Settings::RPC_SERVER_PORT							)
-GET_PREF_FUNC_BOOL(	syncDroppedDatafile,		Settings::SYNC_DROPPED_DATAFILE						)
+GET_PREF_FUNC_BOOL(	fixedDecimals,					Settings::FIXED_DECIMALS							)
+GET_PREF_FUNC_INT(	numDecimals,					Settings::NUM_DECIMALS								)
+GET_PREF_FUNC_BOOL(	exactPValues,					Settings::EXACT_PVALUES								)
+GET_PREF_FUNC_BOOL(	normalizedNotation,				Settings::NORMALIZED_NOTATION						)
+GET_PREF_FUNC_FLT(	ribbonBarHeightScale,			Settings::RIBBON_BAR_HEIGHT_SCALE					)
+GET_PREF_FUNC_BOOL(	useDefaultEditor,				Settings::USE_DEFAULT_SPREADSHEET_EDITOR			)
+GET_PREF_FUNC_STR(	customEditor,					Settings::SPREADSHEET_EDITOR_NAME					)
+GET_PREF_FUNC_STR(	developerFolder,				Settings::DEVELOPER_FOLDER							)
+GET_PREF_FUNC_BOOL(	useDefaultPPI,					Settings::PPI_USE_DEFAULT							)
+GET_PREF_FUNC_INT(	customPPI,						Settings::PPI_CUSTOM_VALUE							)
+GET_PREF_FUNC_WHT(	whiteBackground,				Settings::IMAGE_BACKGROUND							)
+GET_PREF_FUNC_STR(	plotBackground,					Settings::IMAGE_BACKGROUND							)
+GET_PREF_FUNC_BOOL(	developerMode,					Settings::DEVELOPER_MODE							)
+GET_PREF_FUNC_STR(	developerModeName,				Settings::DIRECT_DEVMOD_NAME						)
+GET_PREF_FUNC_INT(	thresholdScale,					Settings::THRESHOLD_SCALE							)
+GET_PREF_FUNC_BOOL(	logToFile,						Settings::LOG_TO_FILE								)
+GET_PREF_FUNC_INT(	logFilesMax,					Settings::LOG_FILES_MAX								)
+GET_PREF_FUNC_INT(	maxFlickVelocity,				Settings::QML_MAX_FLICK_VELOCITY					)
+GET_PREF_FUNC_BOOL(	modulesRemember,				Settings::MODULES_REMEMBER							)
+GET_PREF_FUNC_BOOL(	safeGraphics,					Settings::SAFE_GRAPHICS_MODE						)
+GET_PREF_FUNC_STR(	cranRepoURL,					Settings::CRAN_REPO_URL								)
+GET_PREF_FUNC_STR(	moduleLibraryURL,				Settings::MODULE_LIBRARY_URL						)
+GET_PREF_FUNC_BOOL(	githubPatUseDefault,			Settings::GITHUB_PAT_USE_DEFAULT					)
+GET_PREF_FUNC_STR(	currentThemeName,				Settings::THEME_NAME								)
+GET_PREF_FUNC_BOOL(	useNativeFileDialog,			Settings::USE_NATIVE_FILE_DIALOG					)
+GET_PREF_FUNC_BOOL(	disableAnimations,				Settings::DISABLE_ANIMATIONS						)
+GET_PREF_FUNC_BOOL(	generateMarkdown,				Settings::GENERATE_MARKDOWN_HELP					)
+GET_PREF_FUNC_INT(	maxEnginesAdmin,				Settings::MAX_ENGINE_COUNT_ADMIN                    )
+GET_PREF_FUNC_BOOL( windowsNoBomNative,				Settings::WINDOWS_NO_BOM_NATIVE						)
+GET_PREF_FUNC_INT(	windowsChosenCodePage,			Settings::WINDOWS_CHOSEN_CODEPAGE                   )
+GET_PREF_FUNC_BOOL( dbShowWarning,					Settings::DB_SHOW_WARNING							)
+GET_PREF_FUNC_STR(  dataLabelNA,					Settings::DATA_LABEL_NA								)
+GET_PREF_FUNC_BOOL( guiQtTextRender,				Settings::GUI_USE_QT_TEXTRENDER						)
+GET_PREF_FUNC_BOOL( reportingMode,					Settings::REPORT_SHOW								)
+GET_PREF_FUNC_BOOL( showRSyntax,					Settings::SHOW_RSYNTAX								)
+GET_PREF_FUNC_BOOL( showAllROptions,				Settings::SHOW_ALL_R_OPTIONS						)
+GET_PREF_FUNC_BOOL( showRSyntaxInResults,			Settings::SHOW_RSYNTAX_IN_RESULTS					)
+GET_PREF_FUNC_BOOL( ALTNavModeActive,				Settings::ALTNAVMODE_ACTIVE							)
+GET_PREF_FUNC_BOOL( orderByValueByDefault,			Settings::ORDER_BY_VALUE_BY_DEFAULT					)
+GET_PREF_FUNC_BOOL( checkUpdatesAskUser,			Settings::CHECK_UPDATES_ASK_USER					)
+GET_PREF_FUNC_BOOL( checkUpdates,					Settings::CHECK_UPDATES								)
+GET_PREF_FUNC_INT(	maxScaleLevels,					Settings::MAX_SCALE_LEVELS							)
+GET_PREF_FUNC_BOOL(	pdfLandscape,					Settings::PDF_LANDSCAPE								)
+GET_PREF_FUNC_INT(	pdfPageSize,					Settings::PDF_PAGESIZE								)
+GET_PREF_FUNC_BOOL( directLibpathEnabled,			Settings::DIRECT_LIBPATH_ENABLED					)
+GET_PREF_FUNC_STR(	directLibpathFolder,			Settings::DIRECT_LIBPATH_FOLDER						)
+GET_PREF_FUNC_STR(	directDevModName,				Settings::DIRECT_DEVMOD_NAME						)
+GET_PREF_FUNC_STR(	localConfigurationPATH,			Settings::LOCAL_CONFIGURATION_PATH              	)
+GET_PREF_FUNC_BOOL(	remoteConfiguration,			Settings::REMOTE_CONFIGURATION                     	)
+GET_PREF_FUNC_STR(	remoteConfigurationURL,			Settings::REMOTE_CONFIGURATION_URL					)
+GET_PREF_FUNC_BOOL(	useConfigurationFile,			Settings::USE_CONFIGURATION_FILE					)
+GET_PREF_FUNC_BOOL(	startMaximized,					Settings::START_MAXIMIZED							)
+GET_PREF_FUNC_BOOL(	storeStateEtc,					Settings::STORE_STATE_ETC							)
+GET_PREF_FUNC_BOOL(	showInteractiveDefault,			Settings::SHOW_INTERACTIVE_DEFAULT					)
+GET_PREF_FUNC_BOOL(	autoSaveAtAll,					Settings::AUTOSAVE_ON								)
+GET_PREF_FUNC_INT(	autoSaveIntervalSec,			Settings::AUTOSAVE_INTERVAL_SEC						)
+GET_PREF_FUNC_STR(	aiCommonSystemPrompt,			Settings::AI_COMMON_SYSTEM_PROMPT					)
+GET_PREF_FUNC_BOOL(	aiCommonSystemPromptUseCustom,	Settings::AI_COMMON_SYSTEM_PROMPT_USE_CUSTOM		)
+GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,			Settings::AI_ANNOTATION_USE_CUSTOM					)
+GET_PREF_FUNC_STR(	aiAnnotationPrompt,				Settings::AI_ANNOTATION_PROMPT						)
+GET_PREF_FUNC_STR(	aiUserAvatar,					Settings::AI_USER_AVATAR							)
+GET_PREF_FUNC_BOOL(	aiEnabled,						Settings::AI_ENABLED								)
+GET_PREF_FUNC_BOOL(	rpcServerEnabled,				Settings::RPC_SERVER_ENABLED						)
+GET_PREF_FUNC_STR(	rpcServerIp,					Settings::RPC_SERVER_IP								)
+GET_PREF_FUNC_INT(	rpcServerPort,					Settings::RPC_SERVER_PORT							)
+GET_PREF_FUNC_BOOL(	syncDroppedDatafile,			Settings::SYNC_DROPPED_DATAFILE						)
+GET_PREF_FUNC_BOOL(	onboardingCompleted,			Settings::ONBOARDING_COMPLETED						)
+GET_PREF_FUNC_INT(	onboardingStep,					Settings::ONBOARDING_STEP							)
 
 bool PreferencesModel::engineSandbox() const
 {
@@ -249,10 +251,10 @@ QString PreferencesModel::engineSandboxDir() const
 int PreferencesModel::maxEngines() const
 {
 	int maxEngines = Settings::value(Settings::MAX_ENGINE_COUNT).toInt();
-
+	
 	if(maxEnginesAdmin() > 0)	return std::min(maxEngines, maxEnginesAdmin());
 	else						return maxEngines;
-
+	
 }
 
 QString PreferencesModel::githubPatCustom() const
@@ -283,13 +285,13 @@ QStringList PreferencesModel::modulesRemembered()	const
 void PreferencesModel::moduleEnabledChanged(QString moduleName, bool enabled)
 {
 	QStringList list = modulesRemembered();
-
+	
 	if(list.contains(moduleName) != enabled)
 	{
 		if(enabled)	list.append(moduleName);
 		else		list.removeAll(moduleName);
 	}
-
+	
 	setModulesRemembered(list);
 }
 
@@ -313,7 +315,7 @@ QString PreferencesModel::githubPatResolved() const
 {
 	if(githubPatUseDefault())
 		return QProcessEnvironment::systemEnvironment().value("GITHUB_PAT", GITHUB_PAT_DEFINED);
-
+	
 	return githubPatCustom();
 }
 
@@ -321,7 +323,7 @@ QString PreferencesModel::fixedDecimalsForJS() const
 {
 	if(!fixedDecimals())
 		return "\"\"";
-
+	
 	return QString::fromStdString(std::to_string(numDecimals()));
 }
 
@@ -329,9 +331,9 @@ void PreferencesModel::setFixedDecimals(bool newFixedDecimals)
 {
 	if (fixedDecimals() == newFixedDecimals)
 		return;
-
+	
 	Settings::setValue(Settings::FIXED_DECIMALS, newFixedDecimals);
-
+	
 	emit fixedDecimalsChanged(newFixedDecimals);
 	emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
@@ -340,11 +342,11 @@ void PreferencesModel::setNumDecimals(int newNumDecimals)
 {
 	if (numDecimals() == newNumDecimals)
 		return;
-
+	
 	Settings::setValue(Settings::NUM_DECIMALS, newNumDecimals);
-
+	
 	emit numDecimalsChanged(newNumDecimals);
-
+	
 	if(fixedDecimals())
 		emit fixedDecimalsChangedString(fixedDecimalsForJS());
 }
@@ -363,7 +365,7 @@ void PreferencesModel::onCustomPPIChanged(int)
 
 void PreferencesModel::onDefaultPPIChanged(int)
 {
-
+	
 	if(useDefaultPPI())
 		emit plotPPIChanged(plotPPI(), false);
 }
@@ -371,26 +373,26 @@ void PreferencesModel::onDefaultPPIChanged(int)
 #define SET_PREF_FUNCTION(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-	if(GET_FUNC() == newVal) return;									\
-	Settings::setValue(SETTING, newVal);								\
-	emit NOTIFY(newVal);												\
+		if(GET_FUNC() == newVal) return;									\
+		Settings::setValue(SETTING, newVal);								\
+		emit NOTIFY(newVal);												\
 }
 
 #define SET_PREF_FUNCTION_EMIT_NO_ARG(TYPE, FUNC_NAME, GET_FUNC, NOTIFY, SETTING)	\
 void PreferencesModel::FUNC_NAME(TYPE newVal)							\
 {																		\
-	if(GET_FUNC() == newVal) return;									\
-	Settings::setValue(SETTING, newVal);								\
-	emit NOTIFY();														\
+		if(GET_FUNC() == newVal) return;									\
+		Settings::setValue(SETTING, newVal);								\
+		emit NOTIFY();														\
 }
 
 void PreferencesModel::setCurrentThemeName(QString _currentThemeName)
 {
 	if (currentThemeName() == _currentThemeName) return;
-
+	
 	Settings::setValue(Settings::THEME_NAME, _currentThemeName);
 	JaspTheme::setCurrentThemeFromName(_currentThemeName);
-
+	
 	emit currentThemeNameChanged(_currentThemeName);
 }
 
@@ -455,6 +457,8 @@ SET_PREF_FUNCTION(				bool,		setRpcServerEnabled,		rpcServerEnabled,			rpcServer
 SET_PREF_FUNCTION(				QString,	setRpcServerIp,				rpcServerIp,				rpcServerIpChanged,				Settings::RPC_SERVER_IP								)
 SET_PREF_FUNCTION(				int,		setRpcServerPort,			rpcServerPort,				rpcServerPortChanged,			Settings::RPC_SERVER_PORT							)
 SET_PREF_FUNCTION(				bool,		setSyncDroppedDatafile,		syncDroppedDatafile,		syncDroppedDatafileChanged,		Settings::SYNC_DROPPED_DATAFILE						)
+SET_PREF_FUNCTION(	      bool,	setOnboardingCompleted,	onboardingCompleted,	onboardingCompletedChanged,	Settings::ONBOARDING_COMPLETED	)
+SET_PREF_FUNCTION(	      int,	setOnboardingStep,			onboardingStep,			onboardingStepChanged,			Settings::ONBOARDING_STEP		)
 
 void PreferencesModel::resetAiDefaults()
 {
@@ -473,9 +477,9 @@ void PreferencesModel::setGithubPatCustom(QString newPat)
 {
 	if (githubPatCustom() == newPat)
 		return;
-
+	
 	Settings::setValue(Settings::GITHUB_PAT_CUSTOM, encrypt(newPat));
-
+	
 	emit githubPatCustomChanged();
 }
 
@@ -483,7 +487,7 @@ void PreferencesModel::setWhiteBackground(bool newWhiteBackground)
 {
 	if (whiteBackground() == newWhiteBackground)
 		return;
-
+	
 	setPlotBackground(newWhiteBackground ? "white" : "transparent");
 }
 
@@ -491,7 +495,7 @@ void PreferencesModel::setDefaultPPI(int defaultPPI)
 {
 	if (_defaultPPI == defaultPPI)
 		return;
-
+	
 	_defaultPPI = defaultPPI;
 	emit defaultPPIChanged(_defaultPPI);
 }
@@ -499,13 +503,13 @@ void PreferencesModel::setDefaultPPI(int defaultPPI)
 void PreferencesModel::setUiScale(double newUiScale)
 {
 	newUiScale = std::min(3.0, std::max(0.2, newUiScale));
-
+	
 	if (std::abs(uiScale() - newUiScale) < 0.001)
 		return;
-
+	
 	Settings::setValue(Settings::UI_SCALE, newUiScale);
 	_uiScale = newUiScale;
-
+	
 	emit uiScaleChanged();
 }
 
@@ -513,7 +517,7 @@ void PreferencesModel::setModulesRemembered(QStringList newModulesRemembered)
 {
 	if (modulesRemembered() == newModulesRemembered)
 		return;
-
+	
 	Settings::setValue(Settings::MODULES_REMEMBERED, newModulesRemembered.join('|'));
 	emit modulesRememberedChanged();
 }
@@ -522,12 +526,12 @@ void PreferencesModel::setSafeGraphics(bool newSafeGraphics)
 {
 	if (safeGraphics() == newSafeGraphics)
 		return;
-
+	
 	Settings::setValue(Settings::SAFE_GRAPHICS_MODE, newSafeGraphics);
 	emit modulesRememberChanged(newSafeGraphics);
-
+	
 	MessageForwarder::showWarning(tr("Safe Graphics mode changed"), tr("You've changed the Safe Graphics mode of JASP, for this option to take effect you need to restart JASP"));
-
+	
 	emit safeGraphicsChanged(newSafeGraphics);
 }
 
@@ -577,19 +581,19 @@ void PreferencesModel::setThresholdScale(int newThresholdScale)
 {
 	if (thresholdScale() == newThresholdScale)
 		return;
-
+	
 	Settings::setValue(Settings::THRESHOLD_SCALE, newThresholdScale);
 	emit thresholdScaleChanged(newThresholdScale);
-
+	
 }
 
 void PreferencesModel::_loadDatabaseFont()
 {
 	QFontDatabase fontDatabase;
-
+	
 	fontDatabase.addApplicationFont(":/fonts/FreeSans.ttf");
 	fontDatabase.addApplicationFont(":/fonts/FiraCode-Retina.ttf");
-
+	
 	_allFonts = _allCodeFonts = _allResultFonts = _allInterfaceFonts = fontDatabase.families();
 	_allCodeFonts.removeAll(defaultCodeFont());
 	_allResultFonts.removeAll(defaultResultFont());
@@ -606,7 +610,7 @@ QString PreferencesModel::_checkFontList(QString fonts) const
 			if (_allFonts.contains(font.remove('"')))
 				return font;
 		}
-
+	
 	return fonts;
 }
 
@@ -618,10 +622,10 @@ QString PreferencesModel::defaultResultFont() const
 QString PreferencesModel::resultFont(bool forWebEngine) const
 {
 	QString font		= Settings::value(Settings::RESULT_FONT).toString(),
-			defaultFont = Settings::defaultValue(Settings::RESULT_FONT).toString();
-
+		defaultFont = Settings::defaultValue(Settings::RESULT_FONT).toString();
+	
 	if (font.isEmpty()) font = defaultFont;
-
+	
 	if (forWebEngine)
 	{
 		// for WebEngine, if the font is the default one (that is a list of fonts), then use directly this list.
@@ -632,25 +636,25 @@ QString PreferencesModel::resultFont(bool forWebEngine) const
 	}
 	else
 		font = _checkFontList(font);
-
+	
 	return font;
 }
 
 QString PreferencesModel::interfaceFont() const
 {
 	QString font = Settings::value(Settings::INTERFACE_FONT).toString();
-
+	
 	if (font.isEmpty()) font = defaultInterfaceFont();
-
+	
 	return font;
 }
 
 QString PreferencesModel::codeFont() const
 {
 	QString font = Settings::value(Settings::CODE_FONT).toString();
-
+	
 	if (font.isEmpty()) font = defaultCodeFont();
-
+	
 	return font;
 }
 
@@ -677,7 +681,7 @@ void PreferencesModel::dataLabelNAChangedSlot(QString dataLabelNA)
 void PreferencesModel::onGuiQtTextRenderChanged(bool newGuiQtTextRenderSetting)
 {
 	QQuickWindow::setTextRenderType(newGuiQtTextRenderSetting ? QQuickWindow::QtTextRendering : QQuickWindow::NativeTextRendering);
-
+	
 	MessageForwarder::showWarning(tr("Text rendering setting changed"), tr("The textrendering setting has been changed, this will only take full effect after JASP is restarted."));
 }
 
@@ -701,9 +705,9 @@ QStringList PreferencesModel::_splitValues(const QString &values) const
 	std::set<QString> orderedValues; // use std::set to order the items
 	for (const QString& item : items)
 		orderedValues.insert(stripFirstAndLastChar(item,"\""));
-
+	
 	return QStringList(orderedValues.begin(), orderedValues.end());
-
+	
 }
 
 void PreferencesModel::setDirectLibpathFolder(QString libpath)
