@@ -98,9 +98,8 @@ class PreferencesModel : public PreferencesModelBase
 	Q_PROPERTY(QString		aiUserAvatar			READ aiUserAvatar				WRITE setAiUserAvatar				NOTIFY aiUserAvatarChanged				)
 	Q_PROPERTY(QObject*		aiPersonaModel			READ aiPersonaModel													CONSTANT								)
 	Q_PROPERTY(QObject*		aiConfigModel			READ aiConfigModel													CONSTANT								)
-	Q_PROPERTY(bool         onboardingCompleted     READ onboardingCompleted		WRITE setOnboardingCompleted        NOTIFY onboardingCompletedChanged       )
-	Q_PROPERTY(int          onboardingStep			READ onboardingStep				WRITE setOnboardingStep             NOTIFY onboardingStepChanged            )
-
+	Q_PROPERTY(bool			onboardingCompleted		READ onboardingCompleted		WRITE setOnboardingCompleted		NOTIFY onboardingCompletedChanged		)
+	Q_PROPERTY(int			onboardingStep			READ onboardingStep				WRITE setOnboardingStep				NOTIFY onboardingStepChanged			)
 	Q_PROPERTY(bool			rpcServerEnabled		READ rpcServerEnabled			WRITE setRpcServerEnabled			NOTIFY rpcServerEnabledChanged			)
 	Q_PROPERTY(QString		rpcServerIp				READ rpcServerIp				WRITE setRpcServerIp				NOTIFY rpcServerIpChanged				)
 	Q_PROPERTY(int			rpcServerPort			READ rpcServerPort				WRITE setRpcServerPort				NOTIFY rpcServerPortChanged				)
