@@ -51,6 +51,42 @@ private slots:
 	void	testSyncerReleasesSyncGuardOnCompletion();
 	void	testSyncerRetriesFileChangeMissedDuringSync();
 
+	// Editing the data by hand must stop the external synching *and* say so, so the Synchronisation
+	// ribbon button can switch to its off-state instead of claiming the data file is still leading.
+	void	testManualEditStopsExternalSynching();
+
+	// ...and "Reload Data File" has to really reload: re-importing the (unchanged) data file must throw
+	// the hand-made edits away instead of leaving the edited data on screen.
+	void	testReloadDataFileDiscardsManualEdits();
+
+	// The model behind the data view must keep following the current undo stack across the workspace
+	// teardown+recreation that loading data does, or the ribbon's Undo/Redo buttons never light up.
+	void	testUndoChangedSurvivesWorkspaceRecreation();
+
+	// Undoing the hand-made edits puts the data back to what the data file holds, so the external
+	// synching has to come back on by itself.
+	void	testUndoingManualEditRestoresSynching();
+
+	// Editing a label is not a change of the data, so it must not switch the external synching off.
+	void	testLabelEditDoesNotStopSynching();
+
+	// Hand edits in one dataset must never turn the synching of another one on: that bookkeeping belongs
+	// to the dataset, not to the package that happens to show it.
+	void	testSynchRestoreIsPerDataSet();
+
+	// ...and so are the hand edits themselves: editing a second dataset must switch off *its* synching,
+	// even though another dataset was already edited by hand.
+	void	testManualEditsAreTrackedPerDataSet();
+
+	// The synching can also be switched back on straight on the syncer (FileMenu::setCurrentDataFile when
+	// a generated data file lands). That must clear the manual-edits flag too, or the *next* hand edit
+	// leaves the synching on and the watcher silently reverts it.
+	void	testStartFileSyncingDirectlyAlsoClearsManualEdits();
+
+	// The dataFileSynch flag outlives the session (it is saved in the workspace), the file watcher does
+	// not. synchingExternally() must not report a synch that nobody is actually doing.
+	void	testSynchingExternallyRequiresWatcher();
+
 	// DataExporter tests
 	void	testDataExporterShownDataSetOnly();
 

@@ -211,8 +211,17 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	
 	assert(dataSet->workspace() == this);
 	
-	disconnect(_shownDataSet, &DataSet::shownColumnChanged, this, &Workspace::shownColumnChanged);
-	disconnect(_shownDataSet, &DataSet::shownFilterChanged, this, &Workspace::shownFilterChanged);
+	if(_shownDataSet)
+	{
+		disconnect(_shownDataSet, &DataSet::shownColumnChanged, this, &Workspace::shownColumnChanged);
+		disconnect(_shownDataSet, &DataSet::shownFilterChanged, this, &Workspace::shownFilterChanged);
+
+		//Unhook the shown-dataset relays (see the signals block in workspace.h); a dataset that is
+		//deleted outright disconnects these itself, but switching to another one has to clean up here.
+		disconnect(_shownDataSet,					&DataSet::dataFileSynchChanged,	this,	&Workspace::dataFileSynchChanged);
+		disconnect(_shownDataSet,					&DataSet::dataFileChanged,		this,	&Workspace::dataFileChanged);
+		disconnect(_shownDataSet,					&DataSet::manualEditsChanged,	this,	&Workspace::manualEditsChanged);
+	}
 	
 	_shownDataSet = dataSet;
 	
@@ -226,6 +235,12 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	
 	connect(_shownDataSet, &DataSet::shownColumnChanged, this, &Workspace::shownColumnChanged, Qt::UniqueConnection);
 	connect(_shownDataSet, &DataSet::shownFilterChanged, this, &Workspace::shownFilterChanged, Qt::UniqueConnection);
+
+	//And hook them up again for the new one, so DataSet & friends on the desktop side only have to
+	//connect to the Workspace once (see DataSetPackage::connectWorkspace).
+	connect(_shownDataSet,					&DataSet::dataFileSynchChanged,	this,	&Workspace::dataFileSynchChanged,	Qt::UniqueConnection);
+	connect(_shownDataSet,					&DataSet::dataFileChanged,		this,	&Workspace::dataFileChanged,		Qt::UniqueConnection);
+	connect(_shownDataSet,					&DataSet::manualEditsChanged,	this,	&Workspace::manualEditsChanged,		Qt::UniqueConnection);
 	
 	_varInfo->setProvider(_shownDataSet->shownFilter());
 			
