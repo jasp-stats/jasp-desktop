@@ -173,6 +173,21 @@ columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
 	return _decodingTypes.at(in);
 }
 
+int ColumnEncoder::dataSetIdFromEncoded(const std::string &in)
+{
+	//DataSet::setupEncoderPrefix() embeds the dataset id in every encoded name, so an encoded option
+	//value can always be routed to the dataset it was selected from. Pure parsing: no encoder state
+	//involved, which is why this is static. Legacy names (no id embedded) return -1: they belong to
+	//the primary dataset, and the callers know which one that is.
+	static const std::regex encodedWithDataSet("^JASPColumn_([0-9]+)_[0-9]+(_For_Replacement)?(\\.(scale|ordinal|nominal))?$");
+
+	std::smatch match;
+	if(std::regex_search(in, match, encodedWithDataSet) && match.size() > 1)
+		return std::stoi(match[1].str());
+
+	return -1;
+}
+
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
 {
 	//This will not give the desired result for data from the dataset, but setCurrentColumnTypePerName will fix it!

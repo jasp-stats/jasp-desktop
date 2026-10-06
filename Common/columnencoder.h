@@ -123,6 +123,13 @@ public:
 	/// attributed to `primaryDataSetId`. A null `encoderFor` reproduces encodeColumnNamesinOptions() exactly.
 	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
 
+	/// The dataSetId embedded in an encoded column name by DataSet::setupEncoderPrefix()
+	/// ("JASPColumn_<dataSetId>_<counter>"), the dataset-routing counterpart of columnTypeFromEncoded().
+	/// A trailing ".<type>" suffix or "_For_Replacement" postfix is tolerated. Returns -1 when no
+	/// dataset id is embedded (legacy "JASPColumn_<n>" names and plain column names belong to the
+	/// primary dataset). Mirrored in R by jaspBase::dataSetIdFromEncoded().
+	static	int					dataSetIdFromEncoded(const std::string & in);
+
 	/// Collects the dataSetId -> filterId pairs referenced from an options .meta subtree (see
 	/// BoundControlBase::createMeta(), which stamps both onto options that contain variables when the
 	/// analysis is multi-dataset aware). A dataSetId seen without filterId is registered as -1 and only

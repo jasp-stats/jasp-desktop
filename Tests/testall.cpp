@@ -1740,6 +1740,24 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QVERIFY2(wrongWay.asString() == encodedInA, "Another dataset's encoder must not decode this slice");
 }
 
+void TestAll::testDataSetIdFromEncoded()
+{
+	//The id embedded by DataSet::setupEncoderPrefix() ("JASPColumn_<dsId>_<counter>"):
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3"), 12);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_11_0"), 11);
+
+	//With the type suffix that flows along in preload data, and/or the replacement postfix:
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3.scale"), 12);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3.nominal"), 12);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3_For_Replacement"), 12);
+
+	//Legacy encodings (no id embedded) and non-encoded strings: no dataset to route to.
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_7"), -1);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("age"), -1);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_x_3"), -1);
+	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded(""), -1);
+}
+
 void TestAll::testMultiDataSetQueueHandout()
 {
 	MultiDataSetSliceQueue	queue;
