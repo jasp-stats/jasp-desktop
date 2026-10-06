@@ -407,7 +407,7 @@ FocusScope
 		Text
 		{
 			id:				version
-			text:			qsTr("JASP Enterprise 2026.0") //flavor text, the real version is set in the toplevel CMakeLists.txt
+			text:			!PRO ? mainWindow.versionString() : qsTr("JASP Enterprise 2026.0") //PRO shows marketing flavor text, public builds show the real version
 			color:			jaspTheme.white
 			font.family:	jaspTheme.font.family
 			font.pixelSize: 14 * welcomeRoot.scaler
@@ -463,8 +463,9 @@ FocusScope
 			anchors
 			{
 				left:				parent.left
-				bottom:				parent.bottom
-				margins:				10 * welcomeRoot.scaler
+				bottom:				jaspUrlFeatures.top
+				leftMargin:			10 * welcomeRoot.scaler
+				bottomMargin:		4 * welcomeRoot.scaler
 			}
 			
 			JASPMouseAreaToolTipped
@@ -480,8 +481,71 @@ FocusScope
 		
 		Text
 		{
+			id:						jaspUrlFeatures
+			text:				qsTr("Request features")
+			color:				jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			jaspUrlBug.font.pixelSize
+			font.weight:			Font.Normal
+			font.underline:			featureMouseArea.containsMouse
+			renderType:			Text.QtRendering
+			textFormat:			Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				left:				parent.left
+				bottom:				parent.bottom
+				margins:			10 * welcomeRoot.scaler
+			}
+			
+			JASPMouseAreaToolTipped
+			{
+				id:						featureMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(mainWindow.contactUrlFeatures);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.contactUrlFeatures
+			}
+		}
+		
+		Text
+		{
+			id:						jaspUrlQuestions
+			text:				qsTr("Ask a question")
+			color:				jaspTheme.white
+			font.family:			jaspTheme.font.family
+			font.pixelSize:			jaspUrlBug.font.pixelSize
+			font.weight:			Font.Normal
+			font.underline:			jaspQuestionsMouseArea.containsMouse
+			renderType:			Text.QtRendering
+			textFormat:			Text.StyledText
+			horizontalAlignment:	Text.AlignRight
+
+			anchors
+			{
+				right:				parent.right
+				bottom:				jaspUrl.top
+				rightMargin:			10 * welcomeRoot.scaler
+				bottomMargin:		4 * welcomeRoot.scaler
+			}
+			
+			JASPMouseAreaToolTipped
+			{
+				id:						jaspQuestionsMouseArea
+				hoverEnabled:			true
+				onClicked:				Qt.openUrlExternally(mainWindow.questionsUrl);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			mainWindow.questionsUrl
+			}
+		}
+		
+		Text
+		{
 			id:						jaspUrl
-			text:					qsTr("Visit the website")
+			text:				qsTr("Visit the website")
 			color:					jaspTheme.white
 			font.family:			jaspTheme.font.family
 			font.pixelSize:			14 * welcomeRoot.scaler
