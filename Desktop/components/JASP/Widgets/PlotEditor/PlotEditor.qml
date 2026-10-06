@@ -207,7 +207,7 @@ Popup
 						
 						PlotEditTabHead
 						{
-							buttonText:				qsTr("References")
+							buttonText:				qsTr("Elements")
 							visible:				INTERACTIVE_PLOTS
 						}
 						Component.onCompleted:		setCurrentIndex(0);
