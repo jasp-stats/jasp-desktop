@@ -20,6 +20,7 @@
 #include "analysisform.h"
 #include "log.h"
 #include <QQmlContext>
+#include <QRegularExpression>
 #include "formulasource.h"
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
@@ -389,6 +390,20 @@ bool RSyntax::hasError() const
 	return _form->hasError();
 }
 
+// A name that is not a syntactic R name (e.g. with a space, or a reserved word) must be backquoted
+QString RSyntax::_transformToRName(const QString &name)
+{
+	static const QRegularExpression	syntacticName("^((([A-Za-z]|[.][A-Za-z._])[A-Za-z0-9._]*)|[.])$");
+	static const QStringList		reservedWords = { "if", "else", "repeat", "while", "function", "for", "next", "break", "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA", "NA_integer_", "NA_real_", "NA_character_", "NA_complex_", "in" };
+
+	if (syntacticName.match(name).hasMatch() && !reservedWords.contains(name))
+		return name;
+
+	QString escaped = name;
+	escaped.replace("\\", "\\\\").replace("`", "\\`");
+	return "`" + escaped + "`";
+}
+
 QString RSyntax::transformJsonToR(const Json::Value &json)
 {
 	QString result;
@@ -440,7 +455,9 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 			{
 				const Json::Value& val = json.get(member, Json::Value::null);
 				if (!first) result += ", ";
-				result += tq(member) + " = " + transformJsonToR(val);
+				if (!member.empty())
+					result += _transformToRName(tq(member)) + " = ";
+				result += transformJsonToR(val);
 				first = false;
 			}
 			result += ")";

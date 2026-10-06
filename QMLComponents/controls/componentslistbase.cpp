@@ -144,7 +144,8 @@ Json::Value ComponentsListBase::createJson() const
 			keyLabels.push_back(newItemLabel);
 
 			row[keyValue] = fq(newItemValue);
-			row[keyLabel] = fq(newItemLabel);
+			if (!keyLabel.empty())
+				row[keyLabel] = fq(newItemLabel);
 
 			QMapIterator<QString, QVariant> it(defaultValuesMap);
 			while (it.hasNext())

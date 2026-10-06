@@ -59,6 +59,7 @@ signals:
 
 private:
 
+	static QString					_transformToRName(const QString& name);
 	QString							_analysisFullName()														const;
 	QString							_transformInteractionTerms(ListModel* model)							const;
 	bool							_areTermsVariables(ListModel* model, const Terms& terms)				const;
