@@ -141,7 +141,8 @@ void rbridge_init(DataBridge * dataBridge, sendFuncDef sendToDesktopFunction, po
 		rbridge_shouldDecodeColumnName,
 		rbridge_allColumnNames,
 		rbridge_computedColumnFilterIs,
-		rbridge_setDataSetData
+		rbridge_setDataSetData,
+		rbridge_decodeColumnNameForDataSet
 	};
 
 	JASPTIMER_START(jaspRCPP_init);
@@ -229,6 +230,25 @@ extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 {
 	static std::string out;
 	out = ColumnEncoder::columnEncoder()->decodeAll(in);
+	return out.c_str();
+}
+
+extern "C" const char * STDCALL rbridge_decodeColumnNameForDataSet(const char * in, int dataSetId)
+{
+	static std::string out;
+
+	//Dataset-aware decoding: during a multiDataSetAware run the current encoder belongs to whichever
+	//slice was read last, so encoded option values of the other datasets cannot be decoded with it.
+	//The encoded name carries its dataset id (DataSet::setupEncoderPrefix), so we can decode against
+	//the encoder of the dataset it actually came from. Unknown ids (and legacy names, for which R
+	//passes -1) fall back to the current encoder, like rbridge_decodeAllColumnNames does.
+	DataSet * dataSet = dataSetId >= 0 && data_bridge && data_bridge->workspace() ? data_bridge->workspace()->dataSetById(dataSetId) : nullptr;
+
+	if(dataSet)
+		out = dataSet->encoder().decodeAll(in);
+	else
+		out = ColumnEncoder::columnEncoder()->decodeAll(in);
+
 	return out.c_str();
 }
 
