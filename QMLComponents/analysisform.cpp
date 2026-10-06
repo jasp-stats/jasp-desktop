@@ -111,9 +111,9 @@ void AnalysisForm::refreshAnalysis()
 	_analysis->refresh();
 }
 
-QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData)
+QString AnalysisForm::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware)
 {
-	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, analysisTitle, preloadData);
+	return _rSyntax->generateWrapper(moduleName, analysisName, qmlFileName, analysisTitle, preloadData, multiDataSetAware);
 }
 
 QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue) const

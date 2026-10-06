@@ -141,7 +141,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	return result;
 }
 
-QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData) const
+QString RSyntax::generateWrapper(const QString& moduleName, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware) const
 {
 	auto addDoxygenComment = [](const QString& str) -> QString
 	{
@@ -195,7 +195,9 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	}
 
 	result += analysisName + " <- function(\n";
-	result += FunctionOptionIndent + "data = NULL,\n";
+	// A multiDataSetAware analysis takes its data as a named list of datasets (names = dataset
+	// ids, optionally with attr(datasets, "dataSetNames") titles) instead of a single data frame.
+	result += FunctionOptionIndent + (multiDataSetAware ? "datasets = NULL,\n" : "data = NULL,\n");
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
 		result += ",\n" + FunctionOptionIndent + formula->name() + " = NULL";
@@ -239,13 +241,25 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	+ FunctionLineIndent + "options <- lapply(options, eval)\n"
 	+ FunctionLineIndent + "defaults <- setdiff(names(defaultArgs), names(options))\n"
 	+ FunctionLineIndent + "options[defaults] <- defaultArgs[defaults]\n"
-	+ FunctionLineIndent + "options[[\"data\"]] <- NULL\n"
+	+ FunctionLineIndent + (multiDataSetAware ? "options[[\"datasets\"]] <- NULL\n" : "options[[\"data\"]] <- NULL\n")
 	+ FunctionLineIndent + "options[[\"version\"]] <- NULL\n\n";
 
-	result += "\n"
-	+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(data)) {\n"
-	+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSet(data)\n"
-	+ FunctionLineIndent + "}\n\n";
+	if (multiDataSetAware)
+	{
+		result += "\n"
+		+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(datasets)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSets(datasets)\n"
+		+ FunctionLineIndent + "}\n\n"
+		// Formulas and the option-formula loop below speak 'data'; for an aware wrapper the
+		// primary (first) dataset of the list plays that role.
+		+ FunctionLineIndent + "data <- if (!is.null(datasets) && length(datasets)) datasets[[1]] else NULL\n\n";
+	} else
+	{
+		result += "\n"
+		+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(data)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSet(data)\n"
+		+ FunctionLineIndent + "}\n\n";
+	}
 
 	for (FormulaBase* formula : _formulas)
 	{
@@ -276,7 +290,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	}
 
 	result += "\n"
-	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + "))\n"
+	+ FunctionLineIndent + "return(jaspBase::runWrappedAnalysis(\"" + moduleName + "\", \"" + analysisName + "\", \"" + qmlFileName + "\", options, version, " + (preloadData ? "TRUE" : "FALSE") + (multiDataSetAware ? ", datasets = datasets" : "") + "))\n"
 	+ "}";
 
 	return result;
