@@ -88,10 +88,11 @@ Window
         // Chat web-app theme: interface theme (light/dark) x edition
         // (normal / enterprise-PRO). Pushed to the page via chatThemeUpdated;
         // the page pulls the initial value via getChatTheme() on connect.
-        // Keys match window.CHAT_THEMES in Desktop/html/js/chat-themes.js.
+        // Keys must match window.CHAT_THEMES in Desktop/html/js/chat-themes.js.
         property string chatTheme: {
-            var base = preferencesModel.currentThemeName === "darkTheme" ? "darkTheme" : "lightTheme"
-            return PRO ? base.replace("Theme", "ProTheme") : base
+            var dark = preferencesModel.currentThemeName === "darkTheme"
+            return PRO ? (dark ? "darkProTheme" : "lightProTheme")
+                       : (dark ? "darkTheme" : "lightTheme")
         }
         onChatThemeChanged: chatThemeUpdated(chatTheme)
 

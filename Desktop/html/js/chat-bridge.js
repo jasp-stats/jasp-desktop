@@ -29,14 +29,6 @@ function _syncMsgLog() {
 function _applyProps(newProps) {
   var apply = function () {
     if (!_chatEl) return;
-    console.log(
-      "chat-bridge: applyProps [" +
-        Object.keys(newProps).join(",") +
-        "] msgs=" +
-        _msgLog.length +
-        " streaming=" +
-        _isStreaming,
-    );
     // Restore the canonical log before reassignment. The restore re-fires
     // onMessage with isHistory:true — we have no onMessage listener, so that
     // is harmless.
@@ -71,29 +63,22 @@ function _applyProps(newProps) {
 }
 
 function _handleThemeUpdate(name) {
-  console.log("chat-bridge: chat theme update:", name);
   if (typeof window.applyChatTheme !== "function") {
     console.warn("chat-bridge: chat-themes.js not loaded");
     return;
   }
-  var props = window.applyChatTheme(name || "lightTheme");
-  _applyProps(props);
+  _applyProps(window.applyChatTheme(name || "lightTheme"));
 }
 
-// Debug handle for remote inspection (QTWEBENGINE_REMOTE_DEBUGGING=9422 →
-// chrome://inspect or http://127.0.0.1:9422). Type __jaspChat in the console.
-Object.defineProperty(window, "__jaspChat", {
-  get: function () {
-    return {
-      msgCount: _msgLog.length,
-      msgLog: _msgLog,
-      isStreaming: _isStreaming,
-      pendingApply: !!_pendingApply,
-      themes: Object.keys(window.CHAT_THEMES || {}),
-      element: _chatEl,
-    };
-  },
-});
+// Property changes that arrived while a stream was active are deferred here
+// and applied when the stream ends (a rebuild mid-stream would kill the
+// in-flight streaming bubble).
+function _flushPendingApply() {
+  if (!_pendingApply) return;
+  var apply = _pendingApply;
+  _pendingApply = null;
+  apply();
+}
 
 // Table enhancement is deferred until stream ends to avoid flickering
 // and autoscroll disruption during partial table rendering.
@@ -189,12 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Keep currentSignals alive — tool-call loops may emit more onOpen/onClose.
         // Run table enhancement now that the stream is fully complete.
         _scheduleEnhance();
-        // Apply any property change (theme/avatar) that arrived mid-stream.
-        if (_pendingApply) {
-          var apply = _pendingApply;
-          _pendingApply = null;
-          apply();
-        }
+        _flushPendingApply();
       });
 
       aiBridge.onStreamError.connect(function (errorMsg) {
@@ -223,11 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         currentSignals = null;
         _scheduleEnhance();
-        if (_pendingApply) {
-          var apply = _pendingApply;
-          _pendingApply = null;
-          apply();
-        }
+        _flushPendingApply();
       });
 
       aiBridge.onClearChat.connect(function () {
