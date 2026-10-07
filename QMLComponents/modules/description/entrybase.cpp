@@ -200,7 +200,10 @@ AnalysisEntry * EntryBase::convertToAnalysisEntry(bool requiresDataDefault, bool
 
 bool EntryBase::preloadData() const
 {
-	return _preloadData;
+	//Aware analyses always preload (their datasets ride the same engine read/queue machinery); see
+	//Modules::AnalysisEntry::preloadData, which is what the engine actually runs on. Keep the QML
+	//side consistent with that so a module author sees the effective value, not the inert default.
+	return _preloadData || multiDataSetAware();
 }
 
 void EntryBase::setPreloadData(bool newPreloadData)
