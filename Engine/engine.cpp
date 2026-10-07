@@ -874,7 +874,10 @@ void Engine::runAnalysis()
 
 	std::string multiDataSetJson;
 
-	if(_analysisMultiDataSet && _analysisPreloadData)
+	//Check multiAware before preload: an aware analysis always runs preload-style (the datasets are
+	//handed over through the queued reads below), and preloadData is forced true for aware entries
+	//anyway (Modules::AnalysisEntry::preloadData), so the flag must not gate this branch.
+	if(_analysisMultiDataSet)
 	{
 		//Multi-dataset aware run: every variable option records in its .meta which dataset (and which
 		//filter of that dataset) it was selected from (BoundControlBase::createMeta), so encoding and
@@ -882,28 +885,34 @@ void Engine::runAnalysis()
 		//so the per-dataset slices coexist in one options blob without ever colliding.
 		Workspace * workspace = resolveWorkspace();
 
+		//An analysis without a filter reports dataSetId -1 (AnalysisBase only reaches its dataset via
+		//the filter), but provideAndUpdateDataSet() above resolved the shown one: that is the primary.
+		//Without this the whole slice queue would key on -1, dataSetById(-1) fails and every dataset
+		//gets skipped, leaving the analysis with an empty `datasets` list.
+		const int primaryDataSetId = _analysisDataSetId >= 0 ? _analysisDataSetId : (dataset ? dataset->id() : -1);
+
 		std::map<int, int> dataSetFilterIds;
 		ColumnEncoder::collectDataSetIdsFromMeta(encodedAnalysisOptions[".meta"], dataSetFilterIds);
 
-		if(_analysisDataSetId >= 0 && dataSetFilterIds.find(_analysisDataSetId) == dataSetFilterIds.end())
-			dataSetFilterIds[_analysisDataSetId] = -1; //Options without own provenance belong to the primary dataset
+		if(primaryDataSetId >= 0 && dataSetFilterIds.find(primaryDataSetId) == dataSetFilterIds.end())
+			dataSetFilterIds[primaryDataSetId] = -1; //Options without own provenance belong to the primary dataset
 
 		//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
 		//against them, then anchor the shown dataset back at the analyses own one.
 		for(const auto & dataSetFilter : dataSetFilterIds)
-			if(dataSetFilter.first != _analysisDataSetId && workspace->dataSetById(dataSetFilter.first))
+			if(dataSetFilter.first != primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
 				provideAndUpdateDataSet(dataSetFilter.first);
 
-		dataset = provideAndUpdateDataSet(_analysisDataSetId);
+		dataset = provideAndUpdateDataSet(primaryDataSetId);
 
 		ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
-				encodedAnalysisOptions, _analysisPreloadData,
+				encodedAnalysisOptions, true, //aware always collects the wanted cols, that is how it knows which slices to queue
 				[workspace](int dataSetId) -> ColumnEncoder *
 				{
 					DataSet * ds = workspace->dataSetById(dataSetId);
 					return ds ? &ds->encoder() : nullptr;
 				},
-				_analysisDataSetId);
+				primaryDataSetId);
 
 		Filter * analysisFilterObj = dataset && !_analysisFilter.empty() ? dataset->filter(_analysisFilter) : nullptr;
 		int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
@@ -941,7 +950,7 @@ void Engine::runAnalysis()
 		multiInfo["names"]	= dataSetNames;
 		multiDataSetJson	= multiInfo.toStyledString();
 
-		auto primaryCols = colsPerDataSet.find(_analysisDataSetId);
+		auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 		_analysisColsTypes = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
 
 		//Results can carry encoded names from any involved dataset, keep those encoders around for sendString():
@@ -955,9 +964,7 @@ void Engine::runAnalysis()
 	}
 	else
 	{
-		if(_analysisMultiDataSet)
-			Log::log() << "Engine::runAnalysis: multiDataSetAware analysis '" << _analysisTitle << "' requested without preloadData; it will get its data like a non-aware analysis then." << std::endl;
-
+		//Non-aware: the classic single (shown) dataset path, encoded against the current encoder.
 		_analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(encodedAnalysisOptions, _analysisPreloadData);
 	}
 

@@ -59,7 +59,9 @@ public:
 	///< Analyses that are aware can offer the user a dataset/filter selection (VariablesForm::dataSetSelection)
 	///< and receive their datasets as the `datasets` parameter rather than through readDataSet().
 	bool			multiDataSetAware()		const { return _multiDataSetAware;	}
-	bool			preloadData()			const { return _preloadData;		}
+	///< Aware analyses always preload: the engine hands their datasets over through the same
+	///< read/queue machinery as preload data, so preloading is not really optional for them.
+	bool			preloadData()			const { return _preloadData || _multiDataSetAware;	}
 	bool			shouldBeExposed()		const { return _isAnalysis && !_isSeparator && _function != "???"; }
 
 	DynamicModule*	dynamicModule()			const;

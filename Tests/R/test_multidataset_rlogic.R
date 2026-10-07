@@ -14,7 +14,9 @@ if (!file.exists(commonR))
 exprs  <- parse(commonR)
 wanted <- c(".multiDataSetState", ".multiDataSetMode", ".stopIfMultiDataSetMode", ".isMultiDataSetJson",
             ".readDataSetCleanNAs", ".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader",
-            "readDataSetByVariableTypes")
+            "readDataSetByVariableTypes",
+            ".dataSetIdFromEncodedOne", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
+            "getDataSetFor", "getDataSetColumn")
 
 env <- new.env(parent = baseenv())
 found <- character()
@@ -99,6 +101,67 @@ wrapper <- function() {
 }
 wrapper()
 check(identical(env$.multiDataSetMode(), FALSE), "on.exit reset clears the mode (also on error paths)")
+
+# --- bridge-backed round trip: R parser against REAL ColumnEncoder output -------------------------
+# jaspSyntax embeds SyntaxInterface, whose native library contains the very ColumnEncoder the
+# engine uses. When it is available we encode a real dataset through that bridge and run
+# jaspBase's routing parser, the option==columnname invariant and the decode cycle against
+# genuine encoder output - not imagined format strings. (The jaspBase testthat suite tests the
+# routing logic itself; the C++ JASPTest tests the encoder contract; this ties the two together.)
+
+syntaxLib <- Sys.getenv("JASP_SYNTAX_LIB", file.path(dirname(jaspSourceDir), ".toolLib"))
+moduleDir <- Sys.getenv("JASP_TESTMODULE_DIR", file.path(dirname(jaspSourceDir), "jaspTestModule"))
+moduleQml <- file.path(moduleDir, "inst", "qml", "testMultiDataSet.qml")
+
+# jsonlite & jaspSyntax live in the tool/build libraries; pick them up when present
+for (extraLib in c(syntaxLib, Sys.getenv("JASP_TEST_PKGLIB",
+                                        file.path(moduleDir, "ModuleBundleBuildDir", "build_dir", "jaspTestModule"))))
+	if (dir.exists(extraLib)) .libPaths(c(extraLib, .libPaths()))
+
+haveBridge <- suppressWarnings(requireNamespace("jaspSyntax", quietly = TRUE)) &&
+              requireNamespace("jsonlite", quietly = TRUE) && file.exists(moduleQml)
+if (!haveBridge) {
+	cat("SKIP : bridge round-trip (jaspSyntax not in", syntaxLib, "or module qml missing)\n")
+} else {
+	Sys.setenv(QT_QPA_PLATFORM = "offscreen")
+	jaspSyntax <- getNamespace("jaspSyntax")
+	jaspSyntax$clearNativeState()
+	jaspSyntax$setParameter("verbose", "none")
+
+	# deliberately nasty column names: the reason encoding exists at all
+	nasty <- data.frame("weight (kg)" = c(1.5, 2.5, 3.5), "2 + 2" = c(10L, 20L, 30L),
+	                    check.names = FALSE)
+	names(nasty) <- c("weight (kg)", "2 + 2")
+	jaspSyntax$loadDataSet(nasty)
+
+	parsed <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "multiDataSetNonAware", moduleQml,
+		as.character(jsonlite::toJSON(list(dependentA = list(value = "weight (kg)", types = "scale")),
+		                               auto_unbox = TRUE)), "1", TRUE)
+	optionsParsed <- jsonlite::fromJSON(parsed, simplifyVector = FALSE)
+	encodedValue  <- as.character(optionsParsed$dependentA[[1]])
+
+	check(grepl("^JASPColumn_[0-9]+_[0-9]+_Encoded$", encodedValue),
+	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
+	check(!is.na(env$dataSetIdFromEncoded(encodedValue)),
+	      "jaspBase's parser recovers a dataset id from genuine encoder output")
+
+	slice <- jaspSyntax$readRequestedDataset()
+	check(is.data.frame(slice) && encodedValue %in% names(slice),
+	      "the encoded option value IS the slice's column name (index-directly invariant)")
+
+	decoded <- as.character(jaspSyntax$decodeColumnText(encodedValue))
+	check(identical(decoded, "weight (kg)"), "decode returns the original (type dropped)")
+
+	# encode again from the decoded plain name: stable (this is the cycle the C++ test pins down
+	# against the encoder itself; here it runs through the whole bridge)
+	parsed2   <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "multiDataSetNonAware", moduleQml,
+		as.character(jsonlite::toJSON(list(dependentA = list(value = decoded, types = "scale")),
+		                               auto_unbox = TRUE)), "1", TRUE)
+	encoded2  <- as.character(jsonlite::fromJSON(parsed2, simplifyVector = FALSE)$dependentA[[1]])
+	check(identical(encoded2, encodedValue), "decode -> encode cycle is stable")
+
+	jaspSyntax$clearNativeState()
+}
 
 if (failures > 0)
 	stop(failures, " multi-dataset R-logic check(s) failed")
