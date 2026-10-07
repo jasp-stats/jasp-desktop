@@ -12,28 +12,34 @@ var streamHasContent = false;
 // first. _syncMsgLog() snapshots the live view after every state change.
 var _chatEl = null;
 var _msgLog = [];
-// Property assignment deferred while a stream is active (rebuilding
-// mid-stream would kill the in-flight streaming bubble); applied on close.
-var _pendingApply = null;
+// Property changes deferred while a stream is active (rebuilding mid-stream
+// would kill the in-flight streaming bubble); applied on stream end.
+var _pendingProps = null;
 
 function _syncMsgLog() {
-  if (!_chatEl) return;
+  if (!_chatEl) return null;
   try {
     var msgs = _chatEl.getMessages();
     if (msgs) _msgLog = msgs;
+    return msgs;
   } catch (e) {
     console.warn("chat-bridge: could not sync message log:", e);
+    return null;
   }
 }
 
 function _applyProps(newProps) {
   var apply = function () {
     if (!_chatEl) return;
-    // Restore the canonical log before reassignment. The restore re-fires
+    // Snapshot the LIVE view right before the rebuild — deep-chat rebuilds
+    // its message view from the `history` property on any reactive property
+    // change, dropping anything not in it. Restoring the just-taken snapshot
+    // keeps the conversation across the rebuild (the restore re-fires
     // onMessage with isHistory:true — we have no onMessage listener, so that
-    // is harmless.
+    // is harmless).
+    var live = _syncMsgLog();
     try {
-      _chatEl.history = _msgLog;
+      if (live && live.length) _chatEl.history = live;
     } catch (e) {
       console.warn("chat-bridge: could not restore message log:", e);
     }
@@ -55,8 +61,9 @@ function _applyProps(newProps) {
     _syncMsgLog();
   };
   if (_isStreaming) {
-    // Defer until the stream ends — see onStreamClose / onStreamError.
-    _pendingApply = apply;
+    // Defer until the stream ends — merge so a theme change followed by an
+    // avatar change (or vice versa) both survive.
+    _pendingProps = Object.assign({}, _pendingProps || {}, newProps);
     return;
   }
   apply();
@@ -70,14 +77,13 @@ function _handleThemeUpdate(name) {
   _applyProps(window.applyChatTheme(name || "lightTheme"));
 }
 
-// Property changes that arrived while a stream was active are deferred here
-// and applied when the stream ends (a rebuild mid-stream would kill the
-// in-flight streaming bubble).
+// Property changes that arrived while a stream was active are applied when
+// the stream ends (see _applyProps).
 function _flushPendingApply() {
-  if (!_pendingApply) return;
-  var apply = _pendingApply;
-  _pendingApply = null;
-  apply();
+  if (!_pendingProps) return;
+  var pending = _pendingProps;
+  _pendingProps = null;
+  _applyProps(pending);
 }
 
 // Table enhancement is deferred until stream ends to avoid flickering
