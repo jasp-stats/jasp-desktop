@@ -37,6 +37,19 @@
     var text = isDark ? "#EEE" : "black";
     var placeholder = isDark ? "#747677" : "#9A9A9A";
     var aiBorder = isDark ? "rgba(255,255,255,.1)" : "rgba(0,0,0,.1)";
+    // deep-chat v2.0.0 hardcodes :host { background-color:#fff;
+    // border:1px solid #cacaca } and #text-input-container { background-color:#fff }.
+    // Host inline styles beat the one-shot :host rule; the input container is
+    // overridden via textInput.styles.container.
+    var hostStyle = isDark
+      ? { backgroundColor: "#212121", borderColor: "#333333" }
+      : { backgroundColor: "#FFFFFF", borderColor: "#cacaca" };
+    var inputContainer = { width: "97.5%" };
+    if (isDark) {
+      inputContainer.backgroundColor = "#2E2E2E";
+      inputContainer.border = "1px solid rgba(255,255,255,.12)";
+      inputContainer.boxShadow = "none";
+    }
     return {
       vars: {
         "jasp-zebra": isDark ? "#2E2E2E" : "#EBEBEB",
@@ -110,10 +123,11 @@
       textInput: {
         placeholder: { text: "Ask anything...", style: { color: placeholder } },
         styles: {
-          container: { width: "97.5%" },
+          container: inputContainer,
           text: { color: text },
         },
       },
+      hostStyle: hostStyle,
     };
   }
 
@@ -167,6 +181,7 @@
       messageStyles: theme.messageStyles,
       submitButtonStyles: theme.submitButtonStyles,
       textInput: theme.textInput,
+      hostStyle: theme.hostStyle,
     };
   };
 })();

@@ -29,6 +29,14 @@ function _syncMsgLog() {
 function _applyProps(newProps) {
   var apply = function () {
     if (!_chatEl) return;
+    console.log(
+      "chat-bridge: applyProps [" +
+        Object.keys(newProps).join(",") +
+        "] msgs=" +
+        _msgLog.length +
+        " streaming=" +
+        _isStreaming,
+    );
     // Restore the canonical log before reassignment. The restore re-fires
     // onMessage with isHistory:true — we have no onMessage listener, so that
     // is harmless.
@@ -39,6 +47,13 @@ function _applyProps(newProps) {
     }
     for (var key in newProps) {
       try {
+        if (key === "hostStyle") {
+          // Inline styles on the host element — these beat deep-chat's own
+          // one-shot :host rule (background-color:#fff / border) and don't
+          // trigger a rebuild.
+          for (var p in newProps.hostStyle) _chatEl.style[p] = newProps.hostStyle[p];
+          continue;
+        }
         _chatEl[key] = newProps[key];
       } catch (e) {
         console.warn("chat-bridge: could not apply " + key + ":", e);
@@ -64,6 +79,21 @@ function _handleThemeUpdate(name) {
   var props = window.applyChatTheme(name || "lightTheme");
   _applyProps(props);
 }
+
+// Debug handle for remote inspection (QTWEBENGINE_REMOTE_DEBUGGING=9422 →
+// chrome://inspect or http://127.0.0.1:9422). Type __jaspChat in the console.
+Object.defineProperty(window, "__jaspChat", {
+  get: function () {
+    return {
+      msgCount: _msgLog.length,
+      msgLog: _msgLog,
+      isStreaming: _isStreaming,
+      pendingApply: !!_pendingApply,
+      themes: Object.keys(window.CHAT_THEMES || {}),
+      element: _chatEl,
+    };
+  },
+});
 
 // Table enhancement is deferred until stream ends to avoid flickering
 // and autoscroll disruption during partial table rendering.
@@ -143,6 +173,9 @@ document.addEventListener("DOMContentLoaded", function () {
         _isStreaming = false;
         if (currentSignals) {
           currentSignals.onClose();
+          // Snapshot the completed exchange — the theme/avatar applyProps
+          // relies on this being fresh.
+          _syncMsgLog();
         } else {
           // Auto-intro stream finished — replace the primer only if we have
           // intro text; never wipe an existing conversation.
@@ -209,7 +242,10 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       console.log("chat-bridge: aiBridge connected, setting up deep-chat");
+      setupDeepChat();
       // Theme: pull the initial value, then react to live switches from QML.
+      // After setupDeepChat so the element exists when the async callback
+      // with the initial theme name arrives.
       if (aiBridge.getChatTheme) {
         aiBridge.getChatTheme(function (name) {
           _handleThemeUpdate(name);
@@ -220,7 +256,6 @@ document.addEventListener("DOMContentLoaded", function () {
           _handleThemeUpdate(name);
         });
       }
-      setupDeepChat();
     });
   } else {
     console.error("chat-bridge: window.qt.webChannelTransport not available");
@@ -244,6 +279,10 @@ function setupDeepChat() {
       );
 
       currentSignals = signals;
+
+      // The user message was just rendered — snapshot immediately so a theme
+      // switch that lands before/without a stream close still keeps it.
+      _syncMsgLog();
 
       signals.stopClicked.listener = function () {
         console.log("chat-bridge: stop clicked");
