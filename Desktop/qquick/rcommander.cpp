@@ -2,6 +2,8 @@
 #include "engine/enginesync.h"
 #include "mainwindow.h"
 #include "modules/dynamicmodules.h"
+#include <QPointer>
+#include <json/json.h>
 
 RCommander * RCommander::_lastCommander = nullptr;
 
@@ -143,9 +145,105 @@ void RCommander::rCodeReturned(const QString & result, int, bool)
 
 void RCommander::rCodeReturnedLog(const QString & log, bool)
 {
-	appendToOutput(log);
+	static const QString beginMarker = "@@@JASP_BATCH_RESULT@@@";
+	static const QString endMarker	 = "@@@JASP_BATCH_RESULT_END@@@";
+
+	QString display = log;
+	QString batchJson;
+	int start = log.indexOf(beginMarker);
+	if (start >= 0)
+	{
+		int jsonStart = start + beginMarker.size();
+		int end = log.indexOf(endMarker, jsonStart);
+		if (end >= 0)
+		{
+			batchJson = log.mid(jsonStart, end - jsonStart);
+			display = log.left(start) + log.mid(end + endMarker.size());
+		}
+	}
+
+	appendToOutput(display);
+
+	if (!batchJson.trimmed().isEmpty() && batchJson.trimmed() != "[]")
+		createAnalysesFromBatchJson(batchJson);
 
 	setRunning(false);
+}
+
+void RCommander::createAnalysesFromBatchJson(const QString & json)
+{
+	Json::Value root;
+	Json::Reader reader;
+	if (!reader.parse(fq(json), root) || !root.isArray())
+	{
+		appendToOutput(tr("Could not read the analyses returned by the R code"));
+		return;
+	}
+
+	int added = 0;
+	for (const Json::Value & entry : root)
+	{
+		Json::Value analysisObj = entry;
+		if (analysisObj.isString())
+		{
+			Json::Value parsed;
+			if (!reader.parse(analysisObj.asString(), parsed) || !parsed.isObject())
+				continue;
+			analysisObj = parsed;
+		}
+
+		if (!analysisObj.isObject())
+			continue;
+
+		const QString module	= tq(analysisObj.get("module",	"").asString());
+		const QString analysis	= tq(analysisObj.get("analysis",	"").asString());
+		if (module.isEmpty() || analysis.isEmpty())
+			continue;
+
+		Analysis * a = Analyses::analyses()->createAnalysis(module, analysis);
+		if (!a)
+		{
+			appendToOutput(tr("Analysis not found: %1::%2").arg(module).arg(analysis));
+			continue;
+		}
+
+		if (analysisObj.isMember("title") && analysisObj["title"].isString())
+			a->setTitle(analysisObj["title"].asString());
+
+		Json::Value formResult(Json::objectValue);
+		formResult["options"] = analysisObj.get("options", Json::Value(Json::objectValue));
+		const QString resultStr = tq(Json::writeString(Json::StreamWriterBuilder(), formResult));
+
+		applyBatchEntryToAnalysis(a, resultStr);
+		added++;
+	}
+
+	if (added > 0)
+		appendToOutput(tr("Added %1 analyses").arg(added));
+}
+
+void RCommander::applyBatchEntryToAnalysis(Analysis * analysis, const QString & optionsJson)
+{
+	if (!analysis)
+		return;
+
+	auto applyNow = [analysis, optionsJson]()
+	{
+		analysis->runScriptRequestDone(optionsJson, AnalysisForm::rSyntaxControlName, false);
+	};
+
+	if (analysis->hasForm() && analysis->form()->initialized())
+	{
+		applyNow();
+		return;
+	}
+
+	QPointer<Analysis> guard(analysis);
+	connect(analysis, &Analysis::analysisInitialized, this, [guard, optionsJson]()
+	{
+		if (guard)
+			guard->runScriptRequestDone(optionsJson, AnalysisForm::rSyntaxControlName, false);
+	}, Qt::SingleShotConnection);
 }
 
 void RCommander::setRunning(bool running)
