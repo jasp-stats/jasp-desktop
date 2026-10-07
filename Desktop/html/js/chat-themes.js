@@ -149,6 +149,9 @@ function makeTheme(palette, accent) {
             borderTop: "1px solid " + palette.aiRowBorder,
             borderBottom: "1px solid " + palette.aiRowBorder,
           },
+          // deep-chat hardcodes .ai-message-text { color:#000 } — without
+          // this the AI text stays black and is unreadable in dark mode.
+          bubble: { color: palette.text },
         },
       },
     },
