@@ -5,6 +5,7 @@
 #include <QFileInfo>
 
 class EngineRepresentation;
+class Analysis;
 
 ///
 /// Interface for the R-commander. Keeps a log, and handles communication with the engine that belongs to it.
@@ -55,6 +56,8 @@ signals:
 private:
 	bool parseAnalysisCode(const QString& code, QString& moduleName, QString& analysisName) const;
 	void setIsAnalysisCode(bool isAnalysisCode);
+	void createAnalysesFromBatchJson(const QString & json);
+	void applyBatchEntryToAnalysis(Analysis * analysis, const QString & optionsJson);
 
 	static RCommander		*	_lastCommander;
 	QString						_output			= "", //Set in qml to have it be translatable
