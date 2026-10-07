@@ -973,6 +973,14 @@ AnalysisForm* getQmlForm(const QString& qmlFileStr)
 
 bool generateWrapper(const QString& modulePath, const QString& analysisName, const QString& qmlFileName, const QString& analysisTitle, bool preloadData, bool multiDataSetAware)
 {
+	if (analysisName.endsWith("Internal"))
+	{
+		//...Internal is the analysis entry point of a wrapped analysis (and may be pointed at directly
+		//by unwrapped ones); generating a wrapper named after it would shadow the analysis body itself.
+		Log::log() << "generateWrapper: refusing to generate a wrapper for '" << fq(analysisName) << "'" << std::endl;
+		return true;
+	}
+
 	QString qmlFilePath = modulePath + "/inst/qml/" + qmlFileName;
 
 	AnalysisForm* form = getQmlForm(qmlFilePath);

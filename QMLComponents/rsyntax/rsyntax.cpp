@@ -21,6 +21,7 @@
 #include "log.h"
 #include <QQmlContext>
 #include <QRegularExpression>
+#include <QSet>
 #include "formulasource.h"
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
@@ -214,6 +215,8 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	for (FormulaBase* formula : _formulas)
 		optionsWithFormula += formula->extraOptions(true, true);
 
+	QSet<QString> wrapperArgs;	//argument names emitted so far, to keep the generated function valid R
+
 	for (const std::string& member : boundValues.getMemberNames())
 	{
 		QString memberQ = tq(member);
@@ -228,11 +231,21 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		}
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
-		result += ",\n" + FunctionOptionIndent + getRSyntaxFromControlName(control) + " = " + transformJsonToR(defaultValue);
+		const QString optionName = getRSyntaxFromControlName(control);
+		if (!isRSyntaxIdentifier(optionName) || optionName == "data" || optionName == "datasets" || optionName == "version" || wrapperArgs.contains(optionName))
+		{
+			//Not a usable R argument (jaspTestModule's testOptionNames has controls named 'data',
+			//'formula' and even '*^&*^&%jkkh'): leave it out rather than emit a broken wrapper.
+			Log::log() << "RSyntax: skipping wrapper argument for control '" << fq(memberQ) << "'" << std::endl;
+			continue;
+		}
+		wrapperArgs.insert(optionName);
+
+		result += ",\n" + FunctionOptionIndent + optionName + " = " + transformJsonToR(defaultValue);
 
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 		if (listControl)
-			optionsWithFormula.push_back(getRSyntaxFromControlName(control));
+			optionsWithFormula.push_back(optionName);
 	}
 
 	result += ") {\n\n"
@@ -418,6 +431,14 @@ QString RSyntax::_transformToRName(const QString &name)
 	return "`" + escaped + "`";
 }
 
+// Used by generateWrapper's argument guard and the empty-name routing in transformJsonToR below
+bool RSyntax::isRSyntaxIdentifier(const QString& name)
+{
+	//R syntactic names: start with a letter or a dot not followed by a digit, then letters, digits, dot, _
+	static const QRegularExpression rName("^[A-Za-z.][A-Za-z0-9._]*$");
+	return !name.isEmpty() && rName.match(name).hasMatch();
+}
+
 QString RSyntax::transformJsonToR(const Json::Value &json)
 {
 	QString result;
@@ -464,6 +485,36 @@ QString RSyntax::transformJsonToR(const Json::Value &json)
 		case Json::objectValue:
 		{
 			bool first = true;
+
+			//Member names must be valid R names to emit list(name = value); a quoted name fixes most
+			//of them, but R rejects even list("" = 1) - so when any name cannot be quoted into
+			//validity the whole object goes through names<- instead.
+			QStringList memberNames;
+			bool needsNamesAssignment = false;
+			for (const std::string& member : json.getMemberNames())
+			{
+				QString memberName = tq(member);
+				memberNames += memberName;
+				if (!isRSyntaxIdentifier(memberName) && memberName.isEmpty())
+					needsNamesAssignment = true;
+			}
+
+			if (needsNamesAssignment)
+			{
+				result = "local({ .l <- list(";
+				QStringList namesR;
+				first = true;
+				for (const std::string& member : json.getMemberNames())
+				{
+					if (!first) result += ", ";
+					result += transformJsonToR(json.get(member, Json::Value::null));
+					namesR += "\"" + tq(member).replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+					first = false;
+				}
+				result += "); names(.l) <- c(" + namesR.join(", ") + "); .l })";
+				return result;
+			}
+
 			result = "list(";
 			for (const std::string& member : json.getMemberNames())
 			{
