@@ -173,6 +173,11 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					clearAllErrors();
 	void					cleanUpForm();
 	bool					hasError();
+
+	///< Names of the options that carry a dataset selection (VariablesForm::dataSetSelectionOption);
+	///< the syntax bridge pre-checks these in the raw options JSON before parsing (empty values are
+	///< coerced by the DropDown itself, so the check cannot live in the control).
+	QStringList				dataSetSelectionOptionNames() const;
 	QString					getError(bool withControlName = false);
 
 	bool					isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->isOwnComputedColumn(col) : false; }

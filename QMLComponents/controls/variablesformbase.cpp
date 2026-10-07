@@ -51,7 +51,12 @@ void VariablesFormBase::handleFormIsKnown(AnalysisForm * form)
 		return;
 
 	if(Workspace::singleton())
+	{
 		connect(Workspace::singleton(), &Workspace::dataSetFilterDropDownListChanged, this, &VariablesFormBase::dataSetSelectionValuesChanged, Qt::UniqueConnection);
+		connect(Workspace::singleton(), &Workspace::dataSetCreated,					this, &VariablesFormBase::dataSetTitleValuesChanged,		Qt::UniqueConnection);
+		connect(Workspace::singleton(), &Workspace::dataSetRemoved,					this, &VariablesFormBase::dataSetTitleValuesChanged,		Qt::UniqueConnection);
+		connect(Workspace::singleton(), &Workspace::dataSetTitleChanged,				this, &VariablesFormBase::dataSetTitleValuesChanged,		Qt::UniqueConnection);
+	}
 
 	//AnalysisForm::setAnalysisUp() re-runs whenever the analysis or its filter changes; keep the
 	//selection properties in sync with whatever the analysis is doing elsewhere (filter button, RPC, ...).
@@ -173,11 +178,21 @@ void VariablesFormBase::handleAnalysisChanged()
 	//The awareness of the analysis drives dataSetSelectionAllowed, so follow its changes too (the
 	//QML bindings of the selection widget lean on that signal to stay up-to-date).
 	if(AnalysisBase * analysis = _owningAnalysis())
+	{
 		connect(analysis, &AnalysisBase::multiDataSetAwareChanged, this, &VariablesFormBase::handleAnalysisChanged, Qt::UniqueConnection);
+
+		//A dataSetSelectionOption makes this a multi-dataset analysis by definition. In desktop the
+		//AnalysisEntry pushes that flag onto the analysis, but the syntax bridge runs on a dummy
+		//AnalysisBase that gets nothing - so the form declares it here, as soon as both are known
+		//(before any option value binds and .meta gets stamped).
+		if(!_dataSetSelectionOption.isEmpty() && !analysis->multiDataSetAware())
+			analysis->setMultiDataSetAware(true);
+	}
 
 	emit dataSetSelectionAllowedChanged();
 	emit selectedFilterIdChanged();
 	emit dataSetSelectionValuesChanged();
+	emit dataSetTitleValuesChanged();
 }
 
 void VariablesFormBase::handleAnalysisFilterChanged()
@@ -242,4 +257,89 @@ void VariablesFormBase::setDataSetSelection(bool dataSetSelection)
 	}
 
 	emit dataSetSelectionChanged();
+}
+
+void VariablesFormBase::setDataSetSelectionOption(const QString & option)
+{
+	if (_dataSetSelectionOption == option)
+		return;
+
+	_dataSetSelectionOption = option;
+
+	//An option-driven dataset selection implies a multi-dataset analysis; in the bridge the dummy
+	//analysis gets no flag from anywhere else (handleAnalysisChanged covers the case where the
+	//analysis only shows up after this property was bound).
+	if(!_dataSetSelectionOption.isEmpty() && _owningAnalysis() && !_owningAnalysis()->multiDataSetAware())
+		_owningAnalysis()->setMultiDataSetAware(true);
+
+	emit dataSetSelectionOptionChanged();
+}
+
+QVariantList VariablesFormBase::dataSetTitleValues() const
+{
+	Workspace    * workspace = Workspace::singleton();
+	QVariantList   values;
+
+	if (workspace)
+		for (DataSet * dataSet : workspace->dataSets())
+			if (dataSet)
+				values.append(QVariantMap({ {"value", dataSet->title()}, { "label", dataSet->title() } }));
+
+	return values;
+}
+
+void VariablesFormBase::selectDataSetByName(const QString & name)
+{
+	Workspace    * workspace = Workspace::singleton();
+	AnalysisBase * analysis  = _owningAnalysis();
+
+	QStringList available;
+
+	if (workspace)
+		for (DataSet * dataSet : workspace->dataSets())
+			if (dataSet)
+				available << dataSet->title();
+
+	if (name.trimmed().isEmpty())
+	{
+		addControlError(tr("The dataset selection option '%1' must not be empty (datasets loaded: %2)")
+						.arg(dataSetSelectionOption(), available.join(", ")));
+		return;
+	}
+
+	DataSet * dataSet = workspace ? workspace->dataSetByTitle(name) : nullptr;
+
+	if (!dataSet)
+	{
+		addControlError(tr("The dataset selection option '%1' names '%2', but no such dataset is loaded (datasets loaded: %3)")
+						.arg(dataSetSelectionOption(), name, available.join(", ")));
+		return;
+	}
+
+	_selectedDataSetTitle = name;
+	applyDataSetSelection();
+}
+
+void VariablesFormBase::applyDataSetSelection()
+{
+	if (_dataSetSelectionOption.isEmpty() || _selectedDataSetTitle.isEmpty())
+		return;
+
+	Workspace    * workspace = Workspace::singleton();
+	AnalysisBase * analysis  = _owningAnalysis();
+	DataSet      * dataSet   = workspace ? workspace->dataSetByTitle(_selectedDataSetTitle) : nullptr;
+
+	if (!dataSet || !analysis || !dataSet->defaultFilter())
+		return;
+
+	//Syntax mode has no user filters (the data arrives prefiltered), so selecting a dataset means
+	//selecting its default filter: the form's variable info, the .meta stamping of the values bound
+	//afterwards (BoundControlBase::createMeta) and the per-dataset encoding all follow the analysis.
+	if (analysis->filterId() != dataSet->defaultFilter()->id())
+		analysis->setFilterId(dataSet->defaultFilter()->id());
+
+	if (workspace->shownDataSet() != dataSet)
+		workspace->setShownDataSet(dataSet);
+
+	emit selectedFilterIdChanged();
 }

@@ -1,5 +1,6 @@
 #include "jaspcontrol.h"
 #include "jasplistcontrol.h"
+#include "variablesformbase.h"
 #include "log.h"
 #include "analysisform.h"
 #include "jasptheme.h"
@@ -921,6 +922,20 @@ void JASPControl::cleanUp()
 
 void JASPControl::_setInitialized(const Json::Value &value)
 {
+	//A VariablesForm with an option-driven dataset selection (syntax mode) owns the analysis'
+	//filter for the duration of binding its own controls: the options arrive in one pass and the
+	//selections bind before the lists, so re-applying here keeps every value validated and
+	//.meta-stamped against the dataset of ITS OWN form. Desktop never sets dataSetSelectionOption,
+	//so this is inert there.
+	for (QQuickItem * item = parentItem(); item; item = item->parentItem())
+	{
+		if (VariablesFormBase * variablesForm = qobject_cast<VariablesFormBase *>(item))
+		{
+			variablesForm->applyDataSetSelection();
+			break;
+		}
+	}
+
 	BoundControl* bControl = boundControl();
 	if (bControl)
 	{

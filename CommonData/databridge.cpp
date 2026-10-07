@@ -21,6 +21,8 @@
 #include "columnencoder.h"
 #include "rbridge.h"
 #include "timers.h"
+#include "filter.h"
+#include "log.h"
 
 DataBridge::DataBridge(unsigned long sessionID, bool useMemory)
 	: _extraEncodings(new ColumnEncoder(ExtraOptionsPrefix))
@@ -179,6 +181,89 @@ DataSet * DataBridge::provideAndUpdateDataSet(int dataSetId, std::function<void(
 	JASPTIMER_STOP(DataBridge::provideAndUpdateDataSet());
 
 	return _workspace->shownDataSet();
+}
+
+DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value & options, int analysisDataSetId, const std::string & analysisFilter, const std::string & logName)
+{
+	MultiDataSetRunPlan plan;
+	Workspace * workspace = resolveWorkspace();
+
+	//An analysis without a filter reports dataSetId -1 (AnalysisBase only reaches its dataset via
+	//the filter), but the shown dataset that provideAndUpdateDataSet() resolves is the primary then.
+	//Without this the whole slice queue would key on -1, dataSetById(-1) fails and every dataset
+	//gets skipped, leaving the analysis with an empty `datasets` list.
+	DataSet * shown = provideAndUpdateDataSet(analysisDataSetId);
+	plan.primaryDataSetId = analysisDataSetId >= 0 ? analysisDataSetId : (shown ? shown->id() : -1);
+	const int primaryDataSetId = plan.primaryDataSetId;
+
+	std::map<int, int> dataSetFilterIds;
+	ColumnEncoder::collectDataSetIdsFromMeta(options[".meta"], dataSetFilterIds);
+
+	if(primaryDataSetId >= 0 && dataSetFilterIds.find(primaryDataSetId) == dataSetFilterIds.end())
+		dataSetFilterIds[primaryDataSetId] = -1; //Options without own provenance belong to the primary dataset
+
+	//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
+	//against them, then anchor the shown dataset back at the analyses own one.
+	for(const auto & dataSetFilter : dataSetFilterIds)
+		if(dataSetFilter.first != primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
+			provideAndUpdateDataSet(dataSetFilter.first);
+
+	DataSet * dataset = provideAndUpdateDataSet(primaryDataSetId);
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
+			[workspace](int dataSetId) -> ColumnEncoder *
+			{
+				DataSet * ds = workspace->dataSetById(dataSetId);
+				return ds ? &ds->encoder() : nullptr;
+			},
+			primaryDataSetId);
+
+	Filter * analysisFilterObj = dataset && !analysisFilter.empty() ? dataset->filter(analysisFilter) : nullptr;
+	int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
+
+	std::vector<MultiDataSetSlice> queue;
+	Json::Value dataSetIds(Json::arrayValue), dataSetNames(Json::objectValue);
+
+	for(const auto & cols : colsPerDataSet)
+	{
+		const int dataSetId = cols.first;
+		DataSet * ds = workspace->dataSetById(dataSetId);
+
+		if(!ds)
+		{
+			Log::log() << "DataBridge::prepareMultiDataSetRun: '" << logName << "' references dataset " << dataSetId
+					   << " which no longer exists; this slice is skipped." << std::endl;
+			continue;
+		}
+
+		int filterId = dataSetFilterIds.count(dataSetId) ? dataSetFilterIds[dataSetId] : -1;
+
+		if(filterId < 0 && ds == dataset)
+			filterId = primaryFilterId;
+
+		queue.push_back({ dataSetId, filterId, cols.second });
+
+		dataSetIds.append(std::to_string(dataSetId));
+		dataSetNames[std::to_string(dataSetId)] = fq(ds->title());
+	}
+
+	setMultiDataSetQueue(std::move(queue));
+
+	plan.multiDataSetJson			= Json::objectValue;
+	plan.multiDataSetJson["ids"]	= dataSetIds;
+	plan.multiDataSetJson["names"]	= dataSetNames;
+
+	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
+	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
+
+	if(dataset)
+		plan.involvedDataSetIds.push_back(dataset->id());
+	for(const auto & dataSetFilter : dataSetFilterIds)
+		if(dataSetFilter.first != plan.primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
+			plan.involvedDataSetIds.push_back(dataSetFilter.first);
+
+	return plan;
 }
 
 std::string DataBridge::createColumn(const std::string &columnName, bool computed)

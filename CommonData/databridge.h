@@ -32,7 +32,9 @@ class MultiDataSetSliceQueue
 {
 public:
 	/// One dataset of a multi-dataset aware analysis run: which dataset, which of its filters to
-	/// honour, and the columns+types (in that dataset's encoded names) the analysis requested from it.
+	/// honour, and the columns+types it requested. The names are the ORIGINAL qualified ones
+	/// ("Name.scale"); rbridge_readDataSetRequested encodes them at the last moment against the
+	/// slice's own dataset encoder (that is where the encoded namespace of options and data meets).
 	struct Slice
 	{
 		int								dataSetId	= -1;
@@ -87,6 +89,23 @@ public:
 	/// read-path again; every request sets this explicitly so a stale queue can never leak).
 	void					setMultiDataSetQueue(std::vector<MultiDataSetSlice> queue)	{ _multiDataSetQueue.set(std::move(queue)); }
 	const MultiDataSetSlice	*	takeMultiDataSetSlice()										{ return _multiDataSetQueue.take(); }
+
+	/// Outcome of preparing a multi-dataset aware run (see prepareMultiDataSetRun).
+	struct MultiDataSetRunPlan
+	{
+		int								primaryDataSetId	= -1;
+		ColumnEncoder::colsPlusTypes	primaryCols;							///< what to read from the primary dataset (original qualified names)
+		std::vector<int>				involvedDataSetIds;						///< primary first, then every dataset the options reference
+		Json::Value						multiDataSetJson;						///< { ids: [...], names: { "<id>": title } } for jaspBase::runJaspResults
+	};
+
+	/// Prepare a multi-dataset aware analysis run: every variable option records in its .meta which
+	/// dataset (and filter) it was selected from (BoundControlBase::createMeta), so the options are
+	/// encoded per dataset (each dataset's own encoder embeds its id in the names) and one read
+	/// slice per involved dataset is queued for rbridge_readDataSetRequested. Used by both
+	/// Engine::runAnalysis and the syntax bridge, so the two cannot drift apart.
+	/// analysisDataSetId may be -1 (an analysis without filter); the shown dataset is the primary then.
+	MultiDataSetRunPlan		prepareMultiDataSetRun(Json::Value & options, int analysisDataSetId, const std::string & analysisFilter, const std::string & logName);
 
 protected:
 	bool					isColumnNameOk(const std::string & columnName);
