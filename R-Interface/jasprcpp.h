@@ -67,7 +67,6 @@ std::string		jaspRCPP_encodeColumnName(				std::string    in);
 std::string		jaspRCPP_decodeColumnName(				std::string    in);
 Rcpp::String	jaspRCPP_encodeAllColumnNames(	const	Rcpp::String & in);
 Rcpp::String	jaspRCPP_decodeAllColumnNames(	const	Rcpp::String & in);
-Rcpp::String	jaspRCPP_decodeColNamesForDataSet(const	Rcpp::String & in, int dataSetId);
 bool			jaspRCPP_shouldEncodeColumnName(		std::string    in);
 bool			jaspRCPP_shouldDecodeColumnName(		std::string    in);
 std::string		jaspRCPP_nativeToUtf8(			const	Rcpp::String & in);

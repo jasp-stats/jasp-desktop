@@ -80,11 +80,6 @@ private slots:
 	// attributed) against the encoder of its own dataset, per the .meta dataSetId provenance.
 	void	testPerDataSetEncodingUsesOwnDatasetEncoder();
 
-	// dataSetIdFromEncoded: the pure parse of the dataset id embedded in encoded names
-	// (jaspBase::dataSetIdFromEncoded mirrors this), tolerating type suffixes and the
-	// _For_Replacement postfix, -1 for legacy/plain names.
-	void	testDataSetIdFromEncoded();
-
 	// Option provenance: AnalysisBase must gather the dataSetId -> filterId pairs from the .meta
 	// of its bound values (with -1 for options that carry no filterId).
 	void	testAnalysisBaseReferencedDataSets();

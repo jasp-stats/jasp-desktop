@@ -86,7 +86,6 @@ typedef bool						(STDCALL *SetColumnDataAndType)			(const char* columnName, con
 typedef bool						(STDCALL *SetDataSet)					(const char* datasetName, const char ** columnNames, const int * columnTypes, const char *** columnData, const size_t * columnLengths, size_t colCount);
 typedef int							(STDCALL *DataSetRowCount)              ();
 typedef const char *				(STDCALL *EnDecodeDef)					(const char *);
-typedef const char *				(STDCALL *EnDecodeForDataSetDef)		(const char *, int);
 typedef int							(STDCALL *DecodeTypeDef)				(const char *);
 typedef bool						(STDCALL *ShouldEnDecodeDef)			(const char *);
 typedef const char *				(STDCALL *systemDef)					(const char *);
@@ -132,10 +131,6 @@ struct RBridgeCallBacks {
 	//New callbacks MUST be appended here (at the END): this struct is shared across the engine and
 	//the R-Interface DLL and read by offset, so inserting anywhere else breaks mismatched halves.
 	SetDataSet						dataSetSetDataSet;
-	//Decodes `in` against the encoder of the dataset with this id (Workspace::dataSetById), falling
-	//back to the current encoder when the id is unknown; R-side dataset-aware decoding for the
-	//encoded option values of multiDataSetAware analyses (ColumnEncoder::dataSetIdFromEncoded).
-	EnDecodeForDataSetDef			decoderForDataSet;
 };
 
 typedef void			(*sendFuncDef)			(const char *);

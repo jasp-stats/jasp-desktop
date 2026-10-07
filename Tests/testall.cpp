@@ -1738,24 +1738,24 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	Json::Value wrongWay(encodedInA);
 	b->encoder().decodeJson(wrongWay);
 	QVERIFY2(wrongWay.asString() == encodedInA, "Another dataset's encoder must not decode this slice");
-}
 
-void TestAll::testDataSetIdFromEncoded()
-{
-	//The id embedded by DataSet::setupEncoderPrefix() ("JASPColumn_<dsId>_<counter>"):
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3"), 12);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_11_0"), 11);
+	// The encode -> decode -> encode -> decode cycle: decoding hands back the plain column name
+	// (the ".type" qualifier is deliberately dropped - decode gives the name as it is in the data),
+	// and that plain name re-encodes to the current type's encoded name, so the cycle is stable
+	// from there on:
+	const std::string decoded1	= a->encoder().decode(encodedInA);
+	QCOMPARE(QString::fromStdString(decoded1), QString::fromStdString(colName));
 
-	//With the type suffix that flows along in preload data, and/or the replacement postfix:
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3.scale"), 12);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3.nominal"), 12);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_12_3_For_Replacement"), 12);
+	const std::string again		= a->encoder().encode(decoded1);
+	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
+	QCOMPARE(QString::fromStdString(a->encoder().decode(again)), QString::fromStdString(colName));
 
-	//Legacy encodings (no id embedded) and non-encoded strings: no dataset to route to.
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_7"), -1);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("age"), -1);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded("JASPColumn_x_3"), -1);
-	QCOMPARE(ColumnEncoder::dataSetIdFromEncoded(""), -1);
+	// And the emitted format that jaspBase's dataSetIdFromEncoded routing contractually depends on
+	// (DataSet::setupEncoderPrefix embeds the id, the "_Encoded" postfix is the encoder default):
+	QVERIFY2(encodedInA.rfind("JASPColumn_" + std::to_string(a->id()) + "_", 0) == 0,
+	         "encoded names must start with JASPColumn_<dataSetId>_");
+	QVERIFY2(encodedInA.size() > 8 && encodedInA.compare(encodedInA.size() - 8, 8, "_Encoded") == 0,
+	         "encoded names must end in the _Encoded postfix");
 }
 
 void TestAll::testMultiDataSetQueueHandout()
