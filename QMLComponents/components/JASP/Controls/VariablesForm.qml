@@ -133,6 +133,28 @@ VariablesFormBase
 
 			Component.onCompleted:	syncToSelection()
 		}
+
+		// Syntax mode only: the same selection, but driven by an OPTION (named by
+		// variablesForm.dataSetSelectionOption) whose value is a dataset title. On desktop the name
+		// stays empty, so this control is never registered in the form and stays invisible; in the
+		// bridge the value binds (before the lists that 'depends' on it) and switches the whole form
+		// to that dataset, so the column-name options that follow validate and encode against it.
+		DropDown
+		{
+			id:			dataSetOptionDropDown
+
+			readonly property bool	syntaxMode:	typeof NO_DESKTOP_MODE !== "undefined" && NO_DESKTOP_MODE
+
+			name:		syntaxMode ? variablesForm.dataSetSelectionOption : ""
+			visible:	name !== ""
+			values:		variablesForm.dataSetTitleValues
+
+			onCurrentValueChanged:
+			{
+				if(name !== "")
+					variablesForm.selectDataSetByName(currentValue)
+			}
+		}
 	}
 
 	Connections

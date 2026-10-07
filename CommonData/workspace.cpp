@@ -356,6 +356,17 @@ DataSet *Workspace::dataSetByName(const std::string & name) const
 	return nullptr;
 }
 
+DataSet *Workspace::dataSetByTitle(const QString & title) const
+{
+	//Exact match on the user facing title (DataSet::setTitle keeps those unique); used by the
+	//syntax-mode dataset selection, where the user refers to datasets by name.
+	for(auto & idData : _dataSets)
+		if(idData.second->title() == title)
+			return idData.second;
+
+	return nullptr;
+}
+
 QString Workspace::makeDataSetTitleUnique(const QString & title, DataSet * exclude) const
 {
 	QSet<QString> takenTitles;

@@ -54,6 +54,9 @@ public:
 			DataSets				dataSets()		const;
 			DataSet				*	dataSetById(int id) const;
 			DataSet				*	dataSetByName(const std::string & name) const;
+			///< Exact match on the user facing title (unique per Workspace::setTitle); syntax-mode
+			///< dataset selection refers to datasets by name.
+			DataSet				*	dataSetByTitle(const QString & title) const;
 			Filter				*	filterById(int id) const;
 			///Returns title if no other dataset already has that title, otherwise appends " (n)" with an incrementing n until it is unique. exclude lets a dataset check against the others without matching against its own current title.
 			QString					makeDataSetTitleUnique(const QString & title, DataSet * exclude = nullptr) const;

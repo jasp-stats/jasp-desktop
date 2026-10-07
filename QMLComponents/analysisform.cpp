@@ -28,6 +28,7 @@
 #include "controls/comboboxbase.h"
 #include "controls/textinputbase.h"
 #include "controls/componentslistbase.h"
+#include "controls/variablesformbase.h"
 #include "controls/rowcontrols.h"
 #include "log.h"
 #include "controls/jaspcontrol.h"
@@ -575,6 +576,17 @@ void AnalysisForm::addControlError(JASPControl* control, QString message, bool t
 
 	if (warning)	control->setHasWarning(true);
 	else			control->setHasError(true);
+}
+
+QStringList AnalysisForm::dataSetSelectionOptionNames() const
+{
+	QStringList names;
+
+	for (VariablesFormBase * variablesForm : findChildren<VariablesFormBase *>())
+		if (variablesForm && !variablesForm->dataSetSelectionOption().isEmpty())
+			names << variablesForm->dataSetSelectionOption();
+
+	return names;
 }
 
 bool AnalysisForm::hasError()

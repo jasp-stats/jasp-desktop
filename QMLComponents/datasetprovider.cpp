@@ -66,6 +66,7 @@ void DataSetProvider::resetDataSet()
 	
 	_workspace = new Workspace(this);
 	_workspace->createDataSet();
+	_firstLoadedDataSetId = -1;
 }
 
 int	DataSetProvider::rowCount(const QModelIndex &) const
@@ -87,10 +88,35 @@ QVariant DataSetProvider::data(const QModelIndex & index, int role) const
 	else								return QVariant(); //QAbstractTableModel::data(index, role);
 }
 
-void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue)
+void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & dataSetStrings, int threshold, bool orderLabelsByValue, const QString & title)
 {
-	if (!dataSet())
-		_workspace->createDataSet();
+	// With a title this is a named (multi-)dataset load: a dataset with that title gets its
+	// contents replaced, otherwise a new DataSet is added to the workspace (each through
+	// dbCreate, so they all get a real id and encoder prefix - setupEncoderPrefix). Without a
+	// title the legacy behaviour holds: fill the shown dataset.
+	DataSet * target = nullptr;
+
+	if (title.isEmpty())
+	{
+		if (!dataSet())
+			_workspace->createDataSet();
+	}
+	else if (DataSet * existing = _workspace->dataSetByTitle(title))
+	{
+		_workspace->setShownDataSet(existing);
+		target = existing;
+	}
+	else
+	{
+		// createDataSet() reuses the shown dataset while it is still empty (the one
+		// resetDataSet() pre-creates), so the first named load fills that one.
+		target = _workspace->createDataSet();
+		_workspace->setShownDataSet(target);
+		target->setTitle(title);
+	}
+
+	if (_firstLoadedDataSetId < 0 && !title.isEmpty() && dataSet())
+		_firstLoadedDataSetId = dataSet()->id();   // primary of a multi-dataset syntax run
 
 	dataSet()->beginBatchedToDB();
 

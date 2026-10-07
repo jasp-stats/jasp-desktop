@@ -47,6 +47,13 @@ class VariablesFormBase : public JASPControl
 	///< The filter this form currently runs on (the analysis' filterId), -1 when unknown; setting it
 	///< switches the whole form (and thus the analysis) to that dataset/filter.
 	Q_PROPERTY( int						selectedFilterId				READ selectedFilterId			WRITE setSelectedFilterId			NOTIFY selectedFilterIdChanged		)
+	///< Syntax mode only: name of the OPTION that carries this form's dataset selection (a dataset
+	///< title; see selectDataSetByName). Setting it also marks the analysis multiDataSetAware (there
+	///< is no AnalysisEntry in the bridge to push that flag). Empty (the default) means: no
+	///< option-driven selection, desktop keeps using the dataSetSelection dropdown above.
+	Q_PROPERTY( QString					dataSetSelectionOption			READ dataSetSelectionOption		WRITE setDataSetSelectionOption	NOTIFY dataSetSelectionOptionChanged	)
+	///< {value: title, label: title} per workspace dataset; the values a dataSetSelectionOption may hold.
+	Q_PROPERTY( QVariantList			dataSetTitleValues				READ dataSetTitleValues			NOTIFY dataSetTitleValuesChanged		)
 
 public:
 	VariablesFormBase(QQuickItem* parent = nullptr);
@@ -60,6 +67,21 @@ public:
 	QVariantList			dataSetSelectionValues()		const;
 	bool					dataSetSelectionAllowed()		const;
 	int						selectedFilterId()			const;
+	QString					dataSetSelectionOption()		const	{ return _dataSetSelectionOption;			}
+	///< {value: title, label: title} per workspace dataset; the values a dataSetSelectionOption may hold.
+	QVariantList			dataSetTitleValues()			const;
+
+	///< Switches this form (and analysis) to the dataset with exactly this title: the syntax-mode
+	///< counterpart of the desktop dataSetSelection dropdown (users pre-filter their data, so the
+	///< dataset's default filter is selected). Empty or unknown names raise a control error.
+	Q_INVOKABLE void		selectDataSetByName(const QString & name);
+
+	///< Re-selects the dataset chosen through dataSetSelectionOption (if any) on the owning
+	///< analysis: JASPControl calls this right before binding any of its children, so a control
+	///  validates and stamps against ITS OWN form's dataset regardless of the order in which the
+	///  form applies the options (the analysis filter is one global slot; each form owns it for a
+	///  binding moment). No-op for desktop (no dataSetSelectionOption there).
+	void					applyDataSetSelection();
 
 	Q_INVOKABLE bool		widthSetByForm(JASPControl* control)	{ return _controlsWidthSetByForm.contains(control); }
 	Q_INVOKABLE bool		heightSetByForm(JASPControl* control)	{ return _controlsHeightSetByForm.contains(control); }
@@ -69,6 +91,7 @@ public slots:
 	void					setMinimumHeightVariablesLists(qreal value);
 	void					setDataSetSelection(bool dataSetSelection);
 	void					setSelectedFilterId(int filterId);
+	void					setDataSetSelectionOption(const QString & option);
 
 signals:
 	void availableVariablesListChanged();
@@ -80,6 +103,8 @@ signals:
 	void dataSetSelectionValuesChanged();
 	void dataSetSelectionAllowedChanged();
 	void selectedFilterIdChanged();
+	void dataSetSelectionOptionChanged();
+	void dataSetTitleValuesChanged();
 
 protected:
 	void componentComplete() override;
@@ -103,6 +128,8 @@ private:
 	qreal						_marginBetweenVariablesLists = 8;
 	qreal						_minimumHeightVariablesLists = 25;
 	bool						_dataSetSelection = false;
+	QString						_dataSetSelectionOption;
+	QString						_selectedDataSetTitle;	///< what dataSetSelectionOption last resolved to
 
 };
 

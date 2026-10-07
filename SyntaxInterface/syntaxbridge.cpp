@@ -443,7 +443,13 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		createDataBridge(dbInMemory);
 	}
 	else
-		provider = DataSetProvider::getProvider(dbInMemory);
+	{
+		//Unnamed (legacy) loads replace the data, so they reset. Named multi-dataset loads must
+		//ACCUMULATE in the workspace - a fresh state is established by clearNativeState() before
+		//loadDataSets(), not by each individual load.
+		const bool named = syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name;
+		provider = DataSetProvider::getProvider(dbInMemory, !named);
+	}
 
 	std::map<std::string, stringvec > dataSet;
 
@@ -456,7 +462,10 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 		dataSet[column.name] = values;
 	}
 
-	provider->loadDataSet(dataSet, threshold, orderLabelsByValue);
+	//A named dataset goes into the workspace as its own DataSet (with id + encoder prefix, titled);
+	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
+	provider->loadDataSet(dataSet, threshold, orderLabelsByValue,
+	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString());
 }
 
 void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
@@ -563,6 +572,35 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
+	//Dataset selection options (VariablesForm::dataSetSelectionOption) must carry a dataset name:
+	//a bound DropDown coerces "" to its first entry, so the control itself cannot flag emptiness -
+	//check the raw JSON here and fail with a clear message.
+	if (const QStringList selectionOptions = form->dataSetSelectionOptionNames(); !selectionOptions.isEmpty())
+	{
+		Json::Value rawOptions;
+		Json::Reader rawReader;
+
+		if (!rawReader.parse(options, rawOptions))
+			return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Could not parse the options json");
+
+		QStringList loaded;
+
+		if (Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr)
+			for (DataSet * dataSet : workspace->dataSets())
+				if (dataSet)
+					loaded << dataSet->title();
+
+		for (const QString & option : selectionOptions)
+		{
+			const Json::Value & value = rawOptions[option.toStdString()];
+
+			if (!value.isString() || tq(value.asString()).trimmed().isEmpty())
+				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
+					"The dataset selection option '" + option.toStdString() + "' must name one of the loaded datasets ("
+					+ loaded.join(", ").toStdString() + ")");
+		}
+	}
+
 	Json::Value parsedOptions;
 	std::string errorMsg;
 	if (!form->parseOptions(options, parsedOptions, errorMsg))
@@ -577,10 +615,29 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 	gl_dataBridge->extraEncodings()->setCurrentNamesFromOptionsMeta(parsedOptions);
 	gl_dataBridge->updateOptionsAccordingToMeta(parsedOptions);
-	ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
-	rbridge_setWantedCols(analysisColsTypes);
 
 	Json::Value status = statusBase("syntaxBridgeLoadQmlAndParseOptions");
+
+	if (form->analysisObj() && form->analysisObj()->multiDataSetAware())
+	{
+		//Multi-dataset aware run: exactly what Engine::runAnalysis does, through the shared
+		//DataBridge preparation. The QML controls stamped the .meta provenance while binding (the
+		//dataset selection option switched its form to the named dataset first, via 'depends'), so
+		//the options encode per dataset and the slice queue feeds the R-side reads. Syntax datasets
+		//have no user filters; the default filter of each dataset is queued. The primary is the
+		//first loaded dataset (the wrapper's datasets[[1]]), not whatever the selections left shown.
+		const int primaryId = DataSetProvider::getProvider(gl_initializedDbInMemory, false)->firstLoadedDataSetId();
+		const DataBridge::MultiDataSetRunPlan plan = gl_dataBridge->prepareMultiDataSetRun(parsedOptions, primaryId, "", analysisNameStr);
+
+		rbridge_setWantedCols(plan.primaryCols);
+		status["multiDataSetJson"] = plan.multiDataSetJson;
+	}
+	else
+	{
+		ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
+		rbridge_setWantedCols(analysisColsTypes);
+	}
+
 	status["ok"] = true;
 	status["options"] = parsedOptions;
 	return statusResult(status);

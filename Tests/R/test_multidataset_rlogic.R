@@ -111,7 +111,7 @@ check(identical(env$.multiDataSetMode(), FALSE), "on.exit reset clears the mode 
 
 syntaxLib <- Sys.getenv("JASP_SYNTAX_LIB", file.path(dirname(jaspSourceDir), ".toolLib"))
 moduleDir <- Sys.getenv("JASP_TESTMODULE_DIR", file.path(dirname(jaspSourceDir), "jaspTestModule"))
-moduleQml <- file.path(moduleDir, "inst", "qml", "testMultiDataSet.qml")
+moduleQml <- file.path(moduleDir, "inst", "qml", "testMultiDataSetNonAware.qml")  # single-dataset twin: no selection options
 
 # jsonlite & jaspSyntax live in the tool/build libraries; pick them up when present
 for (extraLib in c(syntaxLib, Sys.getenv("JASP_TEST_PKGLIB",

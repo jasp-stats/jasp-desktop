@@ -875,92 +875,25 @@ void Engine::runAnalysis()
 	std::string multiDataSetJson;
 
 	//Check multiAware before preload: an aware analysis always runs preload-style (the datasets are
-	//handed over through the queued reads below), and preloadData is forced true for aware entries
-	//anyway (Modules::AnalysisEntry::preloadData), so the flag must not gate this branch.
+	//handed over through the queued reads), and preloadData is forced true for aware entries anyway
+	//(Modules::AnalysisEntry::preloadData), so the flag must not gate this branch.
 	if(_analysisMultiDataSet)
 	{
-		//Multi-dataset aware run: every variable option records in its .meta which dataset (and which
-		//filter of that dataset) it was selected from (BoundControlBase::createMeta), so encoding and
-		//loading happen per dataset. Encoded names embed their dataset id (DataSet::setupEncoderPrefix),
-		//so the per-dataset slices coexist in one options blob without ever colliding.
-		Workspace * workspace = resolveWorkspace();
+		//Encoding and slice queueing happen per dataset from the .meta provenance the controls
+		//stamped; shared with the syntax bridge through DataBridge so the two cannot drift apart.
+		MultiDataSetRunPlan plan = prepareMultiDataSetRun(encodedAnalysisOptions, _analysisDataSetId, _analysisFilter, _analysisTitle);
 
-		//An analysis without a filter reports dataSetId -1 (AnalysisBase only reaches its dataset via
-		//the filter), but provideAndUpdateDataSet() above resolved the shown one: that is the primary.
-		//Without this the whole slice queue would key on -1, dataSetById(-1) fails and every dataset
-		//gets skipped, leaving the analysis with an empty `datasets` list.
-		const int primaryDataSetId = _analysisDataSetId >= 0 ? _analysisDataSetId : (dataset ? dataset->id() : -1);
+		if(DataSet * primary = plan.primaryDataSetId >= 0 ? resolveWorkspace()->dataSetById(plan.primaryDataSetId) : nullptr)
+			dataset = primary;
 
-		std::map<int, int> dataSetFilterIds;
-		ColumnEncoder::collectDataSetIdsFromMeta(encodedAnalysisOptions[".meta"], dataSetFilterIds);
-
-		if(primaryDataSetId >= 0 && dataSetFilterIds.find(primaryDataSetId) == dataSetFilterIds.end())
-			dataSetFilterIds[primaryDataSetId] = -1; //Options without own provenance belong to the primary dataset
-
-		//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
-		//against them, then anchor the shown dataset back at the analyses own one.
-		for(const auto & dataSetFilter : dataSetFilterIds)
-			if(dataSetFilter.first != primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
-				provideAndUpdateDataSet(dataSetFilter.first);
-
-		dataset = provideAndUpdateDataSet(primaryDataSetId);
-
-		ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
-				encodedAnalysisOptions, true, //aware always collects the wanted cols, that is how it knows which slices to queue
-				[workspace](int dataSetId) -> ColumnEncoder *
-				{
-					DataSet * ds = workspace->dataSetById(dataSetId);
-					return ds ? &ds->encoder() : nullptr;
-				},
-				primaryDataSetId);
-
-		Filter * analysisFilterObj = dataset && !_analysisFilter.empty() ? dataset->filter(_analysisFilter) : nullptr;
-		int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
-
-		std::vector<MultiDataSetSlice> queue;
-		Json::Value dataSetIds(Json::arrayValue), dataSetNames(Json::objectValue);
-
-		for(const auto & cols : colsPerDataSet)
-		{
-			const int dataSetId = cols.first;
-			DataSet * ds = workspace->dataSetById(dataSetId);
-
-			if(!ds)
-			{
-				Log::log() << "Engine::runAnalysis: '" << _analysisTitle << "' references dataset " << dataSetId
-						   << " which no longer exists; this slice is skipped." << std::endl;
-				continue;
-			}
-
-			int filterId = dataSetFilterIds.count(dataSetId) ? dataSetFilterIds[dataSetId] : -1;
-
-			if(filterId < 0 && ds == dataset)
-				filterId = primaryFilterId;
-
-			queue.push_back({ dataSetId, filterId, cols.second });
-
-			dataSetIds.append(std::to_string(dataSetId));
-			dataSetNames[std::to_string(dataSetId)] = fq(ds->title());
-		}
-
-		setMultiDataSetQueue(std::move(queue));
-
-		Json::Value multiInfo(Json::objectValue);
-		multiInfo["ids"]		= dataSetIds;
-		multiInfo["names"]	= dataSetNames;
-		multiDataSetJson	= multiInfo.toStyledString();
-
-		auto primaryCols = colsPerDataSet.find(primaryDataSetId);
-		_analysisColsTypes = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
+		_analysisColsTypes = plan.primaryCols;
+		multiDataSetJson	= plan.multiDataSetJson.toStyledString();
 
 		//Results can carry encoded names from any involved dataset, keep those encoders around for sendString():
 		_analysisDataSetEncoders.clear();
-		if(dataset)
-			_analysisDataSetEncoders.push_back(&dataset->encoder());
-		for(const auto & dataSetFilter : dataSetFilterIds)
-			if(DataSet * ds = workspace->dataSetById(dataSetFilter.first))
-				if(std::find(_analysisDataSetEncoders.begin(), _analysisDataSetEncoders.end(), &ds->encoder()) == _analysisDataSetEncoders.end())
-					_analysisDataSetEncoders.push_back(&ds->encoder());
+		for(const int dataSetId : plan.involvedDataSetIds)
+			if(DataSet * ds = resolveWorkspace()->dataSetById(dataSetId))
+				_analysisDataSetEncoders.push_back(&ds->encoder());
 	}
 	else
 	{
