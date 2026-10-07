@@ -52,6 +52,7 @@ public:
 	static QString					FunctionOptionIndent,
 									FunctionLineIndent;
 	static QString					transformJsonToR(const Json::Value& json);
+	static bool						isRSyntaxIdentifier(const QString& name);
 
 signals:
 	void							somethingChanged();
