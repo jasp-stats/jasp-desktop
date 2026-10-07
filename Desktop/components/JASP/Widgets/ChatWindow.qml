@@ -85,6 +85,16 @@ Window
 
 		property string conversationStatsJson: ""
 
+        // Chat web-app theme: interface theme (light/dark) x edition
+        // (normal / enterprise-PRO). Pushed to the page via chatThemeUpdated;
+        // the page pulls the initial value via getChatTheme() on connect.
+        // Keys match window.CHAT_THEMES in Desktop/html/js/chat-themes.js.
+        property string chatTheme: {
+            var base = preferencesModel.currentThemeName === "darkTheme" ? "darkTheme" : "lightTheme"
+            return PRO ? base.replace("Theme", "ProTheme") : base
+        }
+        onChatThemeChanged: chatThemeUpdated(chatTheme)
+
             signal onStreamOpen()
             signal onStreamClose()
             signal onStreamChunk(string text)
@@ -93,6 +103,7 @@ Window
 	signal conversationStatsUpdated()
 	signal personaAvatarUpdated(string newPath)
 	signal userAvatarUpdated(string newPath)
+	signal chatThemeUpdated(string name)
 
             function startStream(messagesJson) { aiBridge.startStream(messagesJson) }
             function stopStream() { aiBridge.stopStream() }
@@ -100,6 +111,7 @@ Window
     	        function clearChat() { aiBridge.clearChat() }
 	    function conversationStats() { return aiBridge.conversationStats() }
 	    function openUrl(url) { Qt.openUrlExternally(url) }
+	    function getChatTheme() { return chatTheme }
 	    function exportToMarkdownFile(path) { aiBridge.exportToMarkdownFile(path) }
 	    function requestSave() { saveFileDialog.open() }
 
