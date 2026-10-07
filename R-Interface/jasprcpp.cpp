@@ -52,7 +52,6 @@ EnDecodeDef						encodeColumnName,
 								decodeColumnName,
 								encodeAllColumnNames,
 								decodeAllColumnNames;
-EnDecodeForDataSetDef			decodeColumnNameForDataSet;
 DecodeTypeDef					decodeColumnType;
 
 ShouldEnDecodeDef				shouldEncodeColumnName,
@@ -183,7 +182,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	decodeColumnType							= callbacks->decodeType;
 	encodeColumnName							= callbacks->encoder;
 	decodeColumnName							= callbacks->decoder;
-	decodeColumnNameForDataSet					= callbacks->decoderForDataSet;
 
 	// TODO: none of this should pollute the global environment.
 	rEnvironment[".setLog"]							= Rcpp::InternalFunction(&jaspRCPP_setLog);
@@ -203,7 +201,6 @@ void STDCALL jaspRCPP_init(const char* buildYear, const char* version, RBridgeCa
 	rEnvironment[".decodeColNamesLax"]				= Rcpp::InternalFunction(&jaspRCPP_decodeAllColumnNames);
 	rEnvironment[".encodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_encodeColumnNameRcpp);
 	rEnvironment[".decodeColNamesStrict"]			= Rcpp::InternalFunction(&jaspRCPP_decodeColumnNameRcpp);
-	rEnvironment[".decodeColNamesForDataSet"]		= Rcpp::InternalFunction(&jaspRCPP_decodeColNamesForDataSet);
 	rEnvironment[".setColumnDataAsScale"]			= Rcpp::InternalFunction(&jaspRCPP_setColumnDataAsScale);
 	rEnvironment[".setDataSet"]						= Rcpp::InternalFunction(&jaspRCPP_setDataSet);
 	rEnvironment[".readFullDatasetToEnd"]			= Rcpp::InternalFunction(&jaspRCPP_readFullDataSet);
@@ -1556,14 +1553,6 @@ Rcpp::String jaspRCPP_encodeAllColumnNames(const Rcpp::String & in)
 Rcpp::String jaspRCPP_decodeAllColumnNames(const Rcpp::String & in)
 {
 	return decodeAllColumnNames(std::string(in).c_str());
-}
-
-Rcpp::String jaspRCPP_decodeColNamesForDataSet(const Rcpp::String & in, int dataSetId)
-{
-	if (decodeColumnNameForDataSet == nullptr)	//Older CommonData without the dataset-aware decoder
-		return decodeAllColumnNames(std::string(in).c_str());
-
-	return decodeColumnNameForDataSet(std::string(in).c_str(), dataSetId);
 }
 
 bool jaspRCPP_shouldEncodeColumnName(std::string in)

@@ -68,7 +68,6 @@ extern "C" {
 	int							STDCALL rbridge_dataSetRowCount();
 	const char *				STDCALL rbridge_encodeColumnName(		const char * in);
 	const char *				STDCALL rbridge_decodeColumnName(		const char * in);
-	const char *				STDCALL rbridge_decodeColumnNameForDataSet(const char * in, int dataSetId);
 	int							STDCALL rbridge_decodeColumnType(		const char * in);
 	const char *				STDCALL rbridge_encodeAllColumnNames(	const char * in);
 	const char *				STDCALL rbridge_decodeAllColumnNames(	const char * in);
