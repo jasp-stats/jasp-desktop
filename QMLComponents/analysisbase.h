@@ -143,7 +143,7 @@ protected:
 	QQuickItem	*	_parentItem			= nullptr;
 	QString			_qmlError;
 	bool			_isAnnotated		= false;
-	bool			_multiDataSetAware	= false;	///< See the multiDataSetAware Q_PROPERTY; Desktop::Analysis overrides the getter with the module entry's value.
+	bool			_multiDataSetAware	= false;	///< See the multiDataSetAware Q_PROPERTY above; Desktop::Analysis pushes its module entry's value in via syncMultiDataSetAwareness()
 	//Guarded pointers: a Filter/DataSet is owned by a DataSet/Workspace that may be destroyed (e.g.
 	//multi-dataset teardown) while the analysis lives on; the guard auto-nulls on destruction so the
 	//analysis never dereferences freed memory. _filterDataSet also derives from the (possibly null)

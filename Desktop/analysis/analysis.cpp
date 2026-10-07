@@ -62,6 +62,8 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
 
+	syncMultiDataSetAwareness();
+
 	initAnalysis();
 }
 
@@ -93,6 +95,8 @@ Analysis::Analysis(size_t id, Analysis * duplicateMe)
 {
 	_filter = duplicateMe->_filter;
 	
+	syncMultiDataSetAwareness();
+
 	initAnalysis();
 }
 
@@ -170,6 +174,14 @@ Analysis::~Analysis()
 	}
 }
 
+void Analysis::syncMultiDataSetAwareness()
+{
+	//The AnalysisBase property is the single source of truth (with a working NOTIFY); it mirrors
+	//whatever the currently bound module entry says. See the declaration in analysis.h for why
+	//this is pushed per binding rather than connected to the entry.
+	setMultiDataSetAware(_moduleData && _moduleData->multiDataSetAware());
+}
+
 bool Analysis::checkAnalysisEntry()
 {
 	/*
@@ -195,6 +207,10 @@ bool Analysis::checkAnalysisEntry()
 			Modules::ModuleException("???", "No coded reference stored...");
 
 		_moduleData = _dynamicModule->retrieveCorrespondingAnalysisEntry(_codedReferenceToAnalysisEntry);
+
+		//The entry was just (re)bound: it may well be a different one than before (module reload),
+		//so re-push its awareness into the property.
+		syncMultiDataSetAwareness();
 
 		bool updateTitleToDefault = _title == _titleDefault;
 
@@ -222,6 +238,8 @@ bool Analysis::checkAnalysisEntry()
 		Log::log() << "Analysis::checkAnalysisEntry() had a problem: " << e.what() << std::endl;
 
 		_moduleData = nullptr;
+		syncMultiDataSetAwareness();
+
 		if(_QMLFileWatcher.files().size())
 			_QMLFileWatcher.removePaths(_QMLFileWatcher.files());
 		return false;
