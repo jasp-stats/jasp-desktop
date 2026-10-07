@@ -794,9 +794,8 @@ void Engine::receiveAnalysisMessage(const Json::Value & jsonRequest)
 		_analysisMultiDataSet	= jsonRequest.get("multiDataSetAware",	false).asBool();
 		_engineState			= engineState::analysis;
 
-		//Never let a queue or encoder set from a previous run leak into this one:
+		//Never let a queue from a previous run leak into this one:
 		setMultiDataSetQueue({});
-		_analysisDataSetIds.clear();
 
 		Json::Value optionsEnc	= jsonRequest.get("options",			Json::nullValue);
 		
@@ -816,15 +815,18 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		if(_analysisMultiDataSet && _engineState == engineState::analysis && _analysisDataSetIds.size() > 1)
+		if(_analysisMultiDataSet && _engineState == engineState::analysis)
 		{
-			//Multi-dataset aware run: an encoded name in the results can come from any dataset this
-			//analysis runs on (each name embeds its dataset id, see DataSet::setupEncoderPrefix), so we
-			//decode against every involved dataset's encoder rather than only the current one.
+			//Multi-dataset aware run: an encoded name in the results can come from any dataset
+			//(each encoded name embeds its own dataset id, DataSet::setupEncoderPrefix), and a
+			//dataset's encoder only ever matches the tokens of its own dataset - so decoding
+			//against every dataset the workspace holds is both complete and safe, with no
+			//per-run bookkeeping needed: datasets opened or closed while the analysis ran are
+			//handled simply by being present or not.
 			ColumnEncoder * restoreTo = ColumnEncoder::currentEncoder();
 
-			for(const int dataSetId : _analysisDataSetIds)
-				if(DataSet * ds = resolveWorkspace()->dataSetById(dataSetId))
+			for(DataSet * ds : resolveWorkspace()->dataSets())
+				if(ds)
 				{
 					ColumnEncoder::setCurrentEncoder(&ds->encoder());
 					ColumnEncoder::decodeJsonSafeHtml(message);
@@ -889,10 +891,6 @@ void Engine::runAnalysis()
 
 		_analysisColsTypes = plan.primaryCols;
 		multiDataSetJson	= plan.multiDataSetJson.toStyledString();
-
-		//Results can carry encoded names from any involved dataset, keep those datasets around
-		//(by id, resolved again at send time) so sendString() can decode against all of them:
-		_analysisDataSetIds = plan.involvedDataSetIds;
 	}
 	else
 	{

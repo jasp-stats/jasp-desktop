@@ -257,12 +257,6 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
 
-	if(dataset)
-		plan.involvedDataSetIds.push_back(dataset->id());
-	for(const auto & dataSetFilter : dataSetFilterIds)
-		if(dataSetFilter.first != plan.primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
-			plan.involvedDataSetIds.push_back(dataSetFilter.first);
-
 	return plan;
 }
 

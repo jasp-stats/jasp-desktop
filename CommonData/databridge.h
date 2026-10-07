@@ -95,7 +95,6 @@ public:
 	{
 		int								primaryDataSetId	= -1;
 		ColumnEncoder::colsPlusTypes	primaryCols;							///< what to read from the primary dataset (original qualified names)
-		std::vector<int>				involvedDataSetIds;						///< primary first, then every dataset the options reference
 		Json::Value						multiDataSetJson;						///< { ids: [...], names: { "<id>": title } } for jaspBase::runJaspResults
 	};
 
