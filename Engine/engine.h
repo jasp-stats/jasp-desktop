@@ -131,9 +131,12 @@ private: // Data:
 									_analysisOptions		= Json::nullValue,
 									_analysisResults;
 	ColumnEncoder::colsPlusTypes	_analysisColsTypes;
-	///Every dataset encoder involved in the current multi-dataset aware analysis run (primary first);
-	///results can contain encoded names from any of them, so sendString() decodes against all.
-	std::vector<ColumnEncoder *>	_analysisDataSetEncoders;
+	///Every dataset involved in the current multi-dataset aware analysis run, by id (primary
+	///first); results can contain encoded names from any of them, so sendString() decodes against
+	///all of their encoders. Ids rather than pointers: a dataset can be closed while the analysis
+	///runs, and resolving fresh at send time turns that into a skipped decode instead of a dangling
+	///pointer (~DataSet only guards the *current* encoder).
+	std::vector<int>				_analysisDataSetIds;
 
 
 };
