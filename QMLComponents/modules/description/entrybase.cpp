@@ -28,6 +28,7 @@ EntryBase::EntryBase(EntryType entryType) : DescriptionChildBase(), _entryType(e
 	connect(this, &EntryBase::qmlChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::debugChanged,			this, &EntryBase::somethingChanged);
 	connect(this, &EntryBase::hasWrapperChanged,	this, &EntryBase::somethingChanged);
+	connect(this, &EntryBase::multiDataSetAwareChanged, this, &EntryBase::somethingChanged);
 }
 
 void EntryBase::devModeChanged(bool)

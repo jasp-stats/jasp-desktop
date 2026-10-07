@@ -34,6 +34,17 @@ VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 	connect(this, &JASPControl::formIsKnown, this, &VariablesFormBase::handleFormIsKnown);
 }
 
+void VariablesFormBase::setUp()
+{
+	JASPControl::setUp();
+
+	//AnalysisForm::setAnalysisUp() -> _setUp() is the hook static controls get (formIsKnown is only
+	//emitted for dynamically created ones, see JASPControl's constructor), and by then the analysis
+	//is attached. Reuse handleFormIsKnown: its connections are UniqueConnections, so getting here a
+	//second time (dynamic controls also emit formIsKnown) is harmless.
+	handleFormIsKnown(form());
+}
+
 void VariablesFormBase::handleFormIsKnown(AnalysisForm * form)
 {
 	if(!form)
@@ -46,7 +57,12 @@ void VariablesFormBase::handleFormIsKnown(AnalysisForm * form)
 	//selection properties in sync with whatever the analysis is doing elsewhere (filter button, RPC, ...).
 	connect(form, &AnalysisForm::analysisChanged,				this, &VariablesFormBase::handleAnalysisChanged,		Qt::UniqueConnection);
 	connect(form, &AnalysisForm::filterChanged,					this, &VariablesFormBase::handleAnalysisFilterChanged,	Qt::UniqueConnection);
-	emit dataSetSelectionAllowedChanged();
+
+	//The analysis is usually already attached when we get here - analysisChanged may well have fired
+	//before this connection existed. Pull the current analysis in explicitly, otherwise the
+	//multiDataSetAwareChanged hookup inside handleAnalysisChanged never happens and QML keeps a stale
+	//dataSetSelectionAllowed=false (the getter is right, only the binding never re-evaluated).
+	handleAnalysisChanged();
 }
 
 void VariablesFormBase::componentComplete()

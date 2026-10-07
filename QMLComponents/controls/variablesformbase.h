@@ -83,6 +83,9 @@ signals:
 
 protected:
 	void componentComplete() override;
+	///< Static controls never receive formIsKnown (only dynamically created ones emit it), so this
+	///< is where a VariablesForm sitting in a normal form hooks itself up to its AnalysisForm.
+	void setUp() override;
 
 private slots:
 	void					handleFormIsKnown(AnalysisForm * form);

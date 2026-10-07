@@ -109,5 +109,22 @@ Item
 			wait(50)
 			compare(targetList.dropKeys[0], allVars.name, "the assigned list still knows its source")
 		}
+
+		// Render probe: the selection must occupy real height when allowed (a zero-height area would
+		// make the dropdown invisible in the GUI while all the property plumbing still checks out).
+		function test_selector_area_gets_real_height_when_aware()
+		{
+			var analysis = jaspForm.analysis
+			selectionForm.height = 300
+
+			analysis.multiDataSetAware = false
+			wait(10)
+			compare(selectionForm._selectorHeight, 0, "without awareness the lists start at the top")
+
+			analysis.multiDataSetAware = true
+			wait(10)
+			verify(selectionForm._selectorHeight > 0,
+				   "the dataset selection should occupy real height when aware (got " + selectionForm._selectorHeight + ")")
+		}
 	}
 }
