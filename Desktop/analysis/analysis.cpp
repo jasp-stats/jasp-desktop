@@ -792,10 +792,20 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			if (fileData.size() > 0 && plotlyJson.isNull())
 				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
 
-			//Decode against this analysis' own dataset encoder: the process-global encoder is only
-			//populated in the engine, so the static ColumnEncoder::decodeJson would be a no-op here.
+			//Decode against this analysis' own dataset encoder plus, for a multi-dataset aware
+			//run, the encoders of every dataset its options reference: plot files are written by
+			//R with encoded names and never pass through the engine's sendString, and the
+			//process-global encoder is only populated in the engine - so the static
+			//ColumnEncoder::decodeJson would be a no-op here.
+			Workspace * workspace = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
+
 			if(DataSet * ds = dataSet())
 				ds->encoder().decodeJson(plotlyJson);
+
+			for(const auto & reference : referencedDataSets())
+				if(DataSet * ds = workspace ? workspace->dataSetById(reference.first) : nullptr)
+					if(ds != dataSet())
+						ds->encoder().decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
