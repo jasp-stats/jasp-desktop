@@ -22,9 +22,20 @@
 
 #include <QCoreApplication>
 #include <QFile>
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QStringList>
+
+#ifdef _WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <mach-o/dyld.h>
+#elif defined(__linux__)
+#include <unistd.h>
+#endif
 
 static bool _thisIsATest = false;
 
@@ -235,7 +246,11 @@ const Settings::Setting Settings::Values[] = {
 	// pane out entirely (#ifndef PRO in ResourceButtons), so there the
 	// setting is a no-op. Dropped from every file operation by
 	// ActionButtons::loadButtonData(); a change needs a restart.
-	{"osfEnabled",				true}
+	{"osfEnabled",				true,
+	// Signed+obfuscated enterprise license blob; only PRO builds read it
+	// (Desktop/utilities/license.cpp). Absent by default: enterprise MSIs
+	// ship one minted by Tools/license/license.py.
+	{"license",					""}
 };
 
 // Shipped JSON files beside the application: the per-client installer layer
@@ -256,6 +271,35 @@ const Settings::Setting Settings::Values[] = {
 // Not shipping a file at all is the normal case and stays quiet — except for
 // defaults.json, whose absence is reported once because the MSI layer is
 // expected to provide one.
+static QString applicationDir()
+{
+	if (QCoreApplication::instance() != nullptr)
+		return QCoreApplication::applicationDirPath();
+
+	// Before Application exists (main() parses arguments — and reads the
+	// inputs for decisions like the license check — first): ask the OS
+	// directly, the same call Qt's applicationDirPath() makes internally.
+	// Empty when even the OS will not say; callers then simply find no file,
+	// which fails closed where that matters (see Desktop/utilities/license.cpp).
+	QString modulePath;
+#ifdef _WIN32
+	wchar_t windowsPath[MAX_PATH + 1] = {};
+	if (GetModuleFileNameW(nullptr, windowsPath, MAX_PATH) > 0)
+		modulePath = QString::fromWCharArray(windowsPath);
+#elif defined(__APPLE__)
+	char macPath[4096];
+	uint32_t macPathSize = sizeof macPath;
+	if (_NSGetExecutablePath(macPath, &macPathSize) == 0)
+		modulePath = QString::fromUtf8(macPath);
+#elif defined(__linux__)
+	char linuxPath[4096] = {};
+	const ssize_t len = readlink("/proc/self/exe", linuxPath, sizeof linuxPath - 1);
+	if (len > 0)
+		modulePath = QString::fromLatin1(linuxPath, int(len));
+#endif
+	return modulePath.isEmpty() ? QString() : QFileInfo(modulePath).absolutePath();
+}
+
 static const QJsonObject& shippedSettings(bool forced)
 {
 	// [0] = defaults.json (soft), [1] = forced.json (enforced)
@@ -265,20 +309,22 @@ static const QJsonObject& shippedSettings(bool forced)
 	const int idx = forced ? 1 : 0;
 	if (loaded[idx])
 		return shipped[idx];
-	if (QCoreApplication::instance() == nullptr)
-		return shipped[idx];		// too early: applicationDirPath() is empty; retry on a later call
+
+	const QString appDir = applicationDir();
+	if (appDir.isEmpty())
+		return shipped[idx]; // we cannot know where to look yet; retry on a later call
 
 	const QString fileName = forced ? "forced.json" : "defaults.json";
-	QStringList candidates = {
-		QCoreApplication::applicationDirPath() + "/" + fileName,
-		QCoreApplication::applicationDirPath() + "/Resources/" + fileName
+	const QStringList candidates = {
+		appDir + "/" + fileName,
+		appDir + "/Resources/" + fileName
 	};
 #ifdef __APPLE__
-	// applicationDirPath() is JASP.app/Contents/MacOS here, so the bundle's
+	// appDir is JASP.app/Contents/MacOS here, so the bundle's
 	// Resources folder is a sibling — the per-client DMG layer stages the
 	// files there (Contents/Resources, the idiomatic spot) rather than next
 	// to the binary.
-	candidates += QCoreApplication::applicationDirPath() + "/../Resources/" + fileName;
+	candidates += appDir + "/../Resources/" + fileName;
 	// Admin-owned and outside the (signature-sealed) bundle: IT can drop or
 	// update the file there — e.g. through an MDM-installed package — without
 	// re-signing or re-notarizing JASP. Checked first so a value IT pushes

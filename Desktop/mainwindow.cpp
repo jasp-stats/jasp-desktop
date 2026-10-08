@@ -63,6 +63,9 @@
 #include "utilities/qutils.h"
 #include "utilities/appdirs.h"
 #include "utilities/settings.h"
+#if defined(PRO) && defined(LICENSE_CHECK)
+#include "utilities/license.h"
+#endif
 #include "utilities/qmlutils.h"
 #include "utilities/reporter.h"
 #include "utilities/allhelp.h"
@@ -197,6 +200,12 @@ MainWindow::MainWindow(Application * application, bool batchRun) : QObject(appli
 	checkForUpdates();
 
 	QTimer::singleShot(0, this, [&]() { _jaspConfiguration->processConfiguration();  });
+
+#if defined(PRO) && defined(LICENSE_CHECK)
+	// Enterprise expiry nag: logs the license state in every run mode; pops
+	// the non-blocking dialog only in interactive release sessions.
+	QTimer::singleShot(0, this, [&]() { License::runStartupCheck(!_batchRunning && !backendlessTestMode()); });
+#endif
 	
 	_progressBarTimer = new QTimer(this);
 	_progressBarTimer->setSingleShot(true);
