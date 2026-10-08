@@ -572,38 +572,87 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
-	//Dataset selection options (VariablesForm::dataSetSelectionOption) must carry a dataset name:
-	//a bound DropDown coerces "" to its first entry, so the control itself cannot flag emptiness -
-	//check the raw JSON here and fail with a clear message.
+	//Dataset selection options (VariablesForm::dataSetSelectionOption) are user-facing DATASET
+	//NAMES in syntax mode ("haha"), while the control contract everywhere carries FILTER ids:
+	//translate them here - the syntax wrapper layer - before anything binds, so the QML side is
+	//byte-identical in desktop and syntax mode. A dataset name maps to its default filter (syntax
+	//has no user filters, the data arrives prefilled), an existing filter id passes through, and
+	//anything else fails with a clear message. (The bound DropDown itself cannot flag emptiness -
+	//it coerces "" to its first entry - so this raw check stays the gatekeeper.)
+	Json::Value rawOptions;
+	Json::Reader rawReader;
+	if (!rawReader.parse(options, rawOptions))
+		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Could not parse the options json");
+
+	std::string optionsToParse = options;
+
 	if (const QStringList selectionOptions = form->dataSetSelectionOptionNames(); !selectionOptions.isEmpty())
 	{
-		Json::Value rawOptions;
-		Json::Reader rawReader;
-
-		if (!rawReader.parse(options, rawOptions))
-			return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Could not parse the options json");
+		Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr;
 
 		QStringList loaded;
-
-		if (Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr)
+		if (workspace)
 			for (DataSet * dataSet : workspace->dataSets())
 				if (dataSet)
 					loaded << dataSet->title();
 
 		for (const QString & option : selectionOptions)
 		{
-			const Json::Value & value = rawOptions[option.toStdString()];
+			const std::string key = option.toStdString();
 
-			if (!value.isString() || tq(value.asString()).trimmed().isEmpty())
+			QString text;
+
+			if (rawOptions.isMember(key))
+			{
+				const Json::Value & value = rawOptions[key];
+
+				if (value.isString())
+					text = tq(value.asString());
+				else if (value.isIntegral())
+					text = QString::number(value.asInt64());
+			}
+
+			text = text.trimmed();
+
+			if (text.isEmpty())
 				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
-					"The dataset selection option '" + option.toStdString() + "' must name one of the loaded datasets ("
+					"The dataset selection option '" + key + "' must name one of the loaded datasets ("
 					+ loaded.join(", ").toStdString() + ")");
+
+			std::string sliceFilterId;
+
+			if (DataSet * byTitle = workspace ? workspace->dataSetByTitle(text) : nullptr)
+			{
+				if (byTitle->defaultFilter())
+					sliceFilterId = std::to_string(byTitle->defaultFilter()->id());
+			}
+
+			if (sliceFilterId.empty())
+			{
+				bool	   isNum	 = false;
+				const int  filterId	 = text.toInt(&isNum);
+
+				if (isNum && workspace && workspace->filterById(filterId))
+					sliceFilterId = text.toStdString();
+			}
+
+			if (sliceFilterId.empty())
+				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
+					"The dataset selection option '" + key + "' names '" + text.toStdString()
+					+ "', which is neither a loaded dataset (" + loaded.join(", ").toStdString()
+					+ ") nor a known filter id");
+
+			rawOptions[key] = sliceFilterId;   //strings, exactly like the desktop dropdown writes them
 		}
+
+		Json::StreamWriterBuilder writer;
+		writer["indentation"] = "";
+		optionsToParse = Json::writeString(writer, rawOptions);
 	}
 
 	Json::Value parsedOptions;
 	std::string errorMsg;
-	if (!form->parseOptions(options, parsedOptions, errorMsg))
+	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 
 	//Establish the request context before any encoding happens: provideAndUpdateDataSet() points the
@@ -621,11 +670,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (form->analysisObj() && form->analysisObj()->multiDataSetAware())
 	{
 		//Multi-dataset aware run: exactly what Engine::runAnalysis does, through the shared
-		//DataBridge preparation. The QML controls stamped the .meta provenance while binding (the
-		//dataset selection option switched its form to the named dataset first, via 'depends'), so
-		//the options encode per dataset and the slice queue feeds the R-side reads. Syntax datasets
-		//have no user filters; the default filter of each dataset is queued. The primary is the
-		//first loaded dataset (the wrapper's datasets[[1]]), not whatever the selections left shown.
+		//DataBridge preparation. The selection options arrived as filter ids (translated from
+		//dataset names above); binding the FilterSelect dropdowns switched each form to its own
+		//filter before the lists bound ('depends'), so the .meta stamped per form, the options
+		//encode per dataset and the slice queue feeds the R-side reads. Syntax datasets have no
+		//user filters; a name resolved to the dataset's default filter. The primary is the first
+		//loaded dataset (the wrapper's datasets[[1]]), not whatever the selections left shown.
 		const int primaryId = DataSetProvider::getProvider(gl_initializedDbInMemory, false)->firstLoadedDataSetId();
 		const DataBridge::MultiDataSetRunPlan plan = gl_dataBridge->prepareMultiDataSetRun(parsedOptions, primaryId, "", analysisNameStr);
 
