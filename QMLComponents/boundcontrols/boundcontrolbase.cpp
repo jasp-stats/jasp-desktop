@@ -35,28 +35,27 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 Json::Value BoundControlBase::createMeta()  const
 { 
 	Json::Value meta(Json::objectValue);
-	
-	if (_control->encodeValue())
+
+	//Provenance for EVERY value of a multi-dataset aware analysis: which dataset (and which
+	//filter of it) the value was selected THROUGH - the owning host's filter under a selecting
+	//VariablesForm/TextArea, else the analysis' own. That includes the dataset SELECTION options
+	//themselves (not encoded, but their filter id is session-local and must survive save/reload;
+	//see Analysis::asJSON / Analyses::remapSavedProvenance) and it is what lets the engine slice
+	//per dataset+filter (ColumnEncoder::collectDataSetFilterPairsFromMeta).
+	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+	Filter       * stampFilter = _control->effectiveSelectionFilter();
+
+	if (analysis && analysis->multiDataSetAware() && stampFilter && stampFilter->data())
 	{
-		meta["shouldEncode"] = true;
+		meta["dataSetId"]	= stampFilter->data()->id();
+		meta["filterId"]	= stampFilter->id();
 
-		//A multi-dataset aware analysis can be pointed at any dataset, so its variable options record which
-		//dataset (and which filter of that dataset) the current value was selected from. The engine encodes
-		//and loads each option against the encoder/slice of that dataset instead of assuming the shown one;
-		//see ColumnEncoder::encodeColumnNamesinOptionsPerDataSet() and Engine::runAnalysis().
-		AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
-
-		//The filter to stamp is the one the value was selected THROUGH: under a VariablesForm
-		//with its own dataset selection that is the form's filter, not the analysis' one (two
-		//forms of one analysis can carry values from two datasets side by side).
-		Filter * stampFilter = _control->effectiveSelectionFilter();
-
-		if (analysis && analysis->multiDataSetAware() && stampFilter && stampFilter->data())
-		{
-			meta["dataSetId"]	= stampFilter->data()->id();
-			meta["filterId"]	= stampFilter->id();
-		}
+		if (_control->isDataSetSelectionOption())
+			meta["isFilterSelection"] = true;
 	}
+
+	if (_control->encodeValue())
+		meta["shouldEncode"] = true;
 	
 	for(const std::string & key : _isRCode)
 		if(key.empty())		meta	 ["isRCode"] = true;

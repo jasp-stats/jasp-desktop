@@ -22,18 +22,6 @@
 #include "variableinfo.h"
 #include "columnencoder.h"
 
-ColumnEncoder * BoundControlJAGSTextArea::_encoder() const
-{
-	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
-	//request context). Resolve the encoder for the data this control's form is bound to instead.
-	if (VariableInfo * vi = _textArea->effectiveVarInfo())
-		if (VariableInfoProvider * provider = vi->provider())
-			if (ColumnEncoder * encoder = provider->columnEncoder())
-				return encoder;
-
-	return ColumnEncoder::fallbackEncoder();
-}
-
 void BoundControlJAGSTextArea::bindTo(const Json::Value &value)
 {
 	if (value.type() != Json::objectValue)	return;

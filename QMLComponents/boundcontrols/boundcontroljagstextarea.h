@@ -36,7 +36,6 @@ public:
 	void		checkSyntax()											override;
 
 private:
-	ColumnEncoder *					_encoder()							const;
 
 	std::set<std::string>		_usedColumnNames;
 	QSet<QString>				_usedParameters;

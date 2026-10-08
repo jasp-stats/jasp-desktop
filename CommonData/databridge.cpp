@@ -234,6 +234,7 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 
 	std::vector<MultiDataSetSlice> queue;
 	Json::Value sliceKeys(Json::arrayValue), sliceTitles(Json::objectValue), sliceDataSetIds(Json::objectValue);
+	std::set<std::string> seenKeys;					//two pairs can resolve to the same slice: queue it once
 
 	for(const auto & pair : dataSetFilterPairs)
 	{
@@ -255,10 +256,14 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 			filterId = (ds == dataset && primaryFilterId >= 0) ? primaryFilterId
 															   : (ds->defaultFilter() ? ds->defaultFilter()->id() : -1);
 
+		const std::string key = std::to_string(filterId);
+
+		if(!seenKeys.insert(key).second)
+			continue;
+
 		auto cols = colsPerDataSet.find(dataSetId);
 		queue.push_back({ dataSetId, filterId, cols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : cols->second });
 
-		const std::string key = std::to_string(filterId);
 		sliceKeys.append(key);
 		sliceTitles[key]			= fq(ds->title());
 		sliceDataSetIds[key]		= std::to_string(dataSetId);
@@ -270,6 +275,19 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	plan.multiDataSetJson["ids"]		= sliceKeys;			///< slice keys = the resolved filter id per slice
 	plan.multiDataSetJson["names"]		= sliceTitles;			///< slice key -> dataset title
 	plan.multiDataSetJson["dataSetIds"] = sliceDataSetIds;		///< slice key -> dataset id
+
+	//The primary slice (what the analysis itself runs on): the queued slice of the primary dataset
+	//matching the analysis' filter, else just its first slice - R may offer it as "the" dataset.
+	std::string primaryKey;
+	for(const MultiDataSetSlice & slice : queue)
+	{
+		if(slice.dataSetId != primaryDataSetId)
+			continue;
+
+		if(primaryKey.empty() || slice.filterId == primaryFilterId)
+			primaryKey = std::to_string(slice.filterId);
+	}
+	plan.multiDataSetJson["primary"] = primaryKey;
 
 	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;

@@ -16,7 +16,8 @@ wanted <- c(".multiDataSetState", ".multiDataSetMode", ".stopIfMultiDataSetMode"
             ".readDataSetCleanNAs", ".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader",
             "readDataSetByVariableTypes",
             ".dataSetIdFromEncodedOne", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
-            ".sliceKeyForDataSet", "getDataSetFor", "getDataSetColumn")
+            ".sliceKeyForDataSet", ".sliceKeysForDataSet", "getDataSetFor", "getDataSetColumn",
+             "getSliceKey", "getSlice", "sliceDataSetId", "sliceTitle")
 
 env <- new.env(parent = baseenv())
 found <- character()
@@ -103,17 +104,27 @@ attr(datasetsFk, "dataSetNames") <- c("31" = "Alpha", "32" = "Alpha", "41" = "Be
 attr(datasetsFk, "dataSetIds")   <- c("31" = "3",     "32" = "3",     "41" = "4")
 
 check(identical(env$.sliceKeyForDataSet(datasetsFk, "4"), "41"), ".sliceKeyForDataSet maps dataset id to its filter slice")
-check(identical(env$.sliceKeyForDataSet(datasetsFk, "3"), "31"), "...first slice wins for a dataset with two of them")
+errAmb <- tryCatch({ env$.sliceKeyForDataSet(datasetsFk, "3"); "" }, error = function(e) conditionMessage(e))
+check(grepl("filtered slices", errAmb), "two slices of one dataset FAIL LOUDLY, never silently first")
 check(identical(env$.sliceKeyForDataSet(datasetsFk, "99"), NULL), "...and absent datasets resolve to NULL")
-check(env$getDataSetFor("JASPColumn_3_7_Encoded", datasetsFk)$slice %in% c("31", "32"),
-      "getDataSetFor lands an encoded name on a slice of the embedded dataset")
+errGet <- tryCatch({ env$getDataSetFor("JASPColumn_3_7_Encoded", datasetsFk); "" }, error = function(e) conditionMessage(e))
+check(grepl("filtered slices", errGet), "getDataSetFor refuses the ambiguity too")
+check(identical(env$getDataSetFor("JASPColumn_4_2_Encoded", datasetsFk)$slice, "41"), "unambiguous encoded routing works")
 check(identical(env$dataSetNameFromEncoded("JASPColumn_4_2_Encoded", datasetsFk), "Beta"),
       "title lookup works through the filter-keyed attrs")
 
-# a per-form selection indexes its slice directly - the option==slicekey invariant:
-selectionOption <- 32
-check(identical(datasetsFk[[as.character(selectionOption)]]$slice, "32"),
-      "a selection option (filter id) indexes its own slice directly")
+# public slice API (what analysis writers get):
+opts <- list(dataSetA = "32", dataSetB = list(types = "unknown", value = ""))
+check(identical(env$getSliceKey(opts, datasetsFk, "dataSetA"), "32"),
+      "a selection option (filter id) indexes its own slice directly - the option==slicekey invariant")
+check(identical(env$getSliceKey(opts, datasetsFk, "dataSetB", column = "JASPColumn_4_2_Encoded"), "41"),
+      "an empty selection falls back to the column's dataset when unambiguous")
+errFb <- tryCatch({ env$getSliceKey(opts, datasetsFk, "dataSetB", column = "JASPColumn_3_7_Encoded"); "" }, error = function(e) conditionMessage(e))
+check(grepl("getSliceKey", errFb), "ambiguous fallback errors and names getSliceKey as the fix")
+check(identical(env$sliceDataSetId(datasetsFk, "32"), "3"), "sliceDataSetId maps slice to dataset")
+check(identical(env$sliceTitle(datasetsFk, "31"), "Alpha"), "sliceTitle gives the user-facing title")
+errSl <- tryCatch({ env$getSlice(datasetsFk, "999"); "" }, error = function(e) conditionMessage(e))
+check(grepl("no slice", errSl), "getSlice errors listing the available keys")
 
 # --- reset semantics like runJaspResults' on.exit -----------------------------------------------
 wrapper <- function() {

@@ -39,6 +39,11 @@ public:
 	virtual QString			rScriptDoneHandler(const QString &result)	{ throw std::runtime_error("runRScript done but handler not implemented!\nImplement an override for RScriptDoneHandler!\nResult was: " + result.toStdString()); };
 
 protected:
+	///< The encoder for the data this text area's form/host is bound to: desktop never uses the
+	///< process-global ColumnEncoder (only meaningful inside an engine request), it asks the
+	///< provider of the effective VariableInfo (see JASPControl::effectiveVarInfo).
+	ColumnEncoder			*	_encoder()							const;
+
 	TextAreaBase*				_textArea	= nullptr;
 };
 

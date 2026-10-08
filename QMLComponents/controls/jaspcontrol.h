@@ -179,6 +179,9 @@ public:
 	///< The Filter effectiveVarInfo() serves, or nullptr: the provenance a value of this control
 	///< must be stamped with (see BoundControlBase::createMeta).
 	Filter							* effectiveSelectionFilter();
+	///< True when this control IS a host's dataset-selection control: its name equals the
+	///< dataSetSelectionOption of the selecting host it lives under (see FilterSelect/HostFilterSelection).
+	bool							  isDataSetSelectionOption() const;
 	///< Provider chain for items that are not JASPControls themselves (a Formula is a plain
 	///< QQuickItem): nearest selecting host ancestor of `item`, else the AnalysisForm's provider.
 	static VariableInfo				* varInfoForItem(QQuickItem * item, AnalysisForm * form);
