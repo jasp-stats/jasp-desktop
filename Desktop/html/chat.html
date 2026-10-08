@@ -26,6 +26,7 @@
 
         <script type="text/javascript" src="js/qwebchannel.js"></script>
         <script type="text/javascript" src="js/deepChat.bundle.js"></script>
+        <script type="text/javascript" src="js/chat-themes.js"></script>
         <script type="text/javascript" src="js/chat-bridge.js"></script>
         <script type="text/javascript" src="js/md_table_enhance.js"></script>
     </head>
@@ -80,79 +81,28 @@
                 tbody tr:last-child td {
                     border-bottom: thin solid;
                 }
+                /* Theme colours come from CSS custom properties set by
+                   chat-themes.js. Custom properties cascade into the shadow
+                   DOM and live-update, so theme switches need no rebuild.
+                   auxiliaryStyle itself is only applied once by deep-chat,
+                   hence the variable indirection. */
                 tbody tr:nth-child(even) td,
                 tbody tr:nth-child(even) th {
-                    background: #EBEBEB;
+                    background: var(--jasp-zebra, #EBEBEB);
+                }
+                a {
+                    color: var(--jasp-link, #14a1e3);
+                }
+                ::-webkit-scrollbar {
+                    width: 10px;
+                    height: 10px;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background-color: var(--jasp-scrollbar, #9A9A9A);
+                    border-radius: 5px;
                 }
             "
             errorMessages='{"displayServiceErrorMessages": true}'
-            messageStyles='{
-                "default": {
-                    "shared": {
-                        "outerContainer": {"paddingLeft": "0", "paddingRight": "0"},
-                        "bubble": {
-                            "maxWidth": "100%", "backgroundColor": "unset", "marginTop": "10px", "marginBottom": "10px"
-                        }
-                    },
-                    "user": {
-                        "bubble": {
-                            "marginLeft": "0px", "color": "black"
-                        }
-                    },
-                    "ai": {
-                        "outerContainer": {
-                            "backgroundColor": "rgba(247,247,248)", "borderTop": "1px solid rgba(0,0,0,.1)", "borderBottom": "1px solid rgba(0,0,0,.1)"
-                        }
-                    }
-                }
-            }'
-            avatars='{
-                "default": {"styles": {"position": "start"}}
-            }'
-            submitButtonStyles='{
-                "submit": {
-                    "container": {
-                        "default": {"backgroundColor": "#19c37d"},
-                        "hover": {"backgroundColor": "#0bab69"},
-                        "click": {"backgroundColor": "#068e56"}
-                    },
-                    "svg": {
-                        "content": "<?xml version=\"1.0\" ?> <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"> <g> <path d=\"M21.66,12a2,2,0,0,1-1.14,1.81L5.87,20.75A2.08,2.08,0,0,1,5,21a2,2,0,0,1-1.82-2.82L5.46,13H11a1,1,0,0,0,0-2H5.46L3.18,5.87A2,2,0,0,1,5.86,3.25h0l14.65,6.94A2,2,0,0,1,21.66,12Z\"> </path> </g> </svg>",
-                        "styles": {
-                            "default": {
-                                "width": "1.3em",
-                                "marginTop": "0.15em",
-                                "filter": "brightness(0) saturate(100%) invert(100%) sepia(28%) saturate(2%) hue-rotate(69deg) brightness(107%) contrast(100%)"
-                            }
-                        }
-                    }
-                },
-                "loading": {
-                    "container": {"default": {"backgroundColor": "white"}},
-                    "svg": {
-                        "styles": {
-                            "default": {"filter": "brightness(0) saturate(100%) invert(72%) sepia(0%) saturate(3044%) hue-rotate(322deg) brightness(100%) contrast(96%)"}
-                        }
-                    }
-                },
-                "stop": {
-                    "container": {
-                        "default": {"backgroundColor": "white"},
-                        "hover": {"backgroundColor": "#dadada52"}
-                    },
-                    "svg": {
-                        "content": "<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"> <rect width=\"24\" height=\"24\" rx=\"4\" ry=\"4\" /> </svg>",
-                        "styles": {
-                            "default": {
-                                "width": "0.95em",
-                                "marginTop": "0.32em",
-                                "filter": "brightness(0) saturate(100%) invert(72%) sepia(0%) saturate(3044%) hue-rotate(322deg) brightness(100%) contrast(96%)"
-                            }
-                        }
-                    }
-                }
-            }'
-            textInput='{"placeholder": {"text": "Ask anything..."}, "styles": {"container": {"width": "97.5%"}}}'
         ></deep-chat>
     </body>
 </html>
