@@ -17,6 +17,7 @@
 //
 
 #include "formulabase.h"
+#include "controls/jaspcontrol.h"
 #include "formulasource.h"
 #include "rsyntax.h"
 #include "controls/sourceitem.h"
@@ -156,7 +157,10 @@ bool FormulaBase::parseRSyntaxOptions(Json::Value &options) const
 	FormulaParser::ParsedTerms leftParsedTerms, rightParsedTerms;
 	QString error;
 
-	VariableInfoProvider * provider = form()->variableInfoProvider();
+	//Provider chain follows the components: inside a VariablesForm with its own dataset
+	//selection, terms must validate against THAT form's dataset (see JASPControl::varInfoForItem):
+	VariableInfo * varInfo   = JASPControl::varInfoForItem(const_cast<FormulaBase *>(this), form());
+	VariableInfoProvider * provider = varInfo ? varInfo->provider() : nullptr;
 
 	if (!FormulaParser::parse(lhs, true, leftParsedTerms, error, provider) || !FormulaParser::parse(rhs, false, rightParsedTerms, error, provider))
 	{

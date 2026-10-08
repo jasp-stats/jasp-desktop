@@ -48,6 +48,14 @@ Item
 			AvailableVariablesList	{ name: "allVarsC" }
 			AssignedVariablesList	{ name: "targetC" }
 		}
+
+		// A TextArea is a host too (R/Lavaan/JAGS editors autocomplete against their own dataset):
+		TextArea
+		{
+			id:						rCodeArea
+			name:					"rCodeBox"
+			dataSetSelectionOption:	"rCodeSet"
+		}
 	}
 
 	TestCase
@@ -184,6 +192,27 @@ Item
 
 			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
 			verify(options.dataSetC === undefined, "a form without option may not write a selection option")
+		}
+
+		// T12: the same selection mechanism on a TextArea host - its own option, its own filter,
+		// fully independent of the VariablesForms next to it and of the analysis filter.
+		function test_textarea_host_selects_independently()
+		{
+			verify(rCodeArea.selectionAvailable, "declaring the option gives the text area a selection")
+			verify(rCodeArea.selectedFilterId >= 0, "it defaults to the current filter")
+			verify(rCodeArea.ownVarInfo !== null, "the host owns its VariableInfo")
+
+			var secondFilterId = parseInt(_entryFor("Second - ").value)
+			rCodeArea.selectedFilterId = secondFilterId
+			wait(20)
+
+			compare(rCodeArea.selectedFilterId, secondFilterId, "the text area holds its own selection")
+			verify(formA.selectedFilterId !== secondFilterId, "form A is untouched by the text area's choice")
+			verify(formB.selectedFilterId !== formA.selectedFilterId, "the forms still hold their own two-way split too")
+
+			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			compare(String(options.rCodeSet), String(secondFilterId), "its selection travels as its own option")
+			compare(String(options.dataSetA), String(formA.selectedFilterId), "the other options stay put")
 		}
 	}
 }

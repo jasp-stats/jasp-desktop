@@ -179,6 +179,9 @@ public:
 	///< The Filter effectiveVarInfo() serves, or nullptr: the provenance a value of this control
 	///< must be stamped with (see BoundControlBase::createMeta).
 	Filter							* effectiveSelectionFilter();
+	///< Provider chain for items that are not JASPControls themselves (a Formula is a plain
+	///< QQuickItem): nearest selecting host ancestor of `item`, else the AnalysisForm's provider.
+	static VariableInfo				* varInfoForItem(QQuickItem * item, AnalysisForm * form);
 	void							setInitialized(const Json::Value& value = Json::nullValue);
 	void							setUnitialized();
 	virtual void					cleanUp();

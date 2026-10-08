@@ -120,13 +120,34 @@ TextAreaBase
 		text:		textArea.title
 	}
 
+	// Per-component dataset/filter selection: a FilterSelect when this TextArea declares a
+	// dataSetSelectionOption (an R/Lavaan/JAGS editor may look at its own dataset); behind a
+	// Loader so a bound control without a name can never exist.
+	Loader
+	{
+		id:					filterSelectLoader
+		active:				textArea.selectionAvailable
+		sourceComponent:	filterSelectComponent
+		visible:			active
+		width:				parent.implicitWidth
+		anchors.top:		textAreaTitle.bottom
+		anchors.topMargin:	jaspTheme.titleBottomMargin
+	}
+
+	Component
+	{
+		id:	filterSelectComponent
+		FilterSelect { host: textArea }
+	}
+
 	Rectangle
 	{
 		id:					flickableRectangle
-		anchors.top:		title !== "" ? textAreaTitle.bottom : parent.top
-		anchors.topMargin:	title !== "" ? jaspTheme.titleBottomMargin : 0
+		anchors.top:		filterSelectLoader.active ? filterSelectLoader.bottom : (title !== "" ? textAreaTitle.bottom : parent.top)
+		anchors.topMargin:	title !== "" || filterSelectLoader.active ? jaspTheme.titleBottomMargin : 0
 		width:				parent.implicitWidth
 		height:				parent.implicitHeight - (title !== "" ? (textAreaTitle.height + jaspTheme.titleBottomMargin) : 0)
+											  - (filterSelectLoader.active ? (filterSelectLoader.height + jaspTheme.titleBottomMargin) : 0)
 		color:				textArea.enabled ? jaspTheme.white : jaspTheme.whiteBroken
 		border.width:		1
 		border.color:		jaspTheme.borderColor

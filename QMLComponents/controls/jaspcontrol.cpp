@@ -966,3 +966,30 @@ Filter * JASPControl::effectiveSelectionFilter()
 	VariableInfo * varInfo = effectiveVarInfo();
 	return varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
 }
+
+VariableInfo * JASPControl::varInfoForItem(QQuickItem * item, AnalysisForm * form)
+{
+	//Same chain as effectiveVarInfo(), but starting from an arbitrary QQuickItem and returning the
+	//VariableInfo instance (not just its provider): a Formula lives in a VariablesForm and must
+	//validate its terms against the dataset THAT form selected, not the analysis-wide one.
+	for (QQuickItem * cur = item; cur; cur = cur->parentItem())
+	{
+		JASPControl * control = qobject_cast<JASPControl *>(cur);
+		if (!control)
+			continue;
+
+		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
+			return varInfo;
+
+		if (!form)
+			form = control->form();
+	}
+
+	if (!form)
+		return nullptr;
+
+	if (!form->varInfo()->provider() && form->filter())
+		form->varInfo()->setProvider(form->filter());
+
+	return form->varInfo();
+}
