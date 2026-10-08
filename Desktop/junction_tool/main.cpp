@@ -184,11 +184,11 @@ void RunScan(const fs::path& baseDir, bool deleteAfterScan) {
     }
 }
 
-void RunCreate(const std::string& filename, const fs::path& baseDirJunction, const fs::path& baseDirTarget) {
+int RunCreate(const std::string& filename, const fs::path& baseDirJunction, const fs::path& baseDirTarget) {
     std::ifstream inFile(filename);
     if (!inFile) { 
         std::cerr << "[ERROR] Could not open " << filename << "\n"; 
-        return; 
+        return 1;
     }
 
     std::string line;
@@ -214,9 +214,9 @@ void RunCreate(const std::string& filename, const fs::path& baseDirJunction, con
         }
     }
 
-    //Handle special dirs 'manifests' and 'Tools'
+    //Handle special dirs 'manifests', 'Tools' and 'binary_pkgs'
     std::cout << "\nProcessing special folders and files...\n";
-    std::vector<std::string> specialDirs = {"manifests", "Tools"};
+    std::vector<std::string> specialDirs = {"manifests", "Tools", "binary_pkgs"};
     for (const auto& dirName : specialDirs) {
         fs::path targetDir = baseDirTarget / dirName;
         fs::path junctionLink = baseDirJunction / dirName;
@@ -245,7 +245,8 @@ void RunCreate(const std::string& filename, const fs::path& baseDirJunction, con
         }
     }
     
-    std::cout << "\nCreation complete. Success: " << successCount << ", Failed: " << failCount << "\n";
+    std::cout << "\nCreation complete. Success: " << successCount << ", Failed: " << failCount << std::endl;
+    return failCount;
 }
 
 #endif // _WIN32
@@ -281,7 +282,14 @@ int main(int argc, char* argv[]) {
                 std::cerr << "[ERROR] Create Mode requires a map file, a base junction directory, and a base target directory.\n";
                 return 1;
             }
-            RunCreate(argv[2], fs::absolute(argv[3]).lexically_normal(), fs::absolute(argv[4]).lexically_normal());
+            int failures = RunCreate(argv[2], fs::absolute(argv[3]).lexically_normal(), fs::absolute(argv[4]).lexically_normal());
+            //A non-zero exit code makes JASP treat first-run initialization as failed: the
+            //bundledModulesInitialized flag is then not written and the next start retries, instead
+            //of silently keeping a half-built junction farm forever (jasp-issues#4586).
+            if (failures > 0) {
+                std::cerr << "[ERROR] " << failures << " junction(s) could not be created, please retry or check antivirus/permissions.\n";
+                return 2;
+            }
         } else {
             std::cerr << "[ERROR] Unknown mode. Use -s, -sd, or -c.\n";
             return 1;

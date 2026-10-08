@@ -42,6 +42,18 @@ public:
 	static QString userModulesLibDir();
 	static QString bundledModulesDir();
 	static QString bundledModulesLibDir();
+	//!Extra R libpaths for a module, derived from its manifest (manifests/jasp<name>.json, sibling of the
+	//!module_libs dir that moduleRLibrary lives in). The manifest's "mapping" entries ("<hash> =>
+	//!<pkgname>_<version>", written by jaspModuleBundleManager at build and install time) list every
+	//!binary_pkgs/<hash> dir the module needs; with the newer nested extraction layout
+	//!binary_pkgs/<hash>/<pkgname> those hash dirs are micro-libraries and can be passed to .libPaths()
+	//!directly. Works for bundled modules (shipped manifest, reached through the farm's binary_pkgs
+	//!junction) and user-installed modules (manifest next to the install in the user modules dir).
+	//!Hash dirs extracted in the old layout (DESCRIPTION at their root) are skipped, so old installs
+	//!yield an empty list and keep using the junction farm exactly as before — callers can append the
+	//!result unconditionally.
+	//!Windows-only (Linux/macOS use proper symlinks and keep the flat binary_pkgs layout).
+	static QStringList moduleExtraLibPaths(const QString & moduleRLibrary, const QString & moduleName);
 	static QString documents();
 	static QString autoSaveDir();
 	static QString sandboxedDocuments();

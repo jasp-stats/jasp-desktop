@@ -441,7 +441,26 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 std::string DynamicModule::getLibPathsToUse() const
 {
-	return "c('" + moduleRLibrary().toStdString() + "', '" + AppDirs::rHome().toStdString() + "/library')";
+	//The module's own (farm) library comes first so that behaviour is identical to before when the farm is
+	//healthy. Then follow any direct binary_pkgs/<hash>/<pkg> libpaths from the module's own manifest
+	//(AppDirs::moduleExtraLibPaths): these point into the read-only install tree for bundled modules or
+	//into the user modules dir for installed ones, and rescue module loading when the farm in appData is
+	//missing or incomplete (jasp-issues#4586). R's own library goes last so module-pinned versions win over it.
+	QStringList libPaths;
+	libPaths << moduleRLibrary();
+	libPaths << AppDirs::moduleExtraLibPaths(moduleRLibrary(), QString::fromStdString(_name));
+	libPaths << (AppDirs::rHome() + "/library");
+
+	std::string rVector = "c(";
+	for (int i = 0; i < libPaths.size(); i++)
+	{
+		if (i > 0)
+			rVector += ", ";
+		rVector += "'" + libPaths.at(i).toStdString() + "'";
+	}
+	rVector += ")";
+
+	return rVector;
 }
 
 

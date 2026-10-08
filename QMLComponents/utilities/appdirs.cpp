@@ -19,6 +19,12 @@
 #include "appdirs.h"
 
 #include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QMutex>
+#include <QMutexLocker>
+#include <json/json.h>
+#include <fstream>
 
 
 #ifdef _WIN32
@@ -99,6 +105,78 @@ QString AppDirs::bundledModulesDir()
 QString AppDirs::bundledModulesLibDir()
 {
 	return AppDirs::bundledModulesDir() + "/module_libs/";
+}
+
+QStringList AppDirs::moduleExtraLibPaths(const QString & moduleRLibrary, const QString & moduleName)
+{
+#ifdef _WIN32
+	//Modules live under a shared root: <root>/module_libs/<module>/, <root>/manifests/jasp<module>.json
+	//and <root>/binary_pkgs/<hash>. The manifest (written by jaspModuleBundleManager, the same routine at
+	//build time and at user-install time) contains a "mapping" of "<hash> => <pkgname>_<version>" strings
+	//listing every package a module needs — including the module package itself. With the old extraction
+	//layout a hash dir IS the package root and only the junction farm can give it its name back; with the
+	//newer nested extraction (binary_pkgs/<hash>/<pkgname>) every hash dir is a micro-library that can be
+	//passed to .libPaths() directly. We detect which is which per hash dir (DESCRIPTION at its root = old)
+	//so old installs simply yield nothing and keep using the farm exactly as they always have.
+	static QHash<QString, QStringList>	cache;
+	static QMutex						mutex;
+
+	const QString	cacheKey	= moduleRLibrary + '|' + moduleName;
+	QMutexLocker	lock(&mutex);
+
+	if (!cache.contains(cacheKey))
+	{
+		QStringList libPaths;
+
+		QDir	moduleLibDir(moduleRLibrary);
+		if (moduleLibDir.cdUp() && moduleLibDir.cdUp())		//.../module_libs -> <root>
+		{
+			QString	manifestPath = QDir(moduleLibDir.absoluteFilePath("manifests")).absoluteFilePath("jasp" + moduleName + ".json");
+			std::ifstream	in(manifestPath.toStdString());
+			Json::Value	root;
+
+			if (in.good() && Json::Reader().parse(in, root))
+			{
+				const Json::Value & mapping = root.get("mapping", Json::arrayValue);
+
+				if (mapping.isArray())
+					for (const Json::Value & entry : mapping)
+					{
+						//"<hash> => <pkgname>_<version>": we only need the hash, the package name lives inside the dir
+						QStringList parts = QString::fromStdString(entry.asString()).split(" => ");
+						if (parts.size() != 2 || parts[0].isEmpty())
+							continue;
+
+							//"<hash> => <pkgname>_<version>": we only need the hash, the package name lives inside the dir.
+							//binary_pkgs is a sibling of module_libs/manifests under the module root; for bundled modules on
+							//Windows it reaches the install tree through the binary_pkgs junction in the farm.
+							QString absPath = QDir::cleanPath(moduleLibDir.absoluteFilePath("binary_pkgs/" + parts[0]));
+
+						//Old layout guard: a hash dir that has a DESCRIPTION directly at its root is the
+						//package itself instead of a micro-library and only the junction farm can load it.
+						if (!QDir(absPath).exists() || QFile::exists(absPath + "/DESCRIPTION"))
+							continue;
+
+						if (!libPaths.contains(absPath))
+							libPaths.append(absPath);
+						}
+
+				if (!libPaths.isEmpty())
+				Log::log() << "AppDirs::moduleExtraLibPaths() found " << libPaths.size() << " direct libpath(s) for module '" << moduleName.toStdString() << "' from its manifest" << std::endl;
+			}
+		}
+
+		cache[cacheKey] = libPaths;
+	}
+
+	return cache.value(cacheKey);
+#else
+	//Linux/macOS have proper symlinks: the manager links module_libs/<mod>/<pkg> directly into
+	//binary_pkgs and those links ship fine in the packages, so no extra libpaths are needed there.
+	Q_UNUSED(moduleRLibrary);
+	Q_UNUSED(moduleName);
+	return QStringList();
+#endif
 }
 
 QString AppDirs::processPath(const QString & path)
