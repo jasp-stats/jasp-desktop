@@ -88,6 +88,10 @@ private slots:
 	// queue restores the legacy single-dataset read-path.
 	void	testMultiDataSetQueueHandout();
 
+	// A multi-dataset aware analysis has no single dataset: usesDataSet() must answer from the
+	// referenced datasets of the .meta, not from (the absence of) its own filter.
+	void	testAnalysisBaseUsesDataSetWhenAware();
+
 	// File round-trip 1/2: rebinding an aware analysis' options restamps meta from the current
 	// filter, so the loaded provenance must be restored - but only for unchanged values.
 	void	testRestoreProvenanceFromBoundValues();

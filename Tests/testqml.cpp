@@ -24,13 +24,21 @@ TestQml::TestQml(QObject *parent)
 
 	prov->loadDataSet(dataSet);
 
-	//A second dataset with its own filter: enough for the multi-dataset dataset/filter selection
-	//(VariablesForm::dataSetSelection, see tst_dataSetSelectionVariablesForm.qml) to select between.
+	//A second dataset with its own filters and its own columns: enough for per-form dataset
+	//selection (VariablesForm::dataSetSelectionOption, see tst_dataSetSelectionVariablesForm.qml)
+	//to select between, and for tests to prove two forms look at *different* data:
+	//"TestInts" exists in both datasets with different values, "SecondOnly" only here.
 	//The first dataset is shown again right away, so all other QML tests keep looking at their data.
 	if(DataSet * first = prov->dataSet())
 	{
 		Workspace * ws = first->workspace();
-		DataSet * second = ws ? ws->createDataSet() : nullptr;
+
+		std::map<std::string, stringvec > secondSet;
+		secondSet["TestInts"]   = {"100", "200", "300"};
+		secondSet["SecondOnly"] = {"x", "y", "z"};
+		prov->loadDataSet(secondSet, 10, true, "Second");
+
+		DataSet * second = ws ? ws->dataSetByTitle("Second") : nullptr;
 
 		if(second)
 		{

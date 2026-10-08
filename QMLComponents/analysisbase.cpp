@@ -303,6 +303,13 @@ void AnalysisBase::setBoundValues(const Json::Value &boundValues)
 	_boundValues = boundValues;
 }
 
+QString AnalysisBase::boundValuesAsJson() const
+{
+	Json::StreamWriterBuilder builder;
+	builder["indentation"] = "";
+	return QString::fromStdString(Json::writeString(builder, _boundValues));
+}
+
 const Json::Value &AnalysisBase::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
 {
 	bool found = false;

@@ -2,10 +2,14 @@ import QtTest
 import QtQuick
 import JASP.Controls
 
-// The dataset/filter selection of VariablesForm (dataSetSelection): it is enabled only for
-// multiDataSetAware analyses, fed by the filters of all datasets in the workspace, and selecting a
-// dataset is selecting one of its filters (which the analysis then runs on).
-// The form is kept out of the TestCase (invisible) like the other VariablesForm tests do.
+// Per-form dataset/filter selection (VariablesForm::dataSetSelectionOption): every form that
+// declares an option name owns a selection whose value is a FILTER ID, stored in that option of
+// the analysis (so it reaches the engine identically in desktop and syntax mode) and served to
+// the form's own controls through the form's own VariableInfo provider.
+// The forms are independent: selecting in one never changes what another shows, and selection
+// code NEVER touches the analysis' own filter (that global belongs to the FilterMenuButton).
+// Fixture (see Tests/testqml.cpp): dataset 1 (shown: TestInts/TestLetters/TestDoubles/TestNominal)
+// plus "Second" (TestInts with different values + SecondOnly), with default filter + one extra.
 Item
 {
 	width:	1000
@@ -20,11 +24,29 @@ Item
 
 		VariablesForm
 		{
-			id:					selectionForm
-			dataSetSelection:	true
+			id:						formA
+			dataSetSelectionOption:	"dataSetA"
 
-			AvailableVariablesList	{ name: "allVars";	id: allVars }
-			AssignedVariablesList	{ name: "target";		id: targetList }
+			AvailableVariablesList	{ name: "allVarsA";	id: allVarsA }
+			AssignedVariablesList	{ name: "dependentA";	id: dependentA; depends: "dataSetA" }
+		}
+
+		VariablesForm
+		{
+			id:						formB
+			dataSetSelectionOption:	"dataSetB"
+
+			AvailableVariablesList	{ name: "allVarsB";	id: allVarsB }
+			AssignedVariablesList	{ name: "dependentB";	id: dependentB; depends: "dataSetB" }
+		}
+
+		// No dataSetSelectionOption: the FilterMenuButton world, untouched by any of this.
+		VariablesForm
+		{
+			id:			noSelectionForm
+
+			AvailableVariablesList	{ name: "allVarsC" }
+			AssignedVariablesList	{ name: "targetC" }
 		}
 	}
 
@@ -46,85 +68,113 @@ Item
 			compare(spyLoader.count, 1, "The form should have completed")
 		}
 
-		function test_inert_when_not_aware()
+		function _entryFor(labelStart)
 		{
-			var analysis = jaspForm.analysis
-			verify(analysis, "The form should have an (dummy) analysis")
-			analysis.multiDataSetAware = false
-
-			compare(selectionForm.dataSetSelection, true)
-			compare(selectionForm.dataSetSelectionAllowed, false, "dataSetSelection must stay inert for non-aware analyses")
+			for (var entry of formA.filterSelectionValues)
+				if (entry.label.indexOf(labelStart) === 0)
+					return entry
+			return null
 		}
 
-		function test_aware_enables_selection_and_values()
+		function _columnNames(listView)
 		{
-			var analysis = jaspForm.analysis
-			analysis.multiDataSetAware = true
-			compare(selectionForm.dataSetSelectionAllowed, true)
-
-			var entries = selectionForm.dataSetSelectionValues
-			compare(entries.length, 3, "fixture: first datasets default filter, second datasets default filter and one extra filter")
-
-			var filterIds = []
-
-			for (var i = 0; i < entries.length; i++)
-			{
-				var filterId = parseInt(entries[i].value)
-
-				verify(!isNaN(filterId) && filterId >= 0, "the value of an entry must be a filterId, got: " + entries[i].value)
-				verify(entries[i].label.indexOf(" - ") > 0, "the label should read 'DataSet - Filter', got: " + entries[i].label)
-				verify(filterIds.indexOf(filterId) === -1, "filter ids are unique, so no entry may be duplicated")
-				filterIds.push(filterId)
-			}
+			var names = []
+			for (var i = 0; i < listView.count; i++)
+				names.push(listView.model.data(listView.model.index(i, 0)))
+			return names
 		}
 
-		function test_selection_switches_analysis_filter()
+		// Declaring a dataSetSelectionOption is what makes an analysis multi-dataset aware
+		// (both modes; no separate dataSetSelection flag any more).
+		function test_option_marks_analysis_aware()
 		{
-			var analysis = jaspForm.analysis
-			analysis.multiDataSetAware = true
-			compare(selectionForm.dataSetSelectionAllowed, true)
-			compare(selectionForm.selectedFilterId, analysis.filterId)
+			verify(jaspForm.analysis.multiDataSetAware, "a form declaring dataSetSelectionOption implies multiDataSetAware")
+		}
 
-			var current = selectionForm.selectedFilterId
-			var other = -1
+		// The offered values are filter ids with 'DataSet - Filter' labels, equal on both forms.
+		function test_filter_values_offered_per_form()
+		{
+			var entries = formA.filterSelectionValues
+			verify(entries.length >= 3, "fixture should offer >= 3 filters across the 2 datasets, got " + entries.length)
 
-			for (var entry of selectionForm.dataSetSelectionValues)
+			for (var entry of entries)
 			{
 				var filterId = parseInt(entry.value)
-				if (filterId !== current)
-				{
-					other = filterId
-					break
-				}
+				verify(!isNaN(filterId) && filterId >= 0, "a value must be a filter id, got: " + entry.value)
+				verify(entry.label.indexOf(" - ") > 0, "label should read 'DataSet - Filter', got: " + entry.label)
 			}
 
-			verify(other !== -1, "the fixture should offer another filter to select")
-
-			selectionForm.selectedFilterId = other
-
-			compare(selectionForm.selectedFilterId, other, "the form should report what is selected")
-			compare(analysis.filterId, other, "selecting a dataset is selecting its filter: it is handed to the analysis")
-
-			// The lists re-provision on the filter change and must stay functional afterwards:
-			wait(50)
-			compare(targetList.dropKeys[0], allVars.name, "the assigned list still knows its source")
+			compare(formB.filterSelectionValues.length, entries.length)
 		}
 
-		// Render probe: the selection must occupy real height when allowed (a zero-height area would
-		// make the dropdown invisible in the GUI while all the property plumbing still checks out).
-		function test_selector_area_gets_real_height_when_aware()
+		// Before any interaction every form defaults to the analysis' current filter, each
+		// through its own selection.
+		function test_defaults_to_analysis_filter()
 		{
-			var analysis = jaspForm.analysis
-			selectionForm.height = 300
+			compare(formA.selectedFilterId, jaspForm.analysis.filterId)
+			compare(formB.selectedFilterId, jaspForm.analysis.filterId)
+		}
 
-			analysis.multiDataSetAware = false
-			wait(10)
-			compare(selectionForm._selectorHeight, 0, "without awareness the lists start at the top")
+		// The regression this whole file guards: two forms, two filters, at the same time.
+		// (Linked-by-shared-state selections fail here, and always have.)
+		function test_forms_select_independently()
+		{
+			var analysisFilterId = jaspForm.analysis.filterId
+			var secondEntry		 = _entryFor("Second - ")
 
-			analysis.multiDataSetAware = true
+			verify(secondEntry !== null, "fixture must offer a filter of dataset 'Second'")
+			var secondFilterId = parseInt(secondEntry.value)
+			verify(secondFilterId !== analysisFilterId, "the 'Second' filter must be another filter than the shown one")
+
+			formA.selectedFilterId = analysisFilterId
+			formB.selectedFilterId = secondFilterId
+			wait(50)
+
+			compare(formA.selectedFilterId, analysisFilterId, "form A keeps its own selection")
+			compare(formB.selectedFilterId, secondFilterId,	  "form B keeps its own selection")
+			compare(jaspForm.analysis.filterId, analysisFilterId, "selection must never touch the analysis' filter")
+
+			// The selections travel as options: both present, side by side, holding the filter ids.
+			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			compare(String(options.dataSetA), String(analysisFilterId))
+			compare(String(options.dataSetB), String(secondFilterId))
+
+			// And each form's data view follows its own selection, not the other's:
+			var colsA = _columnNames(allVarsA)
+			var colsB = _columnNames(allVarsB)
+
+			verify(colsA.length > 0 && colsB.length > 0, "both lists should be populated: A " + colsA + ", B " + colsB)
+			verify(colsB.indexOf("SecondOnly") !== -1, "form B must show its own dataset's column, got: " + colsB)
+			verify(colsA.indexOf("SecondOnly") === -1, "form A must not show dataset 'Second's column, got: " + colsA)
+			verify(colsA.indexOf("TestLetters") !== -1, "form A must still show dataset 1's columns, got: " + colsA)
+			// Same name in both worlds, no cross-contamination (the 'compare a variable with itself' trap):
+			verify(colsB.indexOf("TestInts") !== -1 && colsA.indexOf("TestInts") !== -1,
+				   "'TestInts' exists in both datasets and must be listed by both forms")
+		}
+
+		// An id that resolves to no filter is rejected: selection (and option) stay as they were.
+		function test_bogus_filter_id_rejected()
+		{
+			var before = formA.selectedFilterId
+			formA.selectedFilterId = 987654
 			wait(10)
-			verify(selectionForm._selectorHeight > 0,
-				   "the dataset selection should occupy real height when aware (got " + selectionForm._selectorHeight + ")")
+
+			compare(formA.selectedFilterId, before, "a bogus filter id must be rejected, not adopted")
+
+			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			compare(String(options.dataSetA), String(before), "the option must not be rewritten by a rejected selection")
+		}
+
+		// A form without dataSetSelectionOption gets no selection at all (non-aware analyses,
+		// the FilterMenuButton world): no dropdown, no option, selection reads as unselected.
+		function test_form_without_option_has_no_selection()
+		{
+			compare(noSelectionForm.selectionAvailable, false)
+			compare(noSelectionForm.dataSetSelectionOption, "")
+			compare(noSelectionForm.selectedFilterId, -1, "a form without option holds no selection")
+
+			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			verify(options.dataSetC === undefined, "a form without option may not write a selection option")
 		}
 	}
 }

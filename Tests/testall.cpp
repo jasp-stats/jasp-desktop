@@ -1767,6 +1767,7 @@ void TestAll::testMultiDataSetQueueHandout()
 
 	std::vector<MultiDataSetSliceQueue::Slice> slices;
 	slices.push_back({ 11, 111, ColumnEncoder::colsPlusTypes() });
+	slices.push_back({ 11, 112, ColumnEncoder::colsPlusTypes() });   //same dataset, other filter: still a slice of its own
 	slices.push_back({ 12, 112, ColumnEncoder::colsPlusTypes() });
 	slices.push_back({ 13,  13, ColumnEncoder::colsPlusTypes() });
 
@@ -1780,18 +1781,45 @@ void TestAll::testMultiDataSetQueueHandout()
 
 	const MultiDataSetSliceQueue::Slice * second = queue.take();
 	QVERIFY(second);
-	QCOMPARE(second->dataSetId, 12);
+	QCOMPARE(second->dataSetId, 11);
 	QCOMPARE(second->filterId, 112);
 
 	const MultiDataSetSliceQueue::Slice * third = queue.take();
 	QVERIFY(third);
-	QCOMPARE(third->dataSetId, 13);
+	QCOMPARE(third->dataSetId, 12);
+
+	const MultiDataSetSliceQueue::Slice * fourth = queue.take();
+	QVERIFY(fourth);
+	QCOMPARE(fourth->dataSetId, 13);
 
 	QVERIFY(queue.take() == nullptr);
 
 	//And a new request (empty queue) fully disables the multi-dataset read-path again:
 	queue.set({});
 	QVERIFY(queue.take() == nullptr);
+}
+
+void TestAll::testAnalysisBaseUsesDataSetWhenAware()
+{
+	AnalysisBase analysis;
+
+	Json::Value boundValues(Json::objectValue);
+	boundValues["dependent"] = "Score";
+
+	Json::Value meta(Json::objectValue);
+	meta["dependent"]["dataSetId"]	= 7;
+	meta["dependent"]["filterId"]	= 71;
+	boundValues[".meta"] = meta;
+
+	analysis.setBoundValues(boundValues);
+
+	//Not aware: usesDataSet() is about the analysis' own dataset; it has none, so 7 is not in use:
+	QCOMPARE(analysis.usesDataSet(7), false);
+
+	//Aware: every dataset referenced through the options is in use, and every other is not:
+	analysis.setMultiDataSetAware(true);
+	QCOMPARE(analysis.usesDataSet(7), true);
+	QCOMPARE(analysis.usesDataSet(42), false);
 }
 
 void TestAll::testAnalysisBaseReferencedDataSets()

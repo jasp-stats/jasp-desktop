@@ -67,6 +67,9 @@ public:
 	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
 						const Json::Value &	boundValues()												const	{ return _boundValues;		}
+	///< The whole bound-value tree as a JSON string: a QML/inspectable view of exactly what the
+	///< controls write (used by the dataset-selection tests to assert option payloads).
+	Q_INVOKABLE QString		boundValuesAsJson()																const;
 						const Json::Value &	boundValue(const std::string& name,
 														 const QVector<JASPControl::ParentKey>& parentKeys = {});
 
