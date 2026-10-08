@@ -34,6 +34,27 @@ TextAreaBase::TextAreaBase(QQuickItem* parent)
 	: JASPListControl(parent)
 {
 	_controlType = ControlType::TextArea;
+
+	connect(this, &JASPControl::formIsKnown, this, &TextAreaBase::handleFormIsKnown);
+
+	//Per-component dataset selection state lives in _hostSelection, the Q_PROPERTYs mirror it:
+	connect(&_hostSelection, &HostFilterSelection::selectedFilterIdChanged,		this, &TextAreaBase::selectedFilterIdChanged);
+	connect(&_hostSelection, &HostFilterSelection::selectionAvailableChanged,	this, &TextAreaBase::selectionAvailableChanged);
+	connect(&_hostSelection, &HostFilterSelection::filterSelectionValuesChanged, this, &TextAreaBase::filterSelectionValuesChanged);
+}
+
+void TextAreaBase::handleFormIsKnown(AnalysisForm * form)
+{
+	if (!form)
+		return;
+
+	connect(form, &AnalysisForm::analysisChanged,	this, [this]() { _hostSelection.analysisBecameKnown(); });
+	//Plain functor connections (Qt::UniqueConnection does not apply to lambdas): these signals
+	//can fire several times per setup, but both HostFilterSelection entries are idempotent
+	//(same filter -> early return), so duplicates are harmless.
+	connect(form, &AnalysisForm::filterChanged,		this, [this]() { _hostSelection.analysisFilterMaybeChanged(); });
+
+	_hostSelection.analysisBecameKnown();
 }
 
 void TextAreaBase::setUpModel()
@@ -69,6 +90,8 @@ bool TextAreaBase::containsVariables() const
 
 void TextAreaBase::setUp()
 {
+	handleFormIsKnown(form());
+
 	switch (_textType)
 	{
 	case TextType::TextTypeSource:		_boundControl = new BoundControlSourceTextArea(this);												break;

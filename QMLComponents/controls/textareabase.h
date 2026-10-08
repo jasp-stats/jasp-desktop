@@ -21,6 +21,7 @@
 #define TEXTAREABASE_H
 
 #include "jasplistcontrol.h"
+#include "hostfilterselection.h"
 #include "models/listmodeltermsavailable.h"
 #include "boundcontrols/boundcontroltextarea.h"
 
@@ -32,6 +33,7 @@
 #include <QDebug>
 
 class Filter;
+class AnalysisForm;
 
 class TextAreaBase : public JASPListControl, public BoundControl
 {
@@ -45,6 +47,16 @@ class TextAreaBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( bool		checkSyntax			READ checkSyntax			WRITE setCheckSyntax		NOTIFY checkSyntaxChanged						)
 	Q_PROPERTY( QString		variableSeparator	READ variableSeparator		WRITE setVariableSeparator	NOTIFY variableSeparatorChanged					)
 	Q_PROPERTY( QStringList	separators			READ separators				WRITE setSeparators			NOTIFY separatorsChanged						)
+	///< Per-component dataset/filter selection, exactly like VariablesForm::dataSetSelectionOption:
+	///< a TextArea with syntax checking/autocompletion (R, Lavaan, JAGS) can look at its own
+	///< dataset, independent of the analysis' global filter - the value of the named option is a
+	///< filter id and a FilterSelect in the component shows/writes it.
+	Q_PROPERTY( QString		dataSetSelectionOption	READ dataSetSelectionOption		WRITE setDataSetSelectionOption	NOTIFY dataSetSelectionOptionChanged	)
+	Q_PROPERTY( bool		selectionAvailable		READ selectionAvailable													NOTIFY selectionAvailableChanged		)
+	Q_PROPERTY( QVariantList filterSelectionValues	READ filterSelectionValues												NOTIFY filterSelectionValuesChanged	)
+	Q_PROPERTY( int			selectedFilterId			READ selectedFilterId			WRITE setSelectedFilterId			NOTIFY selectedFilterIdChanged			)
+	///< This component's VariableInfo (provider = selected filter) once it has a selection.
+	Q_PROPERTY( VariableInfo * ownVarInfo				READ ownVarInfo														NOTIFY selectionAvailableChanged		)
 
 
 public:
@@ -96,6 +108,18 @@ public slots:
 	void	checkSyntaxHandler()		{ if(_checkSyntax)		_boundControl->checkSyntax();		}
 	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax)	checkSyntaxHandler();				}
 
+	// ---- per-component dataset/filter selection (HostFilterSelection, see VariablesFormBase) ----
+	QString					dataSetSelectionOption()			const	{ return _hostSelection.option();			}
+	bool					selectionAvailable()				const	{ return _hostSelection.selectionAvailable(); }
+	QVariantList			filterSelectionValues()				const	{ return _hostSelection.filterSelectionValues(); }
+	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
+	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
+	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
+
+public slots:
+	void					setDataSetSelectionOption(const QString & option)	{ _hostSelection.setOption(option); emit dataSetSelectionOptionChanged(); }
+	void					setSelectedFilterId(int filterId)					{ _hostSelection.setSelectedFilterId(filterId); }
+
 signals:
 	void	textTypeChanged();
 	void	hasScriptErrorChanged();
@@ -106,9 +130,14 @@ signals:
 	void	variableSeparatorChanged();
 	void	infoTextChanged();
 	void	separatorsChanged();
+	void	dataSetSelectionOptionChanged();
+	void	selectionAvailableChanged();
+	void	filterSelectionValuesChanged();
+	void	selectedFilterIdChanged();
 
 protected slots:
 	void	termsChangedHandler()		override;
+	void	handleFormIsKnown(AnalysisForm * form);
 
 protected:
 	void						_setInitialized(const Json::Value& value = Json::nullValue)	override;
@@ -123,6 +152,7 @@ protected:
 	QStringList					_separators;
 
 	ListModelTermsAvailable*	_model					= nullptr;
+	HostFilterSelection			_hostSelection			{ this };
 };
 
 

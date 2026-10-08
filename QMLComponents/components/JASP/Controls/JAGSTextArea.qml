@@ -45,12 +45,16 @@ import JASP
 */
 TextArea
 {
-	textType:		JASP.TextTypeJAGSmodel
+	id:			jagsTextArea
+	textType:	JASP.TextTypeJAGSmodel
 	showLineNumber: true
-	
+
 	RSyntaxHighlighterQuick
 	{
 		textDocument:		parent.textDocument
-		varInfo:			form.filter.varInfo
+		// the component's own selection when it has one, else the analysis filter's info:
+		varInfo:			jagsTextArea.selectionAvailable && jagsTextArea.ownVarInfo
+							? jagsTextArea.ownVarInfo
+							: (form && form.filter ? form.filter.varInfo : null)
 	}
 }
