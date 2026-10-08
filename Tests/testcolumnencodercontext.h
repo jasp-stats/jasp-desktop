@@ -35,6 +35,7 @@ private slots:
 	void encodePerDataSetAttributedToPrimaryWithoutProvenance();
 	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
 	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
+	void collectDataSetFilterPairsKeepsEverySlice();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

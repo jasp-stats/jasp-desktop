@@ -16,7 +16,7 @@ wanted <- c(".multiDataSetState", ".multiDataSetMode", ".stopIfMultiDataSetMode"
             ".readDataSetCleanNAs", ".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader",
             "readDataSetByVariableTypes",
             ".dataSetIdFromEncodedOne", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
-            "getDataSetFor", "getDataSetColumn")
+            ".sliceKeyForDataSet", "getDataSetFor", "getDataSetColumn")
 
 env <- new.env(parent = baseenv())
 found <- character()
@@ -92,6 +92,28 @@ check(identical(attr(datasets, "dataSetNames")[["5"]], "Alpha"), "titles are car
 invisible(env$.multiDataSetMode(FALSE))
 datasetAfter <- env$.readDataSetToEnd(columns = "Score")
 check(is.data.frame(datasetAfter), "readDataSetToEnd works again after the mode was reset")
+
+# --- filter-keyed slices (C8/T5): engine queue keys are FILTER ids, one per distinct slice -------
+# Mirrors what runJaspResults now builds from multiDataSetJson: ids = filter ids, and the
+# dataSetIds/dataSetNames attributes map every slice key back to its dataset (id, title).
+sliceKeys   <- c("31", "32", "41")            # dataset 3 via filters 31 AND 32 (two slices!), dataset 4 via 41
+datasetsFk  <- lapply(sliceKeys, function(k) data.frame(slice = k))
+names(datasetsFk) <- sliceKeys
+attr(datasetsFk, "dataSetNames") <- c("31" = "Alpha", "32" = "Alpha", "41" = "Beta")
+attr(datasetsFk, "dataSetIds")   <- c("31" = "3",     "32" = "3",     "41" = "4")
+
+check(identical(env$.sliceKeyForDataSet(datasetsFk, "4"), "41"), ".sliceKeyForDataSet maps dataset id to its filter slice")
+check(identical(env$.sliceKeyForDataSet(datasetsFk, "3"), "31"), "...first slice wins for a dataset with two of them")
+check(identical(env$.sliceKeyForDataSet(datasetsFk, "99"), NULL), "...and absent datasets resolve to NULL")
+check(env$getDataSetFor("JASPColumn_3_7_Encoded", datasetsFk)$slice %in% c("31", "32"),
+      "getDataSetFor lands an encoded name on a slice of the embedded dataset")
+check(identical(env$dataSetNameFromEncoded("JASPColumn_4_2_Encoded", datasetsFk), "Beta"),
+      "title lookup works through the filter-keyed attrs")
+
+# a per-form selection indexes its slice directly - the option==slicekey invariant:
+selectionOption <- 32
+check(identical(datasetsFk[[as.character(selectionOption)]]$slice, "32"),
+      "a selection option (filter id) indexes its own slice directly")
 
 # --- reset semantics like runJaspResults' on.exit -----------------------------------------------
 wrapper <- function() {

@@ -196,17 +196,27 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	plan.primaryDataSetId = analysisDataSetId >= 0 ? analysisDataSetId : (shown ? shown->id() : -1);
 	const int primaryDataSetId = plan.primaryDataSetId;
 
-	std::map<int, int> dataSetFilterIds;
-	ColumnEncoder::collectDataSetIdsFromMeta(options[".meta"], dataSetFilterIds);
+	std::set<std::pair<int, int>> dataSetFilterPairs;
+	ColumnEncoder::collectDataSetFilterPairsFromMeta(options[".meta"], dataSetFilterPairs);
 
-	if(primaryDataSetId >= 0 && dataSetFilterIds.find(primaryDataSetId) == dataSetFilterIds.end())
-		dataSetFilterIds[primaryDataSetId] = -1; //Options without own provenance belong to the primary dataset
+	//Every distinct (dataset, filter) the options reference gets a slice of its own: two forms
+	//selecting two filters of the same dataset must see two differently filtered dataframes.
+	bool primaryReferenced = false;
+	for(const auto & pair : dataSetFilterPairs)
+		if(pair.first == primaryDataSetId)
+		{
+			primaryReferenced = true;
+			break;
+		}
+
+	if(primaryDataSetId >= 0 && !primaryReferenced)
+		dataSetFilterPairs.insert({ primaryDataSetId, -1 }); //Options without own provenance belong to the primary dataset
 
 	//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
 	//against them, then anchor the shown dataset back at the analyses own one.
-	for(const auto & dataSetFilter : dataSetFilterIds)
-		if(dataSetFilter.first != primaryDataSetId && workspace->dataSetById(dataSetFilter.first))
-			provideAndUpdateDataSet(dataSetFilter.first);
+	for(const auto & pair : dataSetFilterPairs)
+		if(pair.first != primaryDataSetId && workspace->dataSetById(pair.first))
+			provideAndUpdateDataSet(pair.first);
 
 	DataSet * dataset = provideAndUpdateDataSet(primaryDataSetId);
 
@@ -223,12 +233,12 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
 
 	std::vector<MultiDataSetSlice> queue;
-	Json::Value dataSetIds(Json::arrayValue), dataSetNames(Json::objectValue);
+	Json::Value sliceKeys(Json::arrayValue), sliceTitles(Json::objectValue), sliceDataSetIds(Json::objectValue);
 
-	for(const auto & cols : colsPerDataSet)
+	for(const auto & pair : dataSetFilterPairs)
 	{
-		const int dataSetId = cols.first;
-		DataSet * ds = workspace->dataSetById(dataSetId);
+		const int dataSetId = pair.first;
+		DataSet  * ds       = workspace->dataSetById(dataSetId);
 
 		if(!ds)
 		{
@@ -237,22 +247,29 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 			continue;
 		}
 
-		int filterId = dataSetFilterIds.count(dataSetId) ? dataSetFilterIds[dataSetId] : -1;
+		//Resolve the placeholder to the filter the slice actually runs on, so the slice key (the
+		//filter id) is exactly what a per-form selection option holds: options index the queued
+		//datasets directly, the same way encoded option values index a dataframe's columns.
+		int filterId = pair.second;
+		if(filterId < 0)
+			filterId = (ds == dataset && primaryFilterId >= 0) ? primaryFilterId
+															   : (ds->defaultFilter() ? ds->defaultFilter()->id() : -1);
 
-		if(filterId < 0 && ds == dataset)
-			filterId = primaryFilterId;
+		auto cols = colsPerDataSet.find(dataSetId);
+		queue.push_back({ dataSetId, filterId, cols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : cols->second });
 
-		queue.push_back({ dataSetId, filterId, cols.second });
-
-		dataSetIds.append(std::to_string(dataSetId));
-		dataSetNames[std::to_string(dataSetId)] = fq(ds->title());
+		const std::string key = std::to_string(filterId);
+		sliceKeys.append(key);
+		sliceTitles[key]			= fq(ds->title());
+		sliceDataSetIds[key]		= std::to_string(dataSetId);
 	}
 
 	setMultiDataSetQueue(std::move(queue));
 
-	plan.multiDataSetJson			= Json::objectValue;
-	plan.multiDataSetJson["ids"]	= dataSetIds;
-	plan.multiDataSetJson["names"]	= dataSetNames;
+	plan.multiDataSetJson				= Json::objectValue;
+	plan.multiDataSetJson["ids"]		= sliceKeys;			///< slice keys = the resolved filter id per slice
+	plan.multiDataSetJson["names"]		= sliceTitles;			///< slice key -> dataset title
+	plan.multiDataSetJson["dataSetIds"] = sliceDataSetIds;		///< slice key -> dataset id
 
 	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
