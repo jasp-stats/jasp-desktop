@@ -329,13 +329,19 @@ Filter *AnalysisBase::filter() const
 
 bool AnalysisBase::usesDataSet(int dataSetId) const
 {
+	//A multi-dataset aware analysis operates on exactly the datasets its options reference (plus
+	//its own filter's dataset if it has one): the "unbound applies to any dataset" shortcut below
+	//would claim all of them, which is meaningless when each selection names its own dataset.
+	if(multiDataSetAware())
+	{
+		if(_filterDataSet && _filterDataSet->id() == dataSetId)
+			return true;
+
+		return referencedDataSets().count(dataSetId) > 0;
+	}
+
 	//An analysis without an explicit dataset binding applies to any dataset (e.g. reports, unbound analyses).
 	if(!_filterDataSet || _filterDataSet->id() == dataSetId)
-		return true;
-
-	//A multi-dataset aware analysis may also have options that reference other datasets, and those
-	//datasets are loaded for it when it runs; deleting one therefore affects this analysis too.
-	if(multiDataSetAware() && referencedDataSets().count(dataSetId))
 		return true;
 
 	return false;

@@ -29,7 +29,7 @@ ColumnEncoder * BoundControlRlangTextArea::_encoder() const
 {
 	//Desktop-only: never use the process-global ColumnEncoder (that is only meaningful inside the engine's
 	//request context). Resolve the encoder for the data this control's form is bound to instead.
-	if (VariableInfo * vi = _textArea->form()->varInfo())
+	if (VariableInfo * vi = _textArea->effectiveVarInfo())
 		if (VariableInfoProvider * provider = vi->provider())
 			if (ColumnEncoder * encoder = provider->columnEncoder())
 				return encoder;
@@ -45,7 +45,7 @@ BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLa
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->form()->varInfo());
+        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->effectiveVarInfo());
 		
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}

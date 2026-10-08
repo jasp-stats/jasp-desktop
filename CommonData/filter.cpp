@@ -470,6 +470,14 @@ QAbstractItemModel *Filter::providerModel()
 	return rowFilteredVarInfo();
 }
 
+ColumnEncoder *Filter::columnEncoder()
+{
+	//The namespace of the data this filter serves is the namespace of its dataset: whoever
+	//en-/decodes through this provider (host dataset selection) uses this encoder, never the
+	//process-global current one (which only means something inside an engine request).
+	return _data ? &_data->encoder() : nullptr;
+}
+
 
 
 QVariant Filter::provideInfo(varInfoType info, const QString& colName, int row) const

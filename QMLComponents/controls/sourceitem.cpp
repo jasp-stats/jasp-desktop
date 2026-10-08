@@ -103,7 +103,7 @@ void SourceItem::_setUp()
 	else if (_isDataSetVariables)
 	{
 		if(_targetListControl->form())
-			setVarInfo(_targetListControl->form()->varInfo());
+			setVarInfo(_targetListControl->effectiveVarInfo());
 
 		_sourceNativeModel	= infoProviderModel();
 		_nativeModelRole	= requestInfo(varInfoType::NameRole).toInt();
@@ -206,14 +206,14 @@ void SourceItem::connectModels()
 
 	if (_isDataSetVariables)
 	{
-		connect(form->varInfo(),	&VariableInfo::variableNamesChanged,	_targetListControl->model(), &ListModel::sourceVariableNamesChanged );
-		connect(form->varInfo(),	&VariableInfo::variableTypeChanged,		_targetListControl->model(), &ListModel::sourceVariableTypeChanged );
-		connect(form->varInfo(),	&VariableInfo::labelsChanged,			_targetListControl->model(), &ListModel::sourceLabelsChanged );
-		connect(form->varInfo(),	&VariableInfo::labelsReordered,			_targetListControl->model(), &ListModel::sourceLabelsReordered );
-		connect(form->varInfo(),	&VariableInfo::filterChanged,			_targetListControl->model(), &ListModel::filterChanged );
-		connect(form->varInfo(),	&VariableInfo::variablesChanged,		_targetListControl->model(), &ListModel::sourceVariablesChanged );
-		connect(form->varInfo(),	&VariableInfo::dataSetChanged,			_targetListControl->model(), &ListModel::sourceTermsReset );
-		connect(form->varInfo(),	&VariableInfo::refresh,					_targetListControl->model(), &ListModel::refresh );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::variableNamesChanged,	_targetListControl->model(), &ListModel::sourceVariableNamesChanged );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::variableTypeChanged,		_targetListControl->model(), &ListModel::sourceVariableTypeChanged );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::labelsChanged,			_targetListControl->model(), &ListModel::sourceLabelsChanged );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::labelsReordered,			_targetListControl->model(), &ListModel::sourceLabelsReordered );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::filterChanged,			_targetListControl->model(), &ListModel::filterChanged );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::variablesChanged,		_targetListControl->model(), &ListModel::sourceVariablesChanged );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::dataSetChanged,			_targetListControl->model(), &ListModel::sourceTermsReset );
+		connect(_targetListControl->effectiveVarInfo(),	&VariableInfo::refresh,					_targetListControl->model(), &ListModel::refresh );
 	}
 
 	if (_sourceListModel)

@@ -151,7 +151,24 @@ void Analysis::filterRemoved(Filter * f)
 
 DataSet * Analysis::dataSet() const
 {
+	//A multi-dataset aware analysis has no *single* dataset to hand out: components must go
+	//through their (per-host) VariableInfo provider and the engine through the option
+	//provenance. Returning _filterDataSet here would silently point at one of the many.
+	if (multiDataSetAware())
+	{
+		_noSingleDataSet("dataSet()");
+		return nullptr;
+	}
+
 	return _filterDataSet;
+}
+
+///One-shot complaint for the single-dataset API being used on a multi-dataset aware analysis.
+void Analysis::_noSingleDataSet(const char * what) const
+{
+	Log::log() << "Analysis " << id() << ": " << what
+	           << " was used on a multi-dataset aware analysis: it has no single dataset/filter,"
+	           << " variable info must come through the (per-form) provider chain." << std::endl;
 }
 
 Analysis::~Analysis()
@@ -1015,16 +1032,19 @@ void Analysis::boundValueChangedHandler()
 
 void Analysis::requestComputedColumnCreationHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnCreationHandler"); return; }
 	emit requestComputedColumnCreation(columnName, this);
 }
 
 void Analysis::requestColumnCreationHandler(const std::string & columnName, columnType colType)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestColumnCreationHandler"); return; }
 	emit requestColumnCreation(columnName, this, colType);
 }
 
 void Analysis::requestComputedColumnDestructionHandler(const std::string& columnName)
 {
+	if (multiDataSetAware()) { _noSingleDataSet("requestComputedColumnDestructionHandler"); return; }
 	emit requestComputedColumnDestruction(columnName, this);
 }
 
@@ -1371,6 +1391,8 @@ Json::Value Analysis::rSources() const
 
 bool Analysis::isOwnComputedColumn(const std::string & colName) const
 {
+	if (multiDataSetAware()) { _noSingleDataSet("isOwnComputedColumn"); return false; }
+
 	Column * col = DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->column(colName) : nullptr;
 
 	return col->analysisId() == id();
@@ -1787,6 +1809,9 @@ std::string Analysis::qmlFormPath(bool addFileProtocol, bool ignoreReadyForUse) 
 
 bool Analysis::isColumnFreeOrMine(const QString & columnName) const
 {
+	//Which dataset would "free" even refer to? Refuse rather than answer about the wrong one.
+	if (multiDataSetAware()) { _noSingleDataSet("isColumnFreeOrMine"); return false; }
+
 	//An analysis without a filter/dataset is not "mine": treat every column as free.
 	if(!_filter || !_filter->data())
 		return true;

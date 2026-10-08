@@ -1813,10 +1813,11 @@ void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 
 	analysis.setBoundValues(boundValues);
 
-	//Not aware: usesDataSet() is about the analysis' own dataset; it has none, so 7 is not in use:
-	QCOMPARE(analysis.usesDataSet(7), false);
+	//Not aware and unbound: the legacy "applies to any dataset" semantics (reports etc.):
+	QCOMPARE(analysis.usesDataSet(7), true);
 
-	//Aware: every dataset referenced through the options is in use, and every other is not:
+	//Aware: exactly the datasets referenced through the options are in use, and every other is
+	//not - the "unbound applies to all" shortcut must not swallow that (C: guards).
 	analysis.setMultiDataSetAware(true);
 	QCOMPARE(analysis.usesDataSet(7), true);
 	QCOMPARE(analysis.usesDataSet(42), false);
