@@ -299,6 +299,8 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		for (size_t index = 0; index < depends.size(); index++)
 		{
 			JASPControl					* depend		= depends[index];
+			if (!depend)	//_depends should never hold nulls (see JASPControl::_addExplicitDependency), but never dereference one here either
+				continue;
 			const std::set<JASPControl*>	& dependdepends = depend->depends();
 
 			for (JASPControl* dependdepend : dependdepends)

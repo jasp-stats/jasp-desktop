@@ -871,7 +871,17 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 	if (control)
 		_depends.insert(control);
 	else if (depends.canConvert<QString>())
-		_depends.insert(form()->getControl(depends.toString()));
+	{
+		//A depends name may legitimately target an OPTION that has no control registered in this
+		//form: the option-driven dataset selection of VariablesForm (dataSetSelectionOption) lives
+		//in a DropDown that is named (and thus registered) only in syntax mode; on desktop its name
+		//is empty. An unresolved name carries no ordering constraint, so ignore it - inserting a
+		//null dependency would crash AnalysisForm::sortControls (and everything else that walks
+		//_depends, like dependingControlsAreInitialized) the moment it is dereferenced.
+		JASPControl* depControl = form() ? form()->getControl(depends.toString()) : nullptr;
+		if (depControl && depControl != this)
+			_depends.insert(depControl);
+	}
 	else if (depends.canConvert<QVariantList>())
 	{
 		QVariantList varDeps = depends.toList();
