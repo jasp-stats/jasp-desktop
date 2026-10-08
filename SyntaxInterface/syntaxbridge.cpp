@@ -878,6 +878,63 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 	}
 }
 
+// Decode a WHOLE json payload (an analysis' results json, say) against every column encoder
+// the bridge workspace knows: each DataSet's own encoder, then the extra-options encoder, then
+// the process-global one. An encoder only ever replaces the exact tokens it minted itself
+// (ColumnEncoder::decodeJson works from decodingMap(this)), so running them all over one
+// payload is safe and order-independent - this is the same coverage the engine gives results
+// of a multi-dataset aware run (cf. Analysis::loadPlotlyJsonInResults), without depending on
+// which dataset the bridge happens to have shown last. Payloads that are not valid json are
+// handed back unchanged; the success envelope is { ok: true, text: <decoded json> }.
+const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
+{
+	if (!json || json[0] == '\0')
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Cannot decode an empty payload.");
+
+	Json::Value payload;
+	Json::Reader reader;
+	if (!reader.parse(json, payload))
+	{
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");   // not json at all:
+		status["ok"]   = true;                                           // nothing to decode,
+		status["text"] = json;                                           // pass the text through
+		return statusResult(status);
+	}
+
+	try
+	{
+		if (Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr)
+		{
+			for (DataSet * dataSet : workspace->dataSets())
+			{
+				if (dataSet)
+					dataSet->encoder().decodeJson(payload);
+			}
+		}
+
+		if (ColumnEncoder * extras = extraColumnEncoder())
+			extras->decodeJson(payload);
+
+		ColumnEncoder::columnEncoder()->decodeJson(payload);
+
+		Json::StreamWriterBuilder writer;
+		writer["indentation"] = "";
+
+		Json::Value status = statusBase("syntaxBridgeDecodeJsonText");
+		status["ok"]   = true;
+		status["text"] = Json::writeString(writer, payload);
+		return statusResult(status);
+	}
+	catch(const std::exception & exception)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), exception.what());
+	}
+	catch(...)
+	{
+		return statusError(statusBase("syntaxBridgeDecodeJsonText"), "Unknown error while decoding json text.");
+	}
+}
+
 } // extern "C"
 
 

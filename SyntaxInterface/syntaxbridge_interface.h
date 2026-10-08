@@ -73,6 +73,7 @@ SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeGetVariableNames();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeSetVerbose(bool verbose);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeColumnEncoderContext();
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const char* encoderContextJson);
+SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeDecodeJsonText(const char* json);
 
 } // extern "C"
 
