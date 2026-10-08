@@ -857,6 +857,13 @@
             "description": "关于文化适应不匹配与代际文化冲突之间关系的 Meta 分析数据集。 <br><br> 示例 JASP 文件演示了 PET-PEESE、选择模型和稳健贝叶斯 Meta 分析的使用和报告。<br><br> <i>数据来自 Lui (2015).<\/i>",
             "kind": "file",
             "associated_datafile": "Acculturation Mismatch and Intergenerational Cultural Conflict.csv"
+          },
+          {
+            "name": "Writing-to-Learn Interventions",
+            "path": "Writing-to-Learn Interventions.jasp",
+            "description": "来自 48 项关于校本写作促学干预对学业成绩影响的研究结果。<br><br> 示例 JASP 文件演示了以反馈和处理时长为调节变量的元回归分析。<br><br> <i> 数据集取自 R 包 metadat。<\/i>",
+            "kind": "file",
+            "associated_datafile": "Writing-to-Learn Interventions.csv"
           }
         ],
         "debug": false
