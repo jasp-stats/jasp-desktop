@@ -1,6 +1,7 @@
 #include "jaspcontrol.h"
 #include "jasplistcontrol.h"
 #include "variablesformbase.h"
+#include "textareabase.h"
 #include "filter.h"
 #include "variableinfo.h"
 #include "log.h"
@@ -965,6 +966,31 @@ Filter * JASPControl::effectiveSelectionFilter()
 {
 	VariableInfo * varInfo = effectiveVarInfo();
 	return varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
+}
+
+bool JASPControl::isDataSetSelectionOption() const
+{
+	if (name().isEmpty())
+		return false;
+
+	//a selecting host naming THIS control as its selection option (first host on the chain decides)
+	for (QQuickItem * item = parentItem(); item; item = item->parentItem())
+	{
+		if (auto * variablesForm = qobject_cast<VariablesFormBase *>(item))
+		{
+			if (variablesForm->selectionAvailable() && variablesForm->dataSetSelectionOption() == name())
+				return true;
+			return false;
+		}
+		if (auto * textArea = qobject_cast<TextAreaBase *>(item))
+		{
+			if (textArea->selectionAvailable() && textArea->dataSetSelectionOption() == name())
+				return true;
+			return false;
+		}
+	}
+
+	return false;
 }
 
 VariableInfo * JASPControl::varInfoForItem(QQuickItem * item, AnalysisForm * form)

@@ -1922,13 +1922,23 @@ void TestAll::testRemapSavedProvenance()
 	options[".meta"]["dangling"]["shouldEncode"]	= true;
 	options[".meta"]["dangling"]["dataSetId"]		= 424242;	//not in the side table
 
+	//Side table as Analysis::asJSON writes it now: one entry per (dataset, filter) PAIR, keyed
+	//"<oldDataSetId>_<oldFilterId>", naming both (ids are session-local, names are not):
 	Json::Value & provenance = analysisData["dataSetProvenance"];
-	provenance[std::to_string(oldIdOne)]["name"]		= fq(first->name());
-	provenance[std::to_string(oldIdOne)]["filterId"]	= oldFilterOne;
-	provenance[std::to_string(oldIdOne)]["filter"]		= first->defaultFilter()->name();
-	provenance[std::to_string(oldIdTwo)]["name"]		= fq(second->name());
-	provenance[std::to_string(oldIdTwo)]["filterId"]	= oldFilterTwo;
-	provenance[std::to_string(oldIdTwo)]["filter"]		= second->shownFilter()->name();
+	provenance[std::to_string(oldIdOne) + "_" + std::to_string(oldFilterOne)]["dataSet"]	= fq(first->name());
+	provenance[std::to_string(oldIdOne) + "_" + std::to_string(oldFilterOne)]["filter"]		= first->defaultFilter()->name();
+	provenance[std::to_string(oldIdTwo) + "_" + std::to_string(oldFilterTwo)]["dataSet"]	= fq(second->name());
+	provenance[std::to_string(oldIdTwo) + "_" + std::to_string(oldFilterTwo)]["filter"]		= second->shownFilter()->name();
+
+	//A dataset selection option: filter id AS VALUE (string, like FilterSelect writes) plus its
+	//isFilterSelection stamp - the value itself must be remapped too, or the restored dropdown
+	//selects a foreign filter:
+	options["dataSetA"]											= std::to_string(oldFilterTwo);
+	options[".meta"]["dataSetA"]["dataSetId"]					= oldIdTwo;
+	options[".meta"]["dataSetA"]["filterId"]					= oldFilterTwo;
+	options[".meta"]["dataSetA"]["isFilterSelection"]			= true;
+	//an ordinary numeric option that happens to equal an old filter id must NOT be touched:
+	options["plotHeight"]										= oldFilterTwo;
 
 	Analyses::remapSavedProvenance(analysisData, ws);
 
@@ -1936,6 +1946,8 @@ void TestAll::testRemapSavedProvenance()
 	QCOMPARE(options[".meta"]["dependent"]["filterId"].asInt(),		first->defaultFilter()->id());
 	QCOMPARE(options[".meta"]["covariate"]["dataSetId"].asInt(),		second->id());
 	QCOMPARE(options[".meta"]["covariate"]["filterId"].asInt(),		second->shownFilter()->id());
+	QCOMPARE(options["dataSetA"].asString(),						std::to_string(second->shownFilter()->id()));
+	QCOMPARE(options["plotHeight"].asInt(),							oldFilterTwo);
 
 	//Unknown datasets are left alone (the engine will report and skip that slice):
 	QCOMPARE(options[".meta"]["dangling"]["dataSetId"].asInt(), 424242);

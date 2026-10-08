@@ -381,7 +381,9 @@ bool RSyntax::parseRSyntaxOptions(Json::Value &options) const
 				FormulaParser::ParsedTerms parsedTerms;
 				QString error;
 
-				if (!FormulaParser::parse(option["rhs"], false, parsedTerms, error, form()->varInfo()->provider()))
+				VariableInfo * rhsVarInfo = form() ? form()->varInfo() : nullptr;
+
+				if (!FormulaParser::parse(option["rhs"], false, parsedTerms, error, rhsVarInfo ? rhsVarInfo->provider() : nullptr))
 				{
 					addError(error);
 					return false;

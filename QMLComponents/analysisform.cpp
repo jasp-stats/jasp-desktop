@@ -17,6 +17,7 @@
 //
 
 #include "analysisform.h"
+#include "controls/textareabase.h"
 #include "knownissues.h"
 #include <cmath>
 #include "boundcontrols/boundcontrol.h"
@@ -95,16 +96,6 @@ void AnalysisForm::runFilter(const QString & name)
 Filter *AnalysisForm::filter()
 {
 	return _analysis ? _analysis->filter() : nullptr;
-}
-
-VariableInfoProvider *AnalysisForm::variableInfoProvider()
-{
-	Filter * analysisFilter = filter();
-
-	if (analysisFilter)
-		return analysisFilter;
-
-	return _varInfo ? _varInfo->provider() : nullptr;
 }
 
 void AnalysisForm::refreshAnalysis()
@@ -587,6 +578,10 @@ QStringList AnalysisForm::dataSetSelectionOptionNames() const
 	for (VariablesFormBase * variablesForm : findChildren<VariablesFormBase *>())
 		if (variablesForm && !variablesForm->dataSetSelectionOption().isEmpty())
 			names << variablesForm->dataSetSelectionOption();
+
+	for (TextAreaBase * textArea : findChildren<TextAreaBase *>())	//TextArea hosts select the same way
+		if (textArea && !textArea->dataSetSelectionOption().isEmpty())
+			names << textArea->dataSetSelectionOption();
 
 	return names;
 }

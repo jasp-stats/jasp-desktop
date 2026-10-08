@@ -47,7 +47,6 @@ protected:
 	RSyntaxHighlighter*						_rLangHighlighter		= nullptr;
 
 private:
-	ColumnEncoder *							_encoder()				const;
 
 protected:
 	stringset								_noPrefixUsedColumnNames;

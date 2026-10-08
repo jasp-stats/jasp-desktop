@@ -816,13 +816,16 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			//ColumnEncoder::decodeJson would be a no-op here.
 			Workspace * workspace = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
 
-			if(DataSet * ds = dataSet())
-				ds->encoder().decodeJson(plotlyJson);
-
-			for(const auto & reference : referencedDataSets())
-				if(DataSet * ds = workspace ? workspace->dataSetById(reference.first) : nullptr)
-					if(ds != dataSet())
+			//Aware runs decode against every referenced dataset's encoder (an encoder only
+			//matches its own tokens); non-aware against the analysis' own dataset.
+			if(multiDataSetAware())
+			{
+				for(const auto & reference : referencedDataSets())
+					if(DataSet * ds = workspace ? workspace->dataSetById(reference.first) : nullptr)
 						ds->encoder().decodeJson(plotlyJson);
+			}
+			else if(DataSet * ds = dataSet())
+				ds->encoder().decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
@@ -895,29 +898,35 @@ Json::Value Analysis::asJSON(bool withRSource) const
 		//which they can be re-resolved when the file is loaded again (Analyses::remapSavedProvenance).
 		Json::Value provenance(Json::objectValue);
 		Workspace * workspace	= DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
-		std::map<int, int>	 	refs			= referencedDataSets();
-		const int 				  primaryId		= dataSet() ? dataSet()->id() : -1;
 
-		if (primaryId >= 0 && (refs.count(primaryId) == 0 || refs[primaryId] < 0))
-			refs[primaryId] = filterId();
+		//One entry per referenced (dataset, filter) PAIR - selection options carry .meta stamps
+		//too, so every form's chosen filter is included even when no variable references it.
+		//Ids are session-local, names are not: each pair is stored BY NAME under the composite
+		//key "<oldDataSetId>_<oldFilterId>" and re-resolved on load (Analyses::remapSavedProvenance).
+		std::set<std::pair<int, int>> pairs;
+		ColumnEncoder::collectDataSetFilterPairsFromMeta(boundValues().get(".meta", Json::nullValue), pairs);
+
+		if (_filterDataSet)
+			pairs.insert({ _filterDataSet->id(), _filter ? _filter->id() : -1 });
 
 		if (workspace)
-			for (const auto & ref : refs)
+			for (const auto & pair : pairs)
 			{
-				DataSet * ds = workspace->dataSetById(ref.first);
+				DataSet * ds = workspace->dataSetById(pair.first);
 
 				if (!ds)
 					continue;
 
+				Filter * f = pair.second >= 0 ? workspace->filterById(pair.second) : nullptr;
+
+				if (!f || f->data() != ds)
+					f = ds->defaultFilter();
+
 				Json::Value entry;
-				entry["name"]		= fq(ds->name());
-				entry["filterId"]	= ref.second;
+				entry["dataSet"]	= fq(ds->name());
+				entry["filter"]		= f ? f->name() : std::string();
 
-				if (ref.second >= 0)
-					if (Filter * f = workspace->filterById(ref.second))
-						entry["filter"]	= f->name();
-
-				provenance[std::to_string(ref.first)] = entry;
+				provenance[std::to_string(pair.first) + "_" + std::to_string(f ? f->id() : -1)] = entry;
 			}
 
 		analysisAsJson["dataSetProvenance"] = provenance;

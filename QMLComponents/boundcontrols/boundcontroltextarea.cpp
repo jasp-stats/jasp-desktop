@@ -17,6 +17,8 @@
 //
 
 #include "boundcontroltextarea.h"
+#include "columnencoder.h"
+#include "controls/textareabase.h"
 #include "controls/textareabase.h"
 #include "r_functionwhitelist.h"
 
@@ -35,6 +37,16 @@ void BoundControlTextArea::resetBoundValue()
 {
 	// checkSyntax takes care that the right boundValue is set.
 	checkSyntax();
+}
+
+ColumnEncoder *BoundControlTextArea::_encoder() const
+{
+	if (VariableInfo * vi = _textArea->effectiveVarInfo())
+		if (VariableInfoProvider * provider = vi->provider())
+			if (ColumnEncoder * encoder = provider->columnEncoder())
+				return encoder;
+
+	return ColumnEncoder::fallbackEncoder();
 }
 
 bool BoundControlTextArea::isJsonValid(const Json::Value &optionValue) const

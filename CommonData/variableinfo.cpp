@@ -17,7 +17,8 @@ VariableInfo::~VariableInfo()
 
 void VariableInfo::setProvider(VariableInfoProvider *provider)
 {
-	bool emitSome = _provider && _provider != provider;
+	bool emitSome = _provider != provider;	//also on the first (null -> provider) assignment: consumers
+											//connected to this VariableInfo must learn it now has data
 	
 	_provider = provider;
 	
