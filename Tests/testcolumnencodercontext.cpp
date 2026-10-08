@@ -428,3 +428,26 @@ void TestColumnEncoderContext::collectDataSetIdsFromMetaGathersPairsAndUpgrades(
 }
 
 QTEST_MAIN(TestColumnEncoderContext)
+
+void TestColumnEncoderContext::collectDataSetFilterPairsKeepsEverySlice()
+{
+	Json::Value meta(Json::objectValue);
+
+	meta["dependentA"]["dataSetId"]	= 3;
+	meta["dependentA"]["filterId"]	= 31;
+	meta["dependentB"]["dataSetId"]	= 3;              //same dataset...
+	meta["dependentB"]["filterId"]	= 32;             //...other filter: a slice of its own
+	meta["legacy"]["dataSetId"]		= 4;              //no filter: placeholder slice
+	meta["other"]["dataSetId"]		= 4;
+	meta["other"]["filterId"]		= 41;             //real filter coexists with the placeholder
+
+	std::set<std::pair<int, int>> pairs;
+	ColumnEncoder::collectDataSetFilterPairsFromMeta(meta, pairs);
+
+	//Every distinct (dataset, filter) survives - that is the whole point versus the map version:
+	QCOMPARE(pairs.size(), size_t(4));
+	QVERIFY(pairs.count({3, 31}));
+	QVERIFY(pairs.count({3, 32}));
+	QVERIFY(pairs.count({4, -1}));
+	QVERIFY(pairs.count({4, 41}));
+}
