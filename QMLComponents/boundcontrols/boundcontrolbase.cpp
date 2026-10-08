@@ -46,10 +46,15 @@ Json::Value BoundControlBase::createMeta()  const
 		//see ColumnEncoder::encodeColumnNamesinOptionsPerDataSet() and Engine::runAnalysis().
 		AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
 
-		if (analysis && analysis->multiDataSetAware() && analysis->filter() && analysis->filter()->data())
+		//The filter to stamp is the one the value was selected THROUGH: under a VariablesForm
+		//with its own dataset selection that is the form's filter, not the analysis' one (two
+		//forms of one analysis can carry values from two datasets side by side).
+		Filter * stampFilter = _control->effectiveSelectionFilter();
+
+		if (analysis && analysis->multiDataSetAware() && stampFilter && stampFilter->data())
 		{
-			meta["dataSetId"]	= analysis->filter()->data()->id();
-			meta["filterId"]	= analysis->filter()->id();
+			meta["dataSetId"]	= stampFilter->data()->id();
+			meta["filterId"]	= stampFilter->id();
 		}
 	}
 	

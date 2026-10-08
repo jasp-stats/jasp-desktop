@@ -46,7 +46,11 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 void JASPListControl::whenFormIsKnown(AnalysisForm * form)
 {
 	if (!form) return;
-	if (model())				model()->setVarInfo(form->varInfo());
+	if (model())
+	{
+		VariableInfo * varInfo = effectiveVarInfo();
+		if (varInfo) model()->setVarInfo(varInfo);
+	}
 }
 
 
@@ -61,8 +65,9 @@ void JASPListControl::setUpModel()
 		// dynamic row-components, which get it via whenFormIsKnown), this is the only place
 		// where it is wired up; without it, e.g. getVariableRealType() would always return
 		// 'unknown', wrongly making every column look like its type was manually changed.
-		if (form())
-			model()->setVarInfo(form()->varInfo());
+		VariableInfo * varInfo = effectiveVarInfo();
+		if (varInfo)
+			model()->setVarInfo(varInfo);
 	}
 
 	emit modelChanged();
@@ -430,8 +435,8 @@ bool JASPListControl::checkLevelsConstraints()
 
 	if ((_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed) && model())
 	{
-		if (!model()->varInfo() && form())
-			model()->setVarInfo(form()->varInfo());
+		if (!model()->varInfo())
+			model()->setVarInfo(effectiveVarInfo());
 		checked = _checkLevelsConstraints();
 	}
 

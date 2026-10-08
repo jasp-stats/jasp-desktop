@@ -37,9 +37,10 @@ import JASP.Controls
     \list
     \li \b listWidth (int) - Width of each variable list. Default: width * 2 / 5.
     \li \b removeInvisibles (bool) - Remove invisible controls from the layout. Default: false.
-    \li \b dataSetSelection (bool) - Show a dataset/filter selection above the available variables list;
-        selecting an entry switches the whole form (and analysis) to that dataset/filter. Only functional
-        for multiDataSetAware analyses (see the module Description). Default: false.
+    \li \b dataSetSelectionOption (string) - Name of the option carrying this form's dataset/filter
+        selection (a filter id). The form then gets its own FilterSelect dropdown and its own
+        variable-info provider: multiple forms of one analysis can select different datasets at
+        the same time. Declaring it marks the analysis multiDataSetAware. Default: "" (no selection).
     \endlist
 
     \section1 Example
@@ -89,81 +90,33 @@ VariablesFormBase
 
 	Item { id: items }
 
-	// Dataset/filter selection for multi-dataset aware analyses. Wrapping Item keeps it out of the
-	// JASPControl scan of VariablesFormBase::componentComplete(): it is form furniture, not an option.
+	// Per-form dataset/filter selection: one reusable FilterSelect, created exactly when the form
+	// declares a dataSetSelectionOption (so an unnamed bound control can never exist). Wrapping
+	// Item keeps it out of the JASPControl scan of VariablesFormBase::componentComplete(): it is
+	// form furniture; the FilterSelect inside registers itself as the option's control.
 	Item
 	{
 		id:					dataSetSelectionArea
 		x:					0
 		y:					0
 		width:				variablesForm.listWidth
-		visible:			variablesForm.dataSetSelection && variablesForm.dataSetSelectionAllowed
-		height:				visible ? dataSetDropDown.height : 0
+		visible:			filterSelectLoader.active
+		height:				visible ? filterSelectLoader.height : 0
 
-		DropDown
+		Loader
 		{
-			id:				dataSetDropDown
-			isBound:		false
-			anchors.left:	dataSetSelectionArea.left
-			anchors.right:	dataSetSelectionArea.right
-			title:			qsTr("Data")
-			toolTip:		qsTr("Select the dataset (and filter) to use for this analysis")
-			values:			variablesForm.dataSetSelectionValues
-
-			function syncToSelection()
-			{
-				var entries = variablesForm.dataSetSelectionValues
-				var selected = variablesForm.selectedFilterId
-
-				for (var i = 0; i < entries.length; i++)
-					if (parseInt(entries[i].value) === selected)
-					{
-						if (currentIndex !== i)
-							currentIndex = i
-						return
-					}
-			}
-
-			onCurrentValueChanged:
-			{
-				var filterId = parseInt(currentValue)
-				if (!isNaN(filterId))
-					variablesForm.setSelectedFilterId(filterId)
-			}
-
-			Component.onCompleted:	syncToSelection()
-		}
-
-		// Syntax mode only: the same selection, but driven by an OPTION (named by
-		// variablesForm.dataSetSelectionOption) whose value is a dataset title. On desktop the name
-		// stays empty, so this control is never registered in the form and stays invisible; in the
-		// bridge the value binds (before the lists that 'depends' on it) and switches the whole form
-		// to that dataset, so the column-name options that follow validate and encode against it.
-		DropDown
-		{
-			id:			dataSetOptionDropDown
-
-			readonly property bool	syntaxMode:	typeof NO_DESKTOP_MODE !== "undefined" && NO_DESKTOP_MODE
-
-			name:		syntaxMode ? variablesForm.dataSetSelectionOption : ""
-			visible:	name !== ""
-			values:		variablesForm.dataSetTitleValues
-
-			onCurrentValueChanged:
-			{
-				if(name !== "")
-					variablesForm.selectDataSetByName(currentValue)
-			}
+			id:					filterSelectLoader
+			active:				variablesForm.selectionAvailable
+			sourceComponent:	filterSelectComponent
+			anchors.left:		dataSetSelectionArea.left
+			anchors.right:		dataSetSelectionArea.right
 		}
 	}
 
-	Connections
+	Component
 	{
-		target:	variablesForm
-
-		function onSelectedFilterIdChanged()			{ dataSetDropDown.syncToSelection() }
-		function onDataSetSelectionValuesChanged()	{ dataSetDropDown.syncToSelection() }
-		function onDataSetSelectionAllowedChanged()	{ dataSetDropDown.syncToSelection() }
+		id:	filterSelectComponent
+		FilterSelect { host: variablesForm }
 	}
 
 	// The lists and the assigned column start below the selection; _selectorHeight is 0 without one,

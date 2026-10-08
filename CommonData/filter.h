@@ -130,6 +130,10 @@ public:
 	QAbstractItemModel		*	providerModel() override;
 	QVariant					provideInfo(varInfoType info, const QString& name = "", int row = 0)			const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name,		int row, QVariant value)		override;
+	///< The encoder of this filter's own dataset: consumers that en-/decode column names through
+	///< the provider chain (host selections!) get the namespace of the dataset they look at, never
+	///< the process-global current one. See VariableInfoProvider::columnEncoder.
+	ColumnEncoder			*	columnEncoder() override;
 	
 	
 signals:

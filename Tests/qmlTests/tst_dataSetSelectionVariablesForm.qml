@@ -107,36 +107,45 @@ Item
 			compare(formB.filterSelectionValues.length, entries.length)
 		}
 
-		// Before any interaction every form defaults to the analysis' current filter, each
-		// through its own selection.
+		// Before any interaction every form defaults to the workspace's current filter, each
+		// through its own selection (the dummy analysis holds no filter itself: -1).
 		function test_defaults_to_analysis_filter()
 		{
-			compare(formA.selectedFilterId, jaspForm.analysis.filterId)
-			compare(formB.selectedFilterId, jaspForm.analysis.filterId)
+			verify(formA.selectedFilterId >= 0, "a selecting form defaults to the current filter")
+			compare(formB.selectedFilterId, formA.selectedFilterId, "both forms start on the same current filter")
 		}
 
 		// The regression this whole file guards: two forms, two filters, at the same time.
 		// (Linked-by-shared-state selections fail here, and always have.)
 		function test_forms_select_independently()
 		{
-			var analysisFilterId = jaspForm.analysis.filterId
+			var analysisFilterId = jaspForm.analysis.filterId	//the dummy analysis' own filter, must STAY what it is
 			var secondEntry		 = _entryFor("Second - ")
+			var firstEntry		 = null
 
-			verify(secondEntry !== null, "fixture must offer a filter of dataset 'Second'")
+			for (var entry of formA.filterSelectionValues)
+				if (entry.label.indexOf("Second - ") !== 0)
+				{
+					firstEntry = entry
+					break
+				}
+
+			verify(secondEntry !== null && firstEntry !== null, "fixture must offer a filter of each dataset")
 			var secondFilterId = parseInt(secondEntry.value)
-			verify(secondFilterId !== analysisFilterId, "the 'Second' filter must be another filter than the shown one")
+			var firstFilterId  = parseInt(firstEntry.value)
+			verify(secondFilterId !== firstFilterId, "the two datasets must be different filters")
 
-			formA.selectedFilterId = analysisFilterId
+			formA.selectedFilterId = firstFilterId
 			formB.selectedFilterId = secondFilterId
 			wait(50)
 
-			compare(formA.selectedFilterId, analysisFilterId, "form A keeps its own selection")
-			compare(formB.selectedFilterId, secondFilterId,	  "form B keeps its own selection")
+			compare(formA.selectedFilterId, firstFilterId,  "form A keeps its own selection")
+			compare(formB.selectedFilterId, secondFilterId, "form B keeps its own selection")
 			compare(jaspForm.analysis.filterId, analysisFilterId, "selection must never touch the analysis' filter")
 
 			// The selections travel as options: both present, side by side, holding the filter ids.
 			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
-			compare(String(options.dataSetA), String(analysisFilterId))
+			compare(String(options.dataSetA), String(firstFilterId))
 			compare(String(options.dataSetB), String(secondFilterId))
 
 			// And each form's data view follows its own selection, not the other's:

@@ -9,6 +9,8 @@
 class AnalysisForm;
 class JASPListControl;
 class BoundControl;
+class VariableInfo;
+class Filter;
 
 ///
 /// Basic class for all our qml controls
@@ -165,6 +167,18 @@ public:
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool collapseStructuralControls = false);
 
 	virtual void					setUp()										{}
+	/// Dataset/filter selection lives on HOSTS (VariablesFormBase, TextAreaBase, ...): a host with
+	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
+	/// Consumers must not grab form()->varInfo() directly but use effectiveVarInfo() below, so a
+	/// control under a selecting host follows that host's dataset instead of the analysis-wide one.
+	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
+	///< The nearest host (self included) with an active dataset selection provides this control's
+	///< variable info; without such a host the AnalysisForm's VariableInfo (analysis filter /
+	///< shown filter) is used, exactly as before selections existed.
+	VariableInfo					* effectiveVarInfo();
+	///< The Filter effectiveVarInfo() serves, or nullptr: the provenance a value of this control
+	///< must be stamped with (see BoundControlBase::createMeta).
+	Filter							* effectiveSelectionFilter();
 	void							setInitialized(const Json::Value& value = Json::nullValue);
 	void							setUnitialized();
 	virtual void					cleanUp();

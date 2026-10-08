@@ -87,6 +87,9 @@ public:
 	void				rewriteImages();
 	bool				isColumnFreeOrMine(const QString & columnName)				const override;
 	DataSet		*		dataSet()													const override;
+	///< Complaint logged by the single-dataset API when the analysis is multi-dataset aware
+	///  (they refuse rather than answer about one arbitrary dataset - see their implementations).
+	void				_noSingleDataSet(const char * what)							const;
 
 	void				setRFile(const std::string &file)							{ _rfile = file;								}
 	void				setRSources(const Json::Value& rSources);

@@ -1,6 +1,8 @@
 #include "jaspcontrol.h"
 #include "jasplistcontrol.h"
 #include "variablesformbase.h"
+#include "filter.h"
+#include "variableinfo.h"
 #include "log.h"
 #include "analysisform.h"
 #include "jasptheme.h"
@@ -932,20 +934,6 @@ void JASPControl::cleanUp()
 
 void JASPControl::_setInitialized(const Json::Value &value)
 {
-	//A VariablesForm with an option-driven dataset selection (syntax mode) owns the analysis'
-	//filter for the duration of binding its own controls: the options arrive in one pass and the
-	//selections bind before the lists, so re-applying here keeps every value validated and
-	//.meta-stamped against the dataset of ITS OWN form. Desktop never sets dataSetSelectionOption,
-	//so this is inert there.
-	for (QQuickItem * item = parentItem(); item; item = item->parentItem())
-	{
-		if (VariablesFormBase * variablesForm = qobject_cast<VariablesFormBase *>(item))
-		{
-			variablesForm->applyDataSetSelection();
-			break;
-		}
-	}
-
 	BoundControl* bControl = boundControl();
 	if (bControl)
 	{
@@ -957,4 +945,24 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	_initialized = true;
 	_initializedWithValue = (value != Json::nullValue);
 	emit initializedChanged();
+}
+
+VariableInfo * JASPControl::effectiveVarInfo()
+{
+	//Provider chain = component chain: the nearest host (self included) that holds an active
+	//dataset/filter selection serves this control, so two forms of one analysis can look at two
+	//datasets at the same time. Hosts without a selection hand out nothing and the walk continues
+	//up to the AnalysisForm's VariableInfo (analysis filter, else shown filter) - which is exactly
+	//how every non-aware analysis has always worked.
+	for (JASPControl * control = this; control; control = qobject_cast<JASPControl *>(control->parentItem()))
+		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
+			return varInfo;
+
+	return form() ? form()->varInfo() : nullptr;
+}
+
+Filter * JASPControl::effectiveSelectionFilter()
+{
+	VariableInfo * varInfo = effectiveVarInfo();
+	return varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
 }

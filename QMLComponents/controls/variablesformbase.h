@@ -20,6 +20,7 @@
 #define VARIABLESFROMBASE_H
 
 #include "jaspcontrol.h"
+#include "hostfilterselection.h"
 #include <QVariantList>
 
 class VariablesListBase;
@@ -35,25 +36,19 @@ class VariablesFormBase : public JASPControl
 	Q_PROPERTY( QList<JASPControl*>		allJASPControls					READ allJASPControls														NOTIFY allJASPControlsChanged				)
 	Q_PROPERTY( qreal					marginBetweenVariablesLists		READ marginBetweenVariablesLists	WRITE setMarginBetweenVariablesLists	NOTIFY marginBetweenVariablesListsChanged	)
 	Q_PROPERTY( qreal					minimumHeightVariablesLists		READ minimumHeightVariablesLists	WRITE setMinimumHeightVariablesLists	NOTIFY minimumHeightVariablesListsChanged	)
-	/// Enabling this puts a dataset/filter selection on the form: every filter of every dataset in the
-	/// workspace can be picked and the whole form follows it (selecting a dataset always means selecting
-	/// one of its filters; see AnalysisBase::setFilterId). Only meaningful for multiDataSetAware analyses,
-	/// so it is silently inert for the others (see dataSetSelectionAllowed).
-	Q_PROPERTY( bool					dataSetSelection				READ dataSetSelection			WRITE setDataSetSelection			NOTIFY dataSetSelectionChanged			)
-	///< Entries {value: "<filterId>", label: "DataSet - Filter"}, the workspace's dataSetFilterDropDownList.
-	Q_PROPERTY( QVariantList			dataSetSelectionValues			READ dataSetSelectionValues													NOTIFY dataSetSelectionValuesChanged		)
-	///< False while the bound analysis is known not to be multiDataSetAware.
-	Q_PROPERTY( bool					dataSetSelectionAllowed			READ dataSetSelectionAllowed												NOTIFY dataSetSelectionAllowedChanged		)
-	///< The filter this form currently runs on (the analysis' filterId), -1 when unknown; setting it
-	///< switches the whole form (and thus the analysis) to that dataset/filter.
-	Q_PROPERTY( int						selectedFilterId				READ selectedFilterId			WRITE setSelectedFilterId			NOTIFY selectedFilterIdChanged		)
-	///< Syntax mode only: name of the OPTION that carries this form's dataset selection (a dataset
-	///< title; see selectDataSetByName). Setting it also marks the analysis multiDataSetAware (there
-	///< is no AnalysisEntry in the bridge to push that flag). Empty (the default) means: no
-	///< option-driven selection, desktop keeps using the dataSetSelection dropdown above.
+	///< Name of the OPTION that carries this form's dataset/filter selection (value: a filter id);
+	///< setting it gives the form a selection of its own: a FilterSelect dropdown on the form
+	///  reads/writes the option (desktop and syntax alike) and every list below the form shows the
+	///  columns of the selected filter - independent from any other form of the same analysis.
+	///  It also marks the analysis multiDataSetAware (in the bridge nothing else sets that flag).
 	Q_PROPERTY( QString					dataSetSelectionOption			READ dataSetSelectionOption		WRITE setDataSetSelectionOption	NOTIFY dataSetSelectionOptionChanged	)
-	///< {value: title, label: title} per workspace dataset; the values a dataSetSelectionOption may hold.
-	Q_PROPERTY( QVariantList			dataSetTitleValues				READ dataSetTitleValues			NOTIFY dataSetTitleValuesChanged		)
+	///< True when this form has a dataSetSelectionOption (so its FilterSelect should exist).
+	Q_PROPERTY( bool					selectionAvailable				READ selectionAvailable													NOTIFY selectionAvailableChanged			)
+	///< {value: "<filterId>", label: "DataSet - Filter"}: every filter of every workspace dataset.
+	Q_PROPERTY( QVariantList			filterSelectionValues			READ filterSelectionValues												NOTIFY filterSelectionValuesChanged		)
+	///< This form's own selection (never the analysis' filter!), -1 while none. Setting an unknown
+	///< filter id is rejected. Assigning it is what the FilterSelect dropdown and the tests do.
+	Q_PROPERTY( int						selectedFilterId				READ selectedFilterId			WRITE setSelectedFilterId			NOTIFY selectedFilterIdChanged			)
 
 public:
 	VariablesFormBase(QQuickItem* parent = nullptr);
@@ -63,25 +58,14 @@ public:
 	QList<JASPControl*>		allJASPControls()				const	{ return _allJASPControls;				}
 	qreal					marginBetweenVariablesLists()	const	{ return _marginBetweenVariablesLists;	}
 	qreal					minimumHeightVariablesLists()	const	{ return _minimumHeightVariablesLists;	}
-	bool					dataSetSelection()			const	{ return _dataSetSelection;					}
-	QVariantList			dataSetSelectionValues()		const;
-	bool					dataSetSelectionAllowed()		const;
-	int						selectedFilterId()			const;
-	QString					dataSetSelectionOption()		const	{ return _dataSetSelectionOption;			}
-	///< {value: title, label: title} per workspace dataset; the values a dataSetSelectionOption may hold.
-	QVariantList			dataSetTitleValues()			const;
+	QString					dataSetSelectionOption()		const	{ return _hostSelection.option();			}
+	bool					selectionAvailable()			const	{ return _hostSelection.selectionAvailable(); }
+	QVariantList			filterSelectionValues()			const	{ return _hostSelection.filterSelectionValues(); }
+	int						selectedFilterId()			const	{ return _hostSelection.selectedFilterId(); }
 
-	///< Switches this form (and analysis) to the dataset with exactly this title: the syntax-mode
-	///< counterpart of the desktop dataSetSelection dropdown (users pre-filter their data, so the
-	///< dataset's default filter is selected). Empty or unknown names raise a control error.
-	Q_INVOKABLE void		selectDataSetByName(const QString & name);
-
-	///< Re-selects the dataset chosen through dataSetSelectionOption (if any) on the owning
-	///< analysis: JASPControl calls this right before binding any of its children, so a control
-	///  validates and stamps against ITS OWN form's dataset regardless of the order in which the
-	///  form applies the options (the analysis filter is one global slot; each form owns it for a
-	///  binding moment). No-op for desktop (no dataSetSelectionOption there).
-	void					applyDataSetSelection();
+	///< This form's VariableInfo once it has a selection (provider = the selected filter) - what
+	///< every consumer below the form resolves to through JASPControl::effectiveVarInfo().
+	VariableInfo		  * ownedSelectionVarInfo() override				{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
 
 	Q_INVOKABLE bool		widthSetByForm(JASPControl* control)	{ return _controlsWidthSetByForm.contains(control); }
 	Q_INVOKABLE bool		heightSetByForm(JASPControl* control)	{ return _controlsHeightSetByForm.contains(control); }
@@ -89,9 +73,8 @@ public:
 public slots:
 	void					setMarginBetweenVariablesLists(qreal value);
 	void					setMinimumHeightVariablesLists(qreal value);
-	void					setDataSetSelection(bool dataSetSelection);
-	void					setSelectedFilterId(int filterId);
-	void					setDataSetSelectionOption(const QString & option);
+	void					setDataSetSelectionOption(const QString & option)	{ _hostSelection.setOption(option); emit dataSetSelectionOptionChanged(); }
+	void					setSelectedFilterId(int filterId)					{ _hostSelection.setSelectedFilterId(filterId); }
 
 signals:
 	void availableVariablesListChanged();
@@ -99,12 +82,10 @@ signals:
 	void allJASPControlsChanged();
 	void marginBetweenVariablesListsChanged();
 	void minimumHeightVariablesListsChanged();
-	void dataSetSelectionChanged();
-	void dataSetSelectionValuesChanged();
-	void dataSetSelectionAllowedChanged();
-	void selectedFilterIdChanged();
 	void dataSetSelectionOptionChanged();
-	void dataSetTitleValuesChanged();
+	void selectionAvailableChanged();
+	void filterSelectionValuesChanged();
+	void selectedFilterIdChanged();
 
 protected:
 	void componentComplete() override;
@@ -115,7 +96,7 @@ protected:
 private slots:
 	void					handleFormIsKnown(AnalysisForm * form);
 	void					handleAnalysisChanged();
-	void					handleAnalysisFilterChanged();
+	void					handleAnalysisFilterChanged()	{ _hostSelection.analysisFilterMaybeChanged(); }
 
 private:
 	AnalysisBase	*		_owningAnalysis()			const;
@@ -127,9 +108,7 @@ private:
 								_controlsHeightSetByForm;
 	qreal						_marginBetweenVariablesLists = 8;
 	qreal						_minimumHeightVariablesLists = 25;
-	bool						_dataSetSelection = false;
-	QString						_dataSetSelectionOption;
-	QString						_selectedDataSetTitle;	///< what dataSetSelectionOption last resolved to
+	HostFilterSelection			_hostSelection;
 
 };
 
