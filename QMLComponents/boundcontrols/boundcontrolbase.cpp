@@ -38,9 +38,8 @@ Json::Value BoundControlBase::createMeta()  const
 
 	//Provenance for EVERY value of a multi-dataset aware analysis: which dataset (and which
 	//filter of it) the value was selected THROUGH - the owning host's filter under a selecting
-	//VariablesForm/TextArea, else the analysis' own. That includes the dataset SELECTION options
-	//themselves (not encoded, but their filter id is session-local and must survive save/reload;
-	//see Analysis::asJSON / Analyses::remapSavedProvenance) and it is what lets the engine slice
+	//VariablesForm/TextArea, else the analysis' own. The ids come straight from the storage db,
+	//so they are still the right ones when the file reopens; they are what lets the engine slice
 	//per dataset+filter (ColumnEncoder::collectDataSetFilterPairsFromMeta).
 	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
 	Filter       * stampFilter = _control->effectiveSelectionFilter();
@@ -49,9 +48,6 @@ Json::Value BoundControlBase::createMeta()  const
 	{
 		meta["dataSetId"]	= stampFilter->data()->id();
 		meta["filterId"]	= stampFilter->id();
-
-		if (_control->isDataSetSelectionOption())
-			meta["isFilterSelection"] = true;
 	}
 
 	if (_control->encodeValue())

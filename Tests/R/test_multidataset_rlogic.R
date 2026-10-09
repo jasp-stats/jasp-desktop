@@ -16,7 +16,7 @@ wanted <- c(".multiDataSetState", ".multiDataSetMode", ".stopIfMultiDataSetMode"
             ".readDataSetCleanNAs", ".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader",
             "readDataSetByVariableTypes",
             ".dataSetIdFromEncodedOne", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
-            ".sliceKeyForDataSet", ".sliceKeysForDataSet", "getDataSetFor", "getDataSetColumn",
+            ".sliceKeyForDataSet", ".sliceKeysForDataSet", "getDataSetFor",
              "getSliceKey", "getSlice", "sliceDataSetId", "sliceTitle")
 
 env <- new.env(parent = baseenv())
@@ -35,6 +35,15 @@ for (e in exprs) {
 missing <- setdiff(wanted, found)
 if (length(missing) > 0)
 	stop("common.R did not define (as expected): ", paste(missing, collapse = ", "))
+
+# Removed for good (CTO review 2026-10-09): the accessor scanned every dataset as a fallback
+# and could silently serve a same-named column from the wrong one - analyses index the
+# datasets list directly. Re-adding it must trip this check.
+commonSrc <- readLines(commonR)
+for (gone in c("getDataSetColumn")) {
+	if (any(grepl(paste0("^", gone, " *<-"), commonSrc)))
+		stop(gone, " must stay deleted: index datasets[[key]] directly (zero-export policy)")
+}
 
 # --- stubs for the native R-C++ callbacks -------------------------------------------------------
 readCount <- 0

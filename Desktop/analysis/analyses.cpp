@@ -61,108 +61,6 @@ void Analyses::destroyAllForms()
 }
 
 
-void Analyses::_walkRewriteProvenance(Json::Value & metaNode, const std::map<int, int> & dataSetIds, const std::map<int, int> & filterIds)
-{
-	if(metaNode.isObject())
-	{
-		if(metaNode.isMember("dataSetId") && metaNode["dataSetId"].isInt())
-		{
-			auto found = dataSetIds.find(metaNode["dataSetId"].asInt());
-			if(found != dataSetIds.end())
-				metaNode["dataSetId"] = found->second;
-		}
-
-		if(metaNode.isMember("filterId") && metaNode["filterId"].isInt())
-		{
-			auto found = filterIds.find(metaNode["filterId"].asInt());
-			if(found != filterIds.end())
-				metaNode["filterId"] = found->second;
-		}
-
-		for(const std::string & memberName : metaNode.getMemberNames())
-			_walkRewriteProvenance(metaNode[memberName], dataSetIds, filterIds);
-	}
-	else if(metaNode.isArray())
-		for(Json::ArrayIndex i = 0; i < metaNode.size(); i++)
-			_walkRewriteProvenance(metaNode[i], dataSetIds, filterIds);
-}
-
-void Analyses::remapSavedProvenance(Json::Value & analysisData, Workspace * workspace)
-{
-	//The dataSetId/filterId provenance in an aware analysis' .meta points at the datasets and filters of
-	//the session that saved the file; dataset/filter ids are not stable across sessions. The name-based
-	//side table written next to the options (Analysis::asJSON) re-resolves them in this workspace.
-	const Json::Value & provenance = analysisData["dataSetProvenance"];
-	Json::Value			  & options  = analysisData["options"];
-
-	if(!provenance.isObject() || !options.isObject() || !options.isMember(".meta") || !workspace)
-		return;
-
-	std::map<int, int> dataSetIds, filterIds;
-
-	//Entries are keyed "<oldDataSetId>_<oldFilterId>" and name their dataset+filter (Analysis::asJSON)
-	for(const std::string & savedKey : provenance.getMemberNames())
-	{
-		const QStringList parts		= tq(savedKey).split('_');
-		bool			  okDs = false, okFilter = false;
-		const int		  oldDataSetId	= parts.value(0).toInt(&okDs);
-		const int		  oldFilterId	= parts.value(1).toInt(&okFilter);
-
-		if(!okDs)
-			continue;
-
-		const Json::Value & entry = provenance[savedKey];
-
-		DataSet * dataSet = workspace->dataSetByName(entry.get("dataSet", "").asString());
-
-		if(!dataSet)
-		{
-			Log::log() << "Analyses::remapSavedProvenance: dataset '" << entry.get("dataSet", "").asString()
-					   << "' of saved provenance is gone; its option slices keep the stale id (and will be skipped by the engine)." << std::endl;
-			continue;
-		}
-
-		dataSetIds[oldDataSetId] = dataSet->id();
-
-		const std::string filterName = entry.get("filter", "").asString();
-		Filter			* filter	   = filterName.empty() ? dataSet->defaultFilter() : dataSet->filter(filterName);
-
-		if(okFilter && oldFilterId >= 0 && filter)
-			filterIds[oldFilterId] = filter->id();
-	}
-
-	//Dataset selection options carry a filter id AS VALUE (marked in their .meta by createMeta):
-	//rewrite those too, so the restored dropdowns point at this session's filters. The marker
-	//keeps ordinary numeric options (plot height, and any filter id equal by accident) untouched.
-	for(const std::string & optionName : options.getMemberNames())
-	{
-		if(optionName == ".meta")
-			continue;
-
-		const Json::Value & metaNode = options[".meta"].get(optionName, Json::nullValue);
-
-		if(!metaNode.isObject() || !metaNode.get("isFilterSelection", false).asBool())
-			continue;
-
-		Json::Value	  & value	 = options[optionName];
-		const std::string rawValue = value.isString() ? value.asString()
-											 : (value.isIntegral() ? std::to_string(value.asInt64()) : "");
-
-		bool		ok				= false;
-		const int	oldFilterId		= tq(rawValue).toInt(&ok);
-		auto		replacement		= filterIds.find(ok ? oldFilterId : -1);
-
-		if(replacement != filterIds.end() && replacement->second != oldFilterId)
-		{
-			value = std::to_string(replacement->second);	//strings, exactly like the dropdown writes them
-			Log::log() << "Analyses::remapSavedProvenance: selection option '" << optionName << "' remapped "
-					   << oldFilterId << " -> " << replacement->second << std::endl;
-		}
-	}
-
-	_walkRewriteProvenance(options[".meta"], dataSetIds, filterIds);
-}
-
 Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
 {
 	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
@@ -179,10 +77,6 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Modules::UpgradeMsgs		msgs;
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
-
-	//Re-resolve multi-dataset aware option provenance (dataSetId/filterId in the .meta) at this session,
-	//before anything binds to it: those ids come from the session that saved the file.
-	remapSavedProvenance(analysisData, DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr);
 	std::string					title			= analysisData.get("title", "").asString();
 
 	// Reports have no module — create via report constructor, no module resolution needed
