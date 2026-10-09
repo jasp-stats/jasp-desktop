@@ -59,7 +59,7 @@ SYNTAX_INTERFACE void				STDCALL syntaxBridgeShutdown();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearQmlState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearDataSetState();
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeClearNativeState();
-SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
+SYNTAX_INTERFACE int					STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* dataset, bool dbInMemory, int threshold, bool orderLabelsByValue);
 SYNTAX_INTERFACE void				STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadDataSetFromJaspFileStatus(const char * filePath, bool dbInMemory);
 SYNTAX_INTERFACE const char*		STDCALL syntaxBridgeLoadQmlAndParseOptions(const char * moduleName, const char* analysisName, const char* qmlFile, const char* options, const char* version, bool preloadData);
