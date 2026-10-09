@@ -913,19 +913,12 @@ const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
 
 	try
 	{
+		//Single choke point, same all-encoders decode the desktop uses but plain (not HTML): every
+		//dataset the bridge workspace holds + extras + global, each matching only its own tokens.
 		if (Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr)
-		{
-			for (DataSet * dataSet : workspace->dataSets())
-			{
-				if (dataSet)
-					dataSet->encoder().decodeJson(payload);
-			}
-		}
-
-		if (ColumnEncoder * extras = extraColumnEncoder())
-			extras->decodeJson(payload);
-
-		ColumnEncoder::columnEncoder()->decodeJson(payload);
+			workspace->decodeJsonAcross(payload, /*safeHtml=*/false);
+		else
+			ColumnEncoder::columnEncoder()->decodeJson(payload);
 
 		Json::StreamWriterBuilder writer;
 		writer["indentation"] = "";

@@ -618,6 +618,41 @@ void ColumnEncoder::decodeJsonSafeHtml(Json::Value & json)
 	replaceAll(json, decodingMapSafeHtml(), encodedNames(), true, false);
 }
 
+void ColumnEncoder::decodeJsonAcrossEncoders(Json::Value & json, const std::vector<ColumnEncoder *> & datasetEncoders, bool safeHtml)
+{
+	//Per-dataset encoders are deliberately NOT in _otherEncoders (so ENCODE can't collide two
+	//datasets that share an original column name), which is why reaching every dataset's tokens
+	//means rooting a decode pass at each one. The extras encoder and the global one ARE folded into
+	//every pass's map, so a final pass rooted at current/global completes the coverage even when
+	//there are no datasets. See the header for why this is safe to over-sweep.
+	if(safeHtml)
+	{
+		//decodeJsonSafeHtml is static and reads the *current* encoder (plus extras), so point
+		//current at each dataset in turn - exactly the dance Engine::sendString used to inline.
+		ColumnEncoder * restoreTo = currentEncoder();
+
+		for(ColumnEncoder * encoder : datasetEncoders)
+			if(encoder)
+			{
+				setCurrentEncoder(encoder);
+				decodeJsonSafeHtml(json);
+			}
+
+		setCurrentEncoder(restoreTo);
+		decodeJsonSafeHtml(json);		//current/global + extras, also covers the empty-dataset case
+	}
+	else
+	{
+		//decodeJson is instance-rooted and already unions extras via decodingMap(this); no need to
+		//disturb the process-global current encoder at all.
+		for(ColumnEncoder * encoder : datasetEncoders)
+			if(encoder)
+				encoder->decodeJson(json);
+
+		columnEncoder()->decodeJson(json);	//global/current + extras
+	}
+}
+
 
 void ColumnEncoder::replaceAll(Json::Value & json, const std::map<std::string, std::string> & map, const std::vector<std::string> & names, bool replaceNames, bool replaceStrict)
 {

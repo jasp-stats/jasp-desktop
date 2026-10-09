@@ -815,27 +815,15 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		if(_analysisMultiDataSet && _engineState == engineState::analysis)
-		{
-			//Multi-dataset aware run: an encoded name in the results can come from any dataset
-			//(each encoded name embeds its own dataset id, DataSet::setupEncoderPrefix), and a
-			//dataset's encoder only ever matches the tokens of its own dataset - so decoding
-			//against every dataset the workspace holds is both complete and safe, with no
-			//per-run bookkeeping needed: datasets opened or closed while the analysis ran are
-			//handled simply by being present or not.
-			ColumnEncoder * restoreTo = ColumnEncoder::currentEncoder();
-
-			for(DataSet * ds : resolveWorkspace()->dataSets())
-				if(ds)
-				{
-					ColumnEncoder::setCurrentEncoder(&ds->encoder());
-					ColumnEncoder::decodeJsonSafeHtml(message);
-				}
-
-			ColumnEncoder::setCurrentEncoder(restoreTo);
-		}
+		//Every results payload goes through the same all-encoders decode: each open dataset's own
+		//encoder (encoded names embed the dataset id, so a token only matches its dataset) plus the
+		//extras and global encoders. Aware and non-aware runs are not different here - a non-aware
+		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless
+		//(see ColumnEncoder::decodeJsonAcrossEncoders). Desktop renders HTML, so safeHtml = true.
+		if(Workspace * workspace = resolveWorkspace())
+			workspace->decodeJsonAcross(message, /*safeHtml=*/true);
 		else
-			ColumnEncoder::columnEncoder()->decodeJsonSafeHtml(message); // decode all columnnames as far as you can
+			ColumnEncoder::decodeJsonSafeHtml(message);	//no workspace: current + extras
 
 		msgStr = message.toStyledString();
 	}

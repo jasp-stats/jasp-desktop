@@ -451,3 +451,59 @@ void TestColumnEncoderContext::collectFilterIdsFromMetaGathersEveryDistinctFilte
 	QVERIFY(filterIds.count(32));
 	QVERIFY(filterIds.count(41));
 }
+
+// The single all-encoders results decoder that Engine::sendString, the syntax bridge and (later)
+// the R wrapper share: it must resolve tokens minted by the global current encoder, the extras
+// encoder AND every passed dataset encoder in one call, and the safeHtml switch must be the only
+// difference between desktop (escaped) and bridge/wrapper (plain) output.
+void TestColumnEncoderContext::decodeJsonAcrossEncodersCoversEveryEncoderAndHonoursSafeHtml()
+{
+	ColumnEncoder * defaultEncoder = ColumnEncoder::columnEncoder();
+	ColumnEncoder::setCurrentEncoder(defaultEncoder);
+
+	ColumnEncoder   extras(ExtraOptionsPrefix);
+	ColumnEncoder   dsOne("JASPColumn_1_"), dsTwo("JASPColumn_2_");
+
+	defaultEncoder->setCurrentNames(names({{"global col",	columnType::scale}}));
+	extras        .setCurrentNames(names({{"extra col",		columnType::scale}}));
+	dsOne         .setCurrentNames(names({{"one col",		columnType::scale}}));
+	dsTwo         .setCurrentNames(names({{"two col",		columnType::scale}}));
+
+	Json::Value payload;
+	payload["a"] = defaultEncoder->encodeAll("global col");	//global/current encoder's token
+	payload["b"] = extras        .encodeAll("extra col");		//extras (registered, folded into every pass)
+	payload["c"] = dsOne         .encodeAll("one col");			//a dataset encoder passed in the sweep
+	payload["d"] = dsTwo         .encodeAll("two col");			//...and a second one
+
+	QVERIFY2(payload["a"].asString() != "global col" && payload["c"].asString() != "one col",
+			 "sanity: the inputs must actually be encoded tokens");
+
+	ColumnEncoder::decodeJsonAcrossEncoders(payload, { &dsOne, &dsTwo }, /*safeHtml=*/false);
+
+	QCOMPARE(payload["a"].asString(), std::string("global col"));
+	QCOMPARE(payload["b"].asString(), std::string("extra col"));
+	QCOMPARE(payload["c"].asString(), std::string("one col"));
+	QCOMPARE(payload["d"].asString(), std::string("two col"));
+
+	// safeHtml is the only difference: a name with HTML-special characters comes back escaped,
+	// plain does not. (Exact escaped form is stringUtils::escapeHtmlStuff's business; we only
+	// assert the modes differ and that escaping actually happened.)
+	ColumnEncoder ds("JASPColumn_8_");
+	ds.setCurrentNames(names({{"Score & Rank [x]", columnType::scale}}));
+	const std::string specialToken = ds.encodeAll("Score & Rank [x]");
+
+	Json::Value plainVal, htmlVal;
+	plainVal["v"] = specialToken;
+	htmlVal["v"]  = specialToken;
+
+	ColumnEncoder::decodeJsonAcrossEncoders(plainVal, { &ds }, /*safeHtml=*/false);
+	ColumnEncoder::decodeJsonAcrossEncoders(htmlVal,  { &ds }, /*safeHtml=*/true);
+
+	QCOMPARE(plainVal["v"].asString(), std::string("Score & Rank [x]"));
+	QVERIFY2(htmlVal["v"].asString() != plainVal["v"].asString(), "safeHtml must escape where plain does not");
+	QVERIFY2(htmlVal["v"].asString().find("&amp;") != std::string::npos, "safeHtml should escape the ampersand");
+
+	//Leave the global in a clean state for later tests in this binary.
+	defaultEncoder->setCurrentNames(emptyNames());
+	ColumnEncoder::setCurrentEncoder(defaultEncoder);
+}

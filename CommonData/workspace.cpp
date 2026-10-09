@@ -409,6 +409,20 @@ Filter *Workspace::filterById(int id)
 	return nullptr;
 }
 
+void Workspace::decodeJsonAcross(Json::Value & json, bool safeHtml)
+{
+	//Convenience only: gather this workspace's own dataset encoders and hand the real work to
+	//ColumnEncoder, where the multi-encoder decode lives. Extras + global ride along inside it.
+	std::vector<ColumnEncoder *> datasetEncoders;
+	datasetEncoders.reserve(_dataSets.size());
+
+	for(auto & idData : _dataSets)
+		if(idData.second)
+			datasetEncoders.push_back(&idData.second->encoder());
+
+	ColumnEncoder::decodeJsonAcrossEncoders(json, datasetEncoders, safeHtml);
+}
+
 Column *Workspace::shownColumn() const
 {
 	return shownDataSet() ? shownDataSet()->shownColumn() : nullptr;
