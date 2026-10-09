@@ -81,6 +81,12 @@ public:
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
+	///< A list inherits its dataset namespace from the control its items come from (`source`):
+	///  resolve through that control so the dependency - not the visual parent chain - picks the
+	///  feeding form. nullptr until a source control resolves (setup timing, values-/rSource
+	///  driven lists), so effectiveVarInfo() transparently falls back to the component walk.
+	VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited) override;
+
 			bool					hasSource()					const			{ return _sourceItems.size() > 0; }
 			bool					hasNativeSource()			const;
 			

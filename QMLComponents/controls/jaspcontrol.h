@@ -3,6 +3,7 @@
 
 #include <QQuickItem>
 #include <QPropertyAnimation>
+#include <QSet>
 #include "qutils.h"
 #include "columntype.h"
 
@@ -172,16 +173,29 @@ public:
 	/// Consumers must not grab form()->varInfo() directly but use effectiveVarInfo() below, so a
 	/// control under a selecting host follows that host's dataset instead of the analysis-wide one.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
-	///< The nearest host (self included) with an active dataset selection provides this control's
-	///< variable info; without such a host the AnalysisForm's VariableInfo (analysis filter /
-	///< shown filter) is used, exactly as before selections existed.
+	///< The namespace this control declares it draws from - the semantic main path, overriding the
+	///< component-chain walk in effectiveVarInfo(). A JASPListControl answers through its `source`
+	/// (the available-items control feeds it); RFormula/FilterSelect can override the same hook
+	/// when they get an explicit dataset source. `visited` guards source chains against cycles.
+	/// Base: nullptr - no declared source, effectiveVarInfo() falls back to the walk.
+	virtual VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited) { Q_UNUSED(visited); return nullptr; }
+	///< The variable info for this control: first its own sourceVarInfo() (semantic dependency),
+	///< else the nearest host (self included) with an active dataset selection, else the
+	///< AnalysisForm's VariableInfo (analysis filter / shown filter) as before selections existed.
 	VariableInfo					* effectiveVarInfo();
+	///< effectiveVarInfo() with the source-cycle guard threaded through; internal to the chain,
+	///  public so subclass sourceVarInfo() overrides can recurse into it.
+	VariableInfo					* effectiveVarInfoImpl(const QSet<JASPControl *> & visited);
 	///< The Filter effectiveVarInfo() serves, or nullptr: the provenance a value of this control
 	///< must be stamped with (see BoundControlBase::createMeta).
 	Filter							* effectiveSelectionFilter();
 	///< True when this control IS a host's dataset-selection control: its name equals the
 	///< dataSetSelectionOption of the selecting host it lives under (see FilterSelect/HostFilterSelection).
 	bool							  isDataSetSelectionOption() const;
+	///< Introspection (QML/tests): the filter id effectiveVarInfo() resolves to right now, or -1
+	///  when the resolved namespace is not backed by a filter. Lets a test prove which host a
+	///  control's variable namespace actually came from (source edge vs visual walk).
+	Q_INVOKABLE int					  resolvedSelectionFilterIdForTest();
 	///< Provider chain for items that are not JASPControls themselves (a Formula is a plain
 	///< QQuickItem): nearest selecting host ancestor of `item`, else the AnalysisForm's provider.
 	static VariableInfo				* varInfoForItem(QQuickItem * item, AnalysisForm * form);
