@@ -177,6 +177,14 @@ than the junction farm ever was)**; load-everything 16.6 → 11.9 s (residual = 
 closed by including them in the map — done in the shipped version). Harness: `perftest.R`/
 `perfmap.R` patterns from the dev build tree; re-verify on an installed MSIX before release.
 
+### Installer size note (deferred)
+
+`module_libs` real copies ship in the installer (~150–200 MB extracted across the bundled set,
+roughly 50–70 MB compressed). Accepted for now; a future optimization if it ever matters: copy
+only the QML-relevant subtree for *dep* entries (root `qmldir`, `qml/`, descriptor, `icons/` —
+typically 100–500 KB) and **omit `DESCRIPTION`** so R resolution stays on the micro-lib while Qt's
+positional imports keep resolving through the entry. Own packages keep their full copy.
+
 ## Rollout
 
 1. ✅ Land the JASP-side + junction_tool changes (safe on old layouts by construction).
