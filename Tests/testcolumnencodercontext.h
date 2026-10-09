@@ -36,6 +36,7 @@ private slots:
 	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
 	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
 	void collectFilterIdsFromMetaGathersEveryDistinctFilter();
+	void decodeJsonAcrossEncodersCoversEveryEncoderAndHonoursSafeHtml();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

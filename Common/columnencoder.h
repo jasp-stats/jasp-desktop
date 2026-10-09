@@ -117,6 +117,17 @@ public:
 
 	static	void				decodeJsonSafeHtml(Json::Value & json);
 
+	/// Decode `json` (names and string values) in place across every encoder that could own one of
+	/// its tokens: each DataSet encoder in `datasetEncoders` plus the process-global current one.
+	/// Every pass also folds in the registered extras (decodingMap(this)/decodingMapSafeHtml union
+	/// _otherEncoders), so extras need not be listed. Sweeping datasets that minted nothing present
+	/// is harmless: an encoded name embeds its dataset id, so a root only replaces its own tokens.
+	/// `safeHtml` escapes the replacement values - the desktop renders results as HTML and wants that;
+	/// the syntax bridge / R wrapper want the plain decoded text. This is the single choke point every
+	/// results output should run through, replacing the per-callsite dataset loops it is aware of and
+	/// unaware of alike.
+	static	void				decodeJsonAcrossEncoders(Json::Value & json, const std::vector<ColumnEncoder *> & datasetEncoders, bool safeHtml);
+
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
 
 	/// Multi-dataset aware version of encodeColumnNamesinOptions(): walks options and their .meta in lockstep and
