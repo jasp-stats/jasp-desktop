@@ -414,8 +414,11 @@ if(WIN32)
 
 
   #modules
+  #module_libs ships real directory copies on Windows now (module package + JASP-module deps for
+  #positional QML imports, written by jaspModuleBundleManager at build time); the engine reads the
+  #install tree directly and nothing recreates entries in appData anymore (jasp-issues #4586).
   install(
-  DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/Tools
+  DIRECTORY ${MODULES_BINARY_PATH}/binary_pkgs ${MODULES_BINARY_PATH}/manifests ${MODULES_BINARY_PATH}/module_libs ${MODULES_BINARY_PATH}/Tools
   DESTINATION ${JASP_INSTALL_MODULEDIR}
   REGEX ${FILES_EXCLUDE_PATTERN} EXCLUDE
   REGEX ${FOLDERS_EXCLUDE_PATTERN} EXCLUDE)
