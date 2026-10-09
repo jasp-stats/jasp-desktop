@@ -46,7 +46,12 @@ Item
 			id:			noSelectionForm
 
 			AvailableVariablesList	{ name: "allVarsC" }
-			AssignedVariablesList	{ name: "targetC" }
+			AssignedVariablesList	{ name: "targetC"; id: targetC }
+
+			// Visually parked in the NON-selecting form, but drawing from formA's dependentA:
+			// its namespace must follow the source (formA's selection), not the visual parent.
+			// This is what JASPControl::sourceVarInfo() buys over the parentItem walk.
+			AssignedVariablesList	{ name: "srcDriven"; id: srcDriven; source: dependentA }
 		}
 
 		// A TextArea is a host too (R/Lavaan/JAGS editors autocomplete against their own dataset):
@@ -213,6 +218,31 @@ Item
 			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
 			compare(String(options.rCodeSet), String(secondFilterId), "its selection travels as its own option")
 			compare(String(options.dataSetA), String(formA.selectedFilterId), "the other options stay put")
+		}
+
+		// source-first resolution: a list that declares `source` inherits the variable namespace of
+		// the control it feeds from, even when visually parked under a different, non-selecting
+		// form. The visual-parent (parentItem) chain is only the fallback for controls with no source.
+		function test_source_drives_namespace_across_forms()
+		{
+			var original = formA.selectedFilterId
+
+			// srcDriven mirrors formA's CURRENT selection, proving the namespace came through
+			// source -> dependentA -> formA rather than the non-selecting visual parent.
+			compare(srcDriven.resolvedSelectionFilterIdForTest(), formA.selectedFilterId,
+					"a source-driven list resolves through its source (formA), not its visual parent")
+
+			var secondFilterId = parseInt(_entryFor("Second - ").value)
+			formA.selectedFilterId = secondFilterId
+			wait(50)
+
+			compare(srcDriven.resolvedSelectionFilterIdForTest(), secondFilterId,
+					"changing formA's selection follows into the source-driven list")
+			verify(targetC.resolvedSelectionFilterIdForTest() !== secondFilterId,
+					"a sibling list WITHOUT a source stays on the non-selecting form's own namespace")
+
+			formA.selectedFilterId = original	//don't bleed into the next test's assumptions
+			wait(20)
 		}
 	}
 }

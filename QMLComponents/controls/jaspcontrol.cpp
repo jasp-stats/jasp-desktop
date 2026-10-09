@@ -950,14 +950,39 @@ void JASPControl::_setInitialized(const Json::Value &value)
 
 VariableInfo * JASPControl::effectiveVarInfo()
 {
+	return effectiveVarInfoImpl(QSet<JASPControl *>());
+}
+
+VariableInfo * JASPControl::effectiveVarInfoImpl(const QSet<JASPControl *> & visited)
+{
+	//Semantic main path: a control that declares WHERE its variables come from (a JASPListControl
+	//through its `source`) resolves there first, so a list keeps following the component it
+	//actually depends on even when its visual parent chain points elsewhere. The chain is
+	//cycle-guarded (visited) and may recurse a few hops before it lands on a host.
+	if (VariableInfo * sourceInfo = sourceVarInfo(visited))
+		return sourceInfo;
+
 	//Provider chain = component chain: the nearest host (self included) that holds an active
 	//dataset/filter selection serves this control, so two forms of one analysis can look at two
 	//datasets at the same time. Hosts without a selection hand out nothing and the walk continues
 	//up to the AnalysisForm's VariableInfo (analysis filter, else shown filter) - which is exactly
 	//how every non-aware analysis has always worked.
+	QSet<JASPControl *> seen = visited;		//the walk must not loop back into a source that led here
+	seen.insert(this);
+
 	for (JASPControl * control = this; control; control = qobject_cast<JASPControl *>(control->parentItem()))
+	{
 		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
 			return varInfo;
+
+		//a list control met on the way up may itself draw from another form's source
+		if (control != this && !seen.contains(control))
+		{
+			seen.insert(control);
+			if (VariableInfo * ancestorSource = control->sourceVarInfo(seen))
+				return ancestorSource;
+		}
+	}
 
 	return form() ? form()->varInfo() : nullptr;
 }
@@ -966,6 +991,12 @@ Filter * JASPControl::effectiveSelectionFilter()
 {
 	VariableInfo * varInfo = effectiveVarInfo();
 	return varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
+}
+
+int JASPControl::resolvedSelectionFilterIdForTest()
+{
+	Filter * f = effectiveSelectionFilter();
+	return f ? f->id() : -1;
 }
 
 bool JASPControl::isDataSetSelectionOption() const

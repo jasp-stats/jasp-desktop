@@ -66,6 +66,10 @@ public:
 	SourceItem(JASPListControl* _listControl = nullptr);
 
 	ListModel*				sourceListModel()					{ return _sourceListModel;					}
+	///< The available-items control this source draws from (nullptr for values-/rSource-/native
+	/// model-driven sources and until _findModelAndControl resolves it). The semantic edge a list
+	/// uses to inherit its dataset namespace (see JASPListControl::sourceVarInfo).
+	JASPListControl *		sourceListControl()					{ return _sourceListControl;				}
 	const QString&			rowControlName()			const	{ return _rowControlName;					}
 	const QStringList&		sourceFilter()				const	{ return _sourceFilter;						}
 	bool					combineWithOtherModels()	const	{ return _combineWithOtherModels;			}

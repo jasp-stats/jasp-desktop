@@ -43,6 +43,32 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 	connect(this, &JASPControl::formIsKnown, this, &JASPListControl::whenFormIsKnown);
 }
 
+VariableInfo *JASPListControl::sourceVarInfo(const QSet<JASPControl *> & visited)
+{
+	if (_sourceItems.isEmpty())
+		return nullptr;
+
+	QSet<JASPControl *> seen = visited;
+	seen.insert(this);
+
+	//A list draws its variables from the control named by `source`; that control's namespace IS
+	//this list's. Resolving through it (its own source, else the selecting host it lives under)
+	//keeps the dependency semantic even if the list is visually reparented elsewhere. Available-
+	//items controls have no source, so the recursion ends at the feeding form. nullptr when no
+	//source control has resolved (setup timing, or a values-/rSource-driven list): the caller
+	//falls back to the component-chain walk.
+	for (SourceItem * sourceItem : _sourceItems)
+	{
+		JASPListControl * sourceControl = sourceItem->sourceListControl();
+
+		if (sourceControl && !seen.contains(sourceControl))
+			if (VariableInfo * sourceInfo = sourceControl->effectiveVarInfoImpl(seen))
+				return sourceInfo;
+	}
+
+	return nullptr;
+}
+
 void JASPListControl::whenFormIsKnown(AnalysisForm * form)
 {
 	if (!form) return;
