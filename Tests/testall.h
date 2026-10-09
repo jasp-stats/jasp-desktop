@@ -96,13 +96,10 @@ private slots:
 	// filter, so the loaded provenance must be restored - but only for unchanged values.
 	void	testRestoreProvenanceFromBoundValues();
 
-	// File round-trip 2/2: dataSetId/filterId provenance saved by another session is re-resolved
-	// through the name-based side table; unknown datasets keep the stale id.
-	void	testRemapSavedProvenance();
-
-	// Pin for the removal of that remapping: dataset/filter ids come straight from the storage
-	// db and a .jasp restores that db verbatim, so reopening (fresh Workspace over the same
-	// database) must hand back the very same ids - saved provenance is simply still valid.
+	// File round-trip 2/2: dataset/filter ids come straight from the storage db and a .jasp
+	// restores that db verbatim, so reopening (fresh Workspace over the same database) must
+	// hand back the very same ids - saved provenance is simply still valid. (This invariant is
+	// why Analyses::remapSavedProvenance and its side table were removed.)
 	void	testDataSetFilterIdsSurviveStorageReload();
 
 	// Filter ownership: removeFilter must unregister (no dangling pointer in _filters) and

@@ -730,7 +730,7 @@ void AnalysisForm::setAnalysisUp()
 
 	//Rebinding restamped every control's meta with the analysis' current filter; for a multi-dataset
 	//aware analysis the provenance from the file must win, so restore it for all unchanged values
-	//(Analyses::remapSavedProvenance has already re-resolved those ids at this session).
+	//(the file's ids come straight from the restored storage db, so they are valid as-is).
 	if (_analysis->multiDataSetAware())
 		_analysis->restoreProvenanceFromBoundValues(initialOptions);
 

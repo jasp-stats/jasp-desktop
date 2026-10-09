@@ -890,47 +890,10 @@ Json::Value Analysis::asJSON(bool withRSource) const
 
 	//Marker for older JASP versions (and for the file itself) that this analysis depends on the
 	//multi-dataset machinery: its options carry dataSetId/filterId provenance in their .meta.
+	//Those ids are straight from the storage db (which the .jasp restores verbatim), so a reopened
+	//file resolves them again unchanged - no name-based side table or remapping is needed.
 	if (multiDataSetAware())
-	{
 		analysisAsJson["multiDataSetAware"] = true;
-
-		//The provenance ids are only meaningful in this session, so store a name-based side table with
-		//which they can be re-resolved when the file is loaded again (Analyses::remapSavedProvenance).
-		Json::Value provenance(Json::objectValue);
-		Workspace * workspace	= DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
-
-		//One entry per referenced (dataset, filter) PAIR - selection options carry .meta stamps
-		//too, so every form's chosen filter is included even when no variable references it.
-		//Ids are session-local, names are not: each pair is stored BY NAME under the composite
-		//key "<oldDataSetId>_<oldFilterId>" and re-resolved on load (Analyses::remapSavedProvenance).
-		std::set<std::pair<int, int>> pairs;
-		ColumnEncoder::collectDataSetFilterPairsFromMeta(boundValues().get(".meta", Json::nullValue), pairs);
-
-		if (_filterDataSet)
-			pairs.insert({ _filterDataSet->id(), _filter ? _filter->id() : -1 });
-
-		if (workspace)
-			for (const auto & pair : pairs)
-			{
-				DataSet * ds = workspace->dataSetById(pair.first);
-
-				if (!ds)
-					continue;
-
-				Filter * f = pair.second >= 0 ? workspace->filterById(pair.second) : nullptr;
-
-				if (!f || f->data() != ds)
-					f = ds->defaultFilter();
-
-				Json::Value entry;
-				entry["dataSet"]	= fq(ds->name());
-				entry["filter"]		= f ? f->name() : std::string();
-
-				provenance[std::to_string(pair.first) + "_" + std::to_string(f ? f->id() : -1)] = entry;
-			}
-
-		analysisAsJson["dataSetProvenance"] = provenance;
-	}
 	
 
 	if (withRSource)
