@@ -27,6 +27,7 @@
 
 #include <QString>
 #include <QDir>
+#include <QPair>
 
 /// collector class with functions that make the locations of relevannt folders available
 /// Uses Qt so can't be used in R-Interface.
@@ -42,18 +43,26 @@ public:
 	static QString userModulesLibDir();
 	static QString bundledModulesDir();
 	static QString bundledModulesLibDir();
-	//!Extra R libpaths for a module, derived from its manifest (manifests/jasp<name>.json, sibling of the
+	//!Extra R libpaths for a module, derived from its manifest (manifests/<name>_manifest.json — the
+	//!name jaspModuleBundleManager gives it — sibling of the
 	//!module_libs dir that moduleRLibrary lives in). The manifest's "mapping" entries ("<hash> =>
 	//!<pkgname>_<version>", written by jaspModuleBundleManager at build and install time) list every
 	//!binary_pkgs/<hash> dir the module needs; with the newer nested extraction layout
 	//!binary_pkgs/<hash>/<pkgname> those hash dirs are micro-libraries and can be passed to .libPaths()
-	//!directly. Works for bundled modules (shipped manifest, reached through the farm's binary_pkgs
-	//!junction) and user-installed modules (manifest next to the install in the user modules dir).
+	//!directly. Works for bundled modules (shipped manifest in the install tree) and user-installed
+	//!modules (manifest next to the install in the user modules dir).
 	//!Hash dirs extracted in the old layout (DESCRIPTION at their root) are skipped, so old installs
-	//!yield an empty list and keep using the junction farm exactly as before — callers can append the
-	//!result unconditionally.
+	//!yield an empty list and keep loading through their legacy links exactly as before — callers
+	//!can append the result unconditionally.
 	//!Windows-only (Linux/macOS use proper symlinks and keep the flat binary_pkgs layout).
 	static QStringList moduleExtraLibPaths(const QString & moduleRLibrary, const QString & moduleName);
+	//!Ordered pkg -> lib-dir pairs mirroring the .libPaths() order of getLibPathsToUse(): the
+	//!module_libs entry first, then the binary_pkgs micro-libraries from the manifest, then R's own
+	//!library. The engine turns this into options(JASP.find.package.map) and installs a thin
+	//!find.package fast-path that consults the map before sweeping all libpaths per lookup
+	//!(~20ms/call at ~400 libpaths on Windows, paid by every namespace load and system.file call).
+	//!Empty on non-Windows. See windows-binary-pkgs-libpaths.md.
+	static QList<QPair<QString, QString>> modulePkgMap(const QString & moduleRLibrary, const QString & moduleName);
 	static QString documents();
 	static QString autoSaveDir();
 	static QString sandboxedDocuments();

@@ -41,53 +41,7 @@
 
 #ifdef _WIN32
 #include "utilities/dynamicruntimeinfo.h"
-
-bool createJunctions()
-{
-    QProcess junctionTool;
-
-    QString toolPath = AppDirs::programDir().absoluteFilePath("junctionTool");
-    QString mapFilePath = AppDirs::programDir().absoluteFilePath("junctions_map.txt");
-    QString baseDirPath =  AppDirs::bundledModulesDir();
-    QString shippedModulesPath = AppDirs::programDir().absoluteFilePath("Modules");
-    
-    junctionTool.setProcessChannelMode(QProcess::ForwardedChannels);
-    
-    junctionTool.setProgram(toolPath);
-    junctionTool.setArguments({"-c", QDir::toNativeSeparators(mapFilePath), QDir::toNativeSeparators(baseDirPath), QDir::toNativeSeparators(shippedModulesPath)});
-
-    Log::log() << "Starting junction tool..." << std::endl;
-    junctionTool.start();
-
-    if (!junctionTool.waitForStarted()) {
-        Log::log() << "Failed to start junction_tool.exe!" << std::endl;
-        return false;
-    }
-
-    // 120 seconds is more than enough time.
-    if (!junctionTool.waitForFinished(120000)) {
-        Log::log() << "junction_tool.exe timed out! Terminating..." << std::endl;
-        junctionTool.kill();
-        junctionTool.waitForFinished();
-        return false;
-    }
-
-    if (junctionTool.exitStatus() == QProcess::CrashExit) {
-        Log::log() << "junction_tool.exe crashed unexpectedly!" << std::endl;
-        return false;
-    }
-
-    int exitCode = junctionTool.exitCode();
-    if (exitCode != 0) {
-        Log::log() << "junction_tool.exe returned error code: " << exitCode << std::endl;
-        return false;
-    }
-
-	return DynamicRuntimeInfo::getInstance()->writeDynamicRuntimeInfoFile(); //write file so we only do this once
-}
-
 #endif
-
 
 #define SEPARATE_PROCESS
 
@@ -467,26 +421,11 @@ int main(int argc, char *argv[])
 	personaSchemeHandler.setResourcesPersonasDir(QString::fromStdString(Dirs::resourcesDir()) + "/PersonaImages");
 
 #ifdef _WIN32
+	//Module loading no longer needs first-run initialization: the engine reads the install tree
+	//directly (module_libs real copies + binary_pkgs micro-libraries through .libPaths), so the
+	//appData junction farm and its bundledModulesInitialized flag are gone (jasp-issues #4586).
 	auto runtimeEnv = DynamicRuntimeInfo::getInstance()->getRuntimeEnvironmentAsString();
 	Log::log() << "Runtime Environment: " << runtimeEnv << std::endl;
-
-	// Since we introduced renv to JASP, we need to recreate the junctions from Modules -> renv-cache on first run. Because windows does not support proper symlinks on user perms
-	// For this JASP has the --junctions argument, and is run on first execution of a specific jasp version on a system.
-	Log::log() << "Checking if we need to recreate junctions or not" << std::endl;
-	if(!DynamicRuntimeInfo::getInstance()->bundledModulesInitialized())
-	{
-		Log::log() << "We need to recreate junctions!" << std::endl;
-
-		QMessageBox *msgBox = MessageForwarder::getInfoBox("Creating Junctions, one moment please", "Creating Junctions, one moment please");
-		msgBox->show();
-
-		if(!createJunctions())
-		{
-			std::cerr << "Modules folder missing and couldn't be created!\nContact the JASP team for support." << std::endl;
-			exit(254);
-		}
-		msgBox->close();
-	}
 #endif
 	a.init(arguments);
 

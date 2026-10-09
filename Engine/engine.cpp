@@ -26,6 +26,91 @@
 #include "databaseinterface.h"
 #include "r_functionwhitelist.h"
 
+//Installed once per engine session, together with options(JASP.find.package.map), right before a
+//module loads (Engine::receiveModuleRequestMessage). Stock find.package() collects EVERY match:
+//it runs one vectorized file.exists() sweep across all of .libPaths() per lookup (also through
+//system.file), because it must gather all candidate dirs before prepending the loaded namespace's
+//path and version-checking each. With the ~300-400 micro-library libpaths of a module that costs
+//~20ms per call on Windows/NTFS (measured, R 4.5.2), paid per namespace load and on every
+//system.file() call. The map lets mapped packages skip the sweep entirely. Semantics are exactly
+//preserved: for a mapped package we return the loaded namespace's path when loaded (as stock
+//does), else the first hit in .libPaths() order (the map is built in that order); everything
+//unmapped (base packages included) falls through to the untouched original. unlockBinding is
+//legitimate here because JASP ships its own R; if a future R forbids it the tryCatch leaves the
+//stock function in place - slow, but correct. See Docs/development/windows-binary-pkgs-libpaths.md.
+static const char * pkgMapFindPackagePatch = R"RCODE(
+(function()
+{
+	install <- function()
+	{
+		if (isTRUE(getOption('JASP.find.package.map.installed')))
+			return(invisible(TRUE))
+
+		ok <- tryCatch({
+			orig <- base::find.package
+			newfp <- function(package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption('verbose')) {
+				map <- getOption('JASP.find.package.map') #read at call time so module switches can refresh it
+				#is.null: the default search through .libPaths(); identical after unique(): loadNamespace's
+				#import recursion passes c(lib.loc, .libPaths()), duplicating the vector at every depth —
+				#unique() gives it back in original order, and duplicates never change a first-hit search
+				if ((is.null(lib.loc) || identical(unique(lib.loc), .libPaths())) && !is.null(map) && length(package) == 1L && !is.na(package) && package %in% names(map)) {
+					if (isNamespaceLoaded(package))
+						return(if (identical(package, 'base')) system.file() else .getNamespaceInfo(asNamespace(package), 'path'))
+					p <- file.path(map[[package]], package)
+					if (file.exists(file.path(p, 'DESCRIPTION')))
+						return(p)
+				}
+				orig(package, lib.loc, quiet, verbose)
+			}
+			ns <- asNamespace('base')
+			unlockBinding('find.package', ns)
+			assign('find.package', newfp, envir = ns)
+			lockBinding('find.package', ns)
+			TRUE
+		}, error = function(e) FALSE)
+
+			options(JASP.find.package.map.installed = ok)
+		if (ok)
+			cat('JASP find.package map active (', length(getOption('JASP.find.package.map')), ' entries)\n')
+		else
+			cat('JASP find.package map could not be installed, falling back to stock (slow) lookups\n') #cat, not warning: the eval wrapper suppresses warnings
+		invisible(ok)
+	}
+
+	installLoadNamespaceNormalizer <- function()
+	{
+		if (isTRUE(getOption('JASP.loadNamespace.normalized')))
+			return(invisible(TRUE))
+		ok <- tryCatch({
+			origln <- base::loadNamespace
+			newln <- function(package, lib.loc = NULL, ...)
+			{
+				#loadNamespace threads c(lib.loc, .libPaths()) through its recursion, so the shelf
+				#list duplicates at every dependency depth (285, 570, 855... entries). Duplicates are
+				#meaningless in a search path (first occurrence decides everything, order preserved),
+				#so dedup keeps the vectors bounded at length(.libPaths()) instead of growing with
+				#chain depth — and stops deep fall-through sweeps from being amplified several-fold.
+				if (is.character(lib.loc) && anyDuplicated(lib.loc))
+					lib.loc <- unique(lib.loc)
+				origln(package, lib.loc, ...)
+			}
+			ns <- asNamespace('base')
+			unlockBinding('loadNamespace', ns)
+			assign('loadNamespace', newln, envir = ns)
+			lockBinding('loadNamespace', ns)
+			TRUE
+		}, error = function(e) FALSE)
+		options(JASP.loadNamespace.normalized = ok)
+		if (!ok)
+			cat('JASP loadNamespace normalizer could not be installed; lib.loc vectors may duplicate\n')
+		invisible(ok)
+	}
+
+	install()
+	installLoadNamespaceNormalizer()
+})()
+)RCODE";
+
 void SendFunctionForJaspresults(const char * msg) 
 {
 	Json::Reader	parser;
@@ -572,12 +657,18 @@ void Engine::receiveModuleRequestMessage(const Json::Value & jsonRequest)
 	std::string		moduleCode		= jsonRequest["moduleCode"].asString();
 	std::string		moduleName		= jsonRequest["moduleName"].asString();
 	std::string		moduleLibPaths  = jsonRequest["moduleLibPaths"].asString();
+	std::string		modulePkgMap	= jsonRequest.get("modulePkgMap", Json::nullValue).asString();
 
 	Log::log() << "About to run module request for module '" << moduleName << "' and code to run:\n'" << moduleCode << "'" << std::endl;
 
 	if(moduleStatusFromString((moduleRequest)) == moduleStatus::loading) {
 		//Some jaspModules use jaspBase calls in their .onload so we first we need to prepare jaspbase
-		jaspRCPP_evalRCode((".libPaths( " + moduleLibPaths +  " ); 'success'").c_str(), false);
+		//The pkg map (Windows micro-library layout) must be in place before anything loads, so that
+		//even jaspBase's own resolution skips the libpaths sweep.
+		std::string	setupCode = ".libPaths( " + moduleLibPaths + " ); ";
+		if(!modulePkgMap.empty() && modulePkgMap != "character(0)")
+			setupCode += "options(JASP.find.package.map = " + modulePkgMap + "); " + std::string(pkgMapFindPackagePatch) + " ";
+		jaspRCPP_evalRCode((setupCode + "'success'").c_str(), false);
 		jaspRCPP_init_jaspBase();
 	}
 

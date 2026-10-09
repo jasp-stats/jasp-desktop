@@ -434,6 +434,7 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 	requestJson["moduleRequest"]	= moduleStatusToString(moduleStatus::loading);
 	requestJson["moduleName"]		= _name;
 	requestJson["moduleLibPaths"]   =  getLibPathsToUse();
+	requestJson["modulePkgMap"]	=  getPkgMapToUse();
 	requestJson["moduleCode"]		= generateModuleLoadingR();
 
 	return requestJson;
@@ -441,11 +442,12 @@ Json::Value	DynamicModule::requestJsonForPackageLoadingRequest()
 
 std::string DynamicModule::getLibPathsToUse() const
 {
-	//The module's own (farm) library comes first so that behaviour is identical to before when the farm is
-	//healthy. Then follow any direct binary_pkgs/<hash>/<pkg> libpaths from the module's own manifest
-	//(AppDirs::moduleExtraLibPaths): these point into the read-only install tree for bundled modules or
-	//into the user modules dir for installed ones, and rescue module loading when the farm in appData is
-	//missing or incomplete (jasp-issues#4586). R's own library goes last so module-pinned versions win over it.
+	//The module's own library dir comes first: for bundled modules it is the module_libs entry in
+	//the install tree, for user-installed ones their entry in the user modules dir. Then follow any
+	//direct binary_pkgs/<hash>/<pkg> libpaths from the module's own manifest (AppDirs::moduleExtraLibPaths):
+	//these serve every plain R dep, so module_libs entries only carry real copies of the module package
+	//and its JASP-module deps (their QML is imported positionally) (jasp-issues#4586). R's own library
+	//goes last so module-pinned versions win over it.
 	QStringList libPaths;
 	libPaths << moduleRLibrary();
 	libPaths << AppDirs::moduleExtraLibPaths(moduleRLibrary(), QString::fromStdString(_name));
@@ -457,6 +459,30 @@ std::string DynamicModule::getLibPathsToUse() const
 		if (i > 0)
 			rVector += ", ";
 		rVector += "'" + libPaths.at(i).toStdString() + "'";
+	}
+	rVector += ")";
+
+	return rVector;
+}
+
+std::string DynamicModule::getPkgMapToUse() const
+{
+	//Named R character vector pkg => lib dir ("c('abind'='...', ...)"), or "character(0)" when the
+	//module has no micro-libraries (non-Windows, or an old-layout install). Sent once with the
+	//module-load request; the engine stores it in options(JASP.find.package.map) and installs a thin
+	//find.package fast-path so package lookups skip the sweep across all ~300-400 libpaths
+	//(see AppDirs::modulePkgMap and windows-binary-pkgs-libpaths.md).
+	const auto &	pkgMap = AppDirs::modulePkgMap(moduleRLibrary(), QString::fromStdString(_name));
+
+	if (pkgMap.isEmpty())
+		return "character(0)";
+
+	std::string rVector = "c(";
+	for (int i = 0; i < pkgMap.size(); i++)
+	{
+		if (i > 0)
+			rVector += ", ";
+		rVector += "'" + pkgMap.at(i).first.toStdString() + "'='" + pkgMap.at(i).second.toStdString() + "'";
 	}
 	rVector += ")";
 
@@ -535,10 +561,14 @@ std::string DynamicModule::iconFolder() const
 	return moduleInstFolder() + "/icons/";
 }
 
-std::string DynamicModule::rModuleCall(const std::string &function) const
+std::string DynamicModule::rModuleCall( const std::string & function) const
 {
-	return ".libPaths(" + getLibPathsToUse()  + ");\n"
-			+ _name + "::" + function;
+	//The engine session already carries the module's .libPaths() from its moduleLoadRequest, and
+	//nothing resets them mid-session (a respawned engine re-loads the module first), so re-sending
+	//the ~400-entry vector on every analysis call was pure waste — and the reason AppDirs cached
+	//libpaths/map results, which in turn served stale entries after in-session reinstalls.
+	//Those caches are gone; this is only ever evaluated in an engine that has loaded the module.
+	return _name + "::" + function;
 }
 
 std::string	DynamicModule::iconFilePath(std::string whichIcon)	const

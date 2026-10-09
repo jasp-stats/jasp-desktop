@@ -29,8 +29,9 @@
 #   - The install process configure a few Batch files for performing a few tasks, e.g.,
 #     creating WIX installer. Those files need to be configured using the NATIVE directory
 #     paths. Those `cmake_paths` are doing exactly that.
-#   - CMake doesn't copy JASP Modules, `jasp*`, into the install folder, and therefore there
-#     is no need to remove the junction inside the staged folder
+#   - CMake doesn't copy JASP Modules, `jasp*`, into the install folder. The Windows staged
+#     module tree contains no links at all: module_libs entries are real directory copies and
+#     everything else loads from binary_pkgs micro-libraries
 #
 # ------------------------------------------------------------------------------
 # Notes
@@ -314,7 +315,7 @@ if(WIN32)
   # include(InstallRequiredSystemLibraries)
   # install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)
 
-  install(TARGETS JASP JASPEngine ContainerFilePermissionChecker JunctionTool RUNTIME DESTINATION .)
+  install(TARGETS JASP JASPEngine ContainerFilePermissionChecker RUNTIME DESTINATION .)
 
   set(JASP_QML_FILES "${CMAKE_SOURCE_DIR}/Desktop")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")

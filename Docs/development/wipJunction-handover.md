@@ -2,6 +2,10 @@
 
 October 2026 · origin: jasp-issues #4586/#4566 · full spec: `Docs/development/windows-binary-pkgs-libpaths.md`
 
+> **Update:** stage 2 (farm retirement) is now implemented on top of the additive transition —
+> manager copy rule, `bundledModulesDir()` → install tree, junction machinery deleted.
+> See "Farm retirement" in the spec. Still unvalidated: nothing is compiled or tested yet.
+
 ## Why
 
 On Windows (MSIX/MSI) bundled-module loading depends on the "junction farm" rebuilt in
@@ -45,7 +49,7 @@ nested `binary_pkgs/<hash>/<pkgname>/` layout provides without any links.
 
 | file | change |
 |---|---|
-| `QMLComponents/utilities/appdirs.h.in` + `.cpp` | `AppDirs::moduleExtraLibPaths()` — manifest `mapping` parser, `#ifdef _WIN32`, mutex-guarded cache, old-layout guard (`appdirs.h` is generated — build regenerates it) |
+| `QMLComponents/utilities/appdirs.h.in` + `.cpp` | `AppDirs::moduleExtraLibPaths()` — manifest `mapping` parser (`manifests/<name>_manifest.json`), `#ifdef _WIN32`, mutex-guarded cache, old-layout guard (`appdirs.h` is generated — build regenerates it) |
 | `QMLComponents/modules/dynamicmodule.cpp` | `getLibPathsToUse()` appends the hash dirs |
 | `Desktop/junction_tool/main.cpp` | exit ≠ 0 when any junction fails (no more silent half-farms; Desktop already retries because the `bundledModulesInitialized` flag isn't written) + `binary_pkgs` added to farm special-dirs |
 | `Engine/jaspModuleBundleManager` (submodule, branch `wipJunction`) | `nestBinaryPkgIfNeeded()` in `utils.R`; nesting pass + junctions one level deeper in `installJaspModuleBundle()` — both Windows-only |

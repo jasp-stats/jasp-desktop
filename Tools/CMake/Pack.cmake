@@ -4,10 +4,6 @@
 #   - We have two bundler, WIX and ZIP; and they can be called by their target name
 #       - `cmake --build . --target wix`
 #       - `cmake --build . --target zip`
-#   - In addition, there are two targets for collecting and recreating junctions that
-#     are being called automatically before the creation of WIX,
-#       - `cmake --build . --target recreate-junctions`
-#       - `cmake --build . --target collect-junctions`
 #
 # On macOS,
 #   - We are using the `create-dmg` script to create and design the DMG. You need to
@@ -63,30 +59,18 @@ if(WIN32)
   endif()
 
   add_custom_target(
-    collect-junctions
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-    BYPRODUCTS "${CMAKE_BINARY_DIR}/junctions_map.txt"
-    COMMAND cmd.exe /C JunctionTool.exe -s Modules
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/")
-
-  add_custom_target(
     zip
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     BYPRODUCTS "${CMAKE_SOURCE_DIR}/JASP/JASP.zip"
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_SOURCE_DIR}/Tools/windows/zip/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
+            "${CMAKE_SOURCE_DIR}/Tools/windows/zip/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C ZIP.cmd)
 
   add_custom_target(
     msix
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory JASP
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_BINARY_DIR}/junctions_map.txt" "${JASP_INSTALL_PREFIX}/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/Tools/windows/msix/staticRuntimeInfo.json" "${JASP_INSTALL_PREFIX}/"
     COMMAND cmd.exe /C msix.cmd)

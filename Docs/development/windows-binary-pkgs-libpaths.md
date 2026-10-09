@@ -1,6 +1,6 @@
 # Binary packages as direct R library paths (`binary_pkgs/<hash>/<pkg>`)
 
-Status: proposed / in implementation · October 2026
+Status: implemented (additive rescue + farm retirement) · October 2026
 Related: jasp-issues #4586, #4566 · `Docs/development/windows-sandbox-efs-save-crash.md`
 
 ## Problem
@@ -59,19 +59,17 @@ new:  binary_pkgs/<hash>/<pkgname>/DESCRIPTION  (hash dir == micro-library, .lib
   proper symlinks, which ship fine in the packages;
 - the hash (content hash) is unchanged, so dedup, already-present detection and uninstall keep working.
 
-**junction_tool (`Desktop/junction_tool/main.cpp`):**
-
-- junction `binary_pkgs` into the farm alongside `manifests` and `Tools`, so the farm root
-  mirrors the full module root and manifest-relative hash paths resolve for bundled modules;
-- exit non-zero when any junction failed so JASP retries on the next start instead of
-  persisting a half-built farm.
+**junction_tool (`Desktop/junction_tool/main.cpp`) — retired in the farm-retirement step:** the
+farm it built is gone; the target, the build-time `-s` scan (`collect-junctions` in
+`Tools/CMake/Pack.cmake` / `Tools/windows/BuildBotScript.cmd`), the `junctions_map.txt` shipment
+and the first-run creation in `Desktop/main.cpp` were all removed.
 
 **JASP Desktop (`QMLComponents`):**
 
 - `AppDirs::moduleExtraLibPaths(moduleRLibrary, moduleName)`: **Windows-only** (`#ifdef _WIN32`; on
   Linux/macOS it returns an empty list — symlinks already solve it there). Reads the module's own
-  manifest (`<root>/manifests/jasp<name>.json`, where `<root>` is two levels up from the module's
-  library dir — farm root for bundled, user modules root for installed), parses `mapping`, resolves
+  manifest (`<root>/manifests/<name>_manifest.json`, where `<root>` is two levels up from the module's
+  library dir — install-tree Modules root for bundled, user modules root for installed), parses `mapping`, resolves
   `binary_pkgs/<hash>` against that root, and returns every hash dir that exists and does **not** have
   a `DESCRIPTION` at its root (old-layout guard).
 - `DynamicModule::getLibPathsToUse()` now emits
@@ -90,6 +88,39 @@ All of this is Windows-only, in both places:
   `c(moduleRLibrary, R library)` exactly as today, and their trees keep the flat layout;
 - junction_tool is Windows-only by construction.
 
+## Farm retirement (step 3, implemented)
+
+Once the tree ships only new-extraction packages the farm is pure dead weight. Changes:
+
+- **Manager copy rule** (`installJaspModuleBundle`, Windows-only): `module_libs/<mod>/` gets real
+  directory copies of exactly those packages that must exist under their own name inside the
+  importer's entry — the module package itself and every dependency that is itself a JASP module
+  (detected as `jasp*` minus the infra set jaspBase/jaspGraphs/jaspTools/jaspResults/
+  jaspWorkarounds), because modules import each other's QML through relative paths that resolve
+  positionally. ~34 cross-module edges ≈ 70 MB on disk. All other deps are served solely by
+  their hash micro-libraries. `repairJaspModuleBundleByManifest` nests freshly downloaded hashes
+  and rebuilds the entry, so repairing fully migrates old-layout installs. `createLink()` (and
+  with it every junction creation for NEW installs) is no longer called on Windows; Linux/macOS
+  symlinks are untouched.
+- **Shared-hash heal for legacy installs** (`nestAndHealSharedHashes`, Windows-only): when a
+  still-flat hash is nested and another installed (old-layout) module's manifest also references
+  it, that module's `module_libs` junction is re-pointed one level deeper — the legacy entry's own
+  idiom, instant and deduplicating — with a real dir copy as fallback if junction creation is
+  blocked (AV, jasp-issues #4586). Junction doctrine: none in the bundled/shipped path, none for
+  new user installs; legacy user entries may be repaired with junctions until the module is
+  reinstalled/updated, at which point it migrates to the copy layout where only read/execute
+  permissions are needed (no junction creation, no EFS/SID surface).
+- **`AppDirs::bundledModulesDir()`**: always `programDir()/Modules` on Windows (like ZIP/portable).
+  All consumers — manifests, `Tools`, `modules-settings.json`, module files — only ever read
+  from the install tree.
+- **Deleted machinery**: `createJunctions()` + first-run dialog + `bundledModulesInitialized` gate
+  in `Desktop/main.cpp`, the `JunctionTool` target and `Desktop/junction_tool/`, the
+  `collect-junctions` build step and every `junctions_map.txt` copy. Stale farm dirs in appData
+  are harmless leftovers.
+
+Old user installs keep their already-built junctions (module loading still starts from
+  `module_libs/<mod>`); nothing new ever creates one.
+
 ## Old installs (the compat story)
 
 Detection is purely structural — a hash dir with `DESCRIPTION` at its root was extracted by
@@ -104,25 +135,53 @@ the old manager:
 A user updating a module through a new JASP reinstalls with the new manager and migrates
 automatically; never-updated installs keep working through their existing farms.
 
-## Performance note
+## Performance: the find.package map (measured & implemented)
 
-`find.package()` does one vectorized `file.exists()` sweep over `.libPaths()` per package
-lookup (no short-circuit, verified in the R 4.5.2 source). With ~170–280 hash dirs per
-module that is ~30–50k attribute checks per engine start — measured at ~3.5 µs/check warm
-(Linux), so expect roughly 0.1–0.5 s once per engine start, zero per subsequent analysis.
-DLL loading, lazy-load DBs and `.onLoad` are unaffected (they use the resolved path).
-Backstop if a real-Windows benchmark disagrees: a ~5-line early-exit patch in
-`find.package` (JASP already maintains R patches).
+`find.package()` collects every match: one vectorized `file.exists()` sweep over *all* of
+`.libPaths()` per lookup (no short-circuit — it must gather all candidate dirs before prepending
+the loaded namespace's path and version-checking each; verified in the R 4.5.2 source), and
+`system.file()` pays the same sweep on **every** call. Measured on Windows/NTFS (dev machine,
+Defender active), R 4.5.2, 412 libpaths:
+
+- per lookup ~20 ms (~50 µs/stat vs 3.5 µs on Linux)
+- `library(<module>)` at engine start: +0.3–0.4 s (≈15 `loadNamespace` calls at load time)
+- load-everything worst case: +9 s cumulative; realistic sessions sit far below that, but runtime
+  `system.file()` calls made the unmitigated cost unbounded in principle
+
+**Solution: a pkg → lib-dir map consulted before the sweep.** The manifest already knows which
+micro-library holds which package, so the desktop sends a named vector alongside the libpaths:
+
+- `AppDirs::modulePkgMap()` (Windows-only, cached) builds ordered `pkg => dir` pairs mirroring the
+  `.libPaths()` order: the `module_libs` entry first, then the manifest's micro-libraries, then
+  R's own library (covers base/recommended packages too).
+- `DynamicModule::requestJsonForPackageLoadingRequest()` adds it to the module-load request as
+  `modulePkgMap`; `Engine::receiveModuleRequestMessage()` stores it in
+  `options(JASP.find.package.map)` and installs the fast-path **right there — the only moment
+  that needs it**: the module-load request is what starts package loading (even jaspBase resolves
+  during it), and patch + options persist for the session (`.libPaths` resets on later analysis
+  calls cannot undo them). A module switch in-session just refreshes the option; the wrapper
+  reads the map at call time.
+- The fast-path (R snippet in `engine.cpp`) wraps — not replaces — stock `find.package`: for a
+  **mapped** package it returns the loaded namespace's path when loaded (exactly what stock does)
+  and otherwise the first `.libPaths()` hit (the map is built in that order); anything unmapped
+  (base packages included) falls through to the original untouched. One `file.exists` check
+  validates the mapped dir.
+- Shipping mechanism: runtime rebinding (`unlockBinding` on base — JASP ships its own R) inside a
+  `tryCatch`; if a future R forbids it we silently fall back to stock behavior (slow but correct)
+  and log a warning. Chosen over patching the R build because the wrapper survives R upgrades by
+  construction (it never reimplements the stock logic), and it deploys at JASP's cadence. A proper
+  R-build patch remains the escape hatch if rebinding ever stops working.
+
+Measured effect of the prototype: lookup 20.6 → 0.1 ms; `library()` 2.1–2.3 → **1.75 s (faster
+than the junction farm ever was)**; load-everything 16.6 → 11.9 s (residual = R-library packages,
+closed by including them in the map — done in the shipped version). Harness: `perftest.R`/
+`perfmap.R` patterns from the dev build tree; re-verify on an installed MSIX before release.
 
 ## Rollout
 
-1. Land the JASP-side + junction_tool changes (safe on old layouts by construction).
-2. Switch the manager to nested extraction; verify a full Windows bundle and a user install.
-3. **Farm retirement (the goal)** — once a release ships only new-extraction packages:
-   skip `createJunctions()` and the first-run dialog, stop creating `module_libs` junctions
-   in the manager, read `manifests`/`Tools`/`modules-settings.json` directly from the
-   install tree, and retire `junction_tool` + the `bundledModulesInitialized` flag. Old
-   user installs keep their already-built junctions; nothing new ever creates one.
+1. ✅ Land the JASP-side + junction_tool changes (safe on old layouts by construction).
+2. ✅ Switch the manager to nested extraction; verify a full Windows bundle and a user install.
+3. ✅ Farm retirement — see the dedicated section above.
 
 ## Testing checklist
 
@@ -137,3 +196,14 @@ Backstop if a real-Windows benchmark disagrees: a ~5-line early-exit patch in
 - [ ] First-run with junction creation sabotaged (e.g. read-only appData): JASP retries on
       next start (exit-code fix).
 - [ ] Upgrade old→new on a machine with an existing farm and existing user modules.
+- [ ] Farm retirement: fresh MSIX/MSI install creates **no** `BundledJASPModules_*` dir in
+      appData and no first-run dialog; bundled analyses still run.
+- [ ] Shipped tree: `module_libs/<mod>/` contains real copies of the module pkg and its
+      JASP-module deps only; no `junctions_map.txt`/`JunctionTool.exe` in the install prefix.
+- [ ] Cross-module QML forms load (jaspLearnStats/jaspTimeSeries/jaspVisualModeling).
+- [ ] Repair flow: delete a `binary_pkgs/<hash>`, trigger module repair — hash downloads,
+      nests, and the module_libs entry is rebuilt.
+- [ ] Pkg map: engine log shows `JASP find.package map active (N entries)` on module load;
+      `find.package('<dep>')` resolves instantly; verify a package present in both R/library
+      and a micro-library (e.g. Matrix) returns the loaded path when loaded and the micro-lib
+      otherwise; module update in-session refreshes the map without reinstalling the wrapper.

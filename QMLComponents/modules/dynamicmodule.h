@@ -130,6 +130,7 @@ public:
 	QStringList			importsRQ()			const { return tql(_importsR);					}
 	
 	std::string			getLibPathsToUse()	const;
+	std::string			getPkgMapToUse()	const;	//!<Named R vector pkg => lib dir (or "character(0)"), sent with the module-load request for the find.package map fast-path
 	void				setIsCommon(bool common) { _isCommon = common;}
 
 	bool				requiresModule(const std::string & moduleName) { return _importsR.count(moduleName) > 0; }

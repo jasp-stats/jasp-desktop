@@ -34,8 +34,6 @@ cmake --build build --target all
 
 cmake --build build --target install
 
-cmake --build build --target collect-junctions
-
 cmake --build build --target zip
 
 rem The msix-artifacts are only built for non-pro builds; CMake creates build\pro-build when PRO is on.
