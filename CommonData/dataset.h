@@ -72,6 +72,10 @@ public:
 			void			showFilter(Filter * filter);
 			Filter *		showFilter(const std::string & filterName);
 			Filter *		showFilter(const QString & filterName);
+			///< Attach to an existing db filter row that has no live object yet (a reopened .jasp
+			///< materialises only default filters). Returns the filter, or nullptr when the row
+			///< is gone or it is the default filter (which is always live).
+			Filter *		loadStoredFilter(const std::string & name);
 			Columns		&	columns()			const		{ return	const_cast<Columns&>(_columns);	}
     const	EmptyValues *	emptyValues()       const		{ return	_emptyValues; }
 			EmptyValues *	emptyValues()					{ return	_emptyValues; }

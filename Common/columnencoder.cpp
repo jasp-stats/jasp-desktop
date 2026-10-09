@@ -978,27 +978,19 @@ void ColumnEncoder::collectDataSetIdsFromMeta(const Json::Value & meta, std::map
 			collectDataSetIdsFromMeta(element, dataSetFilterIds);
 }
 
-void ColumnEncoder::collectDataSetFilterPairsFromMeta(const Json::Value & meta, std::set<std::pair<int, int>> & dataSetFilterPairs)
+void ColumnEncoder::collectFilterIdsFromMeta(const Json::Value & meta, std::set<int> & filterIds)
 {
 	if(meta.isObject())
 	{
-		if(meta.isMember("dataSetId") && meta["dataSetId"].isInt())
-		{
-			const int dataSetId	= meta["dataSetId"].asInt(),
-						filterId	= (meta.isMember("filterId") && meta["filterId"].isInt()) ? meta["filterId"].asInt() : -1;
-
-			dataSetFilterPairs.insert({ dataSetId, filterId });
-
-			//No erasing placeholders: (ds,-1) means "some option lives on the dataset's default
-			//slice" and can legitimately coexist with a specific (ds,f) another option carries.
-		}
+		if(meta.isMember("filterId") && meta["filterId"].isInt())
+			filterIds.insert(meta["filterId"].asInt());	//filter ids are globally unique and imply their dataset (Filter::data())
 
 		for(const std::string & memberName : meta.getMemberNames())
-			collectDataSetFilterPairsFromMeta(meta[memberName], dataSetFilterPairs);
+			collectFilterIdsFromMeta(meta[memberName], filterIds);
 	}
 	else if(meta.isArray())
 		for(const Json::Value & element : meta)
-			collectDataSetFilterPairsFromMeta(element, dataSetFilterPairs);
+			collectFilterIdsFromMeta(element, filterIds);
 }
 
 void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, const EncoderFor & encoderFor)

@@ -386,11 +386,26 @@ QString Workspace::makeDataSetTitleUnique(const QString & title, DataSet * exclu
 	return candidate;
 }
 
-Filter *Workspace::filterById(int id) const
+Filter *Workspace::filterById(int id)
 {
 	for(auto & idDataSet : _dataSets)
 		if(idDataSet.second->filter(id))
 			return idDataSet.second->filter(id);
+
+	//A reopened .jasp materialises only default filters: a named filter nobody has selected yet
+	//lives on purely as a db row. Attach to that row instead of resolving to nothing - saved
+	//provenance and the slice queue point at these ids, and the row's id is the invariant.
+	const int         dataSetId = db().filterGetDataSetId(id);
+	DataSet         * dataSet   = dataSetById(dataSetId);
+	const std::string name      = dataSet ? db().filterGetName(id) : std::string();
+
+	if(dataSet && !name.empty() && db().filterGetId(dataSetId, name) == id)
+	{
+		Filter * f = dataSet->loadStoredFilter(name);	//dbLoad by name keeps the row id
+		if(f && f->id() == id)
+			return f;
+	}
+
 	return nullptr;
 }
 

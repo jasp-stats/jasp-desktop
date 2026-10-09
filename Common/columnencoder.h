@@ -136,7 +136,7 @@ public:
 	///< Like collectDataSetIdsFromMeta, but keeps every distinct (dataSetId, filterId) pair: two
 	///< forms selecting two different filters of the same dataset need two slices, and a node
 	///< without a filterId contributes (dataSetId, -1) = "the dataset's default".
-	static	void				collectDataSetFilterPairsFromMeta(const Json::Value & meta, std::set<std::pair<int, int>> & dataSetFilterPairs);
+	static	void				collectFilterIdsFromMeta(const Json::Value & meta, std::set<int> & filterIds);
 
 private:
 	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, colsPlusTypes& colTypes, ColumnEncoder * encoder);

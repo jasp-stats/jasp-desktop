@@ -120,6 +120,24 @@ void DataSet::addFilter()
 	showFilter(createFilter(filterName));
 }
 
+Filter *DataSet::loadStoredFilter(const std::string & name)
+{
+	if(name.empty() || name == DEFAULT_FILTER_NAME)
+		return nullptr;	//the default filter is always live; a second default object would be a bug
+
+	if(Filter * existing = filter(name))
+		return existing;
+
+	try
+	{
+		return createFilter(name, false);	//dbLoad by name keeps the row id; registers itself into _filters
+	}
+	catch(...)
+	{
+		return nullptr;
+	}
+}
+
 void DataSet::showFilter(Filter * f)
 {
 	if(f->data() != this)

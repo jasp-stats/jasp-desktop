@@ -429,7 +429,7 @@ void TestColumnEncoderContext::collectDataSetIdsFromMetaGathersPairsAndUpgrades(
 
 QTEST_MAIN(TestColumnEncoderContext)
 
-void TestColumnEncoderContext::collectDataSetFilterPairsKeepsEverySlice()
+void TestColumnEncoderContext::collectFilterIdsFromMetaGathersEveryDistinctFilter()
 {
 	Json::Value meta(Json::objectValue);
 
@@ -437,17 +437,17 @@ void TestColumnEncoderContext::collectDataSetFilterPairsKeepsEverySlice()
 	meta["dependentA"]["filterId"]	= 31;
 	meta["dependentB"]["dataSetId"]	= 3;              //same dataset...
 	meta["dependentB"]["filterId"]	= 32;             //...other filter: a slice of its own
-	meta["legacy"]["dataSetId"]		= 4;              //no filter: placeholder slice
+	meta["legacy"]["dataSetId"]		= 4;              //no filterId stamp: contributes nothing (the primary slice is always queued)
 	meta["other"]["dataSetId"]		= 4;
-	meta["other"]["filterId"]		= 41;             //real filter coexists with the placeholder
+	meta["other"]["filterId"]		= 41;             //distinct filter of the same dataset
+	meta["nested"][0]["filterId"]	= 31;             //array walk; a duplicate id dedups
 
-	std::set<std::pair<int, int>> pairs;
-	ColumnEncoder::collectDataSetFilterPairsFromMeta(meta, pairs);
+	std::set<int> filterIds;
+	ColumnEncoder::collectFilterIdsFromMeta(meta, filterIds);
 
-	//Every distinct (dataset, filter) survives - that is the whole point versus the map version:
-	QCOMPARE(pairs.size(), size_t(4));
-	QVERIFY(pairs.count({3, 31}));
-	QVERIFY(pairs.count({3, 32}));
-	QVERIFY(pairs.count({4, -1}));
-	QVERIFY(pairs.count({4, 41}));
+	//Filter ids imply their dataset, so the set of ids IS the set of slices:
+	QCOMPARE(filterIds.size(), size_t(3));
+	QVERIFY(filterIds.count(31));
+	QVERIFY(filterIds.count(32));
+	QVERIFY(filterIds.count(41));
 }
