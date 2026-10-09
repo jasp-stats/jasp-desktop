@@ -196,29 +196,33 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	plan.primaryDataSetId = analysisDataSetId >= 0 ? analysisDataSetId : (shown ? shown->id() : -1);
 	const int primaryDataSetId = plan.primaryDataSetId;
 
-	std::set<std::pair<int, int>> dataSetFilterPairs;
-	ColumnEncoder::collectDataSetFilterPairsFromMeta(options[".meta"], dataSetFilterPairs);
+	//"No filter" is the dataset's default filter - a real db row with a real id - so the analysis
+	//always has a concrete primary slice and the queue needs no placeholders.
+	DataSet * dataset			= provideAndUpdateDataSet(primaryDataSetId);
+	Filter  * analysisFilterObj = dataset && !analysisFilter.empty() ? dataset->filter(analysisFilter) : nullptr;
+	Filter  * primaryFilter		= analysisFilterObj ? analysisFilterObj : (dataset ? dataset->defaultFilter() : nullptr);
 
-	//Every distinct (dataset, filter) the options reference gets a slice of its own: two forms
-	//selecting two filters of the same dataset must see two differently filtered dataframes.
-	bool primaryReferenced = false;
-	for(const auto & pair : dataSetFilterPairs)
-		if(pair.first == primaryDataSetId)
-		{
-			primaryReferenced = true;
-			break;
-		}
+	//Every value of an aware analysis stamps the filter it was selected through (createMeta) and
+	//filter ids are globally unique and imply their dataset (Filter::data()), so the queue is
+	//just the distinct stamped ids plus the analysis' own slice: no dataset/filter pairing,
+	//no -1 placeholders, no dedup dance (a std::set is the dedup).
+	std::set<int> filterIds;
+	ColumnEncoder::collectFilterIdsFromMeta(options[".meta"], filterIds);
 
-	if(primaryDataSetId >= 0 && !primaryReferenced)
-		dataSetFilterPairs.insert({ primaryDataSetId, -1 }); //Options without own provenance belong to the primary dataset
+	if(primaryFilter)
+		filterIds.insert(primaryFilter->id());
 
-	//Load every involved dataset once so each dataset's encoder holds fresh names before we encode
-	//against them, then anchor the shown dataset back at the analyses own one.
-	for(const auto & pair : dataSetFilterPairs)
-		if(pair.first != primaryDataSetId && workspace->dataSetById(pair.first))
-			provideAndUpdateDataSet(pair.first);
+	//Load every involved dataset once so each dataset's encoder holds fresh names before we
+	//encode against them, then anchor the shown dataset back at the analyses own one.
+	for(const int filterId : filterIds)
+	{
+		Filter * sliceFilter = workspace->filterById(filterId);	//materialises named filters of reopened files
 
-	DataSet * dataset = provideAndUpdateDataSet(primaryDataSetId);
+		if(sliceFilter && sliceFilter->data() && sliceFilter->data()->id() != primaryDataSetId)
+			provideAndUpdateDataSet(sliceFilter->data()->id());
+	}
+
+	dataset = provideAndUpdateDataSet(primaryDataSetId);
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
@@ -229,65 +233,44 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 			},
 			primaryDataSetId);
 
-	Filter * analysisFilterObj = dataset && !analysisFilter.empty() ? dataset->filter(analysisFilter) : nullptr;
-	int primaryFilterId = analysisFilterObj ? analysisFilterObj->id() : -1;
-
 	std::vector<MultiDataSetSlice> queue;
 	Json::Value sliceKeys(Json::arrayValue), sliceTitles(Json::objectValue), sliceDataSetIds(Json::objectValue);
-	std::set<std::string> seenKeys;					//two pairs can resolve to the same slice: queue it once
 
-	for(const auto & pair : dataSetFilterPairs)
+	for(const int filterId : filterIds)
 	{
-		const int dataSetId = pair.first;
-		DataSet  * ds       = workspace->dataSetById(dataSetId);
+		Filter	* sliceFilter	= workspace->filterById(filterId);
+		DataSet * ds			= sliceFilter ? sliceFilter->data() : nullptr;
 
 		if(!ds)
 		{
-			Log::log() << "DataBridge::prepareMultiDataSetRun: '" << logName << "' references dataset " << dataSetId
-					   << " which no longer exists; this slice is skipped." << std::endl;
+			Log::log() << "DataBridge::prepareMultiDataSetRun: '" << logName << "' references filter " << filterId
+					   << " which does not resolve to a dataset anymore; this slice is skipped." << std::endl;
 			continue;
 		}
 
-		//Resolve the placeholder to the filter the slice actually runs on, so the slice key (the
-		//filter id) is exactly what a per-form selection option holds: options index the queued
-		//datasets directly, the same way encoded option values index a dataframe's columns.
-		int filterId = pair.second;
-		if(filterId < 0)
-			filterId = (ds == dataset && primaryFilterId >= 0) ? primaryFilterId
-															   : (ds->defaultFilter() ? ds->defaultFilter()->id() : -1);
-
+		//The slice key IS the filter id - exactly what a per-form selection option carries - so
+		//an analysis indexes its queued datasets directly, the same way encoded option values
+		//index a dataframe's columns.
 		const std::string key = std::to_string(filterId);
 
-		if(!seenKeys.insert(key).second)
-			continue;
-
-		auto cols = colsPerDataSet.find(dataSetId);
-		queue.push_back({ dataSetId, filterId, cols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : cols->second });
+		auto cols = colsPerDataSet.find(ds->id());
+		queue.push_back({ ds->id(), filterId, cols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : cols->second });
 
 		sliceKeys.append(key);
 		sliceTitles[key]			= fq(ds->title());
-		sliceDataSetIds[key]		= std::to_string(dataSetId);
+		sliceDataSetIds[key]		= std::to_string(ds->id());
 	}
 
 	setMultiDataSetQueue(std::move(queue));
 
 	plan.multiDataSetJson				= Json::objectValue;
-	plan.multiDataSetJson["ids"]		= sliceKeys;			///< slice keys = the resolved filter id per slice
+	plan.multiDataSetJson["ids"]		= sliceKeys;			///< slice keys = the filter id per slice
 	plan.multiDataSetJson["names"]		= sliceTitles;			///< slice key -> dataset title
 	plan.multiDataSetJson["dataSetIds"] = sliceDataSetIds;		///< slice key -> dataset id
 
-	//The primary slice (what the analysis itself runs on): the queued slice of the primary dataset
-	//matching the analysis' filter, else just its first slice - R may offer it as "the" dataset.
-	std::string primaryKey;
-	for(const MultiDataSetSlice & slice : queue)
-	{
-		if(slice.dataSetId != primaryDataSetId)
-			continue;
-
-		if(primaryKey.empty() || slice.filterId == primaryFilterId)
-			primaryKey = std::to_string(slice.filterId);
-	}
-	plan.multiDataSetJson["primary"] = primaryKey;
+	//The primary slice (what the analysis itself runs on): its own filter, else the primary
+	//dataset's default - a real id in the queue above whenever a primary dataset exists.
+	plan.multiDataSetJson["primary"] = primaryFilter ? std::to_string(primaryFilter->id()) : "";
 
 	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
