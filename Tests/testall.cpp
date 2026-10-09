@@ -1953,6 +1953,65 @@ void TestAll::testRemapSavedProvenance()
 	QCOMPARE(options[".meta"]["dangling"]["dataSetId"].asInt(), 424242);
 }
 
+void TestAll::testDataSetFilterIdsSurviveStorageReload()
+{
+	//Opening a .jasp restores internal.sqlite verbatim (ArchiveReader) and Workspace::dbLoad
+	//enumerates db().dataSetIds(), calling DataSet::dbLoad(id) per dataset - ids are rowids of
+	//the restored file, not reassigned. This pins that invariant (the premise on which
+	//Analyses::remapSavedProvenance was removed): a reload hands back identical dataset and
+	//filter ids, so provenance saved against them resolves without any remapping.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	DataSet * first = ws->shownDataSet();
+	QVERIFY(first);
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), second, [](int){});
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	const int idFirst	= first->id(),
+			  idSecond	= second->id(),
+			  defFirst	= first->defaultFilter()->id(),
+			  defSecond = second->defaultFilter()->id(),
+			  namedId	= named->id();
+
+	QVERIFY(idFirst != idSecond);
+
+	//Drop the package (its workspace owns the Workspace singleton) and reopen the same storage
+	//the way opening a .jasp does: a fresh Workspace reading the (restored) database.
+	delete _pkg;
+	_pkg = nullptr;
+
+	Workspace reopen;
+	reopen.dbLoad();
+
+	DataSet * reFirst	= reopen.dataSetById(idFirst);
+	DataSet * reSecond	= reopen.dataSetById(idSecond);
+	QVERIFY(reFirst);
+	QVERIFY(reSecond);
+
+	QCOMPARE(reFirst->defaultFilter()->id(),	defFirst);
+	QCOMPARE(reSecond->defaultFilter()->id(),	defSecond);
+
+	//Named filter objects load lazily (the app materialises them via showFilter/sync), but the
+	//row - and its id - is there from the restored db, so the lazy load re-attaches to exactly
+	//the id saved provenance refers to. No remapping needed, ever.
+	QCOMPARE(DatabaseInterface::singleton()->filterGetId(idSecond, "KeepMyId"), namedId);
+
+	Filter * reNamed = reSecond->showFilter(fq("KeepMyId"));
+	QVERIFY(reNamed);
+	QCOMPARE(reNamed->id(), namedId);
+
+	//A selection option value (a filter id as string) resolves to the very same filter in the
+	//reopened workspace - which is all save/load round-tripping needs from these ids.
+	QVERIFY(reopen.filterById(namedId) == reNamed);
+}
+
 void TestAll::testFilterRemoveFilter()
 {
 	QVERIFY(_newPkgWithDataSet());
