@@ -14,10 +14,7 @@ if (!file.exists(commonR))
 exprs  <- parse(commonR)
 wanted <- c(".multiDataSetState", ".multiDataSetMode", ".stopIfMultiDataSetMode", ".isMultiDataSetJson",
             ".readDataSetCleanNAs", ".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader",
-            "readDataSetByVariableTypes",
-            ".dataSetIdFromEncodedOne", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
-            ".sliceKeyForDataSet", ".sliceKeysForDataSet", "getDataSetFor",
-             "getSliceKey", "getSlice", "sliceDataSetId", "sliceTitle")
+            "readDataSetByVariableTypes")
 
 env <- new.env(parent = baseenv())
 found <- character()
@@ -40,7 +37,9 @@ if (length(missing) > 0)
 # and could silently serve a same-named column from the wrong one - analyses index the
 # datasets list directly. Re-adding it must trip this check.
 commonSrc <- readLines(commonR)
-for (gone in c("getDataSetColumn")) {
+for (gone in c("getDataSetColumn", "getSliceKey", "getSlice", "sliceDataSetId", "sliceTitle",
+                "getDataSetFor", "dataSetIdFromEncoded", "dataSetNameFromEncoded",
+                ".dataSetIdFromEncodedOne", ".sliceKeyForDataSet", ".sliceKeysForDataSet")) {
 	if (any(grepl(paste0("^", gone, " *<-"), commonSrc)))
 		stop(gone, " must stay deleted: index datasets[[key]] directly (zero-export policy)")
 }
@@ -86,54 +85,44 @@ for (fnName in c(".readDataSetToEnd", ".readFullDataset", ".readDataSetHeader"))
 err <- tryCatch({ env$readDataSetByVariableTypes(list(), character()); "" }, error = function(e) conditionMessage(e))
 check(grepl("not available in multi-dataset aware analyses", err), "readDataSetByVariableTypes stops in multi mode")
 
-# --- runJaspResults' datasets handout (must mirror the engine slice queue) ------------------------
+# --- queue reads (what runJaspResults builds from multiDataSetJson) -------------------------------
 readCount <- 0
-ids       <- c("5", "12")
-datasets  <- lapply(ids, function(id) env$.fromRCPP(".readDataSetRequestedNative"))
-names(datasets) <- ids
+sliceKeys <- c("5", "12")   # FILTER ids (globally unique; each implies its dataset)
+datasets  <- lapply(sliceKeys, function(key) env$.fromRCPP(".readDataSetRequestedNative"))
+names(datasets) <- sliceKeys
 attr(datasets, "dataSetNames") <- c("5" = "Alpha", "12" = "Beta")
+attr(datasets, "dataSetIds")   <- c("5" = "3",     "12" = "4")
 
-check(identical(readCount, 2), "one native read per referenced dataset, in ids order")
-check(identical(names(datasets), ids), "datasets are keyed by dataset id")
+check(identical(readCount, 2), "one native read per queued slice, in queue order")
+check(identical(names(datasets), sliceKeys), "slices are keyed by FILTER id")
 check(identical(datasets[["5"]]$reading, 1) && identical(datasets[["12"]]$reading, 2),
 	  "first read got the first slice, second read got the second slice")
 check(identical(attr(datasets, "dataSetNames")[["5"]], "Alpha"), "titles are carried as attribute")
+check(identical(attr(datasets, "dataSetIds")[["12"]], "4"), "the key's dataset id is an attribute too")
 
 invisible(env$.multiDataSetMode(FALSE))
 datasetAfter <- env$.readDataSetToEnd(columns = "Score")
 check(is.data.frame(datasetAfter), "readDataSetToEnd works again after the mode was reset")
 
-# --- filter-keyed slices (C8/T5): engine queue keys are FILTER ids, one per distinct slice -------
-# Mirrors what runJaspResults now builds from multiDataSetJson: ids = filter ids, and the
-# dataSetIds/dataSetNames attributes map every slice key back to its dataset (id, title).
-sliceKeys   <- c("31", "32", "41")            # dataset 3 via filters 31 AND 32 (two slices!), dataset 4 via 41
+# --- the datasets contract: option == key == filter id, and [[ is the whole accessor --------------
+# Two forms selecting two filters of one dataset (31 AND 32 of ds 3) index different slices;
+# the dataSetIds/dataSetNames attributes map every key to its dataset (id, title). This mirrors
+# exactly what runJaspResults builds from the bridge queue (prepareMultiDataSetRun).
+sliceKeys   <- c("31", "32", "41")
 datasetsFk  <- lapply(sliceKeys, function(k) data.frame(slice = k))
 names(datasetsFk) <- sliceKeys
 attr(datasetsFk, "dataSetNames") <- c("31" = "Alpha", "32" = "Alpha", "41" = "Beta")
 attr(datasetsFk, "dataSetIds")   <- c("31" = "3",     "32" = "3",     "41" = "4")
 
-check(identical(env$.sliceKeyForDataSet(datasetsFk, "4"), "41"), ".sliceKeyForDataSet maps dataset id to its filter slice")
-errAmb <- tryCatch({ env$.sliceKeyForDataSet(datasetsFk, "3"); "" }, error = function(e) conditionMessage(e))
-check(grepl("filtered slices", errAmb), "two slices of one dataset FAIL LOUDLY, never silently first")
-check(identical(env$.sliceKeyForDataSet(datasetsFk, "99"), NULL), "...and absent datasets resolve to NULL")
-errGet <- tryCatch({ env$getDataSetFor("JASPColumn_3_7_Encoded", datasetsFk); "" }, error = function(e) conditionMessage(e))
-check(grepl("filtered slices", errGet), "getDataSetFor refuses the ambiguity too")
-check(identical(env$getDataSetFor("JASPColumn_4_2_Encoded", datasetsFk)$slice, "41"), "unambiguous encoded routing works")
-check(identical(env$dataSetNameFromEncoded("JASPColumn_4_2_Encoded", datasetsFk), "Beta"),
-      "title lookup works through the filter-keyed attrs")
-
-# public slice API (what analysis writers get):
-opts <- list(dataSetA = "32", dataSetB = list(types = "unknown", value = ""))
-check(identical(env$getSliceKey(opts, datasetsFk, "dataSetA"), "32"),
-      "a selection option (filter id) indexes its own slice directly - the option==slicekey invariant")
-check(identical(env$getSliceKey(opts, datasetsFk, "dataSetB", column = "JASPColumn_4_2_Encoded"), "41"),
-      "an empty selection falls back to the column's dataset when unambiguous")
-errFb <- tryCatch({ env$getSliceKey(opts, datasetsFk, "dataSetB", column = "JASPColumn_3_7_Encoded"); "" }, error = function(e) conditionMessage(e))
-check(grepl("getSliceKey", errFb), "ambiguous fallback errors and names getSliceKey as the fix")
-check(identical(env$sliceDataSetId(datasetsFk, "32"), "3"), "sliceDataSetId maps slice to dataset")
-check(identical(env$sliceTitle(datasetsFk, "31"), "Alpha"), "sliceTitle gives the user-facing title")
-errSl <- tryCatch({ env$getSlice(datasetsFk, "999"); "" }, error = function(e) conditionMessage(e))
-check(grepl("no slice", errSl), "getSlice errors listing the available keys")
+# what a parsed dataSetSelectionOption holds after the bridge translation: a filter id (string,
+# sometimes in the wrapper default shape list(types=, value=) - tail(unlist(x), 1) gets it):
+selA <- "32"; selB <- "41"
+check(identical(datasetsFk[[selA]]$slice, "32"), "selection option value IS the slice key (form A)")
+check(identical(datasetsFk[[selB]]$slice, "41"), "...and a second form indexes its own slice directly")
+check(identical(attr(datasetsFk, "dataSetIds")[["32"]], "3"), "attr dataSetIds maps key to its dataset id")
+check(identical(attr(datasetsFk, "dataSetNames")[["31"]], "Alpha"), "attr dataSetNames gives the user-facing title")
+check(is.null(datasetsFk[["999"]]),
+      "a wrong key yields NULL (analyses test it) - never a silent scan across the other slices")
 
 # --- reset semantics like runJaspResults' on.exit -----------------------------------------------
 wrapper <- function() {
@@ -184,9 +173,6 @@ if (!haveBridge) {
 
 	check(grepl("^JASPColumn_[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
-	check(!is.na(env$dataSetIdFromEncoded(encodedValue)),
-	      "jaspBase's parser recovers a dataset id from genuine encoder output")
-
 	slice <- jaspSyntax$readRequestedDataset()
 	check(is.data.frame(slice) && encodedValue %in% names(slice),
 	      "the encoded option value IS the slice's column name (index-directly invariant)")
