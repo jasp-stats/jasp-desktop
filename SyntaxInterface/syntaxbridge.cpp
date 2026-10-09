@@ -430,12 +430,12 @@ void STDCALL syntaxBridgeShutdown()
 	gl_jaspBaseInitialized = false;
 }
 
-void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
+int STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeDataSet, bool dbInMemory, int threshold, bool orderLabelsByValue)
 {
 	if (!init(dbInMemory))
 	{
 		Log::log() << "Error during initialization" << std::endl;
-		return;
+		return -1;
 	}
 
 	DataSetProvider* provider = nullptr;
@@ -471,6 +471,10 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 	//an unnamed one keeps the legacy behaviour of filling the shown dataset.
 	provider->loadDataSet(dataSet, threshold, orderLabelsByValue,
 	                      syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name ? tq(syntaxBridgeDataSet->name) : QString());
+
+	//Either way the just-loaded dataset is the shown one: hand its REAL database id back so
+	//callers (jaspSyntax, jaspTools) can refer to it by the invariant instead of the title.
+	return provider->dataSet() ? provider->dataSet()->id() : -1;
 }
 
 void STDCALL syntaxBridgeLoadDataSetFromJaspFile(const char * filePath, bool dbInMemory)
@@ -577,13 +581,15 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
-	//Dataset selection options (VariablesForm::dataSetSelectionOption) are user-facing DATASET
-	//NAMES in syntax mode ("haha"), while the control contract everywhere carries FILTER ids:
-	//translate them here - the syntax wrapper layer - before anything binds, so the QML side is
-	//byte-identical in desktop and syntax mode. A dataset name maps to its default filter (syntax
-	//has no user filters, the data arrives prefilled), an existing filter id passes through, and
-	//anything else fails with a clear message. (The bound DropDown itself cannot flag emptiness -
-	//it coerces "" to its first entry - so this raw check stays the gatekeeper.)
+	//Dataset selection options are user-facing handles in syntax mode: a dataset TITLE ("haha")
+	//or the DATASET ID that loadDataSet/loadDataSets hand back - while the control contract
+	//everywhere carries FILTER ids: translate them here, in the syntax wrapper layer, before
+	//anything binds, so the QML side is byte-identical in desktop and syntax mode. A dataset
+	//maps to its default filter (syntax has no user filters, the data arrives prefilled) and
+	//anything else fails with a clear message listing what IS loaded. Bare filter ids are NOT
+	//accepted: dataset 1 and filter 1 both exist and a script cannot mean both. (The bound
+	//DropDown itself cannot flag emptiness - it coerces "" to its first entry - so this raw
+	//check stays the gatekeeper.)
 	Json::Value rawOptions;
 	Json::Reader rawReader;
 	if (!rawReader.parse(options, rawOptions))
@@ -631,21 +637,20 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 				if (byTitle->defaultFilter())
 					sliceFilterId = std::to_string(byTitle->defaultFilter()->id());
 			}
-
-			if (sliceFilterId.empty())
+			else
 			{
 				bool	   isNum	 = false;
-				const int  filterId	 = text.toInt(&isNum);
+				const int  dataSetId = text.toInt(&isNum);
+				DataSet  * byId		 = isNum && workspace ? workspace->dataSetById(dataSetId) : nullptr;
 
-				if (isNum && workspace && workspace->filterById(filterId))
-					sliceFilterId = text.toStdString();
+				if (byId && byId->defaultFilter())
+					sliceFilterId = std::to_string(byId->defaultFilter()->id());
 			}
 
 			if (sliceFilterId.empty())
 				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
-					"The dataset selection option '" + key + "' names '" + text.toStdString()
-					+ "', which is neither a loaded dataset (" + loaded.join(", ").toStdString()
-					+ ") nor a known filter id");
+					"The dataset selection option '" + key + "' holds '" + text.toStdString()
+					+ "', which is neither the title nor the id of a loaded dataset (" + loaded.join(", ").toStdString() + ")");
 
 			rawOptions[key] = sliceFilterId;   //strings, exactly like the desktop dropdown writes them
 		}
