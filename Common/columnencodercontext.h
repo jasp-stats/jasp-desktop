@@ -26,7 +26,8 @@ public:
 	static constexpr int Version = 1;
 
 	ColumnEncoderContext() = default;
-	ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra);
+	ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra,
+	                     const std::string & prefix = std::string());
 
 	static ColumnEncoderContext	fromJson(const Json::Value & context);
 	static ColumnEncoderContext	fromJsonString(const char * contextJson);
@@ -35,11 +36,17 @@ public:
 
 	const ColumnEncoder::colTypeMap&	columns() const		{ return _columns; }
 	const ColumnEncoder::colTypeMap&	extra() const		{ return _extra; }
+	///< The encode namespace (prefix) the captured columns were minted in ("" = v1 context,
+	///< replay under whatever prefix is live). DataSet encoders mint per-dataset prefixed names
+	///< (JASPColumn_<dataSetId>_), so a context captured on one dataset must carry its prefix
+	///< to replay correctly once another dataset is live.
+	const std::string&					prefix() const		{ return _prefix; }
 	bool								supplied() const	{ return _supplied; }
 
 private:
 	ColumnEncoder::colTypeMap	_columns;
 	ColumnEncoder::colTypeMap	_extra;
+	std::string					_prefix;
 	bool						_supplied = false;
 };
 
@@ -54,6 +61,7 @@ private:
 	ColumnEncoder				& _extraEncoder;
 	ColumnEncoder::colTypeMap	_previousColumns;
 	ColumnEncoder::colTypeMap	_previousExtra;
+	std::string					_previousPrefix;
 };
 
 Json::Value decodeColumnJson(const char * payloadJson, const char * encoderContextJson, ColumnEncoder & extraEncoder, bool replaceNames = true);

@@ -227,19 +227,19 @@ static ColumnEncoder & requireExtraColumnEncoder()
 	return *encoder;
 }
 
-static ColumnEncoder::colTypeMap currentDatasetColumnTypes()
-{
-	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
-	return dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap();
-}
-
 static Json::Value columnEncoderContextJson()
 {
 	ColumnEncoder * extraEncoder = extraColumnEncoder();
+	//The columns come from the shown dataset and its OWN encoder mints the tokens
+	//(JASPColumn_<dataSetId>_), so capture the prefix from that encoder as well - the process-
+	//global one only mirrors the dataset namespace after a read redirected it, which made the
+	//capture order-dependent.
+	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
 
 	return ColumnEncoderContext(
-		currentDatasetColumnTypes(),
-		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap()
+		dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap(),
+		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap(),
+		dataSet ? dataSet->encoder().encodePrefix() : std::string()
 	).toJson();
 }
 
