@@ -65,23 +65,34 @@ if(WINDOWS)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:48000000")
 
   # These are mainly for R-Interface, and all build using the MinGW
+  # Some of the modules are not available on rtools for windows arm64 and have hence been excluded
+  set(_JASP_ENGINE_POST_BUILD_COMMANDS
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBWINPTHREAD_DLL}       ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}         ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBRDATA_DLL}            ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_ZLIB_DLL}                ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBBZ2_DLL}              ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBLZMA_DLL}             ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBICONV_DLL}            ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}           ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_NORINSIDE_DLL} ${CMAKE_BINARY_DIR}
+  )
+
+  if(NOT WIN_ARM64)
+    list(APPEND _JASP_ENGINE_POST_BUILD_COMMANDS
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBGCC_S_SEH_DLL} ${CMAKE_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}    ${CMAKE_BINARY_DIR}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_MSYS_DLL}         ${CMAKE_BINARY_DIR}
+    )
+  endif()
+
   add_custom_command(
     TARGET JASPEngine
-    POST_BUILD DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBWINPTHREAD_DLL}       ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBGCC_S_SEH_DLL}        ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBREADSTAT_DLL}         ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBSTDCPP_DLL}           ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBRDATA_DLL}            ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_MSYS_DLL}                ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_ZLIB_DLL}                ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBBZ2_DLL}              ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBLZMA_DLL}             ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTOOLS_LIBICONV_DLL}            ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_DLL}           ${CMAKE_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_LIB_R_INTERFACE_NORINSIDE_DLL} ${CMAKE_BINARY_DIR}
-    COMMENT "------ Re-installing the dependencies (if necessary)")
-
+    POST_BUILD
+    DEPENDS ${CMAKE_BINARY_DIR}/R-Interface/libR-Interface.dll
+    ${_JASP_ENGINE_POST_BUILD_COMMANDS}
+    COMMENT "------ Re-installing the dependencies (if necessary)"
+  )
 endif()
 
 list(POP_BACK CMAKE_MESSAGE_CONTEXT)

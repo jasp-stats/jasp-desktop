@@ -58,7 +58,17 @@ if(WIN32)
 
   # This is a variable and it's provided by the main CMakeFiles.txt.
   # It is here only if we someone wants to build the R-Interface separately.
-if(${R_VERSION} VERSION_GREATER_EQUAL "4.5.0")
+  if(WIN_ARM64)
+    if(DEFINED ENV{RTOOLS45_AARCH64_HOME})
+      set(RTOOLS_PATH
+        "$ENV{RTOOLS45_AARCH64_HOME}/aarch64-w64-mingw32.static.posix"
+        CACHE PATH "Path to Rtools45 aarch64 toolchain folder")
+    else()
+      set(RTOOLS_PATH
+        "C:/rtools45-aarch64/aarch64-w64-mingw32.static.posix"
+        CACHE PATH "Path to Rtools45 aarch64 toolchain folder")
+    endif()
+  elseif(${R_VERSION} VERSION_GREATER_EQUAL "4.5.0")
     set(RTOOLS_PATH
       "C:/rtools45/ucrt64"
        CACHE PATH "Path to Rtools45 ucrt64 folder")
@@ -112,18 +122,31 @@ if(${R_VERSION} VERSION_GREATER_EQUAL "4.5.0")
 
   message(CHECK_START "Looking for R.dll")
   set(_LIB_R_PATH ${JASP_BINARY_DIR}/R)
-  find_file(
-    _LIB_R
-    NAMES R.dll
-    PATHS ${_LIB_R_PATH}/bin
-    PATH_SUFFIXES x64 x32
-    NO_DEFAULT_PATH)
+  if(WIN_ARM64)
+    # ARM64 R has a flat bin/ directory (no x64 subfolder)
+    find_file(
+      _LIB_R
+      NAMES R.dll
+      PATHS ${_LIB_R_PATH}/bin
+      NO_DEFAULT_PATH)
+  else()
+    find_file(
+      _LIB_R
+      NAMES R.dll
+      PATHS ${_LIB_R_PATH}/bin
+      PATH_SUFFIXES x64 x32
+      NO_DEFAULT_PATH)
+  endif()
 
   if(_LIB_R)
     message(CHECK_PASS "found.")
     message(STATUS "  ${_LIB_R}")
   else()
-    message(CHECK_FAIL "not found in ${_LIB_R_PATH}/bin/x64")
+    if(WIN_ARM64)
+      message(CHECK_FAIL "not found in ${_LIB_R_PATH}/bin/")
+    else()
+      message(CHECK_FAIL "not found in ${_LIB_R_PATH}/bin/x64")
+    endif()
     message(FATAL_ERROR "R.dll is required for building R-Interface.")
   endif()
 

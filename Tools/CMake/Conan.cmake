@@ -76,6 +76,17 @@ build_type=${CMAKE_BUILD_TYPE}
 
     message(STATUS "  ${CONAN_COMPILER_RUNTIME}")
 
+    # ARM64: Boost's b2 needs explicit architecture flags for Windows ARM64.
+    # Also force cppstd=14 to match pre-built packages on ConanCenter.
+    if(WIN_ARM64)
+      set(CONAN_ARM64_OPTIONS
+        -s arch=armv8
+        -o "boost/*:extra_b2_flags=architecture=arm address-model=64"
+        -s compiler.cppstd=14)
+    else()
+      set(CONAN_ARM64_OPTIONS "")
+    endif()
+
     if(NOT JASP_SYNTAX_INTERFACE_ONLY)
       if(freexl_POPULATED)
         message(STATUS "Compiling freexl dependency ${freexl_SOURCE_DIR}")
@@ -87,6 +98,7 @@ build_type=${CMAKE_BUILD_TYPE}
             ${CONAN_FREEXL_BUILD_TYPE_ARGS}
             -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
             -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
+            ${CONAN_ARM64_OPTIONS}
             --test-missing
         )
       else()
@@ -109,6 +121,7 @@ build_type=${CMAKE_BUILD_TYPE}
       ${CONAN_INSTALL_BUILD_TYPE_ARGS}
       -c tools.cmake.cmaketoolchain:generator=${CMAKE_GENERATOR}
       -s compiler.runtime=${CONAN_COMPILER_RUNTIME} --build=missing
+      ${CONAN_ARM64_OPTIONS}
       ${CONAN_SYNTAX_OPTION})
 
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_CLEAN_FILES _deps)
