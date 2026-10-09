@@ -80,6 +80,11 @@ public:
 			bool				shouldDecode(const std::string & in);
 			void				setCurrentNames(const colTypeMap & names);
 			const colTypeMap&	currentNames() const { return _dataSetTypes; }
+			const std::string &	encodePrefix() const { return _encodePrefix; }
+			///< Reforge this encoder's namespace under a different prefix, regenerating the encoded
+			///< names from the current ones (same contract as DataSet::setupEncoderPrefix()). Used to
+			///< replay a captured ColumnEncoderContext whose dataset carried its own prefix.
+			void				setEncodePrefix(const std::string & prefix) { _encodePrefix = prefix; setCurrentNames(currentNames()); }
 			void				updateColumnTypesOnly(const colTypeMap & names);
 			void				setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding=true);	///< Do not use! Deprecated
 			void				setCurrentColumnTypePerName(const colTypeMap & theMap);									///< Do not use! Deprecated

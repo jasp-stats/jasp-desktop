@@ -66,8 +66,9 @@ static Json::Value parsePayloadJson(const char * payloadJson)
 	return payload;
 }
 
-ColumnEncoderContext::ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra)
-	: _columns(columns), _extra(extra), _supplied(true)
+ColumnEncoderContext::ColumnEncoderContext(const ColumnEncoder::colTypeMap & columns, const ColumnEncoder::colTypeMap & extra,
+                                           const std::string & prefix)
+	: _columns(columns), _extra(extra), _prefix(prefix), _supplied(true)
 {
 }
 
@@ -83,7 +84,8 @@ ColumnEncoderContext ColumnEncoderContext::fromJson(const Json::Value & context)
 
 	return ColumnEncoderContext(
 		columnTypesFromJson(context["columns"], "columns"),
-		columnTypesFromJson(context["extra"], "extra")
+		columnTypesFromJson(context["extra"], "extra"),
+		context["prefix"].isString() ? context["prefix"].asString() : std::string()
 	);
 }
 
@@ -106,6 +108,8 @@ Json::Value ColumnEncoderContext::toJson() const
 	context["version"] = Version;
 	context["columns"] = columnTypesToJson(_columns);
 	context["extra"] = columnTypesToJson(_extra);
+	if(!_prefix.empty())
+		context["prefix"] = _prefix;
 
 	return context;
 }
@@ -118,6 +122,14 @@ ScopedColumnEncoderContext::ScopedColumnEncoderContext(const ColumnEncoderContex
 
 	_previousColumns = ColumnEncoder::columnEncoder()->currentNames();
 	_previousExtra = _extraEncoder.currentNames();
+	_previousPrefix = ColumnEncoder::columnEncoder()->encodePrefix();
+
+	// A captured context is only self-contained if the encode namespace travels with it:
+	// per-dataset encoders mint JASPColumn_<dataSetId>_<n>_Encoded, so replaying dataset A's
+	// context while dataset B is live has to reforge A's prefix before applying A's names.
+	// An empty prefix (v1 context) keeps whatever namespace is live, as before.
+	if(!context.prefix().empty() && context.prefix() != _previousPrefix)
+		ColumnEncoder::columnEncoder()->setEncodePrefix(context.prefix());
 
 	ColumnEncoder::columnEncoder()->setCurrentNames(context.columns());
 	_extraEncoder.setCurrentNames(context.extra());
@@ -128,6 +140,7 @@ ScopedColumnEncoderContext::~ScopedColumnEncoderContext()
 	if(!_supplied)
 		return;
 
+	ColumnEncoder::columnEncoder()->setEncodePrefix(_previousPrefix);
 	ColumnEncoder::columnEncoder()->setCurrentNames(_previousColumns);
 	_extraEncoder.setCurrentNames(_previousExtra);
 }
