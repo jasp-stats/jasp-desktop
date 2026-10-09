@@ -336,7 +336,10 @@ static void clearQmlFormCache()
 static DataSetProvider* resetDataProvider(bool dbInMemory, bool resetDataSet)
 {
 	bool providerWillBeRecreated = gl_initialized && gl_initializedDbInMemory != dbInMemory;
-	if (providerWillBeRecreated)
+	//resetDataSet destroys the workspace every cached form may still be bound to (dropdowns
+	//point at its Filters, forms at its columns) - so those forms have to go with it, or the
+	//next parseOptions touches freed memory and segfaults.
+	if (providerWillBeRecreated || resetDataSet)
 		clearQmlFormCache();
 
 	DataSetProvider * provider = DataSetProvider::getProvider(dbInMemory, resetDataSet, gl_application);
@@ -444,11 +447,13 @@ void STDCALL syntaxBridgeLoadDataSet(const SyntaxBridgeDataSet* syntaxBridgeData
 	}
 	else
 	{
-		//Unnamed (legacy) loads replace the data, so they reset. Named multi-dataset loads must
-		//ACCUMULATE in the workspace - a fresh state is established by clearNativeState() before
-		//loadDataSets(), not by each individual load.
+		//Unnamed (legacy) loads replace the data, so they reset - and go through
+		//resetDataProvider() so the QML form cache bound to the old workspace is dropped too.
+		//Named multi-dataset loads must ACCUMULATE in the workspace - a fresh state is
+		//established by clearNativeState() before loadDataSets(), not by each individual load.
 		const bool named = syntaxBridgeDataSet->name && *syntaxBridgeDataSet->name;
-		provider = DataSetProvider::getProvider(dbInMemory, !named);
+		provider = named ? DataSetProvider::getProvider(dbInMemory, false, gl_application)
+		                 : resetDataProvider(dbInMemory, true);
 	}
 
 	std::map<std::string, stringvec > dataSet;
