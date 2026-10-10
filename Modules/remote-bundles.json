@@ -111,9 +111,9 @@
             "checksum": "d6eeab43acc8479c4c1d1c1856812bb081b6905f29e8cf82cb676376da16d80b"
         },
         {
-            "url": "https://api.github.com/repos/jasp-stats-modules/jaspNetwork/releases/assets/572320188",
-            "name": "jaspNetwork_0.96.3-release.601_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "bc0ac034f517ea034b15715eaccaa15325d43a27e49249b329a556bf88bcb3aa"
+            "url": "https://api.github.com/repos/jasp-stats-modules/jaspNetwork/releases/assets/627771340",
+            "name": "jaspNetwork_0.96.3-release.607_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "c0e9dffe7c840896050649e7e5dcd9c396d630175591f17aeedb4e58766fff2e"
         },
         {
             "url": "https://api.github.com/repos/jasp-stats-modules/jaspPower/releases/assets/572323714",
@@ -161,9 +161,9 @@
             "checksum": "b5e83abdafb40a1d0a2c97973caed8ad575262860a63b5357251a5356d8be1bc"
         },
         {
-            "url": "https://api.github.com/repos/jasp-stats-modules/jaspSem/releases/assets/572391947",
-            "name": "jaspSem_0.97.1-release.601_Windows_x86-64_R-4-5-2.JASPModule",
-            "checksum": "e9fb1d2b81d06716fb8c09f481c99a87f476537d3d9a85a20625c3ee723dbb12"
+            "url": "https://api.github.com/repos/jasp-stats-modules/jaspSem/releases/assets/627781839",
+            "name": "jaspSem_0.97.1-release.607_Windows_x86-64_R-4-5-2.JASPModule",
+            "checksum": "8f8953d85870da34ffee0b8388065d1d2c3d09922aaacaf9deda9bad1da58864"
         },
         {
             "url": "https://api.github.com/repos/jasp-stats-modules/jaspSummaryStatistics/releases/assets/572400676",
