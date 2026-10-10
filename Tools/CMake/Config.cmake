@@ -42,6 +42,22 @@ else()
   set(WINDOWS 0)
 endif()
 
+# Windows Architecture Detection
+# Detect whether we are targeting ARM64 or x64 on Windows.
+if(WIN32)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "ARM64|aarch64")
+    set(WIN_ARM64 ON)
+    message(STATUS
+      "Windows target architecture: ARM64 "
+      "(CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR})")
+  else()
+    set(WIN_ARM64 OFF)
+    message(STATUS
+      "Windows target architecture: x64 "
+      "(CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR})")
+  endif()
+endif()
+
 # With this, we can hit up to 90% speed up!
 option(USE_CCACHE "Whether to use ccache for build" OFF)
 option(RUN_IWYU "Whether to run Include What You Use" OFF)

@@ -201,8 +201,14 @@ set(R_BINARY_HASHES
 list(APPEND CMAKE_MESSAGE_CONTEXT R)
 
 # dont forget check and upgrande Rtools version if major_minor version changed.
-set(R_VERSION "4.5.2")
-set(R_VERSION_MAJOR_MINOR "4.5")
+if(WIN_ARM64)
+  # R 4.6.1 is the latest version with official Windows aarch64 support
+  set(R_VERSION "4.6.1")
+  set(R_VERSION_MAJOR_MINOR "4.6")
+else()
+  set(R_VERSION "4.5.2")
+  set(R_VERSION_MAJOR_MINOR "4.5")
+endif()
 set(CURRENT_R_VERSION ${R_VERSION_MAJOR_MINOR})
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "arm64")
@@ -212,7 +218,10 @@ else()
 endif()
 
 if(WIN32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
+  if(WIN_ARM64)
+    # R 4.6.1 aarch64 has a flat bin/ directory (no x64 subfolder)
+    set(R_DIR_NAME "")
+  elseif(CMAKE_SIZEOF_VOID_P EQUAL 8) # 64 bits
     set(R_DIR_NAME "x64")
   elseif(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     set(R_DIR_NAME "i386")
@@ -668,61 +677,102 @@ elseif(WIN32)
 
     message(CHECK_FAIL "not found.")
 
-    message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
+    if(WIN_ARM64)
+      #ARM64: No Win ARM64 installer available on static server. Install from github 
+      set(R_ARM64_URL "https://github.com/r-devel/windows-arm64/releases/download/devel/R-devel-aarch64.exe" CACHE STRING "URL for Windows ARM64 R installer")
 
-    set(R_VERSION_NAME "R-${R_VERSION}-win")
-    set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
-    set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+      message(CHECK_START "Downloading R aarch64 installer")
 
-    list(
-      FIND
-      AVAILABLE_R_VERSIONS
-      "${R_VERSION_NAME}"
-      HASH_INDEX)
-    list(
-      GET
-      R_BINARY_HASHES
-      ${HASH_INDEX}
-      R_PACKAGE_HASH)
+      fetchcontent_declare(
+        r_win_arm64_exe
+        URL ${R_ARM64_URL}
+        DOWNLOAD_NO_EXTRACT ON
+        DOWNLOAD_NAME "R-aarch64.exe"
+      )
 
-    fetchcontent_declare(
-      r_win_exe
-      URL ${R_DOWNLOAD_URL}
-      URL_HASH SHA1=${R_PACKAGE_HASH}
-      DOWNLOAD_NO_EXTRACT ON
-      DOWNLOAD_NAME ${R_PACKAGE_NAME})
+      fetchcontent_makeavailable(r_win_arm64_exe)
 
-    fetchcontent_makeavailable(r_win_exe)
+      if(r_win_arm64_exe_POPULATED)
+        message(CHECK_PASS "successful.")
+        message(CHECK_START "Unpacking and preparing the R aarch64 instance")
 
-    if(r_win_exe_POPULATED)
-
-      message(CHECK_PASS "successful.")
-
-      message(CHECK_START "Unpacking and preparing the R instance")
-
-      execute_process(
-        WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
-        COMMAND ${R_PACKAGE_NAME} /CURRENTUSER /verysilent /sp
-                /DIR=${r_win_exe_BINARY_DIR}/R)
-
-      file(COPY ${r_win_exe_BINARY_DIR}/R DESTINATION ${CMAKE_BINARY_DIR})
-
-      if(EXISTS ${CMAKE_BINARY_DIR}/R)
-        message(CHECK_PASS "successful")
-      else()
-        message(CHECK_FAIL "failed")
-        message(
-          FATAL_ERROR
-            "CMake has failed to prepare the R environment in the build folder."
+        execute_process(
+          WORKING_DIRECTORY ${r_win_arm64_exe_SOURCE_DIR}
+          COMMAND "R-aarch64.exe" /CURRENTUSER /verysilent sp /DIR=${r_win_arm64_exe_BINARY_DIR}/R
         )
-      endif()
 
-      # TODOs:
-      #   - [ ] I think we should probably remove a few auxiliary files, e.g. uninstall stuff
+        file(COPY ${r_win_arm64_exe_BINARY_DIR}/R DESTINATION ${CMAKE_BINARY_DIR})
+
+        if(EXISTS ${CMAKE_BINARY_DIR}/R)
+          message(CHECK_PASS "successful")
+        else()
+          message(CHECK_FAIL "failed")
+          message(FATAL_ERROR "Cmake has failed to prepare the R aarch64 environment in the build folder.")
+        endif()
+
+      else()
+        message(CHECK_FAIL "failed.")
+      endif()
 
     else()
 
-      message(CHECK_FAIL "failed.")
+      message(CHECK_START "Downloading R-${R_VERSION}-win.exe")
+
+      set(R_VERSION_NAME "R-${R_VERSION}-win")
+      set(R_PACKAGE_NAME "${R_VERSION_NAME}.exe")
+      set(R_DOWNLOAD_URL "${R_BINARY_REPOSITORY}/${R_PACKAGE_NAME}")
+
+      list(
+        FIND
+        AVAILABLE_R_VERSIONS
+        "${R_VERSION_NAME}"
+        HASH_INDEX)
+      list(
+        GET
+        R_BINARY_HASHES
+        ${HASH_INDEX}
+        R_PACKAGE_HASH)
+
+      fetchcontent_declare(
+        r_win_exe
+        URL ${R_DOWNLOAD_URL}
+        URL_HASH SHA1=${R_PACKAGE_HASH}
+        DOWNLOAD_NO_EXTRACT ON
+        DOWNLOAD_NAME ${R_PACKAGE_NAME})
+
+      fetchcontent_makeavailable(r_win_exe)
+
+      if(r_win_exe_POPULATED)
+
+        message(CHECK_PASS "successful.")
+
+        message(CHECK_START "Unpacking and preparing the R instance")
+
+        execute_process(
+          WORKING_DIRECTORY ${r_win_exe_SOURCE_DIR}
+          COMMAND ${R_PACKAGE_NAME} /CURRENTUSER /verysilent /sp
+                  /DIR=${r_win_exe_BINARY_DIR}/R)
+
+        file(COPY ${r_win_exe_BINARY_DIR}/R DESTINATION ${CMAKE_BINARY_DIR})
+
+        if(EXISTS ${CMAKE_BINARY_DIR}/R)
+          message(CHECK_PASS "successful")
+        else()
+          message(CHECK_FAIL "failed")
+          message(
+            FATAL_ERROR
+              "CMake has failed to prepare the R environment in the build folder."
+          )
+        endif()
+
+        # TODOs:
+        #   - [ ] I think we should probably remove a few auxiliary files, e.g. uninstall stuff
+
+      else()
+
+        message(CHECK_FAIL "failed.")
+
+      endif()
 
     endif()
 
@@ -871,6 +921,19 @@ execute_process(
 
 else()
 ##################
+if(WIN_ARM64)
+    set(RENV_REPOSITORY "https://cran.r-universe.dev")
+    set(RCPP_LOCKFILE
+      "${PROJECT_SOURCE_DIR}/Modules/Rcpp_RInside_ARM64.lock")
+    set(MODULE_BUNDLE_LOCKFILE
+      "${PROJECT_SOURCE_DIR}/Engine/jaspModuleBundleManager/renv_ARM64.lock")
+else()
+    set(RENV_REPOSITORY "https://packagemanager.posit.co/cran/latest")
+    set(RCPP_LOCKFILE
+      "${PROJECT_SOURCE_DIR}/Modules/Rcpp_RInside.lock")
+    set(MODULE_BUNDLE_LOCKFILE
+      "${PROJECT_SOURCE_DIR}/Engine/jaspModuleBundleManager/renv.lock")
+endif()
 # renv bootstrap  
 configure_file(${PROJECT_SOURCE_DIR}/Modules/install-renv.R.in
                 ${SCRIPT_DIRECTORY}/install-renv.R @ONLY)
@@ -994,38 +1057,130 @@ if((NOT EXISTS ${jags_HOME}) AND (NOT LINUX))
 endif()
 
 if(WIN32)
+  if(WIN_ARM64)
+    # ARM64: Download JAGS aarch64 installer from GitHub
+    set(JAGS_ARM64_URL
+      "https://github.com/r-windows/JAGS/releases/download/installers/JAGS-5.0.0-aarch64.exe"
+      CACHE STRING "URL for Windows ARM64 JAGS installer")
 
-  message(STATUS "Downloading `jags`")
-  fetchcontent_declare(
-    jags_win
-    URL "https://static.jasp-stats.org/development/JAGS-4.3.1-Windows.zip"
-    URL_HASH
-      SHA256=4b168ddcc29a22c02e5c8dd61e3240ec8f940fee239b1563f63fc5b0bea60796
-  )
+    message(CHECK_START "Downloading JAGS aarch64 installer")
 
-  fetchcontent_makeavailable(jags_win)
+    fetchcontent_declare(
+      jags_win_arm64_exe
+      URL            ${JAGS_ARM64_URL}
+      DOWNLOAD_NO_EXTRACT ON
+      DOWNLOAD_NAME  "JAGS-aarch64.exe")
 
-  if(jags_win_POPULATED)
+    fetchcontent_makeavailable(jags_win_arm64_exe)
 
-    message(CHECK_PASS "successful")
+    if(NOT jags_win_arm64_exe_POPULATED)
+      message(CHECK_FAIL "failed")
+      message(FATAL_ERROR "Could not download JAGS aarch64 from ${JAGS_ARM64_URL}")
+    endif()
+
+    message(CHECK_PASS "successful.")
+
+    # The JAGS installer is an NSIS installer 
+    find_program(
+      _JAGS_7Z_EXECUTABLE
+      NAMES 7z.exe 7za.exe
+      PATHS
+        "$ENV{ProgramFiles}/7-Zip"
+        "$ENV{LOCALAPPDATA}/Programs/7-Zip"
+      NO_DEFAULT_PATH
+    )
+    
+    if(NOT _JAGS_7Z_EXECUTABLE)
+      message(FATAL_ERROR 
+        "7-Zip is required to extract the JAGS ARM64 archive."
+        "Install 7-Zip before configuring JASP.")
+    endif()
+
+    set(_JAGS_EXTRACT_DIR "${jags_win_arm64_exe_BINARY_DIR}/jags-extracted")
+
+    file(REMOVE_RECURSE "${_JAGS_EXTRACT_DIR}")
+    file(MAKE_DIRECTORY "${_JAGS_EXTRACT_DIR}")
+
+    execute_process(
+      COMMAND "${_JAGS_7Z_EXECUTABLE}"
+              x 
+              "${jags_win_arm64_exe_SOURCE_DIR}/JAGS-aarch64.exe"
+              "-o${_JAGS_EXTRACT_DIR}"
+              -y
+              RESULT_VARIABLE _JAGS_EXTRACT_RESULT
+              COMMAND_ECHO STDOUT
+    )
+
+
+    if(NOT _JAGS_EXTRACT_RESULT EQUAL 0)
+      message(FATAL_ERROR
+        "Failed to extract JAGS aarch64 archive."
+        "(exit code ${_JAGS_EXTRACT_RESULT})")
+    endif()
+
+    foreach(_JAGS_DIR bin include lib modules)
+      if(NOT EXISTS "${_JAGS_EXTRACT_DIR}/${_JAGS_DIR}")
+        message(FATAL_ERROR
+          "Extracted JAGS archive does not contain '${_JAGS_DIR}/'")
+      endif()
+    endforeach()
 
     add_custom_command(
       OUTPUT ${jags_VERSION_H_PATH}
-      # bin
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/bin
       COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/lib
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/modules
       COMMAND ${CMAKE_COMMAND} -E copy_directory
-              ${jags_win_SOURCE_DIR}/x64/ ${jags_HOME}/x64
+              "${_JAGS_EXTRACT_DIR}/bin"     ${jags_HOME}/bin
       COMMAND ${CMAKE_COMMAND} -E copy_directory
-              ${jags_win_SOURCE_DIR}/include/ ${jags_HOME}/include)
+              "${_JAGS_EXTRACT_DIR}/include" ${jags_HOME}/include
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${_JAGS_EXTRACT_DIR}/lib"     ${jags_HOME}/lib
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${_JAGS_EXTRACT_DIR}/modules" ${jags_HOME}/modules)
 
     add_custom_target(
       jags
       JOB_POOL sequential
       DEPENDS ${jags_VERSION_H_PATH})
 
+    message(CHECK_PASS "successful.")
   else()
-    message(CHECK_FAIL "failed")
+  #x64:Download JAGS from static server.
+    message(STATUS "Downloading `jags`")
+    fetchcontent_declare(
+      jags_win
+      URL "https://static.jasp-stats.org/development/JAGS-4.3.1-Windows.zip"
+      URL_HASH
+        SHA256=4b168ddcc29a22c02e5c8dd61e3240ec8f940fee239b1563f63fc5b0bea60796
+    )
+
+    fetchcontent_makeavailable(jags_win)
+
+    if(jags_win_POPULATED)
+
+      message(CHECK_PASS "successful")
+
+      add_custom_command(
+        OUTPUT ${jags_VERSION_H_PATH}
+        # bin
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/x64
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${jags_HOME}/include
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${jags_win_SOURCE_DIR}/x64/ ${jags_HOME}/x64
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${jags_win_SOURCE_DIR}/include/ ${jags_HOME}/include)
+
+      add_custom_target(
+        jags
+        JOB_POOL sequential
+        DEPENDS ${jags_VERSION_H_PATH})
+
+    else()
+      message(CHECK_FAIL "failed")
+    endif()
+  
   endif()
   
 elseif(APPLE)

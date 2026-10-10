@@ -156,10 +156,14 @@ public:
 		//std::remove_if makes sure all non-ascii chars are removed from your vector, but it does not change the length of the vector. That's why we erase the remaining part of the vector afterwards.
 		input.erase(std::remove_if(input.begin(), input.end(), [](unsigned char x)
 		{
-	#ifdef _WIN32
-			return !std::isalnum(x, std::locale());
+	#if defined(_WIN32) && (defined(_M_ARM64) || defined(__aarch64__))
+		// libc++ on Windows ARM64 cannot instantiate std::isalnum<unsigned char>
+		//fixes error: in instantiation of function template specialization 'std::isalnum<unsigned char>' requested here
+		return !std::isalnum(static_cast<char>(x), std::locale());
+	#elif defined(_WIN32)
+		return !std::isalnum(x, std::locale());
 	#else
-			return !std::isalnum(x);
+    	return !std::isalnum(x);
 	#endif
 
 		}), input.end());

@@ -1,4 +1,30 @@
-options(repos='https://cran.r-project.org')
+if("@WIN_ARM64@" =="ON"){
+    options(
+        repos = c(
+            CRAN = "https://cran.r-universe.dev"
+        )
+    )
+
+    Sys.setenv(
+        RENV_CONFIG_REPOS_OVERRIDE =
+            "https://cran.r-universe.dev",
+        "_R_INSTALL_TIME_PATCHES_" =
+            "http://contributor.r-project.org/windows-arm64/patches"
+    )
+
+    # jaspBase uses INCLUDE_DIR to locate the local jasp-desktop/Common tree.
+    # Required since the local jasp-desktop/Common has Win ARM64 changes included
+    includeDir <- normalizePath(
+        file.path("@PROJECT_SOURCE_DIR@", "Common"),
+        winslash = "/",
+        mustWork = FALSE
+    )
+
+    Sys.setenv(INCLUDE_DIR = includeDir)
+} else {
+    options(repos='https://cran.r-project.org')
+}
+
 options(jaspRemoteCellarRedownload=FALSE)
 Sys.setenv(GITHUB_PAT="@GITHUB_PAT@")
 
@@ -29,6 +55,26 @@ f <- function(mod) {
     if(dir.exists(target)) unlink(target, recursive=TRUE)
     dir.create(target, recursive = TRUE)
     file.copy(modlib, module_libs, recursive=TRUE)
+
+    # Local module builds do not create a .JASPModule bundle or run jaspModuleBundleManager. 
+    # Instead, we Copy the compiled module library directly to module_libs and write the minimal manifest required by installedmodules.cpp
+    # for JASP to discover the locally built module.
+    manifests_dir <- file.path(MODULES_DIR, 'manifests')
+    dir.create(manifests_dir, recursive = TRUE, showWarnings = FALSE)
+
+    modName <- basename(mod)
+    modDescPath <- file.path(target, modName, 'DESCRIPTION')
+    modVersion <- tryCatch(
+        as.character(read.dcf(modDescPath, fields = 'Version')[1, 1]),
+        error = function(e) '0.0.0'
+    )
+
+    manifestFile <- file.path(manifests_dir, paste0(modName, '_manifest.json'))
+    writeLines(
+        sprintf('{\n  "name": "%s",\n  "version": "%s"\n}', modName, modVersion),
+        manifestFile
+    )
+    message('Wrote manifest: ', manifestFile)
 
     if (Sys.info()[['sysname']] == 'Darwin') {  
         print("Patching and Signing all Module binaries")

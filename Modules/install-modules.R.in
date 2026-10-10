@@ -15,12 +15,17 @@ getPlatform <- function() {
     info <- Sys.info()
     os <- ""
     switch(info[['sysname']],
-        Windows = {os <- "Windows-x86_64"},
+        Windows = { os <- if (info[["machine"]] == "aarch64"|| info[["machine"]] == "arm64") "Windows-arm64" else "Windows-x86_64"},
         Linux   = {os <- "Linux"},
         Darwin  = {os <- if(info[['machine']] == "arm64") "MacOS-arm64" else "MacOS-x86_64"}
     )
     os
 }
+
+isWindowsArm64 <- function() {
+  getPlatform() == "Windows-arm64"
+}
+
 mkdir <- function(paths) {
   for (path in paths)
     if (!dir.exists(path))
@@ -32,81 +37,84 @@ mkdir(c(MODULES_DIR, LOCAL_MODULES_DIR, BUNDLE_DOWNLOAD_DIR))
 .libPaths("@JASP_MODULE_BUNDLE_MANAGER_LIBRARY@")
 library("jaspModuleBundleManager")
 library("tools")
+if(isWindowsArm64()) {
+    cat("Windows ARM64 detected; skipping remote module downloads\n")
+} else {
+    #check which bundles need downloading
+    remoteBundles <- rjson::fromJSON(file="@MODULES_SOURCE_PATH@/remote-bundles.json")[[getPlatform()]]
+    remoteBundleURLS <- unlist(sapply(remoteBundles, function(x){x$url}))
 
-#check which bundles need downloading
-remoteBundles <- rjson::fromJSON(file="@MODULES_SOURCE_PATH@/remote-bundles.json")[[getPlatform()]]
-remoteBundleURLS <- unlist(sapply(remoteBundles, function(x){x$url}))
+    toInstallRemote <- c()
+    toInstallLocal <- c()
+    installed <- c()
 
-toInstallRemote <- c()
-toInstallLocal <- c()
-installed <- c()
-
-if(length(remoteBundleURLS) > 0) {
-    remoteBundleDownloaded <- c()
-    if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
-        tryCatch({
-            remoteBundleDownloaded <- read.delim("@MODULES_BINARY_PATH@/bundles-downloaded.txt", header = FALSE)[[1]]
-            remoteBundleDownloaded <- remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleDownloaded)))]
-        }, error = function(e) { remoteBundleDownloaded <- c() })
-    }
-    toDownload <- remoteBundles[!remoteBundleURLS %in% remoteBundleDownloaded]
-
-    #download and write a file with all our successes
-    downloaded <- c()
-    if(length(toDownload)) {
-        cat("We will download: ", paste(toDownload, sep=' '), '\n')
-        download <- function(bundle) {
-            req <- tryCatch({
-                path <- file.path(BUNDLE_DOWNLOAD_DIR, basename(bundle$url))
-                res <- curl::curl_fetch_disk(bundle$url, path)
-                if(sha256sum(files=path) != bundle$checksum) {
-                    file.remove(path)
-                    warning(paste0("Checksum of: ", bundle$url, "Does not match. Skipping"))
-                    res <- list(status_code=404)
-                }
-                res 
-            }, error = function(e) { print(e); list(status_code=404) })
-            if(req$status_code != 200)
-                return(FALSE)
-            TRUE
+    if(length(remoteBundleURLS) > 0) {
+        remoteBundleDownloaded <- c()
+        if(file.exists("@MODULES_BINARY_PATH@/bundles-downloaded.txt")) {
+            tryCatch({
+                remoteBundleDownloaded <- read.delim("@MODULES_BINARY_PATH@/bundles-downloaded.txt", header = FALSE)[[1]]
+                remoteBundleDownloaded <- remoteBundleDownloaded[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleDownloaded)))]
+            }, error = function(e) { remoteBundleDownloaded <- c() })
         }
-        res <- sapply(toDownload, download)
-        success <- unlist(sapply(toDownload[res], function(x){x$url}))
-        downloaded <- unique(c(remoteBundleDownloaded[remoteBundleDownloaded %in% remoteBundleURLS], success))
-        write(downloaded, "@MODULES_BINARY_PATH@/bundles-downloaded.txt")
+        toDownload <- remoteBundles[!remoteBundleURLS %in% remoteBundleDownloaded]
 
-        if(!all(res)) {
-            toDownload <- toDownload[!res]
-            cat("Unable to download the following bundles: ", paste(toDownload, sep = ' '), '\n')
-            quit(status=66)
+        #download and write a file with all our successes
+        downloaded <- c()
+        if(length(toDownload)) {
+            cat("We will download: ", paste(toDownload, sep=' '), '\n')
+            download <- function(bundle) {
+                req <- tryCatch({
+                    path <- file.path(BUNDLE_DOWNLOAD_DIR, basename(bundle$url))
+                    res <- curl::curl_fetch_disk(bundle$url, path)
+                    if(sha256sum(files=path) != bundle$checksum) {
+                        file.remove(path)
+                        warning(paste0("Checksum of: ", bundle$url, "Does not match. Skipping"))
+                        res <- list(status_code=404)
+                    }
+                    res 
+                }, error = function(e) { print(e); list(status_code=404) })
+                if(req$status_code != 200)
+                    return(FALSE)
+                TRUE
+            }
+            res <- sapply(toDownload, download)
+            success <- unlist(sapply(toDownload[res], function(x){x$url}))
+            downloaded <- unique(c(remoteBundleDownloaded[remoteBundleDownloaded %in% remoteBundleURLS], success))
+            write(downloaded, "@MODULES_BINARY_PATH@/bundles-downloaded.txt")
+
+            if(!all(res)) {
+                toDownload <- toDownload[!res]
+                cat("Unable to download the following bundles: ", paste(toDownload, sep = ' '), '\n')
+                quit(status=66)
+            }
+
+            #clean up the download folder a bit by removing all bundles we where not instructed to download
+            files <- list.files(BUNDLE_DOWNLOAD_DIR)
+            leftover <- files[! files %in% basename(downloaded)]
+            file.remove(file.path(BUNDLE_DOWNLOAD_DIR, leftover))
         }
 
-        #clean up the download folder a bit by removing all bundles we where not instructed to download
-        files <- list.files(BUNDLE_DOWNLOAD_DIR)
-        leftover <- files[! files %in% basename(downloaded)]
-        file.remove(file.path(BUNDLE_DOWNLOAD_DIR, leftover))
-    }
 
-
-    # use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
-    toInstallRemoteTotal <- remoteBundleURLS[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleURLS)))]
-    prevInstalledRemote <- c()
-    if(file.exists("@MODULES_BINARY_PATH@/remote-bundles-installed.txt")) {
-        tryCatch({
-            prevInstalledRemote <- read.delim("@MODULES_BINARY_PATH@/remote-bundles-installed.txt", header = FALSE)[[1]]
-        }, error = function(e) { prevInstalledRemote <- c() })
-    }
-    toInstallRemote <- toInstallRemoteTotal[!toInstallRemoteTotal %in% prevInstalledRemote]
-
-    if(length(toInstallRemote) > 0) {
-        installRemote <- function(remote) {
-            bundlePath <- file.path(BUNDLE_DOWNLOAD_DIR, basename(remote))
-            cat("Installing: ", bundlePath, "\n")
-            jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
+        # use the jaspModuleBundleManager to install the downloaded bundles and the ones in the local overwrite folder
+        toInstallRemoteTotal <- remoteBundleURLS[file.exists(file.path(BUNDLE_DOWNLOAD_DIR, basename(remoteBundleURLS)))]
+        prevInstalledRemote <- c()
+        if(file.exists("@MODULES_BINARY_PATH@/remote-bundles-installed.txt")) {
+            tryCatch({
+                prevInstalledRemote <- read.delim("@MODULES_BINARY_PATH@/remote-bundles-installed.txt", header = FALSE)[[1]]
+            }, error = function(e) { prevInstalledRemote <- c() })
         }
-        res <- sapply(toInstallRemote, installRemote)
-        installed <- c(installed, res)
-        write(toInstallRemoteTotal, "@MODULES_BINARY_PATH@/remote-bundles-installed.txt", ncolumns=1)
+        toInstallRemote <- toInstallRemoteTotal[!toInstallRemoteTotal %in% prevInstalledRemote]
+
+        if(length(toInstallRemote) > 0) {
+            installRemote <- function(remote) {
+                bundlePath <- file.path(BUNDLE_DOWNLOAD_DIR, basename(remote))
+                cat("Installing: ", bundlePath, "\n")
+                jaspModuleBundleManager::installJaspModuleBundle("@MODULES_BINARY_PATH@", bundlePath)
+            }
+            res <- sapply(toInstallRemote, installRemote)
+            installed <- c(installed, res)
+            write(toInstallRemoteTotal, "@MODULES_BINARY_PATH@/remote-bundles-installed.txt", ncolumns=1)
+        }
     }
 }
 
