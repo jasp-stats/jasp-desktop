@@ -3,13 +3,15 @@ from pathlib import Path
 import re
 import argparse
 
-htmlPrefix = """JASP depends on the following R packages:
+htmlPrefix = """JASP depends on the following R packages:
 <table class="table table-bordered table-hover table-condensed">
 <thead>
 <tr>
-<th title="Field #1">Package</th>
-<th title="Field #2">Version</th>
-<th title="Field #3">Author</th>
+<th title="Field #1">Index</th>
+<th title="Field #2">Package</th>
+<th title="Field #3">Version</th>
+<th title="Field #4">Author</th>
+<th title="Field #5">License</th>
 </tr>
 </thead>
 <tbody>
@@ -21,48 +23,58 @@ htmlPostfix = """</tbody>
 
 def extract_data(descriptionPath):
     description = descriptionPath.read_text(encoding = 'unicode-escape')
-    encodingMatch = re.search('(^Encoding:)\s*(.*$)', description, flags=re.MULTILINE)
+    encodingMatch = re.search('(^Encoding:)\\s*(.*$)', description, flags=re.MULTILINE)
     encoding = 'utf-8'
     if encodingMatch:
         encoding = encodingMatch.group(2)
 
     description = descriptionPath.read_text(encoding = encoding)
-    package = re.search('(^Package:)\s*(.*$)', description, flags=re.MULTILINE).group(2)
-    version = re.search('(^Version:)\s*(.*$)', description, flags=re.MULTILINE).group(2)
+    package = re.search('(^Package:)\\s*(.*$)', description, flags=re.MULTILINE).group(2)
+    version = re.search('(^Version:)\\s*(.*$)', description, flags=re.MULTILINE).group(2)
     
-    authorMatch = re.search('(^Author:)\s*(.*$)', description, flags=re.MULTILINE)
+    authorMatch = re.search('(^Author:)\\s*(.*$)', description, flags=re.MULTILINE)
     author = authorMatch.group(2)
     for line in description[authorMatch.end() + 1: -1].splitlines():
-        match = re.search('^\s+(.*$)', line, flags=re.MULTILINE)
+        match = re.search('^\\s+(.*$)', line, flags=re.MULTILINE)
         if match == None:
             break
         author += '\n' + match.group(1)
-    return [package, version, author]
+    licenseMatch = re.search('(^License:)\\s*(.*$)', description, flags=re.MULTILINE)
+    license = licenseMatch.group(2) if licenseMatch else ""
+
+
+    return [package, version, author, license]
+
+def write_html_table(out, htmlPrefix, pkgList):
+    out.write(htmlPrefix.encode('utf-8'))
+    for i, pkg in enumerate(pkgList, start=1):
+        out.write(('<tr>\n' 
+        + '<td>' + str(i) + '</td>\n' 
+        + '<td> ' + pkg[0] + ' </td>\n' 
+        + '<td> ' + pkg[1] + ' </td>\n' 
+        + '<td> ' + pkg[2] + ' </td>\n' 
+        + '<td> ' + pkg[3] + ' </td>\n' 
+        + '</tr>\n'
+        ).encode('utf-8'))
+    out.write(htmlPostfix.encode('utf-8'))
 
 def gather_pkgs(path_str):
     path = Path(path_str)
-    renv_cache = path / 'Modules' / 'renv-cache' / 'v5'
-    if(not renv_cache.exists()):
-        print('renv-cache not found')
+    binary_pkgs = path / 'Modules' / 'binary_pkgs'
+    if(not binary_pkgs.exists()):
+        print('binary_pkgs not found')
         return
 
     #Gather and sort alphabetically on pkg name
     pkgList = []
-    descriptions = set(renv_cache.glob("*/*/*/*/DESCRIPTION"))
+    descriptions = set(binary_pkgs.glob("*/DESCRIPTION"))
     for desc in descriptions:
         pkgList.append(list(extract_data(desc)))
     pkgList.sort(key=lambda x: x[0])
 
     #write html table
-    with open(path.parts[-1] + '-pkgs.txt', 'w') as out:
-        out.write(htmlPrefix)
-        for pkg in pkgList:
-            out.write('<tr>\n')
-            out.write('<td> ' + pkg[0] + ' </td>\n')
-            out.write('<td> ' + pkg[1] + ' </td>\n')
-            out.write('<td> ' + pkg[2] + ' </td>\n')
-            out.write('</tr>\n')
-        out.write(htmlPostfix)
+    with open(path.parts[-1] + '-pkgs.txt', 'wb') as out:
+        write_html_table(out, htmlPrefix, pkgList)
 
 def main():
     parser = argparse.ArgumentParser(
