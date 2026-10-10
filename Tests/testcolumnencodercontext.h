@@ -31,6 +31,11 @@ private slots:
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
 	void currentEncoderReTargetsOnSwitchAndClearsOnDestruction();
+	void rCommanderEncodingKeepsArgumentNamesIntact();
+	void encodeRScriptSkipsStringLiteralsAndSubstringsByDefault();
+	void encodeRScriptEncodesInsideStringLiteralsWhenRequested();
+	void encodeRScriptPrefixedTracksColumnsPerPrefix();
+	void encodeRScriptMergesExtraEncodersOnlyForCommander();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

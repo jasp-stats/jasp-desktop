@@ -71,7 +71,7 @@ private:
 	void					runDefaultFilter(	int dataSet,		const std::string & filter,				const std::string & generatedFilter,	int filterRequestId				);
 	void 					runFilterByName(	const std::string & name, int dataSet);
 	void					runRCode(			int dataSet,		const std::string & rCode,				int rCodeRequestId,						bool whiteListed				);
-	void					runRCodeCommander(	int dataSet,		std::string   rCode																						);
+	void					runRCodeCommander(	int dataSet,		std::string   rCode,		const std::string & workingDirectory = ""						);
 
 	void					stopEngine();
 	void					pauseEngine(	const Json::Value & jsonRequest);

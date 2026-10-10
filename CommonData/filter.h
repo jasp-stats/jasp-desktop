@@ -130,6 +130,7 @@ public:
 	QAbstractItemModel		*	providerModel() override;
 	QVariant					provideInfo(varInfoType info, const QString& name = "", int row = 0)			const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name,		int row, QVariant value)		override;
+	ColumnEncoder			*	columnEncoder() override;
 	
 	
 signals:

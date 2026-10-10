@@ -437,9 +437,11 @@ void EngineRepresentation::processFilterByNameReply(Json::Value &json)
 	emit filterByNameDone(dataSet, tq(name), tq(error));
 }
 
-void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode)
+void EngineRepresentation::runScriptOnProcess(const QString & rCmdCode, const QString & workingDirectory)
 {
 	RScriptStore * script = new RScriptStore(DataSetPackage::pkg()->dataSet() ? DataSetPackage::pkg()->dataSet()->id() : -1, -1, rCmdCode, "", engineState::rCode, false, true);
+
+	script->workingDirectory = workingDirectory;
 
 	runScriptOnProcess(script);
 
@@ -462,6 +464,7 @@ void EngineRepresentation::runScriptOnProcess(RScriptStore * scriptStore)
 		json["whiteListed"]		= scriptStore->whiteListedVersion;
 		json["returnLog"]		= scriptStore->returnLog;
 		json["dataSetId"]		= scriptStore->dataSetId;
+		json["workingDirectory"]= scriptStore->workingDirectory.toStdString();
 
 		_lastRequestId			= scriptStore->requestId;
 
