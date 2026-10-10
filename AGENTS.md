@@ -7,9 +7,9 @@ cmake -GNinja -S . -B build -DBUILD_TESTS=ON
 cmake --build build --target CommonData    # library target only
 cmake --build build                        # everything (slow)
 cmake --build build --target JASP          # desktop app only
-
-Add `-DINSTALL_R_MODULES=OFF` to skip building R modules (much faster build, but analyses won't run).
 ```
+
+Add `-DINSTALL_R_MODULES=OFF` to skip building R modules (much faster build, but analyses won't run). CI's `JASP_TEST_BUILD=ON` flag is a no-op — the real option is `BUILD_TESTS`.
 
 - Use the existing `build/` directory — it is already configured.
 - Re-run `cmake build/` after adding new `.cpp`/`.h` files (CMake uses `GLOB_RECURSE` in `CommonData/CMakeLists.txt`).
@@ -27,29 +27,34 @@ xvfb-run build/Tests/JASPTest testSyncerStartStopFileSyncing  # single test by n
 ctest -R testDataImport --output-on-failure             # or via ctest
 ```
 
-Test names (use `-functions` on binary to list all). There are SEVEN test executables — verify against ALL of them:
-- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp); note the two `testDataImport` CSV/TSV hardcoded-json failures are pre-existing on this branch
+Test names (use `-functions` on binary to list all). There are EIGHT test executables — verify against ALL of them:
+- `JASPTest` — data import + syncer tests (slots in `Tests/testall.{h,cpp}`); also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp)
 - `JASPTestParsedArgs` — command-line argument parsing (depends on `JASPDesktopLib`); PRO-only flags are exercised in both modes via `AppInfo::setProMode`, no PRO build required
 - `JASPTestEngine` — engine integration tests
-- `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPQuickTest`
+- `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPTestDbMigration`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
 
-To build and run everything in one go:
+Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too.
+
+To build and run everything in one go (Linux; on macOS drop `xvfb-run`, `QT_QPA_PLATFORM=offscreen` suffices):
 
 ```bash
-cmake --build build --target JASPTest JASPTestParsedArgs JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPQuickTest JASPTestColumnEncoderContext
+cmake --build build --target JASPTest JASPTestParsedArgs JASPTestEngine JASPTestDebugData JASPTestCsvPrev JASPTestDbMigration JASPQuickTest JASPTestColumnEncoderContext
 xvfb-run build/Tests/JASPTest
 xvfb-run build/Tests/JASPTestParsedArgs
 xvfb-run build/Tests/JASPTestEngine
 xvfb-run build/Tests/JASPTestDebugData
 xvfb-run build/Tests/JASPTestCsvPrev
+xvfb-run build/Tests/JASPTestDbMigration
 QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest
 xvfb-run build/Tests/JASPTestColumnEncoderContext
 ```
 
 PRO-only behaviour (batch data sync/export CLI) is a *runtime* flag now: `AppInfo::proMode()`, defaulting to the compile-time `PRO` CMake option and overridable with `AppInfo::setProMode()` (used by `JASPTestParsedArgs`). The remaining `#ifdef PRO` blocks are branding only.
 
-For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
+For most tests on Linux, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
+
+With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
 
 ## Library architecture (dependency order)
 
@@ -74,19 +79,44 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - `ColumnEncoder` — per-dataset column name encoding singleton with context pointer (`ColumnEncoder::setCurrentEncoder()`)
 - `DatabaseConnectionInfo` — DB interval polling timer (owned by `DataSetSyncer`)
 - `DataSetPackage` — singleton desktop wrapper around Workspace
+- `JaspRpcDispatcher`/`JaspRpcServer` (`Desktop/rpc/`) — the JSON-RPC/MCP surface the agent API and gate tests use; method specs live in `Resources/JASP_RPC.json`, server start is gated on `PreferencesModel::rpcServerEnabled()`
+- `MainWindow` is NOT built in `main.cpp` — it's `new`ed inside `Application::init()`; `--rpcPort`/`--safeGraphics` style runtime overrides must be applied in `main()` before that
 
 ## Git notes
 
 - No enforced prefix convention (`feature/`, `bugfix/` not used).
 - Bot branches prefixed `bot` (e.g., `botDataSetSynch`, `botDev`).
-- Upstream branch: `origin/development`. Forks: `joris/development`, `bruno/development`.
+- Base/PR branch: `development` on the upstream remote.
 
 ## Qt quirks
 
-- Tests use `QApplication` (Widgets-based), need a display. Use `xvfb-run`.
+- Tests use `QApplication` (Widgets-based), need a display. Use `xvfb-run` on Linux; `QT_QPA_PLATFORM=offscreen` on macOS.
+- `PreferencesModel::prefs()` is still null inside the early `MainWindow` ctor (the model is constructed a few lines later in that same ctor); anything read there must be `this`-free (static `Settings`/static overrides only) — that is how the RPC server reads its host/port.
 - `#ifdef NOT_IGNORING_SYNCHING` — never defined anywhere, dead code.
 - `FileEvent::FileSyncData` — was dead/never existed, now added to enum.
 - `DataSet::setDataFileAndTimeStamp` (overload) exists alongside `setDataFile` (single string).
+
+## Gate test / fuzzer (`Tests/gatetest/`)
+
+- `run_gatetest.sh` → gate test (every analysis, default options, via jasp-mcp MCP layer).
+- `fuzztest.py` → schema-guided option fuzzer (optionMeta kinds: checkbox/combo/variables/number/integer/percent/string/array).
+- `gatecommon.py` → shared RPC harness (MCP-first with direct-JSON-RPC fallback), JASP process handling.
+- JASP headless requires `-platform offscreen` (`-platform minimal`, used by `--hide`, crashes QtWebEngine's scene graph during blocking RPC waits). `--rpcPort=<n>` enables the RPC server at startup as a session-only runtime override (unlike `--safeGraphics` it is NOT persisted; see `PreferencesModel::setRuntimeRpcPort`).
+- The fuzz/gate harness tolerates `validationError`/`rejected`/`fatalError` outcomes; crash/hang/wedge abort the run with a `.repro.json` (multiple repros get `-2`, `-3` suffixes). `-32603` internal errors and unexpected statuses are only counted as *suspicious* — they fail the run solely with `--strict`.
+- RSS-watchdog kills are recorded as `rss-watchdog` (machine protection, deliberately NOT attributed to a mutation and without a repro); the watchdog survives restarts and keeps protecting the sweep.
+- Run-level health fails the sweep even without a crash: nothing ran at all, a systemic `analysis_create` failure ratio (>10%), or a jasp-mcp layer that is connected but never serves a successful call.
+- The `gateSmoke`/`fuzzSmoke`/`gateTest` ctest targets carry the `gatetest` label (`ctest -LE gatetest` to exclude them) and take the JASP binary from the `JASP_BIN` env var, which CMake sets to the configured build tree.
+- `jaspTestModule` is always skipped (dev-only module).
+
+## Debugging JASP desktop crashes — pitfalls learned the hard way
+
+- **lldb batch mode ends supervision at the first stop.** Any breakpoint hit (or attach-SIGSTOP handling quirk) ends the `-k`-scripted session, leaving the target stopped/frozen. Do not use `break set -n abort` style name matching: it resolves to *all* matching symbols (e.g. `Analysis::abort`, hit constantly during fuzzing — 121 locations). Pin exact symbols per library, e.g. `break set -n exit -s libsystem_c.dylib` / `-n __abort_message -s libc++abi.dylib`, and prefer `QCoreApplication::exit` / `QGuiApplication::quit` for clean-exit tracing.
+- **Silent clean `exit(0)` is a real death mode** for JASP: Qt's `quitOnLastWindowClosed` default (true) is never disabled, so anything that closes/destroys the main QML window exits the whole app with code 0 — no log output, no signal. The fuzzer's summary filters exit code 0 out (`finish()`), so a clean quit shows up only as "connection refused" transport errors. Check `jasp_proc.returncode` when chasing "process died" reports.
+- Attaching lldb mid-run changes timing; crashes may become hangs or clean exits. Prefer launching JASP *under* lldb (`lldb --batch -o "process launch" ...`) and driving it from outside, and let the process run to death under supervision instead of attaching late. Note: lldb batch **attaching** ends supervision after the sourced script finishes — for guaranteed supervision, launch under lldb via a wrapper script (`exec lldb --batch -s script -- real-binary "$@"`) with `process launch` as the first script line and auto-continue breakpoint commands (`breakpoint command add N -o bt -o continue`), and check the *fuzzer's own output* for the real JASP pid (`grep "JASP pid"`); `pgrep -f rpcPort` can match stale leftovers from earlier runs.
+- **DYLD_INSERT_LIBRARIES interposition of `exit`/`_exit` via `dlsym(RTLD_NEXT)` recurses into itself** (the interpose table redirects RTLD_NEXT back to the interposer) — stack-overflow SIGSEGVs that poison the experiment. Interpose with the raw `SYS_exit` syscall instead (see the pattern used while chasing the QV4 GC crash; keep the dylib out of the fuzzer's own process expectations — it inherits DYLD_* so its own exits get logged too).
+- The mysterious clean-exit(0) fuzz deaths resolved into **multiple real crash modes**: EXC_BAD_ACCESS in `QV4::markDrain` (QtQml GC marking, use-after-free on the QML heap — see Tests/gatetest/README.md), plus one-off SIGBUS. "Connection refused" transport errors mean the desktop process is already gone; `jasp_proc.returncode` tells the death mode (0 filtered by summaries, -6 SIGABRT, -10 SIGBUS, -11 SIGSEGV).
+- The R engine processes detect parent death via heartbeat files (`temp/JASP-IPC-<pid>_heartbeat`); "no parent alive" in engine logs means the desktop process already died — check the *desktop* log and exit code.
+- The IPC channel is a **single-slot mailbox** with a fixed-width id prefix (4 digits since `f268fa249`); each send overwrites the slot, so fast repeated engine messages can overwrite an unread reply. `processReplies` never reads while the desktop thinks the engine is `idle`.
 
 ## Conventions
 

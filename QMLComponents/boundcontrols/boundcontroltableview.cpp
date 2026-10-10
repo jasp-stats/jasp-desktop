@@ -67,6 +67,11 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 
 	for (const Json::Value& row : value)
 	{
+		//const operator[]/asString throw on non-object rows and non-string entries (e.g.
+		//fuzzed garbage in an options table), so skip anything that is not shaped as a row.
+		if (!row.isObject())
+			continue;
+
 		tableTerms.colNames.push_back(tq(row["name"].asString()));
 		if (index == 0)
 		{
@@ -80,6 +85,7 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 			if (value.isInt())			val = value.asInt();
 			else if (value.isDouble())	val = value.asDouble();
 			else if (value.isString())	val = tq(value.asString());
+			else						continue;	//bool/null/objects are not representable in a table cell
 			tableTerms.values[tableTerms.values.size() - 1].push_back(val);
 		}
 

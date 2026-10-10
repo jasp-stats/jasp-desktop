@@ -28,6 +28,23 @@
 #include <filesystem>
 #include <fstream>
 
+namespace
+{
+//The message-id prefix in the shared slot: a fixed-width zero-padded decimal number.
+//It replaced a single-digit id (modulo 10), whose loss-detection wrapped after only 10
+//unread sends: any message that arrived while 10+ earlier messages were still unread
+//looked identical to the last-read id and was silently ignored (which, combined with
+//overwrites in the single-slot mailbox, made replies disappear deterministically).
+constexpr int MsgIDWidth		= 4;
+constexpr uint64_t MsgIDModulo	= 10000;
+
+std::string msgIDPrefix(uint64_t id)
+{
+	std::string idStr = std::to_string(id % MsgIDModulo);
+	return std::string(MsgIDWidth - idStr.length(), '0') + idStr;
+}
+}
+
 #ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
 namespace boost {
 namespace interprocess {
@@ -388,7 +405,7 @@ void IPCChannel::send(const string & data, bool alreadyLockedMutex)
 		if(!alreadyLockedMutex)
 			_mutexOut->lock();
 
-		_dataOut->assign(std::to_string(_msgIDSend % 10).c_str()); // prefix a one character msg ID
+		_dataOut->assign(msgIDPrefix(_msgIDSend).c_str()); // prefix the fixed-width msg ID
 		_msgIDSend++;
 		_dataOut->append(data.c_str(), data.length());
 
@@ -432,7 +449,7 @@ void IPCChannel::resend()
 	{
 		_mutexOut->lock();
 
-		(*_dataOut)[0] = std::to_string(_msgIDSend % 10).c_str()[0]; // replace the one character prefix msg ID
+		_dataOut->replace(0, MsgIDWidth, msgIDPrefix(_msgIDSend).c_str()); // replace the msg-id prefix
 		_msgIDSend++;
 	}
 	catch (boost::interprocess::interprocess_exception &e)
@@ -462,7 +479,15 @@ bool IPCChannel::receive(string &data, int timeout)
 		try
 		{
 			rebindMemoryInIfSizeChanged();
-			data.assign(_dataIn->c_str() + 1, _dataIn->size() - 1); // remove message id prefix
+			//The slot may have been overwritten by a newer message between the tryWait
+			//above and here; guard the length so a bogus slot cannot underflow.
+			if(_dataIn->length() >= MsgIDWidth)
+				data.assign(_dataIn->c_str() + MsgIDWidth, _dataIn->size() - MsgIDWidth); // remove the msg-id prefix
+			else
+			{
+				Log::log() << "IPCChannel: msg slot too small for a msg-id prefix (length " << _dataIn->length() << "), discarding." << std::endl;
+				data.clear();
+			}
 		}
 		catch(std::exception & e)
 		{
@@ -487,10 +512,17 @@ bool IPCChannel::tryWait(int timeout)
 	std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
 	if(_dataIn->length()) {
 		try{
-			uint64_t newMsgID = std::stoull(std::string(1, _dataIn->front()));
-			if(newMsgID != _msgIDRecv) {
-				messageWaiting = true;
-				_msgIDRecv = newMsgID;
+			//The id prefix is fixed-width, so parse exactly MsgIDWidth characters.
+			//A slot shorter than that cannot contain a message from a matching build.
+			if(_dataIn->length() < MsgIDWidth)
+				Log::log() << "IPCChannel: msg slot too small for a msg-id prefix (length " << _dataIn->length() << "), ignoring." << std::endl;
+			else
+			{
+				uint64_t newMsgID = std::stoull(std::string(_dataIn->c_str(), MsgIDWidth));
+				if(newMsgID != _msgIDRecv) {
+					messageWaiting = true;
+					_msgIDRecv = newMsgID;
+				}
 			}
 		} catch(std::exception& e) {Log::log()<< "Failure getting msgID: " << e.what() << std::endl;}
 	}

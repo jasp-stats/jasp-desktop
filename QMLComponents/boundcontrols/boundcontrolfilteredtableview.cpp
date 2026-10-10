@@ -61,6 +61,11 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 	{
 		const Json::Value& firstRow = value[Json::UInt(0)];
 
+		//const operator[] throws on non-objects (fuzzed garbage in the options array):
+		//treat a malformed first row as "no row" and keep the defaults.
+		if (!firstRow.isObject())
+			return;
+
 		tableTerms.filter		= tq(firstRow["filter"].asString());
 		tableTerms.filterName	= firstRow.isMember("filterName") ? tq(firstRow["filterName"].asString()) : "";
 		tableTerms.colName		= tq(firstRow["colName"].asString());

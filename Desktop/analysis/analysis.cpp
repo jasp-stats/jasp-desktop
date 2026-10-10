@@ -154,7 +154,16 @@ Analysis::~Analysis()
 {
 	setRefreshBlocked(true);
 	if(form())
-		destroyForm();
+	{
+		//~Analysis runs deferred (see Analyses::removeAnalysis), i.e. at an event-loop
+		//quiet point after the QML delegate holding JS references to this form has been
+		//destroyed, so a synchronous delete is safe here — and required, because the
+		//deleteLater'd form would otherwise outlive this Analysis (its `analysis`
+		//property would dangle for a loop pass).
+		form()->setParent(nullptr);
+		form()->setParentItem(nullptr);
+		delete form();
+	}
 
 	if(DataSetPackage::pkg() && DataSetPackage::pkg()->hasDataSet())
 	{
