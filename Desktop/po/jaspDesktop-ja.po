@@ -195,179 +195,6 @@ msgid "Reset"
 msgstr "リセット"
 
 msgctxt "ComputeColumnWindow|"
-msgid "absolute value"
-msgstr "絶対値"
-
-msgctxt "ComputeColumnWindow|"
-msgid "standard deviation"
-msgstr "標準偏差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "variance"
-msgstr "分散"
-
-msgctxt "ComputeColumnWindow|"
-msgid "summation"
-msgstr "総和"
-
-msgctxt "ComputeColumnWindow|"
-msgid "product of values"
-msgstr "値の積"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns minimum of values"
-msgstr "最小値を返します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns maximum of values"
-msgstr "最大値を返します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "mean"
-msgstr "平均"
-
-msgctxt "ComputeColumnWindow|"
-msgid "rounds y to n decimals"
-msgstr "y を小数点以下 n 桁に丸めます"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns number of elements in y"
-msgstr "yの要素数を返します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "median"
-msgstr "中央値"
-
-msgctxt "ComputeColumnWindow|"
-msgid "natural logarithm"
-msgstr "自然対数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 2 logarithm"
-msgstr "2を底とする対数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 10 logarithm"
-msgstr "10を底とする対数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "logarithm of y in 'base'"
-msgstr "'base' を底とした y の対数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "exponential"
-msgstr "指数関数"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
-"correlations, numbers between -1 and 1 to the real line"
-msgstr ""
-"相関を変換するフィッシャーのZ変換(すなわち、逆双曲線正接)により、-1と1の間の"
-"数値を実線に変換する"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
-"real numbers to numbers between -1 and 1"
-msgstr "フィッシャーの逆Z変換(すなわち双曲正接)で実数を-1から1の間の数に変換"
-
-msgctxt "ComputeColumnWindow|"
-msgid "break your data up in numBreaks levels"
-msgstr "データを numBreaks 水準に分割します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "列の欠落値(NA)をreplaceWithの値に置き換えます"
-
-msgctxt "ComputeColumnWindow|"
-msgid "if-else statement"
-msgstr "if-else文"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Gaussian distribution with specified mean and standard "
-"deviation sd"
-msgstr "指定した平均と標準偏差sdを持つガウス分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from t distribution with degrees of freedom df and non-"
-"centrality parameter ncp"
-msgstr "自由度dfと非中心性パラメーターncpをもつt分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a chi-squared distribution with degrees of freedom df "
-"and non-centrality parameter ncp"
-msgstr "自由度dfと非心パラメータncpを持つカイ2乗分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from an F distribution with specified degrees of freedoms "
-"df1, df2 and non-centrality parameter ncp"
-msgstr ""
-"指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを"
-"生成します．"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a binomial distribution with specified trials and "
-"probability prob"
-msgstr "指定された試行数と確率の二項分布からデータを生成"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a negative binomial distribution with specified trials "
-"and probability prob"
-msgstr "指定された試行と確率をもつ負の二項分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a geometric distribution with specified probability prob"
-msgstr "指定された確率をもつ幾何学的分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "指定された比率λのポアソン分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
-"指定された形状パラメータ、アルファとベータのをもつベータ分布からデータを生成"
-"します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a uniform distribution between min and max"
-msgstr "minとmaxの間の一様分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
-"指定された形状パラメータとスケールパラメータを持つガンマ分布からデータを生成"
-"します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from an exponential distribution with specified rate"
-msgstr "指定された比率のパラメータを持つ指数分布からデータを生成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a log-normal distribution with specified logarithmic "
-"mean meanLog and standard deviation sdLog"
-msgstr ""
-"指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生"
-"成します"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Weibull distribution with specified shape and scale"
-msgstr ""
-"指定された形状パラメータとスケールパラメータを持つワイブル分布からデータを生"
-"成します"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "生成されたRコードを表示"
 
@@ -859,244 +686,6 @@ msgstr ""
 msgctxt "RecentFiles|"
 msgid "Recent Files"
 msgstr "最近使ったファイル"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code clear(ed)"
-msgstr "計算された列のコードをクリアする(あるいはクリアされている)"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code applied"
-msgstr "計算列コードが適用されました"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Please enter all arguments - see fields marked in red."
-msgstr ""
-"すべての引数を入力してください - 赤でマークされたフィールドを参照してくださ"
-"い。"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Only one formula per computed column allowed."
-msgstr "1つの計算列につき、1つの数式しか使用できません。"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "ドラッグ＆ドロップ式の計算列コンストラクタへようこそ!"
-
-msgctxt "DropTrash|"
-msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "不要な部分をここに捨て、ダブルクリックで全体を消去する"
-
-msgctxt "OperatorSelector|"
-msgid "Addition"
-msgstr "足し算"
-
-msgctxt "OperatorSelector|"
-msgid "Subtraction"
-msgstr "引き算"
-
-msgctxt "OperatorSelector|"
-msgid "Multiplication"
-msgstr "掛け算"
-
-msgctxt "OperatorSelector|"
-msgid "Division"
-msgstr "割り算"
-
-msgctxt "OperatorSelector|"
-msgid "Power (2^3 returns 8)"
-msgstr "累乗 (2^3 returns 8)"
-
-msgctxt "OperatorSelector|"
-msgid "Square root"
-msgstr "平方根"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "[剰余]: 除算の残りを返します。3%2 は 1 を返す"
-
-msgctxt "OperatorSelector|"
-msgid "returns logicals and can be the root of a filter formula"
-msgstr "は論理式を返し、フィルター式のルートにもなります"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Equality: %1"
-msgstr "等式: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Inequality: %1"
-msgstr "不等式: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than: %1"
-msgstr "未満: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than or equal to: %1"
-msgstr "以下: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than: %1"
-msgstr "より大きい: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than or equal to: %1"
-msgstr "以上: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "And: %1"
-msgstr "論理積: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Or: %1"
-msgstr "論理和: %1"
-
-msgctxt "OperatorSelector|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "分割: 各サブグループにフィルタを個別に適用"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "not: %1"
-msgstr "否定: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Addition"
-msgstr "足し算"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Subtraction"
-msgstr "減算"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Multiplication"
-msgstr "乗算"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Division"
-msgstr "除算"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Power (2^3 returns 8)"
-msgstr "累乗 (2^3 returns 8)"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Square root"
-msgstr "平方根"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "[剰余]: 除算の残りを返します。3%2 は 1 を返す"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "returns logicals"
-msgstr "論理値を返す"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Equality: %1"
-msgstr "等式: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Inequality: %1"
-msgstr "不等式: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than: %1"
-msgstr "未満: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than or equal to: %1"
-msgstr "以下: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than: %1"
-msgstr "より大きい: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than or equal to: %1"
-msgstr "以上: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "And: %1"
-msgstr "論理積: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Or: %1"
-msgstr "論理和: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "分割: 各サブグループにフィルタを個別に適用"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Not: %1"
-msgstr "否定: %1"
-
-msgctxt "FilterWindow|"
-msgid "absolute value"
-msgstr "絶対値"
-
-msgctxt "FilterWindow|"
-msgid "standard deviation"
-msgstr "標準偏差"
-
-msgctxt "FilterWindow|"
-msgid "variance"
-msgstr "分散"
-
-msgctxt "FilterWindow|"
-msgid "summation"
-msgstr "総和"
-
-msgctxt "FilterWindow|"
-msgid "product of values"
-msgstr "値の積"
-
-msgctxt "FilterWindow|"
-msgid "returns minimum of values"
-msgstr "最小値を返します"
-
-msgctxt "FilterWindow|"
-msgid "returns maximum of values"
-msgstr "最大値を返します"
-
-msgctxt "FilterWindow|"
-msgid "mean"
-msgstr "平均"
-
-msgctxt "FilterWindow|"
-msgid "rounds y to n decimals"
-msgstr "y を小数点以下 n 桁に丸めます"
-
-msgctxt "FilterWindow|"
-msgid "returns number of elements in y"
-msgstr "yの要素数を返します"
-
-msgctxt "FilterWindow|"
-msgid "median"
-msgstr "中央値"
-
-msgctxt "FilterWindow|"
-msgid "if-else statement"
-msgstr "if-else文"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -2535,18 +2124,6 @@ msgctxt "TableView|"
 msgid "Delete"
 msgstr "削除"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Standardizes the variable"
-msgstr "変数を標準化します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns the sign of values"
-msgstr "値の符号を返します"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "文字列に少なくとも1回は部分文字列が含まれている場合、trueを返します"
-
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
@@ -2618,18 +2195,6 @@ msgstr "アニメーションの無効化"
 msgctxt "PrefsUI|"
 msgid "Use native file dialogs"
 msgstr "ネイティブファイルダイアログの使用"
-
-msgctxt "FilterWindow|"
-msgid "Standardizes the variable"
-msgstr "変数を標準化します"
-
-msgctxt "FilterWindow|"
-msgid "returns the sign of values"
-msgstr "値の符号を返します"
-
-msgctxt "FilterWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "文字列に少なくとも1回は部分文字列が含まれている場合、trueを返します"
 
 msgctxt "ModulesMenu|"
 msgid "Select a developer module by clicking here"
@@ -3143,42 +2708,6 @@ msgid ""
 msgstr ""
 "これは等価性比較でのみ使用できる.大小比較や数学的な演算では使えない.まずは、"
 "順序かスカラーに変換してみてください。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Logit transform (i.e., the inverse of the standard logit function, or log-"
-"odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
-"ロジット変換(すなわち、標準ロジット関数の逆、または対数オッズ変換)は、0と1の"
-"間の数字を実数直線上に変換します。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse logit transform (i.e., the standard logit function) converts numbers "
-"on the real line to numbers between 0 and 1."
-msgstr ""
-"逆ロジット変換(すなわち、標準ロジット関数)は、0と1の数値を実数に変換します。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
-"stabilize variance and attempt to make the data more normal distribution-"
-"like."
-msgstr ""
-"2 パラメータ Box-Cox 変換 (-shift よりも大きい値に変換) は分散を安定化し、"
-"データをより正規分布に近いものにしようとする。"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Inverse two-parameter Box-Cox transform."
-msgstr "逆2パラメータボックス-コックス変換。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
-"attempt to make the data more normal distribution-like."
-msgstr ""
-"Yeo-Johnson変換 (任意の実数に変換) は分散を安定化し、データをより正規分布に近"
-"いものにしようとする。"
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
@@ -4325,18 +3854,6 @@ msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr "列の定義"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr "y の各欠測値に対して TRUE で boolean ベクトルを返します"
-
-msgctxt "FilterWindow|"
-msgid ""
-"Combine with not-operator to filter out rows with missing values (NA) for a "
-"column."
-msgstr ""
-"欠損値(NA)を持つ行をフィルタリングするために、否定演算子と組み合わせてくださ"
-"い。"
-
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4845,32 +4362,6 @@ msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr "ページサイズ"
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared\n"
-msgstr "フィルタを解除しました\n"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied\n"
-msgstr "フィルタを適用しました\n"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr "すべての引数を入力してください。赤で示された欄を確認してください。\n"
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.\n"
-msgstr "式が論理値の集合を返さないため、フィルタには使えません。\n"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!\n"
-msgstr "ドラッグ&ドロップのフィルタへようこそ。\n"
-
-msgctxt "JASPColumn|"
-msgid "Click icon to change column type"
-msgstr "アイコンをクリックすると列の型を変更できます"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "列名が未使用かどうかの欄"
@@ -4978,10 +4469,6 @@ msgstr "リボンの倍率(%): "
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "リボンの高さの倍率を設定します。"
-
-msgctxt "JASPColumn|"
-msgid "Column description: "
-msgstr "列の説明: "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
@@ -5156,34 +4643,6 @@ msgstr ""
 "JASPのエンジンはセキュリティサンドボックスモードで動作しており、次の場所にの"
 "みアクセスできます: "
 
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise mean"
-msgstr "行の平均"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise sum"
-msgstr "行の合計"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise standard deviation"
-msgstr "行の標準偏差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise variance"
-msgstr "行の分散"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise median"
-msgstr "行の中央値"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise minimum"
-msgstr "行の最小値"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise maximum"
-msgstr "行の最大値"
-
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr "設定ファイルを使用する。"
@@ -5207,34 +4666,6 @@ msgstr "設定ファイルを選択する"
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "設定ファイルを選択する。"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise mean"
-msgstr "行の平均"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise sum"
-msgstr "行の合計"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise standard deviation"
-msgstr "行の標準偏差"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise variance"
-msgstr "行の分散"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise median"
-msgstr "行の中央値"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise minimum"
-msgstr "行の最小値"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise maximum"
-msgstr "行の最大値"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
@@ -5535,52 +4966,6 @@ msgstr ""
 "\n"
 "分析をリフレッシュしますか？"
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform with an automatic determination of the shape "
-"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
-"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"2パラメータのBox-Cox変換です。形状パラメータlambdaは "
-"'loglik'、'sd'、'movingRange' の3つの方法のいずれかで自動的に決まります。最適"
-"なlambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform (scale-invariant Box-Box; transforms values "
-"greater than -shift) to stabilize variance and attempt to make the data more "
-"normal distribution-like."
-msgstr ""
-"2パラメータのべき変換です(スケール不変のBox-Box。-shiftより大きい値を変換しま"
-"す)。分散を安定させ、データを正規分布に近づけることを目指します。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform with an automatic determination of the shape "
-"parameter lambda. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"2パラメータのべき変換です。形状パラメータlambdaは自動的に決まります。最適な"
-"lambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) with an automatic "
-"determination of the shape parameter lambda. The search for optimal lambda "
-"is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Yeo-Johnson変換です(任意の実数値を変換します)。形状パラメータlambdaは自動的に"
-"決まります。最適なlambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Johnson transform (transforms any real values). The search for optimal "
-"parameter is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Johnson変換です(任意の実数値を変換します)。最適なパラメータの探索は 'lower' "
-"と 'upper' の範囲内で行われます。"
-
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
 msgstr "モジュールライブラリのURL: "
@@ -5675,10 +5060,6 @@ msgstr "水平線"
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
 msgstr "垂直線"
-
-msgctxt "PlotEditor|"
-msgid "References"
-msgstr "文献"
 
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
@@ -10465,3 +9846,640 @@ msgstr "地域"
 msgctxt "CsvPreviewModel|"
 msgid "text"
 msgstr "テキスト"
+
+msgctxt "DataLibrary|"
+msgid "Click here to open the Online Data Library"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Onboarding"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Show onboarding tour on next start"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Enable this to see the guided tour again the next time JASP starts."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Start tutorial"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Data and Analysis Section"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "This is the main entry point for the Data and Analysis menu."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "File Menu and Preferences"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Clicking the hamburger button in the upper left corner opens/closes this "
+"file menu and preferences interface, used to open and save files, and to "
+"configure JASP global preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Modules Library"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This is where you can manage analytics modules. In the list on the far right "
+"of this area, you can enable/disable installed modules, and you can also "
+"manage all available modules from the online modules store on the left."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "AI Assistant"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
+"Detailed AI settings can be found in the preferences menu."
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Elements"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Getting Started"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Next"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Previous"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Skip the Tutorial"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Insert element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Remove element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Move element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Change column type"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit number"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit logical"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit text"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Clear all"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "は論理式を返し、フィルター式のルートにもなります"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals"
+msgstr "論理値を返す"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Addition"
+msgstr "足し算"
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Subtraction"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Multiplication"
+msgstr ""
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "Division"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Power (2^3 returns 8)"
+msgstr "累乗 (2^3 returns 8)"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "[剰余]: 除算の残りを返します。3%2 は 1 を返す"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Equality: %1"
+msgstr "等式: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inequality: %1"
+msgstr "不等式: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than: %1"
+msgstr "未満: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than or equal to: %1"
+msgstr "以下: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than: %1"
+msgstr "より大きい: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than or equal to: %1"
+msgstr "以上: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "And: %1"
+msgstr "論理積: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Or: %1"
+msgstr "論理和: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "分割: 各サブグループにフィルタを個別に適用"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "absolute value"
+msgstr "絶対値"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "standard deviation"
+msgstr "標準偏差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "variance"
+msgstr "分散"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "summation"
+msgstr "総和"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "product of values"
+msgstr "値の積"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Standardizes the variable"
+msgstr "変数を標準化します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns minimum of values"
+msgstr "最小値を返します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns maximum of values"
+msgstr "最大値を返します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "mean"
+msgstr "平均"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns the sign of values"
+msgstr "値の符号を返します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "rounds y to n decimals"
+msgstr "y を小数点以下 n 桁に丸めます"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns number of elements in y"
+msgstr "yの要素数を返します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "median"
+msgstr "中央値"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "if-else statement"
+msgstr "if-else文"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns true if string contains substring at least once"
+msgstr "文字列に少なくとも1回は部分文字列が含まれている場合、trueを返します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Combine with not-operator to filter out rows with missing values (NA) for a "
+"column."
+msgstr ""
+"欠損値(NA)を持つ行をフィルタリングするために、否定演算子と組み合わせてくださ"
+"い。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Square root"
+msgstr "平方根"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Not: %1"
+msgstr "否定: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "natural logarithm"
+msgstr "自然対数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 2 logarithm"
+msgstr "2を底とする対数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 10 logarithm"
+msgstr "10を底とする対数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "logarithm of y in 'base'"
+msgstr "'base' を底とした y の対数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "exponential"
+msgstr "指数関数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"相関を変換するフィッシャーのZ変換(すなわち、逆双曲線正接)により、-1と1の間の"
+"数値を実線に変換する"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr "フィッシャーの逆Z変換(すなわち双曲正接)で実数を-1から1の間の数に変換"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+"ロジット変換(すなわち、標準ロジット関数の逆、または対数オッズ変換)は、0と1の"
+"間の数字を実数直線上に変換します。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+"逆ロジット変換(すなわち、標準ロジット関数)は、0と1の数値を実数に変換します。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+"2 パラメータ Box-Cox 変換 (-shift よりも大きい値に変換) は分散を安定化し、"
+"データをより正規分布に近いものにしようとする。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform with an automatic determination of the shape "
+"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
+"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"2パラメータのBox-Cox変換です。形状パラメータlambdaは "
+"'loglik'、'sd'、'movingRange' の3つの方法のいずれかで自動的に決まります。最適"
+"なlambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr "逆2パラメータボックス-コックス変換。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform (scale-invariant Box-Box; transforms values "
+"greater than -shift) to stabilize variance and attempt to make the data more "
+"normal distribution-like."
+msgstr ""
+"2パラメータのべき変換です(スケール不変のBox-Box。-shiftより大きい値を変換しま"
+"す)。分散を安定させ、データを正規分布に近づけることを目指します。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform with an automatic determination of the shape "
+"parameter lambda. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"2パラメータのべき変換です。形状パラメータlambdaは自動的に決まります。最適な"
+"lambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+"Yeo-Johnson変換 (任意の実数に変換) は分散を安定化し、データをより正規分布に近"
+"いものにしようとする。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) with an automatic "
+"determination of the shape parameter lambda. The search for optimal lambda "
+"is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Yeo-Johnson変換です(任意の実数値を変換します)。形状パラメータlambdaは自動的に"
+"決まります。最適なlambdaの探索は 'lower' と 'upper' の範囲内で行われます。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Johnson transform (transforms any real values). The search for optimal "
+"parameter is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Johnson変換です(任意の実数値を変換します)。最適なパラメータの探索は 'lower' "
+"と 'upper' の範囲内で行われます。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "break your data up in numBreaks levels"
+msgstr "データを numBreaks 水準に分割します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr "列の欠落値(NA)をreplaceWithの値に置き換えます"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr "指定した平均と標準偏差sdを持つガウス分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr "自由度dfと非中心性パラメーターncpをもつt分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr "自由度dfと非心パラメータncpを持つカイ2乗分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr ""
+"指定された自由度 df1, df2 と非中心性パラメータ ncp を持つ F 分布からデータを"
+"生成します．"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr "指定された試行数と確率の二項分布からデータを生成"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr "指定された試行と確率をもつ負の二項分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr "指定された確率をもつ幾何学的分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr "指定された比率λのポアソン分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr ""
+"指定された形状パラメータ、アルファとベータのをもつベータ分布からデータを生成"
+"します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr "minとmaxの間の一様分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr ""
+"指定された形状パラメータとスケールパラメータを持つガンマ分布からデータを生成"
+"します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr "指定された比率のパラメータを持つ指数分布からデータを生成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"指定された対数平均meanLogと標準偏差sdLogを使用して対数正規分布からデータを生"
+"成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr ""
+"指定された形状パラメータとスケールパラメータを持つワイブル分布からデータを生"
+"成します"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise mean"
+msgstr "行の平均"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise sum"
+msgstr "行の合計"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise standard deviation"
+msgstr "行の標準偏差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise variance"
+msgstr "行の分散"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise median"
+msgstr "行の中央値"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise minimum"
+msgstr "行の最小値"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise maximum"
+msgstr "行の最大値"
+
+msgctxt "ScriptConstructorView|"
+msgid "Filter cleared"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Filter applied"
+msgstr "フィルタが適用されました"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code clear(ed)"
+msgstr "計算された列のコードをクリアする(あるいはクリアされている)"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code applied"
+msgstr "計算列コードが適用されました"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr ""
+"すべての引数を入力してください - 赤でマークされたフィールドを参照してくださ"
+"い。"
+
+msgctxt "ScriptConstructorView|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Only one formula per computed column allowed."
+msgstr "1つの計算列につき、1つの数式しか使用できません。"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr "不要な部分をここに捨て、ダブルクリックで全体を消去する"
+
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop filter!"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr "ドラッグ＆ドロップ式の計算列コンストラクタへようこそ!"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Click icon to change column type"
+msgstr "アイコンをクリックすると列の型を変更できます"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Column description: "
+msgstr "列の説明: "
+
+#, qt-format
+msgctxt "ScriptNodeItem|"
+msgid "Only %1 allowed in this context."
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "/"
+msgstr ""

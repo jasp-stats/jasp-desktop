@@ -188,173 +188,6 @@ msgid "Reset"
 msgstr "重置"
 
 msgctxt "ComputeColumnWindow|"
-msgid "absolute value"
-msgstr "绝对值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "standard deviation"
-msgstr "标准差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "variance"
-msgstr "方差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "summation"
-msgstr "求和"
-
-msgctxt "ComputeColumnWindow|"
-msgid "product of values"
-msgstr "积"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns minimum of values"
-msgstr "返回最小值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns maximum of values"
-msgstr "返回最大值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "mean"
-msgstr "平均值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "rounds y to n decimals"
-msgstr "y 舍入到 n 位小数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns number of elements in y"
-msgstr "返回y中的元素数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "median"
-msgstr "中位数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "natural logarithm"
-msgstr "自然对数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 2 logarithm"
-msgstr "以 2 为底的对数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 10 logarithm"
-msgstr "以 10 为底的对数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "logarithm of y in 'base'"
-msgstr "以'base'为底 y 的对数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "exponential"
-msgstr "指数"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
-"correlations, numbers between -1 and 1 to the real line"
-msgstr ""
-"Fisher's Z-transform （费舍尔的 Z 变换，即反双曲正切）将相关性、-1 和 1 之间"
-"的数字转换为实数线"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
-"real numbers to numbers between -1 and 1"
-msgstr ""
-"Fisher's Z-transform（费舍尔的逆变换，即双曲正切）将实数转换为 -1 和 1 之间的"
-"数字"
-
-msgctxt "ComputeColumnWindow|"
-msgid "break your data up in numBreaks levels"
-msgstr "将您的数据分解为 numBreaks 级别"
-
-msgctxt "ComputeColumnWindow|"
-msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr "用替换列中的值替换任何缺失值（NA）"
-
-msgctxt "ComputeColumnWindow|"
-msgid "if-else statement"
-msgstr "if-else 语句"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Gaussian distribution with specified mean and standard "
-"deviation sd"
-msgstr "从具有指定均值和标准差 sd 的高斯分布中生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from t distribution with degrees of freedom df and non-"
-"centrality parameter ncp"
-msgstr "从具有自由度 df 和非中心参数 ncp 的 t 分布上生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a chi-squared distribution with degrees of freedom df "
-"and non-centrality parameter ncp"
-msgstr "从具有自由度 df 和非中心参数 ncp 的 卡方分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from an F distribution with specified degrees of freedoms "
-"df1, df2 and non-centrality parameter ncp"
-msgstr "从具有指定自由度df1、df2和非中心性参数ncp的F分布中生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a binomial distribution with specified trials and "
-"probability prob"
-msgstr "从具有指定试验和概率区间的二项分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a negative binomial distribution with specified trials "
-"and probability prob"
-msgstr "从具有指定试验和概率区间的负二项分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a geometric distribution with specified probability prob"
-msgstr "从具有指定概率区间的几何分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr "从具有指定参数 lambda 的泊松分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a beta distribution with specified shapes alpha and beta"
-msgstr "从具有指定形状参数 alpha 和 beta 的 beta 分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a uniform distribution between min and max"
-msgstr "从具有指定最小值和最大值之间的均匀分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr "从具有指定形状参数和尺度的伽马分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from an exponential distribution with specified rate"
-msgstr "从具有指定参数的指数分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a log-normal distribution with specified logarithmic "
-"mean meanLog and standard deviation sdLog"
-msgstr ""
-"从具有指定对数均值 meanLog 和标准偏差 sdLog 的对数正态分布 log-normal 中生成"
-"数据"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Weibull distribution with specified shape and scale"
-msgstr "从具有指定形状参数和尺度的韦布尔 Weibull 分布生成数据"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "显示生成的 R 代码"
 
@@ -809,242 +642,6 @@ msgstr ""
 msgctxt "RecentFiles|"
 msgid "Recent Files"
 msgstr "最近的文件"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code clear(ed)"
-msgstr "清除（或已清除）计算列的代码"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code applied"
-msgstr "已应用计算列代码"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Please enter all arguments - see fields marked in red."
-msgstr "请输入所有参数 - 参阅标红的字段。"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Only one formula per computed column allowed."
-msgstr "每个计算列只允许有一个公式。"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "欢迎使用拖放式计算列构建器！"
-
-msgctxt "DropTrash|"
-msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "拖拽至此可删除部分条件；双击将清空全部候选内容"
-
-msgctxt "OperatorSelector|"
-msgid "Addition"
-msgstr "加"
-
-msgctxt "OperatorSelector|"
-msgid "Subtraction"
-msgstr "减"
-
-msgctxt "OperatorSelector|"
-msgid "Multiplication"
-msgstr "乘"
-
-msgctxt "OperatorSelector|"
-msgid "Division"
-msgstr "除"
-
-msgctxt "OperatorSelector|"
-msgid "Power (2^3 returns 8)"
-msgstr "幂（2^3 返回 8）"
-
-msgctxt "OperatorSelector|"
-msgid "Square root"
-msgstr "平方根"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "取模：返回除法的余数。 3%2 返回 1"
-
-msgctxt "OperatorSelector|"
-msgid "returns logicals and can be the root of a filter formula"
-msgstr "返回逻辑值，并且可以是筛选器公式的根"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Equality: %1"
-msgstr "等： %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Inequality: %1"
-msgstr "不等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than: %1"
-msgstr "小于：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than or equal to: %1"
-msgstr "小于等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than: %1"
-msgstr "大于：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than or equal to: %1"
-msgstr "大于等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "And: %1"
-msgstr "与：%1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Or: %1"
-msgstr "或：%1"
-
-msgctxt "OperatorSelector|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "拆分：分别对每个子组应用过滤器"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "not: %1"
-msgstr "非：%1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Addition"
-msgstr "加"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Subtraction"
-msgstr "减"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Multiplication"
-msgstr "乘"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Division"
-msgstr "除"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Power (2^3 returns 8)"
-msgstr "幂（2^3 返回 8）"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Square root"
-msgstr "平方根"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "取模：返回除法的余数。 3%2 返回 1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "returns logicals"
-msgstr "返回逻辑值"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Equality: %1"
-msgstr "等： %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Inequality: %1"
-msgstr "不等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than: %1"
-msgstr "小于：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than or equal to: %1"
-msgstr "小于等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than: %1"
-msgstr "大于：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than or equal to: %1"
-msgstr "大于等于：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "And: %1"
-msgstr "与：%1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Or: %1"
-msgstr "或：%1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "拆分：分别对每个子组应用过滤器"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Not: %1"
-msgstr "非：%1"
-
-msgctxt "FilterWindow|"
-msgid "absolute value"
-msgstr "绝对值"
-
-msgctxt "FilterWindow|"
-msgid "standard deviation"
-msgstr "标准差"
-
-msgctxt "FilterWindow|"
-msgid "variance"
-msgstr "方差"
-
-msgctxt "FilterWindow|"
-msgid "summation"
-msgstr "求和"
-
-msgctxt "FilterWindow|"
-msgid "product of values"
-msgstr "积"
-
-msgctxt "FilterWindow|"
-msgid "returns minimum of values"
-msgstr "返回最小值"
-
-msgctxt "FilterWindow|"
-msgid "returns maximum of values"
-msgstr "返回最大值"
-
-msgctxt "FilterWindow|"
-msgid "mean"
-msgstr "平均值"
-
-msgctxt "FilterWindow|"
-msgid "rounds y to n decimals"
-msgstr "y 舍入到 n 位小数"
-
-msgctxt "FilterWindow|"
-msgid "returns number of elements in y"
-msgstr "返回y中的元素数"
-
-msgctxt "FilterWindow|"
-msgid "median"
-msgstr "中位数"
-
-msgctxt "FilterWindow|"
-msgid "if-else statement"
-msgstr "if-else 语句"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -2393,22 +1990,6 @@ msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
 msgstr "找不到来源于%2 的组件%1"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Standardizes the variable"
-msgstr "标准化变量"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "如果字符串至少包含一次子字符串，则返回 true"
-
-msgctxt "FilterWindow|"
-msgid "Standardizes the variable"
-msgstr "标准化变量"
-
-msgctxt "FilterWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "如果字符串至少包含一次子字符串，则返回 true"
-
 msgctxt "PlotEditingAxis|"
 msgid "Title"
 msgstr "标题"
@@ -2694,10 +2275,6 @@ msgctxt "TableView|"
 msgid "Delete"
 msgstr "删除"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns the sign of values"
-msgstr "返回值的符号"
-
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
@@ -2723,10 +2300,6 @@ msgstr "有关更多信息，请参阅文档 "
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
 msgstr "用户界面选项"
-
-msgctxt "FilterWindow|"
-msgid "returns the sign of values"
-msgstr "返回值的符号"
 
 msgctxt "PlotEditingAxis|"
 msgid "Show title"
@@ -3005,41 +2578,6 @@ msgid ""
 msgstr ""
 "只能用作等于（不等于）比较运算，不能用于大于/小于比较或其他数学运算。如果您想"
 "这样做：先尝试将其转换为序数或标量。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Logit transform (i.e., the inverse of the standard logit function, or log-"
-"odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
-"Logit 变换（即标准 logit 函数的倒数，或 log-odds 变换）将 0 和 1 之间的数字转"
-"换为实数轴。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse logit transform (i.e., the standard logit function) converts numbers "
-"on the real line to numbers between 0 and 1."
-msgstr ""
-"逆 logit 变换（即标准 logit 函数）将实线上的数字转换为 0 到 1 之间的数字。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
-"stabilize variance and attempt to make the data more normal distribution-"
-"like."
-msgstr ""
-"双参数 Box-Cox 变换（变换大于 -shift 的值）以稳定方差并尝试使数据更接近正态分"
-"布。"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Inverse two-parameter Box-Cox transform."
-msgstr "逆双参数 Box-Cox 变换"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
-"attempt to make the data more normal distribution-like."
-msgstr ""
-"Yeo-Johnson 变换（变换任何实数值）以稳定方差并尝试使数据更接近正态分布。"
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
@@ -4183,16 +3721,6 @@ msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr "变量定义"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr "对于 y 中的每个缺失值，返回一个值为 TRUE 的布尔向量"
-
-msgctxt "FilterWindow|"
-msgid ""
-"Combine with not-operator to filter out rows with missing values (NA) for a "
-"column."
-msgstr "与非运算符组合使用可过滤掉列中存在缺失值 (NA) 的行。"
-
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4692,32 +4220,6 @@ msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr "纸张尺寸"
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared\n"
-msgstr "已清除筛选条件\n"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied\n"
-msgstr "已应用筛选条件\n"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr "请输入所需参数 - 参见红色标记的字段。\n"
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.\n"
-msgstr "公式没有返回一组逻辑值，因此不能在过滤器中使用。\n"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!\n"
-msgstr "欢迎使用拖放式筛选器！\n"
-
-msgctxt "JASPColumn|"
-msgid "Click icon to change column type"
-msgstr "点击图标更改变量类型"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Column-name-is-free 字段"
@@ -4820,10 +4322,6 @@ msgstr "菜单栏缩放（%）: "
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "设置顶部分析菜单栏的高度尺寸。"
-
-msgctxt "JASPColumn|"
-msgid "Column description: "
-msgstr "列说明： "
 
 msgctxt "VariablesList|"
 msgid "Click icon to change column type"
@@ -4982,34 +4480,6 @@ msgid ""
 "The jasp engine is running in security sandbox mode and only has access to: "
 msgstr "JASP 引擎在安全沙盒模式下运行，只能访问： "
 
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise mean"
-msgstr "按行计算均值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise sum"
-msgstr "按行计算总和"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise standard deviation"
-msgstr "按行计算标准差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise variance"
-msgstr "按行计算方差"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise median"
-msgstr "按行计算中位数"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise minimum"
-msgstr "按行计算极小值"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise maximum"
-msgstr "按行计算极大值"
-
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr "使用配置文件。"
@@ -5033,34 +4503,6 @@ msgstr "选择配置文件"
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "选择配置文件。"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise mean"
-msgstr "按行计算均值"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise sum"
-msgstr "按行计算总和"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise standard deviation"
-msgstr "按行计算标准差"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise variance"
-msgstr "按行计算方差"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise median"
-msgstr "按行计算中位数"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise minimum"
-msgstr "按行计算极小值"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise maximum"
-msgstr "按行计算极大值"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
@@ -5347,51 +4789,6 @@ msgstr ""
 "\n"
 "现在刷新分析吗？"
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform with an automatic determination of the shape "
-"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
-"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"双参数Box-Cox变换，根据以下三种方法之一自动确定形状参数"
-"λ：'loglik'、'sd'或'movingRange'。最优λ的搜索范围限定在“lower”和“upper”之间。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform (scale-invariant Box-Box; transforms values "
-"greater than -shift) to stabilize variance and attempt to make the data more "
-"normal distribution-like."
-msgstr ""
-"双参数幂变换（尺度不变 Box-Box；变换大于 -shift 的值）以稳定方差并尝试使数据"
-"更接近正态分布。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform with an automatic determination of the shape "
-"parameter lambda. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"采用双参数幂变换，并自动确定形状参数λ。最优λ的搜索范围限定"
-"在“lower”和“upper”之内。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) with an automatic "
-"determination of the shape parameter lambda. The search for optimal lambda "
-"is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Yeo-Johnson变换（可变换任意实数值）能够自动确定形状参数λ。最优λ的搜索范围限定"
-"在“lower”和“upper”之内。"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Johnson transform (transforms any real values). The search for optimal "
-"parameter is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"约翰逊变换（可变换任意实数值）。最优参数的搜索范围限定在“lower”和“upper”之"
-"内。"
-
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
 msgstr "模块仓库网址: "
@@ -5484,10 +4881,6 @@ msgstr "水平线"
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
 msgstr "竖线"
-
-msgctxt "PlotEditor|"
-msgid "References"
-msgstr "参考线"
 
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
@@ -9706,4 +9099,632 @@ msgstr ""
 
 msgctxt "CsvPreviewModel|"
 msgid "text"
+msgstr ""
+
+msgctxt "DataLibrary|"
+msgid "Click here to open the Online Data Library"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Onboarding"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Show onboarding tour on next start"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Enable this to see the guided tour again the next time JASP starts."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Start tutorial"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Data and Analysis Section"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "This is the main entry point for the Data and Analysis menu."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "File Menu and Preferences"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Clicking the hamburger button in the upper left corner opens/closes this "
+"file menu and preferences interface, used to open and save files, and to "
+"configure JASP global preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Modules Library"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This is where you can manage analytics modules. In the list on the far right "
+"of this area, you can enable/disable installed modules, and you can also "
+"manage all available modules from the online modules store on the left."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "AI Assistant"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
+"Detailed AI settings can be found in the preferences menu."
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Elements"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Getting Started"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Next"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Previous"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Skip the Tutorial"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Insert element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Remove element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Move element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Change column type"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit number"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit logical"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit text"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Clear all"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "返回逻辑值，并且可以是筛选器公式的根"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals"
+msgstr "返回逻辑值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Addition"
+msgstr "加"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Subtraction"
+msgstr "减"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Multiplication"
+msgstr "乘"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Division"
+msgstr "除"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Power (2^3 returns 8)"
+msgstr "幂（2^3 返回 8）"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "取模：返回除法的余数。 3%2 返回 1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Equality: %1"
+msgstr "等： %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inequality: %1"
+msgstr "不等于：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than: %1"
+msgstr "小于：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than or equal to: %1"
+msgstr "小于等于：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than: %1"
+msgstr "大于：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than or equal to: %1"
+msgstr "大于等于：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "And: %1"
+msgstr "与：%1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Or: %1"
+msgstr "或：%1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "拆分：分别对每个子组应用过滤器"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "absolute value"
+msgstr "绝对值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "standard deviation"
+msgstr "标准差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "variance"
+msgstr "方差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "summation"
+msgstr "求和"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "product of values"
+msgstr "积"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Standardizes the variable"
+msgstr "标准化变量"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns minimum of values"
+msgstr "返回最小值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns maximum of values"
+msgstr "返回最大值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "mean"
+msgstr "平均值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns the sign of values"
+msgstr "返回值的符号"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "rounds y to n decimals"
+msgstr "y 舍入到 n 位小数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns number of elements in y"
+msgstr "返回y中的元素数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "median"
+msgstr "中位数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "if-else statement"
+msgstr "if-else 语句"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns true if string contains substring at least once"
+msgstr "如果字符串至少包含一次子字符串，则返回 true"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Combine with not-operator to filter out rows with missing values (NA) for a "
+"column."
+msgstr "与非运算符组合使用可过滤掉列中存在缺失值 (NA) 的行。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Square root"
+msgstr "平方根"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Not: %1"
+msgstr "非：%1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "natural logarithm"
+msgstr "自然对数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 2 logarithm"
+msgstr "以 2 为底的对数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 10 logarithm"
+msgstr "以 10 为底的对数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "logarithm of y in 'base'"
+msgstr "以'base'为底 y 的对数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "exponential"
+msgstr "指数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"Fisher's Z-transform （费舍尔的 Z 变换，即反双曲正切）将相关性、-1 和 1 之间"
+"的数字转换为实数线"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr ""
+"Fisher's Z-transform（费舍尔的逆变换，即双曲正切）将实数转换为 -1 和 1 之间的"
+"数字"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+"Logit 变换（即标准 logit 函数的倒数，或 log-odds 变换）将 0 和 1 之间的数字转"
+"换为实数轴。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+"逆 logit 变换（即标准 logit 函数）将实线上的数字转换为 0 到 1 之间的数字。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+"双参数 Box-Cox 变换（变换大于 -shift 的值）以稳定方差并尝试使数据更接近正态分"
+"布。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform with an automatic determination of the shape "
+"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
+"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"双参数Box-Cox变换，根据以下三种方法之一自动确定形状参数"
+"λ：'loglik'、'sd'或'movingRange'。最优λ的搜索范围限定在“lower”和“upper”之间。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr "逆双参数 Box-Cox 变换"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform (scale-invariant Box-Box; transforms values "
+"greater than -shift) to stabilize variance and attempt to make the data more "
+"normal distribution-like."
+msgstr ""
+"双参数幂变换（尺度不变 Box-Box；变换大于 -shift 的值）以稳定方差并尝试使数据"
+"更接近正态分布。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform with an automatic determination of the shape "
+"parameter lambda. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"采用双参数幂变换，并自动确定形状参数λ。最优λ的搜索范围限定"
+"在“lower”和“upper”之内。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+"Yeo-Johnson 变换（变换任何实数值）以稳定方差并尝试使数据更接近正态分布。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) with an automatic "
+"determination of the shape parameter lambda. The search for optimal lambda "
+"is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Yeo-Johnson变换（可变换任意实数值）能够自动确定形状参数λ。最优λ的搜索范围限定"
+"在“lower”和“upper”之内。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Johnson transform (transforms any real values). The search for optimal "
+"parameter is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"约翰逊变换（可变换任意实数值）。最优参数的搜索范围限定在“lower”和“upper”之"
+"内。"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "break your data up in numBreaks levels"
+msgstr "将您的数据分解为 numBreaks 级别"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr "用替换列中的值替换任何缺失值（NA）"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr "从具有指定均值和标准差 sd 的高斯分布中生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr "从具有自由度 df 和非中心参数 ncp 的 t 分布上生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr "从具有自由度 df 和非中心参数 ncp 的 卡方分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr "从具有指定自由度df1、df2和非中心性参数ncp的F分布中生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr "从具有指定试验和概率区间的二项分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr "从具有指定试验和概率区间的负二项分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr "从具有指定概率区间的几何分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr "从具有指定参数 lambda 的泊松分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr "从具有指定形状参数 alpha 和 beta 的 beta 分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr "从具有指定最小值和最大值之间的均匀分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr "从具有指定形状参数和尺度的伽马分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr "从具有指定参数的指数分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"从具有指定对数均值 meanLog 和标准偏差 sdLog 的对数正态分布 log-normal 中生成"
+"数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr "从具有指定形状参数和尺度的韦布尔 Weibull 分布生成数据"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise mean"
+msgstr "按行计算均值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise sum"
+msgstr "按行计算总和"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise standard deviation"
+msgstr "按行计算标准差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise variance"
+msgstr "按行计算方差"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise median"
+msgstr "按行计算中位数"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise minimum"
+msgstr "按行计算极小值"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise maximum"
+msgstr "按行计算极大值"
+
+msgctxt "ScriptConstructorView|"
+msgid "Filter cleared"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Filter applied"
+msgstr "应用了筛选器"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code clear(ed)"
+msgstr "清除（或已清除）计算列的代码"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code applied"
+msgstr "已应用计算列代码"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr "请输入所有参数 - 参阅标红的字段。"
+
+msgctxt "ScriptConstructorView|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Only one formula per computed column allowed."
+msgstr "每个计算列只允许有一个公式。"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr "拖拽至此可删除部分条件；双击将清空全部候选内容"
+
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop filter!"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr "欢迎使用拖放式计算列构建器！"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Click icon to change column type"
+msgstr "点击图标更改变量类型"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Column description: "
+msgstr "列说明： "
+
+#, qt-format
+msgctxt "ScriptNodeItem|"
+msgid "Only %1 allowed in this context."
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "/"
 msgstr ""
