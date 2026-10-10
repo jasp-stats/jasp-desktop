@@ -16,6 +16,11 @@ rem Nightly Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-nightly.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+rem The default priconfig enables resource-pack splitting (autoResourcePackage) for Language.
+rem Our install tree is full of language-named folders (module/Qt/R translations), so makepri
+rem emits a schema-less main resources.pri, which the Store rejects (omitSchemaFromResourcePacks).
+rem Emptying <packaging> keeps every candidate in one schema-carrying resources.pri.
+powershell -Command "(Get-Content priconfig.xml -Raw) -replace '(?s)<packaging[^>]*>.*?</packaging>', '<packaging></packaging>' | Set-Content priconfig.xml"
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-nightly.msix"
@@ -25,6 +30,11 @@ rem Store Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+rem The default priconfig enables resource-pack splitting (autoResourcePackage) for Language.
+rem Our install tree is full of language-named folders (module/Qt/R translations), so makepri
+rem emits a schema-less main resources.pri, which the Store rejects (omitSchemaFromResourcePacks).
+rem Emptying <packaging> keeps every candidate in one schema-carrying resources.pri.
+powershell -Command "(Get-Content priconfig.xml -Raw) -replace '(?s)<packaging[^>]*>.*?</packaging>', '<packaging></packaging>' | Set-Content priconfig.xml"
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
@@ -38,6 +48,11 @@ rem Store Beta Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store-beta.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+rem The default priconfig enables resource-pack splitting (autoResourcePackage) for Language.
+rem Our install tree is full of language-named folders (module/Qt/R translations), so makepri
+rem emits a schema-less main resources.pri, which the Store rejects (omitSchemaFromResourcePacks).
+rem Emptying <packaging> keeps every candidate in one schema-carrying resources.pri.
+powershell -Command "(Get-Content priconfig.xml -Raw) -replace '(?s)<packaging[^>]*>.*?</packaging>', '<packaging></packaging>' | Set-Content priconfig.xml"
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
@@ -52,6 +67,11 @@ rem Standalone Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-standalone.xml .\AppxManifest.xml
 makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+rem The default priconfig enables resource-pack splitting (autoResourcePackage) for Language.
+rem Our install tree is full of language-named folders (module/Qt/R translations), so makepri
+rem emits a schema-less main resources.pri, which the Store rejects (omitSchemaFromResourcePacks).
+rem Emptying <packaging> keeps every candidate in one schema-carrying resources.pri.
+powershell -Command "(Get-Content priconfig.xml -Raw) -replace '(?s)<packaging[^>]*>.*?</packaging>', '<packaging></packaging>' | Set-Content priconfig.xml"
 makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Standalone-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
