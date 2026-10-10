@@ -5,9 +5,9 @@ import QtQml.Models
 import QtQuick.Layouts
 Item
 {
-					id:			itemDelegateItem
-	property bool	showShadow:	itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText
-	
+		id:			itemDelegateItem
+		property bool showShadow: itemShadowText !== undefined && itemShadowText !== "" && itemText !== undefined && itemText !== itemShadowText
+
 	TextMetrics
 	{
 		id:		itemDelegateTextMetrics
@@ -77,10 +77,12 @@ Item
 		hoverEnabled:		true
 		anchors.fill:		itemHighlight
 		acceptedButtons:	Qt.LeftButton | Qt.RightButton
-		
-		toolTipText:		(itemShadowText !== undefined && itemText !== undefined && itemText !== itemShadowText)
-								? ((itemDelegateText.truncated || itemDelegateLabel.truncated) ? "%1 - %2".arg(itemText).arg(itemShadowText) : "")
-								: (itemDelegateText.truncated ? itemText : "")
+
+		toolTipText: containsMouse
+						? (showShadow
+							? ((itemDelegateText.truncated || itemDelegateLabel.truncated) ? "%1 - %2".arg(itemText).arg(itemShadowText) : "")
+							: (itemDelegateText.truncated ? itemText : ""))
+						: ""
 
         onClicked:	(mouse) =>
 		{
