@@ -376,6 +376,8 @@ if(WIN32)
                 ${CMAKE_BINARY_DIR}/AppxManifest-standalone.xml @ONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/AppxManifest-nightly.xml.in
                 ${CMAKE_BINARY_DIR}/AppxManifest-nightly.xml @ONLY)
+  configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/priconfig.xml
+                ${CMAKE_BINARY_DIR}/priconfig.xml COPYONLY)
   configure_file(${CMAKE_SOURCE_DIR}/Tools/windows/msix/msix.cmd.in
                 ${CMAKE_BINARY_DIR}/msix.cmd @ONLY)
   install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION . COMPONENT MSIX EXCLUDE_FROM_ALL)
