@@ -35,7 +35,9 @@ Term::Term(const QString					& value,		const QString		&	label,	const QString	& i
 
 Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel, const columnTypeVec& types)
 {
-	if (!json.isMember(keyValue))
+	//Defensive against non-object rows (e.g. malformed AI-supplied option values):
+	//isMember() throws on non-object Json; treat anything but an object as an empty term.
+	if (!json.isObject() || !json.isMember(keyValue))
 	{
 		initFrom("", "", {columnType::unknown});
 		return;

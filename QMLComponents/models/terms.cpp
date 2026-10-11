@@ -78,8 +78,11 @@ Terms::Terms(const Json::Value &valuesPart, const Json::Value &typesPart, const 
 					types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
 			}
 
+			//Only strings and objects are valid term rows; anything else (numbers,
+			//bools, nulls from malformed input) is skipped instead of throwing.
 			Term term = row.isString() ? Term(row.asString(), types)
-									   : Term(row, keyValue, keyLabel, types);
+						   : row.isObject() ? Term(row, keyValue, keyLabel, types)
+						   : Term();
 			if (term.size() > 0)
 			{
 				add(term);
