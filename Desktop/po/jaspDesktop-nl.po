@@ -201,195 +201,6 @@ msgid "Reset"
 msgstr "Herstel"
 
 msgctxt "ComputeColumnWindow|"
-msgid "absolute value"
-msgstr "absolute waarde"
-
-msgctxt "ComputeColumnWindow|"
-msgid "standard deviation"
-msgstr "standaard afwijking"
-
-msgctxt "ComputeColumnWindow|"
-msgid "variance"
-msgstr "variantie"
-
-msgctxt "ComputeColumnWindow|"
-msgid "summation"
-msgstr "sommering"
-
-msgctxt "ComputeColumnWindow|"
-msgid "product of values"
-msgstr "product van waarden"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns minimum of values"
-msgstr "retourneert minimum van waarden"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns maximum of values"
-msgstr "retourneert maximum van waarden"
-
-msgctxt "ComputeColumnWindow|"
-msgid "mean"
-msgstr "gemiddelde"
-
-msgctxt "ComputeColumnWindow|"
-msgid "rounds y to n decimals"
-msgstr "rond y af tot n decimalen"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns number of elements in y"
-msgstr "retourneert aantal elementen in y"
-
-msgctxt "ComputeColumnWindow|"
-msgid "median"
-msgstr "mediaan"
-
-msgctxt "ComputeColumnWindow|"
-msgid "natural logarithm"
-msgstr "natuurlijke logaritme"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 2 logarithm"
-msgstr "grondtal 2 logaritme"
-
-msgctxt "ComputeColumnWindow|"
-msgid "base 10 logarithm"
-msgstr "grondtal 10 logaritme"
-
-msgctxt "ComputeColumnWindow|"
-msgid "logarithm of y in 'base'"
-msgstr "logaritme van y in 'grondtal'"
-
-msgctxt "ComputeColumnWindow|"
-msgid "exponential"
-msgstr "exponentieel"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
-"correlations, numbers between -1 and 1 to the real line"
-msgstr ""
-"Fisher's Z-transformatie (dit is de inverse hyperbolische tanges) om "
-"correlaties te transformeren, getallen tussen -1 en 1 naar reële getallen"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
-"real numbers to numbers between -1 and 1"
-msgstr ""
-"Fisher's Z-transformatie (dit is de hyperbolische tanges) om reële getallen "
-"te transformeren naar getallen tussen -1 en 1"
-
-msgctxt "ComputeColumnWindow|"
-msgid "break your data up in numBreaks levels"
-msgstr "splits uw gegevens op in aantalSplits niveaus"
-
-msgctxt "ComputeColumnWindow|"
-msgid "replace any missing values (NA) in column by the value in replaceWith"
-msgstr ""
-"vervang iedere ontbrekende waarde (NA) in de kolom door de waarde in "
-"vervangMet"
-
-msgctxt "ComputeColumnWindow|"
-msgid "if-else statement"
-msgstr "if-else statement"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Gaussian distribution with specified mean and standard "
-"deviation sd"
-msgstr ""
-"genereert gegevens van een Gauss verdeling met gespecificeerd gemiddelde en "
-"standaard deviatie"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from t distribution with degrees of freedom df and non-"
-"centrality parameter ncp"
-msgstr ""
-"genereert gegevens van een t-verdeling met gespecificeerd aantal "
-"vrijheidsgraden vg en niet-centrale parameter ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a chi-squared distribution with degrees of freedom df "
-"and non-centrality parameter ncp"
-msgstr ""
-"genereert data met een chi-kwadraat verdeling met vrijheidsgraden vg en niet-"
-"centraliteitsparameter ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from an F distribution with specified degrees of freedoms "
-"df1, df2 and non-centrality parameter ncp"
-msgstr ""
-"genereert data met een F verdeling met een gespecificeerd aantal "
-"vrijheidsgraden vg 1, vg 2 en niet-centraliteitsparameter ncp"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a binomial distribution with specified trials and "
-"probability prob"
-msgstr ""
-"genereert data met een binomiaalverdeling met gespecificeerde steekproeven "
-"en kans"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a negative binomial distribution with specified trials "
-"and probability prob"
-msgstr ""
-"genereert data met een negatieve binomiaalverdeling met gespecificeerde "
-"steekproeven en kans"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a geometric distribution with specified probability prob"
-msgstr ""
-"genereert data met een geometrische verdeling met gespecificeerde kans prob"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a Poisson distribution with specified rate lambda"
-msgstr ""
-"genereert data met een Poissonverdeling met een gespecificeerde snelheid/ "
-"intensiteit lambda"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a beta distribution with specified shapes alpha and beta"
-msgstr ""
-"genereert data met een betaverdeling met gespecificeerde vormen alpha en beta"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a uniform distribution between min and max"
-msgstr "genereert data met een uniforme verdeling tussen min en max"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from a gamma distribution with specified shape and scale"
-msgstr ""
-"genereert data met een gammaverdeling met gespecificeerde vorm en schaal"
-
-msgctxt "ComputeColumnWindow|"
-msgid "generates data from an exponential distribution with specified rate"
-msgstr ""
-"genereert data met een exponentiële verdeling met een gespecificeerde "
-"snelheid/ intensiteit"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a log-normal distribution with specified logarithmic "
-"mean meanLog and standard deviation sdLog"
-msgstr ""
-"genereert data met een log-normaalverdeling met een gespecificeerd "
-"logaritmisch gemiddelde meanLog en standaardafwijking sdLog"
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"generates data from a Weibull distribution with specified shape and scale"
-msgstr ""
-"genereert data met een Weibullverdeling met gespecificeerde vorm en schaal"
-
-msgctxt "ComputeColumnWindow|"
 msgid "Show generated R code"
 msgstr "Toon gegenereerde R code"
 
@@ -880,242 +691,6 @@ msgstr ""
 msgctxt "RecentFiles|"
 msgid "Recent Files"
 msgstr "Laatst geopend"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code clear(ed)"
-msgstr "Code berekende kolommen leeg(gemaakt)"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Computed columns code applied"
-msgstr "Code berekende kolommen toegepast"
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Please enter all arguments - see fields marked in red."
-msgstr "Vul alle argumenten in aub - zie de velden in rood gemarkeerd."
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Only one formula per computed column allowed."
-msgstr "Slechts één formule per berekende kolom toegestaan."
-
-msgctxt "ComputedColumnsConstructor|"
-msgid "Welcome to the drag and drop computed column constructor!"
-msgstr "Welkom bij de vereenvoudigde berekende kolom maker!"
-
-msgctxt "DropTrash|"
-msgid "Dump unwanted snippets here; double-click to erase the entire slate"
-msgstr "Plak ongewenste snippers hier; dubbel-klik om alles te verwijderen"
-
-msgctxt "OperatorSelector|"
-msgid "Addition"
-msgstr "Optellen"
-
-msgctxt "OperatorSelector|"
-msgid "Subtraction"
-msgstr "Aftrekken"
-
-msgctxt "OperatorSelector|"
-msgid "Multiplication"
-msgstr "Vermenigvuldigen"
-
-msgctxt "OperatorSelector|"
-msgid "Division"
-msgstr "Delen door"
-
-msgctxt "OperatorSelector|"
-msgid "Power (2^3 returns 8)"
-msgstr "Macht (2^3 is 8)"
-
-msgctxt "OperatorSelector|"
-msgid "Square root"
-msgstr "Wortel"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
-
-msgctxt "OperatorSelector|"
-msgid "returns logicals and can be the root of a filter formula"
-msgstr "geeft logicals en kan de basis zijn van een formule voor een filter"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Equality: %1"
-msgstr "Gelijkheid: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Inequality: %1"
-msgstr "Ongelijkheid: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than: %1"
-msgstr "Kleiner dan: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Less than or equal to: %1"
-msgstr "Kleiner dan of gelijk aan: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than: %1"
-msgstr "Groter dan: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Greater than or equal to: %1"
-msgstr "Groter dan of gelijk aan: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "And: %1"
-msgstr "En: %1"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "Or: %1"
-msgstr "Of: %1"
-
-msgctxt "OperatorSelector|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Splits: voert een filter uit op elke groep"
-
-#, qt-format
-msgctxt "OperatorSelector|"
-msgid "not: %1"
-msgstr "niet: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Addition"
-msgstr "Optellen"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Subtraction"
-msgstr "Aftrekken"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Multiplication"
-msgstr "Vermenigvuldigen"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Division"
-msgstr "Delen door"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Power (2^3 returns 8)"
-msgstr "Macht (2^3 is 8)"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Square root"
-msgstr "Wortel"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
-msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "returns logicals"
-msgstr "geeft logicals"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Equality: %1"
-msgstr "Gelijkheid: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Inequality: %1"
-msgstr "Ongelijkheid: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than: %1"
-msgstr "Kleiner dan: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Less than or equal to: %1"
-msgstr "Kleiner dan of gelijk aan: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than: %1"
-msgstr "Groter dan: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Greater than or equal to: %1"
-msgstr "Groter dan of gelijk aan: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "And: %1"
-msgstr "En: %1"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Or: %1"
-msgstr "Of: %1"
-
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Split: applies filter separately to each subgroup"
-msgstr "Splits: voert een filter uit op elke groep"
-
-#, qt-format
-msgctxt "OperatorSelectorComputedColumns|"
-msgid "Not: %1"
-msgstr "Niet: %1"
-
-msgctxt "FilterWindow|"
-msgid "absolute value"
-msgstr "absolute waarde"
-
-msgctxt "FilterWindow|"
-msgid "standard deviation"
-msgstr "standaard afwijking"
-
-msgctxt "FilterWindow|"
-msgid "variance"
-msgstr "variantie"
-
-msgctxt "FilterWindow|"
-msgid "summation"
-msgstr "optelling"
-
-msgctxt "FilterWindow|"
-msgid "product of values"
-msgstr "product van waarden"
-
-msgctxt "FilterWindow|"
-msgid "returns minimum of values"
-msgstr "retourneert minimum van waarden"
-
-msgctxt "FilterWindow|"
-msgid "returns maximum of values"
-msgstr "retourneert maximum van waarden"
-
-msgctxt "FilterWindow|"
-msgid "mean"
-msgstr "gemiddelde"
-
-msgctxt "FilterWindow|"
-msgid "rounds y to n decimals"
-msgstr "rond y af tot n decimalen"
-
-msgctxt "FilterWindow|"
-msgid "returns number of elements in y"
-msgstr "retourneert aantal elementen in y"
-
-msgctxt "FilterWindow|"
-msgid "median"
-msgstr "mediaan"
-
-msgctxt "FilterWindow|"
-msgid "if-else statement"
-msgstr "if-else statement"
 
 msgctxt "FilterWindow|"
 msgid "Filter Changed"
@@ -2525,22 +2100,6 @@ msgctxt "QObject|"
 msgid "Cannot find component %1 for the source of %2"
 msgstr "Kan component %1 voor bron van %2 niet vinden"
 
-msgctxt "ComputeColumnWindow|"
-msgid "Standardizes the variable"
-msgstr "Standaardiseert de variabele"
-
-msgctxt "ComputeColumnWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "retourneert waar als de string de substring minstens eenmaal bevat"
-
-msgctxt "FilterWindow|"
-msgid "Standardizes the variable"
-msgstr "Standaardiseert de variabele"
-
-msgctxt "FilterWindow|"
-msgid "returns true if string contains substring at least once"
-msgstr "retourneert waar als de string de substring minstens eenmaal bevat"
-
 msgctxt "PlotEditingAxis|"
 msgid "Title"
 msgstr "Titel"
@@ -2841,10 +2400,6 @@ msgctxt "TableView|"
 msgid "Delete"
 msgstr "Verwijder"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns the sign of values"
-msgstr "retourneert het teken van waarden"
-
 msgctxt "OSFLogin|"
 msgid ""
 "<sup>*</sup>OSF account login only, ORCID or institutional login are not "
@@ -2868,10 +2423,6 @@ msgstr "Zie documentatie voor meer informatie "
 msgctxt "PrefsUI|"
 msgid "User Interface Options"
 msgstr "Gebruikersinterface opties"
-
-msgctxt "FilterWindow|"
-msgid "returns the sign of values"
-msgstr "retourneert het teken van waarden"
 
 msgctxt "PlotEditingAxis|"
 msgid "Label"
@@ -3171,43 +2722,6 @@ msgstr ""
 "die enkel gebruikt wordt in (in)equivalentievergelijkingen. Niet in groter-/"
 "kleiner-dan-vergelijkingen of wiskundige operaties, indien je dit wel wilt: "
 "Converteer het eerst naar een ordinale of scalar variabele."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Logit transform (i.e., the inverse of the standard logit function, or log-"
-"odds transform) converts numbers between 0 and 1 to the real line."
-msgstr ""
-"Logit transformatie (i.e., de inverse van de standaard logit functie, of log-"
-"odds transformatie) converteert getallen tussen 0 en 1 naar een reële lijn."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Inverse logit transform (i.e., the standard logit function) converts numbers "
-"on the real line to numbers between 0 and 1."
-msgstr ""
-"Inverse logit transformatie (i.e., de standaard logit functie) converteert "
-"getallen op de reële lijn naar nummer tussen 0 en 1."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
-"stabilize variance and attempt to make the data more normal distribution-"
-"like."
-msgstr ""
-"Twee-parameter Box-Cox transformatie (verandert getallen groter dan -shift) "
-"om variantie te stabiliseren en data meer normaal verdeeld te maken."
-
-msgctxt "ComputeColumnWindow|"
-msgid "Inverse two-parameter Box-Cox transform."
-msgstr "Inverse twee-parameter Box-Cox transformatie."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
-"attempt to make the data more normal distribution-like."
-msgstr ""
-"Yeo-Johnson transformatie (transformeert elke reële waarde) stabiliseert "
-"variantie en maakt de data meer normaal verdeeld."
 
 msgctxt "PrefsData|"
 msgid "Show missing values as: "
@@ -4365,19 +3879,6 @@ msgctxt "ColumnModel|"
 msgid "Column definition"
 msgstr "Kolomdefinitie"
 
-msgctxt "ComputeColumnWindow|"
-msgid "returns a boolean vector with TRUE for each missing value in y"
-msgstr ""
-"retourneert een booleaanse vector met TRUE voor elke ontbrekende waarde in y"
-
-msgctxt "FilterWindow|"
-msgid ""
-"Combine with not-operator to filter out rows with missing values (NA) for a "
-"column."
-msgstr ""
-"Combineer met not-operator om rijen met ontbrekende waarden (NA) voor een "
-"kolom uit te filteren."
-
 msgctxt "PrefsData|"
 msgid ""
 "If a variable has more distinct integer values than this it will be "
@@ -4897,34 +4398,6 @@ msgctxt "PrefsResults|"
 msgid "Page size"
 msgstr "Paginaformaat"
 
-msgctxt "FilterConstructor|"
-msgid "Filter cleared\n"
-msgstr "Filter gewist\n"
-
-msgctxt "FilterConstructor|"
-msgid "Filter applied\n"
-msgstr "Filter toegepast\n"
-
-msgctxt "FilterConstructor|"
-msgid "Please enter all arguments - see fields marked in red.\n"
-msgstr "Voer alle argumenten in - zie de rood gemarkeerde velden.\n"
-
-msgctxt "FilterConstructor|"
-msgid ""
-"Formula does not return a set of logical values, and therefore cannot be "
-"used in the filter.\n"
-msgstr ""
-"De formule retourneert geen verzameling logische waarden en kan daarom niet "
-"worden gebruikt in het filter.\n"
-
-msgctxt "FilterConstructor|"
-msgid "Welcome to the drag and drop filter!\n"
-msgstr "Welkom bij de sleepfilter!\n"
-
-msgctxt "JASPColumn|"
-msgid "Click icon to change column type"
-msgstr "Klik op het pictogram om het kolomtype te wijzigen"
-
 msgctxt "TextInputBase|"
 msgid "Column-name-is-free field"
 msgstr "Kolom-naam-is-vrij veld"
@@ -5038,10 +4511,6 @@ msgstr "Lintschaal (%): "
 msgctxt "PrefsUI|"
 msgid "Set the scale of height of the ribbon."
 msgstr "Stel de hoogteschaal van het lint in."
-
-msgctxt "JASPColumn|"
-msgid "Column description: "
-msgstr "Kolombeschrijving: "
 
 #, fuzzy
 msgctxt "VariablesList|"
@@ -5224,34 +4693,6 @@ msgstr ""
 "De JASP-engine draait in de beveiligingssandbox-modus en heeft alleen "
 "toegang tot: "
 
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise mean"
-msgstr "Rijgewijs gemiddelde"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise sum"
-msgstr "Rijgewijze som"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise standard deviation"
-msgstr "Rijgewijze standaardafwijking"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise variance"
-msgstr "Rijgewijze variantie"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise median"
-msgstr "Rijgewijze mediaan"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise minimum"
-msgstr "Rijgewijs minimum"
-
-msgctxt "ComputeColumnWindow|"
-msgid "Rowwise maximum"
-msgstr "Rijgewijs maximum"
-
 msgctxt "PrefsAdvanced|"
 msgid "Use a configuration file."
 msgstr "Een configuratiebestand gebruiken."
@@ -5275,34 +4716,6 @@ msgstr "Configuratiebestand selecteren"
 msgctxt "PrefsAdvanced|"
 msgid "Select configuration file."
 msgstr "Configuratiebestand selecteren."
-
-msgctxt "FilterWindow|"
-msgid "Rowwise mean"
-msgstr "Rijgewijs gemiddelde"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise sum"
-msgstr "Rijgewijze som"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise standard deviation"
-msgstr "Rijgewijze standaardafwijking"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise variance"
-msgstr "Rijgewijze variantie"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise median"
-msgstr "Rijgewijze mediaan"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise minimum"
-msgstr "Rijgewijs minimum"
-
-msgctxt "FilterWindow|"
-msgid "Rowwise maximum"
-msgstr "Rijgewijs maximum"
 
 msgctxt "PrefsUI|"
 msgid "Should JASP open its window maximized on startup?"
@@ -5608,56 +5021,6 @@ msgstr ""
 "\n"
 "De analyse vernieuwen?"
 
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter Box-Cox transform with an automatic determination of the shape "
-"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
-"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"Box-Cox-transformatie met twee parameters met automatische bepaling van de "
-"vormparameter lambda, volgens een van de drie methoden: 'loglik', 'sd' of "
-"'movingRange'. De zoektocht naar de optimale lambda is begrensd binnen de "
-"grenzen 'lower' en 'upper'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform (scale-invariant Box-Box; transforms values "
-"greater than -shift) to stabilize variance and attempt to make the data more "
-"normal distribution-like."
-msgstr ""
-"Machtstransformatie met twee parameters (schaal-invariante Box-Cox; "
-"transformeert waarden groter dan -shift) om de variantie te stabiliseren en "
-"de gegevens meer op een normale verdeling te laten lijken."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Two-parameter power transform with an automatic determination of the shape "
-"parameter lambda. The search for optimal lambda is bounded within 'lower' "
-"and 'upper' limits."
-msgstr ""
-"Machtstransformatie met twee parameters met automatische bepaling van de "
-"vormparameter lambda. De zoektocht naar de optimale lambda is begrensd "
-"binnen de grenzen 'lower' en 'upper'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Yeo-Johnson transform (transforms any real values) with an automatic "
-"determination of the shape parameter lambda. The search for optimal lambda "
-"is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Yeo-Johnson-transformatie (transformeert alle reële waarden) met "
-"automatische bepaling van de vormparameter lambda. De zoektocht naar de "
-"optimale lambda is begrensd binnen de grenzen 'lower' en 'upper'."
-
-msgctxt "ComputeColumnWindow|"
-msgid ""
-"Johnson transform (transforms any real values). The search for optimal "
-"parameter is bounded within 'lower' and 'upper' limits."
-msgstr ""
-"Johnson-transformatie (transformeert alle reële waarden). De zoektocht naar "
-"de optimale parameter is begrensd binnen de grenzen 'lower' en 'upper'."
-
 msgctxt "PrefsAdvanced|"
 msgid "Module library URL: "
 msgstr "URL modulebibliotheek: "
@@ -5754,10 +5117,6 @@ msgstr "Horizontale lijn"
 msgctxt "PlotEditingReferenceLines|"
 msgid "Vertical Line"
 msgstr "Verticale lijn"
-
-msgctxt "PlotEditor|"
-msgid "References"
-msgstr "Referenties"
 
 msgctxt "ResultMenuModel|"
 msgid "Switch Static/Interactive Image"
@@ -10308,4 +9667,662 @@ msgstr ""
 
 msgctxt "CsvPreviewModel|"
 msgid "text"
+msgstr ""
+
+msgctxt "DataLibrary|"
+msgid "Click here to open the Online Data Library"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Onboarding"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Show onboarding tour on next start"
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Enable this to see the guided tour again the next time JASP starts."
+msgstr ""
+
+msgctxt "PrefsUI|"
+msgid "Start tutorial"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Data and Analysis Section"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "This is the main entry point for the Data and Analysis menu."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "File Menu and Preferences"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Clicking the hamburger button in the upper left corner opens/closes this "
+"file menu and preferences interface, used to open and save files, and to "
+"configure JASP global preferences."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "Modules Library"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"This is where you can manage analytics modules. In the list on the far right "
+"of this area, you can enable/disable installed modules, and you can also "
+"manage all available modules from the online modules store on the left."
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid "AI Assistant"
+msgstr ""
+
+msgctxt "MainWindow|"
+msgid ""
+"Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
+"Detailed AI settings can be found in the preferences menu."
+msgstr ""
+
+msgctxt "PlotEditor|"
+msgid "Elements"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Getting Started"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Finish"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Next"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Previous"
+msgstr ""
+
+msgctxt "Tutorial|"
+msgid "Skip the Tutorial"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Insert element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Remove element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Move element"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Change column type"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit number"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit logical"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Edit text"
+msgstr ""
+
+msgctxt "ScriptConstructorModel|"
+msgid "Clear all"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals and can be the root of a filter formula"
+msgstr "geeft logicals en kan de basis zijn van een formule voor een filter"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns logicals"
+msgstr "geeft logicals"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Addition"
+msgstr "Optellen"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Subtraction"
+msgstr "Aftrekken"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Multiplication"
+msgstr "Vermenigvuldigen"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Division"
+msgstr "Delen door"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Power (2^3 returns 8)"
+msgstr "Macht (2^3 is 8)"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
+msgstr "Modulo: geeft het restant van een deling. 3%2 is 1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Equality: %1"
+msgstr "Gelijkheid: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inequality: %1"
+msgstr "Ongelijkheid: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than: %1"
+msgstr "Kleiner dan: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Less than or equal to: %1"
+msgstr "Kleiner dan of gelijk aan: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than: %1"
+msgstr "Groter dan: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Greater than or equal to: %1"
+msgstr "Groter dan of gelijk aan: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "And: %1"
+msgstr "En: %1"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Or: %1"
+msgstr "Of: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Split: applies filter separately to each subgroup"
+msgstr "Splits: voert een filter uit op elke groep"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "absolute value"
+msgstr "absolute waarde"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "standard deviation"
+msgstr "standaard afwijking"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "variance"
+msgstr "variantie"
+
+msgctxt "ScriptConstructorRegistry|"
+msgid "summation"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "product of values"
+msgstr "product van waarden"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Standardizes the variable"
+msgstr "Standaardiseert de variabele"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns minimum of values"
+msgstr "retourneert minimum van waarden"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns maximum of values"
+msgstr "retourneert maximum van waarden"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "mean"
+msgstr "gemiddelde"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns the sign of values"
+msgstr "retourneert het teken van waarden"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "rounds y to n decimals"
+msgstr "rond y af tot n decimalen"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns number of elements in y"
+msgstr "retourneert aantal elementen in y"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "median"
+msgstr "mediaan"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "if-else statement"
+msgstr "if-else statement"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "returns true if string contains substring at least once"
+msgstr "retourneert waar als de string de substring minstens eenmaal bevat"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Combine with not-operator to filter out rows with missing values (NA) for a "
+"column."
+msgstr ""
+"Combineer met not-operator om rijen met ontbrekende waarden (NA) voor een "
+"kolom uit te filteren."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Square root"
+msgstr "Wortel"
+
+#, fuzzy, qt-format
+msgctxt "ScriptConstructorRegistry|"
+msgid "Not: %1"
+msgstr "Niet: %1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "natural logarithm"
+msgstr "natuurlijke logaritme"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 2 logarithm"
+msgstr "grondtal 2 logaritme"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "base 10 logarithm"
+msgstr "grondtal 10 logaritme"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "logarithm of y in 'base'"
+msgstr "logaritme van y in 'grondtal'"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "exponential"
+msgstr "exponentieel"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Fisher's Z-transform (i.e., the inverse hyperbolic tangent) to transform "
+"correlations, numbers between -1 and 1 to the real line"
+msgstr ""
+"Fisher's Z-transformatie (dit is de inverse hyperbolische tanges) om "
+"correlaties te transformeren, getallen tussen -1 en 1 naar reële getallen"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse Fisher's Z-transform (i.e., the hyperbolic tangent) to transform "
+"real numbers to numbers between -1 and 1"
+msgstr ""
+"Fisher's Z-transformatie (dit is de hyperbolische tanges) om reële getallen "
+"te transformeren naar getallen tussen -1 en 1"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Logit transform (i.e., the inverse of the standard logit function, or log-"
+"odds transform) converts numbers between 0 and 1 to the real line."
+msgstr ""
+"Logit transformatie (i.e., de inverse van de standaard logit functie, of log-"
+"odds transformatie) converteert getallen tussen 0 en 1 naar een reële lijn."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Inverse logit transform (i.e., the standard logit function) converts numbers "
+"on the real line to numbers between 0 and 1."
+msgstr ""
+"Inverse logit transformatie (i.e., de standaard logit functie) converteert "
+"getallen op de reële lijn naar nummer tussen 0 en 1."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform (transforms values greater than -shift) to "
+"stabilize variance and attempt to make the data more normal distribution-"
+"like."
+msgstr ""
+"Twee-parameter Box-Cox transformatie (verandert getallen groter dan -shift) "
+"om variantie te stabiliseren en data meer normaal verdeeld te maken."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter Box-Cox transform with an automatic determination of the shape "
+"parameter lambda, according to one of the three of methods:'loglik', 'sd', "
+"or 'movingRange'. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"Box-Cox-transformatie met twee parameters met automatische bepaling van de "
+"vormparameter lambda, volgens een van de drie methoden: 'loglik', 'sd' of "
+"'movingRange'. De zoektocht naar de optimale lambda is begrensd binnen de "
+"grenzen 'lower' en 'upper'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Inverse two-parameter Box-Cox transform."
+msgstr "Inverse twee-parameter Box-Cox transformatie."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform (scale-invariant Box-Box; transforms values "
+"greater than -shift) to stabilize variance and attempt to make the data more "
+"normal distribution-like."
+msgstr ""
+"Machtstransformatie met twee parameters (schaal-invariante Box-Cox; "
+"transformeert waarden groter dan -shift) om de variantie te stabiliseren en "
+"de gegevens meer op een normale verdeling te laten lijken."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Two-parameter power transform with an automatic determination of the shape "
+"parameter lambda. The search for optimal lambda is bounded within 'lower' "
+"and 'upper' limits."
+msgstr ""
+"Machtstransformatie met twee parameters met automatische bepaling van de "
+"vormparameter lambda. De zoektocht naar de optimale lambda is begrensd "
+"binnen de grenzen 'lower' en 'upper'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) to stabilize variance and "
+"attempt to make the data more normal distribution-like."
+msgstr ""
+"Yeo-Johnson transformatie (transformeert elke reële waarde) stabiliseert "
+"variantie en maakt de data meer normaal verdeeld."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Yeo-Johnson transform (transforms any real values) with an automatic "
+"determination of the shape parameter lambda. The search for optimal lambda "
+"is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Yeo-Johnson-transformatie (transformeert alle reële waarden) met "
+"automatische bepaling van de vormparameter lambda. De zoektocht naar de "
+"optimale lambda is begrensd binnen de grenzen 'lower' en 'upper'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"Johnson transform (transforms any real values). The search for optimal "
+"parameter is bounded within 'lower' and 'upper' limits."
+msgstr ""
+"Johnson-transformatie (transformeert alle reële waarden). De zoektocht naar "
+"de optimale parameter is begrensd binnen de grenzen 'lower' en 'upper'."
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "break your data up in numBreaks levels"
+msgstr "splits uw gegevens op in aantalSplits niveaus"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "replace any missing values (NA) in column by the value in replaceWith"
+msgstr ""
+"vervang iedere ontbrekende waarde (NA) in de kolom door de waarde in "
+"vervangMet"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Gaussian distribution with specified mean and standard "
+"deviation sd"
+msgstr ""
+"genereert gegevens van een Gauss verdeling met gespecificeerd gemiddelde en "
+"standaard deviatie"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from t distribution with degrees of freedom df and non-"
+"centrality parameter ncp"
+msgstr ""
+"genereert gegevens van een t-verdeling met gespecificeerd aantal "
+"vrijheidsgraden vg en niet-centrale parameter ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a chi-squared distribution with degrees of freedom df "
+"and non-centrality parameter ncp"
+msgstr ""
+"genereert data met een chi-kwadraat verdeling met vrijheidsgraden vg en niet-"
+"centraliteitsparameter ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from an F distribution with specified degrees of freedoms "
+"df1, df2 and non-centrality parameter ncp"
+msgstr ""
+"genereert data met een F verdeling met een gespecificeerd aantal "
+"vrijheidsgraden vg 1, vg 2 en niet-centraliteitsparameter ncp"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a binomial distribution with specified trials and "
+"probability prob"
+msgstr ""
+"genereert data met een binomiaalverdeling met gespecificeerde steekproeven "
+"en kans"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a negative binomial distribution with specified trials "
+"and probability prob"
+msgstr ""
+"genereert data met een negatieve binomiaalverdeling met gespecificeerde "
+"steekproeven en kans"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a geometric distribution with specified probability prob"
+msgstr ""
+"genereert data met een geometrische verdeling met gespecificeerde kans prob"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a Poisson distribution with specified rate lambda"
+msgstr ""
+"genereert data met een Poissonverdeling met een gespecificeerde snelheid/ "
+"intensiteit lambda"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a beta distribution with specified shapes alpha and beta"
+msgstr ""
+"genereert data met een betaverdeling met gespecificeerde vormen alpha en beta"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a uniform distribution between min and max"
+msgstr "genereert data met een uniforme verdeling tussen min en max"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from a gamma distribution with specified shape and scale"
+msgstr ""
+"genereert data met een gammaverdeling met gespecificeerde vorm en schaal"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "generates data from an exponential distribution with specified rate"
+msgstr ""
+"genereert data met een exponentiële verdeling met een gespecificeerde "
+"snelheid/ intensiteit"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a log-normal distribution with specified logarithmic "
+"mean meanLog and standard deviation sdLog"
+msgstr ""
+"genereert data met een log-normaalverdeling met een gespecificeerd "
+"logaritmisch gemiddelde meanLog en standaardafwijking sdLog"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid ""
+"generates data from a Weibull distribution with specified shape and scale"
+msgstr ""
+"genereert data met een Weibullverdeling met gespecificeerde vorm en schaal"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise mean"
+msgstr "Rijgewijs gemiddelde"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise sum"
+msgstr "Rijgewijze som"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise standard deviation"
+msgstr "Rijgewijze standaardafwijking"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise variance"
+msgstr "Rijgewijze variantie"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise median"
+msgstr "Rijgewijze mediaan"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise minimum"
+msgstr "Rijgewijs minimum"
+
+#, fuzzy
+msgctxt "ScriptConstructorRegistry|"
+msgid "Rowwise maximum"
+msgstr "Rijgewijs maximum"
+
+msgctxt "ScriptConstructorView|"
+msgid "Filter cleared"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Filter applied"
+msgstr "Filter toegepast"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code clear(ed)"
+msgstr "Code berekende kolommen leeg(gemaakt)"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Computed columns code applied"
+msgstr "Code berekende kolommen toegepast"
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Please enter all arguments - see fields marked in red."
+msgstr "Vul alle argumenten in aub - zie de velden in rood gemarkeerd."
+
+msgctxt "ScriptConstructorView|"
+msgid ""
+"Formula does not return a set of logical values, and therefore cannot be "
+"used in the filter."
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Only one formula per computed column allowed."
+msgstr "Slechts één formule per berekende kolom toegestaan."
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Dump unwanted snippets here; double-click to erase the entire slate"
+msgstr "Plak ongewenste snippers hier; dubbel-klik om alles te verwijderen"
+
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop filter!"
+msgstr ""
+
+#, fuzzy
+msgctxt "ScriptConstructorView|"
+msgid "Welcome to the drag and drop computed column constructor!"
+msgstr "Welkom bij de vereenvoudigde berekende kolom maker!"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Click icon to change column type"
+msgstr "Klik op het pictogram om het kolomtype te wijzigen"
+
+#, fuzzy
+msgctxt "ScriptNodeItem|"
+msgid "Column description: "
+msgstr "Kolombeschrijving: "
+
+#, qt-format
+msgctxt "ScriptNodeItem|"
+msgid "Only %1 allowed in this context."
+msgstr ""
+
+msgctxt "ScriptNodeItem|"
+msgid "/"
 msgstr ""
