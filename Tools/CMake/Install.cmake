@@ -51,7 +51,7 @@ set(FILES_EXCLUDE_PATTERN
 # nothing compiles against them at runtime (jaspBase sets
 # install.packages.compile.from.source = "never" and no sourceCpp is used).
 set(FOLDERS_EXCLUDE_PATTERN
- ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/([^/]*/)?include$|module_libs/([^/]*/)?include$|binary_pkgs/[^/]*/[^/]*/help$|module_libs/[^/]*/[^/]*/help$"
+ ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/[^/]*/include$|binary_pkgs/[^/]*/[^/]*/include$|module_libs/[^/]*/include$|module_libs/[^/]*/[^/]*/include$|binary_pkgs/[^/]*/[^/]*/help$|module_libs/[^/]*/[^/]*/help$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
