@@ -45,13 +45,13 @@ list(APPEND CMAKE_MESSAGE_CONTEXT Install)
 #   - On macOS, gfortran is being installed by CMake, and it's being used during the build,
 #     and here we exclude it.
 set(FILES_EXCLUDE_PATTERN
-    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory|\\.pdb)$"
+    ".*(\\.bib|\\.Rnw|\\.cpp|\\.c|\\.pdf|\\.html|\\.f|\\.dSYM|\\.log|\\.bak|\\.deb|\\.DS_Store|\\.Rhistory|\\.pdb|/MD5)$"
 )
 # Header-only include/ dirs of the binary_pkgs are dead weight in installs:
 # nothing compiles against them at runtime (jaspBase sets
 # install.packages.compile.from.source = "never" and no sourceCpp is used).
 set(FOLDERS_EXCLUDE_PATTERN
- ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/[^/]*/include$"
+ ".*(/doc|/examples|/man|/html|/demo|/i386|/bib|/gfortran|/BH|/announce|/test|/tinytest|/tests)$|binary_pkgs/([^/]*/)?include$|module_libs/([^/]*/)?include$|binary_pkgs/[^/]*/[^/]*/help$|module_libs/[^/]*/[^/]*/help$"
 )
 
 # See here, http://cmake.org/cmake/help/v3.22/variable/CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT.html
