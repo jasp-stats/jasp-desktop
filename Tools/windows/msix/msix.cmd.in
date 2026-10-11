@@ -6,18 +6,6 @@ rem You don't need to run this file manually, you can ask CMake to run it for yo
 rem `cmake --build . --target msix`
 
 
-rem The Microsoft Store rejects packages whose resources.pri was built by makepri from
-rem Windows SDK 10.0.26100+ (validation error: "generated with the omitSchemaFromResourcePacks
-rem option..."). The newest Store-allowed toolchain is 10.0.22621 (allowed: >= 22621 < 25054).
-rem Pin makepri to an allow-listed SDK when installed; fall back to PATH with a loud warning.
-set "MAKEPRI=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\makepri.exe"
-if not exist "%MAKEPRI%" set "MAKEPRI=C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\makepri.exe"
-if exist "%MAKEPRI%" goto makepri_ok
-echo WARNING: no Store-allowed makepri found, falling back to PATH makepri - Store submission will likely be rejected!
-set "MAKEPRI=makepri.exe"
-:makepri_ok
-echo Using makepri: %MAKEPRI%
-
 rem -------- Temporary fix to transfer modules to cache --------
 
 echo Transfering module folders to renv-cache (we should get rid of this in the future)
@@ -27,13 +15,8 @@ pushd .
 rem Nightly Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-nightly.xml .\AppxManifest.xml
-rem Use the static priconfig from the source tree: SDK-generated configs omit the schema from
-rem the main resources.pri (omitSchemaFromResourcePacks), which the Store rejects. Also remove
-rem stale pri files left by earlier builds/variants: they would be packed again as payload and,
-rem worse, re-indexed into the new resources.pri.
-if exist resources.pri del resources.pri
-if exist resources.language-*.pri del resources.language-*.pri
-"%MAKEPRI%" new /o /pr . /cf @JASP_BINARY_DIR_NATIVE@\priconfig.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-nightly.msix"
 if exist @MSIX_SIGN_CERT_PATH@ SignTool sign /fd SHA256 /a /f "@MSIX_SIGN_CERT_PATH@" /p "@MSIX_SIGN_CERT_PASSWORD@" "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-nightly.msix"
@@ -41,13 +24,8 @@ if exist @MSIX_SIGN_CERT_PATH@ SignTool sign /fd SHA256 /a /f "@MSIX_SIGN_CERT_P
 rem Store Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store.xml .\AppxManifest.xml
-rem Use the static priconfig from the source tree: SDK-generated configs omit the schema from
-rem the main resources.pri (omitSchemaFromResourcePacks), which the Store rejects. Also remove
-rem stale pri files left by earlier builds/variants: they would be packed again as payload and,
-rem worse, re-indexed into the new resources.pri.
-if exist resources.pri del resources.pri
-if exist resources.language-*.pri del resources.language-*.pri
-"%MAKEPRI%" new /o /pr . /cf @JASP_BINARY_DIR_NATIVE@\priconfig.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
 rem Bundle PDB symbols with the Store MSIX into an .msixupload file
@@ -59,13 +37,8 @@ ren "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-@JASP_VERSION_MAJOR@.@JASP_VERSION
 rem Store Beta Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-store-beta.xml .\AppxManifest.xml
-rem Use the static priconfig from the source tree: SDK-generated configs omit the schema from
-rem the main resources.pri (omitSchemaFromResourcePacks), which the Store rejects. Also remove
-rem stale pri files left by earlier builds/variants: they would be packed again as payload and,
-rem worse, re-indexed into the new resources.pri.
-if exist resources.pri del resources.pri
-if exist resources.language-*.pri del resources.language-*.pri
-"%MAKEPRI%" new /o /pr . /cf @JASP_BINARY_DIR_NATIVE@\priconfig.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
 rem Bundle PDB symbols with the Store Beta MSIX into an .msixupload file
@@ -78,13 +51,8 @@ ren "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Store-Beta-@JASP_VERSION_MAJOR@.@JASP_VE
 rem Standalone Pack MSIX
 cd "@JASP_INSTALL_DIR_NATIVE@"
 copy /y @JASP_BINARY_DIR_NATIVE@\AppxManifest-standalone.xml .\AppxManifest.xml
-rem Use the static priconfig from the source tree: SDK-generated configs omit the schema from
-rem the main resources.pri (omitSchemaFromResourcePacks), which the Store rejects. Also remove
-rem stale pri files left by earlier builds/variants: they would be packed again as payload and,
-rem worse, re-indexed into the new resources.pri.
-if exist resources.pri del resources.pri
-if exist resources.language-*.pri del resources.language-*.pri
-"%MAKEPRI%" new /o /pr . /cf @JASP_BINARY_DIR_NATIVE@\priconfig.xml
+makepri.exe createconfig /o /cf priconfig.xml /dq en-US
+makepri.exe new /o /pr . /cf .\priconfig.xml
 cd "@JASP_BINARY_DIR_NATIVE@"
 MakeAppx pack /o /d .\Install\ /p "@JASP_BINARY_DIR_NATIVE@\JASP\JASP-Standalone-@JASP_VERSION_MAJOR@.@JASP_VERSION_MINOR@.@JASP_VERSION_PATCH@@JASP_VERSION_MSIX_PATCH_POSTFIX@.@JASP_VERSION_TWEAK@.msix"
 
