@@ -80,23 +80,25 @@ Terms::Terms(const Json::Value &valuesPart, const Json::Value &typesPart, const 
 
 			//Only strings and objects are valid term rows; anything else (numbers,
 			//bools, nulls from malformed input) is skipped instead of throwing.
-			Term term = row.isString() ? Term(row.asString(), types)
-						   : row.isObject() ? Term(row, keyValue, keyLabel, types)
-						   : Term();
-			if (term.size() > 0)
+			if (row.isString() || row.isObject())
 			{
-				add(term);
-
-				if (row.isObject())
+				Term term = row.isString() ? Term(row.asString(), types)
+								   : Term(row, keyValue, keyLabel, types);
+				if (term.size() > 0)
 				{
-					QMap<QString, Json::Value> controlMap;
-					for (auto itr = row.begin(); itr != row.end(); ++itr)
+					add(term);
+
+					if (row.isObject())
 					{
-						const std::string& name = itr.key().asString();
-						if (name != keyValue)
-							controlMap[tq(name)] = *itr;
+						QMap<QString, Json::Value> controlMap;
+						for (auto itr = row.begin(); itr != row.end(); ++itr)
+						{
+							const std::string& name = itr.key().asString();
+							if (name != keyValue)
+								controlMap[tq(name)] = *itr;
+						}
+						allControlValues[term.value()] = controlMap;
 					}
-					allControlValues[term.value()] = controlMap;
 				}
 			}
 
