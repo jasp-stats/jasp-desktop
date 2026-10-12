@@ -283,13 +283,25 @@ void Analyses::saveAnalysesJsonForReload()
 
 	destroyAllForms();
 
+	std::vector<Analysis*> oldAnalyses;
 	for(auto & idAnalysis : _analysisMap)
-		delete idAnalysis.second;
+		oldAnalyses.push_back(idAnalysis.second);
 
 	_analysisMap.clear();
 	_orderedIds.clear();
 
 	endResetModel();
+
+	//Deferred like in clear() and removeAnalysis(): destroyAllForms() only deleteLater()s the forms, so a
+	//synchronous delete here would leave each pending form with a dangling _analysis, and the delegates the
+	//model reset tears down still hold JS references to these analyses (see removeAnalysis for the QV4 GC).
+	//Queued calls still pending for them (e.g. a createForm from reloadForm) are dropped first, as a delete
+	//would: their module is being replaced and may already be gone by the time those calls would run.
+	for(Analysis * analysis : oldAnalyses)
+	{
+		QCoreApplication::removePostedEvents(analysis);
+		analysis->deleteLater();
+	}
 }
 
 void Analyses::reloadSavedAnalysesJson()

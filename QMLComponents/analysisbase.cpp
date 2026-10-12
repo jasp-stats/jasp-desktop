@@ -64,6 +64,10 @@ void AnalysisBase::destroyForm()
 		//QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in QV4::markDrain.
 		//Defer the deletion to the next event-loop pass, at the same quiet point where
 		//the delegate's JS references get invalidated.
+		//Until then the form must stay inert, as it does before the deferred delete in
+		//Analyses::clear/removeAnalysis (Analysis::remove): it no longer reacts to data or
+		//engine signals while its analysis or module may already be on their way out.
+		_analysisForm->cleanUpForm();
 		_analysisForm->deleteLater();
 		_analysisForm = nullptr;
 
