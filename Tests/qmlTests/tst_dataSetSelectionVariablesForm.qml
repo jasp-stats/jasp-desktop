@@ -8,6 +8,9 @@ import JASP.Controls
 // the form's own controls through the form's own VariableInfo provider.
 // The forms are independent: selecting in one never changes what another shows, and selection
 // code NEVER touches the analysis' own filter (that global belongs to the FilterMenuButton).
+// Controls below a selecting host get their bindTo dependency on that host's FilterSelect derived
+// from the varInfo resolution (JASPControl::selectionDependency), so a selection loaded from a file
+// is in effect before anything that uses it stamps its .meta - no repair pass involved.
 // Fixture (see Tests/testqml.cpp): dataset 1 (shown: TestInts/TestLetters/TestDoubles/TestNominal)
 // plus "Second" (TestInts with different values + SecondOnly), with default filter + one extra.
 Item
@@ -29,6 +32,16 @@ Item
 
 			AvailableVariablesList	{ name: "allVarsA";	id: allVarsA }
 			AssignedVariablesList	{ name: "dependentA";	id: dependentA; depends: "dataSetA" }
+
+			// No depends: of its own: the dependency on this form's selection is derived from the
+			// varInfo resolution (JASPControl::selectionDependency) and recorded by sortControls.
+			AssignedVariablesList	{ name: "aDependent";	id: aDependent }
+
+			// The hard case for the ordering: a plain bound option that has no dependencies what
+			// so ever (an assigned list at least depends on its available one) and whose name sorts
+			// before the selection option, so without the derived edge the sort puts IT first and
+			// its .meta is stamped with whatever filter was current before the selection was bound.
+			Switch					{ name: "aSwitch";	id: aSwitch }
 		}
 
 		VariablesForm
@@ -208,11 +221,12 @@ Item
 			verify(rCodeArea.ownVarInfo !== null, "the host owns its VariableInfo")
 
 			var secondFilterId = parseInt(_entryFor("Second - ").value)
+			var formABefore		= formA.selectedFilterId
 			rCodeArea.selectedFilterId = secondFilterId
 			wait(20)
 
 			compare(rCodeArea.selectedFilterId, secondFilterId, "the text area holds its own selection")
-			verify(formA.selectedFilterId !== secondFilterId, "form A is untouched by the text area's choice")
+			compare(formA.selectedFilterId, formABefore, "form A is untouched by the text area's choice")
 			verify(formB.selectedFilterId !== formA.selectedFilterId, "the forms still hold their own two-way split too")
 
 			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
@@ -243,6 +257,101 @@ Item
 
 			formA.selectedFilterId = original	//don't bleed into the next test's assumptions
 			wait(20)
+		}
+
+		// The ordering dependency on a dataset selection is never declared: it is derived from where
+		// a control's variables actually resolve to (JASPControl::selectionDependency), which is the
+		// only reason a host's FilterSelect is bound before everything it serves.
+		function test_selection_dependency_is_derived()
+		{
+			verify(allVarsA.dependsOnForTest("dataSetA"),
+					"an available list with no depends: of its own depends on its form's selection")
+			verify(aDependent.dependsOnForTest("dataSetA"),
+					"an assigned list with no depends: of its own depends on its form's selection")
+			verify(aSwitch.dependsOnForTest("dataSetA"),
+					"a plain option without any dependency of its own still depends on the selection it resolves through")
+			verify(dependentA.dependsOnForTest("dataSetA"),
+					"a list that declares depends: on its selection ends up with the same edge")
+			verify(dependentB.dependsOnForTest("dataSetB"), "form B's list depends on B's selection")
+			verify(!dependentA.dependsOnForTest("dataSetB"), "no cross-talk between the two forms")
+
+			// the real witness that the edge comes from the resolution and not from the visual tree:
+			// srcDriven sits in the NON-selecting form and declares no depends at all, yet its
+			// variables come through source -> dependentA -> formA, so it waits for formA's selection
+			verify(srcDriven.dependsOnForTest("dataSetA"),
+					"a source-driven list depends on the selection its source resolves through")
+			verify(!srcDriven.dependsOnForTest("dataSetB"), "...and on no other selection")
+
+			// no host, no selection dependency (the analysis-wide VariableInfo is in place long
+			// before any control binds, so there is nothing to wait for)
+			verify(!targetC.dependsOnForTest("dataSetA") && !targetC.dependsOnForTest("dataSetB"),
+					"a list in a form without selection depends on no selection at all")
+
+			// a host is the owner of its selection, not a dependent of it
+			verify(!formA.dependsOnForTest("dataSetA"), "the host itself is not its own dependency")
+		}
+
+		// The regression a provenance repair pass used to paper over: loading options whose selection
+		// points at another dataset than the analysis filter is running on must stamp the UNCHANGED
+		// values with that dataset from the very first bind. setOptions is the same path a .jasp
+		// reload takes (store the loaded values, then setAnalysisUp rebinds every control).
+		function test_saved_selection_stamps_values_on_first_bind()
+		{
+			var secondEntry = _entryFor("Second - ")
+			var firstEntry  = null
+
+			for (var entry of formA.filterSelectionValues)
+				if (entry.label.indexOf("Second - ") !== 0)
+				{
+					firstEntry = entry
+					break
+				}
+
+			verify(secondEntry !== null && firstEntry !== null, "fixture must offer a filter of each dataset")
+
+			var savedFilterA = parseInt(secondEntry.value)
+			var savedFilterB = parseInt(firstEntry.value)
+			var originalA	 = formA.selectedFilterId
+			var originalB	 = formB.selectedFilterId
+			var bound		 = {}
+
+			try
+			{
+				jaspForm.setOptions({
+					dataSetA:	secondEntry.value,				//saved selection: dataset 'Second'
+					dataSetB:	firstEntry.value,					//saved selection: the first dataset
+					aSwitch:	true,								//no dependencies: only the derived edge orders it
+					aDependent:	{ value: ["TestInts"], types: ["scale"] },	//unchanged from the file
+					dependentA:	{ value: ["TestInts"], types: ["scale"] },
+					dependentB:	{ value: ["TestInts"], types: ["scale"] }
+				})
+				wait(50)
+				bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			} finally
+			{
+				//functions run alphabetically: put the selections back for the tests after this one
+				formA.selectedFilterId = originalA
+				formB.selectedFilterId = originalB
+				wait(20)
+			}
+
+			var meta = bound[".meta"]
+
+			compare(parseInt(String(bound.dataSetA)), savedFilterA, "form A took the loaded selection")
+			verify(meta && meta.aSwitch && meta.aDependent && meta.dependentA && meta.dependentB,
+					"the loaded options bound and stamped their meta")
+
+			// "TestInts" lives in both datasets: only the stamp tells them apart, and a stamp taken
+			// before dataSetA was bound would name the analysis' current filter instead.
+			compare(meta.aSwitch.filterId, savedFilterA,
+					"an option that sorts before its selection still gets the loaded selection's stamp")
+			compare(meta.aDependent.filterId, savedFilterA,
+					"a value whose name sorts before its selection option is stamped with that selection")
+			compare(meta.dependentA.filterId, savedFilterA, "the one that declares depends: likewise")
+			compare(meta.dependentB.filterId, savedFilterB, "form B's value is stamped with B's loaded filter")
+			verify(meta.aSwitch.dataSetId !== meta.dependentB.dataSetId,
+					"the two stamps name different datasets, not one analysis-wide stamp")
+			verify(bound.aDependent.value.indexOf("TestInts") !== -1, "the value itself survived the bind")
 		}
 	}
 }

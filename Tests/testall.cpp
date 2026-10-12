@@ -1849,46 +1849,6 @@ void TestAll::testAnalysisBaseReferencedDataSets()
 	QCOMPARE(analysis.multiDataSetAware(), false);
 }
 
-void TestAll::testRestoreProvenanceFromBoundValues()
-{
-	AnalysisBase analysis;
-	analysis.setMultiDataSetAware(true);
-
-	Json::Value saved(Json::objectValue);
-	saved["dependent"]	= Json::Value(Json::objectValue);
-	saved["dependent"]["value"].append("Score");
-	saved["dependent"]["types"].append("scale");
-	saved[".meta"]["dependent"]["shouldEncode"]	= true;
-	saved[".meta"]["dependent"]["dataSetId"]		= 3;
-	saved[".meta"]["dependent"]["filterId"]		= 30;
-	saved["covariate"]	= Json::Value(Json::objectValue);
-	saved["covariate"]["value"].append("Other");
-	saved["covariate"]["types"].append("scale");
-	saved[".meta"]["covariate"]["shouldEncode"]	= true;
-	saved[".meta"]["covariate"]["dataSetId"]		= 4;
-	saved[".meta"]["covariate"]["filterId"]		= 40;
-
-	Json::Value current(Json::objectValue);
-	current["dependent"]	= saved["dependent"];	//unchanged: provenance must be restored
-	current[".meta"]["dependent"]["shouldEncode"]	= true;
-	current[".meta"]["dependent"]["dataSetId"]		= 9;	//restamped onto the current dataset by the rebind
-	current["covariate"]	= Json::Value(Json::objectValue);	//changed value: restamp must be kept
-	current["covariate"]["value"].append("Changed");
-	current["covariate"]["types"].append("scale");
-	current[".meta"]["covariate"]["shouldEncode"]	= true;
-	current[".meta"]["covariate"]["dataSetId"]		= 9;
-
-	analysis.setBoundValues(current);
-	analysis.restoreProvenanceFromBoundValues(saved);
-
-	std::map<int, int> refs = analysis.referencedDataSets();
-
-	QCOMPARE(refs.count(3), size_t(1));		//dependent back where it came from
-	QCOMPARE(refs[3], 30);
-	QCOMPARE(refs.count(4), size_t(0));
-	QCOMPARE(refs.count(9), size_t(1));		//covariate keeps its fresh stamp
-}
-
 void TestAll::testDataSetFilterIdsSurviveStorageReload()
 {
 	//Opening a .jasp restores internal.sqlite verbatim (ArchiveReader) and Workspace::dbLoad

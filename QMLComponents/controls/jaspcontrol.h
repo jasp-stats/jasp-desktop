@@ -173,19 +173,40 @@ public:
 	/// Consumers must not grab form()->varInfo() directly but use effectiveVarInfo() below, so a
 	/// control under a selecting host follows that host's dataset instead of the analysis-wide one.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
+	///< Hosts only: the NAME of the option carrying the selection whose VariableInfo is handed out
+	/// by ownedSelectionVarInfo() (VariablesForm::dataSetSelectionOption, TextArea's of the same
+	/// name). The control that reads/writes that option - the FilterSelect dropdown - is registered
+	/// in the form under exactly this name, so getControl(ownedSelectionOptionName()) finds it.
+	/// Note this is a name, not a control; JASPControl::selectionDependency() gives the control.
+	virtual QString					ownedSelectionOptionName() const				{ return QString(); }
 	///< The namespace this control declares it draws from - the semantic main path, overriding the
 	///< component-chain walk in effectiveVarInfo(). A JASPListControl answers through its `source`
 	/// (the available-items control feeds it); RFormula/FilterSelect can override the same hook
 	/// when they get an explicit dataset source. `visited` guards source chains against cycles.
-	/// Base: nullptr - no declared source, effectiveVarInfo() falls back to the walk.
-	virtual VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited) { Q_UNUSED(visited); return nullptr; }
+	/// `selectionHost` (optional) additionally reports WHICH host the resolution landed on - the
+	/// source of the bindTo ordering dependency (see selectionDependency()), so it must be passed
+	/// on through any recursion into effectiveVarInfoImpl(). Base: nullptr - no declared source,
+	/// effectiveVarInfo() falls back to the walk.
+	virtual VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited, JASPControl ** selectionHost = nullptr) { Q_UNUSED(visited); Q_UNUSED(selectionHost); return nullptr; }
 	///< The variable info for this control: first its own sourceVarInfo() (semantic dependency),
 	///< else the nearest host (self included) with an active dataset selection, else the
 	///< AnalysisForm's VariableInfo (analysis filter / shown filter) as before selections existed.
 	VariableInfo					* effectiveVarInfo();
 	///< effectiveVarInfo() with the source-cycle guard threaded through; internal to the chain,
-	///  public so subclass sourceVarInfo() overrides can recurse into it.
-	VariableInfo					* effectiveVarInfoImpl(const QSet<JASPControl *> & visited);
+	///  public so subclass sourceVarInfo() overrides can recurse into it. When `selectionHost` is
+	///  given it also reports the host the selection was resolved through (nullptr when the walk
+	///  ended at the AnalysisForm's VariableInfo, which is no host and so no dependency).
+	VariableInfo					* effectiveVarInfoImpl(const QSet<JASPControl *> & visited, JASPControl ** selectionHost = nullptr);
+	///< The host whose dataset/filter selection this control's variables resolve through (its own
+	/// selection included) - the same walk as effectiveVarInfo(), so the two can never disagree.
+	/// nullptr when they resolve to the AnalysisForm's VariableInfo (no per-component selection).
+	JASPControl						* selectionHost();
+	///< The control that must be bound BEFORE this one for that selection to be in effect: the
+	/// FilterSelect carrying the host's option (binding it is what writes the host's selected
+	/// filter id and so restamps the provider this control resolves to). nullptr when there is no
+	/// selection host, or the host names no registered control - which leaves no ordering
+	/// constraint, exactly as before the edge existed. AnalysisForm::sortControls records this edge.
+	JASPControl						* selectionDependency();
 	///< The Filter effectiveVarInfo() serves, or nullptr: the provenance a value of this control
 	///< must be stamped with (see BoundControlBase::createMeta).
 	Filter							* effectiveSelectionFilter();
@@ -196,6 +217,10 @@ public:
 	///  when the resolved namespace is not backed by a filter. Lets a test prove which host a
 	///  control's variable namespace actually came from (source edge vs visual walk).
 	Q_INVOKABLE int					  resolvedSelectionFilterIdForTest();
+	///< Introspection (QML/tests): whether this control carries a bindTo dependency on the control
+	///  named by `controlName` - explicit (`depends:`), through a source, or derived from the
+	///  dataset selection it resolves through (see AnalysisForm::sortControls).
+	Q_INVOKABLE bool				  dependsOnForTest(const QString & controlName) const;
 	///< Provider chain for items that are not JASPControls themselves (a Formula is a plain
 	///< QQuickItem): nearest selecting host ancestor of `item`, else the AnalysisForm's provider.
 	static VariableInfo				* varInfoForItem(QQuickItem * item, AnalysisForm * form);

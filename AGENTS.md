@@ -28,11 +28,13 @@ ctest -R testDataImport --output-on-failure             # or via ctest
 ```
 
 Test names (use `-functions` on binary to list all). There are SEVEN test executables — verify against ALL of them:
-- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp); note the two `testDataImport` CSV/TSV hardcoded-json failures are pre-existing on this branch
+- `JASPTest` — data import + syncer tests; also hosts the CLI sync-chain tests (`testCliSyncExportChain*`, `testCliSyncExportWaitsForAnalysesToSettle`), which construct a real `MainWindow` in backendless mode, without QML UI or R engines (set `JASP_TEST_BACKENDLESS=1` / see `_newMainWindowWithExitSpy` in Tests/testall.cpp); the two `testDataImport` CSV/TSV hardcoded-json failures long reported as pre-existing on this branch did not reproduce in a recent full run (109 passed / 0 failed)
 - `JASPTestParsedArgs` — command-line argument parsing (depends on `JASPDesktopLib`); PRO-only flags are exercised in both modes via `AppInfo::setProMode`, no PRO build required
 - `JASPTestEngine` — engine integration tests
 - `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
+
+`JASPTestDebugData` and `JASPTestEngine` abort *intermittently* (roughly 1 run in 2-3): core dump with a completely empty log, i.e. before the first test prints. Seen on clean HEAD builds as well, so rerun the binary before concluding your change broke it.
 
 To build and run everything in one go:
 
@@ -50,6 +52,8 @@ xvfb-run build/Tests/JASPTestColumnEncoderContext
 PRO-only behaviour (batch data sync/export CLI) is a *runtime* flag now: `AppInfo::proMode()`, defaulting to the compile-time `PRO` CMake option and overridable with `AppInfo::setProMode()` (used by `JASPTestParsedArgs`). The remaining `#ifdef PRO` blocks are branding only.
 
 For most tests, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
+
+Inside a QML `TestCase` (the `Tests/qmlTests/tst_*.qml` files) functions run in **alphabetical order**, not declaration order — a test that leaves a form/selection mutated breaks the ones that sort after it. Restore state (a `try { ... } finally { ... }` around mutating calls works) or assert against a value captured before the mutation instead of what an earlier test happened to leave behind.
 
 ## Library architecture (dependency order)
 

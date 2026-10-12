@@ -66,6 +66,10 @@ public:
 	///< This form's VariableInfo once it has a selection (provider = the selected filter) - what
 	///< every consumer below the form resolves to through JASPControl::effectiveVarInfo().
 	VariableInfo		  * ownedSelectionVarInfo() override				{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
+	///< The option the form's FilterSelect dropdown is bound to (see dataSetSelectionOption): by
+	///  this name the dropdown is registered in the form, which is how consumers learn which
+	///  control carries their selection (JASPControl::selectionDependency).
+	QString				  ownedSelectionOptionName() const override			{ return _hostSelection.option(); }
 
 	Q_INVOKABLE bool		widthSetByForm(JASPControl* control)	{ return _controlsWidthSetByForm.contains(control); }
 	Q_INVOKABLE bool		heightSetByForm(JASPControl* control)	{ return _controlsHeightSetByForm.contains(control); }
