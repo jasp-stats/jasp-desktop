@@ -97,11 +97,6 @@ public:
 	///< ColumnEncoder::collectDataSetIdsFromMeta); the primary dataset/filter of the analysis itself is
 	///< not necessarily part of it, that comes from filter()/dataSet().
 	std::map<int, int>	referencedDataSets()												const;
-	/// Re-apply the dataSetId/filterId provenance from a loaded set of bound values onto the freshly
-	/// (re)generated .meta of the current bound values (AnalysisForm::setAnalysisUp re-binds every
-	/// control, which restamps its meta with the analysis' current filter - for a multi-dataset aware
-	/// analysis the provenance of the file must win, unless the value itself changed).
-	void					restoreProvenanceFromBoundValues(const Json::Value & savedBoundValues);
 
 						QString				filterName()	const;
 						int					filterId()		const;

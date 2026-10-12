@@ -1,7 +1,5 @@
 #include "jaspcontrol.h"
 #include "jasplistcontrol.h"
-#include "variablesformbase.h"
-#include "textareabase.h"
 #include "filter.h"
 #include "variableinfo.h"
 #include "log.h"
@@ -876,11 +874,12 @@ void JASPControl::_addExplicitDependency(const QVariant& depends)
 	else if (depends.canConvert<QString>())
 	{
 		//A depends name may legitimately target an OPTION that has no control registered in this
-		//form: the option-driven dataset selection of VariablesForm (dataSetSelectionOption) lives
-		//in a DropDown that is named (and thus registered) only in syntax mode; on desktop its name
-		//is empty. An unresolved name carries no ordering constraint, so ignore it - inserting a
+		//form, and an unresolved name carries no ordering constraint, so ignore it - inserting a
 		//null dependency would crash AnalysisForm::sortControls (and everything else that walks
 		//_depends, like dependingControlsAreInitialized) the moment it is dereferenced.
+		//(The dataset selection used to need this: on desktop its dropdown was unnamed. It is a
+		//named, registered FilterSelect now, and its edge is recorded from the varInfo resolution
+		//in sortControls, so a form never has to declare `depends: "<selectionOption>"` itself.)
 		JASPControl* depControl = form() ? form()->getControl(depends.toString()) : nullptr;
 		if (depControl && depControl != this)
 			_depends.insert(depControl);
@@ -953,13 +952,13 @@ VariableInfo * JASPControl::effectiveVarInfo()
 	return effectiveVarInfoImpl(QSet<JASPControl *>());
 }
 
-VariableInfo * JASPControl::effectiveVarInfoImpl(const QSet<JASPControl *> & visited)
+VariableInfo * JASPControl::effectiveVarInfoImpl(const QSet<JASPControl *> & visited, JASPControl ** selectionHost)
 {
 	//Semantic main path: a control that declares WHERE its variables come from (a JASPListControl
 	//through its `source`) resolves there first, so a list keeps following the component it
 	//actually depends on even when its visual parent chain points elsewhere. The chain is
 	//cycle-guarded (visited) and may recurse a few hops before it lands on a host.
-	if (VariableInfo * sourceInfo = sourceVarInfo(visited))
+	if (VariableInfo * sourceInfo = sourceVarInfo(visited, selectionHost))
 		return sourceInfo;
 
 	//Provider chain = component chain: the nearest host (self included) that holds an active
@@ -973,18 +972,56 @@ VariableInfo * JASPControl::effectiveVarInfoImpl(const QSet<JASPControl *> & vis
 	for (JASPControl * control = this; control; control = qobject_cast<JASPControl *>(control->parentItem()))
 	{
 		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
+		{
+			//this host IS where this control's variables come from: report it (and not the control
+			//that happens to sit below it) so the bindTo order can be derived from the resolution
+			if (selectionHost)
+				*selectionHost = control;
 			return varInfo;
+		}
 
 		//a list control met on the way up may itself draw from another form's source
 		if (control != this && !seen.contains(control))
 		{
 			seen.insert(control);
-			if (VariableInfo * ancestorSource = control->sourceVarInfo(seen))
+			if (VariableInfo * ancestorSource = control->sourceVarInfo(seen, selectionHost))
 				return ancestorSource;
 		}
 	}
 
+	//no host anywhere on the chain: the analysis-wide VariableInfo serves this control, and that is
+	//not a selection dependency (the analysis filter is in place long before any control binds)
 	return form() ? form()->varInfo() : nullptr;
+}
+
+JASPControl * JASPControl::selectionHost()
+{
+	JASPControl * host = nullptr;
+	effectiveVarInfoImpl(QSet<JASPControl *>(), &host);
+	return host;
+}
+
+JASPControl * JASPControl::selectionDependency()
+{
+	JASPControl * host = selectionHost();
+	if (!host || host == this)			//a host's own selection is not a dependency on itself
+		return nullptr;
+
+	const QString option = host->ownedSelectionOptionName();
+	if (option.isEmpty())
+		return nullptr;
+
+	//The FilterSelect dropdown registers itself under the option's name (see FilterSelect.qml), and
+	//binding IT is what pushes the saved filter id into the host; a host hands out its selection
+	//VariableInfo only while its selection (and so its dropdown Loader) is available, so finding no
+	//control here means the option was renamed after the form completed: no constraint, as before.
+	return form() ? form()->getControl(option) : nullptr;
+}
+
+bool JASPControl::dependsOnForTest(const QString & controlName) const
+{
+	JASPControl * other = form() ? form()->getControl(controlName) : nullptr;
+	return other && _depends.count(other) > 0;
 }
 
 Filter * JASPControl::effectiveSelectionFilter()
@@ -1004,21 +1041,17 @@ bool JASPControl::isDataSetSelectionOption() const
 	if (name().isEmpty())
 		return false;
 
-	//a selecting host naming THIS control as its selection option (first host on the chain decides)
+	//the inverse of selectionDependency(): a host on the parent chain whose selection option is
+	//carried by a control named exactly like this one (the nearest host with a selection decides)
 	for (QQuickItem * item = parentItem(); item; item = item->parentItem())
 	{
-		if (auto * variablesForm = qobject_cast<VariablesFormBase *>(item))
-		{
-			if (variablesForm->selectionAvailable() && variablesForm->dataSetSelectionOption() == name())
-				return true;
-			return false;
-		}
-		if (auto * textArea = qobject_cast<TextAreaBase *>(item))
-		{
-			if (textArea->selectionAvailable() && textArea->dataSetSelectionOption() == name())
-				return true;
-			return false;
-		}
+		JASPControl * control = qobject_cast<JASPControl *>(item);
+		if (!control)
+			continue;
+
+		const QString option = control->ownedSelectionOptionName();
+		if (!option.isEmpty())
+			return option == name();
 	}
 
 	return false;

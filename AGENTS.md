@@ -34,7 +34,9 @@ Test names (use `-functions` on binary to list all). There are EIGHT test execut
 - `JASPTestDebugData`, `JASPTestCsvPrev`, `JASPTestDbMigration`, `JASPQuickTest`
 - `JASPTestColumnEncoderContext` — encoder indirection/extra-encodings (depends only on `Common`, unlike the others)
 
-Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too.
+Known-stale failure to NOT chase: `testDataImport` (CSV+TSV data-driven) fails on its hardcoded golden-JSON comparison because trailing spaces are no longer trimmed; it fails on a clean checkout too. (Branch history: before the upstream rebase that brought in the trimming change, the two `testDataImport` CSV/TSV hardcoded-json failures long reported as pre-existing on this branch did not reproduce in a recent full run — 109 passed / 0 failed.)
+
+`JASPTestDebugData` and `JASPTestEngine` abort *intermittently* (roughly 1 run in 2-3): core dump with a completely empty log, i.e. before the first test prints. Seen on clean HEAD builds as well, so rerun the binary before concluding your change broke it.
 
 To build and run everything in one go (Linux; on macOS drop `xvfb-run`, `QT_QPA_PLATFORM=offscreen` suffices):
 
@@ -55,6 +57,8 @@ PRO-only behaviour (batch data sync/export CLI) is a *runtime* flag now: `AppInf
 For most tests on Linux, use `xvfb-run` (or combine `QT_QPA_PLATFORM=offscreen` with `xvfb-run`). `JASPQuickTest` requires both: `QT_QPA_PLATFORM=offscreen xvfb-run build/Tests/JASPQuickTest`. The test library is at `Tests/TestLibrary/`.
 
 With `BUILD_TESTS=ON`, `gateSmoke`/`fuzzSmoke` (RPC-driven smokes from `Tests/gatetest/`, need a built `JASP` + the `Tests/gatetest/jasp-mcp` submodule, no xvfb) are also in ctest; the full `gateTest` sweep is opt-in via `-DBUILD_GATETEST=ON`. See `Tests/gatetest/README.md`.
+
+Inside a QML `TestCase` (the `Tests/qmlTests/tst_*.qml` files) functions run in **alphabetical order**, not declaration order — a test that leaves a form/selection mutated breaks the ones that sort after it. Restore state (a `try { ... } finally { ... }` around mutating calls works) or assert against a value captured before the mutation instead of what an earlier test happened to leave behind.
 
 ## Library architecture (dependency order)
 

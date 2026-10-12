@@ -115,6 +115,9 @@ public slots:
 	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
 	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
 	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
+	///< The option the text area's FilterSelect dropdown is bound to; its registered control is
+	///  what consumers of this host depend on for bindTo order (JASPControl::selectionDependency).
+	QString				  ownedSelectionOptionName() const override	{ return _hostSelection.option(); }
 
 public slots:
 	void					setDataSetSelectionOption(const QString & option)	{ _hostSelection.setOption(option); emit dataSetSelectionOptionChanged(); }

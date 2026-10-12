@@ -85,7 +85,7 @@ public:
 	///  resolve through that control so the dependency - not the visual parent chain - picks the
 	///  feeding form. nullptr until a source control resolves (setup timing, values-/rSource
 	///  driven lists), so effectiveVarInfo() transparently falls back to the component walk.
-	VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited) override;
+	VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited, JASPControl ** selectionHost = nullptr) override;
 
 			bool					hasSource()					const			{ return _sourceItems.size() > 0; }
 			bool					hasNativeSource()			const;

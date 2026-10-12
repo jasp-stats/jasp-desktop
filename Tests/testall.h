@@ -129,14 +129,12 @@ private slots:
 	// referenced datasets of the .meta, not from (the absence of) its own filter.
 	void	testAnalysisBaseUsesDataSetWhenAware();
 
-	// File round-trip 1/2: rebinding an aware analysis' options restamps meta from the current
-	// filter, so the loaded provenance must be restored - but only for unchanged values.
-	void	testRestoreProvenanceFromBoundValues();
-
-	// File round-trip 2/2: dataset/filter ids come straight from the storage db and a .jasp
-	// restores that db verbatim, so reopening (fresh Workspace over the same database) must
-	// hand back the very same ids - saved provenance is simply still valid. (This invariant is
-	// why Analyses::remapSavedProvenance and its side table were removed.)
+	// File round-trip: dataset/filter ids come straight from the storage db and a .jasp restores
+	// that db verbatim, so reopening (fresh Workspace over the same database) must hand back the
+	// very same ids - saved provenance is simply still valid, and rebinding needs no repair pass:
+	// the derived selection dependency (see tst_dataSetSelectionVariablesForm.qml) stamps values
+	// with the loaded selection from the very first bind. (This invariant is also why
+	// Analyses::remapSavedProvenance and its side table were removed.)
 	void	testDataSetFilterIdsSurviveStorageReload();
 
 	// Filter ownership: removeFilter must unregister (no dangling pointer in _filters) and

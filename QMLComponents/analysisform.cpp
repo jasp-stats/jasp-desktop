@@ -279,6 +279,18 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 	for (JASPControl* control : controls)
 	{
 		control->addExplicitDependency();
+
+		//The dataset/filter selection a control's variables resolve through is a dependency too, and
+		//it is not declared anywhere: it falls out of the varInfo resolution itself (see
+		//JASPControl::selectionDependency). Recording it here - before the transitive closure below
+		//snapshots the set - is what makes a host's FilterSelect bind before every control it serves:
+		//binding the dropdown writes the saved filter id into the host and so restamps the provider
+		//that createMeta() stamps values with. Without the edge, an unchanged value loaded from a
+		//file would get restamped with whatever filter happened to be current (and the deferred
+		//init in JASPControl::setInitialized would not wait for the selection either).
+		if (JASPControl* selectionControl = control->selectionDependency())
+			control->addDependency(selectionControl);		//guards self and already-known edges
+
 		JASPControls depends(control->depends().begin(), control->depends().end());
 
 		// By adding at the end of the vector new dependencies, this makes sure that these dependencies of these new dependencies are
@@ -287,6 +299,10 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		// Afterwards, if a control depends (directly or indirectly) of another control, the number of elements in its 'depends' set is then
 		// automatically strictly bigger than the 'depends' set of all controls it depends on.
 		// We have then simply to use the size of their 'depends' set, to sort the controls.
+		// (the closure is a single pass in list order, so a set that grows later can leave two
+		// controls tied rather than ordered; stable_sort keeps such ties deterministic across runs,
+		// and JASPControl::setInitialized deferring on its uninitialized dependencies is what makes
+		// a residual tie bind in the right order regardless.)
 		for (size_t index = 0; index < depends.size(); index++)
 		{
 			JASPControl					* depend		= depends[index];
@@ -302,7 +318,7 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		}
 	}
 
-	std::sort(controls.begin(), controls.end(),
+	std::stable_sort(controls.begin(), controls.end(),
 		[](JASPControl* a, JASPControl* b) {
 			return a->depends().size() < b->depends().size();
 		});
@@ -770,12 +786,6 @@ void AnalysisForm::setAnalysisUp()
 
 	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
 	bindTo(initialOptions);
-
-	//Rebinding restamped every control's meta with the analysis' current filter; for a multi-dataset
-	//aware analysis the provenance from the file must win, so restore it for all unchanged values
-	//(the file's ids come straight from the restored storage db, so they are valid as-is).
-	if (_analysis->multiDataSetAware())
-		_analysis->restoreProvenanceFromBoundValues(initialOptions);
 
 	lockOptions();
 
