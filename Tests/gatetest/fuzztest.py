@@ -395,11 +395,15 @@ def main() -> int:
     # (desktop + QtWebEngine helpers + R engines) and kill it when it exceeds the
     # cap. Without this, a leak or wedge can consume all RAM and destabilize the
     # machine. The thread survives deaths and restarts (it always looks at the
-    # *current* jasp_proc) and records kills in watchdog_flag: the main loop then
-    # reports an "rss-watchdog" death that is NOT attributed to a mutation and
-    # gets no repro file (options cannot deterministically reproduce a cap kill).
+    # *current* instance in `watched`) and records kills in watchdog_flag: the main
+    # loop then reports an "rss-watchdog" death that is NOT attributed to a mutation
+    # and gets no repro file (options cannot deterministically reproduce a cap kill).
     watchdog_flag = {"killed": False}
     watchdog_stop = threading.Event()
+    # Set on launch (_arm_watchdog) and on every restart. The thread must not read
+    # main's jasp_proc: that is only assigned once launch_ready returns, which can
+    # take longer than the first tick, and the resulting NameError killed the thread.
+    watched = {"proc": None}
 
     def _tree_pids(root_pid: int) -> list[int]:
         pids, frontier = [root_pid], [root_pid]
@@ -419,10 +423,11 @@ def main() -> int:
         scan_failures = 0
         while not watchdog_stop.is_set():
             time.sleep(10)
-            if watchdog_stop.is_set() or jasp_proc.poll() is not None:
+            proc = watched["proc"]
+            if watchdog_stop.is_set() or proc is None or proc.poll() is not None:
                 continue  # death/restart window: the main thread restarts, stay armed
             try:
-                pid_list = ",".join(str(p) for p in _tree_pids(jasp_proc.pid))
+                pid_list = ",".join(str(p) for p in _tree_pids(proc.pid))
                 out = subprocess.run(["ps", "-o", "rss=,comm=", "-p", pid_list],
                                      capture_output=True, text=True, timeout=15)
                 total_mb, breakdown = 0, []
@@ -440,7 +445,7 @@ def main() -> int:
                     log(f"WATCHDOG: JASP process tree at {total_mb}MB > cap {cfg.max_tree_rss_mb}MB "
                         f"({', '.join(breakdown)}) — killing it to protect the machine")
                     watchdog_flag["killed"] = True
-                    shutdown_jasp(jasp_proc)
+                    shutdown_jasp(proc)
             except Exception as e:
                 # Do not fail open silently: a systematic scan failure (missing
                 # pgrep/ps, permissions, ...) would otherwise disable protection
@@ -450,7 +455,8 @@ def main() -> int:
                     log(f"WARNING: RSS watchdog scan failed {scan_failures}x in a row ({e}); "
                         f"memory protection may be inactive")
 
-    def _arm_watchdog(_proc) -> None:
+    def _arm_watchdog(proc) -> None:
+        watched["proc"] = proc
         if cfg.max_tree_rss_mb > 0:
             threading.Thread(target=_watchdog, daemon=True).start()
 
@@ -487,6 +493,7 @@ def main() -> int:
         url = f"http://127.0.0.1:{port}/rpc"
         client.direct.url = url
         jasp_proc = start_jasp(cfg.jasp_bin, port, jasp_log_path, cfg.jasp_extra_args)
+        watched["proc"] = jasp_proc
         log(f"JASP pid {jasp_proc.pid} (restarted), log: {jasp_log_path}")
         try:
             wait_for_server(client, jasp_proc, cfg.startup_timeout)

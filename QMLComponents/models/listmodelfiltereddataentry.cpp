@@ -199,13 +199,14 @@ void ListModelFilteredDataEntry::initTableTerms(const TableTerms& terms)
 	//still fresh. This unconditional run used to be the entry point of the infinite
 	//filterByName loop with the audit data-entry. Cell values are not part of TableTerms,
 	//they reach the table through the bound value/_initialValues, so skipping here cannot
-	//miss a value-only change.
+	//miss a value-only change. The incoming colNames are the data columns as stored in the bound
+	//value (_dataColumns), while _tableTerms.colNames also holds the appended extraCol/colName.
 	if(_filter &&
 		terms.colName		== _tableTerms.colName &&
 		terms.extraCol		== _tableTerms.extraCol &&
 		terms.filter		== _tableTerms.filter &&
 		terms.filterName	== _tableTerms.filterName &&
-		terms.colNames		== _tableTerms.colNames)
+		terms.colNames		== _dataColumns)
 		return;
 
 	_retriedEmptyRun = false;

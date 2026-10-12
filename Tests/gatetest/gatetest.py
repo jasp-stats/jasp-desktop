@@ -88,7 +88,9 @@ def run_one_analysis(client: GateClient, module: str, analysis: str, cfg) -> tup
                 if isinstance(res.get("results"), dict):
                     err = str(res["results"].get("errorMessage", ""))[:300]
                 raise GateFailure(f"analysis finished with status '{status}' {msg} {err}".strip())
-            if status != "running":
+            # 'empty' means not scheduled yet (engine still starting or busy): keep
+            # polling like for 'running', only the deadline decides (as in fuzztest.py).
+            if status not in ("running", "empty"):
                 raise GateFailure(f"unexpected analysis status: {status!r}")
     finally:
         try:

@@ -116,7 +116,7 @@ Common → CommonData → QMLComponents → JASPEngine / JASPDesktopLib → JASP
 - **DYLD_INSERT_LIBRARIES interposition of `exit`/`_exit` via `dlsym(RTLD_NEXT)` recurses into itself** (the interpose table redirects RTLD_NEXT back to the interposer) — stack-overflow SIGSEGVs that poison the experiment. Interpose with the raw `SYS_exit` syscall instead (see the pattern used while chasing the QV4 GC crash; keep the dylib out of the fuzzer's own process expectations — it inherits DYLD_* so its own exits get logged too).
 - The mysterious clean-exit(0) fuzz deaths resolved into **multiple real crash modes**: EXC_BAD_ACCESS in `QV4::markDrain` (QtQml GC marking, use-after-free on the QML heap — see Tests/gatetest/README.md), plus one-off SIGBUS. "Connection refused" transport errors mean the desktop process is already gone; `jasp_proc.returncode` tells the death mode (0 filtered by summaries, -6 SIGABRT, -10 SIGBUS, -11 SIGSEGV).
 - The R engine processes detect parent death via heartbeat files (`temp/JASP-IPC-<pid>_heartbeat`); "no parent alive" in engine logs means the desktop process already died — check the *desktop* log and exit code.
-- The IPC channel is a **single-slot mailbox** with a fixed-width id prefix (4 digits since `f268fa249`); each send overwrites the slot, so fast repeated engine messages can overwrite an unread reply. `processReplies` never reads while the desktop thinks the engine is `idle`.
+- The IPC channel is a **single-slot mailbox** with a fixed-width id prefix (4 digits, `MsgIDWidth` in `CommonData/ipcchannel.cpp`); each send overwrites the slot, so fast repeated engine messages can overwrite an unread reply. `processReplies` never reads while the desktop thinks the engine is `idle`.
 
 ## Conventions
 

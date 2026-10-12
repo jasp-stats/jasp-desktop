@@ -81,11 +81,12 @@ void BoundControlTableView::fillTableTerms(const Json::Value &value, ListModelTa
 		tableTerms.values.push_back({});
 		for (const Json::Value& value : row["values"])
 		{
+			//bool/null/objects are not representable in a table cell, but they must keep their place as an
+			//empty cell: skipping them would move every following value of this column up a row.
 			QVariant val;
 			if (value.isInt())			val = value.asInt();
 			else if (value.isDouble())	val = value.asDouble();
 			else if (value.isString())	val = tq(value.asString());
-			else						continue;	//bool/null/objects are not representable in a table cell
 			tableTerms.values[tableTerms.values.size() - 1].push_back(val);
 		}
 
