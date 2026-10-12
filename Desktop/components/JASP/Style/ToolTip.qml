@@ -3,6 +3,7 @@ import QtQuick.Controls.Basic as QtC
 
 QtC.ToolTip {
 	id: control
+	z:	9999
 	implicitWidth: Math.min(jaspTheme.tooltipMaxWidth, contentItem.implicitWidth + leftPadding + rightPadding)
 
 	background: Rectangle
