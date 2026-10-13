@@ -12,7 +12,10 @@ import JASP.Controls
 // from the varInfo resolution (JASPControl::selectionDependency), so a selection loaded from a file
 // is in effect before anything that uses it stamps its .meta - no repair pass involved.
 // Fixture (see Tests/testqml.cpp): dataset 1 (shown: TestInts/TestLetters/TestDoubles/TestNominal)
-// plus "Second" (TestInts with different values + SecondOnly), with default filter + one extra.
+// plus "Second" (TestInts with different values + SecondOnly), with default filter + extras; the
+// workspace is then REOPENED from the database, so every test runs against a reopened file and
+// the eager filter materialisation of DataSet::dbLoad (mds-plan C2/EAGER) is what puts the stored
+// named filter "ReopenMe" in the dropdown.
 Item
 {
 	width:	1000
@@ -110,11 +113,84 @@ Item
 			return names
 		}
 
+		//The FilterSelect (a DropDown) a selecting host embeds behind its Loader: find it by the
+		//option name it registered, so a test can read its error/awaiting state. hasError is the
+		//JASPControl marker (plain Items expose objectName as `name`, not this property).
+		function _selectControlFor(root, optionName)
+		{
+			for (var i = 0; i < root.children.length; i++)
+			{
+				const kid = root.children[i]
+				if (kid.name === optionName && kid.hasError !== undefined)
+					return kid
+				const found = _selectControlFor(kid, optionName)
+				if (found)
+					return found
+			}
+			return null
+		}
+
 		// Declaring a dataSetSelectionOption is what makes an analysis multi-dataset aware
 		// (both modes; no separate dataSetSelection flag any more).
 		function test_option_marks_analysis_aware()
 		{
 			verify(jaspForm.analysis.multiDataSetAware, "a form declaring dataSetSelectionOption implies multiDataSetAware")
+		}
+
+		// The fixture reopened the database (Tests/testqml.cpp), so this whole file runs against
+		// a REOPENED file. 'ReopenMe' was stored, never selected - it reaches the dropdown only
+		// because DataSet::dbLoad materialises every stored filter at open (mds-plan C2/EAGER;
+		// before that it stayed a db row and was unselectable - agent1 m4).
+		function test_reopen_selection_survives_never_run_analysis()
+		{
+			var reopenEntry = _entryFor("Second - ReopenMe")
+			verify(reopenEntry !== null, "'ReopenMe' (stored, never selected) must be offered right after the reopen")
+
+			var savedFilterId = parseInt(reopenEntry.value)
+			var originalA		 = formA.selectedFilterId
+			var originalB		 = formB.selectedFilterId
+
+			try
+			{
+				//The same bind path a .jasp load takes; the dummy analysis is NEVER run, so no
+				//engine pass materialises anything here - exactly the disabled-analysis case of
+				//finding M1, where the old coercion destroyed the saved selection for good.
+				jaspForm.setOptions({ dataSetA: reopenEntry.value })
+				wait(50)
+
+				var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				compare(String(options.dataSetA), String(savedFilterId), "the saved selection must survive the bind intact")
+				compare(formA.selectedFilterId, savedFilterId, "the host must hold the saved filter")
+
+				var select = _selectControlFor(formA, "dataSetA")
+				verify(select !== null, "the selection control must exist")
+				verify(!select.hasError, "binding a reopened filter must not raise 'Unknown option'")
+				verify(!select.valueAwaitsModel, "and nothing may be left pending once it bound")
+
+				var colsA = _columnNames(allVarsA)
+				verify(colsA.indexOf("SecondOnly") !== -1, "form A must show the saved selection's dataset, got: " + colsA)
+			} finally
+			{
+				formA.selectedFilterId = originalA	//functions run alphabetically: don't bleed
+				formB.selectedFilterId = originalB
+				wait(20)
+			}
+		}
+
+		// Every dataset×filter pair of the reopened file is in the model, including the named
+		// ones - the aware dropdown, the RPC dataset_info list and the workspace dropdown all
+		// iterate these same live filters.
+		function test_reopened_named_filter_is_offered()
+		{
+			var entries = formA.filterSelectionValues
+			var reopened = _entryFor("Second - ReopenMe")
+			verify(reopened !== null, "the stored named filter must be listed without any priming")
+
+			var ids = entries.map(function (e) { return String(e.value) })
+			verify(ids.indexOf(String(reopened.value)) !== -1, "its value is the stored filter id")
+
+			for (var entry of entries)
+				verify(entry.label.indexOf(" - ") > 0, "every entry labels its dataset and filter, got: " + entry.label)
 		}
 
 		// The offered values are filter ids with 'DataSet - Filter' labels, equal on both forms.
@@ -232,6 +308,63 @@ Item
 			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
 			compare(String(options.rCodeSet), String(secondFilterId), "its selection travels as its own option")
 			compare(String(options.dataSetA), String(formA.selectedFilterId), "the other options stay put")
+		}
+
+		// Agent-2's scratch probe (tst_reopenCoerce.qml) promoted: a selection value naming no
+		// filter at all (id 987654: no live filter, no db row - the deleted/corrupted case eager
+		// loading cannot rescue) must NOT be coerced to the first dropdown entry. The option keeps
+		// the saved value while it waits for a model that can serve it, the host keeps its own
+		// selection, and the control reports the problem instead of rewriting the file's content
+		// behind the user's back (mds-plan C2/BIND). Last test alphabetically; restores anyway.
+		function test_unknown_saved_filter_id_waits_not_coerced()
+		{
+			var unknownId = 987654
+
+			//Park formA on a SECOND-dataset filter first, so its selection differs from the first
+			//dropdown entry (dataset 1's default). Otherwise a coercion to entry 0 would land on
+			//the very id the host already held and the bug would hide.
+			var secondEntry = _entryFor("Second - ")
+			verify(secondEntry !== null, "fixture must offer a second-dataset filter")
+			var distinctId = parseInt(secondEntry.value)
+
+			formA.selectedFilterId = distinctId
+			wait(20)
+			var before = formA.selectedFilterId
+			var firstEntry = null
+			for (var entry of formA.filterSelectionValues)
+			{
+				firstEntry = entry
+				break
+			}
+			verify(parseInt(firstEntry.value) !== unknownId, "fixture sanity: first entry is not the unknown id")
+			verify(parseInt(firstEntry.value) !== before, "host must start OFF entry 0 so coercion is visible")
+
+			var select = _selectControlFor(formA, "dataSetA")
+			verify(select !== null, "the selection control must exist")
+
+			try
+			{
+				jaspForm.setOptions({ dataSetA: String(unknownId) })
+				wait(50)
+
+				var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				compare(String(options.dataSetA), String(unknownId),
+						"an unknown saved selection must not be rewritten to the first entry's id")
+				compare(formA.selectedFilterId, before,
+						"the host must not be pushed to another filter by an unknown value")
+				verify(select.valueAwaitsModel, "the value must stay pending until a model could serve it")
+				verify(select.hasError, "the control must report the unknown option (error state)")
+				compare(select.currentValue, "", "and show nothing rather than a coerced entry")
+			} finally
+			{
+				//rebind through the combo itself: it is the side holding the pending value (the
+				//host never moved), so a plain host reselect would leave the option at 987654.
+				select.currentValue = String(before)
+				wait(20)
+			}
+
+			var restored = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			compare(String(restored.dataSetA), String(before), "the option is back on a live filter after the restore")
 		}
 
 		// source-first resolution: a list that declares `source` inherits the variable namespace of

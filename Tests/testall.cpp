@@ -2674,18 +2674,41 @@ void TestAll::testDataSetFilterIdsSurviveStorageReload()
 	QCOMPARE(reFirst->defaultFilter()->id(),	defFirst);
 	QCOMPARE(reSecond->defaultFilter()->id(),	defSecond);
 
-	//Named filter objects load lazily (the app materialises them via showFilter/sync), but the
-	//row - and its id - is there from the restored db, so the lazy load re-attaches to exactly
-	//the id saved provenance refers to. No remapping needed, ever.
+	//C2/EAGER: dbLoad materialises EVERY stored filter while the file opens - no showFilter
+	//priming, no lazy attach needed (agent1 m4/m5). The row is attached to, not replaced by,
+	//exactly the id saved provenance refers to.
 	QCOMPARE(DatabaseInterface::singleton()->filterGetId(idSecond, "KeepMyId"), namedId);
+	QVERIFY2(reSecond->filter(namedId) != nullptr, "the named filter must be live right after reopen (eager dbLoad)");
+	QVERIFY2(reSecond->filter(fq("KeepMyId")) != nullptr, "the named filter must be live by name too");
+	QCOMPARE(reSecond->filters().size(), size_t(2));	//default + KeepMyId, attached at their old ids
+	QCOMPARE(reSecond->filter(fq("KeepMyId"))->id(), namedId);
+	QCOMPARE(reopen.filterById(namedId), reSecond->filter(namedId));
 
-	Filter * reNamed = reSecond->showFilter(fq("KeepMyId"));
-	QVERIFY(reNamed);
-	QCOMPARE(reNamed->id(), namedId);
+	//The dropdown the aware selection offers lists live filters only - after the eager load it
+	//contains the reopened named filter, so it is selectable again (agent1 m4).
+	bool namedInDropDown = false;
+	for(const QVariant & entry : reopen.dataSetFilterDropDownList())
+		if(entry.toMap().value("value").toString() == QString::number(namedId))
+			namedInDropDown = true;
+	QVERIFY2(namedInDropDown, "dataSetFilterDropDownList must offer the reopened named filter");
 
 	//A selection option value (a filter id as string) resolves to the very same filter in the
 	//reopened workspace - which is all save/load round-tripping needs from these ids.
+	Filter * reNamed = reSecond->showFilter(fq("KeepMyId"));
+	QVERIFY(reNamed);
+	QCOMPARE(reNamed->id(), namedId);
 	QVERIFY(reopen.filterById(namedId) == reNamed);
+
+	//The lazy db-fallback of Workspace::filterById stays as safety net for rows that never went
+	//through dbLoad (e.g. written by another process): a bare db row, no live object, must still
+	//materialise to exactly its own id (this half was unpinned before - agent1 m5).
+	const int rawId = DatabaseInterface::singleton()->filterInsert(reFirst->id(), "TRUE", DEFAULT_FILTER_GEN, "{}", "", "RawRowFilter");
+	QVERIFY(rawId > 0);
+	QVERIFY2(reFirst->filter(rawId) == nullptr, "a raw db row has no live filter yet");
+	Filter * lazily = reopen.filterById(rawId);
+	QVERIFY(lazily != nullptr);
+	QCOMPARE(lazily->id(), rawId);
+	QVERIFY(lazily->data() == reFirst);
 }
 
 void TestAll::testFilterRemoveFilter()

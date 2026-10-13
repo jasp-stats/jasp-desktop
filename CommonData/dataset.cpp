@@ -146,6 +146,7 @@ Filter *DataSet::loadStoredFilter(const std::string & name)
 	}
 	catch(...)
 	{
+		Log::log() << "DataSet::loadStoredFilter: could not materialise stored filter '" << name << "'" << std::endl;
 		return nullptr;
 	}
 }
@@ -810,6 +811,17 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 	}
 
 	setupEncoderPrefix();
+
+	//Eagerly materialise every stored filter (the upgrade branch above already did). Multi-dataset
+	//aware selections list LIVE filters only (Workspace::_filterDropDownList, RPC dataset_info),
+	//so a named filter that exists only as a db row is unselectable after a reopen - and a saved
+	//selection option naming it gets coerced away by ComboBoxBase::bindTo before it ever reaches
+	//the host (mds-plan C2/EAGER, findings M3/m4). loadStoredFilter attaches to the existing row
+	//so the db row id - the invariant saved provenance refers to - is preserved, is a no-op for
+	//filters that are already live (default included), and runs after setupEncoderPrefix so the
+	//dataset's own encoder is ready for the filters' rescanForColumns.
+	for(const int filterRowId : db().dataSetGetFilters(_dataSetId))
+		loadStoredFilter(db().filterGetName(filterRowId));
 }
 
 

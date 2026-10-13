@@ -49,6 +49,11 @@ public:
 	int							firstLoadedDataSetId() const { return _firstLoadedDataSetId; }
 	void						closeDatabase();
 	void						loadDatabase(const Version & jaspVersion);
+	///< Reopen the current database exactly the way opening a .jasp does: throw the Workspace
+	///< away and dbLoad a fresh one (every dataset and stored filter restored from db rows, ids
+	///< included - see DataSet::dbLoad's eager filter materialisation). loadDatabase() is the
+	///< syntax-bridge flow for a foreign database; this one reopens the database at hand.
+	void						reloadWorkspace();
 
 	QVariant					provideInfo(varInfoType info, const QString& colName = "", int row = 0)		const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name, int row, QVariant value)			override;

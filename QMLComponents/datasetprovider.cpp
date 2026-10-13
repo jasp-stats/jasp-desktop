@@ -69,6 +69,22 @@ void DataSetProvider::resetDataSet()
 	_firstLoadedDataSetId = -1;
 }
 
+void DataSetProvider::reloadWorkspace()
+{
+	//Open the database at hand afresh, like DataSetPackage does for a .jasp: the Workspace dies,
+	//a new one dbLoads every dataset out of the restored rows (ids preserved, stored filters
+	//materialised eagerly). The syntax bridge's loadDatabase() is not this: it loads a foreign
+	//file into the legacy single-dataset shape.
+	delete _workspace;
+	_workspace = nullptr;
+
+	_db->close();
+	_db->load();
+
+	_workspace = new Workspace(this);
+	_workspace->dbLoad();
+}
+
 int	DataSetProvider::rowCount(const QModelIndex &) const
 {
 	return dataSet()->columnCount();
