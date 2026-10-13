@@ -37,10 +37,10 @@ class ComboBoxBase : public JASPListControl, public BoundControlBase
 	Q_PROPERTY( QString				currentColumnType			READ currentColumnType											NOTIFY currentColumnTypeChanged		)
 	Q_PROPERTY( QString				currentColumnTypeIcon		READ currentColumnTypeIcon										NOTIFY currentColumnTypeIconChanged	)
 	Q_PROPERTY( QString				longestValue				READ longestValue												NOTIFY longestValueChanged			)
-	///< True while this combo is bound to an aware-analysis value its model cannot serve yet:
-	///the combo stays blank, the option keeps the saved value, and it binds for real as soon as
-	///a model update contains it (see bindTo). FilterSelect uses it to not pull the dropdown to
-	///its host over top of a value that is still waiting.
+	///< True while this combo is bound to a value its model cannot serve yet: the combo stays
+	///blank, the option keeps the saved value, and it binds for real as soon as a model update
+	///contains it (see bindTo). FilterSelect uses it to not pull the dropdown to its host over
+	///top of a value that is still waiting.
 	Q_PROPERTY( bool				valueAwaitsModel			READ valueAwaitsModel			NOTIFY currentValueChanged			)
 
 public:
@@ -101,9 +101,9 @@ protected:
 								_currentColumnRealType,
 								_currentColumnTypeIcon;
 	std::string					_unusedInitialValue;
-	///< An aware combo bound to a value its model cannot serve yet keeps it pending in
-	///_unusedInitialValue and sets this flag; it gates the "wait, don't coerce to entry 0"
-	///behaviour of bindTo/termsChangedHandler so non-aware combos keep the exact old flow.
+	///< A combo bound to a value its model cannot serve yet keeps it pending in
+	///_unusedInitialValue and sets this flag: bindTo/termsChangedHandler wait instead of
+	///coercing to entry 0, until the model catches up or a user/host choice supersedes it.
 	bool						_valueAwaitsModel	= false;
 	int							_currentIndex			= -1;
 	QString						_longestLabel;
