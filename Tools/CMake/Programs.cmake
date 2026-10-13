@@ -156,12 +156,22 @@ if(WIN32)
 
   message(CHECK_START "Looking for Rtools $ENV{RTOOLS45_HOME}")
   if(WIN_ARM64)
-    #ARM64: Rtools uses aarcg64-w64-mingw32.static.posix toolchain
     if(DEFINED ENV{RTOOLS45_AARCH64_HOME})
-      set(RTOOLS_PATH "$ENV{RTOOLS45_AARCH64_HOME}/aarch64-w64-mingw32.static.posix" CACHE PATH "Path to Rtools45 aarch64 toolchain folder")
+      file(TO_CMAKE_PATH "$ENV{RTOOLS45_AARCH64_HOME}" _RTOOLS45_AARCH64_HOME)
+      set(RTOOLS_ROOT "${_RTOOLS45_AARCH64_HOME}" CACHE PATH "Path to Rtools45 installation root, e.g., C:/rtools45-aarch64")
     else()
-      set(RTOOLS_PATH "C:/rtools45-aarch64/aarch64-w64-mingw32.static.posix" CACHE PATH "Path to Rtools45 aarch64 toolchain folder")
+      set(RTOOLS_ROOT "C:/rtools45-aarch64" CACHE PATH "Path to Rtools45 installation root, e.g., C:/rtools45-aarch64")
     endif()
+    set(RTOOLS_PATH "${RTOOLS_ROOT}/clangarm64" CACHE PATH "Path to Rtools45 UCRT64 package folder, e.g., C:/rtools45-aarch64/clangarm64")
+    get_filename_component(_RTOOLS_ROOT_FROM_CLANGARM64 "${RTOOLS_PATH}" DIRECTORY)
+    set(RTOOLS_STATIC_TOOLCHAIN_PATH
+        "${_RTOOLS_ROOT_FROM_CLANGARM64}/aarch64-w64-mingw32.static.posix"
+        CACHE PATH
+        "Path to Rtools45 static.posix compiler toolchain, e.g., C:/rtools45-aarch64/aarch64-w64-mingw32.static.posix")
+    set(RTOOLS_BUILD_TOOLS_PATH
+        "${_RTOOLS_ROOT_FROM_CLANGARM64}/usr"
+        CACHE PATH
+        "Path to Rtools45 MSYS build tools, e.g., C:/rtools45-aarch64/usr")
   else()
     if(DEFINED ENV{RTOOLS45_HOME})
       file(TO_CMAKE_PATH "$ENV{RTOOLS45_HOME}" _RTOOLS45_HOME)
@@ -170,21 +180,21 @@ if(WIN32)
       set(RTOOLS_ROOT "C:/rtools45" CACHE PATH "Path to Rtools45 installation root, e.g., C:/rtools45")
     endif()
     set(RTOOLS_PATH "${RTOOLS_ROOT}/ucrt64" CACHE PATH "Path to Rtools45 UCRT64 package folder, e.g., C:/rtools45/ucrt64")
-
-  get_filename_component(_RTOOLS_ROOT_FROM_UCRT "${RTOOLS_PATH}" DIRECTORY)
-  set(RTOOLS_STATIC_TOOLCHAIN_PATH
-      "${_RTOOLS_ROOT_FROM_UCRT}/x86_64-w64-mingw32.static.posix"
-      CACHE PATH
-      "Path to Rtools45 static.posix compiler toolchain, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
-  set(RTOOLS_BUILD_TOOLS_PATH
-      "${_RTOOLS_ROOT_FROM_UCRT}/usr"
-      CACHE PATH
-      "Path to Rtools45 MSYS build tools, e.g., C:/rtools45/usr")
+    get_filename_component(_RTOOLS_ROOT_FROM_UCRT "${RTOOLS_PATH}" DIRECTORY)
+    set(RTOOLS_STATIC_TOOLCHAIN_PATH
+        "${_RTOOLS_ROOT_FROM_UCRT}/x86_64-w64-mingw32.static.posix"
+        CACHE PATH
+        "Path to Rtools45 static.posix compiler toolchain, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
+    set(RTOOLS_BUILD_TOOLS_PATH
+        "${_RTOOLS_ROOT_FROM_UCRT}/usr"
+        CACHE PATH
+        "Path to Rtools45 MSYS build tools, e.g., C:/rtools45/usr")
+  endif()
 
   if(EXISTS ${RTOOLS_PATH})
 
     message(CHECK_PASS "found")
-    message(STATUS "  UCRT package path: ${RTOOLS_PATH}")
+    message(STATUS "  package prefix: ${RTOOLS_PATH}")
     message(STATUS "  static toolchain:  ${RTOOLS_STATIC_TOOLCHAIN_PATH}")
     message(STATUS "  build tools:       ${RTOOLS_BUILD_TOOLS_PATH}")
 
@@ -208,17 +218,32 @@ if(WIN32)
     )
   endif()
 
-  if(NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/gcc.exe"
-     OR NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/g++.exe")
-    message(
-      FATAL_ERROR
-        "Rtools static.posix compiler toolchain not found. Set RTOOLS_STATIC_TOOLCHAIN_PATH to the Rtools static toolchain path, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
-  endif()
+  if(WIN_ARM64)
+    if(NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/gcc.exe"
+      OR NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/g++.exe")
+      message(
+        FATAL_ERROR
+          "Rtools static.posix compiler toolchain not found. Set RTOOLS_STATIC_TOOLCHAIN_PATH to the Rtools static toolchain path, e.g., C:/rtools45-aarch64/aarch64-w64-mingw32.static.posix")
+    endif()
 
-  if(NOT EXISTS "${RTOOLS_BUILD_TOOLS_PATH}/bin/make.exe")
-    message(
-      FATAL_ERROR
-        "Rtools MSYS make not found. Set RTOOLS_BUILD_TOOLS_PATH to the Rtools build tools path, e.g., C:/rtools45/usr")
+    if(NOT EXISTS "${RTOOLS_BUILD_TOOLS_PATH}/bin/make.exe")
+      message(
+        FATAL_ERROR
+          "Rtools MSYS make not found. Set RTOOLS_BUILD_TOOLS_PATH to the Rtools build tools path, e.g., C:/rtools45-aarch64/usr")
+    endif()
+  else()
+    if(NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/gcc.exe"
+      OR NOT EXISTS "${RTOOLS_STATIC_TOOLCHAIN_PATH}/bin/g++.exe")
+      message(
+        FATAL_ERROR
+          "Rtools static.posix compiler toolchain not found. Set RTOOLS_STATIC_TOOLCHAIN_PATH to the Rtools static toolchain path, e.g., C:/rtools45/x86_64-w64-mingw32.static.posix")
+    endif()
+
+    if(NOT EXISTS "${RTOOLS_BUILD_TOOLS_PATH}/bin/make.exe")
+      message(
+        FATAL_ERROR
+          "Rtools MSYS make not found. Set RTOOLS_BUILD_TOOLS_PATH to the Rtools build tools path, e.g., C:/rtools45/usr")
+    endif()
   endif()
 
   if(DEFINED ENV{WIX})
@@ -264,6 +289,7 @@ if(WIN32)
   set(RTOOLS_BUILD_TOOLS_BIN "${RTOOLS_BUILD_TOOLS_PATH}/bin")
   set(RTOOLS_C_COMPILER "${RTOOLS_STATIC_TOOLCHAIN_BIN}/gcc.exe")
   set(RTOOLS_CXX_COMPILER "${RTOOLS_STATIC_TOOLCHAIN_BIN}/g++.exe")
+    set(RTOOLS_R_INTERFACE_GENERATOR "Unix Makefiles")
   if(WIN_ARM64)
     set(RTOOLS_MAKE_PROGRAM
         "C:/rtools45-aarch64/clangarm64/bin/mingw32-make.exe")
