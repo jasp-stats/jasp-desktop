@@ -98,15 +98,23 @@ if(WINDOWS)
   set_target_properties(JASP PROPERTIES OUTPUT_NAME "JASPDesktop") # https://github.com/jasp-stats/jasp-issues/issues/1030
 endif()
 
-if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
-  add_dependencies(JASP Modules)
-  if(NOT LINUX)
+if(WIN_ARM64)
+  # Windows ARM64 uses the local module build (ModulesBuild) exclusively.
+  if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
     add_dependencies(JASPDesktopLib jags)
   endif()
-endif()
-
-if(LOCAL_MODULES_BUILD)
   add_dependencies(JASP ModulesBuild)
+else()
+  if(INSTALL_R_MODULES AND NOT FLATPAK_USED)
+    add_dependencies(JASP Modules)
+    if(NOT LINUX)
+      add_dependencies(JASPDesktopLib jags)
+    endif()
+  endif()
+
+  if(LOCAL_MODULES_BUILD)
+    add_dependencies(JASP ModulesBuild)
+  endif()
 endif()
 
 if(APPLE)
