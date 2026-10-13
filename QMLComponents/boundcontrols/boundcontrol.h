@@ -34,6 +34,12 @@ public:
 	virtual void						setBoundValue(const Json::Value& value, bool emitChange = true)			= 0;
 	virtual const Json::Value&			defaultBoundValue()												const	= 0;
 	virtual	void						setDefaultBoundValue(const Json::Value& defaultValue)					= 0;
+
+	///< Rewrite the stored option with a freshly created .meta (same value, no control-level
+	/// change signal): used by a selecting host to move provenance stamps to a new filter
+	/// without touching values (HostFilterSelection::restampValuesUnderHost). Base: nothing
+	/// to restamp; BoundControlBase implements it for the controls that stamp at all.
+	virtual void						restampValue()															{}
 };
 
 #endif // BOUNDCONTROL_H

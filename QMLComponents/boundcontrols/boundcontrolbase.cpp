@@ -36,23 +36,31 @@ Json::Value BoundControlBase::createMeta()  const
 { 
 	Json::Value meta(Json::objectValue);
 
-	//Provenance for EVERY value of a multi-dataset aware analysis: which dataset (and which
-	//filter of it) the value was selected THROUGH - the owning host's filter under a selecting
-	//VariablesForm/TextArea, else the analysis' own. The ids come straight from the storage db,
-	//so they are still the right ones when the file reopens; filter ids are globally unique and
-	//imply their dataset, so the engine queues its slices from the stamped filter ids alone
-	//(ColumnEncoder::collectFilterIdsFromMeta, consumed by DataBridge::prepareMultiDataSetRun).
-	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
-	Filter       * stampFilter = _control->effectiveSelectionFilter();
-
-	if (analysis && analysis->multiDataSetAware() && stampFilter && stampFilter->data())
-	{
-		meta["dataSetId"]	= stampFilter->data()->id();
-		meta["filterId"]	= stampFilter->id();
-	}
-
 	if (_control->encodeValue())
+	{
 		meta["shouldEncode"] = true;
+
+		//Provenance for the values that actually ENCODE COLUMNS of a multi-dataset aware analysis:
+		//which dataset (and which filter of it) the value was selected THROUGH - the owning host's
+		//filter under a selecting VariablesForm/TextArea, else the analysis' own. The ids come
+		//straight from the storage db, so they are still the right ones when the file reopens;
+		//filter ids are globally unique and imply their dataset, so the engine queues its slices
+		//from the stamped filter ids alone (ColumnEncoder::collectFilterIdsFromMeta, consumed by
+		//DataBridge::prepareMultiDataSetRun) and attributes every encoded value to its own
+		//dataset's encoder. Scalars carry no stamp on purpose (mds-plan C3/M5): they never rewrite
+		//themselves when a host switches selection, so their stamp could only go stale - and a
+		//stale stamped id seeds a phantom slice for a filter nothing uses anymore. Column-bearing
+		//values stay live because a changing host restamps them (HostFilterSelection) and a
+		//changing selection re-encodes them through the provider chain.
+		AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+
+		if (analysis && analysis->multiDataSetAware())
+			if (Filter * stampFilter = _control->effectiveSelectionFilter(); stampFilter && stampFilter->data())
+			{
+				meta["dataSetId"]	= stampFilter->data()->id();
+				meta["filterId"]	= stampFilter->id();
+			}
+	}
 	
 	for(const std::string & key : _isRCode)
 		if(key.empty())		meta	 ["isRCode"] = true;
@@ -99,6 +107,25 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 
 	if (emitChange)
 		emit _control->boundValueChanged(_control);
+}
+
+void BoundControlBase::restampValue()
+{
+	AnalysisForm* form = _control->form();
+
+	//Same option value, freshly created .meta, and no boundValueChanged: a selecting host uses
+	//this to move the provenance of its (unchanged) column values onto a new filter. A control
+	//whose option isn't in the json yet has nothing to restamp, and writing one here would
+	//create an option that was never set.
+	if (!form || !_control->isBound())
+		return;
+
+	const Json::Value &value = boundValue();
+
+	if (value.isNull())
+		return;
+
+	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 }
 
 void BoundControlBase::setIsRCode(std::string key)

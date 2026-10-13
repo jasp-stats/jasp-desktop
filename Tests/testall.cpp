@@ -2603,6 +2603,73 @@ void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 	QCOMPARE(analysis.usesDataSet(42), false);
 }
 
+void TestAll::testAnalysisBaseDataSpecWhenAware()
+{
+	//C3/M7: dataSpec() for a multi-dataset aware analysis must come from the datasets its bound
+	//values reference, not from dataSet() - which an aware analysis deliberately refuses (and
+	//Desktop::Analysis logs about). Before this the aware branch was dead code: the early return
+	//on !data already yielded "", so the results header showed nothing about the data.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+	QVERIFY(a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+
+	AnalysisBase analysis;
+
+	Json::Value boundValues(Json::objectValue);
+	boundValues["dependent"]	= "x";
+	boundValues["covariate"]	= "y";
+	boundValues["extra"]		= "z";
+
+	Json::Value meta(Json::objectValue);
+	meta["dependent"]["dataSetId"]		= a->id();
+	meta["dependent"]["filterId"]		= a->defaultFilter()->id();
+	meta["dependent"]["shouldEncode"]	= true;
+	meta["covariate"]["dataSetId"]		= b->id();
+	meta["covariate"]["filterId"]		= b->defaultFilter()->id();
+	meta["covariate"]["shouldEncode"]	= true;
+	meta["extra"]["dataSetId"]			= a->id();				//second stamp of the same dataset: deduped
+	meta["extra"]["filterId"]			= a->defaultFilter()->id();
+	meta["extra"]["shouldEncode"]		= true;
+	boundValues[".meta"] = meta;
+
+	analysis.setBoundValues(boundValues);
+
+	//Not aware: bit-identical legacy behaviour - the base dataSet() is nullptr, so is the spec
+	//(the aware branch must not change anything on this path, not even call dataSet()):
+	QCOMPARE(analysis.dataSpec(), QString(""));
+
+	//Aware: one entry per referenced dataset (deduped), in id order, " + " joined:
+	analysis.setMultiDataSetAware(true);
+	const QString spec = analysis.dataSpec();
+
+	QVERIFY2(spec == a->title() + " + " + b->title(),
+			 qPrintable(QString("dataSpec should name both referenced datasets, got: '%1'").arg(spec)));
+
+	//A reference that resolves to no dataset anymore contributes nothing (and must not print a
+	//bare separator):
+	Json::Value dead = meta;
+	dead["gone"]["dataSetId"]	= 987654;
+	dead["gone"]["filterId"]	= 987655;
+	boundValues[".meta"]		= dead;
+	analysis.setBoundValues(boundValues);
+
+	QCOMPARE(analysis.dataSpec(), a->title() + " + " + b->title());
+
+	//And with nothing referenced at all the spec is simply empty:
+	analysis.setBoundValues(Json::Value(Json::objectValue));
+	QCOMPARE(analysis.dataSpec(), QString(""));
+}
+
 void TestAll::testAnalysisBaseReferencedDataSets()
 {
 	AnalysisBase analysis;

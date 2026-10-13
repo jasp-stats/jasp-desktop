@@ -386,6 +386,34 @@ int AnalysisBase::filterId() const
 
 QString AnalysisBase::dataSpec() const
 {
+	//A multi-dataset aware analysis has no single dataset: Desktop::Analysis::dataSet() refuses
+	//to name one (and logs about it), so the old `!data` early return made this always empty for
+	//aware analyses - the results header showed nothing and every call spammed the log. The spec
+	//comes from the datasets the options actually reference instead: own dataset first when it
+	//has one, then the others, " + " joined - deleting any of them has consequences for this
+	//analysis as well (mds-plan C3/M7).
+	if(multiDataSetAware())
+	{
+		Workspace * workspace = Workspace::singleton();
+
+		if(!workspace)
+			return "";
+
+		const std::map<int, int> referenced = referencedDataSets();
+
+		QStringList titles;
+
+		if(_filterDataSet)
+			titles.append(_filterDataSet->title());
+
+		for(const auto & dataSetFilter : referenced)
+			if(!_filterDataSet || dataSetFilter.first != _filterDataSet->id())
+				if(DataSet * other = workspace->dataSetById(dataSetFilter.first))
+					titles.append(other->title());
+
+		return titles.join(" + ");
+	}
+
 	DataSet * data = dataSet();
 
 	if(!data)
@@ -394,27 +422,10 @@ QString AnalysisBase::dataSpec() const
 	bool showDataSet	= data->workspace() && data->workspace()->dataSets().size()	> 1,
 		 showFilter		= _filter			&& data->filters().size()				> 1;
 
-	QString spec =	showDataSet && showFilter	?	QString("%1 - %2").arg(data->title(), _filter->title())
+	return	showDataSet && showFilter	?	QString("%1 - %2").arg(data->title(), _filter->title())
 		:	showDataSet					?	data->title()
 		:	showFilter					?	_filter->title()
 		:									"";
-
-	//A multi-dataset aware analysis may reference more datasets than its own; show those too, deleting one
-	//has consequences for this analysis as well.
-	if(multiDataSetAware() && data->workspace())
-	{
-		QStringList otherTitles;
-
-		for(const auto & dataSetFilter : referencedDataSets())
-			if(dataSetFilter.first != data->id())
-				if(DataSet * other = data->workspace()->dataSetById(dataSetFilter.first))
-					otherTitles.append(other->title());
-
-		if(!otherTitles.isEmpty())
-			spec = spec.isEmpty() ? otherTitles.join(", ") : QString("%1 + %2").arg(spec, otherTitles.join(", "));
-	}
-
-	return spec;
 }
 
 void AnalysisBase::setMultiDataSetAware(bool multiDataSetAware)

@@ -20,6 +20,7 @@
 #include "jaspcontrol.h"
 #include "analysisform.h"
 #include "analysisbase.h"
+#include "boundcontrols/boundcontrol.h"
 #include "workspace.h"
 #include "filter.h"
 #include "variableinfo.h"
@@ -145,7 +146,45 @@ void HostFilterSelection::applyFilter(Filter * filter)
 	if (_ownVarInfo)
 		_ownVarInfo->setProvider(filter ? filter : currentFallbackFilter());
 
+	//The provider is live from here on: move the provenance stamps of the column values served
+	//by this selection onto the new filter BEFORE anybody downstream reads the options again.
+	restampValuesUnderHost();
+
 	emit selectedFilterIdChanged();
+}
+
+//The .meta stamps of column-bearing values name the filter they were selected THROUGH
+//(BoundControlBase::createMeta), so a new selection makes the ones below this host stale. A
+//same-dataset switch rewrites no value at all - the encoded column names stay valid - so without
+//this the abandoned filter would keep a stamp (and the engine a phantom slice, and
+//referencedDataSets()/dataSpec()/RPC dataSetIds an over-reported dataset) while the live one had
+//none. Values are not touched: each control's .meta is simply rewritten through the provider
+//chain, which now resolves to `filter`. Scalars are walked too but createMeta no longer stamps
+//them (mds-plan C3/M5), so this can never (re)introduce a stamp that shouldn't be there.
+void HostFilterSelection::restampValuesUnderHost()
+{
+	AnalysisForm * form = _host->form();
+	AnalysisBase * analysis = form ? form->analysisObj() : nullptr;
+
+	if(!analysis || !analysis->multiDataSetAware())
+		return;
+
+	//Exactly the controls whose variables resolve through THIS host: a nested host serves its
+	//own subtree, and the resolution follows `source` too, so a list fed from below this host -
+	//even one visually parked elsewhere - is restamped where its names actually come from.
+	const QList<JASPControl *> controls = form->findChildren<JASPControl *>();
+
+	for(JASPControl * control : controls)
+	{
+		if(control == _host || !control->isBound() || !control->encodeValue())
+			continue;
+
+		if(control->selectionHost() != _host)
+			continue;
+
+		if(BoundControl * bound = control->boundControl())
+			bound->restampValue();
+	}
 }
 
 Filter * HostFilterSelection::currentFallbackFilter() const
