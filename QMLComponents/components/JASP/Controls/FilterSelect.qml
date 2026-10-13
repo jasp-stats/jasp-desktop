@@ -61,6 +61,12 @@ DropDown
 		if (!host || host.selectedFilterId < 0)
 			return
 
+		//A saved value the model cannot serve yet is waiting on it (ComboBoxBase keeps the option
+		//intact and shows the error): pulling to the host's fallback here would rewrite that
+		//saved selection, exactly what the waiting exists to prevent (mds-plan C2/BIND).
+		if (filterSelect.valueAwaitsModel)
+			return
+
 		if (parseInt(currentValue) !== host.selectedFilterId)
 		{
 			const entry = _entryForFilterId(host.selectedFilterId)

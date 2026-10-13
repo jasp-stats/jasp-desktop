@@ -18,6 +18,7 @@
 
 #include "comboboxbase.h"
 #include "analysisform.h"
+#include "analysisbase.h"
 #include "log.h"
 #include "jasptheme.h"
 
@@ -38,6 +39,20 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 	const Terms& terms = _model->terms();
 	int index = -1;
 
+	//The waiting-for-model behaviour below is for multi-dataset aware analyses only (mds-plan
+	//C2/BIND): there, a bound value the model cannot serve yet must stay pending, never be
+	//rewritten. Non-aware combos keep the exact pre-existing flow, so nothing may be reset for
+	//them here; for aware ones bindTo fully recomputes the pending state, so a value pending
+	//from an earlier bind (or an earlier analysis in this form) can never leak into this one.
+	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+	const bool preservesUnknown = analysis && analysis->multiDataSetAware();
+
+	if (preservesUnknown)
+	{
+		_unusedInitialValue	= "";
+		_valueAwaitsModel	= false;
+	}
+
 	if (terms.size() > 0)
 	{
 		if (selectedValue.empty())	index = 0;
@@ -56,9 +71,25 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 			if (index == -1)
 			{
 				addControlError(tr("Unknown option %1 in DropDown %2").arg(tq(selectedValue)).arg(name()));
-				index = 0;
-				// Maybe the values will be reset afterwards due to some QML/JavaScript dependencies: use this selectedValue if the model is reset during the initialization of the form
-				_unusedInitialValue = selectedValue;
+
+				if (preservesUnknown)
+				{
+					// Snapping to index 0 here used to rewrite the option and push the coerced
+					// value into whatever the control drives, silently destroying what the file
+					// saved (the classic hit: a reopened multi-dataset selection naming a filter
+					// the dropdown offers only a moment later, finding M1). Show the error and
+					// keep the value pending instead: the combo stays blank, the option keeps
+					// the value as it came in, and termsChangedHandler() binds it for real (and
+					// clears the error) the moment the model can serve it.
+					_unusedInitialValue	= selectedValue;
+					_valueAwaitsModel	= true;
+				}
+				else
+				{
+					index = 0;
+					// Maybe the values will be reset afterwards due to some QML/JavaScript dependencies: use this selectedValue if the model is reset during the initialization of the form
+					_unusedInitialValue = selectedValue;
+				}
 			}
 		}
 	}
@@ -69,11 +100,16 @@ void ComboBoxBase::bindTo(const Json::Value& value)
 		// So keep this value, and use it if the model is reset during the initialization of the form.
 		_unusedInitialValue = selectedValue;
 
-	_setCurrentProperties(index);
+	_setCurrentProperties(index, !_valueAwaitsModel);
 
 	_resetItemWidth();
 
-	if (_control->encodeValue())
+	if (_valueAwaitsModel)
+		// The option must keep what the file saved while the value waits for a model that can
+		// serve it; writing the empty _currentValue here would destroy it just like the old
+		// coercion to entry 0 did.
+		BoundControlBase::bindTo(value);
+	else if (_control->encodeValue())
 	{
 		Json::Value newValue(Json::objectValue);
 		Json::Value type = _isValueWithTypes(value) ? value["types"] : Json::nullValue;
@@ -139,7 +175,14 @@ void ComboBoxBase::setUp()
 	if (form())
 	{
 		connect(form(), &AnalysisForm::languageChanged,			this,	[this] () { _model->sourceTermsReset(); }	);
-		connect(form(), &AnalysisForm::analysisChanged,			this,	[this] () { _unusedInitialValue = ""; });
+		connect(form(), &AnalysisForm::analysisChanged,			this,	[this] () {
+			// Non-aware: unchanged (always drops any leftover value on analysis change). Aware:
+			// analysisChanged fires at the END of setAnalysisUp, after the rebind, so it must not
+			// drop a value that is still waiting for its model to catch up (mds-plan C2/BIND);
+			// bindTo() owns resetting that one.
+			if (!_valueAwaitsModel)
+				_unusedInitialValue = "";
+		});
 	}
 }
 
@@ -176,6 +219,7 @@ void ComboBoxBase::termsChangedHandler()
 					index = lostValueIndex;
 					_orgValue = _unusedInitialValue;
 					_unusedInitialValue = "";
+					_valueAwaitsModel = false;
 					clearControlError();
 				}
 			}
@@ -184,7 +228,20 @@ void ComboBoxBase::termsChangedHandler()
 			index = _getStartIndex();
 
 		if (index < 0 || index > int(terms.size()))
+		{
+			if (_valueAwaitsModel)
+			{
+				// A value is still waiting for this model (bindTo found no entry for it): it
+				// keeps waiting instead of snapping to entry 0 - snapping would write that entry
+				// into the option and destroy the saved value all over again (see bindTo). Show
+				// nothing, leave the bound value untouched, the error state stays on screen.
+				_setCurrentProperties(-1, false);
+				_resetItemWidth();
+				return;
+			}
+
 			index = 0;
+		}
 	}
 
 	_setCurrentProperties(index);
@@ -194,6 +251,15 @@ void ComboBoxBase::termsChangedHandler()
 
 void ComboBoxBase::activatedSlot(int index)
 {
+	//A deliberate user pick ends any waiting: the saved value that had no model entry is now
+	//superseded by what the user actually chose (and its error, added in bindTo, is cleared).
+	if (_valueAwaitsModel)
+	{
+		_unusedInitialValue	= "";
+		_valueAwaitsModel	= false;
+		clearControlError();
+	}
+
 	_setCurrentProperties(index);
 }
 
@@ -242,7 +308,19 @@ void ComboBoxBase::setCurrentLabel(QString label)
 void ComboBoxBase::setCurrentValue(QString value)
 {
 	if (initialized())
-		_setCurrentProperties(_model->terms().indexOfValue(value));
+	{
+		int index = _model->terms().indexOfValue(value);
+
+		if (index != -1 && _valueAwaitsModel)
+		{
+			//A programmatic selection of a real entry (FilterSelect following its host) is the
+			//new truth: a value still waiting from the file must not snatch the control back.
+			_unusedInitialValue	= "";
+			_valueAwaitsModel	= false;
+		}
+
+		_setCurrentProperties(index);
+	}
 	else
 		_currentValue = value;
 }
