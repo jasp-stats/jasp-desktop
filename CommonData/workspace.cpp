@@ -544,6 +544,117 @@ QVariantList Workspace::_filterDropDownList(int excludeDataSetId) const
 	return out;
 }
 
+// --- mds-plan C4/RESOLVER: the dataset-selection syntax surface, see workspace.h -------------
+// Ids stay the internal wire format; these maps are how the human strings of syntax text get
+// onto the wire and back. Exact lookup only, never parsing: dataset titles may themselves
+// contain " - " (or ":"), so splitting would silently mis-resolve.
+
+QMap<QString, int> Workspace::datasetSelectionSurfaceMap() const
+{
+	QMap<QString, int> map;
+
+	//Every dropdown entry ("title - filterName" -> filter id), default filters included: their
+	//label embeds the translatable "Default filter", which is precisely why scripts are pointed
+	//at the bare titles below instead - but the label works too, in the language it was written.
+	for(const QVariant & entry : dataSetFilterDropDownList())
+	{
+		const QVariantMap mapEntry	= entry.toMap();
+		bool			  ok		= false;
+		const int		  filterId	= mapEntry.value("value").toString().toInt(&ok);
+
+		if(ok)
+			map.insert(mapEntry.value("label").toString(), filterId);
+	}
+
+	//Bare dataset title -> that dataset's default filter id (language-independent spelling of
+	//"the data as loaded"). Bare titles WIN label collisions - a dataset titled like another
+	//pair's dropdown label is addressed by its title, because titles are the primary handle:
+	for(const auto & idData : _dataSets)
+	{
+		const DataSet * dataSet = idData.second;
+
+		if(!dataSet || !dataSet->defaultFilter())
+			continue;
+
+		if(map.contains(dataSet->title()) && map.value(dataSet->title()) != dataSet->defaultFilter()->id())
+			Log::log() << "Workspace: dataset title '" << dataSet->title()
+			           << "' collides with a dataset/filter dropdown label, the bare title wins (-> default filter "
+			           << dataSet->defaultFilter()->id() << ")" << std::endl;
+
+		map.insert(dataSet->title(), dataSet->defaultFilter()->id());
+	}
+
+	return map;
+}
+
+QString Workspace::datasetSelectionSurface(int filterId) const
+{
+	if(filterId <= 0)
+		return QString();
+
+	for(const auto & idData : _dataSets)
+	{
+		const DataSet * dataSet = idData.second;
+
+		if(!dataSet)
+			continue;
+
+		if(dataSet->defaultFilter() && dataSet->defaultFilter()->id() == filterId)
+			return dataSet->title();									//bare: no translatable fragment in syntax
+
+		for(const Filter * f : dataSet->filters())
+			if(f != dataSet->defaultFilter() && f->id() == filterId)
+				return dataSet->title() + " - " + f->title();			//user strings all the way
+	}
+
+	return QString();													//unknown id renders empty (and the empty selection then fails loudly on re-parse)
+}
+
+bool Workspace::resolveDataSetSelectionValue(const QString &optionName, const Json::Value &value, int &filterId, QString &error) const
+{
+	filterId = -1;
+
+	QString text;
+
+	if(value.isString())
+		text = tq(value.asString());
+	else if(value.isIntegral())
+		text = QString::number(value.asInt64());
+	else if(value.isObject() && value.isMember("value") && (value["value"].isString() || value["value"].isIntegral()))
+	{
+		//Desktop-shaped {types,value}: unwrap the plain string/int inside (the type tag says
+		//nothing about a dataset selection); the bare rules below then apply to it.
+		const Json::Value & inner = value["value"];
+		text = inner.isString() ? tq(inner.asString()) : QString::number(inner.asInt64());
+	}
+	else if(!value.isNull())
+	{
+		error = "The dataset selection option '" + optionName + "' holds a value that is not a plain string: pass the dataset title directly (e.g. \"DataSetA\" or \"DataSetA - myfilter\")";
+		return false;
+	}
+
+	text = text.trimmed();
+
+	const QMap<QString, int> surfaceMap = datasetSelectionSurfaceMap();
+
+	if(text.isEmpty())
+	{
+		error = "The dataset selection option '" + optionName + "' must name one of the loaded datasets (available: " + surfaceMap.keys().join(", ") + ")";
+		return false;
+	}
+
+	if(surfaceMap.contains(text))
+	{
+		filterId = surfaceMap.value(text);
+		return true;
+	}
+
+	//No numeric-id path, ever: a number resolves only when a dataset is actually titled that
+	//number (M4's title-shadows-id disappears together with the id-acceptance it shadowed).
+	error = "The dataset selection option '" + optionName + "' holds '" + text + "', which matches no dataset selection string (available: " + surfaceMap.keys().join(", ") + ")";
+	return false;
+}
+
 bool Workspace::wouldCreateComputedDataSetLoop(DataSet * me, DataSet * target) const
 {
 	std::set<int> visited;

@@ -35,7 +35,20 @@ void HostFilterSelection::setOption(const QString & option)
 	if (_option == option)
 		return;
 
+	const QString previous = _option;
 	_option = option;
+
+	//Registry membership follows the property (mds-plan C4/REGISTRY): the syntax bridge reads
+	//the form's registry instead of scanning children, and a re-registered host applies its own
+	//pending raw selection value (left behind by a parse that ran before this host existed)
+	//immediately. When the form is not yet known here, analysisBecameKnown() registers later.
+	if (AnalysisForm * form = _host->form())
+	{
+		if (!previous.isEmpty())
+			form->unregisterDataSetSelectionOption(previous, _host);
+		if (!_option.isEmpty())
+			form->registerDataSetSelectionOption(_option, _host);
+	}
 
 	emit selectionAvailableChanged();
 
@@ -90,6 +103,10 @@ void HostFilterSelection::analysisBecameKnown()
 	if (!_host->form() || _option.isEmpty())
 		return;
 
+	//The property may have been set before this host knew its form (async instantiation, the
+	//M9 case): registration is idempotent, so doing it again here is harmless - and it is what
+	//puts dynamically created selection hosts into the bridge's registry at all.
+	_host->form()->registerDataSetSelectionOption(_option, _host);
 	//A selection option makes this a multi-dataset analysis by definition: the desktop entry
 	//pushes that flag from the module data, but the syntax bridge runs on a dummy analysis that
 	//gets nothing else - so declare it here, before any option binds and .meta gets stamped.

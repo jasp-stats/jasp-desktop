@@ -83,6 +83,19 @@ Item
 		}
 	}
 
+	// A host instantiated only during the registry test, mimicking a ComponentsList row (created
+	// after form completion; the row's creation context resolves `form`, exactly what a plain
+	// createObject from this document gets too via the root's `form` alias).
+	Component
+	{
+		id:			lateHostComponent
+		TextArea
+		{
+			name:					"lateRCode"
+			dataSetSelectionOption:	"lateSet"
+		}
+	}
+
 	TestCase
 	{
 		id:		testCase
@@ -93,6 +106,13 @@ Item
 			id:				spyLoader
 			target:			jaspForm
 			signalName:		"formCompletedSignal"
+		}
+
+		SignalSpy
+		{
+			id:				spySyntax
+			target:			jaspForm
+			signalName:		"rSyntaxTextChanged"
 		}
 
 		function initTestCase()
@@ -569,6 +589,103 @@ Item
 					"form B's scalar carries no provenance stamp either, got: " + JSON.stringify(meta.bSwitch))
 			verify(meta.dataSetA === undefined && meta.dataSetB === undefined,
 					"selection options need no stamp: their value is the filter id itself")
+		}
+
+		// mds-plan C4/RENDER + RESOLVER + LANG: the wrapper call shown in the form carries the
+		// syntax surface (bare dataset title for a default filter, "title - filterName" for a
+		// named one - never the bound filter id), re-renders when the selection changes, and
+		// survives a language switch: re-resolving the shown text through the bridge's own
+		// exact-match map must land on exactly the filter ids that are bound (round-trip).
+		function test_shownCall_selection_roundtrip_survives_languagechange()
+		{
+			var namedEntry   = _entryFor("Second - ReopenMe")			// named filter of dataset 'Second'
+			var secondEntry  = _entryFor("Second - ")					// the default filter comes first per dataset
+			verify(namedEntry !== null && secondEntry !== null,
+					"fixture must offer both the default and the named 'ReopenMe' filter of 'Second'")
+
+			var originalA = formA.selectedFilterId
+			var originalB = formB.selectedFilterId
+
+			try
+			{
+				formA.selectedFilterId = parseInt(namedEntry.value)		// named filter
+				formB.selectedFilterId = parseInt(secondEntry.value)	// default filter
+				wait(50)
+
+				compare(String(formA.selectedFilterId), String(namedEntry.value), "form A holds the named filter id on the wire")
+
+				var syntax = form.rSyntaxText
+				var mA = syntax.match(/dataSetA\s*=\s*"([^"]*)"/)
+				var mB = syntax.match(/dataSetB\s*=\s*"([^"]*)"/)
+				verify(mA !== null && mB !== null, "the shown call must render both selection options, got: " + syntax)
+
+				// named filter -> exactly its dropdown label (user strings all the way down);
+				// default filter -> the BARE title, never the translatable "... - Default filter":
+				compare(mA[1], "Second - ReopenMe", "a named selection renders as 'title - filterName'")
+				compare(mB[1], "Second", "a default-filter selection renders as the bare dataset title")
+				verify(syntax.indexOf("Default filter") === -1,
+						"no translatable label fragment may enter the shown call")
+
+				// the round trip: shown text -> exact-match resolver (the bridge's own lookup) ->
+				// the very filter ids that are bound on the wire:
+				compare(form.resolveDataSetSelectionText(mA[1]), String(formA.selectedFilterId),
+						"re-parsing the shown surface string lands on form A's bound filter id")
+				compare(form.resolveDataSetSelectionText(mB[1]), String(formB.selectedFilterId),
+						"...and on form B's")
+
+				// LANG: a language change re-emits the shown call (Analyses::languageChangedHandler
+				// emits form()->languageChanged() on every form; the render always rebuilds from the
+				// live workspace map), and the re-shown text still resolves to the same ids.
+				var emittedBefore = spySyntax.count
+				jaspForm.languageChanged()
+				wait(50)
+				verify(spySyntax.count > emittedBefore,
+						"languageChanged must re-emit the shown wrapper call")
+
+				var syntax2 = form.rSyntaxText
+				var m2A = syntax2.match(/dataSetA\s*=\s*"([^"]*)"/)
+				var m2B = syntax2.match(/dataSetB\s*=\s*"([^"]*)"/)
+				verify(m2A !== null && m2B !== null, "the re-shown call still carries both selections")
+				compare(form.resolveDataSetSelectionText(m2A[1]), String(formA.selectedFilterId),
+						"the round-trip invariant holds across the language switch (form A)")
+				compare(form.resolveDataSetSelectionText(m2B[1]), String(formB.selectedFilterId),
+						"the round-trip invariant holds across the language switch (form B)")
+			} finally
+			{
+				formA.selectedFilterId = originalA
+				formB.selectedFilterId = originalB
+				wait(20)
+			}
+		}
+
+		// mds-plan C4/REGISTRY: the bridge reads the form's selection-option registry, so
+		// dataSetSelectionOptionNames must hold exactly the live hosts' option names (and the
+		// TextArea host too - the old findChildren scan covered both statically created kinds; the
+		// registry covers every lifecycle point, tested here for membership).
+		function test_selectionOptionRegistry_membership()
+		{
+			var names = form.dataSetSelectionOptionNames()
+			verify(names.indexOf("dataSetA") !== -1, "formA's option is registered, got: " + names)
+			verify(names.indexOf("dataSetB") !== -1, "formB's option is registered, got: " + names)
+			verify(names.indexOf("rCodeSet")  !== -1, "the TextArea host's option is registered, got: " + names)
+			verify(names.indexOf("dependentA") === -1, "a plain list option is not a selection option, got: " + names)
+
+			// The M9 case proper: a host instantiated AFTER form completion (what a ComponentsList
+			// row does) must be in the registry right away - the bridge translates its option from
+			// then on, no findChildren moment needed. The production dynamic path reaches the host
+			// through JASPControl's formIsKnown signal (RowControls set the isDynamic context
+			// property); a plain createObject from the test takes the static branch, so fire that
+			// same signal here - it is the exact entry point handleFormIsKnown listens on.
+			// NOTE: the host is deliberately NOT destroyed at the end - destroying an addControl'ed
+			// control leaves a dangling pointer in AnalysisForm::_controls (no unregister path
+			// exists; pre-existing lifecycle hole, reported not fixed). Dead-host pruning of the
+			// registry itself is pinned in C++ (JASPTest::testSelectionRegistryLateHostAppliesPendingValue).
+			var late = lateHostComponent.createObject(jaspForm)
+			verify(late !== null, "the late host was created")
+			late.formIsKnown(jaspForm)
+			wait(20)
+			verify(form.dataSetSelectionOptionNames().indexOf("lateSet") !== -1,
+					"a host created after form completion registers immediately (M9)")
 		}
 	}
 }

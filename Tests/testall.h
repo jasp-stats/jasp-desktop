@@ -123,6 +123,24 @@ private slots:
 	// Analyses::remapSavedProvenance and its side table were removed.)
 	void	testDataSetFilterIdsSurviveStorageReload();
 
+	// mds-plan C4/RESOLVER: the syntax surface of the dataset selection options is human strings
+	// only - bare dataset title for the default filter, dropdown label "title - filterName" for a
+	// named one, exact-match lookup against the live workspace (never parsed, ids not enterable) -
+	// including the reverse direction used by the wrapper render and the label-collision
+	// precedence (bare titles win).
+	void	testDataSetSelectionSurfaceMap();
+
+	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
+	// selection host registering after that parse (async instantiation, the M9 case) resolves
+	// its own option out of the pending JSON and writes the filter id into the bound values
+	// immediately - dead hosts are pruned from the registry at read.
+	void	testSelectionRegistryLateHostAppliesPendingValue();
+
+	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
+	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
+	// to misread them), and a same-build round trip opens.
+	void	testJaspArchiveVersionBlocksOlderBuilds();
+
 	// Filter ownership: removeFilter must unregister (no dangling pointer in _filters) and
 	// runFilters() must stay safe afterwards.
 	void	testFilterRemoveFilter();

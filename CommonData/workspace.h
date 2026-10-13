@@ -92,6 +92,32 @@ public slots:
 			Q_INVOKABLE QStringList				dataSetNames() const;
 			QVariantList						inputFilterDropDownList() const;
 			QVariantList						dataSetFilterDropDownList() const;
+
+			// --- dataset selection on the syntax surface (mds-plan C4) ------------------------------
+			// Selection options carry FILTER ids everywhere internally (options json, .jasp, engine,
+			// .meta) - but in syntax text (generated wrapper defaults, the call shown in the form,
+			// hand-written R) they are human strings only: a dropdown label "title - filterName" for
+			// a named filter, or the BARE dataset title for its default filter (the default filter's
+			// own label part is tr()-translatable and must never reach syntax text; user filter names
+			// are user strings and safe). These strings are never parsed or split - titles may contain
+			// " - " or ":" - they are resolved by exact lookup against the maps below, built on demand
+			// from the live workspace so they always self-sync. Filter ids are not enterable syntax.
+
+			///< Syntax surface string -> filter id: every dropdown label, plus every bare dataset
+			///< title pointing at that dataset's default filter. Bare titles win label collisions
+			///  (a dataset may be titled like another pair's label - the title is the more direct
+			///  handle), and the win is logged.
+			QMap<QString, int>					datasetSelectionSurfaceMap() const;
+			///< Reverse of that, for rendering: bound filter id -> bare title (a dataset's default
+			///< filter) or "title - filterName" (named), "" for -1 or an id that resolves to nothing.
+			QString								datasetSelectionSurface(int filterId) const;
+			///< Resolve one raw selection-option value the way the syntax bridge does: a bare
+			///< string (or int - which is only ever a title that happens to read as a number, never
+			///< a dataset or filter id), or that same bare thing inside the desktop-shaped
+			///< {types,value}. On failure returns false and fills a ready-to-show message, naming
+			///  `optionName` and listing what IS selectable (syntax-facing English by design: the
+			///  bridge hands it to R users untouched by the UI language).
+			bool								resolveDataSetSelectionValue(const QString &optionName, const Json::Value &value, int &filterId, QString &error) const;
 			Q_INVOKABLE void					setDataSetComputed(const QString & name, bool computed);
 			void					setShownDataSet(QString	  name);
 			void					setShownDataSet(DataSet * dataSet);

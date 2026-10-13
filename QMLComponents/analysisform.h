@@ -20,6 +20,7 @@
 #define ANALYSISFORM_H
 
 #include <QMap>
+#include <QPointer>
 #include <QQuickItem>
 
 #include "boundcontrols/boundcontrol.h"
@@ -173,10 +174,31 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					cleanUpForm();
 	bool					hasError();
 
-	///< Names of the options that carry a dataset selection (VariablesForm::dataSetSelectionOption);
-	///< the syntax bridge pre-checks these in the raw options JSON before parsing (empty values are
-	///< coerced by the DropDown itself, so the check cannot live in the control).
-	QStringList				dataSetSelectionOptionNames() const;
+	// --- per-form dataset-selection registry (mds-plan C4/REGISTRY, M9) --------------------------
+	// The syntax bridge must translate the surface strings of dataset selection options before
+	// anything binds, and it used a findChildren scan for that - blind to hosts instantiated
+	// asynchronously (ComponentsList rows). Hosts (VariablesFormBase, TextAreaBase) now register
+	// their dataSetSelectionOption on the form (HostFilterSelection::setOption, or the first
+	// analysisBecameKnown() when the form was not yet known at property time) and unregister on
+	// change; dead entries are pruned when read. A host registering LATE while the raw options
+	// of the current parse are still pending resolves and applies its own option immediately -
+	// no scheduled "wait for instantiation" passes anywhere.
+
+	///< Live registry entries (deduplicated, dead hosts pruned); read by the syntax bridge.
+	Q_INVOKABLE QStringList	dataSetSelectionOptionNames() const;
+	void					registerDataSetSelectionOption(const QString &option, JASPControl *host);
+	void					unregisterDataSetSelectionOption(const QString &option, JASPControl *host);
+
+	///< The raw options JSON of the current syntax-bridge parse request (set per request, empty
+	///  clears). A selection host registering after the parse resolves its own option out of
+	///  this and writes the resulting filter id into the analysis values before its DropDown
+	///  binds - so late hosts see exactly what early hosts got.
+	void					setPendingDataSetSelectionRawValues(const Json::Value &rawOptions);
+
+	///< Resolve one dataset-selection syntax surface string to its filter id (exact lookup in
+	///< Workspace::datasetSelectionSurfaceMap), "" when nothing matches. The bridge translates
+	///< through the very same map; QML tests use this to replay the shown wrapper call.
+	Q_INVOKABLE QString		resolveDataSetSelectionText(const QString &surfaceText) const;
 	QString					getError(bool withControlName = false);
 
 	bool					isOwnComputedColumn(const std::string& col)			const	{ return _analysis ? _analysis->isOwnComputedColumn(col) : false; }
@@ -264,6 +286,14 @@ private:
 													_valueChangedEmittedButBlocked	= false;
 	QString											_info,
 													_infoBottom;
+	struct DataSetSelectionRegistration
+	{
+		QPointer<JASPControl>	host;
+		QString					option;
+	};
+	mutable QVector<DataSetSelectionRegistration>			_dataSetSelectionHosts;			///< mds-plan C4/REGISTRY (dead entries pruned at read time by the const accessor)
+	Json::Value										_pendingSelectionRawOptions;		///< raw JSON of the current bridge parse (see setPendingDataSetSelectionRawValues)
+	void											_applyPendingDataSetSelectionValue(const QString &option);
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?
 	qstringset										_waitingFilters;

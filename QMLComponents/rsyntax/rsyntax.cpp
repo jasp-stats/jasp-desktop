@@ -26,9 +26,41 @@
 #include "controls/jasplistcontrol.h"
 #include "boundcontrols/boundcontrolterms.h"
 #include "controls/comboboxbase.h"
+#include "workspace.h"
 
 QString RSyntax::FunctionOptionIndent	= "          ";
 QString RSyntax::FunctionLineIndent		= "   ";
+
+// C4/RENDER: a dataset selection option holds a FILTER id on the wire, but the syntax surface
+// (generated wrapper defaults, the call shown in the form) carries human strings only: the bare
+// dataset title for a default filter, "title - filterName" for a named one, "" for no selection.
+// Reverse lookup through the live workspace; a value that already is a surface string (a combo
+// holding its value pending, mds-plan C2) is kept verbatim - re-parsing resolves it right back.
+// An id that resolves to nothing (dead filter) renders empty: the shown call then fails loudly
+// on re-parse instead of leaking an id into syntax text.
+static QString selectionSurfaceFromBoundValue(const Json::Value &value)
+{
+	const Json::Value * plain = &value;
+	if (plain->isObject() && plain->isMember("value"))
+		plain = &(*plain)["value"];
+
+	QString text;
+	if (plain->isString())			text = tq(plain->asString());
+	else if (plain->isIntegral())	text = QString::number(plain->asInt64());
+	text = text.trimmed();
+
+	Workspace * workspace = Workspace::singleton();
+	if (text.isEmpty() || !workspace)
+		return QString();
+
+	bool isNum = false;
+	const int filterId = text.toInt(&isNum);
+	if (isNum)
+		return workspace->datasetSelectionSurface(filterId);
+
+	const QMap<QString, int> surfaceMap = workspace->datasetSelectionSurfaceMap();
+	return surfaceMap.contains(text) ? text : QString();
+}
 
 
 RSyntax::RSyntax(AnalysisForm *form) : QObject(form), _form(form)
@@ -101,6 +133,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	}
 
 	const Json::Value& boundValues = _form->boundValues();
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
 
 	for (const std::string& member : boundValues.getMemberNames())
 	{
@@ -129,11 +162,16 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			{
 				result += "," + newLine + indent + getRSyntaxFromControlName(control) + " = ";
 
-				JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-				if (listControl && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
-					result += _transformInteractionTerms(listControl->model());
+				if (selectionOptions.contains(memberQ))
+					result += transformJsonToR(Json::Value(fq(selectionSurfaceFromBoundValue(foundValue))));   //surface string, never the bound id
 				else
-					result += transformJsonToR(foundValue);
+				{
+					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
+					if (listControl && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
+						result += _transformInteractionTerms(listControl->model());
+					else
+						result += transformJsonToR(foundValue);
+				}
 			}
 		}
 	}
@@ -215,6 +253,8 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	for (FormulaBase* formula : _formulas)
 		optionsWithFormula += formula->extraOptions(true, true);
 
+	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
+
 	QSet<QString> wrapperArgs;	//argument names emitted so far, to keep the generated function valid R
 
 	for (const std::string& member : boundValues.getMemberNames())
@@ -241,7 +281,13 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		}
 		wrapperArgs.insert(optionName);
 
-		result += ",\n" + FunctionOptionIndent + optionName + " = " + transformJsonToR(defaultValue);
+		//mds-plan C4/RENDER: a selection default enters the wrapper as its surface string (bare
+		//title / "title - filterName", "" when nothing was selected) - never as the bound filter
+		//id, which is internal wire format.
+		const Json::Value renderedDefault = selectionOptions.contains(memberQ)
+				? Json::Value(fq(selectionSurfaceFromBoundValue(defaultValue)))
+				: defaultValue;
+		result += ",\n" + FunctionOptionIndent + optionName + " = " + transformJsonToR(renderedDefault);
 
 		JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
 		if (listControl)
