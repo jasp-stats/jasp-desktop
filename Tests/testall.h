@@ -88,6 +88,23 @@ private slots:
 	// queue restores the legacy single-dataset read-path.
 	void	testMultiDataSetQueueHandout();
 
+	// C1/M1 request-boundary discipline: filling the queue through a real prepareMultiDataSetRun
+	// and clearing it through the very call the syntax bridge entry and Engine::receiveAnalysisMessage
+	// make (setMultiDataSetQueue({})) must leave nothing for the next request - a half-consumed
+	// aware queue can never leak into a later (non-aware) read.
+	void	testMultiDataSetQueueClearedAtRequestBoundary();
+
+	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
+	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
+	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy
+	// name-based path must behave exactly as before.
+	void	testLoadFilteredDataFilterFirstProvenance();
+
+	// C1/e4 primarySliceKey: a real primary filter yields its id as the "primary" member, and when
+	// no primary filter exists the member is ABSENT (jaspBase keys on !is.null - "" would read as
+	// a bogus key).
+	void	testPrepareMultiDataSetRunPrimarySliceKey();
+
 	// A multi-dataset aware analysis has no single dataset: usesDataSet() must answer from the
 	// referenced datasets of the .meta, not from (the absence of) its own filter.
 	void	testAnalysisBaseUsesDataSetWhenAware();

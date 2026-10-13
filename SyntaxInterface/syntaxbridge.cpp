@@ -572,6 +572,14 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!init())
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error during initialization.");
 
+	//Request boundary, exactly like Engine::receiveAnalysisMessage: a slice queue is only ever
+	//valid for the request that filled it. The aware branch below refills it through
+	//prepareMultiDataSetRun; anything else (non-aware parse, early error return, an aware run
+	//whose R side died before consuming every slice) must leave NOTHING behind - otherwise the
+	//next request's dataset reads silently get handed the previous run's dataset/filter/columns.
+	if (gl_dataBridge)
+		gl_dataBridge->setMultiDataSetQueue({});
+
 	std::string qmlFileStr		= qmlFile,
 				versionStr		= version,
 				analysisNameStr	= analysisName,

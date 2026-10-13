@@ -133,6 +133,13 @@ wrapper <- function() {
 wrapper()
 check(identical(env$.multiDataSetMode(), FALSE), "on.exit reset clears the mode (also on error paths)")
 
+# --- primarySliceKey contract (C1/e4): the C++ side OMITS "primary" when there is no primary ----
+# filter; jaspBase keys on !is.null, so an omitted member must give NULL (a "" would surface as a
+# non-NULL key of nothing - what prepareMultiDataSetRun used to emit).
+dsInfoNoPrimary <- list(ids = c("5"), names = c("5" = "Alpha"), dataSetIds = c("5" = "3"))
+primaryAttr     <- if (!is.null(dsInfoNoPrimary$primary)) as.character(dsInfoNoPrimary$primary) else NULL
+check(is.null(primaryAttr), "absent primary member yields NULL primarySliceKey (omit, never \"\")")
+
 # --- bridge-backed round trip: R parser against REAL ColumnEncoder output -------------------------
 # jaspSyntax embeds SyntaxInterface, whose native library contains the very ColumnEncoder the
 # engine uses. When it is available we encode a real dataset through that bridge and run
@@ -187,6 +194,34 @@ if (!haveBridge) {
 		                               auto_unbox = TRUE)), "1", TRUE)
 	encoded2  <- as.character(jsonlite::fromJSON(parsed2, simplifyVector = FALSE)$dependentA[[1]])
 	check(identical(encoded2, encodedValue), "decode -> encode cycle is stable")
+
+	# --- C1/M1 stale-slice regression (agent-3's leak repro) --------------------------------------
+	# An aware parse queues one slice per referenced filter; a run that never consumes them (R died
+	# before the read loop) must not leave them for the NEXT request: syntaxBridgeLoadQmlAndParseOptions-
+	# Status clears the queue at entry, exactly like Engine::receiveAnalysisMessage does per message.
+	# Without that clear the non-aware read below is served the stale aware slice (dataset A's columns
+	# / row count) instead of the freshly loaded dataset.
+	awareQml <- file.path(moduleDir, "inst", "qml", "testMultiDataSet.qml")
+	if (file.exists(awareQml)) {
+		jaspSyntax$clearNativeState()
+		invisible(jaspSyntax$loadDataSets(list(sliceA = data.frame(AlphaCol = 1:5),
+		                                        sliceB = data.frame(BetaCol  = 1:5))))
+		awareStatus <- jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetFunc", awareQml,
+			as.character(jsonlite::toJSON(list(
+				dataSetA = "sliceA", dependentA = list(value = "AlphaCol", types = "scale"),
+				dataSetB = "sliceB", dependentB = list(value = "BetaCol",  types = "scale")),
+				auto_unbox = TRUE)), "1", TRUE)
+		check(nzchar(awareStatus$multiDataSetJson), "aware parse queued its slices (and nobody reads them)")
+		invisible(jaspSyntax$loadDataSet(data.frame(PlainCol = 1:7)))   # unnamed load: new request, non-aware
+		invisible(jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetNonAware", moduleQml,
+			as.character(jsonlite::toJSON(list(dependentA = list(value = "PlainCol", types = "scale")),
+			                               auto_unbox = TRUE)), "1", TRUE))
+		staleSlice <- jaspSyntax$readRequestedDataset(decode = FALSE)
+		check(is.data.frame(staleSlice) && nrow(staleSlice) == 7L,
+		      "stale aware slices do not survive the bridge request boundary (read got the non-aware dataset)")
+	} else {
+		cat("SKIP : C1/M1 stale-slice regression (aware test qml not in", moduleDir, ")\n")
+	}
 
 	jaspSyntax$clearNativeState()
 }

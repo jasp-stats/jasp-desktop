@@ -269,8 +269,11 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	plan.multiDataSetJson["dataSetIds"] = sliceDataSetIds;		///< slice key -> dataset id
 
 	//The primary slice (what the analysis itself runs on): its own filter, else the primary
-	//dataset's default - a real id in the queue above whenever a primary dataset exists.
-	plan.multiDataSetJson["primary"] = primaryFilter ? std::to_string(primaryFilter->id()) : "";
+	//dataset's default - a real id in the queue above whenever a primary dataset exists. When
+	//there is no primary filter at all the member stays ABSENT: jaspBase keys on !is.null, so an
+	//"" here would hand analyses a non-NULL primarySliceKey that is not a key of anything.
+	if(primaryFilter)
+		plan.multiDataSetJson["primary"] = std::to_string(primaryFilter->id());
 
 	auto primaryCols = colsPerDataSet.find(primaryDataSetId);
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
@@ -394,19 +397,44 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 				const std::string	colName = loadFilteredData["column"].asString(),
 									filterN	= loadFilteredData["filter"].asString();
 
-				//A multi-dataset aware analysis records on the option (next to loadFilteredData) which
-				//dataset and filter its values were selected from; honour that, otherwise just use the
-				//dataset this request is anchored at (the old behaviour).
-				DataSet			*	data	= provideAndUpdateDataSet(meta.isObject() ? meta.get("dataSetId", -1).asInt() : -1);
+				//A multi-dataset aware analysis stamps the filter its values were selected through
+				//on the option (createMeta). Filter ids are globally unique and imply their dataset
+				//(Filter::data()), so THAT filter is the anchor: resolve it first and look the column
+				//up in its own dataset - a dataSetId stamped next to it only verifies (a mismatch is
+				//logged, the filter wins), it must never re-point the lookup at another dataset.
+				//Indexing one dataset's column with another dataset's filter vector is an unchecked
+				//out-of-bounds read on filter->filtered(). Options without a filterId stamp (all
+				//non-aware ones) keep the old name-based path on the dataset this request anchors at.
+				Filter			*	stamped	= meta.isObject() && meta.isMember("filterId") && meta["filterId"].isInt()
+											? resolveWorkspace()->filterById(meta["filterId"].asInt())
+											: nullptr;
+				DataSet			*	data	= nullptr;
+				Filter			*	filter	= nullptr;
+
+				if(stamped && stamped->data())
+				{
+					data   = stamped->data();							//the filter implies its dataset; that is the anchor
+					provideAndUpdateDataSet(data->id());				//and point the request's encoder indirection at it too
+					filter = stamped;
+
+					if(meta.isMember("dataSetId") && meta["dataSetId"].isInt() && meta["dataSetId"].asInt() >= 0 && meta["dataSetId"].asInt() != data->id())
+						Log::log() << "DataBridge::updateOptionsAccordingToMeta: provenance mismatch, option stamped dataSetId " << meta["dataSetId"].asInt()
+								   << " but its filterId " << filter->id() << " lives in dataset " << data->id() << "; trusting the filter." << std::endl;
+				}
+				else
+				{
+					data   = provideAndUpdateDataSet(meta.isObject() ? meta.get("dataSetId", -1).asInt() : -1);
+					filter = data->filter(filterN);
+
+					if(!filter && stamped)	//stale filter name AND an unresolvable filterId: nothing left to honour
+						Log::log() << "DataBridge::updateOptionsAccordingToMeta: neither filter '" << filterN << "' nor filterId " << meta["filterId"].asInt()
+								   << " resolves in dataset " << data->id() << "; the option keeps its current values." << std::endl;
+				}
+
 				Column			*	col		= data->column(colName);
 
 				if(!col)
 					return;
-
-				Filter			*	filter	= data->filter(filterN);
-
-				if(!filter && meta.isObject() && meta.isMember("filterId") && meta["filterId"].isInt() && data->workspace())
-					filter = data->workspace()->filterById(meta["filterId"].asInt());
 
 				if(col && filter)
 				{

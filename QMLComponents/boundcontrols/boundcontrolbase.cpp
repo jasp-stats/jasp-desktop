@@ -39,8 +39,9 @@ Json::Value BoundControlBase::createMeta()  const
 	//Provenance for EVERY value of a multi-dataset aware analysis: which dataset (and which
 	//filter of it) the value was selected THROUGH - the owning host's filter under a selecting
 	//VariablesForm/TextArea, else the analysis' own. The ids come straight from the storage db,
-	//so they are still the right ones when the file reopens; they are what lets the engine slice
-	//per dataset+filter (ColumnEncoder::collectDataSetFilterPairsFromMeta).
+	//so they are still the right ones when the file reopens; filter ids are globally unique and
+	//imply their dataset, so the engine queues its slices from the stamped filter ids alone
+	//(ColumnEncoder::collectFilterIdsFromMeta, consumed by DataBridge::prepareMultiDataSetRun).
 	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
 	Filter       * stampFilter = _control->effectiveSelectionFilter();
 
