@@ -68,6 +68,12 @@ AnalysisForm::AnalysisForm(QQuickItem *parent) : QQuickItem(parent)
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::showAllROptionsChanged,	this,		&AnalysisForm::showAllROptionsChanged,	Qt::QueuedConnection);
 	connect(PreferencesModelBase::preferences(),	&PreferencesModelBase::developerModeChanged,	this,		&AnalysisForm::helpMDChanged,			Qt::QueuedConnection);
 	connect(this,									&AnalysisForm::analysisChanged,					this,		&AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
+	//mds-plan C4/LANG: the wrapper call shown in the form is *rendered* text - dataset/filter
+	//strings resolved through the live workspace map. The map itself always self-syncs, but an
+	//already-shown call does not until it is re-rendered, so a language change (which may swap
+	//any translatable fragment that ever entered the render) re-emits it. Analyses::
+	//languageChangedHandler emits this signal on every form.
+	connect(this,									&AnalysisForm::languageChanged,					this,		&AnalysisForm::rSyntaxTextChanged,		Qt::QueuedConnection);
 }
 
 AnalysisForm::~AnalysisForm()
@@ -634,15 +640,103 @@ QStringList AnalysisForm::dataSetSelectionOptionNames() const
 {
 	QStringList names;
 
-	for (VariablesFormBase * variablesForm : findChildren<VariablesFormBase *>())
-		if (variablesForm && !variablesForm->dataSetSelectionOption().isEmpty())
-			names << variablesForm->dataSetSelectionOption();
+	//Registry instead of a findChildren scan (mds-plan C4/REGISTRY, M9): hosts register when
+	//their dataSetSelectionOption is set (or when the form becomes known to them after that),
+	//so dynamically instantiated hosts are in here too. Dead hosts drop out at read time.
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(!it->host)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			continue;
+		}
 
-	for (TextAreaBase * textArea : findChildren<TextAreaBase *>())	//TextArea hosts select the same way
-		if (textArea && !textArea->dataSetSelectionOption().isEmpty())
-			names << textArea->dataSetSelectionOption();
+		if(!it->option.isEmpty() && !names.contains(it->option))
+			names << it->option;
+
+		++it;
+	}
 
 	return names;
+}
+
+void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPControl *host)
+{
+	if(option.isEmpty() || !host)
+		return;
+
+	for(const DataSetSelectionRegistration &registration : _dataSetSelectionHosts)
+		if(registration.host == host && registration.option == option)
+			return;   //already registered
+
+	_dataSetSelectionHosts.append({QPointer<JASPControl>(host), option});
+
+	//Late host (ComponentsList async instantiation while a bridge parse left raw options
+	//pending): resolve and apply its own option right now, before its DropDown binds.
+	_applyPendingDataSetSelectionValue(option);
+}
+
+void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPControl *host)
+{
+	if(option.isEmpty() || !host)
+		return;
+
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(it->host == host && it->option == option)
+			it = _dataSetSelectionHosts.erase(it);
+		else
+			++it;
+	}
+}
+
+void AnalysisForm::setPendingDataSetSelectionRawValues(const Json::Value &rawOptions)
+{
+	_pendingSelectionRawOptions = rawOptions.isObject() ? rawOptions : Json::Value(Json::objectValue);
+}
+
+void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
+{
+	if(!_pendingSelectionRawOptions.isMember(option.toStdString()) || !_analysis)
+		return;
+
+	Workspace * workspace = Workspace::singleton();
+	if(!workspace)
+		return;
+
+	int		   filterId = -1;
+	QString    error;
+
+	if(!workspace->resolveDataSetSelectionValue(option, _pendingSelectionRawOptions[option.toStdString()], filterId, error))
+	{
+		//Same contract as the bridge, but the parse itself already answered: all that is left
+		//to do is leave the value untouched (the combo will hold it pending, C2/BIND) and log.
+		Log::log() << "AnalysisForm: late selection host for option '" << fq(option) << "' could not resolve its pending value: "
+		           << fq(error) << std::endl;
+		return;
+	}
+
+	//Write the option exactly like the desktop dropdown would: a filter-id string in the bound
+	//values, no .meta on it (selection options carry none, mds-plan C3/M5). Late controls bind
+	//from boundValue() (RowControls) or the next parse, so they see the id, not the surface text.
+	_analysis->setBoundValue(fq(option), Json::Value(std::to_string(filterId)), Json::Value());
+
+	_pendingSelectionRawOptions.removeMember(option.toStdString());
+}
+
+QString AnalysisForm::resolveDataSetSelectionText(const QString &surfaceText) const
+{
+	Workspace * workspace = Workspace::singleton();
+
+	int		   filterId = -1;
+	QString    error;
+
+	const Json::Value query(surfaceText.trimmed().toStdString());
+
+	if(!workspace || !workspace->resolveDataSetSelectionValue("query", query, filterId, error))
+		return QString();
+
+	return QString::number(filterId);
 }
 
 bool AnalysisForm::hasError()

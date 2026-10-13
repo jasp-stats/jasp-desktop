@@ -34,10 +34,13 @@
 #include "columnencoder.h"
 #include "databridge.h"
 #include "analysisbase.h"
+#include "analysisform.h"
+#include "controls/jaspcontrol.h"
 #include "data/asyncloader.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
 #include "data/expanddataproxymodel.h"
+#include "archivereader.h"
 #include "mainwindow.h"
 #include "results/resultsjsinterface.h"
 #include "scriptconstructormodel.h"
@@ -2776,6 +2779,215 @@ void TestAll::testDataSetFilterIdsSurviveStorageReload()
 	QVERIFY(lazily != nullptr);
 	QCOMPARE(lazily->id(), rawId);
 	QVERIFY(lazily->data() == reFirst);
+}
+
+void TestAll::testDataSetSelectionSurfaceMap()
+{
+	//mds-plan C4/RESOLVER: option values stay filter ids on the wire, but syntax text carries
+	//human strings only and resolves by EXACT lookup against the live workspace - no parsing,
+	//no numeric-id path. Fixture: "Alpha" (default only), "Second" (+ named "KeepMyId"),
+	//a dataset titled "42" (a number is a title here, nothing more) and one titled exactly
+	//like another pair's dropdown label (the collision the precedence rule is about).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(csv), second, [](int){});
+	second->setTitle("Second");
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	DataSet * numeric = ws->createDataSet();
+	QVERIFY(numeric);
+	importer.loadDataSet(fq(csv), numeric, [](int){});
+	numeric->setTitle("42");
+
+	DataSet * shadow = ws->createDataSet();
+	QVERIFY(shadow);
+	importer.loadDataSet(fq(csv), shadow, [](int){});
+	shadow->setTitle("Second - KeepMyId");   //equal to second's named-filter label
+
+	const QMap<QString, int> surface = ws->datasetSelectionSurfaceMap();
+
+	//Bare title -> default filter; dropdown label -> its filter:
+	QCOMPARE(surface.value("Alpha"), alpha->defaultFilter()->id());
+	QCOMPARE(surface.value("Second"), second->defaultFilter()->id());
+	QCOMPARE(surface.value("Second - KeepMyId"), shadow->defaultFilter()->id());   //bare title WINS the collision (logged)
+	QCOMPARE(surface.value("42"), numeric->defaultFilter()->id());                 //a number is only ever a title
+
+	//The exact-match resolver agrees with the map, and there is no id path: "1" resolves only
+	//if a dataset is titled "1" (none is), so a dataset/filter id written into syntax fails:
+	int		 filterId	= -1;
+	QString  error;
+
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Second - KeepMyId"), filterId, error) && filterId == shadow->defaultFilter()->id(),
+			 qPrintable(QString("the shadowing title must resolve to its own dataset, got %1 (%2)").arg(filterId).arg(error)));
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Second - " + fq(second->defaultFilter()->title())), filterId, error) && filterId == second->defaultFilter()->id(),
+			 qPrintable(QString("the default filter's own label must resolve too, got %1 (%2)").arg(filterId).arg(error)));
+
+	filterId = 12345;
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", Json::Value(std::to_string(alpha->defaultFilter()->id())), filterId, error) && filterId == -1,
+			 "a bare filter/dataset id is not syntax anymore (M4): the numeric-id acceptance is gone");
+	QVERIFY2(error.contains("available:"), qPrintable(QString("the rejection must list what IS selectable, got: %1").arg(error)));
+	QVERIFY2(error.contains("Alpha") && error.contains("Second - KeepMyId"), qPrintable(QString("the listing must name the datasets, got: %1").arg(error)));
+
+	//Desktop-shaped {types,value}: a plain string/int inside is unwrapped, anything else is
+	//rejected with the direct-title hint (M9's unhelpful error replaced):
+	Json::Value shaped(Json::objectValue);
+	shaped["types"]	= "unknown";
+	shaped["value"] = "42";
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == numeric->defaultFilter()->id(),
+			 qPrintable(QString("{types,value} with a plain title inside must unwrap, got %1 (%2)").arg(filterId).arg(error)));
+
+	shaped["value"] = 42;   //int is equally a plain value
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == numeric->defaultFilter()->id(),
+			 "{types,value} with a plain int inside must unwrap too");
+
+	shaped["value"] = Json::Value(Json::arrayValue);
+	shaped["value"].append("42");
+	filterId = 999;
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", shaped, filterId, error) && filterId == -1, "a non-plain value must be rejected");
+	QVERIFY2(error.contains("pass the dataset title directly"), qPrintable(QString("the rejection must hint the surface contract, got: %1").arg(error)));
+
+	Json::Value empty(Json::objectValue);
+	empty["types"]	= "unknown";
+	empty["value"]	= "";
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetB", empty, filterId, error) && error.startsWith("The dataset selection option 'dataSetB'"),
+			 "an empty selection fails loudly, naming the option");
+
+	//C4/RENDER reverse direction: bound id -> surface string (bare for default, label for named,
+	//empty for nothing/dead id - never an id leaking back into syntax text):
+	QCOMPARE(ws->datasetSelectionSurface(alpha->defaultFilter()->id()), QString("Alpha"));
+	QCOMPARE(ws->datasetSelectionSurface(second->defaultFilter()->id()), QString("Second"));
+	QCOMPARE(ws->datasetSelectionSurface(-1),							 QString(""));
+	QCOMPARE(ws->datasetSelectionSurface(987654),						 QString(""));
+
+	const QString namedSurface = ws->datasetSelectionSurface(named->id());
+	QCOMPARE(namedSurface, QString("Second - KeepMyId"));   //the second dataset's own named filter
+
+	//The map is temporary BY DESIGN: always built from the live workspace, so a rename needs no
+	//cache invalidation anywhere (C4/LANG leans on this):
+	alpha->setTitle("Alpha2");
+	QVERIFY2(ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Alpha2"), filterId, error) && filterId == alpha->defaultFilter()->id(),
+			 "a renamed dataset resolves under its new title immediately");
+	QVERIFY2(!ws->resolveDataSetSelectionValue("dataSetA", Json::Value("Alpha"), filterId, error),
+			 "the old title is gone from the surface immediately");
+}
+
+void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
+{
+	//mds-plan C4/REGISTRY (M9): the bridge hands the raw options JSON of the current parse to
+	//the form; a selection host that registers after the parse (async ComponentsList
+	//instantiation) resolves its own option out of that pending JSON and writes the resulting
+	//filter id into the bound values at registration time, before its DropDown ever binds.
+	//Driven through the C++ API here; the QML lifecycle side (register on late instantiation,
+	//prune on destroy) is pinned in tst_dataSetSelectionVariablesForm.qml.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	DataSet * second = ws->createDataSet();
+	QVERIFY(second);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), second, [](int){});
+	second->setTitle("Second");
+	Filter * named = second->createFilter("KeepMyId", true);
+	QVERIFY(named);
+
+	//The AnalysisForm ctor connects to PreferencesModelBase::preferences(); let it lazily create
+	//a PLAIN base there and the PreferencesModel-based tests later in this binary could no longer
+	//install their own model (the base ctor asserts on an existing singleton). Hand them the
+	//guarded real one, exactly like testSyncKeepMissingColumns does:
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);   //parenting is how AnalysisBase picks up _analysisForm
+	form.setAnalysis(&analysis);
+	Json::Value raw(Json::objectValue);
+	raw["dataSetA"]	= "Second - KeepMyId";
+	raw["dataSetB"]	= "NoSuchDataSet";
+	form.setPendingDataSetSelectionRawValues(raw);
+
+	//Nothing registered yet, nothing applied:
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+	QVERIFY(!analysis.boundValues().isMember("dataSetA"));
+
+	JASPControl * earlyHost = new JASPControl();
+	form.registerDataSetSelectionOption("dataSetA", earlyHost);
+
+	QCOMPARE(form.dataSetSelectionOptionNames(), QStringList({ "dataSetA" }));
+	QCOMPARE(analysis.boundValues()["dataSetA"].asString(), std::to_string(named->id()));   //resolved+applied at registration
+
+	//A late host only ever touches its own option - the unresolvable dataSetB stays untouched
+	//(its DropDown will hold whatever it gets pending, mds-plan C2) - but registers anyway, so
+	//the NEXT parse translates it properly:
+	JASPControl * laterHost = new JASPControl();
+	form.registerDataSetSelectionOption("dataSetB", laterHost);
+	QVERIFY(!analysis.boundValues().isMember("dataSetB"));
+	QVERIFY(form.dataSetSelectionOptionNames().contains("dataSetB"));
+
+	//Request boundary: a fresh parse replaces the pending JSON wholesale; re-registering the
+	//same (host, option) is a no-op and nothing gets applied out of thin air:
+	form.setPendingDataSetSelectionRawValues(Json::Value());
+	form.registerDataSetSelectionOption("dataSetB", laterHost);
+	QVERIFY(!analysis.boundValues().isMember("dataSetB"));
+
+	//Dead hosts drop out at read time - the bridge never demands a value for an option nobody
+	//owns anymore (the old findChildren scan got this half right, the registry must not regress
+	//it):
+	delete earlyHost;
+	QStringList names = form.dataSetSelectionOptionNames();
+	QVERIFY(!names.contains("dataSetA"));
+	QVERIFY(names.contains("dataSetB"));
+
+	delete laterHost;
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+}
+
+void TestAll::testJaspArchiveVersionBlocksOlderBuilds()
+{
+	//mds-plan C4/VERSION: the archive version written into every manifest is 7.0.0 (major).
+	//JASPImporter::isCompatible blocks an older build on `archiveMajor > their own major`, so
+	//aware .jasp files (filter-id selections, eagerly materialised per-file filters) cannot be
+	//half-read by a pre-feature JASP; the same build round trips its own files.
+	QVERIFY(_newPkgWithDataSet());
+
+	const std::string jaspFile = TempFiles::createSpecific("mdsarchiveversion", "temp.jasp");
+
+	Json::Value compareMe = _pkg->dataSet()->jsonForCompare();
+	JASPExporter::createSnapshot("mdsarchiveversion_snapshot_");
+	JASPExporter().saveDataSet(jaspFile, [](int){});
+
+	const ManifestInfo manifest = ArchiveReader::readManifest(jaspFile);
+	//Version::asString minimises (trailing zeroes dropped), so the manifest reads "7": compare
+	//as Versions, which is exactly what JASPImporter::isCompatible does with it.
+	QVERIFY2(Version(manifest.jaspArchiveVersion) == JASPExporter::jaspArchiveVersion
+	         && Version(manifest.jaspArchiveVersion).major() == 7,
+	         qPrintable(QString("manifest should carry the 7.0.0 archive version, got: %1")
+	                    .arg(tq(manifest.jaspArchiveVersion))));
+
+	//Same-build round trip: the importer's own gate must accept what this build wrote...
+	_pkg->reset();
+	JASPImporter::loadDataSet(jaspFile, [](int){});
+	QVERIFY2(_pkg->dataSet(), "same-build round trip must open");
+	QVERIFY2(_pkg->dataSet()->jsonForCompare() == compareMe, "same-build round trip must preserve the dataset");
+	QCOMPARE(_pkg->archiveVersion().major(), 7);
+
+	//...and the gate's direction is the MAJOR comparison that blocks older builds (a 6.x build
+	//reading this file sees 7 > 6 and refuses; the other direction stays readable):
+	QVERIFY(Version("7.0.0").major() > Version("6.0.0").major());
 }
 
 void TestAll::testFilterRemoveFilter()

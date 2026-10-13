@@ -149,7 +149,13 @@ check(is.null(primaryAttr), "absent primary member yields NULL primarySliceKey (
 
 syntaxLib <- Sys.getenv("JASP_SYNTAX_LIB", file.path(dirname(jaspSourceDir), ".toolLib"))
 moduleDir <- Sys.getenv("JASP_TESTMODULE_DIR", file.path(dirname(jaspSourceDir), "jaspTestModule"))
-moduleQml <- file.path(moduleDir, "inst", "qml", "testMultiDataSetNonAware.qml")  # single-dataset twin: no selection options
+# Non-aware single-dataset form for the parse round trips below. mds-plan C4/M8 deleted the
+# multiDataSetNonAware twin it used to target; testVariablesForm is a plain non-aware analysis
+# with a variables list (varS), which is all this section needs. Cross-repo pairing: the twin's
+# removal lands in the same change in jaspTestModule.
+moduleQml  <- file.path(moduleDir, "inst", "qml", "testVariablesForm.qml")
+moduleOpts <- function(column) as.character(jsonlite::toJSON(
+	list(varS = list(value = column, types = "scale")), auto_unbox = TRUE))
 
 # jsonlite & jaspSyntax live in the tool/build libraries; pick them up when present
 for (extraLib in c(syntaxLib, Sys.getenv("JASP_TEST_PKGLIB",
@@ -172,11 +178,10 @@ if (!haveBridge) {
 	names(nasty) <- c("weight (kg)", "2 + 2")
 	jaspSyntax$loadDataSet(nasty)
 
-	parsed <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "multiDataSetNonAware", moduleQml,
-		as.character(jsonlite::toJSON(list(dependentA = list(value = "weight (kg)", types = "scale")),
-		                               auto_unbox = TRUE)), "1", TRUE)
+	parsed <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "testVariablesForm", moduleQml,
+		moduleOpts("weight (kg)"), "1", TRUE)
 	optionsParsed <- jsonlite::fromJSON(parsed, simplifyVector = FALSE)
-	encodedValue  <- as.character(optionsParsed$dependentA[[1]])
+	encodedValue  <- as.character(optionsParsed$varS[[1]])
 
 	check(grepl("^JASPColumn_[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
@@ -189,10 +194,9 @@ if (!haveBridge) {
 
 	# encode again from the decoded plain name: stable (this is the cycle the C++ test pins down
 	# against the encoder itself; here it runs through the whole bridge)
-	parsed2   <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "multiDataSetNonAware", moduleQml,
-		as.character(jsonlite::toJSON(list(dependentA = list(value = decoded, types = "scale")),
-		                               auto_unbox = TRUE)), "1", TRUE)
-	encoded2  <- as.character(jsonlite::fromJSON(parsed2, simplifyVector = FALSE)$dependentA[[1]])
+	parsed2   <- jaspSyntax$loadQmlAndParseOptions("jaspTestModule", "testVariablesForm", moduleQml,
+		moduleOpts(decoded), "1", TRUE)
+	encoded2  <- as.character(jsonlite::fromJSON(parsed2, simplifyVector = FALSE)$varS[[1]])
 	check(identical(encoded2, encodedValue), "decode -> encode cycle is stable")
 
 	# --- C1/M1 stale-slice regression (agent-3's leak repro) --------------------------------------
@@ -213,14 +217,69 @@ if (!haveBridge) {
 				auto_unbox = TRUE)), "1", TRUE)
 		check(nzchar(awareStatus$multiDataSetJson), "aware parse queued its slices (and nobody reads them)")
 		invisible(jaspSyntax$loadDataSet(data.frame(PlainCol = 1:7)))   # unnamed load: new request, non-aware
-		invisible(jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetNonAware", moduleQml,
-			as.character(jsonlite::toJSON(list(dependentA = list(value = "PlainCol", types = "scale")),
-			                               auto_unbox = TRUE)), "1", TRUE))
+		invisible(jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "testVariablesForm", moduleQml,
+			moduleOpts("PlainCol"), "1", TRUE))
 		staleSlice <- jaspSyntax$readRequestedDataset(decode = FALSE)
 		check(is.data.frame(staleSlice) && nrow(staleSlice) == 7L,
 		      "stale aware slices do not survive the bridge request boundary (read got the non-aware dataset)")
 	} else {
 		cat("SKIP : C1/M1 stale-slice regression (aware test qml not in", moduleDir, ")\n")
+	}
+
+	# --- C4/RESOLVER: the selection syntax surface is human strings only (mds-plan C4) -------------
+	# Bare dataset TITLE = default filter, dropdown label "title - filterName" = a named one,
+	# resolved by exact lookup against the live workspace. Dataset ids and filter ids are NOT
+	# enterable in syntax (M4): a number resolves only when a dataset is titled that number.
+	awareParse <- function(selA, selB) {
+		jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetFunc", awareQml,
+			as.character(jsonlite::toJSON(list(
+				dataSetA = selA, dependentA = list(value = "AlphaCol", types = "scale"),
+				dataSetB = selB, dependentB = list(value = "BetaCol",  types = "scale")),
+				auto_unbox = TRUE)), "1", TRUE)
+	}
+	if (file.exists(awareQml)) {
+		jaspSyntax$clearNativeState()
+		surfaceIds <- jaspSyntax$loadDataSets(list("42" = data.frame(AlphaCol = 1:5),
+		                                            B        = data.frame(BetaCol  = 1:5)))
+
+		stSurf <- tryCatch(awareParse("42", "B"), error = function(e) e)
+		check(!inherits(stSurf, "error") && nzchar(stSurf$multiDataSetJson),
+		      "bare titles parse through the bridge")
+		surfParsed <- jsonlite::fromJSON(stSurf$options, simplifyVector = FALSE)
+		surfMsj    <- jsonlite::fromJSON(stSurf$multiDataSetJson)
+		key42 <- as.character(utils::tail(unlist(surfParsed$dataSetA), 1L))
+		keyB  <- as.character(utils::tail(unlist(surfParsed$dataSetB), 1L))
+		check(identical(as.character(surfMsj$dataSetIds[[key42]]), as.character(surfaceIds[["42"]])),
+		      "a dataset TITLED '42' is addressed by that title: numbers on the surface are titles, nothing else")
+		check(identical(as.character(surfMsj$dataSetIds[[keyB]]), as.character(surfaceIds[["B"]])),
+		      "and 'B' resolves to dataset B")
+
+		errNum <- tryCatch({ awareParse(as.character(surfaceIds[[1]]), "B"); "" }, error = function(e) conditionMessage(e))
+		check(grepl("matches no dataset selection string", errNum),
+		      "a numeric DATASET id is rejected outright (M4: ids are internal wire format, never syntax)")
+
+		errName <- tryCatch({ awareParse("42 - myfilter", "B"); "" }, error = function(e) conditionMessage(e))
+		check(grepl("matches no dataset selection string", errName) && grepl("available:", errName),
+		      "'title - name' fails loudly on fresh loads (no named filters there) and lists what IS available")
+
+		errShape <- tryCatch({
+			shapeOpts <- jsonlite::toJSON(list(
+				dataSetA = list(types = "unknown", value = list("42")),   # {types,value} WITHOUT a plain inside
+				dependentA = list(value = "AlphaCol", types = "scale"),
+				dataSetB = "B",
+				dependentB = list(value = "BetaCol", types = "scale")), auto_unbox = FALSE)
+			jaspSyntax$loadQmlAndParseOptionsStatus("jaspTestModule", "multiDataSetFunc", awareQml,
+				as.character(shapeOpts), "1", TRUE)
+			""
+		}, error = function(e) conditionMessage(e))
+		check(grepl("pass the dataset title directly", errShape),
+		      "a shaped selection value with no plain string inside is rejected with the direct-title hint (M9)")
+
+		stPlain <- tryCatch(awareParse(list(types = "unknown", value = "42"), "B"), error = function(e) e)
+		check(!inherits(stPlain, "error"),
+		      "the desktop-shaped {types,value} with a plain title inside still unwraps (old wrapper defaults)")
+
+		jaspSyntax$clearNativeState()
 	}
 
 	jaspSyntax$clearNativeState()

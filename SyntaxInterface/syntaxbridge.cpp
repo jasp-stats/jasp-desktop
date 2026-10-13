@@ -589,15 +589,22 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	if (!form)
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Cannot create QML Form " + qmlFileStr);
 
-	//Dataset selection options are user-facing handles in syntax mode: a dataset TITLE ("haha")
-	//or the DATASET ID that loadDataSet/loadDataSets hand back - while the control contract
-	//everywhere carries FILTER ids: translate them here, in the syntax wrapper layer, before
-	//anything binds, so the QML side is byte-identical in desktop and syntax mode. A dataset
-	//maps to its default filter (syntax has no user filters, the data arrives prefilled) and
-	//anything else fails with a clear message listing what IS loaded. Bare filter ids are NOT
-	//accepted: dataset 1 and filter 1 both exist and a script cannot mean both. (The bound
-	//DropDown itself cannot flag emptiness - it coerces "" to its first entry - so this raw
-	//check stays the gatekeeper.)
+	//Request boundary again (see the queue clear above): raw selection values from a previous
+	//parse must never be picked up by a host registering during this one.
+	form->setPendingDataSetSelectionRawValues(Json::Value());
+
+	//Dataset selection options carry the syntax surface (mds-plan C4): human strings only - the
+	//bare dataset TITLE for a dataset's default filter, or the dropdown label "title - filterName"
+	//for a named one, resolved by EXACT lookup against Workspace::datasetSelectionSurfaceMap()
+	//(never parsed or split: titles may contain " - " or ":"). The control contract everywhere
+	//carries FILTER ids, so the translation happens here, before anything binds, and the QML side
+	//stays byte-identical in desktop and syntax mode. There is no numeric-id path: a number
+	//resolves only when a dataset is titled that number (M4's title-shadows-id went away together
+	//with id acceptance). Unknown strings fail loudly, listing what IS selectable. Hosts that did
+	//not exist yet when this parse ran (async ComponentsList instantiation) get the still
+	//untranslated raw values handed to the form as pending, and resolve their own option the
+	//moment they register it. (The bound DropDown itself cannot flag emptiness - it holds
+	//unmatched values pending - so this raw check stays the gatekeeper.)
 	Json::Value rawOptions;
 	Json::Reader rawReader;
 	if (!rawReader.parse(options, rawOptions))
@@ -607,65 +614,35 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 	if (const QStringList selectionOptions = form->dataSetSelectionOptionNames(); !selectionOptions.isEmpty())
 	{
-		Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr;
+		Json::Value pending = rawOptions;   //what late hosts may still resolve from
 
-		QStringList loaded;
-		if (workspace)
-			for (DataSet * dataSet : workspace->dataSets())
-				if (dataSet)
-					loaded << dataSet->title();
+		Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr;
 
 		for (const QString & option : selectionOptions)
 		{
 			const std::string key = option.toStdString();
 
-			QString text;
+			const Json::Value value = rawOptions.isMember(key) ? rawOptions[key] : Json::Value("");
 
-			if (rawOptions.isMember(key))
-			{
-				const Json::Value & value = rawOptions[key];
+			int	   filterId = -1;
+			QString error;
 
-				if (value.isString())
-					text = tq(value.asString());
-				else if (value.isIntegral())
-					text = QString::number(value.asInt64());
-			}
-
-			text = text.trimmed();
-
-			if (text.isEmpty())
+			if (!workspace)
 				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
-					"The dataset selection option '" + key + "' must name one of the loaded datasets ("
-					+ loaded.join(", ").toStdString() + ")");
+					"The dataset selection option '" + key + "' must name one of the loaded datasets (none are loaded)");
 
-			std::string sliceFilterId;
+			if (!workspace->resolveDataSetSelectionValue(option, value, filterId, error))
+				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), error.toStdString());
 
-			if (DataSet * byTitle = workspace ? workspace->dataSetByTitle(text) : nullptr)
-			{
-				if (byTitle->defaultFilter())
-					sliceFilterId = std::to_string(byTitle->defaultFilter()->id());
-			}
-			else
-			{
-				bool	   isNum	 = false;
-				const int  dataSetId = text.toInt(&isNum);
-				DataSet  * byId		 = isNum && workspace ? workspace->dataSetById(dataSetId) : nullptr;
-
-				if (byId && byId->defaultFilter())
-					sliceFilterId = std::to_string(byId->defaultFilter()->id());
-			}
-
-			if (sliceFilterId.empty())
-				return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"),
-					"The dataset selection option '" + key + "' holds '" + text.toStdString()
-					+ "', which is neither the title nor the id of a loaded dataset (" + loaded.join(", ").toStdString() + ")");
-
-			rawOptions[key] = sliceFilterId;   //strings, exactly like the desktop dropdown writes them
+			rawOptions[key]	= std::to_string(filterId);   //strings, exactly like the desktop dropdown writes them
+			pending.removeMember(key);                    //resolved; late hosts need nothing of it
 		}
 
 		Json::StreamWriterBuilder writer;
 		writer["indentation"] = "";
 		optionsToParse = Json::writeString(writer, rawOptions);
+
+		form->setPendingDataSetSelectionRawValues(pending);
 	}
 
 	Json::Value parsedOptions;
