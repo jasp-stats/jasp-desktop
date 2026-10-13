@@ -2382,8 +2382,9 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
 	QCOMPARE(QString::fromStdString(a->encoder().decode(again)), QString::fromStdString(colName));
 
-	// And the emitted format that jaspBase's dataSetIdFromEncoded routing contractually depends on
-	// (DataSet::setupEncoderPrefix embeds the id, the "_Encoded" postfix is the encoder default):
+	// And the emitted token format is id-namespaced so the results decode sweeps need no routing
+	// table - a token only ever matches the dataset that minted it (DataSet::setupEncoderPrefix
+	// embeds the id, the "_Encoded" postfix is the encoder default):
 	QVERIFY2(encodedInA.rfind("JASPColumn_" + std::to_string(a->id()) + "_", 0) == 0,
 	         "encoded names must start with JASPColumn_<dataSetId>_");
 	QVERIFY2(encodedInA.size() > 8 && encodedInA.compare(encodedInA.size() - 8, 8, "_Encoded") == 0,
@@ -2429,6 +2430,153 @@ void TestAll::testMultiDataSetQueueHandout()
 	//And a new request (empty queue) fully disables the multi-dataset read-path again:
 	queue.set({});
 	QVERIFY(queue.take() == nullptr);
+}
+
+void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
+{
+	//DataBridge-level pin of the request-boundary discipline: both Engine::receiveAnalysisMessage
+	//(engine.cpp) and the entry of syntaxBridgeLoadQmlAndParseOptionsStatus clear the queue with
+	//exactly setMultiDataSetQueue({}) before the request branches; the aware branch then refills it
+	//through prepareMultiDataSetRun. This pins the fill (on a real workspace) and the reset, so an
+	//aware parse that queued slices and an R side that died mid-consumption can never leak a stale
+	//slice into the next request's dataset reads.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+
+	DataBridge bridge(ProcessInfo::currentPID());	//borrows the process-wide workspace, just like the syntax bridge does in a host
+
+	Json::Value options(Json::objectValue);
+	options[".meta"]["dependent"]["dataSetId"]	= a->id();
+	options[".meta"]["dependent"]["filterId"]	= a->shownFilter()->id();
+	options[".meta"]["covariate"]["dataSetId"]	= b->id();
+	options[".meta"]["covariate"]["filterId"]	= b->shownFilter()->id();
+
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "requestBoundaryTest");
+
+	//Two distinct stamped filters (a's and b's shown/default one): two slices, handed out in order:
+	QCOMPARE(plan.multiDataSetJson["ids"].size(), 2u);
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);
+	QVERIFY(bridge.takeMultiDataSetSlice() == nullptr);
+
+	//Refill and abort mid-consumption (the leak scenario: aware parse, R error before every slice
+	//was read), then run the request-boundary reset: the next request gets nothing, no matter what
+	//the previous one left queued.
+	bridge.prepareMultiDataSetRun(options, a->id(), "", "requestBoundaryTest");
+	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);	//one slice consumed, one still queued
+	bridge.setMultiDataSetQueue({});						//<- the exact call every bridge/engine request starts with
+	QVERIFY(bridge.takeMultiDataSetSlice() == nullptr);
+}
+
+void TestAll::testLoadFilteredDataFilterFirstProvenance()
+{
+	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: the stamped filterId is the
+	//anchor (globally unique, implies its dataset), dataSetId is verification-only. b is made
+	//smaller than a: the old dataSetId-anchored path would index a's 99 rows against b's short
+	//filter vector (unchecked out-of-bounds read), the filter-anchored one cannot.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	b->setRowCount(5);
+	b->runFilters();
+
+	Filter * bFilter = b->shownFilter();
+	QVERIFY(bFilter);
+	boolvec keepFive(5, true);
+	keepFive[1] = false;						//rows 2 of 5 filtered out
+	bFilter->setFilterVector(keepFive);
+
+	QVERIFY(a->rowCount() > 5);					//the mismatched sizes the old code would run past
+	QCOMPARE(b->rowCount(), 5);
+
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	Json::Value options(Json::objectValue);
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["column"]	= a->column(0)->name();
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "NoSuchFilterName";	//forces the provenance path
+
+	//1) Cross-dataset provenance (dataSetId names a, filterId lives in b): trust the filter, anchor
+	//on b. The old code anchored on a, failed the name lookup and filtered a's rows with b's short
+	//vector; the new code never mixes the two (no OOB read, values computed over b).
+	options[".meta"]["filtered"]["dataSetId"]	= a->id();
+	options[".meta"]["filtered"]["filterId"]	= bFilter->id();
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);	//5 rows of b minus the one b filters out
+
+	//2) Dead dataSetId, live filterId (agent-1 m1 scenario): re-anchor the request at a so the old
+	//dataSetId-first path would keep a; the filterId must still resolve to b.
+	ws->setShownDataSet(a->id());
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["dataSetId"]	= 987654;
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);
+	QCOMPARE(options["filtered"]["values"].size(), 4u);
+
+	//3) Legacy option: no filterId stamped at all -> the old name-based path, unchanged.
+	Filter * aFilter = a->createFilter("keepAllButFirst", true);
+	QVERIFY(aFilter);
+	boolvec keepN(a->rowCount(), true);
+	keepN[0] = false;
+	aFilter->setFilterVector(keepN);
+
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "keepAllButFirst";
+	options[".meta"]["filtered"]["dataSetId"]					= a->id();
+	options[".meta"]["filtered"].removeMember("filterId");
+	bridge.updateOptionsAccordingToMeta(options);
+	QCOMPARE(options["filtered"]["rowIndices"].size(), static_cast<Json::ArrayIndex>(a->rowCount()) - 1);
+	QCOMPARE(options["filtered"]["rowIndices"][0].asInt(), 2);	//row 1 filtered out, so it starts at 2
+}
+
+void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a);
+	QVERIFY(a->defaultFilter());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	Json::Value options(Json::objectValue);
+
+	//A primary dataset with its default filter: "primary" carries that filter id and is a real key
+	//of the queued ids.
+	const DataBridge::MultiDataSetRunPlan withData = bridge.prepareMultiDataSetRun(options, a->id(), "", "primarySliceKeyTest");
+	const std::string primary = std::to_string(a->defaultFilter()->id());
+
+	QVERIFY2(withData.multiDataSetJson.isMember("primary"), "primary must be present when a primary filter exists");
+	QCOMPARE(withData.multiDataSetJson["primary"].asString(), primary);
+	QCOMPARE(withData.multiDataSetJson["ids"][0].asString(), primary);
+
+	//No dataset at all (empty workspace): there is no primary filter, so the member must be ABSENT,
+	//not "". jaspBase's runJaspResults keys on !is.null: an "" would surface as a non-NULL
+	//primarySliceKey attribute that is not a key of any slice.
+	while (ws->shownDataSet())
+		ws->deleteShownDataSet();
+
+	const DataBridge::MultiDataSetRunPlan empty = bridge.prepareMultiDataSetRun(options, -1, "", "primarySliceKeyTest");
+	QVERIFY2(!empty.multiDataSetJson.isMember("primary"), "no primary filter: the primary member must be absent, not empty");
+	QCOMPARE(empty.multiDataSetJson["ids"].size(), 0u);
 }
 
 void TestAll::testAnalysisBaseUsesDataSetWhenAware()

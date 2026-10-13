@@ -260,12 +260,11 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 
 	if (multiDataSetAware)
 	{
-		result += "\n"
-		+ FunctionLineIndent + "if (!jaspBase::jaspResultsCalledFromJasp() && !is.null(datasets)) {\n"
-		+ FunctionLineIndent + FunctionLineIndent + "jaspBase::storeDataSets(datasets)\n"
-		+ FunctionLineIndent + "}\n\n"
+		//No store block here on purpose: jaspBase does not export storeDataSets (zero-export
+		//contract) and runWrappedAnalysis already loads the datasets through the bridge itself.
 		// Formulas and the option-formula loop below speak 'data'; for an aware wrapper the
 		// primary (first) dataset of the list plays that role.
+		result += "\n"
 		+ FunctionLineIndent + "data <- if (!is.null(datasets) && length(datasets)) datasets[[1]] else NULL\n\n";
 	} else
 	{
