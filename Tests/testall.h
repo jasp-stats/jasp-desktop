@@ -109,6 +109,12 @@ private slots:
 	// referenced datasets of the .meta, not from (the absence of) its own filter.
 	void	testAnalysisBaseUsesDataSetWhenAware();
 
+	// C3/M7: and neither has dataSpec() - the results-header spec must be built from the
+	// referenced datasets (workspace titles, deduped, own dataset first, " + " joined) instead
+	// of early-returning "" on the single-dataset accessor that aware analyses refuse (whose
+	// desktop implementation also logged a warning on every call).
+	void	testAnalysisBaseDataSpecWhenAware();
+
 	// File round-trip: dataset/filter ids come straight from the storage db and a .jasp restores
 	// that db verbatim, so reopening (fresh Workspace over the same database) must hand back the
 	// very same ids - saved provenance is simply still valid, and rebinding needs no repair pass:

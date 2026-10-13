@@ -38,6 +38,7 @@ public:
 	const Json::Value&			boundValue()												const	override;
 	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
+	void						restampValue()														override;
 	void						setIsRCode(std::string key = "");
 	void						setFilterForValues(const std::string & filterName);
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);

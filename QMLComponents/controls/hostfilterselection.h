@@ -85,7 +85,8 @@ private slots:
 	void validateSelection();							///< C10: vanished filter -> fall back, never dangle
 
 private:
-	void   applyFilter(Filter * filter);				///< store + restamp provider + notify
+	void   applyFilter(Filter * filter);				///< store + restamp provider + notify values below the host
+	void   restampValuesUnderHost();					///< move .meta provenance of this host's column values onto the new filter (mds-plan C3/M5)
 	Filter * currentFallbackFilter() const;				///< analysis filter, else workspace shown filter
 
 	JASPControl *				_host;

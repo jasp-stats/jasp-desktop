@@ -54,6 +54,10 @@ Item
 
 			AvailableVariablesList	{ name: "allVarsB";	id: allVarsB }
 			AssignedVariablesList	{ name: "dependentB";	id: dependentB; depends: "dataSetB" }
+
+			// A scalar under a selecting host, for the provenance-gate tests (mds-plan C3/M5):
+			// it carries no columns, so its .meta must stay free of dataSetId/filterId.
+			Switch					{ name: "bSwitch";	id: bSwitch }
 		}
 
 		// No dataSetSelectionOption: the FilterMenuButton world, untouched by any of this.
@@ -128,6 +132,76 @@ Item
 					return found
 			}
 			return null
+		}
+
+		// The phantom-slice class (agent-2 M3, mds-plan C3/M5): switching a host to ANOTHER
+		// FILTER OF THE SAME DATASET rewrites no value at all - the encoded column names stay
+		// perfectly valid - so provenance can only stay honest through the restamp walk that
+		// HostFilterSelection::applyFilter does on every selection change. Column values must
+		// follow the selection; scalars and the selection option itself carry no provenance, so
+		// the abandoned filter cannot linger in .meta (and from there in the engine's slice
+		// queue, referencedDataSets() or the RPC dataSetIds report).
+		function test_midsession_switch_restamps_column_values()
+		{
+			var secondFilters = []
+
+			for (var entry of formB.filterSelectionValues)
+				if (entry.label.indexOf("Second - ") === 0)
+					secondFilters.push(entry)
+
+			verify(secondFilters.length >= 2, "fixture must offer two filters of dataset 'Second', got " + secondFilters.length)
+
+			var f1 = parseInt(secondFilters[0].value)
+			var f2 = parseInt(secondFilters[1].value)
+			verify(f1 !== f2, "the two 'Second' filters must be different filters")
+
+			var originalB = formB.selectedFilterId
+
+			try
+			{
+				formB.selectedFilterId = f1
+				wait(20)
+
+				jaspForm.setOptions({
+					dependentB:	{ value: ["TestInts"], types: ["scale"] },	//TestInts exists in 'Second' too
+					bSwitch:	true
+				})
+				wait(50)
+
+				var bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				var meta = bound[".meta"]
+
+				verify(meta && meta.dependentB, "the column value bound and stamped its meta")
+				compare(meta.dependentB.filterId, f1, "the column value is stamped with the live selection")
+				verify(meta.dependentB.shouldEncode === true, "the gate keeps the generic .meta of an encoded value")
+
+				//the actual mid-session switch: same dataset, other filter, no value change -
+				formB.selectedFilterId = f2
+				wait(50)
+
+				bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				meta = bound[".meta"]
+
+				compare(formB.selectedFilterId, f2, "the host took the new selection")
+				verify(String(bound.dependentB.value).indexOf("TestInts") !== -1, "the value survived the switch untouched")
+				compare(meta.dependentB.filterId, f2, "the column value followed the host onto the new filter")
+
+				//and no stamp anywhere in the form still names the abandoned filter - that is
+				//what the engine would queue as a phantom slice:
+				var stale = []
+				for (var key of Object.keys(meta))
+					if (meta[key] && meta[key].filterId !== undefined && meta[key].filterId === f1)
+						stale.push(key)
+				compare(stale.join(","), "", "no stale filterId left in any .meta of the switched form")
+
+				//scalars and the selection option carry no provenance at all (C3/M5 gate):
+				verify(meta.bSwitch === undefined, "a scalar under the same host carries no stamp: " + JSON.stringify(meta.bSwitch))
+				verify(meta.dataSetB === undefined, "the selection option carries no stamp: its value IS the filter id")
+			} finally
+			{
+				formB.selectedFilterId = originalB	//functions run alphabetically: don't bleed
+				wait(20)
+			}
 		}
 
 		// Declaring a dataSetSelectionOption is what makes an analysis multi-dataset aware
@@ -471,20 +545,30 @@ Item
 			var meta = bound[".meta"]
 
 			compare(parseInt(String(bound.dataSetA)), savedFilterA, "form A took the loaded selection")
-			verify(meta && meta.aSwitch && meta.aDependent && meta.dependentA && meta.dependentB,
+			verify(meta && meta.aDependent && meta.dependentA && meta.dependentB,
 					"the loaded options bound and stamped their meta")
 
 			// "TestInts" lives in both datasets: only the stamp tells them apart, and a stamp taken
 			// before dataSetA was bound would name the analysis' current filter instead.
-			compare(meta.aSwitch.filterId, savedFilterA,
-					"an option that sorts before its selection still gets the loaded selection's stamp")
 			compare(meta.aDependent.filterId, savedFilterA,
 					"a value whose name sorts before its selection option is stamped with that selection")
 			compare(meta.dependentA.filterId, savedFilterA, "the one that declares depends: likewise")
 			compare(meta.dependentB.filterId, savedFilterB, "form B's value is stamped with B's loaded filter")
-			verify(meta.aSwitch.dataSetId !== meta.dependentB.dataSetId,
+			verify(meta.dependentA.dataSetId !== meta.dependentB.dataSetId,
 					"the two stamps name different datasets, not one analysis-wide stamp")
 			verify(bound.aDependent.value.indexOf("TestInts") !== -1, "the value itself survived the bind")
+
+			// mds-plan C3/M5: provenance belongs on column-bearing values ONLY. aSwitch (a plain
+			// Switch) never carries columns, so it must not appear in .meta at all - and neither
+			// does the selection option: its value already IS the filter id. A stamp here would
+			// seed the engine's slice queue with a filter no value of this host uses (phantom
+			// slice) and could never be refreshed when the host moves on.
+			verify(meta.aSwitch === undefined,
+					"a scalar carries no provenance stamp, got: " + JSON.stringify(meta.aSwitch))
+			verify(meta.bSwitch === undefined,
+					"form B's scalar carries no provenance stamp either, got: " + JSON.stringify(meta.bSwitch))
+			verify(meta.dataSetA === undefined && meta.dataSetB === undefined,
+					"selection options need no stamp: their value is the filter id itself")
 		}
 	}
 }
