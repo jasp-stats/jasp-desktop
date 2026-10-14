@@ -21,6 +21,7 @@
 #include "analysisform.h"
 #include "jasplistcontrol.h"
 #include "models/listmodeltermsavailable.h"
+#include "models/listmodelfactorsform.h"
 #include "rowcontrols.h"
 #include <QQmlEngine>
 #include "filter.h"
@@ -224,6 +225,11 @@ void SourceItem::connectModels()
 		connect(_sourceListModel,		&ListModel::labelsReordered,		controlModel, &ListModel::sourceLabelsReordered );
 		connect(_sourceListModel,		&ListModel::filterChanged,			controlModel, &ListModel::filterChanged );
 		connect(_sourceListModel,		&ListModel::variablesChanged,		controlModel, &ListModel::sourceVariablesChanged );
+
+		// Only when the titles of the factors are used: the terms of a FactorsForm are otherwise its variables, which are not renamed
+		ListModelFactorsForm* factorsModel = qobject_cast<ListModelFactorsForm*>(_sourceListModel);
+		if (factorsModel && _sourceFilter.contains("title"))
+			connect(factorsModel,		&ListModelFactorsForm::titlesRenamed,	controlModel, &ListModel::sourceVariableNamesChanged );
 	}
 
 	if (_sourceListControl && _sourceListControl != _targetListControl)

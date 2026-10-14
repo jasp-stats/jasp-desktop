@@ -1,5 +1,9 @@
 #include "testqml.h"
 #include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
+#include <QQmlPropertyMap>
+#include <QFontDatabase>
 #include "tempfiles.h"
 #include "processinfo.h"
 #include "dirs.h"
@@ -8,6 +12,7 @@
 #include "utilities/qmlutils.h"
 #include "utilities/settings.h"
 #include "qquick/scriptconstructorview.h"
+#include "jasptheme.h"
 
 TestQml::TestQml(QObject *parent)
 	: QObject{parent}
@@ -44,6 +49,26 @@ void TestQml::qmlEngineAvailable(QQmlEngine *engine)
 	// registration happens in the MainWindow constructor (not at static init).
 	qmlRegisterType<ScriptConstructorView>("JASP", 1, 0, "ScriptConstructor");
 	qmlRegisterUncreatableMetaObject(ScriptConstructorEnums::staticMetaObject, "JASP", 1, 0, "ScriptConstructorMode", "enums only");
+
+	// Use the theme of the application (as MainWindow does): a default constructed JaspTheme has no sizes, so the controls would get no real geometry.
+	qmlRegisterType<JaspTheme>("JASP", 1, 0, "JaspTheme");
+	// The theme gets its fonts from the preferences of the application, which the PreferencesModelBase used here does not have.
+	QQmlContext*	themeContext	= new QQmlContext(engine->rootContext(), engine);
+	QQmlPropertyMap*	themePrefs	= new QQmlPropertyMap(themeContext);
+	themePrefs->insert("interfaceFont",	QFontDatabase::systemFont(QFontDatabase::GeneralFont).family());
+	themePrefs->insert("codeFont",		QFontDatabase::systemFont(QFontDatabase::FixedFont).family());
+	themeContext->setContextProperty("preferencesModel", themePrefs);
+
+	QQmlComponent themeComponent(engine, QUrl("qrc:/components/JASP/Theme/Theme.qml"));
+	JaspTheme* theme = qobject_cast<JaspTheme*>(themeComponent.create(themeContext));
+	if (theme)
+	{
+		theme->setParent(engine);
+		JaspTheme::setCurrentTheme(theme);
+		engine->rootContext()->setContextProperty("jaspTheme", theme);
+	}
+	else
+		qWarning() << "Could not load the JASP theme:" << themeComponent.errorString();
 }
 
 void TestQml::cleanupTestCase()

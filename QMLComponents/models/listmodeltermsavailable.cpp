@@ -259,5 +259,9 @@ void ListModelTermsAvailable::addAssignedModel(ListModelAssignedInterface *assig
 void ListModelTermsAvailable::removeAssignedModel(ListModelAssignedInterface *assignedModel)
 {
 	_assignedModels.removeAll(assignedModel);
+	disconnect(this, nullptr, assignedModel, nullptr);
+
+	// The terms of the removed assigned model must become available again (as when a factor of a FactorsForm is removed)
+	removeTermsInAssignedList();
 }
 
