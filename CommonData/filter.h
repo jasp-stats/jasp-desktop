@@ -108,7 +108,7 @@ public:
 	bool						setFilterVector(	const boolvec		& filterResult);
 	void						setFilterValueNoDB(	size_t	row, bool val);
 	void						setRowCount(		size_t	rows);
-	void						setId(				int		id)			{ _id = id; }
+	void						setId(				int		id);
 
 	stringset					columnsUsedInConstructor()	const;
 	stringset					columnsUsedInRFilter()		const;
@@ -130,12 +130,11 @@ public:
 	QAbstractItemModel		*	providerModel() override;
 	QVariant					provideInfo(varInfoType info, const QString& name = "", int row = 0)			const	override;
 	bool						absorbInfo(	varInfoType info, const QString& name,		int row, QVariant value)		override;
-	///< The encoder of this filter's own dataset: consumers that en-/decode column names through
-	///< the provider chain (host selections!) get the namespace of the dataset they look at, never
-	///< the process-global current one. See VariableInfoProvider::columnEncoder.
+	///< This filter's own namespace view (mds-plan C3): a non-owning {canonical of its DataSet,
+	///< prefix "JASPColumn_D<dsId>_F<filterId>_"} handle. Consumers that en-/decode column names
+	///< through the provider chain (host selections!) get the namespace of THIS filter, never the
+	///< process-global current one. See VariableInfoProvider::columnEncoder.
 	ColumnEncoder			*	columnEncoder() override;
-	
-	
 signals:
 	void						nameChanged();
 	void						rFilterChanged();
@@ -158,6 +157,14 @@ protected:
 	void						calculateFilteredRowCount();
 	void						rescanForColumns();
 	void						connectionCreation();
+
+private:
+			///< (Re)create the namespace view once _id is final (dbCreate/dbLoad/setId); no-op
+			///< while it already matches this filter's (datasetId, filterId). The view registers
+			///< its block in the global decode table; destroying it erases the block again, so a
+			///< deleted filter's tokens go raw (mds-plan C16).
+			void				ensureColumnView();
+			void				dropColumnView();
 	
 protected slots:
 	void						datasetChanged(int dataSetId, QStringList changedColumns, QStringList missingColumns, QMap<QString, QString> changeNameColumns, bool rowCountChanged, bool);
@@ -166,8 +173,10 @@ protected slots:
 private:
 	Filter(DataSet * data);
 	Filter(DataSet * data, const std::string & name, bool createIfMissing = true);
+	~Filter() override;
 
 	DataSet					*	_data				= nullptr;
+	ColumnEncoder			*	_columnView			= nullptr;	///< mds-plan C3: this filter's view on its dataset's canonical mint
 	int							_id					= -1,
 								_filteredRowCount	= 0;
 	std::string					_rFilter			= "",

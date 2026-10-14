@@ -141,11 +141,10 @@ ColumnEncoder::~ColumnEncoder()
 	if(_currentEncoder == this)
 		_currentEncoder = nullptr;
 
-	//A dying canonical first erases and detaches every live view (their tokens go raw, C16) so
-	//the views' destructors never touch freed memory - DataSet deletes its canonical before its
-	//filters die as QObject children.
-	if(_mode == Mode::canonical)
-		orphanViews();
+	//A dying encoder first erases and detaches every live view (their tokens go raw, C16) so the
+	//views' destructors never touch freed memory - DataSet deletes its canonical (or, during the
+	//Phase-1 transition, its still-FULL encoder) before its filters die as QObject children.
+	orphanViews();
 
 	if(_mode == Mode::view && _canonical)
 		_canonical->_views.erase(this);
