@@ -47,6 +47,8 @@
 #include "qquick/scriptconstructorview.h"
 #include "qquick/scriptnodeitem.h"
 #include "timers.h"
+#include "analysis/analyses.h"
+#include "modules/dynamicmodules.h"
 
 #include <QSignalSpy>
 #include <QFile>
@@ -3064,6 +3066,68 @@ void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 	//run non-zero, so check the import failure is actually in the report.
 	QVERIFY2(!mw->_batchResult.errors.filter("Could not import data").isEmpty(),
 			 qPrintable("Batch errors: " + mw->_batchResult.errors.join(" | ")));
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
+{
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	//A minimal installed module (no R code needed: nothing gets run), whose Upgrades.qml brings
+	//version 0.1 of its analysis to 0.2 with a message above the form and one on the option "number":
+	const QString	moduleName	= "jaspUpgradeMsgTest",
+					moduleDir	= QString::fromStdString(TempFiles::createTmpFolder()) + "/" + moduleName + "/",
+					contentDir	= moduleDir + moduleName + "/";
+
+	QVERIFY(QDir().mkpath(contentDir + "icons"));
+	QVERIFY(QDir().mkpath(contentDir + "qml"));
+	QVERIFY(_writeTextFile(contentDir + "DESCRIPTION", "Package: " + moduleName.toUtf8() + "\nTitle: Upgrade message test\nVersion: 0.2\n"));
+	QVERIFY(_writeTextFile(contentDir + "Description.qml",
+		"import QtQuick\nimport JASP.Module\n"
+		"Description\n{\n\ttitle: \"Upgrade message test\"\n\tAnalysis { title: \"Upgrade message test\"; func: \"upgradeMsgTest\" }\n}\n"));
+	QVERIFY(_writeTextFile(contentDir + "Upgrades.qml",
+		"import QtQuick\nimport JASP.Module\n"
+		"Upgrades\n{\n\tUpgrade\n\t{\n\t\tfunctionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.2\"\n"
+		"\t\tmsg: \"form message\"\n"
+		"\t\tChangeSetValue { name: \"number\"; jsonValue: 3; msg: \"control message\" }\n\t}\n}\n"));
+
+	QVERIFY(DynamicModules::dynMods()->initializeModuleFromDir(fq(moduleDir)));
+
+	Json::Value analysisData;
+	analysisData["id"]								= 1;
+	analysisData["name"]							= "upgradeMsgTest";
+	analysisData["title"]							= "Upgrade message test";
+	analysisData["status"]							= "complete";
+	analysisData["options"]["number"]				= 1;
+	analysisData["dynamicModule"]["moduleName"]		= fq(moduleName);
+	analysisData["dynamicModule"]["moduleVersion"]	= "0.1";
+	analysisData["dynamicModule"]["analysisEntry"]	= "upgradeMsgTest";
+
+	//The form of an analysis is created as soon as the Analyses model announces it, so that is the
+	//moment the messages must already be there (AnalysisForm::bindTo reads them only once):
+	stringvec formMsgsWhenStored, controlMsgsWhenStored;
+	QMetaObject::Connection inserted = connect(Analyses::analyses(), &QAbstractItemModel::rowsInserted, this, [&](const QModelIndex &, int first, int)
+	{
+		Analysis * analysis		= (*Analyses::analyses())[first];
+		formMsgsWhenStored		= analysis->upgradeMsgsForOption("");
+		controlMsgsWhenStored	= analysis->upgradeMsgsForOption("number");
+	});
+
+	Analysis * analysis = Analyses::analyses()->createFromJaspFileEntry(analysisData, nullptr);
+	disconnect(inserted);
+
+	QVERIFY(analysis);
+	QCOMPARE(analysis->boundValues()["number"].asInt(), 3); //so the upgrade did run
+	QCOMPARE(formMsgsWhenStored,	stringvec({"form message"}));
+	QCOMPARE(controlMsgsWhenStored,	stringvec({"control message"}));
+	QVERIFY(analysis->needsRefresh());
 
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test

@@ -143,6 +143,10 @@ private slots:
 	void	testCliSyncExportChainFailsOnBadDataFile();
 	void	testCliSyncExportWaitsForAnalysesToSettle();
 
+	// The msg's of an Upgrades.qml (above the form and on a control) have to be on the analysis
+	// before it is added to the Analyses model, because that is where its form gets created.
+	void	testUpgradeMsgsAreSetBeforeAnalysisIsStored();
+
 	// ScriptConstructor (drag-and-drop filter / computed column model) regression tests.
 	// These replace the old QML FilterConstructor and must stay byte/behaviour compatible with the
 	// JSON stored in .jasp files and the R code that gets sent to the engine.
