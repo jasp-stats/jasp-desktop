@@ -393,31 +393,74 @@ QString MainWindow::bugReportUrl() const
 	return Settings::value(Settings::BUG_REPORT_URL).toString();
 }
 
+bool MainWindow::externalLinksEnabled() const
+{
+	// Same tier chain as bugReportUrl: policy > forced.json > user INI >
+	// defaults.json > built-in (true). CONSTANT, so a change needs a restart.
+	return Settings::value(Settings::EXTERNAL_LINKS_ENABLED).toBool();
+}
+
 const QString MainWindow::contactUrlFeatures() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2ffeature-request.yml";
-#else
-	return "https://jasp-stats.org/request-feature";	
-#endif
+	// Settings-sourced (name `contactUrlFeatures`): community default in
+	// settings.cpp, enterprise MSIs override it through forced.json or group
+	// policy — one binary serves every customer.
+	return Settings::value(Settings::CONTACT_URL_FEATURES).toString();
 }
 
 const QString MainWindow::contactUrlBugs() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fbug-report.yml";
-#else
-	return "https://jasp-stats.org/report-bug";
-#endif
+	// Settings name `contactUrlBugs` — see contactUrlFeatures().
+	return Settings::value(Settings::CONTACT_URL_BUGS).toString();
 }
 
 const QString MainWindow::contactUrlCrashReport() const
 {
-#ifdef PRO
-	return QString("https://support.jasp-services.com/") + PRO_COMPANY_NAME + "/Issues/issues/new?template=.gitea%2fISSUE_TEMPLATE%2fcrash-report.yml";	
-#else
-	return "https://jasp-stats.org/report-bug";
-#endif
+	// Settings name `contactUrlCrashReport` — see contactUrlFeatures().
+	return Settings::value(Settings::CONTACT_URL_CRASH_REPORT).toString();
+}
+
+const QString MainWindow::questionsUrl() const
+{
+	// Settings name `questionsUrl` — see contactUrlFeatures().
+	return Settings::value(Settings::QUESTIONS_URL).toString();
+}
+
+QString MainWindow::companyLogoUrl() const
+{
+	// Settings name `companyLogoPath` — see contactUrlFeatures() for the tier
+	// chain. Empty means "no logo". A relative path is resolved beside the
+	// executable and in its Resources/ subfolder (mirroring how forced.json
+	// and defaults.json are found); an absolute path is taken as-is. A
+	// configured-but-missing file logs a warning and yields "" so the UI
+	// hides the logo instead of showing a broken image.
+	const QString raw = Settings::value(Settings::COMPANY_LOGO_PATH).toString();
+	if (raw.isEmpty())
+		return "";
+
+	QString found;
+	if (QDir::isAbsolutePath(raw))
+	{
+		if (QFile::exists(raw))
+			found = raw;
+	}
+	else
+	{
+		const QString appDir = QCoreApplication::applicationDirPath();
+		if (QFile::exists(appDir + "/" + raw))
+			found = appDir + "/" + raw;
+		else if (QFile::exists(appDir + "/Resources/" + raw))
+			found = appDir + "/Resources/" + raw;
+	}
+
+	if (found.isEmpty())
+	{
+		qWarning() << "Settings: companyLogoPath" << raw << "does not point to an existing file; company logo not shown";
+		Log::log() << "Settings: companyLogoPath " << raw.toStdString() << " does not point to an existing file; company logo not shown" << std::endl;
+		return "";
+	}
+
+	return QUrl::fromLocalFile(QDir::cleanPath(found)).toString();
 }
 
 const QString MainWindow::contactText() const
@@ -2517,11 +2560,29 @@ void MainWindow::showAbout()
 
 void MainWindow::showContact()
 {
+#ifndef PRO
+	// Community-build lockdown: the Contact window points at the public
+	// jasp-stats.org channels there. In PRO it carries the client's own
+	// JASP Services tracker links (settings-driven URLs) and stays open.
+	if (!externalLinksEnabled())
+		return;
+#endif
+
+	// No tracker configured: with all three contact URLs explicitly empty
+	// the window would be nothing but dead links, so treat it as unavailable.
+	if (	Settings::value(Settings::CONTACT_URL_FEATURES).toString().isEmpty()
+		&&	Settings::value(Settings::CONTACT_URL_BUGS).toString().isEmpty()
+		&&	Settings::value(Settings::CONTACT_URL_CRASH_REPORT).toString().isEmpty())
+		return;
+
 	setContactVisible(true);
 }
 
 void MainWindow::showCommunity()
 {
+	if (!externalLinksEnabled())
+		return;
+
 	setCommunityVisible(true);
 }
 
