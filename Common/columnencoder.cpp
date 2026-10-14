@@ -17,6 +17,7 @@
 
 #include "columnencoder.h"
 #include "stringutils.h"
+#include <algorithm>
 #include <regex>
 #ifdef BUILDING_JASP
 #include "log.h"
@@ -31,19 +32,27 @@
 ColumnEncoder				*	ColumnEncoder::_columnEncoder				= nullptr;
 ColumnEncoder				*	ColumnEncoder::_currentEncoder				= nullptr;
 std::set<ColumnEncoder*>	*	ColumnEncoder::_otherEncoders				= nullptr;
-bool							ColumnEncoder::_encodingMapInvalidated		= true;
-bool							ColumnEncoder::_decodingMapInvalidated		= true;
-bool							ColumnEncoder::_decodingTypeInvalidated		= true;
-bool							ColumnEncoder::_decoSafeMapInvalidated		= true;
-bool							ColumnEncoder::_originalNamesInvalidated	= true;
-bool							ColumnEncoder::_encodedNamesInvalidated		= true;
+
+/// The ONE process-global strict decode table (C4): full encoded string -> (originalName, type).
+/// Contains one block per live filter of every loaded dataset, plus the extras encoder's block
+/// and the process-global fallback encoder's block. Single writer: rebuildBlock(), which erases
+/// the block's bounded key space (its prefix x mint indices) before writing, so rename re-mints,
+/// column-count shrinks and filter drops all close over every token the block could ever have
+/// minted. That makes stale tokens impossible without tombstones (C16: deleted-filter tokens go
+/// raw because their block is erased).
+std::map<std::string, ColumnEncoder::DecodeEntry> & ColumnEncoder::_decodeTable()
+{
+	static std::map<std::string, DecodeEntry> table;
+	return table;
+}
 
 
 ColumnEncoder * ColumnEncoder::columnEncoder()
 {
 	//This static getter is the ENGINE-ONLY entry point for the R bridge encoder context, set by
-	//setCurrentEncoder() in provideAndUpdateDataSet. Desktop code must use provider->columnEncoder()
-	//(the dataset's own encoder) which reads from the instance directly.
+	//setCurrentEncoder() in provideAndUpdateDataSet - after mds-plan Phase 1 that is a VIEW (the
+	//shown dataset's shown filter's handle), never a canonical. Desktop code must use
+	//provider->columnEncoder() (the filter's own view) which reads from the instance directly.
 	if(!_currentEncoder)
 	{
 		if(!_columnEncoder)
@@ -66,39 +75,50 @@ ColumnEncoder * ColumnEncoder::fallbackEncoder()
 	return _columnEncoder;
 }
 
-void ColumnEncoder::setCurrentEncoder(ColumnEncoder * encoder)
+ColumnEncoder * ColumnEncoder::createCanonical()
 {
-	if(_currentEncoder && _currentEncoder != encoder)
-		_currentEncoder->invalidateAll();
-
-	_currentEncoder = encoder;
+	return new ColumnEncoder(CanonicalTag{});
 }
 
-void ColumnEncoder::invalidateAll()
+ColumnEncoder * ColumnEncoder::createView(ColumnEncoder * canonical, const std::string & prefix, const std::string & postfix)
 {
-	_encodingMapInvalidated		= true;
-	_decodingMapInvalidated		= true;
-	_decodingTypeInvalidated	= true;
-	_decoSafeMapInvalidated		= true;
-	_originalNamesInvalidated	= true;
-	_encodedNamesInvalidated	= true;
+	return new ColumnEncoder(canonical, prefix, postfix);
+}
+
+void ColumnEncoder::setCurrentEncoder(ColumnEncoder * encoder)
+{
+	_currentEncoder = encoder;
 }
 
 ColumnEncoder::ColumnEncoder(std::string prefix, std::string postfix)
 	: _encodePrefix(prefix), _encodePostfix(postfix)
 {
 	if(!_otherEncoders)
-	{
 		_otherEncoders = new ColumnEncoder::ColumnEncoders();
-		invalidateAll();
-	}
 
 	_otherEncoders->insert(this);
 }
 
-ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently)
-	: _encodePrefix("JASPColumn_"), _encodePostfix("_For_Replacement")
+ColumnEncoder::ColumnEncoder(CanonicalTag)
+	: _mode(Mode::canonical), _encodePrefix(""), _writesBlock(false)
 {
+}
+
+ColumnEncoder::ColumnEncoder(ColumnEncoder * canonical, std::string prefix, std::string postfix)
+	: _mode(Mode::view), _canonical(canonical), _encodePrefix(prefix), _encodePostfix(postfix)
+{
+	if(_canonical)
+		_canonical->_views.insert(this);
+
+	rebuildBlock();		// mint the block from whatever the canonical holds right now
+}
+
+ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDifferently)
+	: _encodePrefix("JASPColumn_"), _encodePostfix("_For_Replacement"), _writesBlock(false)
+{
+	// The replacer-encoder (C5): registers nowhere - not in the decode table and not in
+	// _otherEncoders - it only exists inside replaceColumnNamesInRScript() and its private maps
+	// are hacked to point back at the replaced names, so it must not leak into anything global.
 
 	colTypeMap originalNames;
 
@@ -114,12 +134,23 @@ ColumnEncoder::ColumnEncoder(const std::map<std::string, std::string> & decodeDi
 
 ColumnEncoder::~ColumnEncoder()
 {
-	//Whatever the current indirection points at, if it was us, clear it BEFORE the invalidation
-	//below: otherwise a later columnEncoder()/isColumnName() use dereferences a destroyed encoder.
-	//(Needed for non-default encoders too, e.g. a per-dataset encoder destroyed while current;
-	//DataSet also clears explicitly, but this covers every other owner.)
+	//Whatever the current indirection points at, if it was us, clear it BEFORE the block
+	//teardown below: otherwise a later columnEncoder()/isColumnName() use dereferences a
+	//destroyed encoder. (Needed for non-default encoders too, e.g. a per-dataset view destroyed
+	//while current; DataSet also clears explicitly, but this covers every other owner.)
 	if(_currentEncoder == this)
 		_currentEncoder = nullptr;
+
+	//A dying canonical first erases and detaches every live view (their tokens go raw, C16) so
+	//the views' destructors never touch freed memory - DataSet deletes its canonical before its
+	//filters die as QObject children.
+	if(_mode == Mode::canonical)
+		orphanViews();
+
+	if(_mode == Mode::view && _canonical)
+		_canonical->_views.erase(this);
+
+	eraseBlock();
 
 	if(this != _columnEncoder)
 	{
@@ -130,47 +161,145 @@ ColumnEncoder::~ColumnEncoder()
 	{
 		_columnEncoder = nullptr;
 
-		ColumnEncoders others = *_otherEncoders;
+		if(_otherEncoders)
+		{
+			ColumnEncoders others = *_otherEncoders;
 
-		for(ColumnEncoder * colEnc : others)
-			delete colEnc;
+			for(ColumnEncoder * colEnc : others)
+				delete colEnc;
 
-		if(_otherEncoders->size() > 0)
-			LOGGER << "Something went wrong removing other ColumnEncoders..." << std::endl;
+			if(_otherEncoders->size() > 0)
+				LOGGER << "Something went wrong removing other ColumnEncoders..." << std::endl;
 
-		delete _otherEncoders;
-		_otherEncoders = nullptr;
-
-		invalidateAll();
+			delete _otherEncoders;
+			_otherEncoders = nullptr;
+		}
 	}
+}
+
+void ColumnEncoder::orphanViews()
+{
+	ColumnEncoders views = _views;
+	_views.clear();
+
+	for(ColumnEncoder * view : views)
+	{
+		view->eraseBlock();
+		view->_canonical = nullptr;
+	}
+}
+
+void ColumnEncoder::rebuildBlock()
+{
+	// THE block writer (C4): erase the bounded key space of the previous write, then write.
+	// The key space is enumerable from the mint: prefix + index + postfix for every index the
+	// counter ever handed out (dense [0, mintSize)), so erase-then-write is closed under
+	// rename re-mints, shrinking column counts and prefix reforges.
+	if(!_writesBlock)
+		return;
+
+	eraseBlock();
+
+	const std::vector<std::pair<std::string, columnType>> & reverse = mintReverse();
+
+	for(size_t i = 0; i < reverse.size(); ++i)
+		_decodeTable()[_encodePrefix + std::to_string(i) + _encodePostfix] = DecodeEntry{reverse[i].first, reverse[i].second};
+
+	_blockCount		= reverse.size();
+	_blockPrefix	= _encodePrefix;
+	_blockPostfix	= _encodePostfix;
+}
+
+void ColumnEncoder::eraseBlock()
+{
+	if(!_writesBlock)
+		return;
+
+	for(size_t i = 0; i < _blockCount; ++i)
+		_decodeTable().erase(_blockPrefix + std::to_string(i) + _blockPostfix);
+
+	_blockCount = 0;
+}
+
+std::string ColumnEncoder::tableDecodeAll(const std::string & text)
+{
+	colMap map;
+	colVec names;
+
+	for(const auto & tokenEntry : _decodeTable())
+	{
+		map [tokenEntry.first] = tokenEntry.second.name;
+		names.push_back(tokenEntry.first);
+	}
+
+	sortVectorBigToSmall(names);
+	return replaceAll(text, map, names);
+}
+
+void ColumnEncoder::tableDecodeJson(Json::Value & json, bool replaceNames, bool safeHtml)
+{
+	colMap map;
+	colVec names;
+
+	for(const auto & tokenEntry : _decodeTable())
+	{
+		map [tokenEntry.first] = safeHtml ? stringUtils::escapeHtmlStuff(tokenEntry.second.name, true) : tokenEntry.second.name;	// escape square brackets for https://github.com/jasp-stats/jasp-issues/issues/2625
+		names.push_back(tokenEntry.first);
+	}
+
+	sortVectorBigToSmall(names);
+	replaceAll(json, map, names, replaceNames, false);
+}
+
+void ColumnEncoder::resetForTests()
+{
+	//Forget every block. Live instances still believe they wrote one (_blockCount), so their next
+	//eraseBlock/rebuildBlock removes or rewrites whatever occupies their namespace - use this only
+	//between fully independent test scenarios, before the instances re-mint.
+	_decodeTable().clear();
 }
 
 std::string ColumnEncoder::encode(const std::string &in)
 {
 	if(in == "") return "";
 
-	if(_encodingMap.count(in) == 0)
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder::encode called on a canonical mint, the canonical answers no full-string encode (mds-plan C2)!");
+
+	const auto & forward = mintForward();
+	auto found = forward.find(in);
+
+	if(found == forward.end())
 		throw std::runtime_error("Trying to encode columnName but '" + in + "' is not a columnName!");
 
-	return _encodingMap.at(in);
+	return _encodePrefix + std::to_string(found->second) + _encodePostfix;
 }
 
 std::string ColumnEncoder::decode(const std::string &in)
 {
+	//Compat shim: decoding is context-free now, the global table answers for every NON-canonical
+	//instance (the canonical never holds nor answers full-string decode, C2).
+	//Throws on miss exactly like the old instance-rooted decode did (callers rely on it).
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder::decode called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
+
 	if(in == "") return "";
 
-	if(_decodingMap.count(in) == 0)
+	const auto & table = _decodeTable();
+	auto found = table.find(in);
+
+	if(found == table.end())
 		throw std::runtime_error("Trying to decode columnName but '" + in + "' is not an encoded columnName!");
 
-	return _decodingMap.at(in);
+	return found->second.name;
 }
 
 columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
 {
-	if(in == "" || _decodingTypes.count(in) == 0) 
-		return columnType::unknown;
-	
-	return _decodingTypes.at(in);
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder::columnTypeFromEncoded called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
+
+	return tableColumnTypeFromEncoded(in);
 }
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
@@ -191,68 +320,147 @@ void ColumnEncoder::setCurrentColumnTypePerName(const colTypeMap &theMap)
 	setCurrentNames(theMap);
 }
 
-void ColumnEncoder::setCurrentNames(const colTypeMap & namesWithTypes)
+void ColumnEncoder::buildMint(const colTypeMap & namesWithTypes)
 {
-	//LOGGER << "ColumnEncoder::setCurrentNames(#"<< names.size() << ")" << std::endl;
+	_dataSetTypes	= namesWithTypes;
+	_mintForward.clear();
+	_mintReverse.clear();
+	_mintReverse.reserve(namesWithTypes.size() * 3);
 
-	_originalNames.clear();
-	_encodingMap.clear();
-	_decodingMap.clear();
-	_encodedNames.clear();
-	_encodedNames.reserve(namesWithTypes.size());
-
-	_dataSetTypes = namesWithTypes;
-	
 	size_t runningCounter = 0;
-	
-	auto encodedNameGenerator = [&runningCounter, this](){ return _encodePrefix + std::to_string(runningCounter++) + _encodePostfix; }; //Slightly weird (but R-syntactically valid) name to avoid collisions with user stuff.
-	
+
 	for (const auto & nameType : namesWithTypes)
 	{
 		//namesWithTypes either comes from the data and has a columnType specified and otherwise it is a level or something. With unknown columnType.
-		
-		_originalNames.push_back(nameType.first);
-		
+
 		if(nameType.second == columnType::unknown)
-		{	
-			std::string encodedName			= encodedNameGenerator();
-			_encodingMap[nameType.first]	= encodedName;
-			_decodingMap[encodedName]		= nameType.first;
-			_encodedNames					. push_back(encodedName);
+		{
+			_mintForward[nameType.first]	= runningCounter;
+			_mintReverse.push_back({nameType.first, columnType::unknown});
+			++runningCounter;
 		}
 		else //It is a column from (the) data
 			for(columnType colType : { columnType::scale, columnType::ordinal, columnType::nominal })
 			{
-				std::string qualifiedName			= nameType.first + "." + columnTypeToString(colType);
-				_originalNames						. push_back(qualifiedName);
-				std::string encodedName				= encodedNameGenerator();
-				_encodingMap[qualifiedName]			= encodedName;
-				_decodingMap[encodedName]			= nameType.first; //Decoding is back to the actual name in the data!
-				_encodedNames						. push_back(encodedName);
-				_decodingTypes[encodedName]			= colType;
-	
+				std::string qualifiedName	= nameType.first + "." + columnTypeToString(colType);
+				_mintForward[qualifiedName]	= runningCounter;
+				_mintReverse.push_back({nameType.first, colType});	//Decoding is back to the actual name in the data!
+				++runningCounter;
+
 				if (colType == nameType.second) //This is the type as specified in the data, so the name without specification of type gets encoded to its default type
-					_encodingMap[nameType.first] = encodedName;
+					_mintForward[nameType.first] = runningCounter - 1;
 			}
 	}
-	
+}
+
+void ColumnEncoder::materializeMaps()
+{
+	//FULL only: derive the legacy full-string maps from the mint + own prefix. Byte-identical to
+	//what the pre-Phase-1 setCurrentNames() used to build directly.
+	_originalNames.clear();
+	_encodingMap.clear();
+	_decodingMap.clear();
+	_decodingTypes.clear();
+	_encodedNames.clear();
+	_encodedNames.reserve(_mintReverse.size());
+
+	for(const auto & nameIndex : _mintForward)
+	{
+		_originalNames.push_back(nameIndex.first);
+		_encodingMap[nameIndex.first] = _encodePrefix + std::to_string(nameIndex.second) + _encodePostfix;
+	}
+
+	for(size_t i = 0; i < _mintReverse.size(); ++i)
+	{
+		std::string encodedName = _encodePrefix + std::to_string(i) + _encodePostfix;
+
+		_decodingMap[encodedName]	= _mintReverse[i].first;
+		_encodedNames.push_back(encodedName);
+
+		if(_mintReverse[i].second != columnType::unknown)
+			_decodingTypes[encodedName] = _mintReverse[i].second;
+	}
+
 	sortVectorBigToSmall(_originalNames);
 	sortVectorBigToSmall(_encodedNames);
-	invalidateAll();
+}
+
+void ColumnEncoder::setCurrentNames(const colTypeMap & namesWithTypes)
+{
+	switch(_mode)
+	{
+	case Mode::view:
+		//A view has no mint of its own: the legacy ColumnEncoderContext replay path (and anything
+		//else that re-points the current encoder at a view and renames through it) funnels into
+		//the canonical - exactly the blast radius the dataset's own encoder used to have.
+		if(_canonical)
+			_canonical->setCurrentNames(namesWithTypes);
+		return;
+
+	case Mode::canonical:
+		buildMint(namesWithTypes);
+		for(ColumnEncoder * view : _views)			//every live view's block is a consequence of this mint (D1.4 funnel)
+			view->rebuildBlock();
+		return;
+
+	case Mode::full:
+		buildMint(namesWithTypes);
+		materializeMaps();
+		rebuildBlock();
+		for(ColumnEncoder * view : _views)		//a FULL instance may still carry views (transitional or ad-hoc setups): their blocks follow the mint too
+			view->rebuildBlock();
+		return;
+	}
+}
+
+void ColumnEncoder::setEncodePrefix(const std::string & prefix)
+{
+	switch(_mode)
+	{
+	case Mode::canonical:
+		return;	//the canonical owns no namespace; reforging it is a no-op by construction
+
+	case Mode::view:
+		_encodePrefix = prefix;
+		rebuildBlock();		//erase-then-write moves the whole block into the new namespace
+		return;
+
+	case Mode::full:
+		_encodePrefix = prefix;
+		setCurrentNames(currentNames());	//same contract as before Phase 1: reforge = remint
+		return;
+	}
 }
 
 void ColumnEncoder::updateColumnTypesOnly(const colTypeMap &namesWithTypes)
 {
+	if(_mode == Mode::view)
+	{
+		if(_canonical)
+			_canonical->updateColumnTypesOnly(namesWithTypes);
+		return;
+	}
+
+	//updateColumnTypesOnly never mints new tokens, so no view block needs a rewrite: the
+	//index -> (name, type) space that the blocks are built from is untouched.
 	_dataSetTypes = namesWithTypes;
-	
+
+	//The reverse mint (and therefore every decode block) is untouched: a type-only change never
+	//mints new tokens, it only re-points the bare-name default of the encode side.
 	for (const auto & nameType : namesWithTypes)
 		if(nameType.second != columnType::unknown)
 		{
 			std::string qualifiedName		= nameType.first + "." + columnTypeToString(nameType.second);
-			_encodingMap[nameType.first]	= _encodingMap[qualifiedName];
+
+			auto qualified = _mintForward.find(qualifiedName);
+			if(qualified == _mintForward.end())
+				continue;	//never minted (e.g. names-only remint via the deprecated overload): skip instead of the old behaviour of mapping the bare name to ""
+
+			_mintForward[nameType.first] = qualified->second;
+
+			if(_mode == Mode::full)
+				_encodingMap[nameType.first] = _encodePrefix + std::to_string(qualified->second) + _encodePostfix;
 		}
-	
-	invalidateAll();
 }
 
 void ColumnEncoder::sortVectorBigToSmall(std::vector<std::string> & vec)
@@ -260,9 +468,61 @@ void ColumnEncoder::sortVectorBigToSmall(std::vector<std::string> & vec)
 	std::sort(vec.begin(), vec.end(), [](std::string & a, std::string & b) { return a.size() > b.size(); }); //We need this to make sure smaller columnNames do not bite chunks off of larger ones
 }
 
+ColumnEncoder::colMap ColumnEncoder::ownEncodingMap() const
+{
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder: encode-side map requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+
+	if(_mode == Mode::full)
+		return _encodingMap;
+
+	colMap map;	//view: compose canonical index + own prefix on the fly, nothing is stored (C3)
+
+	for(const auto & nameIndex : mintForward())
+		map[nameIndex.first] = _encodePrefix + std::to_string(nameIndex.second) + _encodePostfix;
+
+	return map;
+}
+
+ColumnEncoder::colVec ColumnEncoder::ownOriginalNames() const
+{
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder: encode-side names requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+
+	if(_mode == Mode::full)
+		return _originalNames;
+
+	colVec names;
+
+	for(const auto & nameIndex : mintForward())
+		names.push_back(nameIndex.first);
+
+	sortVectorBigToSmall(names);
+	return names;
+}
+
+ColumnEncoder::colVec ColumnEncoder::ownEncodedNames() const
+{
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder: encoded names requested on a canonical mint, it answers no full-string encode (mds-plan C2)!");
+
+	if(_mode == Mode::full)
+		return _encodedNames;
+
+	colVec names;
+	const auto & reverse = mintReverse();
+	names.reserve(reverse.size());
+
+	for(size_t i = 0; i < reverse.size(); ++i)
+		names.push_back(_encodePrefix + std::to_string(i) + _encodePostfix);
+
+	sortVectorBigToSmall(names);
+	return names;
+}
+
 ColumnEncoder::colMap ColumnEncoder::encodingMap(const ColumnEncoder * self)
 {
-	colMap map = self->_encodingMap;
+	colMap map = self->ownEncodingMap();
 
 	if(_otherEncoders)
 		for(const ColumnEncoder * other : *_otherEncoders)
@@ -274,23 +534,9 @@ ColumnEncoder::colMap ColumnEncoder::encodingMap(const ColumnEncoder * self)
 	return map;
 }
 
-ColumnEncoder::colMap ColumnEncoder::decodingMap(const ColumnEncoder * self)
-{
-	colMap map = self->_decodingMap;
-
-	if(_otherEncoders)
-		for(const ColumnEncoder * other : *_otherEncoders)
-			if(other != self)
-				for(const auto & keyVal : other->_decodingMap)
-					if(map.count(keyVal.first) == 0)
-						map[keyVal.first] = keyVal.second;
-
-	return map;
-}
-
 ColumnEncoder::colVec ColumnEncoder::originalNames(const ColumnEncoder * self)
 {
-	colVec vec = self->_originalNames;
+	colVec vec = self->ownOriginalNames();
 
 	if(_otherEncoders)
 		for(const ColumnEncoder * other : *_otherEncoders)
@@ -302,125 +548,21 @@ ColumnEncoder::colVec ColumnEncoder::originalNames(const ColumnEncoder * self)
 	return vec;
 }
 
-ColumnEncoder::colVec ColumnEncoder::encodedNames(const ColumnEncoder * self)
-{
-	colVec vec = self->_encodedNames;
-
-	if(_otherEncoders)
-		for(const ColumnEncoder * other : *_otherEncoders)
-			if(other != self)
-				for(const std::string & name : other->_encodedNames)
-					vec.push_back(name);
-
-	sortVectorBigToSmall(vec);
-	return vec;
-}
-
-const ColumnEncoder::colMap	&	ColumnEncoder::encodingMap()
-{
-	static ColumnEncoder::colMap map;
-
-	if(_encodingMapInvalidated)
-	{
-		map = encodingMap(columnEncoder());
-		_encodingMapInvalidated = false;
-	}
-
-	return map;
-}
-
-const ColumnEncoder::colMap	&	ColumnEncoder::decodingMap()
-{
-	static ColumnEncoder::colMap map;
-
-	if(_decodingMapInvalidated)
-	{
-		map = decodingMap(columnEncoder());
-		_decodingMapInvalidated = false;
-	}
-
-	return map;
-}
-
-const ColumnEncoder::colTypeMap &ColumnEncoder::decodingTypes()
-{
-	static ColumnEncoder::colTypeMap map;
-
-	if(_decodingTypeInvalidated)
-	{
-		map = columnEncoder()->_decodingTypes;
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const auto & keyVal : other->_decodingTypes)
-					if(map.count(keyVal.first) == 0)
-						map[keyVal.first] = keyVal.second;
-
-		_decodingTypeInvalidated = false;
-	}
-
-	return map;
-}
-
-
-const ColumnEncoder::colMap	&	ColumnEncoder::decodingMapSafeHtml()
-{
-	static ColumnEncoder::colMap map;
-
-	if(_decoSafeMapInvalidated)
-	{
-		map.clear();
-		
-		for(const auto & keyVal : columnEncoder()->_decodingMap)
-			if(map.count(keyVal.first) == 0)
-				map[keyVal.first] = stringUtils::escapeHtmlStuff(keyVal.second, true);
-
-		if(_otherEncoders)
-			for(const ColumnEncoder * other : *_otherEncoders)
-				for(const auto & keyVal : other->_decodingMap)
-					if(map.count(keyVal.first) == 0)
-						map[keyVal.first] = stringUtils::escapeHtmlStuff(keyVal.second, true); // replace square brackets for https://github.com/jasp-stats/jasp-issues/issues/2625
-
-		_decoSafeMapInvalidated = false;
-	}
-
-	return map;
-}
-
-const ColumnEncoder::colVec	&	ColumnEncoder::originalNames()
-{
-	static ColumnEncoder::colVec vec;
-
-	if(_originalNamesInvalidated)
-	{
-		vec = originalNames(columnEncoder());
-		_originalNamesInvalidated = false;
-	}
-
-	return vec;
-}
-
-const ColumnEncoder::colVec	&	ColumnEncoder::encodedNames()
-{
-	static ColumnEncoder::colVec vec;
-
-	if(_encodedNamesInvalidated)
-	{
-		vec = encodedNames(columnEncoder());
-		_encodedNamesInvalidated = false;
-	}
-
-	return vec;
-}
-
 bool ColumnEncoder::shouldEncode(const std::string & in)
 {
-	return _encodingMap.count(in) > 0;
+	if(_mode == Mode::full)
+		return _encodingMap.count(in) > 0;
+
+	return mintForward().count(in) > 0;
 }
 
 bool ColumnEncoder::shouldDecode(const std::string & in)
 {
-	return _decodingMap.count(in) > 0;
+	if(_mode == Mode::canonical)
+		return false;	//the canonical holds no token namespace at all (C2); token membership lives in the global table
+
+	//Compat shim: decoding is context-free (C4), the table answers.
+	return tableShouldDecode(in);
 }
 
 std::string	ColumnEncoder::replaceAllStrict(const std::string & text, const std::map<std::string, std::string> & map)
@@ -468,7 +610,7 @@ std::string	ColumnEncoder::replaceAll(std::string text, const std::map<std::stri
 }
 std::string ColumnEncoder::encodeRScript(std::string text, std::set<std::string> * columnNamesFound)
 {
-	return encodeRScript(text, _encodingMap, _originalNames, columnNamesFound);
+	return encodeRScript(text, ownEncodingMap(), ownOriginalNames(), columnNamesFound);
 }
 
 
@@ -483,12 +625,15 @@ std::string ColumnEncoder::encodeRScript(std::string text, std::map<std::string,
 	
 	std::sort(prefixes.begin(), prefixes.end(), [](const std::string & l, const std::string & r){ return l.size() < r.size();  });
 	prefixes.insert(prefixes.begin(), ""); //empty first
+
+	const colMap map	= ownEncodingMap();
+	const colVec names	= ownOriginalNames();
 	
 	prefixedColumnsFound.clear();
 	
 	for(auto& prefix : prefixes) {
 		stringset columnNamesFound;
-		text = encodeRScript(text, _encodingMap, _originalNames, &columnNamesFound, prefix);
+		text = encodeRScript(text, map, names, &columnNamesFound, prefix);
 		prefixedColumnsFound.insert({prefix, columnNamesFound});
 	}
 	return text;
@@ -600,7 +745,12 @@ std::string ColumnEncoder::encodeAll(const std::string & text) const
 
 std::string ColumnEncoder::decodeAll(const std::string & text) const
 {
-	return replaceAll(text, decodingMap(this), encodedNames(this));
+	//Compat shim (D1.5 retires it): the context-free global-table sweep (C4). The canonical is
+	//not part of that contract - it answers no full-string decode (C2).
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder::decodeAll called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
+
+	return tableDecodeAll(text);
 }
 
 void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool replaceStrict) const
@@ -610,47 +760,28 @@ void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool repla
 
 void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames) const
 {
-	replaceAll(json, decodingMap(this), encodedNames(this), replaceNames, false);
+	//Compat shim (D1.5 retires it): the context-free global-table sweep (C4). The canonical is
+	//not part of that contract - it answers no full-string decode (C2).
+	if(_mode == Mode::canonical)
+		throw std::runtime_error("ColumnEncoder::decodeJson called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
+
+	tableDecodeJson(json, replaceNames, false);
 }
 
 void ColumnEncoder::decodeJsonSafeHtml(Json::Value & json)
 {
-	replaceAll(json, decodingMapSafeHtml(), encodedNames(), true, false);
+	tableDecodeJson(json, true, true);
 }
 
 void ColumnEncoder::decodeJsonAcrossEncoders(Json::Value & json, const std::vector<ColumnEncoder *> & datasetEncoders, bool safeHtml)
 {
-	//Per-dataset encoders are deliberately NOT in _otherEncoders (so ENCODE can't collide two
-	//datasets that share an original column name), which is why reaching every dataset's tokens
-	//means rooting a decode pass at each one. The extras encoder and the global one ARE folded into
-	//every pass's map, so a final pass rooted at current/global completes the coverage even when
-	//there are no datasets. See the header for why this is safe to over-sweep.
-	if(safeHtml)
-	{
-		//decodeJsonSafeHtml is static and reads the *current* encoder (plus extras), so point
-		//current at each dataset in turn - exactly the dance Engine::sendString used to inline.
-		ColumnEncoder * restoreTo = currentEncoder();
-
-		for(ColumnEncoder * encoder : datasetEncoders)
-			if(encoder)
-			{
-				setCurrentEncoder(encoder);
-				decodeJsonSafeHtml(json);
-			}
-
-		setCurrentEncoder(restoreTo);
-		decodeJsonSafeHtml(json);		//current/global + extras, also covers the empty-dataset case
-	}
-	else
-	{
-		//decodeJson is instance-rooted and already unions extras via decodingMap(this); no need to
-		//disturb the process-global current encoder at all.
-		for(ColumnEncoder * encoder : datasetEncoders)
-			if(encoder)
-				encoder->decodeJson(json);
-
-		columnEncoder()->decodeJson(json);	//global/current + extras
-	}
+	//The old implementation rooted a decode pass at every dataset encoder (and flipped the
+	//current encoder per dataset for the safeHtml variant). That whole dance existed because
+	//decode maps were instance-rooted; with the one global strict decode table (C4) decoding is
+	//context-free, so `datasetEncoders` is ignored and one sweep covers every live filter of
+	//every loaded dataset plus extras. D1.5 converges the callers on tableDecodeJson() directly.
+	(void) datasetEncoders;
+	tableDecodeJson(json, true, safeHtml);
 }
 
 
@@ -765,12 +896,12 @@ std::string ColumnEncoder::replaceColumnNamesInRScript(const std::string & rCode
 
 ColumnEncoder::colVec ColumnEncoder::columnNames()
 {
-	return columnEncoder() ? columnEncoder()->_originalNames : colVec();
+	return columnEncoder() ? columnEncoder()->ownOriginalNames() : colVec();
 }
 
 ColumnEncoder::colVec ColumnEncoder::columnNamesEncoded()
 {
-	return columnEncoder() ? columnEncoder()->_encodedNames : colVec();
+	return columnEncoder() ? columnEncoder()->ownEncodedNames() : colVec();
 }
 
 void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const std::string& optionName, colsPlusTypes& colTypes, ColumnEncoder * encoder)
@@ -820,9 +951,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 			bool hasType = type != "unknown" && columnTypeValidName(type);
 
 			std::string columnName = jsonValue.asString();
-			if(!hasType && columnName != "" && encoder->_dataSetTypes.count(columnName))
+			if(!hasType && columnName != "" && encoder->currentNames().count(columnName))
 			{
-				type = columnTypeToString(encoder->_dataSetTypes.at(columnName));
+				type = columnTypeToString(encoder->currentNames().at(columnName));
 				hasType = type != "unknown";
 			}
 
@@ -854,9 +985,9 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 				bool hasType = type != "unknown" && columnTypeValidName(type);
 				std::string columnName = jsonColumnName.asString();
 
-				if(!hasType && columnName != "" && encoder->_dataSetTypes.count(columnName))
+				if(!hasType && columnName != "" && encoder->currentNames().count(columnName))
 				{
-					type = columnTypeToString(encoder->_dataSetTypes.at(columnName));
+					type = columnTypeToString(encoder->currentNames().at(columnName));
 					hasType = type != "unknown";
 				}
 
@@ -934,9 +1065,9 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 
 		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
 
-		if(encoder->_dataSetTypes.count(possibleCol))
+		if(encoder->currentNames().count(possibleCol))
 		{
-			columnType possType = encoder->_dataSetTypes.at(possibleCol);
+			columnType possType = encoder->currentNames().at(possibleCol);
 			if(possType != columnType::unknown)
 				colTypesPerDataSet[dataSetId].insert(std::make_pair(possibleCol + "." + columnTypeToString(possType) , possType));
 		}
@@ -1039,10 +1170,10 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	bool	encodePlease	= meta.isObject() && meta.get("shouldEncode",	false).asBool(),
 			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
 
-	//Every dataset has its own encoder and DataSet::setupEncoderPrefix() makes its encoded names globally unique
-	//by embedding the dataset id, so a multi-dataset options blob can be encoded slice by slice: every option
-	//against the encoder of the dataset its terms come from. Without a resolver this is the old behaviour:
-	//everything against the process-global current encoder.
+	//Every resolved encoder here is a filter VIEW whose tokens embed the dataset id (and, since
+	//mds-plan Phase 1, the filter id), so a multi-dataset options blob can be encoded slice by
+	//slice: every option against the namespace of the dataset its terms come from. Without a
+	//resolver this is the old behaviour: everything against the process-global current encoder.
 	ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
 
 	switch(options.type())

@@ -2370,9 +2370,12 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QCOMPARE(QString::fromStdString(fromA.asString()), QString::fromStdString(colName));
 	QCOMPARE(QString::fromStdString(fromB.asString()), QString::fromStdString(colName));
 
+	//Decode-side merge is dead (mds-plan D1.1/C4): the one global table answers every instance, so
+	//the old "another dataset's encoder must not decode this slice" behaviour is explicitly gone -
+	//a live token resolves from any encoder. Only STALE namespaces leave tokens raw.
 	Json::Value wrongWay(encodedInA);
 	b->encoder().decodeJson(wrongWay);
-	QVERIFY2(wrongWay.asString() == encodedInA, "Another dataset's encoder must not decode this slice");
+	QCOMPARE(wrongWay.asString(), colName);
 
 	// The encode -> decode -> encode -> decode cycle: decoding hands back the plain column name
 	// (the ".type" qualifier is deliberately dropped - decode gives the name as it is in the data),

@@ -37,6 +37,14 @@ private slots:
 	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
 	void collectFilterIdsFromMetaGathersEveryDistinctFilter();
 	void decodeJsonAcrossEncodersCoversEveryEncoderAndHonoursSafeHtml();
+	// mds-plan Phase 1: canonical mint + per-filter views + the one global decode table
+	void canonicalAnswersNoFullStringEncodeDecode();
+	void filterViewsMintDistinctTokensThatBothDecode();
+	void remintRewritesEveryViewBlockAndStaleTokensGoRaw();
+	void typeOnlyChangeKeepsTokensAndMovesBareDefaults();
+	void destroyingViewOrCanonicalErasesBlocks();
+	void independentCanonicalsFromIdenticalMapsProduceIdenticalBlocks();
+	void extrasStyleInstanceFeedsTheGlobalTable();
 };
 
 #endif // TESTCOLUMNENCODERCONTEXT_H

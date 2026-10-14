@@ -169,6 +169,7 @@ void TestColumnEncoderContext::init()
 void TestColumnEncoderContext::cleanup()
 {
 	ColumnEncoder::columnEncoder()->setCurrentNames(emptyNames());
+	ColumnEncoder::resetForTests();		//forget every block left behind by the Phase-1 view tests
 }
 
 void TestColumnEncoderContext::scopedContextsDecodeInterleavedAndRestoreLiveState()
@@ -506,4 +507,228 @@ void TestColumnEncoderContext::decodeJsonAcrossEncodersCoversEveryEncoderAndHono
 	//Leave the global in a clean state for later tests in this binary.
 	defaultEncoder->setCurrentNames(emptyNames());
 	ColumnEncoder::setCurrentEncoder(defaultEncoder);
+}
+
+// ---------------------------------------------------------------------------------------------
+// mds-plan Phase 1: canonical mint + per-filter views + the one global decode table (C1-C4, C16)
+// ---------------------------------------------------------------------------------------------
+
+void TestColumnEncoderContext::canonicalAnswersNoFullStringEncodeDecode()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+
+	canonical->setCurrentNames(names({{"Group", columnType::nominal}, {"Score", columnType::scale}}));
+
+	// The mint answers membership of original names and holds the type state ...
+	QVERIFY2(canonical->shouldEncode("Score"),			"the canonical must know its own column names");
+	QVERIFY2(canonical->shouldEncode("Score.nominal"),	"qualified names belong to the mint too");
+	QVERIFY2(!canonical->shouldEncode("Nope"),			"unknown names are not members");
+	QCOMPARE(canonical->currentNames().size(), size_t(2));
+
+	// ... but full-string encode/decode is not the canonical's job (C2):
+	QVERIFY2(!captureError([&](){ canonical->encode("Score"); }).empty(),	"encode on a canonical must throw");
+	QVERIFY2(!captureError([&](){ canonical->decode("JASPColumn_D1_F11_3_Encoded"); }).empty(),	"decode on a canonical must throw");
+	QVERIFY2(!captureError([&](){ canonical->decodeAll("JASPColumn_D1_F11_3_Encoded"); }).empty(),	"decodeAll on a canonical must throw");
+	Json::Value json = QString("JASPColumn_D1_F11_3_Encoded").toStdString();
+	QVERIFY2(!captureError([&](){ canonical->decodeJson(json); }).empty(),	"decodeJson on a canonical must throw");
+	QVERIFY2(!canonical->shouldDecode("anything"),	"the canonical holds no token namespace");
+	QCOMPARE(canonical->encodePrefix(), std::string());	// no namespace of its own
+
+	delete canonical;
+}
+
+void TestColumnEncoderContext::filterViewsMintDistinctTokensThatBothDecode()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	canonical->setCurrentNames(names({{"Group", columnType::nominal}, {"Score", columnType::scale}}));
+
+	ColumnEncoder * viewOne = ColumnEncoder::createView(canonical, "JASPColumn_D1_F11_");
+	ColumnEncoder * viewTwo = ColumnEncoder::createView(canonical, "JASPColumn_D1_F12_");
+
+	const std::string tokenOne = viewOne->encode("Score");
+	const std::string tokenTwo = viewTwo->encode("Score");
+
+	// C1 shape + the classic alphabetical mint (Group owns 0-2 with bare->2, Score 3-5 with bare->3):
+	QCOMPARE(tokenOne, std::string("JASPColumn_D1_F11_3_Encoded"));
+	QCOMPARE(tokenTwo, std::string("JASPColumn_D1_F12_3_Encoded"));
+	QVERIFY2(tokenOne != tokenTwo, "the same name in two filters of one dataset must mint distinct tokens");
+
+	// Both decode through the one global table, context-free (C4):
+	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), std::string("Score"));
+	QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), std::string("Score"));
+	QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(tokenOne), columnType::scale);
+	QVERIFY2(viewOne->shouldDecode(tokenTwo), "decode is context-free: a view resolves foreign live tokens too");
+
+	// Qualified variants get their own index and type:
+	QCOMPARE(viewTwo->encode("Score.nominal"), std::string("JASPColumn_D1_F12_5_Encoded"));
+	QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(std::string("JASPColumn_D1_F12_5_Encoded")), columnType::nominal);
+	QCOMPARE(ColumnEncoder::tableDecode(std::string("JASPColumn_D1_F12_0_Encoded")), std::string("Group"));
+
+	// shouldEncode is canonical membership (C3), not a per-view map:
+	QVERIFY2(viewOne->shouldEncode("Group"),	"membership comes from the shared mint");
+	QVERIFY2(!viewOne->shouldEncode("Nope"),	"unknown names are not encodable");
+
+	delete viewTwo;
+	delete viewOne;
+	delete canonical;
+}
+
+void TestColumnEncoderContext::remintRewritesEveryViewBlockAndStaleTokensGoRaw()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	canonical->setCurrentNames(names({{"Alpha", columnType::scale}, {"Zeta", columnType::scale}}));
+
+	ColumnEncoder * viewOne = ColumnEncoder::createView(canonical, "JASPColumn_D1_F11_");
+	ColumnEncoder * viewTwo = ColumnEncoder::createView(canonical, "JASPColumn_D1_F12_");
+
+	const std::string alphaOne	= viewOne->encode("Alpha");
+	const std::string zetaOne	= viewOne->encode("Zeta");
+	const std::string zetaTwo	= viewTwo->encode("Zeta");
+	QCOMPARE(ColumnEncoder::tableDecode(zetaOne), std::string("Zeta"));
+
+	// Column removal (setCurrentNames is the single funnel): the mint shrinks and every view block
+	// is rewritten as an automatic consequence - no caller has to remember (D1.4).
+	canonical->setCurrentNames(names({{"Alpha", columnType::scale}}));
+
+	QCOMPARE(viewOne->encode("Alpha"), alphaOne);
+	QCOMPARE(ColumnEncoder::tableDecode(alphaOne), std::string("Alpha"));
+	QCOMPARE(ColumnEncoder::tableDecode(zetaOne), zetaOne);	//stale token: decodes raw
+	QCOMPARE(ColumnEncoder::tableDecode(zetaTwo), zetaTwo);	//...in every view of the canonical
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(zetaOne), "shrunk-away tokens must be gone from the table");
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(zetaTwo), "shrunk-away tokens of the other view must be gone too");
+
+	// Rename keeps the token space closed as well: the old "Alpha" name is gone, so its old index
+	// now belongs to "Bravo" - the table answers with the CURRENT mapping only, never both.
+	canonical->setCurrentNames(names({{"Bravo", columnType::scale}, {"Zeta", columnType::scale}}));
+	QCOMPARE(ColumnEncoder::tableDecode(alphaOne), std::string("Bravo"));	//re-minted index: current entry wins
+	QCOMPARE(ColumnEncoder::tableDecode(viewOne->encode("Zeta")), std::string("Zeta"));
+
+	delete viewTwo;
+	delete viewOne;
+	delete canonical;
+}
+
+void TestColumnEncoderContext::typeOnlyChangeKeepsTokensAndMovesBareDefaults()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	canonical->setCurrentNames(names({{"Score", columnType::scale}}));
+
+	ColumnEncoder * view = ColumnEncoder::createView(canonical, "JASPColumn_D1_F11_");
+
+	const std::string bareToken	= view->encode("Score");			// -> the scale entry
+	const std::string ordToken	= view->encode("Score.ordinal");
+
+	// Type-only change (column.cpp:396 funnels here): no re-mint, only the bare-name default moves.
+	canonical->updateColumnTypesOnly(names({{"Score", columnType::ordinal}}));
+
+	QCOMPARE(view->encode("Score"), ordToken);							//bare default follows the data type
+	QCOMPARE(ColumnEncoder::tableDecode(bareToken), std::string("Score"));	//no token was re-minted
+	QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(bareToken), columnType::scale);
+	QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(ordToken), columnType::ordinal);
+	QCOMPARE(view->currentNames().at("Score"), columnType::ordinal);		//type state follows (view -> canonical)
+
+	delete view;
+	delete canonical;
+}
+
+void TestColumnEncoderContext::destroyingViewOrCanonicalErasesBlocks()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	canonical->setCurrentNames(names({{"Score", columnType::scale}}));
+
+	ColumnEncoder * doomedView = ColumnEncoder::createView(canonical, "JASPColumn_D1_F42_");
+	ColumnEncoder * liveView   = ColumnEncoder::createView(canonical, "JASPColumn_D1_F43_");
+
+	const std::string deadToken = doomedView->encode("Score");
+	const std::string liveToken = liveView->encode("Score");
+
+	// Filter destroy: the view dies, its block is erased (C16), the canonical and its other views
+	// keep working.
+	delete doomedView;
+
+	QCOMPARE(ColumnEncoder::tableDecode(deadToken), deadToken);
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(deadToken), "a destroyed filter's tokens must not decode anymore");
+	QCOMPARE(ColumnEncoder::tableDecode(liveToken), std::string("Score"));
+
+	// Dataset unload: ~DataSet deletes the canonical while the filters (as its QObject children)
+	// die only later - the canonical must detach and erase every live view first.
+	delete canonical;
+
+	QCOMPARE(ColumnEncoder::tableDecode(liveToken), liveToken);
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(liveToken), "a dataset unload must erase the blocks of all its filters");
+
+	delete liveView;	//still alive (like a not-yet-deleted child) but detached - must not crash
+}
+
+void TestColumnEncoderContext::independentCanonicalsFromIdenticalMapsProduceIdenticalBlocks()
+{
+	const ColumnEncoder::colTypeMap columns = names({{"Group", columnType::nominal}, {"Score", columnType::scale}, {"x y", columnType::unknown}});
+
+	ColumnEncoder * canonicalOne = ColumnEncoder::createCanonical();
+	ColumnEncoder * canonicalTwo = ColumnEncoder::createCanonical();
+	canonicalOne->setCurrentNames(columns);
+	canonicalTwo->setCurrentNames(columns);
+
+	ColumnEncoder * viewOne = ColumnEncoder::createView(canonicalOne, "JASPColumn_D7_F70_");
+	ColumnEncoder * viewTwo = ColumnEncoder::createView(canonicalTwo, "JASPColumn_D8_F80_");
+
+	// Deterministic minting: identical column maps yield identical indices, so the two processes'
+	// (desktop/engine/syntax-bridge analog) blocks agree on every name's index - only the prefix
+	// differs - and every token decodes back to the same name and type.
+	for(const std::string & name : { std::string("Group"), std::string("Group.scale"), std::string("Score"), std::string("Score.nominal"), std::string("x y") })
+	{
+		const std::string tokenOne = viewOne->encode(name);
+		const std::string tokenTwo = viewTwo->encode(name);
+
+		QVERIFY2(tokenOne.size() > 16 && tokenTwo.size() > 16, "sanity: both must be full tokens");
+		QCOMPARE(QString::fromStdString(tokenOne.substr(std::string("JASPColumn_D7_F70_").size())),
+		         QString::fromStdString(tokenTwo.substr(std::string("JASPColumn_D8_F80_").size())));	//same index part
+
+		const std::string bareName = name.substr(0, name.find('.'));
+		QCOMPARE(ColumnEncoder::tableDecode(tokenOne), bareName);
+		QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), bareName);
+		QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(tokenOne), ColumnEncoder::tableColumnTypeFromEncoded(tokenTwo));
+	}
+
+	delete viewTwo;
+	delete viewOne;
+	delete canonicalTwo;
+	delete canonicalOne;
+}
+
+void TestColumnEncoderContext::extrasStyleInstanceFeedsTheGlobalTable()
+{
+	std::string tokenA, tokenB;
+
+	{
+		ColumnEncoder extras(ExtraOptionsPrefix);	//a FULL self-contained instance: the extras shape (C6)
+		extras.setCurrentNames(names({{"level A", columnType::unknown}, {"level B", columnType::unknown}}));
+
+		tokenA = extras.encode("level A");
+		tokenB = extras.encode("level B");
+
+		QCOMPARE(tokenA, std::string("JaspExtraOptions_0_Encoded"));
+		QCOMPARE(tokenB, std::string("JaspExtraOptions_1_Encoded"));
+
+		// extras tokens decode at every decode site (context-free):
+		QCOMPARE(ColumnEncoder::tableDecode(tokenA), std::string("level A"));
+		QCOMPARE(ColumnEncoder::tableColumnTypeFromEncoded(tokenA), columnType::unknown);
+
+		Json::Value payload(Json::objectValue);
+		payload["k"] = tokenB;
+		ColumnEncoder::tableDecodeJson(payload);
+		QCOMPARE(payload["k"].asString(), std::string("level B"));
+
+		// The per-request refresh (setCurrentNamesFromOptionsMeta) closes over the old key space:
+		Json::Value options(Json::objectValue);
+		options[".meta"]["lv"]["encodeThis"] = "level C";
+		extras.setCurrentNamesFromOptionsMeta(options);
+
+		QCOMPARE(ColumnEncoder::tableDecode(tokenA), std::string("level C"));	//index 0 was rewritten
+		QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenB), "index 1 is outside the fresh mint and must be erased, not kept");
+	}
+
+	// The extras instance's death erases its whole block.
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenA), "a destroyed extras encoder must leave nothing decodable");
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenB), "a destroyed extras encoder must leave nothing decodable");
 }
