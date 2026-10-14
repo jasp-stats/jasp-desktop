@@ -1194,7 +1194,10 @@ void AnalysisForm::setAnalysisUp()
 	// state from here; the run/save/dataSpec paths generate from them, never from this tree.
 	Json::Value initialOptions	= _analysis->takePendingOptions();
 
-	_setUpControls();
+	// The controls are set up only once: setting them up again (when setOptions is called) would connect their signals twice.
+	bool firstSetUp = !_initialized;
+	if (firstSetUp)
+		_setUpControls();
 
 	// The controls own their values: bindTo(initialOptions) resets each one to its
 	// initial value (createJson() when the option is absent), so there is no stored tree left over
@@ -1208,9 +1211,12 @@ void AnalysisForm::setAnalysisUp()
 	_initialized = true;
 	emit initializedChanged();
 
-	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
-	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
-	connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
+	if (firstSetUp)
+	{
+		// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
+		connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
+		connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
+	}
 
 	emit analysisChanged();
 
