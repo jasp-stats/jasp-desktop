@@ -37,9 +37,9 @@ public:
 	const ColumnEncoder::colTypeMap&	columns() const		{ return _columns; }
 	const ColumnEncoder::colTypeMap&	extra() const		{ return _extra; }
 	///< The encode namespace (prefix) the captured columns were minted in ("" = v1 context,
-	///< replay under whatever prefix is live). DataSet encoders mint per-dataset prefixed names
-	///< (JASPColumn_<dataSetId>_), so a context captured on one dataset must carry its prefix
-	///< to replay correctly once another dataset is live.
+	///< replay under whatever prefix is live). Filter views mint per-filter prefixed names
+	///< (JASPColumn_D<dataSetId>_F<filterId>_), so a context captured on one dataset must carry
+	///< its prefix to replay correctly once another dataset is live.
 	const std::string&					prefix() const		{ return _prefix; }
 	bool								supplied() const	{ return _supplied; }
 

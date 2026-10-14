@@ -48,11 +48,12 @@ QmlUtils::QmlUtils(QObject *parent) : QObject(parent)
 static ColumnEncoder * currentDatasetEncoder()
 {
 	//The process-global current-encoder indirection is only populated inside the engine, so the
-	//desktop must en/decode against the shown dataset's own encoder instead.
+	//desktop must en/decode against the shown dataset's shown-filter VIEW (mds-plan C3/C7 - the
+	//canonical itself mints no full strings).
 	Workspace * ws = Workspace::singleton();
 	DataSet * ds = ws ? ws->shownDataSet() : nullptr;
 
-	return ds ? &ds->encoder() : nullptr;
+	return ds ? ds->shownEncoder() : nullptr;
 }
 
 QString QmlUtils::encodeAllColumnNames(const QString & str)

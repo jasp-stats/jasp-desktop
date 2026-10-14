@@ -105,9 +105,11 @@ private slots:
 	// (which restore via dropLevelsTypeFromQString) do not throw missingEnumVal.
 	void	testUndoColumnDropLevels();
 
-	// Encoder regression: each dataset's encoder prefix must carry the dataset id (not -1), so
-	// colliding column names across datasets cannot encode to the same name.
+	// Encoder regression (mds-plan Phase 1): each dataset owns a canonical mint (no full-string
+	// encode/decode) and each Filter a view prefix "JASPColumn_D<dsId>_F<filterId>_", so colliding
+	// column names cannot encode to the same token; decoding is context-free via the global table.
 	void	testEncoderPrefixPerDataset();
+
 
 	// Multi-dataset selection: the workspace must offer every filter of every dataset (value =
 	// globally unique filterId, label = "DataSet - Filter") for VariablesForm::dataSetSelection.

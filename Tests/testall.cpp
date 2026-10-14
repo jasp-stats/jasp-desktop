@@ -2209,19 +2209,32 @@ void TestAll::testEncoderPrefixPerDataset()
 	DataSet * a = _pkg->dataSet();
 	QVERIFY(a);
 	QVERIFY(a->columnCount() > 0);
+	QVERIFY(a->defaultFilter());
 
 	const std::string colName	= a->column(0)->name();
-	const std::string prefixA	= "JASPColumn_" + std::to_string(a->id()) + "_";
-	const std::string encodedA	= a->encoder().encode(colName);
+	const std::string prefixA	= "JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->defaultFilter()->id()) + "_";
 
-	QVERIFY2(encodedA.find(prefixA) == 0,	qPrintable("Encoder prefix must carry the dataset id"));
+	ColumnEncoder * viewA = a->defaultFilter()->columnEncoder();
+	QVERIFY2(viewA, "a live filter must own its namespace view (mds-plan C3)");
+	const std::string encodedA = viewA->encode(colName);
+
+	QVERIFY2(encodedA.find(prefixA) == 0,	qPrintable(tq("Filter view prefix must carry the dataset AND filter id, got: " + encodedA)));
+	QVERIFY2(encodedA.size() > prefixA.size() + 8 && encodedA.compare(encodedA.size() - 8, 8, "_Encoded") == 0,	qPrintable(tq("tokens end in the _Encoded postfix, got: " + encodedA)));
 	QVERIFY2(encodedA.find("-1") == std::string::npos,	qPrintable("Encoder prefix must not be the -1 sentinel"));
 
-	//Reload from the DB (the .jasp restore path): the prefix must still carry the id, not -1.
+	//The canonical holds the mint but mints no tokens itself (C2): it answers membership, encode throws.
+	QVERIFY2(a->encoder().shouldEncode(colName), "the canonical must know its own column names");
+	bool canonicalEncodeThrew = false;
+	try { a->encoder().encode(colName); } catch(const std::runtime_error &) { canonicalEncodeThrew = true; }
+	QVERIFY2(canonicalEncodeThrew, "the canonical must never answer full-string encode");
+
+	//Reload from the DB (the .jasp restore path): dataset AND filter rowids are stable, so the
+	//reloaded dataset's default-filter view mints the exact same tokens (see
+	//testDataSetFilterIdsSurviveStorageReload for the id-persistence pin).
 	DataSet loadMe(nullptr, a->id());
 	QCOMPARE(loadMe.id(), a->id());
-	const std::string encodedReload = loadMe.encoder().encode(colName);
-	QVERIFY2(encodedReload.find(prefixA) == 0,	qPrintable("Reloaded dataset must keep the id-based prefix"));
+	QCOMPARE(loadMe.defaultFilter()->id(), a->defaultFilter()->id());
+	const std::string encodedReload = loadMe.defaultFilter()->columnEncoder()->encode(colName);
 	QCOMPARE(encodedReload, encodedA);
 
 	//A second dataset with a colliding column name must get a distinct prefix.
@@ -2231,18 +2244,20 @@ void TestAll::testEncoderPrefixPerDataset()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
 	QVERIFY(b->id() != a->id());
 
-	const std::string prefixB	= "JASPColumn_" + std::to_string(b->id()) + "_";
-	const std::string encodedB	= b->encoder().encode(b->column(0)->name());
+	const std::string prefixB	= "JASPColumn_D" + std::to_string(b->id()) + "_F" + std::to_string(b->defaultFilter()->id()) + "_";
+	const std::string encodedB	= b->defaultFilter()->columnEncoder()->encode(b->column(0)->name());
 	QVERIFY2(encodedB.find(prefixB) == 0,	qPrintable("Second dataset must get its own id-based prefix"));
 	QVERIFY(encodedB != encodedA);
 
-	//Instance-level JSON decode must work against the dataset's own encoder (the static
-	//ColumnEncoder::decodeJson is a no-op on the desktop: the global current-encoder indirection is
-	//only set inside the engine).
+	//Decoding is context-free since mds-plan C4: the ONE global table holds a block per live filter
+	//of every loaded dataset, so a single sweep resolves tokens of both datasets (the old
+	//instance-rooted decodeJson only saw its own dataset).
 	Json::Value json;
-	json["axis"] = encodedA;
-	a->encoder().decodeJson(json);
-	QCOMPARE(json["axis"].asString(), colName);
+	json["axis"]	= encodedA;
+	json["series"]	= encodedB;
+	ColumnEncoder::tableDecodeJson(json);
+	QCOMPARE(json["axis"].asString(),	colName);
+	QCOMPARE(json["series"].asString(),	b->column(0)->name());
 }
 
 void TestAll::testDataSetFilterDropDownList()
@@ -2322,10 +2337,15 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 
 	const std::string qualified	= colName + "." + columnTypeToString(colInB->type());
 
-	//The engine always refreshes each dataset's encoder (with types!) via provideAndUpdateDataSet before
-	//encoding against it; do the same here because the desktop import path may have left untyped names.
+	//The engine always refreshes each dataset's canonical (with types!) via provideAndUpdateDataSet
+	//before encoding against it; do the same here because the desktop import path may have left
+	//untyped names.
 	a->encoder().setCurrentNames(a->getColumnTypesMap());
 	b->encoder().setCurrentNames(b->getColumnTypesMap());
+
+	//Encode through the shown filter's VIEW (mds-plan C3): the canonical itself mints no tokens.
+	ColumnEncoder * viewA = a->shownEncoder(), * viewB = b->shownEncoder();
+	QVERIFY(viewA && viewB);
 
 	Json::Value options(Json::objectValue);
 
@@ -2347,8 +2367,10 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 			options, true,
 			[ws](int dataSetId) -> ColumnEncoder *
 			{
+				//Encode against the dataset's shown-filter VIEW (mds-plan C3) - exactly like
+				//DataBridge::prepareMultiDataSetRun does.
 				DataSet * ds = ws->dataSetById(dataSetId);
-				return ds ? &ds->encoder() : nullptr;
+				return ds ? ds->shownEncoder() : nullptr;
 			},
 			a->id());
 
@@ -2356,43 +2378,52 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QVERIFY(colsPerDataSet.count(a->id()) == 1);
 	QVERIFY(colsPerDataSet.count(b->id()) == 1);
 
-	const std::string encodedInA = a->encoder().encode(qualified),
-					encodedInB = b->encoder().encode(qualified);
+	const std::string encodedInA = viewA->encode(qualified),
+					encodedInB = viewB->encode(qualified);
 
 	QVERIFY2(encodedInA != encodedInB, "The same column in two datasets must not encode to the same name");
 	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),	QString::fromStdString(encodedInA));
 	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),	QString::fromStdString(encodedInB));
 
-	//And each slice is only decodable by the encoder of the dataset it belongs to:
+	//Decoding is context-free since mds-plan C4: ONE sweep of the global table resolves both
+	//datasets' slices, and so does every view's legacy instance shim:
 	Json::Value fromA(encodedInA), fromB(encodedInB);
-	a->encoder().decodeJson(fromA);
-	b->encoder().decodeJson(fromB);
+	viewA->decodeJson(fromA);
+	viewB->decodeJson(fromB);
 	QCOMPARE(QString::fromStdString(fromA.asString()), QString::fromStdString(colName));
 	QCOMPARE(QString::fromStdString(fromB.asString()), QString::fromStdString(colName));
 
-	//Decode-side merge is dead (mds-plan D1.1/C4): the one global table answers every instance, so
-	//the old "another dataset's encoder must not decode this slice" behaviour is explicitly gone -
-	//a live token resolves from any encoder. Only STALE namespaces leave tokens raw.
+	//The old "another dataset's encoder must not decode this slice" pin is replaced by its
+	//Phase-1 counterpart: a foreign VIEW resolving the token is exactly the point of the global
+	//table - only STALE namespaces leave tokens raw.
 	Json::Value wrongWay(encodedInA);
-	b->encoder().decodeJson(wrongWay);
-	QCOMPARE(wrongWay.asString(), colName);
+	viewB->decodeJson(wrongWay);
+	QCOMPARE(QString::fromStdString(wrongWay.asString()), QString::fromStdString(colName));
+
+	std::string staleToken;
+	{
+		ColumnEncoder doomed("JASPColumn_D999999_F999999_");		//a namespace that lives only for a moment (transient filter analogue)
+		doomed.setCurrentNames(a->getColumnTypesMap());
+		staleToken = doomed.encode(qualified);
+		QCOMPARE(ColumnEncoder::tableDecode(staleToken), colName);
+	}
+	QCOMPARE(ColumnEncoder::tableDecode(staleToken), staleToken);	//its block was erased with it (C16): raw
 
 	// The encode -> decode -> encode -> decode cycle: decoding hands back the plain column name
 	// (the ".type" qualifier is deliberately dropped - decode gives the name as it is in the data),
 	// and that plain name re-encodes to the current type's encoded name, so the cycle is stable
 	// from there on:
-	const std::string decoded1	= a->encoder().decode(encodedInA);
+	const std::string decoded1	= ColumnEncoder::tableDecode(encodedInA);
 	QCOMPARE(QString::fromStdString(decoded1), QString::fromStdString(colName));
 
-	const std::string again		= a->encoder().encode(decoded1);
+	const std::string again		= viewA->encode(decoded1);
 	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
-	QCOMPARE(QString::fromStdString(a->encoder().decode(again)), QString::fromStdString(colName));
+	QCOMPARE(QString::fromStdString(ColumnEncoder::tableDecode(again)), QString::fromStdString(colName));
 
-	// And the emitted token format is id-namespaced so the results decode sweeps need no routing
-	// table - a token only ever matches the dataset that minted it (DataSet::setupEncoderPrefix
-	// embeds the id, the "_Encoded" postfix is the encoder default):
-	QVERIFY2(encodedInA.rfind("JASPColumn_" + std::to_string(a->id()) + "_", 0) == 0,
-	         "encoded names must start with JASPColumn_<dataSetId>_");
+	// And the emitted token format is dataset-AND-filter-namespaced (mds-plan C1), so results
+	// decode sweeps need no routing table and deleted namespaces simply stop answering:
+	QVERIFY2(encodedInA.rfind("JASPColumn_D" + std::to_string(a->id()) + "_F" + std::to_string(a->shownFilter()->id()) + "_", 0) == 0,
+	         qPrintable(tq("encoded names must start with JASPColumn_D<dataSetId>_F<filterId>_, got: " + encodedInA)));
 	QVERIFY2(encodedInA.size() > 8 && encodedInA.compare(encodedInA.size() - 8, 8, "_Encoded") == 0,
 	         "encoded names must end in the _Encoded postfix");
 }

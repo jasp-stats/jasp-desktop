@@ -125,7 +125,7 @@ ScopedColumnEncoderContext::ScopedColumnEncoderContext(const ColumnEncoderContex
 	_previousPrefix = ColumnEncoder::columnEncoder()->encodePrefix();
 
 	// A captured context is only self-contained if the encode namespace travels with it:
-	// per-dataset encoders mint JASPColumn_<dataSetId>_<n>_Encoded, so replaying dataset A's
+	// filter views mint JASPColumn_D<dataSetId>_F<filterId>_<n>_Encoded, so replaying dataset A's
 	// context while dataset B is live has to reforge A's prefix before applying A's names.
 	// An empty prefix (v1 context) keeps whatever namespace is live, as before.
 	if(!context.prefix().empty() && context.prefix() != _previousPrefix)

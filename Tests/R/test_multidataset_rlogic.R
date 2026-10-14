@@ -183,7 +183,9 @@ if (!haveBridge) {
 	optionsParsed <- jsonlite::fromJSON(parsed, simplifyVector = FALSE)
 	encodedValue  <- as.character(optionsParsed$varS[[1]])
 
-	check(grepl("^JASPColumn_[0-9]+_[0-9]+_Encoded$", encodedValue),
+	# mds-plan Phase 1 (jasp-desktop): tokens are minted per FILTER view now -
+	# JASPColumn_D<dsId>_F<filterId>_<index>_Encoded (C1).
+	check(grepl("^JASPColumn_D[0-9]+_F[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
 	slice <- jaspSyntax$readRequestedDataset()
 	check(is.data.frame(slice) && encodedValue %in% names(slice),

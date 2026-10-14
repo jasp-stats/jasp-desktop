@@ -161,7 +161,8 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 	dataSet()->endBatchedToDB([](float f) {});
 
 	//The desktop must not rely on the process-global ColumnEncoder (that is only meaningful inside the
-	//engine's request context); consumers get the dataset's own encoder via provider->columnEncoder().
+	//engine's request context); consumers get a filter's view via provider->columnEncoder() and here we
+	//only (re)mint the dataset's canonical - every live view block follows automatically (mds-plan D1.4).
 	dataSet()->encoder().setCurrentNames(dataSet()->getColumnTypesMap());
 
 }

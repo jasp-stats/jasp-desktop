@@ -138,8 +138,16 @@ public:
 			void			insertColumn(			size_t			index,	bool alterDataSetTable = true);
 			Column		*	createColumn(			const std::string &	name, columnType columnType = columnType::unknown);
 			Column		*	createComputedColumn(	const std::string & name, columnType type		= columnType::unknown, computedColumnType desiredType = computedColumnType::analysis, int analysisId = -1);
+			///< The canonical mint of this dataset (mds-plan C2): bookkeeping only
+			///< (setCurrentNames/updateColumnTypesOnly/currentNames). It answers no full-string
+			///< encode/decode - encode through a filter view (shownEncoder()/Filter::columnEncoder()),
+			///< decode through the context-free global table (ColumnEncoder::tableDecode()).
 			ColumnEncoder	&	encoder()			{ return *_encoder; }
 	const	ColumnEncoder	&	encoder()	const	{ return *_encoder; }
+			///< Compat shim (the old "the dataset's encoder"): the VIEW of this dataset's shown
+			///< filter - the namespace in which its column names are minted for the current
+			///< request/UI context. nullptr only when no filter (and no default) exists yet.
+			ColumnEncoder	*	shownEncoder();
 			DataSetSyncer	&	syncer()			{ return *_syncer; }
 	const	DataSetSyncer	&	syncer()	const	{ return *_syncer; }
 			int				getColumnIndex(	const	std::string &	name	) const;
@@ -178,7 +186,6 @@ public:
 			size_t			getMaximumColumnWidthInCharacters(size_t columnIndex) const;
 			stringvec		getColumnNames();
 			colTypeMap		getColumnTypesMap();
-			void			setupEncoderPrefix();
 			
 
 			void			setDataFile(		const std::string & dataFilePath);

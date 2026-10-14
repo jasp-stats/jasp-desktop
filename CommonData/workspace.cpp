@@ -234,8 +234,9 @@ void Workspace::setShownDataSet(DataSet *dataSet)
 	UndoStack::setCurrent(_shownDataSet->undoStack());
 
 	//Column-name encoding/decoding (and computed-column dependency resolution) on the desktop must
-	//reflect the shown dataset. Consumers obtain the dataset's own encoder via the provider
-	//(provider->columnEncoder()); we only (re)populate its name map here, and never touch the
+	//reflect the shown dataset. Consumers obtain a filter's namespace view via the provider
+	//(provider->columnEncoder()); we only (re)mint the shown dataset's canonical here - the blocks of
+	//all its live filter views follow automatically (mds-plan D1.4) - and never touch the
 	//process-global current encoder (that global is only meaningful inside the engine's request context).
 	_shownDataSet->encoder().setCurrentNames(_shownDataSet->getColumnTypesMap());
 	
@@ -867,8 +868,9 @@ void Workspace::computedColumnSucceeded(int dataSetId, QString columnNameQ, QStr
 		return;
 
 	std::string	columnName	= fq(columnNameQ);
-	//The engine may report the encoded name; translate it defensively so the lookup works either way.
-	try { columnName = dataSet->encoder().decode(columnName); } catch(...) {}
+	//The engine may report the encoded name; translate it defensively so the lookup works either
+	//way. Decoding is context-free (mds-plan C4): the global table answers, unknown stays raw.
+	columnName = ColumnEncoder::tableDecode(columnName);
 	Column	*	column		= dataSet->column(columnName);
 
 	if(!column)

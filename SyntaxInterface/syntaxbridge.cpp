@@ -230,16 +230,18 @@ static ColumnEncoder & requireExtraColumnEncoder()
 static Json::Value columnEncoderContextJson()
 {
 	ColumnEncoder * extraEncoder = extraColumnEncoder();
-	//The columns come from the shown dataset and its OWN encoder mints the tokens
-	//(JASPColumn_<dataSetId>_), so capture the prefix from that encoder as well - the process-
-	//global one only mirrors the dataset namespace after a read redirected it, which made the
-	//capture order-dependent.
+	//The columns come from the shown dataset; its canonical only mints indices - the tokens are
+	//minted by the filter VIEWS - so capture the prefix from the shown filter's view as well
+	//(the process-global one only mirrors the dataset namespace after a read redirected it, which
+	//made the capture order-dependent).
 	DataSet * dataSet = gl_dataBridge ? gl_dataBridge->provideAndUpdateDataSet() : nullptr;
 
 	return ColumnEncoderContext(
 		dataSet ? dataSet->getColumnTypesMap() : ColumnEncoder::colTypeMap(),
 		extraEncoder ? extraEncoder->currentNames() : ColumnEncoder::colTypeMap(),
-		dataSet ? dataSet->encoder().encodePrefix() : std::string()
+		//The tokens ride the shown filter's VIEW namespace (JASPColumn_D<dsId>_F<filterId>_,
+		//mds-plan C1/C3) - the canonical itself carries no prefix.
+		dataSet && dataSet->shownEncoder() ? dataSet->shownEncoder()->encodePrefix() : std::string()
 	).toJson();
 }
 

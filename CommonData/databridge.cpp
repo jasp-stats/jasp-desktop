@@ -170,12 +170,15 @@ DataSet * DataBridge::provideAndUpdateDataSet(int dataSetId, std::function<void(
 	if(_workspace->shownDataSet())
 	{
 		DataSet * ds = _workspace->shownDataSet();
-		//Column-name encoding for the R bridge is scoped to the *current request's* shown dataset.
-		//Every rbridge_* entry runs provideAndUpdateDataSet() first, and DataSet::setShownDataSet()
-		//(desktop) / this re-point (engine) keep the indirection authoritative. Also see the
-		//EngineBridgeCallbacks/DataSet guard in ColumnEncoder::setCurrentEncoder / ~DataSet.
-		ColumnEncoder::setCurrentEncoder(&ds->encoder());
+		//Remint the dataset's canonical (mds-plan C2) - every filter view's block in the global
+		//decode table is rewritten as a consequence (D1.4 funnel) - and point the legacy non-aware
+		//request indirection at the shown filter's VIEW (C7): rbridge encodeAll/encodeRScript
+		//entries run against it. Also see the EngineBridgeCallbacks/DataSet guard in
+		//ColumnEncoder::setCurrentEncoder / ~DataSet.
 		ds->encoder().setCurrentNames(ds->getColumnTypesMap());
+
+		if(ColumnEncoder * view = ds->shownEncoder())
+			ColumnEncoder::setCurrentEncoder(view);
 	}
 	
 	JASPTIMER_STOP(DataBridge::provideAndUpdateDataSet());
@@ -228,8 +231,12 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
 			[workspace](int dataSetId) -> ColumnEncoder *
 			{
+				//Encode against the dataset's shown-filter VIEW (the canonical mints no full
+				//strings, C2). Per-stamp-filter resolution (option filterId -> that filter's
+				//view) is D1.6's job; until then one view per dataset keeps options and slice
+				//data in exactly one namespace, as before.
 				DataSet * ds = workspace->dataSetById(dataSetId);
-				return ds ? &ds->encoder() : nullptr;
+				return ds ? ds->shownEncoder() : nullptr;
 			},
 			primaryDataSetId);
 

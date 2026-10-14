@@ -535,6 +535,12 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 			else if(rbridge_dataSet->defaultFilter())
 				rbridge_dataSet->showFilter(rbridge_dataSet->defaultFilter());
 
+			//showFilter() ran after provideAndUpdateDataSet() re-pointed the indirection, so anchor
+			//it at the slice's own view now - the namespace the columns below (and the options that
+			//were encoded against this dataset) meet in. D1.6 makes this the explicit slice handle.
+			if(ColumnEncoder * view = rbridge_dataSet->shownEncoder())
+				ColumnEncoder::setCurrentEncoder(view);
+
 			datasetWanted = slice->cols;
 		}
 	}

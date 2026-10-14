@@ -35,7 +35,7 @@ DataSet::DataSet(Workspace * workspace, int id)
 {
 	Log::log() << "DataSet::DataSet(id=" << id << ")" << std::endl;
 
-	_encoder = new ColumnEncoder();
+	_encoder = ColumnEncoder::createCanonical();	//mds-plan C2: the DataSet owns the mint, the namespaces (views) belong to the filters
 	_syncer  = new DataSetSyncer(this);
 	_emptyValues	= new EmptyValues(nullptr);
 	connect(_emptyValues,	&EmptyValues::emptyValuesChanged,	this,		&DataSet::emptyValuesChanged			);
@@ -563,13 +563,10 @@ std::map<std::string,columnType> DataSet::getColumnTypesMap()
 	return theMap;
 }
 
-void DataSet::setupEncoderPrefix()
+ColumnEncoder * DataSet::shownEncoder()
 {
-	//Make the encoder prefix globally unique (carries the dataset id) so ALL datasets loaded into the
-	//engine can coexist without encoded-name collisions. Must run after the id has been finalized
-	//(dbCreate/dbLoad), which is why it is called at the end of those, not in the constructor.
-	_encoder->_encodePrefix = "JASPColumn_" + std::to_string(_dataSetId) + "_";
-	_encoder->setCurrentNames(getColumnTypesMap()); //regenerate all encoded names with the new prefix
+	Filter * f = shownFilter();
+	return f ? f->columnEncoder() : nullptr;
 }
 
 void DataSet::setDataFileAndTimeStamp(const std::string &dataFilePath, long timestamp)
@@ -697,7 +694,10 @@ void DataSet::dbCreate()
 
 	_rowCount		= 0;
 
-	setupEncoderPrefix();
+	//Mint the (still empty) column names through the canonical; the default filter's view - whose
+	//block is rewritten as a consequence - got its final id from dbCreate above, so the funnel is
+	//live from here on (mds-plan D1.4).
+	_encoder->setCurrentNames(getColumnTypesMap());
 }
 
 void DataSet::dbUpdate()
@@ -810,7 +810,10 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 			f->dbUpdate(true);
 	}
 
-	setupEncoderPrefix();
+	//Remint the canonical with the loaded columns (mds-plan D1.4): every live filter view's block
+	//in the global decode table is rewritten as an automatic consequence, and the views attached
+	//just below (loadStoredFilter -> Filter::dbLoad) mint their blocks from this state.
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	//Eagerly materialise every stored filter (the upgrade branch above already did). Multi-dataset
 	//aware selections list LIVE filters only (Workspace::_filterDropDownList, RPC dataset_info),
@@ -818,8 +821,8 @@ void DataSet::dbLoad(int id, std::function<void(float)> progressCallback, Versio
 	//selection option naming it gets coerced away by ComboBoxBase::bindTo before it ever reaches
 	//the host (mds-plan C2/EAGER, findings M3/m4). loadStoredFilter attaches to the existing row
 	//so the db row id - the invariant saved provenance refers to - is preserved, is a no-op for
-	//filters that are already live (default included), and runs after setupEncoderPrefix so the
-	//dataset's own encoder is ready for the filters' rescanForColumns.
+	//filters that are already live (default included), and runs after the canonical remint above
+	//so the freshly attached views mint their blocks from the loaded names.
 	for(const int filterRowId : db().dataSetGetFilters(_dataSetId))
 		loadStoredFilter(db().filterGetName(filterRowId));
 }
@@ -1381,14 +1384,23 @@ const DatabaseInterface &DataSet::db() const
 stringset DataSet::findUsedColumnNames(std::string searchThis)
 {
 	stringset columnsFound, columnsWithTypeFound;
-	encoder().encodeRScript(searchThis, &columnsWithTypeFound);
-	
+
+	//Text scanning encodes through the shown filter's VIEW (the canonical itself never mints
+	//full strings, mds-plan C2); which view it is cannot matter for the result set because the
+	//encode->decode roundtrip below drops the namespace again.
+	ColumnEncoder * view = shownEncoder();
+
+	if(!view)
+		return columnsFound;
+
+	view->encodeRScript(searchThis, &columnsWithTypeFound);
+
 	//The found columns now also include the type, but we dont really care about that right now.
 	//Instead we'll make use of the encode->decode not being symmetrical (for the results to be less ugly) and dropping the type
-	
+
 	for(const std::string & colPlusType : columnsWithTypeFound)
-		columnsFound.insert(encoder().decode(encoder().encode(colPlusType)));
-	
+		columnsFound.insert(ColumnEncoder::tableDecode(view->encode(colPlusType)));
+
 	return columnsFound;
 }
 

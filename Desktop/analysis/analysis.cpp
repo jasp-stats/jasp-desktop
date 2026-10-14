@@ -818,23 +818,11 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			if (fileData.size() > 0 && plotlyJson.isNull())
 				Log::log() << "loadPlotlyJsonInResults: parse produced null from non-empty file '" << tempFileRelativePath << "'" << std::endl;
 
-			//Decode against this analysis' own dataset encoder plus, for a multi-dataset aware
-			//run, the encoders of every dataset its options reference: plot files are written by
-			//R with encoded names and never pass through the engine's sendString, and the
-			//process-global encoder is only populated in the engine - so the static
-			//ColumnEncoder::decodeJson would be a no-op here.
-			Workspace * workspace = DataSetPackage::pkg() ? DataSetPackage::pkg()->workspace() : nullptr;
-
-			//Aware runs decode against every referenced dataset's encoder (an encoder only
-			//matches its own tokens); non-aware against the analysis' own dataset.
-			if(multiDataSetAware())
-			{
-				for(const auto & reference : referencedDataSets())
-					if(DataSet * ds = workspace ? workspace->dataSetById(reference.first) : nullptr)
-						ds->encoder().decodeJson(plotlyJson);
-			}
-			else if(DataSet * ds = dataSet())
-				ds->encoder().decodeJson(plotlyJson);
+			//Decoding is context-free since mds-plan C4: plot files are written by R with encoded
+			//names and never pass through the engine's sendString, but the desktop's global decode
+			//table holds a block per live filter of every loaded dataset (plus extras), so ONE
+			//sweep resolves them all - aware and non-aware runs alike.
+			ColumnEncoder::tableDecodeJson(plotlyJson);
 
 			return plotlyJson;
 		}
