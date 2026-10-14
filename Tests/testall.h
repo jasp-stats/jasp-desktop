@@ -110,6 +110,10 @@ private slots:
 	// column names cannot encode to the same token; decoding is context-free via the global table.
 	void	testEncoderPrefixPerDataset();
 
+	// Mutation funnel (mds-plan D1.4): after every mutation class {rename, add, remove, type-only,
+	// filter create, filter destroy, dataset unload} the ONE decode table maps exactly the current
+	// names of the live namespaces; stale/foreign tokens decode raw.
+	void	testEncoderMutationFunnel();
 
 	// Multi-dataset selection: the workspace must offer every filter of every dataset (value =
 	// globally unique filterId, label = "DataSet - Filter") for VariablesForm::dataSetSelection.

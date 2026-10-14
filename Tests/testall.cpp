@@ -2428,6 +2428,124 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	         "encoded names must end in the _Encoded postfix");
 }
 
+void TestAll::testEncoderMutationFunnel()
+{
+	//Every mutation class funnels into the canonical mint (setCurrentNames / updateColumnTypesOnly)
+	//or the view (register/erase), and the ONE global decode table must reflect exactly the current
+	//state after each - no caller has to remember a second step (mds-plan D1.4).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 1);
+	QVERIFY(a->defaultFilter());
+
+	ColumnEncoder * viewOne = a->defaultFilter()->columnEncoder();
+	QVERIFY(viewOne);
+
+	const std::string colName = a->column(0)->name();
+
+	//The app's bookkeeping path (setShownDataSet / provideAndUpdateDataSet do this after mutations):
+	auto remint = [a]() { a->encoder().setCurrentNames(a->getColumnTypesMap()); };
+
+	//Every token of a namespace must map back to a name the mint currently holds:
+	auto tableMatchesMint = [a](ColumnEncoder * view)
+	{
+		const ColumnEncoder::colTypeMap & types = a->encoder().currentNames();
+
+		for(const auto & nameType : types)
+		{
+			const std::string token = view->encode(nameType.first);
+			QCOMPARE(QString::fromStdString(ColumnEncoder::tableDecode(token)), QString::fromStdString(nameType.first));
+		}
+	};
+
+	remint();
+	tableMatchesMint(viewOne);
+
+	// --- type-only change (Column::setType -> updateColumnTypesOnly): no token churn ------------
+	Column * first = a->column(0);
+	const columnType oldType = first->type();
+	const columnType newType = oldType == columnType::scale ? columnType::nominal : columnType::scale;
+	const std::string bareTokenBefore = viewOne->encode(colName);
+
+	first->setType(newType);
+
+	QCOMPARE(viewOne->encode(colName), viewOne->encode(colName + "." + columnTypeToString(newType)));
+	QCOMPARE(ColumnEncoder::tableDecode(bareTokenBefore), colName);	//the old token still resolves (nothing was re-minted)
+	tableMatchesMint(viewOne);
+
+	// --- filter create: a second live namespace on the same mint --------------------------------
+	a->addFilter();												//"Filter 0", shown
+	Filter * extra = a->shownFilter();
+	QVERIFY2(extra && extra != a->defaultFilter(), "addFilter must show the new filter");
+	ColumnEncoder * viewTwo = extra->columnEncoder();
+	QVERIFY(viewTwo);
+
+	const std::string tokenOne = viewOne->encode(colName),
+					tokenTwo = viewTwo->encode(colName);
+
+	QVERIFY2(tokenOne != tokenTwo, "the same name in two filters of one dataset must mint distinct tokens");
+	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);
+	QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), colName);		//both decode, context-free (C4)
+	tableMatchesMint(viewTwo);
+
+	// --- column add: grow ------------------------------------------------------------------------
+	QVERIFY(a->createColumn("FunnelFresh", columnType::scale));
+	remint();
+	QCOMPARE(ColumnEncoder::tableDecode(viewOne->encode("FunnelFresh")), std::string("FunnelFresh"));
+	QCOMPARE(ColumnEncoder::tableDecode(viewTwo->encode("FunnelFresh")), std::string("FunnelFresh"));
+
+	// --- column rename: the table maps current names only ----------------------------------------
+	const std::string freshToken = viewOne->encode("FunnelFresh");
+	Column * fresh = a->column("FunnelFresh");
+	QVERIFY(fresh);
+	fresh->setNameManually(tq("RenewedFun"));
+	remint();
+
+	QCOMPARE(ColumnEncoder::tableDecode(viewOne->encode("RenewedFun")), std::string("RenewedFun"));
+	QVERIFY2(ColumnEncoder::tableDecode(freshToken) != "FunnelFresh",
+			 "a renamed-away name must not survive anywhere in the table");
+	tableMatchesMint(viewOne);
+
+	// --- column remove: shrink --------------------------------------------------------------------
+	const std::string renewedToken = viewOne->encode("RenewedFun");
+	a->removeColumn("RenewedFun");
+	remint();
+
+	QVERIFY2(ColumnEncoder::tableDecode(renewedToken) != "RenewedFun",
+			 "a removed column must not stay decodable under its own name");
+	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//the untouched part of the space keeps working
+	tableMatchesMint(viewOne);
+	tableMatchesMint(viewTwo);
+
+	// --- filter destroy: its block goes raw, everything else is untouched -------------------------
+	a->removeFilter(extra);
+
+	QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), tokenTwo);		//deleted filter's tokens go raw (C16)
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenTwo), "the destroyed filter's namespace must be gone");
+	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//the default filter is unaffected
+	tableMatchesMint(viewOne);
+
+	// --- dataset unload: every block of the unloaded dataset goes raw, the others stay -------------
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+	QVERIFY(b->defaultFilter()->columnEncoder());
+	const std::string tokenB = b->defaultFilter()->columnEncoder()->encode(b->column(0)->name());
+	QCOMPARE(ColumnEncoder::tableDecode(tokenB), b->column(0)->name());
+
+	ws->setShownDataSet(b);
+	ws->deleteShownDataSet();
+
+	QCOMPARE(ColumnEncoder::tableDecode(tokenB), tokenB);			//unloaded: raw
+	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenB), "an unloaded dataset must leave nothing decodable");
+	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//dataset a keeps decoding
+}
+
 void TestAll::testMultiDataSetQueueHandout()
 {
 	MultiDataSetSliceQueue	queue;
