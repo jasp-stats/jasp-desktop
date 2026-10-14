@@ -224,6 +224,10 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 				}
 				else
 					_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+
+				// These values are used only once to initialize the row controls: afterwards the row controls have the right values.
+				// If they were kept, a next reset of the row controls (when the source changes) would set them back to these old values.
+				_rowControlsValues.remove(term.value());
 			}
 
 			row++;
@@ -670,6 +674,7 @@ void ListModel::sourceVariableNamesChanged(QMap<QString, QString> map)
 {
 	QMap<QString, QString>	changedNamesMap;
 	QSet<int>				changedIndexes;
+	QStringList				oldValues = _terms.values();
 
 	QMapIterator<QString, QString> it(map);
 	while (it.hasNext())
@@ -683,6 +688,26 @@ void ListModel::sourceVariableNamesChanged(QMap<QString, QString> map)
 			changedIndexes += indexes;
 		}
 	}
+
+	// The row controls are kept per term value: move them to the new value, otherwise they would be deleted
+	// and recreated (losing their values) when the terms are reset.
+	bool rowControlsMoved = false;
+	for (int i : changedIndexes)
+	{
+		const QString	& oldValue = oldValues[i],
+						  newValue = _terms.at(i).value();
+
+		if (oldValue != newValue && _rowControlsMap.contains(oldValue) && !_rowControlsMap.contains(newValue))
+		{
+			_rowControlsMap[newValue] = _rowControlsMap.take(oldValue);
+			// The stored values are only the initial ones: without them, the row controls keep their current values when they are reset.
+			_rowControlsValues.remove(oldValue);
+			rowControlsMoved = true;
+		}
+	}
+
+	if (rowControlsMoved)
+		setUpRowControls(); // Set the new rowValue/rowLabel in the context of the moved row controls
 
 	for (int i : changedIndexes)
 	{

@@ -156,14 +156,18 @@ void ListModelFactorsForm::removeFactor()
 
 void ListModelFactorsForm::titleChangedSlot(int row, QString title)
 {
-	if (row < 0 && row >= _factors.size())
+	if (row < 0 || row >= _factors.size())
 		return;
 	
 	if (_factors[row].title == title)
 		return;
 
+	QString oldTitle = _factors[row].title;
 	_factors[row].title = title;
 
+	// Let the controls using the titles rename their term before they get the new titles:
+	// otherwise they would see a factor removed and a new one added, and would lose their values for this factor.
+	emit titlesRenamed({{oldTitle, title}});
 	emit dataChanged(index(row, 0), index(row,0));
 	emit _factorsForm->factorsTitlesChanged();
 }

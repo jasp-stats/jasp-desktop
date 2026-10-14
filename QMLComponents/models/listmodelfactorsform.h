@@ -71,6 +71,7 @@ public slots:
 
 signals:
 	void addListView(JASPListControl* listView);
+	void titlesRenamed(QMap<QString, QString> map); // Old title -> new title, for the controls using the titles of the factors as source
 	
 protected slots:
 	void nestedChangedHandler();
