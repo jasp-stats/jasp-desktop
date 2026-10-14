@@ -325,6 +325,8 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 
 	if (!onlyRemove)
 	{
+		QList<TermRowKey> usedValueKeys;
+
 		int row = 0;
 		for (const Term& term : terms())
 		{
@@ -343,10 +345,20 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 				}
 				else
 					_rowControlsMap[key]->resetValues(row, term, Terms::relatedValuesForTerm(_rowControlsValues, term));
+
+				usedValueKeys.append(key);
+				if (term.filterId() >= 0)
+					usedValueKeys.append(TermRowKey(term.value(), -1)); // the fallback entry relatedValuesForTerm() may have used
 			}
 
 			row++;
 		}
+
+		// These values are used only once to initialize the row controls: afterwards the row controls have the right values.
+		// If they were kept, a next reset of the row controls (when the source changes) would set them back to these old values.
+		// They are removed after the loop, as same-name rows behind different filters may share one (name, -1) fallback entry.
+		for (const TermRowKey& usedKey : usedValueKeys)
+			_rowControlsValues.remove(usedKey);
 	}
 	
 	// Disconnect and delete all controls that are not used anymore
@@ -832,6 +844,7 @@ void ListModel::sourceVariableNamesChanged(QMap<QString, QString> map)
 {
 	QMap<QString, QString>	changedNamesMap;
 	QSet<int>				changedIndexes;
+	QStringList				oldValues = _terms.values();
 
 	QMapIterator<QString, QString> it(map);
 	while (it.hasNext())
@@ -845,6 +858,28 @@ void ListModel::sourceVariableNamesChanged(QMap<QString, QString> map)
 			changedIndexes += indexes;
 		}
 	}
+
+	// The row controls are kept per row identity (value + filterId): move them to the new one, otherwise they would be deleted
+	// and recreated (losing their values) when the terms are reset.
+	bool rowControlsMoved = false;
+	for (int i : changedIndexes)
+	{
+		// A rename keeps the filter of the term: only the name part of the row identity changes.
+		const Term		& term = _terms.at(i);
+		const TermRowKey  oldKey(oldValues[i], term.filterId()),
+						  newKey = TermRowKey::ofTerm(term);
+
+		if (oldKey != newKey && _rowControlsMap.contains(oldKey) && !_rowControlsMap.contains(newKey))
+		{
+			_rowControlsMap[newKey] = _rowControlsMap.take(oldKey);
+			// The stored values are only the initial ones: without them, the row controls keep their current values when they are reset.
+			_rowControlsValues.remove(oldKey);
+			rowControlsMoved = true;
+		}
+	}
+
+	if (rowControlsMoved)
+		setUpRowControls(); // Set the new rowValue/rowLabel in the context of the moved row controls
 
 	for (int i : changedIndexes)
 	{

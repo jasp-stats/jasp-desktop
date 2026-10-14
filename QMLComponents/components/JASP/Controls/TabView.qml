@@ -164,6 +164,10 @@ ComponentsListBase
 			}
 
 			property bool isEditable: tabView.tabNameEditable && tabView.isTabEditable(model.index)
+			// The whole name of the tab (model.name: there is no 'value' role) when it is truncated
+			property string toolTipText: (tabButtonLabel.truncated ? model.name : "")
+										+ (tabButtonLabel.truncated && isEditable ? "\n" : "")
+										+ (isEditable ? qsTr("Double click to edit") : "")
 			property bool isRemovable: tabView.showRemoveIcon && tabView.minimumItems < tabView.count && !textFieldItem.visible && isTabRemovable(model.index)
 
 			contentItem: Item
@@ -184,10 +188,8 @@ ComponentsListBase
 					width				: parent.width - jaspTheme.labelSpacing - (removeIconItem.visible ? removeIconItem.width  : 0)
 					visible				: !textFieldItem.visible
 
-					QtControls.ToolTip.visible	: tabButton.hovered && (tabButtonLabel.truncated || tabButton.isEditable)
-					QtControls.ToolTip.text		: (tabButtonLabel.truncated ? model.value : "")
-												+ (tabButtonLabel.truncated && tabButton.isEditable ? "\n" : "")
-												+ (tabButton.isEditable ? qsTr("Double click to edit") : "")
+					QtControls.ToolTip.visible	: tabButton.hovered && tabButton.toolTipText !== ""
+					QtControls.ToolTip.text		: tabButton.toolTipText
 
 
 				}
@@ -222,7 +224,7 @@ ComponentsListBase
 					isBound				: false
 					visible				: false
 					useExternalBorder	: false
-					value				: model.value
+					value				: model.name
 					fieldWidth			: parent.width
 					fieldHeight			: parent.height
 					onEditingFinished	: tabView.keyValueChanged(index, displayValue)
@@ -307,6 +309,9 @@ ComponentsListBase
 	{
 		id				: itemTabBar
 		contentHeight	: tabView.tabBarHeight + tabView.tabButtonRadius
+		// The height of the TabBar is given by its contentHeight: the default implicitHeight is computed from the implicit height of its content,
+		// which can give a binding loop when TabViews are nested.
+		implicitHeight	: contentHeight + topPadding + bottomPadding
 
 		anchors
 		{
@@ -371,7 +376,14 @@ ComponentsListBase
 		}
 
 		currentIndex		: itemTabBar.currentIndex
-		onCurrentIndexChanged: height = Qt.binding( function() { return currentIndex >= 0 ? rep.itemAt(currentIndex).height : 0; });
+
+		// Height of the currently shown tab, pushed by the wrappers below.
+		// Do not pull it via rep.itemAt(currentIndex).height in a binding: itemAt() is not
+		// notifiable, so after a model reset (which destroys and recreates the delegates
+		// without necessarily changing currentIndex) such a binding would keep referencing
+		// a destroyed item and the whole TabView would collapse to height 0.
+		property real currentTabHeight: 0
+		height				: (rep.count > 0 && itemStack.currentIndex >= 0) ? currentTabHeight : 0
 
 		Repeater
 		{
@@ -382,13 +394,22 @@ ComponentsListBase
 				id:	tabViewWrapper
 				property var rowComponentItem: model.rowComponent
 
+				// The StackLayout resizes its items to its own size, so the height of this wrapper cannot be used
+				// to get the height of the tab: use the height of its content.
+				readonly property real	contentHeight	: rowComponentItem ? rowComponentItem.height : 0
+				readonly property bool	isCurrent		: StackLayout.isCurrentItem
+
 				width	: itemStack.width
-				height	: rowComponentItem ? rowComponentItem.height : 0
+				height	: contentHeight
+
+				onIsCurrentChanged		: if (isCurrent) itemStack.currentTabHeight = contentHeight
+				onContentHeightChanged	: if (isCurrent) itemStack.currentTabHeight = contentHeight
 
 				Component.onCompleted:
 				{
 					rowComponentItem.parent = tabViewWrapper
 					rowComponentItem.width = Qt.binding(function() {return itemStack.width})
+					if (isCurrent) itemStack.currentTabHeight = contentHeight
 				}
 			}
 		}

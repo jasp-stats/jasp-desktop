@@ -124,7 +124,7 @@ ComponentsListBase
 	innerControl			: itemGrid
 	addItemManually			: !source && !rSource
 	Layout.columnSpan		: (parent && parent.hasOwnProperty('columns')) ? parent.columns : 1
-	preferredWidth			: parent.width
+	preferredWidth			: parent ? parent.width : 0
 	preferredHeight			: implicitHeight
 
 	property alias	label				: componentsList.title
