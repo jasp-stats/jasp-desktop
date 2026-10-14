@@ -30,7 +30,7 @@ void ChangeJS::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, bool inMe
 
 	msgs[logId].push_back(prefixLog + "Applied ChangeJS to option '" + name + "', result was: '" + options[name].toStyledString() + "'");
 
-	if(msg() != "")
+	if(!inMeta && msg() != "")
 		msgs[name].push_back(fq(msg()));
 }
 
