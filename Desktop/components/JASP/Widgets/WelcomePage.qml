@@ -318,31 +318,6 @@ FocusScope
 					horizontalCenter:	parent.horizontalCenter
 				}
 			}
-
-			// Company logo (enterprise branding), bottom centre: the
-			// `companyLogoPath` setting resolved by MainWindow::companyLogoUrl()
-			// (absolute path as-is, relative beside the exe / in Resources/).
-			// Empty or missing file hides it; showing it replaces the sponsor
-			// wall above.
-			Image
-			{
-				id:						companyLogo
-				visible:			mainWindow.companyLogoUrl !== ""
-				source:				mainWindow.companyLogoUrl
-				fillMode:			Image.PreserveAspectFit
-				horizontalAlignment:	Image.AlignHCenter
-				verticalAlignment:	Image.AlignVCenter
-				height:				50 * welcomeRoot.scaler
-				width:				Math.min(implicitHeight > 0 ? implicitWidth * height / implicitHeight : 0, 480 * welcomeRoot.scaler)
-				sourceSize.height:	100 * welcomeRoot.scaler	// rasterize SVGs / load rasters at 2x for crispness
-
-				anchors
-				{
-					bottom:				parent.bottom
-					bottomMargin:	8 * welcomeRoot.scaler
-					horizontalCenter:	parent.horizontalCenter
-				}
-			}
 			
 		}
 
@@ -633,14 +608,37 @@ FocusScope
 			
 			JASPMouseAreaToolTipped
 			{
-				id:							jaspStatsMouseArea2
-				hoverEnabled:				true
+				id:						jaspStatsMouseArea2
+				hoverEnabled:			true
 				property url websiteUrl:	"https://www.jasp-services.com"
-				onClicked:					Qt.openUrlExternally(websiteUrl);
-				anchors.fill:				parent
-				cursorShape:				Qt.PointingHandCursor
-				toolTipText:				websiteUrl
-				visible:					!PRO
+				onClicked:				Qt.openUrlExternally(websiteUrl);
+				anchors.fill:			parent
+				cursorShape:			Qt.PointingHandCursor
+				toolTipText:			websiteUrl
+				visible:			!PRO
+			}
+		}
+
+		// Company logo (enterprise branding), bottom centre — same parent and
+		// bottom margin as the footer links. `companyLogoPath` resolved by
+		// MainWindow::companyLogoUrl(); empty or missing file hides it.
+		Image
+		{
+			id:					companyLogo
+			visible:			mainWindow.companyLogoUrl !== ""
+			source:				mainWindow.companyLogoUrl
+			fillMode:			Image.PreserveAspectFit
+				horizontalAlignment:	Image.AlignHCenter
+				verticalAlignment:	Image.AlignVCenter
+			height:				50 * welcomeRoot.scaler
+				width:				Math.min(implicitHeight > 0 ? implicitWidth * height / implicitHeight : 0, 480 * welcomeRoot.scaler)
+				sourceSize.height:	100 * welcomeRoot.scaler	// 2x for crispness
+
+			anchors
+			{
+				bottom:				parent.bottom
+				bottomMargin:	10 * welcomeRoot.scaler	// same as the footer links
+				horizontalCenter:	parent.horizontalCenter
 			}
 		}
 		
