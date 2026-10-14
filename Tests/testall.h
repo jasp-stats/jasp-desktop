@@ -136,6 +136,13 @@ private slots:
 	// immediately - dead hosts are pruned from the registry at read.
 	void	testSelectionRegistryLateHostAppliesPendingValue();
 
+	// mds-plan C5 (chunk-4 finding #1): a control registered on the form and destroyed later
+	// must not stay in the form's control caches - the destroyed signal prunes _controls,
+	// _dependsOrderedCtrls and the error-message references synchronously, so the passes that
+	// walk them (clearFormErrors, filterByNameDone, usedVariables, the setAnalysisUp/bind pass)
+	// never dereference freed memory, and the freed option name is reusable.
+	void	testDeadControlsArePrunedFromFormCaches();
+
 	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
 	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
 	// to misread them), and a same-build round trip opens.

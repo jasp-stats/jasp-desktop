@@ -222,6 +222,18 @@ void AnalysisForm::filterByNameDone(int dataSetID, const QString & name, const Q
 
 void AnalysisForm::addControl(JASPControl *control)
 {
+	//mds-plan C5: componentComplete registers every static-branch control here, but nothing used
+	//to unregister - a control created after form setup and destroyed later (the late
+	//ComponentsList/QML createObject case) left raw pointers in _controls and _dependsOrderedCtrls
+	//and the next pass over them (setAnalysisUp/_setUpModels/bindTo/filterByNameDone/
+	//clearFormErrors/...) dereferenced freed memory: SEGV (chunk-4 finding #1). Prune at the same
+	//chokepoint registration happens: the destroyed signal fires from ~QObject, so the dying
+	//control is only ever used as a pointer VALUE below - it must never be dereferenced here.
+	//(QObject's own rule covers the teardown race: when the form dies first its signal machinery
+	//is gone before children are deleted, so this callback never runs on a half-dead form - and
+	//the context object disconnects it anyway.)
+	connect(control, &QObject::destroyed, this, [this, control](QObject *) { _unregisterDeadControl(control); });
+
 	const QString & name = control->name();
 
 	if (_analysis && control->isBound())
@@ -252,6 +264,25 @@ void AnalysisForm::addControl(JASPControl *control)
 		control->setUp();
 		control->setInitialized();
 	}
+}
+
+void AnalysisForm::_unregisterDeadControl(JASPControl * deadControl)
+{
+	for (auto it = _controls.begin(); it != _controls.end();)
+		if (it.value() == deadControl)
+			it = _controls.erase(it);
+		else
+			++it;
+
+	_dependsOrderedCtrls.removeAll(deadControl);
+
+	//The ControlErrorMessage items keep a raw pointer to their control (that is how hasError()/
+	//getError()/clearAllErrors() find it again); with the control gone the reference would dangle
+	//and the next clearAllErrors() would dereference it - clear it exactly like clearControlError
+	//does for a living control, making the dead one's error drop out of hasError() as well.
+	for (QQuickItem * messageItem : _controlErrorMessageCache)
+		if (messageItem->property("control").value<JASPControl*>() == deadControl)
+			messageItem->setProperty("control", QVariant());
 }
 
 void AnalysisForm::addColumnControl(JASPControl* control, bool isComputed)
