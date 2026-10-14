@@ -225,12 +225,29 @@ GET_PREF_FUNC_BOOL(	aiAnnotationUseCustom,			Settings::AI_ANNOTATION_USE_CUSTOM	
 GET_PREF_FUNC_STR(	aiAnnotationPrompt,				Settings::AI_ANNOTATION_PROMPT						)
 GET_PREF_FUNC_STR(	aiUserAvatar,					Settings::AI_USER_AVATAR							)
 GET_PREF_FUNC_BOOL(	aiEnabled,						Settings::AI_ENABLED								)
-GET_PREF_FUNC_BOOL(	rpcServerEnabled,				Settings::RPC_SERVER_ENABLED						)
-GET_PREF_FUNC_STR(	rpcServerIp,					Settings::RPC_SERVER_IP								)
-GET_PREF_FUNC_INT(	rpcServerPort,					Settings::RPC_SERVER_PORT							)
 GET_PREF_FUNC_BOOL(	syncDroppedDatafile,			Settings::SYNC_DROPPED_DATAFILE						)
 GET_PREF_FUNC_BOOL(	onboardingCompleted,			Settings::ONBOARDING_COMPLETED						)
 GET_PREF_FUNC_INT(	onboardingStep,					Settings::ONBOARDING_STEP							)
+
+//The RPC getters (not macro-generated) honour the session-only --rpcPort override:
+//while it is set the server is enabled on that port and the persisted settings are
+//not consulted, so automation never touches the user's configuration. The setters
+//stay untouched: toggling the preference in the UI still edits the persisted value,
+//the override just wins for this session.
+bool PreferencesModel::rpcServerEnabled() const
+{
+	return runtimeRpcPort() != -1 || Settings::value(Settings::RPC_SERVER_ENABLED).toBool();
+}
+
+QString PreferencesModel::rpcServerIp() const
+{
+	return Settings::value(Settings::RPC_SERVER_IP).toString();
+}
+
+int PreferencesModel::rpcServerPort() const
+{
+	return runtimeRpcPort() != -1 ? runtimeRpcPort() : Settings::value(Settings::RPC_SERVER_PORT).toInt();
+}
 
 bool PreferencesModel::engineSandbox() const
 {

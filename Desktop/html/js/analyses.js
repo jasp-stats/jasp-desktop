@@ -104,16 +104,20 @@ JASPWidgets.Analyses = JASPWidgets.View.extend({
 
 		analysis.$el.animate({ opacity: 0 }, 400, "easeOutCubic", function () {
 			analysis.$el.slideUp(400, function () {
-				// TODO: See why analysis is NULL here.
-				// analysis.close();
-				this.analyses = _.without(this.analyses, analysis);
-				this.views = _.without(this.analyses, analysis);
+				// NOTE: inside jQuery animation callbacks `this` is the animated DOM
+				// element, *not* this collection. The old code assigned `this.analyses`
+				// on the DOM element, so the collection never actually shrank and every
+				// removed analysis (view + model + results data, plots included) leaked
+				// for the lifetime of the web view. Filter the real lists instead.
+				analysesVar.analyses = _.without(analysesVar.analyses, analysis);
+				analysesVar.views = _.without(analysesVar.views, analysis);
 
 				analysesVar.setBottomSpacerHeight();
 				// just add classNmae then will not be collected in exports from jaspWidgets.js,
 				// then removed element from the DOM.
-				analysis.$el.addClass("removed"); 
-				analysis.$el.remove(); 
+				analysis.$el.addClass("removed");
+				analysis.close();
+				analysis.$el.remove();
 			});
 		});
 	},

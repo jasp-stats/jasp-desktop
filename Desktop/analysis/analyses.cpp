@@ -208,7 +208,7 @@ void Analyses::clear()
 		analysis->remove();
 
 		emit analysisRemoved(analysis);
-		delete analysis;
+		analysis->deleteLater(); //Deferred: see Analyses::removeAnalysis for the QV4 GC rationale.
 	}
 
 	_analysisMap.clear();
@@ -283,13 +283,25 @@ void Analyses::saveAnalysesJsonForReload()
 
 	destroyAllForms();
 
+	std::vector<Analysis*> oldAnalyses;
 	for(auto & idAnalysis : _analysisMap)
-		delete idAnalysis.second;
+		oldAnalyses.push_back(idAnalysis.second);
 
 	_analysisMap.clear();
 	_orderedIds.clear();
 
 	endResetModel();
+
+	//Deferred like in clear() and removeAnalysis(): destroyAllForms() only deleteLater()s the forms, so a
+	//synchronous delete here would leave each pending form with a dangling _analysis, and the delegates the
+	//model reset tears down still hold JS references to these analyses (see removeAnalysis for the QV4 GC).
+	//Queued calls still pending for them (e.g. a createForm from reloadForm) are dropped first, as a delete
+	//would: their module is being replaced and may already be gone by the time those calls would run.
+	for(Analysis * analysis : oldAnalyses)
+	{
+		QCoreApplication::removePostedEvents(analysis);
+		analysis->deleteLater();
+	}
 }
 
 void Analyses::reloadSavedAnalysesJson()
@@ -344,7 +356,13 @@ void Analyses::removeAnalysis(Analysis *analysis)
 	emit analysisRemoved(analysis);
 	emit somethingModified();
 
-	delete analysis;
+	//Deferred delete: the AnalysisFormExpander delegate (a Repeater child) is torn down
+	//deferred by beginRemoveRows/endRemoveRows and still holds JS wrappers of this
+	//Analysis (myAnalysis: model.analysis) plus of its form. A synchronous delete here
+	//frees them under the QV4 incremental GC's feet -> intermittent EXC_BAD_ACCESS in
+	//QV4::markDrain. deleteLater runs the destruction at the next quiet point, after
+	//those references are invalidated. (~Analysis then synchronously deletes the form.)
+	analysis->deleteLater();
 }
 
 
@@ -1325,6 +1343,34 @@ void Analyses::registerRpcHandlers()
 		// Agent just observed this analysis's full state — clear dirty flags
 		AgentStateTracker::notifyAnalysisObserved(a->id());
 
+		return response;
+	});
+
+	//NOTE: no analysis_getOptions method: get_analyses_state with a single analysisId
+	//already returns the identity, lifecycle status, options and optionMeta of an
+	//existing analysis (include_options=true, options_meta_diff=false for the full meta).
+
+	disp->registerMethodByName("analysis_remove", [](const Json::Value& params) -> Json::Value
+	{
+		int analysisId = params["analysisId"].asInt();
+
+		Json::Value error;
+		Analysis* a = _rpcResolveAnalysis(analysisId, error);
+		if (!a) return error;
+
+		// Take the identity before removal, the Analysis object is deleted inside.
+		std::string module   = a->module();
+		std::string analysis = a->name();
+		int         id       = static_cast<int>(a->id());
+
+		// Analyses::removeAnalysis emits analysisRemoved, which AgentStateTracker
+		// listens to (markAnalysisRemoved), so the workspace-dirty bookkeeping is handled there.
+		Analyses::analyses()->removeAnalysisById(static_cast<size_t>(analysisId));
+
+		Json::Value response = JaspRpcDispatcher::successResult();
+		response["analysisId"] = id;
+		response["module"]     = module;
+		response["analysis"]   = analysis;
 		return response;
 	});
 

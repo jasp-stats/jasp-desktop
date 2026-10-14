@@ -112,6 +112,14 @@ public:
 
 	static PreferencesModel * prefs() { return qobject_cast<PreferencesModel*>(_singleton); }
 
+	//Session-only override for --rpcPort (see setRuntimeRpcPort): while set (!= -1) the RPC
+	//server is enabled on this port for the lifetime of the process and the persisted
+	//RPC_SERVER_ENABLED/PORT settings are neither consulted nor written, so automation
+	//(Tests/gatetest) cannot leak configuration into the user's desktop. Static rather than
+	//a member because MainWindow reads these prefs before the PreferencesModel exists.
+	static void		setRuntimeRpcPort(int port)				{ s_runtimeRpcPort = port; }
+	static int		runtimeRpcPort()							{ return s_runtimeRpcPort; }
+
 	int				customPPI()								const;
 	int				numDecimals()							const;
 	int				defaultPPI()							const	{ return _defaultPPI; }
@@ -406,6 +414,7 @@ private slots:
 	void dataLabelNAChangedSlot(QString label);
 	
 private:
+	inline static int s_runtimeRpcPort	= -1;	///< --rpcPort session override, -1 = not set (see setRuntimeRpcPort)
 	int				_defaultPPI		= 192;
 	double			_uiScale		= -1;
 	QStringList		_allFonts,

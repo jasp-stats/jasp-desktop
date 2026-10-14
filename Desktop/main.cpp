@@ -33,6 +33,7 @@
 #include <json/json.h>
 #include "utilities/appdirs.h"
 #include "parsedarguments.h"
+#include "gui/preferencesmodel.h"
 #include "batchresult.h"
 
 #ifdef linux
@@ -354,6 +355,9 @@ int main(int argc, char *argv[])
 
 	if(arguments.safeGraphics)				Settings::setValue(Settings::SAFE_GRAPHICS_MODE, true);
 	else									arguments.safeGraphics = Settings::value(Settings::SAFE_GRAPHICS_MODE).toBool();
+
+	if(arguments.rpcPort > 0) //Enable the RPC/MCP server for automation (e.g. Tests/gatetest) on the requested port, session-only:
+		PreferencesModel::setRuntimeRpcPort(arguments.rpcPort); //unlike --safeGraphics nothing is persisted, see PreferencesModel::setRuntimeRpcPort
 
 	if(arguments.containerSettingForced)	Settings::setValue(Settings::ENGINE_SANDBOX,	arguments.container);
 	else									arguments.container = Settings::value(Settings::ENGINE_SANDBOX).toBool();

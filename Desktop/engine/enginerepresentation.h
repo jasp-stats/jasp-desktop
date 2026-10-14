@@ -216,6 +216,11 @@ private:
 				*	_analysisAborted	= nullptr;	///<To make sure we know that the response we got was from this aborted analysis or not
 	int64_t			_idRemovedAnalysis	= -1,		///<If the analysis was deleted we should ignore its results
 					_lastRequestId		= -1,		///<for R code requests from qml components, so that we can send it back to the right element
+					_lastFilterByNameRequestId = -1,///<for named filter runs: replies for superseded requests are dropped (see processFilterByNameReply)
+													 ///<TODO: this gate is per engine channel: two superseded requests dispatched to two channels
+													 ///<each pass their own channel's gate (and engines write results to the shared DB unordered),
+													 ///<so a stale reply can in theory still slip through. A global last-request-id per
+													 ///<dataset+filter (tracked in EngineSync) would close it completely.
 					_abortTime			= -1,		///<When did we tell the analysis to abort? So that we can kill it if it takes too long
 					_idleStartSecs		= -1,
 					_lastCompColDataSet = -1,

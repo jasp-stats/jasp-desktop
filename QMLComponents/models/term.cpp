@@ -35,7 +35,9 @@ Term::Term(const QString					& value,		const QString		&	label,	const QString	& i
 
 Term::Term(const Json::Value &json, const std::string& keyValue, const std::string& keyLabel, const columnTypeVec& types)
 {
-	if (!json.isMember(keyValue))
+	//isMember/get throw on non-objects (e.g. a fuzzed non-object element inside an
+	//options array), so guard the type first.
+	if (!json.isObject() || !json.isMember(keyValue))
 	{
 		initFrom("", "", {columnType::unknown});
 		return;

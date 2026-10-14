@@ -79,6 +79,7 @@ private:
 	
 private:
 	boolvec						_acceptedRows;
+	bool						_retriedEmptyRun = false;	///<one extra runFilter() per state change when the filter yields 0 rows, to avoid an endless retry loop
 	sizetvec					_filteredRowToData;
 	std::map<size_t, double>	_enteredValues;
 	doublevec					_initialValues;

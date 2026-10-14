@@ -317,17 +317,18 @@ void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
 	_engineState				= engineState::filter;
 	std::string name			= jsonRequest.get("name",		"").asString();
 	int dataSetId				= jsonRequest.get("dataSetId",	-1).asInt();
+	int requestId				= jsonRequest.get("requestId",	-1).asInt();
 
-	runFilterByName(name, dataSetId);
+	runFilterByName(name, dataSetId, requestId);
 }
 
-void Engine::runFilterByName(const std::string & name, int dataSetId)
+void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId)
 {
 	provideAndUpdateDataSet(dataSetId);
 	
 	if(!_workspace || !_workspace->dataSetById(dataSetId) || !_workspace->dataSetById(dataSetId)->showFilter(name))
 	{
-		sendFilterByNameDone(name, dataSetId, "No workspace or filter in it found!");
+		sendFilterByNameDone(name, dataSetId, "No workspace or filter in it found!", requestId);
 		_engineState = engineState::idle;
 		
 		return;
@@ -360,7 +361,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId)
 	localFilter->incRevision();
 	DatabaseInterface::singleton()->transactionWriteEnd();
 
-	sendFilterByNameDone(name, dataSetId, RPossibleWarning);
+	sendFilterByNameDone(name, dataSetId, RPossibleWarning, requestId);
 
 	_engineState = engineState::idle;
 }
@@ -434,7 +435,7 @@ void Engine::sendFilterError(int filterRequestId, const std::string & errorMessa
 	sendString(filterResponse);
 }
 
-void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const std::string & errorMessage)
+void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const std::string & errorMessage, int requestId)
 {
 	Json::Value filterResponse(Json::objectValue);
 
@@ -442,6 +443,7 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 	filterResponse["name"]			= name;
 	filterResponse["dataSetId"]		= dataSetId;
 	filterResponse["errorMessage"]	= errorMessage;
+	filterResponse["requestId"]		= requestId;
 
 	sendString(filterResponse);
 }
@@ -834,9 +836,11 @@ void Engine::runAnalysis()
 
 	case Status::empty:
 	case Status::aborted:
-		_analysisStatus	= Status::empty;
-		_engineState	= engineState::idle;
-		Log::log() << "Engine::state <= idle because it does not need to be run now (empty || aborted)" << std::endl;
+		//Acknowledge the abort/no-op to the desktop: it waits ENGINE_KILLTIME for an
+		//answer and kills+restarts the engine when none comes. This branch used to
+		//return silently, so *every* abort degenerated into a kill+restart cycle
+		//(engines endlessly loading data + resuming while analyses were never scheduled).
+		sendAbortAck();
 		return;
 
 	default:	break;
@@ -863,6 +867,12 @@ void Engine::runAnalysis()
 	switch(_analysisStatus)
 	{
 	case Status::aborted:
+		//The analysis was aborted while running (the desktop re-sends the request with
+		//perform=abort). Acknowledge it: without this reply the desktop always fell
+		//through to its ENGINE_KILLTIME kill+restart, making aborts useless.
+		sendAbortAck();
+		return;
+
 	case Status::error:
 	case Status::exception:
 		return;
@@ -980,6 +990,21 @@ analysisResultStatus Engine::getStatusToAnalysisStatus()
 	}
 }
 
+
+void Engine::sendAbortAck()
+{
+	//Tell the desktop the abort was processed. analysisResultStatus::aborted lets
+	//EngineRepresentation::processAnalysisReply clear its in-progress bookkeeping
+	//and go back to scheduling instead of killing this engine.
+	_analysisResults					= Json::Value(Json::objectValue);
+	_analysisResults["status"]			= "aborted";
+	_analysisResults["results"]			= Json::Value(Json::objectValue);
+
+	sendAnalysisResults();
+
+	_analysisStatus						= Status::empty;
+	_engineState						= engineState::idle;
+}
 
 void Engine::sendAnalysisResults()
 {
