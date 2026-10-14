@@ -714,7 +714,10 @@ void AnalysisForm::setAnalysisUp()
 	// Keep these values before the controls are set up (they might set default values), and then bind each control to its initial value
 	Json::Value initialOptions	= _analysis->boundValues();
 
-	_setUpControls();
+	// The controls are set up only once: setting them up again (when setOptions is called) would connect their signals twice.
+	bool firstSetUp = !_initialized;
+	if (firstSetUp)
+		_setUpControls();
 
 	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
 	bindTo(initialOptions);
@@ -724,9 +727,12 @@ void AnalysisForm::setAnalysisUp()
 
 	_initialized = true;
 
-	// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
-	connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
-	connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
+	if (firstSetUp)
+	{
+		// Don't bind boundValuesChanged before it is initialized: each setup of all controls will generate a boundValuesChanged
+		connect(_analysis,					&AnalysisBase::boundValuesChanged,		this,			&AnalysisForm::rSyntaxTextChanged,				Qt::QueuedConnection	);
+		connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
+	}
 
 	emit analysisChanged();
 }

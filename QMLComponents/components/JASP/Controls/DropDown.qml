@@ -304,11 +304,12 @@ ComboBoxBase
 					clip:			true
 					anchors.fill:	parent
 	
-					property real	maxHeight: typeof mainWindowRoot	!== 'undefined' ? mainWindowRoot.height		// Case Dropdowns used in Desktop
-											 : typeof csvPreviewWindow	!== 'undefined' ? csvPreviewWindow.height	// Case CSV Preview
-											 : typeof rcmdRoot			!== 'undefined' ? rcmdRoot.height			// Case Dropdown used in R Command
-											 : typeof backgroundForms	!== 'undefined' ? backgroundForms.height	// Case Dropdowns used in Analysis forms
-											 : typeof scrollPrefs		!== 'undefined' ? scrollPrefs.height		// When its used in a Prefs* page ?
+					// These roots can be defined but null (backgroundForms is a null context property when there is no main window, as in the unit tests)
+					property real	maxHeight: typeof mainWindowRoot	!== 'undefined' && mainWindowRoot	? mainWindowRoot.height		// Case Dropdowns used in Desktop
+											 : typeof csvPreviewWindow	!== 'undefined' && csvPreviewWindow	? csvPreviewWindow.height	// Case CSV Preview
+											 : typeof rcmdRoot			!== 'undefined' && rcmdRoot			? rcmdRoot.height			// Case Dropdown used in R Command
+											 : typeof backgroundForms	!== 'undefined' && backgroundForms	? backgroundForms.height	// Case Dropdowns used in Analysis forms
+											 : typeof scrollPrefs		!== 'undefined' && scrollPrefs		? scrollPrefs.height		// When its used in a Prefs* page ?
 											 : Infinity
 	
 

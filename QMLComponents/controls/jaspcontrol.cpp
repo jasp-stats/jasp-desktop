@@ -19,7 +19,7 @@ QByteArray JASPControl::_mouseAreaDef = "\
 	import QtQuick.Controls\n\
 	MouseArea {\n\
 	z:					5\n\
-	anchors.fill:		parent.mouseAreaZone\n\
+	anchors.fill:		parent ? parent.mouseAreaZone : undefined\n\
 	acceptedButtons:	Qt.NoButton\n\
 	ToolTip.text:		parent ? parent.toolTip : ''\n\
 	ToolTip.visible:	ToolTip.text && containsMouse\n\
@@ -30,9 +30,12 @@ QQmlComponent* JASPControl::getMouseAreaComponent(QQmlEngine* engine)
 	QQmlComponent* result = _mouseAreaComponentMap[engine];
 	if (result == nullptr)
 	{
-		result = new QQmlComponent(engine);
+		// The component is deleted with its engine, and must then be removed from the map:
+		// another engine could be created later at the same address (as in the unit tests), and would otherwise get this deleted component.
+		result = new QQmlComponent(engine, engine);
 		result->setData(_mouseAreaDef, QUrl());
 		_mouseAreaComponentMap[engine] = result;
+		QObject::connect(engine, &QObject::destroyed, [engine]() { _mouseAreaComponentMap.remove(engine); });
 	}
 
 	return result;
