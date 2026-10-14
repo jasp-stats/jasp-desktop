@@ -2,7 +2,7 @@
 	"openrpc": "1.2.6",
 	"info": {
 		"title": "JASP RPC API",
-		"version": "1.1.0"
+		"version": "1.2.0"
 	},
 	"methods": [
 		{
