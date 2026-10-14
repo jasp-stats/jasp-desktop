@@ -676,16 +676,41 @@ Item
 			// through JASPControl's formIsKnown signal (RowControls set the isDynamic context
 			// property); a plain createObject from the test takes the static branch, so fire that
 			// same signal here - it is the exact entry point handleFormIsKnown listens on.
-			// NOTE: the host is deliberately NOT destroyed at the end - destroying an addControl'ed
-			// control leaves a dangling pointer in AnalysisForm::_controls (no unregister path
-			// exists; pre-existing lifecycle hole, reported not fixed). Dead-host pruning of the
-			// registry itself is pinned in C++ (JASPTest::testSelectionRegistryLateHostAppliesPendingValue).
 			var late = lateHostComponent.createObject(jaspForm)
 			verify(late !== null, "the late host was created")
 			late.formIsKnown(jaspForm)
 			wait(20)
 			verify(form.dataSetSelectionOptionNames().indexOf("lateSet") !== -1,
 					"a host created after form completion registers immediately (M9)")
+
+			// mds-plan C5 (chunk-4 finding #1): destroying that host again is safe NOW. The plain
+			// createObject took the STATIC registration branch (JASPControl::componentComplete ->
+			// AnalysisForm::addControl), so the host also entered the form's control caches - which
+			// had no unregister path, and the next bind pass (setOptions -> setAnalysisUp ->
+			// _setUpModels/_setUp/bindTo over _controls and _dependsOrderedCtrls) dereferenced the
+			// freed pointer: deterministic SEGV. The caches are pruned synchronously on destruction
+			// now, so the whole create -> bind -> destroy -> bind cycle below must survive.
+			jaspForm.setOptions({ aSwitch: true })	//bind pass with the late host still alive
+			wait(50)
+
+			late.destroy()							//deleteLater: the destroyed signal prunes on the event loop
+			wait(20)
+			verify(form.getControl("lateRCode") === null, "a destroyed control must not resolve from the form's control cache anymore")
+			verify(form.dataSetSelectionOptionNames().indexOf("lateSet") === -1, "the selection registry must not hold the dead host either")
+
+			jaspForm.setOptions({ aSwitch: false })	//the previously crashing pass, run over pruned caches
+			wait(50)
+			var bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			compare(String(bound.aSwitch), "false", "the bind pass completed normally after the destruction")
+
+			//and the freed option name is reusable: the pruned entry must not resurface as a bogus
+			//"2 controls have the same name" collision:
+			var revived = lateHostComponent.createObject(jaspForm)
+			wait(20)
+			verify(form.getControl("lateRCode") !== null, "a recreated control takes the freed name")
+			verify(!revived.hasError, "the recreated control must not be flagged as a duplicate")
+			revived.destroy()
+			wait(20)
 		}
 	}
 }

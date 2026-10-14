@@ -2956,6 +2956,70 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
 }
 
+void TestAll::testDeadControlsArePrunedFromFormCaches()
+{
+	//mds-plan C5 (chunk-4 finding #1): JASPControl::componentComplete registers every
+	//static-branch control on the form (AnalysisForm::addControl), but nothing unregistered -
+	//destroying such a control after setup left raw pointers in _controls, and in
+	//_dependsOrderedCtrls once a bind pass had run over them. The next pass (setAnalysisUp,
+	//bindTo, clearFormErrors, filterByNameDone, usedVariables) dereferenced freed memory:
+	//deterministic SEGV (reproduced in tst_dataSetSelectionVariablesForm.qml pre-fix, which now
+	//drives the same cycle through the real QML lifecycle). The form prunes on the control's
+	//destroyed signal now, wired at the addControl chokepoint.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences(), same guard as testSelectionRegistryLateHostAppliesPendingValue
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);   //parenting is how AnalysisBase picks up _analysisForm
+	form.setAnalysis(&analysis);
+
+	JASPControl * keeper = new JASPControl();
+	keeper->setName("keeper");
+	form.addControl(keeper);
+
+	JASPControl * doomed = new JASPControl();
+	doomed->setName("doomed");
+	form.addControl(doomed);
+
+	QCOMPARE(form.getControl("keeper"), keeper);
+	QCOMPARE(form.getControl("doomed"), doomed);
+
+	//complete the form the way Form.qml's Component.onCompleted does: the setAnalysisUp pass
+	//pushes every registered control into _dependsOrderedCtrls, so after this the doomed control
+	//dangles in BOTH caches once destroyed.
+	emit form.formCompletedSignal();
+	QVERIFY2(form.initialized(), "the dummy analysis must have completed the setup pass");
+
+	delete doomed;   //~QObject fires destroyed() - the form must drop it from every container
+
+	QVERIFY2(!form.getControl("doomed"), "a destroyed control must not resolve from the form cache anymore");
+	QCOMPARE(form.getControl("keeper"), keeper);
+
+	//the passes that used to walk the freed pointers:
+	form.clearFormErrors();
+	form.clearFormWarnings();
+	form.filterByNameDone(1, "someFilter", "");
+	QVERIFY(form.usedVariables().empty());
+	form.optionMeta(false);   //walks _dependsOrderedCtrls
+
+	//the freed option name is reusable: the pruned entry must not resurface as a bogus
+	//"2 controls have the same name" collision:
+	JASPControl * revived = new JASPControl();
+	revived->setName("doomed");
+	form.addControl(revived);
+	QCOMPARE(form.getControl("doomed"), revived);
+
+	//and the full bind pass (setOptions -> setAnalysisUp -> _setUpModels/_setUp/bindTo) must
+	//survive with the revived control, then with everything dead:
+	form.setOptions(QVariantMap({ { "someOption", true } }));
+
+	delete keeper;
+	delete revived;
+	form.clearFormErrors();
+	QVERIFY(!form.getControl("keeper"));
+	QVERIFY(!form.getControl("doomed"));
+}
+
 void TestAll::testJaspArchiveVersionBlocksOlderBuilds()
 {
 	//mds-plan C4/VERSION: the archive version written into every manifest is 7.0.0 (major).

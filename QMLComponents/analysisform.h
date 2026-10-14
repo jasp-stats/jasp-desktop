@@ -241,6 +241,7 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 private:
 
 	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
+	void			_unregisterDeadControl(JASPControl * deadControl);
 	void			_setUpControls();
 	void			_setUpModels();
 	void			_setUp();
