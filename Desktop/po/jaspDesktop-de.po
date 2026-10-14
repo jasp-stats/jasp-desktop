@@ -3,10 +3,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Language: de_DE\n"
 "X-Source-Language: American English\n"
 "X-Qt-Contexts: true\n"
+"PO-Revision-Date: 2026-10-11 03:51+0000\n"
+"Last-Translator: Johannes Keyser <joke@fsfe.org>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/jasp/jaspdesktop/"
+"de/>\n"
+"Language: de\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 msgctxt "ComponentsList|"
 msgid "Add a row"
@@ -10207,35 +10213,37 @@ msgstr "Text"
 
 msgctxt "DataLibrary|"
 msgid "Click here to open the Online Data Library"
-msgstr ""
+msgstr "Hier klicken, um die Online-Datenbibliothek zu öffnen"
 
 msgctxt "PrefsUI|"
 msgid "Onboarding"
-msgstr ""
+msgstr "Einführung"
 
 msgctxt "PrefsUI|"
 msgid "Show onboarding tour on next start"
-msgstr ""
+msgstr "Einführungstour beim nächsten Start anzeigen"
 
 msgctxt "PrefsUI|"
 msgid "Enable this to see the guided tour again the next time JASP starts."
 msgstr ""
+"Aktivieren Sie dies, um die Einführung beim nächsten Start von JASP erneut "
+"anzuzeigen."
 
 msgctxt "PrefsUI|"
 msgid "Start tutorial"
-msgstr ""
+msgstr "Tutorium starten"
 
 msgctxt "MainWindow|"
 msgid "Data and Analysis Section"
-msgstr ""
+msgstr "Abschnitt Daten und Analyse"
 
 msgctxt "MainWindow|"
 msgid "This is the main entry point for the Data and Analysis menu."
-msgstr ""
+msgstr "Dies ist der Haupteinstiegspunkt für das Menü Daten und Analyse."
 
 msgctxt "MainWindow|"
 msgid "File Menu and Preferences"
-msgstr ""
+msgstr "Menü Datei und Einstellungen"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -10243,10 +10251,14 @@ msgid ""
 "file menu and preferences interface, used to open and save files, and to "
 "configure JASP global preferences."
 msgstr ""
+"Klicken auf die Hamburger-Schaltfläche in der oberen linken Ecke öffnet/"
+"schließt dieses Dateimenü und die Einstellungsoberfläche, um Dateien zu "
+"öffnen und zu speichern sowie die globalen Einstellungen von zu JASP "
+"konfigurieren."
 
 msgctxt "MainWindow|"
 msgid "Modules Library"
-msgstr ""
+msgstr "Modulbibliothek"
 
 msgctxt "MainWindow|"
 msgid ""
@@ -10254,56 +10266,63 @@ msgid ""
 "of this area, you can enable/disable installed modules, and you can also "
 "manage all available modules from the online modules store on the left."
 msgstr ""
+"Hier können Sie die Analysemodule verwalten. In der Liste ganz rechts in "
+"diesem Bereich können Sie installierte Module aktivieren bzw. deaktivieren "
+"und außerdem alle verfügbaren Module aus dem Modul-Onlineshop auf der linken "
+"Seite verwalten."
 
 msgctxt "MainWindow|"
 msgid "AI Assistant"
-msgstr ""
+msgstr "KI-Assistent"
 
 msgctxt "MainWindow|"
 msgid ""
 "Click the robot icon here or press Ctrl+J to bring up the AI chat panel."
 "Detailed AI settings can be found in the preferences menu."
 msgstr ""
+"licken Sie hier auf das Roboter-Symbol oder drücken Sie Strg+J, um das KI-"
+"Chat-Fenster aufzurufen. Detaillierte KI-Einstellungen finden Sie im "
+"Einstellungsmenü."
 
 msgctxt "PlotEditor|"
 msgid "Elements"
-msgstr ""
+msgstr "Elemente"
 
 msgctxt "Tutorial|"
 msgid "Getting Started"
-msgstr ""
+msgstr "Erste Schritte"
 
 msgctxt "Tutorial|"
 msgid "Finish"
-msgstr ""
+msgstr "Beenden"
 
 msgctxt "Tutorial|"
 msgid "Next"
-msgstr ""
+msgstr "Weiter"
 
 msgctxt "Tutorial|"
 msgid "Previous"
-msgstr ""
+msgstr "Zurück"
 
 msgctxt "Tutorial|"
 msgid "Skip the Tutorial"
-msgstr ""
+msgstr "Tutorium überspringen"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Insert element"
-msgstr ""
+msgstr "Element einfügen"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Remove element"
-msgstr ""
+msgstr "Element entfernen"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Move element"
-msgstr ""
+msgstr "Element verschieben"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Change column type"
-msgstr ""
+msgstr "Spaltentyp ändern"
 
 msgctxt "ScriptConstructorModel|"
 msgid "Edit number"
@@ -10328,32 +10347,26 @@ msgstr ""
 "liefert Wahrheitswerte und kann als Ausgangspunkt einer Formel für einen "
 "Filter dienen"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "returns logicals"
 msgstr "liefert Wahrheitswerte"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Addition"
 msgstr "Addition"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Subtraction"
 msgstr "Subtraktion"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Multiplication"
 msgstr "Multiplikation"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Division"
 msgstr "Division"
 
-#, fuzzy
 msgctxt "ScriptConstructorRegistry|"
 msgid "Power (2^3 returns 8)"
 msgstr "Potenz (2^3 ergibt 8)"
@@ -10363,12 +10376,12 @@ msgctxt "ScriptConstructorRegistry|"
 msgid "Modulo: returns the remainder of a division. 3%2 returns 1"
 msgstr ""
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Equality: %1"
 msgstr "Gleichheit: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Inequality: %1"
 msgstr "Ungleichheit: %1"
@@ -10376,9 +10389,9 @@ msgstr "Ungleichheit: %1"
 #, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Less than: %1"
-msgstr ""
+msgstr "Kleiner als: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Less than or equal to: %1"
 msgstr "Kleiner als oder gleich wie: %1"
@@ -10386,19 +10399,19 @@ msgstr "Kleiner als oder gleich wie: %1"
 #, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Greater than: %1"
-msgstr ""
+msgstr "Größer als: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Greater than or equal to: %1"
 msgstr "Größer als oder gleich wie: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "And: %1"
 msgstr "Und: %1"
 
-#, fuzzy, qt-format
+#, qt-format
 msgctxt "ScriptConstructorRegistry|"
 msgid "Or: %1"
 msgstr "Oder: %1"
