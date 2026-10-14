@@ -84,4 +84,63 @@ TestCase
 		form.setOptions(options)
 		compare(form.errors, "", "Loading the options should not give any error")
 	}
+
+	function findItems(item, property, result)
+	{
+		// Find recursively all the items having this property
+		var children = []
+		for (var i = 0; i < item.children.length; i++)
+			children.push(item.children[i])
+
+		// The buttons of a TabBar (or any Container) are in its contentModel, not in its children
+		if (item.contentModel !== undefined && typeof item.itemAt === "function")
+			for (var j = 0; j < item.count; j++)
+				children.push(item.itemAt(j))
+
+		for (var child of children)
+		{
+			if (!child || result.indexOf(child) >= 0)
+				continue
+			if (child.hasOwnProperty(property))
+				result.push(child)
+			findItems(child, property, result)
+		}
+		return result
+	}
+
+	function lockState(list)
+	{
+		// The terms of a list, with '(locked)' when a term cannot be selected (and so cannot be moved)
+		var result = []
+		var names = toArray(list.columnsNames)
+		for (var i = 0; i < names.length; i++)
+		{
+			list.model.clearSelectedItems()
+			list.model.selectItem(i, true)
+			result.push(names[i] + (list.model.selectedItems().length > 0 ? "" : "(locked)"))
+		}
+		list.model.clearSelectedItems()
+		return result
+	}
+
+	function checkLockState(list, expected, message)
+	{
+		tryVerify(function() { return JSON.stringify(lockState(list)) === JSON.stringify(expected) }, 1000,
+				  message + ": expected " + JSON.stringify(expected) + " but got " + JSON.stringify(lockState(list)))
+	}
+
+	function moveTerms(from, to, names)
+	{
+		// Move without checking the result: in a nested FactorsForm, a target list may already have these terms
+		from.clearSelectedItems()
+		var all = toArray(from.columnsNames)
+		for (var name of names)
+		{
+			var index = all.indexOf(name)
+			verify(index >= 0, "Variable " + name + " not found in " + from.name)
+			from.addSelectedItem(index)
+		}
+		compare(from.model.selectedItems().length, names.length, "Variables " + JSON.stringify(names) + " of " + from.name + " should be movable")
+		from.moveSelectedItems(to)
+	}
 }

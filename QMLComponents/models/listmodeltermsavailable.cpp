@@ -147,7 +147,8 @@ void ListModelTermsAvailable::sourceTermsReset()
 		if (!term.value().isEmpty() && !_allTerms.containsValue(term.value()))
 			addedTerms.add(term);
 
-	if (oldTerms != newTerms)
+	// The Terms comparison checks only the values: a label may also have changed (for example the title of a factor)
+	if (oldTerms != newTerms || oldTerms.labels() != newTerms.labels())
 	{
 		initTerms(newTerms);
 		_connectAllSourcesControls();
