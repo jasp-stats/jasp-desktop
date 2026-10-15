@@ -231,33 +231,29 @@ FocusScope
 
 			}
 
-			Text
+			// Company logo (enterprise branding) in the spot the "Get started"
+			// link used to occupy — that link is not needed on enterprise builds,
+			// the logo takes its place below the bullet points.
+			// `companyLogoPath` is resolved by MainWindow::companyLogoUrl(); empty
+			// or missing file hides it.
+			Image
 			{
-				id:						openADataFile
-				text:					(!PRO ? qsTr("So open a data file and take JASP for a spin!") : qsTr("Get started!")).replace(/, /g, ",&nbsp;")
-				color:					jaspTheme.blue
-				font.underline:			true
-				font.family:			jaspTheme.font.family
-				font.pixelSize:			freshAndFunky.font.pixelSize + (2 * welcomeRoot.scaler)
-				renderType:				Text.QtRendering
-				textFormat:				Text.StyledText
+				id:					companyLogo
+				visible:			mainWindow.companyLogoUrl !== ""
+				source:				mainWindow.companyLogoUrl
+				fillMode:			Image.PreserveAspectFit
+				horizontalAlignment:	Image.AlignHCenter
+				verticalAlignment:	Image.AlignVCenter
+				height:				mainWindow.companyLogoHeight * welcomeRoot.scaler
+				width:				Math.min(implicitHeight > 0 ? implicitWidth * height / implicitHeight : 0, 480 * welcomeRoot.scaler)
+				sourceSize.height:	2 * mainWindow.companyLogoHeight * welcomeRoot.scaler	// 2x for crispness
 
 				anchors
 				{
 					horizontalCenter:	parent.horizontalCenter
 					top:				bulletPoints.bottom
-					topMargin:			25 * welcomeRoot.scaler
+					topMargin:		35 * welcomeRoot.scaler
 				}
-
-				MouseArea
-				{
-					id:				openDataFileMouse
-					anchors.fill:	parent
-					hoverEnabled:	true
-					onClicked:		fileMenuModel.showFileOpenMenu()
-					cursorShape:	Qt.PointingHandCursor
-				}
-
 			}
 			
 			Rectangle
@@ -616,29 +612,6 @@ FocusScope
 				cursorShape:			Qt.PointingHandCursor
 				toolTipText:			websiteUrl
 				visible:			!PRO
-			}
-		}
-
-		// Company logo (enterprise branding), bottom centre — same parent and
-		// bottom margin as the footer links. `companyLogoPath` resolved by
-		// MainWindow::companyLogoUrl(); empty or missing file hides it.
-		Image
-		{
-			id:					companyLogo
-			visible:			mainWindow.companyLogoUrl !== ""
-			source:				mainWindow.companyLogoUrl
-			fillMode:			Image.PreserveAspectFit
-				horizontalAlignment:	Image.AlignHCenter
-				verticalAlignment:	Image.AlignVCenter
-			height:				mainWindow.companyLogoHeight * welcomeRoot.scaler
-				width:				Math.min(implicitHeight > 0 ? implicitWidth * height / implicitHeight : 0, 480 * welcomeRoot.scaler)
-				sourceSize.height:	2 * mainWindow.companyLogoHeight * welcomeRoot.scaler	// 2x for crispness
-
-			anchors
-			{
-				bottom:				parent.bottom
-				bottomMargin:	10 * welcomeRoot.scaler	// same as the footer links
-				horizontalCenter:	parent.horizontalCenter
 			}
 		}
 		
