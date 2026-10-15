@@ -1,6 +1,7 @@
 #include "qutils.h"
 #include "changebase.h"
 #include "upgrade.h"
+#include "upgrades.h"
 
 namespace Modules
 {
@@ -55,7 +56,10 @@ void ChangeBase::registerChange(QQuickItem * parent)
 	Upgrade * upgrade = qobject_cast<Upgrade*>(parent);
 	
 	if(!upgrade && parent)
-		throw upgradeLoadError(fq(toString()), "A Change* Item must always be a child of Upgrade");
+	{
+		Upgrades::addLoadError(upgradeLoadError(fq(toString()), "A Change* Item must always be a child of Upgrade").what()); //Not thrown, see Upgrades::addLoadError
+		return;
+	}
 	
 	if(upgrade != _upgrade)
 	{

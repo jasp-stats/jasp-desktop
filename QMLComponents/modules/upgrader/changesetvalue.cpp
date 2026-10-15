@@ -18,7 +18,7 @@ void ChangeSetValue::applyUpgrade(Json::Value & options, UpgradeMsgs & msgs, boo
 
 	msgs[logId].push_back(prefixLog + "Set value '" + _jsonValue.toStyledString()  + "' on option '" + name + "'.");
 
-	if(msg() != "")
+	if(!inMeta && msg() != "")
 		msgs[name].push_back(fq(msg()));
 }
 
