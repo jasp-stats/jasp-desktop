@@ -91,6 +91,10 @@ public:
 
 	const Term &at(size_t index)										const;
 	Term &at(size_t index);
+	///< Term-aware lookups (mds-plan C9/C13): a lookup term with filterId -1 matches on name alone
+	///< (unqualified = context fallback), a stamped one must match name AND filterId — so a list
+	///< can hold two same-name terms from different filters and callers still hit the right one.
+	///< The QString overloads stay pure name lookups (first term with that name).
 	bool containsValue(const Term				&	term)				const;
 	bool containsValue(const QString			&	value)				const;
 	int	 indexOfLabel(const QString				&	component)			const;

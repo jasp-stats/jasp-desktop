@@ -144,6 +144,9 @@ protected:
 			void	_connectAllSourcesControls();
 			Term	_checkTermType(const Term& terms)					const;
 			void	_setAllowedType(Term& term)							const;
+			///< The filter id of the selection this list's variables resolve through (mds-plan C9),
+			///< -1 when there is no explicit selection host — see _setAllowedType.
+			int		_currentSelectionFilterId()							const;
 
 			bool							_needsSource			= true;
 			QMap<QString, RowControls* >	_rowControlsMap;

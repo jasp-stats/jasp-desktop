@@ -282,10 +282,14 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 		{
 			bool allComponentsAreAlsoInTerms = true;
 			Terms allCrossedTerms = Terms(term.components()).crossCombinations();
-			allCrossedTerms.remove(term);
+			//mds-plan C9: allCrossedTerms is freshly composed (unqualified, -1) while the model
+			//terms carry their selection's filterId - strict Term equality would never match the
+			//two, so these membership probes stay name-based (formula syntax has no provenance
+			//yet; qualification of generated terms is mds-plan D8.2).
+			allCrossedTerms.remove(Term(term.components()));
 			for (const Term& oneTerm : allCrossedTerms)
 			{
-				if (std::find(orgTerms.begin(), orgTerms.end(), oneTerm) == orgTerms.end())
+				if (std::find_if(orgTerms.begin(), orgTerms.end(), [&oneTerm](const Term &t) { return t.value() == oneTerm.value(); }) == orgTerms.end())
 				{
 					allComponentsAreAlsoInTerms = false;
 					break;
@@ -297,7 +301,7 @@ QString FormulaSource::generateInteractionTerms(const Terms& terms, const Json::
 				// Remove the components and their combinations in terms so that they don't appear in the formula
 				for (const Term& oneTerm : allCrossedTerms)
 				{
-					auto found = std::find(sortedTerms.begin(), sortedTerms.end(), oneTerm);
+					auto found = std::find_if(sortedTerms.begin(), sortedTerms.end(), [&oneTerm](const Term &t) { return t.value() == oneTerm.value(); });
 					if (found != sortedTerms.end()) sortedTerms.erase(found);
 				}
 

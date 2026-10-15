@@ -3405,6 +3405,137 @@ void TestAll::testDeadControlsArePrunedFromFormCaches()
 	QVERIFY(!form.getControl("doomed"));
 }
 
+void TestAll::testTermFilterIdIsPartOfIdentity()
+{
+	//mds-plan D2.1/C9: Term carries the id of the filter it was selected through (-1 =
+	//unqualified) as INTERNAL typed state, and it is part of identity. Flagship case: two terms
+	//named "TestInts" from two different filters must never compare equal and must coexist in
+	//one Terms; lookups distinguish stamped terms but keep the C13 fallback (an unqualified
+	//lookup matches on name alone, so every pre-existing name-based flow keeps working).
+	Term plain(tq("TestInts"), columnType::scale);
+	QCOMPARE(plain.filterId(), -1);						//fresh terms are unqualified
+
+	Term inA(plain);		inA.setFilterId(11);
+	Term inAcopy(plain);	inAcopy.setFilterId(11);	//same everything, separately built
+	Term inB(plain);		inB.setFilterId(12);
+
+	QVERIFY(plain == Term(tq("TestInts"), columnType::scale));	//-1 == -1: legacy equality unchanged
+	QVERIFY(inA   == inAcopy);
+	QVERIFY(inA   != inB);									//the flagship: same name, other filter
+	QVERIFY(inA   != plain);								//equality is strict, -1 included (C9):
+	QVERIFY(plain != inA);									//qualified and unqualified are different facts
+
+	//interaction terms: components compare as a set (always did), the term-level filterId must agree:
+	Term interA(QStringList({"x", "y"}));		interA.setFilterId(11);
+	Term interAotherOrder(QStringList({"y", "x"}));	interAotherOrder.setFilterId(11);
+	Term interB(QStringList({"x", "y"}));			interB.setFilterId(12);
+	QVERIFY(interA == interAotherOrder);
+	QVERIFY(interA != interB);
+
+	//operator< is a total order over the identity, so ordered containers keep both terms apart
+	//(Terms::indexesFromTerms leans on this):
+	QVERIFY(inA < inB);
+	QVERIFY(!(inB < inA));
+	QVERIFY(!(plain < plain));
+
+	//qHash is consistent with operator==: QHash/QSet hold same-name terms of two filters apart:
+	QHash<Term, int> byHash;
+	byHash.insert(inA, 1);
+	byHash.insert(inB, 2);
+	QCOMPARE(byHash.size(), 2);
+	QCOMPARE(byHash.value(inA), 1);
+	QCOMPARE(byHash.value(inB), 2);
+
+	//one Terms container, same name through two filters (the flagship containment):
+	Terms terms;
+	terms.add(inA);
+	terms.add(inB);
+	QCOMPARE(terms.size(), size_t(2));				//both survive the uniqueness check
+	QVERIFY(terms.containsValue(inA));
+	QVERIFY(terms.containsValue(inB));
+	QVERIFY(terms.indexOfValue(inA) >= 0 && terms.indexOfValue(inB) >= 0);
+	QVERIFY(terms.indexOfValue(inA) != terms.indexOfValue(inB));
+	Term inC(plain);	inC.setFilterId(13);
+	QVERIFY(!terms.containsValue(inC));				//a third filter is NOT in there
+	QVERIFY(terms.containsValue(plain));			//C13: unqualified lookup matches by name
+	QVERIFY(terms.containsValue("TestInts"));		//the QString overload stays a name lookup
+	QVERIFY(!terms.containsValue("NoSuchColumn"));
+
+	//adding an exact stamped twin is still a duplicate (no second entry), and an unqualified
+	//insert UPDATES the stamped entry in place - it never demotes it to -1:
+	terms.add(Term(inA));
+	QCOMPARE(terms.size(), size_t(2));
+	terms.add(plain);
+	QCOMPARE(terms.size(), size_t(2));
+	for(const Term &t : terms)
+		QVERIFY(t.filterId() != -1);				//the stamps survived the unqualified insert
+
+	//remove() finds by identity: removing one filter's copy leaves the other one alone and the
+	//value map reindexes:
+	terms.remove(inA);
+	QCOMPARE(terms.size(), size_t(1));
+	QVERIFY(!terms.containsValue(inA));
+	QVERIFY(terms.containsValue(inB));
+	QCOMPARE(terms.indexOfValue(inB), 0);
+
+	//container equality inherits the strictness:
+	Terms tA, tB;
+	tA.add(inA);	tB.add(inB);
+	QVERIFY(tA != tB);
+
+	//ordered containers keep both stamped copies apart (operator< tiebreak; Terms::indexesFromTerms
+	//and the std::map<Term,...> inside it lean on exactly this):
+	std::map<Term, int> ordered;
+	ordered[inA] = 0;
+	ordered[inB] = 1;
+	QCOMPARE(ordered.size(), size_t(2));
+	QCOMPARE(ordered[inA], 0);
+	QCOMPARE(ordered[inB], 1);
+
+	//combination terms carry the source filter when uniform (interaction components share the
+	//term-level filterId, mds-plan D6.1) and stay unqualified when the sources mix:
+	Term x(tq("x"), columnType::nominal);		x.setFilterId(11);
+	Term y(tq("y"), columnType::nominal);		y.setFilterId(11);
+	Terms uniform;
+	uniform.add(x);
+	uniform.add(y);
+	Terms crossed = uniform.crossCombinations();
+	QVERIFY(crossed.size() > 1);
+	for(const Term &t : crossed)
+		QCOMPARE(t.filterId(), 11);
+	Term way = uniform.wayCombinations(2).at(0);
+	QCOMPARE(way.components().size(), size_t(2));	//the interaction product itself
+	QCOMPARE(way.filterId(), 11);
+
+	Term yOther(tq("y"), columnType::nominal);	yOther.setFilterId(12);
+	Terms mixed;
+	mixed.add(x);
+	mixed.add(yOther);
+	Terms mixedProducts = mixed.crossCombinations();
+	bool sawQualified = false, sawInteraction = false;
+	for(const Term &t : mixedProducts)
+	{
+		if(t.components().size() > 1)
+		{
+			sawInteraction = true;
+			QCOMPARE(t.filterId(), -1);				//mixed provenance cannot claim one source
+		}
+		else
+			sawQualified = t.filterId() >= 0;		//the single-term combinations keep theirs
+	}
+	QVERIFY(sawInteraction);
+	QVERIFY(sawQualified);
+
+	//NO wire field yet (mds-plan D2.1, serialization is Phase 3): the json of a stamped term is
+	//byte-identical to the unqualified one, and parsing options yields unqualified terms.
+	QCOMPARE(tq(inA.toJson().toStyledString()), tq(plain.toJson().toStyledString()));
+	Json::Value stamped = inA.toJson();
+	QVERIFY(!stamped.isMember("filterId"));
+	Term reparsed(stamped, "value", "", inA.types());
+	QCOMPARE(reparsed.filterId(), -1);
+	QVERIFY(reparsed == plain);
+}
+
 void TestAll::testJaspArchiveVersionBlocksOlderBuilds()
 {
 	//mds-plan C4/VERSION: the archive version written into every manifest is 7.0.0 (major).

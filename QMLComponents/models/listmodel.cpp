@@ -25,6 +25,7 @@
 #include "controls/sourceitem.h"
 #include "controls/rowcontrols.h"
 #include "controls/jasplistcontrol.h"
+#include "filter.h"
 
 ListModel::ListModel(JASPListControl* listView) 
 	: QAbstractTableModel(listView)
@@ -120,6 +121,29 @@ void ListModel::_setAllowedType(Term& term) const
 				term.setType(realType);
 		}
 	}
+
+	//mds-plan D2.1 (C9): this is the chokepoint every term passes through on its way into a list
+	//model (init/reset, drag-drop adds, type checks, formula terms) — the same place that already
+	//normalizes types. A term must know the source filter it belongs to: stamp the selection this
+	//list resolves through onto the term itself, so "the terms of a list carry the list's
+	//namespace" holds from the moment a term enters it. -1 when there is no explicit selection
+	//host (non-aware world, and freshly parsed unqualified values keep meaning exactly that).
+	//Restamping on a host SWITCH is D2.5's typed restamp; this covers construction and moves.
+	term.setFilterId(_currentSelectionFilterId());
+}
+
+int ListModel::_currentSelectionFilterId() const
+{
+	if (!_listView)
+		return -1;
+
+	//Only an EXPLICIT selection host qualifies a term (mds-plan C13: the fallback for a control
+	//with no host is the analysis-wide VariableInfo — legacy behaviour, and legacy terms stay
+	//-1). selectionHost() reports nullptr exactly in that fallthrough case.
+	JASPControl *	host	= _listView->selectionHost();
+	Filter			*	filter	= host ? _listView->effectiveSelectionFilter() : nullptr;
+
+	return filter && filter->id() >= 0 ? filter->id() : -1;
 }
 
 Term ListModel::_checkTermType(const Term &term) const

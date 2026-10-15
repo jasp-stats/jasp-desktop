@@ -366,7 +366,10 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	Term keyTerm = Term::readTerm(checkBoxControl->parentListViewKey());
 	for (const Term& otherTerm : _draggableModel->terms())
 	{
-		if (otherTerm == keyTerm)
+		//row identity is the name-based value (the row controls map keys on it); comparing Term
+		//objects here would use the strict identity incl. filterId (mds-plan C9) and the freshly
+		//parsed keyTerm is unqualified, so the self-skip would silently stop firing:
+		if (otherTerm.value() == keyTerm.value())
 			continue;
 
 		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.value());

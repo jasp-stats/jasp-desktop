@@ -204,6 +204,13 @@ private slots:
 	// never dereference freed memory, and the freed option name is reusable.
 	void	testDeadControlsArePrunedFromFormCaches();
 
+	// mds-plan D2.1/C9: a Term carries the filterId it was selected through (-1 = unqualified) and
+	// it is part of identity: same-name terms from different filters never compare equal, Terms
+	// lookups distinguish stamped terms but keep the C13 fallback (an unqualified lookup matches
+	// on name), moves/copies carry the id and combination terms inherit it when uniform. No JSON
+	// wire field: options stay byte-identical until Phase 3's generators.
+	void	testTermFilterIdIsPartOfIdentity();
+
 	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
 	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
 	// to misread them), and a same-build round trip opens.

@@ -24,6 +24,31 @@
 
 using namespace std;
 
+//mds-plan C9: a term composed out of others (cross/way/interaction combination) inherits the
+//source filter only when ALL contributing terms agree on one — the components of an interaction
+//share the term-level filterId (mds-plan D6.1). Mixed provenance cannot be expressed by a single
+//term-level id, so a mixed combination stays unqualified (-1) rather than lying about one source.
+namespace
+{
+	constexpr int kNoFilterIdYet = -2;		//running-state sentinels for the carry below, never term values
+	constexpr int kMixedFilterIds = -3;
+
+	void carryFilterId(int &soFar, int candidate)
+	{
+		if (soFar == kMixedFilterIds)
+			return;
+		if (soFar == kNoFilterIdYet)
+			soFar = candidate;
+		else if (soFar != candidate)
+			soFar = kMixedFilterIds;
+	}
+
+	int settledFilterId(int soFar)
+	{
+		return soFar == kMixedFilterIds || soFar == kNoFilterIdYet ? -1 : soFar;
+	}
+}
+
 Terms::Terms(const QList<QString> &terms, Terms *parent)
 {
 	_parent = parent;
@@ -49,6 +74,8 @@ Terms::Terms(Terms *parent)
 
 Terms::Terms(const Json::Value &valuesPart, const Json::Value &typesPart, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues)
 {
+	//No provenance on the wire yet (mds-plan D2.1/C11): every term parsed out of options json is
+	//UNQUALIFIED (-1); the list it lands in stamps the current selection in (ListModel::_setAllowedType).
 	if (valuesPart.isString())
 	{
 		std::string str = valuesPart.asString();
@@ -259,7 +286,7 @@ Term &Terms::at(size_t index)
 
 bool Terms::containsValue(const Term &term) const
 {
-	return containsValue(term.value());
+	return indexOfValue(term) >= 0;
 }
 
 bool Terms::containsValue(const QString &value) const
@@ -269,7 +296,27 @@ bool Terms::containsValue(const QString &value) const
 
 int Terms::indexOfValue(const Term &term) const
 {
-	return indexOfValue(term.value());
+	//mds-plan C9/C13 lookup rule: an UNQUALIFIED lookup term (-1) matches on name alone — the
+	//context fallback ("this list holds that column, whichever filter it came through"): that is
+	//exactly how freshly parsed/bound terms (-1, no wire field yet) still find their stamped twins
+	//in a list. A STAMPED lookup term must match name AND filter — the same-name-different-filter
+	//distinction. Equality itself stays strict (see Term::operator==); the wildcard is here, in
+	//the lookup, never in ==.
+	if (term.filterId() < 0)
+		return indexOfValue(term.value());
+
+	auto itr = _valueMap.find(term.value());
+	if(itr != _valueMap.end() && _terms.at(size_t(itr->second)) == term)	//fast path: the name's map index already IS the stamped twin
+		return itr->second;
+
+	int index = 0;															//collisions are rare: scan only when the map entry mismatches
+	for(const Term &candidate : _terms)
+	{
+		if (candidate == term)
+			return index;
+		++index;
+	}
+	return -1;
 }
 
 int Terms::indexOfValue(const QString &value) const
@@ -350,6 +397,7 @@ Terms Terms::crossCombinations() const
 
 			vector<string> combination;
 			columnTypeVec types;
+			int carriedFilterId = kNoFilterIdYet;
 
 			for (uint i = 0; i < _terms.size(); i++) {
 				if (!v[i])
@@ -358,11 +406,13 @@ Terms Terms::crossCombinations() const
 					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
 					types.insert(types.end(), termTypes.begin(), termTypes.end());
+					carryFilterId(carriedFilterId, _terms.at(i).filterId());		//mds-plan C9
 				}
 			}
 
 			Term newTerm(combination);
 			newTerm.setTypes(types);
+			newTerm.setFilterId(settledFilterId(carriedFilterId));
 			t.add(newTerm);
 
 		} while (std::next_permutation(v.begin(), v.end()));
@@ -384,6 +434,7 @@ Terms Terms::wayCombinations(int ways) const
 
 			vector<string> combination;
 			columnTypeVec types;
+			int carriedFilterId = kNoFilterIdYet;
 
 			for (uint i = 0; i < _terms.size(); ++i) {
 				if (!v[i])
@@ -392,11 +443,13 @@ Terms Terms::wayCombinations(int ways) const
 					columnTypeVec termTypes = _terms.at(i).types();
 					combination.insert(combination.end(), components.begin(), components.end());
 					types.insert(types.end(), termTypes.begin(), termTypes.end());
+					carryFilterId(carriedFilterId, _terms.at(i).filterId());		//mds-plan C9
 				}
 			}
 
 			Term newTerm(combination);
 			newTerm.setTypes(types);
+			newTerm.setFilterId(settledFilterId(carriedFilterId));
 			t.add(newTerm);
 
 		} while (std::next_permutation(v.begin(), v.end()));
@@ -426,8 +479,13 @@ Terms Terms::ffCombinations(const Terms &terms)
 			columnTypeVec coTypes = combos.at(j).types();
 			types.insert(types.end(), coTypes.begin(), coTypes.end());
 
+			int carriedFilterId = kNoFilterIdYet;						//mds-plan C9: this-term and its
+			carryFilterId(carriedFilterId, _terms.at(i).filterId());		//combination part must agree
+			carryFilterId(carriedFilterId, combos.at(j).filterId());		//for the product to be qualified
+
 			Term newTerm(termComponents);
 			newTerm.setTypes(types);
+			newTerm.setFilterId(settledFilterId(carriedFilterId));
 			newTerms.add(newTerm);
 		}
 	}
@@ -550,6 +608,10 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 
 Json::Value Terms::getOptionsWithRelatedValues(const RelatedValuesPerTerm &relatedValuesPerTerm, const std::string &keyValue, const std::string &keyLabel, bool useArray, bool useValueAndType) const
 {
+	//mds-plan D2.1: the per-term filterId deliberately does NOT appear in this json — options
+	//serialization is Phase 3's generators (C11), term provenance is internal state for now. The
+	//related values stay keyed by term.value() (row identity by name): two same-name-different-
+	//filter rows sharing row controls is a Phase-3/D6 story, not silently changed here.
 	Json::Value options(Json::arrayValue);
 
 	for (const Term& term : _terms)
@@ -799,7 +861,11 @@ bool Terms::discardWhatIsntTheseTerms(const Terms &terms, Terms *discarded)
 			_terms.end(),
 			[&](Term& term)
 			{
-				if (!term.value().isEmpty() && !terms.containsValue(term))
+				//Name-based on purpose (mds-plan C9): this is the namespace-universe check used by
+				//ListModelTermsAvailable::removeTermsInAssignedList ("does that column still exist
+				//at all"), not an identity match - a differently stamped twin (assigned list with a
+				//selection of its own) must not be wiped from the assigned list over a stamp.
+				if (!term.value().isEmpty() && !terms.containsValue(term.value()))
 				{
 					if (discarded != nullptr)
 						discarded->add(term);

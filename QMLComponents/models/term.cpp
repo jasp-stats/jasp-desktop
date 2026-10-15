@@ -148,12 +148,18 @@ const QString &Term::at(int index) const
 	return _components.at(index);
 }
 
+//Identity (mds-plan C9): same components (as a set, order-free — always has been) AND the same
+//source filter. -1 (unqualified) is a value like any other here: it is NOT a wildcard, a term
+//that knows its filter and one that does not are different facts about the world and must not
+//compare equal (that is what lets Terms keep both apart once the stamp arrives). Wildcard-ish
+//matching lives in the LOOKUP helpers (Terms::containsValue/indexOfValue), not in equality.
 bool Term::operator==(const Term &other) const
 {
 	if (this == &other)
 		return true;
 
-	return (other.size() == size()) && containsAll(other);
+	return _filterId == other._filterId
+		&& (other.size() == size()) && containsAll(other);
 }
 
 bool Term::operator!=(const Term &other) const
@@ -163,7 +169,12 @@ bool Term::operator!=(const Term &other) const
 
 bool Term::operator<(const Term &other) const
 {
-	return value() < other.value();
+	if (value() != other.value())
+		return value() < other.value();
+
+	//Same name, different filters: keep a strict total order so std::map<Term, ...> (e.g.
+	//Terms::indexesFromTerms) does not collapse same-name-different-filter terms into one key.
+	return _filterId < other._filterId;
 }
 
 
