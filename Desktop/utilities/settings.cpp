@@ -207,7 +207,12 @@ const Settings::Setting Settings::Values[] = {
 	// path is used as-is (QA machines, network shares, UNC). A
 	// configured-but-missing file logs a warning and hides the logo. Bound by
 	// MainWindow::companyLogoUrl() and WelcomePage.qml; needs a restart.
-	{"companyLogoPath",			""}
+	{"companyLogoPath",			""},
+	// Base height of the company logo in welcome-page units — the page scales
+	// it with the window (scaler 0.85–2.0), so 35 renders roughly 30–70px.
+	// Clamped to 0–200 when read. Only meaningful together with a non-empty
+	// companyLogoPath.
+	{"companyLogoHeight",		35}
 };
 
 // Shipped JSON files beside the application: the per-client MSI layer.

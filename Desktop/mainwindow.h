@@ -109,6 +109,7 @@ class MainWindow : public QObject
 	Q_PROPERTY(QString		contactText			READ contactText											NOTIFY contactTextChanged			)
 	Q_PROPERTY(QString		questionsUrl		READ questionsUrl																	CONSTANT							)
 	Q_PROPERTY(QString		companyLogoUrl		READ companyLogoUrl																	CONSTANT							)
+	Q_PROPERTY(int			companyLogoHeight	READ companyLogoHeight																	CONSTANT							)
 	Q_PROPERTY(bool			hadFatalError		READ hadFatalError											NOTIFY hadFatalErrorChanged			)
 	Q_PROPERTY(bool			startedForBatch		READ startedForBatch										CONSTANT							)
 
@@ -168,6 +169,9 @@ public:
 	/// (absolute path as-is; relative beside the exe / in Resources/), or ""
 	/// when unset or the file is missing. Read once per launch.
 	QString				companyLogoUrl()	const;
+	/// `companyLogoHeight` setting (default 35), clamped to 0–200: base
+	/// height of the welcome-page logo, scaled with the page.
+	int					companyLogoHeight()	const;
 	bool				startDetached(const QString & applicationPath, const QStringList & args) const; ///< Makes sure no pipes are connected
 	bool				hadFatalError() const;
 

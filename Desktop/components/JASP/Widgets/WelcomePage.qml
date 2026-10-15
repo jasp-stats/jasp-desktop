@@ -630,9 +630,9 @@ FocusScope
 			fillMode:			Image.PreserveAspectFit
 				horizontalAlignment:	Image.AlignHCenter
 				verticalAlignment:	Image.AlignVCenter
-			height:				50 * welcomeRoot.scaler
+			height:				mainWindow.companyLogoHeight * welcomeRoot.scaler
 				width:				Math.min(implicitHeight > 0 ? implicitWidth * height / implicitHeight : 0, 480 * welcomeRoot.scaler)
-				sourceSize.height:	100 * welcomeRoot.scaler	// 2x for crispness
+				sourceSize.height:	2 * mainWindow.companyLogoHeight * welcomeRoot.scaler	// 2x for crispness
 
 			anchors
 			{

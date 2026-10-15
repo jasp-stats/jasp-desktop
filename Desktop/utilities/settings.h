@@ -122,7 +122,8 @@ public:
 		CONTACT_URL_BUGS,
 		CONTACT_URL_CRASH_REPORT,
 		QUESTIONS_URL,
-		COMPANY_LOGO_PATH
+		COMPANY_LOGO_PATH,
+		COMPANY_LOGO_HEIGHT
 	};
 
 	/// Resolution order for value(): highest first —

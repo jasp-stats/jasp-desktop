@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 //
 #include <QDir>
+#include <algorithm>
 
 #include <QFile>
 #include <QUrl>
@@ -461,6 +462,13 @@ QString MainWindow::companyLogoUrl() const
 	}
 
 	return QUrl::fromLocalFile(QDir::cleanPath(found)).toString();
+}
+
+int MainWindow::companyLogoHeight() const
+{
+	// Settings name `companyLogoHeight` (default 35). Clamped so a policy
+	// typo cannot blow up the welcome-page layout.
+	return std::clamp(Settings::value(Settings::COMPANY_LOGO_HEIGHT).toInt(), 0, 200);
 }
 
 const QString MainWindow::contactText() const
