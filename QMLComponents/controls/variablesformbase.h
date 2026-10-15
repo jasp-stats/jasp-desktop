@@ -20,11 +20,9 @@
 #define VARIABLESFROMBASE_H
 
 #include "jaspcontrol.h"
-#include "hostfilterselection.h"
 #include <QVariantList>
 
 class VariablesListBase;
-class AnalysisBase;
 
 class VariablesFormBase : public JASPControl
 {
@@ -36,19 +34,6 @@ class VariablesFormBase : public JASPControl
 	Q_PROPERTY( QList<JASPControl*>		allJASPControls					READ allJASPControls														NOTIFY allJASPControlsChanged				)
 	Q_PROPERTY( qreal					marginBetweenVariablesLists		READ marginBetweenVariablesLists	WRITE setMarginBetweenVariablesLists	NOTIFY marginBetweenVariablesListsChanged	)
 	Q_PROPERTY( qreal					minimumHeightVariablesLists		READ minimumHeightVariablesLists	WRITE setMinimumHeightVariablesLists	NOTIFY minimumHeightVariablesListsChanged	)
-	///< Name of the OPTION that carries this form's dataset/filter selection (value: a filter id);
-	///< setting it gives the form a selection of its own: a FilterSelect dropdown on the form
-	///  reads/writes the option (desktop and syntax alike) and every list below the form shows the
-	///  columns of the selected filter - independent from any other form of the same analysis.
-	///  It also marks the analysis multiDataSetAware (in the bridge nothing else sets that flag).
-	Q_PROPERTY( QString					dataSetSelectionOption			READ dataSetSelectionOption		WRITE setDataSetSelectionOption	NOTIFY dataSetSelectionOptionChanged	)
-	///< True when this form has a dataSetSelectionOption (so its FilterSelect should exist).
-	Q_PROPERTY( bool					selectionAvailable				READ selectionAvailable													NOTIFY selectionAvailableChanged			)
-	///< {value: "<filterId>", label: "DataSet - Filter"}: every filter of every workspace dataset.
-	Q_PROPERTY( QVariantList			filterSelectionValues			READ filterSelectionValues												NOTIFY filterSelectionValuesChanged		)
-	///< This form's own selection (never the analysis' filter!), -1 while none. Setting an unknown
-	///< filter id is rejected. Assigning it is what the FilterSelect dropdown and the tests do.
-	Q_PROPERTY( int						selectedFilterId				READ selectedFilterId			WRITE setSelectedFilterId			NOTIFY selectedFilterIdChanged			)
 
 public:
 	VariablesFormBase(QQuickItem* parent = nullptr);
@@ -58,18 +43,6 @@ public:
 	QList<JASPControl*>		allJASPControls()				const	{ return _allJASPControls;				}
 	qreal					marginBetweenVariablesLists()	const	{ return _marginBetweenVariablesLists;	}
 	qreal					minimumHeightVariablesLists()	const	{ return _minimumHeightVariablesLists;	}
-	QString					dataSetSelectionOption()		const	{ return _hostSelection.option();			}
-	bool					selectionAvailable()			const	{ return _hostSelection.selectionAvailable(); }
-	QVariantList			filterSelectionValues()			const	{ return _hostSelection.filterSelectionValues(); }
-	int						selectedFilterId()			const	{ return _hostSelection.selectedFilterId(); }
-
-	///< This form's VariableInfo once it has a selection (provider = the selected filter) - what
-	///< every consumer below the form resolves to through JASPControl::effectiveVarInfo().
-	VariableInfo		  * ownedSelectionVarInfo() override				{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
-	///< The option the form's FilterSelect dropdown is bound to (see dataSetSelectionOption): by
-	///  this name the dropdown is registered in the form, which is how consumers learn which
-	///  control carries their selection (JASPControl::selectionDependency).
-	QString				  ownedSelectionOptionName() const override			{ return _hostSelection.option(); }
 
 	Q_INVOKABLE bool		widthSetByForm(JASPControl* control)	{ return _controlsWidthSetByForm.contains(control); }
 	Q_INVOKABLE bool		heightSetByForm(JASPControl* control)	{ return _controlsHeightSetByForm.contains(control); }
@@ -77,8 +50,6 @@ public:
 public slots:
 	void					setMarginBetweenVariablesLists(qreal value);
 	void					setMinimumHeightVariablesLists(qreal value);
-	void					setDataSetSelectionOption(const QString & option)	{ _hostSelection.setOption(option); emit dataSetSelectionOptionChanged(); }
-	void					setSelectedFilterId(int filterId)					{ _hostSelection.setSelectedFilterId(filterId); }
 
 signals:
 	void availableVariablesListChanged();
@@ -86,24 +57,11 @@ signals:
 	void allJASPControlsChanged();
 	void marginBetweenVariablesListsChanged();
 	void minimumHeightVariablesListsChanged();
-	void dataSetSelectionOptionChanged();
-	void selectionAvailableChanged();
-	void filterSelectionValuesChanged();
-	void selectedFilterIdChanged();
 
 protected:
 	void componentComplete() override;
-	///< Static controls never receive formIsKnown (only dynamically created ones emit it), so this
-	///< is where a VariablesForm sitting in a normal form hooks itself up to its AnalysisForm.
-	void setUp() override;
-
-private slots:
-	void					handleFormIsKnown(AnalysisForm * form);
-	void					handleAnalysisChanged();
-	void					handleAnalysisFilterChanged()	{ _hostSelection.analysisFilterMaybeChanged(); }
 
 private:
-	AnalysisBase	*		_owningAnalysis()			const;
 
 	VariablesListBase*			_availableVariablesList = nullptr;
 	QList<JASPControl*>			_allAssignedVariablesList,
@@ -112,7 +70,6 @@ private:
 								_controlsHeightSetByForm;
 	qreal						_marginBetweenVariablesLists = 8;
 	qreal						_minimumHeightVariablesLists = 25;
-	HostFilterSelection			_hostSelection;
 
 };
 

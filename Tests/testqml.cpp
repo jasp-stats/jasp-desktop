@@ -29,9 +29,9 @@ TestQml::TestQml(QObject *parent)
 
 	prov->loadDataSet(dataSet);
 
-	//A second dataset with its own filters and its own columns: enough for per-form dataset
-	//selection (VariablesForm::dataSetSelectionOption, see tst_dataSetSelectionVariablesForm.qml)
-	//to select between, and for tests to prove two forms look at *different* data:
+	//A second dataset with its own filters and its own columns: enough for per-list dataset
+	//selection (VariablesListBase::dataSetSelectionOption, see tst_dataSetSelectionVariablesList.qml)
+	//to select between, and for tests to prove two selecting lists look at *different* data:
 	//"TestInts" exists in both datasets with different values, "SecondOnly" only here.
 	//The first dataset is shown again right away, so all other QML tests keep looking at their data.
 	if(DataSet * first = prov->dataSet())
@@ -56,7 +56,7 @@ TestQml::TestQml(QObject *parent)
 		//stored rows and every test runs against a *reopened file* - the state the eager filter
 		//materialisation of DataSet::dbLoad (mds-plan C2/EAGER) exists for. 'ReopenMe' reaches
 		//the dataset/filter dropdown only because dbLoad materialised the stored row; the
-		//reopen tests in tst_dataSetSelectionVariablesForm.qml assert exactly that.
+		//reopen tests in tst_dataSetSelectionVariablesList.qml assert exactly that.
 		prov->reloadWorkspace();
 	}
 }

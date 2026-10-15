@@ -24,46 +24,14 @@
 #include "workspace.h"
 #include "log.h"
 
-VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent), _hostSelection(this)
+VariablesFormBase::VariablesFormBase(QQuickItem* parent) : JASPControl(parent)
 {
 	_controlType			= ControlType::VariablesForm;
 	_useControlMouseArea	= false;
 
-	//The analysis (and with it the dataset selection) can only become known after construction,
-	//AnalysisForm hands it out later on; formIsKnown tells us when that happened.
-	connect(this, &JASPControl::formIsKnown, this, &VariablesFormBase::handleFormIsKnown);
-
-	//The per-form selection state lives in _hostSelection, the Q_PROPERTYs mirror it:
-	connect(&_hostSelection, &HostFilterSelection::selectedFilterIdChanged,		this, &VariablesFormBase::selectedFilterIdChanged);
-	connect(&_hostSelection, &HostFilterSelection::selectionAvailableChanged,	this, &VariablesFormBase::selectionAvailableChanged);
-	connect(&_hostSelection, &HostFilterSelection::filterSelectionValuesChanged, this, &VariablesFormBase::filterSelectionValuesChanged);
-}
-
-void VariablesFormBase::setUp()
-{
-	JASPControl::setUp();
-
-	//AnalysisForm::setAnalysisUp() -> _setUp() is the hook static controls get (formIsKnown is only
-	//emitted for dynamically created ones, see JASPControl's constructor), and by then the analysis
-	//is attached. Reuse handleFormIsKnown: its connections are UniqueConnections, so getting here a
-	//second time (dynamic controls also emit formIsKnown) is harmless.
-	handleFormIsKnown(form());
-}
-
-void VariablesFormBase::handleFormIsKnown(AnalysisForm * form)
-{
-	if(!form)
-		return;
-
-	//AnalysisForm::setAnalysisUp() re-runs whenever the analysis or its filter changes; keep the
-	//per-form selection in sync (it follows the analysis filter only until the user picks one).
-	connect(form, &AnalysisForm::analysisChanged,	this, &VariablesFormBase::handleAnalysisChanged,			Qt::UniqueConnection);
-	connect(form, &AnalysisForm::filterChanged,		this, &VariablesFormBase::handleAnalysisFilterChanged,	Qt::UniqueConnection);
-
-	//The analysis is usually already attached when we get here - analysisChanged may well have fired
-	//before this connection existed. Pull the current analysis in explicitly, otherwise the
-	//selection never gets its default and QML keeps stale values.
-	handleAnalysisChanged();
+	//Dataset/filter selection is NOT a form concern (mds-plan C10): each list that wants its own
+	//namespace declares dataSetSelectionOption on itself (VariablesListBase / FilterSelect.qml).
+	//The form is layout and available/assigned relations only.
 }
 
 void VariablesFormBase::componentComplete()
@@ -167,21 +135,4 @@ void VariablesFormBase::setMinimumHeightVariablesLists(qreal value)
 JASPControl* VariablesFormBase::availableVariablesList() const
 {
 	return _availableVariablesList;
-}
-
-void VariablesFormBase::handleAnalysisChanged()
-{
-	//With the analysis known, the selection (if this form declares one) marks the analysis
-	//multiDataSetAware, hooks the workspace removal signals and gets its default: the analysis'
-	//current filter. All QML bindings of the selection widget hang off these signals:
-	_hostSelection.analysisBecameKnown();
-
-	emit selectedFilterIdChanged();
-	emit filterSelectionValuesChanged();
-	emit selectionAvailableChanged();
-}
-
-AnalysisBase * VariablesFormBase::_owningAnalysis() const
-{
-	return form() ? form()->analysisObj() : nullptr;
 }

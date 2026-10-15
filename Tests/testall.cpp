@@ -3276,7 +3276,7 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 	//instantiation) resolves its own option out of that pending JSON and writes the resulting
 	//filter id into the bound values at registration time, before its DropDown ever binds.
 	//Driven through the C++ API here; the QML lifecycle side (register on late instantiation,
-	//prune on destroy) is pinned in tst_dataSetSelectionVariablesForm.qml.
+	//prune on destroy) is pinned in tst_dataSetSelectionVariablesList.qml.
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -3348,7 +3348,7 @@ void TestAll::testDeadControlsArePrunedFromFormCaches()
 	//destroying such a control after setup left raw pointers in _controls, and in
 	//_dependsOrderedCtrls once a bind pass had run over them. The next pass (setAnalysisUp,
 	//bindTo, clearFormErrors, filterByNameDone, usedVariables) dereferenced freed memory:
-	//deterministic SEGV (reproduced in tst_dataSetSelectionVariablesForm.qml pre-fix, which now
+	//deterministic SEGV (reproduced in tst_dataSetSelectionVariablesList.qml pre-fix, which now
 	//drives the same cycle through the real QML lifecycle). The form prunes on the control's
 	//destroyed signal now, wired at the addControl chokepoint.
 	if(!PreferencesModel::prefs())

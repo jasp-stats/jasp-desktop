@@ -28,9 +28,10 @@
 class JASPControl;
 class VariableInfo;
 
-/// Dataset/filter selection that lives on a HOST control (a VariablesFormBase, a TextAreaBase,
-/// ...) instead of on the analysis: two hosts of one analysis can therefore hold two different
-/// filters at the same time - which is the whole point of the multi-dataset aware analyses.
+/// Dataset/filter selection that lives on a HOST control (a VariablesListBase, a TextAreaBase,
+/// ...) instead of on the analysis or its form: two hosts of one analysis can therefore hold two
+/// different filters at the same time - which is the whole point of the multi-dataset aware
+/// analyses (mds-plan C10: selection lives on the list, not on the VariablesForm).
 ///
 /// The selection is a filter id, carried by the option named by dataSetSelectionOption: a
 /// FilterSelect DropDown embedded by the host mirrors (and writes) that option, so the selection

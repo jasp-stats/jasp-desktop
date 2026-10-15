@@ -42,6 +42,7 @@ void HostFilterSelection::setOption(const QString & option)
 	//the form's registry instead of scanning children, and a re-registered host applies its own
 	//pending raw selection value (left behind by a parse that ran before this host existed)
 	//immediately. When the form is not yet known here, analysisBecameKnown() registers later.
+	//Hosts are per-LIST/TextArea selection owners (mds-plan C10/D2.2), see VariablesListBase.
 	if (AnalysisForm * form = _host->form())
 	{
 		if (!previous.isEmpty())
@@ -187,13 +188,17 @@ void HostFilterSelection::restampValuesUnderHost()
 		return;
 
 	//Exactly the controls whose variables resolve through THIS host: a nested host serves its
-	//own subtree, and the resolution follows `source` too, so a list fed from below this host -
-	//even one visually parked elsewhere - is restamped where its names actually come from.
+	//own subtree, and the resolution follows `source` (and the related available list, mds-plan
+	//C10) too, so a list fed from below this host - even one visually parked elsewhere - is
+	//restamped where its names actually come from. The host itself is included (mds-plan D2.2):
+	//a list host's own bound terms resolve through its own selection - for the hosts that were
+	//never bound (VariablesForm) this made no difference, for TextArea it re-stamps the same
+	//filter the value already had.
 	const QList<JASPControl *> controls = form->findChildren<JASPControl *>();
 
 	for(JASPControl * control : controls)
 	{
-		if(control == _host || !control->isBound() || !control->encodeValue())
+		if(!control->isBound() || !control->encodeValue())
 			continue;
 
 		if(control->selectionHost() != _host)

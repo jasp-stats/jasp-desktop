@@ -8,7 +8,7 @@ import JASP.Controls
 // bound value the DropDown cannot serve goes to the error state and stays pending - the option
 // keeps the value exactly as it came in and is NEVER rewritten to entry 0 - and it binds for
 // real the moment the model grows an entry that can serve it. (The aware path is pinned by
-// tst_dataSetSelectionVariablesForm.qml::test_unknown_saved_filter_id_waits_not_coerced.)
+// tst_dataSetSelectionVariablesList.qml::test_unknown_saved_filter_id_waits_not_coerced.)
 Item
 {
 	width:	1000

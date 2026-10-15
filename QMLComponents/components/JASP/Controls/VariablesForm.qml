@@ -37,11 +37,12 @@ import JASP.Controls
     \list
     \li \b listWidth (int) - Width of each variable list. Default: width * 2 / 5.
     \li \b removeInvisibles (bool) - Remove invisible controls from the layout. Default: false.
-    \li \b dataSetSelectionOption (string) - Name of the option carrying this form's dataset/filter
-        selection (a filter id). The form then gets its own FilterSelect dropdown and its own
-        variable-info provider: multiple forms of one analysis can select different datasets at
-        the same time. Declaring it marks the analysis multiDataSetAware. Default: "" (no selection).
     \endlist
+
+    \note Dataset/filter selection is a property of the LISTS, not of the form (mds-plan C10):
+    a VariablesList or AvailableVariablesList that declares \c dataSetSelectionOption gets its own
+    FilterSelect dropdown and its own variable-info provider, so several lists of one form can
+    select different datasets at the same time.
 
     \section1 Example
 
@@ -90,39 +91,6 @@ VariablesFormBase
 
 	Item { id: items }
 
-	// Per-form dataset/filter selection: one reusable FilterSelect, created exactly when the form
-	// declares a dataSetSelectionOption (so an unnamed bound control can never exist). Wrapping
-	// Item keeps it out of the JASPControl scan of VariablesFormBase::componentComplete(): it is
-	// form furniture; the FilterSelect inside registers itself as the option's control.
-	Item
-	{
-		id:					dataSetSelectionArea
-		x:					0
-		y:					0
-		width:				variablesForm.listWidth
-		visible:			filterSelectLoader.active
-		height:				visible ? filterSelectLoader.height : 0
-
-		Loader
-		{
-			id:					filterSelectLoader
-			active:				variablesForm.selectionAvailable
-			sourceComponent:	filterSelectComponent
-			anchors.left:		dataSetSelectionArea.left
-			anchors.right:		dataSetSelectionArea.right
-		}
-	}
-
-	Component
-	{
-		id:	filterSelectComponent
-		FilterSelect { host: variablesForm }
-	}
-
-	// The lists and the assigned column start below the selection; _selectorHeight is 0 without one,
-	// so all pre-existing bindings behave exactly as before.
-	readonly property real _selectorHeight: dataSetSelectionArea.visible ? dataSetSelectionArea.height + marginBetweenVariablesLists : 0
-
 	Connections
 	{
 		target:					preferencesModel
@@ -163,21 +131,12 @@ VariablesFormBase
 		}
 	}
 
-	// The available list takes the height of the form (minus the dataset/filter selection above it),
-	// and the list width if its width is not set explicitly
+	// The available list takes the height of the form, and the list width if its width is not set explicitly
 	Binding
 	{
 		target:			variablesForm.availableVariablesList
 		property:		"height"
-		value:			variablesForm.height - variablesForm._selectorHeight
-		restoreMode:	Binding.RestoreNone
-	}
-
-	Binding
-	{
-		target:			variablesForm.availableVariablesList
-		property:		"y"
-		value:			variablesForm._selectorHeight
+		value:			variablesForm.height
 		restoreMode:	Binding.RestoreNone
 	}
 
@@ -224,7 +183,7 @@ VariablesFormBase
 			{
 				target:			controlLayout.control
 				property:		"anchors.topMargin"
-				value:			controlLayout.position > 0 ? variablesForm.marginBetweenVariablesLists : variablesForm._selectorHeight
+				value:			controlLayout.position > 0 ? variablesForm.marginBetweenVariablesLists : 0
 				restoreMode:	Binding.RestoreNone
 			}
 

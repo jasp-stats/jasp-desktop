@@ -26,20 +26,21 @@ import JASP.Controls
 
     A DropDown bound to the option named by \c host.dataSetSelectionOption; its value is a FILTER
     ID (every filter of every workspace dataset is offered, labelled "DataSet - Filter"). Any
-    component that consumes variable info for itself (VariablesForm, TextAreaBase, ...) embeds
+    component that consumes variable info for itself (VariablesListBase, TextAreaBase, ...) embeds
     one, typically behind a <c>Loader { active: host.selectionAvailable }</c> so that a bound
     control without a name never exists at all.
 
     The host owns the selection state (HostFilterSelection); this control only mirrors it
     (host -> dropdown) and reports user picks back (dropdown -> host). Because the dropdown is a
     normal bound control, the selection reaches the analysis' options in desktop and syntax mode
-    through exactly the same mechanism as every other option.
+    through exactly the same mechanism as every other option. Selections live on LISTS, not on
+    the VariablesForm (mds-plan C10/D2.2).
 */
 DropDown
 {
 	id: filterSelect
 
-	///< Any control with a HostFilterSelection (VariablesFormBase, TextAreaBase, ...).
+	///< Any control with a HostFilterSelection (VariablesListBase, TextAreaBase, ...).
 	property QtObject host
 
 	name:	 host && host.dataSetSelectionOption ? host.dataSetSelectionOption : ""

@@ -168,14 +168,14 @@ public:
 	static QList<JASPControl*>		getChildJASPControls(const QQuickItem* item, bool collapseStructuralControls = false);
 
 	virtual void					setUp()										{}
-	/// Dataset/filter selection lives on HOSTS (VariablesFormBase, TextAreaBase, ...): a host with
+	/// Dataset/filter selection lives on HOSTS (VariablesListBase, TextAreaBase, ...): a host with
 	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
 	/// Consumers must not grab form()->varInfo() directly but use effectiveVarInfo() below, so a
 	/// control under a selecting host follows that host's dataset instead of the analysis-wide one.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
 	///< Hosts only: the NAME of the option carrying the selection whose VariableInfo is handed out
-	/// by ownedSelectionVarInfo() (VariablesForm::dataSetSelectionOption, TextArea's of the same
-	/// name). The control that reads/writes that option - the FilterSelect dropdown - is registered
+	/// by ownedSelectionVarInfo() (VariablesListBase::dataSetSelectionOption, TextArea's of the
+	/// same name). The control that reads/writes that option - the FilterSelect dropdown - is registered
 	/// in the form under exactly this name, so getControl(ownedSelectionOptionName()) finds it.
 	/// Note this is a name, not a control; JASPControl::selectionDependency() gives the control.
 	virtual QString					ownedSelectionOptionName() const				{ return QString(); }

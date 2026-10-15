@@ -179,7 +179,7 @@ private slots:
 	// File round-trip: dataset/filter ids come straight from the storage db and a .jasp restores
 	// that db verbatim, so reopening (fresh Workspace over the same database) must hand back the
 	// very same ids - saved provenance is simply still valid, and rebinding needs no repair pass:
-	// the derived selection dependency (see tst_dataSetSelectionVariablesForm.qml) stamps values
+	// the derived selection dependency (see tst_dataSetSelectionVariablesList.qml) stamps values
 	// with the loaded selection from the very first bind. (This invariant is also why
 	// Analyses::remapSavedProvenance and its side table were removed.)
 	void	testDataSetFilterIdsSurviveStorageReload();
