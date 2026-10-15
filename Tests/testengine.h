@@ -24,6 +24,7 @@ private slots:
 	void    testComputedColumnCascade();
 	void    testComputedDataSet();
     void    testVariableInfoPerFilter();
+	void    testEngineRegistryPropagatesColumnMutations();
 	void	testScriptConstructorFuzz();
 
 private:

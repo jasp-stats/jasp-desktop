@@ -11,6 +11,7 @@
 #include "data/datasetpackage.h"
 #include "data/importers/csvimporter.h"
 #include "engine/enginerepresentation.h"
+#include "columnencoder.h"
 #include "utilities/settings.h"
 #include "filter.h"
 #include "variableinfo.h"
@@ -449,6 +450,121 @@ void TestEngine::testVariableInfoPerFilter()
 
 	info.setProvider(defaultF);
 	QCOMPARE(info.rowCount(), rowCount);
+}
+
+void TestEngine::testEngineRegistryPropagatesColumnMutations()
+{
+	// mds-plan D1.4/D1.9: the engine-registry propagation check. JASPTestEngine drives a real
+	// OUT-OF-PROCESS JASPEngine (EngineSync::startSlaveProcess) which keeps its own DataBridge
+	// on the same sqlite db and its own process-local copy of the global decode table. It
+	// re-materialises that table per request: provideAndUpdateDataSet() -> Workspace/DataSet/
+	// Column::checkForUpdates (pull from db) -> canonical setCurrentNames(getColumnTypesMap())
+	// -> rebuildBlock of every filter-view block (the D1.4 funnel). A compute-column request
+	// only succeeds when that child-side registry is current end-to-end: the rCode is encoded
+	// against the child's mint, R's data environment is named by the child's tokens, and the
+	// result column name is decoded through the child's table on the way back.
+	QVERIFY2(_data,			"No dataset!");
+	QVERIFY2(_engines,		"No EngineSync!");
+	QVERIFY2(_engineRep,	"No EngineRepresentation!");
+
+	_engines->startStoppedEngine(_engineRep);
+
+	QSignalSpy spy(_engineRep, SIGNAL(computeColumnSucceeded(int, const QString &, const QString &, bool)));
+	QVERIFY2(spy.isValid(),	"Spy is broken!");
+
+	// One request -> exactly one computeColumnSucceeded (it carries failures as non-empty
+	// warning + dataChanged == false, see processComputeColumnReply).
+	auto runCompute = [&](const QString &column, const QString &code) -> QPair<QString, bool>
+	{
+		_engines->computeColumn(_data->id(), column, code, columnType::scale);
+		if(!spy.wait())
+			return { "<engine did not answer>", false };
+		const QVariantList response = spy.takeFirst();
+		return { response[2].toString(), response[3].toBool() };
+	};
+	auto runOk = [&](const QString &column, const QString &code, const char *what)
+	{
+		const QPair<QString, bool> result = runCompute(column, code);
+		QVERIFY2(result.second, qPrintable(QString(what) + " failed: " + result.first));
+	};
+	auto runFails = [&](const QString &column, const QString &code, const char *what, const QString &expectedInWarning)
+	{
+		const QPair<QString, bool> result = runCompute(column, code);
+		QVERIFY2(!result.second, what);
+		// Specifically: the engine must fail because the NAME no longer resolves in its
+		// (re-materialised) registry - an R "object not found", not engine trouble.
+		QVERIFY2(result.first.contains(expectedInWarning),
+				 qPrintable(QString(what) + " should fail on the name '" + expectedInWarning
+							+ "', got: " + result.first));
+	};
+
+	// 1. Baseline request: materialises the child's registry and proves the plumbing.
+	// NB: overwriteDataAndType answers with "did the data change" - every positive request
+	// below therefore computes visibly different values than its predecessor.
+	Column *target = _data->column("contExpon");
+	target->setCodeType(computedColumnType::rCode);
+	target->setRCode("contNormal+1");
+	runOk("contExpon", "contNormal+1", "baseline compute");
+
+	// Desktop-side namespace: the shown filter's VIEW (C3), tokens per C1.
+	ColumnEncoder *view = _data->shownEncoder();
+	QVERIFY2(view, "shown dataset must answer with a filter-view encoder");
+	const std::string oldToken = view->encode("contNormal");
+	QVERIFY2(tq(oldToken).startsWith("JASPColumn_D") && tq(oldToken).endsWith("_Encoded"),
+			 qPrintable("shown view must mint the C1 token shape, got: " + tq(oldToken)));
+	QCOMPARE(tq(ColumnEncoder::decode(oldToken)), QString("contNormal"));
+
+	// 2. Desktop-side rename. setName() only writes the db and bumps the column revision -
+	// it re-mints NOTHING, so the desktop table is still on the old namespace here: the
+	// propagation below really happens on the next request, not at mutation time.
+	QVERIFY2(_data->column("contNormal")->setName("alphaRenamed"), "rename failed");
+	QCOMPARE(tq(ColumnEncoder::decode(oldToken)), QString("contNormal"));	// stale by design
+
+	// 3. Next engine request references the NEW name: succeeds only if the child process
+	// pulled the rename from the db and re-materialised canonical + view blocks - the
+	// encode -> R -> decode roundtrip through the child's own table (cross-process proof).
+	target->setRCode("alphaRenamed+2");
+	runOk("contExpon", "alphaRenamed+2", "engine request via the renamed column");
+
+	// 4. ...and the OLD name is dead in the child: its script encoder can no longer resolve
+	// it, so the request fails - the cross-process equivalent of old tokens going raw.
+	target->setRCode("contNormal+1");
+	runFails("contExpon", "contNormal+1", "engine must not resolve the pre-rename column name", "contNormal");
+
+	// 5. Desktop-side funnel (the exact re-mint provideAndUpdateDataSet()/Workspace do):
+	// the desktop table re-materialises; the new token round-trips, the old one no longer
+	// resolves to the old name.
+	_data->encoder().setCurrentNames(_data->getColumnTypesMap());
+	const std::string newToken = view->encode("alphaRenamed");
+	QCOMPARE(tq(ColumnEncoder::decode(newToken)), QString("alphaRenamed"));
+	QVERIFY2(ColumnEncoder::shouldDecode(newToken), "renamed column's token missing from the table");
+	QVERIFY2(tq(ColumnEncoder::decode(oldToken)) != "contNormal",
+			 "old token still decodes to the pre-rename name after the funnel");
+
+	// 6. Add: insert + rename (setName again leaves the desktop mint holding the auto name),
+	// so the add AND the rename must reach the child through the db in one request.
+	const int insertAt = int(_data->columnCount());
+	_data->insertColumns(insertAt, 1);
+	Column *added = _data->column(insertAt);
+	QVERIFY2(added, "insertColumns produced no column");
+	QVERIFY2(added->setName("addedCol"), "renaming the inserted column failed");
+	QVERIFY2(!view->shouldEncode("addedCol"), "desktop mint should still hold the auto name here");
+	target->setRCode("addedCol+1");
+	runOk("contExpon", "addedCol+1", "engine request via the added column");
+
+	// 7. Shrink: the alphabetically-last column's token sits at the end of the block's key
+	// space, so erase-then-write (C4) must leave it RAW on the desktop side after removal...
+	const std::string lastToken = view->encode("unicode");
+	QVERIFY2(ColumnEncoder::shouldDecode(lastToken), "last column's token missing before removal");
+	_data->removeColumns(_data->columnIndex(_data->column("unicode")), 1);
+	QCOMPARE(tq(ColumnEncoder::decode(lastToken)), tq(lastToken));	// raw (C16)
+	// ...and the child must refuse it too on its next request.
+	target->setRCode("unicode+1");
+	runFails("contExpon", "unicode+1", "engine must not resolve the removed column", "unicode");
+
+	// 8. Propagated state stays healthy: everything the mutations produced still computes.
+	target->setRCode("alphaRenamed*3+1");
+	runOk("contExpon", "alphaRenamed*3+1", "engine request after rename+add+remove");
 }
 
 void TestEngine::testScriptConstructorFuzz()
