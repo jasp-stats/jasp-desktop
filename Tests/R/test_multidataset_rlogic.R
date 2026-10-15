@@ -187,7 +187,13 @@ if (!haveBridge) {
 	# JASPColumn_D<dsId>_F<filterId>_<index>_Encoded (C1).
 	check(grepl("^JASPColumn_D[0-9]+_F[0-9]+_[0-9]+_Encoded$", encodedValue),
 	      paste("QML parsing yields real encoded option values (", encodedValue, ")"))
-	slice <- jaspSyntax$readRequestedDataset()
+	# decode = FALSE: the index-directly invariant lives in the RAW encoded
+	# namespace (that is what jaspBase keys `datasets[[...]]` by). Decoded names
+	# are the high-level API's job (decode = TRUE), pinned one check below via
+	# the native decode roundtrip. (D1.8 made readRequestedDataset(decode = TRUE)
+	# actually decode D1 tokens - this check used to lean on the R-side guard not
+	# recognising the new shape.)
+	slice <- jaspSyntax$readRequestedDataset(decode = FALSE)
 	check(is.data.frame(slice) && encodedValue %in% names(slice),
 	      "the encoded option value IS the slice's column name (index-directly invariant)")
 
