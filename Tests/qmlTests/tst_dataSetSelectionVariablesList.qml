@@ -120,6 +120,13 @@ Item
 			signalName:		"rSyntaxTextChanged"
 		}
 
+		SignalSpy
+		{
+			id:				spyDataSpec
+			target:			jaspForm.analysis
+			signalName:		"dataSpecChanged"
+		}
+
 		function initTestCase()
 		{
 			spyLoader.wait(3000)
@@ -290,6 +297,122 @@ Item
 				allVarsA.selectedFilterId = originalA	//functions run alphabetically: don't bleed
 				allVarsB.selectedFilterId = originalB
 				rCodeArea.selectedFilterId = originalTA
+				wait(20)
+			}
+		}
+
+		// mds-plan D2.5 (analysis side of the switch): a host selection change reaches the
+		// ANALYSIS - the aware option-write path (dropdown mirroring the host) plus the explicit
+		// provider notification (HostFilterSelection::applyFilter -> AnalysisForm ->
+		// AnalysisBase::handleSelectionNamespaceMaybeChanged) mean dataSpecChanged re-emits on a
+		// mid-session switch, so title/RPC/dataSetIds consumers re-read the live dataset set.
+		function test_hostSwitch_reemitsDataSpec()
+		{
+			var secondEntry = _entryFor("Second - ")
+			verify(secondEntry !== null, "fixture must offer a second-dataset filter")
+			var secondFilterId = parseInt(secondEntry.value)
+			var originalB = allVarsB.selectedFilterId
+
+			try
+			{
+				var before = spyDataSpec.count
+				allVarsB.selectedFilterId = secondFilterId
+				wait(50)
+				verify(spyDataSpec.count > before,
+						"switching one list's host selection re-emits dataSpecChanged on the analysis")
+				compare(String(JSON.parse(jaspForm.analysis.boundValuesAsJson()).dataSetB), String(secondFilterId),
+						"the selection option follows the host (the engine-side slice key travels as the option)")
+			} finally
+			{
+				allVarsB.selectedFilterId = originalB	//functions run alphabetically: don't bleed
+				wait(20)
+			}
+		}
+
+		// mds-plan D2.5 (list side of the switch): the host restamps the TERMS of its own bound
+		// controls - host-inclusive, source-following - writing the typed filterId (C9), and the
+		// walk stops at other hosts' subtrees. Same-dataset switch (no value rewrite at all) is
+		// the hard case: only the restamp walk keeps typed state and .meta moving together.
+		// The bind-time stamps double as the pinned DESTINATION rule of mds-plan D2.1: a term
+		// bound into a control is stamped with the filter THAT control resolves through (its own
+		// host, else the source chain, else -1), never with the filter the value happened to come
+		// from in the file.
+		function test_hostSwitch_typedRestamp_staysWithinHost()
+		{
+			var secondEntry = _entryFor("Second - ")
+			var reopenEntry = _entryFor("Second - ReopenMe")
+			var firstEntry  = null
+			for (var entry of allVarsA.filterSelectionValues)
+				if (entry.label.indexOf("Second - ") !== 0)
+				{
+					firstEntry = entry
+					break
+				}
+			verify(secondEntry !== null && reopenEntry !== null && firstEntry !== null,
+					"fixture must offer two filters of 'Second' and one of the first dataset")
+
+			var fSecond	= parseInt(secondEntry.value)
+			var fReopen	= parseInt(reopenEntry.value)
+			var fFirst	= parseInt(firstEntry.value)
+			var originalA = allVarsA.selectedFilterId
+			var originalB = allVarsB.selectedFilterId
+
+			try
+			{
+				//Two hosts, two DATASETS at once; then bind the same column name into both
+				//sections, the source-driven list below host A, and the hostless list:
+				allVarsA.selectedFilterId = fSecond
+				allVarsB.selectedFilterId = fFirst
+				wait(20)
+				jaspForm.setOptions({
+					dependentA:	{ value: ["TestInts"], types: ["scale"] },
+					aDependent:	{ value: ["TestInts"], types: ["scale"] },
+					srcDriven:	{ value: ["TestInts"], types: ["scale"] },
+					dependentB:	{ value: ["TestInts"], types: ["scale"] },
+					targetC:	{ value: ["TestInts"], types: ["scale"] }
+				})
+				wait(50)
+
+				//bind-time destination stamps: A-section through host A's selection, B-section
+				//through host B's, the source-driven one through A's chain (it lives under the
+				//NON-selecting form!), and the hostless one unqualified:
+				compare(dependentA.model.termProvenanceForTest().join(","), "TestInts@" + fSecond,
+						"host A's assigned list stamps its terms at bind through host A")
+				compare(aDependent.model.termProvenanceForTest().join(","), "TestInts@" + fSecond,
+						"the no-depends assigned list likewise (inherits through its related available list)")
+				compare(srcDriven.model.termProvenanceForTest().join(","), "TestInts@" + fSecond,
+						"a source-driven list stamps through its SOURCE's host, not its visual parent")
+				compare(dependentB.model.termProvenanceForTest().join(","), "TestInts@" + fFirst,
+						"host B's list stamps through host B - same column name, different typed filter")
+				compare(targetC.model.termProvenanceForTest().join(","), "TestInts@-1",
+						"a list with no selection host keeps its terms unqualified (C13 legacy)")
+
+				//The mid-session switch, same dataset, OTHER filter - nothing is re-entered and no
+				//value changes; the walk must move typed AND meta provenance together, and ONLY
+				//below the switched host:
+				allVarsA.selectedFilterId = fReopen
+				wait(50)
+
+				compare(dependentA.model.termProvenanceForTest().join(","), "TestInts@" + fReopen,
+						"switched host re-stamps its own bound list's terms (typed filterId)")
+				compare(aDependent.model.termProvenanceForTest().join(","), "TestInts@" + fReopen,
+						"the served no-depends list follows")
+				compare(srcDriven.model.termProvenanceForTest().join(","), "TestInts@" + fReopen,
+						"the source-driven list (visually parked elsewhere) follows too - its names come from there")
+				compare(dependentB.model.termProvenanceForTest().join(","), "TestInts@" + fFirst,
+						"THE REGRESSION: host B's terms are untouched by host A's switch")
+				compare(targetC.model.termProvenanceForTest().join(","), "TestInts@-1",
+						"and the hostless list never acquires a stamp from anyone's switch")
+
+				//typed and stamped halves moved together (the engine consumes .meta, Phase 3 the
+				//terms - they may never disagree):
+				var meta = JSON.parse(jaspForm.analysis.boundValuesAsJson())[".meta"]
+				compare(meta.dependentA.filterId, fReopen, "meta half followed host A")
+				compare(meta.dependentB.filterId, fFirst, "meta half of host B untouched")
+			} finally
+			{
+				allVarsA.selectedFilterId = originalA	//there and back: the walk restamps again
+				allVarsB.selectedFilterId = originalB
 				wait(20)
 			}
 		}

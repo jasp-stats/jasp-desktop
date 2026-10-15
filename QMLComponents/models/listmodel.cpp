@@ -146,6 +146,33 @@ int ListModel::_currentSelectionFilterId() const
 	return filter && filter->id() >= 0 ? filter->id() : -1;
 }
 
+void ListModel::restampTermsFilterId()
+{
+	//mds-plan D2.5: the typed companion of HostFilterSelection::restampValuesUnderHost - the same
+	//walk, the same control set, but writing the typed filterId (C9) instead of the .meta stamp.
+	//The filter is re-resolved live (selectionHost()/effectiveSelectionFilter() walk the current
+	//component chain and the host's current filter - nothing cached); the terms keep name, type
+	//and components, and a list without a host collapses to -1 (unqualified) exactly like fresh
+	//intake would stamp it (ListModel::_setAllowedType).
+	const int filterId = _currentSelectionFilterId();
+
+	for(Term & term : _terms)
+		term.setFilterId(filterId);
+
+	//Deliberately no termsChanged() (see the header): the visible columns (name, type, label)
+	//did not move, and the VariableInfo provider signals of the re-pointed host namespace already
+	//refresh the data side. The option JSON carries no filterId (D2.1), so no re-encode is due
+	//either - the .meta restamp in the same walk covers what the engine consumes.
+}
+
+QStringList ListModel::termProvenanceForTest() const
+{
+	QStringList out;
+	for(const Term & term : _terms)
+		out << term.value() + "@" + QString::number(term.filterId());
+	return out;
+}
+
 Term ListModel::_checkTermType(const Term &term) const
 {
 	Term checkedTerm(term);

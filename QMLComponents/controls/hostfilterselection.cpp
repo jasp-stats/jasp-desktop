@@ -18,6 +18,8 @@
 
 #include "hostfilterselection.h"
 #include "jaspcontrol.h"
+#include "jasplistcontrol.h"
+#include "models/listmodel.h"
 #include "analysisform.h"
 #include "analysisbase.h"
 #include "boundcontrols/boundcontrol.h"
@@ -186,6 +188,12 @@ void HostFilterSelection::applyFilter(Filter * filter)
 //none. Values are not touched: each control's .meta is simply rewritten through the provider
 //chain, which now resolves to `filter`. Scalars are walked too but createMeta no longer stamps
 //them (mds-plan C3/M5), so this can never (re)introduce a stamp that shouldn't be there.
+//
+//mds-plan D2.5: the walk is now BOTH halves of the switch - the .meta restamp above (what the
+//engine consumes today) and the TYPED term restamp below (ListModel::restampTermsFilterId, the
+//typed filterId of mds-plan C9). Phase 3 retires the .meta half when provenance moves from meta
+//to the terms themselves (D3.2/D3.4); until then they must move together, which is why they
+//share this one walk over exactly the controls that resolve through THIS host.
 void HostFilterSelection::restampValuesUnderHost()
 {
 	AnalysisForm * form = _host->form();
@@ -205,10 +213,18 @@ void HostFilterSelection::restampValuesUnderHost()
 
 	for(JASPControl * control : controls)
 	{
-		if(!control->isBound() || !control->encodeValue())
+		if(control->selectionHost() != _host)
 			continue;
 
-		if(control->selectionHost() != _host)
+		//Typed half (mds-plan D2.5): EVERY list below the host carries term provenance, bound
+		//or not - an unbound list's terms are just as much "the host's namespace" as a bound
+		//one's, and ListModel::restampTermsFilterId re-resolves the filter live.
+		if(JASPListControl * list = qobject_cast<JASPListControl *>(control))
+			if(ListModel * m = list->model())
+				m->restampTermsFilterId();
+
+		//Meta half: only column-bearing bound values carry a stamp.
+		if(!control->isBound() || !control->encodeValue())
 			continue;
 
 		if(BoundControl * bound = control->boundControl())

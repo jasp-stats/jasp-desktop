@@ -97,6 +97,21 @@ public:
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
 			void					checkTermsTypes();
+			///< mds-plan D2.5 (host-switch propagation, typed half): rewrite the typed filterId of
+			///  every term in this model to the selection the list resolves through RIGHT NOW
+			///  (_currentSelectionFilterId, C13 host-bound). Called by HostFilterSelection on every
+			///  control below the switching host - names and types are untouched, only the typed
+			///  provenance moves, exactly like the .meta restamp moves the stamped one. No signal:
+			///  the display shows name+type (unchanged, and the VariableInfo::dataSetChanged/
+			///  filterChanged/refresh emissions of the re-pointed provider already drive the
+			///  data-side refresh), and the option JSON carries no filterId (mds-plan D2.1) -
+			///  emitting termsChanged here would churn row controls and dependent lists for
+			///  desktop-internal bookkeeping.
+			void					restampTermsFilterId();
+			///< Introspection (QML tests, mds-plan D2.5): "name@filterId" per model term - the
+			///< typed proof that a host switch restamped exactly the controls of the host that
+			///< moved. Empty filterId part (-1) means unqualified (no explicit host).
+			Q_INVOKABLE QStringList	termProvenanceForTest() const;
 	virtual Terms					termsFromIndexes(	const QList<int>& indexes)					const;
 	virtual QList<int>				indexesFromTerms(	const Terms		& terms)					const;
 
