@@ -75,8 +75,10 @@ public:
 	typedef std::set<ColumnEncoder *>							ColumnEncoders;
 	typedef std::set<std::pair<std::string, columnType>>		colsPlusTypes;
 	typedef std::map<int, colsPlusTypes>						perDataSetColsPlusTypes;
-	///< Resolves the encoder to use for a given dataSetId, or nullptr to fall back to the current encoder.
-	typedef std::function<ColumnEncoder *(int dataSetId)>		EncoderFor;
+	///< Resolves the encoder to use for a given option stamp (dataSetId, filterId), or nullptr to
+	/// fall back to the current encoder. filterId -1 means "no filter stamped" (unqualified option:
+	/// the resolver should return the dataset's shown-filter view / legacy fallback, C7).
+	typedef std::function<ColumnEncoder *(int dataSetId, int filterId)>	EncoderFor;
 
 	/// One entry of the process-global strict decode table (C4): token -> (original name, type).
 	struct DecodeEntry
@@ -181,12 +183,15 @@ public:
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
 
 	/// Multi-dataset aware version of encodeColumnNamesinOptions(): walks options and their .meta in lockstep and
-	/// encodes every option against the encoder that `encoderFor` resolves for the `dataSetId` recorded in that
-	/// option's meta (falling back to the process-global current encoder when the resolver has none or the option
-	/// carries no dataSetId). Because the resolved encoder is a filter VIEW whose tokens embed the dataset id,
-	/// the slices of different datasets can safely coexist in one options blob (per-filter provenance arrives
-	/// with D1.6). The collected cols+types are returned per dataSetId; options without a dataSetId in their meta
-	/// are attributed to `primaryDataSetId`. A null `encoderFor` reproduces encodeColumnNamesinOptions() exactly.
+	/// encodes every option against the encoder that `encoderFor` resolves for the (dataSetId, filterId) stamp
+	/// recorded in that option's meta (mds-plan D1.6: the stamped filter's VIEW, so an option encodes in exactly
+	/// the namespace of the filter its terms were selected through - the same view the slice for that filter is
+	/// handed to R in). Options stamped without a filterId (or meta-less ones) carry filterId -1 and fall back to
+	/// the resolver's dataset-level choice, which for the legacy path is the process-global current encoder.
+	/// Because the resolved encoder is a filter VIEW whose tokens embed both ids, the slices of different datasets
+	/// and filters can safely coexist in one options blob. The collected cols+types are returned per dataSetId;
+	/// options without a dataSetId in their meta are attributed to `primaryDataSetId`. A null `encoderFor`
+	/// reproduces encodeColumnNamesinOptions() exactly.
 	static	perDataSetColsPlusTypes	encodeColumnNamesinOptionsPerDataSet(Json::Value & options, bool preloadingData, const EncoderFor & encoderFor, int primaryDataSetId);
 
 	/// Collects the dataSetId -> filterId pairs referenced from an options .meta subtree (see
@@ -219,10 +224,11 @@ private:
 	const std::vector<std::pair<std::string, columnType>> & mintReverse() const		{ return _mode == Mode::view && _canonical ? _canonical->_mintReverse : _mintReverse;	}
 
 	static	void				_convertPreloadingDataOption(Json::Value & option, const std::string& optionName, colsPlusTypes& colTypes, ColumnEncoder * encoder);
-	static	void				_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor);
-	static	void				_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, const EncoderFor & encoderFor);
-	static	ColumnEncoder	*	_encoderForDataSetId(int dataSetId, const EncoderFor & encoderFor);
+	static	void				_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, int filterId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor);
+	static	void				_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, int filterId, const EncoderFor & encoderFor);
+	static	ColumnEncoder	*	_encoderForDataSetId(int dataSetId, int filterId, const EncoderFor & encoderFor);
 	static	int					_dataSetIdFromMetaNode(const Json::Value & metaNode, int inherited);
+	static	int					_filterIdFromMetaNode(const Json::Value & metaNode, int inherited);
 
 private:
 	static	std::string			replaceAll(std::string text, const std::map<std::string, std::string> & map, const std::vector<std::string> & names);

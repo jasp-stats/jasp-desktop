@@ -524,6 +524,13 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 	//dataset, its selected filter and its wanted columns before reading.
 	const DataBridge::MultiDataSetSlice * slice = data_bridge ? data_bridge->takeMultiDataSetSlice() : nullptr;
 
+	//mds-plan D1.6: on a queued slice read, the wanted columns are encoded through the SLICE
+	//FILTER's explicit view handle - not through whatever the process-global current encoder
+	//happens to point at. The re-anchoring of currentEncoder below stays for the legacy encode
+	//callbacks R fires during the read (C7 fallback indirection), but the slice encode here no
+	//longer depends on that ordering.
+	ColumnEncoder * sliceEncoder = nullptr;
+
 	if(slice)
 	{
 		rbridge_dataSet = data_bridge->provideAndUpdateDataSet(slice->dataSetId);
@@ -536,13 +543,19 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 			//the dataset may still have some other filter shown from a previous run. Only show
 			//filters that exist; showFilter(name) would fabricate unknown ones (see Engine::runAnalysis).
 			if(filter && filter->data() == rbridge_dataSet && rbridge_dataSet->filter(filter->name()))
+			{
 				rbridge_dataSet->showFilter(filter->name());
+				sliceEncoder = filter->columnEncoder();			//the explicit handle of the slice's own filter
+			}
 			else if(rbridge_dataSet->defaultFilter())
+			{
 				rbridge_dataSet->showFilter(rbridge_dataSet->defaultFilter());
+				sliceEncoder = rbridge_dataSet->defaultFilter()->columnEncoder();
+			}
 
 			//showFilter() ran after provideAndUpdateDataSet() re-pointed the indirection, so anchor
-			//it at the slice's own view now - the namespace the columns below (and the options that
-			//were encoded against this dataset) meet in. D1.6 makes this the explicit slice handle.
+			//it at the slice's own view now too - same handle sliceEncoder resolves to above, kept
+			//for the R-side legacy encode entries.
 			if(ColumnEncoder * view = rbridge_dataSet->shownEncoder())
 				ColumnEncoder::setCurrentEncoder(view);
 
@@ -557,11 +570,13 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
 
     for(const auto & nameType : datasetWanted)
     {
+		ColumnEncoder * encoder = sliceEncoder ? sliceEncoder : ColumnEncoder::columnEncoder();
+
 		//Make sure this is encodable/decodable
-		if(!ColumnEncoder::columnEncoder()->shouldEncode(nameType.first) && !ColumnEncoder::shouldDecode(nameType.first))
+		if(!encoder->shouldEncode(nameType.first) && !ColumnEncoder::shouldDecode(nameType.first))
 			throw std::runtime_error("rbridge_readDataSetRequested gets '" + nameType.first + "' but its not a columnname at all");
 		
-		requestedColumns[*colMax].name = strdup(ColumnEncoder::columnEncoder()->encodeAll(nameType.first).c_str());
+		requestedColumns[*colMax].name = strdup(encoder->encodeAll(nameType.first).c_str());
         requestedColumns[*colMax].type = int(nameType.second);
 
         (*colMax)++;

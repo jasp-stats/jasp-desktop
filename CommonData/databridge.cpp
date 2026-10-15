@@ -172,8 +172,12 @@ DataSet * DataBridge::provideAndUpdateDataSet(int dataSetId, std::function<void(
 		DataSet * ds = _workspace->shownDataSet();
 		//Remint the dataset's canonical (mds-plan C2) - every filter view's block in the global
 		//decode table is rewritten as a consequence (D1.4 funnel) - and point the legacy non-aware
-		//request indirection at the shown filter's VIEW (C7): rbridge encodeAll/encodeRScript
-		//entries run against it. Also see the EngineBridgeCallbacks/DataSet guard in
+		//request indirection at the shown filter's VIEW (C7). D1.6 keeps this as the DOCUMENTED
+		//LEGACY FALLBACK ONLY: the aware paths resolve their encoder explicitly (the option-stamp
+		//resolver in prepareMultiDataSetRun, the slice handle in rbridge_readDataSetRequested), so
+		//this currentEncoder is consulted by nothing but the non-aware request context (plain
+		//rbridge encodeAll/encodeRScript entries) - behaviour byte-identical to pre-Phase-1 modulo
+		//the C1 token shape. Also see the EngineBridgeCallbacks/DataSet guard in
 		//ColumnEncoder::setCurrentEncoder / ~DataSet.
 		ds->encoder().setCurrentNames(ds->getColumnTypesMap());
 
@@ -229,12 +233,25 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
-			[workspace](int dataSetId) -> ColumnEncoder *
+			[workspace](int dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//Encode against the dataset's shown-filter VIEW (the canonical mints no full
-				//strings, C2). Per-stamp-filter resolution (option filterId -> that filter's
-				//view) is D1.6's job; until then one view per dataset keeps options and slice
-				//data in exactly one namespace, as before.
+				//mds-plan D1.6: encode against the STAMPED filter's VIEW - the exact namespace the
+				//slice for that filter is handed to R in (rbridge_readDataSetRequested anchors the
+				//slice read on the same view). filter ids are globally unique and imply their
+				//dataset (Filter::data), so the stamp alone resolves it.
+				if(filterId >= 0)
+				{
+					Filter * stampFilter = workspace->filterById(filterId);	//materialises named filters of reopened files
+
+					if(stampFilter && stampFilter->data())
+						return stampFilter->columnEncoder();
+				}
+
+				//Dual-read for the transition (C7): an option stamped without a filterId (legacy
+				//meta, released files) or a stamp whose filter does not resolve encodes against
+				//the dataset's shown-filter VIEW - the same namespace provideAndUpdateDataSet
+				//points the legacy currentEncoder at - so unstamped runs keep exactly today's
+				//behaviour.
 				DataSet * ds = workspace->dataSetById(dataSetId);
 				return ds ? ds->shownEncoder() : nullptr;
 			},

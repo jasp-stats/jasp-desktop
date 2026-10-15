@@ -32,6 +32,7 @@ private slots:
 	void malformedContextDoesNotMutateLiveState();
 	void currentEncoderReTargetsOnSwitchAndClearsOnDestruction();
 	void encodePerDataSetRoutesOptionsToEncoderOfTheirDataSet();
+	void encodePerDataSetRoutesOptionsToStampedFilterView();
 	void encodePerDataSetAttributedToPrimaryWithoutProvenance();
 	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
 	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();

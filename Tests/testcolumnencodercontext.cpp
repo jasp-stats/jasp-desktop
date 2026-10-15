@@ -308,7 +308,7 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[&dsOne, &dsTwo](int dataSetId) -> ColumnEncoder *
+			[&dsOne, &dsTwo](int dataSetId, int) -> ColumnEncoder *
 			{
 				if(dataSetId == 1)	return &dsOne;
 				if(dataSetId == 2)	return &dsTwo;
@@ -333,6 +333,82 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 	QVERIFY(colsPerDataSet[2].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
 }
 
+// mds-plan D1.6: the resolver gets the FULL stamp (dataSetId AND filterId) of every option node,
+// so two options that refer to the same column through two different filters of ONE dataset
+// encode into two distinct namespaces - the same two namespaces their slices are handed to R in.
+// An option stamped without filterId (or with a dead one) must fall back to the dataset-level
+// view the resolver picks (dual-read, C7).
+void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView()
+{
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	canonical->setCurrentNames(names({{"Group", columnType::nominal}, {"Score", columnType::scale}}));
+
+	ColumnEncoder * viewShown = ColumnEncoder::createView(canonical, "JASPColumn_D1_F11_");	//the dataset's shown filter
+	ColumnEncoder * viewHost  = ColumnEncoder::createView(canonical, "JASPColumn_D1_F12_");	//a form's host filter: NOT shown
+
+	Json::Value options(Json::objectValue);
+	options["dependent"]				= Json::Value(Json::objectValue);
+	options["dependent"]["value"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["value"].append("Score");
+	options["dependent"]["types"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["types"].append("scale");
+	options["splitBy"]					= Json::Value(Json::objectValue);
+	options["splitBy"]["value"]			= Json::Value(Json::arrayValue);
+	options["splitBy"]["value"].append("Group");
+	options["splitBy"]["types"]			= Json::Value(Json::arrayValue);
+	options["splitBy"]["types"].append("nominal");
+	options["unqualified"]				= Json::Value(Json::objectValue);
+	options["unqualified"]["value"]		= Json::Value(Json::arrayValue);
+	options["unqualified"]["value"].append("Score");
+	options["unqualified"]["types"]		= Json::Value(Json::arrayValue);
+	options["unqualified"]["types"].append("scale");
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["dependent"]["dataSetId"]		= 1;
+	options[".meta"]["dependent"]["filterId"]		= 12;					//the HOST filter, not the shown one
+	options[".meta"]["splitBy"]["shouldEncode"]		= true;
+	options[".meta"]["splitBy"]["dataSetId"]		= 1;
+	options[".meta"]["splitBy"]["filterId"]			= 11;					//the shown filter
+	options[".meta"]["unqualified"]["shouldEncode"]	= true;
+	options[".meta"]["unqualified"]["dataSetId"]	= 1;					//no filterId: dual-read fallback
+
+	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[&viewShown, &viewHost](int, int filterId) -> ColumnEncoder *
+			{
+				//exactly the D1.6 dual-read shape of DataBridge::prepareMultiDataSetRun's resolver
+				return filterId == 12 ? viewHost : viewShown;
+			},
+			1);
+
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()),  QString::fromStdString(viewHost->encode("Score.scale")));
+	QCOMPARE(QString::fromStdString(options["splitBy"][0].asString()),    QString::fromStdString(viewShown->encode("Group.nominal")));
+	QCOMPARE(QString::fromStdString(options["unqualified"][0].asString()),QString::fromStdString(viewShown->encode("Score.scale")));
+
+	const std::string dependentToken = options["dependent"][0].asString();
+	QVERIFY2(dependentToken.rfind("JASPColumn_D1_F12_", 0) == 0,	qPrintable(QString::fromStdString("stamped option must encode in its filter's namespace, got: " + dependentToken)));
+	QVERIFY2(options["splitBy"][0].asString().rfind("JASPColumn_D1_F11_", 0) == 0,	"shown-stamped option encodes in the shown view");
+
+	//Both namespaces are live in the one table, so a single context-free sweep decodes both sides
+	//of the same-name collision - the host/shown landmine resolving through the table (C4):
+	Json::Value sweep(Json::arrayValue);
+	sweep.append(dependentToken);
+	sweep.append(options["splitBy"][0].asString());
+	ColumnEncoder::decodeJson(sweep);
+	QCOMPARE(sweep[0].asString(), std::string("Score"));
+	QCOMPARE(sweep[1].asString(), std::string("Group"));
+
+	//Requested cols are still attributed per dataset (the slice queue keys on the filter ids):
+	QCOMPARE(colsPerDataSet.size(), size_t(1));
+	QVERIFY(colsPerDataSet.count(1) == 1);
+	QVERIFY(colsPerDataSet[1].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
+	QVERIFY(colsPerDataSet[1].count(std::make_pair(std::string("Group.nominal"), columnType::nominal)) == 1);
+
+	delete viewHost;
+	delete viewShown;
+	delete canonical;
+}
+
 void TestColumnEncoderContext::encodePerDataSetAttributedToPrimaryWithoutProvenance()
 {
 	ColumnEncoder dsOne("JASPColumn_1_"), dsTwo("JASPColumn_2_");
@@ -343,7 +419,7 @@ void TestColumnEncoderContext::encodePerDataSetAttributedToPrimaryWithoutProvena
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[&dsOne, &dsTwo](int dataSetId) -> ColumnEncoder *
+			[&dsOne, &dsTwo](int dataSetId, int) -> ColumnEncoder *
 			{
 				if(dataSetId == 1)	return &dsOne;
 				if(dataSetId == 2)	return &dsTwo;

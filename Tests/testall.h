@@ -148,6 +148,13 @@ private slots:
 	// aware queue can never leak into a later (non-aware) read.
 	void	testMultiDataSetQueueClearedAtRequestBoundary();
 
+	// Encode-boundary per stamp (mds-plan D1.6): prepareMultiDataSetRun encodes each option against
+	// the VIEW of the filter its .meta filterId stamp names, not the shown encoder; un-stamped
+	// options dual-read back to the shown-filter fallback. The landmine case - a form whose HOST
+	// filter is neither the shown dataset nor its shown filter - must still encode in the host's
+	// namespace and decode through the one global table.
+	void	testPrepareMultiDataSetRunEncodesPerStampView();
+
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy

@@ -2366,10 +2366,11 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[ws](int dataSetId) -> ColumnEncoder *
+			[ws](int dataSetId, int) -> ColumnEncoder *
 			{
-				//Encode against the dataset's shown-filter VIEW (mds-plan C3) - exactly like
-				//DataBridge::prepareMultiDataSetRun does.
+				//Encode against the dataset's shown-filter VIEW (mds-plan C3) - exactly what the
+				//D1.6 resolver falls back to for un-stamped options; the stamps here ARE the shown
+				//filters, so stamp-resolution would return the very same views.
 				DataSet * ds = ws->dataSetById(dataSetId);
 				return ds ? ds->shownEncoder() : nullptr;
 			},
@@ -2766,6 +2767,102 @@ void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
 	QVERIFY(bridge.takeMultiDataSetSlice() != nullptr);	//one slice consumed, one still queued
 	bridge.setMultiDataSetQueue({});						//<- the exact call every bridge/engine request starts with
 	QVERIFY(bridge.takeMultiDataSetSlice() == nullptr);
+}
+
+void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
+{
+	//mds-plan D1.6: prepareMultiDataSetRun resolves each option's encoder from its .meta stamp's
+	//FILTER VIEW (not the shown encoder), with a dual-read fallback to the shown-filter view for
+	//un-stamped options (C7). The landmine: the form's HOST filter differs from the shown dataset
+	//filter - the stamped option must encode in the host's namespace, the un-stamped one in the
+	//shown one, and the global table must decode both.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	//A second dataset so we can point the shown dataset elsewhere than a, proving the resolver
+	//follows the stamp's filter, not whatever dataset/filter is currently shown.
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->id() != a->id());
+
+	a->addFilter();						//"Filter 0" on a, shown on a
+	Filter * hostFilter = a->shownFilter();
+	QVERIFY2(hostFilter && hostFilter != a->defaultFilter(), "addFilter must show the new host filter");
+	const int hostFilterId = hostFilter->id();
+
+	//The landmine proper: switch a's SHOWN filter back to the default. The form keeps the named
+	//filter as its host (stamped on its options), while the dataset shows another filter from here
+	//on - option encoding must follow the stamp, not the shown filter.
+	a->showFilter(a->defaultFilter());
+
+	//Now switch the workspace's shown dataset to b: a's host filter is neither the shown dataset
+	//nor its shown filter, exactly the mixed-run scenario.
+	ws->setShownDataSet(b);
+	ColumnEncoder::setCurrentEncoder(b->shownEncoder());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must give a typed contNormal in the first dataset too");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	//Remint a's canonical so both a-filters' blocks hold the current names (provideAndUpdateDataSet
+	//does this per request; the resolver returns live views either way).
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string hostToken		= hostFilter->columnEncoder()->encode(qualified);
+	const std::string shownDefault	= a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(hostToken != shownDefault, "the host filter and the default filter must mint distinct tokens");
+
+	Json::Value options(Json::objectValue);
+
+	options["dependent"]				= Json::Value(Json::objectValue);
+	options["dependent"]["value"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["value"].append(colName);
+	options["dependent"]["types"]		= Json::Value(Json::arrayValue);
+	options["dependent"]["types"].append(columnTypeToString(colA->type()));
+	options["legacy"]					= Json::Value(Json::objectValue);
+	options["legacy"]["value"]			= Json::Value(Json::arrayValue);
+	options["legacy"]["value"].append(colName);
+	options["legacy"]["types"]			= Json::Value(Json::arrayValue);
+	options["legacy"]["types"].append(columnTypeToString(colA->type()));
+
+	options[".meta"]["dependent"]["shouldEncode"]	= true;
+	options[".meta"]["dependent"]["dataSetId"]		= a->id();
+	options[".meta"]["dependent"]["filterId"]		= hostFilterId;		//the host filter, NOT the shown one
+	options[".meta"]["legacy"]["shouldEncode"]		= true;
+	options[".meta"]["legacy"]["dataSetId"]			= a->id();			//no filterId: dual-read -> shown fallback
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "perStampViewTest");
+
+	//prepareMultiDataSetRun re-points currentEncoder at a's shown filter (default) as part of
+	//provideAndUpdateDataSet(primaryDataSetId); the STAMPED option must still land in the host's
+	//namespace, proving the resolver used the stamp's filter view, not the (just-changed) current.
+	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()), QString::fromStdString(hostToken));
+
+	//The un-stamped option falls back to the shown filter's view of the primary dataset (default).
+	QCOMPARE(QString::fromStdString(options["legacy"][0].asString()), QString::fromStdString(shownDefault));
+
+	//The host filter must be in the slice queue (its stamp collected it):
+	bool hostQueued = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+		if(id.asString() == std::to_string(hostFilterId))
+			hostQueued = true;
+	QVERIFY2(hostQueued, "the stamped host filter must be queued as a slice");
+
+	//And the one global table decodes both namespaces back to the real name, context-free (C4):
+	Json::Value sweep(Json::arrayValue);
+	sweep.append(options["dependent"][0].asString());
+	sweep.append(options["legacy"][0].asString());
+	ColumnEncoder::decodeJson(sweep);
+	QCOMPARE(sweep[0].asString(), colName);
+	QCOMPARE(sweep[1].asString(), colName);
 }
 
 void TestAll::testLoadFilteredDataFilterFirstProvenance()

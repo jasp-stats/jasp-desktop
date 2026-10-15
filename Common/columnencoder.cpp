@@ -942,22 +942,25 @@ void ColumnEncoder::_convertPreloadingDataOption(Json::Value & options, const st
 	options[optionName] = !useSingleVal ? newOption : newOption[0];
 }
 
-void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor)
+void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & options, const Json::Value & meta, int dataSetId, int filterId, bool preloadingData, perDataSetColsPlusTypes & colTypesPerDataSet, const EncoderFor & encoderFor)
 {
 	if (options.isObject())
 	{
 		for (const std::string& optionName : options.getMemberNames())
 		{
-			//The meta tree mirrors the options tree, so the dataSetId recorded on an option's meta node (or on an
-			//enclosing node) tells us which dataset this option's terms belong to. Options without meta (or without
-			//a dataSetId anywhere up their path) keep belonging to the dataset they inherited: the primary one.
+			//The meta tree mirrors the options tree, so the (dataSetId, filterId) stamp recorded on an option's
+			//meta node (or on an enclosing node) tells us which namespace this option's terms belong to. Options
+			//without meta (or without a dataSetId anywhere up their path) keep belonging to the dataset they
+			//inherited: the primary one; without a filterId they stay unqualified (-1) and the resolver picks
+			//the dataset-level fallback (mds-plan D1.6/C7).
 			const Json::Value & childMeta	= (meta.isObject() && meta.isMember(optionName)) ? meta[optionName] : Json::Value::null;
 			const int			childDsId	= _dataSetIdFromMetaNode(childMeta, dataSetId);
+			const int			childFlId	= _filterIdFromMetaNode(childMeta, filterId);
 
 			if (options[optionName].isObject() && options[optionName].isMember("value") && options[optionName].isMember("types"))
 			{
 				if(preloadingData)
-					_convertPreloadingDataOption(options, optionName, colTypesPerDataSet[childDsId], _encoderForDataSetId(childDsId, encoderFor));
+					_convertPreloadingDataOption(options, optionName, colTypesPerDataSet[childDsId], _encoderForDataSetId(childDsId, childFlId, encoderFor));
 				else //make sure "optionname".types is available for analyses incapable of preloadingData, this should be considered deprecated
 				{
 					options[optionName + ".types"] = options[optionName]["types"];
@@ -970,7 +973,7 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 				}
 			}
 			else
-				_addTypeToColumnNamesInOptionsRecursively(options[optionName], childMeta, childDsId, preloadingData, colTypesPerDataSet, encoderFor);
+				_addTypeToColumnNamesInOptionsRecursively(options[optionName], childMeta, childDsId, childFlId, preloadingData, colTypesPerDataSet, encoderFor);
 		}
 	}
 	else if (options.isArray())
@@ -983,14 +986,14 @@ void ColumnEncoder::_addTypeToColumnNamesInOptionsRecursively(Json::Value & opti
 		{
 			const Json::Value & elementMeta	= metaIsArray && i < meta.size() ? meta[i] : meta;
 
-			_addTypeToColumnNamesInOptionsRecursively(options[i], elementMeta, _dataSetIdFromMetaNode(elementMeta, dataSetId), preloadingData, colTypesPerDataSet, encoderFor);
+			_addTypeToColumnNamesInOptionsRecursively(options[i], elementMeta, _dataSetIdFromMetaNode(elementMeta, dataSetId), _filterIdFromMetaNode(elementMeta, filterId), preloadingData, colTypesPerDataSet, encoderFor);
 		}
 	}
 	else if (options.isString())
 	{
 		const std::string possibleCol = options.asString();
 
-		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
+		ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, filterId, encoderFor);
 
 		if(encoder->currentNames().count(possibleCol))
 		{
@@ -1023,9 +1026,9 @@ ColumnEncoder::perDataSetColsPlusTypes ColumnEncoder::encodeColumnNamesinOptions
 
 	//LOGGER << "Options before encoding: " << options.toStyledString() << std::endl;
 
-	_addTypeToColumnNamesInOptionsRecursively(options, options[".meta"], primaryDataSetId, preloadingData, getTheseColsPerDataSet, encoderFor);
+	_addTypeToColumnNamesInOptionsRecursively(options, options[".meta"], primaryDataSetId, -1, preloadingData, getTheseColsPerDataSet, encoderFor);
 
-	_encodeColumnNamesinOptions(options, options[".meta"], primaryDataSetId, encoderFor);
+	_encodeColumnNamesinOptions(options, options[".meta"], primaryDataSetId, -1, encoderFor);
 
 	//LOGGER << "Options after encoding: " << options.toStyledString() << std::endl;
 	return getTheseColsPerDataSet;
@@ -1039,10 +1042,18 @@ int ColumnEncoder::_dataSetIdFromMetaNode(const Json::Value & metaNode, int inhe
 	return inherited;
 }
 
-ColumnEncoder * ColumnEncoder::_encoderForDataSetId(int dataSetId, const EncoderFor & encoderFor)
+int ColumnEncoder::_filterIdFromMetaNode(const Json::Value & metaNode, int inherited)
+{
+	if(metaNode.isObject() && metaNode.isMember("filterId") && metaNode["filterId"].isInt())
+		return metaNode["filterId"].asInt();
+
+	return inherited;
+}
+
+ColumnEncoder * ColumnEncoder::_encoderForDataSetId(int dataSetId, int filterId, const EncoderFor & encoderFor)
 {
 	if(encoderFor)
-		if(ColumnEncoder * encoder = encoderFor(dataSetId))
+		if(ColumnEncoder * encoder = encoderFor(dataSetId, filterId))
 			return encoder;
 
 	return columnEncoder();
@@ -1086,22 +1097,26 @@ void ColumnEncoder::collectFilterIdsFromMeta(const Json::Value & meta, std::set<
 			collectFilterIdsFromMeta(element, filterIds);
 }
 
-void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, const EncoderFor & encoderFor)
+void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, int dataSetId, int filterId, const EncoderFor & encoderFor)
 {
 	if(meta.isNull())
 		return;
 
-	//A node can either record its own dataSetId or inherit the one from the node enclosing it.
+	//A node can either record its own stamp or inherit it from the node enclosing it (mds-plan D1.6:
+	//the filterId is read alongside the dataSetId, so every option encodes against the exact filter
+	//its terms were selected through; an unqualified node keeps the inherited -1).
 	dataSetId	= _dataSetIdFromMetaNode(meta, dataSetId);
+	filterId	= _filterIdFromMetaNode(meta, filterId);
 
 	bool	encodePlease	= meta.isObject() && meta.get("shouldEncode",	false).asBool(),
 			isRCode			= meta.isObject() && meta.get("rCode",			false).asBool();
 
-	//Every resolved encoder here is a filter VIEW whose tokens embed the dataset id (and, since
-	//mds-plan Phase 1, the filter id), so a multi-dataset options blob can be encoded slice by
-	//slice: every option against the namespace of the dataset its terms come from. Without a
-	//resolver this is the old behaviour: everything against the process-global current encoder.
-	ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, encoderFor);
+	//Every resolved encoder here is a filter VIEW whose tokens embed the dataset id AND the filter
+	//id (mds-plan Phase 1, C1), so a multi-dataset options blob can be encoded slice by slice:
+	//every option against the namespace of the filter its terms come from - the very namespace the
+	//slice queue hands that filter's data to R in. Without a resolver this is the old behaviour:
+	//everything against the process-global current encoder.
+	ColumnEncoder * encoder = _encoderForDataSetId(dataSetId, filterId, encoderFor);
 
 	switch(options.type())
 	{
@@ -1111,7 +1126,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 
 		else if(meta.type() == Json::arrayValue)
 			for(int i=0; i<options.size() && i < meta.size(); i++)
-				_encodeColumnNamesinOptions(options[i], meta[i], dataSetId, encoderFor);
+				_encodeColumnNamesinOptions(options[i], meta[i], dataSetId, filterId, encoderFor);
 
 		else if(isRCode)
 		{
@@ -1121,7 +1136,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 		}
 		else if(meta.type() == Json::objectValue) // The option is an array, and the meta is an object: each option element in the array must be encoded with the same meta
 			for(int i=0; i<options.size(); i++)
-				_encodeColumnNamesinOptions(options[i], meta, dataSetId, encoderFor);
+				_encodeColumnNamesinOptions(options[i], meta, dataSetId, filterId, encoderFor);
 
 
 		return;
@@ -1129,7 +1144,7 @@ void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Val
 	case Json::objectValue:
 		for(const std::string & memberName : options.getMemberNames())
 			if(memberName != ".meta" && meta.isMember(memberName))
-				_encodeColumnNamesinOptions(options[memberName], meta[memberName], dataSetId, encoderFor);
+				_encodeColumnNamesinOptions(options[memberName], meta[memberName], dataSetId, filterId, encoderFor);
 
 			else if(isRCode && options[memberName].isString())
 				options[memberName] = encoder->encodeRScript(options[memberName].asString());
