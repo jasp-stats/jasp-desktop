@@ -42,6 +42,7 @@
 #include "data/expanddataproxymodel.h"
 #include "archivereader.h"
 #include "mainwindow.h"
+#include "engine/enginerepresentation.h"
 #include "results/resultsjsinterface.h"
 #include "scriptconstructormodel.h"
 #include "scriptnode.h"
@@ -2255,7 +2256,7 @@ void TestAll::testEncoderPrefixPerDataset()
 	Json::Value json;
 	json["axis"]	= encodedA;
 	json["series"]	= encodedB;
-	ColumnEncoder::tableDecodeJson(json);
+	ColumnEncoder::decodeJson(json);
 	QCOMPARE(json["axis"].asString(),	colName);
 	QCOMPARE(json["series"].asString(),	b->column(0)->name());
 }
@@ -2386,18 +2387,18 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	QCOMPARE(QString::fromStdString(options["covariate"][0].asString()),	QString::fromStdString(encodedInB));
 
 	//Decoding is context-free since mds-plan C4: ONE sweep of the global table resolves both
-	//datasets' slices, and so does every view's legacy instance shim:
+	//datasets' slices - there is no instance-rooted decode left to route around (D1.5):
 	Json::Value fromA(encodedInA), fromB(encodedInB);
-	viewA->decodeJson(fromA);
-	viewB->decodeJson(fromB);
+	ColumnEncoder::decodeJson(fromA);
+	ColumnEncoder::decodeJson(fromB);
 	QCOMPARE(QString::fromStdString(fromA.asString()), QString::fromStdString(colName));
 	QCOMPARE(QString::fromStdString(fromB.asString()), QString::fromStdString(colName));
 
 	//The old "another dataset's encoder must not decode this slice" pin is replaced by its
-	//Phase-1 counterpart: a foreign VIEW resolving the token is exactly the point of the global
-	//table - only STALE namespaces leave tokens raw.
+	//Phase-1 counterpart: the table resolving a foreign live token is exactly the point (C4)
+	//- only STALE namespaces leave tokens raw.
 	Json::Value wrongWay(encodedInA);
-	viewB->decodeJson(wrongWay);
+	ColumnEncoder::decodeJson(wrongWay);
 	QCOMPARE(QString::fromStdString(wrongWay.asString()), QString::fromStdString(colName));
 
 	std::string staleToken;
@@ -2405,20 +2406,20 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 		ColumnEncoder doomed("JASPColumn_D999999_F999999_");		//a namespace that lives only for a moment (transient filter analogue)
 		doomed.setCurrentNames(a->getColumnTypesMap());
 		staleToken = doomed.encode(qualified);
-		QCOMPARE(ColumnEncoder::tableDecode(staleToken), colName);
+		QCOMPARE(ColumnEncoder::decode(staleToken), colName);
 	}
-	QCOMPARE(ColumnEncoder::tableDecode(staleToken), staleToken);	//its block was erased with it (C16): raw
+	QCOMPARE(ColumnEncoder::decode(staleToken), staleToken);	//its block was erased with it (C16): raw
 
 	// The encode -> decode -> encode -> decode cycle: decoding hands back the plain column name
 	// (the ".type" qualifier is deliberately dropped - decode gives the name as it is in the data),
 	// and that plain name re-encodes to the current type's encoded name, so the cycle is stable
 	// from there on:
-	const std::string decoded1	= ColumnEncoder::tableDecode(encodedInA);
+	const std::string decoded1	= ColumnEncoder::decode(encodedInA);
 	QCOMPARE(QString::fromStdString(decoded1), QString::fromStdString(colName));
 
 	const std::string again		= viewA->encode(decoded1);
 	QCOMPARE(QString::fromStdString(again), QString::fromStdString(encodedInA));
-	QCOMPARE(QString::fromStdString(ColumnEncoder::tableDecode(again)), QString::fromStdString(colName));
+	QCOMPARE(QString::fromStdString(ColumnEncoder::decode(again)), QString::fromStdString(colName));
 
 	// And the emitted token format is dataset-AND-filter-namespaced (mds-plan C1), so results
 	// decode sweeps need no routing table and deleted namespaces simply stop answering:
@@ -2457,7 +2458,7 @@ void TestAll::testEncoderMutationFunnel()
 		for(const auto & nameType : types)
 		{
 			const std::string token = view->encode(nameType.first);
-			QCOMPARE(QString::fromStdString(ColumnEncoder::tableDecode(token)), QString::fromStdString(nameType.first));
+			QCOMPARE(QString::fromStdString(ColumnEncoder::decode(token)), QString::fromStdString(nameType.first));
 		}
 	};
 
@@ -2473,7 +2474,7 @@ void TestAll::testEncoderMutationFunnel()
 	first->setType(newType);
 
 	QCOMPARE(viewOne->encode(colName), viewOne->encode(colName + "." + columnTypeToString(newType)));
-	QCOMPARE(ColumnEncoder::tableDecode(bareTokenBefore), colName);	//the old token still resolves (nothing was re-minted)
+	QCOMPARE(ColumnEncoder::decode(bareTokenBefore), colName);	//the old token still resolves (nothing was re-minted)
 	tableMatchesMint(viewOne);
 
 	// --- filter create: a second live namespace on the same mint --------------------------------
@@ -2487,15 +2488,15 @@ void TestAll::testEncoderMutationFunnel()
 					tokenTwo = viewTwo->encode(colName);
 
 	QVERIFY2(tokenOne != tokenTwo, "the same name in two filters of one dataset must mint distinct tokens");
-	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);
-	QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), colName);		//both decode, context-free (C4)
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);
+	QCOMPARE(ColumnEncoder::decode(tokenTwo), colName);		//both decode, context-free (C4)
 	tableMatchesMint(viewTwo);
 
 	// --- column add: grow ------------------------------------------------------------------------
 	QVERIFY(a->createColumn("FunnelFresh", columnType::scale));
 	remint();
-	QCOMPARE(ColumnEncoder::tableDecode(viewOne->encode("FunnelFresh")), std::string("FunnelFresh"));
-	QCOMPARE(ColumnEncoder::tableDecode(viewTwo->encode("FunnelFresh")), std::string("FunnelFresh"));
+	QCOMPARE(ColumnEncoder::decode(viewOne->encode("FunnelFresh")), std::string("FunnelFresh"));
+	QCOMPARE(ColumnEncoder::decode(viewTwo->encode("FunnelFresh")), std::string("FunnelFresh"));
 
 	// --- column rename: the table maps current names only ----------------------------------------
 	const std::string freshToken = viewOne->encode("FunnelFresh");
@@ -2504,8 +2505,8 @@ void TestAll::testEncoderMutationFunnel()
 	fresh->setNameManually(tq("RenewedFun"));
 	remint();
 
-	QCOMPARE(ColumnEncoder::tableDecode(viewOne->encode("RenewedFun")), std::string("RenewedFun"));
-	QVERIFY2(ColumnEncoder::tableDecode(freshToken) != "FunnelFresh",
+	QCOMPARE(ColumnEncoder::decode(viewOne->encode("RenewedFun")), std::string("RenewedFun"));
+	QVERIFY2(ColumnEncoder::decode(freshToken) != "FunnelFresh",
 			 "a renamed-away name must not survive anywhere in the table");
 	tableMatchesMint(viewOne);
 
@@ -2514,18 +2515,18 @@ void TestAll::testEncoderMutationFunnel()
 	a->removeColumn("RenewedFun");
 	remint();
 
-	QVERIFY2(ColumnEncoder::tableDecode(renewedToken) != "RenewedFun",
+	QVERIFY2(ColumnEncoder::decode(renewedToken) != "RenewedFun",
 			 "a removed column must not stay decodable under its own name");
-	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//the untouched part of the space keeps working
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//the untouched part of the space keeps working
 	tableMatchesMint(viewOne);
 	tableMatchesMint(viewTwo);
 
 	// --- filter destroy: its block goes raw, everything else is untouched -------------------------
 	a->removeFilter(extra);
 
-	QCOMPARE(ColumnEncoder::tableDecode(tokenTwo), tokenTwo);		//deleted filter's tokens go raw (C16)
-	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenTwo), "the destroyed filter's namespace must be gone");
-	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//the default filter is unaffected
+	QCOMPARE(ColumnEncoder::decode(tokenTwo), tokenTwo);		//deleted filter's tokens go raw (C16)
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenTwo), "the destroyed filter's namespace must be gone");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//the default filter is unaffected
 	tableMatchesMint(viewOne);
 
 	// --- dataset unload: every block of the unloaded dataset goes raw, the others stay -------------
@@ -2536,14 +2537,149 @@ void TestAll::testEncoderMutationFunnel()
 	b->encoder().setCurrentNames(b->getColumnTypesMap());
 	QVERIFY(b->defaultFilter()->columnEncoder());
 	const std::string tokenB = b->defaultFilter()->columnEncoder()->encode(b->column(0)->name());
-	QCOMPARE(ColumnEncoder::tableDecode(tokenB), b->column(0)->name());
+	QCOMPARE(ColumnEncoder::decode(tokenB), b->column(0)->name());
 
 	ws->setShownDataSet(b);
 	ws->deleteShownDataSet();
 
-	QCOMPARE(ColumnEncoder::tableDecode(tokenB), tokenB);			//unloaded: raw
-	QVERIFY2(!ColumnEncoder::tableShouldDecode(tokenB), "an unloaded dataset must leave nothing decodable");
-	QCOMPARE(ColumnEncoder::tableDecode(tokenOne), colName);		//dataset a keeps decoding
+	QCOMPARE(ColumnEncoder::decode(tokenB), tokenB);			//unloaded: raw
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenB), "an unloaded dataset must leave nothing decodable");
+	QCOMPARE(ColumnEncoder::decode(tokenOne), colName);		//dataset a keeps decoding
+}
+
+void TestAll::testDecodeSupersetSemanticsAcrossLiveNamespaces()
+{
+	//mds-plan D1.5/C4+C16: every decode site is the static entry, so a single sweep must resolve
+	//tokens from ANY live namespace (any filter of any loaded dataset, plus extras) regardless of
+	//which one the payload was minted against - and must leave everything that is NOT a live
+	//namespace's token exactly raw. Superset for live namespaces, strict for dead ones.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	CSVImporter importer;
+	DataSet * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+
+	//The provideAndUpdateDataSet remint (what the engine does per request), then a NAMED filter on
+	//b so its view is a second live namespace on a second dataset while dataset a stays shown.
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+	b->addFilter();
+	Filter * bNamed = b->shownFilter();
+	QVERIFY(bNamed && bNamed != b->defaultFilter());
+	b->encoder().setCurrentNames(b->getColumnTypesMap());
+
+	//Extras (C6): a first-class block of the table, fed the way factorlevellistbase feeds it.
+	ColumnEncoder extras("JaspExtraOptions_");
+	Json::Value extrasMeta(Json::objectValue);
+	extrasMeta[".meta"]["levels"]["encodeThis"] = "a factor level";
+	extras.setCurrentNamesFromOptionsMeta(extrasMeta);
+
+	const std::string tokenA	= a->shownEncoder()->encode(a->column(0)->name());
+	const std::string tokenB	= bNamed->columnEncoder()->encode("contNormal");
+	const std::string tokenEx	= extras.encode("a factor level");
+
+	//A namespace that dies before the sweep (deleted filter analogue): captured while live, raw after.
+	std::string tokenDeleted;
+	{
+		a->addFilter();						//shown on a
+		Filter * doomed = a->shownFilter();
+		QVERIFY(doomed && doomed != a->defaultFilter());
+		a->encoder().setCurrentNames(a->getColumnTypesMap());
+		tokenDeleted = doomed->columnEncoder()->encode(a->column(0)->name());
+		QCOMPARE(ColumnEncoder::decode(tokenDeleted), a->column(0)->name());
+		a->removeFilter(doomed);
+	}
+
+	const std::string tokenForeign	= "JASPColumn_D987654_F987654_0_Encoded";		//never minted anywhere
+
+	// --- one static sweep resolves every live namespace (the superset), unknown stays raw ----------
+	Json::Value payload(Json::objectValue);
+	payload["fromShownDataset"]	= tokenA;
+	payload["fromOtherFilter"]	= tokenB;
+	payload["fromExtras"]		= tokenEx;
+	payload["fromDeleted"]		= tokenDeleted;
+	payload["neverMinted"]		= tokenForeign;
+	ColumnEncoder::decodeJson(payload);
+
+	QCOMPARE(payload["fromShownDataset"].asString(),	a->column(0)->name());
+	QCOMPARE(payload["fromOtherFilter"].asString(),		std::string("contNormal"));
+	QCOMPARE(payload["fromExtras"].asString(),			std::string("a factor level"));
+	QCOMPARE(payload["fromDeleted"].asString(),			tokenDeleted);		//C16: deleted filter goes raw
+	QCOMPARE(payload["neverMinted"].asString(),			tokenForeign);		//unknown goes raw
+
+	// --- the scalar entries behave identically ------------------------------------------------------
+	QCOMPARE(ColumnEncoder::decode(tokenB), std::string("contNormal"));		//a's decode of b's token: superset (C4)
+	QCOMPARE(ColumnEncoder::decode(tokenForeign), tokenForeign);
+	QVERIFY2(!ColumnEncoder::shouldDecode(tokenDeleted), "the destroyed filter's block must be gone");
+	QCOMPARE(ColumnEncoder::decodeAll("see " + tokenEx + " and " + tokenForeign),
+			std::string("see a factor level and " + tokenForeign));
+
+	// --- and every converged results-site uses exactly these entries: the sweep the desktop results
+	// decode performs (EngineRepresentation::checkForComputedColumns / Analysis::loadPlotlyJsonInResults
+	// twins) resolves the extras token too - the gap C6 called out was this site decoding dataset-only.
+	Json::Value resultsJson(Json::objectValue);
+	resultsJson["columnName"] = tokenEx;
+	ColumnEncoder::decodeJson(resultsJson);
+	QCOMPARE(resultsJson["columnName"].asString(), std::string("a factor level"));
+}
+
+void TestAll::testComputedColumnSiteDecodesExtrasTokens()
+{
+	//mds-plan C6 called out the one site that decoded dataset-only: EngineRepresentation's
+	//computed-column reporting (enginerepresentation.cpp). With D1.5 every site is the static
+	//entry, so a columnName that is an EXTRAS token (not a dataset token) resolves too. The
+	//observable: the site only reaches Workspace::computedColumnSucceeded - which clears the
+	//column error on the warning-less success path - when the reported name decodes to a real
+	//column of the dataset.
+	QVERIFY(_newPkgWithDataSet());
+
+	DataSet * a = _pkg->workspace()->shownDataSet();
+	QVERIFY(a);
+
+	Column * col = a->createComputedColumn("ExtraReported", columnType::scale);
+	QVERIFY(col);
+	QVERIFY(col->setError("stale error"));
+
+	std::string token;
+	{
+		ColumnEncoder extras("JaspExtraOptions_");
+		Json::Value extrasMeta(Json::objectValue);
+		extrasMeta[".meta"]["lv"]["encodeThis"] = "ExtraReported";	//the factorlevellistbase shape (C6)
+		extras.setCurrentNamesFromOptionsMeta(extrasMeta);
+
+		token = extras.encode("ExtraReported");
+		QVERIFY2(token.rfind("JaspExtraOptions_", 0) == 0, qPrintable(tq("extras token expected, got: " + token)));
+
+		Json::Value results(Json::objectValue);
+		results["columnName"]	= token;
+		results["columnType"]	= int(columnType::scale);
+		results["dataChanged"]	= true;
+
+		EngineRepresentation rep(0, new QProcess());	//no engine process needed for this site
+		rep.checkForComputedColumns(a, results);
+	}
+
+	QCOMPARE(QString::fromStdString(col->error()), QString());		//decoded through the extras block
+
+	//Negative control (C16 at this very site): with the extras encoder dead the token is raw, no
+	//column matches it and the site leaves the error alone.
+	QVERIFY(col->setError("stale error again"));
+
+	Json::Value results(Json::objectValue);
+	results["columnName"]	= token;
+	results["columnType"]	= int(columnType::scale);
+	results["dataChanged"]	= true;
+
+	EngineRepresentation rep(0, new QProcess());
+	rep.checkForComputedColumns(a, results);
+
+	QCOMPARE(QString::fromStdString(col->error()), QString("stale error again"));
 }
 
 void TestAll::testMultiDataSetQueueHandout()

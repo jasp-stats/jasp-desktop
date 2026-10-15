@@ -505,7 +505,7 @@ void Engine::runRCodeCommander(int dataSetId, std::string rCode)
 	{
 		rbridge_detachRCodeEnv(rCmdFiltered);
 		rbridge_detachRCodeEnv(rCmdDataName);
-		rCodeResult = ColumnEncoder::columnEncoder()->decodeAll(rCodeResult);
+		rCodeResult = ColumnEncoder::decodeAll(rCodeResult);
 	}
 
 	sendRCodeResult(-1, rCodeResult);
@@ -817,15 +817,13 @@ void Engine::sendString(Json::Value message)
 	
 	if(message.isObject()) //If everything is converted to jaspResults maybe we can do this there?
 	{
-		//Every results payload goes through the same all-encoders decode: each open dataset's own
-		//encoder (encoded names embed the dataset id, so a token only matches its dataset) plus the
-		//extras and global encoders. Aware and non-aware runs are not different here - a non-aware
-		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless
-		//(see ColumnEncoder::decodeJsonAcrossEncoders). Desktop renders HTML, so safeHtml = true.
-		if(Workspace * workspace = resolveWorkspace())
-			workspace->decodeJsonAcross(message, /*safeHtml=*/true);
-		else
-			ColumnEncoder::decodeJsonSafeHtml(message);	//no workspace: current + extras
+		//Every results payload goes through the one global strict decode table (mds-plan C4/D1.5):
+		//a block per live filter of every loaded dataset plus the extras block, membership-only,
+		//unknown tokens staying raw. Aware and non-aware runs are not different here - a non-aware
+		//analysis may still live in a workspace with other datasets, and over-sweeping is harmless.
+		//safeHtml is just a parameter of the sweep (the old currentEncoder-flip variant is gone);
+		//desktop renders HTML, so safeHtml = true.
+		ColumnEncoder::decodeJson(message, /*replaceNames=*/true, /*safeHtml=*/true);
 
 		msgStr = message.toStyledString();
 	}

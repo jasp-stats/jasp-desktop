@@ -91,7 +91,9 @@ void BoundControlJAGSTextArea::checkSyntax()
 			if (paramName.contains("["))
                 paramName = paramName.left(paramName.indexOf("["));
 
-			if (paramName != "" && !_encoder()->shouldDecode(fq(paramName)))
+			//Token membership is the context-free global table's answer (mds-plan C4/D1.5), not
+			//the host encoder's own map - the instance decode shims retired with D1.5.
+			if (paramName != "" && !ColumnEncoder::shouldDecode(fq(paramName)))
 				_usedParameters.insert(paramName);
 
 		}

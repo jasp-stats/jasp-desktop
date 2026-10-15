@@ -220,7 +220,7 @@ void ColumnEncoder::eraseBlock()
 	_blockCount = 0;
 }
 
-std::string ColumnEncoder::tableDecodeAll(const std::string & text)
+std::string ColumnEncoder::decodeAll(const std::string & text)
 {
 	colMap map;
 	colVec names;
@@ -235,7 +235,7 @@ std::string ColumnEncoder::tableDecodeAll(const std::string & text)
 	return replaceAll(text, map, names);
 }
 
-void ColumnEncoder::tableDecodeJson(Json::Value & json, bool replaceNames, bool safeHtml)
+void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames, bool safeHtml)
 {
 	colMap map;
 	colVec names;
@@ -272,33 +272,6 @@ std::string ColumnEncoder::encode(const std::string &in)
 		throw std::runtime_error("Trying to encode columnName but '" + in + "' is not a columnName!");
 
 	return _encodePrefix + std::to_string(found->second) + _encodePostfix;
-}
-
-std::string ColumnEncoder::decode(const std::string &in)
-{
-	//Compat shim: decoding is context-free now, the global table answers for every NON-canonical
-	//instance (the canonical never holds nor answers full-string decode, C2).
-	//Throws on miss exactly like the old instance-rooted decode did (callers rely on it).
-	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder::decode called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
-
-	if(in == "") return "";
-
-	const auto & table = _decodeTable();
-	auto found = table.find(in);
-
-	if(found == table.end())
-		throw std::runtime_error("Trying to decode columnName but '" + in + "' is not an encoded columnName!");
-
-	return found->second.name;
-}
-
-columnType ColumnEncoder::columnTypeFromEncoded(const std::string &in)
-{
-	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder::columnTypeFromEncoded called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
-
-	return tableColumnTypeFromEncoded(in);
 }
 
 void ColumnEncoder::setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding)
@@ -555,15 +528,6 @@ bool ColumnEncoder::shouldEncode(const std::string & in)
 	return mintForward().count(in) > 0;
 }
 
-bool ColumnEncoder::shouldDecode(const std::string & in)
-{
-	if(_mode == Mode::canonical)
-		return false;	//the canonical holds no token namespace at all (C2); token membership lives in the global table
-
-	//Compat shim: decoding is context-free (C4), the table answers.
-	return tableShouldDecode(in);
-}
-
 std::string	ColumnEncoder::replaceAllStrict(const std::string & text, const std::map<std::string, std::string> & map)
 {
 	if (map.count(text) > 0)
@@ -742,45 +706,9 @@ std::string ColumnEncoder::encodeAll(const std::string & text) const
 	return replaceAll(text, encodingMap(this), originalNames(this));
 }
 
-std::string ColumnEncoder::decodeAll(const std::string & text) const
-{
-	//Compat shim (D1.5 retires it): the context-free global-table sweep (C4). The canonical is
-	//not part of that contract - it answers no full-string decode (C2).
-	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder::decodeAll called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
-
-	return tableDecodeAll(text);
-}
-
 void ColumnEncoder::encodeJson(Json::Value & json, bool replaceNames, bool replaceStrict) const
 {
 	replaceAll(json, encodingMap(this), originalNames(this), replaceNames, replaceStrict);
-}
-
-void ColumnEncoder::decodeJson(Json::Value & json, bool replaceNames) const
-{
-	//Compat shim (D1.5 retires it): the context-free global-table sweep (C4). The canonical is
-	//not part of that contract - it answers no full-string decode (C2).
-	if(_mode == Mode::canonical)
-		throw std::runtime_error("ColumnEncoder::decodeJson called on a canonical mint, the canonical answers no full-string decode (mds-plan C2)!");
-
-	tableDecodeJson(json, replaceNames, false);
-}
-
-void ColumnEncoder::decodeJsonSafeHtml(Json::Value & json)
-{
-	tableDecodeJson(json, true, true);
-}
-
-void ColumnEncoder::decodeJsonAcrossEncoders(Json::Value & json, const std::vector<ColumnEncoder *> & datasetEncoders, bool safeHtml)
-{
-	//The old implementation rooted a decode pass at every dataset encoder (and flipped the
-	//current encoder per dataset for the safeHtml variant). That whole dance existed because
-	//decode maps were instance-rooted; with the one global strict decode table (C4) decoding is
-	//context-free, so `datasetEncoders` is ignored and one sweep covers every live filter of
-	//every loaded dataset plus extras. D1.5 converges the callers on tableDecodeJson() directly.
-	(void) datasetEncoders;
-	tableDecodeJson(json, true, safeHtml);
 }
 
 

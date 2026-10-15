@@ -875,14 +875,14 @@ const char* STDCALL syntaxBridgeDecodeColumnText(const char* valuesJson, const c
 	}
 }
 
-// Decode a WHOLE json payload (an analysis' results json, say) against every column encoder
-// the bridge workspace knows: each DataSet's own encoder, then the extra-options encoder, then
-// the process-global one. An encoder only ever replaces the exact tokens it minted itself
-// (ColumnEncoder::decodeJson works from decodingMap(this)), so running them all over one
-// payload is safe and order-independent - this is the same coverage the engine gives results
-// of a multi-dataset aware run (cf. Analysis::loadPlotlyJsonInResults), without depending on
-// which dataset the bridge happens to have shown last. Payloads that are not valid json are
-// handed back unchanged; the success envelope is { ok: true, text: <decoded json> }.
+// Decode a WHOLE json payload (an analysis' results json, say) with the ONE process-global strict
+// decode table (mds-plan C4, converged at D1.5): a block per live filter of every dataset in the
+// bridge workspace, plus the extras and fallback blocks. The old per-encoder sweep (each DataSet's
+// own encoder, then the extra-options encoder, then the process-global one) collapsed into this
+// single static entry - every encoder only ever replaced the exact tokens it minted, so the sweep
+// is order-independent and the table is exactly its union. Aware and non-aware payloads are not
+// different here. Payloads that are not valid json are handed back unchanged; the success envelope
+// is { ok: true, text: <decoded json> }.
 const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
 {
 	if (!json || json[0] == '\0')
@@ -900,12 +900,9 @@ const char* STDCALL syntaxBridgeDecodeJsonText(const char* json)
 
 	try
 	{
-		//Single choke point, same all-encoders decode the desktop uses but plain (not HTML): every
-		//dataset the bridge workspace holds + extras + global, each matching only its own tokens.
-		if (Workspace * workspace = gl_dataBridge ? gl_dataBridge->workspace() : nullptr)
-			workspace->decodeJsonAcross(payload, /*safeHtml=*/false);
-		else
-			ColumnEncoder::columnEncoder()->decodeJson(payload);
+		//Single choke point, the same context-free global-table sweep the engine's sendString uses
+		//but plain (not HTML): every live filter of every dataset + extras + fallback in one walk.
+		ColumnEncoder::decodeJson(payload);
 
 		Json::StreamWriterBuilder writer;
 		writer["indentation"] = "";

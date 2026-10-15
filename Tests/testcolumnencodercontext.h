@@ -36,7 +36,7 @@ private slots:
 	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
 	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
 	void collectFilterIdsFromMetaGathersEveryDistinctFilter();
-	void decodeJsonAcrossEncodersCoversEveryEncoderAndHonoursSafeHtml();
+	void decodeJsonCoversEveryBlockAndHonoursSafeHtml();
 	// mds-plan Phase 1: canonical mint + per-filter views + the one global decode table
 	void canonicalAnswersNoFullStringEncodeDecode();
 	void filterViewsMintDistinctTokensThatBothDecode();

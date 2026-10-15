@@ -190,10 +190,13 @@ extern "C" const char * STDCALL rbridge_encodeColumnName(const char * in)
 
 extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 {
+	//The hand-rolled "extras first, then current encoder" chain is gone (mds-plan D1.5): the ONE
+	//global strict decode table (C4) holds the extras block as a first-class citizen (C6), so a
+	//single context-free lookup covers extras, every live filter of every loaded dataset and the
+	//fallback encoder. Unknown tokens stay raw (C16) - R guards with shouldDecode where it needs
+	//to tell the difference.
 	static std::string out;
-
-	if(extraEncodings->shouldDecode(in))	out = extraEncodings->decode(in);
-	else									out = ColumnEncoder::columnEncoder()->decode(in);
+	out = ColumnEncoder::decode(in);
 
 	return out.c_str();
 }
@@ -201,9 +204,7 @@ extern "C" const char * STDCALL rbridge_decodeColumnName(const char * in)
 extern "C" int STDCALL rbridge_decodeColumnType(const char * in)
 {
 	static columnType colType;
-
-	if(extraEncodings->shouldDecode(in))	colType = extraEncodings->columnTypeFromEncoded(in);
-	else									colType = ColumnEncoder::columnEncoder()->columnTypeFromEncoded(in);
+	colType = ColumnEncoder::columnTypeFromEncoded(in);
 
 	return int(colType);
 }
@@ -215,7 +216,7 @@ extern "C" bool STDCALL rbridge_shouldEncodeColumnName(const char * in)
 
 extern "C" bool STDCALL rbridge_shouldDecodeColumnName(const char * in)
 {
-	return (extraEncodings && extraEncodings->shouldDecode(in)) || ColumnEncoder::columnEncoder()->shouldDecode(in);
+	return ColumnEncoder::shouldDecode(in);
 }
 
 extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
@@ -228,7 +229,7 @@ extern "C" const char * STDCALL rbridge_encodeAllColumnNames(const char * in)
 extern "C" const char * STDCALL rbridge_decodeAllColumnNames(const char * in)
 {
 	static std::string out;
-	out = ColumnEncoder::columnEncoder()->decodeAll(in);
+	out = ColumnEncoder::decodeAll(in);
 	return out.c_str();
 }
 
@@ -394,7 +395,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetForFilteringCompCol(size_t 
 		{
 			//It should then be a columnName + '.' + type
 			//And decoding always goes to the original columnname so:
-			std::string colNameSansType = ColumnEncoder::columnEncoder()->decode(	ColumnEncoder::columnEncoder()->encode(colName));
+			std::string colNameSansType = ColumnEncoder::decode(ColumnEncoder::columnEncoder()->encode(colName));
 
 			assert(colName[colNameSansType.size()] == '.'); //Because how??? ;)
 
@@ -450,9 +451,13 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSet(RBridgeColumnType* colHead
 	{
 		RBridgeColumnType	&	columnInfo		= colHeaders[colNo];
 		RBridgeColumn		&	resultCol		= datasetStatic[colNo];
-		std::string				columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
+		std::string				columnName		= ColumnEncoder::decode(columnInfo.name);	//context-free table (mds-plan C4/D1.5)
 								resultCol.name	= strdup(columnInfo.name);
 		Column				*	column			= rbridge_dataSet->column(columnName);
+
+		if(!column)
+			throw std::runtime_error("rbridge_readDataSet gets '" + std::string(columnInfo.name) + "' but it does not name a column of the current dataset");
+
 		columnType				colType			= column->type(),
 								requestedType	= columnType(columnInfo.type);
 
@@ -553,7 +558,7 @@ extern "C" RBridgeColumn* STDCALL rbridge_readDataSetRequested(size_t * colMax, 
     for(const auto & nameType : datasetWanted)
     {
 		//Make sure this is encodable/decodable
-		if(!ColumnEncoder::columnEncoder()->shouldEncode(nameType.first) && !ColumnEncoder::columnEncoder()->shouldDecode(nameType.first))
+		if(!ColumnEncoder::columnEncoder()->shouldEncode(nameType.first) && !ColumnEncoder::shouldDecode(nameType.first))
 			throw std::runtime_error("rbridge_readDataSetRequested gets '" + nameType.first + "' but its not a columnname at all");
 		
 		requestedColumns[*colMax].name = strdup(ColumnEncoder::columnEncoder()->encodeAll(nameType.first).c_str());
@@ -620,9 +625,16 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	{
 		RBridgeColumnType			&	columnInfo		= columnsType[colNo];
 		RBridgeColumnDescription	&	resultCol		= resultCols[colNo];
-		std::string						columnName		= ColumnEncoder::columnEncoder()->decode(columnInfo.name);
+		//Context-free table decode (mds-plan C4/D1.5). The old instance-rooted decode threw on a
+		//miss; the table keeps unknown tokens raw, so translate that failure mode into the same
+		//explicit error instead of dereferencing a null column below.
+		std::string					columnName		= ColumnEncoder::decode(columnInfo.name);
 										resultCol.name	= strdup(columnInfo.name);
 		Column						*	column			= rbridge_dataSet->column(columnName);
+
+		if(!column)
+			throw std::runtime_error("rbridge_readDataSetDescription gets '" + std::string(columnInfo.name) + "' but it does not name a column of the current dataset");
+
 		columnType						colType			= column->type(),
 										requestedType	= columnType(columnInfo.type);
 
@@ -638,12 +650,12 @@ extern "C" RBridgeColumnDescription* STDCALL rbridge_readDataSetDescription(RBri
 	return resultCols;
 }
 
-///Sneaky variable declaration of colName!
-#define JASP_COLUMN_DECODE_HERE_STORED_colName std::string colName(ColumnEncoder::columnEncoder()->decode(columnName))
+///Sneaky variable declaration of colName! Decoding is the context-free global table (mds-plan C4/D1.5).
+#define JASP_COLUMN_DECODE_HERE_STORED_colName std::string colName(ColumnEncoder::decode(columnName))
 
 extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 {
-	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
+	if(!ColumnEncoder::shouldDecode(columnName))
 		return data_bridge->getColumnType(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
@@ -652,7 +664,7 @@ extern "C" int STDCALL rbridge_getColumnType(const char * columnName)
 
 extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 {
-	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
+	if(!ColumnEncoder::shouldDecode(columnName))
 		return  data_bridge->getColumnAnalysisId(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
@@ -662,7 +674,7 @@ extern "C" int STDCALL rbridge_getColumnAnalysisId(const char * columnName)
 
 extern "C" int STDCALL rbridge_getColumnOriginalIndex(const char * columnName)
 {
-	if(!ColumnEncoder::columnEncoder()->shouldDecode(columnName))
+	if(!ColumnEncoder::shouldDecode(columnName))
 		return  data_bridge->getColumnOriginalIndex(columnName);
 
 	JASP_COLUMN_DECODE_HERE_STORED_colName;
@@ -705,10 +717,10 @@ extern "C" bool STDCALL rbridge_setDataSetData(const char* datasetName, const ch
 	{
 		//The R data.frame's column names are encoded (the user code was encoded before evaluation);
 		//decode them back to the plain names (no type suffix) so the output dataset gets the real
-		//column titles. New/user-authored names are not encodable, so keep them as-is.
+		//column titles. New/user-authored names are not in the decode table, so keep them as-is.
 		const std::string & colName = columnNames[i];
-		names.push_back(ColumnEncoder::columnEncoder()->shouldDecode(colName)
-			? ColumnEncoder::columnEncoder()->decode(colName)
+		names.push_back(ColumnEncoder::shouldDecode(colName)
+			? ColumnEncoder::decode(colName)
 			: colName);
 
 		types.push_back(columnType(columnTypes[i]));
@@ -894,7 +906,7 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	if(arrayLength < 0)
 	{
-		errorMsg = ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg());
+		errorMsg = ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg());
 
 		if(errorMsg == "")
 			errorMsg = "Filter returned something incomprehensible, make sure you entered all columnnames *exactly* right.";
@@ -939,7 +951,7 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str(), setWd);
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	return result;
 }
@@ -970,7 +982,7 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 	std::string result = jaspRCPP_evalComputedColumn(rCode64.c_str(), setColumnFunc.c_str());
 	jaspRCPP_runScript("detach(data)");	//a	nd afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	computedColumnFilter = "";
 	
@@ -1026,7 +1038,7 @@ std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::s
 	std::string result = jaspRCPP_evalComputedDataSet(rCode64.c_str(), setDataSetCode.c_str());
 	jaspRCPP_runScript("detach(data)");	//afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
-	jaspRCPP_setErrorMsg(ColumnEncoder::columnEncoder()->decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
+	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
 
 	computedColumnFilter = "";
 

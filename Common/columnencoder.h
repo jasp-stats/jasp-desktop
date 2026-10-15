@@ -35,7 +35,7 @@
 ///  * FULL      - self-contained instance: owns a mint (name -> index and index -> (original,
 ///                type)) AND materializes the full-string encode/decode maps in its own prefix
 ///                namespace. Its namespace is registered as a block in the process-global strict
-///                decode table (see tableDecode()). Used by the process-global fallback encoder,
+///                decode table (see the static decode()). Used by the process-global fallback encoder,
 ///                the extras encoder (DataBridge's `JaspExtraOptions_`, C6) and ad-hoc callers
 ///                (tests, ColumnEncoderContext replay).
 ///
@@ -110,7 +110,7 @@ public:
 	static void					setCurrentEncoder(ColumnEncoder * encoder);
 
 	static	bool				isColumnName(const std::string & in)							{ return columnEncoder()->shouldEncode(in);	}
-	static	bool				isEncodedColumnName(const std::string & in)						{ return tableShouldDecode(in);				}
+	static	bool				isEncodedColumnName(const std::string & in)						{ return shouldDecode(in);					}
 	static	void				setCurrentColumnNames(const colTypeMap & names)					{ columnEncoder()->setCurrentNames(names);	}
 	static	void				updateColumnTypesOnlyStatic(const colTypeMap & names)			{ columnEncoder()->updateColumnTypesOnly(names);	}
 
@@ -125,9 +125,6 @@ public:
 	static	colVec				columnNamesEncoded();
 
 			bool				shouldEncode(const std::string & in);
-			///< Compat shim (D1.3-D1.6 will retire it): decoding is context-free, so this is the
-			///< global table's membership check regardless of which instance answers.
-			bool				shouldDecode(const std::string & in);
 
 			/// Mint a fresh namespace. On the canonical and on FULL instances this (re)builds the
 			/// mint and rewrites every dependent block; on a VIEW it funnels into its canonical
@@ -150,12 +147,6 @@ public:
 			/// raw name (bare or `name.type`) -> full encoded token. Canonical never answers
 			/// (C2); a view composes canonical index + own prefix (C3).
 			std::string			encode(const std::string &in);
-			///< Compat shim (D1.5 retires it): table lookup, throws on miss like the old
-			///< instance-rooted decode did.
-			std::string			decode(const std::string &in);
-
-			///< Compat shim (D1.5 retires it): consults the global table.
-			columnType			columnTypeFromEncoded(const std::string & in);
 
 			///Replace all occurences of columnNames in a string by their encoded versions, taking into account the presence of word boundaries and parentheses.
 			std::string			encodeRScript(std::string text, std::set<std::string> * columnNamesFound = nullptr);
@@ -167,36 +158,23 @@ public:
 		///C5). Decode is context-free and goes through the global table instead.
 			std::string			encodeAll(const std::string & text) const;
 
-			///Replace all occurences of encoded columnNames in a string by their decoded versions, regardless of word boundaries or parentheses.
-			///< Compat shim (D1.5 retires it): the context-free global-table sweep.
-			std::string			decodeAll(const std::string & text) const;
-
 			///Replace all occurences of columnNames in a string by their encoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
 			void				encodeJson(Json::Value & json, bool replaceNames = false, bool replaceStrict = false) const;
-
-			///Replace all occurences of encoded columnNames in a string by their decoded versions in all json-names and string-values, regardless of word boundaries or parentheses.
-			///< Compat shim (D1.5 retires it): the context-free global-table sweep.
-			void				decodeJson(Json::Value & json, bool replaceNames = true) const;
-
-	static	void				decodeJsonSafeHtml(Json::Value & json);
-
-	/// Decode `json` (names and string values) in place with the global strict decode table.
-	/// `datasetEncoders` is IGNORED: decoding is context-free (C4), one table covers every live
-	/// filter of every loaded dataset plus extras, so the old per-dataset sweep (and its
-	/// currentEncoder flipping for the safeHtml variant) is gone. The signature survives so the
-	/// results-decode call sites keep compiling until D1.5 converges them on tableDecodeJson().
-	static	void				decodeJsonAcrossEncoders(Json::Value & json, const std::vector<ColumnEncoder *> & datasetEncoders, bool safeHtml);
 
 	/// --- The ONE process-global strict decode table (C4) -------------------------------
 	/// Single writer: rebuildBlock() (erase the block's bounded key space, then write).
 	/// These are THE decode entry points; O(1), context-free, strict (no hit ==> raw).
-	/// (Interim names: D1.5 retires the instance shims above and renames these to
-	/// decode()/shouldDecode()/columnTypeFromEncoded().)
-	static	std::string			tableDecode(const std::string & in)								{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? in : it->second.name;				}
-	static	bool				tableShouldDecode(const std::string & in)							{ return _decodeTable().count(in) > 0;																		}
-	static	columnType			tableColumnTypeFromEncoded(const std::string & in)				{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? columnType::unknown : it->second.type;	}
-	static	std::string			tableDecodeAll(const std::string & text);
-	static	void				tableDecodeJson(Json::Value & json, bool replaceNames = true, bool safeHtml = false);
+	/// They cover every live filter block of every loaded dataset plus the extras and fallback
+	/// blocks, so results decoding needs no per-dataset sweep anymore (mds-plan D1.5 retired the
+	/// instance-rooted decode shims, decodeJsonSafeHtml and decodeJsonAcrossEncoders with their
+	/// currentEncoder-flip dance).
+	static	std::string			decode(const std::string & in)									{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? in : it->second.name;				}
+	static	bool				shouldDecode(const std::string & in)							{ return _decodeTable().count(in) > 0;																		}
+	static	columnType			columnTypeFromEncoded(const std::string & in)					{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? columnType::unknown : it->second.type;	}
+	///< Replace all occurences of table tokens in `text` by their decoded names.
+	static	std::string			decodeAll(const std::string & text);
+	///< Replace all occurences of table tokens in all json-names and string-values of `json`.
+	static	void				decodeJson(Json::Value & json, bool replaceNames = true, bool safeHtml = false);
 	///< Forget every block (test isolation). Live instances re-mint on their next rebuild.
 	static	void				resetForTests();
 

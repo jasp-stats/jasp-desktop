@@ -795,7 +795,7 @@ void EngineRepresentation::checkForComputedColumns(DataSet * dataSet, const Json
 			//The analysis reports the encoded column name; translate it to the real one. Decoding is
 			//context-free (mds-plan C4): the global table answers for every live filter of every
 			//loaded dataset (and extras), unknown tokens stay raw.
-			std::string	decoded = ColumnEncoder::tableDecode(columnName);
+			std::string	decoded = ColumnEncoder::decode(columnName);
 
 			//The R side is responsible for deleting the DB row (and bumping revision) when a column is
 			//removed, and for bumping revision when its type changes. checkDataSetForUpdates() below then

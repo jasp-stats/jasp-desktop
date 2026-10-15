@@ -151,7 +151,7 @@ Json::Value decodeColumnJson(const char * payloadJson, const char * encoderConte
 	ColumnEncoderContext context = ColumnEncoderContext::fromJsonString(encoderContextJson);
 	ScopedColumnEncoderContext scopedContext(context, extraEncoder);
 
-	ColumnEncoder::columnEncoder()->decodeJson(payload, replaceNames);
+	ColumnEncoder::decodeJson(payload, replaceNames);	//context-free global table (mds-plan C4/D1.5)
 
 	return payload;
 }

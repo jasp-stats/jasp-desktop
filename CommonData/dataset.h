@@ -141,7 +141,7 @@ public:
 			///< The canonical mint of this dataset (mds-plan C2): bookkeeping only
 			///< (setCurrentNames/updateColumnTypesOnly/currentNames). It answers no full-string
 			///< encode/decode - encode through a filter view (shownEncoder()/Filter::columnEncoder()),
-			///< decode through the context-free global table (ColumnEncoder::tableDecode()).
+			///< decode through the context-free global table (ColumnEncoder::decode())..
 			ColumnEncoder	&	encoder()			{ return *_encoder; }
 	const	ColumnEncoder	&	encoder()	const	{ return *_encoder; }
 			///< Compat shim (the old "the dataset's encoder"): the VIEW of this dataset's shown

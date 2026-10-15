@@ -425,20 +425,6 @@ Filter *Workspace::filterById(int id)
 	return nullptr;
 }
 
-void Workspace::decodeJsonAcross(Json::Value & json, bool safeHtml)
-{
-	//Convenience only: gather this workspace's own dataset encoders and hand the real work to
-	//ColumnEncoder, where the multi-encoder decode lives. Extras + global ride along inside it.
-	std::vector<ColumnEncoder *> datasetEncoders;
-	datasetEncoders.reserve(_dataSets.size());
-
-	for(auto & idData : _dataSets)
-		if(idData.second)
-			datasetEncoders.push_back(&idData.second->encoder());
-
-	ColumnEncoder::decodeJsonAcrossEncoders(json, datasetEncoders, safeHtml);
-}
-
 Column *Workspace::shownColumn() const
 {
 	return shownDataSet() ? shownDataSet()->shownColumn() : nullptr;
@@ -870,7 +856,7 @@ void Workspace::computedColumnSucceeded(int dataSetId, QString columnNameQ, QStr
 	std::string	columnName	= fq(columnNameQ);
 	//The engine may report the encoded name; translate it defensively so the lookup works either
 	//way. Decoding is context-free (mds-plan C4): the global table answers, unknown stays raw.
-	columnName = ColumnEncoder::tableDecode(columnName);
+	columnName = ColumnEncoder::decode(columnName);
 	Column	*	column		= dataSet->column(columnName);
 
 	if(!column)

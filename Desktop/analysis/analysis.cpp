@@ -822,7 +822,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 			//names and never pass through the engine's sendString, but the desktop's global decode
 			//table holds a block per live filter of every loaded dataset (plus extras), so ONE
 			//sweep resolves them all - aware and non-aware runs alike.
-			ColumnEncoder::tableDecodeJson(plotlyJson);
+			ColumnEncoder::decodeJson(plotlyJson);
 
 			return plotlyJson;
 		}

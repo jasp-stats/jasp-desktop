@@ -115,6 +115,17 @@ private slots:
 	// names of the live namespaces; stale/foreign tokens decode raw.
 	void	testEncoderMutationFunnel();
 
+	// Decode-superset semantics (mds-plan D1.5, C4/C16): every results-decode site is the static
+	// entry now, so ONE sweep resolves tokens from ANY live namespace - other datasets, other
+	// filters, the extras block - while unknown, foreign-never-live and deleted-filter tokens
+	// stay raw everywhere.
+	void	testDecodeSupersetSemanticsAcrossLiveNamespaces();
+
+	// The computed-column results site in EngineRepresentation (enginerepresentation.cpp) must
+	// decode with the one global table too - extras tokens included (mds-plan C6's known gap,
+	// closed and pinned at D1.5).
+	void	testComputedColumnSiteDecodesExtrasTokens();
+
 	// Multi-dataset selection: the workspace must offer every filter of every dataset (value =
 	// globally unique filterId, label = "DataSet - Filter") for VariablesForm::dataSetSelection.
 	void	testDataSetFilterDropDownList();

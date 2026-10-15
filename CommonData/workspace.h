@@ -60,10 +60,6 @@ public:
 	///< Resolves live objects first, then lazily materialises named filters from the storage db
 	///< (a reopened .jasp only loads default filters; the row id stays the invariant).
 	Filter				*	filterById(int id);
-	///< Decode `json` across every dataset in this workspace + the extras + global encoders
-	///< (delegates to ColumnEncoder::decodeJsonAcrossEncoders, collecting this workspace's own
-	///< dataset encoders). safeHtml for GUI-bound output, plain for the syntax bridge / R wrapper.
-	void					decodeJsonAcross(Json::Value & json, bool safeHtml);
 			///Returns title if no other dataset already has that title, otherwise appends " (n)" with an incrementing n until it is unique. exclude lets a dataset check against the others without matching against its own current title.
 			QString					makeDataSetTitleUnique(const QString & title, DataSet * exclude = nullptr) const;
 			

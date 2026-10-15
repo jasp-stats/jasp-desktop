@@ -1399,7 +1399,7 @@ stringset DataSet::findUsedColumnNames(std::string searchThis)
 	//Instead we'll make use of the encode->decode not being symmetrical (for the results to be less ugly) and dropping the type
 
 	for(const std::string & colPlusType : columnsWithTypeFound)
-		columnsFound.insert(ColumnEncoder::tableDecode(view->encode(colPlusType)));
+		columnsFound.insert(ColumnEncoder::decode(view->encode(colPlusType)));
 
 	return columnsFound;
 }

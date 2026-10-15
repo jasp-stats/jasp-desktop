@@ -64,8 +64,10 @@ QString QmlUtils::encodeAllColumnNames(const QString & str)
 
 QString QmlUtils::decodeAllColumnNames(const QString & str)
 {
-	ColumnEncoder * encoder = currentDatasetEncoder();
-	return encoder ? tq(encoder->decodeAll(fq(str))) : str;
+	//Decoding is context-free since mds-plan C4/D1.5: the static sweep of the one global table
+	//resolves every live filter of every loaded dataset plus extras, unknown stays raw - no
+	//dataset encoder needs to be alive for this to answer.
+	return tq(ColumnEncoder::decodeAll(fq(str)));
 }
 
 QJSValue	QmlUtils::encodeJson(const QJSValue	& val, QQuickItem * caller)
@@ -78,9 +80,9 @@ QJSValue	QmlUtils::encodeJson(const QJSValue	& val, QQuickItem * caller)
 
 QJSValue	QmlUtils::decodeJson(const QJSValue	& val, QQuickItem * caller)
 {
+	//Context-free global-table sweep (mds-plan C4/D1.5), see also decodeAllColumnNames above.
 	Json::Value v(fqj(val));
-	if(ColumnEncoder * encoder = currentDatasetEncoder())
-		encoder->decodeJson(v);
+	ColumnEncoder::decodeJson(v);
 	return tqj(v, caller);
 }
 
