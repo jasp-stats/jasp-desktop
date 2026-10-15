@@ -29,6 +29,30 @@ public:
 	static stringvec				jsonStringArrayToVec(const Json::Value & jsonStrings);
 	static stringset				jsonStringArrayToSet(const Json::Value & jsonStrings);
 
+	/// Numeric-tolerant deep equality: integer and real values that are equal as
+	/// doubles compare equal, because values round-tripped through e.g. the plot
+	/// editor can swap between the two representations.
+	static bool						jsonValuesEqual(const Json::Value & left, const Json::Value & right);
+
+	/// Computes a merge patch (RFC 7386 style, on Json::Value level) that
+	/// transforms `before` into `after`: keys added in `after` are included,
+	/// unequal leaves/arrays are included wholesale, keys only in `before`
+	/// become null (= "remove" when applied), equal parts are omitted.
+	/// Note: because null means "remove", a patch cannot set a value to null.
+	static Json::Value				jsonDiff(const Json::Value & before, const Json::Value & after);
+
+	/// Applies a merge patch (as produced by jsonDiff) onto `target` in place:
+	/// object patches are merged recursively, other values overwrite, null
+	/// removes the key.
+	static void						jsonApplyPatch(Json::Value & target, const Json::Value & patch);
+
+	/// Returns the subtrees of `source` whose key-path does not exist in
+	/// `reference`. Used to salvage user additions (e.g. plot references) from a
+	/// legacy full editOptions snapshot: anything `reference` (fresh engine
+	/// options) also provides is dropped, because there it cannot be told apart
+	/// from stale engine output.
+	static Json::Value				jsonKeysMissingFrom(const Json::Value & source, const Json::Value & reference);
+
 	template<typename T>
 	static Json::Value				vecToJsonArray(const std::vector<T> & vec)
 	{

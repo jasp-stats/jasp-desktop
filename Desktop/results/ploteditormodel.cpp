@@ -327,8 +327,6 @@ void PlotEditorModel::refresh()
 	if(!_analysis)
 		return;
 
-	_analysis->setEditOptionsOfPlot(_name.toStdString(), _imgOptions["editOptions"]);
-
 	//Lets make sure the plot gets reloaded by QML
 	_goBlank = true;
 	emit dataChanged();

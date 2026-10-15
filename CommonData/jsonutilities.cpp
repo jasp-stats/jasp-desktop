@@ -132,6 +132,122 @@ stringvec JsonUtilities::jsonStringArrayToVec(const Json::Value & jsonStrings)
 stringset JsonUtilities::jsonStringArrayToSet(const Json::Value &jsonStrings)
 {
 	auto vec = jsonStringArrayToVec(jsonStrings);
-	
+
 	return stringset(vec.begin(), vec.end());
+}
+
+bool JsonUtilities::jsonValuesEqual(const Json::Value & left, const Json::Value & right)
+{
+	//Numeric-tolerant: values round-tripped through e.g. the plot editor can swap
+	//between int and double representation (1 vs 1.0), which jsoncpp's operator==
+	//would report as a difference.
+	if(left.isNumeric() && right.isNumeric())
+		return left.asDouble() == right.asDouble();
+
+	if(left.type() != right.type())
+		return false;
+
+	if(left.isObject())
+	{
+		if(left.size() != right.size())
+			return false;
+
+		for(const std::string & key : left.getMemberNames())
+			if(!right.isMember(key) || !jsonValuesEqual(left[key], right[key]))
+				return false;
+
+		return true;
+	}
+
+	if(left.isArray())
+	{
+		if(left.size() != right.size())
+			return false;
+
+		for(Json::ArrayIndex i = 0; i < left.size(); i++)
+			if(!jsonValuesEqual(left[i], right[i]))
+				return false;
+
+		return true;
+	}
+
+	//strings, booleans, null
+	return left == right;
+}
+
+Json::Value JsonUtilities::jsonDiff(const Json::Value & before, const Json::Value & after)
+{
+	Json::Value patch = Json::objectValue;
+
+	if(!before.isObject() || !after.isObject())
+		return jsonValuesEqual(before, after) ? patch : after;
+
+	for(const std::string & key : after.getMemberNames())
+	{
+		if(!before.isMember(key))
+			patch[key] = after[key];
+		else if(before[key].isObject() && after[key].isObject())
+		{
+			Json::Value subPatch = jsonDiff(before[key], after[key]);
+			if(subPatch.isObject() && subPatch.size() > 0)
+				patch[key] = subPatch;
+		}
+		else if(!jsonValuesEqual(before[key], after[key]))
+			patch[key] = after[key];
+	}
+
+	for(const std::string & key : before.getMemberNames())
+		if(!after.isMember(key))
+			patch[key] = Json::nullValue; //RFC 7386: null means "remove" when applied
+
+	return patch;
+}
+
+void JsonUtilities::jsonApplyPatch(Json::Value & target, const Json::Value & patch)
+{
+	if(!patch.isObject())
+	{
+		target = patch;
+		return;
+	}
+
+	if(!target.isObject())
+		target = Json::objectValue;
+
+	for(const std::string & key : patch.getMemberNames())
+	{
+		const Json::Value & patchValue = patch[key];
+
+		if(patchValue.isNull())
+			target.removeMember(key);
+		else if(patchValue.isObject() && target.isMember(key) && target[key].isObject())
+			jsonApplyPatch(target[key], patchValue);
+		else
+			target[key] = patchValue;
+	}
+}
+
+Json::Value JsonUtilities::jsonKeysMissingFrom(const Json::Value & source, const Json::Value & reference)
+{
+	if(!source.isObject())
+		return Json::objectValue;
+
+	Json::Value missing = Json::objectValue;
+
+	for(const std::string & key : source.getMemberNames())
+	{
+		if(!reference.isObject() || !reference.isMember(key))
+			missing[key] = source[key];
+		else if(source[key].isObject() && reference[key].isObject())
+		{
+			Json::Value subMissing = jsonKeysMissingFrom(source[key], reference[key]);
+			if(subMissing.isObject() && subMissing.size() > 0)
+				missing[key] = subMissing;
+		}
+		//else: the key exists in both, so it cannot be told apart from engine
+		//output and is dropped (this is deliberately presence-based, values are
+		//not compared)
+	}
+
+	return missing;
 }

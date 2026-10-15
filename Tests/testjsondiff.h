@@ -1,0 +1,60 @@
+//
+// Copyright (C) 2026 University of Amsterdam
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public
+// License along with this program.  If not, see
+// <http://www.gnu.org/licenses/>.
+//
+#pragma once
+#include <QtTest>
+
+class TestJsonDiff : public QObject
+{
+	Q_OBJECT
+
+private slots:
+	// jsonValuesEqual
+	void equalPrimitives();
+	void equalNumericTolerant();
+	void equalNestedObjects();
+	void equalArrays();
+	void unequalValues();
+
+	// jsonDiff
+	void diffEmpty();
+	void diffAddedKeys();
+	void diffChangedLeaf();
+	void diffRemovedKey();
+	void diffNested();
+	void diffArraysWholesale();
+	void diffEqualGivesEmptyPatch();
+	void diffNumericTolerant();
+	void diffRoundTrip();
+
+	// jsonApplyPatch
+	void applyPatchSimple();
+	void applyPatchRemovesKey();
+	void applyPatchRecurse();
+	void applyPatchWholesaleReplace();
+	void applyPatchOntoNullTarget();
+	void applyPatchOntoWrongTypeTarget();
+
+	// jsonKeysMissingFrom (legacy migration)
+	void missingKeysKeepsAdditions();
+	void missingKeysDropsPresentKeys();
+	void missingKeysNested();
+	void missingKeysNonObjectSource();
+
+	// The actual regression scenario of INTERNAL-jasp issue 3366
+	void boxplotResizeLabelBugScenario();
+};
