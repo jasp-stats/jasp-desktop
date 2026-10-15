@@ -11,6 +11,7 @@ const stringvec AnalysisBase::emptyStringVec;
 
 AnalysisBase::AnalysisBase(QObject* parent)
 	: QObject(parent)
+	, VariableInfoProvider(this)
 {
 	// If the parent object is the form, just use it. This is used in R-Syntax mode when the AnalysisForm::parseOptions creates a dummy AnalysisBase
 	_analysisForm = qobject_cast<AnalysisForm*>(parent);
@@ -20,6 +21,7 @@ AnalysisBase::AnalysisBase(QObject* parent)
 
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
+	, VariableInfoProvider(this)
 	, _boundValues(duplicateMe->boundValues())
 {
 	connectDataSpecChanges();
@@ -456,4 +458,142 @@ void AnalysisBase::setFilterId(int filterId)
 	emit dataSpecChanged();
 
 	refresh();
+}
+
+// ---- VariableInfoProvider over the selection-host registry (mds-plan C10/D2.4) -----------------
+// The whole point of this endpoint is that it is DERIVED, never stored: every call re-enumerates
+// the form's live selection hosts (which unregister eagerly, mds-plan D2.3) and reads their filter
+// through the virtual - a Filter's encode handle lazy-attaches and dies with the filter (D1.2),
+// so caching a handle/encoder/filter pointer here would be the first stale namespace in the
+// house. See the class doc in analysisbase.h for the one/many/none semantics and what merged
+// consumers must do.
+
+QList<Filter *> AnalysisBase::selectedSelectionFilters() const
+{
+	QList<Filter *> filters;
+
+	if(!_analysisForm)
+		return filters;
+
+	for(JASPControl * host : _analysisForm->selectionHostControls())
+	{
+		Filter * filter = host ? host->selectedSelectionFilter() : nullptr;	//per-use virtual (D2.3)
+		if(filter && !filters.contains(filter))
+			filters << filter;
+	}
+
+	return filters;
+}
+
+bool AnalysisBase::selectionNamespaceIsMerged() const
+{
+	return selectedSelectionFilters().size() > 1;
+}
+
+QVariantList AnalysisBase::selectionNamespaceFilterIds() const
+{
+	QVariantList ids;
+	for(const Filter * filter : selectedSelectionFilters())
+		ids.append(filter->id());
+	return ids;
+}
+
+QStringList AnalysisBase::selectionNamespaceVariableNames() const
+{
+	return provideInfo(varInfoType::VariableNames).toStringList();
+}
+
+void AnalysisBase::handleSelectionNamespaceMaybeChanged()
+{
+	emit selectionNamespaceChanged();
+
+	//The referenced-dataset view of an aware analysis follows its hosts' selections (their stamps
+	//ride along with the restamp walk, and once Phase 3 computes dataSpec from component state the
+	//namespace IS the data spec): re-emit so title/RPC/queue consumers re-read the live view.
+	if(multiDataSetAware())
+		emit dataSpecChanged();
+}
+
+ColumnEncoder *AnalysisBase::columnEncoder()
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->columnEncoder() : nullptr;	//no host selection: analysis filter (C13 host-bound fallback)
+	if(filters.size() > 1)
+		return nullptr;										//merged: no single namespace, say so with nullptr
+
+	return filters.first()->columnEncoder();				//the live Filter resolves its own view handle (never cached)
+}
+
+QAbstractItemModel *AnalysisBase::providerModel()
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->providerModel() : nullptr;
+	if(filters.size() > 1)
+		return nullptr;										//merged: there is no single model
+
+	return filters.first()->providerModel();
+}
+
+QVariant AnalysisBase::provideInfo(varInfoType info, const QString& name, int row) const
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->provideInfo(info, name, row) : QVariant();
+	if(filters.size() == 1)
+		return filters.first()->provideInfo(info, name, row);
+
+	//Merged view (mds-plan C10): the union of the selected filters. Only VariableNames is truly
+	//aggregated - with collisions KEPT (a column that lives behind two selected namespaces is two
+	//entries; the terms' filterId tells them apart downstream, C9). Everything else has no honest
+	//union: per-name requests scan the hosts in registration order for the first hit, dataset-wide
+	//requests answer from the first host. Consumers that need a single namespace must use the
+	//analysis' own filter or a specific host - see the class doc.
+	if(info == varInfoType::VariableNames)
+	{
+		QStringList names;
+		for(Filter * filter : filters)
+			names << filter->provideInfo(varInfoType::VariableNames).toStringList();
+		return names;
+	}
+
+	if(info == varInfoType::DataAvailable)
+	{
+		for(Filter * filter : filters)
+			if(filter->provideInfo(varInfoType::DataAvailable).toBool())
+				return true;
+		return false;
+	}
+
+	for(Filter * filter : filters)
+	{
+		const QVariant value = filter->provideInfo(info, name, row);
+		if(value.isValid())
+			return value;						//first host that has this column (or answers at all)
+	}
+
+	return QVariant();
+}
+
+bool AnalysisBase::absorbInfo(varInfoType info, const QString& name, int row, QVariant value)
+{
+	const QList<Filter *> filters = selectedSelectionFilters();
+
+	if(filters.isEmpty())
+		return _filter ? _filter->absorbInfo(info, name, row, value) : false;
+	if(filters.size() == 1)
+		return filters.first()->absorbInfo(info, name, row, value);
+
+	//Merged: write through the first host that accepts it - same first-hit rule as provideInfo.
+	//Editing through a merged namespace is inherently ambiguous; a caller that knows which slice
+	//it means goes through that host (or the term's filterId) instead.
+	for(Filter * filter : filters)
+		if(filter->absorbInfo(info, name, row, value))
+			return true;
+
+	return false;
 }

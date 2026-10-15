@@ -3454,6 +3454,141 @@ void TestAll::testSelectionHostRegistryIntrospection()
 	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
 }
 
+namespace {
+
+// Minimal selection host for the D2.4 provider test: the registry is host-type-agnostic (D2.3),
+// everything the provider needs comes through the JASPControl::selectedSelectionFilter() virtual.
+class TestSelectionHost : public JASPControl
+{
+public:
+	explicit TestSelectionHost(Filter * filter = nullptr) : JASPControl(), _filter(filter) {}
+	Filter			* selectedSelectionFilter() const override	{ return _filter; }
+	void			  setFilter(Filter * filter)					{ _filter = filter; }
+
+private:
+	Filter		*	  _filter;
+};
+
+}
+
+void TestAll::testAnalysisProviderAggregatesSelectionHosts()
+{
+	//mds-plan C10/D2.4: the analysis' VariableInfoProvider aggregates over the form's selection-
+	//host registry - resolved PER USE (no encoder/filter pointer is ever cached: Filter views
+	//lazy-attach and die with the filter, D1.2). 0 hosts ⟹ the analysis' own filter answers
+	//(C13 host-bound fallback), 1 distinct filter ⟹ that filter IS the namespace, >1 ⟹ merged
+	//union in which same-name columns from different filters COEXIST and encoder/model honestly
+	//return nullptr. selectionNamespaceChanged() fires when the aggregate moves (register,
+	//unregister, host switch - the switch half is pinned in qmlTests against a real host).
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences()
+
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	//A second dataset from the SAME csv: every column name lives in both datasets, so the merged
+	//union has a collision for each name - the "both visible, distinct" case.
+	CSVImporter importer;
+	DataSet   * b = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY2(b->id() != a->id() && b->columnCount() > 0, "second dataset must be a real second namespace");
+
+	a->addFilter();						//a named filter on a, shown on a
+	Filter * aNamed   = a->shownFilter();
+	Filter * aDefault = a->defaultFilter();
+	Filter * bDefault = b->defaultFilter();
+	QVERIFY2(aNamed && aNamed != aDefault, "addFilter must give a distinct named filter");
+	QVERIFY(bDefault && bDefault != aNamed);
+
+	AnalysisForm	form;
+	AnalysisBase	analysis(&form);
+	form.setAnalysis(&analysis);
+
+	// --- 0 hosts: fallback to the analysis' own filter ------------------------------------------
+	analysis.setFilterId(aDefault->id());
+	QVERIFY(analysis.selectedSelectionFilters().isEmpty());
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QVERIFY2(analysis.columnEncoder() == aDefault->columnEncoder(), "0 hosts must answer with the analysis filter's live view");
+	QCOMPARE(analysis.selectionNamespaceVariableNames(), aDefault->provideInfo(varInfoType::VariableNames).toStringList());
+
+	// --- 1 host: that filter IS the namespace (not the analysis' own one) ------------------------
+	TestSelectionHost * hostA = new TestSelectionHost(aNamed);
+	QSignalSpy namespaceSpy(&analysis, &AnalysisBase::selectionNamespaceChanged);
+	form.registerDataSetSelectionOption("hostA", hostA);
+
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	QVERIFY(analysis.columnEncoder() == aNamed->columnEncoder());
+	QVERIFY(analysis.columnEncoder() != aDefault->columnEncoder());
+	QVERIFY(analysis.providerModel() == aNamed->providerModel());
+	QCOMPARE(analysis.selectionNamespaceVariableNames(), aNamed->provideInfo(varInfoType::VariableNames).toStringList());
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QCOMPARE(namespaceSpy.count(), 1);						//registry change reaches the provider
+
+	//two hosts on the SAME filter are still ONE namespace (the aggregate dedups by filter):
+	TestSelectionHost * hostSame = new TestSelectionHost(aNamed);
+	form.registerDataSetSelectionOption("hostSame", hostSame);
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QCOMPARE(namespaceSpy.count(), 2);						//registry changed (MAYBE semantics: the
+															//aggregate itself did not - consumers
+															//re-read, they do not trust a diff)
+
+	// --- 2 distinct filters: merged union, collisions coexist ------------------------------------
+	TestSelectionHost * hostB = new TestSelectionHost(bDefault);
+	form.registerDataSetSelectionOption("hostB", hostB);
+	QCOMPARE(namespaceSpy.count(), 3);
+	QVERIFY(analysis.selectionNamespaceIsMerged());
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id(), bDefault->id() }));	//registration order
+
+	//merged means NO single namespace: encoder and model honestly say nullptr:
+	QVERIFY(analysis.columnEncoder() == nullptr);
+	QVERIFY(analysis.providerModel() == nullptr);
+
+	//b is the same csv as a: every name comes through two distinct filters and appears twice -
+	//both visible, the terms' filterId (C9) tells them apart downstream:
+	const QStringList base = tq(a->getColumnNames());
+	QVERIFY(base.size() > 0);
+	const QStringList merged = analysis.selectionNamespaceVariableNames();
+	QCOMPARE(merged.size(), base.size() * 2);
+	for(const QString & name : base)
+		QCOMPARE(merged.count(name), 2);
+
+	//per-name requests scan the hosts in registration order and answer with the first hit
+	//(documented merged-view rule - consumers needing precision use a specific host):
+	QVERIFY(analysis.provideInfo(varInfoType::VariableType, base.first()).isValid());
+	QVERIFY(!analysis.provideInfo(varInfoType::VariableType, tq("NoSuchColumnHere")).isValid());
+
+	// --- live re-resolution, nothing cached --------------------------------------------------------
+	//hostB moves onto aNamed: the aggregate collapses back to the single namespace WITHOUT any
+	//re-registration, purely through the per-use virtual:
+	hostB->setFilter(aNamed);
+	QVERIFY(!analysis.selectionNamespaceIsMerged());
+	QVERIFY(analysis.columnEncoder() == aNamed->columnEncoder());
+	hostB->setFilter(bDefault);
+	QVERIFY(analysis.selectionNamespaceIsMerged());
+
+	//eager unregister (D2.3) immediately shrinks the aggregate again:
+	delete hostB;
+	QCOMPARE(namespaceSpy.count(), 4);
+	QCOMPARE(analysis.selectionNamespaceFilterIds(), QVariantList({ aNamed->id() }));
+	delete hostSame;
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 1);
+	delete hostA;
+	QCOMPARE(int(analysis.selectedSelectionFilters().size()), 0);
+
+	//back to the fallback; and with the analysis filter gone as well the provider is silent:
+	QVERIFY(analysis.columnEncoder() == aDefault->columnEncoder());
+	analysis.setFilterId(-1);								//no filter by that id ⟹ _filter nulls
+	QVERIFY(analysis.columnEncoder() == nullptr);
+	QVERIFY(analysis.selectionNamespaceVariableNames().isEmpty());
+	QVERIFY(!analysis.provideInfo(varInfoType::DataAvailable).toBool());
+}
+
 void TestAll::testTermFilterIdIsPartOfIdentity()
 {
 	//mds-plan D2.1/C9: Term carries the id of the filter it was selected through (-1 =

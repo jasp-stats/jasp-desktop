@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <json/json.h>
 #include "controls/jaspcontrol.h"
+#include "variableinfo.h"
 #include "appinfo.h"
 
 
@@ -12,7 +13,39 @@ class AnalysisForm;
 class DataSet;
 class Filter;
 
-class AnalysisBase : public QObject
+// mds-plan C10/D2.4: the analysis IS a VariableInfoProvider - the AnalysisBase analogue of
+// Filter::columnEncoder() (CommonData/filter.cpp) - over the form's selection-host registry
+// (AnalysisForm::selectionHostControls, mds-plan D2.3):
+//
+//   - every registered host is asked for its currently selected filter through the virtual
+//     JASPControl::selectedSelectionFilter() PER USE. Nothing is ever cached (not a ColumnEncoder*,
+//     not even a Filter*): a Filter's encode handle lazy-attaches to the filter's final rowid and
+//     is dropped when the filter dies (mds-plan D1.2), and hosts come and go with the QML tree.
+//   - exactly ONE selected filter       ⟹ the provider IS that filter's namespace: provideInfo/
+//     absorbInfo/providerModel/columnEncoder delegate straight to it (columnEncoder() = the live
+//     Filter's own view handle, resolved at call time).
+//   - NO host holds a selection          ⟹ fallback to the analysis' own filter (_filter, the
+//     FilterMenuButton one), and to nothing at all when the analysis has none either.
+//   - MORE THAN ONE distinct filter      ⟹ MERGED namespace (union view over the selected filters):
+//       * VariableNames is the union of the hosts' names, one entry per distinct selected filter
+//         that holds the column - same-name columns coming through different filters COEXIST
+//         (they are different namespaces, mds-plan C3; the terms' filterId disambiguates them
+//         downstream, mds-plan C9/C13),
+//       * every other request scans the hosts in registration order and answers with the first
+//         hit (per-name) or the first host (dataset-wide),
+//       * columnEncoder() and providerModel() return nullptr: there is no single namespace, and
+//         pretending otherwise is exactly the phantom-slice disease this plan kills.
+//     Consumers that need a SINGLE namespace - a legacy run, an encoder handle, one model - must
+//     not use the merged view: they use the analysis' own filter (filter()/its columnEncoder()) or
+//     one specific host (AnalysisForm::selectionHostControls() → selectedSelectionFilter()), and
+//     they can detect the merged case with selectionNamespaceIsMerged() / selectionNamespaceFilterCount().
+//
+// selectionNamespaceChanged() is emitted whenever the aggregate could have changed: a host
+// registers or unregisters (AnalysisForm::selectionHostsChanged) or a host's selected filter
+// moves (AnalysisForm::selectionHostFilterChanged). The resolution walk (JASPControl::
+// effectiveVarInfo) stays the per-control mechanism until Phase 4 replaces it with term-carried
+// provenance; this provider is the analysis-wide endpoint Phase 3/4 consumers switch to.
+class AnalysisBase : public QObject, public VariableInfoProvider
 {
 	Q_OBJECT
 	QML_ELEMENT
@@ -60,6 +93,28 @@ public:
 	virtual				void				destroyForm();
 	virtual				bool				isColumnFreeOrMine(const QString & columnName)				const	{ return false; }
 	virtual				DataSet *			dataSet()													const	{ return nullptr; }
+
+	// ---- VariableInfoProvider over the selection-host registry (mds-plan C10/D2.4) -------------
+	// See the class doc above for the one/many/none semantics; every access re-resolves the live
+	// filters through the form's registry, nothing is cached.
+	QVariant								provideInfo(varInfoType info, const QString &name = "", int row = 0)	const override;
+	bool									absorbInfo(	varInfoType info, const QString &name, int row, QVariant value)			override;
+	QAbstractItemModel					*	providerModel()																							override;
+	ColumnEncoder							*	columnEncoder()																							override;
+
+	///< The live, deduplicated (registration-order) filters the form's selection hosts hold right
+	///  now, read through JASPControl::selectedSelectionFilter(). Empty when no host holds one -
+	///  the provider's fallback (analysis' own filter) takes over then.
+	QList<Filter *>							selectedSelectionFilters() const;
+	///< True when more than one distinct filter is selected across the hosts: the merged case (see
+	///  the class doc - consumers needing a single namespace must not use the merged view).
+	Q_INVOKABLE bool						selectionNamespaceIsMerged() const;
+	///< The distinct selected filter ids in registration order ([] = fallback to the analysis'
+	///  own filter). Introspection/QML surface of selectedSelectionFilters().
+	Q_INVOKABLE QVariantList				selectionNamespaceFilterIds() const;
+	///< The provider's name universe: single namespace = that filter's names; merged = the union
+	///  with one entry per distinct source filter (collisions COEXIST, mds-plan C3/C9).
+	Q_INVOKABLE QStringList					selectionNamespaceVariableNames() const;
 
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue)													const	{ return defaultValue;		}
 	virtual QVariant			getConstant(const QString& key, const QVariant& defaultValue, const QString& module, const QString& analysis)	const	{ return defaultValue;		}
@@ -118,6 +173,13 @@ public slots:
 	virtual void	requestComputedColumnCreationHandler(	const std::string & columnName)						{}
 	virtual void	requestComputedColumnDestructionHandler(const std::string & columnName)						{}
 	virtual void	onUsedVariablesChanged()																	{}
+	///< The form's selection-host registry changed (host registered/unregistered) or a host moved
+	///  to another filter: re-emits selectionNamespaceChanged() (the merged-namespace signal of the
+	///  VariableInfoProvider, mds-plan C10/D2.4) and, for aware analyses, dataSpecChanged() - the
+	///  analysis-wide view of "what this analysis runs on" may have moved even when no option
+	///  value changed (a same-dataset host switch rewrites no value, but it restamps provenance and
+	///  can change the referenced datasets, mds-plan C3/M5). Wired by AnalysisForm at pairing.
+	void			handleSelectionNamespaceMaybeChanged();
 
 
 signals:
@@ -129,6 +191,10 @@ signals:
 	void			boundValuesChanged();
 	void			filterChanged(Filter * f);
 	void			dataSpecChanged();
+	///< mds-plan C10/D2.4: the aggregate over the selection hosts (this class' provider namespace)
+	///< may have changed - consumers re-read it through selectedSelectionFilters()/provideInfo(),
+	///< never cache it.
+	void			selectionNamespaceChanged();
 
 
 protected:

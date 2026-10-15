@@ -232,6 +232,68 @@ Item
 			}
 		}
 
+		// mds-plan C10/D2.4: the analysis itself is a VariableInfoProvider over the selection-host
+		// registry (AnalysisBase::selectedSelectionFilters etc.) - one namespace while every host
+		// happens to sit on the same filter, MERGED once they split. The merged union keeps name
+		// collisions (a column behind two selected namespaces is two entries - the terms' filterId
+		// disambiguates downstream), and the merged case honestly has no single encoder handle.
+		function test_analysisProvider_aggregatesHostRegistry()
+		{
+			//All three hosts default to the workspace's current filter (test_defaults...): the
+			//aggregate dedups by FILTER, not by host - one distinct filter, not merged.
+			var ids = jaspForm.analysis.selectionNamespaceFilterIds()
+			compare(ids.length, 1, "three hosts on one filter aggregate to one namespace, got: " + ids)
+			verify(!jaspForm.analysis.selectionNamespaceIsMerged(), "one distinct filter is not merged")
+
+			var originalA = allVarsA.selectedFilterId
+			var originalB = allVarsB.selectedFilterId
+			var originalTA = rCodeArea.selectedFilterId
+
+			try
+			{
+				var secondEntry = _entryFor("Second - ")
+				var firstEntry  = null
+				for (var entry of allVarsA.filterSelectionValues)
+					if (entry.label.indexOf("Second - ") !== 0)
+					{
+						firstEntry = entry
+						break
+					}
+				verify(secondEntry !== null && firstEntry !== null, "fixture must offer a filter of each dataset")
+
+				allVarsA.selectedFilterId = parseInt(secondEntry.value)	//dataset 'Second'
+				allVarsB.selectedFilterId = parseInt(firstEntry.value)	//dataset 1
+				wait(20)
+
+				verify(jaspForm.analysis.selectionNamespaceIsMerged(),
+						"lists on two datasets make the analysis namespace merged")
+				ids = jaspForm.analysis.selectionNamespaceFilterIds()
+				verify(ids.indexOf(parseInt(secondEntry.value)) !== -1 && ids.indexOf(parseInt(firstEntry.value)) !== -1,
+						"both selected filters are in the aggregate, got: " + ids)
+
+				//The union view: 'TestInts' lives in BOTH datasets, so it must appear once per
+				//source filter - both visible, distinct (C9 disambiguates downstream).
+				var names = jaspForm.analysis.selectionNamespaceVariableNames()
+				var testInts = names.filter(function (n) { return n === "TestInts" }).length
+				compare(testInts, 2, "'TestInts' must be visible once per selected filter, got: " + names)
+
+				//...and the merge collapses by itself when the hosts reunite (per-use resolution,
+				//nothing cached): ALL three hosts (the text area included) onto one filter.
+				rCodeArea.selectedFilterId = parseInt(firstEntry.value)
+				allVarsB.selectedFilterId = parseInt(firstEntry.value)
+				allVarsA.selectedFilterId = parseInt(firstEntry.value)
+				wait(20)
+				verify(!jaspForm.analysis.selectionNamespaceIsMerged(),
+						"all hosts back on one filter: single namespace again")
+			} finally
+			{
+				allVarsA.selectedFilterId = originalA	//functions run alphabetically: don't bleed
+				allVarsB.selectedFilterId = originalB
+				rCodeArea.selectedFilterId = originalTA
+				wait(20)
+			}
+		}
+
 		// Declaring a dataSetSelectionOption (on a list) is what makes an analysis multi-dataset
 		// aware (both modes; no separate dataSetSelection flag any more).
 		function test_option_marks_analysis_aware()

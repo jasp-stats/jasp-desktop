@@ -169,6 +169,13 @@ void HostFilterSelection::applyFilter(Filter * filter)
 	restampValuesUnderHost();
 
 	emit selectedFilterIdChanged();
+
+	//mds-plan C10/D2.4: the analysis-wide provider view (AnalysisBase : VariableInfoProvider)
+	//aggregates over exactly this - tell it the namespace moved, AFTER the restamp walk so it
+	//re-reads a settled state. Covers hosts with nothing bound yet too, where the walk emits no
+	//setBoundValue and the (absent) dropdown has no option to write.
+	if (AnalysisForm * form = _host->form())
+		form->notifySelectionHostFilterChanged(_host);
 }
 
 //The .meta stamps of column-bearing values name the filter they were selected THROUGH

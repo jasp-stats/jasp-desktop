@@ -216,6 +216,13 @@ private slots:
 	// foundation D2.4 (AnalysisBase as VariableInfoProvider) aggregates over.
 	void	testSelectionHostRegistryIntrospection();
 
+	// mds-plan C10/D2.4: AnalysisBase implements VariableInfoProvider over that registry -
+	// 0 hosts fall back to the analysis' own filter, 1 host (deduped) delegates to that filter's
+	// live namespace (handle resolved per use, never cached), >1 distinct filters give the merged
+	// union view (same-name columns from different filters coexist; columnEncoder/providerModel
+	// return nullptr for the merged case) - and selectionNamespaceChanged() tracks the aggregate.
+	void	testAnalysisProviderAggregatesSelectionHosts();
+
 	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
 	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
 	// to misread them), and a same-build round trip opens.

@@ -145,6 +145,12 @@ signals:
 	void					activeJASPControlChanged();
 	void					isAnnotatedChanged();
 	void					relaxInputConstraintsChanged(bool relax);
+	///< mds-plan D2.4: the selection-HOST registry changed (a host registered or dropped out -
+	///  eager unregister on destruction included). AnalysisBase re-reads its provider aggregate.
+	void					selectionHostsChanged();
+	///< mds-plan D2.4/D2.5: a registered host moved to another filter (HostFilterSelection has
+	///  restamped its controls and notifies through notifySelectionHostFilterChanged).
+	void					selectionHostFilterChanged(JASPControl * host);
 		
 public:
 	ListModel			*	getModel(const QString& modelName)								const	{ return _modelMap.count(modelName) > 0 ? _modelMap[modelName] : nullptr;	} // Maps create elements if they do not exist yet
@@ -204,6 +210,10 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	Q_INVOKABLE QVariantList selectionHosts() const;
 	void					registerDataSetSelectionOption(const QString &option, JASPControl *host);
 	void					unregisterDataSetSelectionOption(const QString &option, JASPControl *host);
+	///< mds-plan C10/D2.4+D2.5: HostFilterSelection calls this when its selected filter moved
+	///  (after the restamp walk, so consumers re-read a settled namespace). Re-emits
+	///  selectionHostFilterChanged, which AnalysisBase uses to refresh its provider view.
+	void					notifySelectionHostFilterChanged(JASPControl * host)	{ emit selectionHostFilterChanged(host); }
 
 	///< The raw options JSON of the current syntax-bridge parse request (set per request, empty
 	///  clears). A selection host registering after the parse resolves its own option out of
@@ -268,6 +278,10 @@ private:
 	void			setControlIsDependency(	std::string controlName, bool isDependency)					{ setControlIsDependency(tq(controlName), isDependency);	}
 	void			setControlMustContain(	std::string controlName, std::set<std::string> containThis)	{ setControlMustContain(tq(controlName), tql(containThis)); }
 	void			setAnalysisUp();
+	///< mds-plan C10/D2.4: pair the registry/provider signals onto an analysis (both pairing
+	///  points - setAnalysis and the syntax/unit-test dummy made in setAnalysisUp - run this,
+	///  unique-connected so it is idempotent).
+	void			connectSelectionNamespaceSignals(AnalysisBase * analysis);
 	stringvecvec	_getValuesFromJson(const Json::Value& jsonValues, const QStringList& searchPath);
 	QString			msgsListToString(const QStringList & list) const;
 	void			lockOptions();

@@ -707,6 +707,9 @@ void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPCon
 	//(read-time pruning of null QPointers stays as the belt).
 	connect(host, &QObject::destroyed, this, &AnalysisForm::handleSelectionHostDestroyed, Qt::UniqueConnection);
 
+	//mds-plan D2.4: the provider aggregate (AnalysisBase over the registry) just grew a host.
+	emit selectionHostsChanged();
+
 	//Late host (ComponentsList async instantiation while a bridge parse left raw options
 	//pending): resolve and apply its own option right now, before its DropDown binds.
 	_applyPendingDataSetSelectionValue(option);
@@ -714,15 +717,23 @@ void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPCon
 
 void AnalysisForm::handleSelectionHostDestroyed(QObject * host)
 {
+	bool removed = false;
+
 	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
 	{
 		//inside destroyed() the host pointer is still the identity to match, while the QPointer
 		//may or may not have been nulled yet - accept either signal, never dereference it here.
 		if(it->host.isNull() || it->host.data() == host)
+		{
 			it = _dataSetSelectionHosts.erase(it);
+			removed = true;
+		}
 		else
 			++it;
 	}
+
+	if(removed)							//mds-plan D2.4: the provider aggregate just shrank
+		emit selectionHostsChanged();
 }
 
 QList<JASPControl *> AnalysisForm::selectionHostControls() const
@@ -767,13 +778,21 @@ void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPC
 	if(option.isEmpty() || !host)
 		return;
 
+	bool removed = false;
+
 	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
 	{
 		if(it->host == host && it->option == option)
+		{
 			it = _dataSetSelectionHosts.erase(it);
+			removed = true;
+		}
 		else
 			++it;
 	}
+
+	if(removed)							//mds-plan D2.4: provider aggregate shrank (option rename path)
+		emit selectionHostsChanged();
 }
 
 void AnalysisForm::setPendingDataSetSelectionRawValues(const Json::Value &rawOptions)
@@ -902,7 +921,22 @@ void AnalysisForm::setAnalysis(AnalysisBase * analysis)
 
 	Log::log() << "AnalysisForm " << this << " sets Analysis " << _analysis << " on itself" << std::endl;
 
+	connectSelectionNamespaceSignals(_analysis);	//mds-plan C10/D2.4
+
 	setAnalysisUp();
+}
+
+void AnalysisForm::connectSelectionNamespaceSignals(AnalysisBase * analysis)
+{
+	if(!analysis)
+		return;
+
+	//mds-plan C10/D2.4: the analysis' VariableInfoProvider aggregates over THIS registry, so it
+	//has to hear about registry changes (host joins/leaves) and host filter switches (after the
+	//HostFilterSelection restamp walk has settled the namespace, see notifySelectionHostFilterChanged).
+	//Unique: both pairing points (here and the dummy in setAnalysisUp) may run on the same pair.
+	connect(this, &AnalysisForm::selectionHostsChanged,			analysis, &AnalysisBase::handleSelectionNamespaceMaybeChanged, Qt::UniqueConnection);
+	connect(this, &AnalysisForm::selectionHostFilterChanged,	analysis, &AnalysisBase::handleSelectionNamespaceMaybeChanged, Qt::UniqueConnection);
 }
 
 void AnalysisForm::boundValueChangedHandler(JASPControl *)
@@ -941,7 +975,10 @@ void AnalysisForm::setAnalysisUp()
 	if (!_analysis)
 	{
 		if (qmlEngine(this)->rootContext()->contextProperty("NO_DESKTOP_MODE").toBool())
+		{
 			_analysis = new AnalysisBase(this); // Make dummy analysis: needed for Unit TestCases or R Syntax mode
+			connectSelectionNamespaceSignals(_analysis);	//mds-plan C10/D2.4: this path bypasses setAnalysis
+		}
 		else
 			return;
 	}
