@@ -174,18 +174,34 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	void					cleanUpForm();
 	bool					hasError();
 
-	// --- per-form dataset-selection registry (mds-plan C4/REGISTRY, M9) --------------------------
+	// --- selection-host registry (mds-plan C4/REGISTRY, M9, D2.3) --------------------------------
 	// The syntax bridge must translate the surface strings of dataset selection options before
 	// anything binds, and it used a findChildren scan for that - blind to hosts instantiated
-	// asynchronously (ComponentsList rows). Hosts (VariablesFormBase, TextAreaBase) now register
-	// their dataSetSelectionOption on the form (HostFilterSelection::setOption, or the first
-	// analysisBecameKnown() when the form was not yet known at property time) and unregister on
-	// change; dead entries are pruned when read. A host registering LATE while the raw options
-	// of the current parse are still pending resolves and applies its own option immediately -
-	// no scheduled "wait for instantiation" passes anywhere.
+	// asynchronously (ComponentsList rows). Selection HOSTS - the lists with a dataSetSelection-
+	// Option (VariablesListBase, mds-plan C10/D2.2) and the TextAreaBase hosts - register here
+	// (HostFilterSelection::setOption, or the first analysisBecameKnown() when the form was not
+	// yet known at property time); destruction unregisters eagerly (and dead entries are pruned
+	// at every read). A host registering LATE while the raw options of the current parse are
+	// still pending resolves and applies its own option immediately - no scheduled "wait for
+	// instantiation" passes anywhere.
+	// Ordering guarantee (mds-plan D2.3): every control that resolves through a host carries a
+	// bindTo dependency on that host's FilterSelect (derived from the varInfo resolution in
+	// AnalysisForm::sortControls via JASPControl::selectionDependency), so each host's selection
+	// is bound BEFORE the controls it serves - per host, independent of the other hosts.
+	// This registry is the foundation of mds-plan D2.4 (AnalysisBase as VariableInfoProvider):
+	// the provider aggregates over selectionHostControls(), reading each host's filter through
+	// JASPControl::selectedSelectionFilter() - ids/filters re-resolved at use, never cached
+	// encoder pointers (see the virtual's doc).
 
 	///< Live registry entries (deduplicated, dead hosts pruned); read by the syntax bridge.
 	Q_INVOKABLE QStringList	dataSetSelectionOptionNames() const;
+	///< Live selection hosts (dead pruned, deduplicated) in registration order - D2.4's input.
+	QList<JASPControl *>	selectionHostControls() const;
+	///< Introspection (QML/tests, mds-plan D2.3): how many live hosts own a selection right now.
+	Q_INVOKABLE int			selectionHostCount() const;
+	///< Introspection: the live host controls themselves (JASPControl* items; selecting ones
+	///  answer ownedSelectionVarInfo()/selectedSelectionFilter()).
+	Q_INVOKABLE QVariantList selectionHosts() const;
 	void					registerDataSetSelectionOption(const QString &option, JASPControl *host);
 	void					unregisterDataSetSelectionOption(const QString &option, JASPControl *host);
 
@@ -261,6 +277,9 @@ private:
 private slots:
 	   void			formCompletedHandler();
 	   void			knownIssuesUpdated();
+	   ///< mds-plan D2.3: unregistering a selection host is eager, not only read-time pruning
+	   ///  (wired at registration; entries whose host is dying or dead drop out).
+	   void			handleSelectionHostDestroyed(QObject * host);
 
 private:
 	AnalysisBase								*	_analysis			= nullptr;

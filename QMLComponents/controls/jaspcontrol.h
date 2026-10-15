@@ -173,6 +173,14 @@ public:
 	/// Consumers must not grab form()->varInfo() directly but use effectiveVarInfo() below, so a
 	/// control under a selecting host follows that host's dataset instead of the analysis-wide one.
 	virtual VariableInfo			* ownedSelectionVarInfo()						{ return nullptr; }
+	///< Hosts only (mds-plan D2.3): the filter currently picked through this host's own selection
+	/// (HostFilterSelection::selectedFilter), nullptr for non-hosts or while nothing is selected.
+	/// Registry consumers - above all mds-plan D2.4 (AnalysisBase as VariableInfoProvider over the
+	/// registered selected filters) - enumerate the form's selection hosts and read their filter
+	/// THROUGH THIS. They must never cache a ColumnEncoder*: a Filter's encode handle lazy-attaches
+	/// to the filter's final rowid and is dropped when the filter dies (D1.2), so only the
+	/// filterId/Filter* re-resolved at use time is safe to hold.
+	virtual Filter					* selectedSelectionFilter() const				{ return nullptr; }
 	///< Hosts only: the NAME of the option carrying the selection whose VariableInfo is handed out
 	/// by ownedSelectionVarInfo() (VariablesListBase::dataSetSelectionOption, TextArea's of the
 	/// same name). The control that reads/writes that option - the FilterSelect dropdown - is registered

@@ -677,6 +677,42 @@ Item
 			}
 		}
 
+		// mds-plan D2.3: the form's registry exposes the live selection HOSTS (count + list), the
+		// selecting lists and the TextArea alike, and it tracks their lifecycle eagerly. The
+		// per-host bind-order promise (each host's FilterSelect before the controls it serves)
+		// is pinned in test_selection_dependency_is_derived; here: registry integrity - the
+		// control registered for a host's option IS that host's own dropdown.
+		function test_selectionHostRegistry_introspection()
+		{
+			compare(form.selectionHostCount(), 3, "two selecting lists and the text area are the hosts")
+
+			var hosts = form.selectionHosts()
+			verify(hosts.indexOf(allVarsA) !== -1 && hosts.indexOf(allVarsB) !== -1 && hosts.indexOf(rCodeArea) !== -1,
+					"the live hosts are exactly the selecting ones, got: " + hosts)
+			verify(hosts.indexOf(allVarsC) === -1 && hosts.indexOf(targetC) === -1 && hosts.indexOf(dependentA) === -1,
+					"controls without a selection are not hosts")
+
+			//registry integrity: getControl(option) resolves to the host's OWN FilterSelect, the
+			//control selectionDependency() orders the served controls against:
+			var selectA = _selectControlFor(allVarsA, "dataSetA")
+			verify(selectA !== null, "list A's dropdown lives in its chrome")
+			verify(form.getControl("dataSetA") === selectA,
+					"the registered option control IS the host's own dropdown")
+
+			//count is lifecycle-tracked: a late host joins immediately, its destruction removes
+			//it EAGERLY (on destroyed, not read-time pruning), and the real hosts survive:
+			var late = lateHostComponent.createObject(jaspForm)
+			late.formIsKnown(jaspForm)
+			wait(20)
+			compare(form.selectionHostCount(), 4, "the late host registered")
+			verify(form.selectionHosts().indexOf(late) !== -1, "and it is in the host list")
+			late.destroy()
+			wait(20)
+			compare(form.selectionHostCount(), 3, "a destroyed host unregisters with the object")
+			verify(form.selectionHosts().indexOf(allVarsA) !== -1 && form.selectionHosts().length === 3,
+					"and the real hosts survived the churn")
+		}
+
 		// mds-plan C4/REGISTRY: the bridge reads the form's selection-option registry, so
 		// dataSetSelectionOptionNames must hold exactly the live hosts' option names - the LIST
 		// hosts and the TextArea host alike (mds-plan D2.2 moved the form hosts onto the lists;

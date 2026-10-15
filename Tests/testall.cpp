@@ -3405,6 +3405,55 @@ void TestAll::testDeadControlsArePrunedFromFormCaches()
 	QVERIFY(!form.getControl("doomed"));
 }
 
+void TestAll::testSelectionHostRegistryIntrospection()
+{
+	//mds-plan D2.3: the form's selection-host registry is introspectable (count + list in
+	//registration order) and unregisters EAGERLY on destruction - this is the interface mds-plan
+	//D2.4 (AnalysisBase as VariableInfoProvider over the registered selected filters) aggregates
+	//over, so its shape and lifecycle are pinned here, host-type-agnostic.
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);   //AnalysisForm's ctor touches preferences(), see above
+
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form.setAnalysis(&analysis);
+
+	QCOMPARE(form.selectionHostCount(), 0);
+	QVERIFY(form.selectionHosts().isEmpty());
+
+	JASPControl * hostA = new JASPControl();
+	JASPControl * hostB = new JASPControl();
+	form.registerDataSetSelectionOption("optionA", hostA);
+	form.registerDataSetSelectionOption("optionB", hostB);
+
+	QCOMPARE(form.selectionHostCount(), 2);
+	const QList<JASPControl *> hosts = form.selectionHostControls();
+	QCOMPARE(hosts.indexOf(hostA), 0);					//registration order is the list order
+	QCOMPARE(hosts.indexOf(hostB), 1);
+
+	//re-registering the same (host, option) does not duplicate; a second option on the SAME
+	//host counts as one host (the registry is of hosts, the names accessor stays per-option):
+	form.registerDataSetSelectionOption("optionA", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	form.registerDataSetSelectionOption("optionA2", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	QCOMPARE(form.dataSetSelectionOptionNames().count(), 3);
+
+	//explicit unregister (option rename path, HostFilterSelection::setOption) drops the entry:
+	form.unregisterDataSetSelectionOption("optionA2", hostA);
+	QCOMPARE(form.selectionHostCount(), 2);
+	QCOMPARE(form.dataSetSelectionOptionNames(), QStringList({ "optionA", "optionB" }));
+
+	//eager unregister on destruction - no read-time wait, no dangling host handed to D2.4:
+	delete hostB;
+	QCOMPARE(form.selectionHostCount(), 1);
+	QCOMPARE(form.selectionHostControls(), QList<JASPControl *>({ hostA }));
+
+	delete hostA;
+	QCOMPARE(form.selectionHostCount(), 0);
+	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
+}
+
 void TestAll::testTermFilterIdIsPartOfIdentity()
 {
 	//mds-plan D2.1/C9: Term carries the id of the filter it was selected through (-1 =

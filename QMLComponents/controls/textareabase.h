@@ -47,7 +47,7 @@ class TextAreaBase : public JASPListControl, public BoundControl
 	Q_PROPERTY( bool		checkSyntax			READ checkSyntax			WRITE setCheckSyntax		NOTIFY checkSyntaxChanged						)
 	Q_PROPERTY( QString		variableSeparator	READ variableSeparator		WRITE setVariableSeparator	NOTIFY variableSeparatorChanged					)
 	Q_PROPERTY( QStringList	separators			READ separators				WRITE setSeparators			NOTIFY separatorsChanged						)
-	///< Per-component dataset/filter selection, exactly like VariablesForm::dataSetSelectionOption:
+	///< Per-component dataset/filter selection, exactly like VariablesListBase::dataSetSelectionOption:
 	///< a TextArea with syntax checking/autocompletion (R, Lavaan, JAGS) can look at its own
 	///< dataset, independent of the analysis' global filter - the value of the named option is a
 	///< filter id and a FilterSelect in the component shows/writes it.
@@ -108,13 +108,15 @@ public slots:
 	void	checkSyntaxHandler()		{ if(_checkSyntax)		_boundControl->checkSyntax();		}
 	void	checkSyntaxMaybeHandler()	{ if(_autoCheckSyntax)	checkSyntaxHandler();				}
 
-	// ---- per-component dataset/filter selection (HostFilterSelection, see VariablesFormBase) ----
+	// ---- per-component dataset/filter selection (HostFilterSelection, see VariablesListBase) ----
 	QString					dataSetSelectionOption()			const	{ return _hostSelection.option();			}
 	bool					selectionAvailable()				const	{ return _hostSelection.selectionAvailable(); }
 	QVariantList			filterSelectionValues()				const	{ return _hostSelection.filterSelectionValues(); }
 	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
 	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
 	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
+	///< Registry-facing selected filter of this host (mds-plan D2.3).
+	Filter				  * selectedSelectionFilter() const override		{ return _hostSelection.selectedFilter(); }
 	///< The option the text area's FilterSelect dropdown is bound to; its registered control is
 	///  what consumers of this host depend on for bindTo order (JASPControl::selectionDependency).
 	QString				  ownedSelectionOptionName() const override	{ return _hostSelection.option(); }

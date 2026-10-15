@@ -211,6 +211,11 @@ private slots:
 	// wire field: options stay byte-identical until Phase 3's generators.
 	void	testTermFilterIdIsPartOfIdentity();
 
+	// mds-plan D2.3: the selection-host registry on AnalysisForm is introspectable (count/list in
+	// registration order, per-option names kept) and unregisters eagerly on destruction - the
+	// foundation D2.4 (AnalysisBase as VariableInfoProvider) aggregates over.
+	void	testSelectionHostRegistryIntrospection();
+
 	// mds-plan C4/VERSION: a saved .jasp carries the 7.0.0 archive version (major bump: older
 	// builds must reject aware files via JASPImporter::isCompatible's major-version gate, not try
 	// to misread them), and a same-build round trip opens.

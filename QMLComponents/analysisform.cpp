@@ -702,9 +702,64 @@ void AnalysisForm::registerDataSetSelectionOption(const QString &option, JASPCon
 
 	_dataSetSelectionHosts.append({QPointer<JASPControl>(host), option});
 
+	//mds-plan D2.3: unregistering is eager - the registry is the introspection surface D2.4
+	//aggregates over, so a dying host drops out on destruction, not only at the next read
+	//(read-time pruning of null QPointers stays as the belt).
+	connect(host, &QObject::destroyed, this, &AnalysisForm::handleSelectionHostDestroyed, Qt::UniqueConnection);
+
 	//Late host (ComponentsList async instantiation while a bridge parse left raw options
 	//pending): resolve and apply its own option right now, before its DropDown binds.
 	_applyPendingDataSetSelectionValue(option);
+}
+
+void AnalysisForm::handleSelectionHostDestroyed(QObject * host)
+{
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		//inside destroyed() the host pointer is still the identity to match, while the QPointer
+		//may or may not have been nulled yet - accept either signal, never dereference it here.
+		if(it->host.isNull() || it->host.data() == host)
+			it = _dataSetSelectionHosts.erase(it);
+		else
+			++it;
+	}
+}
+
+QList<JASPControl *> AnalysisForm::selectionHostControls() const
+{
+	QList<JASPControl *> hosts;
+
+	//Live hosts in registration order; dead entries prune exactly like the names accessor does.
+	for(auto it = _dataSetSelectionHosts.begin(); it != _dataSetSelectionHosts.end();)
+	{
+		if(!it->host)
+		{
+			it = _dataSetSelectionHosts.erase(it);
+			continue;
+		}
+
+		if(!hosts.contains(it->host))
+			hosts << it->host;
+
+		++it;
+	}
+
+	return hosts;
+}
+
+int AnalysisForm::selectionHostCount() const
+{
+	return int(selectionHostControls().size());
+}
+
+QVariantList AnalysisForm::selectionHosts() const
+{
+	QVariantList result;
+
+	for(JASPControl * host : selectionHostControls())
+		result << QVariant::fromValue(host);
+
+	return result;
 }
 
 void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPControl *host)

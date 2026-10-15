@@ -93,6 +93,8 @@ public:
 	int						selectedFilterId()					const	{ return _hostSelection.selectedFilterId(); }
 	VariableInfo		  * ownVarInfo()							{ return _hostSelection.ownVarInfo(); }
 	VariableInfo		  * ownedSelectionVarInfo() override			{ return _hostSelection.selectionAvailable() ? _hostSelection.ownVarInfo() : nullptr; }
+	///< Registry-facing selected filter of this host (mds-plan D2.3).
+	Filter				  * selectedSelectionFilter() const override		{ return _hostSelection.selectedFilter(); }
 	///< The option the list's FilterSelect dropdown is bound to; its registered control is what
 	///< consumers of this host wait for in bindTo order (JASPControl::selectionDependency).
 	QString				  ownedSelectionOptionName() const override	{ return _hostSelection.option(); }
