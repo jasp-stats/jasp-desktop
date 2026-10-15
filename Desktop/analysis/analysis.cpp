@@ -550,10 +550,19 @@ std::set<std::string> Analysis::applyPlotEdits()
 			// set stays theirs. Taking the engine's value whenever it differs would undo exactly
 			// the keys the user changed, which is what an edit is.
 			Json::Value engineEditOpts;
-			if (_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
-				for (const std::string & key : engineEditOpts.getMemberNames())
-					if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
-						_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
+			if (!_editOptionsOfPlot(_results, uniqueName, engineEditOpts))
+			{
+				// The re-run did not produce this plot (e.g. the split variable changed, so the
+				// per-level plot names are different now). Asking the engine to edit it would
+				// target a plot that does not exist. Keep the stored edit so it comes back if the
+				// plot does, but do not re-edit it now.
+				Log::log() << "applyPlotEdits: plot '" << uniqueName << "' not in results, skipping re-edit" << std::endl;
+				continue;
+			}
+
+			for (const std::string & key : engineEditOpts.getMemberNames())
+				if (!_plotEdits[uniqueName]["editOptions"].isMember(key))
+					_plotEdits[uniqueName]["editOptions"][key] = engineEditOpts[key];
 
 			// A re-run hands us a plain plot: jaspBase deliberately does not re-apply earlier
 			// edits to a freshly drawn figure (see the disabled block in writeImage.R), so every
