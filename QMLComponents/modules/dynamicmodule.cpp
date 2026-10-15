@@ -347,7 +347,8 @@ Upgrades * DynamicModule::instantiateUpgradesQml(QQmlContext* context, const QSt
 
 	//Log::log() << "Dynamic module " << moduleName << " got upgrades? " << ( upgrades ? "yes!" : "no...") << std::endl;
 
-	upgrades->setModule(tq(moduleName));
+	if(upgrades)
+		upgrades->setModule(tq(moduleName));
 
 	return upgrades;
 }
@@ -367,10 +368,18 @@ void DynamicModule::loadDescriptionQml(QQmlContext * context, const QString & de
 
 void DynamicModule::loadUpgradesQML(QQmlContext * context, const QString & upgradesTxt, const QUrl & url)
 {
+	Upgrades::takeLoadErrors(); //Nothing left over from an earlier failed load should end up in this one
+
 	Upgrades * upgrades = instantiateUpgradesQml(context, upgradesTxt, url, name());
 
 	if(!upgrades)
 		throw ModuleException(name(), getQmlUpgradesFilename() + " could not be instantiated!\nIt must have Upgrades item as root and, well not contain any errors.\nCheck the log for more details.");
+
+	//The errors found while creating the QML, see Upgrades::addLoadError
+	QStringList loadErrors = tq(Upgrades::takeLoadErrors());
+
+	if(loadErrors.size())
+		throw ModuleException(name(), fq(loadErrors.join("\n")));
 
 	_upgrades = upgrades;
 }

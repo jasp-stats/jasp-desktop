@@ -49,6 +49,7 @@
 #include "timers.h"
 #include "analysis/analyses.h"
 #include "modules/dynamicmodules.h"
+#include "utilities/messageforwarder.h"
 
 #include <QSignalSpy>
 #include <QFile>
@@ -3075,29 +3076,39 @@ void TestAll::testCliSyncExportChainFailsOnBadDataFile()
 	TempFiles::init(ProcessInfo::currentPID());
 }
 
+//Writes a minimal installed module (no R code needed: nothing gets run) with one analysis "upgradeMsgTest"
+//at version 0.2 and the given Upgrades.qml into the session dir, returns the folder to load it from or
+//an empty string if writing failed.
+QString TestAll::_writeUpgradeTestModule(const QString & moduleName, const QByteArray & upgradesQml)
+{
+	const QString	moduleDir	= QString::fromStdString(TempFiles::createTmpFolder()) + "/" + moduleName + "/",
+					contentDir	= moduleDir + moduleName + "/";
+
+	const bool ok =
+			QDir().mkpath(contentDir + "icons")
+		&&	QDir().mkpath(contentDir + "qml")
+		&&	_writeTextFile(contentDir + "DESCRIPTION", "Package: " + moduleName.toUtf8() + "\nTitle: Upgrade test\nVersion: 0.2\n")
+		&&	_writeTextFile(contentDir + "Description.qml",
+				"import QtQuick\nimport JASP.Module\n"
+				"Description\n{\n\ttitle: \"Upgrade test\"\n\tAnalysis { title: \"Upgrade test\"; func: \"upgradeMsgTest\" }\n}\n")
+		&&	_writeTextFile(contentDir + "Upgrades.qml", "import QtQuick\nimport JASP.Module\n" + upgradesQml);
+
+	return ok ? moduleDir : "";
+}
+
 void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
 {
 	MainWindow * mw = nullptr;
 	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
 
-	//A minimal installed module (no R code needed: nothing gets run), whose Upgrades.qml brings
-	//version 0.1 of its analysis to 0.2 with a message above the form and one on the option "number":
+	//Upgrades.qml brings version 0.1 of the analysis to 0.2 with a message above the form and one on the option "number":
 	const QString	moduleName	= "jaspUpgradeMsgTest",
-					moduleDir	= QString::fromStdString(TempFiles::createTmpFolder()) + "/" + moduleName + "/",
-					contentDir	= moduleDir + moduleName + "/";
+					moduleDir	= _writeUpgradeTestModule(moduleName,
+						"Upgrades\n{\n\tUpgrade\n\t{\n\t\tfunctionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.2\"\n"
+						"\t\tmsg: \"form message\"\n"
+						"\t\tChangeSetValue { name: \"number\"; jsonValue: 3; msg: \"control message\" }\n\t}\n}\n");
 
-	QVERIFY(QDir().mkpath(contentDir + "icons"));
-	QVERIFY(QDir().mkpath(contentDir + "qml"));
-	QVERIFY(_writeTextFile(contentDir + "DESCRIPTION", "Package: " + moduleName.toUtf8() + "\nTitle: Upgrade message test\nVersion: 0.2\n"));
-	QVERIFY(_writeTextFile(contentDir + "Description.qml",
-		"import QtQuick\nimport JASP.Module\n"
-		"Description\n{\n\ttitle: \"Upgrade message test\"\n\tAnalysis { title: \"Upgrade message test\"; func: \"upgradeMsgTest\" }\n}\n"));
-	QVERIFY(_writeTextFile(contentDir + "Upgrades.qml",
-		"import QtQuick\nimport JASP.Module\n"
-		"Upgrades\n{\n\tUpgrade\n\t{\n\t\tfunctionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.2\"\n"
-		"\t\tmsg: \"form message\"\n"
-		"\t\tChangeSetValue { name: \"number\"; jsonValue: 3; msg: \"control message\" }\n\t}\n}\n"));
-
+	QVERIFY(!moduleDir.isEmpty());
 	QVERIFY(DynamicModules::dynMods()->initializeModuleFromDir(fq(moduleDir)));
 
 	Json::Value analysisData;
@@ -3128,6 +3139,45 @@ void TestAll::testUpgradeMsgsAreSetBeforeAnalysisIsStored()
 	QCOMPARE(formMsgsWhenStored,	stringvec({"form message"}));
 	QCOMPARE(controlMsgsWhenStored,	stringvec({"control message"}));
 	QVERIFY(analysis->needsRefresh());
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
+void TestAll::testBrokenUpgradesQmlGivesWarning()
+{
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	QStringList warnings;
+	MessageForwarder::setWarningHandler([&](const QString & title, const QString & message, bool) { warnings << title + ": " + message; });
+	auto resetHandler = qScopeGuard([](){ MessageForwarder::setWarningHandler({}); });
+
+	//Two Upgrades from the same version of the same function, and a Change that is not inside an Upgrade:
+	const QString	moduleName	= "jaspBrokenUpgradesTest",
+					moduleDir	= _writeUpgradeTestModule(moduleName,
+						"Upgrades\n{\n"
+						"\tUpgrade { functionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.2\"; ChangeSetValue { name: \"number\"; jsonValue: 3 } }\n"
+						"\tUpgrade { functionName: \"upgradeMsgTest\"; fromVersion: \"0.1\"; toVersion: \"0.1\" }\n"
+						"\tChangeSetValue { name: \"number\"; jsonValue: 4 }\n"
+						"}\n");
+
+	QVERIFY(!moduleDir.isEmpty());
+
+	//The module itself still loads, a broken Upgrades.qml only means its upgrades are not used:
+	QVERIFY(DynamicModules::dynMods()->initializeModuleFromDir(fq(moduleDir)));
+
+	Modules::DynamicModule * module = (*DynamicModules::dynMods())[fq(moduleName)];
+	QVERIFY(module);
+	QVERIFY(!module->hasUpgradesToApply("upgradeMsgTest", Version("0.1")));
+
+	QCOMPARE(warnings.size(), 1);
+	QVERIFY2(warnings[0].contains("Already registered an Upgrade with version '0.1'"),		qPrintable(warnings[0]));
+	QVERIFY2(warnings[0].contains("A Change* Item must always be a child of Upgrade"),		qPrintable(warnings[0]));
 
 	delete exitSpy;
 	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
