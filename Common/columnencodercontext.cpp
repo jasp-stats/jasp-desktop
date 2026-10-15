@@ -78,9 +78,12 @@ ColumnEncoderContext ColumnEncoderContext::fromJson(const Json::Value & context)
 		throw std::runtime_error("Column encoder context must be a JSON object.");
 
 	if(!context.isMember("version") || !context["version"].isInt())
-		throw std::runtime_error("Column encoder context must contain integer version 1.");
-	if(context["version"].asInt() != Version)
+		throw std::runtime_error("Column encoder context must contain an integer version.");
+	if(context["version"].asInt() < 1 || context["version"].asInt() > Version)
 		throw std::runtime_error("Unsupported column encoder context version.");
+	// v1 and v2 share one wire shape (the replay semantics moved into the table, not the JSON):
+	// a v1 context (no prefix or a dataset prefix) parses and replays exactly like v2's, so no
+	// migration exists and none is needed (C15: dev-branch fixtures, regenerate don't compat).
 
 	return ColumnEncoderContext(
 		columnTypesFromJson(context["columns"], "columns"),
@@ -115,35 +118,32 @@ Json::Value ColumnEncoderContext::toJson() const
 }
 
 ScopedColumnEncoderContext::ScopedColumnEncoderContext(const ColumnEncoderContext & context, ColumnEncoder & extraEncoder)
-	: _supplied(context.supplied()), _extraEncoder(extraEncoder)
+	: _supplied(context.supplied())
 {
 	if(!_supplied)
 		return;
 
-	_previousColumns = ColumnEncoder::columnEncoder()->currentNames();
-	_previousExtra = _extraEncoder.currentNames();
-	_previousPrefix = ColumnEncoder::columnEncoder()->encodePrefix();
+	// v2 replay (mds-plan D1.7): the captured column set becomes a SCOPED block of the one global
+	// decode table - nothing else. The live canonical mint, every filter view and the extras
+	// encoder are never mutated (the v1 swap mutated whatever the current encoder pointed at,
+	// which after Phase 1 is a filter view funneling into the live dataset's mint - the landmine
+	// this rework removes). A context that carries its D<ds>_F<f> prefix replays in exactly that
+	// namespace; a prefix-less (v1) context replays under the namespace the process-global
+	// encoder holds right now, like before.
+	std::string columnsPrefix = context.prefix();
 
-	// A captured context is only self-contained if the encode namespace travels with it:
-	// filter views mint JASPColumn_D<dataSetId>_F<filterId>_<n>_Encoded, so replaying dataset A's
-	// context while dataset B is live has to reforge A's prefix before applying A's names.
-	// An empty prefix (v1 context) keeps whatever namespace is live, as before.
-	if(!context.prefix().empty() && context.prefix() != _previousPrefix)
-		ColumnEncoder::columnEncoder()->setEncodePrefix(context.prefix());
+	if(columnsPrefix.empty())
+		columnsPrefix = ColumnEncoder::columnEncoder()->encodePrefix();
 
-	ColumnEncoder::columnEncoder()->setCurrentNames(context.columns());
-	_extraEncoder.setCurrentNames(context.extra());
+	_columnsBlock.emplace(columnsPrefix, context.columns());
+	_extraBlock.emplace(extraEncoder.encodePrefix(), context.extra());
+
+	// Both blocks write themselves on entry and undo themselves (exactly, via their displaced-
+	// entry logs) in the destructor - member order makes the extra block undone first, which is
+	// irrelevant as they never share a namespace.
 }
 
-ScopedColumnEncoderContext::~ScopedColumnEncoderContext()
-{
-	if(!_supplied)
-		return;
-
-	ColumnEncoder::columnEncoder()->setEncodePrefix(_previousPrefix);
-	ColumnEncoder::columnEncoder()->setCurrentNames(_previousColumns);
-	_extraEncoder.setCurrentNames(_previousExtra);
-}
+ScopedColumnEncoderContext::~ScopedColumnEncoderContext() = default;
 
 Json::Value decodeColumnJson(const char * payloadJson, const char * encoderContextJson, ColumnEncoder & extraEncoder, bool replaceNames)
 {

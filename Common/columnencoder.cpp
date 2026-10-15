@@ -258,6 +258,37 @@ void ColumnEncoder::resetForTests()
 	_decodeTable().clear();
 }
 
+ColumnEncoder::ScopedDecodeBlock::ScopedDecodeBlock(const std::string & prefix, const colTypeMap & names)
+	: _prefix(prefix)
+{
+	//Write the replay block (mint order = every live block's mint order, C1) and remember what
+	//occupied these exact keys, so the destructor puts the table back to the bit - nesting is
+	//exact (LIFO) and live blocks survive a replay that collides with their namespace.
+	const std::vector<std::pair<std::string, columnType>> reverse = mintReverseOf(names);
+
+	for(size_t i = 0; i < reverse.size(); ++i)
+	{
+		const std::string	key	= prefix + std::to_string(i) + "_Encoded";
+		auto				old	= _decodeTable().find(key);
+
+		if(old != _decodeTable().end())
+			_displaced.emplace_back(key, old->second);
+
+		_decodeTable()[key] = DecodeEntry{reverse[i].first, reverse[i].second};
+	}
+
+	_count = reverse.size();
+}
+
+ColumnEncoder::ScopedDecodeBlock::~ScopedDecodeBlock()
+{
+	for(size_t i = 0; i < _count; ++i)
+		_decodeTable().erase(_prefix + std::to_string(i) + "_Encoded");
+
+	for(const auto & displaced : _displaced)
+		_decodeTable()[displaced.first] = displaced.second;
+}
+
 std::string ColumnEncoder::encode(const std::string &in)
 {
 	if(in == "") return "";
@@ -292,23 +323,68 @@ void ColumnEncoder::setCurrentColumnTypePerName(const colTypeMap &theMap)
 	setCurrentNames(theMap);
 }
 
+std::vector<std::pair<std::string, columnType>> ColumnEncoder::mintReverseOf(const colTypeMap & namesWithTypes)
+{
+	// THE deterministic mint (mds-plan C1): alphabetical map order, `.scale`/`.ordinal`/`.nominal`
+	// triple per typed column (the data type also claims the bare name), unknown types take a
+	// single slot. buildMint(), ScopedDecodeBlock and tokenForNameInNames() all derive from this
+	// one function, which is what makes desktop/engine/syntax-bridge blocks identical.
+	std::vector<std::pair<std::string, columnType>> reverse;
+	reverse.reserve(namesWithTypes.size() * 3);
+
+	for(const auto & nameType : namesWithTypes)
+	{
+		//namesWithTypes either comes from the data and has a columnType specified and otherwise it is a level or something. With unknown columnType.
+
+		if(nameType.second == columnType::unknown)
+			reverse.push_back({nameType.first, columnType::unknown});
+		else
+			for(columnType colType : { columnType::scale, columnType::ordinal, columnType::nominal })
+				reverse.push_back({nameType.first, colType});
+	}
+
+	return reverse;
+}
+
+std::string ColumnEncoder::tokenForNameInNames(const colTypeMap & names, const std::string & in, const std::string & prefix, const std::string & postfix)
+{
+	size_t runningCounter = 0;
+
+	for(const auto & nameType : names)
+	{
+		if(nameType.second == columnType::unknown)
+		{
+			if(nameType.first == in)
+				return prefix + std::to_string(runningCounter) + postfix;
+			++runningCounter;
+		}
+		else
+		{
+			for(columnType colType : { columnType::scale, columnType::ordinal, columnType::nominal })
+			{
+				if(nameType.first + "." + columnTypeToString(colType) == in || (colType == nameType.second && nameType.first == in))
+					return prefix + std::to_string(runningCounter) + postfix;
+				++runningCounter;
+			}
+		}
+	}
+
+	return "";
+}
+
 void ColumnEncoder::buildMint(const colTypeMap & namesWithTypes)
 {
 	_dataSetTypes	= namesWithTypes;
 	_mintForward.clear();
-	_mintReverse.clear();
-	_mintReverse.reserve(namesWithTypes.size() * 3);
+	_mintReverse	= mintReverseOf(namesWithTypes);
 
 	size_t runningCounter = 0;
 
 	for (const auto & nameType : namesWithTypes)
 	{
-		//namesWithTypes either comes from the data and has a columnType specified and otherwise it is a level or something. With unknown columnType.
-
 		if(nameType.second == columnType::unknown)
 		{
 			_mintForward[nameType.first]	= runningCounter;
-			_mintReverse.push_back({nameType.first, columnType::unknown});
 			++runningCounter;
 		}
 		else //It is a column from (the) data
@@ -316,11 +392,11 @@ void ColumnEncoder::buildMint(const colTypeMap & namesWithTypes)
 			{
 				std::string qualifiedName	= nameType.first + "." + columnTypeToString(colType);
 				_mintForward[qualifiedName]	= runningCounter;
-				_mintReverse.push_back({nameType.first, colType});	//Decoding is back to the actual name in the data!
-				++runningCounter;
 
 				if (colType == nameType.second) //This is the type as specified in the data, so the name without specification of type gets encoded to its default type
-					_mintForward[nameType.first] = runningCounter - 1;
+					_mintForward[nameType.first] = runningCounter;
+
+				++runningCounter;
 			}
 	}
 }
@@ -381,25 +457,6 @@ void ColumnEncoder::setCurrentNames(const colTypeMap & namesWithTypes)
 		rebuildBlock();
 		for(ColumnEncoder * view : _views)		//a FULL instance may still carry views (transitional or ad-hoc setups): their blocks follow the mint too
 			view->rebuildBlock();
-		return;
-	}
-}
-
-void ColumnEncoder::setEncodePrefix(const std::string & prefix)
-{
-	switch(_mode)
-	{
-	case Mode::canonical:
-		return;	//the canonical owns no namespace; reforging it is a no-op by construction
-
-	case Mode::view:
-		_encodePrefix = prefix;
-		rebuildBlock();		//erase-then-write moves the whole block into the new namespace
-		return;
-
-	case Mode::full:
-		_encodePrefix = prefix;
-		setCurrentNames(currentNames());	//same contract as before Phase 1: reforge = remint
 		return;
 	}
 }

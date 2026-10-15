@@ -59,16 +59,24 @@ void activateContext(const ColumnEncoderContext & encoderContext, ColumnEncoder 
 	extraEncoder.setCurrentNames(encoderContext.extra());
 }
 
-std::string encodeColumn(const ColumnEncoderContext & encoderContext, ColumnEncoder & extraEncoder, const std::string & column)
+// v2 replay is decode-only (the captured namespace lands in the global table for the scope's
+// duration), so payload tokens are minted as pure strings - exactly the C1 shape the replay
+// block writes - instead of the v1 "swap the live encoder, then encode" dance.
+std::string encodeColumn(const ColumnEncoderContext & encoderContext, ColumnEncoder & /*extraEncoder*/, const std::string & column)
 {
-	ScopedColumnEncoderContext scopedContext(encoderContext, extraEncoder);
-	return ColumnEncoder::columnEncoder()->encode(column);
+	const std::string prefix = encoderContext.prefix().empty() ? ColumnEncoder::columnEncoder()->encodePrefix() : encoderContext.prefix();
+	const std::string token	 = ColumnEncoder::tokenForNameInNames(encoderContext.columns(), column, prefix);
+
+	Q_ASSERT_X(!token.empty(), "encodeColumn", "test context must contain the column it encodes");
+	return token;
 }
 
 std::string encodeExtra(const ColumnEncoderContext & encoderContext, ColumnEncoder & extraEncoder, const std::string & value)
 {
-	ScopedColumnEncoderContext scopedContext(encoderContext, extraEncoder);
-	return extraEncoder.encode(value);
+	const std::string token = ColumnEncoder::tokenForNameInNames(encoderContext.extra(), value, extraEncoder.encodePrefix());
+
+	Q_ASSERT_X(!token.empty(), "encodeExtra", "test context must contain the extra value it encodes");
+	return token;
 }
 
 std::string payloadJson(const ColumnEncoderContext & encoderContext, ColumnEncoder & extraEncoder,
@@ -253,8 +261,108 @@ void TestColumnEncoderContext::malformedContextDoesNotMutateLiveState()
 			 schemaErrorMessage.c_str());
 	verifyDecodedPayload(decodePayload(livePayload, "", extraEncoder), "live group", "live score", "live factor");
 
+	// v2: an unsupported version is rejected ... before anything touches the table.
+	const std::string versionError = captureError([&]()
+	{
+		decodePayload(livePayload, "{\"version\":3,\"columns\":[],\"extra\":[]}", extraEncoder);
+	});
+	const std::string versionErrorMessage = "Unexpected version error: " + versionError;
+	QVERIFY2(versionError.find("Unsupported column encoder context version.") != std::string::npos,
+			 versionErrorMessage.c_str());
+
+	// ... and a syntactically fine context with malformed entries likewise (nothing half-written).
+	const std::string entryError = captureError([&]()
+	{
+		decodePayload(livePayload, "{\"version\":2,\"columns\":[{\"name\":42,\"type\":\"scale\"}],\"extra\":[]}", extraEncoder);
+	});
+	const std::string entryErrorMessage = "Unexpected entry error: " + entryError;
+	QVERIFY2(entryError.find("must contain objects with string 'name' and 'type' fields.") != std::string::npos,
+			 entryErrorMessage.c_str());
+
 	QVERIFY2(ColumnEncoder::columnEncoder()->currentNames() == liveContext.columns(), "Dataset column context changed after malformed context errors.");
 	QVERIFY2(extraEncoder.currentNames() == liveContext.extra(), "Extra-option context changed after malformed context errors.");
+
+	// v2 pin: the live TABLE entries survived every malformed replay untouched (v1 corrupted
+	// nothing either, but only because it restored by reminting - v2 never writes on a throw).
+	QCOMPARE(ColumnEncoder::decode(encodeColumn(liveContext, extraEncoder, "live score")), std::string("live score"));
+	QCOMPARE(ColumnEncoder::decode(encodeExtra(liveContext, extraEncoder, "live factor")), std::string("live factor"));
+}
+
+void TestColumnEncoderContext::replayNeverMutatesLiveEncodersAndNestsExactly()
+{
+	//The v2 contract (mds-plan D1.7): replaying a captured context registers a scoped block of
+	//the global decode table and undoes it on exit - the live canonical mint, its filter views
+	//and the extras encoder are NEVER mutated (v1 swapped the current encoder's names, which
+	//after Phase 1 funnels straight into a live dataset's mint). Nesting restores exactly, and
+	//replays that collide with a live namespace (extras, or the same archive slot twice) put the
+	//displaced entries back rather than erasing them.
+	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
+	const ColumnEncoder::colTypeMap liveColumns = names({{"Group", columnType::nominal}, {"Score", columnType::scale}});
+	canonical->setCurrentNames(liveColumns);
+
+	ColumnEncoder * liveView = ColumnEncoder::createView(canonical, "JASPColumn_D1_F11_");
+	const std::string liveToken = liveView->encode("Score");
+
+	ColumnEncoder extras(ExtraOptionsPrefix);
+	extras.setCurrentNames(names({{"live level", columnType::unknown}}));
+	const std::string liveExtraToken = extras.encode("live level");			//JaspExtraOptions_0_Encoded
+
+	//An archived namespace: its own host-filter prefix, different columns, and an extras snapshot
+	//that deliberately collides with the live extras block on index 0.
+	const ColumnEncoderContext archived(
+		names({{"Old Score", columnType::scale}}),
+		names({{"archived level", columnType::unknown}}),
+		"JASPColumn_D2_F21_");
+
+	const std::string archivedToken		= ColumnEncoder::tokenForNameInNames(archived.columns(),	"Old Score",		archived.prefix());
+	const std::string archivedExtra		= ColumnEncoder::tokenForNameInNames(archived.extra(),		"archived level",	ExtraOptionsPrefix);
+
+	QCOMPARE(liveExtraToken, archivedExtra);	//same token string, one shared extras namespace (C6)
+	QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));
+	QCOMPARE(ColumnEncoder::decode(archivedToken), archivedToken);				//archive not live: raw
+	QCOMPARE(ColumnEncoder::decode(archivedExtra), std::string("live level"));	//before the replay, live extras answers
+
+	{
+		ScopedColumnEncoderContext scope(archived, extras);
+
+		QCOMPARE(ColumnEncoder::decode(archivedToken), std::string("Old Score"));
+		QCOMPARE(ColumnEncoder::decode(archivedExtra), std::string("archived level"));	//replay displaces the colliding entry
+		QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));				//other live namespaces keep decoding (superset, C4)
+
+		//The whole point vs v1: entering the scope mutated nothing live:
+		QVERIFY2(canonical->currentNames() == liveColumns,	"replay must not touch the live canonical mint");
+		QCOMPARE(liveView->encode("Score"), liveToken);		//the live view still mints the very same token
+		QCOMPARE(extras.currentNames().size(), size_t(1));	//live extras untouched
+
+		//Nesting over the same namespace: another archive of the same slot (colliding prefix AND
+		//colliding index 0) must layer over the outer replay and undo back to it, not to nothing:
+		{
+			const ColumnEncoderContext archived2(names({{"Newer Score", columnType::scale}}), ColumnEncoder::colTypeMap(), "JASPColumn_D2_F21_");
+			const std::string archived2Token = ColumnEncoder::tokenForNameInNames(archived2.columns(), "Newer Score", archived2.prefix());
+
+			QCOMPARE(archived2Token, archivedToken);	//same slot, same index: a pure overwrite test
+
+			ScopedColumnEncoderContext inner(archived2, extras);
+
+			QCOMPARE(ColumnEncoder::decode(archivedToken), std::string("Newer Score"));	//inner wins
+			QCOMPARE(ColumnEncoder::decode(liveExtraToken), std::string("archived level"));	//inner extra is empty: outer still in effect
+		}
+
+		QCOMPARE(ColumnEncoder::decode(archivedToken), std::string("Old Score"));	//outer restored by the undo log
+		QCOMPARE(ColumnEncoder::decode(archivedExtra), std::string("archived level"));
+	}
+
+	//Exit: the archive namespaces go raw again, every live encoder and table entry is exactly
+	//what it was before the replay:
+	QCOMPARE(ColumnEncoder::decode(archivedToken), archivedToken);
+	QCOMPARE(ColumnEncoder::decode(liveExtraToken), std::string("live level"));
+	QCOMPARE(ColumnEncoder::decode(liveToken), std::string("Score"));
+	QVERIFY2(canonical->currentNames() == liveColumns,		"live canonical still untouched after the replay");
+	QCOMPARE(liveView->encode("Score"), liveToken);
+	QCOMPARE(extras.currentNames().size(), size_t(1));
+
+	delete liveView;
+	delete canonical;
 }
 
 void TestColumnEncoderContext::currentEncoderReTargetsOnSwitchAndClearsOnDestruction()

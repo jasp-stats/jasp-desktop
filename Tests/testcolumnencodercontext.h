@@ -30,6 +30,7 @@ private slots:
 	void cleanup();
 	void scopedContextsDecodeInterleavedAndRestoreLiveState();
 	void malformedContextDoesNotMutateLiveState();
+	void replayNeverMutatesLiveEncodersAndNestsExactly();
 	void currentEncoderReTargetsOnSwitchAndClearsOnDestruction();
 	void encodePerDataSetRoutesOptionsToEncoderOfTheirDataSet();
 	void encodePerDataSetRoutesOptionsToStampedFilterView();

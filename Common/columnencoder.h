@@ -130,17 +130,13 @@ public:
 
 			/// Mint a fresh namespace. On the canonical and on FULL instances this (re)builds the
 			/// mint and rewrites every dependent block; on a VIEW it funnels into its canonical
-			/// (the legacy ColumnEncoderContext replay path mutates the dataset mint through the
-			/// current view, exactly like it used to mutate the dataset's own encoder).
+			/// (callers that re-point the current encoder at a view and rename through it - the
+			/// legacy shape - mutate the dataset mint with the very blast radius the dataset's own
+			/// encoder always had).
 			void				setCurrentNames(const colTypeMap & names);
 			const colTypeMap&	currentNames() const											{ return _mode == Mode::view && _canonical ? _canonical->_dataSetTypes : _dataSetTypes;	}
 			///< The block prefix of this instance ("" on a canonical, which has no namespace).
 			std::string			encodePrefix() const											{ return _encodePrefix;																				}
-			///< Reforge this instance's namespace under a different prefix, regenerating the
-			///< encoded names from the current ones. Full/view only (the canonical has no
-			///< prefix of its own). Used to replay a captured ColumnEncoderContext whose dataset
-			///< carried its own prefix.
-			void				setEncodePrefix(const std::string & prefix);
 			void				updateColumnTypesOnly(const colTypeMap & names);
 			void				setCurrentNames(const std::vector<std::string> & names, bool generateTypesEncoding=true);	///< Do not use! Deprecated
 			void				setCurrentColumnTypePerName(const colTypeMap & theMap);									///< Do not use! Deprecated
@@ -179,6 +175,36 @@ public:
 	static	void				decodeJson(Json::Value & json, bool replaceNames = true, bool safeHtml = false);
 	///< Forget every block (test isolation). Live instances re-mint on their next rebuild.
 	static	void				resetForTests();
+
+	/// The deterministic C1 mint over a raw column map: index -> (originalName, type), exactly
+	/// what buildMint() stores and every block is written from. Pure - no instance, no table.
+	static	std::vector<std::pair<std::string, columnType>>	mintReverseOf(const colTypeMap & namesWithTypes);
+	/// raw name (bare or `name.type`) -> `prefix + <mint index> + postfix` token under the
+	/// deterministic mint of `names` ("" if `in` is not part of that mint). The pure-function
+	/// form of encode(): used by the scoped replay blocks and by the token-shape contract tests,
+	/// never a substitute for an encoder instance on live paths.
+	static	std::string			tokenForNameInNames(const colTypeMap & names, const std::string & in, const std::string & prefix, const std::string & postfix = "_Encoded");
+
+	/// Scoped replay block of the global decode table (mds-plan D1.7): writes `prefix +
+	/// <mint index of names> + _Encoded -> (name, type)` on construction and, on destruction,
+	/// restores EXACTLY the table contents it found under those keys (undo log, not a blind
+	/// erase - entries a live block had at the colliding indices come back, never dropped).
+	/// The sanctioned scoped exception to the rebuildBlock-single-writer rule (C4): purely
+	/// derived, LIFO-nesting, and it is what lets ColumnEncoderContext replay an archived
+	/// namespace through the one table without mutating any live canonical/view/extras.
+	class ScopedDecodeBlock
+	{
+	public:
+							ScopedDecodeBlock(const std::string & prefix, const colTypeMap & names);
+							~ScopedDecodeBlock();
+							ScopedDecodeBlock(const ScopedDecodeBlock &) = delete;
+		ScopedDecodeBlock &	operator=(const ScopedDecodeBlock &) = delete;
+
+	private:
+		std::string											_prefix;
+		size_t												_count		= 0;
+		std::vector<std::pair<std::string, DecodeEntry>>	_displaced;	///< table entries that occupied our keys on entry
+	};
 
 	static	colsPlusTypes		encodeColumnNamesinOptions(Json::Value & options, bool preloadingData);
 
