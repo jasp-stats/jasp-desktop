@@ -72,6 +72,15 @@ qt_add_executable(
   $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
 )
 
+qt_add_executable(
+  JASPTestJsonDiff
+  ${SYSTEM_TYPE}
+  testjsondiff.h
+  testjsondiff.cpp
+  $<$<PLATFORM_ID:Darwin>:${_R_Framework}>
+  $<$<PLATFORM_ID:Windows>:${CMAKE_SOURCE_DIR}/Desktop/JASP.exe.manifest>
+)
+
 add_dependencies(JASPTest           JASPDesktopLib)
 add_dependencies(JASPTestDebugData  JASPDesktopLib)
 add_dependencies(JASPTestEngine     JASPDesktopLib)
@@ -79,6 +88,7 @@ add_dependencies(JASPQuickTest      JASPDesktopLib)
 add_dependencies(JASPTestCsvPrev    JASPDesktopLib)
 add_dependencies(JASPTestColumnEncoderContext Common)
 add_dependencies(JASPTestParsedArgs   JASPDesktopLib)
+add_dependencies(JASPTestJsonDiff     JASPDesktopLib)
 
 target_include_directories(
   JASPTest
@@ -189,6 +199,13 @@ target_link_libraries(
 
   PRIVATE
   Qt6::Core
+)
+
+target_link_libraries(
+  JASPTestJsonDiff
+  PUBLIC
+  JASPDesktopLib
+  Qt::Test
 )
 
 target_compile_definitions(

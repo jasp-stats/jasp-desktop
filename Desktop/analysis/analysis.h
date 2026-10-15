@@ -94,7 +94,6 @@ public:
 
 	Json::Value			editOptionsOfPlot(		const std::string & uniqueName, bool emitError = true);
 	Json::Value			editOptionsOfPlotFromEdits(const std::string & uniqueName);
-	void				setEditOptionsOfPlot(	const std::string & uniqueName, const Json::Value & editOptions);
 	bool				checkAnalysisEntry();
 
 	QVariant			getConstant(const QString& key, const QVariant& defaultValue) const override;
@@ -217,16 +216,31 @@ private:
 	void					processResultsForDependenciesToBeShown();
 	bool					processResultsForDependenciesToBeShownMetaTraverser(const Json::Value & array);
 	bool					_editOptionsOfPlot(const	Json::Value & results, const std::string & uniqueName,			Json::Value & editOptions);
-	bool					_setEditOptionsOfPlot(		Json::Value & results, const std::string & uniqueName, const	Json::Value & editOptions);
 	bool					_updatePlotField(			Json::Value & results, const std::string & uniqueName, const std::string & fieldName, const Json::Value & value);
 	bool					_getPlotDimensions(const Json::Value & results, const std::string & uniqueName, int & width, int & height) const;
 	void					storeUserDataEtc();
 	void					fitOldUserDataEtc();
-	// Phase 1: stamp saved editOptions and sizes into fresh engine results.
-	// Returns names of plots whose dimensions changed (need engine re-render).
+
+	// Stores the user's edit as a merge patch ("editOptionsDiff") relative to
+	// the engine's editOptions of the last run. Only what the user actually
+	// changed is kept; engine-derived values (axis labels, breaks) never enter
+	// the patch so they stay fresh after a re-run with reordered data.
+	void					_storePlotEditDiff(			const std::string & uniqueName, const Json::Value & submittedEditOptions);
+
+	// Converts a legacy plotEdits entry (a full editOptions snapshot from an
+	// older .jasp file) into the diff format, on the first real run after
+	// loading: only subtrees the engine does not produce itself (user additions
+	// such as references) are salvaged into the patch.
+	void					_migrateLegacyPlotEdit(		const std::string & uniqueName, const Json::Value & engineEditOptions);
+
+	// Phase 1: stamp saved sizes into fresh engine results and refresh the
+	// diff base; migrates legacy entries. Returns names of plots needing an
+	// engine re-render (non-empty patch or changed dimensions).
 	std::set<std::string>		applyPlotEdits();
-	
-	// Phase 2: batch-trigger engine re-edits for plots that changed dimensions.
+
+	// Phase 2: batch-trigger engine re-edits: materializes editOptions from the
+	// fresh results plus the stored patch and sends them as an "interactive"
+	// edit, or sends a plain "resize" for size-only restores.
 	// This is a separate flow from user-initiated queueing (_editQueue).
 	void					applyPlotReEdits(const std::set<std::string> & plotNames);
 	
@@ -248,13 +262,14 @@ protected:
 								_resultsMeta		= Json::nullValue,
 								_imgResults			= Json::nullValue,
 								_userData			= Json::nullValue,
+								// Per edited plot: {"editOptionsDiff": <merge patch against the
+								// engine's last-run editOptions, see applyPlotEdits>,
+								// "editOptionsBase": <the engine's last-run editOptions>,
+								// "width"/"height": <user-set size>, and, for entries from
+								// older .jasp files that have not been migrated yet, the legacy
+								// full snapshot under "editOptions".}
 								_plotEdits			= Json::nullValue,
 								_imgOptions			= Json::nullValue,
-								// The full image-edit options submitted by the last user-initiated
-								// edit. Only set when options contains "editOptions" (not
-								// size-only re-edits). Used in imageEdited to merge the user's
-								// intended edits over the engine's response (which may be stale).
-								_imgOptionsUserEdit	= Json::nullValue,
 								_progress			= Json::nullValue,
 								_oldUserData		= Json::nullValue,
 								_oldMetaData		= Json::nullValue;
@@ -264,6 +279,11 @@ protected:
 	// are just re-rendering already-stored edits).
 	std::set<std::string>		_pendingReEdits;
 	std::deque<Json::Value>		_editQueue; // Serializes user-initiated image edits: only one dispatched at a time, the rest queue up
+	// True while imagesRewritten feeds rewritten results into setResults. Those
+	// results contain the engine's accumulated edits (plots are re-rendered
+	// from their edited objects), so they must not become the diff base for new
+	// patches: applyPlotEdits skips base capture and legacy migration meanwhile.
+	bool						_inImagesRewrite	= false;
 	std::string					_preUpgraderVersion	= "0";
 
 
@@ -282,6 +302,13 @@ private:
 								_wasUpgraded					= false,
 								_optionsFromDifferentVersion	= false,
 								_storedWithoutState			= false,
+								// True while restored plotEdits still contain legacy full
+								// editOptions snapshots from an older .jasp file. These cannot
+								// be migrated at load time (the results in the file are polluted
+								// with the same overrides), so needsRefresh() stays true until
+								// the first refresh, whose fresh results provide the diff base
+								// for the migration (see applyPlotEdits).
+								_plotEditsNeedRefresh		= false,
 								// True while results are restored from a .jasp file; setResults must not
 								// dispatch engine re-edits then (see loadResultsUserdataAndRSourcesFromJASPFile).
 								_restoringFromJaspFile		= false,
