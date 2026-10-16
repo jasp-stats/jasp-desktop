@@ -53,6 +53,13 @@ protected:
 	std::string					getName()													const;
 	void						handleComputedColumn(const Json::Value& value);
 
+	///< mds-plan D3.4 (staged): the ONE write-and-notify funnel of the write chain. A control's
+	/// option value is committed to its component-owned state (`_boundValue`, the Phase-3 home of
+	/// the value) and the change is signalled control -> form -> analysis. While the
+	/// `_boundValues` mirror still exists it is written here too, so the funnel is the only place
+	/// the two diverge-free path passes through; the mirror's deletion drops that one line.
+	void						writeCurrentValue(const Json::Value& value, const Json::Value& meta, bool emitChange);
+
 	bool						_isValueWithTypes(const Json::Value &value)					const;
 
 	///< Engine-shape value generated from this control's LIVE typed state (mds-plan D3.1): the
@@ -83,6 +90,7 @@ protected:
 	std::set<std::string>		_isRCode;
 	Json::Value					_orgValue,
 								_defaultValue;
+	Json::Value					_boundValue;										///< mds-plan D3.4: the control's own current option value (component-owned state; maintained through writeCurrentValue while reads still resolve via the mirror)
 	columnType					_columnType			= columnType::unknown;
 	std::string					_filterForValues;
 };

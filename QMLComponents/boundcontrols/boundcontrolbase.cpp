@@ -154,7 +154,20 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 	if (!form || !_control->isBound() || value == boundValue()) return;
 
 	handleComputedColumn(value);
-	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
+	writeCurrentValue(value, createMeta(), emitChange);
+}
+
+//mds-plan D3.4 (staged, see the header): every value the control commits goes through HERE -
+//component-owned state first, the _boundValues mirror (while it exists) second, the change
+//notification last. bindTo, resetBoundValue and the per-family write paths all funnel through
+//setBoundValue, so this is the one place Phase 3 flips from "push into the tree" to pure
+//control -> form -> analysis change signalling.
+void BoundControlBase::writeCurrentValue(const Json::Value &value, const Json::Value &meta, bool emitChange)
+{
+	_boundValue = value;
+
+	if (AnalysisForm * form = _control->form())
+		form->setBoundValue(getName(), value, meta, _control->getParentKeys());
 
 	if (emitChange)
 		emit _control->boundValueChanged(_control);
