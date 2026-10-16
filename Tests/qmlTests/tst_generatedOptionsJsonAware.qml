@@ -3,15 +3,17 @@ import QtQuick
 import JASP
 import JASP.Controls
 
-// mds-plan D3.1/D3.2 - the Engine-json EQUIVALENCE HARNESS, part 2: the AWARE form.
+// mds-plan D3.1/D3.2/D3.4 - the Engine-json GOLDEN HARNESS, part 2: the AWARE form.
 //
-// Same contract as tst_generatedOptionsJson.qml (read that header first), but here the analysis is
-// multiDataSetAware: two selecting AvailableVariablesLists (per-list selection, mds-plan C10/D2.2)
-// plus a TextArea host, so different lists resolve through DIFFERENT filters - and the transient
-// `.filterIds` sidecar (D3.2) must carry that provenance per term where the mirror still carries
-// it per option in `.meta` (until D3.4 deletes the stamping). The flagship: "TestInts" selected in
-// TWO lists through TWO filters of the same dataset generates byte-identical VALUES but
-// distinguishable provenance.
+// Same contract as tst_generatedOptionsJson.qml (read that header first - the mirror is deleted,
+// the expectations are its frozen bytes), but here the analysis is multiDataSetAware: two
+// selecting AvailableVariablesLists (per-list selection, mds-plan C10/D2.2) plus a TextArea host,
+// so different lists resolve through DIFFERENT filters. The golden mirror bytes were captured with
+// their dataSetId/filterId stamp keys stripped (those were the harness' one documented tolerance,
+// and they never shipped: C8/C15) - the provenance they carried is asserted on the transient
+// `.filterIds` sidecar instead, against the LIVE host selections (never against captured ids, so
+// the file stays fixture-order-robust). The flagship: "TestInts" selected in TWO lists through
+// TWO filters of the same dataset generates byte-identical VALUES but distinguishable provenance.
 //
 // Fixture (Tests/testqml.cpp): dataset 1 (TestInts/...) plus "Second" (TestInts with different
 // values + SecondOnly) with extra filters, reopened from the database - so at least two filters of
@@ -153,11 +155,6 @@ Item
 			return tree
 		}
 
-		function mirrorOf()
-		{
-			return JSON.parse(awareForm.analysis.boundValuesAsJson())
-		}
-
 		function generatedOf(storage)
 		{
 			return JSON.parse(awareForm.createOptionsJsonAsJson(storage ? 1 : 0))
@@ -193,26 +190,42 @@ Item
 			return node
 		}
 
-		function assertEngineEqualsMirror(stage)
+		// The frozen expected trees, captured from the _boundValues mirror at the D3.4 deletion
+		// commit by this harness while it still asserted generated == mirror (so they are the
+		// authoritative old bytes), with the dead stamp keys removed - the harness' one documented
+		// tolerance. goldenAware is the state after _bindAwareForm(); the mid-session switch and
+		// the Storage round-trip reach the same bytes (same VALUES; the moved ids lived only in the
+		// stripped keys / the sidecar, asserted live below). goldenReattach is the pending-stamp
+		// re-attach bind, which omits aloneA/rCodeBoxB and therefore holds their defaults.
+		readonly property string goldenAware: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":["scale"],"value":["TestDoubles"]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["ordinal"],"value":["TestInts"]},"depB":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"y ~ TestInts","swA":true}`
+		readonly property string goldenReattach: `{".meta":{"comboA":{"shouldEncode":true},"depA":{"shouldEncode":true},"depB":{"shouldEncode":true},"factorLevelsA":{"encodeThis":["FacA 1","LevA 1","LevA 2"],"shouldEncode":true},"fixedB":{"shouldEncode":true}},"aloneA":{"types":[],"value":[]},"codeSet":"2","comboA":{"types":"ordinal","value":"TestInts"},"dataSetA":"2","dataSetB":"3","depA":{"types":["ordinal"],"value":["TestInts"]},"depB":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsA":[{"levels":["LevA 1","LevA 2"],"name":"FacA 1"}],"fixedB":{"types":["nominal"],"value":["SecondOnly"]},"plotHeight":320,"plotWidth":480,"rCodeBoxB":"","swA":true}`
+
+		// the options that the mirror stamped in the bound aware state (paths, no ids: id
+		// equality is pinned live by the flagship/coverage tests; presence + shape here)
+		readonly property var stampedPaths: ["comboA", "depA", "depB", "factorLevelsA", "fixedB"]
+
+		function assertEngineEqualsGolden(stage, golden)
 		{
 			wait(100)
 
-			const mirror	= mirrorOf()
 			const generated	= generatedOf(false)
 
-			verify(mirror[".filterIds"] === undefined, stage + ": the mirror never carries .filterIds")
+			const expected = JSON.parse(golden)
+			verify(expected[".filterIds"] === undefined, stage + ": the golden (mirror bytes) never carries .filterIds")
 
 			const sidecar = generated[".filterIds"]
 			delete generated[".filterIds"]
 
-			stripMetaProvenance(mirror)
+			// the golden was captured with the stamp keys stripped (the mirror's, dead since the
+			// D3.3 flip); strip the generated side symmetrically - and the raw-tree C8 audit in
+			// test_aware_engine_matches_mirror_bytes proves the generated side has nothing to strip.
 			stripMetaProvenance(generated)
 
-			const d = deepDiff(mirror, generated, "")
+			const d = deepDiff(expected, generated, "")
 			if (d !== "")
-				console.log("EQUIVALENCE-DIFF[" + stage + "] mirror=" + JSON.stringify(mirror) + " generated=" + JSON.stringify(generated) + " diffs=" + d)
+				console.log("GOLDEN-DIFF[" + stage + "] golden=" + golden + " generated=" + JSON.stringify(generated) + " diffs=" + d)
 			compare(d, "",
-				stage + ": createOptionsJson(Engine) differs from the _boundValues mirror beyond the intentional deltas")
+				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes frozen at the D3.4 deletion")
 
 			generated[".filterIds"] = sidecar
 			return generated
@@ -254,63 +267,70 @@ Item
 			return { fA: fA, fB: fB }
 		}
 
-		function test_aware_engine_matches_mirror()
+		function test_aware_engine_matches_mirror_bytes()
 		{
 			_bindAwareForm()
 
-			assertEngineEqualsMirror("aware form")
+			assertEngineEqualsGolden("aware form", goldenAware)
 
-			// C8 in the other direction, asserted on the RAW generated tree (the equivalence above
+			// C8 in the other direction, asserted on the RAW generated tree (the golden comparison
 			// stripped both sides symmetrically): the generator must not emit a single provenance
-			// key, while every other meta key of the mirror's stamped nodes survives.
+			// key, while every other meta key of the options the mirror stamped survives.
 			const rawGenerated	= generatedOf(false)
 			const genStamps		= collectStamps(rawGenerated[".meta"] || {}, "", [])
 			compare(genStamps.length, 0, "generated .meta holds NO dataSetId/filterId keys (C8): " + JSON.stringify(genStamps))
 
-			const mirrorMeta = mirrorOf()[".meta"] || {}
-			const mirrorStamps = collectStamps(mirrorMeta, "", [])
-			verify(mirrorStamps.length >= 5, "the aware mirror stamps several options, got " + JSON.stringify(mirrorStamps))
-			for (const stamp of mirrorStamps)
+			compare(stampedPaths.length, 5, "the frozen golden state stamped several options")	// the mirror-side guard of the golden capture
+			for (const stampPath of stampedPaths)
 			{
-				const genNode = sidecarAt(rawGenerated[".meta"], stamp.path)
-				verify(genNode !== undefined, "the generated meta keeps a node for stamped option '" + stamp.path + "'")
-				verify(genNode.shouldEncode === true, "shouldEncode survives into the generated (send-time) meta of '" + stamp.path + "'")
-				if (stamp.path === "factorLevelsA")
+				const genNode = sidecarAt(rawGenerated[".meta"], stampPath)
+				verify(genNode !== undefined, "the generated meta keeps a node for the golden-stamped option '" + stampPath + "'")
+				verify(genNode.shouldEncode === true, "shouldEncode survives into the generated (send-time) meta of '" + stampPath + "'")
+				if (stampPath === "factorLevelsA")
 					verify(Array.isArray(genNode.encodeThis), "encodeThis survives into the generated meta (C6)")
 			}
 		}
 
-		function test_aware_sidecar_covers_every_mirrored_stamp()
+		function test_aware_sidecar_covers_every_golden_stamp()
 		{
-			_bindAwareForm()
+			const sel = _bindAwareForm()
 			wait(100)
 
 			const gen		 = generatedOf(false)
 			const sidecar	 = gen[".filterIds"]
 			verify(sidecar !== undefined, "the aware form generates the transient .filterIds tree")
 
-			const stamps = collectStamps(mirrorOf()[".meta"] || {}, "", [])
-			for (const stamp of stamps)
+			// Presence/shape at every path the golden mirror state stamped; the id VALUES are
+			// live-state facts pinned against the LIVE hosts (the option-level stamp the mirror
+			// wrote for fixedB was host B's filter - the sidecar's live truth is the same id read
+			// through the host, not a frozen number) and by the flagship/midswitch tests below.
+			for (const stampPath of stampedPaths)
 			{
-				const node = sidecarAt(sidecar, stamp.path)
-				verify(node !== undefined, "sidecar has a node for stamped option '" + stamp.path + "'")
+				const node = sidecarAt(sidecar, stampPath)
+				verify(node !== undefined, "sidecar has a node for the golden-stamped option '" + stampPath + "'")
 				if (Array.isArray(node))
 				{
 					for (const id of node)
 						verify(id === null || id >= 0, "positional sidecar entries are int (stamped) or null (unqualified): " + JSON.stringify(node))
-					// every host-fallback position must agree with the mirror's option-level stamp;
-					// a term may only deviate through its own typed filterId (flagship test):
-					verify(node.indexOf(stamp.filterId) !== -1,
-						"positional sidecar for '" + stamp.path + "' contains the mirrored stamp id " + stamp.filterId + ": " + JSON.stringify(node))
 				}
 				else
-					compare(node, stamp.filterId, "scalar sidecar id == mirror stamp for '" + stamp.path + "'")
+					verify(typeof node === "number" && node >= 0, "scalar sidecar node for '" + stampPath + "': " + node)
 			}
+
+			compare(sidecarAt(sidecar, "fixedB")[0], sel.fB,
+				"fixedB's positional entry carries ITS host filter - the option-level stamp the mirror held, live")
+			compare(sidecarAt(sidecar, "comboA"), sel.fA,
+				"comboA's scalar entry carries its host filter - the equality the mirror stamp asserted")
 
 			// and the sidecar stays EMPTY on an analysis whose values are not column-bearing:
 			verify(sidecar.swA === undefined, "scalars generate no sidecar node (C3/M5)")
 			verify(sidecar.dataSetA === undefined && sidecar.dataSetB === undefined && sidecar.codeSet === undefined,
 				"the selection options generate no sidecar (their value IS the filter id)")
+
+			// the reverse half of "generated == golden + sidecar" (the mirror never carried
+			// .filterIds): nothing outside the stamped set may have a sidecar node.
+			for (const k of Object.keys(sidecar))
+				verify(stampedPaths.indexOf(k) !== -1, "no sidecar node outside the golden stamped set: " + k)
 		}
 
 		function test_aware_sidecar_distinguishes_same_name_in_two_lists()
@@ -374,8 +394,14 @@ Item
 			})(sidecar)
 			verify(seen.indexOf(sel.fA) === -1, "the abandoned filter id is gone from the whole sidecar: " + JSON.stringify(seen))
 
-			// generator still == mirror after the switch (the .meta restamp half moved too):
-			assertEngineEqualsMirror("aware form after mid-session host switch")
+			// generator still == the golden bytes after the switch - same values with ONE legal
+			// change: dataSetA is the selection option, its VALUE is the filter id, so it follows
+			// the host (that is the option's own state, never provenance). The stamps the mirror
+			// moved with its restamp half live, stripped, in the golden; their truth is the
+			// sidecar above.
+			const expectedSwitched = JSON.parse(goldenAware)
+			expectedSwitched.dataSetA = String(sel.fB)
+			assertEngineEqualsGolden("aware form after mid-session host switch", JSON.stringify(expectedSwitched))
 
 			allVarsA.selectedFilterId = sel.fA   //restore for alphabetical siblings
 			wait(40)
@@ -420,14 +446,15 @@ Item
 			verify(genText.indexOf("4242") === -1, "pending-stamped filterId never read into behaviour: " + genText.slice(0, 500))
 			verify(genText.indexOf("\"99\"") === -1 && !JSON.stringify(gen[".filterIds"]).match(/(^|[^0-9])99([^0-9]|$)/),
 				"no ghost dataSetId from the pending tree either")
-			// ...nor anywhere in the mirror (attach cleared the parking; the controls rewrote it
-			// with their OWN host stamps):
-			verify(JSON.stringify(mirrorOf()).indexOf("4242") === -1, "the mirror after attach carries no pending stamps")
+			// ...and the parking is GONE: setAnalysisUp took it once through bindTo (the
+			// successor of the mirror-side "attach cleared the parking; the controls rewrote it
+			// with their OWN host stamps" check - the pending tree is consumed wholesale):
+			verify(!awareForm.analysis.hasPendingOptions(), "the attach consumed the parking lot - the lying stamps left with it")
 
 			// the sidecar carries the real host provenance the controls resolved:
 			compare(sidecarAt(gen[".filterIds"], "depA")[0], sel.fA, "depA's sidecar follows its bound host, not the pending stamp")
 
-			assertEngineEqualsMirror("aware form after pending-stamp re-attach")
+			assertEngineEqualsGolden("aware form after pending-stamp re-attach", goldenReattach)
 		}
 
 		// ---- Storage shape (D5.1 preview) --------------------------------------------------------
@@ -448,7 +475,7 @@ Item
 			compare(again, first, "a Storage tree round-trips through setOptions -> rebind -> regenerate")
 
 			// and the Engine shape stays mirror-equivalent after the round-trip too:
-			assertEngineEqualsMirror("aware form after Storage round-trip")
+			assertEngineEqualsGolden("aware form after Storage round-trip", goldenAware)
 		}
 
 		function test_storage_shape_is_clean_typed_state()

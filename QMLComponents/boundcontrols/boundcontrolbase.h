@@ -37,12 +37,10 @@ public:
 	Json::Value					createJson(JsonFormat format)										const	override;
 	Json::Value					createEngineMeta()												const	override;
 	Json::Value					createFilterIds()												const	override;
-	Json::Value					createMeta()												const	override;
 	void						bindTo(const Json::Value& value)									override { _orgValue = value; setBoundValue(value, false); }
-	const Json::Value&			boundValue()												const	override;
+	const Json::Value&			boundValue()												const	override { return _boundValue; }
 	void						resetBoundValue()													override { bindTo(_orgValue); }
 	void						setBoundValue(const Json::Value& value, bool emitChange = true)		override;
-	void						restampValue()														override;
 	void						setIsRCode(std::string key = "");
 	void						setFilterForValues(const std::string & filterName);
 	void						setIsColumn(bool isComputed, columnType type = columnType::unknown);
@@ -53,21 +51,24 @@ protected:
 	std::string					getName()													const;
 	void						handleComputedColumn(const Json::Value& value);
 
-	///< mds-plan D3.4 (staged): the ONE write-and-notify funnel of the write chain. A control's
-	/// option value is committed to its component-owned state (`_boundValue`, the Phase-3 home of
-	/// the value) and the change is signalled control -> form -> analysis. While the
-	/// `_boundValues` mirror still exists it is written here too, so the funnel is the only place
-	/// the two diverge-free path passes through; the mirror's deletion drops that one line.
-	void						writeCurrentValue(const Json::Value& value, const Json::Value& meta, bool emitChange);
+	///< mds-plan D3.4 (the deletion): the ONE write-and-notify funnel of the write chain. The
+	/// control's option value is committed to its component-owned state (`_boundValue` - THE
+	/// home of the value now that the `_boundValues` analysis mirror is deleted) and the change
+	/// is propagated as a pure notification chain: AnalysisBase::notifyOptionsChanged()
+	/// (boundValuesChanged + the aware dataSpecChanged, so dataSpec/RPC/script consumers re-read
+	/// the generated tree) and the control's own boundValueChanged -> form -> analysis run
+	/// trigger. No option tree is written: components own the state, JSON is generated (C11).
+	void						writeCurrentValue(const Json::Value& value, bool emitChange);
 
 	bool						_isValueWithTypes(const Json::Value &value)					const;
 
 	///< Engine-shape value generated from this control's LIVE typed state (mds-plan D3.1): the
 	/// option value as the control's own write path produces it. The default is createJson(),
 	/// which is exactly the written value for the families that build their write from createJson;
-	/// the families whose mirror value comes from a live-model builder (tableviews, components
+	/// the families whose option value comes from a live-model builder (tableviews, components
 	/// lists, factor levels, JAGS/rlang textareas, ...) override this AND route their write path
-	/// through the same builder, so generator and mirror cannot drift while both exist.
+	/// through the same builder, so the generator and the control's own written value are one
+	/// implementation (mds-plan C11: components own the state, JSON is generated from it).
 	virtual Json::Value			createEngineValue()												const	{ return createJson();			}
 	///< Storage-shape value (D5.1 preview): clean typed state. Defaults to the engine value -
 	/// the shapes only differ where per-term filterIds must ride inside the option itself
@@ -75,11 +76,11 @@ protected:
 	virtual Json::Value			createStorageValue()											const	{ return createEngineValue();	}
 	///< The filter this control's values are provenanced through at generation time, or nullptr:
 	/// multiDataSetAware analysis + a resolvable effectiveSelectionFilter holding its dataset.
-	/// SINGLE source of truth for the host stamp: createMeta() writes its dataSetId/filterId from
-	/// here and createFilterIds() derives the transient sidecar from here (mds-plan D3.1/D3.2,
-	/// no drift between mirror and generator).
+	/// SINGLE source of truth for the host provenance since the D3.4 deletion: createFilterIds()
+	/// derives the transient sidecar from here (mds-plan D3.2) - the send-time `.meta` carries no
+	/// ids at all (C8).
 	Filter						*	generatedHostFilter()												const;
-	///< The host filter's id (see generatedHostFilter), or -1 when the control has no host stamp.
+	///< The host filter's id (see generatedHostFilter), or -1 when the control has no host.
 	/// Family generators read provenance through THIS (not the Filter*) so they need no dependency
 	/// on the Filter class itself.
 	int									generatedHostFilterId()											const;
@@ -90,7 +91,7 @@ protected:
 	std::set<std::string>		_isRCode;
 	Json::Value					_orgValue,
 								_defaultValue;
-	Json::Value					_boundValue;										///< mds-plan D3.4: the control's own current option value (component-owned state; maintained through writeCurrentValue while reads still resolve via the mirror)
+	Json::Value					_boundValue;										///< mds-plan D3.4/C11: the control's own current option value - the component-owned state the generators produce this option from (the analysis' `_boundValues` mirror is deleted)
 	columnType					_columnType			= columnType::unknown;
 	std::string					_filterForValues;
 };

@@ -66,12 +66,22 @@ public:
 	QString				longestValue()								const				{ return _longestLabel;			}
 	bool				valueAwaitsModel()							const				{ return _valueAwaitsModel;		}
 
+protected:
+	///< mds-plan D3.4: while a bound value awaits its model (valueAwaitsModel) the generated
+	/// Engine value is the control's OWN held raw value (C2/BIND: the option keeps exactly what
+	/// came in, never a coerced/blank model projection) - the same value the deleted
+	/// _boundValues mirror stored for a pending combo. Bound normally, the model-derived
+	/// createJson() equals the held value, so this override only matters in the pending state.
+	Json::Value			createEngineValue()							const	override;
+
+public:
+
 	stringvec			usedVariables()								const	override;
 	bool				encodeValue()								const	override	{ return containsVariables();	}
 
 	///< mds-plan D3.2: scalar option-level sidecar for the single selected variable: the selected
 	/// model term's filterId when qualified (the model is the typed state), else the host's id
-	/// (createMeta's stamp today), null = unqualified. See BoundControlTerms::createFilterIds.
+	/// (the option-level sidecar id of the aware world), null = unqualified. See BoundControlTerms::createFilterIds.
 	Json::Value			createFilterIds()															const	override;
 
 

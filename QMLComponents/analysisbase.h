@@ -123,20 +123,15 @@ public:
 	virtual bool				optionLocked(const QString& name)																				const	{ return false; };
 	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
-						const Json::Value &	boundValues()												const	{ return _boundValues;		}
-	///< The whole bound-value tree as a JSON string: a QML/inspectable view of exactly what the
-	///< controls write (used by the dataset-selection tests to assert option payloads).
-	Q_INVOKABLE QString		boundValuesAsJson()																const;
-						const Json::Value &	boundValue(const std::string& name,
-														 const QVector<JASPControl::ParentKey>& parentKeys = {});
+	// ---- mds-plan C11/D3.4: the components own the state, JSON is generated on demand --------
+	// The `_boundValues` mirror and its whole API (boundValue()/setBoundValue()/boundValues()/
+	// setBoundValues()/clearBoundValues()/optionsMeta()/boundValuesAsJson()) are DELETED here:
+	// the run request, save, RPC report, QML options() and script rendering all GENERATE from the
+	// controls (createOptionsJson below), and the one value home is BoundControlBase._boundValue.
+	// What survives of "push a tree in" is the explicit C12 PENDING parking below.
 
-						void				setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
-						void				setBoundValues(const Json::Value& boundValues);
-						const Json::Value	optionsMeta()												const	{ return _boundValues.get(".meta", Json::nullValue);	}
-						void				clearBoundValues()													{ _boundValues.clear();		}
-
-	// ---- mds-plan D3.4/C12: PENDING pre-attach options (the mirror's one sanctioned reader,
-	// setAnalysisUp's bootstrap, as an explicit small member) -----------------------------------
+	// ---- mds-plan D3.4/C12: PENDING pre-attach options (setAnalysisUp's bootstrap, as an
+	// explicit small member - the mirror's one sanctioned reader, never read for behaviour) -----
 	///< Park options that arrive before a form has attached (file load, RPC create, QML
 	///  setOptions, the downstream-widget fallback). setAnalysisUp consumes the parking lot ONCE
 	///  through bindTo and it is then discarded; no run/save/dataSpec path ever reads pending
@@ -149,7 +144,7 @@ public:
 	Json::Value			takePendingOptions();
 	///< Peek accessors (tests/introspection only - behaviour must go through takePendingOptions
 	///  at attach or through the components; neither of these may feed a run/save/dataSpec path).
-	bool				hasPendingOptions()	const	{ return _hasPendingOptions;	}
+	Q_INVOKABLE bool	hasPendingOptions()	const	{ return _hasPendingOptions;	}
 	const Json::Value &	pendingOptions()		const	{ return _pendingOptions;		}
 	///< True when this analysis was CREATED with options (file load, RPC create with options,
 	///  duplication): the explicit successor of the old mirror-shaped `boundValues().size() == 0`
@@ -163,24 +158,22 @@ public:
 	static void			stripTransientSidecar(Json::Value & options);
 
 	// ---- mds-plan C11/D3.1: JSON generated on demand from the components ---------------------
-	// Until the consumer flip (D3.3/D3.5) the _boundValues mirror above stays authoritative for
-	// the run/save/dataSpec paths; these generators are the Phase-3 replacement being proved
-	// equal to it. They walk the form's registered controls per their bindTo paths (no stored
-	// tree): Engine = today's R contract + send-time `.meta` (C8, minus dataSetId/filterId) + the
-	// transient `.filterIds` sidecar (D3.2); Storage = clean typed state (D5.1 preview).
+	// The mirror era is over (D3.4): these generators are the ONLY options tree. Engine = today's
+	// R contract + send-time `.meta` (C8, never dataSetId/filterId) + the transient `.filterIds`
+	// sidecar (D3.2); Storage = clean typed state (D5.1 preview).
 	///< Generate the whole options tree from component state (delegates to the AnalysisForm; an
 	///< analysis without a form has no state to generate from and returns an empty object).
 	Json::Value				createOptionsJson(BoundControl::JsonFormat format);
-	///< QML/test view of createOptionsJson, same canonical writer as boundValuesAsJson:
+	///< QML/test view of createOptionsJson, canonical (key-sorted) JSON string:
 	///< format 0 = Engine, 1 = Storage.
 	Q_INVOKABLE QString		createOptionsJsonAsJson(int format);
 
-	///< mds-plan D3.1: the ONE path implementation for a nested (row-control) option location,
-	///< extracted from _getParentBoundValue so the _boundValues mirror and the generators place
-	///< values at byte-identical paths. parentKeys describe the row chain (see _getParentBoundValue);
-	///< parentNames collects the enclosing option names on the found path (what send-time `.meta` /
-	///< `.filterIds` are nested under), found says the chain resolved, createAnyway materialises the
-	///< row objects for a control whose parent option is generated earlier in the same pass.
+	///< mds-plan D3.1: the ONE path implementation for a nested (row-control) option location
+	///< (extracted from the deleted mirror's _getParentBoundValue; the generators are now its only
+	///< user). parentKeys describe the row chain; parentNames collects the enclosing option names on
+	///< the found path (what send-time `.meta` / `.filterIds` are nested under), found says the
+	///< chain resolved, createAnyway materialises the row objects for a control whose parent option
+	///< is generated earlier in the same pass.
 	static Json::Value	&	resolveOptionParent(Json::Value & root,
 												 const QVector<JASPControl::ParentKey> & parentKeys,
 												 QVector<std::string> & parentNames, bool & found, bool createAnyway = false);
@@ -223,6 +216,12 @@ public:
 	///< Let consumers re-read dataSpec()/referencedDataSets() (emits dataSpecChanged): used by
 	///< AnalysisForm::setAnalysisUp once attach has produced real component state (mds-plan D3.5).
 	void				notifyDataSpecChanged();
+	///< mds-plan D3.4: the pure change-notification tail of the deleted mirror write - called by
+	///< BoundControlBase::writeCurrentValue for every committed option value: emits
+	///< boundValuesChanged (rSyntax text, results-JS) and, for aware analyses, dataSpecChanged
+	///  (a changed value can change what the analysis runs on - the generated sidecar moved).
+	///  Gated on the form being initialized, exactly like the mirror's setBoundValue was.
+	void				notifyOptionsChanged();
 
 						QString				filterName()	const;
 						int					filterId()		const;
@@ -269,8 +268,6 @@ signals:
 
 
 protected:
-	Json::Value&	_getParentBoundValue(const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string>& parentNames, bool & found, bool createAnyway = false);
-	std::string		_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const;
 	void			connectDataSpecChanges();
 
 
@@ -287,10 +284,10 @@ protected:
 	QPointer<DataSet>				_filterDataSet		;
 
 private:
-	Json::Value		_boundValues		= Json::objectValue;
 	//mds-plan C12/D3.4: the PENDING pre-attach parking lot (setAnalysisUp consumes it once through
 	//bindTo; nothing else reads it) and the explicit created-with-options flag that replaces the
-	//old `boundValues().size() == 0` new-analysis heuristic.
+	//old `boundValues().size() == 0` new-analysis heuristic. The `_boundValues` mirror itself is
+	//DELETED (mds-plan C11): components own the state, JSON is generated on demand.
 	Json::Value		_pendingOptions		= Json::objectValue;
 	bool			_hasPendingOptions	= false,
 					_createdWithOptions	= false;

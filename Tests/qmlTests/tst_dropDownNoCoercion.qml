@@ -58,8 +58,8 @@ Item
 			verify(methodCombo.valueAwaitsModel, "the value must stay pending until a model can serve it")
 			compare(methodCombo.currentValue, "", "and the combo shows nothing rather than a coerced entry 0")
 
-			var bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
-			compare(String(bound.method), "notInOptionsYet", "the option keeps the value as it came in, NOT the coerced first entry")
+			var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
+			compare(String(bound.method), "notInOptionsYet", "the option keeps the value as it came in, NOT the coerced first entry (mds-plan D3.4: the generated Engine value of a pending combo IS the held component value - ComboBoxBase::createEngineValue, successor of the deleted mirror's storage of it)")
 
 			//Recovery: the moment the model can serve the value, termsChangedHandler binds it for
 			//real and clears the error - no rebind from the user needed.
@@ -70,7 +70,7 @@ Item
 			verify(!methodCombo.valueAwaitsModel, "nothing may be left pending once it bound")
 			compare(methodCombo.currentValue, "notInOptionsYet", "the pending value binds for real")
 
-			var recovered = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var recovered = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(recovered.method), "notInOptionsYet", "the option holds the very same value after the recovery")
 		}
 	}

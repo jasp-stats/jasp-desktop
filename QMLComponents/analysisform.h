@@ -39,7 +39,7 @@ class Filter;
 /// The backend for the `Form{}` used in all JASP's well, qml forms
 /// This is directly a QQuickItem and connects to Analyses to inform it when the options change.
 /// Each element placed inside the Form will be a derivative of JASPControl
-/// A JASPControl can be also a BoundControl: it is bound in the sense that any changes to its values will be propagated to Analysis and stored there through `Analysis::setBoundValue`
+/// A JASPControl can be also a BoundControl: it is bound in the sense that any changes to its values are stored on the control itself and GENERATE the options JSON on demand (mds-plan C11/D3.4: AnalysisForm::createOptionsJson; the old stored-tree `Analysis::setBoundValue` mirror is deleted)
 /// Each time a JASPControl is initialized, it is registered by the form, and when the form is initialized it sets up the JASPControls either by their default values, 
 /// or by the values stored in a JASP file (when a JASP file is loaded).
 /// The interface errors and warnings are managed by this class.
@@ -280,9 +280,9 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	stringvecvec			getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void					addColumnControl(JASPControl* control, bool isComputed);
 
-	const Json::Value	&	boundValues()																		const	{ return _analysis ? _analysis->boundValues() : Json::Value::null; }
-	const Json::Value	&	boundValue(const std::string& name, const QVector<JASPControl::ParentKey>& parentKeys)		{ return _analysis ? _analysis->boundValue(name, parentKeys) : Json::Value::null; }
-	void					setBoundValue(const std::string& name, const Json::Value& value, const Json::Value& meta, const QVector<JASPControl::ParentKey>& parentKeys = {});
+	//mds-plan D3.4: the boundValues()/boundValue()/setBoundValue()/_getParentBoundValue mirror
+	//plumbing is DELETED with the _boundValues tree - options are generated (createOptionsJson)
+	//and each control owns its value (BoundControlBase::boundValue).
 	stringset				usedVariables();
 
 	void					sortControls(QList<JASPControl*>& controls);
@@ -298,7 +298,6 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	
 private:
 
-	Json::Value	&	_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys);
 	void			_unregisterDeadControl(JASPControl * deadControl);
 	void			_setUpControls();
 	void			_setUpModels();

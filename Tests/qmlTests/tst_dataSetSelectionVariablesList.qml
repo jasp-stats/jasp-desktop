@@ -14,7 +14,8 @@ import JASP.Controls
 // code NEVER touches the analysis' own filter (that global belongs to the FilterMenuButton).
 // Controls below a selecting host get their bindTo dependency on that host's FilterSelect derived
 // from the varInfo resolution (JASPControl::selectionDependency), so a selection loaded from a
-// file is in effect before anything that uses it stamps its .meta - no repair pass involved.
+// file is in effect before anything that uses it takes its provenance (mds-plan D3.4: generated
+// into the transient `.filterIds` sidecar at send time, read off the host) - no repair pass.
 // Fixture (see Tests/testqml.cpp): dataset 1 (shown: TestInts/TestLetters/TestDoubles/TestNominal)
 // plus "Second" (TestInts with different values + SecondOnly), with default filter + extras; the
 // workspace is then REOPENED from the database, so every test runs against a reopened file and
@@ -200,12 +201,14 @@ Item
 				})
 				wait(50)
 
-				var bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))	//mds-plan D3.4: the generated Engine tree (the mirror is deleted)
 				var meta = bound[".meta"]
+				var ids = bound[".filterIds"]
 
-				verify(meta && meta.dependentB, "the column value bound and stamped its meta")
-				compare(meta.dependentB.filterId, f1, "the column value is stamped with the live selection")
-				verify(meta.dependentB.shouldEncode === true, "the gate keeps the generic .meta of an encoded value")
+				verify(meta && meta.dependentB, "the column value bound and meta'd itself")
+				verify(ids && Array.isArray(ids.dependentB), "the column value carries its sidecar provenance")
+				compare(ids.dependentB[0], f1, "the column value is provenanced with the live selection (positional sidecar, C11)")
+				verify(meta.dependentB.shouldEncode === true, "the gate keeps the generic .meta of an encoded value (C8: no ids in meta)")
 
 				//and the assigned list that resolves through this host is stamped likewise:
 				//(dependentB declares depends: on the option; its namespace comes from allVarsB)
@@ -214,24 +217,28 @@ Item
 				allVarsB.selectedFilterId = f2
 				wait(50)
 
-				bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 				meta = bound[".meta"]
+				ids = bound[".filterIds"]
 
 				compare(allVarsB.selectedFilterId, f2, "the host took the new selection")
 				verify(String(bound.dependentB.value).indexOf("TestInts") !== -1, "the value survived the switch untouched")
-				compare(meta.dependentB.filterId, f2, "the column value followed the host onto the new filter")
+				compare(ids.dependentB[0], f2, "the column value followed the host onto the new filter (sidecar)")
 
-				//and no stamp anywhere in the analysis still names the abandoned filter - that is
-				//what the engine would queue as a phantom slice:
-				var stale = []
-				for (var key of Object.keys(meta))
-					if (meta[key] && meta[key].filterId !== undefined && meta[key].filterId === f1)
-						stale.push(key)
-				compare(stale.join(","), "", "no stale filterId left in any .meta after the switched list restamped its controls")
+				//and no provenance anywhere in the analysis still names the abandoned filter - that
+				//is what the engine would queue as a phantom slice:
+				var seen = []
+				;(function walk(node)
+				{
+					if (Array.isArray(node)) { for (const e of node) walk(e); return }
+					if (node !== null && typeof node === "object") { for (const k of Object.keys(node)) walk(node[k]); return }
+					if (typeof node === "number") seen.push(node)
+				})(ids)
+				verify(seen.indexOf(f1) === -1, "the abandoned filter id is gone from the whole sidecar: " + JSON.stringify(seen))
 
 				//scalars and the selection option carry no provenance at all (C3/M5 gate):
-				verify(meta.bSwitch === undefined, "a scalar carries no stamp: " + JSON.stringify(meta.bSwitch))
-				verify(meta.dataSetB === undefined, "the selection option carries no stamp: its value IS the filter id")
+				verify(meta.bSwitch === undefined && ids.bSwitch === undefined, "a scalar carries neither meta nor sidecar node")
+				verify(meta.dataSetB === undefined && ids.dataSetB === undefined, "the selection option carries no provenance: its value IS the filter id")
 			} finally
 			{
 				allVarsB.selectedFilterId = originalB	//functions run alphabetically: don't bleed
@@ -320,7 +327,7 @@ Item
 				wait(50)
 				verify(spyDataSpec.count > before,
 						"switching one list's host selection re-emits dataSpecChanged on the analysis")
-				compare(String(JSON.parse(jaspForm.analysis.boundValuesAsJson()).dataSetB), String(secondFilterId),
+				compare(String(JSON.parse(jaspForm.createOptionsJsonAsJson(0)).dataSetB), String(secondFilterId),
 						"the selection option follows the host (the engine-side slice key travels as the option)")
 			} finally
 			{
@@ -404,11 +411,11 @@ Item
 				compare(targetC.model.termProvenanceForTest().join(","), "TestInts@-1",
 						"and the hostless list never acquires a stamp from anyone's switch")
 
-				//typed and stamped halves moved together (the engine consumes .meta, Phase 3 the
-				//terms - they may never disagree):
-				var meta = JSON.parse(jaspForm.analysis.boundValuesAsJson())[".meta"]
-				compare(meta.dependentA.filterId, fReopen, "meta half followed host A")
-				compare(meta.dependentB.filterId, fFirst, "meta half of host B untouched")
+				//the generated sidecar follows the typed terms exactly (they are one state now -
+				//mds-plan D3.4: the sidecar IS the move, generated from the terms per send):
+				var ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
+				compare(ids.dependentA[0], fReopen, "the generated sidecar followed host A")
+				compare(ids.dependentB[0], fFirst, "the sidecar of host B untouched")
 			} finally
 			{
 				allVarsA.selectedFilterId = originalA	//there and back: the walk restamps again
@@ -445,7 +452,7 @@ Item
 				jaspForm.setOptions({ dataSetA: reopenEntry.value })
 				wait(50)
 
-				var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 				compare(String(options.dataSetA), String(savedFilterId), "the saved selection must survive the bind intact")
 				compare(allVarsA.selectedFilterId, savedFilterId, "the host list must hold the saved filter")
 
@@ -533,7 +540,7 @@ Item
 			compare(jaspForm.analysis.filterId, analysisFilterId, "selection must never touch the analysis' filter")
 
 			// The selections travel as options: both present, side by side, holding the filter ids.
-			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(options.dataSetA), String(firstFilterId))
 			compare(String(options.dataSetB), String(secondFilterId))
 
@@ -559,7 +566,7 @@ Item
 
 			compare(allVarsA.selectedFilterId, before, "a bogus filter id must be rejected, not adopted")
 
-			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(options.dataSetA), String(before), "the option must not be rewritten by a rejected selection")
 		}
 
@@ -575,7 +582,7 @@ Item
 			verify(formA.dataSetSelectionOption === undefined, "VariablesForm has no selection API any more")
 			verify(formA.selectedFilterId === undefined, "not even read-only: the property is gone")
 
-			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			verify(options.dataSetC === undefined, "a list without option may not write a selection option")
 		}
 
@@ -596,7 +603,7 @@ Item
 			compare(allVarsA.selectedFilterId, listABefore, "list A is untouched by the text area's choice")
 			verify(allVarsB.selectedFilterId !== allVarsA.selectedFilterId, "the lists still hold their own two-way split too")
 
-			var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(options.rCodeSet), String(secondFilterId), "its selection travels as its own option")
 			compare(String(options.dataSetA), String(allVarsA.selectedFilterId), "the other options stay put")
 		}
@@ -638,7 +645,7 @@ Item
 				jaspForm.setOptions({ dataSetA: String(unknownId) })
 				wait(50)
 
-				var options = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 				compare(String(options.dataSetA), String(unknownId),
 						"an unknown saved selection must not be rewritten to the first entry's id")
 				compare(allVarsA.selectedFilterId, before,
@@ -654,7 +661,7 @@ Item
 				wait(20)
 			}
 
-			var restored = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var restored = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(restored.dataSetA), String(before), "the option is back on a live filter after the restore")
 		}
 
@@ -757,7 +764,7 @@ Item
 					dependentB:	{ value: ["TestInts"], types: ["scale"] }
 				})
 				wait(50)
-				bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+				bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			} finally
 			{
 				//functions run alphabetically: put the selections back for the tests after this one
@@ -767,19 +774,30 @@ Item
 			}
 
 			var meta = bound[".meta"]
+			var ids = bound[".filterIds"]
 
 			compare(parseInt(String(bound.dataSetA)), savedFilterA, "list A took the loaded selection")
 			verify(meta && meta.aDependent && meta.dependentA && meta.dependentB,
-					"the loaded options bound and stamped their meta")
+					"the loaded options bound and carried their (id-free, C8) meta")
 
-			// "TestInts" lives in both datasets: only the stamp tells them apart, and a stamp taken
-			// before dataSetA was bound would name the analysis' current filter instead.
-			compare(meta.aDependent.filterId, savedFilterA,
-					"a value with no depends: of its own is stamped through its list's selection")
-			compare(meta.dependentA.filterId, savedFilterA, "the one that declares depends: likewise")
-			compare(meta.dependentB.filterId, savedFilterB, "the second section's value is stamped with B's loaded filter")
-			verify(meta.dependentA.dataSetId !== meta.dependentB.dataSetId,
-					"the two stamps name different datasets, not one analysis-wide stamp")
+			// "TestInts" lives in both datasets: only the provenance tells them apart, and an
+			// id taken before dataSetA was bound would name the analysis' current filter instead
+			// (mds-plan D3.4: the transient sidecar carries what the mirror used to stamp).
+			verify(ids && Array.isArray(ids.aDependent) && Array.isArray(ids.dependentA) && Array.isArray(ids.dependentB),
+					"the loaded column values carry sidecar provenance")
+			compare(ids.aDependent[0], savedFilterA,
+					"a value with no depends: of its own is provenanced through its list's selection")
+			compare(ids.dependentA[0], savedFilterA, "the one that declares depends: likewise")
+			compare(ids.dependentB[0], savedFilterB, "the second section's value is provenanced with B's loaded filter")
+			//different datasets, not one analysis-wide stamp: each value is provenanced with the
+			//filter ITS host loaded (A on a 'Second'-dataset filter, B on the first dataset's),
+			//and those two saved filters are distinct ids (mds-plan D3.4: the sidecar carries
+			//what the mirror's dataSetId/filterId stamp pair said; filter ids imply their
+			//dataset, so differing ids from dataset-distinct entries ARE the evidence - no
+			//label grammar parsed, C4).
+			verify(savedFilterA !== savedFilterB, "fixture: the two saved selections name different filters")
+			verify(ids.dependentA[0] !== ids.dependentB[0],
+					"the two provenances name different filters (A through the 'Second' host, B through the first dataset's), not one analysis-wide id")
 			verify(bound.aDependent.value.indexOf("TestInts") !== -1, "the value itself survived the bind")
 
 			// mds-plan C3/M5: provenance belongs on column-bearing values ONLY. The Switches never
@@ -787,12 +805,13 @@ Item
 			// option: its value already IS the filter id. A stamp here would seed the engine's
 			// slice queue with a filter no value of this host uses (phantom slice) and could never
 			// be refreshed when the host moves on.
-			verify(meta.aSwitch === undefined,
-					"a scalar carries no provenance stamp, got: " + JSON.stringify(meta.aSwitch))
-			verify(meta.bSwitch === undefined,
-					"the other scalar carries no provenance stamp either, got: " + JSON.stringify(meta.bSwitch))
-			verify(meta.dataSetA === undefined && meta.dataSetB === undefined,
-					"selection options need no stamp: their value is the filter id itself")
+			verify(meta.aSwitch === undefined && ids.aSwitch === undefined,
+					"a scalar carries no meta and no sidecar node, got: " + JSON.stringify(meta.aSwitch))
+			verify(meta.bSwitch === undefined && ids.bSwitch === undefined,
+					"the other scalar carries none either, got: " + JSON.stringify(meta.bSwitch))
+			verify(meta.dataSetA === undefined && meta.dataSetB === undefined
+					&& ids.dataSetA === undefined && ids.dataSetB === undefined,
+					"selection options need no provenance: their value is the filter id itself")
 		}
 
 		// mds-plan C4/RENDER + RESOLVER + LANG: the wrapper call shown in the form carries the
@@ -941,7 +960,7 @@ Item
 
 			jaspForm.setOptions({ aSwitch: false })	//the previously crashing pass, run over pruned caches
 			wait(50)
-			var bound = JSON.parse(jaspForm.analysis.boundValuesAsJson())
+			var bound = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
 			compare(String(bound.aSwitch), "false", "the bind pass completed normally after the destruction")
 
 			//and the freed option name is reusable: the pruned entry must not resurface as a bogus

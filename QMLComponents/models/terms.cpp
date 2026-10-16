@@ -21,6 +21,7 @@
 #include <QSet>
 #include "qutils.h"
 #include "variableinfo.h"
+#include "log.h"
 
 using namespace std;
 
@@ -72,10 +73,70 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-Terms::Terms(const Json::Value &valuesPart, const Json::Value &typesPart, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues)
+//mds-plan D3.4: the ONE options-json -> Terms applier (see the header). Absorbs the deleted
+//BoundControlTerms::_adjustBindingValue/_adjustBindingType normalization into this chokepoint:
+//  * `{value, types}` option objects are unwrapped (a bare string/array value parses too - that
+//    is what R-syntax-simplified and pre-{value,types} files carry),
+//  * a single-string `types` becomes a one-element array (pre-0.19 files),
+//  * an interaction list WITHOUT row components accepts the simplified `[value, [c1, c2]]` form:
+//    bare entries become `{keyValue: [components]}` rows, exactly the shape Term(json) parses.
+//    Like the deleted helper, the wrap only applies to a bare ARRAY option value (a stored
+//    `{value: [...]}` keeps its rows as they are) and object rows pass through untouched.
+Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues, bool containsInteractions, bool hasRowComponent)
 {
 	//No provenance on the wire yet (mds-plan D2.1/C11): every term parsed out of options json is
-	//UNQUALIFIED (-1); the list it lands in stamps the current selection in (ListModel::_setAllowedType).
+	//UNQUALIFIED (-1); the list it lands in stamps the current selection in (ListModel::_setAllowedType),
+	//bindTo-copied typed Terms keep their own ids (C9) and the D2.1 wildcard lookup matches the
+	//freshly parsed unqualified terms against the stamped model.
+	Json::Value valuesPart	= optionValue;
+	Json::Value typesPart	= Json::arrayValue;
+
+	if (valuesPart.isObject() && valuesPart.isMember("value") && valuesPart.isMember("types"))
+	{
+		typesPart = valuesPart["types"];
+		valuesPart = valuesPart["value"];
+	}
+
+	if (typesPart.isString())
+	{
+		Json::Value typesAsArray(Json::arrayValue);
+		typesAsArray.append(typesPart);
+		typesPart = typesAsArray;
+	}
+
+	if (!hasRowComponent && containsInteractions && optionValue.isArray())
+	{
+		Json::Value rows(Json::arrayValue);
+		for (const Json::Value& aValue : optionValue)
+		{
+			if (aValue.isObject())
+				rows.append(aValue);
+			else
+			{
+				Json::Value row(Json::objectValue);
+				Json::Value components(Json::arrayValue);
+				if (aValue.isString())
+					components.append(aValue);
+				else if (aValue.isArray())
+				{
+					for (const Json::Value& comp : aValue)
+					{
+						if (comp.isString())
+							components.append(comp);
+						else
+							Log::log() << "Wrong Json type when binding interaction terms: " << optionValue.toStyledString() << std::endl;
+					}
+				}
+				else
+					Log::log() << "Wrong Json type when binding interaction terms: " << optionValue.toStyledString() << std::endl;
+
+				row[keyValue] = components;
+				rows.append(row);
+			}
+		}
+		valuesPart = rows;
+	}
+
 	if (valuesPart.isString())
 	{
 		std::string str = valuesPart.asString();
@@ -606,38 +667,6 @@ Json::Value Terms::types(bool onlyChanged, const VariableInfoConsumer* info) con
 	return types;
 }
 
-Json::Value Terms::getOptionsWithRelatedValues(const RelatedValuesPerTerm &relatedValuesPerTerm, const std::string &keyValue, const std::string &keyLabel, bool useArray, bool useValueAndType) const
-{
-	//mds-plan D2.1: the per-term filterId deliberately does NOT appear in this json — options
-	//serialization is Phase 3's generators (C11), term provenance is internal state for now. The
-	//related values stay keyed by term.value() (row identity by name): two same-name-different-
-	//filter rows sharing row controls is a Phase-3/D6 story, not silently changed here.
-	Json::Value options(Json::arrayValue);
-
-	for (const Term& term : _terms)
-	{
-		QMap<QString, Json::Value> relatedValues;
-		if (relatedValuesPerTerm.contains(term.value()))
-			relatedValues = relatedValuesPerTerm[term.value()];
-
-		Json::Value rowValues(Json::objectValue);
-
-		rowValues[keyValue] = term.toJson(useArray, useValueAndType);
-		if (!keyLabel.empty())
-			rowValues[keyLabel] = fq(term.label());
-
-		QMapIterator<QString, Json::Value> it2(relatedValues);
-		while (it2.hasNext())
-		{
-			it2.next();
-			rowValues[fq(it2.key())] = it2.value();
-		}
-		options.append(rowValues);
-	}
-
-	return options;
-}
-
 Json::Value Terms::getValuesOptions() const
 {
 	Json::Value options(Json::arrayValue);
@@ -647,14 +676,50 @@ Json::Value Terms::getValuesOptions() const
 	return options;
 }
 
-Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const
+//mds-plan D3.4: the row-with-related-values assembly lives HERE (the separate
+//getOptionsWithRelatedValues shuffle is deleted; ComponentsList/InputList row builders go
+//through this one serialization too). The row object is the on-demand aggregation of the
+//term's child values: keyValue (+ keyLabel when the list uses one) plus every related value
+//the model holds for the term - which is exactly what the form-wide generator then merges the
+//live row-child control values into, one implementation for both paths.
+//mds-plan D2.1: the per-term filterId deliberately does NOT appear in this json — options
+//serialization is Phase 3's generators (C11), term provenance is internal state (it rides the
+//`.filterIds` sidecar / the typed Terms). The related values stay keyed by term.value() (row
+//identity by name): two same-name-different-filter rows sharing row controls is a D6 story,
+//not silently changed here.
+Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType) const
 {
 	Json::Value result(Json::objectValue);
 
 	Json::Value optionValue;
 
 	if (hasRowComponent || containsInteractions)
-		optionValue = getOptionsWithRelatedValues(relatedValuesPerTerm, keyValue, keyLabel, containsInteractions, false);
+	{
+		Json::Value rows(Json::arrayValue);
+
+		for (const Term& term : _terms)
+		{
+			QMap<QString, Json::Value> relatedValues;
+			if (relatedValuesPerTerm.contains(term.value()))
+				relatedValues = relatedValuesPerTerm[term.value()];
+
+			Json::Value rowValues(Json::objectValue);
+
+			rowValues[keyValue] = term.toJson(containsInteractions, useValueAndType);
+			if (!keyLabel.empty())
+				rowValues[keyLabel] = fq(term.label());
+
+			QMapIterator<QString, Json::Value> it2(relatedValues);
+			while (it2.hasNext())
+			{
+				it2.next();
+				rowValues[fq(it2.key())] = it2.value();
+			}
+			rows.append(rowValues);
+		}
+
+		optionValue = rows;
+	}
 	else if (isSingleRow)
 		optionValue = _terms.size() > 0 ? fq(_terms[0].value()) : "";
 	else

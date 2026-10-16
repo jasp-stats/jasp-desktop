@@ -28,85 +28,18 @@ BoundControlTerms::BoundControlTerms(ListModelAssignedInterface* listModel, bool
 }
 
 
-// For interaction model, if there is no row component, the R Syntax tries to simplify the option value
-// The right json value is an array of abjects of array of strings, like this:
-// [
-//		{
-//			<optionKey> : [  value1 ]
-//		}
-//		{
-//			<optionKey> : [ component1, component2] // In case of interaction, a value is composed by 2 components.
-//		}
-// ]
-//
-// But with R syntax, an array of strings, or an array of array of strings is allowed (the optionKey is not necessary, since no other key is used):
-// [
-//		value1,
-//		[ component1, component2]
-// ]
-//
-// Also if a value comes from a JASP version < 0.19, then no types value is set. So it should be added.
-//
-Json::Value BoundControlTerms::_adjustBindingValue(const Json::Value &value) const
-{
-	Json::Value adjustedValue = _isValueWithTypes(value) ? value["value"] : value;
-
-	if (!_listView->hasRowComponent() && _listView->containsInteractions() && value.isArray())
-	{
-		adjustedValue = Json::Value(Json::arrayValue);
-		for (const Json::Value& aValue : value)
-		{
-			if (aValue.isObject())
-				adjustedValue.append(aValue);
-			else
-			{
-				Json::Value row(Json::objectValue);
-				Json::Value keyValue(Json::arrayValue);
-				if (aValue.isString())
-					keyValue.append(aValue);
-				else if (aValue.isArray())
-				{
-					for (const Json::Value& comp : aValue)
-					{
-						if (comp.isString())
-							keyValue.append(comp);
-						else
-							Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
-					}
-				}
-				else
-					Log::log() << "Wrong Json type when binding " << getName() << ": " << value.toStyledString() << std::endl;
-
-				row[_optionKeyValue()] = keyValue;
-				adjustedValue.append(row);
-			}
-		}
-	}
-
-	return adjustedValue;
-}
-
-Json::Value BoundControlTerms::_adjustBindingType(const Json::Value &value) const
-{
-	Json::Value adjustedType = _isValueWithTypes(value) ? value["types"] : Json::arrayValue;
-	if (adjustedType.isString())
-	{
-		std::string type = adjustedType.asString();
-		adjustedType = Json::arrayValue;
-		adjustedType.append(type);
-	}
-
-	return adjustedType;
-}
-
 void BoundControlTerms::bindTo(const Json::Value &value)
 {
-	Json::Value valuePart = _adjustBindingValue(value);
-	Json::Value typesPart = _adjustBindingType(value);
-
 	Terms::RelatedValuesPerTerm allControlValues;
 
-	Terms terms(valuePart, typesPart, _optionKeyValue(), _optionKeyLabel(), allControlValues);
+	//mds-plan D3.4: ONE parse step - the Terms json applier absorbs the shape normalization the
+	//deleted _adjustBindingValue/_adjustBindingType helpers used to run here (and the list's
+	//interaction/row-component flags decide whether the R-syntax-simplified form gets row-wrapped,
+	//exactly as before). The parsed typed Terms are then copied into the model - provenance rides
+	//the Term objects (mds-plan C9), and legacy unqualified JSON parses to -1 terms that the D2.1
+	//wildcard lookup matches against the stamped model.
+	Terms terms(value, _optionKeyValue(), _optionKeyLabel(), allControlValues,
+				_listView->containsInteractions(), _listView->hasRowComponent());
 
 	// For backward compatibility, the types of the terms must be checked.
 	// Before 0.19.0, the types were not given: in this case the real type of the variable (if it is a variable) is retrieved from the dataset.
@@ -141,10 +74,10 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 		term.setTypes(checkedTypes);
 	}
 
-	Json::Value newValue = Json::objectValue;
-	newValue["value"] = valuePart;
-	newValue["types"] = terms.types();
-	BoundControlBase::bindTo(newValue);
+	//The control's own value is the canonical serialization of what was parsed (the same builder
+	//the write path and the generator use - C11), not the raw input tree the old mirror-era bind
+	//stored; every consumer that reads this option reads the generated form anyway.
+	BoundControlBase::bindTo(_makeOption(terms, allControlValues));
 
 	_termsModel->initTerms(terms, allControlValues);
 }

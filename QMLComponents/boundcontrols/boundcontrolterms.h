@@ -43,8 +43,6 @@ protected:
 
 private:
 	Terms		_getTermsFromOptions(const Json::Value& option)								const;
-	Json::Value	_adjustBindingValue(const Json::Value &value)								const;
-	Json::Value	_adjustBindingType(const Json::Value &value)								const;
 	Json::Value _makeOption(const Terms& terms, const Terms::RelatedValuesPerTerm& controlValues) const;
 	std::string	_optionKeyValue()	const;
 	std::string _optionKeyLabel()	const;

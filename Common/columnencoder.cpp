@@ -1186,44 +1186,6 @@ ColumnEncoder * ColumnEncoder::_encoderForDataSetId(int & dataSetId, int filterI
 	return columnEncoder();
 }
 
-void ColumnEncoder::collectDataSetIdsFromMeta(const Json::Value & meta, std::map<int, int> & dataSetFilterIds)
-{
-	if(meta.isObject())
-	{
-		if(meta.isMember("dataSetId") && meta["dataSetId"].isInt())
-		{
-			const int dataSetId	= meta["dataSetId"].asInt(),
-						filterId	= (meta.isMember("filterId") && meta["filterId"].isInt()) ? meta["filterId"].asInt() : -1;
-
-			auto existing = dataSetFilterIds.find(dataSetId);
-
-			if(existing == dataSetFilterIds.end() || (existing->second == -1 && filterId != -1))
-				dataSetFilterIds[dataSetId] = filterId;
-		}
-
-		for(const std::string & memberName : meta.getMemberNames())
-			collectDataSetIdsFromMeta(meta[memberName], dataSetFilterIds);
-	}
-	else if(meta.isArray())
-		for(const Json::Value & element : meta)
-			collectDataSetIdsFromMeta(element, dataSetFilterIds);
-}
-
-void ColumnEncoder::collectFilterIdsFromMeta(const Json::Value & meta, std::set<int> & filterIds)
-{
-	if(meta.isObject())
-	{
-		if(meta.isMember("filterId") && meta["filterId"].isInt())
-			filterIds.insert(meta["filterId"].asInt());	//filter ids are globally unique and imply their dataset (Filter::data())
-
-		for(const std::string & memberName : meta.getMemberNames())
-			collectFilterIdsFromMeta(meta[memberName], filterIds);
-	}
-	else if(meta.isArray())
-		for(const Json::Value & element : meta)
-			collectFilterIdsFromMeta(element, filterIds);
-}
-
 void ColumnEncoder::_encodeColumnNamesinOptions(Json::Value & options, Json::Value & meta, const Json::Value & sidecar, int dataSetId, int filterId, const EncoderFor & encoderFor)
 {
 	if(meta.isNull())

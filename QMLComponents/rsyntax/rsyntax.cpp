@@ -133,15 +133,16 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 	}
 
 	//mds-plan D3.4: script rendering reads the GENERATED Engine tree (component state, C11) with
-	//the transient `.filterIds` sidecar stripped, not the mirror. Values are the same the mirror
-	//held (equivalence harness; ScriptConstructorGoldenR known-reds unchanged - the render surface
-	//and its C4/RENDER selection handling are untouched). `.meta` stays skipped as before.
+	//the transient `.filterIds` sidecar stripped - the bytes the deleted mirror held are pinned by
+	//the golden harness (tst_generatedOptionsJson*.qml); the script surface and its C4/RENDER
+	//selection handling are untouched (ScriptConstructorGoldenR known-reds unchanged).
+	//`.meta` stays skipped as before.
 	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(generatedOptions);
-	const Json::Value& boundValues = generatedOptions;
+	const Json::Value& optionTree = generatedOptions;
 	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
 
-	for (const std::string& member : boundValues.getMemberNames())
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		QString memberQ = tq(member);
 		if (member == ".meta" || formulaSources.contains(memberQ)) continue;
@@ -155,7 +156,7 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 		}
 
 		const Json::Value& defaultValue = boundControl->defaultBoundValue();
-		const Json::Value& foundValue = boundValues.get(member, Json::Value::null);
+		const Json::Value& foundValue = optionTree.get(member, Json::Value::null);
 		if (showAllOptions || (defaultValue != foundValue))
 		{
 			bool isDifferent = true;
@@ -206,7 +207,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	//mds-plan D3.4: generated Engine tree (sidecar stripped), same as generateSyntax.
 	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
 	AnalysisBase::stripTransientSidecar(generatedOptions);
-	const Json::Value& boundValues = generatedOptions;
+	const Json::Value& optionTree = generatedOptions;
 
 	QString result = "\
 #\n\
@@ -236,7 +237,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		result += addDoxygenComment(form()->info());
 		result += "#'\n";
 	}
-	for (const std::string& member : boundValues.getMemberNames())
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		JASPControl* control = _form->getControl(tq(member));
 		if (control)
@@ -266,7 +267,7 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 
 	QSet<QString> wrapperArgs;	//argument names emitted so far, to keep the generated function valid R
 
-	for (const std::string& member : boundValues.getMemberNames())
+	for (const std::string& member : optionTree.getMemberNames())
 	{
 		QString memberQ = tq(member);
 		if (member == ".meta") continue;

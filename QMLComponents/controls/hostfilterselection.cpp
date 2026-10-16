@@ -184,27 +184,20 @@ void HostFilterSelection::applyFilter(Filter * filter)
 		form->notifySelectionHostFilterChanged(_host);
 }
 
-//The .meta stamps of column-bearing values name the filter they were selected THROUGH
-//(BoundControlBase::createMeta), so a new selection makes the ones below this host stale. A
-//same-dataset switch rewrites no value at all - the encoded column names stay valid - so without
-//this the abandoned filter would keep a stamp (and the engine a phantom slice, and
-//referencedDataSets()/dataSpec()/RPC dataSetIds an over-reported dataset) while the live one had
-//none. Values are not touched: each control's .meta is simply rewritten through the provider
-//chain, which now resolves to `filter`. Scalars are walked too but createMeta no longer stamps
-//them (mds-plan C3/M5), so this can never (re)introduce a stamp that shouldn't be there.
-//
-//mds-plan D2.5: the walk is now BOTH halves of the switch - the .meta restamp above (mirror
-//bookkeeping only since the D3.3 flip - the engine reads the sidecar now; the half retires with
-//D3.4) and the TYPED term restamp below (ListModel::restampTermsFilterId, the typed filterId of
-//mds-plan C9 - the half the generated `.filterIds` feeds on since D3.3). Both move together,
-//over exactly the controls that resolve through THIS host.
+//mds-plan D3.4: THE typed walk - the mirror's `.meta` restamp half retired with the mirror
+//(provenance is generated per send into the `.filterIds` sidecar, so there is nothing stored to
+//move). The typed filterId of every term under this host (ListModel::restampTermsFilterId,
+//mds-plan C9) is what the generated sidecar reads, so moving the term ids IS moving the
+//provenance. A same-dataset switch rewrites no value at all - the encoded column names stay
+//valid - so without this the abandoned filter would keep a term id (and the engine a phantom
+//slice, and referencedDataSets()/dataSpec()/RPC dataSetIds an over-reported dataset, mds-plan
+//C3/M5) while the live one had none. Values are not touched; only the terms' filterId moves.
 //mds-plan D3.5 (owns-the-stamp, the D2.6 NOTE item-1 rule for bindTo-copied terms): the typed
 //half re-stamps only terms the host OWNS - those carrying `oldHostFilterId` (this host's previous
 //filter) or -1 (never qualified). A term with a FOREIGN filterId (a typed copy from another
 //host's selection, mds-plan D6.2) keeps its own provenance: the generator emits its own id per
 //position, the engine resolves that filter's view - silently restamping it onto this host would
-//re-route the term's data. Pre-flip the typed half was unconditional, harmless only because no
-//wire format carried ids yet; with the sidecar consumed, the rule matters.
+//re-route the term's data.
 void HostFilterSelection::restampValuesUnderHost(int oldHostFilterId)
 {
 	AnalysisForm * form = _host->form();
@@ -227,19 +220,12 @@ void HostFilterSelection::restampValuesUnderHost(int oldHostFilterId)
 		if(control->selectionHost() != _host)
 			continue;
 
-		//Typed half (mds-plan D2.5): EVERY list below the host carries term provenance, bound
+		//Typed (mds-plan D2.5): EVERY list below the host carries term provenance, bound
 		//or not - an unbound list's terms are just as much "the host's namespace" as a bound
 		//one's, and ListModel::restampTermsFilterId re-resolves the filter live.
 		if(JASPListControl * list = qobject_cast<JASPListControl *>(control))
 			if(ListModel * m = list->model())
 				m->restampTermsFilterId(oldHostFilterId);
-
-		//Meta half: only column-bearing bound values carry a stamp.
-		if(!control->isBound() || !control->encodeValue())
-			continue;
-
-		if(BoundControl * bound = control->boundControl())
-			bound->restampValue();
 	}
 }
 

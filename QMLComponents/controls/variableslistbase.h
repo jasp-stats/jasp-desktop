@@ -66,7 +66,7 @@ public:
 	bool						isJsonValid(const Json::Value& optionValue)												const	override	{ return _boundControl->isJsonValid(optionValue);	}
 	void						resetBoundValue()																				override	{ return _boundControl->resetBoundValue();			}
 	Json::Value					createJson()																			const	override	{ return _boundControl->createJson();				}
-	Json::Value					createMeta()																			const	override	{ return _boundControl->createMeta();				}
+	Json::Value					createEngineMeta()																				const	override	{ return _boundControl->createEngineMeta();				}
 	void						setBoundValue(const Json::Value& value, 
 											  bool emitChange = true)															override	{ return _boundControl->setBoundValue(value, emitChange);	}
 	const Json::Value		&	defaultBoundValue()																		const	override	{ return _boundControl->defaultBoundValue();		}

@@ -2887,15 +2887,16 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 	//      and queues that filter - the exact inversion of D3.2's documented delta;
 	//  (2) positional semantics: an int|null array resolves the terms one by one, null
 	//      positions take the C7 shown-filter fallback (same-name-different-source, C9);
-	//  (3) the mirror's .meta stamps are dead input: a stamped tree WITHOUT a sidecar now runs
-	//      through the fallback and queues no host filter - from the flip on, the mirror's
-	//      provenance half is never read for behaviour (D3.4 deletes it);
+	//  (3) .meta provenance keys are dead input: a stamped tree WITHOUT a sidecar now runs
+	//      through the fallback and queues no host filter - since D3.4 the generator emits no
+	//      provenance keys at all (C8) and the meta collectors are deleted;
 	//  (4) strip: DataBridge::stripTransientProvenanceForR removes the sidecar at the engine
 	//      boundary (R never sees provenance, C11) and nothing else, and is a no-op on
 	//      sidecar-less (every non-aware) trees;
 	//  (5) the grammar helpers/collector: collectFilterIdsFromSidecar sees every int leaf
-	//      including the "$" container member the collision placement uses; collectFilterIdsFromMeta
-	//      still cannot see the sidecar.
+	//      including the "$" container member the collision placement uses; and the generated
+	//      .meta carries no provenance keys (the deleted meta collectors'negative control,
+	//      re-armed on its premise, mds-plan D3.4).'
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -2999,8 +3000,27 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "collectFilterIdsFromSidecar finds the scalar id");
 
 	std::set<int> fromMeta;
-	ColumnEncoder::collectFilterIdsFromMeta(generatedTree[".meta"], fromMeta);
-	QCOMPARE(fromMeta.size(), size_t{0});	//the meta collector genuinely cannot see the sidecar
+	//mds-plan D3.4: the meta collector is DELETED with the mirror's stamping era - the negative
+	//control retargets to its premise: the generated `.meta` carries NO provenance keys anywhere
+	//(C8), so a meta-based reader could not find hostFilterId even if one existed; the sidecar
+	//above is the only carrier.
+	std::function<bool(const Json::Value &)> hasProvenanceKey = [&hasProvenanceKey](const Json::Value & node)
+	{
+		if(node.isObject())
+		{
+			if(node.isMember("dataSetId") || node.isMember("filterId"))
+				return true;
+			for(const std::string & member : node.getMemberNames())
+				if(hasProvenanceKey(node[member]))
+					return true;
+		}
+		else if(node.isArray())
+			for(const Json::Value & element : node)
+				if(hasProvenanceKey(element))
+					return true;
+		return false;
+	};
+	QVERIFY2(!hasProvenanceKey(generatedTree[".meta"]), "generated .meta holds no dataSetId/filterId keys (C8): the sidecar is the only provenance");
 
 	Json::Value container(Json::objectValue);	//the D3.3 collision shape: "$" positional + named children
 	Json::Value positional(Json::arrayValue);
@@ -3499,7 +3519,7 @@ void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 	//before attach claim NOTHING (C12 deferral):
 	AnalysisBase parked;
 	parked.setMultiDataSetAware(true);
-	parked.setBoundValues(Json::Value(Json::objectValue));	//the pre-attach parking path (Analyses::create)
+	parked.setPendingOptions(Json::Value(Json::objectValue));	//the pre-attach parking path (Analyses::create)
 	QVERIFY2(!parked.usesDataSet(b->id()), "without an attached form the analysis must not claim a dataset");
 }
 
@@ -3558,7 +3578,7 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 	//mds-plan D3.5: pre-attach the spec defers to "" - pending state never names datasets:
 	AnalysisBase parked;
 	parked.setMultiDataSetAware(true);
-	parked.setBoundValues(Json::Value(Json::objectValue));
+	parked.setPendingOptions(Json::Value(Json::objectValue));
 	QCOMPARE(parked.dataSpec().toStdString(), std::string());
 
 	//And with nothing referenced at all the spec is simply empty:
@@ -3635,13 +3655,13 @@ void TestAll::testAnalysisBaseReferencedDataSets()
 	//an uninitialized form references NOTHING (the D3.5 gate, attach half):
 	AnalysisForm unattachedForm;
 	AnalysisBase unattached(&unattachedForm);
-	unattached.setBoundValues(Json::Value(Json::objectValue));
+	unattached.setPendingOptions(Json::Value(Json::objectValue));
 	QCOMPARE(unattached.referencedDataSets().size(), size_t{0});
 
 	//D3.5 gate, the pre-attach half: options PARKED on a formless analysis (the
 	//Analyses::create path) reference NOTHING until the form attaches:
 	AnalysisBase parked;
-	parked.setBoundValues(Json::Value(Json::objectValue));
+	parked.setPendingOptions(Json::Value(Json::objectValue));
 	QCOMPARE(parked.referencedDataSets().size(), size_t{0});
 
 	delete hostA;

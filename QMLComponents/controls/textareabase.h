@@ -67,7 +67,7 @@ public:
 	void						resetBoundValue()									override	{ return _boundControl->resetBoundValue();				}
 	const Json::Value&			boundValue()								const	override	{ return _boundControl->boundValue();					}
 	Json::Value					createJson()								const	override	{ return _boundControl->createJson();					}
-	Json::Value					createMeta()								const	override	{ return _boundControl->createMeta();					}
+	Json::Value					createEngineMeta()							const	override	{ return _boundControl->createEngineMeta();			}
 	const Json::Value&			defaultBoundValue()							const	override	{ return _boundControl->defaultBoundValue();			}
 	void						setDefaultBoundValue(const Json::Value& defaultValue) override	{ _boundControl->setDefaultBoundValue(defaultValue);	}
 	void						setBoundValue(const Json::Value& value,

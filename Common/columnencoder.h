@@ -262,20 +262,14 @@ public:
 	///< The child node a container sidecar node carries for the option `optionName` (null when the
 	///< node is not a container or names no child; FILTERIDS_SELF is never a child lookup).
 	static	Json::Value			sidecarChild(const Json::Value & sidecarNode, const std::string & optionName);
-	///< Collects every int leaf of a `.filterIds` tree - the slice-queue build of the D3.3 flip
-	///< (the positional nodes are bare ints, which collectFilterIdsFromMeta cannot see).
+	///< Collects every int leaf of a `.filterIds` sidecar tree (scalars, positional arrays and
+	///  "$"-containers alike) - the queue input of DataBridge::prepareMultiDataSetRun (D3.3) and
+	///  of the D3.6 component-side reference computation. The provenance-meta collectors this
+	///  replaced (collectDataSetIdsFromMeta/collectFilterIdsFromMeta over the stamped mirror
+	///  .meta) are DELETED with the mirror and its stamping era (mds-plan C8/C11/D3.4): the
+	///  sidecar is now the one place filter ids live.
 	static	void				collectFilterIdsFromSidecar(const Json::Value & sidecarNode, std::set<int> & filterIds);
 	// ----------------------------------------------------------------------------------------------
-
-	/// Collects the dataSetId -> filterId pairs referenced from an options .meta subtree (see
-	/// BoundControlBase::createMeta(), which stamps both onto options that contain variables when the
-	/// analysis is multi-dataset aware). A dataSetId seen without filterId is registered as -1 and only
-	/// upgraded by a later non -1 occurrence, never downgraded.
-	static	void				collectDataSetIdsFromMeta(const Json::Value & meta, std::map<int, int> & dataSetFilterIds);
-	///< Like collectDataSetIdsFromMeta, but keeps every distinct (dataSetId, filterId) pair: two
-	///< forms selecting two different filters of the same dataset need two slices, and a node
-	///< without a filterId contributes (dataSetId, -1) = "the dataset's default".
-	static	void				collectFilterIdsFromMeta(const Json::Value & meta, std::set<int> & filterIds);
 
 private:
 	static	ColumnEncoder	*	_columnEncoder;

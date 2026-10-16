@@ -104,9 +104,9 @@ Json::Value FactorLevelListBase::createJson() const
 	return result;
 }
 
-Json::Value FactorLevelListBase::createMeta() const
+Json::Value FactorLevelListBase::createEngineMeta() const
 {
-	Json::Value meta(BoundControlBase::createMeta()); //Work from parent to get everything it defines
+	Json::Value meta(BoundControlBase::createEngineMeta()); //Work from parent to get everything it defines
 		
 	meta["encodeThis"] = Json::arrayValue;
 	for (const QString & factor : factors())

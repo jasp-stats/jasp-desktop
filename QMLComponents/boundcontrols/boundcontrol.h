@@ -40,7 +40,6 @@ public:
 	enum JsonFormat { Engine, Storage };
 
 	virtual Json::Value					createJson()													const	= 0;
-	virtual Json::Value					createMeta()													const	= 0;
 	virtual bool						isJsonValid(const Json::Value& optionValue)						const	= 0;
 	virtual void						bindTo(const Json::Value& value)										= 0;
 	virtual const Json::Value&			boundValue()													const	= 0;
@@ -52,26 +51,26 @@ public:
 	///< Generate this control's option value in the requested shape (mds-plan D3.1). The default
 	/// is today's createJson() for both formats: BoundControlBase routes the two formats through
 	/// createEngineValue()/createStorageValue() and the families whose stored value is built from
-	/// live state (not from createJson's default builder) override those hooks, so generator and
-	/// write path stay one implementation. Composite controls (TextAreaBase, VariablesListBase,
-	/// TableViewBase) forward boundControl() to their companion, which answers here.
+	/// live state (not from createJson's default builder) override those hooks, so the generation
+	/// and the control's own written value stay one implementation. Composite controls
+	/// (TextAreaBase, VariablesListBase, TableViewBase) forward boundControl() to their companion,
+	/// which answers here.
 	virtual Json::Value	createJson(JsonFormat)														const	{ return createJson();			}
-	///< The send-time `.meta` node of this option (mds-plan C8/D3.2): what createMeta() produces
-	/// MINUS the dataSetId/filterId provenance keys. Default: no meta.
+	///< The send-time `.meta` node of this option (mds-plan C8/D3.2, THE single source since the
+	/// D3.4 deletion of the mirror's createMeta stamping era): what the family generates
+	/// (shouldEncode/isRCode/filterForValues/loadFilteredData/encodeThis/...), never any
+	/// dataSetId/filterId - provenance is in the name (+ the transient sidecar below). Default:
+	/// no meta.
 	virtual Json::Value	createEngineMeta()															const	{ return Json::nullValue;		}
 	///< The transient per-term/per-option filterId node for this option (mds-plan C11/D3.2),
 	/// placed at the option's path inside the generated `.filterIds` tree (same placement rules as
 	/// `.meta`). Schema: int | array of (int|null); an array is POSITIONAL over the option's term
 	/// values (null = unqualified term ⟹ the D3.7 resolver's fallback), a scalar covers the whole
-	/// option (today's option-level stamp). Null when there is nothing to say. Stripped at the
-	/// engine boundary (D3.3); never reaches Storage.
+	/// option (the aware-run namespace). Null when there is nothing to say. Stripped at the
+	/// engine boundary (D3.3); never reaches Storage. Also the per-control provenance input of
+	/// AnalysisForm::collectFilterIds (mds-plan D3.6) - the only place filter ids are ever read
+	/// for behaviour besides the engine-side walk.
 	virtual Json::Value	createFilterIds()															const	{ return Json::nullValue;		}
-
-	///< Rewrite the stored option with a freshly created .meta (same value, no control-level
-	/// change signal): used by a selecting host to move provenance stamps to a new filter
-	/// without touching values (HostFilterSelection::restampValuesUnderHost). Base: nothing
-	/// to restamp; BoundControlBase implements it for the controls that stamp at all.
-	virtual void						restampValue()															{}
 };
 
 #endif // BOUNDCONTROL_H

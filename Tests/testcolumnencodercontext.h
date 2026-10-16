@@ -36,8 +36,10 @@ private slots:
 	void encodePerDataSetRoutesOptionsToStampedFilterView();
 	void encodePerDataSetAttributedToPrimaryWithoutProvenance();
 	void encodePerDataSetWithoutResolverIsLegacyEquivalent();
-	void collectDataSetIdsFromMetaGathersPairsAndUpgrades();
-	void collectFilterIdsFromMetaGathersEveryDistinctFilter();
+	//mds-plan D3.4: collectDataSetIdsFromMetaGathersPairsAndUpgrades and
+	//collectFilterIdsFromMetaGathersEveryDistinctFilter retired WITH the meta collectors (the
+	//`.filterIds` sidecar is the one provenance carrier now; its collector/grammar pins live in
+	//JASPTest::testGeneratedEngineJsonSidecar* and testPlaceOptionFilterIdsCollisionDemotion).
 	void decodeJsonCoversEveryBlockAndHonoursSafeHtml();
 	// mds-plan Phase 1: canonical mint + per-filter views + the one global decode table
 	void canonicalAnswersNoFullStringEncodeDecode();

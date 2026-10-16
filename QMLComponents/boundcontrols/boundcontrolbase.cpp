@@ -31,43 +31,25 @@ BoundControlBase::BoundControlBase(JASPControl* control) : _control(control)
 }
 
 
-//To do: define these fields (isRCode, shouldEncode, dataSetId, etc) somewhere centrally through an enum or something
-Json::Value BoundControlBase::createMeta()  const
-{ 
+//mds-plan C8/D3.4: the send-time `.meta` of this option - THE single source since the mirror and
+//its createMeta provenance-stamping era were deleted. It holds everything the engine consumes
+//(shouldEncode gates the encode; isRCode/filterForValues drive the R-code and filter-by-name
+//paths; families add encodeThis/loadFilteredData on top of this via the same virtual) and NEVER a
+//dataSetId/filterId: provenance is in the encoded name (+ the transient `.filterIds` sidecar,
+//createFilterIds below, which the slice-queue build and the request encoding consume and the
+//engine strips before R - C8/C11). The host resolution that used to feed the mirror's stamp keys
+//(generatedHostFilter) now serves the sidecar only.
+Json::Value BoundControlBase::createEngineMeta()  const
+{
 	Json::Value meta(Json::objectValue);
 
 	if (_control->encodeValue())
-	{
 		meta["shouldEncode"] = true;
 
-		//Provenance for the values that actually ENCODE COLUMNS of a multi-dataset aware analysis:
-		//which dataset (and which filter of it) the value was selected THROUGH - the owning host's
-		//filter under a selecting VariablesForm/TextArea, else the analysis' own. The ids come
-		//straight from the storage db, so they are still the right ones when the file reopens;
-		//filter ids are globally unique and imply their dataset, so the engine queues its slices
-		//from the stamped filter ids alone (ColumnEncoder::collectFilterIdsFromMeta, consumed by
-		//DataBridge::prepareMultiDataSetRun) and attributes every encoded value to its own
-		//dataset's encoder. Scalars carry no stamp on purpose (mds-plan C3/M5): they never rewrite
-		//themselves when a host switches selection, so their stamp could only go stale - and a
-		//stale stamped id seeds a phantom slice for a filter nothing uses anymore. Column-bearing
-		//values stay live because a changing host restamps them (HostFilterSelection) and a
-		//changing selection re-encodes them through the provider chain.
-		//
-		//mds-plan D3.1: the stamp resolution itself lives in generatedHostFilter(), which the
-		//send-time generator's .meta (createEngineMeta = createMeta minus these two keys, C8) and
-		//the transient `.filterIds` sidecar (createFilterIds) both read - mirror and generator
-		//share one implementation, so they cannot drift before the consumer flip (D3.3/D3.5).
-		if (Filter * stampFilter = generatedHostFilter())
-		{
-			meta["dataSetId"]	= stampFilter->data()->id();
-			meta["filterId"]	= stampFilter->id();
-		}
-	}
-	
 	for(const std::string & key : _isRCode)
 		if(key.empty())		meta	 ["isRCode"] = true;
 		else				meta[key]["isRCode"] = true;
-	
+
 	if(!_filterForValues.empty()) //Then the control should load a filter by this name and give it as "values" in the options it passes to the analysis
 		meta["filterForValues"] = _filterForValues;
 
@@ -77,19 +59,6 @@ Json::Value BoundControlBase::createMeta()  const
 Json::Value BoundControlBase::createJson(JsonFormat format) const
 {
 	return format == Engine ? createEngineValue() : createStorageValue();
-}
-
-Json::Value BoundControlBase::createEngineMeta() const
-{
-	//mds-plan C8/D3.1: the send-time .meta of this option is EXACTLY what createMeta() stamps for
-	//the mirror, minus the two provenance keys (provenance rides the `.filterIds` sidecar and the
-	//terms themselves from here on). Calling the virtual createMeta() keeps every family's meta
-	//override (encodeThis, loadFilteredData, ...) in the generated tree without a second
-	//implementation to drift.
-	Json::Value meta = createMeta();
-	meta.removeMember("dataSetId");
-	meta.removeMember("filterId");
-	return meta;
 }
 
 Filter *BoundControlBase::generatedHostFilter() const
@@ -154,42 +123,26 @@ void BoundControlBase::setBoundValue(const Json::Value &value, bool emitChange)
 	if (!form || !_control->isBound() || value == boundValue()) return;
 
 	handleComputedColumn(value);
-	writeCurrentValue(value, createMeta(), emitChange);
+	writeCurrentValue(value, emitChange);
 }
 
-//mds-plan D3.4 (staged, see the header): every value the control commits goes through HERE -
-//component-owned state first, the _boundValues mirror (while it exists) second, the change
-//notification last. bindTo, resetBoundValue and the per-family write paths all funnel through
-//setBoundValue, so this is the one place Phase 3 flips from "push into the tree" to pure
-//control -> form -> analysis change signalling.
-void BoundControlBase::writeCurrentValue(const Json::Value &value, const Json::Value &meta, bool emitChange)
+//mds-plan D3.4 (the deletion): every value the control commits goes through HERE. The value lands
+//in the component-owned `_boundValue` (the generators' home - C11) and the change propagates as
+//pure notification: AnalysisBase::notifyOptionsChanged() re-emits boundValuesChanged + the aware
+//dataSpecChanged (the tail the mirror's setBoundValue used to carry, gated exactly as before),
+//and boundValueChanged drives control -> form -> analysis (the run trigger). Nothing is pushed
+//into an option tree any more; bindTo, resetBoundValue and the per-family write paths all reach
+//this through setBoundValue.
+void BoundControlBase::writeCurrentValue(const Json::Value &value, bool emitChange)
 {
 	_boundValue = value;
 
 	if (AnalysisForm * form = _control->form())
-		form->setBoundValue(getName(), value, meta, _control->getParentKeys());
+		if (AnalysisBase * analysis = form->analysisObj())
+			analysis->notifyOptionsChanged();
 
 	if (emitChange)
 		emit _control->boundValueChanged(_control);
-}
-
-void BoundControlBase::restampValue()
-{
-	AnalysisForm* form = _control->form();
-
-	//Same option value, freshly created .meta, and no boundValueChanged: a selecting host uses
-	//this to move the provenance of its (unchanged) column values onto a new filter. A control
-	//whose option isn't in the json yet has nothing to restamp, and writing one here would
-	//create an option that was never set.
-	if (!form || !_control->isBound())
-		return;
-
-	const Json::Value &value = boundValue();
-
-	if (value.isNull())
-		return;
-
-	form->setBoundValue(getName(), value, createMeta(), _control->getParentKeys());
 }
 
 void BoundControlBase::setIsRCode(std::string key)
@@ -200,14 +153,6 @@ void BoundControlBase::setIsRCode(std::string key)
 void BoundControlBase::setFilterForValues(const std::string &filterName)
 {
 	_filterForValues = filterName;
-}
-
-const Json::Value & BoundControlBase::boundValue() const
-{
-	AnalysisForm * form = _control->form();
-
-	if (form)	return form->boundValue(getName(), _control->getParentKeys());
-	else		return Json::Value::null;
 }
 
 void BoundControlBase::setIsColumn(bool isComputed, columnType type)

@@ -3,18 +3,18 @@ import QtQuick
 import JASP
 import JASP.Controls
 
-// mds-plan D3.1 - the Engine-json EQUIVALENCE HARNESS, part 1: the NON-aware form.
+// mds-plan D3.1/D3.4 - the Engine-json GOLDEN HARNESS, part 1: the NON-aware form.
 //
-// Phase 3 inverts the options pipeline: the controls' typed state is the source of truth and the
+// Phase 3 inverted the options pipeline: the controls' typed state is the source of truth and the
 // two JSON shapes (Engine request / Storage file) are GENERATED on demand
-// (AnalysisForm::createOptionsJson). The _boundValues mirror still feeds every run/save path until
-// the consumer flip (D3.3/D3.5), so this pair of files pins the cutover contract: for a
-// representative control matrix, `createOptionsJson(Engine)` must equal the mirror EXCEPT for the
-// two intentional deltas -
-//   1. the generated tree carries the transient `.filterIds` sidecar (per-term positional arrays
-//      over term lists, scalar ids elsewhere; stripped at the engine boundary in D3.3), and
-//   2. the generated `.meta` holds everything createMeta() stamps MINUS dataSetId/filterId (C8 -
-//      provenance rides the sidecar and the terms instead).
+// (AnalysisForm::createOptionsJson). During the transition this pair of files proved the
+// generator equal to the _boundValues mirror; the mirror is now DELETED (D3.4), so the expected
+// trees are frozen GOLDEN strings captured from that mirror at the deletion commit - the exact
+// bytes the mirror held (values + `.meta`), with its dead dataSetId/filterId stamp keys removed
+// (C8 - the harness asserted equality modulo exactly those keys, and they never shipped: C15).
+// For this NON-aware file the equivalence was byte-for-byte INCLUDING meta (nothing is ever
+// stamped without a selecting host), so the goldens are the complete expected Engine tree minus
+// the transient `.filterIds` sidecar, which must be absent here altogether (D3.2).
 // The Storage shape (D5.1 preview) and the aware-side provenance assertions live in
 // tst_generatedOptionsJsonAware.qml (one Form per test document: the controls resolve their
 // AnalysisForm through the root item's `form` property, so a second Form would register its
@@ -207,38 +207,44 @@ Item
 			return tree
 		}
 
-		function mirrorOf()
-		{
-			return JSON.parse(plainForm.analysis.boundValuesAsJson())
-		}
-
 		function generatedOf(storage)
 		{
 			return JSON.parse(plainForm.createOptionsJsonAsJson(storage ? 1 : 0))
 		}
 
-		// the core D3.1 assertion: generator == mirror modulo the intentional deltas; returns the
-		// generated tree (sidecar put back) for follow-up assertions
-		function assertEngineEqualsMirror(stage)
+		// The frozen expected trees: the _boundValues mirror bytes captured at the D3.4 deletion
+		// commit, from THIS harness while it still asserted generated == mirror (so these strings
+		// are the authoritative old behaviour, not the generator's opinion). Non-aware: no stamp
+		// keys existed to remove, so the goldens are complete Engine trees minus `.filterIds`
+		// (which a non-aware form must not generate at all, D3.2).
+		readonly property string goldenScalars: `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_2"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":true,"comboP":{"types":"unknown","value":""},"compListP":[{"hypP":"","incP":false,"value":["#"]}],"dblP":0,"depP":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_2"}],"fixedP":{"types":[],"value":[]},"formulaP":"2 * TestInts","intP":7,"interP":{"optionKey":"components","types":["scale","nominal","nominal"],"value":[{"components":["TestDoubles"]},{"components":["TestLetters"]},{"components":["TestNominal"]}]},"jagsP":{"columns":[],"model":"","modelOriginal":"","parameters":[]},"plainTextP":"hello","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":[],"model":"","modelOriginal":"","optionKey":"value","prefixedColumns":{"data.":[]},"types":[],"value":[]},"radP":"secondP","rowsP":{"optionKey":"variable","types":[],"value":[]},"swP":true}`
+		readonly property string goldenTerms:	 `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_4"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":true,"comboP":{"types":"unknown","value":""},"compListP":[{"hypP":"","incP":false,"value":["#"]}],"dblP":0,"depP":{"types":["ordinal","scale"],"value":["TestInts","TestDoubles"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_4"}],"fixedP":{"types":["nominal"],"value":["TestLetters"]},"formulaP":"2 * TestInts","intP":7,"interP":{"optionKey":"components","types":[["scale","nominal"]],"value":[{"components":["TestInts","TestLetters"]}]},"jagsP":{"columns":[],"model":"","modelOriginal":"","parameters":[]},"plainTextP":"","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":[],"model":"","modelOriginal":"","optionKey":"value","prefixedColumns":{"data.":[]},"types":[],"value":[]},"radP":"secondP","rowsP":{"optionKey":"variable","types":["ordinal"],"value":[{"keepP":true,"variable":["TestInts"]}]},"swP":true}`
+		readonly property string goldenRich:	 `{".meta":{"comboP":{"shouldEncode":true},"depP":{"shouldEncode":true},"factorLevelsP":{"encodeThis":["FacP 1","LevP 1","LevP 2"],"shouldEncode":true},"filteredP":{"loadFilteredData":{"column":"auditResultP","filter":"ListModelFilteredDataEntry_1"},"shouldEncode":true},"fixedP":{"shouldEncode":true},"formulaP":{"isRCode":true},"interP":{"shouldEncode":true},"rowsP":{"shouldEncode":true}},"cbP":false,"comboP":{"types":"nominal","value":"TestLetters"},"compListP":[{"hypP":"row one","incP":true,"value":["h1"]}],"dblP":0,"depP":{"types":["ordinal"],"value":["TestInts"]},"factorLevelsP":[{"levels":["LevP 1","LevP 2"],"name":"FacP 1"}],"filteredP":[{"colName":"auditResultP","dataCols":[],"extraCol":[],"filter":"TRUE","filterName":"ListModelFilteredDataEntry_1"}],"fixedP":{"types":[],"value":[]},"formulaP":"2 * TestInts","intP":0,"interP":{"optionKey":"components","types":["scale","nominal","nominal"],"value":[{"components":["TestDoubles"]},{"components":["TestLetters"]},{"components":["TestNominal"]}]},"jagsP":{"columns":[],"model":"x ~ dnorm(0, 1)","modelOriginal":"x ~ dnorm(0, 1)","parameters":["x"]},"plainTextP":"r ~ code","plotHeight":320,"plotWidth":480,"rCodeP":{"columns":["JASPColumn_D1_F1_4_Encoded"],"model":"summary(JASPColumn_D1_F1_4_Encoded)","modelOriginal":"summary(TestInts)","optionKey":"value","prefixedColumns":{"data.":[]},"types":["unknown"],"value":["TestInts"]},"radP":"firstP","rowsP":{"optionKey":"variable","types":[],"value":[]},"swP":false}`
+
+		// the core D3.1/D3.4 assertion: generator == the golden mirror bytes (raw, no tolerances
+		// needed: a non-aware tree never carried provenance); returns the generated tree (sidecar
+		// put back) for follow-up assertions
+		function assertEngineEqualsGolden(stage, golden)
 		{
 			wait(100)   // let queued termsChanged/setBoundValue writes settle
 
-			const mirror	= mirrorOf()
 			const generated	= generatedOf(false)
 
-			verify(mirror[".filterIds"] === undefined, stage + ": the mirror never carries .filterIds")
+			const expected = JSON.parse(golden)
+			verify(expected[".filterIds"] === undefined, stage + ": the golden (mirror bytes) never carries .filterIds")
 
 			const sidecar = generated[".filterIds"]
 			delete generated[".filterIds"]
 
-			stripMetaProvenance(mirror)
+			// the golden comparison runs RAW for non-aware - stripMetaProvenance only removes
+			// keys that must be absent anyway, applied here to the generated side it guards:
 			stripMetaProvenance(generated)
 
-			const d = deepDiff(mirror, generated, "")
+			const d = deepDiff(expected, generated, "")
 			if (d !== "")
-				console.log("EQUIVALENCE-DIFF[" + stage + "] mirror=" + JSON.stringify(mirror) + " generated=" + JSON.stringify(generated) + " diffs=" + d)
+				console.log("GOLDEN-DIFF[" + stage + "] golden=" + golden + " generated=" + JSON.stringify(generated) + " diffs=" + d)
 			compare(d, "",
-				stage + ": createOptionsJson(Engine) differs from the _boundValues mirror beyond the intentional deltas")
+				stage + ": createOptionsJson(Engine) differs from the golden mirror bytes frozen at the D3.4 deletion")
 
 			generated[".filterIds"] = sidecar
 			return generated
@@ -254,7 +260,7 @@ Item
 				depP: { value: ["TestInts"], types: ["scale"] }   //gives the filtered tableview its source, so its model writes the live shape (see NOTE in the header test)
 			})
 
-			const gen = assertEngineEqualsMirror("plain scalars")
+			const gen = assertEngineEqualsGolden("plain scalars", goldenScalars)
 			verify(gen[".filterIds"] === undefined,
 				"a non-aware form generates NO .filterIds sidecar at all (unstamped values are filterId-less, exactly as today)")
 			const meta = gen[".meta"] || {}
@@ -282,7 +288,7 @@ Item
 				rowsP:	{ value: [rowObj2], types: ["scale"], optionKey: keyRows }
 			})
 
-			const gen = assertEngineEqualsMirror("plain term lists")
+			const gen = assertEngineEqualsGolden("plain term lists", goldenTerms)
 			verify(gen[".filterIds"] === undefined, "non-aware: still no sidecar (interaction/row/single-row lists included)")
 
 			// the {value, types, optionKey} contract itself must come through:
@@ -315,7 +321,7 @@ Item
 			})
 			wait(150)   // the Rcode syntax check and the row-control binds write through the model
 
-			const gen = assertEngineEqualsMirror("plain rich families")
+			const gen = assertEngineEqualsGolden("plain rich families", goldenRich)
 			verify(gen[".filterIds"] === undefined, "non-aware: no sidecar for the rich families either")
 
 			const meta = gen[".meta"] || {}
@@ -331,8 +337,8 @@ Item
 			// the D3.4 handoff as a createMeta quirk the generator inherits, not introduces.)
 			verify(meta.formulaP && meta.formulaP.isRCode === true,
 				"the generated meta keeps isRCode for the string-valued formula field: " + JSON.stringify(meta.formulaP))
-			verify(meta.rCodeP === undefined && mirrorOf()[".meta"].rCodeP === undefined,
-				"R-code textarea stays meta-free on BOTH sides (today's rlang behaviour, pinned by the equivalence check)")
+			verify(meta.rCodeP === undefined && JSON.parse(goldenRich)[".meta"].rCodeP === undefined,
+				"R-code textarea stays meta-free on BOTH sides (today's rlang behaviour, pinned by the golden bytes)")
 			verify(meta.comboP && meta.comboP.shouldEncode === true, "the variable combobox generates its shouldEncode meta")
 			verify(gen.jagsP && gen.jagsP.modelOriginal === "x ~ dnorm(0, 1)" && Array.isArray(gen.jagsP.parameters),
 				"the JAGS textarea generates its derived {modelOriginal, model, columns, parameters} object: " + JSON.stringify(gen.jagsP))

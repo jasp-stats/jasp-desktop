@@ -171,17 +171,11 @@ void AnalysisBase::setIsAnnotated(bool isAnnotated)
 	_analysisForm->setIsAnnotated(isAnnotated);
 }
 
-// This method tries to find the parent keys in _boundValues Json object
-// If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
-Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
-{
-	return resolveOptionParent(_boundValues, parentKeys, parentNames, found, createAnyway);
-}
 
-//mds-plan D3.1: extracted out of _getParentBoundValue so that the _boundValues mirror and the
-//Phase-3 generators (AnalysisForm::createOptionsJson) share ONE implementation of the nested
-//option placement - same row-chain semantics, same parentNames bookkeeping. Everything below is
-//the mirror's code, unchanged, except that the tree it walks is a parameter.
+//mds-plan D3.1/D3.4: the ONE implementation of nested (row-control) option placement, extracted
+//out of the (now deleted) mirror's _getParentBoundValue so the generators place values at the
+//byte-identical paths the mirror used to - same row-chain semantics, same parentNames bookkeeping.
+//The tree it walks is a parameter (the generated options root).
 //
 // A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
 // whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
@@ -324,60 +318,8 @@ void AnalysisBase::placeOptionFilterIds(Json::Value & filterIdsRoot, const QVect
 		slot = filterIds;
 }
 
-std::string AnalysisBase::_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const
-{
-	std::string keys;
-	bool firstKey = true;
-	for (const auto& parentKey : parentKeys)
-	{
-		std::string parentValue;
-		bool firstValue = true;
-		for (const std::string& v : parentKey.value)
-		{
-			if (!firstValue) parentValue += "*";
-			parentValue += v;
-			firstValue = false;
-		}
 
-		if (!firstKey) keys += " - ";
-		keys += ("key: " + parentKey.key + " name: " + parentKey.name + " value: " + parentValue);
-		firstKey = false;
-	}
 
-	return keys;
-}
-
-void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey>& parentKeys)
-{
-	bool found = false;
-	QVector<std::string> parents;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parents, found, true);
-
-	if (found && parentBoundValue.isObject())
-	{
-		parentBoundValue[name] = value;
-
-		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
-			placeOptionMeta(_boundValues[".meta"], parents, name, meta);
-	}
-	else
-		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
-
-	if (_analysisForm->initialized())
-	{
-		emit boundValuesChanged();
-
-		//For multi-dataset aware analyses the referenced datasets (and thus dataSpec) come from the bound
-		//values' .meta, so a changed option can change what the analysis runs on.
-		if (multiDataSetAware())
-			emit dataSpecChanged();
-	}
-}
-
-void AnalysisBase::setBoundValues(const Json::Value &boundValues)
-{
-	_boundValues = boundValues;
-}
 
 //mds-plan C12/D3.4: the explicit pending-options parking lot. setAnalysisUp consumes it ONCE
 //(takePendingOptions) and routes it through bindTo; run/save/dataSpec never read it. wasCreatedByOptions
@@ -410,17 +352,12 @@ void AnalysisBase::stripTransientSidecar(Json::Value & options)
 	options.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
 }
 
-QString AnalysisBase::boundValuesAsJson() const
-{
-	Json::StreamWriterBuilder builder;
-	builder["indentation"] = "";
-	return QString::fromStdString(Json::writeString(builder, _boundValues));
-}
 
-//mds-plan C11/D3.1: the whole options tree GENERATED from the components (the form walks its
-//registered controls), not read from _boundValues. While the mirror still feeds the run/save paths
-//(until D3.3/D3.5) the equivalence harness keeps the two in lockstep; from the flip on this is the
-//only tree. An analysis without a form has no component state to generate from.
+//mds-plan C11/D3.4: the whole options tree GENERATED from the components (the form walks its
+//registered controls). Since the mirror deletion this is the only tree there is - the equivalence
+//harness that proved generator == mirror during the transition lives on as generator-vs-GOLDEN
+//pins (tst_generatedOptionsJson*.qml). An analysis without a form has no component state to
+//generate from.
 Json::Value AnalysisBase::createOptionsJson(BoundControl::JsonFormat format)
 {
 	return _analysisForm ? _analysisForm->createOptionsJson(format) : Json::Value(Json::objectValue);
@@ -435,16 +372,6 @@ QString AnalysisBase::createOptionsJsonAsJson(int format)
 	return QString::fromStdString(Json::writeString(builder, options));
 }
 
-const Json::Value &AnalysisBase::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)
-{
-	bool found = false;
-	QVector<std::string> parentNames;
-	Json::Value& parentBoundValue = _getParentBoundValue(parentKeys, parentNames, found);
-
-
-	if (found && !parentBoundValue.isNull() && parentBoundValue.isObject())	return parentBoundValue[name];
-	else																	return Json::Value::null;
-}
 
 
 Filter *AnalysisBase::filter() const
@@ -543,6 +470,21 @@ std::map<int, int> AnalysisBase::referencedDataSets() const
 void AnalysisBase::notifyDataSpecChanged()
 {
 	emit dataSpecChanged();
+}
+
+//mds-plan D3.4: the notification tail of the deleted mirror write. boundValuesChanged drives the
+//R-syntax text refresh; for a multi-dataset aware analysis a committed option can change what the
+//analysis runs on (its typed sidecar provenance moved), so dataSpecChanged rides along - exactly
+//the pair the mirror's setBoundValue emitted, gated on the form being initialized as before.
+void AnalysisBase::notifyOptionsChanged()
+{
+	if (_analysisForm && _analysisForm->initialized())
+	{
+		emit boundValuesChanged();
+
+		if (multiDataSetAware())
+			emit dataSpecChanged();
+	}
 }
 
 QString AnalysisBase::filterName() const

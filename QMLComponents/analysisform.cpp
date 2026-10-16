@@ -190,7 +190,6 @@ void AnalysisForm::runScriptRequestDone(const QString& result, const QString& co
 			if (_rSyntax->parseRSyntaxOptions(options))
 			{
 				blockValueChangeSignal(true);
-				_analysis->clearBoundValues();
 				bindTo(Json::nullValue);
 				// Some controls generate extra controls (rowComponents): these extra controls must be first destroyed, because they may disturb the binding of other controls
 				// For this, bind all controls to null and wait for the controls to be completely destroyed.
@@ -331,7 +330,8 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 		//JASPControl::selectionDependency). Recording it here - before the transitive closure below
 		//snapshots the set - is what makes a host's FilterSelect bind before every control it serves:
 		//binding the dropdown writes the saved filter id into the host and so restamps the provider
-		//that createMeta() stamps values with. Without the edge, an unchanged value loaded from a
+		//that createFilterIds() provenances values through (the term filterIds the generated sidecar
+		//reads). Without the edge, an unchanged value loaded from a
 		//file would get restamped with whatever filter happened to be current (and the deferred
 		//init in JASPControl::setInitialized would not wait for the selection either).
 		if (JASPControl* selectionControl = control->selectionDependency())
@@ -620,16 +620,17 @@ void AnalysisForm::addFormError(const QString & error)
 	emit errorsChanged();
 }
 
-//mds-plan C11/D3.1 - see the header for the contract. Two rules keep the generated tree
-//equivalent to the _boundValues mirror while both exist:
+//mds-plan C11/D3.4 - see the header for the contract. This IS the options tree now (the
+//_boundValues mirror it was proved equal to during the transition is deleted; the golden harness
+//tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
 //  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta / placeOptionFilterIds are
-//    the mirror's OWN path code (shared, not reimplemented; the filterIds variant adds the D3.3
-//    "$"-container collision demotion for stamped row children), and the walk order is bindTo's
-//    _dependsOrderedCtrls, so a nested row value lands exactly where the row control's
-//    setBoundValue would have put it;
+//    the ONE path implementation (the mirror's former code, now the generators' alone; the
+//    filterIds variant adds the D3.3 "$"-container collision demotion for provenanced row
+//    children), and the walk order is bindTo's _dependsOrderedCtrls, so a nested row value lands
+//    exactly where its parent row is;
 //  * content: each control generates through the same builder its write path uses
 //    (BoundControlBase::createEngineValue and the per-family overrides), and the Engine `.meta`
-//    is createMeta() minus the two provenance keys (C8), so family meta additions (encodeThis,
+//    is createEngineMeta() (C8: never dataSetId/filterId), so family meta additions (encodeThis,
 //    loadFilteredData, isRCode, filterForValues) cannot drift out of the generated tree.
 Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
 {
@@ -1130,7 +1131,9 @@ void AnalysisForm::setAnalysisUp()
 
 	_setUpControls();
 
-	_analysis->clearBoundValues(); // The boundValues will be reset by the bindTo method. Clear the boundValues to prevent existing options from interferring when resetting values.
+	// The controls own their values (mds-plan D3.4): bindTo(initialOptions) resets each one to its
+	// initial value (createJson() when the option is absent), so there is no stored tree left over
+	// to clear - the old clearBoundValues() retired with the mirror.
 	bindTo(initialOptions);
 
 	lockOptions();
@@ -1411,12 +1414,6 @@ std::vector<std::vector<string> > AnalysisForm::_getValuesFromJson(const Json::V
 	}
 
 	return result;
-}
-
-void  AnalysisForm::setBoundValue(const string &name, const Json::Value &value, const Json::Value &meta, const QVector<JASPControl::ParentKey> &parentKeys)
-{
-	if (_analysis)
-		_analysis->setBoundValue(name, value, meta, parentKeys);
 }
 
 std::set<string> AnalysisForm::usedVariables()

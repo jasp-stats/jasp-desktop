@@ -146,7 +146,7 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 //mds-plan D3.2: the combo holds ONE selected variable, so the sidecar is a scalar (schema:
 //BoundControlTerms::createFilterIds): the selected model term's own filterId when it is qualified
 //(D2.1/D2.5 keep it in sync with the list's namespace), else the option's host filter - exactly
-//what createMeta stamps for this value today - else null (non-aware/hostless: no sidecar, as today).
+//the id the host's sidecar node carries for this value - else null (non-aware/hostless: no sidecar, as today).
 Json::Value ComboBoxBase::createFilterIds() const
 {
 	if (!encodeValue())
@@ -390,6 +390,18 @@ void ComboBoxBase::_setCurrentProperties(int index, bool bindValue)
 		emit usedVariablesChanged();
 }
 
+
+//mds-plan D3.4: the pending combo generates its held raw value, not a model projection (the
+//combo is blank because the model cannot serve the value yet, but the OPTION - the component-owned
+//_boundValue - keeps it exactly as bound; recovery rebinds it for real when the model grows).
+//Bound normally this equals createJson() (the model term at the current index), so the override
+//is a no-op for every non-pending state.
+Json::Value ComboBoxBase::createEngineValue() const
+{
+	if (_valueAwaitsModel)
+		return boundValue();
+	return createJson();
+}
 
 QString	ComboBoxBase::generateMDHelp(int depth) const
 {

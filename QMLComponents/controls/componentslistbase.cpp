@@ -49,7 +49,7 @@ void ComponentsListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms	terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues),
+	Terms	terms(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues),
 			sourceTerms = _termsModel->getSourceTerms();
 
 	if (sourceTerms.size() > 0)
@@ -359,7 +359,11 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues) const
 {
-	return terms.getOptionsWithRelatedValues(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), containsVariables());
+	//mds-plan D3.4: the rows-with-related-values shuffle (Terms::getOptionsWithRelatedValues) is
+	//deleted - this is the on-demand child aggregation itself, one serialization through
+	//Terms::getOptions (the row branch), with the value-part taken out. useValueAndType keeps
+	//this list family's `{value, types}` row-entry shape (containsVariables) exactly as before.
+	return terms.getOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false, containsVariables())["value"];
 }
 
 void ComponentsListBase::addItemHandler()

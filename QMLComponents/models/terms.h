@@ -48,7 +48,18 @@ public:
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);
 	Terms(const QList<Term>									& terms,	Terms *parent = nullptr);
 	Terms(																Terms *parent = nullptr);
-	Terms(const Json::Value& values, const Json::Value& types, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues);
+	///< The ONE options-json -> Terms applier (mds-plan D3.4): takes the option value as stored
+	///  or generated and absorbs every legacy normalization into this chokepoint - unwrapping
+	///  `{value, types}` objects, a single-string `types` becoming a one-element array (pre-0.19
+	///  files), and the R-syntax-simplified form of an interaction list WITHOUT row components
+	///  (bare strings / arrays of strings) becoming `{keyValue: [components]}` rows. This is the
+	///  successor of the deleted BoundControlTerms::_adjustBindingValue/_adjustBindingType +
+	///  split-parts parsing: the flags come from the list (containsInteractions/hasRowComponent),
+	///  every other caller parses with defaults. No provenance on the wire yet (mds-plan D2.1/
+	///  C11): every term parsed out of options json is UNQUALIFIED (-1) - provenance rides the
+	///  typed Terms objects (bindTo-copied lists keep theirs), and the D2.1 wildcard lookup
+	///  matches freshly parsed terms against the stamped model.
+	Terms(const Json::Value& optionValue, const std::string& keyValue, const std::string& keyLabel, RelatedValuesPerTerm& allControlValues, bool containsInteractions = false, bool hasRowComponent = false);
 
 	void set(const QList<QString>							& terms, bool isUnique = true);
 	void set(const std::vector<Term>						& terms, bool isUnique = true);
@@ -123,9 +134,14 @@ public:
 
 	Json::Value types(bool onlyChanged = false, const VariableInfoConsumer* info = nullptr) const;
 
-	Json::Value getOptionsWithRelatedValues(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool useArray, bool useValueAndType) const;
 	Json::Value getValuesOptions() const;
-	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const;
+	///< The canonical `{value, types[, optionKey]}` option serialization of these terms (mds-plan
+	///  D3.1/D3.4): row objects (keyValue + optional keyLabel + the term's related child values)
+	///  when the list has row components or interactions, a single value for isSingleRow, bare
+	///  values otherwise. The row assembly is inlined HERE since the D3.4 deletion of the
+	///  separate getOptionsWithRelatedValues shuffle; useValueAndType selects the
+	///  `{value, types}` entry shape per row (ComponentsList-style variable lists pass true).
+	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType = false) const;
 
 private:
 

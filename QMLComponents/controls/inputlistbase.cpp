@@ -52,7 +52,7 @@ void InputListBase::bindTo(const Json::Value& value)
 	BoundControlBase::bindTo(value);
 
 	Terms::RelatedValuesPerTerm allControlValues;
-	Terms terms(value, Json::nullValue, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
+	Terms terms(value, fq(_optionKeyValue), fq(_optionKeyLabel), allControlValues);
 
 	_inputModel->initTerms(terms, allControlValues);
 }
@@ -107,8 +107,9 @@ void InputListBase::termsChangedHandler()
 	setBoundValue(createEngineValue());
 }
 
-//mds-plan D3.1: the live input terms exactly as the write path puts them in the mirror
-//(row-component lists keep the optionKey discipline through getOptionsWithRelatedValues).
+//mds-plan D3.1: the live input terms exactly as the write path puts them in the control's own
+//value (row-component lists keep the optionKey discipline through the single
+//Terms::getOptions row serialization - the D3.4 deletion folded the shuffle into it).
 Json::Value InputListBase::createEngineValue() const
 {
 	if (!_inputModel)
@@ -116,7 +117,7 @@ Json::Value InputListBase::createEngineValue() const
 
 	const Terms terms = _inputModel->terms();
 
-	return hasRowComponent() ? terms.getOptionsWithRelatedValues(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), false)
+	return hasRowComponent() ? terms.getOptions(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"]
 							 : terms.getValuesOptions();
 }
 

@@ -58,7 +58,6 @@ public:
 	Json::Value					createJson(JsonFormat format)					const	override	{ return _boundControl->createJson(format);		}
 	Json::Value					createEngineMeta()							const	override	{ return _boundControl->createEngineMeta();			}
 	Json::Value					createFilterIds()								const	override	{ return _boundControl->createFilterIds();			}
-	Json::Value					createMeta()								const	override	{ return _boundControl->createMeta();					}
 	const Json::Value&			defaultBoundValue()							const	override	{ return _boundControl->defaultBoundValue();			}
 	void						setDefaultBoundValue(const Json::Value& defaultValue) override	{ _boundControl->setDefaultBoundValue(defaultValue);	}
 

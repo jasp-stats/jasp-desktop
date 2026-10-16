@@ -597,57 +597,7 @@ void TestColumnEncoderContext::encodePerDataSetWithoutResolverIsLegacyEquivalent
 	(void) stillLegacy;
 }
 
-void TestColumnEncoderContext::collectDataSetIdsFromMetaGathersPairsAndUpgrades()
-{
-	Json::Value meta(Json::objectValue);
-
-	meta["dependent"]["shouldEncode"]	= true;
-	meta["dependent"]["dataSetId"]		= 3;
-	meta["dependent"]["filterId"]		= 31;
-	meta["fixedFactors"]["shouldEncode"]	= true;
-	meta["fixedFactors"]["dataSetId"]	= 4;                       //no filterId yet
-	meta["nested"][0]["dataSetId"]		= 4;                       //duplicate, no filter
-	meta["nested"][1]["dataSetId"]		= 4;
-	meta["nested"][1]["filterId"]		= 42;                      //upgrades the -1 of dataset 4
-	meta["nested"][2]["dataSetId"]		= 5;
-	meta["nested"][2]["filterId"]		= 51;
-	meta["nested"][2]["filterId"]		= 51;
-	meta["bogus"]["dataSetId"]			= "seven";                 //not an int: ignored
-	meta["someString"]					= "hello";
-
-	std::map<int, int> dataSetFilterIds;
-	ColumnEncoder::collectDataSetIdsFromMeta(meta, dataSetFilterIds);
-
-	QCOMPARE(dataSetFilterIds.size(), size_t(3));
-	QCOMPARE(dataSetFilterIds[3], 31);
-	QCOMPARE(dataSetFilterIds[4], 42); //first seen without filter (-1), upgraded by the later occurrence
-	QCOMPARE(dataSetFilterIds[5], 51);
-}
-
 QTEST_MAIN(TestColumnEncoderContext)
-
-void TestColumnEncoderContext::collectFilterIdsFromMetaGathersEveryDistinctFilter()
-{
-	Json::Value meta(Json::objectValue);
-
-	meta["dependentA"]["dataSetId"]	= 3;
-	meta["dependentA"]["filterId"]	= 31;
-	meta["dependentB"]["dataSetId"]	= 3;              //same dataset...
-	meta["dependentB"]["filterId"]	= 32;             //...other filter: a slice of its own
-	meta["legacy"]["dataSetId"]		= 4;              //no filterId stamp: contributes nothing (the primary slice is always queued)
-	meta["other"]["dataSetId"]		= 4;
-	meta["other"]["filterId"]		= 41;             //distinct filter of the same dataset
-	meta["nested"][0]["filterId"]	= 31;             //array walk; a duplicate id dedups
-
-	std::set<int> filterIds;
-	ColumnEncoder::collectFilterIdsFromMeta(meta, filterIds);
-
-	//Filter ids imply their dataset, so the set of ids IS the set of slices:
-	QCOMPARE(filterIds.size(), size_t(3));
-	QVERIFY(filterIds.count(31));
-	QVERIFY(filterIds.count(32));
-	QVERIFY(filterIds.count(41));
-}
 
 // The single all-blocks results decoder that Engine::sendString, the syntax bridge, the plotly
 // loader and the computed-column site all use now: it resolves tokens minted by the global current
