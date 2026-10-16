@@ -132,7 +132,13 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 			formulaSources.append(formula->modelSources());
 	}
 
-	const Json::Value& boundValues = _form->boundValues();
+	//mds-plan D3.4: script rendering reads the GENERATED Engine tree (component state, C11) with
+	//the transient `.filterIds` sidecar stripped, not the mirror. Values are the same the mirror
+	//held (equivalence harness; ScriptConstructorGoldenR known-reds unchanged - the render surface
+	//and its C4/RENDER selection handling are untouched). `.meta` stays skipped as before.
+	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(generatedOptions);
+	const Json::Value& boundValues = generatedOptions;
 	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
 
 	for (const std::string& member : boundValues.getMemberNames())
@@ -197,7 +203,10 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		return result;
 	};
 
-	const Json::Value& boundValues = _form->boundValues();
+	//mds-plan D3.4: generated Engine tree (sidecar stripped), same as generateSyntax.
+	Json::Value generatedOptions = _form->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(generatedOptions);
+	const Json::Value& boundValues = generatedOptions;
 
 	QString result = "\
 #\n\

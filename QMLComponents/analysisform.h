@@ -244,6 +244,14 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	///  this and writes the resulting filter id into the analysis values before its DropDown
 	///  binds - so late hosts see exactly what early hosts got.
 	void					setPendingDataSetSelectionRawValues(const Json::Value &rawOptions);
+	///< mds-plan D3.4: where a resolved late-host selection value waits until the option's own
+	///  control exists: _applyPendingDataSetSelectionValue stashes the filter-id string (the
+	///  successor of writing it into the - now deleted - options mirror), and the FIRST bind of
+	///  a control named after the option (RowControls::_setValues fallback) consumes it, so a
+	///  late dropdown binds to the id and not the surface text. Cleared at every request
+	///  boundary, exactly like the raw pending map. Peek/take are separate for the tests.
+	Json::Value				takeResolvedSelectionOptionValue(const QString & option);
+	Json::Value				resolvedSelectionOptionValue(const QString & option) const;
 
 	///< Resolve one dataset-selection syntax surface string to its filter id (exact lookup in
 	///< Workspace::datasetSelectionSurfaceMap), "" when nothing matches. The bridge translates
@@ -351,6 +359,7 @@ private:
 	};
 	mutable QVector<DataSetSelectionRegistration>			_dataSetSelectionHosts;			///< mds-plan C4/REGISTRY (dead entries pruned at read time by the const accessor)
 	Json::Value										_pendingSelectionRawOptions;		///< raw JSON of the current bridge parse (see setPendingDataSetSelectionRawValues)
+	Json::Value										_resolvedSelectionOptionValues;		///< mds-plan D3.4: filter-id strings resolved for late-host selection options, consumed at the option control's first bind (see takeResolvedSelectionOptionValue)
 	void											_applyPendingDataSetSelectionValue(const QString &option);
 	int												_valueChangedSignalsBlocked		= 0;
 	std::queue<std::tuple<QString, QString, bool>>	_waitingRScripts; //Sometimes signals are blocked, and thus rscripts. But they shouldnt just disappear right?

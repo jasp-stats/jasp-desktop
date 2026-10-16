@@ -3271,24 +3271,26 @@ void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
 	pending[".meta"]["depA"]["dataSetId"]	= 4242;		//dev-fixture stamps: must NOT steer behaviour
 	pending[".meta"]["depA"]["filterId"]	= 11;
 
-	analysis.setBoundValues(pending);		//the pre-attach parking path (Analyses::create)
+	analysis.setPendingOptions(pending, true);	//the pre-attach parking path (Analyses::create)
 
-	QVERIFY(analysis.boundValues() == pending);															//parked as-is (bootstrap data, not behaviour)
+	QVERIFY(analysis.pendingOptions() == pending);															//parked as-is (bootstrap data, not behaviour)
+	QVERIFY(analysis.hasPendingOptions());
+	QVERIFY(analysis.createdWithOptions());																	//the explicit isNewAnalysis successor
 	QCOMPARE(analysis.createOptionsJson(BoundControl::Engine), Json::Value(Json::objectValue));			//run/save generation: nothing pre-attach
 	QCOMPARE(analysis.createOptionsJson(BoundControl::Storage), Json::Value(Json::objectValue));
 	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});											//gate: pending .meta never read
 	QVERIFY2(!analysis.usesDataSet(4242), "a pending dataSetId stamp must not make the analysis claim a dataset before attach");
 	QCOMPARE(analysis.dataSpec().toStdString(), std::string());											//no crash, no pending-read
 
-	//And attach consumes the parking lot wholesale: setAnalysisUp reads the pending tree, clears
-	//the mirror and lets the CONTROLS rebuild it, so after attach neither the lying stamps nor the
-	//pending values survive except what a control bound. A bare C++ form has no controls (the
-	//apply-once-with-controls semantics live in the qml harness, see
+	//And attach consumes the parking lot wholesale: setAnalysisUp TAKES the pending tree once
+	//(takePendingOptions) and lets the CONTROLS own the state from then on, so after attach neither
+	//the lying stamps nor the pending values survive except what a control bound. A bare C++ form
+	//has no controls (the apply-once-with-controls semantics live in the qml harness, see
 	//tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read);
 	//what this pins here is the clear side: a re-attach never reads the old parking.
 	AnalysisForm form;
 	form.setAnalysis(&analysis);			//_formCompleted is false in this harness, so this alone changes nothing
-	QVERIFY(analysis.boundValues() == pending);	//still parked - attach has NOT happened, behaviour still deferred
+	QVERIFY(analysis.pendingOptions() == pending);	//still parked - attach has NOT happened, behaviour still deferred
 	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});
 }
 
@@ -3836,8 +3838,10 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 {
 	//mds-plan C4/REGISTRY (M9): the bridge hands the raw options JSON of the current parse to
 	//the form; a selection host that registers after the parse (async ComponentsList
-	//instantiation) resolves its own option out of that pending JSON and writes the resulting
-	//filter id into the bound values at registration time, before its DropDown ever binds.
+	//instantiation) resolves its own option out of that pending JSON and stashes the resulting
+	//filter id on the form at registration time, before its DropDown ever binds (mds-plan D3.4:
+	//the stash replaces the old direct mirror write; RowControls consumes it at the option
+	//control's first bind, which then drives the host exactly like a desktop dropdown would).
 	//Driven through the C++ API here; the QML lifecycle side (register on late instantiation,
 	//prune on destroy) is pinned in tst_dataSetSelectionVariablesList.qml.
 	QVERIFY(_newPkgWithDataSet());
@@ -3870,27 +3874,29 @@ void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 
 	//Nothing registered yet, nothing applied:
 	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
-	QVERIFY(!analysis.boundValues().isMember("dataSetA"));
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetA").isNull());
 
 	JASPControl * earlyHost = new JASPControl();
 	form.registerDataSetSelectionOption("dataSetA", earlyHost);
 
 	QCOMPARE(form.dataSetSelectionOptionNames(), QStringList({ "dataSetA" }));
-	QCOMPARE(analysis.boundValues()["dataSetA"].asString(), std::to_string(named->id()));   //resolved+applied at registration
+	QCOMPARE(form.resolvedSelectionOptionValue("dataSetA").asString(), std::to_string(named->id()));   //resolved+stashed at registration
 
 	//A late host only ever touches its own option - the unresolvable dataSetB stays untouched
 	//(its DropDown will hold whatever it gets pending, mds-plan C2) - but registers anyway, so
 	//the NEXT parse translates it properly:
 	JASPControl * laterHost = new JASPControl();
 	form.registerDataSetSelectionOption("dataSetB", laterHost);
-	QVERIFY(!analysis.boundValues().isMember("dataSetB"));
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetB").isNull());
 	QVERIFY(form.dataSetSelectionOptionNames().contains("dataSetB"));
 
-	//Request boundary: a fresh parse replaces the pending JSON wholesale; re-registering the
-	//same (host, option) is a no-op and nothing gets applied out of thin air:
+	//Request boundary: a fresh parse replaces the pending JSON wholesale (and clears the stash -
+	//a previous parse's leftovers must not leak into this one); re-registering the same
+	//(host, option) is a no-op and nothing gets applied out of thin air:
 	form.setPendingDataSetSelectionRawValues(Json::Value());
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetA").isNull());	//the stash is per-request too
 	form.registerDataSetSelectionOption("dataSetB", laterHost);
-	QVERIFY(!analysis.boundValues().isMember("dataSetB"));
+	QVERIFY(form.resolvedSelectionOptionValue("dataSetB").isNull());
 
 	//Dead hosts drop out at read time - the bridge never demands a value for an option nobody
 	//owns anymore (the old findChildren scan got this half right, the registry must not regress

@@ -22,8 +22,17 @@ AnalysisBase::AnalysisBase(QObject* parent)
 AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	: QObject(parent)
 	, VariableInfoProvider(this)
-	, _boundValues(duplicateMe->boundValues())
 {
+	//mds-plan D3.4: a duplicate is seeded from the source's GENERATED Storage tree (clean typed
+	//state), parked exactly like a file-load and applied once through the controls when the
+	//duplicate's form attaches (setAnalysisUp -> bindTo). The old mirror copy is gone; a source
+	//without an attached form has no component state to duplicate (empty Storage), matching the
+	//old "copy the (empty) mirror" behaviour. The duplicate is "created with options" whenever
+	//the source held any.
+	_pendingOptions			= duplicateMe->createOptionsJson(BoundControl::Storage);
+	_hasPendingOptions		= _pendingOptions.size() > 0;
+	_createdWithOptions		= _hasPendingOptions;
+
 	connectDataSpecChanges();
 }
 
@@ -368,6 +377,37 @@ void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &val
 void AnalysisBase::setBoundValues(const Json::Value &boundValues)
 {
 	_boundValues = boundValues;
+}
+
+//mds-plan C12/D3.4: the explicit pending-options parking lot. setAnalysisUp consumes it ONCE
+//(takePendingOptions) and routes it through bindTo; run/save/dataSpec never read it. wasCreatedByOptions
+//distinguishes "the analysis arrived with these options" (file/RPC/duplicate) from a later
+//programmatic rebind.
+void AnalysisBase::setPendingOptions(const Json::Value & options, bool wasCreatedByOptions)
+{
+	_pendingOptions = options;
+	_hasPendingOptions = true;
+
+	if(wasCreatedByOptions)
+		_createdWithOptions = true;
+}
+
+Json::Value AnalysisBase::takePendingOptions()
+{
+	Json::Value options = _pendingOptions;
+
+	_pendingOptions = Json::objectValue;
+	_hasPendingOptions = false;
+
+	return options;
+}
+
+//mds-plan C11/D3.4: the transient `.filterIds` sidecar is desktop-internal provenance (consumed by
+//the slice-queue build and request encoding) and never leaves to R, RPC clients, QML options() or
+//generated scripts. Stripping is the one top-level member removal D3.3 established.
+void AnalysisBase::stripTransientSidecar(Json::Value & options)
+{
+	options.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
 }
 
 QString AnalysisBase::boundValuesAsJson() const

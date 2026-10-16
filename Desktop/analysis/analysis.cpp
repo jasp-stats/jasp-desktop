@@ -57,7 +57,7 @@ Analysis::Analysis(size_t id, Modules::AnalysisEntry * analysisEntry, const std:
 		_optionsFromDifferentVersion = _dynamicModule->version() != optionsVersion;
 
 	if (options)
-		setBoundValues(options); //Same story as other constructor
+		setPendingOptions(options, true); //Same story as other constructor: park the file-load options (mds-plan C12), created-with-options
 
 	_codedReferenceToAnalysisEntry	= analysisEntry->codedReference(); //We need to store this to be able to find the right analysisEntry after reloading the entries of a dynamic module (destroys analysisEntries). Or replacing the entry if a different version of the module gets loaded of course.
 	_helpFile						= _dynamicModule ? _dynamicModule->helpFolderPath() + tq(analysisEntry->function()) : "";
@@ -123,7 +123,9 @@ void Analysis::initAnalysis()
 	connect(this,				&Analysis::createFormWhenYouHaveAMoment,	this,	&Analysis::createForm,				Qt::QueuedConnection);
 
 
-	bool isNewAnalysis = boundValues().size() == 0;
+	//mds-plan D3.4: the explicit created-with-options bool (set when the file-load/RPC/duplicate
+	//path parked options into the C12 parking lot) replaces the old mirror-shaped heuristic.
+	bool isNewAnalysis = !createdWithOptions();
 
 	if(!_isDuplicate && isNewAnalysis)
 		_status = Empty;
@@ -859,7 +861,7 @@ Json::Value Analysis::loadPlotlyJsonInResults(Json::Value  results) const
 	return results;
 }
 
-Json::Value Analysis::asJSON(bool withRSource) const
+Json::Value Analysis::asJSON(bool withRSource)
 {
 	Json::Value analysisAsJson = Json::objectValue;
 
@@ -879,7 +881,13 @@ Json::Value Analysis::asJSON(bool withRSource) const
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
-	analysisAsJson["options"]		= boundValues();
+	//mds-plan D3.4: the saved options are GENERATED from the components (Engine shape, sidecar
+	//stripped - C11/C12): values + send-time `.meta` (no provenance keys, C8; those stamps never
+	//shipped, so no file-format migration is needed, C15). bindTo re-applies this tree verbatim on
+	//reload, and the Phase-5 storage break (D5.1) swaps in the Storage shape here.
+	Json::Value savedOptions = createOptionsJson(BoundControl::Engine);
+	stripTransientSidecar(savedOptions);
+	analysisAsJson["options"]		= savedOptions;
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;

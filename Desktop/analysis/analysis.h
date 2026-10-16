@@ -148,7 +148,11 @@ public:
 			void				reloadForm()				override;
 			void				exportResults()				override;
 			void				remove();
-			Json::Value			asJSON(bool withRSources = false)	const;
+			//mds-plan D3.4: the saved options are the GENERATED Engine tree (component-owned state, C11)
+	//with the transient `.filterIds` sidecar stripped - today's file shape minus the dev-era
+	//provenance stamps (never shipped, C15: no stamp migration). Generation walks the controls, so
+	//this is not a const read any more (the applyToAll/JS callers hold non-const pointers anyway).
+	Json::Value			asJSON(bool withRSources = false);
 			void				checkDefaultTitleFromJASPFile(	const Json::Value & analysisData);
 			void				loadResultsUserdataAndRSourcesFromJASPFile(const Json::Value & analysisData, Status status);
 			Json::Value			createAnalysisRequestJson();

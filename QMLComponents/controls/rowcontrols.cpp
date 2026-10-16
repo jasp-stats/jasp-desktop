@@ -117,6 +117,13 @@ void RowControls::_setValues(const QMap<QString, Json::Value>& rowValues)
 			BoundControl* boundItem = control->boundControl();
 			if (boundItem)
 				optionValue = boundItem->boundValue();
+
+			//mds-plan D3.4: a late selection host's freshly created option control binds the
+			//RESOLVED filter id the form stashed at registration (the successor of the value the
+			//old mirror write placed where this fallback read it - without it the late dropdown
+			//would bind the untranslated surface text).
+			if (optionValue.isNull() && form)
+				optionValue = form->takeResolvedSelectionOptionValue(control->name());
 		}
 
 		control->setInitialized(optionValue);

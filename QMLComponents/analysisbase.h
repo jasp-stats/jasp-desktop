@@ -135,6 +135,33 @@ public:
 						const Json::Value	optionsMeta()												const	{ return _boundValues.get(".meta", Json::nullValue);	}
 						void				clearBoundValues()													{ _boundValues.clear();		}
 
+	// ---- mds-plan D3.4/C12: PENDING pre-attach options (the mirror's one sanctioned reader,
+	// setAnalysisUp's bootstrap, as an explicit small member) -----------------------------------
+	///< Park options that arrive before a form has attached (file load, RPC create, QML
+	///  setOptions, the downstream-widget fallback). setAnalysisUp consumes the parking lot ONCE
+	///  through bindTo and it is then discarded; no run/save/dataSpec path ever reads pending
+	///  JSON (the C12 rule pinned by testPreAttachOptionsParkAndAreNeverReadForBehaviour).
+	///  createdWithOptions marks the parking as what the analysis was CONSTRUCTED with (file
+	///  load / RPC create / duplication) - see createdWithOptions().
+	void				setPendingOptions(const Json::Value & options, bool wasCreatedByOptions = false);
+	///< Take and clear the parked tree: the single sanctioned consumption point
+	///  (AnalysisForm::setAnalysisUp).
+	Json::Value			takePendingOptions();
+	///< Peek accessors (tests/introspection only - behaviour must go through takePendingOptions
+	///  at attach or through the components; neither of these may feed a run/save/dataSpec path).
+	bool				hasPendingOptions()	const	{ return _hasPendingOptions;	}
+	const Json::Value &	pendingOptions()		const	{ return _pendingOptions;		}
+	///< True when this analysis was CREATED with options (file load, RPC create with options,
+	///  duplication): the explicit successor of the old mirror-shaped `boundValues().size() == 0`
+	///  new-analysis heuristic (mds-plan D3.4).
+	bool				createdWithOptions()	const	{ return _createdWithOptions;	}
+
+	///< mds-plan D3.4: strip the transient `.filterIds` sidecar from a generated Engine tree for
+	///  consumers outside the run pipeline (RPC response["options"], QML options(), script
+	///  rendering): provenance never leaves the desktop (C11); `.meta` stays as generated
+	///  (send-time keys only - C8 already keeps dataSetId/filterId out of it).
+	static void			stripTransientSidecar(Json::Value & options);
+
 	// ---- mds-plan C11/D3.1: JSON generated on demand from the components ---------------------
 	// Until the consumer flip (D3.3/D3.5) the _boundValues mirror above stays authoritative for
 	// the run/save/dataSpec paths; these generators are the Phase-3 replacement being proved
@@ -260,8 +287,13 @@ protected:
 	QPointer<DataSet>				_filterDataSet		;
 
 private:
-	Json::Value		_boundValues		= Json::objectValue,
-					_orgBoundValues		= Json::objectValue;
+	Json::Value		_boundValues		= Json::objectValue;
+	//mds-plan C12/D3.4: the PENDING pre-attach parking lot (setAnalysisUp consumes it once through
+	//bindTo; nothing else reads it) and the explicit created-with-options flag that replaces the
+	//old `boundValues().size() == 0` new-analysis heuristic.
+	Json::Value		_pendingOptions		= Json::objectValue;
+	bool			_hasPendingOptions	= false,
+					_createdWithOptions	= false;
 	
 protected:
 	static const std::string	emptyString; ///< Otherwise we return references to a temporary object (std::string(""))

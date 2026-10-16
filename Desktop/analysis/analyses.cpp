@@ -266,7 +266,7 @@ Json::Value Analyses::asJson() const
 	Json::Value analysesJson		= Json::objectValue,
 				analysesDataList	= Json::arrayValue;;
 
-	applyToAll([&analysesDataList](const Analysis * analysis)
+	applyToAll([&analysesDataList](Analysis * analysis)
 		{ analysesDataList.append(analysis->asJSON(true)); });
 
 	analysesJson["analyses"]	= analysesDataList;
@@ -998,7 +998,12 @@ void Analyses::_rpcWriteStatus(Json::Value& response, Analysis* a)
 
 void Analyses::_rpcWriteOptions(Json::Value& response, Analysis* a, bool includeDesc)
 {
-	response["options"]    = a->boundValues();
+	//mds-plan D3.4: the RPC options report the GENERATED Engine tree (component state, C11) with
+	//the transient `.filterIds` sidecar stripped - verifier-compatible with the old mirror output
+	//minus the documented-dead provenance keys (C8 keeps them out of `.meta` anyway).
+	Json::Value options = a->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	response["options"]    = options;
 	response["optionMeta"] = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 }
 
@@ -1074,7 +1079,10 @@ static Json::Value _diffOptionMeta(const Json::Value& oldMeta, const Json::Value
 
 void Analyses::_rpcWriteOptionsDelta(Json::Value& response, Analysis* a, bool includeDesc, bool forceFull)
 {
-	response["options"] = a->boundValues();
+	//mds-plan D3.4: generated Engine tree, sidecar stripped (see _rpcWriteOptions).
+	Json::Value options = a->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	response["options"] = options;
 
 	Json::Value fullMeta = a->form() ? a->form()->optionMeta(includeDesc) : Json::Value(Json::objectValue);
 

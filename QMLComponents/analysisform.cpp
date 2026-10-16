@@ -131,12 +131,20 @@ QVariant AnalysisForm::getConstant(QString key, QVariant defaultValue, QString m
 
 QVariant AnalysisForm::options() const
 {
-	return jsonToQVariant(_analysis->boundValues());
+	//mds-plan D3.4: the QML-visible options are the GENERATED Engine tree (component state, C11)
+	//with the transient `.filterIds` sidecar stripped - the same view the RPC hands out, and what
+	//the old mirror returned (modulo the provenance keys that were already documented-dead).
+	if(!_analysis)
+		return jsonToQVariant(Json::Value(Json::objectValue));
+
+	Json::Value options = _analysis->createOptionsJson(BoundControl::Engine);
+	AnalysisBase::stripTransientSidecar(options);
+	return jsonToQVariant(options);
 }
 
 void AnalysisForm::setOptions(const QVariantMap &options)
 {
-	_analysis->setBoundValues(qvariantToJson(options));
+	_analysis->setPendingOptions(qvariantToJson(options));
 	setAnalysisUp();
 }
 
@@ -555,6 +563,15 @@ void AnalysisForm::bindTo(const Json::Value & defaultOptions)
 				if (defaultOptions.isObject() && defaultOptions.isMember(name))
 					optionValue = defaultOptions[name];
 
+				//mds-plan D3.4: a late selection host stashed the resolved filter id for this
+				//option at registration (successor of the direct mirror write); if the control
+				//now binds and the tree carries nothing for it, the stash is its value. The
+				//stash is request-scoped (cleared by setPendingDataSetSelectionRawValues), so a
+				//following parse - where this host is registered and the bridge translates its
+				//option properly - is never affected by it.
+				if (optionValue == Json::nullValue && !name.empty())
+					optionValue = takeResolvedSelectionOptionValue(tq(name));
+
 				if (optionValue != Json::nullValue && !boundControl->isJsonValid(optionValue))
 				{
 					optionValue = Json::nullValue;
@@ -890,6 +907,21 @@ void AnalysisForm::unregisterDataSetSelectionOption(const QString &option, JASPC
 void AnalysisForm::setPendingDataSetSelectionRawValues(const Json::Value &rawOptions)
 {
 	_pendingSelectionRawOptions = rawOptions.isObject() ? rawOptions : Json::Value(Json::objectValue);
+	_resolvedSelectionOptionValues = Json::Value(Json::objectValue);	//mds-plan D3.4: same request boundary for the resolved stash
+}
+
+Json::Value AnalysisForm::takeResolvedSelectionOptionValue(const QString & option)
+{
+	const std::string key = option.toStdString();
+
+	Json::Value value = _resolvedSelectionOptionValues.get(key, Json::Value::null);
+	_resolvedSelectionOptionValues.removeMember(key);
+	return value;
+}
+
+Json::Value AnalysisForm::resolvedSelectionOptionValue(const QString & option) const
+{
+	return _resolvedSelectionOptionValues.get(option.toStdString(), Json::Value::null);
 }
 
 void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
@@ -913,10 +945,13 @@ void AnalysisForm::_applyPendingDataSetSelectionValue(const QString &option)
 		return;
 	}
 
-	//Write the option exactly like the desktop dropdown would: a filter-id string in the bound
-	//values, no .meta on it (selection options carry none, mds-plan C3/M5). Late controls bind
-	//from boundValue() (RowControls) or the next parse, so they see the id, not the surface text.
-	_analysis->setBoundValue(fq(option), Json::Value(std::to_string(filterId)), Json::Value());
+	//The resolved filter id waits in the form's stash (mds-plan D3.4: the successor of the direct
+	//mirror write - the mirror is gone, and pending handoffs live on the form). The option's own
+	//DropDown consumes it at its first bind (RowControls::_setValues falls back to the stash), so
+	//a late control binds to the id, not the surface text; the dropdown then drives the host and
+	//owns the value like every normal write. Selection options carry no .meta (mds-plan C3/M5),
+	//which the dropdown's own writes already honour.
+	_resolvedSelectionOptionValues[option.toStdString()] = Json::Value(std::to_string(filterId));
 
 	_pendingSelectionRawOptions.removeMember(option.toStdString());
 }
@@ -1087,9 +1122,11 @@ void AnalysisForm::setAnalysisUp()
 
 	blockValueChangeSignal(true);
 
-	// When reading from JASP file or when reloading the QML file, the boundValues are set to the analysis.
-	// Keep these values before the controls are set up (they might set default values), and then bind each control to its initial value
-	Json::Value initialOptions	= _analysis->boundValues();
+	// When reading from a JASP file or reloading the QML file, the options have been PARKED as
+	// pending JSON (mds-plan C12/D3.4): take them once here - the parking is now empty and no
+	// later path can read it - and bind each control to its initial value. The controls own the
+	// state from here; the run/save/dataSpec paths generate from them, never from this tree.
+	Json::Value initialOptions	= _analysis->takePendingOptions();
 
 	_setUpControls();
 

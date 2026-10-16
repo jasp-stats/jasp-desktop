@@ -1607,9 +1607,14 @@ void MainWindow::analysisEditImageHandler(int id, QString options)
 		string utf8 = fq(options);
 		Json::Value root;
 		Json::Reader().parse(utf8, root);
-		
-		root[".meta"] = analysis->optionsMeta();
-		
+
+		//mds-plan D3.4: the image request carries the analysis' CURRENT send-time `.meta`,
+		//generated from the components (C8: never held provenance keys; the mirror's were
+		//documented-dead input for the engine since the D3.3 flip) instead of the mirror's tree.
+		Json::Value generatedOptions = analysis->createOptionsJson(BoundControl::Engine);
+		if (generatedOptions.isMember(".meta"))
+			root[".meta"] = generatedOptions[".meta"];
+
 		analysis->editImage(root);
 	}
 }
@@ -2495,7 +2500,7 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 					   << " could not be applied: " << errorMsg << std::endl;
 	}
 	else
-		analysis->setBoundValues(root);
+		analysis->setPendingOptions(root);	//C12 parking only (no form to apply through yet)
 }
 
 bool MainWindow::startDataEditorHandler()
