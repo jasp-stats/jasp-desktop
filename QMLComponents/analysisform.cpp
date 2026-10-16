@@ -42,6 +42,7 @@
 #include <QTimer>
 #include "preferencesmodelbase.h"
 #include "workspace.h"
+#include "columnencoder.h"	//mds-plan D3.3: FILTERIDS_SELF for the collision-tolerant sidecar placement
 
 using namespace std;
 
@@ -402,7 +403,14 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 		if (_rSyntax->parseRSyntaxOptions(parsedOptions))
 		{
 			bindTo(parsedOptions);
-			parsedOptions = _analysis->boundValues();
+			//mds-plan C11/D3.3: report the options as GENERATED from the now-bound components
+			//(Engine shape: values + send-time .meta minus provenance + the transient
+			//`.filterIds` sidecar), not from the _boundValues mirror. The syntax bridge feeds
+			//this tree through prepareMultiDataSetRun and back to R, so it must carry the
+			//sidecar the engine-side walk consumes (the mirror's meta stamps are dead input
+			//from the flip on). For a form whose controls are all bound this is what the
+			//mirror used to hold, modulo C8 provenance (equivalence harness pins it).
+			parsedOptions = _analysis->createOptionsJson(BoundControl::Engine);
 		}
 	}
 	catch (const Json::Exception & e)
@@ -604,6 +612,40 @@ void AnalysisForm::addFormError(const QString & error)
 //    (BoundControlBase::createEngineValue and the per-family overrides), and the Engine `.meta`
 //    is createMeta() minus the two provenance keys (C8), so family meta additions (encodeThis,
 //    loadFilteredData, isRCode, filterForValues) cannot drift out of the generated tree.
+//
+//mds-plan D3.3: sidecar placement differs from meta placement in ONE way: a meta node is always
+//an object, so row-child meta merges into the parent option's node freely. A `.filterIds` node
+//is a bare int/array, and a list control with row children would have its positional array
+//sitting exactly where the children's named nodes go - placing through plain placeOptionMeta
+//would hit jsoncpp's "requires objectValue" assert the moment such an aware form generates
+//(latent since D3.2, live the moment the run path flips). On collision the own-node is demoted
+//into the container's reserved "$" member - the grammar ColumnEncoder::sidecarOwnFilterId reads.
+static void placeOptionFilterIds(Json::Value & filterIdsRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & filterIds)
+{
+	Json::Value * node = &filterIdsRoot;
+
+	for(const std::string & parent : parentNames)
+	{
+		Json::Value & child = (*node)[parent];	//creates a null slot on the way down, placeable
+
+		if(child.isArray() || child.isInt())	//an own-node already placed here: demote to "$"
+		{
+			Json::Value container(Json::objectValue);
+			container[ColumnEncoder::FILTERIDS_SELF] = child;
+			child = container;
+		}
+
+		node = &child;
+	}
+
+	Json::Value & slot = (*node)[name];
+
+	if(slot.isObject() && !filterIds.isObject())	//named children already in the slot: the own-node rides "$"
+		slot[ColumnEncoder::FILTERIDS_SELF] = filterIds;
+	else
+		slot = filterIds;
+}
+
 Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
 {
 	Json::Value options		(Json::objectValue),
@@ -635,7 +677,7 @@ Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
 
 			Json::Value optionFilterIds = boundControl->createFilterIds();
 			if (!optionFilterIds.isNull())
-				AnalysisBase::placeOptionMeta(filterIdsRoot, parentNames, name, optionFilterIds);
+				placeOptionFilterIds(filterIdsRoot, parentNames, name, optionFilterIds);
 		}
 	}
 

@@ -649,6 +649,9 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 
 	Json::Value parsedOptions;
 	std::string errorMsg;
+	//mds-plan D3.3: parseOptions now REPORTS the generated Engine tree (values + send-time .meta
+	//minus provenance + the transient .filterIds sidecar), not the _boundValues mirror - the
+	//binding below wrote every value through its control, so this is the same state, generated.
 	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);
 
@@ -684,6 +687,12 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		ColumnEncoder::colsPlusTypes analysisColsTypes = ColumnEncoder::encodeColumnNamesinOptions(parsedOptions, preloadData);
 		rbridge_setWantedCols(analysisColsTypes);
 	}
+
+	//mds-plan C11/D3.3: R never sees provenance - strip the transient `.filterIds` sidecar that
+	//prepareMultiDataSetRun consumed above (and the classic path left alone) from what goes back
+	//into the syntax-bridge caller, exactly like Engine::runAnalysis does before
+	//rbridge_runModuleCall.
+	DataBridge::stripTransientProvenanceForR(parsedOptions);
 
 	status["ok"] = true;
 	status["options"] = parsedOptions;

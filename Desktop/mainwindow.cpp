@@ -2479,7 +2479,23 @@ void MainWindow::analysisChangedDownstreamHandler(int id, QString options)
 	Json::Reader parser;
 	parser.parse(utf8, root);
 
-	analysis->setBoundValues(root);
+	//mds-plan D3.5: JSON->state goes through the controls, never through a direct mirror write.
+	//Since the D3.3 flip the run request is GENERATED from component state, so a bare
+	//setBoundValues here would be written but never read - the downstream change would silently
+	//vanish. parseOptions is the same applier the RPC analysis_run uses (bindTo walks the bound
+	//controls; each write re-stamps and refreshes the mirror on the way). Without a form the
+	//options park as pending JSON (C12): setAnalysisUp applies them exactly once at attach.
+	if (AnalysisForm * form = analysis->form())
+	{
+		Json::Value parsed;
+		std::string errorMsg;
+
+		if (!form->parseOptions(utf8, parsed, errorMsg) && !errorMsg.empty())
+			Log::log() << "MainWindow::analysisChangedDownstreamHandler: options for analysis " << id
+					   << " could not be applied: " << errorMsg << std::endl;
+	}
+	else
+		analysis->setBoundValues(root);
 }
 
 bool MainWindow::startDataEditorHandler()

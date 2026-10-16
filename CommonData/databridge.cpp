@@ -209,12 +209,15 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	Filter  * analysisFilterObj = dataset && !analysisFilter.empty() ? dataset->filter(analysisFilter) : nullptr;
 	Filter  * primaryFilter		= analysisFilterObj ? analysisFilterObj : (dataset ? dataset->defaultFilter() : nullptr);
 
-	//Every value of an aware analysis stamps the filter it was selected through (createMeta) and
-	//filter ids are globally unique and imply their dataset (Filter::data()), so the queue is
-	//just the distinct stamped ids plus the analysis' own slice: no dataset/filter pairing,
-	//no -1 placeholders, no dedup dance (a std::set is the dedup).
+	//Every value of an aware analysis was selected through a filter, and the generated Engine
+	//json names that filter per option/term in the transient `.filterIds` sidecar (mds-plan
+	//D3.2/D3.3 - the provenance stamps left .meta with C8). Filter ids are globally unique and
+	//imply their dataset (Filter::data()), so the queue is just the distinct sidecar ids plus the
+	//analysis' own slice: no dataset/filter pairing, no -1 placeholders, no dedup dance (a
+	//std::set is the dedup). Nulls (unqualified terms) contribute nothing - they encode through
+	//the C7 fallback, the shown-filter namespace of the dataset the analysis itself anchors at.
 	std::set<int> filterIds;
-	ColumnEncoder::collectFilterIdsFromMeta(options[".meta"], filterIds);
+	ColumnEncoder::collectFilterIdsFromSidecar(options.get(ColumnEncoder::FILTERIDS_MEMBER, Json::Value::null), filterIds);
 
 	if(primaryFilter)
 		filterIds.insert(primaryFilter->id());
@@ -233,25 +236,30 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true, //aware always collects the wanted cols, that is how it knows which slices to queue
-			[workspace](int dataSetId, int filterId) -> ColumnEncoder *
+			[workspace](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//mds-plan D1.6: encode against the STAMPED filter's VIEW - the exact namespace the
-				//slice for that filter is handed to R in (rbridge_readDataSetRequested anchors the
-				//slice read on the same view). filter ids are globally unique and imply their
-				//dataset (Filter::data), so the stamp alone resolves it.
+				//mds-plan D3.3/D3.7: encode against the SIDECAR filter's VIEW - the exact namespace
+				//the slice for that filter is handed to R in (rbridge_readDataSetRequested anchors
+				//the slice read on the same view). filter ids are globally unique and imply their
+				//dataset (Filter::data), so the id alone resolves it - and re-attributes the
+				//collected cols+types to that dataset (the walk has no meta stamps left to read a
+				//dataSetId from).
 				if(filterId >= 0)
 				{
 					Filter * stampFilter = workspace->filterById(filterId);	//materialises named filters of reopened files
 
 					if(stampFilter && stampFilter->data())
+					{
+						dataSetId = stampFilter->data()->id();
 						return stampFilter->columnEncoder();
+					}
 				}
 
-				//Dual-read for the transition (C7): an option stamped without a filterId (legacy
-				//meta, released files) or a stamp whose filter does not resolve encodes against
-				//the dataset's shown-filter VIEW - the same namespace provideAndUpdateDataSet
-				//points the legacy currentEncoder at - so unstamped runs keep exactly today's
-				//behaviour.
+				//C7 legacy fallback (plan section 4 table): an unqualified node (absent sidecar,
+				//null position, released files, hostless runs) or a sidecar id whose filter does
+				//not resolve encodes against the dataset's shown-filter VIEW - the same namespace
+				//provideAndUpdateDataSet points the legacy currentEncoder at - so unstamped runs
+				//keep exactly today's behaviour.
 				DataSet * ds = workspace->dataSetById(dataSetId);
 				return ds ? ds->shownEncoder() : nullptr;
 			},
@@ -303,6 +311,17 @@ DataBridge::MultiDataSetRunPlan DataBridge::prepareMultiDataSetRun(Json::Value &
 	plan.primaryCols = primaryCols == colsPerDataSet.end() ? ColumnEncoder::colsPlusTypes() : primaryCols->second;
 
 	return plan;
+}
+
+void DataBridge::stripTransientProvenanceForR(Json::Value & options)
+{
+	//mds-plan C11/D3.3: the transient `.filterIds` sidecar is consumed by prepareMultiDataSetRun
+	//(slice queue + per-node encoding) and by updateOptionsAccordingToMeta (loadFilteredData
+	//anchor), then removed here at the last moment before R sees the options - R never sees
+	//provenance, and the Engine->R contract stays byte-identical to pre-Phase-3 otherwise.
+	//Sidecar-less (every non-aware) tree passes through untouched.
+	if(options.isObject())
+		options.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
 }
 
 std::string DataBridge::createColumn(const std::string &columnName, bool computed)
@@ -395,8 +414,14 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 {
 	JASPTIMER_SCOPE(DataBridge::updateOptionsAccordingToMeta);
 
-	std::function<void(Json::Value&,Json::Value&)> recursiveUpdate;
-	recursiveUpdate = [&recursiveUpdate, this](Json::Value & options, Json::Value & meta)
+	//mds-plan D3.3: the loadFilteredData anchor is the option's scalar `.filterIds` sidecar node
+	//(grammar: ColumnEncoder::sidecarOwnFilterId; the generator emits it for the filtered
+	//tableview, gated by encodeValue, so no aware run loses the anchor) - the .meta filterId
+	//stamp is gone with C8 and the dataSetId verification and its mismatch warning retire with
+	//the stamps. The walk threads the sidecar exactly like the request-encoding walk: positional
+	//nodes are consumed element-wise, container nodes stay shared for named children.
+	std::function<void(Json::Value&,Json::Value&,const Json::Value&)> recursiveUpdate;
+	recursiveUpdate = [&recursiveUpdate, this](Json::Value & options, Json::Value & meta, const Json::Value & sidecar)
 	{
 		if(meta.isNull())
 			return;
@@ -407,53 +432,56 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 		{
 		case Json::arrayValue:
 			for(int i=0; i<options.size() && i < meta.size(); i++)
-				recursiveUpdate(options[i], meta.type() == Json::arrayValue ? meta[i] : meta);
+			{
+				const Json::Value * positional	= ColumnEncoder::sidecarPositional(sidecar);
+				const Json::Value	elementNode	= positional && i < positional->size() ? (*positional)[i] : Json::Value::null;
+
+				recursiveUpdate(options[i], meta.type() == Json::arrayValue ? meta[i] : meta, sidecar.isObject() ? sidecar : elementNode);
+			}
 
 			return;
 
 		case Json::objectValue:
 			for(const std::string & memberName : options.getMemberNames())
-				if(memberName != ".meta" && meta.isMember(memberName))
-					recursiveUpdate(options[memberName], meta[memberName]);
+				if(memberName != ".meta" && memberName != ColumnEncoder::FILTERIDS_MEMBER && meta.isMember(memberName))
+					recursiveUpdate(options[memberName], meta[memberName], ColumnEncoder::sidecarChild(sidecar, memberName));
 
 			if(loadFilteredData.isObject())
 			{
 				const std::string	colName = loadFilteredData["column"].asString(),
 									filterN	= loadFilteredData["filter"].asString();
 
-				//A multi-dataset aware analysis stamps the filter its values were selected through
-				//on the option (createMeta). Filter ids are globally unique and imply their dataset
-				//(Filter::data()), so THAT filter is the anchor: resolve it first and look the column
-				//up in its own dataset - a dataSetId stamped next to it only verifies (a mismatch is
-				//logged, the filter wins), it must never re-point the lookup at another dataset.
-				//Indexing one dataset's column with another dataset's filter vector is an unchecked
-				//out-of-bounds read on filter->filtered(). Options without a filterId stamp (all
-				//non-aware ones) keep the old name-based path on the dataset this request anchors at.
-				Filter			*	stamped	= meta.isObject() && meta.isMember("filterId") && meta["filterId"].isInt()
-											? resolveWorkspace()->filterById(meta["filterId"].asInt())
-											: nullptr;
+				//A multi-dataset aware analysis names the filter its values were selected through in
+				//the sidecar node at this option's path (D3.3). Filter ids are globally unique and
+				//imply their dataset (Filter::data()), so THAT filter is the anchor: resolve it
+				//first and look the column up in its own dataset - the id must never re-point the
+				//lookup at another dataset. Indexing one dataset's column with another dataset's
+				//filter vector is an unchecked out-of-bounds read on filter->filtered(). Options
+				//without a scalar sidecar node (all non-aware ones) keep the old name-based path on
+				//the dataset this request anchors at.
+				const int			sidecarId	= ColumnEncoder::sidecarOwnFilterId(sidecar);
+				Filter			*	stamped	= sidecarId >= 0 ? resolveWorkspace()->filterById(sidecarId) : nullptr;
 				DataSet			*	data	= nullptr;
 				Filter			*	filter	= nullptr;
 
 				if(stamped && stamped->data())
 				{
-					data   = stamped->data();							//the filter implies its dataset; that is the anchor
+					data   = stamped->data();								//the filter implies its dataset; that is the anchor
 					provideAndUpdateDataSet(data->id());				//and point the request's encoder indirection at it too
 					filter = stamped;
-
-					if(meta.isMember("dataSetId") && meta["dataSetId"].isInt() && meta["dataSetId"].asInt() >= 0 && meta["dataSetId"].asInt() != data->id())
-						Log::log() << "DataBridge::updateOptionsAccordingToMeta: provenance mismatch, option stamped dataSetId " << meta["dataSetId"].asInt()
-								   << " but its filterId " << filter->id() << " lives in dataset " << data->id() << "; trusting the filter." << std::endl;
 				}
 				else
 				{
-					data   = provideAndUpdateDataSet(meta.isObject() ? meta.get("dataSetId", -1).asInt() : -1);
-					filter = data->filter(filterN);
+					data   = provideAndUpdateDataSet(-1);				//the dataset this request anchors at (.meta carries no dataSetId since C8)
+					filter = data ? data->filter(filterN) : nullptr;
 
-					if(!filter && stamped)	//stale filter name AND an unresolvable filterId: nothing left to honour
-						Log::log() << "DataBridge::updateOptionsAccordingToMeta: neither filter '" << filterN << "' nor filterId " << meta["filterId"].asInt()
-								   << " resolves in dataset " << data->id() << "; the option keeps its current values." << std::endl;
+					if(!filter && sidecarId >= 0)	//stale filter name AND an unresolvable sidecar id: nothing left to honour
+						Log::log() << "DataBridge::updateOptionsAccordingToMeta: neither filter '" << filterN << "' nor filterId " << sidecarId
+									   << " resolves" << (data ? " in dataset " + std::to_string(data->id()) : "") << "; the option keeps its current values." << std::endl;
 				}
+
+				if(!data)
+					return;
 
 				Column			*	col		= data->column(colName);
 
@@ -484,7 +512,7 @@ void DataBridge::updateOptionsAccordingToMeta(Json::Value & encodedOptions)
 		}
 	};
 
-	recursiveUpdate(encodedOptions, encodedOptions[".meta"]);
+	recursiveUpdate(encodedOptions, encodedOptions[".meta"], encodedOptions.get(ColumnEncoder::FILTERIDS_MEMBER, Json::Value::null));
 
 
 	//Log::log() << "After updating options according to their meta it is now:\n" << encodedOptions << std::endl;

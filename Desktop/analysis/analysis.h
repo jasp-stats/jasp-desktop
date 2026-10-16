@@ -130,7 +130,13 @@ public:
 			AnalysisForm	*	form()				const				{ return _analysisForm;						}
 			bool				hasForm()			const				{ return _analysisForm;						}
 			bool				isDuplicate()		const	override	{ return _isDuplicate;						}
-			bool				shouldRun()								{ return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && !_isReport;	}
+			///< mds-plan C12/D3.3: an analysis only dispatches with an INITIALIZED form - the run
+			///< request is generated from component state (Analysis::createAnalysisRequestJson),
+			///< and before the form has attached through setAnalysisUp there is no component state
+			///< to generate from: the pending JSON parks and the run defers (stays Empty, the next
+			///< sync pass dispatches once the form is up). A form-less analysis (QML load failed)
+			///< never runs - "no analysis, no state case" (C12), as before.
+			bool				shouldRun();
 			bool				isReport()			const				{ return _isReport;						}
 			void				setReport(bool report)					{ _isReport = report;							}
 			bool				beingTranslated()						{ return _beingTranslated;					};

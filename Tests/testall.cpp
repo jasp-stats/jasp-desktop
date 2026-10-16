@@ -2358,21 +2358,33 @@ void TestAll::testPerDataSetEncodingUsesOwnDatasetEncoder()
 	options["covariate"]["types"].append(columnTypeToString(colInB->type()));
 
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
-	options[".meta"]["dependent"]["dataSetId"]		= a->id();
-	options[".meta"]["dependent"]["filterId"]		= a->shownFilter()->id();
 	options[".meta"]["covariate"]["shouldEncode"]	= true;
-	options[".meta"]["covariate"]["dataSetId"]		= b->id();
-	options[".meta"]["covariate"]["filterId"]		= b->shownFilter()->id();
+	//mds-plan D3.3 flip: the provenance rides the transient `.filterIds` sidecar (the .meta
+	//stamps retired with C8); each option names the filter its terms were selected through and
+	//that filter re-attributes the collected cols+types to its own dataset.
+	options[".filterIds"]["dependent"]				= a->shownFilter()->id();
+	options[".filterIds"]["covariate"]				= b->shownFilter()->id();
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[ws](int dataSetId, int) -> ColumnEncoder *
+			[ws](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				//Encode against the dataset's shown-filter VIEW (mds-plan C3) - exactly what the
-				//D1.6 resolver falls back to for un-stamped options; the stamps here ARE the shown
-				//filters, so stamp-resolution would return the very same views.
+				//mds-plan D3.3/D3.7: the sidecar filterId resolves to that filter's VIEW (mds-plan
+				//C3) and re-attributes dataSetId - filter ids imply their dataset. Exactly the
+				//prepareMultiDataSetRun resolver shape, against the real workspace.
+				if(filterId >= 0)
+				{
+					Filter * f = ws->filterById(filterId);
+
+					if(f && f->data())
+					{
+						dataSetId = f->data()->id();
+						return f->columnEncoder();
+					}
+				}
+
 				DataSet * ds = ws->dataSetById(dataSetId);
-				return ds ? ds->shownEncoder() : nullptr;
+				return ds ? ds->shownEncoder() : nullptr;	//C7 legacy fallback
 			},
 			a->id());
 
@@ -2746,11 +2758,11 @@ void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
 
 	DataBridge bridge(ProcessInfo::currentPID());	//borrows the process-wide workspace, just like the syntax bridge does in a host
 
+	//mds-plan D3.3 flip: the slice queue is collected from the `.filterIds` sidecar leaves (the
+	//.meta stamps are gone with C8); two distinct named filters are two slices.
 	Json::Value options(Json::objectValue);
-	options[".meta"]["dependent"]["dataSetId"]	= a->id();
-	options[".meta"]["dependent"]["filterId"]	= a->shownFilter()->id();
-	options[".meta"]["covariate"]["dataSetId"]	= b->id();
-	options[".meta"]["covariate"]["filterId"]	= b->shownFilter()->id();
+	options[".filterIds"]["dependent"]	= a->shownFilter()->id();
+	options[".filterIds"]["covariate"]	= b->shownFilter()->id();
 
 	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "requestBoundaryTest");
 
@@ -2771,11 +2783,11 @@ void TestAll::testMultiDataSetQueueClearedAtRequestBoundary()
 
 void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 {
-	//mds-plan D1.6: prepareMultiDataSetRun resolves each option's encoder from its .meta stamp's
-	//FILTER VIEW (not the shown encoder), with a dual-read fallback to the shown-filter view for
-	//un-stamped options (C7). The landmine: the form's HOST filter differs from the shown dataset
-	//filter - the stamped option must encode in the host's namespace, the un-stamped one in the
-	//shown one, and the global table must decode both.
+	//mds-plan D1.6/D3.3: prepareMultiDataSetRun resolves each option's encoder from the FILTER
+	//VIEW its `.filterIds` sidecar names (not the shown encoder), with the C7 fallback to the
+	//shown-filter view for options the sidecar does not name. The landmine: the form's HOST
+	//filter differs from the shown dataset filter - the sidecar'd option must encode in the
+	//host's namespace, the unnamed one in the shown one, and the global table must decode both.
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -2833,28 +2845,28 @@ void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 	options["legacy"]["types"].append(columnTypeToString(colA->type()));
 
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
-	options[".meta"]["dependent"]["dataSetId"]		= a->id();
-	options[".meta"]["dependent"]["filterId"]		= hostFilterId;		//the host filter, NOT the shown one
 	options[".meta"]["legacy"]["shouldEncode"]		= true;
-	options[".meta"]["legacy"]["dataSetId"]			= a->id();			//no filterId: dual-read -> shown fallback
+	//mds-plan D3.3 flip: provenance in the sidecar (C8 keeps .meta provenance-free)...
+	options[".filterIds"]["dependent"]				= hostFilterId;		//the host filter, NOT the shown one
+	//..."legacy" carries no sidecar node -> C7 shown-filter fallback
 
 	DataBridge bridge(ProcessInfo::currentPID());
 	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "perStampViewTest");
 
 	//prepareMultiDataSetRun re-points currentEncoder at a's shown filter (default) as part of
-	//provideAndUpdateDataSet(primaryDataSetId); the STAMPED option must still land in the host's
-	//namespace, proving the resolver used the stamp's filter view, not the (just-changed) current.
+	//provideAndUpdateDataSet(primaryDataSetId); the sidecar'd option must still land in the host's
+	//namespace, proving the resolver used the sidecar filter's view, not the (just-changed) current.
 	QCOMPARE(QString::fromStdString(options["dependent"][0].asString()), QString::fromStdString(hostToken));
 
 	//The un-stamped option falls back to the shown filter's view of the primary dataset (default).
 	QCOMPARE(QString::fromStdString(options["legacy"][0].asString()), QString::fromStdString(shownDefault));
 
-	//The host filter must be in the slice queue (its stamp collected it):
+	//The host filter must be in the slice queue (its sidecar id collected it):
 	bool hostQueued = false;
 	for(const Json::Value & id : plan.multiDataSetJson["ids"])
 		if(id.asString() == std::to_string(hostFilterId))
 			hostQueued = true;
-	QVERIFY2(hostQueued, "the stamped host filter must be queued as a slice");
+	QVERIFY2(hostQueued, "the sidecar'd host filter must be queued as a slice");
 
 	//And the one global table decodes both namespaces back to the real name, context-free (C4):
 	Json::Value sweep(Json::arrayValue);
@@ -2865,39 +2877,24 @@ void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 	QCOMPARE(sweep[1].asString(), colName);
 }
 
-namespace {
-
-//Collect every int in a `.filterIds` sidecar tree (positional arrays, scalar nodes, nulls for
-//unqualified terms) - the shape mds-plan D3.2 generates and D3.3's slice-queue build must consume.
-static void collectFilterIdsFromSidecarNode(const Json::Value & node, std::set<int> & filterIds)
+void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 {
-	if(node.isArray())
-		for(const Json::Value & element : node)
-			collectFilterIdsFromSidecarNode(element, filterIds);
-	else if(node.isObject())
-		for(const std::string & member : node.getMemberNames())
-			collectFilterIdsFromSidecarNode(node[member], filterIds);
-	else if(node.isInt())
-		filterIds.insert(node.asInt());
-}
-
-}//namespace
-
-void TestAll::testGeneratedEngineJsonSidecarIsInertForCurrentEngine()
-{
-	//mds-plan D3.2: the generated Engine json (AnalysisForm::createOptionsJson(Engine)) adds the
-	//transient `.filterIds` tree (per-term POSITIONAL int|null arrays over term lists, scalar ids
-	//elsewhere, placed at exactly the paths `.meta` uses) and drops dataSetId/filterId from the
-	//meta (C8). Until the consumer flip (D3.3/D3.7) the engine still reads the meta stamps, so
-	//this test pins the two halves of the contract the flip inherits:
-	//  (1) INERTNESS: for the current meta-lockstep walk (prepareMultiDataSetRun's D1.6 resolver)
-	//      the sidecar changes NOTHING - identical encodings and identical slice queues with and
-	//      without it (the int/null leaves are never collected, encoded or recursed into).
-	//  (2) THE DELTA: a generated tree (meta minus provenance + sidecar) run through TODAY's walk
-	//      resolves its terms through the unstamped dual-read fallback and queues no host filter -
-	//      proving the sidecar ids are simply ignored today, and that the flip must read them
-	//      (the collector below is the walk D3.3/D3.7 should key the queue and the per-term
-	//      encoder off; per-term filterId >= 0 -> that filter's VIEW, null -> currentEncoder).
+	//mds-plan D3.3 - the FLIP of the D3.2 "sidecar is inert" pin: the generated Engine json
+	//carries its transient provenance in the `.filterIds` tree and NO provenance in `.meta` (C8),
+	//and the engine-side walk now RUNS OFF that sidecar. Pinned at DataBridge level:
+	//  (1) the generated shape (C8 meta + sidecar) resolves through the SIDECAR filter's VIEW
+	//      and queues that filter - the exact inversion of D3.2's documented delta;
+	//  (2) positional semantics: an int|null array resolves the terms one by one, null
+	//      positions take the C7 shown-filter fallback (same-name-different-source, C9);
+	//  (3) the mirror's .meta stamps are dead input: a stamped tree WITHOUT a sidecar now runs
+	//      through the fallback and queues no host filter - from the flip on, the mirror's
+	//      provenance half is never read for behaviour (D3.4 deletes it);
+	//  (4) strip: DataBridge::stripTransientProvenanceForR removes the sidecar at the engine
+	//      boundary (R never sees provenance, C11) and nothing else, and is a no-op on
+	//      sidecar-less (every non-aware) trees;
+	//  (5) the grammar helpers/collector: collectFilterIdsFromSidecar sees every int leaf
+	//      including the "$" container member the collision placement uses; collectFilterIdsFromMeta
+	//      still cannot see the sidecar.
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -2930,59 +2927,98 @@ void TestAll::testGeneratedEngineJsonSidecarIsInertForCurrentEngine()
 		tree[name]["types"]		= Json::Value(Json::arrayValue);
 		tree[name]["types"].append("scale");
 	};
+	auto queuesFilter = [](const DataBridge::MultiDataSetRunPlan & plan, int filterId)
+	{
+		for(const Json::Value & id : plan.multiDataSetJson["ids"])
+			if(id.asString() == std::to_string(filterId))
+				return true;
+		return false;
+	};
 
-	// --- (1) inertness: mirror tree vs same tree + sidecar --------------------------------------
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	// --- (1) the generated shape drives the run -------------------------------------------------
+	Json::Value generatedTree(Json::objectValue);
+	makeTermOption(generatedTree, "dependent");
+	generatedTree[".meta"]["dependent"]["shouldEncode"]	= true;	//meta MINUS the provenance keys (C8)...
+	generatedTree[".filterIds"]["dependent"]			= hostFilterId;	//...provenance in the sidecar
+
+	const DataBridge::MultiDataSetRunPlan planGenerated = bridge.prepareMultiDataSetRun(generatedTree, a->id(), "", "sidecarDrives");
+
+	QCOMPARE(QString::fromStdString(generatedTree["dependent"][0].asString()), QString::fromStdString(hostToken));	//the sidecar's filter VIEW, not the shown fallback
+	QVERIFY2(queuesFilter(planGenerated, hostFilterId), "the sidecar's host filter is queued as a slice (D3.3 queue build)");
+
+	// --- (2) positional array: per-term resolution, null = C7 shown fallback --------------------
+	Json::Value mixedTree(Json::objectValue);
+	makeTermOption(mixedTree, "mixed");
+	mixedTree["mixed"]["value"].append(colName);			//same name twice, provenance differs
+	mixedTree["mixed"]["types"].append("scale");
+	mixedTree[".meta"]["mixed"]["shouldEncode"]	= true;
+	mixedTree[".filterIds"]["mixed"].append(hostFilterId);
+	mixedTree[".filterIds"]["mixed"].append(Json::Value());	//null = unqualified term position
+
+	bridge.prepareMultiDataSetRun(mixedTree, a->id(), "", "sidecarMixed");
+
+	QCOMPARE(QString::fromStdString(mixedTree["mixed"][0].asString()), QString::fromStdString(hostToken));		//position 0: the sidecar's filter
+	QCOMPARE(QString::fromStdString(mixedTree["mixed"][1].asString()), QString::fromStdString(shownDefault));	//position 1: null -> C7 fallback
+
+	// --- (3) the mirror's .meta stamps are dead input -------------------------------------------
 	Json::Value mirrorTree(Json::objectValue);
 	makeTermOption(mirrorTree, "dependent");
 	mirrorTree[".meta"]["dependent"]["shouldEncode"]	= true;
 	mirrorTree[".meta"]["dependent"]["dataSetId"]		= a->id();
-	mirrorTree[".meta"]["dependent"]["filterId"]		= hostFilterId;
+	mirrorTree[".meta"]["dependent"]["filterId"]		= hostFilterId;	//today's mirror shape - inert now
 
-	Json::Value sidecarTree = mirrorTree;				//identical values AND identical meta,
-	sidecarTree[".filterIds"]["dependent"]	= Json::Value(Json::arrayValue);
-	sidecarTree[".filterIds"]["dependent"].append(hostFilterId);	//just the new transient tree
+	const DataBridge::MultiDataSetRunPlan planMirror = bridge.prepareMultiDataSetRun(mirrorTree, a->id(), "", "stampsInert");
 
-	DataBridge bridge(ProcessInfo::currentPID());
-	const DataBridge::MultiDataSetRunPlan planMirror	= bridge.prepareMultiDataSetRun(mirrorTree,	a->id(), "", "sidecarInertMirror");
-	const DataBridge::MultiDataSetRunPlan planSidecar	= bridge.prepareMultiDataSetRun(sidecarTree,	a->id(), "", "sidecarInertSidecar");
+	QCOMPARE(QString::fromStdString(mirrorTree["dependent"][0].asString()), QString::fromStdString(shownDefault));
+	QVERIFY2(!queuesFilter(planMirror, hostFilterId), "meta stamps are no longer read for behaviour (C8/D3.3) - an unstamped-by-sidecar tree queues no host filter");
 
-	QCOMPARE(QString::fromStdString(sidecarTree["dependent"][0].asString()), QString::fromStdString(mirrorTree["dependent"][0].asString()));
-	QCOMPARE(QString::fromStdString(mirrorTree["dependent"][0].asString()), QString::fromStdString(hostToken));	//sanity: the stamp still drives the encode
-	QVERIFY2(sidecarTree[".filterIds"]["dependent"].isArray()
-			 && sidecarTree[".filterIds"]["dependent"].size() == 1
-			 && sidecarTree[".filterIds"]["dependent"][0].asInt() == hostFilterId,
-				"the walk never recurses INTO .filterIds: values stay in place, unencoded");	//inertness (1)
-	QCOMPARE(planMirror.multiDataSetJson.toStyledString(), planSidecar.multiDataSetJson.toStyledString());	//same queue: the sidecar adds no slice today
-	QCOMPARE(planMirror.primaryDataSetId, planSidecar.primaryDataSetId);
+	// --- (4) strip at the engine boundary (C11) --------------------------------------------------
+	const std::string generatedBefore = generatedTree.toStyledString();
+	Json::Value forR = generatedTree;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY2(!forR.isMember(ColumnEncoder::FILTERIDS_MEMBER), "R never sees the transient provenance (C11)");
+	QVERIFY2(generatedTree.isMember(ColumnEncoder::FILTERIDS_MEMBER), "strip runs on the ENCODED COPY - _analysisOptions keeps the sidecar for re-runs");
 
-	// --- (2) the generated shape through today's walk: sidecar ignored, fallback rules apply -----
-	Json::Value generatedTree(Json::objectValue);
-	makeTermOption(generatedTree, "dependent");			//same values...
-	generatedTree[".meta"]["dependent"]["shouldEncode"]	= true;	//...meta MINUS the provenance keys (C8)
-	generatedTree[".filterIds"]["dependent"]	= Json::Value(Json::arrayValue);
-	generatedTree[".filterIds"]["dependent"].append(hostFilterId);
-	generatedTree[".filterIds"]["dependent"].append(Json::Value());// null = unqualified term position
+	Json::Value expectedStrip = generatedTree;
+	expectedStrip.removeMember(ColumnEncoder::FILTERIDS_MEMBER);
+	QCOMPARE(forR.toStyledString(), expectedStrip.toStyledString());	//the member vanishes, nothing else moves
 
-	const DataBridge::MultiDataSetRunPlan planGenerated = bridge.prepareMultiDataSetRun(generatedTree, a->id(), "", "sidecarGenerated");
+	Json::Value classicTree(Json::objectValue);
+	classicTree["plain"]			= colName;
+	classicTree[".meta"]["plain"]["shouldEncode"]	= true;
+	const std::string classicBefore = classicTree.toStyledString();
+	DataBridge::stripTransientProvenanceForR(classicTree);
+	QCOMPARE(classicTree.toStyledString(), classicBefore);			//sidecar-less (non-aware) trees pass through untouched
 
-	//Today's resolver sees no stamp -> the dual-read shown fallback (NOT the sidecar's host view):
-	QCOMPARE(QString::fromStdString(generatedTree["dependent"][0].asString()), QString::fromStdString(shownDefault));
-	//and the host filter is absent from the queue - exactly the behaviour D3.3 changes by reading
-	//the sidecar instead (this is THE documented DELTA, do not "fix" it on the engine side here):
-	bool hostQueued = false;
-	for(const Json::Value & id : planGenerated.multiDataSetJson["ids"])
-		if(id.asString() == std::to_string(hostFilterId))
-			hostQueued = true;
-	QVERIFY2(!hostQueued, "the current queue build ignores .filterIds (collectFilterIdsFromMeta never sees it)");
+	// --- (5) the sidecar grammar and the collectors ----------------------------------------------
+	std::set<int> fromSidecar;
+	ColumnEncoder::collectFilterIdsFromSidecar(generatedTree[ColumnEncoder::FILTERIDS_MEMBER], fromSidecar);
+	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "collectFilterIdsFromSidecar finds the scalar id");
 
-	//The meta-collector genuinely cannot see the sidecar (its nodes are positional ints, not
-	//{filterId: int} objects) - pinning why the flip needs the sidecar walk, not the meta walk:
 	std::set<int> fromMeta;
 	ColumnEncoder::collectFilterIdsFromMeta(generatedTree[".meta"], fromMeta);
-	QCOMPARE(fromMeta.size(), size_t{0});
-	std::set<int> fromSidecar;
-	collectFilterIdsFromSidecarNode(generatedTree[".filterIds"], fromSidecar);
-	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "the sidecar walk (D3.3's collector shape) finds the host id and no nulls");
+	QCOMPARE(fromMeta.size(), size_t{0});	//the meta collector genuinely cannot see the sidecar
+
+	Json::Value container(Json::objectValue);	//the D3.3 collision shape: "$" positional + named children
+	Json::Value positional(Json::arrayValue);
+	positional.append(hostFilterId);
+	positional.append(Json::Value());
+	container[ColumnEncoder::FILTERIDS_SELF]	= positional;
+	container["childOpt"]						= a->defaultFilter()->id();
+
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(container), -1);	//"$" here is the positional array: no scalar own id
+	Json::Value ownScalar(Json::objectValue);
+	ownScalar[ColumnEncoder::FILTERIDS_SELF]	= hostFilterId;
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(ownScalar), hostFilterId);							//"$" scalar = own option-level id
+	QVERIFY(ColumnEncoder::sidecarPositional(container) != nullptr);					//positional visible THROUGH the container
+	QCOMPARE(ColumnEncoder::sidecarChild(container, "childOpt").asInt(), a->defaultFilter()->id());
+	QVERIFY(ColumnEncoder::sidecarChild(container, ColumnEncoder::FILTERIDS_SELF).isNull());	//"$" is never a child lookup
+
+	std::set<int> fromContainer;
+	ColumnEncoder::collectFilterIdsFromSidecar(container, fromContainer);
+	QVERIFY2(fromContainer == std::set<int>({ hostFilterId, a->defaultFilter()->id() }), "the collector walks containers and nulls alike (queue = both filters)");
 
 	//and the one global table still decodes the produced token context-free (C4):
 	Json::Value sweep(Json::arrayValue);
@@ -2993,10 +3029,11 @@ void TestAll::testGeneratedEngineJsonSidecarIsInertForCurrentEngine()
 
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {
-	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: the stamped filterId is the
-	//anchor (globally unique, implies its dataset), dataSetId is verification-only. b is made
-	//smaller than a: the old dataSetId-anchored path would index a's 99 rows against b's short
-	//filter vector (unchecked out-of-bounds read), the filter-anchored one cannot.
+	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: since the D3.3 flip the
+	//anchor is the option's scalar `.filterIds` sidecar node (globally unique filter id, implies
+	//its dataset); the .meta filterId/dataSetId stamps are dead input - they lie here on purpose.
+	//b is made smaller than a: a dataSetId-anchored lookup would index a's 99 rows against b's
+	//short filter vector (unchecked out-of-bounds read), the sidecar-anchored one cannot.
 	QVERIFY(_newPkgWithDataSet());
 
 	Workspace * ws = _pkg->workspace();
@@ -3027,16 +3064,19 @@ void TestAll::testLoadFilteredDataFilterFirstProvenance()
 	options[".meta"]["filtered"]["loadFilteredData"]["column"]	= a->column(0)->name();
 	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "NoSuchFilterName";	//forces the provenance path
 
-	//1) Cross-dataset provenance (dataSetId names a, filterId lives in b): trust the filter, anchor
-	//on b. The old code anchored on a, failed the name lookup and filtered a's rows with b's short
-	//vector; the new code never mixes the two (no OOB read, values computed over b).
+	//1) Cross-dataset provenance (a LYING dataSetId stamp, sidecar id lives in b): the sidecar is
+	//the anchor, the dead meta stamp cannot re-point anything. The old dataSetId-first behaviour
+	//would anchor on a, fail the name lookup and mix a's rows with b's short vector; the sidecar
+	//path never mixes the two (no OOB read, values computed over b).
 	options[".meta"]["filtered"]["dataSetId"]	= a->id();
-	options[".meta"]["filtered"]["filterId"]	= bFilter->id();
+	options[".meta"]["filtered"]["filterId"]	= -1;
+	options[".filterIds"]["filtered"]			= bFilter->id();
 	bridge.updateOptionsAccordingToMeta(options);
 	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);	//5 rows of b minus the one b filters out
 
-	//2) Dead dataSetId, live filterId (agent-1 m1 scenario): re-anchor the request at a so the old
-	//dataSetId-first path would keep a; the filterId must still resolve to b.
+	//2) Shown elsewhere, sidecar still decisive: re-anchor the request at a (the name path would
+	//stay on a); the sidecar id must still resolve to b - and the LYING meta dataSetId changes
+	//nothing.
 	ws->setShownDataSet(a->id());
 	options["filtered"] = Json::Value(Json::objectValue);
 	options[".meta"]["filtered"]["dataSetId"]	= 987654;
@@ -3044,7 +3084,9 @@ void TestAll::testLoadFilteredDataFilterFirstProvenance()
 	QCOMPARE(options["filtered"]["rowIndices"].size(), 4u);
 	QCOMPARE(options["filtered"]["values"].size(), 4u);
 
-	//3) Legacy option: no filterId stamped at all -> the old name-based path, unchanged.
+	//3) Legacy option: no sidecar scalar anywhere -> the old name-based path on the dataset the
+	//request anchors at (shown), unchanged. The dead meta dataSetId stays (and lies): from the
+	//flip on it is never consulted.
 	Filter * aFilter = a->createFilter("keepAllButFirst", true);
 	QVERIFY(aFilter);
 	boolvec keepN(a->rowCount(), true);
@@ -3053,11 +3095,20 @@ void TestAll::testLoadFilteredDataFilterFirstProvenance()
 
 	options["filtered"] = Json::Value(Json::objectValue);
 	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "keepAllButFirst";
-	options[".meta"]["filtered"]["dataSetId"]					= a->id();
-	options[".meta"]["filtered"].removeMember("filterId");
+	options[".filterIds"].removeMember("filtered");				//no sidecar node -> name path
+	ws->setShownDataSet(a->id());								//the name path resolves in the anchored (shown) dataset
 	bridge.updateOptionsAccordingToMeta(options);
 	QCOMPARE(options["filtered"]["rowIndices"].size(), static_cast<Json::ArrayIndex>(a->rowCount()) - 1);
 	QCOMPARE(options["filtered"]["rowIndices"][0].asInt(), 2);	//row 1 filtered out, so it starts at 2
+
+	//4) Dead sidecar id AND an unresolvable filter name: nothing left to honour - the option keeps
+	//its current values, no crash.
+	options["filtered"] = Json::Value(Json::objectValue);
+	options[".meta"]["filtered"]["loadFilteredData"]["filter"]	= "NoSuchFilterName";
+	options[".filterIds"]["filtered"]							= 987654;
+	bridge.updateOptionsAccordingToMeta(options);
+	QVERIFY(!options["filtered"].isMember("rowIndices"));
+	QVERIFY(!options["filtered"].isMember("values"));
 }
 
 void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()

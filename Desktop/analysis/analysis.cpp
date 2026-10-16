@@ -1065,6 +1065,17 @@ void Analysis::filterByNameDone(int dataSetId, const QString &name, const QStrin
 		run();
 }
 
+bool Analysis::shouldRun()
+{
+	//mds-plan C12/D3.3: the run request is GENERATED from component state
+	//(createAnalysisRequestJson -> AnalysisBase::createOptionsJson), so dispatch requires an
+	//initialized form: before setAnalysisUp has attached and bound it there is no component
+	//state, the pending JSON parks (and must never be read for a run), and staying Empty defers
+	//the dispatch to a later sync pass - by then the form is up. QML load failure means no form
+	//forever: no analysis, no state case (C12).
+	return !isWaitingForModule() && ( isSaveImg() || isEditImg() || isRewriteImgs() || isEmpty() ) && form() && form()->initialized() && !_isReport;
+}
+
 Json::Value Analysis::createAnalysisRequestJson()
 {
 	performType perform = desiredPerformTypeFromAnalysisStatus();
@@ -1097,15 +1108,21 @@ Json::Value Analysis::createAnalysisRequestJson()
 		json["filter"]			= fq(filterName());
 		json["dataSetId"]		= _filter ? _filter->data()->id() : -1;
 
-		//A multi-dataset aware analysis encodes and loads per option: the .meta of the bound values carries
-		//the dataSetId/filterId each option was selected from (BoundControlBase::createMeta).
+		//A multi-dataset aware analysis encodes and loads per option: the transient `.filterIds`
+		//sidecar of the GENERATED Engine json names the filter each option/term was selected
+		//through (mds-plan D3.2/D3.3; DataBridge::prepareMultiDataSetRun consumes it, the engine
+		//strips it before R). mds-plan C11/D3.3 flip: the run request is no longer read from the
+		//_boundValues mirror but generated from the components (AnalysisForm::createOptionsJson) -
+		//shouldRun() only dispatches with an initialized form, so there is always component state
+		//to generate from (no pre-attach request can read pending JSON, C12). For non-aware
+		//analyses the generated tree is byte-identical to the mirror (equivalence harness).
 		if (multiDataSetAware())
 			json["multiDataSetAware"]	= true;
 
 		if (perform == performType::saveImg || perform == performType::editImg)	
 			json["image"]		= imgOptions();
 
-		json["options"]		= boundValues();
+		json["options"]		= createOptionsJson(BoundControl::Engine);
 	}
 
 	return json;

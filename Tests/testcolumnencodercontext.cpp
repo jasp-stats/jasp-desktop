@@ -414,12 +414,23 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 
 	Json::Value options = twoDataSetOptions();
 
+	//mds-plan D3.3 flip: provenance is read from the `.filterIds` sidecar, not from the .meta
+	//stamps anymore - and the stamps still sitting in this fixture are now inert input. Make
+	//them LIE about the dataset: the encoding and the per-dataset attribution must ignore them
+	//completely (the resolver re-attributes dataSetId from the resolved filter).
+	options[".filterIds"]["dependent"]	= 11;	//filter 11 lives in dataset 1
+	options[".filterIds"]["covariate"]	= 22;	//filter 22 lives in dataset 2
+	options[".meta"]["dependent"]["dataSetId"]	= 2;
+	options[".meta"]["covariate"]["dataSetId"]	= 1;
+
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[&dsOne, &dsTwo](int dataSetId, int) -> ColumnEncoder *
+			[&dsOne, &dsTwo](int & dataSetId, int filterId) -> ColumnEncoder *
 			{
-				if(dataSetId == 1)	return &dsOne;
-				if(dataSetId == 2)	return &dsTwo;
+				//mds-plan D3.3/D3.7 resolver shape: the sidecar filterId resolves the encoder AND
+				//re-attributes the dataset (filter ids imply their dataset).
+				if(filterId == 11)	{ dataSetId = 1; return &dsOne; }
+				if(filterId == 22)	{ dataSetId = 2; return &dsTwo; }
 				return nullptr;
 			},
 			1);
@@ -441,11 +452,12 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToEncoderOfTheirData
 	QVERIFY(colsPerDataSet[2].count(std::make_pair(std::string("Score.scale"), columnType::scale)) == 1);
 }
 
-// mds-plan D1.6: the resolver gets the FULL stamp (dataSetId AND filterId) of every option node,
-// so two options that refer to the same column through two different filters of ONE dataset
-// encode into two distinct namespaces - the same two namespaces their slices are handed to R in.
-// An option stamped without filterId (or with a dead one) must fall back to the dataset-level
-// view the resolver picks (dual-read, C7).
+// mds-plan D1.6/D3.3: the resolver gets the filterId that governs every option node (since the
+// D3.3 flip from the `.filterIds` sidecar, before it from the .meta stamp), so two options that
+// refer to the same column through two different filters of ONE dataset encode into two distinct
+// namespaces - the same two namespaces their slices are handed to R in. An option without a
+// sidecar node (or naming a dead filter) must fall back to the dataset-level view the resolver
+// picks (C7 legacy).
 void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView()
 {
 	ColumnEncoder * canonical = ColumnEncoder::createCanonical();
@@ -472,19 +484,19 @@ void TestColumnEncoderContext::encodePerDataSetRoutesOptionsToStampedFilterView(
 	options["unqualified"]["types"].append("scale");
 
 	options[".meta"]["dependent"]["shouldEncode"]	= true;
-	options[".meta"]["dependent"]["dataSetId"]		= 1;
-	options[".meta"]["dependent"]["filterId"]		= 12;					//the HOST filter, not the shown one
 	options[".meta"]["splitBy"]["shouldEncode"]		= true;
-	options[".meta"]["splitBy"]["dataSetId"]		= 1;
-	options[".meta"]["splitBy"]["filterId"]			= 11;					//the shown filter
 	options[".meta"]["unqualified"]["shouldEncode"]	= true;
-	options[".meta"]["unqualified"]["dataSetId"]	= 1;					//no filterId: dual-read fallback
+	//mds-plan D3.3 flip: the (dataSetId, filterId) stamps move from .meta to the transient
+	//`.filterIds` sidecar; an option the sidecar does not name stays unqualified (C7 fallback).
+	options[".filterIds"]["dependent"]	= 12;					//the HOST filter, not the shown one
+	options[".filterIds"]["splitBy"]	= 11;					//the shown filter
+	//no node for "unqualified": resolver fallback, exactly the old no-filterId dual-read
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,
-			[&viewShown, &viewHost](int, int filterId) -> ColumnEncoder *
+			[&viewShown, &viewHost](int &, int filterId) -> ColumnEncoder *
 			{
-				//exactly the D1.6 dual-read shape of DataBridge::prepareMultiDataSetRun's resolver
+				//exactly the D3.3 shape of DataBridge::prepareMultiDataSetRun's resolver
 				return filterId == 12 ? viewHost : viewShown;
 			},
 			1);
@@ -523,7 +535,7 @@ void TestColumnEncoderContext::encodePerDataSetAttributedToPrimaryWithoutProvena
 	makeTwoDataSets(dsOne, dsTwo);
 
 	Json::Value options = twoDataSetOptions();
-	options[".meta"]["covariate"].removeMember("dataSetId"); //provenance lost: it must fall back to the primary dataset
+	options[".meta"]["covariate"].removeMember("dataSetId"); //mds-plan D3.3: .meta stamps are inert input; this tree carries no `.filterIds` sidecar at all, so EVERY option - named or not - falls back to the primary dataset
 
 	ColumnEncoder::perDataSetColsPlusTypes colsPerDataSet = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
 			options, true,

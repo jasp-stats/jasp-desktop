@@ -892,7 +892,12 @@ void Engine::runAnalysis()
 		dataset->showFilter(_analysisFilter); //Only show a filter that actually exists: showFilter(name)
 		                                        //creates a new filter for an unknown name, which would
 		                                        //silently fabricate one from a stale analysis request.
-	
+
+	//mds-plan C11/D3.3: strip the transient `.filterIds` provenance from the ENCODED copy at the
+	//very last moment before R sees it (prepareMultiDataSetRun consumed it above; the unencoded
+	//_analysisOptions keeps the sidecar so a Status::changed re-run can consume it again).
+	stripTransientProvenanceForR(encodedAnalysisOptions);
+
 	_analysisResultsString = rbridge_runModuleCall(_analysisName, _analysisTitle, _dynamicModuleCall, _analysisDataKey,
 								encodedAnalysisOptions.toStyledString(), _analysisStateKey, _analysisId, _analysisRevision, 
 								_developerMode, _analysisColsTypes, _analysisPreloadData, multiDataSetJson);
