@@ -595,6 +595,70 @@ void AnalysisForm::addFormError(const QString & error)
 	emit errorsChanged();
 }
 
+//mds-plan C11/D3.1 - see the header for the contract. Two rules keep the generated tree
+//equivalent to the _boundValues mirror while both exist:
+//  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta are the mirror's OWN path
+//    code (shared, not reimplemented), and the walk order is bindTo's _dependsOrderedCtrls, so a
+//    nested row value lands exactly where the row control's setBoundValue would have put it;
+//  * content: each control generates through the same builder its write path uses
+//    (BoundControlBase::createEngineValue and the per-family overrides), and the Engine `.meta`
+//    is createMeta() minus the two provenance keys (C8), so family meta additions (encodeThis,
+//    loadFilteredData, isRCode, filterForValues) cannot drift out of the generated tree.
+Json::Value AnalysisForm::createOptionsJson(BoundControl::JsonFormat format)
+{
+	Json::Value options		(Json::objectValue),
+				metaRoot	(Json::objectValue),
+				filterIdsRoot(Json::objectValue);
+
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if (!control || !control->isBound())
+			continue;
+
+		BoundControl* boundControl = control->boundControl();
+		const std::string name		= control->name().toStdString();
+
+		if (!boundControl || name.empty())
+			continue;
+
+		QVector<std::string> parentNames;
+		bool				 found	= false;
+		Json::Value &		 parent	= AnalysisBase::resolveOptionParent(options, control->getParentKeys(), parentNames, found, true);
+
+		parent[name] = boundControl->createJson(format);
+
+		if (format == BoundControl::Engine)
+		{
+			Json::Value optionMeta = boundControl->createEngineMeta();
+			if ((optionMeta.isObject() || optionMeta.isArray()) && optionMeta.size() > 0)
+				AnalysisBase::placeOptionMeta(metaRoot, parentNames, name, optionMeta);
+
+			Json::Value optionFilterIds = boundControl->createFilterIds();
+			if (!optionFilterIds.isNull())
+				AnalysisBase::placeOptionMeta(filterIdsRoot, parentNames, name, optionFilterIds);
+		}
+	}
+
+	if (format == BoundControl::Engine)
+	{
+		if (metaRoot.size() > 0)
+			options[".meta"]		= metaRoot;
+		if (filterIdsRoot.size() > 0)
+			options[".filterIds"]	= filterIdsRoot;
+	}
+
+	return options;
+}
+
+QString AnalysisForm::createOptionsJsonAsJson(int format)
+{
+	Json::Value options = createOptionsJson(format == 1 ? BoundControl::Storage : BoundControl::Engine);
+
+	Json::StreamWriterBuilder builder;
+	builder["indentation"] = "";
+	return QString::fromStdString(Json::writeString(builder, options));
+}
+
 void AnalysisForm::addFormWarning(const QString & warning)
 {
 	_formWarnings.append(warning);

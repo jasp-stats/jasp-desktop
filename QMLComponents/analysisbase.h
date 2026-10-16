@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <json/json.h>
 #include "controls/jaspcontrol.h"
+#include "boundcontrols/boundcontrol.h"
 #include "variableinfo.h"
 #include "appinfo.h"
 
@@ -132,6 +133,35 @@ public:
 						void				setBoundValues(const Json::Value& boundValues);
 						const Json::Value	optionsMeta()												const	{ return _boundValues.get(".meta", Json::nullValue);	}
 						void				clearBoundValues()													{ _boundValues.clear();		}
+
+	// ---- mds-plan C11/D3.1: JSON generated on demand from the components ---------------------
+	// Until the consumer flip (D3.3/D3.5) the _boundValues mirror above stays authoritative for
+	// the run/save/dataSpec paths; these generators are the Phase-3 replacement being proved
+	// equal to it. They walk the form's registered controls per their bindTo paths (no stored
+	// tree): Engine = today's R contract + send-time `.meta` (C8, minus dataSetId/filterId) + the
+	// transient `.filterIds` sidecar (D3.2); Storage = clean typed state (D5.1 preview).
+	///< Generate the whole options tree from component state (delegates to the AnalysisForm; an
+	///< analysis without a form has no state to generate from and returns an empty object).
+	Json::Value				createOptionsJson(BoundControl::JsonFormat format);
+	///< QML/test view of createOptionsJson, same canonical writer as boundValuesAsJson:
+	///< format 0 = Engine, 1 = Storage.
+	Q_INVOKABLE QString		createOptionsJsonAsJson(int format);
+
+	///< mds-plan D3.1: the ONE path implementation for a nested (row-control) option location,
+	///< extracted from _getParentBoundValue so the _boundValues mirror and the generators place
+	///< values at byte-identical paths. parentKeys describe the row chain (see _getParentBoundValue);
+	///< parentNames collects the enclosing option names on the found path (what send-time `.meta` /
+	///< `.filterIds` are nested under), found says the chain resolved, createAnyway materialises the
+	///< row objects for a control whose parent option is generated earlier in the same pass.
+	static Json::Value	&	resolveOptionParent(Json::Value & root,
+												 const QVector<JASPControl::ParentKey> & parentKeys,
+												 QVector<std::string> & parentNames, bool & found, bool createAnyway = false);
+	///< mds-plan D3.1: place one option's meta node in a meta tree at the same parent path its value
+	///< sits at (the mirror's setBoundValue `.meta` nesting, shared with the generators' `.meta` and
+	///< `.filterIds` trees so all three agree on placement).
+	static void				placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames,
+											  const std::string & name, const Json::Value & meta);
+
 
 
 						QQuickItem		  *	formItem()													const;

@@ -99,18 +99,7 @@ void BoundControlJAGSTextArea::checkSyntax()
 		}
 	}
 
-	Json::Value boundValue(Json::objectValue);
-
-	boundValue["modelOriginal"] = text.toStdString();
-	boundValue["model"] = _textEncoded.toStdString();
-	Json::Value columns(Json::arrayValue);
-	for (const std::string& column : _usedColumnNames)
-		columns.append(_encoder()->encode(column));
-	boundValue["columns"] = columns;
-	Json::Value parameters(Json::arrayValue);
-	for (const QString& parameter : _usedParameters)
-		parameters.append(parameter.toStdString());
-	boundValue["parameters"] = parameters;
+	Json::Value boundValue = liveBoundValue();
 
 	setBoundValue(boundValue);
 
@@ -119,6 +108,30 @@ void BoundControlJAGSTextArea::checkSyntax()
 	// Do not init the model terms when not necessary: this can call the resetBoundValues that calls checkSyntax
 	if (model->terms() != _usedParameters.values())
 		model->initTerms(_usedParameters.values());
+}
+
+//mds-plan D3.1: the value a JAGS textarea commits = the raw text plus the derived
+//model/columns/parameters of the last syntax check (the control's own cached typed state). One
+//builder for checkSyntax's writes; the generators read the committed result through
+//BoundControlTextArea::_appliedValue (commit-on-apply). No side effects in this builder.
+Json::Value BoundControlJAGSTextArea::liveBoundValue() const
+{
+	Json::Value boundValue(Json::objectValue);
+
+	boundValue["modelOriginal"] = _textArea->text().toStdString();
+	boundValue["model"]			= _textEncoded.toStdString();
+
+	Json::Value columns(Json::arrayValue);
+	for (const std::string& column : _usedColumnNames)
+		columns.append(_encoder()->encode(column));
+	boundValue["columns"] = columns;
+
+	Json::Value parameters(Json::arrayValue);
+	for (const QString& parameter : _usedParameters)
+		parameters.append(parameter.toStdString());
+	boundValue["parameters"] = parameters;
+
+	return boundValue;
 }
 
 

@@ -86,6 +86,10 @@ protected slots:
 	void			termsChangedHandler() override;
 
 protected:
+	///< mds-plan D3.1: live factors-model option value; termsChangedHandler writes exactly this and
+	/// the engine generation reads the same builder (createJson stays the defaults builder).
+	Json::Value		createEngineValue()												const	override;
+
 	GENERIC_SET_FUNCTION(InitNumberFactors,	_initNumberFactors,		initNumberFactorsChanged,	int	)
 
 private:

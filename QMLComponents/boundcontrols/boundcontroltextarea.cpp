@@ -19,7 +19,7 @@
 #include "boundcontroltextarea.h"
 #include "columnencoder.h"
 #include "controls/textareabase.h"
-#include "controls/textareabase.h"
+#include "log.h"
 #include "r_functionwhitelist.h"
 
 BoundControlTextArea::BoundControlTextArea(TextAreaBase* textArea)
@@ -31,6 +31,26 @@ void BoundControlTextArea::bindTo(const Json::Value &value)
 {
 	BoundControlBase::bindTo(value);
 	_textArea->setText(tq(value.asString()));
+}
+
+//mds-plan D3.1: the applied/bound value is the TextArea family's component-owned option state -
+//the widget text is a draft (commit-on-apply UX, and re-init restores the draft on purpose).
+//BoundControlBase::bindTo funnels through this very virtual, so binds and applies land here alike;
+//rlang/JAGS companions' _setBoundValues/checkSyntax writes dispatch here too (non-virtual calls
+//would be the only way to miss it, and there are none).
+void BoundControlTextArea::setBoundValue(const Json::Value &value, bool emitChange)
+{
+	if (!value.isNull())
+		_appliedValue = value;
+
+	BoundControlBase::setBoundValue(value, emitChange);
+}
+
+Json::Value BoundControlTextArea::createEngineValue() const
+{
+	//before the first bind/apply there is no committed value: fall back to today's createJson
+	//shape (the plain text), which is also exactly what the first bindTo will commit.
+	return _appliedValue.isNull() ? createJson() : _appliedValue;
 }
 
 void BoundControlTextArea::resetBoundValue()

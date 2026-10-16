@@ -30,12 +30,16 @@ public:
 	
 	bool		isJsonValid(const Json::Value& value)										const	override;
 	Json::Value	createJson()																const	override;
+	Json::Value	createFilterIds()															const	override;
 	void		bindTo(const Json::Value &value)													override;
 	void		resetBoundValue()																	override;
 	void		setBoundValue(const Json::Value &value, bool emitChanges = true)					override;
 
 	Json::Value	addTermsToOption(const Json::Value &option, const Terms &terms, const Terms::RelatedValuesPerTerm &extraTermsMap = {}) const;
 	bool		areTermsInOption(const Json::Value& option,	Terms& terms)					const;
+
+protected:
+	Json::Value	createStorageValue()														const	override;
 
 private:
 	Terms		_getTermsFromOptions(const Json::Value& option)								const;

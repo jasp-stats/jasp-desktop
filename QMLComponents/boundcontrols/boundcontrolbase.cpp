@@ -52,14 +52,16 @@ Json::Value BoundControlBase::createMeta()  const
 		//stale stamped id seeds a phantom slice for a filter nothing uses anymore. Column-bearing
 		//values stay live because a changing host restamps them (HostFilterSelection) and a
 		//changing selection re-encodes them through the provider chain.
-		AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
-
-		if (analysis && analysis->multiDataSetAware())
-			if (Filter * stampFilter = _control->effectiveSelectionFilter(); stampFilter && stampFilter->data())
-			{
-				meta["dataSetId"]	= stampFilter->data()->id();
-				meta["filterId"]	= stampFilter->id();
-			}
+		//
+		//mds-plan D3.1: the stamp resolution itself lives in generatedHostFilter(), which the
+		//send-time generator's .meta (createEngineMeta = createMeta minus these two keys, C8) and
+		//the transient `.filterIds` sidecar (createFilterIds) both read - mirror and generator
+		//share one implementation, so they cannot drift before the consumer flip (D3.3/D3.5).
+		if (Filter * stampFilter = generatedHostFilter())
+		{
+			meta["dataSetId"]	= stampFilter->data()->id();
+			meta["filterId"]	= stampFilter->id();
+		}
 	}
 	
 	for(const std::string & key : _isRCode)
@@ -70,6 +72,55 @@ Json::Value BoundControlBase::createMeta()  const
 		meta["filterForValues"] = _filterForValues;
 
 	return meta;
+}
+
+Json::Value BoundControlBase::createJson(JsonFormat format) const
+{
+	return format == Engine ? createEngineValue() : createStorageValue();
+}
+
+Json::Value BoundControlBase::createEngineMeta() const
+{
+	//mds-plan C8/D3.1: the send-time .meta of this option is EXACTLY what createMeta() stamps for
+	//the mirror, minus the two provenance keys (provenance rides the `.filterIds` sidecar and the
+	//terms themselves from here on). Calling the virtual createMeta() keeps every family's meta
+	//override (encodeThis, loadFilteredData, ...) in the generated tree without a second
+	//implementation to drift.
+	Json::Value meta = createMeta();
+	meta.removeMember("dataSetId");
+	meta.removeMember("filterId");
+	return meta;
+}
+
+Filter *BoundControlBase::generatedHostFilter() const
+{
+	AnalysisBase * analysis = _control->form() ? _control->form()->analysisObj() : nullptr;
+
+	if (!analysis || !analysis->multiDataSetAware())
+		return nullptr;
+
+	Filter * stampFilter = _control->effectiveSelectionFilter();
+	return stampFilter && stampFilter->data() ? stampFilter : nullptr;
+}
+
+int BoundControlBase::generatedHostFilterId() const
+{
+	Filter * host = generatedHostFilter();
+	return host ? host->id() : -1;
+}
+
+Json::Value BoundControlBase::createFilterIds() const
+{
+	//Default transient provenance node (mds-plan D3.2): the option-level host filter - exactly the
+	//id createMeta stamps as filterId today, at exactly the same gate (encodeValue + aware analysis
+	//+ resolvable host). Term-bearing families override this with the positional per-term array
+	//(BoundControlTerms::createFilterIds); values that were never stamped (non-aware, released
+	//files, hostless legacy runs) generate NO node at all, matching today's stampless meta.
+	if (!_control->encodeValue())
+		return Json::nullValue;
+
+	const int hostId = generatedHostFilterId();
+	return hostId >= 0 ? Json::Value(hostId) : Json::nullValue;
 }
 
 

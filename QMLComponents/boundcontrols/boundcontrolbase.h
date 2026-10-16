@@ -25,6 +25,7 @@
 
 class JASPControl;
 class Terms;
+class Filter;
 
 class BoundControlBase : public BoundControl
 {
@@ -33,6 +34,9 @@ public:
 	virtual						~BoundControlBase()	{}
 
 	Json::Value					createJson()												const	override { return Json::nullValue;		}
+	Json::Value					createJson(JsonFormat format)										const	override;
+	Json::Value					createEngineMeta()												const	override;
+	Json::Value					createFilterIds()												const	override;
 	Json::Value					createMeta()												const	override;
 	void						bindTo(const Json::Value& value)									override { _orgValue = value; setBoundValue(value, false); }
 	const Json::Value&			boundValue()												const	override;
@@ -50,6 +54,28 @@ protected:
 	void						handleComputedColumn(const Json::Value& value);
 
 	bool						_isValueWithTypes(const Json::Value &value)					const;
+
+	///< Engine-shape value generated from this control's LIVE typed state (mds-plan D3.1): the
+	/// option value as the control's own write path produces it. The default is createJson(),
+	/// which is exactly the written value for the families that build their write from createJson;
+	/// the families whose mirror value comes from a live-model builder (tableviews, components
+	/// lists, factor levels, JAGS/rlang textareas, ...) override this AND route their write path
+	/// through the same builder, so generator and mirror cannot drift while both exist.
+	virtual Json::Value			createEngineValue()												const	{ return createJson();			}
+	///< Storage-shape value (D5.1 preview): clean typed state. Defaults to the engine value -
+	/// the shapes only differ where per-term filterIds must ride inside the option itself
+	/// (term lists), see BoundControlTerms::createStorageValue.
+	virtual Json::Value			createStorageValue()											const	{ return createEngineValue();	}
+	///< The filter this control's values are provenanced through at generation time, or nullptr:
+	/// multiDataSetAware analysis + a resolvable effectiveSelectionFilter holding its dataset.
+	/// SINGLE source of truth for the host stamp: createMeta() writes its dataSetId/filterId from
+	/// here and createFilterIds() derives the transient sidecar from here (mds-plan D3.1/D3.2,
+	/// no drift between mirror and generator).
+	Filter						*	generatedHostFilter()												const;
+	///< The host filter's id (see generatedHostFilter), or -1 when the control has no host stamp.
+	/// Family generators read provenance through THIS (not the Filter*) so they need no dependency
+	/// on the Filter class itself.
+	int									generatedHostFilterId()											const;
 
 	JASPControl*				_control			= nullptr;
 	bool						_isComputedColumn	= false,

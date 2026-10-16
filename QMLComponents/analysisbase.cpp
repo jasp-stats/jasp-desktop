@@ -166,27 +166,36 @@ void AnalysisBase::setIsAnnotated(bool isAnnotated)
 // If found, it sets the path to this reference to parentNames and returns a reference of the sub Json object
 Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::ParentKey>& parentKeys, QVector<std::string>& parentNames, bool& found, bool createAnyway)
 {
-	found = (parentKeys.size() == 0);
-	Json::Value* parentBoundValue = &_boundValues;
+	return resolveOptionParent(_boundValues, parentKeys, parentNames, found, createAnyway);
+}
 
-	// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
-	// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
-	// if there are several parentKeys, it repeats this operation
-	//
-	// {
-	//		anOptionName : "one"
-	//		...
-	//		<name>: [
-	//			{
-	//				<key>: "anothervalue"
-	//				anotherKey: "xxx"
-	//			},
-	//			{
-	//				<key>: "<value>"
-	//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
-	//			}
-	//		]
-	// }
+//mds-plan D3.1: extracted out of _getParentBoundValue so that the _boundValues mirror and the
+//Phase-3 generators (AnalysisForm::createOptionsJson) share ONE implementation of the nested
+//option placement - same row-chain semantics, same parentNames bookkeeping. Everything below is
+//the mirror's code, unchanged, except that the tree it walks is a parameter.
+//
+// A parentKey has 3 properties: <name>, <key> and <value>: it assumes that the json boundValue is an abject, one of its member is <name>,
+// whom value is an array of json objects. These objects have a member <key>, and one of them has for value <value>.
+// if there are several parentKeys, it repeats this operation
+//
+// {
+//		anOptionName : "one"
+//		...
+//		<name>: [
+//			{
+//				<key>: "anothervalue"
+//				anotherKey: "xxx"
+//			},
+//			{
+//				<key>: "<value>"
+//				anotherKey: "yyy" // parentBoundValue gets a reference to this Json object
+//			}
+//		]
+// }
+Json::Value & AnalysisBase::resolveOptionParent(Json::Value & root, const QVector<JASPControl::ParentKey> & parentKeys, QVector<std::string> & parentNames, bool & found, bool createAnyway)
+{
+	found = (parentKeys.size() == 0);
+	Json::Value* parentBoundValue = &root;
 
 	for (const auto& parent : parentKeys)
 	{
@@ -262,6 +271,16 @@ Json::Value& AnalysisBase::_getParentBoundValue(const QVector<JASPControl::Paren
 	return *parentBoundValue;
 }
 
+//mds-plan D3.1: the mirror's send-tree placement (was inline in setBoundValue), shared with the
+//generators so `.meta` and `.filterIds` nest by the same rule on both sides.
+void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & meta)
+{
+	Json::Value* metaBoundValue = &metaRoot;
+	for (const std::string& parent : parentNames)
+		metaBoundValue = &((*metaBoundValue)[parent]);
+	(*metaBoundValue)[name] = meta;
+}
+
 std::string AnalysisBase::_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const
 {
 	std::string keys;
@@ -296,12 +315,7 @@ void AnalysisBase::setBoundValue(const std::string &name, const Json::Value &val
 		parentBoundValue[name] = value;
 
 		if ((meta.isObject() || meta.isArray()) && meta.size() > 0)
-		{
-			Json::Value* metaBoundValue = &_boundValues[".meta"];
-			for (const std::string& parent : parents)
-				metaBoundValue = &((*metaBoundValue)[parent]);
-			(*metaBoundValue)[name] = meta;
-		}
+			placeOptionMeta(_boundValues[".meta"], parents, name, meta);
 	}
 	else
 		Log::log() << "Could not find parent keys " << _displayParentKeys(parentKeys) << " in options: " << _boundValues.toStyledString() << std::endl;
@@ -327,6 +341,24 @@ QString AnalysisBase::boundValuesAsJson() const
 	Json::StreamWriterBuilder builder;
 	builder["indentation"] = "";
 	return QString::fromStdString(Json::writeString(builder, _boundValues));
+}
+
+//mds-plan C11/D3.1: the whole options tree GENERATED from the components (the form walks its
+//registered controls), not read from _boundValues. While the mirror still feeds the run/save paths
+//(until D3.3/D3.5) the equivalence harness keeps the two in lockstep; from the flip on this is the
+//only tree. An analysis without a form has no component state to generate from.
+Json::Value AnalysisBase::createOptionsJson(BoundControl::JsonFormat format)
+{
+	return _analysisForm ? _analysisForm->createOptionsJson(format) : Json::Value(Json::objectValue);
+}
+
+QString AnalysisBase::createOptionsJsonAsJson(int format)
+{
+	Json::Value options = createOptionsJson(format == 1 ? BoundControl::Storage : BoundControl::Engine);
+
+	Json::StreamWriterBuilder builder;
+	builder["indentation"] = "";
+	return QString::fromStdString(Json::writeString(builder, options));
 }
 
 const Json::Value &AnalysisBase::boundValue(const std::string &name, const QVector<JASPControl::ParentKey> &parentKeys)

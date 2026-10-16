@@ -44,6 +44,13 @@ signals:
 protected slots:
 	void			termsChangedHandler()								override;
 
+protected:
+	//mds-plan D3.1: live input-model terms are the written value (termsChangedHandler writes
+	//exactly this); createJson stays the defaultValues builder for the initial binding.
+	//The sidecar is the positional per-term array (same schema as BoundControlTerms).
+	Json::Value		createEngineValue()												const	override;
+	Json::Value		createFilterIds()													const	override;
+
 private:
 	ListModelInputValue*		_inputModel			= nullptr;
 	std::vector<std::string>	_defaultValues;

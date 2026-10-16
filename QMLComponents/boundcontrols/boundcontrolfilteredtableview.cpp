@@ -81,7 +81,7 @@ void BoundControlFilteredTableView::fillTableTerms(const Json::Value &value, Lis
 	}
 }
 
-void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const ListModelTableViewBase::TableTerms &tableTerms)
+void BoundControlFilteredTableView::fillBoundValue(Json::Value &value, const ListModelTableViewBase::TableTerms &tableTerms) const
 {
 	ListModelFilteredDataEntry* filteredModel = qobject_cast<ListModelFilteredDataEntry*>(_tableView->tableModel());
 

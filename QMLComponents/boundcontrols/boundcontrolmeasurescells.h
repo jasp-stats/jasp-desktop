@@ -37,7 +37,13 @@ public:
 
 	void				addFactorModel(ListModelFactorLevels* factorModel);
 	QList<QStringList>	getLevels()									const;
-	
+
+protected:
+	///< mds-plan D3.1: live measures-cells terms (shared with resetBoundValue); the sidecar is the
+	/// positional per-term array (schema: BoundControlTerms::createFilterIds).
+	Json::Value			createEngineValue()							const	override;
+	Json::Value			createFilterIds()								const	override;
+
 private:
 	ListModelMeasuresCellsAssigned*		_measuresCellsModel;
 	std::set<ListModelFactorLevels*>	_sourceFactorsModels;

@@ -86,6 +86,13 @@ bool BoundControlLayers::isJsonValid(const Json::Value &optionValue) const
 
 void BoundControlLayers::resetBoundValue()
 {
+	setBoundValue(createEngineValue());
+}
+
+//mds-plan D3.1: the layers model IS the typed state - one builder for the write path and the
+//generators.
+Json::Value BoundControlLayers::createEngineValue() const
+{
 	vector<pair<string, vector<string> > > layers = _layersModel->getLayers();
 	Json::Value boundValue(Json::arrayValue);
 	
@@ -101,5 +108,5 @@ void BoundControlLayers::resetBoundValue()
 		boundValue.append(rowValues);
 	}
 	
-	setBoundValue(boundValue);
+	return boundValue;
 }

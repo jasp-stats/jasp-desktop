@@ -33,7 +33,10 @@ public:
 	Json::Value	createJson()									const	override;
 	void		bindTo(const Json::Value &value)						override;
 	void		resetBoundValue()										override;
-	
+
+protected:
+	Json::Value	createEngineValue()									const	override;	///< mds-plan D3.1: live layers model (shared with resetBoundValue)
+
 private:
 	ListModelLayersAssigned*	_layersModel	= nullptr;
 	

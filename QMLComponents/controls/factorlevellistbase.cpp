@@ -140,8 +140,16 @@ void FactorLevelListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
+	setBoundValue(createEngineValue());
+}
+
+Json::Value FactorLevelListBase::createEngineValue() const
+{
 	Json::Value boundValue(Json::arrayValue);
-	
+
+	if (!_factorLevelsModel)
+		return boundValue;
+
 	for (const QString &factor : factors())
 	{
 		Json::Value row(Json::objectValue);
@@ -154,6 +162,6 @@ void FactorLevelListBase::termsChangedHandler()
 		row["levels"] = levels;
 		boundValue.append(row);
 	}
-	
-	setBoundValue(boundValue);
+
+	return boundValue;
 }

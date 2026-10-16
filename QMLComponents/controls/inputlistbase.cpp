@@ -104,9 +104,39 @@ void InputListBase::termsChangedHandler()
 {
 	JASPListControl::termsChangedHandler();
 
+	setBoundValue(createEngineValue());
+}
+
+//mds-plan D3.1: the live input terms exactly as the write path puts them in the mirror
+//(row-component lists keep the optionKey discipline through getOptionsWithRelatedValues).
+Json::Value InputListBase::createEngineValue() const
+{
+	if (!_inputModel)
+		return Json::Value(Json::arrayValue);
+
 	const Terms terms = _inputModel->terms();
 
-	Json::Value options = hasRowComponent() ? terms.getOptionsWithRelatedValues(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), false)
-											: terms.getValuesOptions();
-	setBoundValue(options);
+	return hasRowComponent() ? terms.getOptionsWithRelatedValues(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), false)
+							 : terms.getValuesOptions();
+}
+
+//mds-plan D3.2: positional per-term sidecar (schema: BoundControlTerms::createFilterIds).
+Json::Value InputListBase::createFilterIds() const
+{
+	if (!_control->encodeValue() || !_inputModel)
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _inputModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
 }

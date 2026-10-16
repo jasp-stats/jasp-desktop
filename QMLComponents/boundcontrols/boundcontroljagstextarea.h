@@ -35,6 +35,11 @@ public:
 
 	void		checkSyntax()											override;
 
+protected:
+	///< mds-plan D3.1: single live-state builder behind checkSyntax's write. The generators read
+	/// the committed result through BoundControlTextArea::_appliedValue (commit-on-apply).
+	Json::Value	liveBoundValue()										const;
+
 private:
 
 	std::set<std::string>		_usedColumnNames;

@@ -143,6 +143,32 @@ bool ComboBoxBase::isJsonValid(const Json::Value &optionValue) const
 		(optionValue.type() == Json::objectValue && optionValue.isMember("value") && optionValue["value"].isString());
 }
 
+//mds-plan D3.2: the combo holds ONE selected variable, so the sidecar is a scalar (schema:
+//BoundControlTerms::createFilterIds): the selected model term's own filterId when it is qualified
+//(D2.1/D2.5 keep it in sync with the list's namespace), else the option's host filter - exactly
+//what createMeta stamps for this value today - else null (non-aware/hostless: no sidecar, as today).
+Json::Value ComboBoxBase::createFilterIds() const
+{
+	if (!encodeValue())
+		return Json::nullValue;
+
+	int id = -1;
+
+	if (_model)
+	{
+		const Terms &	terms	= _model->terms();
+		const int		index	= _getStartIndex();
+
+		if (index >= 0 && index < int(terms.size()))
+			id = terms[size_t(index)].filterId();
+	}
+
+	if (id < 0)
+		id = generatedHostFilterId();
+
+	return id >= 0 ? Json::Value(id) : Json::nullValue;
+}
+
 void ComboBoxBase::setUp()
 {
 	JASPListControl::setUp();

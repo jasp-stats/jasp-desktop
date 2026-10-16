@@ -154,6 +154,48 @@ Json::Value BoundControlTerms::createJson() const
 	return _makeOption(_termsModel->terms(), _termsModel->getTermsWithComponentValues());
 }
 
+//mds-plan C11/D3.2: the transient per-term provenance of this list, POSITIONAL over the terms
+//exactly like `types` is: one entry per term, `Term::filterId()` when the term is qualified
+//(>= 0, mds-plan C9), else the option's host filter (the same id createMeta stamps today - the
+//C13 fallback baked in so the generated Engine json is a COMPLETE input contract for
+//prepareMultiDataSetRun and the request encoding), else null (= unqualified, legacy/hostless:
+//the resolver's currentEncoder fallback, exactly today's unstamped behaviour). The whole node is
+//omitted when there is nothing to say, so non-aware runs generate filterId-less Engine json that
+//matches today's byte-for-byte. Storage keeps the same array INSIDE the option object (D5.1
+//preview): the final per-term {name, filterId?, types} reshaping happens in Phase 5; until then
+//the storage shape must keep re-entering the form through today's JSON->state appliers
+//(Terms parsing ignores the extra member).
+Json::Value BoundControlTerms::createFilterIds() const
+{
+	if (!_control->encodeValue())
+		return Json::nullValue;
+
+	const int			hostId	= generatedHostFilterId();
+
+	Json::Value ids(Json::arrayValue);
+	bool		any				= false;
+
+	for (const Term& term : _termsModel->terms())
+	{
+		const int id = term.filterId() >= 0 ? term.filterId() : hostId;
+		any = any || id >= 0;
+		ids.append(id >= 0 ? Json::Value(id) : Json::Value());
+	}
+
+	return any ? ids : Json::nullValue;
+}
+
+Json::Value BoundControlTerms::createStorageValue() const
+{
+	Json::Value value	= createJson();
+	Json::Value	ids		= createFilterIds();
+
+	if (!ids.isNull() && value.isObject())
+		value["filterIds"] = ids;
+
+	return value;
+}
+
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
 	const Json::Value & valuePart = _isValueWithTypes(optionValue) ? optionValue["value"] : optionValue;

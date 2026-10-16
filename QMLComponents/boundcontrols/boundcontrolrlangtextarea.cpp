@@ -170,6 +170,21 @@ QString BoundControlRlangTextArea::rScriptDoneHandler(const QString & result)
 
 void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 {
+	Terms terms;
+	Json::Value boundValue = liveBoundValue(setModel ? &terms : nullptr);
+
+	if (setModel && _textArea->model())
+		_textArea->model()->initTerms(terms);
+
+	setBoundValue(boundValue, !_control->form()->wasUpgraded());
+}
+
+//mds-plan D3.1: one builder for every _setBoundValues write: the live textarea text plus the
+//derived members of THIS control (_textEncoded, the used-column sets from the last syntax check),
+//encoded against the host encoder exactly as the last check produced them. The generators read
+//the committed result through BoundControlTextArea::_appliedValue instead (commit-on-apply).
+Json::Value BoundControlRlangTextArea::liveBoundValue(Terms* termsOut) const
+{
 	Json::Value boundValue(Json::objectValue);
 
 	std::string text = _textArea->text().toStdString();
@@ -188,15 +203,13 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 		value.append(column);
 	}
 
-	if (setModel && _textArea->model())
-		_textArea->model()->initTerms(terms);
 	boundValue["columns"]	= columns;
 	boundValue["value"]		= value;
 	boundValue["types"]		= terms.types();
 	boundValue["optionKey"] = "value";
 
 	Json::Value prefixedColumns(Json::objectValue);
-	for(auto& prefixSet : _prefixedUsedColumnNames) {
+	for(const auto& prefixSet : _prefixedUsedColumnNames) {
 		prefixedColumns[prefixSet.first] = Json::Value(Json::arrayValue);
 		for (const std::string& column : prefixSet.second) {
 			prefixedColumns[prefixSet.first].append(_encoder()->encode(column));
@@ -204,7 +217,10 @@ void BoundControlRlangTextArea::_setBoundValues(bool setModel)
 	}
 	boundValue["prefixedColumns"] = prefixedColumns;
 
-	setBoundValue(boundValue, !_control->form()->wasUpgraded());
+	if (termsOut)
+		*termsOut = terms;
+
+	return boundValue;
 }
 
 const char* BoundControlRlangTextArea::_checkSyntaxRFunctionName()

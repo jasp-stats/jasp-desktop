@@ -69,6 +69,11 @@ public:
 	stringvec			usedVariables()								const	override;
 	bool				encodeValue()								const	override	{ return containsVariables();	}
 
+	///< mds-plan D3.2: scalar option-level sidecar for the single selected variable: the selected
+	/// model term's filterId when qualified (the model is the typed state), else the host's id
+	/// (createMeta's stamp today), null = unqualified. See BoundControlTerms::createFilterIds.
+	Json::Value			createFilterIds()															const	override;
+
 
 signals:
 	void currentLabelChanged();

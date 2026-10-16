@@ -98,7 +98,7 @@ void BoundControlContrastsTableView::fillTableTerms(const Json::Value &value, Li
 	}
 }
 
-void BoundControlContrastsTableView::fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)
+void BoundControlContrastsTableView::fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms) const
 {
 	BoundControlTableView::fillBoundValue(value, tableTerms);
 

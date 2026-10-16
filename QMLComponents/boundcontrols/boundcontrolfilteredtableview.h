@@ -30,7 +30,7 @@ public:
 	Json::Value		createMeta()																		const	override;
 
 	void			fillTableTerms(const Json::Value& value, ListModelTableViewBase::TableTerms& tableTerms)	override;
-	void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)	override;
+	void			fillBoundValue(Json::Value& value, const ListModelTableViewBase::TableTerms& tableTerms)	const	override;
 };
 
 #endif // BOUNDCONTROLFILTEREDTABLEVIEW_H
