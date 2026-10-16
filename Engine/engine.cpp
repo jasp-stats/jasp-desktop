@@ -798,6 +798,12 @@ void Engine::runAnalysis()
 {
 	Log::log() << "Engine::runAnalysis() " << _analysisTitle << " (" << _analysisId << ") revision: " << _analysisRevision << std::endl;
 
+	// Drawing a plot decodes its column names, which needs the dataset's names in the ColumnEncoder.
+	// Those are only set once the dataset is provided, and an engine may get an image request before
+	// it ran any analysis (e.g. a resize right after loading a .jasp file).
+	if(_analysisStatus == Status::saveImg || _analysisStatus == Status::editImg || _analysisStatus == Status::rewriteImgs)
+		provideAndUpdateDataSet();
+
 	switch(_analysisStatus)
 	{
 	case Status::saveImg:		 saveImage();						return;
