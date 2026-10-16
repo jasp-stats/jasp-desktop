@@ -2865,6 +2865,132 @@ void TestAll::testPrepareMultiDataSetRunEncodesPerStampView()
 	QCOMPARE(sweep[1].asString(), colName);
 }
 
+namespace {
+
+//Collect every int in a `.filterIds` sidecar tree (positional arrays, scalar nodes, nulls for
+//unqualified terms) - the shape mds-plan D3.2 generates and D3.3's slice-queue build must consume.
+static void collectFilterIdsFromSidecarNode(const Json::Value & node, std::set<int> & filterIds)
+{
+	if(node.isArray())
+		for(const Json::Value & element : node)
+			collectFilterIdsFromSidecarNode(element, filterIds);
+	else if(node.isObject())
+		for(const std::string & member : node.getMemberNames())
+			collectFilterIdsFromSidecarNode(node[member], filterIds);
+	else if(node.isInt())
+		filterIds.insert(node.asInt());
+}
+
+}//namespace
+
+void TestAll::testGeneratedEngineJsonSidecarIsInertForCurrentEngine()
+{
+	//mds-plan D3.2: the generated Engine json (AnalysisForm::createOptionsJson(Engine)) adds the
+	//transient `.filterIds` tree (per-term POSITIONAL int|null arrays over term lists, scalar ids
+	//elsewhere, placed at exactly the paths `.meta` uses) and drops dataSetId/filterId from the
+	//meta (C8). Until the consumer flip (D3.3/D3.7) the engine still reads the meta stamps, so
+	//this test pins the two halves of the contract the flip inherits:
+	//  (1) INERTNESS: for the current meta-lockstep walk (prepareMultiDataSetRun's D1.6 resolver)
+	//      the sidecar changes NOTHING - identical encodings and identical slice queues with and
+	//      without it (the int/null leaves are never collected, encoded or recursed into).
+	//  (2) THE DELTA: a generated tree (meta minus provenance + sidecar) run through TODAY's walk
+	//      resolves its terms through the unstamped dual-read fallback and queues no host filter -
+	//      proving the sidecar ids are simply ignored today, and that the flip must read them
+	//      (the collector below is the walk D3.3/D3.7 should key the queue and the per-term
+	//      encoder off; per-term filterId >= 0 -> that filter's VIEW, null -> currentEncoder).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();						//a named filter on a, shown right after creation
+	Filter * hostFilter = a->shownFilter();
+	QVERIFY2(hostFilter && hostFilter != a->defaultFilter(), "addFilter must show the new host filter");
+	const int hostFilterId = hostFilter->id();
+
+	a->showFilter(a->defaultFilter());	//the D1.6 landmine shape again: the host filter is NOT the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	const std::string hostToken		= hostFilter->columnEncoder()->encode(qualified);
+	const std::string shownDefault	= a->defaultFilter()->columnEncoder()->encode(qualified);
+	QVERIFY2(hostToken != shownDefault, "the two namespaces must mint distinct tokens");
+
+	auto makeTermOption = [&colName](Json::Value & tree, const std::string & name)
+	{
+		tree[name]				= Json::Value(Json::objectValue);
+		tree[name]["value"]		= Json::Value(Json::arrayValue);
+		tree[name]["value"].append(colName);
+		tree[name]["types"]		= Json::Value(Json::arrayValue);
+		tree[name]["types"].append("scale");
+	};
+
+	// --- (1) inertness: mirror tree vs same tree + sidecar --------------------------------------
+	Json::Value mirrorTree(Json::objectValue);
+	makeTermOption(mirrorTree, "dependent");
+	mirrorTree[".meta"]["dependent"]["shouldEncode"]	= true;
+	mirrorTree[".meta"]["dependent"]["dataSetId"]		= a->id();
+	mirrorTree[".meta"]["dependent"]["filterId"]		= hostFilterId;
+
+	Json::Value sidecarTree = mirrorTree;				//identical values AND identical meta,
+	sidecarTree[".filterIds"]["dependent"]	= Json::Value(Json::arrayValue);
+	sidecarTree[".filterIds"]["dependent"].append(hostFilterId);	//just the new transient tree
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan planMirror	= bridge.prepareMultiDataSetRun(mirrorTree,	a->id(), "", "sidecarInertMirror");
+	const DataBridge::MultiDataSetRunPlan planSidecar	= bridge.prepareMultiDataSetRun(sidecarTree,	a->id(), "", "sidecarInertSidecar");
+
+	QCOMPARE(QString::fromStdString(sidecarTree["dependent"][0].asString()), QString::fromStdString(mirrorTree["dependent"][0].asString()));
+	QCOMPARE(QString::fromStdString(mirrorTree["dependent"][0].asString()), QString::fromStdString(hostToken));	//sanity: the stamp still drives the encode
+	QVERIFY2(sidecarTree[".filterIds"]["dependent"].isArray()
+			 && sidecarTree[".filterIds"]["dependent"].size() == 1
+			 && sidecarTree[".filterIds"]["dependent"][0].asInt() == hostFilterId,
+				"the walk never recurses INTO .filterIds: values stay in place, unencoded");	//inertness (1)
+	QCOMPARE(planMirror.multiDataSetJson.toStyledString(), planSidecar.multiDataSetJson.toStyledString());	//same queue: the sidecar adds no slice today
+	QCOMPARE(planMirror.primaryDataSetId, planSidecar.primaryDataSetId);
+
+	// --- (2) the generated shape through today's walk: sidecar ignored, fallback rules apply -----
+	Json::Value generatedTree(Json::objectValue);
+	makeTermOption(generatedTree, "dependent");			//same values...
+	generatedTree[".meta"]["dependent"]["shouldEncode"]	= true;	//...meta MINUS the provenance keys (C8)
+	generatedTree[".filterIds"]["dependent"]	= Json::Value(Json::arrayValue);
+	generatedTree[".filterIds"]["dependent"].append(hostFilterId);
+	generatedTree[".filterIds"]["dependent"].append(Json::Value());// null = unqualified term position
+
+	const DataBridge::MultiDataSetRunPlan planGenerated = bridge.prepareMultiDataSetRun(generatedTree, a->id(), "", "sidecarGenerated");
+
+	//Today's resolver sees no stamp -> the dual-read shown fallback (NOT the sidecar's host view):
+	QCOMPARE(QString::fromStdString(generatedTree["dependent"][0].asString()), QString::fromStdString(shownDefault));
+	//and the host filter is absent from the queue - exactly the behaviour D3.3 changes by reading
+	//the sidecar instead (this is THE documented DELTA, do not "fix" it on the engine side here):
+	bool hostQueued = false;
+	for(const Json::Value & id : planGenerated.multiDataSetJson["ids"])
+		if(id.asString() == std::to_string(hostFilterId))
+			hostQueued = true;
+	QVERIFY2(!hostQueued, "the current queue build ignores .filterIds (collectFilterIdsFromMeta never sees it)");
+
+	//The meta-collector genuinely cannot see the sidecar (its nodes are positional ints, not
+	//{filterId: int} objects) - pinning why the flip needs the sidecar walk, not the meta walk:
+	std::set<int> fromMeta;
+	ColumnEncoder::collectFilterIdsFromMeta(generatedTree[".meta"], fromMeta);
+	QCOMPARE(fromMeta.size(), size_t{0});
+	std::set<int> fromSidecar;
+	collectFilterIdsFromSidecarNode(generatedTree[".filterIds"], fromSidecar);
+	QVERIFY2(fromSidecar == std::set<int>({ hostFilterId }), "the sidecar walk (D3.3's collector shape) finds the host id and no nulls");
+
+	//and the one global table still decodes the produced token context-free (C4):
+	Json::Value sweep(Json::arrayValue);
+	sweep.append(generatedTree["dependent"][0].asString());
+	ColumnEncoder::decodeJson(sweep);
+	QCOMPARE(sweep[0].asString(), colName);
+}
+
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {
 	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: the stamped filterId is the
