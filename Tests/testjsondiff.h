@@ -49,6 +49,15 @@ private slots:
 	void applyPatchOntoNullTarget();
 	void applyPatchOntoWrongTypeTarget();
 
+	// jsonComposePatches
+	void composeRecursesObjects();
+	void composeKeepsNull();
+	void composeOntoNonObject();
+
+	// jsonExtendPatch
+	void extendEmptyPatchIsDiff();
+	void extendKeepsEarlierChanges();
+
 	// jsonKeysMissingFrom (legacy migration)
 	void missingKeysKeepsAdditions();
 	void missingKeysDropsPresentKeys();
@@ -57,4 +66,7 @@ private slots:
 
 	// The actual regression scenario of INTERNAL-jasp issue 3366
 	void boxplotResizeLabelBugScenario();
+
+	// Earlier edits must survive a run that reuses the already edited plot
+	void editsSurviveReusedPlotScenario();
 };

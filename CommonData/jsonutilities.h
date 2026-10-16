@@ -46,6 +46,17 @@ public:
 	/// removes the key.
 	static void						jsonApplyPatch(Json::Value & target, const Json::Value & patch);
 
+	/// Folds merge patch `next` into `patch` in place, so that applying the result
+	/// has the same effect as applying `patch` and then `next`. Unlike
+	/// jsonApplyPatch, null values are kept: they still mean "remove" later.
+	static void						jsonComposePatches(Json::Value & patch, const Json::Value & next);
+
+	/// Returns `patch` extended with what `edited` changes relative to its starting
+	/// point, `base` with `patch` applied. Changes already in `patch` stay there
+	/// even when `base` contains them too (e.g. the options of a plot that was
+	/// reused with its earlier edits applied), so no earlier change is lost.
+	static Json::Value				jsonExtendPatch(const Json::Value & patch, const Json::Value & base, const Json::Value & edited);
+
 	/// Returns the subtrees of `source` whose key-path does not exist in
 	/// `reference`. Used to salvage user additions (e.g. plot references) from a
 	/// legacy full editOptions snapshot: anything `reference` (fresh engine

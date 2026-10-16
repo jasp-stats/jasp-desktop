@@ -227,6 +227,36 @@ void JsonUtilities::jsonApplyPatch(Json::Value & target, const Json::Value & pat
 	}
 }
 
+void JsonUtilities::jsonComposePatches(Json::Value & patch, const Json::Value & next)
+{
+	if(!patch.isObject() || !next.isObject())
+	{
+		patch = next;
+		return;
+	}
+
+	for(const std::string & key : next.getMemberNames())
+	{
+		const Json::Value & nextValue = next[key];
+
+		if(nextValue.isObject() && patch.isMember(key) && patch[key].isObject())
+			jsonComposePatches(patch[key], nextValue);
+		else
+			patch[key] = nextValue; //null included: it must still remove the key when the composed patch is applied
+	}
+}
+
+Json::Value JsonUtilities::jsonExtendPatch(const Json::Value & patch, const Json::Value & base, const Json::Value & edited)
+{
+	Json::Value extended	= patch.isObject()	? patch	: Json::Value(Json::objectValue),
+				start		= base.isObject()	? base	: Json::Value(Json::objectValue);
+
+	jsonApplyPatch(start, extended);
+	jsonComposePatches(extended, jsonDiff(start, edited));
+
+	return extended;
+}
+
 Json::Value JsonUtilities::jsonKeysMissingFrom(const Json::Value & source, const Json::Value & reference)
 {
 	if(!source.isObject())

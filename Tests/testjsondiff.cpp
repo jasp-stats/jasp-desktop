@@ -220,6 +220,80 @@ void TestJsonDiff::applyPatchOntoWrongTypeTarget()
 	QVERIFY(target["a"].asInt() == 1);
 }
 
+void TestJsonDiff::composeRecursesObjects()
+{
+	Json::Value patch	= parse(R"({"a": {"x": 1}, "c": [1, 2]})");
+	Json::Value next	= parse(R"({"a": {"y": 2}, "b": 3, "c": [3]})");
+
+	Json::Value composed = patch;
+	JsonUtilities::jsonComposePatches(composed, next);
+
+	QVERIFY(JsonUtilities::jsonValuesEqual(composed, parse(R"({"a": {"x": 1, "y": 2}, "b": 3, "c": [3]})")));
+
+	// Applying the composed patch equals applying both in turn
+	Json::Value target		= parse(R"({"a": {"x": 0, "z": 9}, "b": 0, "c": []})");
+	Json::Value stepwise	= target;
+	JsonUtilities::jsonApplyPatch(stepwise, patch);
+	JsonUtilities::jsonApplyPatch(stepwise, next);
+
+	Json::Value atOnce = target;
+	JsonUtilities::jsonApplyPatch(atOnce, composed);
+
+	QVERIFY(JsonUtilities::jsonValuesEqual(stepwise, atOnce));
+}
+
+void TestJsonDiff::composeKeepsNull()
+{
+	Json::Value composed = parse(R"({"a": {"x": 1}, "b": 2})");
+	JsonUtilities::jsonComposePatches(composed, parse(R"({"a": null})"));
+
+	QVERIFY(composed.isMember("a"));
+	QVERIFY(composed["a"].isNull());
+	QVERIFY(composed["b"].asInt() == 2);
+
+	// The null still removes the key when the composed patch is applied
+	Json::Value target = parse(R"({"a": {"x": 0}, "b": 0})");
+	JsonUtilities::jsonApplyPatch(target, composed);
+
+	QVERIFY(!target.isMember("a"));
+	QVERIFY(target["b"].asInt() == 2);
+}
+
+void TestJsonDiff::composeOntoNonObject()
+{
+	Json::Value composed = Json::nullValue;
+	JsonUtilities::jsonComposePatches(composed, parse(R"({"a": 1})"));
+
+	QVERIFY(JsonUtilities::jsonValuesEqual(composed, parse(R"({"a": 1})")));
+}
+
+void TestJsonDiff::extendEmptyPatchIsDiff()
+{
+	Json::Value base	= parse(R"({"title": "x", "limits": [0, 1]})");
+	Json::Value edited	= parse(R"({"title": "y", "limits": [0, 1], "references": [0]})");
+
+	Json::Value extended = JsonUtilities::jsonExtendPatch(Json::objectValue, base, edited);
+
+	QVERIFY(JsonUtilities::jsonValuesEqual(extended, JsonUtilities::jsonDiff(base, edited)));
+	QVERIFY(JsonUtilities::jsonValuesEqual(JsonUtilities::jsonExtendPatch(Json::nullValue, base, edited), extended));
+}
+
+void TestJsonDiff::extendKeepsEarlierChanges()
+{
+	// The base already shows the earlier change, the edit only changes "b"
+	Json::Value patch	= parse(R"({"a": "edited"})");
+	Json::Value base	= parse(R"({"a": "edited", "b": "plain"})");
+	Json::Value edited	= parse(R"({"a": "edited", "b": "edited too"})");
+
+	Json::Value extended = JsonUtilities::jsonExtendPatch(patch, base, edited);
+
+	QVERIFY(extended["a"].asString() == "edited");
+	QVERIFY(extended["b"].asString() == "edited too");
+
+	// An edit that changes nothing keeps the patch as it was
+	QVERIFY(JsonUtilities::jsonValuesEqual(JsonUtilities::jsonExtendPatch(patch, base, base), patch));
+}
+
 void TestJsonDiff::missingKeysKeepsAdditions()
 {
 	// References exist only in what the desktop sends, never in engine output.
@@ -321,6 +395,53 @@ void TestJsonDiff::boxplotResizeLabelBugScenario()
 	QVERIFY(patch2.isMember("xAxis"));
 	QVERIFY(patch2["xAxis"]["settings"].isMember("title"));
 	QVERIFY(!patch2["xAxis"]["settings"].isMember("labels"));
+}
+
+void TestJsonDiff::editsSurviveReusedPlotScenario()
+{
+	// After an edit the engine keeps the edited plot in its state. A run that
+	// does not touch the plot's dependencies reuses it, so the editOptions of
+	// that run, which become the new diff base, already contain the edit.
+	// Recomputing the patch against such a base dropped the earlier edit, and
+	// the next run that drew the plot anew lost it for good.
+
+	// 1. Plain plot of the first run
+	Json::Value plainBase = parse(R"({
+		"xAxis": { "type": "ScaleContinuousPosition", "settings": { "title": "contNormal", "labels": ["-2", "0", "2"] } },
+		"yAxis": { "type": "ScaleContinuousPosition", "settings": { "title": "Density" } }
+	})");
+
+	// 2. The user sets the x-axis title
+	Json::Value submitted1 = plainBase;
+	submitted1["xAxis"]["settings"]["title"] = "A";
+
+	Json::Value patch = JsonUtilities::jsonExtendPatch(Json::objectValue, plainBase, submitted1);
+	QVERIFY(patch["xAxis"]["settings"]["title"].asString() == "A");
+
+	// 3. An unrelated option changes: the run reuses the edited plot, so its
+	//    editOptions, the new base, already show the x-axis title
+	Json::Value reusedBase = plainBase;
+	reusedBase["xAxis"]["settings"]["title"] = "A";
+
+	// 4. The editor shows base + patch, the user sets the y-axis title
+	Json::Value submitted2 = reusedBase;
+	JsonUtilities::jsonApplyPatch(submitted2, patch);
+	submitted2["yAxis"]["settings"]["title"] = "B";
+
+	// A diff against the reused base alone no longer knows about the x-axis title
+	QVERIFY(!JsonUtilities::jsonDiff(reusedBase, submitted2).isMember("xAxis"));
+
+	patch = JsonUtilities::jsonExtendPatch(patch, reusedBase, submitted2);
+	QVERIFY(patch["xAxis"]["settings"]["title"].asString() == "A");
+	QVERIFY(patch["yAxis"]["settings"]["title"].asString() == "B");
+	QVERIFY(!patch["xAxis"]["settings"].isMember("labels"));
+
+	// 5. A run that draws the plot anew: both edits are re-applied
+	Json::Value materialized = plainBase;
+	JsonUtilities::jsonApplyPatch(materialized, patch);
+
+	QVERIFY(materialized["xAxis"]["settings"]["title"].asString() == "A");
+	QVERIFY(materialized["yAxis"]["settings"]["title"].asString() == "B");
 }
 
 QTEST_MAIN(TestJsonDiff)

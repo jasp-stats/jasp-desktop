@@ -523,9 +523,13 @@ void Analysis::_storePlotEditDiff(const std::string & uniqueName, const Json::Va
 	// Normally applyPlotEdits stored it ("editOptionsBase"); if the entry does
 	// not have one yet (the first edit creates the entry, and base capture in
 	// applyPlotEdits ran before that), fall back to the engine's options in
-	// _results, which are the same thing. Diffing every user edit against the
-	// base of the current run keeps the patch cumulative: it contains exactly
-	// the user's changes, never the engine's output of this run.
+	// _results, which are the same thing.
+	//
+	// The base is not necessarily a plain plot: a plot that a run reused from the
+	// engine state keeps the edits applied to it, and so do its editOptions. The
+	// patch is therefore never recomputed against the base, as that would drop
+	// every earlier change the base already shows. Only what this edit changed
+	// relative to its starting point (base + patch so far) is folded into it.
 	Json::Value base;
 	if (_plotEdits.isMember(uniqueName) && _plotEdits[uniqueName].isMember("editOptionsBase"))
 		base = _plotEdits[uniqueName]["editOptionsBase"];
@@ -542,7 +546,8 @@ void Analysis::_storePlotEditDiff(const std::string & uniqueName, const Json::Va
 	bool resetRequested = submitted.get("resetPlot", false).asBool();
 	submitted.removeMember("resetPlot");
 
-	Json::Value patch = resetRequested ? Json::objectValue : JsonUtilities::jsonDiff(base, submitted);
+	Json::Value previousPatch = _plotEdits.isMember(uniqueName) ? _plotEdits[uniqueName].get("editOptionsDiff", Json::objectValue) : Json::Value(Json::objectValue);
+	Json::Value patch = resetRequested ? Json::Value(Json::objectValue) : JsonUtilities::jsonExtendPatch(previousPatch, base, submitted);
 
 	// If the entry somehow still holds a legacy full snapshot, it is superseded
 	// by the patch computed here.
