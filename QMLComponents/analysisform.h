@@ -45,6 +45,7 @@ class Filter;
 /// The interface errors and warnings are managed by this class.
 class AnalysisForm : public QQuickItem
 {
+	friend class TestAll; ///< mds-plan D3.5: flip _initialized to simulate attach completion in the C++ harness (pre-attach deferral pins)
 	Q_OBJECT
 	QML_ELEMENT
 

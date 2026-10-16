@@ -34,6 +34,7 @@
 #include "columnencoder.h"
 #include "databridge.h"
 #include "analysisbase.h"
+#include "models/listmodel.h"	//mds-plan D3.5: ListModel::termFollowsHostRestamp (owns-the-stamp rule)
 #include "analysisform.h"
 #include "controls/jaspcontrol.h"
 #include "data/asyncloader.h"
@@ -3241,6 +3242,86 @@ void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
 	QCOMPARE(deep["outer"]["rows"]["inner"].asInt(), 5);
 }
 
+void TestAll::testPreAttachOptionsParkAndAreNeverReadForBehaviour()
+{
+	//mds-plan D3.5/C12: options arriving while no form is attached PARK as pending JSON (this is
+	//exactly what Analyses::create does with the optionsJson from a file entry). Nothing that
+	//drives BEHAVIOUR may read them before setAnalysisUp applies them once through the controls:
+	// - createOptionsJson(Engine|Storage) - the generated run/save trees since D3.3 - stay empty
+	//   (an analysis without a form has no component state to generate from);
+	// - referencedDataSets()/usesDataSet()/dataSpec() DEFER ({} / "" - no crash) instead of
+	//   reading the pending .meta; the pre-gate behaviour (a pending dataSetId stamp claiming a
+	//   dataset) is exactly what the gate pins dead;
+	// - run dispatch is gated on form()->initialized() (Analysis::shouldRun) and RPC
+	//   analysis_run refuses without a form, so the pending tree can never ride a request.
+	//No PreferencesModel bootstrap: touching AnalysisForm makes PreferencesModelBase lazy-create
+	//its own base singleton, and a second `new PreferencesModel` would assert against it.
+	QVERIFY(_newPkgWithDataSet());
+
+	AnalysisBase analysis;
+	analysis.setMultiDataSetAware(true);
+
+	Json::Value pending(Json::objectValue);
+	pending["depA"]							= Json::Value(Json::objectValue);
+	pending["depA"]["value"]				= Json::Value(Json::arrayValue);
+	pending["depA"]["value"].append("Score");
+	pending["depA"]["types"]				= Json::Value(Json::arrayValue);
+	pending["depA"]["types"].append("scale");
+	pending[".meta"]["depA"]["shouldEncode"]	= true;
+	pending[".meta"]["depA"]["dataSetId"]	= 4242;		//dev-fixture stamps: must NOT steer behaviour
+	pending[".meta"]["depA"]["filterId"]	= 11;
+
+	analysis.setBoundValues(pending);		//the pre-attach parking path (Analyses::create)
+
+	QVERIFY(analysis.boundValues() == pending);															//parked as-is (bootstrap data, not behaviour)
+	QCOMPARE(analysis.createOptionsJson(BoundControl::Engine), Json::Value(Json::objectValue));			//run/save generation: nothing pre-attach
+	QCOMPARE(analysis.createOptionsJson(BoundControl::Storage), Json::Value(Json::objectValue));
+	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});											//gate: pending .meta never read
+	QVERIFY2(!analysis.usesDataSet(4242), "a pending dataSetId stamp must not make the analysis claim a dataset before attach");
+	QCOMPARE(analysis.dataSpec().toStdString(), std::string());											//no crash, no pending-read
+
+	//And attach consumes the parking lot wholesale: setAnalysisUp reads the pending tree, clears
+	//the mirror and lets the CONTROLS rebuild it, so after attach neither the lying stamps nor the
+	//pending values survive except what a control bound. A bare C++ form has no controls (the
+	//apply-once-with-controls semantics live in the qml harness, see
+	//tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read);
+	//what this pins here is the clear side: a re-attach never reads the old parking.
+	AnalysisForm form;
+	form.setAnalysis(&analysis);			//_formCompleted is false in this harness, so this alone changes nothing
+	QVERIFY(analysis.boundValues() == pending);	//still parked - attach has NOT happened, behaviour still deferred
+	QCOMPARE(analysis.referencedDataSets().size(), size_t{0});
+}
+
+void TestAll::testRestampOwnershipRuleKeepsForeignStamps()
+{
+	//mds-plan D3.5 owns-the-stamp (the D2.6 NOTE item-1 rule for bindTo-copied terms): a host
+	//switch moves only the terms it OWNS - never-qualified (-1) or carrying ITS OLD filter id.
+	//Foreign-stamped terms (a typed copy from another host's selection, mds-plan D6.2) keep their
+	//provenance. Pre-flip the walk restamped everything, harmless while no behaviour read the
+	//typed id; since D3.3 the generated sidecar feeds the engine per term, so a clobbering
+	//restamp would silently re-route a copied term's data. (The walk plumbing - applyFilter
+	//passes the old id - is pinned by the existing mid-session switch tests; the E2E copy case
+	//arrives with D6.2.)
+	QVERIFY(ListModel::termFollowsHostRestamp(-1, 11));		//never qualified: joins the host
+	QVERIFY(ListModel::termFollowsHostRestamp(11, 11));		//owned (the host's previous filter): follows
+	QVERIFY(!ListModel::termFollowsHostRestamp(12, 11));		//foreign stamp: keeps its own
+	QVERIFY(!ListModel::termFollowsHostRestamp(12, -1));	//first selection onto an empty host: foreign stays foreign
+	QVERIFY(ListModel::termFollowsHostRestamp(-1, -1));		//hostless collapse stays consistent
+
+	//Behaviour through Terms, the way ListModel::restampTermsFilterId applies the rule:
+	Term owned(tq("x"), columnType::scale);		owned.setFilterId(11);
+	Term foreign(tq("y"), columnType::scale);	foreign.setFilterId(12);
+	Term fresh(tq("z"), columnType::scale);
+
+	for (Term * term : { &owned, &foreign, &fresh })
+		if (ListModel::termFollowsHostRestamp(term->filterId(), 11))
+			term->setFilterId(13);				//the host moved 11 -> 13
+
+	QCOMPARE(owned.filterId(),  13);			//followed its host
+	QCOMPARE(foreign.filterId(), 12);			//kept its own provenance (would encode via filter 12's view)
+	QCOMPARE(fresh.filterId(),  13);			//unqualified intake joins the host
+}
+
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {
 	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: since the D3.3 flip the
@@ -3360,7 +3441,11 @@ void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()
 
 void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 {
-	AnalysisBase analysis;
+	//mds-plan D3.5: attached form required before references steer behaviour (see
+	//testAnalysisBaseReferencedDataSets for the simulation notes).
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
 
 	Json::Value boundValues(Json::objectValue);
 	boundValues["dependent"] = "Score";
@@ -3380,6 +3465,12 @@ void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 	analysis.setMultiDataSetAware(true);
 	QCOMPARE(analysis.usesDataSet(7), true);
 	QCOMPARE(analysis.usesDataSet(42), false);
+
+	//pre-attach (no form at all) the same pending stamps claim NOTHING (C12 deferral):
+	AnalysisBase parked;
+	parked.setMultiDataSetAware(true);
+	parked.setBoundValues(boundValues);
+	QVERIFY2(!parked.usesDataSet(7), "pending JSON before attach must not make the analysis claim a dataset");
 }
 
 void TestAll::testAnalysisBaseDataSpecWhenAware()
@@ -3402,7 +3493,11 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
 	QVERIFY(b->defaultFilter());
 
-	AnalysisBase analysis;
+	//mds-plan D3.5: dataSpec() reads component state - simulate the attach (see
+	//testAnalysisBaseReferencedDataSets) so the bound values count as control-owned.
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
 
 	Json::Value boundValues(Json::objectValue);
 	boundValues["dependent"]	= "x";
@@ -3444,6 +3539,12 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 
 	QCOMPARE(analysis.dataSpec(), a->title() + " + " + b->title());
 
+	//mds-plan D3.5: pre-attach the spec defers to "" - a pending tree never names datasets:
+	AnalysisBase parked;
+	parked.setMultiDataSetAware(true);
+	parked.setBoundValues(boundValues);
+	QCOMPARE(parked.dataSpec().toStdString(), std::string());
+
 	//And with nothing referenced at all the spec is simply empty:
 	analysis.setBoundValues(Json::Value(Json::objectValue));
 	QCOMPARE(analysis.dataSpec(), QString(""));
@@ -3451,7 +3552,14 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 
 void TestAll::testAnalysisBaseReferencedDataSets()
 {
-	AnalysisBase analysis;
+	//mds-plan D3.5: references are component state - reported only once the form has attached
+	//(pending JSON before setAnalysisUp is never read for behaviour). Attach is simulated here
+	//by flipping the form's initialized flag (no QML controls in the C++ harness); the real
+	//attach/apply-once semantics are pinned by the qml harness
+	//(tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read).
+	AnalysisForm form;
+	AnalysisBase analysis(&form);
+	form._initialized = true;
 
 	Json::Value boundValues(Json::objectValue);
 	boundValues["dependent"] = "Score.scale";
@@ -3473,6 +3581,12 @@ void TestAll::testAnalysisBaseReferencedDataSets()
 
 	//The plain base class is never aware; Desktop::Analysis derives it from the module entry:
 	QCOMPARE(analysis.multiDataSetAware(), false);
+
+	//D3.5 gate, the pre-attach half: the very same tree PARKED on a formless analysis (the
+	//Analyses::create path) references NOTHING until the form attaches:
+	AnalysisBase parked;
+	parked.setBoundValues(boundValues);
+	QCOMPARE(parked.referencedDataSets().size(), size_t{0});
 }
 
 void TestAll::testDataSetFilterIdsSurviveStorageReload()

@@ -48,6 +48,7 @@ class Filter;
 // provenance; this provider is the analysis-wide endpoint Phase 3/4 consumers switch to.
 class AnalysisBase : public QObject, public VariableInfoProvider
 {
+	friend class TestAll; ///< mds-plan D3.5: simulate an attached+initialized form (no QML controls in the C++ harness) to pin the pre-attach deferral vs the attached read
 	Q_OBJECT
 	QML_ELEMENT
 
@@ -187,8 +188,12 @@ public:
 	void					setMultiDataSetAware(bool multiDataSetAware);
 	///< The dataSetId -> filterId pairs referenced through the .meta of the bound values (see
 	///< ColumnEncoder::collectDataSetIdsFromMeta); the primary dataset/filter of the analysis itself is
-	///< not necessarily part of it, that comes from filter()/dataSet().
+	///< not necessarily part of it, that comes from filter()/dataSet(). Defers (answers {}) until
+	///< the form has attached - pending JSON is never read for behaviour (mds-plan D3.5/C12).
 	std::map<int, int>	referencedDataSets()												const;
+	///< Let consumers re-read dataSpec()/referencedDataSets() (emits dataSpecChanged): used by
+	///< AnalysisForm::setAnalysisUp once attach has produced real component state (mds-plan D3.5).
+	void				notifyDataSpecChanged();
 
 						QString				filterName()	const;
 						int					filterId()		const;

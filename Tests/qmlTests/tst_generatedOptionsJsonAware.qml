@@ -381,6 +381,55 @@ Item
 			wait(40)
 		}
 
+		// ---- pre-attach parking (mds-plan D3.5/C12) ---------------------------------------------
+
+		function test_pending_json_applied_once_and_stamps_never_read()
+		{
+			// Options may arrive as PENDING JSON before/while the controls bind (file load parks
+			// them via setBoundValues, setAnalysisUp applies them exactly once through the
+			// controls). From the D3.3 flip on, NOTHING reads pending JSON for behaviour: bindTo
+			// only walks control names, the mirror is cleared and rebuilt by the controls, and
+			// the generated Engine tree (values + sidecar) comes from component state - so a
+			// wedged-in ".meta" stamp in the pending tree is inert input that must vanish with
+			// the parking itself.
+			_bindAwareForm()
+			wait(100)
+
+			// re-bind (park + attach) with LYING provenance stamps in the pending .meta:
+			const sel = _bindAwareForm()
+			awareForm.setOptions({
+				dataSetA:	String(sel.fA),
+				dataSetB:	String(sel.fB),
+				codeSet:	String(sel.fA),
+				depA:		{ value: ["TestInts"], types: ["scale"] },
+				depB:		{ value: ["TestInts"], types: ["scale"] },
+				fixedB:		{ value: ["SecondOnly"], types: ["nominal"] },
+				comboA:		{ value: "TestInts", types: "scale" },
+				".meta":	{ depA: { shouldEncode: true, dataSetId: 99, filterId: 4242 } }
+			})
+			wait(150)
+
+			// state present: the pending VALUES were applied through the controls once...
+			const gen = generatedOf(false)
+			compare(gen.depA.value.length, 1, "pending option applied exactly once (not duplicated)")
+			compare(gen.depA.value[0], "TestInts", "pending value present after attach")
+
+			// ...and the pending STAMPS were never read: the id appears nowhere - neither in the
+			// generated Engine tree (sidecar comes from the bound controls)...
+			const genText = JSON.stringify(gen)
+			verify(genText.indexOf("4242") === -1, "pending-stamped filterId never read into behaviour: " + genText.slice(0, 500))
+			verify(genText.indexOf("\"99\"") === -1 && !JSON.stringify(gen[".filterIds"]).match(/(^|[^0-9])99([^0-9]|$)/),
+				"no ghost dataSetId from the pending tree either")
+			// ...nor anywhere in the mirror (attach cleared the parking; the controls rewrote it
+			// with their OWN host stamps):
+			verify(JSON.stringify(mirrorOf()).indexOf("4242") === -1, "the mirror after attach carries no pending stamps")
+
+			// the sidecar carries the real host provenance the controls resolved:
+			compare(sidecarAt(gen[".filterIds"], "depA")[0], sel.fA, "depA's sidecar follows its bound host, not the pending stamp")
+
+			assertEngineEqualsMirror("aware form after pending-stamp re-attach")
+		}
+
 		// ---- Storage shape (D5.1 preview) --------------------------------------------------------
 
 		function test_storage_roundtrips_through_the_json_to_state_appliers()

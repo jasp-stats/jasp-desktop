@@ -87,7 +87,7 @@ private slots:
 
 private:
 	void   applyFilter(Filter * filter);				///< store + restamp provider + notify values below the host
-	void   restampValuesUnderHost();					///< move .meta provenance AND typed term filterIds of this host's column values onto the new filter (mds-plan C3/M5, D2.5)
+	void   restampValuesUnderHost(int oldHostFilterId);	///< move .meta provenance AND typed term filterIds of this host's column values onto the new filter (mds-plan C3/M5, D2.5); mds-plan D3.5: the typed half only follows terms the host OWNS (filterId == oldHostFilterId or -1), foreign-stamped copies keep theirs
 	Filter * currentFallbackFilter() const;				///< analysis filter, else workspace shown filter
 
 	JASPControl *				_host;

@@ -158,6 +158,8 @@ private slots:
 	void	testPerTermMixedProvenanceEncodesViaOwnViews();
 	void	testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder();
 	void	testPlaceOptionFilterIdsCollisionDemotion();
+	void	testPreAttachOptionsParkAndAreNeverReadForBehaviour();
+	void	testRestampOwnershipRuleKeepsForeignStamps();
 
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a

@@ -160,6 +160,10 @@ void HostFilterSelection::applyFilter(Filter * filter)
 	if (newId == _selectedFilterId && filter == _selectedFilter)
 		return;
 
+	//mds-plan D3.5 owns-the-stamp: the walk needs the filter this host is moving AWAY from -
+	//only terms carrying that id (or -1) follow the new selection, foreign-stamped terms keep.
+	const int oldId = _selectedFilterId;
+
 	_selectedFilter   = filter;
 	_selectedFilterId = newId;
 
@@ -168,7 +172,7 @@ void HostFilterSelection::applyFilter(Filter * filter)
 
 	//The provider is live from here on: move the provenance stamps of the column values served
 	//by this selection onto the new filter BEFORE anybody downstream reads the options again.
-	restampValuesUnderHost();
+	restampValuesUnderHost(oldId);
 
 	emit selectedFilterIdChanged();
 
@@ -189,12 +193,19 @@ void HostFilterSelection::applyFilter(Filter * filter)
 //chain, which now resolves to `filter`. Scalars are walked too but createMeta no longer stamps
 //them (mds-plan C3/M5), so this can never (re)introduce a stamp that shouldn't be there.
 //
-//mds-plan D2.5: the walk is now BOTH halves of the switch - the .meta restamp above (what the
-//engine consumes today) and the TYPED term restamp below (ListModel::restampTermsFilterId, the
-//typed filterId of mds-plan C9). Phase 3 retires the .meta half when provenance moves from meta
-//to the terms themselves (D3.2/D3.4); until then they must move together, which is why they
-//share this one walk over exactly the controls that resolve through THIS host.
-void HostFilterSelection::restampValuesUnderHost()
+//mds-plan D2.5: the walk is now BOTH halves of the switch - the .meta restamp above (mirror
+//bookkeeping only since the D3.3 flip - the engine reads the sidecar now; the half retires with
+//D3.4) and the TYPED term restamp below (ListModel::restampTermsFilterId, the typed filterId of
+//mds-plan C9 - the half the generated `.filterIds` feeds on since D3.3). Both move together,
+//over exactly the controls that resolve through THIS host.
+//mds-plan D3.5 (owns-the-stamp, the D2.6 NOTE item-1 rule for bindTo-copied terms): the typed
+//half re-stamps only terms the host OWNS - those carrying `oldHostFilterId` (this host's previous
+//filter) or -1 (never qualified). A term with a FOREIGN filterId (a typed copy from another
+//host's selection, mds-plan D6.2) keeps its own provenance: the generator emits its own id per
+//position, the engine resolves that filter's view - silently restamping it onto this host would
+//re-route the term's data. Pre-flip the typed half was unconditional, harmless only because no
+//wire format carried ids yet; with the sidecar consumed, the rule matters.
+void HostFilterSelection::restampValuesUnderHost(int oldHostFilterId)
 {
 	AnalysisForm * form = _host->form();
 	AnalysisBase * analysis = form ? form->analysisObj() : nullptr;
@@ -221,7 +232,7 @@ void HostFilterSelection::restampValuesUnderHost()
 		//one's, and ListModel::restampTermsFilterId re-resolves the filter live.
 		if(JASPListControl * list = qobject_cast<JASPListControl *>(control))
 			if(ListModel * m = list->model())
-				m->restampTermsFilterId();
+				m->restampTermsFilterId(oldHostFilterId);
 
 		//Meta half: only column-bearing bound values carry a stamp.
 		if(!control->isBound() || !control->encodeValue())

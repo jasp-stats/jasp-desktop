@@ -1089,6 +1089,13 @@ void AnalysisForm::setAnalysisUp()
 	connect(_analysis,					&AnalysisBase::filterChanged,			this,			&AnalysisForm::filterChanged	);
 
 	emit analysisChanged();
+
+	//mds-plan D3.5/C12: AnalysisBase::referencedDataSets() defers (answers {}) until an
+	//initialized form exists - the pending JSON is applied here and never read for behaviour
+	//before that. Tell the consumers (results header, RPC dataSetIds, file-modified bookkeeping)
+	//to re-read now that the component state - and with it the real references - exists.
+	if (_analysis->multiDataSetAware())
+		emit _analysis->dataSpecChanged();
 }
 
 void AnalysisForm::knownIssuesUpdated()

@@ -146,7 +146,7 @@ int ListModel::_currentSelectionFilterId() const
 	return filter && filter->id() >= 0 ? filter->id() : -1;
 }
 
-void ListModel::restampTermsFilterId()
+void ListModel::restampTermsFilterId(int oldHostFilterId)
 {
 	//mds-plan D2.5: the typed companion of HostFilterSelection::restampValuesUnderHost - the same
 	//walk, the same control set, but writing the typed filterId (C9) instead of the .meta stamp.
@@ -154,10 +154,15 @@ void ListModel::restampTermsFilterId()
 	//component chain and the host's current filter - nothing cached); the terms keep name, type
 	//and components, and a list without a host collapses to -1 (unqualified) exactly like fresh
 	//intake would stamp it (ListModel::_setAllowedType).
+	//mds-plan D3.5 owns-the-stamp: only the host's OWN terms (its old id) and never-qualified
+	//terms (-1) follow the switch; foreign-stamped terms (typed copies, D6.2) keep their
+	//provenance - from the D3.3 flip the sidecar hands them to the engine per term, so a
+	//clobbering restamp would silently re-route their data.
 	const int filterId = _currentSelectionFilterId();
 
 	for(Term & term : _terms)
-		term.setFilterId(filterId);
+		if(termFollowsHostRestamp(term.filterId(), oldHostFilterId))
+			term.setFilterId(filterId);
 
 	//Deliberately no termsChanged() (see the header): the visible columns (name, type, label)
 	//did not move, and the VariableInfo provider signals of the re-pointed host namespace already

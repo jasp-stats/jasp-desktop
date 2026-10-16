@@ -97,17 +97,28 @@ public:
 			Terms					checkTermsTypes(const Terms& terms)								const;
 			Terms					checkTermsTypes(const std::vector<Term>& terms)					const;
 			void					checkTermsTypes();
-			///< mds-plan D2.5 (host-switch propagation, typed half): rewrite the typed filterId of
-			///  every term in this model to the selection the list resolves through RIGHT NOW
-			///  (_currentSelectionFilterId, C13 host-bound). Called by HostFilterSelection on every
-			///  control below the switching host - names and types are untouched, only the typed
-			///  provenance moves, exactly like the .meta restamp moves the stamped one. No signal:
-			///  the display shows name+type (unchanged, and the VariableInfo::dataSetChanged/
-			///  filterChanged/refresh emissions of the re-pointed provider already drive the
-			///  data-side refresh), and the option JSON carries no filterId (mds-plan D2.1) -
-			///  emitting termsChanged here would churn row controls and dependent lists for
-			///  desktop-internal bookkeeping.
-			void					restampTermsFilterId();
+			///< mds-plan D2.5 (host-switch propagation, typed half): move the typed filterId of the
+			///  terms this model holds to the selection the list resolves through RIGHT NOW
+			///  (_currentSelectionFilterId, C13 host-bound) - names and types are untouched, only
+			///  the typed provenance moves, exactly like the .meta restamp moves the stamped one.
+			///  ownership (mds-plan D3.5): a term is restamped only when the host OWNS it -
+			///  filterId equals the host's OLD filter id (previously moved with this host) or -1
+			///  (never qualified). Terms carrying a foreign filterId (a typed bindTo copy from
+			///  another host, mds-plan D6.2) own their stamp and keep it: the generated sidecar
+			///  hands them to the engine per term (D3.3), so clobbering would silently re-route
+			///  their data. Called by HostFilterSelection on every control below the switching
+			///  host with the filter the host moved FROM. No signal: the display shows name+type
+			///  (unchanged, and the VariableInfo::dataSetChanged/filterChanged/refresh emissions
+			///  of the re-pointed provider already drive the data-side refresh), and the option
+			///  JSON carries no filterId (mds-plan D2.1) - emitting termsChanged here would churn
+			///  row controls and dependent lists for desktop-internal bookkeeping.
+			void					restampTermsFilterId(int oldHostFilterId);
+			///< mds-plan D3.5 owns-the-stamp rule (see restampTermsFilterId): true when a term
+			///< with `termFilterId` follows a host switch away from `oldHostFilterId`.
+			static bool			termFollowsHostRestamp(int termFilterId, int oldHostFilterId)
+			{
+				return termFilterId == -1 || termFilterId == oldHostFilterId;
+			}
 			///< Introspection (QML tests, mds-plan D2.5): "name@filterId" per model term - the
 			///< typed proof that a host switch restamped exactly the controls of the host that
 			///< moved. Empty filterId part (-1) means unqualified (no explicit host).

@@ -434,12 +434,27 @@ bool AnalysisBase::usesDataSet(int dataSetId) const
 
 std::map<int, int> AnalysisBase::referencedDataSets() const
 {
+	//mds-plan D3.5/C12: references are component state - they exist only once the form has
+	//attached and its controls bound (D3.6 will compute them from the components directly; until
+	//then this reads the bound-values mirror, which the controls write). Pre-attach the options
+	//are PENDING JSON and must never be read for behaviour - dataSpec()/usesDataSet()/RPC
+	//dataSetIds answer "nothing referenced yet" and are re-read once setAnalysisUp finished
+	//binding (it emits dataSpecChanged), which for released files is identical anyway (their
+	//pending .meta carries no stamps at all).
+	if(!_analysisForm || !_analysisForm->initialized())
+		return {};
+
 	std::map<int, int> dataSetFilterIds;
 
 	if(_boundValues.isObject() && _boundValues.isMember(".meta"))
 		ColumnEncoder::collectDataSetIdsFromMeta(_boundValues[".meta"], dataSetFilterIds);
 
 	return dataSetFilterIds;
+}
+
+void AnalysisBase::notifyDataSpecChanged()
+{
+	emit dataSpecChanged();
 }
 
 QString AnalysisBase::filterName() const
