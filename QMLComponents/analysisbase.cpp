@@ -434,20 +434,68 @@ bool AnalysisBase::usesDataSet(int dataSetId) const
 
 std::map<int, int> AnalysisBase::referencedDataSets() const
 {
-	//mds-plan D3.5/C12: references are component state - they exist only once the form has
-	//attached and its controls bound (D3.6 will compute them from the components directly; until
-	//then this reads the bound-values mirror, which the controls write). Pre-attach the options
-	//are PENDING JSON and must never be read for behaviour - dataSpec()/usesDataSet()/RPC
-	//dataSetIds answer "nothing referenced yet" and are re-read once setAnalysisUp finished
-	//binding (it emits dataSpecChanged), which for released files is identical anyway (their
-	//pending .meta carries no stamps at all).
+	//mds-plan D3.6/C11: computed ON DEMAND from component state - the typed filterIds the bound
+	//controls generate (the same per-control createFilterIds() output that rides the transient
+	//`.filterIds` sidecar at send time, positional per-term entries included), the filters the
+	//registered selection hosts hold, and the analysis' own filter. No mirror, no meta: the
+	//.meta-stamp walk (ColumnEncoder::collectDataSetIdsFromMeta over the bound-values tree) is
+	//dead input since the D3.3 flip and retires with the mirror (D3.4).
+	//
+	//The D3.5/C12 gate stays: references exist only once the form has attached and its controls
+	//bound - pending JSON is never read for behaviour, and setAnalysisUp re-notifies consumers
+	//through notifyDataSpecChanged() when real component state appears.
+	//
+	//Filter ids imply their dataset (C1); an id that names no live filter contributes nothing
+	//(the C16 doctrine: stale provenance goes raw, it must not keep a dead dataset claimed -
+	//the old map carried dead stamped ids through, but every consumer already resolved them to
+	//no dataset and skipped them). Two filters of one dataset: first seen wins, matching the
+	//old walk's keep-the-first-pair rule; every consumer (dataSpec, usesDataSet, RPC
+	//dataSetIds) additionally dedups against the analysis' own dataset anyway.
 	if(!_analysisForm || !_analysisForm->initialized())
+		return {};
+
+	Workspace * workspace = Workspace::singleton();
+
+	if(!workspace)
 		return {};
 
 	std::map<int, int> dataSetFilterIds;
 
-	if(_boundValues.isObject() && _boundValues.isMember(".meta"))
-		ColumnEncoder::collectDataSetIdsFromMeta(_boundValues[".meta"], dataSetFilterIds);
+	auto addFilter = [&workspace, &dataSetFilterIds](int filterId)
+	{
+		if(filterId < 0)
+			return;
+
+		Filter * filter = workspace->filterById(filterId);	//resolves named filters of reopened files too (D1.6)
+
+		if(!filter || !filter->data())
+			return;
+
+		const int dataSetId = filter->data()->id();
+
+		if(dataSetFilterIds.find(dataSetId) == dataSetFilterIds.end())
+			dataSetFilterIds[dataSetId] = filterId;
+	};
+
+	//(a) the values' own typed provenance: per-control createFilterIds generations, including
+	// foreign filterIds a bindTo-copied term carries from another host's selection (mds-plan C9).
+	std::set<int> valueFilterIds;
+	_analysisForm->collectFilterIds(valueFilterIds);
+	for(int filterId : valueFilterIds)
+		addFilter(filterId);
+
+	//(b) every registered selection host's current filter: a host that serves no values yet still
+	// owns a namespace (the empty-list case the option-level mirror stamp used to cover, and any
+	// host whose dropdown never wrote its option).
+	for(const Filter * filter : selectedSelectionFilters())
+		if(filter)
+			addFilter(filter->id());
+
+	//(c) the analysis' own filter (the FilterMenuButton one) - part of what the analysis runs on;
+	// hostless column-bearing controls already generate it through (a), and every consumer dedups
+	// it, so naming it explicitly changes no report and closes the no-controlled-at-all case.
+	if(_filter)
+		addFilter(_filter->id());
 
 	return dataSetFilterIds;
 }

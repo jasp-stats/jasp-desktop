@@ -832,6 +832,24 @@ QList<JASPControl *> AnalysisForm::selectionHostControls() const
 	return hosts;
 }
 
+//mds-plan D3.6: the controls' typed filterIds collected on demand - every bound control answers
+//through the same createFilterIds() (mds-plan D3.1/D3.2) that places its `.filterIds` sidecar
+//node, and the sidecar's leaf grammar (int | positional array) is exactly what
+//ColumnEncoder::collectFilterIdsFromSidecar sweeps. Nothing is stored or cached: this is a
+//generation, not a read (C11), and it sees bindTo-copied foreign term provenance (mds-plan C9)
+//that no host selection would imply.
+void AnalysisForm::collectFilterIds(std::set<int> & filterIds) const
+{
+	for (JASPControl* control : _dependsOrderedCtrls)
+	{
+		if (!control || !control->isBound())
+			continue;
+
+		if (const BoundControl* boundControl = control->boundControl())
+			ColumnEncoder::collectFilterIdsFromSidecar(boundControl->createFilterIds(), filterIds);
+	}
+}
+
 int AnalysisForm::selectionHostCount() const
 {
 	return int(selectionHostControls().size());

@@ -186,9 +186,11 @@ public:
 						bool				usesDataSet(int dataSetId)						const;
 	virtual				bool				multiDataSetAware()								const	{ return _multiDataSetAware;		}
 	void					setMultiDataSetAware(bool multiDataSetAware);
-	///< The dataSetId -> filterId pairs referenced through the .meta of the bound values (see
-	///< ColumnEncoder::collectDataSetIdsFromMeta); the primary dataset/filter of the analysis itself is
-	///< not necessarily part of it, that comes from filter()/dataSet(). Defers (answers {}) until
+	///< What this analysis runs on, computed ON DEMAND from component state (mds-plan D3.6): the
+	///< typed filterIds the bound controls generate (their `.filterIds` sidecar state), the
+	///< registered selection hosts' filters, and the analysis' own filter - mapped to the
+	///< dataSetId -> filterId pairs they live in. The primary dataset/filter of the analysis
+	///< itself is included; every consumer dedups against it anyway. Defers (answers {}) until
 	///< the form has attached - pending JSON is never read for behaviour (mds-plan D3.5/C12).
 	std::map<int, int>	referencedDataSets()												const;
 	///< Let consumers re-read dataSpec()/referencedDataSets() (emits dataSpecChanged): used by

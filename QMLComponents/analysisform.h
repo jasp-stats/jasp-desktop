@@ -226,6 +226,12 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	///< Introspection: the live host controls themselves (JASPControl* items; selecting ones
 	///  answer ownedSelectionVarInfo()/selectedSelectionFilter()).
 	Q_INVOKABLE QVariantList selectionHosts() const;
+	///< mds-plan D3.6: every filterId the bound controls carry in their typed state, generated
+	///  ON DEMAND through the same per-control createFilterIds() that feeds the `.filterIds`
+	///  sidecar (positional per-term entries included) - no stored tree. This is the component
+	///  input of AnalysisBase::referencedDataSets(); selection HOSTS and the analysis' own
+	///  filter are added there, not here.
+	void					collectFilterIds(std::set<int> & filterIds) const;
 	void					registerDataSetSelectionOption(const QString &option, JASPControl *host);
 	void					unregisterDataSetSelectionOption(const QString &option, JASPControl *host);
 	///< mds-plan C10/D2.4+D2.5: HostFilterSelection calls this when its selected filter moved

@@ -3439,44 +3439,73 @@ void TestAll::testPrepareMultiDataSetRunPrimarySliceKey()
 	QCOMPARE(empty.multiDataSetJson["ids"].size(), 0u);
 }
 
+namespace {
+
+// Minimal selection host for the provider/referencedDataSets tests: the registry is
+// host-type-agnostic (D2.3), everything the provider and the D3.6 reference computation need
+// comes through the JASPControl::selectedSelectionFilter() virtual. QPointer-guarded so a test
+// can delete a dataset under a host and watch the reference drop out instead of dangling.
+class TestSelectionHost : public JASPControl
+{
+public:
+	explicit TestSelectionHost(Filter * filter = nullptr) : JASPControl(), _filter(filter) {}
+	Filter			* selectedSelectionFilter() const override	{ return _filter; }
+	void			  setFilter(Filter * filter)					{ _filter = filter; }
+
+private:
+	QPointer<Filter>  _filter;
+};
+
+}
+
 void TestAll::testAnalysisBaseUsesDataSetWhenAware()
 {
-	//mds-plan D3.5: attached form required before references steer behaviour (see
-	//testAnalysisBaseReferencedDataSets for the simulation notes).
+	//mds-plan D3.5/D3.6: attached form required before references steer behaviour, and the
+	//references are component state - registered selection hosts (the TestSelectionHost seam,
+	//see testAnalysisProviderAggregatesSelectionHosts), not stamped mirror meta.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet   * b  = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+	QVERIFY2(b->id() != a->id(), "second dataset must have its own id");
+
 	AnalysisForm form;
 	AnalysisBase analysis(&form);
 	form._initialized = true;
-
-	Json::Value boundValues(Json::objectValue);
-	boundValues["dependent"] = "Score";
-
-	Json::Value meta(Json::objectValue);
-	meta["dependent"]["dataSetId"]	= 7;
-	meta["dependent"]["filterId"]	= 71;
-	boundValues[".meta"] = meta;
-
-	analysis.setBoundValues(boundValues);
+	form.registerDataSetSelectionOption("dependent", new TestSelectionHost(b->defaultFilter()));
+	form.registerDataSetSelectionOption("covariate", new TestSelectionHost(a->defaultFilter()));
 
 	//Not aware and unbound: the legacy "applies to any dataset" semantics (reports etc.):
-	QCOMPARE(analysis.usesDataSet(7), true);
+	QCOMPARE(analysis.usesDataSet(a->id()), true);
 
-	//Aware: exactly the datasets referenced through the options are in use, and every other is
+	//Aware: exactly the datasets the components reference are in use, and every other is
 	//not - the "unbound applies to all" shortcut must not swallow that (C: guards).
 	analysis.setMultiDataSetAware(true);
-	QCOMPARE(analysis.usesDataSet(7), true);
-	QCOMPARE(analysis.usesDataSet(42), false);
+	QCOMPARE(analysis.usesDataSet(a->id()), true);			//referenced through the second host
+	QCOMPARE(analysis.usesDataSet(b->id()), true);			//the first host's dataset (D3.6 (b))
+	QCOMPARE(analysis.usesDataSet(4242), false);			//no component references it
 
-	//pre-attach (no form at all) the same pending stamps claim NOTHING (C12 deferral):
+	//pre-attach (no form at all) a host-claiming analysis is impossible, and options parked
+	//before attach claim NOTHING (C12 deferral):
 	AnalysisBase parked;
 	parked.setMultiDataSetAware(true);
-	parked.setBoundValues(boundValues);
-	QVERIFY2(!parked.usesDataSet(7), "pending JSON before attach must not make the analysis claim a dataset");
+	parked.setBoundValues(Json::Value(Json::objectValue));	//the pre-attach parking path (Analyses::create)
+	QVERIFY2(!parked.usesDataSet(b->id()), "without an attached form the analysis must not claim a dataset");
 }
 
 void TestAll::testAnalysisBaseDataSpecWhenAware()
 {
-	//C3/M7: dataSpec() for a multi-dataset aware analysis must come from the datasets its bound
-	//values reference, not from dataSet() - which an aware analysis deliberately refuses (and
+	//C3/M7: dataSpec() for a multi-dataset aware analysis must come from the datasets its
+	//COMPONENTS reference (mds-plan D3.6: registered selection hosts / typed term provenance /
+	//own filter), not from dataSet() - which an aware analysis deliberately refuses (and
 	//Desktop::Analysis logs about). Before this the aware branch was dead code: the early return
 	//on !data already yielded "", so the results header showed nothing about the data.
 	QVERIFY(_newPkgWithDataSet());
@@ -3493,100 +3522,129 @@ void TestAll::testAnalysisBaseDataSpecWhenAware()
 	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
 	QVERIFY(b->defaultFilter());
 
-	//mds-plan D3.5: dataSpec() reads component state - simulate the attach (see
-	//testAnalysisBaseReferencedDataSets) so the bound values count as control-owned.
+	//mds-plan D3.5/D3.6: dataSpec() reads component state - simulate the attach (see
+	//testAnalysisBaseReferencedDataSets) and drive the references through a selection host.
 	AnalysisForm form;
 	AnalysisBase analysis(&form);
 	form._initialized = true;
 
-	Json::Value boundValues(Json::objectValue);
-	boundValues["dependent"]	= "x";
-	boundValues["covariate"]	= "y";
-	boundValues["extra"]		= "z";
-
-	Json::Value meta(Json::objectValue);
-	meta["dependent"]["dataSetId"]		= a->id();
-	meta["dependent"]["filterId"]		= a->defaultFilter()->id();
-	meta["dependent"]["shouldEncode"]	= true;
-	meta["covariate"]["dataSetId"]		= b->id();
-	meta["covariate"]["filterId"]		= b->defaultFilter()->id();
-	meta["covariate"]["shouldEncode"]	= true;
-	meta["extra"]["dataSetId"]			= a->id();				//second stamp of the same dataset: deduped
-	meta["extra"]["filterId"]			= a->defaultFilter()->id();
-	meta["extra"]["shouldEncode"]		= true;
-	boundValues[".meta"] = meta;
-
-	analysis.setBoundValues(boundValues);
+	analysis.setFilterId(a->defaultFilter()->id());						//the analysis runs ON a...
+	TestSelectionHost * host = new TestSelectionHost(b->defaultFilter());	//...and a host serves b
+	form.registerDataSetSelectionOption("dependent", host);
 
 	//Not aware: bit-identical legacy behaviour - the base dataSet() is nullptr, so is the spec
 	//(the aware branch must not change anything on this path, not even call dataSet()):
 	QCOMPARE(analysis.dataSpec(), QString(""));
 
-	//Aware: one entry per referenced dataset (deduped), in id order, " + " joined:
+	//Aware: own dataset first, then the referenced ones (deduped), " + " joined:
 	analysis.setMultiDataSetAware(true);
 	const QString spec = analysis.dataSpec();
 
 	QVERIFY2(spec == a->title() + " + " + b->title(),
 			 qPrintable(QString("dataSpec should name both referenced datasets, got: '%1'").arg(spec)));
 
-	//A reference that resolves to no dataset anymore contributes nothing (and must not print a
-	//bare separator):
-	Json::Value dead = meta;
-	dead["gone"]["dataSetId"]	= 987654;
-	dead["gone"]["filterId"]	= 987655;
-	boundValues[".meta"]		= dead;
-	analysis.setBoundValues(boundValues);
+	//A reference whose filter dies contributes nothing (and must not print a bare separator) -
+	//the D3.6 dead-id rule: stale provenance goes raw, it keeps no dead dataset claimed:
+	Filter * named = b->createFilter("SpecMeAway");
+	QVERIFY(named);
+	host->setFilter(named);
+	QCOMPARE(analysis.dataSpec(), a->title() + " + " + b->title());		//still b, via the named filter
 
-	QCOMPARE(analysis.dataSpec(), a->title() + " + " + b->title());
+	b->removeFilter(named);												//Filter dies -> host and id go null
+	QCOMPARE(analysis.dataSpec(), a->title());
 
-	//mds-plan D3.5: pre-attach the spec defers to "" - a pending tree never names datasets:
+	//mds-plan D3.5: pre-attach the spec defers to "" - pending state never names datasets:
 	AnalysisBase parked;
 	parked.setMultiDataSetAware(true);
-	parked.setBoundValues(boundValues);
+	parked.setBoundValues(Json::Value(Json::objectValue));
 	QCOMPARE(parked.dataSpec().toStdString(), std::string());
 
 	//And with nothing referenced at all the spec is simply empty:
-	analysis.setBoundValues(Json::Value(Json::objectValue));
-	QCOMPARE(analysis.dataSpec(), QString(""));
+	AnalysisForm emptyForm;
+	AnalysisBase emptyAnalysis(&emptyForm);
+	emptyForm._initialized = true;
+	emptyAnalysis.setMultiDataSetAware(true);
+	QCOMPARE(emptyAnalysis.dataSpec(), QString(""));
+
+	delete host;
 }
 
 void TestAll::testAnalysisBaseReferencedDataSets()
 {
-	//mds-plan D3.5: references are component state - reported only once the form has attached
-	//(pending JSON before setAnalysisUp is never read for behaviour). Attach is simulated here
-	//by flipping the form's initialized flag (no QML controls in the C++ harness); the real
-	//attach/apply-once semantics are pinned by the qml harness
+	//mds-plan D3.6/C11: references are computed ON DEMAND from component state (typed term
+	//provenance + registered selection hosts + the analysis' own filter), reported only once the
+	//form has attached (pending JSON before setAnalysisUp is never read for behaviour). Attach is
+	//simulated here by flipping the form's initialized flag (no QML controls in the C++
+	//harness); the real attach/apply-once semantics are pinned by the qml harness
 	//(tst_generatedOptionsJsonAware.qml::test_pending_json_applied_once_and_stamps_never_read).
+	//mds-plan D3.6 re-armed this from the old fabricated-meta version: ids are REAL filters now
+	//(the computation resolves every filterId through the Workspace, so made-up pairs cannot
+	//enter the map - the old "dataSetId without filterId" meta node has no component analogue).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet   * a  = ws->shownDataSet();
+	QVERIFY(a && a->defaultFilter());
+
+	CSVImporter importer;
+	DataSet   * b  = ws->createDataSet();
+	QVERIFY(b);
+	importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), b, [](int){});
+	QVERIFY(b->defaultFilter());
+
+	a->addFilter();						//a named filter on a, shown on a
+	Filter * aNamed   = a->shownFilter();
+	Filter * aDefault = a->defaultFilter();
+	QVERIFY2(aNamed && aNamed != aDefault, "addFilter must give a distinct named filter");
+
 	AnalysisForm form;
 	AnalysisBase analysis(&form);
 	form._initialized = true;
 
-	Json::Value boundValues(Json::objectValue);
-	boundValues["dependent"] = "Score.scale";
-
-	Json::Value meta(Json::objectValue);
-	meta["dependent"]["shouldEncode"]	= true;
-	meta["dependent"]["dataSetId"]		= 7;
-	meta["dependent"]["filterId"]		= 71;
-	meta["nested"]["group"]["dataSetId"]	= 9;   //no filterId here
-	boundValues[".meta"] = meta;
-
-	analysis.setBoundValues(boundValues);
+	TestSelectionHost * hostA = new TestSelectionHost(aNamed);
+	TestSelectionHost * hostB = new TestSelectionHost(b->defaultFilter());
+	form.registerDataSetSelectionOption("hostA", hostA);
+	form.registerDataSetSelectionOption("hostB", hostB);
 
 	std::map<int, int> refs = analysis.referencedDataSets();
 
 	QCOMPARE(refs.size(), size_t(2));
-	QCOMPARE(refs[7], 71);
-	QCOMPARE(refs[9], -1);
+	QCOMPARE(refs[a->id()], aNamed->id());					//first host wins for its dataset
+	QCOMPARE(refs[b->id()], b->defaultFilter()->id());
+
+	//a second filter of a dataset already referenced does not add a dataset (the map stays one
+	//entry per dataset, first-seen wins - matching the old walk's keep-the-first-pair rule):
+	TestSelectionHost * hostA2 = new TestSelectionHost(aDefault);
+	form.registerDataSetSelectionOption("hostA2", hostA2);
+	refs = analysis.referencedDataSets();
+	QCOMPARE(refs.size(), size_t(2));
+	QCOMPARE(refs[a->id()], aNamed->id());
+
+	//the analysis' own filter is part of what it runs on (D3.6 (c)) - already a here, so no
+	//growth; every consumer dedups against the primary anyway:
+	analysis.setFilterId(b->defaultFilter()->id());
+	refs = analysis.referencedDataSets();
+	QCOMPARE(refs.size(), size_t(2));
 
 	//The plain base class is never aware; Desktop::Analysis derives it from the module entry:
 	QCOMPARE(analysis.multiDataSetAware(), false);
 
-	//D3.5 gate, the pre-attach half: the very same tree PARKED on a formless analysis (the
-	//Analyses::create path) references NOTHING until the form attaches:
+	//an uninitialized form references NOTHING (the D3.5 gate, attach half):
+	AnalysisForm unattachedForm;
+	AnalysisBase unattached(&unattachedForm);
+	unattached.setBoundValues(Json::Value(Json::objectValue));
+	QCOMPARE(unattached.referencedDataSets().size(), size_t{0});
+
+	//D3.5 gate, the pre-attach half: options PARKED on a formless analysis (the
+	//Analyses::create path) reference NOTHING until the form attaches:
 	AnalysisBase parked;
-	parked.setBoundValues(boundValues);
+	parked.setBoundValues(Json::Value(Json::objectValue));
 	QCOMPARE(parked.referencedDataSets().size(), size_t{0});
+
+	delete hostA;
+	delete hostB;
+	delete hostA2;
 }
 
 void TestAll::testDataSetFilterIdsSurviveStorageReload()
@@ -3957,23 +4015,6 @@ void TestAll::testSelectionHostRegistryIntrospection()
 	delete hostA;
 	QCOMPARE(form.selectionHostCount(), 0);
 	QVERIFY(form.dataSetSelectionOptionNames().isEmpty());
-}
-
-namespace {
-
-// Minimal selection host for the D2.4 provider test: the registry is host-type-agnostic (D2.3),
-// everything the provider needs comes through the JASPControl::selectedSelectionFilter() virtual.
-class TestSelectionHost : public JASPControl
-{
-public:
-	explicit TestSelectionHost(Filter * filter = nullptr) : JASPControl(), _filter(filter) {}
-	Filter			* selectedSelectionFilter() const override	{ return _filter; }
-	void			  setFilter(Filter * filter)					{ _filter = filter; }
-
-private:
-	Filter		*	  _filter;
-};
-
 }
 
 void TestAll::testAnalysisProviderAggregatesSelectionHosts()
