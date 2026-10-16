@@ -281,6 +281,40 @@ void AnalysisBase::placeOptionMeta(Json::Value & metaRoot, const QVector<std::st
 	(*metaBoundValue)[name] = meta;
 }
 
+//mds-plan D3.3: sidecar placement differs from meta placement in ONE way: a meta node is always
+//an object, so row-child meta merges into the parent option's node freely. A `.filterIds` node
+//is a bare int/array, and a list control with stamped row children would have its positional
+//array sitting exactly where the children's named nodes go - placing through placeOptionMeta
+//would hit jsoncpp's "requires objectValue" assert the moment such an aware form generates
+//(latent since D3.2, live from the D3.3 flip on: every run generates). On collision the
+//own-node is demoted into the container's reserved "$" member - the grammar
+//ColumnEncoder::sidecarOwnFilterId reads; non-colliding trees keep the D3.2 shape byte-identically.
+void AnalysisBase::placeOptionFilterIds(Json::Value & filterIdsRoot, const QVector<std::string> & parentNames, const std::string & name, const Json::Value & filterIds)
+{
+	Json::Value * node = &filterIdsRoot;
+
+	for(const std::string & parent : parentNames)
+	{
+		Json::Value & child = (*node)[parent];	//creates a null slot on the way down, placeable
+
+		if(child.isArray() || child.isInt())	//an own-node already placed here: demote to "$"
+		{
+			Json::Value container(Json::objectValue);
+			container[ColumnEncoder::FILTERIDS_SELF] = child;
+			child = container;
+		}
+
+		node = &child;
+	}
+
+	Json::Value & slot = (*node)[name];
+
+	if(slot.isObject() && !filterIds.isObject())	//named children already in the slot: the own-node rides "$"
+		slot[ColumnEncoder::FILTERIDS_SELF] = filterIds;
+	else
+		slot = filterIds;
+}
+
 std::string AnalysisBase::_displayParentKeys(const QVector<JASPControl::ParentKey> & parentKeys) const
 {
 	std::string keys;

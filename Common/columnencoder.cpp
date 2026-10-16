@@ -1143,9 +1143,16 @@ const Json::Value * ColumnEncoder::sidecarPositional(const Json::Value & sidecar
 	if(sidecarNode.isArray())
 		return &sidecarNode;
 
-	if(sidecarNode.isObject())
-		if(const Json::Value & own = sidecarNode.get(FILTERIDS_SELF, Json::Value::null); own.isArray())
+	//NB: Value::get() returns BY VALUE in this jsoncpp - a pointer to the positional array must
+	//come out of the node itself (const operator[] references the real member; isMember guards
+	//its existence assertion).
+	if(sidecarNode.isObject() && sidecarNode.isMember(FILTERIDS_SELF))
+	{
+		const Json::Value & own = sidecarNode[FILTERIDS_SELF];
+
+		if(own.isArray())
 			return &own;
+	}
 
 	return nullptr;
 }

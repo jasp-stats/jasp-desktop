@@ -3027,6 +3027,220 @@ void TestAll::testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR()
 	QCOMPARE(sweep[0].asString(), colName);
 }
 
+void TestAll::testPerTermMixedProvenanceEncodesViaOwnViews()
+{
+	//mds-plan D3.7: the request-encoding single walk resolves PER NODE from the sidecar - a
+	//POSITIONAL array with genuinely mixed filters encodes each term in its own filter's VIEW
+	//(the flagship x@f1/x@f2 within ONE list, C9/C11) and the slice queue carries BOTH filters.
+	//This is the behavior the pre-flip lockstep could not express (one stamp per option).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();						//"Filter 0"
+	Filter * f1 = a->shownFilter();
+	a->addFilter();						//"Filter 1"
+	Filter * f2 = a->shownFilter();
+	QVERIFY2(f1 && f2 && f1 != f2, "two distinct named filters required");
+
+	a->showFilter(a->defaultFilter());	//neither position's filter is the shown one
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	QVERIFY2(colA && colA->type() != columnType::unknown, "debug.csv must hold a typed contNormal");
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+
+	const std::string token1 = f1->columnEncoder()->encode(qualified);
+	const std::string token2 = f2->columnEncoder()->encode(qualified);
+	QVERIFY2(token1 != token2 && !token1.empty() && !token2.empty(), "the two filter views must mint distinct tokens");
+
+	Json::Value options(Json::objectValue);
+	options["mixed"]				= Json::Value(Json::objectValue);
+	options["mixed"]["value"]		= Json::Value(Json::arrayValue);
+	options["mixed"]["value"].append(colName);
+	options["mixed"]["value"].append(colName);		//the SAME name twice, provenance differs per term
+	options["mixed"]["types"]		= Json::Value(Json::arrayValue);
+	options["mixed"]["types"].append("scale");
+	options["mixed"]["types"].append("scale");
+	options[".meta"]["mixed"]["shouldEncode"]	= true;
+	options[".filterIds"]["mixed"].append(f1->id());
+	options[".filterIds"]["mixed"].append(f2->id());
+
+	DataBridge bridge(ProcessInfo::currentPID());
+	const DataBridge::MultiDataSetRunPlan plan = bridge.prepareMultiDataSetRun(options, a->id(), "", "mixedPerTerm");
+
+	QCOMPARE(QString::fromStdString(options["mixed"][0].asString()), QString::fromStdString(token1));
+	QCOMPARE(QString::fromStdString(options["mixed"][1].asString()), QString::fromStdString(token2));
+
+	bool queued1 = false, queued2 = false;
+	for(const Json::Value & id : plan.multiDataSetJson["ids"])
+	{
+		if(id.asString() == std::to_string(f1->id())) queued1 = true;
+		if(id.asString() == std::to_string(f2->id())) queued2 = true;
+	}
+	QVERIFY2(queued1 && queued2, "both term filters are queued as slices (sidecar queue build)");
+
+	//and the walk's collected cols are attributed to the filters' own dataset (re-attribution):
+	QVERIFY(plan.primaryCols.count(std::make_pair(qualified, columnType::scale)) == 1);
+
+	//what R gets after the boundary strip: both encodings, no provenance anywhere.
+	Json::Value forR = options;
+	DataBridge::stripTransientProvenanceForR(forR);
+	QVERIFY(!forR.isMember(".filterIds"));
+	QCOMPARE(QString::fromStdString(forR["mixed"][0].asString()), QString::fromStdString(token1));
+	QVERIFY(forR.toStyledString().find("filterId") == std::string::npos);
+}
+
+void TestAll::testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder()
+{
+	//mds-plan D3.7 pins for the single walk:
+	//  (1) the CONTAINER sidecar node (positional "$" + named row-child nodes, the D3.3
+	//      collision shape) encodes a row-object array per POSITION through the "$" entries,
+	//      and the row-object members ride the row's view exactly like the pre-flip option-level
+	//      stamp swallowed the whole array (children are NOT separately encoded here - today's
+	//      semantics, byte-preserved);
+	//  (2) the CLASSIC non-aware encoder (encodeColumnNamesinOptions, null resolver) ignores the
+	//      sidecar ENTIRELY: identical tree with and without `.filterIds` encodes byte-identically
+	//      and collects identical cols, always against the current encoder (C7 legacy -
+	//      sidecar presence must never change non-aware behavior).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	a->addFilter();
+	Filter * f1 = a->shownFilter();
+	a->addFilter();
+	Filter * f2 = a->shownFilter();
+	a->showFilter(a->defaultFilter());
+	a->encoder().setCurrentNames(a->getColumnTypesMap());
+
+	const std::string colName	= "contNormal";
+	Column * colA = a->column(colName);
+	const std::string qualified	= colName + "." + columnTypeToString(colA->type());
+	const std::string token1	= f1->columnEncoder()->encode(qualified);
+	const std::string token2	= f2->columnEncoder()->encode(qualified);
+	const std::string tokenShown = a->defaultFilter()->columnEncoder()->encode(qualified);
+
+	// --- (1) container sidecar over a row-object array -------------------------------------------
+	Json::Value options(Json::objectValue);
+	Json::Value row1(Json::objectValue), row2(Json::objectValue);
+	row1["value"]	= colName;
+	row1["hyp"]		= colName;
+	row2["value"]	= colName;
+	row2["hyp"]		= colName;
+	options["comp"]	= Json::Value(Json::arrayValue);
+	options["comp"].append(row1);
+	options["comp"].append(row2);
+	options[".meta"]["comp"]["shouldEncode"]	= true;
+	options[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f1->id());
+	options[".filterIds"]["comp"][ColumnEncoder::FILTERIDS_SELF].append(f2->id());
+	options[".filterIds"]["comp"]["hyp"]		= f2->id();	//a named child node next to the "$" array
+
+	ColumnEncoder::setCurrentEncoder(f1->columnEncoder());	//resolver-free walk: proves below it is ignored
+	const ColumnEncoder::perDataSetColsPlusTypes cols = ColumnEncoder::encodeColumnNamesinOptionsPerDataSet(
+			options, true,
+			[ws](int & dataSetId, int filterId) -> ColumnEncoder *
+			{
+				if(filterId >= 0)
+					if(Filter * f = ws->filterById(filterId); f && f->data())
+					{
+						dataSetId = f->data()->id();
+						return f->columnEncoder();
+					}
+				DataSet * ds = ws->dataSetById(dataSetId);
+				return ds ? ds->shownEncoder() : nullptr;
+			},
+			a->id());
+
+	QCOMPARE(QString::fromStdString(options["comp"][0]["value"].asString()), QString::fromStdString(token1));	//row 0 via $[0]
+	QCOMPARE(QString::fromStdString(options["comp"][0]["hyp"].asString()),    QString::fromStdString(token1));	//row members ride the ROW view (today's whole-array semantics)
+	QCOMPARE(QString::fromStdString(options["comp"][1]["value"].asString()),  QString::fromStdString(token2));	//row 1 via $[1]
+	QCOMPARE(QString::fromStdString(options["comp"][1]["hyp"].asString()),    QString::fromStdString(token2));
+	QCOMPARE(cols.count(a->id()), size_t(1));																	//re-attribution lands on the filters' dataset
+	QVERIFY(cols.count(9999) == 0);
+
+	// --- (2) classic non-aware: the sidecar is invisible to it (C7) --------------------------------
+	Json::Value classicTree(Json::objectValue);
+	classicTree["dependent"]				= Json::Value(Json::objectValue);
+	classicTree["dependent"]["value"]		= Json::Value(Json::arrayValue);
+	classicTree["dependent"]["value"].append(colName);
+	classicTree["dependent"]["types"]		= Json::Value(Json::arrayValue);
+	classicTree["dependent"]["types"].append("scale");
+	classicTree[".meta"]["dependent"]["shouldEncode"]	= true;
+
+	Json::Value classicWithSidecar = classicTree;
+	classicWithSidecar[".filterIds"]["dependent"]		= Json::Value(Json::arrayValue);
+	classicWithSidecar[".filterIds"]["dependent"].append(f1->id());		//MIXED provenance that classic must ignore
+	classicWithSidecar[".filterIds"]["dependent"].append(Json::Value());
+
+	ColumnEncoder::setCurrentEncoder(a->defaultFilter()->columnEncoder());	//the legacy current-encoder indirection
+	const ColumnEncoder::colsPlusTypes plainCols	= ColumnEncoder::encodeColumnNamesinOptions(classicTree, true);
+	ColumnEncoder::setCurrentEncoder(a->defaultFilter()->columnEncoder());
+	const ColumnEncoder::colsPlusTypes sidecarCols	= ColumnEncoder::encodeColumnNamesinOptions(classicWithSidecar, true);
+
+	classicWithSidecar.removeMember(ColumnEncoder::FILTERIDS_MEMBER);	//only the transient tree itself may differ - the ENCODINGS must be byte-identical
+	QCOMPARE(QString::fromStdString(classicWithSidecar.toStyledString()), QString::fromStdString(classicTree.toStyledString()));
+	QCOMPARE(sidecarCols.size(), plainCols.size());
+	QVERIFY(sidecarCols == plainCols);
+	QCOMPARE(QString::fromStdString(classicTree["dependent"][0].asString()), QString::fromStdString(tokenShown));	//through the current encoder only - never f1's view
+	QVERIFY2(classicTree["dependent"][0].asString() != token1, "a classic run must not be dragged into a sidecar filter's namespace");
+}
+
+void TestAll::testPlaceOptionFilterIdsCollisionDemotion()
+{
+	//mds-plan D3.3/D3.7: the generators' sidecar placement (AnalysisBase::placeOptionFilterIds).
+	//A stamped list's positional node sharing its slot with stamped row-child nodes is demoted
+	//into the container's reserved "$" member (the grammar the engine walk consumes - pinned by
+	//testContainerSidecarWalkAndClassicEncoderStaysCurrentEncoder); trees without a collision
+	//keep the D3.2 schema byte-identically. This placement is what a ComponentsList/TableFields
+	//aware form hits the moment it generates (crash bomb closed by the flip).
+	QVector<std::string> none;
+	Json::Value ids12(Json::arrayValue);	ids12.append(11);	ids12.append(12);
+
+	//positional array node + stamped row child under it -> container { "$": [11,12], child: 22 }
+	Json::Value root(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(root, none, "dep", ids12);
+	AnalysisBase::placeOptionFilterIds(root, {"dep"}, "child", Json::Value(22));
+	QVERIFY2(root["dep"].isObject(), "colliding positional node becomes a container");
+	QVERIFY(root["dep"]["$"].isArray());
+	QCOMPARE(root["dep"]["$"][0].asInt(), 11);
+	QCOMPARE(root["dep"]["$"][1].asInt(), 12);
+	QCOMPARE(root["dep"]["child"].asInt(), 22);
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(root["dep"]), -1);					//"$" is the array: no scalar own id
+	QVERIFY(ColumnEncoder::sidecarPositional(root["dep"]) != nullptr);			//positional still resolves through "$"
+	QCOMPARE(ColumnEncoder::sidecarChild(root["dep"], "child").asInt(), 22);		//named child lookup works beside "$"
+
+	//scalar own node + child -> container { "$": 7, kid: 8 }
+	Json::Value scalarRoot(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(scalarRoot, none, "list", Json::Value(7));
+	AnalysisBase::placeOptionFilterIds(scalarRoot, {"list"}, "kid", Json::Value(8));
+	QCOMPARE(ColumnEncoder::sidecarOwnFilterId(scalarRoot["list"]), 7);
+	QCOMPARE(scalarRoot["list"]["kid"].asInt(), 8);
+
+	//no collision: byte-identical to the D3.2 schema (plain ints/arrays, no containers)
+	Json::Value clean(Json::objectValue), expect(Json::objectValue);
+	Json::Value arr(Json::arrayValue);	arr.append(2);	arr.append(Json::Value());
+	AnalysisBase::placeOptionFilterIds(clean, none, "a", Json::Value(1));
+	AnalysisBase::placeOptionFilterIds(clean, none, "b", arr);
+	expect["a"] = 1;
+	expect["b"].append(2);	expect["b"].append(Json::Value());
+	QCOMPARE(clean.toStyledString(), expect.toStyledString());
+
+	//deep row chain: the demotion follows the path down (parentNames nest like meta's)
+	Json::Value deep(Json::objectValue);
+	AnalysisBase::placeOptionFilterIds(deep, none, "outer", ids12);
+	AnalysisBase::placeOptionFilterIds(deep, {"outer", "rows"}, "inner", Json::Value(5));
+	QVERIFY(deep["outer"]["$"].isArray());
+	QCOMPARE(deep["outer"]["rows"]["inner"].asInt(), 5);
+}
+
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {
 	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: since the D3.3 flip the

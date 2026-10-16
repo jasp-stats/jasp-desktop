@@ -161,6 +161,13 @@ public:
 	///< `.filterIds` trees so all three agree on placement).
 	static void				placeOptionMeta(Json::Value & metaRoot, const QVector<std::string> & parentNames,
 											  const std::string & name, const Json::Value & meta);
+	///< mds-plan D3.3: like placeOptionMeta, but for the transient `.filterIds` sidecar: a bare
+	///< int/array own-node colliding with named row-child nodes is demoted into the container's
+	///< reserved "$" member (grammar: ColumnEncoder::sidecarOwnFilterId) instead of tripping
+	///< jsoncpp's objectValue assert. Non-colliding placements stay byte-identical to
+	///< placeOptionMeta's.
+	static void				placeOptionFilterIds(Json::Value & filterIdsRoot, const QVector<std::string> & parentNames,
+												 const std::string & name, const Json::Value & filterIds);
 
 
 
