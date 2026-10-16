@@ -325,15 +325,16 @@ void AnalysisForm::sortControls(QList<JASPControl*>& controls)
 	{
 		control->addExplicitDependency();
 
-		//The dataset/filter selection a control's variables resolve through is a dependency too, and
-		//it is not declared anywhere: it falls out of the varInfo resolution itself (see
-		//JASPControl::selectionDependency). Recording it here - before the transitive closure below
-		//snapshots the set - is what makes a host's FilterSelect bind before every control it serves:
-		//binding the dropdown writes the saved filter id into the host and so restamps the provider
-		//that createFilterIds() provenances values through (the term filterIds the generated sidecar
-		//reads). Without the edge, an unchanged value loaded from a
-		//file would get restamped with whatever filter happened to be current (and the deferred
-		//init in JASPControl::setInitialized would not wait for the selection either).
+		//The dataset/filter selection a control's variables resolve through is a dependency too,
+		//and it is not declared anywhere: it falls out of the LOCAL namespace resolution (mds-plan
+		//D4.1/D4.2: JASPControl::selectionDependency over JASPListControl::resolvedSelectionHost,
+		//the successor of the deleted walk's derivation). Recording it here - before the
+		//transitive closure below snapshots the set - is what makes a host's FilterSelect bind
+		//before every control it serves: binding the dropdown writes the saved filter id into the
+		//host and so restamps the provider that createFilterIds() provenances values through (the
+		//term filterIds the generated sidecar reads). Without the edge, an unchanged value loaded
+		//from a file would get restamped with whatever filter happened to be current (and the
+		//deferred init in JASPControl::setInitialized would not wait for the selection either).
 		if (JASPControl* selectionControl = control->selectionDependency())
 			control->addDependency(selectionControl);		//guards self and already-known edges
 

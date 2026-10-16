@@ -33,7 +33,7 @@ BoundControlRlangTextArea::BoundControlRlangTextArea(TextAreaBase *textArea, RLa
 	if (textDocumentQQuick)
 	{
 		QTextDocument* doc = textDocumentQQuick->textDocument();
-        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->effectiveVarInfo());
+        _rLangHighlighter = new RSyntaxHighlighter(doc, textArea->resolvedVarInfo());
 		
 		//connect(doc, &QTextDocument::contentsChanged, this, &BoundQMLTextArea::contentsChangedHandler);
 	}

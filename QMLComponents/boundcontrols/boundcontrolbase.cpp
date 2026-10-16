@@ -68,7 +68,15 @@ Filter *BoundControlBase::generatedHostFilter() const
 	if (!analysis || !analysis->multiDataSetAware())
 		return nullptr;
 
-	Filter * stampFilter = _control->effectiveSelectionFilter();
+	//mds-plan D4.2: LOCAL resolution (JASPControl::resolvedVarInfo - own host via the relation
+	//chain, else the analysis-level VariableInfo) replaced the deleted walk; the provider of
+	//whatever VariableInfo serves the control IS the provenance this option belongs to: the
+	//selected Filter of an explicit host, or the analysis'/shown filter at analysis level
+	//(C13 host-bound fallback - dynamic_cast, not selectedSelectionFilter(): the analysis-level
+	//provider is a Filter too and the sidecar must name it as well). Re-read per call, never
+	//cached (D1.2/D2.3).
+	VariableInfo * varInfo = _control->resolvedVarInfo();
+	Filter * stampFilter = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
 	return stampFilter && stampFilter->data() ? stampFilter : nullptr;
 }
 

@@ -63,17 +63,17 @@ void TextAreaBase::setUpModel()
 	{
 		_model = new ListModelTermsAvailable(this);
 		_model->setNeedsSource(_textType == TextType::TextTypeCSem || _textType == JASPControl::TextType::TextTypeMetaSem);
-		connect(effectiveVarInfo(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
+		connect(resolvedVarInfo(),	&VariableInfo::dataSetChanged,		this,	&TextAreaBase::checkSyntaxHandler);
 
 		if (_textType == TextType::TextTypeLavaan)
 		{
 			// Lavaan TextArea does not have a source, but the script contains variables: so it the variables types or names change, the model must be updated.
 
-			connect(effectiveVarInfo(),	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged,	Qt::UniqueConnection);
-			connect(effectiveVarInfo(),	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::variableNamesChanged,	_model, &ListModel::sourceVariableNamesChanged,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::variableTypeChanged,		_model, &ListModel::sourceVariableTypeChanged,	Qt::UniqueConnection);
 			//If "rowCount" changes on VariableInfo it means a column has been added or removed, this means the model should be reencoded and checked
 			//Fixes https://github.com/jasp-stats/jasp-issues/issues/2462
-			connect(effectiveVarInfo(),	&VariableInfo::rowCountChanged,			this,	&TextAreaBase::checkSyntaxMaybeHandler,	Qt::UniqueConnection);
+			connect(resolvedVarInfo(),	&VariableInfo::rowCountChanged,			this,	&TextAreaBase::checkSyntaxMaybeHandler,	Qt::UniqueConnection);
 		}
 
 		JASPListControl::setUpModel();

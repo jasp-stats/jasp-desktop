@@ -43,9 +43,10 @@ class Filter;
 //
 // selectionNamespaceChanged() is emitted whenever the aggregate could have changed: a host
 // registers or unregisters (AnalysisForm::selectionHostsChanged) or a host's selected filter
-// moves (AnalysisForm::selectionHostFilterChanged). The resolution walk (JASPControl::
-// effectiveVarInfo) stays the per-control mechanism until Phase 4 replaces it with term-carried
-// provenance; this provider is the analysis-wide endpoint Phase 3/4 consumers switch to.
+// moves (AnalysisForm::selectionHostFilterChanged). The per-control resolution walk was deleted
+// with mds-plan Phase 4 (D4.1/D4.2): controls resolve locally through their own selection host
+// or the analysis-level VariableInfo (JASPControl::resolvedVarInfo); this provider is the
+// analysis-wide endpoint.
 class AnalysisBase : public QObject, public VariableInfoProvider
 {
 	friend class TestAll; ///< mds-plan D3.5: simulate an attached+initialized form (no QML controls in the C++ harness) to pin the pre-attach deferral vs the attached read

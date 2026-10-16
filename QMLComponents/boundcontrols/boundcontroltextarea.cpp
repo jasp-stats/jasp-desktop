@@ -61,7 +61,7 @@ void BoundControlTextArea::resetBoundValue()
 
 ColumnEncoder *BoundControlTextArea::_encoder() const
 {
-	if (VariableInfo * vi = _textArea->effectiveVarInfo())
+	if (VariableInfo * vi = _textArea->resolvedVarInfo())
 		if (VariableInfoProvider * provider = vi->provider())
 			if (ColumnEncoder * encoder = provider->columnEncoder())
 				return encoder;

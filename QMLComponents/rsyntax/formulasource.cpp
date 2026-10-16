@@ -383,7 +383,7 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 			FormulaParser::ParsedTerms parsedTerms;
 			QString error;
 
-			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->effectiveVarInfo()->provider()))
+			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->resolvedVarInfo()->provider()))
 			{
 				for (const Term& parsedTerm : parsedTerms.fixedTerms)
 					extraTermsMap[parsedTerm.value()][extraControlName] = true;

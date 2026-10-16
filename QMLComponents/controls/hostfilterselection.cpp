@@ -206,26 +206,29 @@ void HostFilterSelection::restampValuesUnderHost(int oldHostFilterId)
 	if(!analysis || !analysis->multiDataSetAware())
 		return;
 
-	//Exactly the controls whose variables resolve through THIS host: a nested host serves its
-	//own subtree, and the resolution follows `source` (and the related available list, mds-plan
-	//C10) too, so a list fed from below this host - even one visually parked elsewhere - is
-	//restamped where its names actually come from. The host itself is included (mds-plan D2.2):
-	//a list host's own bound terms resolve through its own selection - for the hosts that were
-	//never bound (VariablesForm) this made no difference, for TextArea it re-stamps the same
-	//filter the value already had.
+	//Exactly the LISTS whose variables resolve through THIS host (mds-plan D4.2: local relation
+	//resolution replaced the walk): a nested host serves its own subtree, and the resolution
+	//follows `source` (and the related available list, mds-plan C10) too, so a list fed from
+	//below this host - even one visually parked in another form - is restamped where its names
+	//actually come from. The host itself is included (mds-plan D2.2): a list host's own bound
+	//terms resolve through its own selection - for the hosts that were never bound (VariablesForm)
+	//this made no difference, for TextArea it re-stamps the same filter the value already had.
+	//(Only list controls can resolve to a host at all, and only their models carry term
+	//provenance, so the cast is part of the filter, not a narrowing of the control set.)
 	const QList<JASPControl *> controls = form->findChildren<JASPControl *>();
 
 	for(JASPControl * control : controls)
 	{
-		if(control->selectionHost() != _host)
+		JASPListControl * list = qobject_cast<JASPListControl *>(control);
+
+		if(!list || list->resolvedSelectionHost() != _host)
 			continue;
 
 		//Typed (mds-plan D2.5): EVERY list below the host carries term provenance, bound
 		//or not - an unbound list's terms are just as much "the host's namespace" as a bound
 		//one's, and ListModel::restampTermsFilterId re-resolves the filter live.
-		if(JASPListControl * list = qobject_cast<JASPListControl *>(control))
-			if(ListModel * m = list->model())
-				m->restampTermsFilterId(oldHostFilterId);
+		if(ListModel * m = list->model())
+			m->restampTermsFilterId(oldHostFilterId);
 	}
 }
 

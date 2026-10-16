@@ -353,12 +353,13 @@ void VariablesListBase::_setRelations()
 				emit containsVariablesChanged();
 				emit containsInteractionsChanged();
 
-				//The namespace inheritance (sourceVarInfo -> related available list) only exists from
-				//here on, and setUpModel (which first wired the model's VariableInfo) ran BEFORE the
-				//relations: re-push the now-resolved varInfo so an assigned list under a selecting
-				//available list resolves its column info (types, previews, names) through that host.
+				//The namespace inheritance (relatedNamespaceList -> related available list, resolved
+				//by JASPListControl::resolvedSelectionHost) only exists from here on, and setUpModel
+				//(which first wired the model's VariableInfo) ran BEFORE the relations: re-push the
+				//now-resolved varInfo so an assigned list under a selecting available list resolves
+				//its column info (types, previews, names) through that host.
 				if (ListModel * m = model())
-					if (VariableInfo * info = effectiveVarInfo())
+					if (VariableInfo * info = resolvedVarInfo())
 						m->setVarInfo(info);
 
 				// When the assigned model is of type interaction or it has multiple columns, then the available model should keep its terms when they are moved to the assigned model
@@ -373,10 +374,10 @@ void VariablesListBase::_setRelations()
 	}
 }
 
-VariableInfo * VariablesListBase::sourceVarInfo(const QSet<JASPControl *> & visited, JASPControl ** selectionHost)
+JASPListControl * VariablesListBase::relatedNamespaceList()
 {
 	//Semantic main path first: an explicit `source:` names where this list's variables come from.
-	if (VariableInfo * explicitSource = JASPListControl::sourceVarInfo(visited, selectionHost))
+	if (JASPListControl * explicitSource = JASPListControl::relatedNamespaceList())
 		return explicitSource;
 
 	//mds-plan C10: with selection on the LIST, the available list a VariablesForm hands to its
@@ -390,17 +391,10 @@ VariableInfo * VariablesListBase::sourceVarInfo(const QSet<JASPControl *> & visi
 	ListModelAssignedInterface* assignedModel = qobject_cast<ListModelAssignedInterface*>(_draggableModel);
 	ListModelTermsAvailable* availableModel	= assignedModel ? assignedModel->availableModel() : nullptr;
 
-	if (!availableModel || !availableModel->listView())
+	if (!availableModel)
 		return nullptr;
 
-	JASPListControl * availableList = availableModel->listView();
-	if (visited.contains(availableList))	//cycle guard: never walk back into a list that led here
-		return nullptr;
-
-	QSet<JASPControl *> seen = visited;
-	seen.insert(this);
-
-	return availableList->effectiveVarInfoImpl(seen, selectionHost);
+	return availableModel->listView();
 }
 
 void VariablesListBase::handleFormIsKnown(AnalysisForm * form)
@@ -428,7 +422,7 @@ void VariablesListBase::handleAnalysisChanged()
 
 	//The relations (and with them the inherited namespace) may only now exist too:
 	if (ListModel * m = model())
-		if (VariableInfo * info = effectiveVarInfo())
+		if (VariableInfo * info = resolvedVarInfo())
 			m->setVarInfo(info);
 
 	emit selectedFilterIdChanged();

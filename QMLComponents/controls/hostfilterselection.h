@@ -40,7 +40,7 @@ class VariableInfo;
 /// VariableInfo whose provider is the selected Filter (Filter *is* a VariableInfoProvider,
 /// scoped to its own dataset, rows filtered, names encoded by that dataset's own encoder), and
 /// every variable-info consumer below the host resolves to that VariableInfo (see
-/// JASPControl::effectiveVarInfo).
+/// JASPControl::resolvedVarInfo / JASPListControl::resolvedSelectionHost, mds-plan D4.2).
 ///
 /// The analysis' own filter (FilterMenuButton) is a separate, analysis-global thing: selection
 /// code never touches it.

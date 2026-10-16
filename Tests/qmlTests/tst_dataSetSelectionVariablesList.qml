@@ -6,10 +6,10 @@ import JASP.Controls
 // every list that declares an option name owns a selection whose value is a FILTER ID, stored in
 // that option of the analysis (so it reaches the engine identically in desktop and syntax mode)
 // and served to its own controls through the list's own VariableInfo provider. A plain assigned
-// list inherits the namespace of the available list its items come from (VariablesListBase::
-// sourceVarInfo), so selecting on the available list drives the whole section - while any other
-// list can hold a different selection at the same time. TextAreaBase keeps a selection of its own
-// exactly like before.
+// list inherits the namespace of the available list its items come from (JASPListControl::
+// resolvedSelectionHost following its relation chain), so selecting on the available list drives
+// the whole section - while any other list can hold a different selection at the same time.
+// TextAreaBase keeps a selection of its own exactly like before.
 // The hosts are independent: selecting in one never changes what another shows, and selection
 // code NEVER touches the analysis' own filter (that global belongs to the FilterMenuButton).
 // Controls below a selecting host get their bindTo dependency on that host's FilterSelect derived
@@ -76,7 +76,8 @@ Item
 
 			// Visually parked in the NON-selecting form, but drawing from formA's dependentA:
 			// its namespace must follow the source (allVarsA's selection), not the visual parent.
-			// This is what JASPControl::sourceVarInfo() buys over the parentItem walk.
+			// This is what the relation-chain resolution (JASPListControl::resolvedSelectionHost,
+			// mds-plan D4.2) buys over a visual-parent lookup.
 			AssignedVariablesList	{ id: srcDriven;	name: "srcDriven";	source: dependentA }
 		}
 

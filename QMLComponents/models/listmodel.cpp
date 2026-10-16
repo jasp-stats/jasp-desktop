@@ -139,9 +139,11 @@ int ListModel::_currentSelectionFilterId() const
 
 	//Only an EXPLICIT selection host qualifies a term (mds-plan C13: the fallback for a control
 	//with no host is the analysis-wide VariableInfo — legacy behaviour, and legacy terms stay
-	//-1). selectionHost() reports nullptr exactly in that fallthrough case.
-	JASPControl *	host	= _listView->selectionHost();
-	Filter			*	filter	= host ? _listView->effectiveSelectionFilter() : nullptr;
+	//-1). resolvedSelectionHost() (mds-plan D4.2: local relation resolution, the walk is deleted)
+	//reports nullptr exactly in that fallthrough case. The filter is read through the host's own
+	//selection VariableInfo provider at use time - never cached (D1.2/D2.3 landmine).
+	JASPControl *	host	= _listView->resolvedSelectionHost();
+	Filter			*	filter	= host ? dynamic_cast<Filter *>(host->ownedSelectionVarInfo()->provider()) : nullptr;
 
 	return filter && filter->id() >= 0 ? filter->id() : -1;
 }
@@ -149,9 +151,9 @@ int ListModel::_currentSelectionFilterId() const
 void ListModel::restampTermsFilterId(int oldHostFilterId)
 {
 	//mds-plan D2.5: the typed companion of HostFilterSelection::restampValuesUnderHost - the same
-	//walk, the same control set, but writing the typed filterId (C9) instead of the .meta stamp.
-	//The filter is re-resolved live (selectionHost()/effectiveSelectionFilter() walk the current
-	//component chain and the host's current filter - nothing cached); the terms keep name, type
+	//control set, but writing the typed filterId (C9) instead of the .meta stamp.
+	//The filter is re-resolved live (resolvedSelectionHost() follows the current relations and
+	//the host's current filter - nothing cached, mds-plan D4.2); the terms keep name, type
 	//and components, and a list without a host collapses to -1 (unqualified) exactly like fresh
 	//intake would stamp it (ListModel::_setAllowedType).
 	//mds-plan D3.5 owns-the-stamp: only the host's OWN terms (its old id) and never-qualified

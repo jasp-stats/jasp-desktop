@@ -81,11 +81,14 @@ public:
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
-	///< A list inherits its dataset namespace from the control its items come from (`source`):
-	///  resolve through that control so the dependency - not the visual parent chain - picks the
-	///  feeding form. nullptr until a source control resolves (setup timing, values-/rSource
-	///  driven lists), so effectiveVarInfo() transparently falls back to the component walk.
-	VariableInfo			* sourceVarInfo(const QSet<JASPControl *> & visited, JASPControl ** selectionHost = nullptr) override;
+	///< mds-plan D4.1/D4.2 (successor of the sourceVarInfo chain): a list resolves its namespace
+	///  through its RELATION edges - the explicit `source:` list first, else the related
+	///  available list (VariablesListBase::relatedNamespaceList) - hop by hop until a list is an
+	///  active selection host (it serves itself and everyone it feeds, C13 host-bound) or the
+	///  chain runs out. Direct relation reads only: the deleted walk's visual-parent-chain
+	///  fallback is replaced by the analysis-level VariableInfo (JASPControl::resolvedVarInfo).
+	///  nullptr: no explicit host serves this list.
+	JASPControl			* resolvedSelectionHost()								override;
 
 			bool					hasSource()					const			{ return _sourceItems.size() > 0; }
 			bool					hasNativeSource()			const;
@@ -182,6 +185,12 @@ protected:
 	virtual bool					_checkLevelsConstraints();
 	bool							_checkLevelsConstraintsForVariable(const QString& variable);
 	JASPControls					getMDSubItems(const QQuickItem* parentItem = nullptr)			const	override;
+
+	///< The next list in this list's namespace-relation chain (mds-plan D4.1/D4.2): the first
+	///  source item that names an actual list control (the `source:` edge); nullptr for
+	///  values-/rSource-/native-model-driven sources and until the source resolves (setup
+	///  timing). VariablesListBase extends this with the related-available-list edge.
+	virtual JASPListControl			* relatedNamespaceList();
 
 	GENERIC_SET_FUNCTION(Source,							_source,							sourceChanged,							QVariant		)
 	GENERIC_SET_FUNCTION(RSource,							_rSource,							sourceChanged,							QVariant		)

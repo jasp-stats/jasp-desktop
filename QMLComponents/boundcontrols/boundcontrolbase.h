@@ -75,10 +75,10 @@ protected:
 	/// (term lists), see BoundControlTerms::createStorageValue.
 	virtual Json::Value			createStorageValue()											const	{ return createEngineValue();	}
 	///< The filter this control's values are provenanced through at generation time, or nullptr:
-	/// multiDataSetAware analysis + a resolvable effectiveSelectionFilter holding its dataset.
-	/// SINGLE source of truth for the host provenance since the D3.4 deletion: createFilterIds()
-	/// derives the transient sidecar from here (mds-plan D3.2) - the send-time `.meta` carries no
-	/// ids at all (C8).
+	/// multiDataSetAware analysis + a resolvable host filter (the provider of
+	/// JASPControl::resolvedVarInfo, mds-plan D4.2). SINGLE source of truth for the host
+	/// provenance since the D3.4 deletion: createFilterIds() derives the transient sidecar from
+	/// here (mds-plan D3.2) - the send-time `.meta` carries no ids at all (C8).
 	Filter						*	generatedHostFilter()												const;
 	///< The host filter's id (see generatedHostFilter), or -1 when the control has no host.
 	/// Family generators read provenance through THIS (not the Filter*) so they need no dependency

@@ -46,7 +46,7 @@ public:
 protected:
 	///< The encoder for the data this text area's form/host is bound to: desktop never uses the
 	///< process-global ColumnEncoder (only meaningful inside an engine request), it asks the
-	///< provider of the effective VariableInfo (see JASPControl::effectiveVarInfo).
+	///< provider of the resolved VariableInfo (see JASPControl::resolvedVarInfo).
 	ColumnEncoder			*	_encoder()							const;
 
 	///< mds-plan D3.1: a TextArea commits its option on APPLY (typing alone never writes) and a

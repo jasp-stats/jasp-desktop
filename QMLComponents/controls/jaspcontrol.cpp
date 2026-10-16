@@ -947,63 +947,22 @@ void JASPControl::_setInitialized(const Json::Value &value)
 	emit initializedChanged();
 }
 
-VariableInfo * JASPControl::effectiveVarInfo()
+VariableInfo * JASPControl::resolvedVarInfo()
 {
-	return effectiveVarInfoImpl(QSet<JASPControl *>());
-}
+	//mds-plan D4.2 (C13, host-bound): the explicit host of this control serves its namespace
+	//while it holds one; otherwise the analysis-wide VariableInfo does (the analysis filter,
+	//else the shown filter - how every non-aware analysis has always worked). No component-chain
+	//walk any more: resolvedSelectionHost() is a LOCAL resolution (see JASPListControl), and the
+	//form's VariableInfo remains the legitimate analysis-level endpoint.
+	if (JASPControl * host = resolvedSelectionHost())
+		return host->ownedSelectionVarInfo();	//an ACTIVE host by construction, so non-null
 
-VariableInfo * JASPControl::effectiveVarInfoImpl(const QSet<JASPControl *> & visited, JASPControl ** selectionHost)
-{
-	//Semantic main path: a control that declares WHERE its variables come from (a JASPListControl
-	//through its `source`) resolves there first, so a list keeps following the component it
-	//actually depends on even when its visual parent chain points elsewhere. The chain is
-	//cycle-guarded (visited) and may recurse a few hops before it lands on a host.
-	if (VariableInfo * sourceInfo = sourceVarInfo(visited, selectionHost))
-		return sourceInfo;
-
-	//Provider chain = component chain: the nearest host (self included) that holds an active
-	//dataset/filter selection serves this control, so two forms of one analysis can look at two
-	//datasets at the same time. Hosts without a selection hand out nothing and the walk continues
-	//up to the AnalysisForm's VariableInfo (analysis filter, else shown filter) - which is exactly
-	//how every non-aware analysis has always worked.
-	QSet<JASPControl *> seen = visited;		//the walk must not loop back into a source that led here
-	seen.insert(this);
-
-	for (JASPControl * control = this; control; control = qobject_cast<JASPControl *>(control->parentItem()))
-	{
-		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
-		{
-			//this host IS where this control's variables come from: report it (and not the control
-			//that happens to sit below it) so the bindTo order can be derived from the resolution
-			if (selectionHost)
-				*selectionHost = control;
-			return varInfo;
-		}
-
-		//a list control met on the way up may itself draw from another form's source
-		if (control != this && !seen.contains(control))
-		{
-			seen.insert(control);
-			if (VariableInfo * ancestorSource = control->sourceVarInfo(seen, selectionHost))
-				return ancestorSource;
-		}
-	}
-
-	//no host anywhere on the chain: the analysis-wide VariableInfo serves this control, and that is
-	//not a selection dependency (the analysis filter is in place long before any control binds)
 	return form() ? form()->varInfo() : nullptr;
-}
-
-JASPControl * JASPControl::selectionHost()
-{
-	JASPControl * host = nullptr;
-	effectiveVarInfoImpl(QSet<JASPControl *>(), &host);
-	return host;
 }
 
 JASPControl * JASPControl::selectionDependency()
 {
-	JASPControl * host = selectionHost();
+	JASPControl * host = resolvedSelectionHost();
 	if (!host || host == this)			//a host's own selection is not a dependency on itself
 		return nullptr;
 
@@ -1024,62 +983,9 @@ bool JASPControl::dependsOnForTest(const QString & controlName) const
 	return other && _depends.count(other) > 0;
 }
 
-Filter * JASPControl::effectiveSelectionFilter()
-{
-	VariableInfo * varInfo = effectiveVarInfo();
-	return varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
-}
-
 int JASPControl::resolvedSelectionFilterIdForTest()
 {
-	Filter * f = effectiveSelectionFilter();
+	VariableInfo * varInfo = resolvedVarInfo();
+	Filter * f = varInfo ? dynamic_cast<Filter *>(varInfo->provider()) : nullptr;
 	return f ? f->id() : -1;
-}
-
-bool JASPControl::isDataSetSelectionOption() const
-{
-	if (name().isEmpty())
-		return false;
-
-	//the inverse of selectionDependency(): a host on the parent chain whose selection option is
-	//carried by a control named exactly like this one (the nearest host with a selection decides)
-	for (QQuickItem * item = parentItem(); item; item = item->parentItem())
-	{
-		JASPControl * control = qobject_cast<JASPControl *>(item);
-		if (!control)
-			continue;
-
-		const QString option = control->ownedSelectionOptionName();
-		if (!option.isEmpty())
-			return option == name();
-	}
-
-	return false;
-}
-
-VariableInfo * JASPControl::varInfoForItem(QQuickItem * item, AnalysisForm * form)
-{
-	//Same chain as effectiveVarInfo(), but starting from an arbitrary QQuickItem and returning the
-	//VariableInfo instance (not just its provider): a Formula lives in a VariablesForm and must
-	//validate its terms against the dataset THAT form selected, not the analysis-wide one.
-	for (QQuickItem * cur = item; cur; cur = cur->parentItem())
-	{
-		JASPControl * control = qobject_cast<JASPControl *>(cur);
-		if (!control)
-			continue;
-
-		if (VariableInfo * varInfo = control->ownedSelectionVarInfo())
-			return varInfo;
-
-		if (!form)
-			form = control->form();
-	}
-
-	if (!form)
-		return nullptr;
-
-	if (!form->varInfo()->provider() && form->filter())
-		form->varInfo()->setProvider(form->filter());
-
-	return form->varInfo();
 }

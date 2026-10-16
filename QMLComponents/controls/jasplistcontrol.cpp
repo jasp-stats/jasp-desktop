@@ -43,29 +43,39 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 	connect(this, &JASPControl::formIsKnown, this, &JASPListControl::whenFormIsKnown);
 }
 
-VariableInfo *JASPListControl::sourceVarInfo(const QSet<JASPControl *> & visited, JASPControl ** selectionHost)
+JASPListControl * JASPListControl::relatedNamespaceList()
 {
-	if (_sourceItems.isEmpty())
-		return nullptr;
-
-	QSet<JASPControl *> seen = visited;
-	seen.insert(this);
-
-	//A list draws its variables from the control named by `source`; that control's namespace IS
-	//this list's. Resolving through it (its own source, else the selecting host it lives under)
-	//keeps the dependency semantic even if the list is visually reparented elsewhere. Available-
-	//items controls have no source, so the recursion ends at the feeding form. The host the source
-	//resolves through is reported upward (`selectionHost`): it is where *this* list's variables come
-	//from too, so this list must wait for that host's selection to be bound. nullptr when no
-	//source control has resolved (setup timing, or a values-/rSource-driven list): the caller
-	//falls back to the component-chain walk.
+	//The explicit `source:` edge: the first source item that names an actual list control
+	//(mds-plan D4.2, direct read of what the deleted sourceVarInfo followed). nullptr until a
+	//source control resolves (setup timing, or values-/rSource-driven lists).
 	for (SourceItem * sourceItem : _sourceItems)
-	{
-		JASPListControl * sourceControl = sourceItem->sourceListControl();
+		if (JASPListControl * sourceControl = sourceItem->sourceListControl())
+			return sourceControl;
 
-		if (sourceControl && !seen.contains(sourceControl))
-			if (VariableInfo * sourceInfo = sourceControl->effectiveVarInfoImpl(seen, selectionHost))
-				return sourceInfo;
+	return nullptr;
+}
+
+JASPControl * JASPListControl::resolvedSelectionHost()
+{
+	//mds-plan D4.1/D4.2: follow the RELATION chain hop by hop (explicit `source:` first, else the
+	//related available list) until a list is an ACTIVE selection host - it serves its own subtree
+	//and everyone it feeds (C13 host-bound) - or the chain runs out. Keeping the source edge
+	//ahead of the own-host check preserves the old semantic main path: a list that declares
+	//where its variables come from follows that control, dependency over visuals. The deleted
+	//walk's recursion and its `visited` cycle-guard machinery are gone: relations are declared
+	//statically in QML and acyclic, the hop cap only keeps a cyclically-wired (broken) form
+	//from spinning and ends it where the old guard ended too - no host, no dependency, the
+	//analysis-level namespace serves.
+	JASPListControl * list = this;
+
+	for (int hop = 0; hop < 32; ++hop)
+	{
+		JASPListControl * next = list->relatedNamespaceList();
+
+		if (!next)
+			return list->ownedSelectionVarInfo() ? static_cast<JASPControl *>(list) : nullptr;
+
+		list = next;
 	}
 
 	return nullptr;
@@ -76,7 +86,7 @@ void JASPListControl::whenFormIsKnown(AnalysisForm * form)
 	if (!form) return;
 	if (model())
 	{
-		VariableInfo * varInfo = effectiveVarInfo();
+		VariableInfo * varInfo = resolvedVarInfo();
 		if (varInfo) model()->setVarInfo(varInfo);
 	}
 }
@@ -93,7 +103,7 @@ void JASPListControl::setUpModel()
 		// dynamic row-components, which get it via whenFormIsKnown), this is the only place
 		// where it is wired up; without it, e.g. getVariableRealType() would always return
 		// 'unknown', wrongly making every column look like its type was manually changed.
-		VariableInfo * varInfo = effectiveVarInfo();
+		VariableInfo * varInfo = resolvedVarInfo();
 		if (varInfo)
 			model()->setVarInfo(varInfo);
 	}
@@ -464,7 +474,7 @@ bool JASPListControl::checkLevelsConstraints()
 	if ((_minLevels >= 0 || _maxLevels >= 0 || _minNumericLevels >= 0 || _maxNumericLevels >= 0 || noScaleAllowed) && model())
 	{
 		if (!model()->varInfo())
-			model()->setVarInfo(effectiveVarInfo());
+			model()->setVarInfo(resolvedVarInfo());
 		checked = _checkLevelsConstraints();
 	}
 
