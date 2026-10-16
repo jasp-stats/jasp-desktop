@@ -1555,7 +1555,10 @@ void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
 			if (QFile::exists(finalPath))
 				QFile::remove(finalPath);
 
-			QFile::copy(imagePath, finalPath);
+			//Streamed copy: QFile::copy is CopyFile-based and fails against EFS-encrypted session files (jasp-issues#4566)
+			std::string copyError;
+			if (!Utils::copyFileStreamed(imagePath.toStdString(), finalPath.toStdString(), copyError))
+				Log::log() << "Could not save image to '" << finalPath.toStdString() << "': " << copyError << std::endl;
 		}
 	}
 }
@@ -1577,7 +1580,11 @@ void MainWindow::analysisImageSavedHandler(Analysis *analysis)
 
 		if (QFile::exists(finalPath))
 			QFile::remove(finalPath);
-		QFile::copy(imagePath, finalPath);
+
+		//Streamed copy: QFile::copy is CopyFile-based and fails against EFS-encrypted session files (jasp-issues#4566)
+		std::string copyError;
+		if (!Utils::copyFileStreamed(imagePath.toStdString(), finalPath.toStdString(), copyError))
+			Log::log() << "Could not save image to '" << finalPath.toStdString() << "': " << copyError << std::endl;
 	}
 }
 
@@ -1935,7 +1942,12 @@ void MainWindow::fileEventRequestHandler(FileEvent *event)
 		_resultsJsInterface->exportPreviewHTML();
 		_package->setAnalysesData(_analyses->asJson());
 
-		JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_");
+		std::string snapshotError;
+		if (!JASPExporter::createSnapshot(event->isTmp() ? "jasp_autosave_snapshot_" : "jasp_snapshot_", &snapshotError))
+		{
+			event->setComplete(false, tr("Could not prepare the data for saving: %1").arg(tq(snapshotError)));
+			return;
+		}
 
 		_loader->io(event);
 	}
