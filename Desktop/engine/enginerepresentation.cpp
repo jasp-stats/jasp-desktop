@@ -6,6 +6,20 @@
 #include "utils.h"
 #include "log.h"
 
+namespace
+{
+//mds-plan D7.3: stamp the transient `referencedFilterIds` sidecar (the desktop's scan of the
+//run's code) onto a filter/compute request json. The engine consumes it for slice
+//materialization and strips it before anything reaches R (D3.3 doctrine); for legacy requests
+//the set is empty and no member is written at all, keeping the json byte-identical.
+void stampReferencedFilterIds(Json::Value & json, const std::set<int> & referencedFilterIds)
+{
+	if(!referencedFilterIds.empty())
+		for(const int filterId : referencedFilterIds)
+			json["referencedFilterIds"].append(filterId);
+}
+}
+
 EngineRepresentation::EngineRepresentation(size_t channelNumber, QProcess * slaveProcess, QObject * parent)
 	: QObject(parent), _channelNumber(channelNumber)
 {
@@ -375,6 +389,8 @@ void EngineRepresentation::runScriptOnProcess(RFilterStore * filterStore)
 	QString dataFilter = filterStore->script == "" ? "generatedFilter" : filterStore->script;
 	json["filter"] = dataFilter.toStdString();
 
+	stampReferencedFilterIds(json, filterStore->referencedFilterIds);
+
 	Log::log() << "sending filter with requestID " << filterStore->requestId << " to engine" << std::endl;
 
 	sendString(json);
@@ -390,6 +406,8 @@ void EngineRepresentation::runScriptOnProcess(RFilterByNameStore *filterStore)
 	json["name"]			= filterStore->name.toStdString();
 	json["dataSetId"]		= filterStore->dataSetId;
 	json["requestId"]		= filterStore->requestId;
+
+	stampReferencedFilterIds(json, filterStore->referencedFilterIds);
 
 	//Remember which request we sent out: replies for superseded requests (a newer
 	//input change queued another run while this one was in flight) must be dropped,
@@ -525,6 +543,8 @@ void EngineRepresentation::runScriptOnProcess(RComputeColumnStore * computeColum
 	json["columnType"]		= columnTypeToString(computeColumnStore->_columnType);
 	json["dataSetId"]		= computeColumnStore->dataSetId;
 
+	stampReferencedFilterIds(json, computeColumnStore->referencedFilterIds);
+
 	_lastCompColName		= json["columnName"].asString();
 	_lastCompColDataSet		= computeColumnStore->dataSetId;
 
@@ -563,6 +583,8 @@ void EngineRepresentation::runScriptOnProcess(RComputeDataSetStore * computeData
 	json["computeCode"]				= computeDataSetStore->script.toStdString();
 	json["dataSetId"]				= computeDataSetStore->dataSetId;
 	json["defaultInputFilterId"]	= computeDataSetStore->_defaultInputFilterId;
+
+	stampReferencedFilterIds(json, computeDataSetStore->referencedFilterIds);
 
 	_lastCompDataSetId				= computeDataSetStore->dataSetId;
 

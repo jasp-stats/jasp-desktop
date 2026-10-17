@@ -562,6 +562,20 @@ int EngineSync::sendFilter(int dataSetId, const QString & generatedFilter, const
 
 	int requestId = ++_waitingFilterRequestIDCounter;
 	_waitingFilters.emplace_back(new RFilterStore(dataSetId, generatedFilter, filter, requestId));
+
+	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	//doctrine: desktop owns provenance, engine consumes and strips). Both halves of the run's
+	//code are scanned - the hand-written filter and the machine-generated constructor code -
+	//because the D8.1 editors can emit qualified surface forms in either. Unresolvable
+	//references are logged inside the scan and the engine fails the run loudly at run time.
+	std::set<int> & referencedIds = _waitingFilters.back()->referencedFilterIds;
+	if(Workspace::singleton())
+	{
+		referencedIds = Workspace::singleton()->referencedFilterIdsInCode(filter.toStdString());
+		for(const int filterId : Workspace::singleton()->referencedFilterIdsInCode(generatedFilter.toStdString()))
+			referencedIds.insert(filterId);
+	}
+
 	Log::log() << "waiting filter with requestid: " << requestId << " is now:\n" << generatedFilter.toStdString() << "\n" << filter.toStdString() << std::endl;
 
 	return requestId;
@@ -589,7 +603,19 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 	//Unique requestId so the reply can be matched to this request (mirrors the default
 	//filter path): replies for superseded requests are dropped by EngineRepresentation
 	//and must never clear the filter's stale flag.
-	_waitingScripts.push(new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module));
+	RFilterByNameStore * store = new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module);
+
+	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar (D3.3 doctrine: desktop
+	//owns provenance, engine consumes and strips). For a by-name run the code lives inside the
+	//named filter object, so the scan runs over that filter's rFilter here; when the dataset
+	//is not loaded desktop-side the sidecar stays empty and the engine's own re-scan of the
+	//code it loads fails the run loudly instead of guessing.
+	if(Workspace::singleton())
+		if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
+			if(Filter * namedFilter = dataSet->filter(fq(name)))
+				store->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(namedFilter->rFilter());
+
+	_waitingScripts.push(store);
 }
 
 void EngineSync::sendRCode(int dataSetId, const QString & rCode, int requestId, bool whiteListedVersion, QString module)
@@ -615,6 +641,13 @@ void EngineSync::computeColumn(int dataSetId, const QString & columnName, const 
 	}
 
 	_waitingCompCols.push(new RComputeColumnStore(dataSetId, columnName, computeCode, colType));
+
+	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
+	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
+	//resolve them either.
+	if(Workspace::singleton())
+		_waitingCompCols.back()->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(computeCode.toStdString());
 }
 
 void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int defaultInputFilterId)
@@ -635,6 +668,13 @@ void EngineSync::computeDataSet(int dataSetId, const QString & computeCode, int 
 	}
 
 	_waitingCompDataSets.push(new RComputeDataSetStore(dataSetId, computeCode, defaultInputFilterId));
+
+	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar onto the request (D3.3
+	//doctrine: desktop owns provenance, engine consumes and strips). Unresolvable references
+	//are logged inside the scan; the engine fails the run loudly at run time if it cannot
+	//resolve them either.
+	if(Workspace::singleton())
+		_waitingCompDataSets.back()->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(computeCode.toStdString());
 }
 
 void EngineSync::processFilterScript()
