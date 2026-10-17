@@ -193,6 +193,27 @@ public:
 	/// never a substitute for an encoder instance on live paths.
 	static	std::string			tokenForNameInNames(const colTypeMap & names, const std::string & in, const std::string & prefix, const std::string & postfix = "_Encoded");
 
+	/// The pre-multi-dataset encode prefix every released JASP used (the class default from
+	/// before the D<ds>_F<filter> namespaces, mds-plan C15): released .jasp files can still hold
+	/// `JaspColumn_<i>_Encoded` tokens inside PERSISTED results. See decodeJsonLegacyTokens.
+	static constexpr const char * LEGACY_DEFAULT_PREFIX = "JaspColumn_";
+
+	/// mds-plan D5.3: best-effort legacy-prefix result decoder for PRE-EXISTING persisted results.
+	/// Materializes the released namespace - `LEGACY_DEFAULT_PREFIX + <i> + "_Encoded"` over the
+	/// CURRENT dataset column map, same pure mint (mintReverseOf, C1) released JASP minted with -
+	/// and sweeps it through every string value and member name of `json`, replacing hits by the
+	/// bare original name (exactly what the released instance decoder did).
+	///
+	/// READ-SIDE ONLY by construction (the single-writer rule, C4): NOTHING is registered into
+	/// the global decode table, live decoding stays strict-table, and the sweep is applied once
+	/// at file load to stored result trees only (Analyses::createFromJaspFileEntry). The honest
+	/// limitation, loud and clear: the namespace can only be rebuilt from the columns as they
+	/// are NOW - correct exactly when the dataset has not changed since the file was saved.
+	/// Renamed/reordered/deleted columns leave their old tokens RAW (C16) or map to whatever the
+	/// deterministic mint points at now; deleted filters have no bearing (the legacy format had
+	/// none). No grammar parsing (C4): pure mint-index lookup, garbage in, raw out, never a crash.
+	static	void				decodeJsonLegacyTokens(Json::Value & json, const colTypeMap & namesWithTypes);
+
 	/// Scoped replay block of the global decode table (mds-plan D1.7): writes `prefix +
 	/// <mint index of names> + _Encoded -> (name, type)` on construction and, on destruction,
 	/// restores EXACTLY the table contents it found under those keys (undo log, not a blind

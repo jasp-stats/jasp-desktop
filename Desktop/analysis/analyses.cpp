@@ -33,6 +33,9 @@
 #include <json/value.h>
 #include "log.h"
 #include "rpc/jasprpcdispatcher.h"
+#include "data/exporters/jaspexporter.h"	//mds-plan D5.3: jaspArchiveVersion gates the legacy result decode
+#include "columnencoder.h"				//mds-plan D5.3: decodeJsonLegacyTokens
+#include "dataset.h"					//mds-plan D5.3: getColumnTypesMap
 #include "ai/agentstatetracker.h"
 #include <vector>
 
@@ -61,7 +64,7 @@ void Analyses::destroyAllForms()
 }
 
 
-Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel)
+Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel, Version doUpgradeFrom)
 {
 	Log::log() << "Analyses::createFromJaspFileEntry" << std::endl;
 
@@ -77,6 +80,12 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	Modules::UpgradeMsgs		msgs;
 	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
 	Json::Value				&	optionsJson		= analysisData["options"];
+
+	//mds-plan D5.3: released files' stored results can still carry old bare-prefix
+	//`JaspColumn_<i>_Encoded` tokens (C15) - best-effort decode them from the current column
+	//order before the results tree is loaded (and only there: live decoding stays strict-table
+	//and the legacy map registers nowhere, C4; churned/removed columns leave tokens raw, C16).
+	decodeLegacyResultTokens(analysisData, doUpgradeFrom);
 	std::string					title			= analysisData.get("title", "").asString();
 
 	// Reports have no module — create via report constructor, no module resolution needed
@@ -313,7 +322,10 @@ void Analyses::reloadSavedAnalysesJson()
 
 	bool errorFound;
 	std::stringstream errors;
-	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton());
+	//mds-plan D5.3: _tempSave is OUR OWN generated tree (asJson of the live analyses) - it can
+	//never hold legacy bare-prefix tokens, so hand the loader our current archive version and the
+	//legacy decode gate skips it.
+	loadAnalysesFromJaspFileJson(_tempSave["analyses"], _tempSave["meta"], errorFound, errors, RibbonModel::singleton(), JASPExporter::jaspArchiveVersion);
 
 	//applyToAll([](Analysis * a){ a->setBeingTranslated(true); });
 	endResetModel();
@@ -474,7 +486,35 @@ void Analyses::setAnalysesUserData(Json::Value userData)
 	}
 }
 
-void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
+//mds-plan D5.3: the load-time gate for the legacy-prefix result decode (do019Fix-style, see the
+//header). The archive version is what distinguishes released files (bare-prefix tokens possible)
+//from this branch's own output (D-namespaces only): < 7.0.0 (or absent -> major()==0) decodes,
+//7.x skips. The sweep takes the SHOWN dataset's current columns - released files are
+//single-dataset by construction; multi-dataset files are 7.x and never reach this. Best-effort
+//and read-side only either way: ColumnEncoder::decodeJsonLegacyTokens registers nothing, and an
+//unresolvable token (column churned since save) simply stays raw (C15/C16).
+void Analyses::decodeLegacyResultTokens(Json::Value & analysisData, const Version & doUpgradeFrom)
+{
+	if(doUpgradeFrom.major() >= JASPExporter::jaspArchiveVersion.major())
+		return;
+
+	if(!analysisData.isObject() || !analysisData.isMember("results"))
+		return;
+
+	DataSet * ds = DataSetPackage::pkg() ? DataSetPackage::pkg()->dataSet() : nullptr;
+	if(!ds)
+		return;
+
+	const ColumnEncoder::colTypeMap names = ds->getColumnTypesMap();
+	if(names.empty())
+		return;
+
+	ColumnEncoder::decodeJsonLegacyTokens(analysisData["results"], names);
+	Log::log() << "Analyses::decodeLegacyResultTokens: swept stored results against the legacy bare-prefix namespace ("
+	           << names.size() << " columns, file archive " << (doUpgradeFrom.isEmpty() ? std::string("<none>") : doUpgradeFrom.asString()) << ")" << std::endl;
+}
+
+void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom)
 {
 	if (DataSetPackage::pkg()->hasAnalyses())
 	{
@@ -501,11 +541,11 @@ void Analyses::loadAnalysesFromDatasetPackage(bool & errorFound, stringstream & 
 			}
 		}
 
-		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel);
+		loadAnalysesFromJaspFileJson(analysesDataList, meta, errorFound, errorMsg, ribbonModel, doUpgradeFrom);
 	}
 }
 
-void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel)
+void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom)
 {
 	int				corruptAnalyses = 0;
 	stringstream	corruptionStrings;
@@ -517,7 +557,7 @@ void Analyses::loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList
 	{
 		try
 		{
-			createFromJaspFileEntry(analysisData, ribbonModel);
+			createFromJaspFileEntry(analysisData, ribbonModel, doUpgradeFrom);
 		}
 		catch (Modules::ModuleException modProb)
 		{

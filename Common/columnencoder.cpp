@@ -372,6 +372,33 @@ std::string ColumnEncoder::tokenForNameInNames(const colTypeMap & names, const s
 	return "";
 }
 
+//mds-plan D5.3: the best-effort legacy-prefix result decoder - see the header for the contract
+//(read-side only, NOTHING registers into the global table, correct only while the dataset's
+//columns are unchanged since save, everything else stays raw per C16). The map is built from the
+//same pure mint every live block uses (mintReverseOf, C1/D1.7), with the released default prefix;
+//every index resolves to its bare original name, exactly like the released decodeJson did.
+void ColumnEncoder::decodeJsonLegacyTokens(Json::Value & json, const colTypeMap & namesWithTypes)
+{
+	if(!(json.isObject() || json.isArray()) || namesWithTypes.empty())
+		return;
+
+	const std::vector<std::pair<std::string, columnType>> reverse = mintReverseOf(namesWithTypes);
+
+	colMap map;
+	colVec names;
+	names.reserve(reverse.size());
+
+	for(size_t i = 0; i < reverse.size(); ++i)
+	{
+		const std::string token = std::string(LEGACY_DEFAULT_PREFIX) + std::to_string(i) + "_Encoded";
+		map[token]		= reverse[i].first;
+		names.push_back(token);
+	}
+
+	sortVectorBigToSmall(names);
+	replaceAll(json, map, names, true, false);
+}
+
 void ColumnEncoder::buildMint(const colTypeMap & namesWithTypes)
 {
 	_dataSetTypes	= namesWithTypes;

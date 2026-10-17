@@ -2248,7 +2248,10 @@ void MainWindow::populateUIfromDataSet(bool loadAnalyses)
 	_resultsJsInterface->setScrollAtAll(false);
 
 	if (loadAnalyses)
-		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel);
+		//mds-plan D5.3: hand the file's archive version to the analysis loader (do019Fix-style
+		//threading) - it gates the one-time best-effort decode of legacy bare-prefix result
+		//tokens in stored results trees.
+		_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, _ribbonModel, _package->archiveVersion());
 
 	if (_analyses->count() == 1 && !resultXmlCompare::compareResults::theOne()->testMode()) //I do not want to see QML forms in unit test mode to make sure stuff breaks when options are changed
 		(*_analyses)[0]->expandAnalysis(); //Show options for only analysis

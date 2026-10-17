@@ -12,6 +12,7 @@
 #include "data/importers/odsimporter.h"
 #include "data/importers/jaspimporter.h"
 #include "data/exporters/jaspexporter.h"
+#include "analysis/analyses.h"	//mds-plan D5.3: Analyses::decodeLegacyResultTokens (static gate+sweep)
 #include "data/exporters/dataexporter.h"
 #include "data/importers/excelimporter.h"
 #include "data/importers/rdataimporter.h"
@@ -3678,6 +3679,84 @@ void TestAll::testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade()
 	for (const Json::Value & id : plan3.multiDataSetJson["ids"])
 		queued3 << QString::fromStdString(id.asString());
 	QVERIFY(!queued3.contains("999999"));																					//dead scalar stamp queues nothing either
+}
+
+//mds-plan D5.3: the legacy-prefix result decoder. Released .jasp files (archive < 7.0.0) can
+//persist `JaspColumn_<i>_Encoded` tokens inside stored results; at load the shim materializes
+//that namespace from the CURRENT dataset columns (same pure mint, released default prefix) and
+//sweeps the results tree only. Honest limitations, pinned here: unchanged columns decode,
+//indices outside the mint (deleted columns) stay raw (C16), and a churned column set can only
+//ever resolve index-by-index (order changed ⟹ different name or raw - best effort by design,
+//never a crash). Read-side only: nothing registers into the global decode table (C4).
+void TestAll::testLegacyResultTokenDecoder()
+{
+	QVERIFY(_newPkgWithDataSet());
+	DataSet * ds = _pkg->dataSet();
+	QVERIFY(ds);
+
+	const ColumnEncoder::colTypeMap names = ds->getColumnTypesMap();
+	QVERIFY(!names.empty());
+
+	//tokens of the released namespace (class default prefix, no dataset segment - C15):
+	const std::string bareToken	= ColumnEncoder::tokenForNameInNames(names, "contNormal", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string qualToken	= ColumnEncoder::tokenForNameInNames(names, "contNormal.scale", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	QVERIFY2(!bareToken.empty() && !qualToken.empty(), "debug.csv must yield legacy tokens for contNormal");
+	const std::string deadToken	= std::string(ColumnEncoder::LEGACY_DEFAULT_PREFIX) + "999999_Encoded";	//beyond any mint: a column long deleted
+
+	//the current D-shaped token - the legacy sweep must not even look at it (different prefix):
+	const std::string dToken = ColumnEncoder::tokenForNameInNames(names, "contNormal", "JASPColumn_D1_F1_");
+	QVERIFY(!dToken.empty());
+
+	auto resultsTree = [&](const std::string & bare, const std::string & qual, const std::string & dead, const std::string & dshape)
+	{
+		Json::Value entry(Json::objectValue);
+		Json::Value table(Json::objectValue);
+		table["title"]										= "Descriptives of " + bare;		//token embedded in running text
+		table["cells"][0]["content"][0]						= bare;
+		table["cells"][0]["content"][1]						= qual;
+		table["cells"][0]["note"]							= dead;
+		table["cells"][0]["future"]							= dshape;
+		entry["results"][0]									= table;
+		entry["options"]["ignored"]["value"][0]	= bare;										//NOT a results tree - must stay untouched by the results-only sweep
+		return entry;
+	};
+
+	// --- (1) the released-file gate (archive 6.x < 7.0.0) decodes the results tree ----------------
+	Json::Value entry = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entry, Version("6.0.0"));
+
+	QCOMPARE(entry["results"][0]["cells"][0]["content"][0].asString(), std::string("contNormal"));							//bare token -> original name
+	QCOMPARE(entry["results"][0]["cells"][0]["content"][1].asString(), std::string("contNormal"));							//qualified token -> bare name too (released decode semantics)
+	QCOMPARE(entry["results"][0]["title"].asString(), std::string("Descriptives of contNormal"));							//embedded occurrences sweep like the released decodeJson
+	QCOMPARE(entry["results"][0]["cells"][0]["note"].asString(), deadToken);													//outside the mint -> raw (C16)
+	QCOMPARE(entry["results"][0]["cells"][0]["future"].asString(), dToken);													//current-namespace token untouched
+	QCOMPARE(entry["options"]["ignored"]["value"][0].asString(), bareToken);													//and only the results tree is swept
+
+	// --- (2) single-writer rule (C4): the shim materialized NOTHING into the global table ---------
+	QCOMPARE(tq(ColumnEncoder::decode(bareToken)), tq(bareToken));															//live decode stays strict
+	QVERIFY(!ColumnEncoder::shouldDecode(bareToken));
+
+	// --- (3) the gate: this branch's own files (7.x) are never swept --------------------------------
+	Json::Value entryOwn = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entryOwn, JASPExporter::jaspArchiveVersion);
+	QCOMPARE(entryOwn["results"][0]["cells"][0]["content"][0].asString(), bareToken);										//byte-identical, still raw tokens
+	QCOMPARE(entryOwn["results"][0]["cells"][0]["content"][1].asString(), qualToken);
+
+	//an unknown (empty) version predates the archive field: best effort, so it decodes
+	Json::Value entryUnknown = resultsTree(bareToken, qualToken, deadToken, dToken);
+	Analyses::decodeLegacyResultTokens(entryUnknown, Version());
+	QCOMPARE(entryUnknown["results"][0]["cells"][0]["content"][0].asString(), std::string("contNormal"));
+
+	// --- (4) churn: drop a column that sorts BEFORE contNormal - its old token now indexes a
+	//         different mint slot. Best effort means exactly this: never contNormal again (it is
+	//         misattributed to whatever lives there now or raw), and never a crash. The dataset
+	//         must not have changed since save for the decode to be truthful - documented loudly.
+	ColumnEncoder::colTypeMap churned = names;
+	QVERIFY(churned.erase("contBinom") == 1);																				//alphabetically before contNormal
+	Json::Value entryChurned = resultsTree(bareToken, qualToken, deadToken, dToken);
+	ColumnEncoder::decodeJsonLegacyTokens(entryChurned["results"], churned);
+	QVERIFY(entryChurned["results"][0]["cells"][0]["content"][0].asString() != "contNormal");	//the old token no longer truthfully means contNormal
+																																	//reaching this line at all is the no-crash contract.
 }
 
 void TestAll::testLoadFilteredDataFilterFirstProvenance()

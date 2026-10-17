@@ -67,7 +67,7 @@ public:
 	/// sending them over RPC. Add more keys here as needed.
 	static void			stripResults(Json::Value& val);
 
-	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel);
+	Analysis	*	createFromJaspFileEntry(Json::Value analysisData, RibbonModel* ribbonModel, Version doUpgradeFrom = Version());
 	Analysis	*	create(const Json::Value & analysisData, Modules::AnalysisEntry * analysisEntry, size_t id, Analysis::Status status = Analysis::Empty, bool notifyAll = true, const std::string & title = "", const Version & loadedVersion = "", const Json::Value & options = Json::nullValue);
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry)													{ return create(Json::nullValue, analysisEntry, _nextId++);						}
 	Analysis	*	create(Modules::AnalysisEntry * analysisEntry, const Json::Value & options);
@@ -82,8 +82,22 @@ public:
 	bool			allFresh()		const;
 	bool			allFinished()	const;
 	void			setAnalysesUserData(Json::Value userData);
-	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
-	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel);
+	// mds-plan D5.3: `doUpgradeFrom` is the ARCHIVE version of the file being loaded (the
+	// do019Fix/do0961Fix pattern from DataSet::dbLoad, threaded Workspace::dbLoad-style from
+	// DataSetPackage through the analysis-load entry points). It gates the best-effort legacy
+	// bare-prefix result decode (see decodeLegacyResultTokens) - released files (< 7.0.0) can
+	// carry `JaspColumn_<i>_Encoded` tokens in their stored results; files this branch writes
+	// never do, so they skip the sweep. The default Version() (unknown) decodes: a file without
+	// the archive field is older still.
+	void			loadAnalysesFromDatasetPackage(bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom = Version());
+	void			loadAnalysesFromJaspFileJson(const Json::Value & analysesDataList, const Json::Value & meta, bool & errorFound, std::stringstream & errorMsg, RibbonModel * ribbonModel, Version doUpgradeFrom = Version());
+
+	/// mds-plan D5.3: run ColumnEncoder::decodeJsonLegacyTokens (read-side only, NOTHING hits
+	/// the global decode table - live decode stays strict-table, C4) over one file entry's
+	/// stored results tree, gated on the file's archive version as described above. Public for
+	/// the upgrade-path tests; the load wiring calls it from createFromJaspFileEntry for both
+	/// the module and the report branch.
+	static	void	decodeLegacyResultTokens(Json::Value & analysisData, const Version & doUpgradeFrom);
 
 	///Applies function to some or all analyses, if applyThis returns false it stops processing.
 	void		applyToSome(std::function<bool(Analysis *analysis)> applyThis);

@@ -179,6 +179,13 @@ private slots:
 	// crash and never queue a phantom slice.
 	void	testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade();
 
+	// mds-plan D5.3: the legacy bare-prefix result decoder - best-effort read-side shim for
+	// PRE-EXISTING persisted results (released .jasp files can hold JaspColumn_<i>_Encoded
+	// tokens). Unchanged columns decode, churned/removed ones stay raw, current D-tokens are
+	// invisible to it, and NOTHING it materializes registers into the global decode table
+	// (single-writer rule, live decode stays strict-table).
+	void	testLegacyResultTokenDecoder();
+
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy
