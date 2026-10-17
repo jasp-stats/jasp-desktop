@@ -54,6 +54,8 @@ struct ResolvedQualifiedColumn
     columnType	type		= columnType::unknown;	///< the type segment when present (it wins), else the column's current type
 };
 
+struct QualifiedRefOccurrence;	///< defined below; one scanText() hit (byte range + parsed segments)
+
 struct QualifiedColumnRef
 {
     QString dataSetName;	///< dataset TITLE (the user-facing handle, like the selection surface); "" when absent
@@ -75,6 +77,26 @@ struct QualifiedColumnRef
     /// Whole-string parse of one reference (whitespace around separators allowed). False +
     /// ready-to-show `error` on any violation; a bare input parses with only columnName set.
     static bool		parse(const QString & text, QualifiedColumnRef & out, QString & error);
+
+    /// Scan R code text for quoted qualified references (mds-plan D7.3): every occurrence of
+    /// the plan §5 surface form with at least TWO segments ("DS"."Col", "F"."Col", the full
+    /// form, each with its optional ("Type") tail). R comments and single- or double-quoted R
+    /// string literals are skipped wholesale - a surface form inside them is user text, not a
+    /// reference - and the bare production (one quoted segment) IS an R string literal, so a
+    /// bare name is never a reference (the §4 boundary above). The candidate shapes are
+    /// validated by the strict parse() before they count, so the scanner cannot produce an
+    /// occurrence parse() would reject. Positions are byte offsets into `code` (the grammar
+    /// is ASCII-structural, so they are stable); feed them to callers that rewrite the text.
+    static std::vector<QualifiedRefOccurrence>	scanText(const std::string & code);
+};
+
+/// One qualified reference found in code text by QualifiedColumnRef::scanText (mds-plan D7.3):
+/// the byte range [begin, end) it occupies and the parsed segments. Never hand-built.
+struct QualifiedRefOccurrence
+{
+    size_t				begin	= 0;
+    size_t				end		= 0;
+    QualifiedColumnRef	ref;
 };
 
 class Workspace : public DataSetBaseNode
@@ -213,6 +235,19 @@ public slots:
 			///< call just established the reference is NOT in it. Non-const on purpose: like
 			///< filterById it may materialize a named filter of a reopened file.
 			QString								renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type);
+
+			///< mds-plan D7.3: scan R code text (a filter expression, computed-column code,
+			///< computed-dataset code) for qualified references, resolve each against this
+			///< workspace and collect the referenced FILTER ids - the transient
+			///< `referencedFilterIds` request sidecar the filter/compute request builders stamp
+			///< (design doc §3.2/§3.3). Bare names are NOT references here (the context filter's
+			///< own namespace is the callers' C13 fallback, §4 boundary). A reference that does
+			///< not resolve is skipped (it contributes no slice) and reported through
+			///< `firstError`/`firstErrorKind` when given: the engine re-scans the very same code
+			///< at run time and fails the run LOUDLY with the same kind + message, so the
+			///< request side stays passive by design (no crash, no silent fallback - the run
+			///  error surface is the engine's, which is what D7.5's invalidation triggers on).
+			std::set<int>						referencedFilterIdsInCode(const std::string & code, QString * firstError = nullptr, QualifiedRefError * firstErrorKind = nullptr) const;
 
 			Q_INVOKABLE void					setDataSetComputed(const QString & name, bool computed);
 			void					setShownDataSet(QString	  name);

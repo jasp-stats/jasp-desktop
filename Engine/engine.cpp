@@ -307,7 +307,7 @@ void Engine::receiveFilterMessage(const Json::Value & jsonRequest)
 	int filterRequestId			= jsonRequest.get("requestId", -1).asInt();
 	int dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 
-	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId);
+	runDefaultFilter(dataSetId, filter, generatedFilter, filterRequestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
@@ -320,10 +320,10 @@ void Engine::receiveFilterByNameMessage(const Json::Value & jsonRequest)
 	int dataSetId				= jsonRequest.get("dataSetId",	-1).asInt();
 	int requestId				= jsonRequest.get("requestId",	-1).asInt();
 
-	runFilterByName(name, dataSetId, requestId);
+	runFilterByName(name, dataSetId, requestId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId)
+void Engine::runFilterByName(const std::string & name, int dataSetId, int requestId, const std::vector<int> & referencedFilterIds)
 {
 	provideAndUpdateDataSet(dataSetId);
 	
@@ -341,7 +341,10 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	std::string RPossibleWarning;
 	try
 	{
-		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter());
+		//mds-plan D7.3: the run's slice context is the filter being run - its own view encodes
+		//the code (C13, fixed for filter expressions), and the request's referencedFilterIds
+		//sidecar drives the materialization of any referenced foreign slices.
+		filterResult		= rbridge_applyFilter(strippedFilter, localFilter->generatedFilter(), localFilter, referencedFilterIds);
 		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 	}
 	catch(filterException & e)
@@ -367,7 +370,7 @@ void Engine::runFilterByName(const std::string & name, int dataSetId, int reques
 	_engineState = engineState::idle;
 }
 
-void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId)
+void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const std::string & generatedFilter, int filterRequestId, const std::vector<int> & referencedFilterIds)
 {
 	DataSet		*	dataSet				= provideAndUpdateDataSet(dataSetId);
 
@@ -381,7 +384,9 @@ void Engine::runDefaultFilter(int dataSetId, const std::string & filter, const s
 	try
 	{		
 		std::string		strippedFilter		= stringUtils::stripRComments(filter);
-		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter);
+		//mds-plan D7.3: the run's slice context is the DEFAULT filter being run (its own view
+		//encodes the code, C13) plus the request's referencedFilterIds sidecar.
+		boolvec			filterResult		= rbridge_applyFilter(strippedFilter, generatedFilter, dataSet->defaultFilter(), referencedFilterIds);
 		std::string		RPossibleWarning	= jaspRCPP_getLastErrorMsg();
 
         Log::log() << "Engine::runDefaultFilter ran:\n\t" << strippedFilter << "\n\tRPossibleWarning='" << RPossibleWarning << "'\n\t\tfor revision " << dataSet->defaultFilter()->revision() << std::endl;
@@ -447,6 +452,26 @@ void Engine::sendFilterByNameDone(const std::string & name, int dataSetId, const
 	filterResponse["requestId"]		= requestId;
 
 	sendString(filterResponse);
+}
+
+std::vector<int> Engine::referencedFilterIdsFromRequest(const Json::Value & jsonRequest)
+{
+	//mds-plan D7.3/C11: the transient `referencedFilterIds` sidecar of a filter/compute
+	//request - the desktop's scan of the run's code (the D7.0a helpers, design doc §3.2).
+	//This extraction IS the strip point for these requests (mirroring D3.3's last-moment
+	//doctrine): the ids are consumed for slice materialization only and are never forwarded
+	//into anything R evaluates - the R-visible code is built by rbridge_prepareSliceRunScript
+	//from the code text alone, and the sidecar member dies with the request json here.
+	std::vector<int> ids;
+
+	const Json::Value & sidecar = jsonRequest.get("referencedFilterIds", Json::Value::null);
+
+	if(sidecar.isArray())
+		for(const Json::Value & id : sidecar)
+			if(id.isInt() || id.isUInt())
+				ids.push_back(id.asInt());
+
+	return ids;
 }
 
 void Engine::receiveRCodeMessage(const Json::Value & jsonRequest)
@@ -555,7 +580,7 @@ void Engine::receiveComputeColumnMessage(const Json::Value & jsonRequest)
 	columnType	computeColumnType = columnTypeFromString(jsonRequest.get("columnType",  "").asString());
 	int			dataSetId		  =						 jsonRequest.get("dataSetId",	-1).asInt();
 
-	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType);
+	runComputeColumn(dataSetId, computeColumnName, computeColumnCode, computeColumnType, referencedFilterIdsFromRequest(jsonRequest));
 }
 
 void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
@@ -569,10 +594,10 @@ void Engine::receiveComputeDataSetMessage(const Json::Value & jsonRequest)
 	int			dataSetId				= jsonRequest.get("dataSetId", -1).asInt();
 	int			defaultInputFilterId	= jsonRequest.get("defaultInputFilterId", -1).asInt();
 
-	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId);
+	runComputeDataSet(dataSetId, computeCode, defaultInputFilterId, referencedFilterIdsFromRequest(jsonRequest));
 }
 
-void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType)
+void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnName, const std::string & computeColumnCode, columnType computeColumnType, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeColumn()" << std::endl;
 
@@ -591,15 +616,26 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	{
 		try
 		{
-			std::string computeColumnNameEnc = ColumnEncoder::columnEncoder()->encode(computeColumnName);
-			
 			Column * compCol = compDataSet->column(computeColumnName);
 			
-			std::string useThisFilter				= compCol ? compCol->computeFilter() : "",
-						computeColumnResultStr		= rbridge_evalRComputedColumn(
+			const std::string useThisFilter = compCol ? compCol->computeFilter() : "";
+			
+			//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the COMPUTE
+			//FILTER's view - the same view the data frame R reads inside
+			//rbridge_evalRComputedColumn, and the namespace bare names in the code fall back
+			//to. The output-name encode uses that same explicit handle; the process-global
+			//current encoder is no longer consulted here. ""/unknown falls back to the default
+			//filter - the same fallback showFilter applies.
+			Filter * computeFilter = compDataSet->filter(useThisFilter.empty() ? DEFAULT_FILTER_NAME : useThisFilter);
+			ColumnEncoder * runView = computeFilter ? computeFilter->columnEncoder() : nullptr;
+			std::string computeColumnNameEnc = runView ? runView->encode(computeColumnName) : ColumnEncoder::columnEncoder()->encode(computeColumnName);
+			
+			std::string computeColumnResultStr		= rbridge_evalRComputedColumn(
 							computeColumnCode, 
 							"toString("+ setColumnFunction.at(computeColumnType) + "('" + computeColumnNameEnc +"', .calcedVals, 1))",
-							useThisFilter);
+							useThisFilter,
+							computeFilter,
+							referencedFilterIds);
 	
 			computeColumnResponse["result"]			= computeColumnResultStr;
 			computeColumnResponse["error"]			= jaspRCPP_getLastErrorMsg();
@@ -621,7 +657,7 @@ void Engine::runComputeColumn(int dataSetId, const std::string & computeColumnNa
 	_engineState = engineState::idle;
 }
 
-void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId)
+void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, int defaultInputFilterId, const std::vector<int> & referencedFilterIds)
 {
 	Log::log() << "Engine::runComputeDataSet()" << std::endl;
 
@@ -662,7 +698,7 @@ void Engine::runComputeDataSet(int dataSetId, const std::string & computeCode, i
 				throw std::runtime_error("Computed dataset (id " + std::to_string(dataSetId) + ") not found in engine's workspace; aborting compute. The output dataset must be synced before it can be filled.");
 			std::string	outputName	= output->name().toStdString();
 
-			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name());
+			std::string computeDataSetResult = rbridge_evalRComputedDataSet(computeCode, outputName, inputFilter->name(), inputFilter, referencedFilterIds);
 
 			computeDataSetResponse["result"]	= computeDataSetResult;
 			computeDataSetResponse["error"]		= jaspRCPP_getLastErrorMsg();

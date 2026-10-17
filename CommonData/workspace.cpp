@@ -1095,6 +1095,188 @@ QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, c
 	return ref.render();
 }
 
+std::vector<QualifiedRefOccurrence> QualifiedColumnRef::scanText(const std::string & code)
+{
+	//mds-plan D7.3: the in-code scanner of the plan §5 surface forms. The grammar is
+	//ASCII-structural (quotes, '.', '(' ')'), so the scan runs on bytes; segment CONTENT may
+	//be any UTF-8 - each candidate's exact byte range is re-parsed by the strict parse()
+	//before it counts, so the scanner and the parser can never disagree about what a
+	//reference is. The D7.0a whitespace tolerance is honored between segments.
+	std::vector<QualifiedRefOccurrence> occurrences;
+
+	const size_t size = code.size();
+	size_t pos = 0;
+
+	auto skipSpaces = [&](size_t & p)
+	{
+		while(p < size && (code[p] == ' ' || code[p] == '\t' || code[p] == '\n' || code[p] == '\r'))
+			++p;
+	};
+
+	//Skip one R string literal (either quote style) starting at `p` (code[p] is the opening
+	//quote); returns the position after the closing quote, or `size` when unterminated. An
+	//escaped anything cannot close the literal.
+	auto skipRStringLiteral = [&](size_t p) -> size_t
+	{
+		const char delim = code[p++];
+		while(p < size)
+		{
+			if(code[p] == '\\')		{ p += 2; continue; }
+			if(code[p] == delim)	return p + 1;
+			++p;
+		}
+		return size;
+	};
+
+	while(pos < size)
+	{
+		const char c = code[pos];
+
+		if(c == '#')	//an R comment: nothing inside it is a reference
+		{
+			while(pos < size && code[pos] != '\n')
+				++pos;
+			continue;
+		}
+
+		if(c != '"' && c != '\'')	{ ++pos; continue; }	//everything else: a candidate can only start at a double quote
+
+		if(c == '\'')
+		{
+			//A single-quoted R string literal: skipped wholesale, exactly like a double-quoted
+			//one - a surface form inside it is user text, not a reference.
+			pos = skipRStringLiteral(pos);
+			continue;
+		}
+
+		//Candidate: quoted segment, then ('.' quoted segment){1,2} and the optional
+		//('("Type")') tail, whitespace tolerated between the pieces.
+		size_t										p			= pos;
+		std::vector<std::pair<size_t, size_t>>		segRanges;	//[begin, end) incl. the quotes
+		bool										valid		= true;
+
+		auto trySegment = [&]() -> bool
+		{
+			if(p >= size || code[p] != '"')
+				return false;
+
+			const size_t segStart = p++;
+
+			while(p < size)
+			{
+				if(code[p] == '\\')			{ if(p + 1 >= size) return false; p += 2; continue; }
+				if(code[p] == '"')			{ segRanges.push_back({segStart, ++p}); return true; }
+				++p;
+			}
+
+			return false; //unterminated
+		};
+
+		if(trySegment())
+			for(;;)
+			{
+				size_t q = p;
+				skipSpaces(q);
+
+				if(q < size && code[q] == '.')
+				{
+					if(segRanges.size() >= 3)	{ valid = false; p = q; break; }	//4 segments: not our grammar, and the rest must not rescan as a shifted ref
+
+					++q;
+					skipSpaces(q);
+					p = q;
+
+					if(!trySegment())			{ valid = false; break; }
+					continue;
+				}
+
+				if(q < size && code[q] == '(')	//the optional type tail - only when it is ("...")
+				{
+					++q;
+					skipSpaces(q);
+
+					if(q < size && code[q] == '"')
+					{
+						p = q;
+						if(!trySegment())		{ valid = false; break; }
+						skipSpaces(p);
+						if(p < size && code[p] == ')')	++p;
+						else							{ valid = false; break; }
+					}
+					//an '(' with no quote behind it belongs to the R code (mean("B"."x")): the
+					//candidate simply ends before it
+				}
+
+				break; //no more continuation
+			}
+		else
+			valid = false;
+
+		if(valid && segRanges.size() >= 2)
+		{
+			QualifiedColumnRef ref;
+			QString error;
+			//The strict parser validates the candidate (escape discipline, type spelling,
+			//segment count); only a parse-accepted >=2-segment shape is a reference.
+			if(QualifiedColumnRef::parse(QString::fromUtf8(code.data() + pos, int(p - pos)), ref, error) && !ref.isBare())
+			{
+				occurrences.push_back({ pos, p, ref });
+				pos = p;
+				continue;
+			}
+		}
+
+		//Not a reference: skip the whole consumed candidate span. For a plain string literal
+		//that is the same as skipping the literal (the bare production IS one); for failed
+		//shapes it matters that the REMAINDER must not rescan as a shifted reference (a
+		//4-segment shape would otherwise degrade into a 3-segment one). On VALID R code this
+		//cannot swallow a real reference: an unescaped '."' after a string's closing quote is
+		//a syntax error in R, so any candidate spanning a string boundary only arises in
+		//already-invalid code - the run fails loudly there either way.
+		pos = p > pos ? p : pos + 1;
+	}
+
+	return occurrences;
+}
+
+std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QString * firstError, QualifiedRefError * firstErrorKind) const
+{
+	std::set<int> filterIds;
+
+	if(firstError)		firstError->clear();
+	if(firstErrorKind)	*firstErrorKind = QualifiedRefError::none;
+
+	for(const QualifiedRefOccurrence & occurrence : QualifiedColumnRef::scanText(code))
+	{
+		ResolvedQualifiedColumn resolved;
+		QString error;
+		const QualifiedRefError kind = resolveQualifiedColumnRef(occurrence.ref, resolved, error);
+
+		if(kind != QualifiedRefError::none)
+		{
+			//Unresolvable here: it contributes no slice, and the omission is logged - never
+			//silent. The engine re-scans the very same code at run time and fails the run
+			//LOUDLY with this kind + message when it still cannot resolve (the D7.5 error
+			//surface; the loud-failure doctrine forbids a silent fallback to nothing).
+			Log::log() << "Workspace::referencedFilterIdsInCode: the reference '" << occurrence.ref.render().toStdString()
+					   << "' does not resolve: " << error.toStdString() << " (contributes no slice; the engine will fail the run loudly if it cannot resolve it at run time either)" << std::endl;
+
+			if(firstErrorKind && *firstErrorKind == QualifiedRefError::none)
+			{
+				*firstErrorKind = kind;
+				if(firstError)
+					*firstError = error;
+			}
+
+			continue;
+		}
+
+		filterIds.insert(resolved.filterId);
+	}
+
+	return filterIds;
+}
+
 bool Workspace::wouldCreateComputedDataSetLoop(DataSet * me, DataSet * target) const
 {
 	std::set<int> visited;

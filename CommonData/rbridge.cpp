@@ -850,9 +850,14 @@ char** rbridge_getLabels(const std::vector<std::string> &levels, size_t &nbLevel
 	return results;
 }
 
-std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode)
+std::string	rbridge_encodeColumnNamesInScript(const std::string & filterCode, ColumnEncoder * sliceEncoder)
 {
-	return ColumnEncoder::columnEncoder()->encodeRScript(filterCode, &filterColumnsUsed);
+	//mds-plan D7.3: slice-aware callers pass the run's OWN filter view (the C13 fallback
+	//namespace of the run - what its bare names mean); nullptr keeps the C7 legacy fallback,
+	//the process-global current encoder, for callers that are not aware (byte-identical to
+	//pre-Phase-7). The found columns land in filterColumnsUsed either way - that set is what
+	//the own data read wants.
+	return (sliceEncoder ? sliceEncoder : ColumnEncoder::columnEncoder())->encodeRScript(filterCode, &filterColumnsUsed);
 }
 
 void rbridge_setupRCodeEnv(int rowCount, const std::string & dataname)
@@ -894,7 +899,213 @@ void rbridge_detachRCodeEnv(const std::string & dataname)
 	jaspRCPP_runScript(detacher.c_str());	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 }
 
-std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode)
+bool rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter, Workspace * workspace, const std::vector<int> & referencedFilterIds, std::string & encodedScript, std::vector<DataBridge::MultiDataSetSlice> & slices, std::string & error)
+{
+	//mds-plan D7.3 (design doc §3.2): the engine-side consumption of a filter/compute run's
+	//code. The desktop scanned this very text at request build (Workspace::
+	//referencedFilterIdsInCode) and stamped the transient `referencedFilterIds` sidecar onto
+	//the request; this function re-scans the code (one shared scanner, so the two sides cannot
+	//disagree about what a reference IS), resolves every reference against the engine's own
+	//workspace, rewrites each surface form into the referenced filter view's token and queues
+	//the slices. The strip discipline (C11, mirroring D3.3's last-moment placement): the
+	//sidecar ids live only in this function's inputs and the queue it produces - the returned
+	//`encodedScript` is what R evaluates, and it carries tokens (the sanctioned
+	//provenance-in-name namespace, C1/C8), never the sidecar, never surface forms.
+	encodedScript.clear();
+	slices.clear();
+	error.clear();
+
+	if(!ownFilter || !ownFilter->data() || !workspace || !ownFilter->columnEncoder())
+	{
+		error = "The run has no slice context to encode its code against (own filter, dataset or encoder missing).";
+		return false;
+	}
+
+	DataSet * ownDataSet	= ownFilter->data();
+	const int ownFilterId	= ownFilter->id();
+
+	//Load every sidecar-referenced dataset once BEFORE resolving: the engine workspace only
+	//skeletonises datasets it has never provided (Workspace::checkForUpdates creates the
+	//DataSet but the first per-dataset checkForUpdates does the actual dbLoad), so a foreign
+	//dataset that no request has touched yet would make every resolution below fail with a
+	//bogus unknownDataSet. Same "load every involved dataset" pass prepareMultiDataSetRun
+	//does before it encodes against the slices.
+	for(const int filterId : referencedFilterIds)
+		if(filterId != ownFilterId)
+		{
+			const int refDataSetId = workspace->db().filterGetDataSetId(filterId);
+
+			if(refDataSetId >= 0)
+				if(DataSet * refDataSet = workspace->dataSetById(refDataSetId))
+					refDataSet->checkForUpdates();
+		}
+
+	std::string worked = code;
+
+	//Per referenced FOREIGN filter: the columns the code references there (name -> the
+	//resolved type, type segment wins). Reverse iteration: the replacements below shift byte
+	//positions, and the occurrences are disjoint and ordered - replacing back to front keeps
+	//every earlier position valid.
+	std::map<int, ColumnEncoder::colsPlusTypes> colsPerForeignFilter;
+
+	//Qualified SELF-references (resolved to the run's own filter) ride the own slice: their
+	//columns must be read into the own data frame even though the bare-name pass below can
+	//never see them (the surface form is rewritten into a token BEFORE that pass runs, and a
+	//token is not a name the encode pass would recognize).
+	ColumnEncoder::colsPlusTypes ownQualifiedCols;
+
+	const std::vector<QualifiedRefOccurrence> occurrences = QualifiedColumnRef::scanText(worked);
+
+	for(auto occurrence = occurrences.rbegin(); occurrence != occurrences.rend(); ++occurrence)
+	{
+		ResolvedQualifiedColumn resolved;
+		QString resolveError;
+		const QualifiedRefError kind = workspace->resolveQualifiedColumnRef(occurrence->ref, resolved, resolveError);
+
+		if(kind != QualifiedRefError::none)
+		{
+			//LOUD (D7.5's error surface): a reference that cannot resolve at run time fails
+			//the run with the D7.0a kind's ready-to-show message - no crash, and no silent
+			//fallback to raw names (those would die in R as an untyped "object not found").
+			error = "The reference " + fq(occurrence->ref.render()) + " in the code does not resolve: " + fq(resolveError);
+			return false;
+		}
+
+		const bool selfReference = resolved.filterId == ownFilterId;
+
+		if(!selfReference && std::find(referencedFilterIds.begin(), referencedFilterIds.end(), resolved.filterId) == referencedFilterIds.end())
+		{
+			//mds-plan C11: the desktop owns provenance - it scanned this code at request build
+			//and stamped the sidecar. A reference outside it means the request is stale (the
+			//code or the workspace changed since the request was queued). Refusing to guess
+			//beats silently evaluating against a slice that was never materialized.
+			error = "The reference " + fq(occurrence->ref.render()) + " resolves to filter " + std::to_string(resolved.filterId)
+					+ ", which this run's request did not list as a referenced slice (stale request?). Trigger the run again to refresh it.";
+			return false;
+		}
+
+		if(selfReference)
+			ownQualifiedCols.insert({ resolved.columnName, resolved.type });
+
+		//Resolve the live filter per use (the D1.2 no-caching landmine).
+		Filter * refFilter = workspace->filterById(resolved.filterId);	//materialises named filters of reopened files
+
+		if(!refFilter || !refFilter->data() || !refFilter->columnEncoder())
+		{
+			error = "The reference " + fq(occurrence->ref.render()) + " resolves to filter " + std::to_string(resolved.filterId) + ", which is no longer available in the engine's workspace.";
+			return false;
+		}
+
+		//The surface form becomes the referenced filter view's unique token (C1: globally
+		//unique by construction). In R it resolves through the attached slice frame - or
+		//through the own data frame for a self-reference (same namespace: the own context IS
+		//the C13 fallback, so a qualified self-reference is just an explicit bare name).
+		const std::string token = refFilter->columnEncoder()->encode(resolved.columnName);
+		worked.replace(occurrence->begin, occurrence->end - occurrence->begin, token);
+
+		if(!selfReference)
+			colsPerForeignFilter[resolved.filterId].insert({ resolved.columnName, resolved.type });
+	}
+
+	//The bare-name pass over the substituted code - through the run's OWN filter view (C13),
+	//never the process-global current encoder - fills filterColumnsUsed for the own read.
+	encodedScript = rbridge_encodeColumnNamesInScript(worked, ownFilter->columnEncoder());
+
+	//The queue: one read-slice per referenced FOREIGN filter, in the sidecar's order (the
+	//desktop scan deduplicated), each with the columns the code references in it.
+	for(const int filterId : referencedFilterIds)
+	{
+		if(filterId == ownFilterId)
+			continue;	//self-references ride the own slice; no foreign frame for them
+
+		const auto cols = colsPerForeignFilter.find(filterId);
+
+		if(cols == colsPerForeignFilter.end())
+			continue;	//the sidecar names it but the code does not reference it (cannot happen on the same text; belt)
+
+		Filter * sliceFilter = workspace->filterById(filterId);
+
+		if(!sliceFilter || !sliceFilter->data())
+		{
+			//A dead slice in the sidecar: the code cannot reference it (that reference failed
+			//resolution above), so skipping is safe - same doctrine as prepareMultiDataSetRun.
+			Log::log() << "rbridge_prepareSliceRunScript: the referenced filter " << filterId << " does not resolve to a dataset anymore; its slice is skipped." << std::endl;
+			continue;
+		}
+
+		slices.push_back({ sliceFilter->data()->id(), filterId, cols->second });
+	}
+
+	//The run's OWN slice, LAST: the setup read pops it, so the own data frame is encoded in
+	//ownFilter's view (design doc §3.1: the output name and the data frame must share the
+	//same namespace). Its wanted columns are exactly what the bare pass found - the same set
+	//the legacy rbridge_readDataSetForFilteringCompCol built from filterColumnsUsed, typed
+	//from the own dataset.
+	ColumnEncoder::colsPlusTypes ownCols;
+
+	for(const std::string & colName : filterColumnsUsed)
+	{
+		if(const Column * column = ownDataSet->column(colName))
+			ownCols.insert({ colName, column->type() });
+		else if(!colName.empty() && colName.find('.') != std::string::npos)
+		{
+			//A "name.type" entry (the legacy wanted-cols contract): keep it with its spelled type.
+			const std::string colNameSansType	= ColumnEncoder::decode(ownFilter->columnEncoder()->encode(colName));
+			const std::string typeSpelling		= colName.size() > colNameSansType.size() + 1 ? colName.substr(colNameSansType.size() + 1) : "";
+
+			if(columnTypeValidName(typeSpelling))
+				ownCols.insert({ colName, columnTypeFromString(typeSpelling) });
+		}
+	}
+
+	//Plus whatever the qualified SELF-references demand (see ownQualifiedCols above).
+	ownCols.insert(ownQualifiedCols.begin(), ownQualifiedCols.end());
+
+	slices.push_back({ ownDataSet->id(), ownFilterId, ownCols });
+
+	return true;
+}
+
+void rbridge_attachReferencedSlices(const std::vector<DataBridge::MultiDataSetSlice> & slices)
+{
+	//mds-plan D7.3 (design doc §3.3): the new producer of slice queues for filter/compute
+	//runs. `slices` (foreign slices first, the run's own last) becomes THE queue that
+	//rbridge_readDataSetRequested's slice handling (unchanged since D1.6) consumes one read
+	//per slice; every FOREIGN slice is attached as its own frame under its slice key so the
+	//foreign tokens resolve on R's search path. The OWN slice stays queued: the setup read
+	//(`.readFilterDatasetToEnd()`/`.readCompColDatasetToEnd()`) pops it, which also re-points
+	//the shown dataset back home after the foreign reads and anchors the legacy R-side encode
+	//indirection at the own view.
+	if(!data_bridge || slices.empty())
+		return;
+
+	data_bridge->setMultiDataSetQueue(slices);
+
+	for(size_t i = 0; i + 1 < slices.size(); ++i)
+	{
+		const std::string frame = "slice_" + std::to_string(slices[i].filterId);
+
+		//A previous aborted run may have left the frame attached; detach it best-effort first
+		//(attach() would otherwise stack a masked version 2 of the same name). NB: the read
+		//entry is called directly (it is registered in the runScript-visible rEnvironment like
+		//.readCompColDatasetToEnd et al.) - .fromRCPP is a jaspBase-namespace function and NOT
+		//reachable from these raw scripts.
+		jaspRCPP_runScript(("try(detach('" + frame + "'), silent=TRUE); "
+							+ frame + " <- .readDataSetRequestedNative(); "
+							+ "attach(" + frame + ");").c_str());
+	}
+}
+
+void rbridge_detachReferencedSlices(const std::vector<DataBridge::MultiDataSetSlice> & slices)
+{
+	if(slices.empty())
+		return;
+
+	for(size_t i = 0; i + 1 < slices.size(); ++i)
+		jaspRCPP_runScript(("try(detach('slice_" + std::to_string(slices[i].filterId) + "'), silent=TRUE);").c_str());
+}
+
+std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std::string & generatedFilterCode, Filter * ownFilter, const std::vector<int> & referencedFilterIds)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
@@ -908,15 +1119,30 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 
 	static std::string errorMsg;
 
-	std::string	concatenated = generatedFilterCode + "\n" + filterCode,
-				filter64	 = "local({" + rbridge_encodeColumnNamesInScript(concatenated) + "})";
+	//mds-plan D7.3: the run's slice context is the filter BEING RUN - plan §4 fixes the filter
+	//expression's bare-name fallback to its own dataset's filter (C13) - so the code encodes
+	//through THAT filter's view, not the process-global current encoder. `ownFilter` is it;
+	//the legacy fallback (nullptr) is the shown filter, which is the same filter on every
+	//caller that shows it first (runFilterByName does).
+	Filter * contextFilter = ownFilter ? ownFilter : rbridge_dataSet->shownFilter();
+
+	std::string								filter64,
+											prepError;
+	std::vector<DataBridge::MultiDataSetSlice>	slices;
+
+	if(!rbridge_prepareSliceRunScript(generatedFilterCode + "\n" + filterCode, contextFilter, data_bridge->workspace(), referencedFilterIds, filter64, slices, prepError))
+		throw filterException(prepError.c_str());	//loud: a reference that does not resolve fails the run (D7.5's error surface)
+
+	filter64 = "local({" + filter64 + "})";
 
 	R_FunctionWhiteList::scriptIsSafe(filter64); //can throw filterExceptions
 
 	bool * arrayPointer = nullptr;
 
+	rbridge_attachReferencedSlices(slices);	//foreign frames attached; the own slice queued for the setup read
 	rbridge_setupRCodeFilterEnv(rowCount);
 	int arrayLength	= jaspRCPP_runFilter(filter64.c_str(), &arrayPointer);
+	rbridge_detachReferencedSlices(slices);
 	rbridge_detachRCodeEnv();
 
 	if(arrayLength < 0)
@@ -949,21 +1175,49 @@ std::vector<bool> rbridge_applyFilter(const std::string & filterCode, const std:
 	return returnThis;
 }
 
-std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
+std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd, Filter * ownFilter, const std::vector<int> & referencedFilterIds)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 	int rowCount	= rbridge_dataSet == nullptr ? 0 : rbridge_dataSet->rowCount();
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64("local({" +rbridge_encodeColumnNamesInScript(rCode) + "})");
+	//mds-plan D7.3 (design decision 6): the encode runs against an EXPLICIT slice context -
+	//the caller's filter, else the shown dataset's shown filter (exactly what
+	//provideAndUpdateDataSet anchored the legacy indirection at) - closing the process-global
+	//side door: this path no longer READS the current encoder, whatever it points at.
+	Filter * contextFilter = ownFilter ? ownFilter : (rbridge_dataSet ? rbridge_dataSet->shownFilter() : nullptr);
+
+	std::string rCode64;
+
+	std::vector<DataBridge::MultiDataSetSlice>	slices;
+
+	if(contextFilter)
+	{
+		std::string prepared,
+					prepError;
+
+		if(!rbridge_prepareSliceRunScript(rCode, contextFilter, data_bridge->workspace(), referencedFilterIds, prepared, slices, prepError))
+		{
+			//Loud (D7.5's error surface): an unresolvable reference fails the eval with the
+			//typed message - never a silent fallback.
+			jaspRCPP_setErrorMsg(prepError.c_str());
+			return "The R code could not be run: " + prepError;
+		}
+
+		rCode64 = "local({" + prepared + "})";
+	}
+	else
+		rCode64 = "local({" + rbridge_encodeColumnNamesInScript(rCode) + "})";	//no dataset at all: nothing to slice, the legacy encode (empty encoder, as before)
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
 	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
 
 
+	rbridge_attachReferencedSlices(slices);
 	rbridge_setupRCodeEnv(rowCount);
 	std::string result = jaspRCPP_evalRCode(rCode64.c_str(), setWd);
+	rbridge_detachReferencedSlices(slices);
 	jaspRCPP_runScript("detach(data)");	//and afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
@@ -972,29 +1226,52 @@ std::string rbridge_evalRCodeWhiteListed(const std::string & rCode, bool setWd)
 }
 
 
-std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc, const std::string & filterToUse)
+std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::string & setColumnFunc, const std::string & filterToUse, Filter * ownFilter, const std::vector<int> & referencedFilterIds)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 	
 	if(!rbridge_dataSet)
 		return "null"; // How would doing a computed column make any sense without data?
 	
-	computedColumnFilter = filterToUse == "" ? "DEFAULT_FILTER" : filterToUse;
+	computedColumnFilter = filterToUse == "" ? DEFAULT_FILTER_NAME : filterToUse;
 	
 	rbridge_dataSet->showFilter(computedColumnFilter);
 
+	//The row count of the run's OWN slice - captured before any referenced slice is
+	//materialized (those reads re-point the shown dataset; the returned boolvec must be this
+	//long, rbridge.cpp's own length check is the O3 loud guardrail for row-mismatched
+	//element-wise foreign references).
 	int rowCount	= rbridge_dataSet->shownFilter()->filteredRowCount();
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(rbridge_encodeColumnNamesInScript(rCode));
+	//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the COMPUTE FILTER - the
+	//caller resolved it (`ownFilter`); the fallback is the filter just shown (the same thing).
+	//The data frame R reads and the output-name encode (Engine::runComputeColumn) use this
+	//same view; the process-global current encoder is no longer consulted on this path.
+	Filter * contextFilter = ownFilter ? ownFilter : rbridge_dataSet->shownFilter();
+
+	std::string								prepared,
+											prepError;
+	std::vector<DataBridge::MultiDataSetSlice>	slices;
+
+	if(!rbridge_prepareSliceRunScript(rCode, contextFilter, data_bridge->workspace(), referencedFilterIds, prepared, slices, prepError))
+	{
+		//Loud (D7.5's error surface): fail the run with the typed message, no silent fallback.
+		computedColumnFilter = "";
+		throw filterException(prepError.c_str());
+	}
+
+	std::string rCode64(prepared);
 	
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
-	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
+	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); computedColumnFilter = ""; return std::string("R code is not safe because of: ") + e.what();	}
 
 
+	rbridge_attachReferencedSlices(slices);
 	rbridge_setupRCodeEnv(rowCount);
 	std::string result = jaspRCPP_evalComputedColumn(rCode64.c_str(), setColumnFunc.c_str());
+	rbridge_detachReferencedSlices(slices);
 	jaspRCPP_runScript("detach(data)");	//a	nd afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());
@@ -1004,7 +1281,7 @@ std::string rbridge_evalRComputedColumn(const std::string &rCode, const std::str
 	return result;
 }
 
-std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse)
+std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse, Filter * ownFilter, const std::vector<int> & referencedFilterIds)
 {
 	rbridge_dataSet = data_bridge->provideAndUpdateDataSet();
 
@@ -1019,10 +1296,28 @@ std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::s
 
 	jaspRCPP_resetErrorMsg();
 
-	std::string rCode64(rbridge_encodeColumnNamesInScript(rCode));
+	//mds-plan D7.3 (C13/design doc §3.1): the run's slice context is the INPUT filter (the
+	//existing defaultInputFilterId dropdown is that anchor); the caller resolved it. Same
+	//explicit-handle discipline as the computed-column path above.
+	Filter * contextFilter = ownFilter ? ownFilter : rbridge_dataSet->shownFilter();
+
+	std::string								prepared,
+											prepError;
+	std::vector<DataBridge::MultiDataSetSlice>	slices;
+
+	if(!rbridge_prepareSliceRunScript(rCode, contextFilter, data_bridge->workspace(), referencedFilterIds, prepared, slices, prepError))
+	{
+		//Loud (D7.5's error surface): fail the run with the typed message, no silent fallback.
+		computedColumnFilter = "";
+		throw filterException(prepError.c_str());
+	}
+
+	std::string rCode64(prepared);
 
 	try							{ R_FunctionWhiteList::scriptIsSafe(rCode64); }
-	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); return std::string("R code is not safe because of: ") + e.what();	}
+	catch(filterException & e)	{ jaspRCPP_setErrorMsg(e.what()); computedColumnFilter = ""; return std::string("R code is not safe because of: ") + e.what();	}
+
+	rbridge_attachReferencedSlices(slices);
 
 	rbridge_setupRCodeEnv(rowCount);
 
@@ -1051,6 +1346,7 @@ std::string rbridge_evalRComputedDataSet(const std::string & rCode, const std::s
 	//jaspRCPP_parseEvalStringReturn only returns a string result (else "null").
 	std::string setDataSetCode = "toString(.setDataSet('" + escapedName + "', .jaspResult))";
 	std::string result = jaspRCPP_evalComputedDataSet(rCode64.c_str(), setDataSetCode.c_str());
+	rbridge_detachReferencedSlices(slices);
 	jaspRCPP_runScript("detach(data)");	//afterwards we make sure it is detached to avoid superfluous messages and possible clobbering of analyses
 
 	jaspRCPP_setErrorMsg(ColumnEncoder::decodeAll(jaspRCPP_getLastErrorMsg()).c_str());

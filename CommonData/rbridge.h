@@ -25,10 +25,14 @@
 
 #include <string>
 #include <functional>
+#include <vector>
 #include "jasprcpp_interface.h"
 #include "columnencoder.h"
+#include "databridge.h"		///< DataBridge::MultiDataSetSlice - the D7.3 slice-queue producer types
 
 class DataBridge;
+class Filter;
+class Workspace;
 
 /// The R Bridge provides functions to the R analyses;
 /// i.e. functions to read the data set from shared memory
@@ -100,10 +104,39 @@ extern "C" {
 	void				freeRBridgeColumnDescription(RBridgeColumnDescription* columns, size_t colMax);
 	void				freeLabels(char** labels, size_t nbLabels);
 
-	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode);
-	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode);
-	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd);
-	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode, const std::string & filterName);
-	std::string			rbridge_evalRComputedDataSet(			const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse);
+	//mds-plan D7.3: the filter/compute entry points take the run's EXPLICIT slice context - the
+	//own filter (whose VIEW encodes the code's bare names, the C13 fallback namespace, and
+	//whose namespace the output name of a computed column encodes in) - and the transient
+	//`referencedFilterIds` sidecar of the request (the desktop's scan of the code, consumed
+	//for slice materialization; never seen by R). nullptr / empty keep the legacy behaviour:
+	//the shown filter's view and no referenced slices, byte-identical to pre-Phase-7.
+	std::vector<bool>	rbridge_applyFilter(					const std::string & filterCode, const std::string & generatedFilterCode, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
+	std::string			rbridge_encodeColumnNamesInScript(		const std::string & filterCode, ColumnEncoder * sliceEncoder = nullptr);
+	std::string			rbridge_evalRCodeWhiteListed(			const std::string & rCode, bool setWd, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
+	std::string			rbridge_evalRComputedColumn(			const std::string & rCode, const std::string & setColumnCode, const std::string & filterName, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
+	std::string			rbridge_evalRComputedDataSet(			const std::string & rCode, const std::string & outputDataSetName, const std::string & filterToUse, Filter * ownFilter = nullptr, const std::vector<int> & referencedFilterIds = {});
+
+	/// mds-plan D7.3 (design doc §3.2): prepare the user R code of a filter/compute run that may
+	/// carry qualified column references (the plan §5 surface forms, scanned by the D7.0a
+	/// helpers). Resolves every reference against `workspace`, rewrites it into the referenced
+	/// filter view's unique token, and collects one read-slice per referenced FOREIGN filter
+	/// (the columns the code references in each) plus the run's OWN slice LAST - the setup read
+	/// pops it, so the own data frame is encoded in the run's own view too (the same view the
+	/// bare names encode in). A self-reference resolves through the own view and queues no
+	/// foreign slice (the own context IS the C13 fallback namespace). Returns false + a
+	/// ready-to-show `error` (the D7.0a kinds; the loud-failure doctrine - D7.5's error
+	/// surface) when a reference does not resolve or names a filter the request did not list
+	/// as a referenced slice. `ownFilter` is the run's own filter (the compute filter / the
+	/// filter being run / the input filter of a computed dataset).
+	bool				rbridge_prepareSliceRunScript(const std::string & code, Filter * ownFilter, Workspace * workspace, const std::vector<int> & referencedFilterIds, std::string & encodedScript, std::vector<DataBridge::MultiDataSetSlice> & slices, std::string & error);
+
+	/// mds-plan D7.3 (design doc §3.3): the new producer of slice queues for filter/compute
+	/// runs - sets `slices` (foreign slices first, the run's own last) as the queue that
+	/// rbridge_readDataSetRequested consumes (its D1.6 slice handling unchanged), and attaches
+	/// every FOREIGN slice as its own frame (`slice_<filterId>`) so the foreign tokens resolve
+	/// on R's search path. The own slice stays queued for the setup read.
+	void				rbridge_attachReferencedSlices(const std::vector<DataBridge::MultiDataSetSlice> & slices);
+	///< Best-effort detach of the frames attached by rbridge_attachReferencedSlices.
+	void				rbridge_detachReferencedSlices(const std::vector<DataBridge::MultiDataSetSlice> & slices);
 	void				rbridge_setLANG(						const std::string & lang);
 #endif // RBRIDGE_H
