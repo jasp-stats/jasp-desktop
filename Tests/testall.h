@@ -170,6 +170,15 @@ private slots:
 	void	testStorageTermShapeAndRoundTrip();
 	void	testApplierAcceptsEngineAndStorageShapes();
 
+	// mds-plan D5.2: NO stamp migration - old released options (plain names, no filterIds
+	// anywhere) must parse to all-`-1` terms and encode end-to-end through the C13 fallbacks
+	// exactly like a non-aware run today (engine walk hits the shown-filter view / current
+	// encoder, queue holds only the analysis' own slice), and a sidecar id that no longer
+	// resolves (a stale/foreign filterId LOADED from the D5.1 Storage format - those survive
+	// restamp by design, landmine D4.x) must degrade through the very same fallback, never
+	// crash and never queue a phantom slice.
+	void	testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade();
+
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy

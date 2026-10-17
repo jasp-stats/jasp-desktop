@@ -3582,7 +3582,6 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	Terms fromStale = parse(stale);
 	QCOMPARE(fromStale.size(), size_t{1});
 	QCOMPARE(fromStale.terms()[0].filterId(), 999999);
-
 	//an explicit null filterId (the QML->Json bridge legacy; generated Storage OMITS instead)
 	//reads as unqualified without disqualifying the shape:
 	Json::Value nullFid(Json::objectValue);
@@ -3593,6 +3592,92 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	QCOMPARE(fromNull.size(), size_t{1});
 	QCOMPARE(fromNull.terms()[0].value().toStdString(), "n");
 	QCOMPARE(fromNull.terms()[0].filterId(), -1);
+}
+
+//mds-plan D5.2: NO stamp migration (C15) - the fallback rules must carry every released file
+//forever, and the D5.1 Storage format must not create a new failure mode when a loaded filterId
+//is stale: the engine-side walk degrades it to the same C7/C13 fallback, never a crash and never
+//a phantom slice (the ids survive restamp - see testApplierAcceptsEngineAndStorageShapes and the
+//qml twin test for the survival half; ListModel restamp ownership is testRestampOwnershipRuleKeepsForeignStamps).
+void TestAll::testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade()
+{
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+	DataSet * a = ws->shownDataSet();
+	QVERIFY(a && a->columnCount() > 0);
+
+	Column * col = a->column("contNormal");
+	QVERIFY2(col && col->type() != columnType::unknown, "debug.csv must contain a typed contNormal");
+	const std::string qualified = col->name() + "." + columnTypeToString(col->type());
+
+	Filter * primaryFilter = a->defaultFilter();
+	QVERIFY(primaryFilter);
+	a->encoder().setCurrentNames(a->getColumnTypesMap());	//remint like provideAndUpdateDataSet would, before minting the expected token
+	ColumnEncoder::setCurrentEncoder(a->shownEncoder());	//the legacy fallback anchor, as provideAndUpdateDataSet would
+	const std::string legacyToken = primaryFilter->columnEncoder()->encode(qualified);
+	QVERIFY2(legacyToken != qualified, "sanity: the token must actually be minted");
+
+	//prepareMultiDataSetRun encodes the tree IN PLACE, so every leg needs a fresh copy of the
+	//released-format option tree: plain names, {value, types}, .meta WITHOUT any provenance keys
+	//and no .filterIds anywhere (exactly what an old file's options generate once the all-`-1`
+	//parse runs through the Engine generator).
+	auto releasedTree = [&col]()
+	{
+		Json::Value released(Json::objectValue);
+		released["dependent"]				= Json::Value(Json::objectValue);
+		released["dependent"]["value"]		= Json::Value(Json::arrayValue);
+		released["dependent"]["value"].append(col->name());
+		released["dependent"]["types"]		= Json::Value(Json::arrayValue);
+		released["dependent"]["types"].append(columnTypeToString(col->type()));
+		released[".meta"]["dependent"]["shouldEncode"] = true;	//no dataSetId/filterId: they never shipped (C15)
+		return released;
+	};
+
+	//one bridge for all legs (per-call construction with the same pid is not the tested pattern)
+	DataBridge bridge(ProcessInfo::currentPID());
+
+	// --- (1) the released tree through the full run preparation: every node inherits the
+	//         resolver's dataset-level fallback (the shown-filter VIEW, per the C13 table).
+	Json::Value released = releasedTree();
+
+	const DataBridge::MultiDataSetRunPlan plan1 = bridge.prepareMultiDataSetRun(released, a->id(), "", "releasedTreeTest");
+
+	//the engine walk reshapes {value,types} into the flat R contract (same read as the D3.3 test):
+	QCOMPARE(QString::fromStdString(released["dependent"][0].asString()), QString::fromStdString(legacyToken));	//encoded through the shown/C7 fallback
+	QVERIFY(!released.isMember(ColumnEncoder::FILTERIDS_MEMBER));															//nothing to strip, nothing appeared
+	QStringList queued1;
+	for (const Json::Value & id : plan1.multiDataSetJson["ids"])
+		queued1 << QString::fromStdString(id.asString());
+	QCOMPARE(queued1, QStringList() << QString::number(primaryFilter->id()));												//own slice only, no phantom
+
+	// --- (2) a LOADED stale stamp reaching the engine (Storage carried x@999999 verbatim, the
+	//         generator emits it positionally): the positional miss must fall back exactly like
+	//         the null position - same token as (1) - and the dead id must not queue a slice.
+	Json::Value staleStamp = releasedTree();
+	staleStamp[".filterIds"]["dependent"].append(999999);	//dead filter id (never existed in this db)
+
+	const DataBridge::MultiDataSetRunPlan plan2 = bridge.prepareMultiDataSetRun(staleStamp, a->id(), "", "deadStampTest");
+
+	QCOMPARE(QString::fromStdString(staleStamp["dependent"][0].asString()), QString::fromStdString(legacyToken));	//C7 fallback, not a crash, not a wrong view
+	QStringList queued2;
+	for (const Json::Value & id : plan2.multiDataSetJson["ids"])
+		queued2 << QString::fromStdString(id.asString());
+	QCOMPARE(queued2, QStringList() << QString::number(primaryFilter->id()));												//the dead id is skipped, no phantom slice
+	QVERIFY(!queued2.contains("999999"));
+
+	// --- (3) a scalar (option-level) dead stamp behaves identically (the combobox/host shape).
+	Json::Value staleScalar = releasedTree();
+	staleScalar[".filterIds"]["dependent"] = 999999;
+
+	const DataBridge::MultiDataSetRunPlan plan3 = bridge.prepareMultiDataSetRun(staleScalar, a->id(), "", "deadScalarTest");
+
+	QCOMPARE(QString::fromStdString(staleScalar["dependent"][0].asString()), QString::fromStdString(legacyToken));
+	QStringList queued3;
+	for (const Json::Value & id : plan3.multiDataSetJson["ids"])
+		queued3 << QString::fromStdString(id.asString());
+	QVERIFY(!queued3.contains("999999"));																					//dead scalar stamp queues nothing either
 }
 
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
