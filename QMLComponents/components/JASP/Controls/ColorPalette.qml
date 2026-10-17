@@ -67,15 +67,17 @@ DropDown
 	indexDefaultValue: 0
 	values:
 	[
-		{ label: qsTr("Colorblind"),		value: "colorblind"		},
-		{ label: qsTr("Colorblind #2"),		value: "colorblind2"	},
-		{ label: qsTr("Colorblind #3"),		value: "colorblind3"	},
-		{ label: qsTr("JASP"),				value: "jaspPalette"			},
-		{ label: qsTr("Viridis"),			value: "viridis"		},
-		{ label: qsTr("ggplot2"),			value: "ggplot2"		},
-		{ label: qsTr("Gray"),				value: "gray"			},
-		{ label: qsTr("Blue"),				value: "blue"			},
-		{ label: qsTr("Sports teams: NBA"),	value: "sportsTeamsNBA"	},
-		{ label: qsTr("Grand Budapest"),	value: "grandBudapest"	}
+		{ label: qsTr("Colorblind #3"),			   value: "colorblind3"	   },
+		{ label: qsTr("Colorblind #4"),			   value: "colorblind4"	   },
+		{ label: qsTr("Viridis"),				   value: "viridis"		   },
+		{ label: qsTr("Inferno"),				   value: "inferno"		   },
+		{ label: qsTr("JASP"),					   value: "jaspPalette"	   },
+		{ label: qsTr("ggplot2"),				   value: "ggplot2"		   },
+		{ label: qsTr("Gray"),					   value: "gray"		   },
+		{ label: qsTr("Blue"),					   value: "blue"		   },
+		{ label: qsTr("Sports teams: NBA"),		   value: "sportsTeamsNBA" },
+		{ label: qsTr("Grand Budapest"),		   value: "grandBudapest"  },
+		{ label: qsTr("deprecated Colorblind"),	   value: "colorblind"	   },
+		{ label: qsTr("deprecated Colorblind #2"), value: "colorblind2"	   }
 	]
 }
