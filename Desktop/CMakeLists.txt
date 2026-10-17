@@ -35,7 +35,6 @@ include(HelpGenerator)
 file(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_LIST_DIR}/*.h")
 file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
-list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/junctionTool/main.cpp")
 list(REMOVE_ITEM SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 
 file(GLOB_RECURSE BUNDLE_RESOURCES "${CMAKE_SOURCE_DIR}/Resources/*")
@@ -90,10 +89,6 @@ if(WINDOWS)
   message(STATUS "We will build the windows app container permission checker")
   add_executable(ContainerFilePermissionChecker "${CMAKE_CURRENT_LIST_DIR}/container_permission_checker/main.cpp")
   add_dependencies(JASP ContainerFilePermissionChecker)
-
-  message(STATUS "We will build the windows junctionTool")
-  add_executable(JunctionTool "${CMAKE_CURRENT_LIST_DIR}/junction_tool/main.cpp")
-  add_dependencies(JASP JunctionTool)
 
   set_target_properties(JASP PROPERTIES OUTPUT_NAME "JASPDesktop") # https://github.com/jasp-stats/jasp-issues/issues/1030
 endif()
@@ -153,6 +148,7 @@ target_link_libraries(
     Qt::WebChannelQuick
     Qt::Svg
     Qt::Network
+    Qt::NetworkAuth
     Qt6::HttpServer
 	#? Qt::PrintSupport
     Qt::Xml
@@ -197,6 +193,40 @@ target_link_libraries(
 	PUBLIC
     JASPDesktopLib
   )
+
+if(APPLE)
+  # Keychain backend in Desktop/auth/secretvault.cpp (SecItemAdd et al.)
+  target_link_libraries(JASPDesktopLib PUBLIC "-framework Security")
+endif()
+
+if(APPLE)
+  # Re-sign the freshly linked JASP binary with a stable identity so the
+  # Keychain (SecretVault) recognises it across rebuilds — the linker's ad-hoc
+  # signature changes on every build, re-prompting for the login password.
+  # SignJasp.cmake resolves the best available identity at build time and
+  # falls back to ad-hoc when none is available, so this never breaks a build.
+  add_custom_command(TARGET JASP POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP")
+
+  # POST_BUILD only runs when the target relinks — a binary last signed by an
+  # environment without the identity (CI, a sandboxed terminal) keeps its
+  # ad-hoc signature through every subsequent no-op build. This always-run
+  # target re-signs on every default ("all") build, so a machine that does
+  # hold the identity repairs a stale ad-hoc signature on the first build.
+  add_custom_target(JaspResign ALL
+    DEPENDS JASP
+    COMMAND ${CMAKE_COMMAND}
+            -DFILE=$<TARGET_FILE:JASP>
+            -DIDENTITY=${APPLE_CODESIGN_IDENTITY}
+            -P ${CMAKE_SOURCE_DIR}/Tools/CMake/SignJasp.cmake
+    VERBATIM
+    COMMENT "------ Signing JASP (always)")
+endif()
 
 target_compile_definitions(JASPDesktopLib PUBLIC JASP_USES_QT_HERE)
 target_compile_definitions(JASP           PUBLIC JASP_USES_QT_HERE)

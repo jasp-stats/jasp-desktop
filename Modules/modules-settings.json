@@ -16,6 +16,7 @@
 		"jaspBfpack",
 		"jaspBsts",
 		"jaspCircular",
+		"jaspClassicalTests",
 		"jaspCochrane",
 		"jaspDistributions",
 		"jaspEquivalenceTTests",
