@@ -124,6 +124,48 @@ FocusScope
 				}
 			}
 
+			Rectangle
+			{
+				id:					nightlyNoticeButton
+				color:				jaspTheme.rose
+				radius:				height / 2
+				height:				unstableNotice.height * 1.5
+				width:				unstableNotice.width  * 1.2
+				visible:			aboutModel.branch !== "stable"
+				z: 					2
+
+				anchors
+				{
+					top:					freshAndFunky.bottom
+					topMargin:				(freshAndFunky.height * 3) - (height)
+					horizontalCenter:		freshAndFunky.horizontalCenter
+				}
+
+				Text
+				{
+					id:						unstableNotice
+					anchors.centerIn:		parent
+					text:					"⚠️ " + qsTr("Notice: This is a preview version for testing purposes only!")
+					font.family:			jaspTheme.font.family
+					font.pixelSize:			openADataFile.font.pixelSize + (unstableNoticeTooltip.containsMouse ? 4 * welcomeRoot.scaler : 0)
+					color:					jaspTheme.black
+					horizontalAlignment:	Text.AlignHCenter
+					verticalAlignment:		Text.AlignVCenter
+					renderType:				Text.QtRendering
+					textFormat:				Text.StyledText
+				}
+
+				JASPMouseAreaToolTipped
+				{
+					id:						unstableNoticeTooltip
+					anchors.fill:			parent
+					hoverEnabled:			true
+					cursorShape:			Qt.PointingHandCursor
+					onClicked:				Qt.openUrlExternally("https://www.jasp-stats.org/download");
+					toolTipText:			qsTr("Click to get final release version")
+				}
+			}
+
 			Component
 			{
 				id:					orangeDot
