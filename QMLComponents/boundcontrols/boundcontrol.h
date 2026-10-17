@@ -49,6 +49,16 @@ public:
 	virtual const Json::Value&			defaultBoundValue()												const	= 0;
 	virtual	void						setDefaultBoundValue(const Json::Value& defaultValue)					= 0;
 
+	///< The shape the NULL-PATH self-rebind round-trips through (mds-plan D6, zoo run 8):
+	/// JASPControl::_setInitialized re-binds an already-initialized control that a delta parse
+	/// left out from `value == null ? <own builder> : value`. For every family that builder is
+	/// the Engine shape and the round-trip is the identity; for the assigned-terms family the
+	/// Engine builder deliberately carries no per-term filterIds (D2.1), so re-binding from it
+	/// erases the terms' provenance stamps (the intake then re-stamps them with the control's
+	/// own host - silently re-routing typed copies D6.2 / host-restamped terms D3.5 onto the
+	/// wrong dataset). Those families re-bind from their Storage shape instead, which the
+	/// applier parses back filterId-included (D5.1, lossless round-trip). Default: Engine.
+	virtual JsonFormat	selfRebindFormat()														const	{ return Engine;				}
 	///< Generate this control's option value in the requested shape (mds-plan D3.1). The default
 	/// is today's createJson() for both formats: BoundControlBase routes the two formats through
 	/// createEngineValue()/createStorageValue() and the families whose stored value is built from

@@ -331,7 +331,12 @@ void DataSet::endBatchedToDB(std::function<void(float)> progressCallback, Column
 
 		//Column names/types have (just) been (re)loaded into this DataSet, so keep our own encoder in
 		//sync; when this dataset is the shown/current one it is what the encoder indirection points at.
-		_encoder->setCurrentNames(getColumnNames());
+		//mds-plan D6 (zoo run 2, codeF): the mint must keep the TYPED triple-per-column shape - a
+		//names-only re-mint here (the shape a fresh import/sync ends with, and startFileSyncing's
+		//immediate doSync() guarantees one after every load) downgrades every view's block to one
+		//slot per column, so a bind-time encodeRScript (rlang/JAGS textareas) mints indexes the
+		//engine's typed mint decodes as a different column entirely.
+		_encoder->setCurrentNames(getColumnTypesMap());
 
 		incRevision(); //Should trigger reload at engine end
 	}
@@ -1803,7 +1808,9 @@ bool DataSet::insertColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, true);
 
-	_encoder->setCurrentNames(getColumnNames());
+	//mds-plan D6: typed re-mint - the new columns carry a type (scale default above), and a
+	//names-only mint here would downgrade every existing column's triple to a single slot.
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
@@ -1831,7 +1838,9 @@ bool DataSet::removeColumns(int column, int count, const QModelIndex &)
 
 	emit datasetChanged(_dataSetId, tq(changed), tq(missingColumns), tq(changeNameColumns), false, false);
 
-	_encoder->setCurrentNames(getColumnNames());
+	//mds-plan D6: the SURVIVING columns keep their types - a names-only re-mint here would
+	//downgrade their triples to single slots (same zoo-driven bug class as endBatchedToDB).
+	_encoder->setCurrentNames(getColumnTypesMap());
 
 	return true;
 }
