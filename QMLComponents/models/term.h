@@ -150,4 +150,46 @@ inline size_t qHash(const Term &term, size_t seed)
 	return hash ^ ::qHash(term._filterId, seed);
 }
 
+///
+/// mds-plan D6.1: the identity of a ROW of a term list for the row-scoped satellite state
+/// (Terms::RelatedValuesPerTerm and ListModel's row-controls map). Those maps used to be keyed
+/// by term.value() — the NAME — so a list holding two rows with the same column behind different
+/// filters (the C9 twins) shared, and silently clobbered, one entry: the second row's children
+/// overwrote the first's, and both rows resolved to the same RowControls object.
+/// TermRowKey is the minimal identity that separates twins — (value, filterId) — while staying
+/// stable over type edits (types are not part of it, like Term::operator==) and over a host
+/// restamp of the OTHER rows. Row lookups go through Terms::relatedValuesForTerm(): exact hit on
+/// (value, filterId), else the (value, -1) entry (the unqualified key the JSON applier writes for
+/// engine-shaped input, which the list stamps with its host on intake — that bind flow must keep
+/// finding the loaded row children), else nothing.
+///
+class TermRowKey
+{
+public:
+	TermRowKey() = default;
+	explicit TermRowKey(const QString & name, int filterId = -1) : _name(name), _filterId(filterId) {}
+
+	///< The key of a row's own term (mds-plan C9 identity: value + the filter it came through).
+	static TermRowKey ofTerm(const Term & term)			{ return TermRowKey(term.value(), term.filterId()); }
+
+	const QString	&	name()		const	{ return _name;		}
+	int					filterId()	const	{ return _filterId;	}
+
+	///< Lookup term for Terms::containsValue(Term)-style identity checks: exact when the key is
+	///  qualified, name-only (the D2.1 wildcard) when filterId is -1. Type never takes part.
+	Term asTerm() const { Term term(_name); term.setFilterId(_filterId); return term; }
+
+	bool operator<(const TermRowKey & other) const
+	{
+		if (_name != other._name)	return _name < other._name;
+		return _filterId < other._filterId;
+	}
+	bool operator==(const TermRowKey & other) const	{ return _name == other._name && _filterId == other._filterId; }
+	bool operator!=(const TermRowKey & other) const	{ return !(*this == other); }
+
+private:
+	QString	_name;
+	int		_filterId	= -1;
+};
+
 #endif // TERM_H

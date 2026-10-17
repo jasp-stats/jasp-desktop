@@ -3419,7 +3419,7 @@ void TestAll::testStorageTermShapeAndRoundTrip()
 	QMap<QString, Json::Value> kids;
 	kids[tq("keep")]	= Json::Value(true);
 	kids[tq("extra")]	= Json::Value("s");
-	related[tq("z")]	= kids;
+	related[TermRowKey(tq("z"), 3)]	= kids;	//mds-plan D6.1: rows key on (value, filterId)
 	Cycle rc = storageCycle(rows, "variable", "", false, true, false, related);
 	QCOMPARE(rc.again.toStyledString(), rc.storage.toStyledString());
 	QCOMPARE(rc.storage["optionKey"].asString(), "variable");
@@ -3571,8 +3571,8 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	Terms fromStorageRow{ storageRows, "variable", "", relatedOut, false, true };
 	QCOMPARE(fromStorageRow.size(), size_t{1});
 	QCOMPARE(fromStorageRow.terms()[0].filterId(), 3);
-	QVERIFY(relatedOut.contains(tq("z")));
-	QCOMPARE(relatedOut[tq("z")][tq("keep")].asBool(), true);		//row children collected as today
+	QVERIFY(relatedOut.contains(TermRowKey(tq("z"), 3)));				//mds-plan D6.1: keyed by the term's row identity (z@3)
+	QCOMPARE(relatedOut[TermRowKey(tq("z"), 3)][tq("keep")].asBool(), true);	//row children collected as today
 
 	//a stale/foreign loaded id is KEPT verbatim (the applier never repairs, never drops it - the
 	//engine-side filterById miss turns it into the C7 fallback at run time, D5.2):
@@ -3593,6 +3593,114 @@ void TestAll::testApplierAcceptsEngineAndStorageShapes()
 	QCOMPARE(fromNull.size(), size_t{1});
 	QCOMPARE(fromNull.terms()[0].value().toStdString(), "n");
 	QCOMPARE(fromNull.terms()[0].filterId(), -1);
+}
+
+//mds-plan D6.1 (Phase-6 landmine, the row-control zoo case): RelatedValuesPerTerm and the row
+//assembly keyed row children by term.value() — the NAME — so same-name rows behind different
+//filters (the C9 twins) shared ONE entry: the second row's children clobbered the first's, in
+//the applier, in getOptions/getStorageOptions and across the save round-trip. Keys are now
+//TermRowKey (value + filterId) with the C13-style lookup Terms::relatedValuesForTerm(): exact hit,
+//else the (name,-1) entry (the applier writes engine-shape input unqualified and the list stamps
+//its host afterwards — that bind flow must keep finding the loaded children), else empty.
+void TestAll::testRelatedValuesPerTermRowKeying()
+{
+	// --- the flagship: twin rows with OWN children through the applier ---------------------------
+	// x@11 keep=true and x@12 keep=false in one storage tree. Pre-fix both landed on the key "x"
+	// and only the LAST row's children survived (silent clobber); the value strings were identical
+	// so even the TERMS dedup risk lurked behind it (strict equality since D2.1 keeps the terms).
+	Json::Value row11(Json::objectValue);
+	row11["variable"]["name"]		= "x";
+	row11["variable"]["types"].append("scale");
+	row11["variable"]["filterId"]	= 11;
+	row11["keep"]					= true;
+	Json::Value row12(Json::objectValue);
+	row12["variable"]["name"]		= "x";
+	row12["variable"]["types"].append("scale");
+	row12["variable"]["filterId"]	= 12;
+	row12["keep"]					= false;
+	Json::Value twinRows(Json::arrayValue);
+	twinRows.append(row11);
+	twinRows.append(row12);
+
+	Terms::RelatedValuesPerTerm applierOut;
+	Terms twins{ twinRows, "variable", "", applierOut, false, true };
+	QCOMPARE(twins.size(), size_t{2});										//both rows parsed
+	QCOMPARE(applierOut.size(), 2);											//and kept SEPARATE - the clobber is gone
+	QCOMPARE(applierOut.value(TermRowKey(tq("x"), 11)).value(tq("keep")).asBool(), true);
+	QCOMPARE(applierOut.value(TermRowKey(tq("x"), 12)).value(tq("keep")).asBool(), false);
+
+	// --- generation: each twin row aggregates its OWN children (engine AND storage shape) --------
+	Json::Value engine = twins.getOptions(applierOut, "variable", "", false, true, false);
+	QCOMPARE(engine["value"].size(), 2u);
+	QCOMPARE(engine["value"][0]["keep"].asBool(), true);
+	QCOMPARE(engine["value"][1]["keep"].asBool(), false);
+	QCOMPARE(engine["value"][0]["variable"][0].asString(), "x");			//Term::toJson keeps the component array (no useValueAndType here)
+	QCOMPARE(engine["value"][1]["variable"][0].asString(), "x");			//same name, different children
+
+	Json::Value storage = twins.getStorageOptions(applierOut, "variable", "", false, true, false);
+	QCOMPARE(storage["value"].size(), 2u);
+	QCOMPARE(storage["value"][0]["keep"].asBool(), true);
+	QCOMPARE(storage["value"][1]["keep"].asBool(), false);
+	QCOMPARE(storage["value"][0]["variable"]["filterId"].asInt(), 11);
+	QCOMPARE(storage["value"][1]["variable"]["filterId"].asInt(), 12);
+
+	//save round-trip stays lossless per row (parse -> regenerate byte-equal):
+	Terms::RelatedValuesPerTerm reparsedRelated;
+	Terms reparsed(storage, "variable", "", reparsedRelated, false, true);
+	Json::Value storageAgain = reparsed.getStorageOptions(reparsedRelated, "variable", "", false, true, false);
+	QCOMPARE(storageAgain.toStyledString(), storage.toStyledString());
+
+	// --- no cross-twin bleed: a stamped term never sees the OTHER twin's children ----------------
+	Term x11(tq("x"), columnType::scale);	x11.setFilterId(11);
+	Term x12(tq("x"), columnType::scale);	x12.setFilterId(12);
+	Terms::RelatedValuesPerTerm only11;
+	QMap<QString, Json::Value> kids11;
+	kids11[tq("keep")] = Json::Value(true);
+	only11[TermRowKey(tq("x"), 11)] = kids11;
+	QCOMPARE(Terms::relatedValuesForTerm(only11, x11).value(tq("keep")).asBool(), true);
+	QVERIFY(Terms::relatedValuesForTerm(only11, x12).isEmpty());			//the (x,12) row gets NOTHING from (x,11)
+
+	// --- the bind flow keeps working: applier wrote (x,-1), the list stamped host 11 --------------
+	// (engine-shape input carries no provenance; ListModel::_setAllowedType stamps after the parse,
+	// so the stamped term must still find the unqualified children through the fallback leg.)
+	Term unq(tq("x"), columnType::scale);
+	Terms::RelatedValuesPerTerm legacySeed;
+	legacySeed[TermRowKey(tq("x"), -1)] = kids11;
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, unq).value(tq("keep")).asBool(), true);		//exact (x,-1) hit
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x11).value(tq("keep")).asBool(), true);		//(x,11) miss -> (x,-1) fallback
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x12).value(tq("keep")).asBool(), true);		//fallback is namespace-blind ONLY for the never-qualified key
+	//an exact key always wins over the fallback:
+	legacySeed[TermRowKey(tq("x"), 12)] = QMap<QString, Json::Value>{{ tq("keep"), Json::Value(false) }};
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x11).value(tq("keep")).asBool(), true);		//x@11 -> (x,-1) = true
+	QCOMPARE(Terms::relatedValuesForTerm(legacySeed, x12).value(tq("keep")).asBool(), false);	//x@12 -> exact = false
+
+	// --- legacy equivalence: same-name rows in one ENGINE tree share the single (x,-1) entry -----
+	//(the wire carries no provenance, C8/C15 - last row wins exactly like the old name key did)
+	Json::Value engineTwins(Json::arrayValue);
+	Json::Value engineRowA(Json::objectValue);	engineRowA["variable"]	= "x";	engineRowA["keep"]	= true;
+	Json::Value engineRowB(Json::objectValue);	engineRowB["variable"]	= "x";	engineRowB["keep"]	= false;
+	engineTwins.append(engineRowA);
+	engineTwins.append(engineRowB);
+	Terms::RelatedValuesPerTerm engineRelated;
+	Terms fromEngine{ engineTwins, "variable", "", engineRelated, false, true };
+	QCOMPARE(engineRelated.size(), 1);										//ONE (x,-1) key, as before the fix
+	QCOMPARE(Terms::relatedValuesForTerm(engineRelated, fromEngine.terms()[0]).value(tq("keep")).asBool(), false);	//last write wins, for BOTH rows
+
+	// --- TermRowKey identity helpers ------------------------------------------------------------
+	QCOMPARE(TermRowKey(tq("x"), 11).asTerm().filterId(), 11);
+	QCOMPARE(TermRowKey(tq("x"), 11).asTerm().value(), tq("x"));
+	QCOMPARE(TermRowKey(tq("x"), -1).asTerm().filterId(), -1);
+	QVERIFY(TermRowKey(tq("x"), -1) != TermRowKey(tq("x"), 11));
+	QVERIFY(TermRowKey(tq("x"), 11) < TermRowKey(tq("x"), 12));				//QMap order: name first, filterId tiebreak
+	QVERIFY(TermRowKey(tq("a"), 99) < TermRowKey(tq("b"), 0));
+
+	//the unqualified-key cleanup rule of setUpRowControls (name wildcard for -1 keys, exact for
+	//qualified ones) holds through Terms::containsValue(asTerm()):
+	Terms model;
+	model.add(x11);
+	QVERIFY(model.containsValue(TermRowKey(tq("x"), 11).asTerm()));			//exact twin present
+	QVERIFY(!model.containsValue(TermRowKey(tq("x"), 12).asTerm()));			//the other twin is NOT present
+	QVERIFY(model.containsValue(TermRowKey(tq("x"), -1).asTerm()));			//-1 key = name wildcard
 }
 
 //mds-plan D5.2: NO stamp migration (C15) - the fallback rules must carry every released file

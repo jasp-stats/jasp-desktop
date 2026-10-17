@@ -42,7 +42,16 @@ class VariableInfoConsumer;
 class Terms
 {
 public:
-	typedef QMap<QString, QMap<QString, Json::Value> >		RelatedValuesPerTerm;
+	///< mds-plan D6.1: row-scoped child values keyed by ROW IDENTITY (value + filterId), not by
+	///  name: same-name rows behind different filters (the C9 twins) keep their own children
+	///  instead of clobbering each other. Read them with relatedValuesForTerm().
+	typedef QMap<TermRowKey, QMap<QString, Json::Value> >	RelatedValuesPerTerm;
+
+	///< The related values of one row (mds-plan D6.1): exact (value, filterId) hit, else the
+	///  (value, -1) entry — the unqualified key the JSON applier writes before the list stamps
+	///  its host onto the term (the bind flow) — else empty. An entry belonging to ANOTHER twin
+	///  is never handed out: that sharing is exactly what this keying removes.
+	static const QMap<QString, Json::Value> &	relatedValuesForTerm(const RelatedValuesPerTerm & values, const Term & term);
 
 	Terms(const QList<QString>								& terms,	Terms *parent = nullptr);
 	Terms(const std::vector<std::vector<std::string> >		& terms,	Terms *parent = nullptr);

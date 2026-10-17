@@ -169,6 +169,7 @@ private slots:
 	// dedupe through a save/reload cycle; strict Term equality since D2.1 makes this real).
 	void	testStorageTermShapeAndRoundTrip();
 	void	testApplierAcceptsEngineAndStorageShapes();
+	void	testRelatedValuesPerTermRowKeying();
 
 	// mds-plan D5.2: NO stamp migration - old released options (plain names, no filterIds
 	// anywhere) must parse to all-`-1` terms and encode end-to-end through the C13 fallbacks

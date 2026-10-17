@@ -289,7 +289,7 @@ bool JASPListControl::hasNativeSource() const
 	return _sourceItems.size() == 1 && _sourceItems[0]->isNativeModel();
 }
 
-bool JASPListControl::addRowControl(const QString &key, JASPControl *control)
+bool JASPListControl::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	return model() ? model()->addRowControl(key, control) : false;
 }

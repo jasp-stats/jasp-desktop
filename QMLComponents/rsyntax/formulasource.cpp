@@ -216,13 +216,13 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 {
 	QString result;
 
-	QMap<QString, RowControls*> allRowControls = _model->getAllRowControls();
+	QMap<TermRowKey, RowControls*> allRowControls = _model->getAllRowControls();	//mds-plan D6.1: row-identity keyed
 	for (const Term& term : terms)
 	{
-		QString key = term.value();
+		const TermRowKey key = TermRowKey::ofTerm(term);
 		if (!allRowControls.contains(key))
 		{
-			Log::log() << "Cannot find key " << key << " in rowControls for RandomEffetcs Source" << std::endl;
+			Log::log() << "Cannot find key " << key.name().toStdString() << "@" << key.filterId() << " in rowControls for RandomEffetcs Source" << std::endl;
 			continue;
 		}
 		RowControls* rowControls = allRowControls[key];
@@ -251,7 +251,7 @@ QString FormulaSource::_generateRandomEffectsTerms(const Terms& terms) const
 				result += " + " + generateInteractionTerms(filteredTerms, componentListModel->getVariableTypes(filteredTerms, true));
 
 			result += (hasCorrelation ? " | " : " || ");
-			result += key;
+			result += key.name();		//mds-plan D6.1: key is a TermRowKey now, the term value is rendered
 			result += ")";
 		}
 	}
@@ -359,7 +359,7 @@ std::pair<Terms, Json::Value> FormulaSource::_onlyTrueTerms(const QString& contr
 	for (const Term& term : terms)
 	{
 		const Json::Value& changedType = changedTypes.size() > i ? changedTypes[i] : Json::nullValue;
-		JASPControl* control = _model->getRowControl(term.value(), controlName);
+		JASPControl* control = _model->getRowControl(TermRowKey::ofTerm(term), controlName);	//mds-plan D6.1: exact row identity
 		BoundControl* boundControl = control ? control->boundControl() : nullptr;
 		if (boundControl && boundControl->boundValue().asBool())	
 		{
@@ -385,26 +385,30 @@ Terms::RelatedValuesPerTerm  FormulaSource::_getTermsFromExtraOptions(const Json
 
 			if (FormulaParser::parse(extraOptionJson["rhs"], false, parsedTerms, error, model()->listView()->resolvedVarInfo()->provider()))
 			{
+				//mds-plan D6.1: RelatedValuesPerTerm keys on row identity now; every term the
+				//formula machinery builds here is freshly parsed (unqualified, filterId -1) and is
+				//read back later by equally unqualified terms, so ofTerm() keeps the exact-hit +
+				//(name,-1)-fallback lookup byte-identical for this flow.
 				for (const Term& parsedTerm : parsedTerms.fixedTerms)
-					extraTermsMap[parsedTerm.value()][extraControlName] = true;
+					extraTermsMap[TermRowKey::ofTerm(parsedTerm)][extraControlName] = true;
 			}
 		}
 		else if (extraOptionJson.isString())
 		{
-				extraTermsMap[tq(extraOptionJson.asString())][extraControlName] = true;
+				extraTermsMap[TermRowKey(tq(extraOptionJson.asString()), -1)][extraControlName] = true;
 		}
 		else if (extraOptionJson.isArray())
 		{
 			for (const Json::Value& jsonTerm : extraOptionJson)
 			{
-				if (jsonTerm.isString()) extraTermsMap[tq(jsonTerm.asString())][extraControlName] = true;
+				if (jsonTerm.isString()) extraTermsMap[TermRowKey(tq(jsonTerm.asString()), -1)][extraControlName] = true;
 				else if (jsonTerm.isArray())
 				{
 					QStringList components;
 					for (const Json::Value& jsonComponent : jsonTerm)
 						if (jsonComponent.isString())
 							components.append(tq(jsonComponent.asString()));
-					extraTermsMap[Term(components).value()][extraControlName] = true;
+					extraTermsMap[TermRowKey::ofTerm(Term(components))][extraControlName] = true;
 				}
 			}
 		}
@@ -648,18 +652,18 @@ FormulaParser::ParsedTerms FormulaSource::_fillOptionsWithRandomTerms(const Form
 		Terms::RelatedValuesPerTerm controlValues;
 		QMap<QString, Json::Value> interceptCheck;
 		interceptCheck[_randomEffects.checkControl] =  randomTerm.intercept;
-		controlValues[interceptTerm] = interceptCheck;
+		controlValues[TermRowKey(interceptTerm, -1)] = interceptCheck;	//mds-plan D6.1: row-identity key (unqualified, read back by the unqualified intercept term)
 
 		for (const Term& fixedTerm : fixedEffectTerms)
 		{
 			variables.add(fixedTerm);
 			QMap<QString, Json::Value> checkValue;
 			checkValue[_randomEffects.checkControl] = randomTerm.terms.containsValue(fixedTerm);
-			controlValues[fixedTerm.value()] = checkValue;
+			controlValues[TermRowKey::ofTerm(fixedTerm)] = checkValue;	//mds-plan D6.1
 		}
 		componentValues[_randomEffects.correlationControl] = randomTerm.correlated;
 		componentValues[_randomEffects.variablesControl] = variables.getOptions(controlValues, fq(_randomEffects.variablesKeyValue), fq(_randomEffects.variablesKeyLabel), true, true, false);
-		randomTermsMap[mainTerm.value()] = componentValues;
+		randomTermsMap[TermRowKey::ofTerm(mainTerm)] = componentValues;	//mds-plan D6.1
 	}
 
 	for (auto sourceMainTermsIt : sourceMainTermsMap)

@@ -241,6 +241,7 @@ void JASPControl::componentComplete()
 			if (!listViewVar.isNull())
 			{
 				_parentListViewKey = context->contextProperty("rowValue").toString();
+				_parentListViewFilterId = context->contextProperty("rowFilterId").toInt();	//mds-plan D6.1: the row's filter identity (twins share a name, never this)
 				connect(parentlistView->model(), &ListModel::keyTermChanged, this, &JASPControl::parentListViewKeyChanged);
 			}
 			else
@@ -253,7 +254,7 @@ void JASPControl::componentComplete()
 
 		// For controls made via row components, wait for all controls to be created before calling the setUp: setUp links the controls together via their sources. So in this case, the rowControls calls the setUp once all the controls are made.
 		if (parentlistView)
-			parentlistView->addRowControl(_parentListViewKey, this);
+			parentlistView->addRowControl(parentRowKey(), this);	//mds-plan D6.1: register under the row's FULL identity
 		else
 		{
 			setUp(); // For controls not made via a row components (as in FactorsForm), setUp must be called

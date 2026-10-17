@@ -206,7 +206,12 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 						if (name != keyValue)
 							controlMap[tq(name)] = *itr;
 					}
-					allControlValues[term.value()] = controlMap;
+					//mds-plan D6.1: keyed by ROW IDENTITY - twin rows parsed from the Storage shape
+					//carry their own filterId (C9) and now keep their OWN children; the -1 stamped
+					//later onto engine-shaped parses stays findable through relatedValuesForTerm()'s
+					//fallback. (Two same-name rows in one ENGINE tree still share the single -1
+					//entry - the wire carries no provenance to tell them apart, C8/C15.)
+					allControlValues[TermRowKey::ofTerm(term)] = controlMap;
 				}
 			}
 
@@ -701,6 +706,30 @@ Json::Value Terms::getValuesOptions() const
 	return options;
 }
 
+//mds-plan D6.1: the row-identity lookup for RelatedValuesPerTerm (see the header). Exact
+//(value, filterId) hit first; a stamped term whose row children were loaded UNQUALIFIED (the
+//JSON applier parses engine-shape input with filterId -1, and ListModel::_setAllowedType stamps
+//the host afterwards - the bind flow must still find them) falls back to that (value, -1) entry.
+//A term never sees a DIFFERENT twin's children: that cross-talk is precisely what the keying fix
+//removes. Unqualified terms keep the historical name-only behavior (their exact key IS (name,-1)).
+const QMap<QString, Json::Value> & Terms::relatedValuesForTerm(const Terms::RelatedValuesPerTerm & values, const Term & term)
+{
+	static const QMap<QString, Json::Value> emptyValues;
+
+	auto found = values.find(TermRowKey::ofTerm(term));
+	if (found != values.end())
+		return found.value();
+
+	if (term.filterId() >= 0)
+	{
+		found = values.find(TermRowKey(term.value(), -1));
+		if (found != values.end())
+			return found.value();
+	}
+
+	return emptyValues;
+}
+
 //mds-plan D3.4: the row-with-related-values assembly lives HERE (the separate
 //getOptionsWithRelatedValues shuffle is deleted; ComponentsList/InputList row builders go
 //through this one serialization too). The row object is the on-demand aggregation of the
@@ -710,9 +739,9 @@ Json::Value Terms::getValuesOptions() const
 //mds-plan D2.1/D5.1: this is the ENGINE serialization (the frozen R contract + the send-time
 //shape): the per-term filterId deliberately does NOT appear here — on the run wire provenance
 //rides the transient `.filterIds` sidecar only (C11), and in the FILE it rides inside the
-//per-term objects of the Storage shape (getStorageOptions below). The related values stay keyed
-//by term.value() (row identity by name): two same-name-different-filter rows sharing row
-//controls is a D6 story, not silently changed here.
+//per-term objects of the Storage shape (getStorageOptions below).
+//mds-plan D6.1: the related values are looked up by ROW IDENTITY (value + filterId, with the
+//-1 fallback), so same-name rows behind different filters each aggregate their OWN children.
 Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType) const
 {
 	Json::Value result(Json::objectValue);
@@ -725,9 +754,7 @@ Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPe
 
 		for (const Term& term : _terms)
 		{
-			QMap<QString, Json::Value> relatedValues;
-			if (relatedValuesPerTerm.contains(term.value()))
-				relatedValues = relatedValuesPerTerm[term.value()];
+			const QMap<QString, Json::Value>& relatedValues = Terms::relatedValuesForTerm(relatedValuesPerTerm, term);
 
 			Json::Value rowValues(Json::objectValue);
 
@@ -780,9 +807,7 @@ Json::Value Terms::getStorageOptions(const Terms::RelatedValuesPerTerm& relatedV
 
 		for (const Term& term : _terms)
 		{
-			QMap<QString, Json::Value> relatedValues;
-			if (relatedValuesPerTerm.contains(term.value()))
-				relatedValues = relatedValuesPerTerm[term.value()];
+			const QMap<QString, Json::Value>& relatedValues = Terms::relatedValuesForTerm(relatedValuesPerTerm, term);	//mds-plan D6.1 row identity, see getOptions
 
 			Json::Value rowValues(Json::objectValue);
 

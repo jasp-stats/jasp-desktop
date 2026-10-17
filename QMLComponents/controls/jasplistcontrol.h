@@ -97,7 +97,10 @@ public:
 			
 
 	Q_INVOKABLE JASPControl		*	getRowControl(const QString& key, const QString& name)	const;
-	virtual	bool					addRowControl(const QString& key, JASPControl* control);
+	///< Exact row-control lookup by row identity (mds-plan D6.1), forwarded to the model.
+	JASPControl				*	getRowControl(const TermRowKey& key, const QString& name)	const;
+	///< Registration key is the creating row's identity (mds-plan D6.1), see ListModel::addRowControl.
+	virtual	bool					addRowControl(const TermRowKey& key, JASPControl* control);
 			bool					hasRowComponent()			const;
 
 			const QString		&	optionKeyValue()			const		{ return _optionKeyValue; }

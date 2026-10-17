@@ -54,6 +54,10 @@ void RowControls::initValues(int row, const Term& key, const QMap<QString, Json:
 	context->setContextProperty("rowLabel", key.label());
 	context->setContextProperty("rowValue", key.value());
 	context->setContextProperty("rowType", columnTypeToQString(key.type()));
+	//mds-plan D6.1: the row's filter identity travels with it: JASPControl composes its
+	//registration key (TermRowKey) from rowValue + rowFilterId, so same-name twin rows register
+	//their controls into their OWN RowControls instead of the first row's.
+	context->setContextProperty("rowFilterId", key.filterId());
 
 
 	_rowObject = qobject_cast<QQuickItem*>(_rowComponent->create(context)); // The _rowJASPControlMap will be filled during this step
@@ -84,6 +88,7 @@ void RowControls::resetValues(int row, const Term &key, const QMap<QString, Json
 	_context->setContextProperty("rowLabel", key.label());
 	_context->setContextProperty("rowValue", key.value());
 	_context->setContextProperty("rowType", columnTypeToQString(key.type()));
+	_context->setContextProperty("rowFilterId", key.filterId());		//mds-plan D6.1, see initValues
 	_context->setContextProperty("isNew", false);
 
 	_setValues(rowValues);

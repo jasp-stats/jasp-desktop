@@ -190,23 +190,23 @@ void ComponentsListBase::resetDefaultValue()
 	if (defaultJson.size() > defaultValuesRows)
 	{
 		const Terms& terms = _termsModel->terms();
-		const QMap<QString, RowControls*>& allRowControls = _termsModel->getAllRowControls();
+		const QMap<TermRowKey, RowControls*>& allRowControls = _termsModel->getAllRowControls();	//mds-plan D6.1: row-identity keyed
 
 		for (uint i = defaultValuesRows; i < defaultJson.size(); i++)
 		{
 			if (terms.size() > i)
 			{
-				const QString& key = terms.at(i).value();
-				RowControls* rowControls = allRowControls[key];
+				const TermRowKey key = TermRowKey::ofTerm(terms.at(i));
+				RowControls* rowControls = allRowControls.value(key);
 				if (!rowControls)
 				{
-					Log::log() << "Cannot find " << key << " in row controls!" << std::endl;
+					Log::log() << "Cannot find " << key.name() << "@" << key.filterId() << " in row controls!" << std::endl;
 					continue;
 				}
 				const QMap<QString, JASPControl*>& controlMap = rowControls->getJASPControlsMap();
 				Json::Value row(Json::objectValue);
 
-				row[fq(_optionKeyValue)] = fq(key);
+				row[fq(_optionKeyValue)] = fq(key.name());
 				for (const QString& controlName : controlMap.keys())
 				{
 					JASPControl* control = controlMap[controlName];
@@ -270,7 +270,7 @@ void ComponentsListBase::bindOffsets()
 {
 	if (_termsModel && _termsModel->rowCount() > 0)
 	{
-		RowControls* row = _termsModel->getRowControls(_termsModel->terms().at(0).value());
+		RowControls* row = _termsModel->getRowControls(TermRowKey::ofTerm(_termsModel->terms().at(0)));	//mds-plan D6.1: exact row identity
 		if (row)
 			for (JASPControl* control : row->getJASPControlsMap().values())
 			{
@@ -298,7 +298,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 	std::vector<int> xOffsets;
 	QMap<QString, int> nameXOffsetMap;
-	QString key = _termsModel->terms().at(0).value();
+	TermRowKey key = TermRowKey::ofTerm(_termsModel->terms().at(0));	//mds-plan D6.1: exact row identity
 	auto rowControls = _termsModel->getAllRowControls();
 	if (!rowControls.contains(key))
 		return result;
@@ -412,11 +412,25 @@ void ComponentsListBase::addItemHandler()
 		{
 			std::string keyString = fq(terms.at(size_t(currentInd)).value());
 			
+			//mds-plan D6.1 (landmine): the row-key entry under optionKeyValue is a plain string in
+			//the ENGINE shape, but the control's own value right after a STORAGE bind (file load -
+			//BoundControlBase::bindTo parks the raw input until the first regeneration) carries the
+			//per-term object {name, filterId?, types}. `.asString()` on a jsoncpp object THROWS, so
+			//reading this blindly was an engine-shape assumption; extract the name from either.
+			auto rowKeyName = [](const Json::Value & keyVal) -> std::string
+			{
+				if (keyVal.isString())
+					return keyVal.asString();
+				if (keyVal.isObject() && keyVal.isMember("name") && keyVal["name"].isString())
+					return keyVal["name"].asString();
+				return std::string();
+			};
+			
 			for (const Json::Value& jsonVal : boundVal)
 			{
 				const Json::Value& keyVal = jsonVal.get(fq(_optionKeyValue), Json::nullValue);
 				
-				if (keyVal.asString() == keyString)
+				if (rowKeyName(keyVal) == keyString)
 				{
 					for (const std::string& member : jsonVal.getMemberNames())
 						jsonValues[tq(member)] = jsonVal.get(member, Json::nullValue);
@@ -427,7 +441,9 @@ void ComponentsListBase::addItemHandler()
 					jsonValues[_optionKeyLabel] = fq(newItemLabel);
 			}
 		}
-		rowValues[newItemValue] = jsonValues;
+		//mds-plan D6.1: the new row is fresh and unqualified, key it (name, -1) - the term gets its
+		//host stamp at intake and Terms::relatedValuesForTerm() finds these values through that key.
+		rowValues[TermRowKey(newItemValue, -1)] = jsonValues;
 	}
 	_termsModel->addTerms(newTerms, -1, rowValues);
 	setCurrentIndex(_termsModel->rowCount() - 1);
@@ -482,7 +498,11 @@ void ComponentsListBase::keyValueChangedHandler(int index, QString newLabel)
 	newLabel = _makeUnique(newLabel, _termsModel->terms().labels(), index);
 	QString newValue = _optionKeyLabel.isEmpty() ? newLabel : term.value();
 
-	_termsModel->changeTerm(index, Term(newValue, newLabel));
+	//mds-plan D6.1: a row rename must not drop the row's provenance - carry the old term's
+	//filterId over (ListModelTermsAssigned::changeTerm moves the row maps to the new key).
+	Term newTerm(newValue, newLabel);
+	newTerm.setFilterId(term.filterId());
+	_termsModel->changeTerm(index, newTerm);
 }
 
 QString ComponentsListBase::_changeLastNumber(const QString &val) const

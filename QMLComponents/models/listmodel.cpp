@@ -236,7 +236,7 @@ void ListModel::_connectSourceControls(SourceItem* sourceItem)
 	for (const QString & controlName : sourceItem->usedControls())
 		for (const Term & term : terms)
 		{
-			JASPControl * control = sourceModel->getRowControl(term.value(), controlName);
+			JASPControl * control = sourceModel->getRowControl(TermRowKey::ofTerm(term), controlName);	//mds-plan D6.1: exact row identity
 			if (control)
 			{
 				BoundControl * boundControl = control->boundControl();
@@ -282,14 +282,19 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 		{
 			if (startRow <= row)
 			{
-				if (!_rowControlsMap.contains(term.value()))
+				//mds-plan D6.1: the map key is the row's IDENTITY (value + filterId): same-name
+				//twins behind different filters get their own RowControls, and each row loads its
+				//own children through Terms::relatedValuesForTerm() (exact key, (name,-1) fallback
+				//for values loaded unqualified before the list stamped its host).
+				const TermRowKey key = TermRowKey::ofTerm(term);
+				if (!_rowControlsMap.contains(key))
 				{
 					RowControls* rowControls = new RowControls(this, _rowComponent);
-					_rowControlsMap[term.value()] = rowControls;
-					rowControls->initValues(row, term, _rowControlsValues[term.value()]);
+					_rowControlsMap[key] = rowControls;
+					rowControls->initValues(row, term, Terms::relatedValuesForTerm(_rowControlsValues, term));
 				}
 				else
-					_rowControlsMap[term.value()]->resetValues(row, term, _rowControlsValues[term.value()]);
+					_rowControlsMap[key]->resetValues(row, term, Terms::relatedValuesForTerm(_rowControlsValues, term));
 			}
 
 			row++;
@@ -297,15 +302,18 @@ void ListModel::setUpRowControls(int startRow, bool onlyRemove)
 	}
 	
 	// Disconnect and delete all controls that are not used anymore
-	QStringList removedKeys;
-	for (const QString& key : _rowControlsMap.keys())
-		if (!terms().containsValue(key))
+	QList<TermRowKey> removedKeys;
+	for (const TermRowKey& key : _rowControlsMap.keys())
+		//mds-plan D6.1: term-aware presence check - a twin key only survives while a term with
+		//that SAME (name, filterId) is still in the list (unqualified keys keep the name-only
+		//wildcard lookup of D2.1).
+		if (!terms().containsValue(key.asTerm()))
 		{
 			_rowControlsMap[key]->disconnectAndDeleteControls();
 			removedKeys.append(key);
 		}
 
-	for (const QString& key : removedKeys)
+	for (const TermRowKey& key : removedKeys)
 		_rowControlsMap.remove(key);
 }
 
@@ -316,7 +324,7 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 	for (const Term& term : _terms)
 	{
 		QMap<QString, Json::Value> componentValues;
-		RowControls* rowControls = _rowControlsMap.value(term.value());
+		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	//mds-plan D6.1: exact row identity
 		if (rowControls)
 		{
 			const QMap<QString, JASPControl*>& controlsMap = rowControls->getJASPControlsMap();
@@ -331,28 +339,49 @@ Terms::RelatedValuesPerTerm ListModel::getTermsWithComponentValues() const
 			}
 		}
 
-		result[term.value()] = componentValues;
+		result[TermRowKey::ofTerm(term)] = componentValues;
 	}
 
 	return result;
 }
 
+RowControls *ListModel::getRowControls(const QString &key) const
+{
+	//mds-plan D6.1: name-only access resolves through the model, first row term carrying that
+	//name wins (the legacy single-entry-per-name behavior); twins are reached exactly via the
+	//TermRowKey overload.
+	for (const Term& term : _terms)
+		if (term.value() == key)
+			return _rowControlsMap.value(TermRowKey::ofTerm(term));
+
+	return nullptr;
+}
+
 JASPControl *ListModel::getRowControl(const QString &key, const QString &name) const
 {
-	JASPControl* control = nullptr;
+	//mds-plan D6.1: see getRowControls(const QString&) - name lookup lands on the first row of
+	//that name, the TermRowKey overload is the exact one.
+	for (const Term& term : _terms)
+		if (term.value() == key)
+			return getRowControl(TermRowKey::ofTerm(term), name);
 
+	return nullptr;
+}
+
+JASPControl *ListModel::getRowControl(const TermRowKey &key, const QString &name) const
+{
 	RowControls* rowControls = _rowControlsMap.value(key);
 	if (rowControls)
 	{
 		const QMap<QString, JASPControl*>& controls = rowControls->getJASPControlsMap();
 		if (controls.contains(name))
-			control = controls[name];
+			return controls[name];
 	}
 
-	return control;
+	return nullptr;
 }
 
-bool ListModel::addRowControl(const QString &key, JASPControl *control)
+bool ListModel::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	return _rowControlsMap.contains(key) ? _rowControlsMap[key]->addJASPControl(control) : false;
 }
@@ -618,8 +647,9 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
 
 	case ListModel::RowComponentRole:
 	{
-		QString termStr = term.value();
-		return _rowControlsMap.contains(termStr) ? QVariant::fromValue(_rowControlsMap[termStr]->getRowObject()) : QVariant();
+		//mds-plan D6.1: exact row identity, so twin rows each hand out their own row object
+		RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));
+		return rowControls ? QVariant::fromValue(rowControls->getRowObject()) : QVariant();
 	}
 		
 	case ListModel::ColumnPreviewRole:
@@ -679,7 +709,7 @@ Terms ListModel::filterTerms(const Terms& terms, const QStringList& filters)
 		Terms controlTerms;
 		for (const Term& term : result)
 		{
-			RowControls* rowControls = _rowControlsMap.value(term.value());
+			RowControls* rowControls = _rowControlsMap.value(TermRowKey::ofTerm(term));	//mds-plan D6.1: exact row identity
 			if (rowControls)
 			{
 				JASPControl* control = rowControls->getJASPControl(useThisControl);

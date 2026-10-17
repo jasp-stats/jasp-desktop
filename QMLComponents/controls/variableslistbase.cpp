@@ -183,7 +183,7 @@ void VariablesListBase::setUpModel()
 	JASPListControl::setUpModel();
 }
 
-bool VariablesListBase::addRowControl(const QString &key, JASPControl *control)
+bool VariablesListBase::addRowControl(const TermRowKey &key, JASPControl *control)
 {
 	bool result = JASPListControl::addRowControl(key, control);
 
@@ -311,7 +311,9 @@ ListModel *VariablesListBase::getRelatedModel()
 		QString relatedName = dropKeys()[0]; // The first key gives the default drop item.
 		if (_parentListView)
 		{
-			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(_parentListViewKey, relatedName));
+			//mds-plan D6.1: this list's own row identity selects the RowControls - a bare name
+			//would land on the first twin's row, not necessarily this one's.
+			JASPListControl* relatedControl = qobject_cast<JASPListControl*>(_parentListView->model()->getRowControl(parentRowKey(), relatedName));
 			if (relatedControl)
 				result = relatedControl->model();
 		}
@@ -446,13 +448,16 @@ void VariablesListBase::interactionHighOrderHandler(JASPControl* checkBoxControl
 	Term keyTerm = Term::readTerm(checkBoxControl->parentListViewKey());
 	for (const Term& otherTerm : _draggableModel->terms())
 	{
-		//row identity is the name-based value (the row controls map keys on it); comparing Term
-		//objects here would use the strict identity incl. filterId (mds-plan C9) and the freshly
-		//parsed keyTerm is unqualified, so the self-skip would silently stop firing:
+		//the self-skip compares row VALUES on purpose (mds-plan D2.1): keyTerm is parsed from
+		//the checkbox's rowValue string and is unqualified, so comparing Term objects would use
+		//the strict identity incl. filterId (C9) and the skip would silently stop firing. (The
+		//row CONTROLS lookup below is exact-row-keyed since mds-plan D6.1.)
 		if (otherTerm.value() == keyTerm.value())
 			continue;
 
-		RowControls* rowControls = _draggableModel->getRowControls(otherTerm.value());
+		//mds-plan D6.1: the row controls map keys on row identity, so the lookup uses the model
+		//term's own TermRowKey.
+		RowControls* rowControls = _draggableModel->getRowControls(TermRowKey::ofTerm(otherTerm));
 		if (!rowControls) continue; // Apparently the controls are not created yet for this row. Does not matter: this function will be called when they are created
 		CheckBoxBase* otherCheckBox = qobject_cast<CheckBoxBase*>(rowControls->getJASPControl(_interactionHighOrderCheckBox));
 		bool otherChecked = otherCheckBox->checked();

@@ -56,7 +56,9 @@ public:
 		VirtualRole,
 		DeletableRole
     };
-	typedef QMap<QString, RowControls*>							RowControlMap;
+	///< mds-plan D6.1: row controls keyed by ROW IDENTITY (value + filterId), not by name, so
+	///  same-name twin rows behind different filters each get and keep their own controls.
+	typedef QMap<TermRowKey, RowControls*>						RowControlMap;
 
 	ListModel(JASPListControl* listView);
 	
@@ -81,9 +83,20 @@ public:
 	virtual void					setUpRowControls(int startRow = 0, bool onlyRemove = false);
 	const RowControlMap	&			getAllRowControls()												const		{ return _rowControlsMap;				}
 	Terms::RelatedValuesPerTerm		getTermsWithComponentValues()									const;
-	RowControls*					getRowControls(const QString& key)								const		{ return _rowControlsMap.value(key);	}
+	///< Exact row-controls access by row identity (mds-plan D6.1). The QString overload resolves
+	///< the name through the model (first row term with that name) - the legacy name-only API,
+	///< deterministic for twins now.
+	RowControls*					getRowControls(const TermRowKey& key)							const		{ return _rowControlsMap.value(key);	}
+	RowControls*					getRowControls(const QString& key)							const;
 	virtual JASPControl	*			getRowControl(const QString& key, const QString& name)			const;
-	virtual bool					addRowControl(const QString& key, JASPControl* control);
+	///< Exact (name, filterId) row-control lookup (mds-plan D6.1): every C++ caller that holds the
+	///< row's term uses this, so a twin never resolves to the other row's control.
+	virtual JASPControl	*			getRowControl(const TermRowKey& key, const QString& name)			const;
+	///< Registration of a row control into the RowControls that is being (re)built (mds-plan
+	///< D6.1): the key is the creating row's identity (value + filterId, or the tableview's
+	///< per-row index string with filterId -1), never a bare name - name-based registration
+	///< would put a twin row's controls into the first row's set.
+	virtual bool					addRowControl(const TermRowKey& key, JASPControl* control);
 			QStringList				allLevels(const Terms& terms)									const;
 			void					setVariableType(int index, columnType type);
 			columnType				getVariableType(	const QString& name)						const;
@@ -175,7 +188,7 @@ protected:
 			int		_currentSelectionFilterId()							const;
 
 			bool							_needsSource			= true;
-			QMap<QString, RowControls* >	_rowControlsMap;
+			RowControlMap						_rowControlsMap;			//mds-plan D6.1: keyed by row identity (TermRowKey), see getAllRowControls
 			QQmlComponent *					_rowComponent			= nullptr;
 			Terms::RelatedValuesPerTerm		_rowControlsValues;
 			QList<BoundControl *>			_rowControlsConnected;

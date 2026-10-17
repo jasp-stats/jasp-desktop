@@ -6,6 +6,7 @@
 #include <QSet>
 #include "qutils.h"
 #include "columntype.h"
+#include "models/term.h"	//mds-plan D6.1: TermRowKey for parentRowKey()
 
 class AnalysisForm;
 class JASPListControl;
@@ -146,6 +147,11 @@ public:
 	QQuickItem		*	childControlsArea()			const	{ return _childControlsArea;		}
 	JASPListControl	*	parentListView()			const	{ return _parentListView;			}
 	QString				parentListViewKey()			const	{ return _parentListViewKey;		}
+	///< The FULL identity of the row this control was created under (mds-plan D6.1): rowValue +
+	///  the row's filter id (the TermRowKey the model keys its RowControls by - twin rows share a
+	///  name, never a key). For tableview-style rows (context carries only rowIndex) this is the
+	///  index string with filterId -1, i.e. unchanged legacy behavior.
+	TermRowKey			parentRowKey()				const	{ return TermRowKey(_parentListViewKey, _parentListViewFilterId); }
 	QQuickItem		*	innerControl()				const	{ return _innerControl;				}
 	QQuickItem		*	background()				const	{ return _background;				}
 	QQuickItem		*	focusIndicator()			const	{ return _focusIndicator;			}
@@ -341,6 +347,7 @@ protected:
 							_toolTip,
 							_title,
 							_parentListViewKey;
+	int						_parentListViewFilterId	= -1;	///< mds-plan D6.1: filter id of the row this control was created under (rowFilterId context property; -1 for tableview-index rows and non-row controls)
 	bool					_isBound					= true,
 							_indent						= false,
 							_initialized				= false,
