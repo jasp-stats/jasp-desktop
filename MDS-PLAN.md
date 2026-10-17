@@ -179,7 +179,8 @@ These are settled decisions from a full design session (2026-10-14). Each has a 
 
 ### Phase 7 — Data-side slices (⚠ own design note first)
 
-- [ ] **D7.0** **Design doc** (small md, separate commit): attached-`data` model ⟶ generated fully-qualified paths; how multi-slice references inside a filter resolve at run; how easy-mode constructor emits qualified refs. Do not code before this is reviewed.
+- [x] **D7.0** **Design doc** (small md, separate commit): attached-`data` model ⟶ generated fully-qualified paths; how multi-slice references inside a filter resolve at run; how easy-mode constructor emits qualified refs. Do not code before this is reviewed.
+  > NOTE (owner review, 2026-10-17): doc = `mds-data-slices-design.md` (commit 7dd69326a). ALL six recommendations approved. Refinement on Q3 by plan owner: the easy constructors' **output is visible R code** ⟹ emitted code uses the FULL qualified surface form (`"Dataset"."Filter"."Column"("Type")`) for every outward reference — the v1 scope cut limits only what the **picker offers** (own dataset's columns), never what the output may contain. Implementers of D7.1/D7.2/D7.4: picker scope cut ≠ output grammar cut.
 - [ ] **D7.1** `FilterWindow.qml` (easy constructor `:175`, R editor `:315`): **no fallback selection UI** (own DataSet is the fallback **by definition**, C13); add outward multi-slice referencing (qualified-name insertion/autocomplete from other loaded slices; rCode stays raw in storage, `column.cpp:547` unchanged contract).
 - [ ] **D7.2** `ComputeColumnWindow.qml` / `ComputeDataSetPanel.qml`: existing input-filter selection (`ComputeDataSetPanel.qml:109-125`, `defaultInputFilterId`) codified as *the fallback encoder* for bare names; qualified always wins.
 - [ ] **D7.3** Engine: `runFilter`/`runComputedColumn` (`engine.cpp:573-607`) take explicit slice context instead of process-global current (`:592`).
