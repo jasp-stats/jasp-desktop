@@ -288,6 +288,21 @@ bool VariablesListBase::containsInteractions() const
 	return JASPListControl::containsInteractions();
 }
 
+//mds-plan D6.1 (found by the component zoo): declaring dataSetSelectionOption on a list IS the
+//declaration that its values are columns of that namespace (C10 list-as-host) - no available-list
+//or dataset-source relation required for that. JASPListControl::containsVariables() only knows the
+//RELATION routes, so a standalone host-assigned list (the second-source pattern) came out false,
+//which turned encodeValue() off: its values were never encoded and never provenanced into the
+//sidecar - the list selected a dataset its values could not reach. Available lists are unbound
+//(_isBound = false), so for them this only changes the icon/role reads they already had.
+bool VariablesListBase::containsVariables() const
+{
+	if (_hostSelection.selectionAvailable())
+		return true;
+
+	return JASPListControl::containsVariables();
+}
+
 void VariablesListBase::setDropKeys(const QStringList &dropKeys)
 {
 	if (dropKeys != _dropKeys)

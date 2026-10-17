@@ -85,6 +85,17 @@ bool TextAreaBase::containsVariables() const
 	if (_textType == TextType::TextTypeLavaan || _textType == TextType::TextTypeMetaSem)
 		return true;
 
+	//mds-plan D6.1 (the zoo's Rcode textarea with its own host): R-code text references columns -
+	//the control encodes it through the host view at bind time - so declaring a selection on it
+	//must also make the option ENCODE-side visible: encodeValue() gates the transient `.filterIds`
+	//node (BoundControlBase::createFilterIds), and without that node the host's slice is never
+	//queued and the tokens the text carries name a dataframe R never received. Scoped to the
+	//R-code type on purpose: a plain/default TextArea's text is never encoded (whole-string
+	//shouldEncode would be wrong there), and the Source/JAGS/Lavaan-family types already answer
+	//true through their own model/relation routes.
+	if (_hostSelection.selectionAvailable() && _textType == TextType::TextTypeRcode)
+		return true;
+
 	return JASPListControl::containsVariables();
 }
 

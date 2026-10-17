@@ -81,6 +81,11 @@ Item
 			AssignedVariablesList	{ id: srcDriven;	name: "srcDriven";	source: dependentA }
 		}
 
+		// mds-plan D6.2: a fourth host - an ASSIGNED list that hosts a selection of its own (the
+		// second-source pattern the component zoo exercises; the module form does the same
+		// live). Its option is the destination of the cross-host typed-copy test below.
+		AssignedVariablesList		{ id: boundG;		name: "boundG";		dataSetSelectionOption:	"dataSetG" }
+
 		// A TextArea is a host too (R/Lavaan/JAGS editors autocomplete against their own dataset):
 		TextArea
 		{
@@ -254,15 +259,16 @@ Item
 		// disambiguates downstream), and the merged case honestly has no single encoder handle.
 		function test_analysisProvider_aggregatesHostRegistry()
 		{
-			//All three hosts default to the workspace's current filter (test_defaults...): the
+			//All four hosts default to the workspace's current filter (test_defaults...): the
 			//aggregate dedups by FILTER, not by host - one distinct filter, not merged.
 			var ids = jaspForm.analysis.selectionNamespaceFilterIds()
-			compare(ids.length, 1, "three hosts on one filter aggregate to one namespace, got: " + ids)
+			compare(ids.length, 1, "four hosts on one filter aggregate to one namespace, got: " + ids)
 			verify(!jaspForm.analysis.selectionNamespaceIsMerged(), "one distinct filter is not merged")
 
 			var originalA = allVarsA.selectedFilterId
 			var originalB = allVarsB.selectedFilterId
 			var originalTA = rCodeArea.selectedFilterId
+			var originalG = boundG.selectedFilterId
 
 			try
 			{
@@ -293,10 +299,12 @@ Item
 				compare(testInts, 2, "'TestInts' must be visible once per selected filter, got: " + names)
 
 				//...and the merge collapses by itself when the hosts reunite (per-use resolution,
-				//nothing cached): ALL three hosts (the text area included) onto one filter.
+				//nothing cached): ALL four hosts (the text area and the assigned-list host included)
+				//onto one filter.
 				rCodeArea.selectedFilterId = parseInt(firstEntry.value)
 				allVarsB.selectedFilterId = parseInt(firstEntry.value)
 				allVarsA.selectedFilterId = parseInt(firstEntry.value)
+				boundG.selectedFilterId = parseInt(firstEntry.value)
 				wait(20)
 				verify(!jaspForm.analysis.selectionNamespaceIsMerged(),
 						"all hosts back on one filter: single namespace again")
@@ -305,6 +313,7 @@ Item
 				allVarsA.selectedFilterId = originalA	//functions run alphabetically: don't bleed
 				allVarsB.selectedFilterId = originalB
 				rCodeArea.selectedFilterId = originalTA
+				boundG.selectedFilterId = originalG
 				wait(20)
 			}
 		}
@@ -503,6 +512,95 @@ Item
 
 			compare(allVarsB.filterSelectionValues.length, entries.length)
 		}
+
+ 		// mds-plan D6.2: CROSS-HOST bindTo. A typed copy - the generated Storage tree of a list
+ 		// sitting on ANOTHER host's selection, per-term objects carrying the source filterId (the
+ 		// D5.1 file shape is exactly the carrier a save/reload or a control-to-control copy moves
+ 		// around) - bound into boundG, whose OWN selection points at a different dataset. The
+ 		// destination rules must NOT requalify it: the intake guard (ListModel::_setAllowedType,
+ 		// D5.1) stamps only UNQUALIFIED terms, and the restamp walk (D3.5 owns-the-stamp) moves
+ 		// only terms the host owns. So the copy keeps the SOURCE filterId through the bind, is
+ 		// provenanced to the source in the generated sidecar (the engine encodes it through the
+ 		// source's view), and survives a switch of the DESTINATION host unchanged.
+ 		function test_crossHostBindTo_typedCopyKeepsSourceStamp()
+ 		{
+ 			var secondEntry = _entryFor("Second - ")
+ 			var reopenEntry = _entryFor("Second - ReopenMe")
+ 			var firstEntry  = null
+ 			for (var entry of allVarsA.filterSelectionValues)
+ 				if (entry.label.indexOf("Second - ") !== 0)
+ 				{
+ 					firstEntry = entry
+ 					break
+ 				}
+ 			verify(secondEntry !== null && reopenEntry !== null && firstEntry !== null,
+ 					"fixture must offer two filters of 'Second' and one of the first dataset")
+
+ 			var sourceFilter = parseInt(secondEntry.value)	//host A's selection: the copy comes from here
+ 			var destFilter   = parseInt(firstEntry.value)		//boundG's own selection: different dataset
+ 			var destAlt      = parseInt(reopenEntry.value)	//a later switch of the DESTINATION host
+ 			verify(sourceFilter !== destFilter && destAlt !== sourceFilter, "three distinct filters for the three roles")
+
+ 			var originalA = allVarsA.selectedFilterId
+ 			var originalG = boundG.selectedFilterId
+
+ 			try
+ 			{
+ 				//source side: dependentA under host A (a 'Second' filter) gets a column
+ 				allVarsA.selectedFilterId = sourceFilter
+ 				boundG.selectedFilterId   = destFilter
+ 				wait(20)
+ 				jaspForm.setOptions({
+ 					dependentA: { value: ["TestInts"], types: ["scale"] }
+ 				})
+ 				wait(50)
+ 				compare(dependentA.model.termProvenanceForTest().join(","), "TestInts@" + sourceFilter,
+ 						"the source list's term is stamped through host A")
+
+ 				//the typed copy: generated Storage tree carries the source filterId per term
+ 				var storage = JSON.parse(jaspForm.createOptionsJsonAsJson(1))	//format 1 = Storage
+ 				verify(storage.dependentA && storage.dependentA.value && storage.dependentA.value.length === 1,
+ 						"storage shape present for dependentA: " + JSON.stringify(storage.dependentA))
+ 				compare(storage.dependentA.value[0].filterId, sourceFilter,
+ 						"the D5.1 storage term object carries the source filterId (the copy's carrier)")
+
+ 				//bind the copy into boundG - its own host sits on the OTHER dataset:
+ 				jaspForm.setOptions({ boundG: storage.dependentA })
+ 				wait(50)
+
+ 				compare(boundG.selectedFilterId, destFilter, "boundG still holds its OWN selection")
+ 				compare(boundG.model.termProvenanceForTest().join(","), "TestInts@" + sourceFilter,
+ 						"THE FLAGSHIP: the typed copy keeps the SOURCE filterId - the destination host must not requalify it (D5.1 intake guard, only unqualified terms get stamped)")
+
+ 				//the generated sidecar hands the copy to the engine with the SOURCE id (encoding
+ 				//goes through the source filter's VIEW, D3.3 per-term walk):
+ 				var ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
+ 				compare(ids.boundG[0], sourceFilter, "the generated sidecar provenances the copy with the SOURCE filter")
+ 				verify(ids.boundG[0] !== destFilter, "...which is NOT boundG's own selection")
+
+ 				//D3.5 owns-the-stamp: switching the DESTINATION host restamps only what boundG owns
+ 				//(its old filter or unqualified) - the foreign copy stays with its source:
+ 				boundG.selectedFilterId = destAlt
+ 				wait(50)
+ 				compare(boundG.model.termProvenanceForTest().join(","), "TestInts@" + sourceFilter,
+ 						"the destination host's switch leaves the foreign-stamped copy alone (owns-the-stamp)")
+ 				ids = JSON.parse(jaspForm.createOptionsJsonAsJson(0))[".filterIds"]
+ 				compare(ids.boundG[0], sourceFilter, "and the sidecar still names the SOURCE filter")
+
+ 				//sanity of the walk itself: a term bound AFTER the destination switch is owned by
+ 				//the destination and stamps through it (the guard stamps -1 terms only):
+ 				jaspForm.setOptions({ boundG: { value: ["SecondOnly"], types: ["scale"] } })
+ 				wait(50)
+ 				compare(boundG.model.termProvenanceForTest().join(","), "SecondOnly@" + destAlt,
+ 						"an UNQUALIFIED bind into the same host still takes the destination stamp (the guard condition stays filterId < 0)")
+ 			} finally
+ 			{
+ 				jaspForm.setOptions({ dependentA: { value: [], types: [] }, boundG: { value: [], types: [] } })
+ 				boundG.selectedFilterId = originalG	//functions run alphabetically: don't bleed
+ 				allVarsA.selectedFilterId = originalA	//(selections LAST: applyFilter re-writes the option after the cleanup bind)
+ 				wait(20)
+ 			}
+ 		}
 
 		// Before any interaction every selecting list defaults to the workspace's current filter,
 		// each through its own selection (the dummy analysis holds no filter itself: -1).
@@ -889,10 +987,11 @@ Item
 		// control registered for a host's option IS that host's own dropdown.
 		function test_selectionHostRegistry_introspection()
 		{
-			compare(form.selectionHostCount(), 3, "two selecting lists and the text area are the hosts")
+			compare(form.selectionHostCount(), 4, "the three selecting lists and the text area are the hosts")
 
 			var hosts = form.selectionHosts()
-			verify(hosts.indexOf(allVarsA) !== -1 && hosts.indexOf(allVarsB) !== -1 && hosts.indexOf(rCodeArea) !== -1,
+			verify(hosts.indexOf(allVarsA) !== -1 && hosts.indexOf(allVarsB) !== -1 && hosts.indexOf(rCodeArea) !== -1
+					&& hosts.indexOf(boundG) !== -1,
 					"the live hosts are exactly the selecting ones, got: " + hosts)
 			verify(hosts.indexOf(allVarsC) === -1 && hosts.indexOf(targetC) === -1 && hosts.indexOf(dependentA) === -1,
 					"controls without a selection are not hosts")
@@ -909,12 +1008,12 @@ Item
 			var late = lateHostComponent.createObject(jaspForm)
 			late.formIsKnown(jaspForm)
 			wait(20)
-			compare(form.selectionHostCount(), 4, "the late host registered")
+			compare(form.selectionHostCount(), 5, "the late host registered")
 			verify(form.selectionHosts().indexOf(late) !== -1, "and it is in the host list")
 			late.destroy()
 			wait(20)
-			compare(form.selectionHostCount(), 3, "a destroyed host unregisters with the object")
-			verify(form.selectionHosts().indexOf(allVarsA) !== -1 && form.selectionHosts().length === 3,
+			compare(form.selectionHostCount(), 4, "a destroyed host unregisters with the object")
+			verify(form.selectionHosts().indexOf(allVarsA) !== -1 && form.selectionHosts().length === 4,
 					"and the real hosts survived the churn")
 		}
 

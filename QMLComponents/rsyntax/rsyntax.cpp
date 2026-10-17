@@ -174,8 +174,12 @@ QString RSyntax::generateSyntax(bool showAllOptions, bool useHtml) const
 				else
 				{
 					JASPListControl* listControl = qobject_cast<JASPListControl*>(control);
-					if (listControl && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
-						result += _transformInteractionTerms(listControl->model());
+					//mds-plan D6.1: model() may be null - a TextArea host (e.g. an Rcode editor
+					//with its own dataSetSelectionOption) contains variables by declaration now but
+					//only creates a term model for the Source/JAGS/Lavaan-family types.
+					ListModel* listModel = listControl ? listControl->model() : nullptr;
+					if (listModel && !listControl->hasRowComponent() && listControl->containsVariables() && listControl->useTermsInRSyntax())
+						result += _transformInteractionTerms(listModel);
 					else
 						result += transformJsonToR(foundValue);
 				}

@@ -82,6 +82,13 @@ public:
 	void						moveItems(QList<int> &indexes, ListModelDraggable* dropModel, int dropItemIndex = -1);
 	bool						keepVariablesWhenMoved()																const				{ return _keepVariablesWhenMoved;					}
 	bool						containsInteractions()																	const	override;
+	///< mds-plan D6.1: a list that declares its own dataset/filter selection IS declaring that its
+	///  values are columns of that namespace (C10 list-as-host, C13 host-bound) - no available-list
+	///  or dataset-source relation required. Without this the second-source pattern (a standalone
+	///  AssignedVariablesList with its own dataSetSelectionOption) never encodes: encodeValue()
+	///  gates on containsVariables(), and the list's values would stay raw names that no slice
+	///  column matches (found by the D6 zoo; zero effect on lists without a selection).
+	bool						containsVariables()																				const	override;
 	bool						addInteractionsByDefault()																const				{ return _addInteractionsByDefault;					}
 	bool						interactionContainLowerTerms()															const				{ return _interactionContainLowerTerms;				}
 	QVariant					sourceWithoutDefaultInteraction()														const				{ return _sourceWithoutDefaultInteraction;			}
