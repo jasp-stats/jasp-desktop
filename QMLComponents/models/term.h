@@ -102,6 +102,33 @@ public:
 
 	Json::Value toJson(bool useArray = true, bool useValueAndType = true) const;
 
+	///< mds-plan D5.1: THE Storage term object `{name, filterId?, types}` - the clean typed-state
+	///  file serialization (the Engine wire shape above stays frozen as today's R contract).
+	///  `name` is the value string for a single-component term and the component array for an
+	///  interaction; `types` is always the per-component type array; `filterId` is emitted only
+	///  when the term is qualified (>= 0, C9) and omitted for -1 exactly like the Engine sidecar
+	///  omits nulls. Re-enters through the Terms(json) applier, which recognizes the shape via
+	///  isStorageTermObject() (see the collision rules documented there).
+	Json::Value toJsonStorage() const;
+
+	///< Strict shape test for the D5.1 Storage term object: an OBJECT with a `name` member
+	///  (string or array of strings) AND at least one of `types` (string or array of strings) /
+	///  `filterId` (int; an explicit null or an integral double counts as absent/that int - the
+	///  QML->Json bridge turned every JS number into null for years), and NO other members.
+	///  The member-set restriction is what keeps the
+	///  applier honest: rows (keyValue + row-child controls), factor-level rows (`name` +
+	///  `levels`) and the Engine `{value, types}` entry all fail this test and keep parsing
+	///  byte-identically to today. The one tolerated collision: a row object under a keyValue of
+	///  "name" carrying a child literally named `types` whose value is string/array-of-strings
+	///  and no other children (no real form does this; the MDS plan accepts the ambiguity
+	///  because the Engine shape never nests bare names next to `types` at row level).
+	static bool isStorageTermObject(const Json::Value & json);
+
+	///< Parses one Storage term object (isStorageTermObject-checked by the caller) into a typed
+	///  Term incl. its `filterId`; `fallbackTypes` are used when the entry carries no `types`
+	///  (mixed hand-written trees: positional types still apply).
+	static Term fromStorageTermObject(const Json::Value & json, const columnTypeVec & fallbackTypes = {});
+
 private:
 	void initFrom(const QStringList	& components,	const QString	& label, const columnTypeVec& type, const QString	& info = "");
 	void initFrom(const QString		& value,		const QString	& label, const columnTypeVec& type,	const QString	& info = "");

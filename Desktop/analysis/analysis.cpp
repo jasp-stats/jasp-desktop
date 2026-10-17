@@ -881,13 +881,16 @@ Json::Value Analysis::asJSON(bool withRSource)
 	analysisAsJson["progress"]		= _progress;
 	analysisAsJson["results"]		= loadPlotlyJsonInResults(_results);
 	analysisAsJson["status"]		= statusToString(_status);
-	//mds-plan D3.4: the saved options are GENERATED from the components (Engine shape, sidecar
-	//stripped - C11/C12): values + send-time `.meta` (no provenance keys, C8; those stamps never
-	//shipped, so no file-format migration is needed, C15). bindTo re-applies this tree verbatim on
-	//reload, and the Phase-5 storage break (D5.1) swaps in the Storage shape here.
-	Json::Value savedOptions = createOptionsJson(BoundControl::Engine);
-	stripTransientSidecar(savedOptions);
-	analysisAsJson["options"]		= savedOptions;
+	//mds-plan D3.4/D5.1: the saved options are GENERATED from the components in the STORAGE shape
+	//(C11): per-term `{name, filterId?, types}` objects for the term families (filterId omitted
+	//when -1, provenance inside the term, same-name-different-filter twins immune to positional
+	//drift), every other family its value tree - no `.meta` and no sidecar (both are send-time
+	//artifacts, C8/C11). The Engine wire (createAnalysisRequestJson below) keeps the frozen
+	//{value,types} + sidecar contract untouched. bindTo/Terms(json) re-apply this tree verbatim on
+	//reload (the applier accepts both shapes); version STAYS 7.0.0 - the shape never shipped, so
+	//released files (plain names, all-`-1` ⟹ C13 fallbacks forever) and old bare-prefix result
+	//tokens are handled by D5.2/D5.3, no stamp migration (C15).
+	analysisAsJson["options"]		= createOptionsJson(BoundControl::Storage);
 	analysisAsJson["userdata"]		= userData();
 	analysisAsJson["plotEdits"]		= _plotEdits;
 	analysisAsJson["dynamicModule"] = _moduleData ? _moduleData->asJsonForJaspFile() : Json::objectValue;

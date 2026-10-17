@@ -161,6 +161,15 @@ private slots:
 	void	testPreAttachOptionsParkAndAreNeverReadForBehaviour();
 	void	testRestampOwnershipRuleKeepsForeignStamps();
 
+	// mds-plan D5.1: the final Storage format - per-term {name, filterId?, types} objects for the
+	// term families (simple, interaction, row-bearing; optionKey kept, row children kept), the
+	// single JSON->Terms applier accepting BOTH the new Storage shape and the legacy Engine-shape
+	// input with byte-identical semantics there, and lossless Storage-json -> parse -> regenerate
+	// round trips - including the flagship same-name-different-filter twins (x@11 + x@12 must not
+	// dedupe through a save/reload cycle; strict Term equality since D2.1 makes this real).
+	void	testStorageTermShapeAndRoundTrip();
+	void	testApplierAcceptsEngineAndStorageShapes();
+
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy

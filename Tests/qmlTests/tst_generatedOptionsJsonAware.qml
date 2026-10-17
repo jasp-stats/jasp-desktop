@@ -457,13 +457,13 @@ Item
 			assertEngineEqualsGolden("aware form after pending-stamp re-attach", goldenReattach)
 		}
 
-		// ---- Storage shape (D5.1 preview) --------------------------------------------------------
+		// ---- Storage shape (D5.1 final) ----------------------------------------------------------
 
 		function test_storage_roundtrips_through_the_json_to_state_appliers()
 		{
-			// C12/D3.5: the JSON->state appliers (bindTo path) stay in charge until Phase 5 changes
-			// the file format, so a generated Storage tree must re-enter the form and regenerate
-			// identically (the embedded filterIds member is ignored on parse).
+			// C12/D3.5 + D5.1: the file format IS the Storage tree now, so the JSON->state appliers
+			// (bindTo path) must take it back losslessly: generate, feed through setOptions,
+			// regenerate, BYTE-EQUAL - the exact save/reload loop of a .jasp file.
 			_bindAwareForm()
 			wait(100)
 			const first = JSON.stringify(generatedOf(true))
@@ -487,19 +487,82 @@ Item
 			const storage	= generatedOf(true)
 
 			verify(storage[".meta"] === undefined, "Storage carries no .meta tree (it is a send-time artifact, C8/C11)")
-			verify(storage[".filterIds"] === undefined, "Storage carries no sidecar tree - provenance rides INSIDE the term options")
+			verify(storage[".filterIds"] === undefined, "Storage carries no sidecar tree - provenance rides INSIDE the term objects")
+			verify(storage.depA.types === undefined, "no outer positional types in Storage (per-term since D5.1)")
+			verify(storage.depA.filterIds === undefined, "the D5.1-preview positional filterIds member is gone")
 
-			verify(storage.depA.filterIds !== undefined && storage.depA.filterIds[0] === sidecarAt(engine[".filterIds"], "depA")[0],
+			// D5.1 final: per-term {name, filterId?, types} - the same provenance the Engine
+			// sidecar carries positionally, now inline in the term (against the LIVE host, like
+			// every provenance assertion in this file):
+			compare(storage.depA.value.length, 1)
+			verify(storage.depA.value[0].name === "TestInts", "term value lives inside the per-term object")
+			compare(storage.depA.value[0].filterId, sidecarAt(engine[".filterIds"], "depA")[0],
 				"Storage terms keep the same provenance the Engine sidecar carries")
-			verify(storage.fixedB.filterIds !== undefined, "every aware term list embeds its positional filterIds in Storage")
-			verify(storage.swA === true && storage.dataSetA !== undefined, "scalars and selection options ride along unchanged")
+			verify(Array.isArray(storage.depA.value[0].types), "types ride per term")
+			compare(storage.fixedB.value[0].filterId, sidecarAt(engine[".filterIds"], "fixedB")[0],
+				"the second host's list carries ITS host id inline too")
 
-			// the value tree is identical to the Engine values once the embedded filterIds come out:
-			const engineValues = generatedOf(false)
-			delete engineValues[".meta"]
-			delete engineValues[".filterIds"]
-			stripKey(storage, "filterIds")
-			compare(deepDiff(engineValues, storage, ""), "", "Storage == Engine values once the embedded filterIds come out")
+			// unqualified ⟹ member omitted, never null:
+			verify(storage.aloneA.value.length === 1 && storage.aloneA.value[0].filterId === undefined,
+				"a hostless list omits filterId (nothing to say)")
+
+			// the Engine wire is untouched: bare values + outer types + positional sidecar (frozen):
+			compare(JSON.stringify(engine.depA.value), JSON.stringify(["TestInts"]), "Engine keeps bare term values (frozen R contract)")
+			verify(Array.isArray(engine.depA.types) && engine[".filterIds"].depA.length === 1, "Engine keeps {value, types} + positional sidecar")
+
+			// non-term families store exactly the engine value; scalars and selection options ride along:
+			compare(deepDiff(storage.factorLevelsA, engine.factorLevelsA, ""), "", "the factorLevelList stores the engine value unchanged")
+			compare(deepDiff(storage.rCodeBoxB, engine.rCodeBoxB, ""), "", "the textarea code stays raw in Storage (rCode contract, D7.1 keeps it so)")
+			verify(storage.swA === true && storage.dataSetA !== undefined, "scalars and selection options ride along unchanged")
+		}
+
+		function test_storage_twin_terms_survive_the_save_reload_cycle()
+		{
+			// The D5.1 flagship (C9, strict Term equality from D2.1): TWO terms named "TestInts"
+			// with DIFFERENT filterIds in ONE list must not dedupe through a save/reload cycle.
+			// The Engine sidecar expresses them positionally ([fA, fB] over identical value
+			// entries); the Storage format carries the ids inline, so the distinction survives
+			// verbatim - and the intake stamping (ListModel::_setAllowedType, owns-the-stamp since
+			// D5.1) leaves the loaded ids alone even though host A resolves to fA only.
+			const sel = _bindAwareForm()
+			wait(100)
+
+			awareForm.setOptions({
+				dataSetA:	String(sel.fA),
+				dataSetB:	String(sel.fB),
+				depA:		{ value: [
+					{ name: "TestInts", types: ["scale"], filterId: sel.fA },
+					{ name: "TestInts", types: ["scale"], filterId: sel.fB }
+				] }
+			})
+			wait(150)
+
+			// typed state: both twins present, each with its own provenance (the second one is
+			// FOREIGN to host A and must have survived the bind untouched):
+			compare(depA.model.termProvenanceForTest().join(","), "TestInts@" + sel.fA + ",TestInts@" + sel.fB,
+				"twins coexist in the model and the foreign stamp survives intake")
+
+			// Storage generation keeps both, ids inline:
+			const storage	= generatedOf(true)
+			const first		= JSON.stringify(storage)
+			compare(storage.depA.value.length, 2, "twins survive Storage generation")
+			compare(storage.depA.value[0].filterId, sel.fA, "twin 0 keeps fA inline")
+			compare(storage.depA.value[1].filterId, sel.fB, "twin 1 keeps fB inline")
+
+			// the reload leg: feed the stored tree back through the appliers, regenerate, byte-equal:
+			awareForm.setOptions(JSON.parse(first))
+			wait(150)
+			compare(JSON.stringify(generatedOf(true)), first, "the twin Storage tree round-trips byte-for-byte")
+			compare(depA.model.termProvenanceForTest().join(","), "TestInts@" + sel.fA + ",TestInts@" + sel.fB,
+				"and the typed twins (with the foreign stamp) survived the rebind too")
+
+			// the Engine wire expresses the same distinction positionally, aligned with the bare
+			// value array (the frozen D3.3 contract - per-term objects never reach it):
+			const engine	= generatedOf(false)
+			compare(JSON.stringify(engine.depA.value), JSON.stringify(["TestInts", "TestInts"]), "Engine values stay bare and aligned")
+			const ids		= engine[".filterIds"].depA
+			compare(ids.length, 2, "the sidecar is positional over the twins")
+			verify(ids[0] !== ids[1], "the twin distinction survives on the frozen wire")
 		}
 	}
 }

@@ -129,7 +129,15 @@ void ListModel::_setAllowedType(Term& term) const
 	//namespace" holds from the moment a term enters it. -1 when there is no explicit selection
 	//host (non-aware world, and freshly parsed unqualified values keep meaning exactly that).
 	//Restamping on a host SWITCH is D2.5's typed restamp; this covers construction and moves.
-	term.setFilterId(_currentSelectionFilterId());
+	//mds-plan D5.1/D5.2 (owns-the-stamp, same rule as restampTermsFilterId from D3.5): stamp only
+	//terms that come in UNQUALIFIED. Since the Storage format carries per-term filterIds, a term
+	//loaded from a file (or typed-copied across hosts, D6.2) already knows its provenance - it
+	//must survive the bind: a stale or foreign id degrades on the engine side (the D3.3 walk's
+	//filterById miss ⟹ C7 fallback), a restamp here would silently re-route the term's data to
+	//this host's namespace instead. Legacy parses are all -1, so released files and non-aware
+	//forms keep their exact old behaviour through this same line.
+	if (term.filterId() < 0)
+		term.setFilterId(_currentSelectionFilterId());
 }
 
 int ListModel::_currentSelectionFilterId() const

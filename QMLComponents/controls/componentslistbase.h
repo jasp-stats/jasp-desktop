@@ -59,7 +59,7 @@ public:
 	QList<QVariant>	controlNameXOffsetMap()				const;
 	QList<QVariant>	headerLabels()						const			{ return _headerLabels;			}
 
-	Json::Value		getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm& termsWithComponentValues) const;
+	Json::Value		getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm& termsWithComponentValues, bool storageShape = false) const;
 	int				currentIndex()						const;
 	void			setCurrentIndex(int index);
 
@@ -106,10 +106,12 @@ protected:
 	//generation reuses the very same builder (getJsonFromComponentValues), optionKey discipline
 	//included. Its per-row provenance sidecar is positional over the rows (= the terms): the row
 	//key term's Term::filterId(), host filter as fallback, null = unqualified (see
-	//BoundControlTerms::createFilterIds for the schema; the row-object-embedded Storage variant
-	//would collide with Terms parsing of unknown row members, so row lists keep the sidecar-only
-	//form until D5.1 reshapes row storage).
+	//BoundControlTerms::createFilterIds for the schema). D5.1 resolved the row-embedding
+	//collision the preview note feared: the file format nests the term object UNDER the row key
+	//(`{optionKey: {name, filterId?, types}}`, children stay siblings), so no unknown row member
+	//is ever introduced and the engine sidecar stays positional as always.
 	Json::Value			createEngineValue()												const	override;
+	Json::Value			createStorageValue()												const	override;	///< mds-plan D5.1 (see getJsonFromComponentValues)
 	Json::Value			createFilterIds()													const	override;
 
 private:

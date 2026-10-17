@@ -28,7 +28,8 @@ AnalysisBase::AnalysisBase(QObject* parent, AnalysisBase* duplicateMe)
 	//duplicate's form attaches (setAnalysisUp -> bindTo). The old mirror copy is gone; a source
 	//without an attached form has no component state to duplicate (empty Storage), matching the
 	//old "copy the (empty) mirror" behaviour. The duplicate is "created with options" whenever
-	//the source held any.
+	//the source held any. Since D5.1 the Storage tree carries the per-term filterIds inside the
+	//term objects, so provenance survives the duplicate exactly like it survives a save/reload.
 	_pendingOptions			= duplicateMe->createOptionsJson(BoundControl::Storage);
 	_hasPendingOptions		= _pendingOptions.size() > 0;
 	_createdWithOptions		= _hasPendingOptions;

@@ -3344,6 +3344,257 @@ void TestAll::testRestampOwnershipRuleKeepsForeignStamps()
 	QCOMPARE(fresh.filterId(),  13);			//unqualified intake joins the host
 }
 
+//mds-plan D5.1: THE Storage file format. Every term family serializes its terms as clean typed
+//objects {name, filterId?, types} (filterId omitted when -1) under the existing row/optionKey
+//discipline, and the tree round-trips losslessly: Storage-json -> Terms(json) applier ->
+//regenerate -> BYTE-EQUAL. The flagship is the same-name-different-filter twin pair: x@11 and
+//x@12 in one list must survive the cycle as two distinct terms (strict Term equality since D2.1
+//makes that real - before the identity fix they would have deduped). The Engine wire is NOT
+//touched by this (frozen R contract + positional .filterIds sidecar, see
+//testGeneratedEngineJsonSidecarDrivesRunAndIsStrippedForR); the applier accepts both shapes
+//with byte-identical semantics on the engine side (testApplierAcceptsEngineAndStorageShapes).
+void TestAll::testStorageTermShapeAndRoundTrip()
+{
+	struct Cycle { Json::Value storage, again; Terms reparsed; };
+
+	//helper: one full storage cycle - serialize, parse back through the ONE applier, regenerate.
+	auto storageCycle = [](const Terms& terms, const std::string& keyValue, const std::string& keyLabel,
+	                       bool containsInteractions, bool hasRowComponent, bool isSingleRow,
+	                       const Terms::RelatedValuesPerTerm& related = Terms::RelatedValuesPerTerm()) -> Cycle
+	{
+		Cycle c;
+		c.storage	= terms.getStorageOptions(related, keyValue, keyLabel, containsInteractions, hasRowComponent, isSingleRow);
+
+		Terms::RelatedValuesPerTerm parsedRelated;
+		c.reparsed	= Terms(c.storage, keyValue, keyLabel, parsedRelated, containsInteractions, hasRowComponent);
+
+		c.again		= c.reparsed.getStorageOptions(parsedRelated, keyValue, keyLabel, containsInteractions, hasRowComponent, isSingleRow);
+		return c;
+	};
+
+	// --- simple term list, incl. the flagship twins x@11 / x@12 ---------------------------------
+	Term x11(tq("x"), columnType::scale);		x11.setFilterId(11);
+	Term x12(tq("x"), columnType::nominal);	x12.setFilterId(12);
+	Term y(tq("y"), columnType::ordinal);
+	Terms simple;	simple.add(x11);	simple.add(x12);	simple.add(y);
+	QCOMPARE(simple.size(), size_t{3});			//strict equality keeps the twins side by side
+
+	Cycle sc = storageCycle(simple, "value", "", false, false, false);
+	QCOMPARE(sc.again.toStyledString(), sc.storage.toStyledString());								//lossless round trip
+	QVERIFY(sc.storage.isObject() && sc.storage.isMember("value") && !sc.storage.isMember("types"));	//no outer positional types in Storage (per-term now)
+	QCOMPARE(sc.storage["value"].size(), 3u);
+	QCOMPARE(sc.storage["value"][0]["name"].asString(),		"x");
+	QCOMPARE(sc.storage["value"][0]["types"][0].asString(),	"scale");
+	QCOMPARE(sc.storage["value"][0]["filterId"].asInt(),		11);
+	QCOMPARE(sc.storage["value"][1]["filterId"].asInt(),		12);
+	QCOMPARE(sc.storage["value"][2]["name"].asString(),		"y");
+	QVERIFY(!sc.storage["value"][2].isMember("filterId"));		//unqualified: member omitted (never null)
+	QCOMPARE(sc.reparsed.size(), size_t{3});					//twins did NOT dedupe through the cycle
+	QVERIFY(sc.reparsed.terms()[0] == x11);
+	QVERIFY(sc.reparsed.terms()[1] == x12);
+	QVERIFY(sc.reparsed.terms()[2] == y);
+
+	// --- interaction terms: rows keep the optionKey, the nested entry is the term object ---------
+	Term abTerm(QStringList() << tq("a") << tq("b"), {columnType::scale, columnType::nominal});
+	abTerm.setFilterId(7);
+	Terms inter;	inter.add(abTerm);	inter.add(Term(tq("c"), columnType::scale));
+	Cycle ic = storageCycle(inter, "components", "", true, false, false);
+	QCOMPARE(ic.again.toStyledString(), ic.storage.toStyledString());
+	QCOMPARE(ic.storage["optionKey"].asString(), "components");
+	QVERIFY(ic.storage["value"][0]["components"]["name"].isArray());			//interaction name = component array
+	QCOMPARE(ic.storage["value"][0]["components"]["name"][0].asString(), "a");
+	QCOMPARE(ic.storage["value"][0]["components"]["filterId"].asInt(), 7);
+	QCOMPARE(ic.reparsed.size(), size_t{2});
+	QCOMPARE(ic.reparsed.terms()[0].filterId(), 7);
+	QCOMPARE(ic.reparsed.terms()[0].size(), size_t{2});							//both components survived
+	QCOMPARE(ic.reparsed.terms()[0].at(0).toStdString(), std::string("a"));
+	QCOMPARE(ic.reparsed.terms()[0].at(1).toStdString(), std::string("b"));
+	QCOMPARE(ic.reparsed.terms()[1].filterId(), -1);
+
+	// --- row-bearing list: optionKey discipline kept, children stay in today's row shape --------
+	Term z(tq("z"), columnType::scale);	z.setFilterId(3);
+	Terms rows;	rows.add(z);
+	Terms::RelatedValuesPerTerm related;
+	QMap<QString, Json::Value> kids;
+	kids[tq("keep")]	= Json::Value(true);
+	kids[tq("extra")]	= Json::Value("s");
+	related[tq("z")]	= kids;
+	Cycle rc = storageCycle(rows, "variable", "", false, true, false, related);
+	QCOMPARE(rc.again.toStyledString(), rc.storage.toStyledString());
+	QCOMPARE(rc.storage["optionKey"].asString(), "variable");
+	QCOMPARE(rc.storage["value"][0]["variable"]["name"].asString(),	"z");
+	QCOMPARE(rc.storage["value"][0]["variable"]["filterId"].asInt(),	3);
+	QCOMPARE(rc.storage["value"][0]["keep"].asBool(),	true);					//row children survive as siblings
+	QCOMPARE(rc.storage["value"][0]["extra"].asString(),	"s");
+	QCOMPARE(rc.reparsed.size(), size_t{1});
+	QVERIFY(rc.reparsed.terms()[0] == z);
+	QCOMPARE(rc.reparsed.terms()[0].filterId(), 3);							//the loaded stamp survives the applier
+
+	// --- single row: one term object as the value; empty keeps today's "" -----------------------
+	Term w(tq("w"), columnType::scale);	w.setFilterId(5);
+	Terms single;	single.add(w);
+	Cycle wc = storageCycle(single, "value", "", false, false, true);
+	QCOMPARE(wc.again.toStyledString(), wc.storage.toStyledString());
+	QCOMPARE(wc.storage["value"]["name"].asString(), "w");
+	QCOMPARE(wc.storage["value"]["filterId"].asInt(), 5);
+	QCOMPARE(wc.reparsed.size(), size_t{1});
+	QVERIFY(wc.reparsed.terms()[0] == w);
+
+	Terms emptySingle, emptyList;
+	const Json::Value emptyS	= emptySingle.getStorageOptions({}, "value", "", false, false, true);
+	const Json::Value emptyL	= emptyList.getStorageOptions({}, "value", "", false, false, false);
+	QCOMPARE(emptyS["value"].asString(),			"");						//empty single-row mirrors the engine shape
+	QVERIFY(emptyL["value"].isArray() && emptyL["value"].size() == 0);
+	Cycle es = storageCycle(emptySingle, "value", "", false, false, true);	//both round-trip empty -> empty
+	QCOMPARE(es.again.toStyledString(), es.storage.toStyledString());
+	QCOMPARE(es.reparsed.size(), size_t{0});
+	Cycle el = storageCycle(emptyList, "value", "", false, false, false);
+	QCOMPARE(el.again.toStyledString(), el.storage.toStyledString());
+	QCOMPARE(el.reparsed.size(), size_t{0});
+}
+
+//mds-plan D5.1/D5.2: the single JSON->Terms applier accepts BOTH shapes - the new Storage
+//per-term objects AND every engine/legacy input - with byte-identical parse semantics on the
+//legacy side: released files (plain names, `{value,types}`, single-string types, bare arrays,
+//R-syntax-simplified interaction rows, factor-level rows) keep parsing to exactly the terms they
+//did before Phase 5, all UNQUALIFIED (-1) - no filterId key exists in any of them and none is
+//fabricated. A Storage entry is only claimed by the strict shape test (name + types/filterId,
+//no other members), which is what keeps `{value,types}` engine rows and `name`+`levels`
+//factor rows out of the new branch.
+void TestAll::testApplierAcceptsEngineAndStorageShapes()
+{
+	auto parse = [](const Json::Value& optionValue, const std::string& keyValue = "value", const std::string& keyLabel = "",
+	               bool containsInteractions = false, bool hasRowComponent = false)
+	{
+		Terms::RelatedValuesPerTerm related;
+		return Terms(optionValue, keyValue, keyLabel, related, containsInteractions, hasRowComponent);
+	};
+
+	// --- engine shape {value, types}: today's parse, all terms -1 (D5.2: permanently supported) --
+	Json::Value engine(Json::objectValue);
+	engine["value"].append("x");
+	engine["value"].append("y");
+	engine["types"].append("scale");
+	engine["types"].append("nominal");
+	Terms fromEngine = parse(engine);
+	QCOMPARE(fromEngine.size(), size_t{2});
+	QCOMPARE(fromEngine.terms()[0].filterId(), -1);
+	QCOMPARE(fromEngine.terms()[1].filterId(), -1);
+	QCOMPARE(fromEngine.terms()[0].value().toStdString(), "x");
+	QCOMPARE(fromEngine.terms()[1].types()[0], columnType::nominal);
+
+	// ...and the same tree with a lying filterId member at OPTION level (the D5.1-preview shape):
+	//unknown option members never steered the parse and still do not (terms stay -1).
+	Json::Value previewShape = engine;
+	previewShape["filterIds"].append(11);
+	previewShape["filterIds"].append(12);
+	Terms fromPreview = parse(previewShape);
+	QCOMPARE(fromPreview.size(), size_t{2});
+	QCOMPARE(fromPreview.terms()[0].filterId(), -1);
+	QCOMPARE(fromPreview.terms()[1].filterId(), -1);
+
+	// --- bare forms: string, string array, pre-0.19 single-string types --------------------------
+	QCOMPARE(parse(Json::Value("x")).size(), size_t{1});
+	QCOMPARE(parse(Json::Value("x")).terms()[0].filterId(), -1);
+	Json::Value bare(Json::arrayValue);	bare.append("x");	bare.append("y");
+	Terms fromBare = parse(bare);
+	QCOMPARE(fromBare.size(), size_t{2});
+	QCOMPARE(fromBare.terms()[0].value().toStdString(), "x");
+	Json::Value legacyTypes(Json::objectValue);
+	legacyTypes["value"]	= "x";
+	legacyTypes["types"]	= "scale";				//pre-0.19 single string
+	Terms fromLegacy = parse(legacyTypes);
+	QCOMPARE(fromLegacy.size(), size_t{1});
+	QCOMPARE(fromLegacy.terms()[0].types()[0], columnType::scale);
+
+	// --- R-syntax-simplified interaction list (bare entries become {keyValue:[components]}) ------
+	Json::Value simplified(Json::arrayValue);
+	simplified.append("a");
+	Json::Value pair(Json::arrayValue);	pair.append("a");	pair.append("b");
+	simplified.append(pair);
+	Terms fromSimplified = parse(simplified, "components", "", true, false);
+	QCOMPARE(fromSimplified.size(), size_t{2});
+	QCOMPARE(fromSimplified.terms()[1].size(), size_t{2});
+	QCOMPARE(fromSimplified.terms()[1].filterId(), -1);
+
+	// --- factor-level rows (object with `name` + `levels`) stay on the row path ------------------
+	Json::Value factorRow(Json::objectValue);
+	factorRow["name"]	= "Fac 1";
+	factorRow["levels"].append("Lev 1");
+	factorRow["levels"].append("Lev 2");
+	Json::Value factorOption(Json::arrayValue);
+	factorOption.append(factorRow);
+	Terms factorRows = parse(factorOption, "name");
+	QCOMPARE(factorRows.size(), size_t{1});
+	QCOMPARE(factorRows.terms()[0].value().toStdString(), "Fac 1");
+	QCOMPARE(factorRows.terms()[0].filterId(), -1);					//a `name` member alone is NOT a term object
+
+	// --- engine row object {keyValue:{value,types}} keeps parsing exactly as before --------------
+	Json::Value engineRow(Json::objectValue);
+	engineRow["components"]["value"].append("a");
+	engineRow["components"]["value"].append("b");
+	engineRow["components"]["types"].append("scale");
+	engineRow["components"]["types"].append("nominal");
+	Json::Value engineRows(Json::arrayValue);	engineRows.append(engineRow);
+	Terms::RelatedValuesPerTerm noKids;
+	Terms fromEngineRow = parse(engineRows, "components", "", true, false);
+	QCOMPARE(fromEngineRow.size(), size_t{1});
+	QCOMPARE(fromEngineRow.terms()[0].size(), size_t{2});
+	QCOMPARE(fromEngineRow.terms()[0].filterId(), -1);
+
+	// --- storage shapes parse to the SAME values, plus the typed filterIds ------------------------
+	Json::Value storageSimple(Json::objectValue);
+	storageSimple["value"][0]["name"]			= "x";
+	storageSimple["value"][0]["types"].append("scale");
+	storageSimple["value"][0]["filterId"]		= 11;
+	storageSimple["value"][1]["name"]			= "x";
+	storageSimple["value"][1]["types"].append("nominal");
+	storageSimple["value"][1]["filterId"]		= 12;
+	Terms fromStorage = parse(storageSimple);
+	QCOMPARE(fromStorage.size(), size_t{2});						//the twins coexist
+	QCOMPARE(fromStorage.terms()[0].filterId(), 11);
+	QCOMPARE(fromStorage.terms()[1].filterId(), 12);
+	QCOMPARE(fromStorage.terms()[1].types()[0], columnType::nominal);
+	//engine and storage entries with the same content agree on value+types, differ only on provenance:
+	QCOMPARE(fromStorage.terms()[0].value(), fromEngine.terms()[0].value());
+	QCOMPARE(fromStorage.terms()[0].types(), fromEngine.terms()[0].types());
+
+	//nested storage row ({keyValue: {name, types, filterId}}) + siblings stay children -------------
+	Json::Value storageRow(Json::objectValue);
+	storageRow["variable"]["name"]			= "z";
+	storageRow["variable"]["types"].append("scale");
+	storageRow["variable"]["filterId"]		= 3;
+	storageRow["keep"]						= true;
+	Json::Value storageRows(Json::arrayValue);	storageRows.append(storageRow);
+	Terms::RelatedValuesPerTerm relatedOut;
+	Terms fromStorageRow{ storageRows, "variable", "", relatedOut, false, true };
+	QCOMPARE(fromStorageRow.size(), size_t{1});
+	QCOMPARE(fromStorageRow.terms()[0].filterId(), 3);
+	QVERIFY(relatedOut.contains(tq("z")));
+	QCOMPARE(relatedOut[tq("z")][tq("keep")].asBool(), true);		//row children collected as today
+
+	//a stale/foreign loaded id is KEPT verbatim (the applier never repairs, never drops it - the
+	//engine-side filterById miss turns it into the C7 fallback at run time, D5.2):
+	Json::Value stale(Json::objectValue);
+	stale["value"][0]["name"]		= "gone";
+	stale["value"][0]["types"]		= "scale";
+	stale["value"][0]["filterId"]	= 999999;
+	Terms fromStale = parse(stale);
+	QCOMPARE(fromStale.size(), size_t{1});
+	QCOMPARE(fromStale.terms()[0].filterId(), 999999);
+
+	//an explicit null filterId (the QML->Json bridge legacy; generated Storage OMITS instead)
+	//reads as unqualified without disqualifying the shape:
+	Json::Value nullFid(Json::objectValue);
+	nullFid["value"][0]["name"]		= "n";
+	nullFid["value"][0]["types"]	= "scale";
+	nullFid["value"][0]["filterId"]	= Json::Value();
+	Terms fromNull = parse(nullFid);
+	QCOMPARE(fromNull.size(), size_t{1});
+	QCOMPARE(fromNull.terms()[0].value().toStdString(), "n");
+	QCOMPARE(fromNull.terms()[0].filterId(), -1);
+}
+
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {
 	//DataBridge::updateOptionsAccordingToMeta loadFilteredData block: since the D3.3 flip the

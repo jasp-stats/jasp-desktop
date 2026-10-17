@@ -64,6 +64,18 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 
 	}
 
+	//mds-plan D5.1: Storage row entry `{keyValue: {name, types, filterId?}}` - the per-term object
+	//of the final file format nested under the row's optionKey (optionKey discipline kept, row
+	//children stay siblings and are collected by the Terms(json) applier exactly like today). The
+	//term's OWN types win over the positional fallback; its filterId rides the typed Term (C9).
+	if (jsonValue.isObject() && isStorageTermObject(jsonValue))
+	{
+		Term parsed = fromStorageTermObject(jsonValue, types);
+		initFrom(parsed.components(), label, parsed.types());
+		_filterId = parsed.filterId();
+		return;
+	}
+
 	if (jsonValue.isArray())
 	{
 		for (const Json::Value& component : jsonValue)
@@ -235,4 +247,131 @@ Json::Value Term::toJson(bool useArray, bool useValueAndType) const
 		result = value;
 
 	return result;
+}
+
+//mds-plan D5.1: the Storage term object {name, filterId?, types} - see the header for the shape
+//contract and the collision rules. This is the FILE serialization only (analysis.cpp's save and
+//the duplicate-me parking); the Engine generator (toJson above) is today's frozen R contract
+//and stays byte-identical forever.
+Json::Value Term::toJsonStorage() const
+{
+	Json::Value result(Json::objectValue);
+
+	if (_components.size() == 1)
+		result["name"] = fq(_components[0]);
+	else
+	{
+		Json::Value components(Json::arrayValue);
+		for (const QString& component : _components)
+			components.append(fq(component));
+		result["name"] = components;
+	}
+
+	Json::Value types(Json::arrayValue);
+	for (columnType type : _types)
+		types.append(columnTypeToString(type));
+	result["types"] = types;
+
+	if (_filterId >= 0)
+		result["filterId"] = _filterId;
+
+	return result;
+}
+
+bool Term::isStorageTermObject(const Json::Value & json)
+{
+	if (!json.isObject() || !json.isMember("name"))
+		return false;
+
+	const Json::Value & name = json["name"];
+	if (!name.isString() && !name.isArray())
+		return false;
+	if (name.isArray())
+	{
+		for (const Json::Value & component : name)
+		{
+			if (!component.isString())
+				return false;
+		}
+	}
+
+	bool hasTypes = false;
+	if (json.isMember("types"))
+	{
+		hasTypes = true;
+		const Json::Value & types = json["types"];
+		if (types.isString())
+		{
+			//fine
+		}
+		else if (types.isArray())
+		{
+			for (const Json::Value & type : types)
+			{
+				if (!type.isString())
+					return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//filterId: absent or explicit null == unqualified (null-tolerant because the QML->Json bridge
+	//used to turn every JS number into null; integral reals are accepted for the same reason),
+	//any other non-integral value disqualifies the shape.
+	const bool hasFidMember = json.isMember("filterId");
+	if (hasFidMember && !json["filterId"].isNull() && !json["filterId"].isIntegral())
+		return false;
+	else if (!hasFidMember && !hasTypes)
+		//{name} alone is NOT claimed as a term object: factor-level rows (keyValue "name", no
+		//levels yet) and other name-keyed rows keep parsing through today's row path untouched.
+		//A generated Storage term object always carries `types`, so this never hides a real one.
+		return false;
+
+	for (const std::string & member : json.getMemberNames())
+	{
+		if (member != "name" && member != "types" && member != "filterId")
+			return false;
+	}
+
+	return true;
+}
+
+Term Term::fromStorageTermObject(const Json::Value & json, const columnTypeVec & fallbackTypes)
+{
+	QStringList components;
+
+	const Json::Value & name = json["name"];
+	if (name.isString())
+		components.push_back(tq(name.asString()));
+	else
+		for (const Json::Value & component : name)
+			components.push_back(tq(component.asString()));
+
+	columnTypeVec types = fallbackTypes;
+
+	if (json.isMember("types"))
+	{
+		types = {};
+		const Json::Value & jsonTypes = json["types"];
+		if (jsonTypes.isString())
+			types.push_back(columnTypeFromString(jsonTypes.asString(), columnType::unknown));
+		else
+			for (const Json::Value & type : jsonTypes)
+				types.push_back(columnTypeFromString(type.asString(), columnType::unknown));
+	}
+
+	if (types.empty())
+		types.push_back(columnType::unknown);
+	while (types.size() < components.size())
+		types.push_back(columnType::unknown);
+
+	Term term(components, types);
+
+	if (json.isMember("filterId") && !json["filterId"].isNull())
+		term.setFilterId(json["filterId"].isInt() ? json["filterId"].asInt() : static_cast<int>(json["filterId"].asDouble()));
+
+	return term;
 }

@@ -84,16 +84,26 @@ Terms::Terms(Terms *parent)
 //    `{value: [...]}` keeps its rows as they are) and object rows pass through untouched.
 Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const std::string &keyLabel, RelatedValuesPerTerm &allControlValues, bool containsInteractions, bool hasRowComponent)
 {
-	//No provenance on the wire yet (mds-plan D2.1/C11): every term parsed out of options json is
-	//UNQUALIFIED (-1); the list it lands in stamps the current selection in (ListModel::_setAllowedType),
-	//bindTo-copied typed Terms keep their own ids (C9) and the D2.1 wildcard lookup matches the
-	//freshly parsed unqualified terms against the stamped model.
+	//Provenance rides the wire only in the Storage shape (mds-plan D5.1, see the header):
+	//ENGINE-shape and released-file terms parse UNQUALIFIED (-1) exactly as before, the list they
+	//land in stamps the current selection in (ListModel::_setAllowedType, since D5.1 only onto
+	//terms that come in unqualified), bindTo-copied typed Terms keep their own ids (C9) and the
+	//D2.1 wildcard lookup matches the freshly parsed unqualified terms against the stamped model.
 	Json::Value valuesPart	= optionValue;
 	Json::Value typesPart	= Json::arrayValue;
+
 
 	if (valuesPart.isObject() && valuesPart.isMember("value") && valuesPart.isMember("types"))
 	{
 		typesPart = valuesPart["types"];
+		valuesPart = valuesPart["value"];
+	}
+	else if (valuesPart.isObject() && valuesPart.isMember("value") && !valuesPart.isMember("types"))
+	{
+		//mds-plan D5.1: the Storage option object `{value, optionKey?}` - types live INSIDE the
+		//per-term objects now. No pre-D5.1 path ever produced a `{value}`-without-`types` option
+		//object (BoundControlTerms::isJsonValid rejected it before this card), so this unwrap is
+		//strictly the new file shape; `{value, types}` keeps taking the engine branch above.
 		valuesPart = valuesPart["value"];
 	}
 
@@ -150,6 +160,9 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 		if (!str.empty())
 			add(Term(str, type));
 	}
+	else if (Term::isStorageTermObject(valuesPart))
+		//mds-plan D5.1: single-row Storage option - one term object as the value.
+		add(Term::fromStorageTermObject(valuesPart));
 	else
 	{
 		int termId = 0;
@@ -166,13 +179,25 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 					types.push_back(columnTypeFromString(typesPart[termId].asString(), columnType::unknown));
 			}
 
+			//mds-plan D5.1: the entry dispatch. A Storage term object `{name, filterId?, types}`
+			//parses to a TYPED term (its filterId included, C9 - the flagship x@11/x@12 twins come
+			//back as two distinct Terms and Terms::add keeps both, strict equality from D2.1);
+			//every other entry keeps taking today's byte-identical path (bare string, or a row
+			//object whose keyValue entry may itself be a nested Storage term object, see
+			//Term(json)). The strict member test in isStorageTermObject is what keeps rows and
+			//factor-level rows out of the new branch.
+			const bool isTermObject = row.isObject() && Term::isStorageTermObject(row);
+
 			Term term = row.isString() ? Term(row.asString(), types)
-									   : Term(row, keyValue, keyLabel, types);
+									  : isTermObject ? Term::fromStorageTermObject(row, types)
+												   : Term(row, keyValue, keyLabel, types);
 			if (term.size() > 0)
 			{
 				add(term);
 
-				if (row.isObject())
+				//A term object's members ARE the term, not row children - collecting them as
+				//related values would fabricate `types`/`filterId` row controls out of the format.
+				if (row.isObject() && !isTermObject)
 				{
 					QMap<QString, Json::Value> controlMap;
 					for (auto itr = row.begin(); itr != row.end(); ++itr)
@@ -682,11 +707,12 @@ Json::Value Terms::getValuesOptions() const
 //term's child values: keyValue (+ keyLabel when the list uses one) plus every related value
 //the model holds for the term - which is exactly what the form-wide generator then merges the
 //live row-child control values into, one implementation for both paths.
-//mds-plan D2.1: the per-term filterId deliberately does NOT appear in this json — options
-//serialization is Phase 3's generators (C11), term provenance is internal state (it rides the
-//`.filterIds` sidecar / the typed Terms). The related values stay keyed by term.value() (row
-//identity by name): two same-name-different-filter rows sharing row controls is a D6 story,
-//not silently changed here.
+//mds-plan D2.1/D5.1: this is the ENGINE serialization (the frozen R contract + the send-time
+//shape): the per-term filterId deliberately does NOT appear here — on the run wire provenance
+//rides the transient `.filterIds` sidecar only (C11), and in the FILE it rides inside the
+//per-term objects of the Storage shape (getStorageOptions below). The related values stay keyed
+//by term.value() (row identity by name): two same-name-different-filter rows sharing row
+//controls is a D6 story, not silently changed here.
 Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType) const
 {
 	Json::Value result(Json::objectValue);
@@ -727,6 +753,65 @@ Json::Value Terms::getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPe
 
 	result["value"] = optionValue;
 	result["types"] = types();
+
+	if (hasRowComponent || containsInteractions)
+		result["optionKey"] = keyValue;
+
+	return result;
+}
+
+//mds-plan D5.1: THE Storage serialization (see the header). Same row/value discipline as
+//getOptions - optionKey kept, keyLabel kept, related child values keep today's row shape - but
+//each term entry is the clean typed object {name, filterId?, types} and there is no outer
+//positional `types` array (types live per term; the positional alignment of the Engine wire is
+//frozen and untouched, landmine honored: this tree never reaches the engine, the applier parses
+//it back into typed Terms and the Engine generator rebuilds the sidecar from THOSE).
+//Empty cases mirror the engine shape ("value": [] / "") so parse->regenerate is byte-equal for
+//every family (pinned by testStorageTermShapeAndRoundTrip).
+Json::Value Terms::getStorageOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow) const
+{
+	Json::Value result(Json::objectValue);
+
+	Json::Value optionValue;
+
+	if (hasRowComponent || containsInteractions)
+	{
+		Json::Value rows(Json::arrayValue);
+
+		for (const Term& term : _terms)
+		{
+			QMap<QString, Json::Value> relatedValues;
+			if (relatedValuesPerTerm.contains(term.value()))
+				relatedValues = relatedValuesPerTerm[term.value()];
+
+			Json::Value rowValues(Json::objectValue);
+
+			rowValues[keyValue] = term.toJsonStorage();
+			if (!keyLabel.empty())
+				rowValues[keyLabel] = fq(term.label());
+
+			QMapIterator<QString, Json::Value> it2(relatedValues);
+			while (it2.hasNext())
+			{
+				it2.next();
+				rowValues[fq(it2.key())] = it2.value();
+			}
+			rows.append(rowValues);
+		}
+
+		optionValue = rows;
+	}
+	else if (isSingleRow)
+		optionValue = _terms.size() > 0 ? _terms[0].toJsonStorage() : Json::Value("");
+	else
+	{
+		Json::Value terms(Json::arrayValue);
+		for (const Term& term : _terms)
+			terms.append(term.toJsonStorage());
+		optionValue = terms;
+	}
+
+	result["value"] = optionValue;
 
 	if (hasRowComponent || containsInteractions)
 		result["optionKey"] = keyValue;

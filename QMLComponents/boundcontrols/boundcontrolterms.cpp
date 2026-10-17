@@ -94,10 +94,10 @@ Json::Value BoundControlTerms::createJson() const
 //prepareMultiDataSetRun and the request encoding), else null (= unqualified, legacy/hostless:
 //the resolver's currentEncoder fallback, exactly today's unstamped behaviour). The whole node is
 //omitted when there is nothing to say, so non-aware runs generate filterId-less Engine json that
-//matches today's byte-for-byte. Storage keeps the same array INSIDE the option object (D5.1
-//preview): the final per-term {name, filterId?, types} reshaping happens in Phase 5; until then
-//the storage shape must keep re-entering the form through today's JSON->state appliers
-//(Terms parsing ignores the extra member).
+//matches today's byte-for-byte. This is the ENGINE wire and stays frozen (R contract + the
+//D3.3 positional walk); the Storage format took the provenance out of this sidecar and into the
+//per-term objects (D5.1 final, createStorageValue below) - the positional array exists exactly
+//because the engine value tree cannot carry per-term members without breaking the frozen shape.
 Json::Value BoundControlTerms::createFilterIds() const
 {
 	if (!_control->encodeValue())
@@ -118,23 +118,30 @@ Json::Value BoundControlTerms::createFilterIds() const
 	return any ? ids : Json::nullValue;
 }
 
+//mds-plan D5.1 final: the Storage file shape = Terms::getStorageOptions - per-term
+//`{name, filterId?, types}` objects under the same row/optionKey discipline as the engine tree
+//(filterId omitted when -1; row children and textareas/combos/etc. keep today's shape). The
+//D5.1-preview positional `filterIds` member embedded next to {value, types} is GONE - the applier
+//(Terms(json)) accepts both this final shape and every engine/legacy shape byte-identically, and
+//a generated Storage tree round-trips parse->regenerate->byte-equal including same-name-
+//different-filter twins (testStorageTermShapeAndRoundTrip).
 Json::Value BoundControlTerms::createStorageValue() const
 {
-	Json::Value value	= createJson();
-	Json::Value	ids		= createFilterIds();
-
-	if (!ids.isNull() && value.isObject())
-		value["filterIds"] = ids;
-
-	return value;
+	return _termsModel->terms().getStorageOptions(_termsModel->getTermsWithComponentValues(), _optionKeyValue(), _optionKeyLabel(),
+												  _listView->containsInteractions(), _listView->hasRowComponent(), _isSingleRow);
 }
 
 bool BoundControlTerms::isJsonValid(const Json::Value &optionValue) const
 {
-	const Json::Value & valuePart = _isValueWithTypes(optionValue) ? optionValue["value"] : optionValue;
+	//mds-plan D5.1: valid input is the engine tree ({value, types} or a bare value), the Storage
+	//option object ({value} + optional optionKey - types are inside the term objects there), or
+	//the single-row Storage form (value = one term object). Everything the file/save path can
+	//hand back must pass here or bindTo would reset the control "loaded with the wrong type".
+	const bool isOptionObject = optionValue.isObject() && optionValue.isMember("value");
+	const Json::Value & valuePart = isOptionObject ? optionValue["value"] : optionValue;
 	const Json::Value & typesPart = _isValueWithTypes(optionValue) ? optionValue["types"] : Json::arrayValue;
 
-	return	(valuePart.isNull() || valuePart.isArray() || valuePart.isString()) &&
+	return	(valuePart.isNull() || valuePart.isArray() || valuePart.isString() || Term::isStorageTermObject(valuePart)) &&
 			(typesPart.isArray() || typesPart.isString());
 }
 

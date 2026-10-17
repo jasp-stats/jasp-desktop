@@ -121,10 +121,23 @@ Json::Value InputListBase::createEngineValue() const
 							 : terms.getValuesOptions();
 }
 
+//mds-plan D5.1: the file shape - rows of the row-bearing variant carry the per-term objects
+//{name, filterId?, types} under the optionKey (see the header note; Terms::getStorageOptions),
+//non-row lists keep today's plain string values.
+Json::Value InputListBase::createStorageValue() const
+{
+	if (!_inputModel)
+		return Json::Value(Json::arrayValue);
+
+	const Terms terms = _inputModel->terms();
+
+	return hasRowComponent() ? terms.getStorageOptions(_inputModel->getTermsWithComponentValues(), fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"]
+							 : terms.getValuesOptions();
+}
+
 //mds-plan D3.2: positional per-term sidecar (schema: BoundControlTerms::createFilterIds).
 Json::Value InputListBase::createFilterIds() const
-{
-	if (!_control->encodeValue() || !_inputModel)
+{	if (!_control->encodeValue() || !_inputModel)
 		return Json::nullValue;
 
 	const int			hostId	= generatedHostFilterId();

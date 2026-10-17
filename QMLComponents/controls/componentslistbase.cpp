@@ -357,13 +357,30 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 	return result;
 }
 
-Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues) const
+Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues, bool storageShape) const
 {
 	//mds-plan D3.4: the rows-with-related-values shuffle (Terms::getOptionsWithRelatedValues) is
 	//deleted - this is the on-demand child aggregation itself, one serialization through
 	//Terms::getOptions (the row branch), with the value-part taken out. useValueAndType keeps
-	//this list family's `{value, types}` row-entry shape (containsVariables) exactly as before.
+	//this list family's `{value, types}` row-entry shape (containsVariables()) exactly as before.
+	//mds-plan D5.1: storageShape switches to the FILE serialization - the same rows, but the term
+	//entry under the optionKey becomes the per-term object {name, filterId?, types} (row children
+	//keep today's shape, optionKey kept). The collision that blocked the D5.1-preview embedding
+	//(a positional `filterIds` sibling would parse as a row child) is gone: the provenance rides
+	//INSIDE the nested term object, which the applier reads before anything else at that level.
+	if (storageShape)
+		return terms.getStorageOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false)["value"];
+
 	return terms.getOptions(termsWithComponentValues, fq(_optionKeyValue), fq(_optionKeyLabel), containsInteractions(), true, false, containsVariables())["value"];
+}
+
+//mds-plan D5.1: the file shape for this row-bearing family (see getJsonFromComponentValues).
+Json::Value ComponentsListBase::createStorageValue() const
+{
+	if (!_termsModel)
+		return Json::Value(Json::arrayValue);
+
+	return getJsonFromComponentValues(_termsModel->terms(), _termsModel->getTermsWithComponentValues(), true);
 }
 
 void ComponentsListBase::addItemHandler()

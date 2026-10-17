@@ -33,9 +33,10 @@ public:
 	//            transient per-term/per-option `.filterIds` sidecar (createFilterIds) that the
 	//            slice-queue build and the request encoding consume and that is STRIPPED at the
 	//            engine boundary before R ever sees it (C11, mds-plan D3.3).
-	//  Storage - clean typed state (D5.1 preview; the final storage tweaks happen in Phase 5):
-	//            no `.meta`, no sidecar tree - where the shape has no place for per-term
-	//            filterIds they ride inside the term option itself as a `filterIds` member.
+	//  Storage - clean typed state (D5.1 final): no `.meta`, no sidecar tree. The term families
+	//            serialize each term as the per-term object {name, filterId?, types} (filterId
+	//            omitted when -1, row optionKey discipline kept); every other family stores its
+	//            engine value (the shapes coincide wherever there are no per-term ids to carry).
 	//The QML-facing API maps these as integers 0/1 (AnalysisForm::createOptionsJsonAsJson).
 	enum JsonFormat { Engine, Storage };
 
