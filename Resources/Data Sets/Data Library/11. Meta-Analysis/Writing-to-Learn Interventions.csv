@@ -1,0 +1,49 @@
+"id","author","year","grade","length","minutes","wic","feedback","info","pers","imag","meta","subject","ni","yi","vi","sei"
+1,"Ashworth",1992,4,15,NA,"yes","yes","yes","yes","no","yes","Nursing",60,0.65,0.07,0.265
+2,"Ayers",1993,2,10,NA,"yes",NA,"yes","yes","yes","no","Earth Science",34,-0.75,0.126,0.355
+3,"Baisch",1990,2,2,NA,"yes","no","yes","yes","no","yes","Math",95,-0.21,0.042,0.205
+4,"Baker",1994,4,9,10,"yes","yes","yes","no","no","no","Algebra",209,-0.04,0.019,0.138
+5,"Bauman",1992,1,14,10,"yes","yes","yes","yes","no","yes","Math",182,0.23,0.022,0.148
+6,"Becker",1996,4,1,20,"yes","no","no","yes","no","no","Literature",462,0.03,0.009,0.095
+7,"Bell & Bell",1985,3,4,NA,"yes","yes","yes","yes","no","yes","Math",38,0.26,0.106,0.326
+8,"Brodney",1994,1,15,NA,"yes","yes","yes","yes","no","yes","Math",542,0.06,0.007,0.084
+9,"Burton",1986,4,4,NA,"no","yes","yes","no","no","no","Math",99,0.06,0.04,0.2
+10,"Davis, BH",1990,1,9,10,"yes","no","yes","yes","no","no","Social Studies",77,0.12,0.052,0.228
+11,"Davis, JJ",1996,4,15,NA,"no","yes","yes","no","no","no","Statistics",40,0.77,0.107,0.327
+12,"Day",1994,4,15,NA,"no","yes","yes","yes","no","yes","Sociology",190,0,0.021,0.145
+13,"Dipillo",1994,1,8,6,"yes","yes","yes","yes","no","yes","Math",113,0.52,0.037,0.192
+14,"Ganguli",1989,4,4,4,"yes","no","yes","no","no","no","Math",50,0.54,0.083,0.288
+15,"Giovinazzo",1996,4,14,NA,"no","yes","yes","no","no","no","Algebra",47,0.2,0.086,0.293
+16,"Goss",1998,4,15,10,"yes","yes","yes","no","no","no","Calculus",44,0.2,0.091,0.302
+17,"Greene et al.",1991,4,4,10,"yes","yes","yes","yes","no","no","Comp Science and Chemistry",24,-0.16,0.167,0.409
+18,"Guckin",1992,4,10,8,"yes","yes",NA,NA,"no",NA,"Algebra",78,0.42,0.052,0.228
+19,"Guckin",1992,4,10,8,"yes","yes",NA,NA,"no",NA,"Algebra",46,0.6,0.091,0.302
+20,"Horton et al.",1985,4,3,NA,"no","yes","yes","no","no","no","Chemistry",64,0.51,0.065,0.255
+21,"Hyser",1992,1,24,10,"yes","no","yes","yes","yes","no","Social Studies",57,0.58,0.073,0.27
+22,"Johnson, LA",1991,3,19,NA,"no","yes","yes","no","no","no","Algebra",68,0.54,0.061,0.247
+23,"Johnson, VM",1998,1,4,15,"yes","no","yes","no","no","no","Math",40,0.09,0.1,0.316
+24,"Kasparek",1993,3,12,NA,"yes","yes","yes","yes","no","yes","Algebra",68,0.37,0.06,0.245
+25,"Konopack et al.",1990,2,1,NA,"yes","no","yes","no","no","no","World History",48,-0.01,0.083,0.288
+26,"Langer & Applebee",1987,3,1,35,"yes","no","yes","no","no","no","Social Studies",107,-0.13,0.037,0.192
+27,"Langer & Applebee",1987,3,1,20,"yes","no","yes","no","no","no","Social Studies",58,0.18,0.069,0.263
+28,"Licata",1993,3,1,15,"yes","yes","yes","no","no","no","Math in Science",225,0.27,0.018,0.134
+29,"Lodholz",1980,1,14,15,"yes","yes","yes","no","no","no","Math",446,-0.02,0.009,0.095
+30,"Madden",1993,1,20,8,"yes","no","yes","yes","no","yes","Math",77,0.33,0.053,0.23
+31,"Millican",1994,1,10,NA,"yes","yes","yes","yes","yes","yes","Math",243,0.59,0.017,0.13
+32,"Moynihan",1994,1,7,10,"yes","yes","yes","yes","no","yes","Math",39,0.84,0.112,0.335
+33,"Mulvaney",1991,4,11,NA,"yes","yes","yes","no","no","no","Management",67,-0.32,0.06,0.245
+34,"Nieswandt",1997,3,NA,NA,"no","yes","yes","no","no","no","Chemistry",91,0.12,0.044,0.21
+35,"Radmacher",1995,4,NA,NA,"no","yes","yes","no","no","yes","Psychology",36,1.12,0.129,0.359
+36,"Reaves",1991,3,1,NA,"yes","no","yes","no","no","no","Natural Resources",177,-0.12,0.023,0.152
+37,"Rivard",1996,2,6,55,"yes","no","yes","no","no","no","Science",20,-0.44,0.205,0.453
+38,"Rodgers",1996,4,15,NA,"no","yes","yes","no","no","no","Algebra",120,-0.07,0.033,0.182
+39,"Ross & Faucette",1994,4,15,NA,"no","yes","yes","no","no","no","Algebra",16,0.7,0.265,0.515
+40,"Sharp",1987,4,2,15,"yes","no","no","yes","no","yes","Biology",105,0.49,0.039,0.197
+41,"Shepard",1992,2,4,NA,"no","yes","yes","no","no","no","Math",195,0.2,0.021,0.145
+42,"Stewart",1992,3,24,5,"yes","yes","yes","yes","no","yes","Algebra",62,0.58,0.067,0.259
+43,"Ullrich",1926,4,11,NA,"no","yes","yes","no","no","no","Educational Psychology",289,0.15,0.014,0.118
+44,"Weiss & Walters",1980,4,15,3,"yes","no","yes","no","no","no","Statistics",25,0.63,0.168,0.41
+45,"Wells",1986,1,8,15,"yes","no","yes","yes","no","yes","Math",250,0.04,0.016,0.126
+46,"Willey",1988,3,15,NA,NA,"no","yes","yes","no","yes","Biology",51,1.46,0.099,0.315
+47,"Willey",1988,2,15,NA,NA,"no","yes","yes","no","yes","Social Studies",46,0.04,0.087,0.295
+48,"Youngberg",1989,4,15,10,"yes","yes","yes","no","no","no","Algebra",56,0.25,0.072,0.268
