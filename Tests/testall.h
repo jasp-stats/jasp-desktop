@@ -186,6 +186,12 @@ private slots:
 	// (single-writer rule, live decode stays strict-table).
 	void	testLegacyResultTokenDecoder();
 
+	// mds-plan D5.4: released-format .jasp fixture end to end - loads (legacy result tokens
+	// decode on the unchanged columns, the dead one stays raw, missing module cleanly skipped,
+	// no crash), re-save writes our own envelope, reload is lossless and the 7.x gate skips
+	// the legacy sweep. testJaspArchiveVersionBlocksOlderBuilds stays green next to it.
+	void	testReleasedFormatFileUpgradesOnLoad();
+
 	// C1/M6 loadFilteredData provenance: the stamped filterId is globally unique and implies its
 	// dataset, so it anchors the column lookup; a mismatching dataSetId is verification-only and a
 	// dead dataSetId cannot pull the read to the wrong dataset. Without a filterId the legacy

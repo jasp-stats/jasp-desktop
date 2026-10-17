@@ -3688,6 +3688,83 @@ void TestAll::testReleasedOptionsEncodeViaLegacyFallbackAndDeadStampsDegrade()
 //indices outside the mint (deleted columns) stay raw (C16), and a churned column set can only
 //ever resolve index-by-index (order changed ⟹ different name or raw - best effort by design,
 //never a crash). Read-side only: nothing registers into the global decode table (C4).
+//mds-plan D5.4: repack a zip while replacing (or adding) whole text entries - used to turn a
+//current-format archive into a released-format fixture (manifest downgrade + crafted
+//analyses.json) without faking the internal.sqlite the importer insists on.
+static bool _rewriteZipReplacingEntries(const QString & src, const QString & dst, const QMap<QString, QByteArray> & replacements)
+{
+	struct archive * in = archive_read_new();
+	archive_read_support_format_zip(in);
+
+	if(archive_read_open_filename(in, qPrintable(src), 16384) != ARCHIVE_OK)
+	{
+		Log::log() << "_rewriteZipReplacingEntries: open src failed: " << archive_error_string(in) << std::endl;
+		archive_read_free(in);
+		return false;
+	}
+
+	struct archive * out = archive_write_new();
+	archive_write_set_format_zip(out);
+
+	if(archive_write_open_filename(out, qPrintable(dst)) != ARCHIVE_OK)
+	{
+		Log::log() << "_rewriteZipReplacingEntries: open dst failed: " << archive_error_string(out) << std::endl;
+		archive_read_free(in);
+		archive_write_free(out);
+		return false;
+	}
+
+	bool ok = true;
+	struct archive_entry * entry = nullptr;
+
+	while(archive_read_next_header(in, &entry) == ARCHIVE_OK)
+	{
+		const QString name = tq(archive_entry_pathname(entry));
+
+		if(replacements.contains(name))
+		{
+			const QByteArray content = replacements.value(name);
+
+			struct archive_entry * outEntry = archive_entry_new();
+			archive_entry_set_pathname(	outEntry, qPrintable(name));
+			archive_entry_set_size(		outEntry, content.size());
+			archive_entry_set_filetype(	outEntry, AE_IFREG);
+			archive_entry_set_perm(		outEntry, 0644);
+
+			ok = ok && archive_write_header(out, outEntry) == ARCHIVE_OK
+				&& archive_write_data(out, content.constData(), content.size()) == la_ssize_t(content.size());
+
+			if(!ok) Log::log() << "_rewriteZipReplacingEntries: replace-write failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+
+			archive_entry_free(outEntry);
+			archive_read_data_skip(in);
+		}
+		else
+		{
+			ok = ok && archive_write_header(out, entry) == ARCHIVE_OK;
+			if(!ok) Log::log() << "_rewriteZipReplacingEntries: copy-header failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+
+			char buff[64 * 1024];
+			la_ssize_t bytesRead;
+
+			while(ok && (bytesRead = archive_read_data(in, buff, sizeof(buff))) > 0)
+			{
+				ok = archive_write_data(out, buff, bytesRead) == bytesRead;
+				if(!ok) Log::log() << "_rewriteZipReplacingEntries: write failed for " << fq(name).c_str() << ": " << archive_error_string(out) << std::endl;
+			}
+
+			if(bytesRead < 0)
+			{ Log::log() << "_rewriteZipReplacingEntries: read failed for " << fq(name).c_str() << ": " << archive_error_string(in) << std::endl; ok = false; }
+		}
+	}
+
+	archive_write_close(out);
+	archive_write_free(out);
+	archive_read_free(in);
+
+	return ok;
+}
+
 void TestAll::testLegacyResultTokenDecoder()
 {
 	QVERIFY(_newPkgWithDataSet());
@@ -3758,6 +3835,152 @@ void TestAll::testLegacyResultTokenDecoder()
 	QVERIFY(entryChurned["results"][0]["cells"][0]["content"][0].asString() != "contNormal");	//the old token no longer truthfully means contNormal
 																																	//reaching this line at all is the no-crash contract.
 }
+
+//mds-plan D5.4: the upgrade path end to end over a RELEASED-format .jasp. A real current-build
+//archive is repacked with a released manifest (archive 6.0.0) and a released-shape analyses.json:
+//plain-name option arrays (no {value,types}), a dynamicModule that is not installed here (must be
+//skipped as today), and a report entry whose persisted results hold genuine bare-prefix tokens
+//for the CURRENT column order (unchanged columns) plus a dead index (a churned-away column).
+//Load through the real loader loop: tokens resolve, dead stays raw, no crash, no error. Re-save:
+//our own envelope - results carry no live legacy tokens any more and the options member is the
+//Storage generator's output (a module-backed option-binding file loop is not constructible in
+//this module-free test binary; the Storage save/reload equivalence itself is pinned by
+//testStorageTermShapeAndRoundTrip and the twin round trip in tst_generatedOptionsJsonAware.qml).
+//Reload of the re-saved tree at archive 7: the legacy gate skips it and the results are
+//byte-identical (lossless).
+void TestAll::testReleasedFormatFileUpgradesOnLoad()
+{
+	// --- the legacy tokens for the debug.csv column order (the dataset the fixture will carry) ----
+	{
+		QVERIFY(_newPkgWithDataSet());
+	}
+	const ColumnEncoder::colTypeMap names = _pkg->dataSet()->getColumnTypesMap();
+	const std::string tokNormal	= ColumnEncoder::tokenForNameInNames(names, "contNormal", ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string tokGender	= ColumnEncoder::tokenForNameInNames(names, "facGender",  ColumnEncoder::LEGACY_DEFAULT_PREFIX);
+	const std::string tokGone	= std::string(ColumnEncoder::LEGACY_DEFAULT_PREFIX) + "424242_Encoded";	//dead index: a column churned away long ago
+	QVERIFY2(!tokNormal.empty() && !tokGender.empty(), "the fixture dataset must yield legacy tokens for contNormal/facGender");
+
+	// --- hand over to a real app context -------------------------------------------------------------
+	//MainWindow owns PreferencesModel/Upgrader/Analyses/DataSetPackage (the report Analysis ctor
+	//and the upgrader step need them) and re-creates the session dir, so everything fixture-side
+	//is built AFTER it, exactly like the CLI sync-chain tests do their open().
+	DatabaseInterface::closeInterfaces();	//as TestAll::cleanup does - the DatabaseInterface is not a child of the package
+	delete _pkg;
+	_pkg = nullptr;
+
+	MainWindow * mw = nullptr;
+	QSignalSpy * exitSpy = _newMainWindowWithExitSpy(mw);
+
+	// --- the staged current-format archive (same debug.csv dataset) ----------------------------------
+	{
+		CSVImporter importer;
+		importer.loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), DataSetPackage::pkg()->createDataSet(), [](int){});
+	}
+	QVERIFY(DataSetPackage::pkg()->dataSet() && DataSetPackage::pkg()->dataSet()->column("contNormal"));
+
+	const std::string stageFile = TempFiles::createSpecific("mdslegacy", "stage.jasp");
+	JASPExporter::createSnapshot("mdslegacy_snapshot_");
+	JASPExporter().saveDataSet(stageFile, [](int){});
+	QVERIFY2(QFileInfo::exists(tq(stageFile)), "staged archive must be written");
+
+	// --- crafted released-format analyses.json ---------------------------------------------------
+	Json::Value entry(Json::objectValue);
+	entry["id"]			= 0;
+	entry["name"]		= "legacyReport";
+	entry["title"]		= "legacyReport";
+	entry["isReport"]	= true;
+	entry["status"]		= "complete";
+	entry["options"]["variables"].append("contNormal");				//released plain-name form
+	entry["options"]["variables"].append("facGender");
+	Json::Value table(Json::objectValue);
+	table["title"]					= "Summary of " + tokNormal;
+	table["cells"][0]["content"]	= tokGender;
+	table["cells"][1]["content"]	= tokGone;
+	entry["results"]["items"][0]	= table;				//results is an object root (setResults reads its .meta; real files always are)
+
+	Json::Value moduleEntry(Json::objectValue);						//module absent from this binary: cleanly skipped
+	moduleEntry["id"]				= 1;
+	moduleEntry["name"]				= "Descriptives";
+	moduleEntry["title"]			= "noModuleHere";
+	moduleEntry["status"]			= "complete";
+	moduleEntry["dynamicModule"]["name"]	= "jaspDoesNotHaveThis";
+	moduleEntry["dynamicModule"]["id"]		= "legacyAnalysis";
+	moduleEntry["options"]["variables"].append("contNormal");
+
+	Json::Value doc(Json::objectValue);
+	doc["analyses"].append(entry);
+	doc["analyses"].append(moduleEntry);
+	doc["meta"] = Json::objectValue;
+
+	// --- repack with a released manifest ----------------------------------------------------------
+	QMap<QString, QByteArray> replacements;
+	replacements["analyses.json"]	= tq(doc.toStyledString()).toUtf8();
+	replacements["manifest.json"]	= "{\n\t\"jaspArchiveVersion\" : \"6.0.0\",\n\t\"jaspVersion\" : \"0.96.1\"\n}\n";
+
+	const QString fixtureFile = tq(TempFiles::createSpecific("mdslegacy", "released.jasp"));
+	QVERIFY2(_rewriteZipReplacingEntries(tq(stageFile), fixtureFile, replacements), "fixture repack failed");
+
+	const ManifestInfo fixtureManifest = ArchiveReader::readManifest(fq(fixtureFile));
+	QCOMPARE(tq(fixtureManifest.jaspArchiveVersion), QString("6.0.0"));
+	QCOMPARE(tq(fixtureManifest.jaspVersion), QString("0.96.1"));
+
+	// --- import the released-format file (the same sync importer the open-flow runs) -------------------
+	DataSetPackage::pkg()->reset();
+	JASPImporter::loadDataSet(fq(fixtureFile), [](int){});
+	QCOMPARE(DataSetPackage::pkg()->archiveVersion().major(), 6u);
+	QVERIFY2(DataSetPackage::pkg()->dataSet() && DataSetPackage::pkg()->dataSet()->column("contNormal"), "the fixture dataset must come back");
+
+	// --- the real loader loop, gated with the file's archive version -----------------------------------
+	bool errorFound = false;
+	std::stringstream errorMsg;
+	mw->_analyses->loadAnalysesFromDatasetPackage(errorFound, errorMsg, nullptr, DataSetPackage::pkg()->archiveVersion());
+
+	//the missing-module entry reports the (expected) module error - same as opening such a file in
+	//the real app; nothing else may error and nothing may crash.
+	QVERIFY2(!errorFound || tq(errorMsg.str()).contains("Module"), qPrintable(tq(errorMsg.str())));
+	QCOMPARE(mw->_analyses->count(), 1);																				//report entry loaded, module entry skipped as today
+
+	const std::string afterLoad = mw->_analyses->get(0)->results().toStyledString();
+	QVERIFY2(afterLoad.find(tokNormal) == std::string::npos, "the legacy contNormal token must have decoded at load");
+	QVERIFY2(afterLoad.find(tokGender) == std::string::npos, "the legacy facGender token must have decoded at load");
+	QVERIFY2(afterLoad.find("contNormal") != std::string::npos && afterLoad.find("facGender") != std::string::npos, "the decoded names are present");
+	QVERIFY2(afterLoad.find(tokGone) != std::string::npos, "the dead-index token stays raw (C16), no crash");
+
+	// --- re-save: our own envelope ---------------------------------------------------------------------
+	const Json::Value resaved = mw->_analyses->asJson();
+	const std::string resavedDump = resaved.toStyledString();
+	QVERIFY(resavedDump.find(tokNormal) == std::string::npos);															//what we save carries no live legacy tokens...
+	QVERIFY(resavedDump.find(tokGone) != std::string::npos);																//...only the raw dead one survives verbatim
+	QVERIFY(resaved["analyses"][0].isMember("options"));																	//the save path emits the (Storage-generated) options member
+
+	// --- reload the re-saved tree at archive 7: gate skips, results lossless -----------------------------
+	mw->_analyses->clear();
+	bool error2 = false;
+	std::stringstream errorMsg2;
+	mw->_analyses->loadAnalysesFromJaspFileJson(resaved["analyses"], resaved["meta"], error2, errorMsg2, nullptr, JASPExporter::jaspArchiveVersion);
+
+	QVERIFY2(!error2, qPrintable(tq(errorMsg2.str())));
+	QCOMPARE(mw->_analyses->count(), 1);
+	QCOMPARE(mw->_analyses->get(0)->results().toStyledString(), afterLoad);												//byte-equal through the save/reload cycle
+
+	delete exitSpy;
+	delete mw; //MainWindow::singleton() and other singletons must not survive into the next test
+
+	//Deleting MainWindow destroys its PreferencesModel, and the teardown path can leave a lazy
+	//BARE PreferencesModelBase behind - later tests in this binary install their model through
+	//the `if(!PreferencesModel::prefs()) new PreferencesModel(this)` guard (testSyncKeepMissingColumns
+	//et al.), which trips the base ctor's assert against a leftover plain base. Take whatever is
+	//there (virtual dtor resets the singleton) and hand them the guarded real model, parented to
+	//TestAll so it lives until the next cleanup just like theirs.
+	delete PreferencesModelBase::preferences();
+	if(!PreferencesModel::prefs())
+		new PreferencesModel(this);
+
+	//The MainWindow teardown took the session directory (and its database) with it; following tests
+	//still expect it to exist.
+	TempFiles::init(ProcessInfo::currentPID());
+}
+
 
 void TestAll::testLoadFilteredDataFilterFirstProvenance()
 {

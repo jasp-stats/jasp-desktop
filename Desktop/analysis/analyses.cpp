@@ -78,7 +78,13 @@ Analysis* Analyses::createFromJaspFileEntry(Json::Value analysisData, RibbonMode
 	if(_nextId <= id) _nextId = id + 1;
 
 	Modules::UpgradeMsgs		msgs;
-	bool						wasUpgraded		= Upgrader::upgrader()->upgradeAnalysisData(DynamicModules::dynMods()->modules(), analysisData, msgs);
+	//The Upgrader is MainWindow-owned in the shipped app; guard anyway (a null deref here would
+	//take down the whole load loop - the standalone test harness owns one locally instead).
+	bool						wasUpgraded		= false;
+	if(Upgrader * upgrader = Upgrader::upgrader())
+		wasUpgraded = upgrader->upgradeAnalysisData(DynamicModules::dynMods() ? DynamicModules::dynMods()->modules() : Modules::ModulesMap(), analysisData, msgs);
+	else
+		Log::log() << "Analyses::createFromJaspFileEntry: no Upgrader in this process - option upgrades skipped." << std::endl;
 	Json::Value				&	optionsJson		= analysisData["options"];
 
 	//mds-plan D5.3: released files' stored results can still carry old bare-prefix
