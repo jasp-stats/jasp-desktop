@@ -229,6 +229,28 @@ private slots:
 	// precedence (bare titles win).
 	void	testDataSetSelectionSurfaceMap();
 
+	// mds-plan D7.0a: the user-qualified column-reference grammar (plan §5) - pure
+	// parse/render: the three grammar levels + the bare production, roundtrip
+	// parse(render(x)) == x for names with dots/quotes/backslashes/unicode, exactly two
+	// escapes (\" and \\, anything else rejected), case-insensitive type segment normalized
+	// to the canonical columnType spelling, and every malformed shape rejected with a message.
+	void	testQualifiedColumnRefParseRenderRoundTrip();
+
+	// mds-plan D7.0a: resolution against the live Workspace - full form, "DS"."Col" (default
+	// filter), unique-filter "F"."Col", the flagship same-name column addressed through two
+	// filters of one dataset (distinct filterIds), duplicate columns across datasets, the
+	// type segment winning over lookup, dataset-title precedence over filter names, and every
+	// typed rejection (ambiguous filter name listing candidates, unknown dataset/filter/
+	// column, bare refusal) distinguishable.
+	void	testQualifiedColumnRefResolveAgainstWorkspace();
+
+	// mds-plan D7.0a: the context-aware minimal render - plain-name passthrough inside the
+	// context's default namespace, shortest still-resolvable form outside it ("DS"."Col" /
+	// unique "F"."Col" / full form), type segment only when asked for, dead/absent filter ids
+	// render empty (loud-failure doctrine), and every emitted qualified form roundtrips
+	// through parse+resolve to the exact (dataSetId, filterId, column) it was built from.
+	void	testQualifiedColumnRefRenderMinimal();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

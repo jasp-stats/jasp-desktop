@@ -6,6 +6,77 @@
 #include "datasetbasenode.h"
 #include "databaseinterface.h"
 
+// --- user-qualified column references (mds-plan D7.0a, plan §5) -------------------------------
+// The surface grammar of an outward column reference in filter/compute/analysis code:
+//
+//   "Dataset"."Filter"."Column"("Type")   full form, always valid
+//   "Dataset"."Column"                    that dataset's DEFAULT filter
+//   "Filter"."Column"("Type")             only when the filter name is UNIQUE across all loaded
+//                                         datasets (ambiguity => rejection listing candidates)
+//   "Column"                              bare - NOT handled by these helpers (boundary below)
+//
+// Every segment is a double-quoted string and '.' separates segments only OUTSIDE quotes, so
+// names containing dots need no escaping at all. Inside a segment exactly two escapes exist,
+// R-style: \" for a quote and \\ for a backslash; a backslash before anything else is a parse
+// error. That keeps the rule honest and roundtrip-safe: parse(render(x)) == x for every name,
+// and a quote inside a name can never be confused with a segment boundary. The optional type
+// segment is a quoted columnType spelling (scale/ordinal/nominal/nominalText, case-insensitive,
+// canonical spelling on render) and WINS over the column's current type when present.
+//
+// BOUNDARY (mds-plan §4): these helpers parse/render/resolve QUALIFIED references only. A bare
+// column name is never resolved here - which namespace it falls back to is per-context (the
+// filter's own dataset, the selected input filter, the analysis host, the legacy current
+// encoder) and is the CALLER's concern. parse() still recognizes the bare production (so
+// callers can tell it apart from qualified input), resolve() refuses it with
+// QualifiedRefError::unqualifiedReference, and the context-aware render returns the plain
+// unquoted name when the reference lies inside the caller's default namespace.
+
+enum class QualifiedRefError
+{
+    none = 0,
+    unqualifiedReference,	///< bare name: no context in these helpers (the callers' fallback, §4)
+    unknownDataSet,			///< the dataset segment names no loaded dataset
+    unknownFilterInDataSet,	///< the filter segment names no filter of the named dataset
+    ambiguousFilterName,	///< 2-segment form: the filter name exists in several datasets (error lists them)
+    filterNameMatchesNothing,///< 2-segment form: first segment is neither a dataset title nor a filter name
+    unknownColumn,			///< the column segment names no column of the resolved dataset
+    unknownTypeName			///< a hand-built ref whose type segment is no columnType spelling
+};
+
+/// The concrete resolution of a parsed reference against the live Workspace. Ids only on
+/// purpose: consumers resolve the live objects per use (Workspace::filterById/dataSetById)
+/// and never cache Filter*/Column* pointers (the D1.2 lazy-attach landmine).
+struct ResolvedQualifiedColumn
+{
+    int			dataSetId	= -1;
+    int			filterId	= -1;
+    std::string	columnName;				///< bare original name, never an encoded token
+    columnType	type		= columnType::unknown;	///< the type segment when present (it wins), else the column's current type
+};
+
+struct QualifiedColumnRef
+{
+    QString dataSetName;	///< dataset TITLE (the user-facing handle, like the selection surface); "" when absent
+    QString filterName;		///< filter NAME (Filter::name - never the translatable "Default filter" title); "" when absent
+    QString columnName;		///< always present
+    QString typeName;		///< canonical columnType spelling when a type segment was parsed/built; "" when absent
+
+    bool	isBare() const { return dataSetName.isEmpty() && filterName.isEmpty(); }
+    bool	isFullyQualified() const { return !dataSetName.isEmpty() && !filterName.isEmpty(); }
+
+    /// The surface form of exactly the segments set: quoted+escaped segments joined by '.',
+    /// the type appended as ("Type") when typeName is non-empty. A bare ref renders as the
+    /// quoted column alone; the UNQUOTED plain-name form (today's own-dataset code) is only
+    /// ever produced by Workspace::renderQualifiedColumnRef's default-namespace passthrough.
+    QString		render() const;
+    /// `"` and `\` escaped R-style (\" / \\), everything else verbatim - dots need no escaping
+    /// because the separator only acts outside quotes.
+    static QString	escapeSegment(const QString & raw);
+    /// Whole-string parse of one reference (whitespace around separators allowed). False +
+    /// ready-to-show `error` on any violation; a bare input parses with only columnName set.
+    static bool		parse(const QString & text, QualifiedColumnRef & out, QString & error);
+};
+
 class Workspace : public DataSetBaseNode
 {
 	Q_OBJECT
@@ -114,6 +185,35 @@ public slots:
 			///  `optionName` and listing what IS selectable (syntax-facing English by design: the
 			///  bridge hands it to R users untouched by the UI language).
 			bool								resolveDataSetSelectionValue(const QString &optionName, const Json::Value &value, int &filterId, QString &error) const;
+
+			// --- user-qualified column references (mds-plan D7.0a / plan §5) -------------------
+			// Parse/render are pure (QualifiedColumnRef); resolution runs against the live
+			// workspace: the dataset segment is matched by TITLE (exact, like the selection
+			// surface), the filter segment by NAME. The 2-segment form "X"."Column" resolves X
+			// as a dataset title first (its default filter); only when no dataset is titled X
+			// is X treated as a filter name, and then only when UNIQUE across all loaded
+			// datasets - ambiguity is a rejection listing the candidate datasets. Every failure
+			// kind is a distinct QualifiedRefError plus a ready-to-show message (syntax-facing
+			// English, like resolveDataSetSelectionValue). Bare names are NOT resolved here (§4:
+			// context fallback is the callers' concern - see the grammar block at the top).
+			///< Parse a surface-form reference and resolve it to the concrete (dataSetId,
+			///< filterId, column, type); `ref` must come from QualifiedColumnRef::parse or be
+			///  built to the same rules. Returns the rejection kind (none on success).
+			QualifiedRefError					resolveQualifiedColumnRef(const QualifiedColumnRef & ref, ResolvedQualifiedColumn & out, QString & error) const;
+			///< Context-aware minimal render (plan §5: qualify only what lies outside the
+			///< context's default namespace): the plain unqualified column name when `filterId`
+			///< IS the caller's context filter `contextFilterId` (a filter editor's own
+			///< dataset+filter, the compute panel's selected input filter, an analysis host);
+			///< otherwise the shortest form that still resolves - "DS"."Col" for a default
+			///< filter, "F"."Col" when the filter name is unique across loaded datasets, the
+			///< full form otherwise. The type segment is emitted only when `type` is not
+			///  unknown. A dead/unresolvable `filterId` renders "" (the loud-failure doctrine
+			///  of datasetSelectionSurface) and so does `filterId` < 0 (logged): these helpers
+			///< never invent a bare form, because bare means the caller's context and this
+			///< call just established the reference is NOT in it. Non-const on purpose: like
+			///< filterById it may materialize a named filter of a reopened file.
+			QString								renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type);
+
 			Q_INVOKABLE void					setDataSetComputed(const QString & name, bool computed);
 			void					setShownDataSet(QString	  name);
 			void					setShownDataSet(DataSet * dataSet);

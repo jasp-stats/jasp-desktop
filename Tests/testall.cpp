@@ -4600,6 +4600,360 @@ void TestAll::testDataSetSelectionSurfaceMap()
 			 "the old title is gone from the surface immediately");
 }
 
+void TestAll::testQualifiedColumnRefParseRenderRoundTrip()
+{
+	//mds-plan D7.0a: the plan §5 surface grammar - pure parse/render, no workspace. Quoting
+	//is honest and roundtrip-safe: dots never need escaping (the separator only acts OUTSIDE
+	//quotes), and inside a segment exactly two escapes exist (\" and \\) - a backslash before
+	//anything else is a parse error, so a name's rendering can never be ambiguous.
+	QString error;
+	QualifiedColumnRef ref;
+
+	//The grammar levels: full form, dataset form, and the bare production (recognized here so
+	//callers can tell it apart, but never resolved by the helpers - §4 boundary).
+	QVERIFY2(QualifiedColumnRef::parse("\"Alpha\".\"Keep\".\"Score\"(\"scale\")", ref, error), qPrintable(error));
+	QVERIFY(ref.isFullyQualified() && !ref.isBare());
+	QCOMPARE(ref.dataSetName,	QString("Alpha"));
+	QCOMPARE(ref.filterName,	QString("Keep"));
+	QCOMPARE(ref.columnName,	QString("Score"));
+	QCOMPARE(ref.typeName,		QString("scale"));	//canonical spelling
+	QCOMPARE(ref.render(),		QString("\"Alpha\".\"Keep\".\"Score\"(\"scale\")"));	//byte-stable
+
+	QVERIFY2(QualifiedColumnRef::parse("\"Alpha\".\"Score\"", ref, error), qPrintable(error));
+	QVERIFY(!ref.isBare() && !ref.isFullyQualified());
+	QCOMPARE(ref.dataSetName,	QString("Alpha"));
+	QCOMPARE(ref.filterName,	QString());
+	QCOMPARE(ref.columnName,	QString("Score"));
+	QCOMPARE(ref.render(),		QString("\"Alpha\".\"Score\""));
+
+	QVERIFY2(QualifiedColumnRef::parse("\"Score\"", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("Score"));
+
+	QVERIFY2(QualifiedColumnRef::parse("Score", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("Score"));
+
+	//Bare input is never split on dots (a bare name is the callers' whole business):
+	QVERIFY2(QualifiedColumnRef::parse("x.scale", ref, error), qPrintable(error));
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("x.scale"));
+	QVERIFY2(QualifiedColumnRef::parse("A.\"B\"", ref, error), qPrintable(error));	//unquoted first segment = bare input
+	QVERIFY(ref.isBare());
+	QCOMPARE(ref.columnName,	QString("A.\"B\""));
+
+	//Roundtrip render->parse for tricky names, via the full form (the render of a bare ref is
+	//the quoted column alone - the UNQUOTED passthrough is renderQualifiedColumnRef's job):
+	const QStringList trickyNames = {
+		"with.dots.in.it",
+		"He said \"hi\"",
+		"back\\slash",
+		"both \" and \\ mixed",
+		"Datāset ✓ ünïcode",
+		"ends with dot.",
+		".starts with one",
+		"multi\nline\tname",
+		" - separator looking name",
+	};
+	for(const QString & name : trickyNames)
+	{
+		QualifiedColumnRef built;
+		built.dataSetName	= "D.S";
+		built.filterName	= "F\"F";
+		built.columnName	= name;
+		built.typeName		= "scale";
+
+		const QString rendered = built.render();
+		QualifiedColumnRef parsed;
+		QString parseError;
+		QVERIFY2(QualifiedColumnRef::parse(rendered, parsed, parseError),
+				 qPrintable("roundtrip failed for '" + name + "': rendered '" + rendered + "' - " + parseError));
+		QVERIFY2(parsed.isFullyQualified(), qPrintable("roundtrip lost the qualification of '" + name + "'"));
+		QCOMPARE(parsed.dataSetName,	QString("D.S"));
+		QCOMPARE(parsed.filterName,		QString("F\"F"));
+		QCOMPARE(parsed.columnName,		name);
+		QCOMPARE(parsed.typeName,		QString("scale"));
+	}
+
+	//" renders as \" and \ as \\ (the input here is: a " b \ c):
+	QCOMPARE(QualifiedColumnRef::escapeSegment("a\"b\\c"), QString("a\\\"b\\\\c"));
+
+	//Whitespace around separators is tolerated (the in-code scanner of D7.3 wants this):
+	QVERIFY2(QualifiedColumnRef::parse(" \"A\" . \"B\" ( \"scale\" ) ", ref, error), qPrintable(error));
+	QCOMPARE(ref.dataSetName,	QString("A"));
+	QCOMPARE(ref.columnName,	QString("B"));
+	QCOMPARE(ref.typeName,		QString("scale"));
+
+	//The type segment is case-insensitive and normalizes to the canonical spelling:
+	QVERIFY2(QualifiedColumnRef::parse("\"A\"(\"NOMINALTEXT\")", ref, error), qPrintable(error));
+	QCOMPARE(ref.typeName, QString("nominalText"));
+
+	//Malformed shapes - all rejected with a message, never a throw:
+	struct Bad { const char * text; const char * errorMustContain; };
+	const std::vector<Bad> bad = {
+		{ "",								"empty"							},
+		{ "   ",							"empty"							},
+		{ "\"A",							"unterminated"					},
+		{ "\"A\\",							"escape"						},
+		{ "\"A\\nB\"",						"escape"						},
+		{ "\"A\"x",							"unexpected"					},
+		{ "\"A\".",							"quoted segment"				},
+		{ "\"A\".\"B\".\"C\".\"D\"",		"at most three"					},
+		{ "\"A\"(\"scale\"",				"')'"							},
+		{ "\"A\"(scale)",					"quoted"						},
+		{ "\"A\"(\"nonsense\")",			"unknown column type"			},
+		{ "\"A\"(\"scale\") trailing",		"unexpected text"				},
+	};
+	for(const Bad & b : bad)
+	{
+		QualifiedColumnRef parsed;
+		QString parseError;
+		QVERIFY2(!QualifiedColumnRef::parse(b.text, parsed, parseError),
+				 qPrintable(QString("'%1' must not parse").arg(b.text)));
+		QVERIFY2(parseError.contains(b.errorMustContain),
+				 qPrintable(QString("'%1' rejected with '%2', which lacks '%3'").arg(b.text).arg(parseError).arg(b.errorMustContain)));
+	}
+}
+
+void TestAll::testQualifiedColumnRefResolveAgainstWorkspace()
+{
+	//mds-plan D7.0a: resolution against the live Workspace (plan §5 + the design doc's error
+	//formats). Fixture: "Alpha" (default + named "F0" + "Extra"), "Beta" (default + named
+	//"KeepMyId" + "Shared"), "Gamma" (default + a second "Shared" for the ambiguity
+	//rejection) - contNormal exists in every dataset, the same-name-in-two-filters flagship
+	//and the duplicate-column-across-datasets case included.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0		= alpha->createFilter("F0", true);
+	Filter * alphaExtra		= alpha->createFilter("Extra", true);
+	Filter * alphaAsFilter	= alpha->createFilter("Beta", true);	//a filter named like a DATASET (title precedence)
+	QVERIFY(alphaF0 && alphaExtra && alphaAsFilter);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep	= beta->createFilter("KeepMyId", true);
+	Filter * betaShared	= beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	Filter * gammaShared = gamma->createFilter("Shared", true);
+	QVERIFY(gammaShared);
+
+	const std::string col = "contNormal";
+	QVERIFY(alpha->column(col) && beta->column(col) && gamma->column(col));
+
+	ResolvedQualifiedColumn resolved;
+	QString error;
+
+	//QVERIFY-style failure inside a void helper (the resolve lambda below returns a value,
+	//so the bare-return macros must not expand inside it):
+	auto parseRef = [&](const QString & text, QualifiedColumnRef & ref)
+	{
+		QString parseError;
+		if(!QualifiedColumnRef::parse(text, ref, parseError))
+			QFAIL(qPrintable("parse failed for " + text + ": " + parseError));
+	};
+
+	auto resolve = [&](const QString & text) -> QualifiedRefError
+	{
+		QualifiedColumnRef ref;
+		parseRef(text, ref);
+		return ws->resolveQualifiedColumnRef(ref, resolved, error);
+	};
+
+	//Full form - and the flagship: the SAME column addressed through two different filters of
+	//ONE dataset resolves to the same (dataset, column) but DISTINCT filterIds (which is what
+	//mints distinct tokens under the per-filter views at run, mds-plan C3):
+	QCOMPARE(resolve("\"Alpha\".\"F0\".\"contNormal\""),		QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	alpha->id());
+	QCOMPARE(resolved.filterId,		alphaF0->id());
+	QCOMPARE(resolved.columnName,	QString::fromStdString(col));
+	QCOMPARE(resolved.type,			alpha->column(col)->type());
+
+	QCOMPARE(resolve("\"Alpha\".\"Extra\".\"contNormal\""),		QualifiedRefError::none);
+	QCOMPARE(resolved.filterId,		alphaExtra->id());
+	QVERIFY(alphaF0->id() != alphaExtra->id());
+
+	//"DS"."Column" -> the dataset's default filter:
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\""),				QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	alpha->id());
+	QCOMPARE(resolved.filterId,		alpha->defaultFilter()->id());
+
+	//"Filter"."Column" with a unique filter name across all loaded datasets:
+	QCOMPARE(resolve("\"KeepMyId\".\"contNormal\""),			QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QCOMPARE(resolved.filterId,		betaKeep->id());
+
+	//Duplicate column names across datasets resolve to their own dataset each:
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\""),	QualifiedRefError::none);
+	const int alphaDataSetId = resolved.dataSetId;
+	QCOMPARE(resolve("\"Beta\".\"contNormal\""),	QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QVERIFY(alphaDataSetId != resolved.dataSetId);
+
+	//The type segment WINS over the lookup; absent it is the column's current type:
+	const columnType actualType = alpha->column(col)->type();
+	const columnType overrideType = actualType == columnType::scale ? columnType::ordinal : columnType::scale;
+	QCOMPARE(resolve(QString("\"Alpha\".\"contNormal\"(\"%1\")").arg(tq(columnTypeToString(overrideType)))),	QualifiedRefError::none);
+	QCOMPARE(resolved.type, overrideType);
+	QCOMPARE(resolve("\"Alpha\".\"contNormal\"(\"scale\")"),	QualifiedRefError::none);	//case-insensitive acceptance
+	QCOMPARE(resolved.type, columnType::scale);
+
+	//Dataset-title precedence over filter names: "Beta" is a dataset title AND a filter name
+	//(alphaAsFilter) - the title wins, always, exactly like the selection surface's precedence:
+	QCOMPARE(resolve("\"Beta\".\"contNormal\""),				QualifiedRefError::none);
+	QCOMPARE(resolved.dataSetId,	beta->id());
+	QCOMPARE(resolved.filterId,		beta->defaultFilter()->id());
+
+	//The internal DEFAULT_FILTER spelling resolves inside the full form...
+	QCOMPARE(resolve("\"Alpha\".\"DEFAULT_FILTER\".\"contNormal\""), QualifiedRefError::none);
+	QCOMPARE(resolved.filterId,		alpha->defaultFilter()->id());
+	//...but as a bare filter name it is inherently ambiguous (every dataset has one):
+	QVERIFY2(resolve("\"DEFAULT_FILTER\".\"contNormal\"") == QualifiedRefError::ambiguousFilterName,
+			 qPrintable("the default-filter name is shared by all datasets, got: " + error));
+	QVERIFY(error.contains("Alpha") && error.contains("Beta") && error.contains("Gamma"));
+
+	//Ambiguity rejection lists the candidate datasets (the design doc's error format):
+	QVERIFY2(resolve("\"Shared\".\"contNormal\"") == QualifiedRefError::ambiguousFilterName,
+			 qPrintable("a filter name used twice must be rejected, got: " + error));
+	QVERIFY2(error.contains("Beta") && error.contains("Gamma") && !error.contains("Alpha"),
+			 qPrintable("the rejection must list exactly the candidate datasets, got: " + error));
+	QVERIFY2(error.contains("\"Beta\".\"Shared\".\"contNormal\""),
+			 qPrintable("the rejection should hint the fixing full form, got: " + error));
+
+	//Every missing-piece rejection is its own kind:
+	QVERIFY2(resolve("\"Nope\".\"F0\".\"contNormal\"") == QualifiedRefError::unknownDataSet,
+			 qPrintable("unknown dataset, got: " + error));
+	QVERIFY(error.contains("Alpha") && error.contains("Gamma"));	//lists what IS loaded
+	QVERIFY2(resolve("\"Alpha\".\"Nope\".\"contNormal\"") == QualifiedRefError::unknownFilterInDataSet,
+			 qPrintable("unknown filter in dataset, got: " + error));
+	QVERIFY2(resolve("\"Nope\".\"contNormal\"") == QualifiedRefError::filterNameMatchesNothing,
+			 qPrintable("neither dataset title nor filter name, got: " + error));
+	QVERIFY2(resolve("\"Alpha\".\"contNope\"") == QualifiedRefError::unknownColumn,
+			 qPrintable("unknown column, got: " + error));
+	QVERIFY(error.contains("contNormal"));	//the rejection lists the columns that DO exist
+
+	//Bare references (quoted or not) are refused here - the context fallback is the callers' (§4):
+	QVERIFY2(resolve("contNormal") == QualifiedRefError::unqualifiedReference, qPrintable(error));
+	QVERIFY2(resolve("\"contNormal\"") == QualifiedRefError::unqualifiedReference, qPrintable(error));
+	QCOMPARE(resolved.dataSetId, -1);	//every rejection leaves the output fully reset
+	QCOMPARE(resolved.filterId,  -1);
+}
+
+void TestAll::testQualifiedColumnRefRenderMinimal()
+{
+	//mds-plan D7.0a: the context-aware minimal render - plain-name passthrough inside the
+	//context's default namespace, the shortest still-resolvable form outside it, and every
+	//emitted form roundtrips through parse+resolve to the exact (dataSetId, filterId, column)
+	//it was built from. Fixture as in ...ResolveAgainstWorkspace.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep	= beta->createFilter("KeepMyId", true);
+	Filter * betaShared	= beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	QVERIFY(gamma->createFilter("Shared", true));
+
+	const std::string col = "contNormal";
+	QVERIFY(alpha->column(col) && beta->column(col));
+
+	const int alphaDefault = alpha->defaultFilter()->id();
+	const int betaDefault	= beta->defaultFilter()->id();
+
+	auto render = [&](int contextFilterId, int filterId, columnType type) -> QString
+	{
+		return ws->renderQualifiedColumnRef(contextFilterId, filterId, col, type);
+	};
+
+	//Inside the default namespace: the PLAIN unquoted name (byte-identical to today's
+	//own-dataset code; bare resolution itself stays with the caller, §4):
+	QCOMPARE(render(alphaDefault, alphaDefault, columnType::unknown), QString("contNormal"));
+	QCOMPARE(render(alphaF0->id(), alphaF0->id(), columnType::unknown), QString("contNormal"));
+
+	//Same dataset, other filter: the unique-filter form (F0's name is unique):
+	QCOMPARE(render(alphaDefault, alphaF0->id(), columnType::unknown), QString("\"F0\".\"contNormal\""));
+
+	//Back to the own dataset's default filter from another filter: the "DS"."Col" form
+	//(a default filter never needs its name spelled out):
+	QCOMPARE(render(alphaF0->id(), alphaDefault, columnType::unknown), QString("\"Alpha\".\"contNormal\""));
+
+	//Another dataset's default filter: "DS"."Col".
+	QCOMPARE(render(alphaDefault, betaDefault, columnType::unknown), QString("\"Beta\".\"contNormal\""));
+
+	//Another dataset's uniquely named filter: "F"."Col".
+	QCOMPARE(render(alphaDefault, betaKeep->id(), columnType::unknown), QString("\"KeepMyId\".\"contNormal\""));
+
+	//A filter name that is NOT unique (Shared lives in Beta and Gamma): the full form.
+	QCOMPARE(render(alphaDefault, betaShared->id(), columnType::unknown), QString("\"Beta\".\"Shared\".\"contNormal\""));
+
+	//The type segment only when explicitly asked for:
+	QCOMPARE(render(alphaDefault, betaDefault, columnType::scale), QString("\"Beta\".\"contNormal\"(\"scale\")"));
+	QCOMPARE(render(alphaDefault, betaKeep->id(), columnType::ordinal), QString("\"KeepMyId\".\"contNormal\"(\"ordinal\")"));
+
+	//No context at all (-1): never a bare form - everything qualifies minimally.
+	QCOMPARE(render(-1, alphaDefault, columnType::unknown), QString("\"Alpha\".\"contNormal\""));
+
+	//A dead or absent filter id renders empty and fails loudly downstream (the
+	//datasetSelectionSurface doctrine) - never a bare form, never a made-up name:
+	QCOMPARE(render(alphaDefault, 999999, columnType::unknown), QString());
+	QCOMPARE(render(alphaDefault, -1, columnType::unknown), QString());
+
+	//Every emitted qualified form roundtrips: parse + resolve lands on the very tuple.
+	const QList<QPair<int, QString>> qualified = {
+		{ alphaF0->id(),		render(alphaDefault, alphaF0->id(), columnType::unknown) },
+		{ alphaDefault,			render(alphaF0->id(), alphaDefault, columnType::unknown) },
+		{ betaDefault,			render(alphaDefault, betaDefault, columnType::unknown) },
+		{ betaKeep->id(),		render(alphaDefault, betaKeep->id(), columnType::unknown) },
+		{ betaShared->id(),		render(alphaDefault, betaShared->id(), columnType::unknown) },
+		{ alphaDefault,			render(-1, alphaDefault, columnType::unknown) },
+	};
+	for(const auto & target : qualified)
+	{
+		QualifiedColumnRef ref;
+		QString error;
+		QVERIFY2(QualifiedColumnRef::parse(target.second, ref, error), qPrintable("minimal form did not parse: " + target.second + " - " + error));
+		ResolvedQualifiedColumn resolved;
+		QVERIFY2(ws->resolveQualifiedColumnRef(ref, resolved, error) == QualifiedRefError::none,
+				 qPrintable("minimal form did not resolve: " + target.second + " - " + error));
+		QCOMPARE(resolved.filterId, target.first);
+		QCOMPARE(resolved.columnName, QString::fromStdString(col));
+	}
+}
+
 void TestAll::testSelectionRegistryLateHostAppliesPendingValue()
 {
 	//mds-plan C4/REGISTRY (M9): the bridge hands the raw options JSON of the current parse to

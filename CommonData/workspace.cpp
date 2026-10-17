@@ -657,6 +657,444 @@ bool Workspace::resolveDataSetSelectionValue(const QString &optionName, const Js
 	return false;
 }
 
+// --- mds-plan D7.0a: the user-qualified column-reference grammar, see workspace.h ------------
+// (plan §5; the parse/render surface mirrors the selection surface above: human strings,
+// exact resolution against the live workspace, typed rejections with ready-to-show messages.)
+
+//The accepted type-segment spellings are THE columnType names (case-insensitive, canonical on
+//output), built from the enum's own map so the grammar can never drift from it.
+static bool columnTypeFromSurfaceName(const QString & raw, columnType & out)
+{
+	static const std::map<QString, columnType> spellings = []()
+	{
+		std::map<QString, columnType> map;
+		for(const auto & idName : columnTypeToStringMap())
+			map.emplace(QString::fromStdString(idName.second).toLower(), columnType(idName.first));
+		return map;
+	}();
+
+	const auto it = spellings.find(raw.toLower());
+
+	if(it == spellings.end())
+		return false;
+
+	out = it->second;
+	return true;
+}
+
+static QStringList columnTypeSurfaceSpellings()
+{
+	QStringList spellings;
+	for(const auto & idName : columnTypeToStringMap())
+		spellings.push_back(QString::fromStdString(idName.second));
+	return spellings;
+}
+
+QString QualifiedColumnRef::escapeSegment(const QString & raw)
+{
+	QString escaped;
+	escaped.reserve(raw.size());
+
+	for(const QChar & c : raw)
+	{
+		if(c == '"' || c == '\\')
+			escaped += '\\';
+		escaped += c;
+	}
+
+	return escaped;
+}
+
+QString QualifiedColumnRef::render() const
+{
+	QStringList parts;
+
+	if(!dataSetName.isEmpty())
+		parts.push_back(dataSetName);
+	if(!filterName.isEmpty())
+		parts.push_back(filterName);
+	parts.push_back(columnName); //always present
+
+	QString out;
+
+	for(const QString & part : parts)
+	{
+		if(!out.isEmpty())
+			out += '.';
+		out += '"' + escapeSegment(part) + '"';
+	}
+
+	if(!typeName.isEmpty())
+		out += "(\"" + escapeSegment(typeName) + "\")";
+
+	return out;
+}
+
+bool QualifiedColumnRef::parse(const QString & text, QualifiedColumnRef & out, QString & error)
+{
+	out		= QualifiedColumnRef();
+	error.clear();
+
+	int			pos		= 0;
+	const int	size	= text.size();
+
+	auto skipSpaces = [&pos, &text, size]()
+	{
+		while(pos < size && text[pos].isSpace())
+			++pos;
+	};
+
+	//One quoted segment; `pos` sits on the opening quote. Exactly two escapes exist (" and
+	//\); a backslash before anything else is rejected, which keeps parse(render(x)) == x and
+	//leaves no ambiguity about what a backslash inside a name means.
+	auto parseQuotedSegment = [&](QString & value) -> bool
+	{
+		++pos; //opening quote
+
+		while(pos < size)
+		{
+			const QChar c = text[pos];
+
+			if(c == '\\')
+			{
+				if(pos + 1 >= size)
+				{
+					error = "a trailing backslash at the end of the reference is not a complete escape";
+					return false;
+				}
+
+				const QChar escaped = text[pos + 1];
+
+				if(escaped != '"' && escaped != '\\')
+				{
+					error = "invalid escape '\\" + QString(escaped) + "' in a quoted segment (only \\\" and \\\\ exist)";
+					return false;
+				}
+
+				value += escaped;
+				pos += 2;
+			}
+			else if(c == '"')
+			{
+				++pos; //closing quote
+				return true;
+			}
+			else
+			{
+				value += c;
+				++pos;
+			}
+		}
+
+		error = "unterminated quoted segment (missing closing '\"')";
+		return false;
+	};
+
+	skipSpaces();
+
+	if(pos >= size)
+	{
+		error = "The column reference is empty";
+		return false;
+	}
+
+	if(text[pos] != '"')
+	{
+		//The bare production: the whole (trimmed) text is the unqualified column name. Dots
+		//are never split here - bare handling is the callers' context fallback (§4 boundary).
+		out.columnName = text.trimmed();
+		return true;
+	}
+
+	QStringList segments;
+	QString		typeSegment;
+
+	QString segment;
+	if(!parseQuotedSegment(segment))
+		return false;
+	segments.push_back(segment);
+
+	for(;;)
+	{
+		skipSpaces();
+
+		if(pos >= size)
+			break;
+
+		if(text[pos] == '.')
+		{
+			++pos;
+			skipSpaces();
+
+			if(pos >= size || text[pos] != '"')
+			{
+				error = "expected a quoted segment after '.'";
+				return false;
+			}
+
+			if(segments.size() >= 3)
+			{
+				error = "a column reference has at most three segments: \"Dataset\".\"Filter\".\"Column\"";
+				return false;
+			}
+
+			segment.clear();
+			if(!parseQuotedSegment(segment))
+				return false;
+			segments.push_back(segment);
+		}
+		else if(text[pos] == '(')
+		{
+			++pos;
+			skipSpaces();
+
+			if(pos >= size || text[pos] != '"')
+			{
+				error = "the type segment must be a quoted column type name, e.g. (\"scale\")";
+				return false;
+			}
+
+			segment.clear();
+			if(!parseQuotedSegment(segment))
+				return false;
+
+			skipSpaces();
+			if(pos >= size || text[pos] != ')')
+			{
+				error = "expected ')' after the type segment";
+				return false;
+			}
+			++pos;
+
+			skipSpaces();
+			if(pos < size)
+			{
+				error = "unexpected text after the type segment: '" + text.mid(pos) + "'";
+				return false;
+			}
+
+			typeSegment = segment;
+			break;
+		}
+		else
+		{
+			error = "unexpected character '" + QString(text[pos]) + "' after a segment: expected '.', '(\"Type\")' or the end of the reference";
+			return false;
+		}
+	}
+
+	if(!typeSegment.isEmpty())
+	{
+		columnType parsed = columnType::unknown;
+
+		if(!columnTypeFromSurfaceName(typeSegment, parsed))
+		{
+			error = "unknown column type \"" + typeSegment + "\" (known: " + columnTypeSurfaceSpellings().join(", ") + ")";
+			return false;
+		}
+
+		out.typeName = tq(columnTypeToString(parsed)); //canonical spelling
+	}
+
+	if(segments.size() == 1)
+	{
+		//A quoted bare reference: still unqualified (the quotes change nothing about context).
+		out.columnName = segments[0];
+		return true;
+	}
+
+	out.dataSetName	= segments[0];
+	out.columnName	= segments.back();
+
+	if(segments.size() == 3)
+		out.filterName = segments[1];
+
+	return true;
+}
+
+QualifiedRefError Workspace::resolveQualifiedColumnRef(const QualifiedColumnRef & ref, ResolvedQualifiedColumn & out, QString & error) const
+{
+	out		= ResolvedQualifiedColumn();
+	error.clear();
+
+	if(ref.isBare())
+	{
+		error = "The column reference '" + ref.columnName + "' is unqualified: a bare name resolves through its context (the filter's own dataset, the selected input filter or the analysis host), not through the workspace";
+		return QualifiedRefError::unqualifiedReference;
+	}
+
+	DataSet * dataSet	= nullptr;
+	Filter	* filter	= nullptr;
+
+	if(!ref.filterName.isEmpty())
+	{
+		//Full form "Dataset"."Filter"."Column": dataset by title, filter by name inside it
+		//(DataSet::filter matches named filters and the default filter by its internal
+		//DEFAULT_FILTER_NAME spelling).
+		dataSet = dataSetByTitle(ref.dataSetName);
+
+		if(!dataSet)
+		{
+			QStringList titles;
+			for(const auto & idData : _dataSets)
+				titles.push_back(idData.second->title());
+			error = "No loaded dataset is titled '" + ref.dataSetName + "' (loaded: " + titles.join(", ") + ")";
+			return QualifiedRefError::unknownDataSet;
+		}
+
+		filter = dataSet->filter(fq(ref.filterName));
+
+		if(!filter)
+		{
+			QStringList filterNames;
+			for(const Filter * f : dataSet->filters())
+				filterNames.push_back(f->nameQ());
+
+			error = "Dataset '" + ref.dataSetName + "' has no filter named '" + ref.filterName + "' (its filters: " + filterNames.join(", ") + ")";
+			return QualifiedRefError::unknownFilterInDataSet;
+		}
+	}
+	else
+	{
+		//Two-segment form "X"."Column": X is a dataset title first (its default filter), and
+		//only when no dataset is titled X is it a filter name - and then only when UNIQUE
+		//across all loaded datasets (plan §5). No clever fall-through when the title matches:
+		//dataset-title precedence is exact, like the selection surface above.
+		dataSet = dataSetByTitle(ref.dataSetName);
+
+		if(dataSet)
+		{
+			filter = dataSet->defaultFilter();
+
+			if(!filter)
+			{
+				error = "Dataset '" + ref.dataSetName + "' has no default filter (yet)";
+				return QualifiedRefError::unknownFilterInDataSet;
+			}
+		}
+		else
+		{
+			QList<DataSet *> candidates;
+			for(const auto & idData : _dataSets)
+				if(idData.second->filter(fq(ref.dataSetName)))
+					candidates.push_back(idData.second);
+
+			if(candidates.size() > 1)
+			{
+				QStringList titles;
+				for(const DataSet * candidate : candidates)
+					titles.push_back(candidate->title());
+
+				error = "The filter name '" + ref.dataSetName + "' is used in several datasets (" + titles.join(", ") + "): qualify it with the dataset, e.g. \"" + candidates.first()->title() + "\".\"" + ref.dataSetName + "\".\"" + ref.columnName + "\"";
+				return QualifiedRefError::ambiguousFilterName;
+			}
+
+			if(candidates.empty())
+			{
+				QStringList titles;
+				for(const auto & idData : _dataSets)
+					titles.push_back(idData.second->title());
+				error = "'" + ref.dataSetName + "' matches no loaded dataset title and no filter name (loaded datasets: " + titles.join(", ") + ")";
+				return QualifiedRefError::filterNameMatchesNothing;
+			}
+
+			dataSet	= candidates.first();
+			filter	= dataSet->filter(fq(ref.dataSetName));
+		}
+	}
+
+	Column * column = dataSet->column(fq(ref.columnName));
+
+	if(!column)
+	{
+		QStringList columnNames;
+		for(const Column * c : dataSet->columns())
+			columnNames.push_back(tq(c->name()));
+
+		error = "Dataset '" + ref.dataSetName + "' has no column named '" + ref.columnName + "' (its columns: " + columnNames.join(", ") + ")";
+		return QualifiedRefError::unknownColumn;
+	}
+
+	out.dataSetId	= dataSet->id();
+	out.filterId	= filter->id();
+	out.columnName	= fq(ref.columnName);
+	out.type		= column->type();
+
+	if(!ref.typeName.isEmpty())
+	{
+		columnType stamped = columnType::unknown;
+
+		if(!columnTypeFromSurfaceName(ref.typeName, stamped))
+		{
+			error = "Unknown column type \"" + ref.typeName + "\" in the reference";
+			return QualifiedRefError::unknownTypeName;
+		}
+
+		out.type = stamped; //the type segment wins over the lookup (plan §5)
+	}
+
+	return QualifiedRefError::none;
+}
+
+QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type)
+{
+	if(filterId < 0)
+	{
+		Log::log() << "Workspace::renderQualifiedColumnRef: no filter id to qualify against, rendering nothing" << std::endl;
+		return QString();
+	}
+
+	Filter * target = filterById(filterId);
+
+	if(!target || !target->data())
+	{
+		//Dead/unresolvable slice: render empty and fail loudly downstream, exactly like
+		//datasetSelectionSurface's unknown-id handling.
+		Log::log() << "Workspace::renderQualifiedColumnRef: filter id " << filterId << " resolves to nothing, rendering nothing" << std::endl;
+		return QString();
+	}
+
+	//Inside the caller's default namespace: the plain name IS the reference (the callers'
+	//bare-name fallback machinery takes it from here, §4). Filter ids are globally unique,
+	//so id equality means the very same namespace.
+	Filter * context = contextFilterId >= 0 ? filterById(contextFilterId) : nullptr;
+
+	if(context && context->id() == target->id())
+		return tq(columnName);
+
+	QualifiedColumnRef ref;
+	ref.columnName	= tq(columnName);
+
+	if(type != columnType::unknown)
+		ref.typeName = tq(columnTypeToString(type));
+
+	DataSet * dataSet = target->data();
+
+	if(dataSet->defaultFilter() && dataSet->defaultFilter()->id() == filterId)
+	{
+		ref.dataSetName = dataSet->title(); //"DS"."Col" - a default filter needs no filter segment
+		return ref.render();
+	}
+
+	//"F"."Col" only when the filter name is unique across all loaded datasets - the minimal
+	//form must roundtrip through resolveQualifiedColumnRef, so an ambiguous name is never
+	//emitted (it would not resolve again).
+	int matches = 0;
+	for(const auto & idData : _dataSets)
+		if(idData.second->filter(target->name()))
+			++matches;
+
+	if(matches == 1)
+	{
+		ref.filterName = target->nameQ();
+		return ref.render();
+	}
+
+	ref.dataSetName	= dataSet->title();
+	ref.filterName	= target->nameQ();
+	return ref.render();
+}
+
 bool Workspace::wouldCreateComputedDataSetLoop(DataSet * me, DataSet * target) const
 {
 	std::set<int> visited;
