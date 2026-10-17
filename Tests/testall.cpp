@@ -34,6 +34,7 @@
 #include "filter.h"
 #include "columnencoder.h"
 #include "databridge.h"
+#include "rbridge.h"
 #include "analysisbase.h"
 #include "models/listmodel.h"	//mds-plan D3.5: ListModel::termFollowsHostRestamp (owns-the-stamp rule)
 #include "analysisform.h"
@@ -4951,6 +4952,307 @@ void TestAll::testQualifiedColumnRefRenderMinimal()
 				 qPrintable("minimal form did not resolve: " + target.second + " - " + error));
 		QCOMPARE(resolved.filterId, target.first);
 		QCOMPARE(resolved.columnName, QString::fromStdString(col));
+	}
+}
+
+void TestAll::testQualifiedColumnRefScanInCode()
+{
+	//mds-plan D7.3: the in-code scanner. Feeds R code text with tricky names and checks what
+	//is found (byte ranges + parsed segments) and - just as important - what is NOT: bare
+	//names (quoted or not) are never references, and surface forms inside R comments or R
+	//string literals are user text, not references.
+	auto scan = [](const std::string & code) { return QualifiedColumnRef::scanText(code); };
+
+	//One ref inside plain R code; bare names around it are not references:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("contNormal > mean(\"Beta\".\"contNormal\") + 3");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName,	QString("Beta"));
+		QCOMPARE(found[0].ref.filterName,	QString());
+		QCOMPARE(found[0].ref.columnName,	QString("contNormal"));
+		QVERIFY(found[0].ref.isBare() == false);
+		QCOMPARE(std::string("contNormal > mean(\"Beta\".\"contNormal\") + 3").substr(found[0].begin, found[0].end - found[0].begin), std::string("\"Beta\".\"contNormal\""));
+	}
+
+	//The bare production is never a reference - unquoted AND quoted (the quoted bare is an R
+	//string literal, exactly what the scanner skips it as):
+	QVERIFY(scan("contNormal").empty());
+	QVERIFY(scan("\"contNormal\"").empty());
+	QVERIFY(scan("x <- \"contNormal\" + contNormal2").empty());
+
+	//Full form with the type tail, mid-expression:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("if (\"Beta\".\"Keep\".\"contNormal\"(\"scale\") > 3) 1 else 2");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName,	QString("Beta"));
+		QCOMPARE(found[0].ref.filterName,	QString("Keep"));
+		QCOMPARE(found[0].ref.columnName,	QString("contNormal"));
+		QCOMPARE(found[0].ref.typeName,		QString("scale"));
+	}
+
+	//Whitespace tolerance (D7.0a's contract, which the scanner wants):
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("sum( \"Beta\" . \"contNormal\" ( \"scale\" ) )");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.typeName, QString("scale"));
+	}
+
+	//Several refs in one text, found left to right with disjoint ranges:
+	{
+		const std::string code = "\"Alpha\".\"x\" + \"Beta\".\"y\" * \"Gamma\".\"F\".\"z\"";
+		const std::vector<QualifiedRefOccurrence> found = scan(code);
+		QCOMPARE(found.size(), size_t(3));
+		QCOMPARE(found[0].ref.dataSetName, QString("Alpha"));
+		QCOMPARE(found[1].ref.dataSetName, QString("Beta"));
+		QCOMPARE(found[2].ref.dataSetName, QString("Gamma"));
+		QCOMPARE(found[2].ref.filterName,  QString("F"));
+		for(size_t i = 0; i < found.size(); ++i)
+		{
+			QVERIFY(found[i].begin < found[i].end);
+			QCOMPARE(code.substr(found[i].begin, found[i].end - found[i].begin).find('"'), size_t(0)); //starts at a quote
+			if(i > 0)
+				QVERIFY(found[i - 1].end <= found[i].begin); //disjoint, ordered
+		}
+	}
+
+	//R string literals hide their content: a surface form inside one is user text, and the
+	//bare-quoted string literal right before a real ref must not swallow it:
+	{
+		QVERIFY(scan("warning(\"use \\\"B\\\" and \\\"x\\\" to refer\")").empty());					//escaped quotes inside a literal
+		const std::vector<QualifiedRefOccurrence> found = scan("paste0(\"B\", \"Beta\".\"x\")");	//"B" is a literal, the second is a ref
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName, QString("Beta"));
+	}
+	QVERIFY(scan("x <- 'say \"B\".\"x\" here'").empty());											//single-quoted literal hides it too
+	QVERIFY(scan("# \"B\".\"x\" in a comment\ncontNormal").empty());								//comment hides it
+
+	//Tricky names survive the scan: escapes and unicode inside segments (the strict parse
+	//validates the candidate, so the scanner cannot return something parse rejects):
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("mean(\"F\\\"F\".\"Datāset ✓\")");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].ref.dataSetName, QString("F\"F"));
+		QCOMPARE(found[0].ref.columnName,  QString("Datāset ✓"));
+	}
+
+	//Malformed shapes are not references - and a 4-segment shape must not rescan as a shifted
+	//3-segment ref:
+	QVERIFY(scan("\"A\".").empty());
+	QVERIFY(scan("\"A\".\"B\".\"C\".\"D\"").empty());
+	QVERIFY(scan("\"A\\qB\".\"x\"").empty());		//invalid escape: R string content, not our grammar
+
+	//A ref at the very start and very end of the text:
+	{
+		const std::vector<QualifiedRefOccurrence> found = scan("\"B\".\"x\"");
+		QCOMPARE(found.size(), size_t(1));
+		QCOMPARE(found[0].begin, size_t(0));
+		QCOMPARE(found[0].end, std::string("\"B\".\"x\"").size());
+	}
+}
+
+void TestAll::testWorkspaceReferencedFilterIdsInCode()
+{
+	//mds-plan D7.3: the desktop-side scan that stamps the transient `referencedFilterIds`
+	//sidecar onto filter/compute requests. Fixture as in ...ResolveAgainstWorkspace.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	auto scanRefs = [&](const std::string & code, QString * error = nullptr, QualifiedRefError * kind = nullptr)
+	{
+		return ws->referencedFilterIdsInCode(code, error, kind);
+	};
+
+	//A single outward reference - the referenced filter's id, nothing else:
+	{
+		const std::set<int> ids = scanRefs("contNormal > mean(\"Beta\".\"contNormal\")");
+		QCOMPARE(ids, std::set<int>({ beta->defaultFilter()->id() }));
+	}
+
+	//Distinct refs collect distinctly; the same filter twice dedups:
+	{
+		const std::set<int> ids = scanRefs("\"Beta\".\"KeepMyId\".\"contNormal\" + \"Beta\".\"KeepMyId\".\"contGamma\" + \"Alpha\".\"F0\".\"contNormal\"");
+		QCOMPARE(ids, std::set<int>({ betaKeep->id(), alphaF0->id() }));
+	}
+
+	//Bare names are NOT references (the context filter's own namespace, §4):
+	QVERIFY(scanRefs("contNormal + contGamma > 3").empty());
+	QVERIFY(scanRefs("\"contNormal\" + contNormal").empty());
+
+	//A qualified SELF-reference (the context filter itself) IS a reference and lands in the
+	//sidecar: the engine skips queueing it (own context = the C13 fallback namespace) but the
+	//membership contract stays uniform:
+	QCOMPARE(scanRefs("\"Alpha\".\"F0\".\"contNormal\" > 0"), std::set<int>({ alphaF0->id() }));
+
+	//Unresolvable refs contribute nothing, are not silent, and report the typed first error:
+	//a 2-segment name matches no dataset title and no unique filter name, so the kind is
+	//filterNameMatchesNothing (unknownDataSet is the full-form kind, see the resolve test).
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		const std::set<int> ids = scanRefs("\"Nope\".\"contNormal\" + \"Beta\".\"contNormal\"", &error, &kind);
+		QCOMPARE(ids, std::set<int>({ beta->defaultFilter()->id() }));	//the resolvable one still counts
+		QCOMPARE(kind, QualifiedRefError::filterNameMatchesNothing);
+		QVERIFY2(error.contains("Nope"), qPrintable(error));
+	}
+
+	//Pure-bare code: no ids, no error:
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(scanRefs("contNormal > 3", &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::none);
+		QVERIFY(error.isEmpty());
+	}
+}
+
+void TestAll::testPrepareSliceRunScript()
+{
+	//mds-plan D7.3: the engine-side consumption of the transient `referencedFilterIds` sidecar
+	//(design doc §3.2/§3.3). Unit-tested here because rbridge_prepareSliceRunScript is pure C++
+	//(scan, resolve, encode, queue - it calls no R); the out-of-process end-to-end behaviour is
+	//pinned in TestEngine's slice tests. Fixture as in testWorkspaceReferencedFilterIdsInCode.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	QVERIFY(alphaF0);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	Filter * own = alpha->defaultFilter();
+	QVERIFY(own->columnEncoder());
+
+	std::string											prepared, error;
+	std::vector<DataBridge::MultiDataSetSlice>			slices;
+
+	auto prepare = [&](const std::string & code, const std::vector<int> & referencedFilterIds)
+	{
+		return rbridge_prepareSliceRunScript(code, own, ws, referencedFilterIds, prepared, slices, error);
+	};
+
+	//(d) Non-aware code: byte-identical to the pre-Phase-7 encode. The legacy pass encoded
+	//through the process-global current encoder, which for a non-aware run was anchored at the
+	//run's own filter view - so encoding the same text through that view here IS the legacy
+	//output, and prepare must reproduce it exactly (no rewrites, no wrapper, same view).
+	{
+		const std::string code = "contNormal > 3 & contGamma < 10";
+
+		ColumnEncoder::setCurrentEncoder(own->columnEncoder());	//the legacy C7 anchoring
+		const std::string legacy = rbridge_encodeColumnNamesInScript(code);	//nullptr -> the global
+		ColumnEncoder::setCurrentEncoder(nullptr);
+
+		QVERIFY2(prepare(code, {}), qPrintable(QString::fromStdString(error)));
+		QCOMPARE(prepared, legacy);
+		QVERIFY(prepared.find("contNormal") == std::string::npos);	//bare names became tokens
+		QVERIFY(prepared.find(own->columnEncoder()->encode("contNormal")) != std::string::npos);
+
+		//The queue is just the own slice, LAST, with the columns the bare pass found:
+		QCOMPARE(slices.size(), size_t(1));
+		QCOMPARE(slices.back().filterId,	own->id());
+		QCOMPARE(slices.back().dataSetId,	alpha->id());
+		QCOMPARE(slices.back().cols, ColumnEncoder::colsPlusTypes({ {"contNormal", alpha->column("contNormal")->type()},
+																	{"contGamma", alpha->column("contGamma")->type()} }));
+	}
+
+	//(a) A qualified outward reference: the surface form becomes the REFERENCED filter's view
+	//token, the foreign slice is queued first (per sidecar order) with exactly the referenced
+	//columns, and the own slice stays last.
+	{
+		const std::string code = "contNormal > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+		const std::string betaToken = betaKeep->columnEncoder()->encode("contNormal");
+
+		QVERIFY2(prepare(code, { betaKeep->id() }), qPrintable(QString::fromStdString(error)));
+		QVERIFY(prepared.find(betaToken) != std::string::npos);
+		QVERIFY(prepared.find("\"Beta\"") == std::string::npos);	//surface form gone from R-visible code
+
+		QCOMPARE(slices.size(), size_t(2));
+		QCOMPARE(slices[0].filterId,	betaKeep->id());	//foreign first, in sidecar order
+		QCOMPARE(slices[0].dataSetId,	beta->id());
+		QCOMPARE(slices[0].cols,		ColumnEncoder::colsPlusTypes({ {"contNormal", beta->column("contNormal")->type()} }));
+		QCOMPARE(slices[1].filterId,	own->id());			//own slice LAST (the setup read pops it)
+		QCOMPARE(slices[1].dataSetId,	alpha->id());
+	}
+
+	//(c) A reference outside the sidecar is a stale request: loud, typed, no guessing.
+	{
+		QVERIFY(!prepare("contNormal > mean(\"Beta\".\"KeepMyId\".\"contNormal\")", {}));
+		QVERIFY2(error.find("did not list as a referenced slice") != std::string::npos, qPrintable(QString::fromStdString(error)));
+		QVERIFY2(error.find("KeepMyId") != std::string::npos, qPrintable(QString::fromStdString(error)));
+	}
+
+	//(c) An unresolvable reference fails the run loudly with the D7.0a kind's message.
+	{
+		QVERIFY(!prepare("contNormal > mean(\"Nope\".\"contNormal\")", {}));
+		QVERIFY2(error.find("does not resolve") != std::string::npos, qPrintable(QString::fromStdString(error)));
+		QVERIFY2(error.find("Nope") != std::string::npos, qPrintable(QString::fromStdString(error)));
+	}
+
+	//(a) A qualified SELF-reference (resolved to the run's own filter) rides the own slice:
+	//rewritten into the own context's token (the C13 fallback namespace) and its column IS read
+	//into the own data frame (the bare pass cannot see it), no foreign frame queued for it even
+	//when the sidecar lists it.
+	{
+		const std::string code			= "\"Alpha\".\"F0\".\"contNormal\" > 3";
+		const std::string selfToken		= alphaF0->columnEncoder()->encode("contNormal");
+
+		std::string										preparedSelf, errorSelf;
+		std::vector<DataBridge::MultiDataSetSlice>		slicesSelf;
+
+		QVERIFY2(rbridge_prepareSliceRunScript(code, alphaF0, ws, { alphaF0->id() }, preparedSelf, slicesSelf, errorSelf),
+				 qPrintable(QString::fromStdString(errorSelf)));
+		QVERIFY(preparedSelf.find(selfToken) != std::string::npos);
+		QCOMPARE(slicesSelf.size(), size_t(1));	//only the own slice, and it carries the referenced column
+		QCOMPARE(slicesSelf[0].filterId, alphaF0->id());
+		QCOMPARE(slicesSelf[0].cols, ColumnEncoder::colsPlusTypes({ {"contNormal", alpha->column("contNormal")->type()} }));
+	}
+
+	//(a) Two foreign filters: one slice each, sidecar order, columns attributed per filter.
+	{
+		const std::string code = "mean(\"Beta\".\"KeepMyId\".\"contGamma\") + mean(\"Beta\".\"KeepMyId\".\"contNormal\") + mean(\"Alpha\".\"F0\".\"contNormal\")";
+
+		QVERIFY2(prepare(code, { betaKeep->id(), alphaF0->id() }), qPrintable(QString::fromStdString(error)));
+
+		QCOMPARE(slices.size(), size_t(3));
+		QCOMPARE(slices[0].filterId, betaKeep->id());
+		QCOMPARE(slices[0].cols.size(), size_t(2));	//contGamma + contNormal
+		QCOMPARE(slices[1].filterId, alphaF0->id());
+		QCOMPARE(slices[1].cols.size(), size_t(1));
+		QCOMPARE(slices[2].filterId, own->id());	//own last
 	}
 }
 

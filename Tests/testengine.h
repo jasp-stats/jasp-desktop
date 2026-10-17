@@ -26,6 +26,7 @@ private slots:
     void    testVariableInfoPerFilter();
 	void    testEngineRegistryPropagatesColumnMutations();
 	void	testScriptConstructorFuzz();
+	void	testQualifiedSliceReferencesEndToEnd();
 
 private:
 	EngineSync				*	_engines	= nullptr;

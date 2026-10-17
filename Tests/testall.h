@@ -251,6 +251,27 @@ private slots:
 	// through parse+resolve to the exact (dataSetId, filterId, column) it was built from.
 	void	testQualifiedColumnRefRenderMinimal();
 
+	// mds-plan D7.3: the in-code scanner for qualified references (QualifiedColumnRef::scanText)
+	// - finds every >=2-segment surface form in R code text with byte positions, skips R
+	// comments and string literals wholesale (a surface form inside them is user text), never
+	// counts a bare name (quoted or not) as a reference, tolerates whitespace, and only ever
+	// returns candidates the strict parse accepts.
+	void	testQualifiedColumnRefScanInCode();
+
+	// mds-plan D7.3: Workspace::referencedFilterIdsInCode - the desktop-side scan that builds
+	// the transient `referencedFilterIds` request sidecar: distinct resolved filter ids (self-
+	// references included), bare names excluded, unresolvable refs skipped with the typed
+	// first-error reported (the engine's run-time scan is the loud surface, D7.5).
+	void	testWorkspaceReferencedFilterIdsInCode();
+
+	// mds-plan D7.3: rbridge_prepareSliceRunScript - the engine-side consumption of the sidecar:
+	// surface forms rewritten into the referenced filter view's tokens, the queue = foreign
+	// slices first (sidecar order, per-filter columns) + the own slice last, non-aware code
+	// byte-identical to the legacy encode, and loud typed errors for stale/unresolvable refs.
+	// Pure C++ (no R calls), hence unit-tested here; the out-of-process behaviour is pinned in
+	// TestEngine's slice tests.
+	void	testPrepareSliceRunScript();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

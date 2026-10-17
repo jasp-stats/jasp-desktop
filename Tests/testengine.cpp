@@ -22,6 +22,8 @@
 #include <json/json.h>
 #include <random>
 #include <functional>
+#include <cmath>
+#include <algorithm>
 
 void TestEngine::initTestCase()
 {
@@ -706,6 +708,167 @@ void TestEngine::testScriptConstructorFuzz()
 
 		requestId++;
 	}
+}
+
+void TestEngine::testQualifiedSliceReferencesEndToEnd()
+{
+	//mds-plan D7.3 (design doc §3.2): end-to-end through the real out-of-process engine. A
+	//computed column and a filter whose code carries a qualified outward reference must run
+	//against the REFERENCED filter's materialized slice (its filtered rows, its view's tokens),
+	//and an unresolvable reference must fail the run loudly with the typed message - no silent
+	//fallback. The scanner/prepare unit side is pinned in TestAll::testPrepareSliceRunScript.
+	QVERIFY2(_data,			"No dataset!");
+	QVERIFY2(_engines,		"No EngineSync!");
+	QVERIFY2(_engineRep,	"No EngineRepresentation!");
+
+	_engines->startStoppedEngine(_engineRep);
+
+	//The filter dispatch normally runs through MainWindow's connections (mainwindow.cpp:520-521);
+	//replicate them here so setRFilter's auto-queued run (Filter::setInvalidated) reaches the
+	//engine, exactly like testComputedColumnCascade replicates the compute cascade connection.
+	connect(_pkg, &DataSetPackage::sendFilter,		_engines, &EngineSync::sendFilter,		Qt::QueuedConnection);
+	connect(_pkg, &DataSetPackage::sendFilterByName, _engines, &EngineSync::sendFilterByName,	Qt::QueuedConnection);
+
+	//Second dataset "Beta" (same csv; DataSet::setTitle keeps titles unique, and surface forms
+	//resolve by title, so the reference below cannot accidentally hit the first dataset).
+	DataSet * beta = _pkg->createDataSet();
+	QVERIFY2(beta, "Could not create the second dataset!");
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), beta, [](int){});
+	beta->setTitle("Beta");
+	QVERIFY2(beta->column("contNormal"), "Beta should have contNormal");
+
+	//Beta's named filter "KeepPos" keeps the rows with contNormal > 0: the foreign slice is its
+	//FILTERED rows (the slice read obeys the referenced filter, obeyFilter=true).
+	Filter * keepPos = beta->createFilter("KeepPos", true);
+	QVERIFY2(keepPos, "Could not create KeepPos!");
+	keepPos->setRFilter("contNormal > 0");
+
+	//The engine must have run KeepPos once so its filter vector is materialized in the db (the
+	//slice read obeys it); setRFilter auto-queued that run through Filter::setInvalidated.
+	QSignalSpy filterByNameSpy(_engineRep, SIGNAL(filterByNameDone(int, QString, QString)));
+	QVERIFY2(filterByNameSpy.isValid(), "Spy is broken!");
+
+	bool keepPosRan = false;
+	while(!keepPosRan && filterByNameSpy.wait(120000))
+		while(filterByNameSpy.count() > 0)
+		{
+			const QVariantList response = filterByNameSpy.takeFirst();
+			if(response[1].toString() == "KeepPos")
+				keepPosRan = response[2].toString().isEmpty();	//only a run without an error counts
+		}
+
+	QVERIFY2(keepPosRan, "KeepPos never ran engine-side");
+
+	//The values the foreign slice will be read as - Beta's contNormal, filtered to > 0. The
+	//expected mean is computed from the very same db values the engine reads.
+	const Json::Value betaContNormal = beta->column("contNormal")->jsonForCompare()["data"];
+	QVERIFY2(betaContNormal.isArray() && betaContNormal.size() > 0, "Beta's contNormal has no data!");
+
+	double expectedMean = 0;
+	int		expectedSliceRows = 0;
+
+	for(const Json::Value & v : betaContNormal)
+	{
+		const double value = std::stod(v.asString());
+		if(value > 0)
+		{
+			expectedMean += value;
+			expectedSliceRows++;
+		}
+	}
+	expectedMean /= expectedSliceRows;
+
+	QVERIFY2(expectedSliceRows > 0, "KeepPos's filter would keep no rows - fixture is wrong");
+
+	//(a) A computed column whose code references Beta's filtered slice: the value must be the
+	//mean over exactly that slice, on every row. NB: the code also uses the own bare column so
+	//the scalar aggregate is recycled to the own row count (a bare scalar result is padded with
+	//blanks by Column::overwriteDataAndType - pre-existing semantics, not a slice behaviour).
+	Column * target = _data->column("contGamma");
+	QVERIFY2(target, "ds1 should have contGamma");
+	target->setCodeType(computedColumnType::rCode);
+	target->setRCode("contGamma * 0 + mean(\"Beta\".\"KeepPos\".\"contNormal\")");
+
+	QSignalSpy computeSpy(_engineRep, SIGNAL(computeColumnSucceeded(int, const QString &, const QString &, bool)));
+	QVERIFY2(computeSpy.isValid(), "Spy is broken!");
+
+	_engines->computeColumn(_data->id(), "contGamma", tq(target->rCode()), columnType::scale);
+
+	QVERIFY2(computeSpy.wait(120000), "The qualified-ref compute never answered");
+	{
+		const QVariantList response = computeSpy.takeFirst();
+		QCOMPARE(response[1].toString(), QString("contGamma"));
+		QVERIFY2(response[2].toString().isEmpty(), qPrintable("Qualified-ref compute should succeed, got: " + response[2].toString()));
+		QVERIFY2(response[3].toBool(), "Qualified-ref compute reported no data change");
+	}
+
+	target->checkForUpdates();
+
+	{
+		const Json::Value computed = target->jsonForCompare()["data"];
+		QVERIFY2(computed.isArray() && int(computed.size()) == _data->rowCount(), "Computed column has the wrong shape");
+
+		for(const Json::Value & v : computed)
+		{
+			const double value = std::stod(v.asString());
+			QVERIFY2(std::fabs(value - expectedMean) <= 1e-9 * std::max(1.0, std::fabs(expectedMean)),
+					 qPrintable(QString("Computed value %1 is not the slice mean %2").arg(value).arg(expectedMean)));
+		}
+	}
+
+	//(b) A filter with an outward reference: rows of ds1 above Beta's filtered-slice mean. The
+	//filter's own read is its dataset's full rows (obeyFilter=false); the reference is a scalar
+	//aggregate, so no row alignment is involved.
+	const Json::Value ownContNormal = _data->column("contNormal")->jsonForCompare()["data"];
+	QVERIFY2(ownContNormal.isArray() && int(ownContNormal.size()) == _data->rowCount(), "ds1's contNormal has the wrong shape");
+
+	QSignalSpy filterSpy(_engineRep, SIGNAL(filterDone(int)));
+	QVERIFY2(filterSpy.isValid(), "Spy is broken!");
+
+	const std::string outwardFilter = "contNormal > mean(\"Beta\".\"KeepPos\".\"contNormal\")";
+	_data->defaultFilter()->setRFilter(outwardFilter);
+	_engines->sendFilter(_data->id(), "", tq(outwardFilter));
+
+	QVERIFY2(filterSpy.wait(120000), "The outward-ref filter never answered");
+	filterSpy.takeFirst();
+
+	_data->checkForUpdates();
+
+	{
+		const boolvec & filtered = _data->defaultFilter()->filtered();
+		QCOMPARE(int(filtered.size()), int(ownContNormal.size()));
+
+		for(int i = 0; i < int(ownContNormal.size()); ++i)
+			QCOMPARE(filtered[i], std::stod(ownContNormal[i].asString()) > expectedMean);
+	}
+
+	//(c) An unresolvable reference fails the run LOUDLY with the typed message (D7.5's error
+	//surface - the desktop scan skips it with a warning, the engine's run-time scan refuses),
+	//and the target column is left untouched (dataChanged false keeps it invalidated).
+	Column * badTarget = _data->column("contcor2");
+	QVERIFY2(badTarget, "ds1 should have contcor2");
+	const Json::Value badDataBefore = badTarget->jsonForCompare()["data"];
+
+	badTarget->setCodeType(computedColumnType::rCode);
+	badTarget->setRCode("\"Nope\".\"contNormal\"");
+
+	_engines->computeColumn(_data->id(), "contcor2", tq(badTarget->rCode()), columnType::scale);
+
+	QVERIFY2(computeSpy.wait(120000), "The unresolvable-ref compute never answered");
+	{
+		const QVariantList response = computeSpy.takeFirst();
+		QCOMPARE(response[1].toString(), QString("contcor2"));
+		QVERIFY2(!response[3].toBool(), "An unresolvable reference must not report a data change");
+		const QString warning = response[2].toString();
+		QVERIFY2(warning.contains("does not resolve"), qPrintable("Expected the loud typed error, got: " + warning));
+		QVERIFY2(warning.contains("Nope"), qPrintable("The typed error should name the reference, got: " + warning));
+	}
+
+	badTarget->checkForUpdates();
+	QCOMPARE(badTarget->jsonForCompare()["data"], badDataBefore);
+
+	disconnect(_pkg, &DataSetPackage::sendFilter,		_engines, &EngineSync::sendFilter);
+	disconnect(_pkg, &DataSetPackage::sendFilterByName,	_engines, &EngineSync::sendFilterByName);
 }
 
 
