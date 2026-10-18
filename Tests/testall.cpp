@@ -7519,8 +7519,45 @@ void TestAll::testQualifiedTermEmissionMinimalFormsAndReparse()
 		//padding spaces are NOT trimmed (only the whole term string ever was).
 		QCOMPARE(weird.at(0).components()[1], QString(" contNormal"));
 
-		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).value(), QString("contNormal"));
 		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).type(), columnType::scale);
+	}
+
+	//(g) mds-plan D8.6: the D6.2 cross-host COPY composed end-to-end through the D8.2 emitters
+	//and the D8.1 applier. A copy arrives as a Storage per-term object carrying the SOURCE
+	//filterId (the bindTo/applier half is pinned by test_crossHostBindTo_typedCopyKeepsSourceStamp
+	//+ testRestampOwnershipRuleKeepsForeignStamps); this pins the emission half: emitting under
+	//the DESTINATION context renders the source's qualified minimal form, and re-parse + applier
+	//restore the SOURCE stamp - the destination context never wins, the copy never re-stamps.
+	{
+		Json::Value storageOption(Json::objectValue);
+		Json::Value storageValue(Json::arrayValue);
+		storageValue.append(Json::Value(Json::objectValue));
+		storageValue[0]["name"]		= "contNormal";
+		storageValue[0]["filterId"]	= betaKeep->id();			//the source host's stamp, as bindTo delivered it
+		storageValue[0]["types"]	= Json::Value(Json::arrayValue);
+		storageValue[0]["types"].append("scale");
+		storageOption["value"]		= storageValue;
+		Terms::RelatedValuesPerTerm copiedRelated;
+		Terms copied(storageOption, "value", "", copiedRelated, false, false);
+		QCOMPARE(copied.size(), size_t(1));
+		QCOMPARE(copied.at(0).filterId(), betaKeep->id());		//the copy keeps the source stamp through the applier
+
+		//emission under the DESTINATION context (alpha's default filter, NOT the stamp):
+		const QString emitted = FormulaParser::transformToFormulaTerm(copied.at(0), Json::Value("scale"), ':', false, contextId);
+		QCOMPARE(emitted, QString("`\"KeepMyId\".\"contNormal\"(\"scale\")`"));
+
+		//re-parse of the emitted script text + applier: the SOURCE filterId comes back:
+		Terms reparsedText = FormulaParser::parseTerm(emitted, nullptr);
+		QCOMPARE(reparsedText.size(), size_t(1));
+		Json::Value reOption(Json::objectValue);
+		Json::Value reValues(Json::arrayValue);
+		reValues.append(reparsedText.at(0).components()[0].toStdString());	//what the applier sees in the parsed option
+		reOption["value"] = reValues;
+		Terms::RelatedValuesPerTerm reRelated;
+		Terms restored(reOption, "value", "", reRelated, false, false);
+		QCOMPARE(restored.size(), size_t(1));
+		QCOMPARE(restored.at(0).filterId(), betaKeep->id());	//the source stamp, never the destination context
+		QVERIFY2(restored.at(0) == copied.at(0), "the copied term survives emission + re-parse as the same typed term");
 	}
 }
 
