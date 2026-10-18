@@ -611,7 +611,14 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 	if (terms.size() == 0)	return "NULL";
 
-	if (_areTermsVariables(model, terms) && model->listView()->mayUseFormula())	return "~ " + FormulaSource::generateInteractionTerms(terms, model->getVariableTypes(true));
+	//mds-plan D8.2: the emission context - the analysis' own filter (else the shown-filter C13
+	//fallback) is the namespace bare names resolve in at run time (D7.3 self-reference rule);
+	//terms stamped with another live filter id emit the qualified minimal form, -1/own-filter
+	//terms stay byte-identical.
+	int contextFilterId = FormulaSource::contextFilterIdForForm(_form);
+	Workspace * ws = Workspace::singleton();
+
+	if (_areTermsVariables(model, terms) && model->listView()->mayUseFormula())	return "~ " + FormulaSource::generateInteractionTerms(terms, model->getVariableTypes(true), contextFilterId);
 
 	QString result = "list(";
 	bool first = true;
@@ -621,7 +628,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 		first = false;
 		QStringList components = term.components();
 		if (components.length() == 1)
-			result += "\"" + components[0] + "\"";
+			result += "\"" + _rLiteralForTermComponent(term, components[0], contextFilterId, ws) + "\"";
 		else
 		{
 			result += "list(";
@@ -630,7 +637,7 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 			{
 				if (!firstComponent) result += ", ";
 				firstComponent = false;
-				result += "\"" + component + "\"";
+				result += "\"" + _rLiteralForTermComponent(term, component, contextFilterId, ws) + "\"";
 			}
 			result += ")";
 		}
@@ -640,6 +647,34 @@ QString RSyntax::_transformInteractionTerms(ListModel* model) const
 
 
 	return result;
+}
+
+QString RSyntax::_rLiteralForTermComponent(const Term& term, const QString& component, int contextFilterId, Workspace* ws) const
+{
+	//mds-plan D8.2: the list() branch has no per-term type info, so the qualified minimal form
+	//is rendered with columnType::unknown (no type segment). A dead slice renders to nothing:
+	//the bare name is kept under a loud log (parseable R resolving through the C13 context
+	//fallback, wrong-slice but never a made-up form), exactly like the formula branch.
+	QString value = component;
+
+	if (contextFilterId >= 0 && term.filterId() >= 0 && term.filterId() != contextFilterId)
+	{
+		QString qualified = ws ? ws->renderQualifiedColumnRef(contextFilterId, term.filterId(), component.toStdString(), columnType::unknown) : QString();
+
+		if (!qualified.isEmpty())	value = qualified;
+		else
+			Log::log() << "RSyntax::_transformInteractionTerms: term component '" << component.toStdString()
+					   << "' is stamped with filter id " << term.filterId()
+					   << " which renders to nothing (dead slice); emitting the bare name under the context namespace" << std::endl;
+	}
+
+	//Only a (re)rendered qualified form is escaped for the R string literal: its grammar puts
+	//double quotes (and possibly backslashes) inside the component. Legacy bare components
+	//keep the historical verbatim wrap (byte-identity).
+	if (value != component)
+		value.replace("\\", "\\\\").replace("\"", "\\\"");
+
+	return value;
 }
 
 QString RSyntax::_analysisFullName() const

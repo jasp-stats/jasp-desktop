@@ -309,6 +309,14 @@ private slots:
 	// with the typed message. Storage roundtrip keeps the ids.
 	void	testQualifiedTermComponentsParseTyped();
 
+	// mds-plan D8.2: RSyntax term emission - terms stamped outside the emission context (the
+	// analysis' own filter) render as the D7.0a qualified MINIMAL forms (backtick-wrapped in
+	// formula text, quote-escaped in the addQuotes list() path, byte-identical bare for -1 and
+	// own-context terms); the formula text parser keeps qualified forms verbatim (quote-aware
+	// separator split) so the re-parse resolves through the D8.1 applier into typed terms
+	// again - the full emission->re-parse roundtrip.
+	void	testQualifiedTermEmissionMinimalFormsAndReparse();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

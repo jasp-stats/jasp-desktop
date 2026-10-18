@@ -39,6 +39,7 @@
 #include "models/listmodel.h"	//mds-plan D3.5: ListModel::termFollowsHostRestamp (owns-the-stamp rule)
 #include "analysisform.h"
 #include "controls/jaspcontrol.h"
+#include "rsyntax/formulaparser.h"	//mds-plan D8.2: emission + re-parse roundtrip
 #include "data/asyncloader.h"
 #include "data/importers/csv/csvparser.h"
 #include "data/datasetloader.h"
@@ -7411,6 +7412,117 @@ void TestAll::testQualifiedTermComponentsParseTyped()
 	}
 }
 
+void TestAll::testQualifiedTermEmissionMinimalFormsAndReparse()
+{
+	//mds-plan D8.2: RSyntax term emission renders terms stamped OUTSIDE the emission context
+	//(the analysis' own filter, FormulaSource::contextFilterIdFor / RSyntax's form filter) as
+	//the D7.0a qualified MINIMAL forms; the formula text parser keeps them VERBATIM, and the
+	//re-parse resolves through the D8.1 applier into typed terms with filterIds again.
+	//Unstamped (-1) and own-context terms stay byte-identical legacy emissions (§4).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const int contextId		= alpha->defaultFilter()->id();
+	const int betaDefaultId	= beta->defaultFilter()->id();
+
+	//(a) Unstamped and own-context: the legacy bare emission, byte-identical - the ".type"
+	//suffix spelling and everything else untouched (qualification never fires for -1/own).
+	QCOMPARE(FormulaParser::transformToFormulaTerm(Term(QStringList{"contNormal"}, columnTypeVec{columnType::scale}),
+													Json::Value("scale"), ':', false, contextId),
+			QString("contNormal.scale"));
+
+	Term ownContext(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	ownContext.setFilterId(contextId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(ownContext, Json::Value("scale"), ':', false, contextId),
+			QString("contNormal.scale"));
+
+	//(b) A foreign default-filter stamp: the dataset-title minimal form (no filter segment),
+	//backtick-wrapped by the R-name guard like any non-syntactic name (so the script stays
+	//R-parseable), and the ".type" bare suffix is NOT appended - the form owns its ("type")
+	//segment, appending the bare spelling would poison the type-wins rule at re-parse.
+	Term foreignDefault(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	foreignDefault.setFilterId(betaDefaultId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignDefault, Json::Value("scale"), ':', false, contextId),
+			QString("`\"Beta\".\"contNormal\"(\"scale\")`"));
+
+	//(c) A foreign named-filter stamp whose filter name is unique across loaded datasets: the
+	//"F"."Col" minimal form. (Beta's default + KeepMyId: no ambiguity.)
+	Term foreignNamed(QStringList{"contNormal"}, columnTypeVec{columnType::scale});
+	foreignNamed.setFilterId(betaKeep->id());
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignNamed, Json::Value("scale"), ':', false, contextId),
+			QString("`\"KeepMyId\".\"contNormal\"(\"scale\")`"));
+
+	//(d) Interaction terms qualify EVERY component with the term's one filterId (C9 uniform);
+	//the separator join is untouched.
+	Term interaction(QStringList{"contNormal", "contExpo"}, columnTypeVec{columnType::scale, columnType::scale});
+	interaction.setFilterId(betaDefaultId);
+	QCOMPARE(FormulaParser::transformToFormulaTerm(interaction, Json::Value("scale"), ':', false, contextId),
+			QString("`\"Beta\".\"contNormal\"(\"scale\")` : `\"Beta\".\"contExpo\"(\"scale\")`"));
+
+	//(e) The addQuotes path (extra-option list() emission): the qualified form's inner quotes
+	//are escaped for the R string literal; bare components keep the legacy verbatim wrap.
+	QCOMPARE(FormulaParser::transformToFormulaTerm(foreignDefault, Json::Value("scale"), ':', true, contextId),
+			QString("\"\\\"Beta\\\".\\\"contNormal\\\"(\\\"scale\\\")\""));
+	QCOMPARE(FormulaParser::transformToFormulaTerm(ownContext, Json::Value("scale"), ':', true, contextId),
+			QString("\"contNormal.scale\""));
+
+	//(f) Re-parse: the formula text parser keeps a qualified form VERBATIM as the component
+	//(its own ("type") segment included), separators inside quotes never split, and the bare
+	//".type"-suffixed path is byte-identical legacy. Then the D8.1 applier resolves the
+	//verbatim component into the typed term again - the full emission->re-parse roundtrip.
+	{
+		//The backtick-wrapped emission from (b) is exactly what lands in formula text:
+		Terms reparsed = FormulaParser::parseTerm(QString("`\"Beta\".\"contNormal\"(\"scale\")`"), nullptr);
+		QCOMPARE(reparsed.size(), size_t(1));
+		QCOMPARE(reparsed.at(0).components().length(), 1);
+		QCOMPARE(reparsed.at(0).components()[0], QString("\"Beta\".\"contNormal\"(\"scale\")"));
+
+		//applier direction: the verbatim component resolves to the typed term (ids only):
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Beta\".\"contNormal\"(\"scale\")");
+		option["value"] = values;
+		Terms::RelatedValuesPerTerm allControlValues;
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).type(), columnType::scale);	//the segment wins over the lookup (§5)
+
+		//A separator INSIDE quotes never splits: a filter named 'We:ird' survives the ':'
+		//interaction split and resolves against its live filter.
+		Filter * betaWeird = beta->createFilter("We:ird", true);
+		QVERIFY(betaWeird);
+		Terms weird = FormulaParser::parseTerm(QString("`\"We:ird\".\"contNormal\"` : contNormal.scale"), nullptr);
+		QCOMPARE(weird.size(), size_t(1));
+		QCOMPARE(weird.at(0).components().length(), 2);
+		QCOMPARE(weird.at(0).components()[0], QString("\"We:ird\".\"contNormal\""));
+		//bare components keep the legacy split behavior byte-identically: the separator's
+		//padding spaces are NOT trimmed (only the whole term string ever was).
+		QCOMPARE(weird.at(0).components()[1], QString(" contNormal"));
+
+		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).value(), QString("contNormal"));
+		QCOMPARE(FormulaParser::parseTerm(QString("contNormal.scale"), nullptr).at(0).type(), columnType::scale);
+	}
+}
 
 void TestAll::testScriptConstructorCompleteness()
 {

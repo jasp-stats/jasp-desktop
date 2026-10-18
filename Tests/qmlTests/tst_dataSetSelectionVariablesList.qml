@@ -781,6 +781,53 @@ Item
 			}
 		}
 
+		// mds-plan D8.2: RSyntax term emission qualifies terms stamped OUTSIDE the emission
+		// context. The context is the analysis' own filter (the namespace bare names resolve in
+		// at run time, D7.3 self-reference rule); a term bound under a FOREIGN host (list B on
+		// Second's default filter) must render as the qualified minimal form
+		// ("Dataset"."Column") in the generated R syntax - never mangled into the context
+		// namespace, never carrying a bare ".type" suffix next to its own ("type") segment.
+		// Unstamped/own-context terms stay byte-identical legacy (C++-tested).
+		function test_rsyntax_emits_qualified_minimal_for_outward_terms()
+		{
+			var secondEntry = _entryFor("Second - ")
+			verify(secondEntry !== null, "fixture must offer Second's default filter")
+			var secondId = parseInt(secondEntry.value)
+			var originalB = allVarsB.selectedFilterId
+
+			try
+			{
+				allVarsB.selectedFilterId = secondId
+				wait(20)
+				jaspForm.setOptions({ dependentB: { value: ["SecondOnly"], types: ["scale"] } })
+				wait(50)
+
+				//the term carries the foreign host's provenance (D5 stamp on intake)...
+				compare(dependentB.model.termProvenanceForTest().join(","), "SecondOnly@" + secondId,
+						"the bound term is stamped with list B's host filter id")
+
+				//...and the emission qualifies it: the dataset-title minimal form, no bare
+				//".scale" suffix (the qualified form owns its ("scale") segment).
+				var syntax = form.rSyntaxText
+				verify(syntax.indexOf('"Second"."SecondOnly"') !== -1,
+						"the outward term emits the qualified minimal form, got: " + syntax)
+				verify(syntax.indexOf("SecondOnly.scale") === -1,
+						"no bare .type suffix is appended to a qualified form, got: " + syntax)
+			}
+			finally
+			{
+				allVarsB.selectedFilterId = originalB
+				jaspForm.setOptions({ dependentB: { value: [], types: [] } })
+				wait(20)
+			}
+		}
+
+		// Agent-2's scratch probe (tst_reopenCoerce.qml) promoted: a selection value naming no
+		// filter at all (id 987654: no live filter, no db row - the deleted/corrupted case eager
+		// loading cannot rescue) must NOT be coerced to the first dropdown entry. The option keeps
+		// the saved value while it waits for a model that can serve it, the host keeps its own
+		// selection, and the control reports the problem instead of rewriting the file's content
+		// behind the user's back (mds-plan C2/BIND). Restores anyway.
 		function test_unknown_saved_filter_id_waits_not_coerced()
 		{
 			var unknownId = 987654

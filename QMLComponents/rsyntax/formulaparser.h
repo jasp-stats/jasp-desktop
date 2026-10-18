@@ -38,7 +38,13 @@ public:
 //	static ParsedTerm	parseTerm(const QString& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 //	static ParsedTerm	parseTerm(const ParsedTerm& term, const ParsedTerms& conditionalParsedTerms, bool isCorrelated);
 
-	static QString		transformToFormulaTerm(const Term& term, const Json::Value& changedType = Json::nullValue, char join = FormulaParser::allInterationsSeparator, bool withCrossCombinations = false);
+	// mds-plan D8.2: `contextFilterId` is the default namespace bare names resolve in at run
+	// time (the analysis' own filter). A term stamped with a DIFFERENT live filter id renders
+	// as the D7.0a qualified MINIMAL form (renderQualifiedColumnRef: bare inside the context,
+	// "DS"."Col" / "F"."Col" / full form outside it) - qualification never happens for -1
+	// (unqualified) terms, so every legacy emission stays byte-identical. The default -1 keeps
+	// every caller that cannot know a context on the legacy path.
+	static QString		transformToFormulaTerm(const Term& term, const Json::Value& changedType = Json::nullValue, char join = FormulaParser::allInterationsSeparator, bool withCrossCombinations = false, int contextFilterId = -1);
 
 private:
 	static ParsedTerms	squeezeConditionalTerms(const ParsedTerms& terms);
