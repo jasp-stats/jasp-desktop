@@ -111,7 +111,7 @@ public:
 	///< available list (dropKeys[0], set in _setRelations). A list that declares its own
 	///< dataSetSelectionOption serves itself and skips the inherited edge (C13 host-bound).
 	///< mds-plan D4.1/D4.2: the direct relation reads behind JASPListControl::resolvedSelectionHost's
-	///< chain (the deleted walk's sourceVarInfo override lived here).
+	///< chain (the deleted walk's namespace override lived here).
 	JASPListControl		  * relatedNamespaceList() override;
 
 signals:

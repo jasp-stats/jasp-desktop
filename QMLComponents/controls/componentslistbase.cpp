@@ -359,7 +359,7 @@ QList<QVariant> ComponentsListBase::controlNameXOffsetMap() const
 
 Json::Value ComponentsListBase::getJsonFromComponentValues(const Terms& terms, const Terms::RelatedValuesPerTerm &termsWithComponentValues, bool storageShape) const
 {
-	//mds-plan D3.4: the rows-with-related-values shuffle (Terms::getOptionsWithRelatedValues) is
+	//mds-plan D3.4: the rows-with-related-values shuffle of the mirror era is
 	//deleted - this is the on-demand child aggregation itself, one serialization through
 	//Terms::getOptions (the row branch), with the value-part taken out. useValueAndType keeps
 	//this list family's `{value, types}` row-entry shape (containsVariables()) exactly as before.

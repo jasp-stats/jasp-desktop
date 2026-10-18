@@ -46,7 +46,7 @@ JASPListControl::JASPListControl(QQuickItem *parent)
 JASPListControl * JASPListControl::relatedNamespaceList()
 {
 	//The explicit `source:` edge: the first source item that names an actual list control
-	//(mds-plan D4.2, direct read of what the deleted sourceVarInfo followed). nullptr until a
+	//(mds-plan D4.2, the direct relation read the deleted walk hopped through). nullptr until a
 	//source control resolves (setup timing, or values-/rSource-driven lists).
 	for (SourceItem * sourceItem : _sourceItems)
 		if (JASPListControl * sourceControl = sourceItem->sourceListControl())

@@ -173,8 +173,8 @@ void AnalysisBase::setIsAnnotated(bool isAnnotated)
 }
 
 
-//mds-plan D3.1/D3.4: the ONE implementation of nested (row-control) option placement, extracted
-//out of the (now deleted) mirror's _getParentBoundValue so the generators place values at the
+//mds-plan D3.1/D3.4: the ONE implementation of nested (row-control) option placement, the
+//generators' own walk - it places values at the
 //byte-identical paths the mirror used to - same row-chain semantics, same parentNames bookkeeping.
 //The tree it walks is a parameter (the generated options root).
 //
@@ -406,7 +406,7 @@ std::map<int, int> AnalysisBase::referencedDataSets() const
 	//controls generate (the same per-control createFilterIds() output that rides the transient
 	//`.filterIds` sidecar at send time, positional per-term entries included), the filters the
 	//registered selection hosts hold, and the analysis' own filter. No mirror, no meta: the
-	//.meta-stamp walk (ColumnEncoder::collectDataSetIdsFromMeta over the bound-values tree) is
+	//.meta-stamp walk over the bound-values tree is
 	//dead input since the D3.3 flip and retires with the mirror (D3.4).
 	//
 	//The D3.5/C12 gate stays: references exist only once the form has attached and its controls

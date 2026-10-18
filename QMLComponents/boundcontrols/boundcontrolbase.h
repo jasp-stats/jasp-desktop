@@ -53,7 +53,7 @@ protected:
 
 	///< mds-plan D3.4 (the deletion): the ONE write-and-notify funnel of the write chain. The
 	/// control's option value is committed to its component-owned state (`_boundValue` - THE
-	/// home of the value now that the `_boundValues` analysis mirror is deleted) and the change
+	/// home of the value now that the analysis-wide mirror is deleted) and the change
 	/// is propagated as a pure notification chain: AnalysisBase::notifyOptionsChanged()
 	/// (boundValuesChanged + the aware dataSpecChanged, so dataSpec/RPC/script consumers re-read
 	/// the generated tree) and the control's own boundValueChanged -> form -> analysis run
@@ -91,7 +91,7 @@ protected:
 	std::set<std::string>		_isRCode;
 	Json::Value					_orgValue,
 								_defaultValue;
-	Json::Value					_boundValue;										///< mds-plan D3.4/C11: the control's own current option value - the component-owned state the generators produce this option from (the analysis' `_boundValues` mirror is deleted)
+	Json::Value					_boundValue;										///< mds-plan D3.4/C11: the control's own current option value - the component-owned state the generators produce this option from (the analysis-wide mirror is deleted)
 	columnType					_columnType			= columnType::unknown;
 	std::string					_filterForValues;
 };

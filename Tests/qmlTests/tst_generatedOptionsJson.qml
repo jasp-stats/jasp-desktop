@@ -8,7 +8,7 @@ import JASP.Controls
 // Phase 3 inverted the options pipeline: the controls' typed state is the source of truth and the
 // two JSON shapes (Engine request / Storage file) are GENERATED on demand
 // (AnalysisForm::createOptionsJson). During the transition this pair of files proved the
-// generator equal to the _boundValues mirror; the mirror is now DELETED (D3.4), so the expected
+// generator equal to the analysis-wide mirror; the mirror is now DELETED (D3.4), so the expected
 // trees are frozen GOLDEN strings captured from that mirror at the deletion commit - the exact
 // bytes the mirror held (values + `.meta`), with its dead dataSetId/filterId stamp keys removed
 // (C8 - the harness asserted equality modulo exactly those keys, and they never shipped: C15).
@@ -212,7 +212,7 @@ Item
 			return JSON.parse(plainForm.createOptionsJsonAsJson(storage ? 1 : 0))
 		}
 
-		// The frozen expected trees: the _boundValues mirror bytes captured at the D3.4 deletion
+		// The frozen expected trees: the mirror bytes captured at the D3.4 deletion
 		// commit, from THIS harness while it still asserted generated == mirror (so these strings
 		// are the authoritative old behaviour, not the generator's opinion). Non-aware: no stamp
 		// keys existed to remove, so the goldens are complete Engine trees minus `.filterIds`

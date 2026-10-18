@@ -1123,7 +1123,7 @@ Json::Value Analysis::createAnalysisRequestJson()
 		//sidecar of the GENERATED Engine json names the filter each option/term was selected
 		//through (mds-plan D3.2/D3.3; DataBridge::prepareMultiDataSetRun consumes it, the engine
 		//strips it before R). mds-plan C11/D3.3 flip: the run request is no longer read from the
-		//_boundValues mirror but generated from the components (AnalysisForm::createOptionsJson) -
+		//mirror-era read but generated from the components (AnalysisForm::createOptionsJson) -
 		//shouldRun() only dispatches with an initialized form, so there is always component state
 		//to generate from (no pre-attach request can read pending JSON, C12). For non-aware
 		//analyses the generated tree is byte-identical to the mirror (equivalence harness).

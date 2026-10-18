@@ -433,10 +433,16 @@ void Analyses::rescanAnalysisEntriesOfDynamicModule(Modules::DynamicModule * mod
 
 				//This function is called once after 300 ms upon translation due to delayedUpdate in description
 				//and causes the set analysis options to be cleared without this additional flag check set at the start of translations
-				if(a->readyToCreateForm() && !a->beingTranslated())
-				{
+				//mds-plan D9.1: only (re)create forms that are actually missing or broken. A description
+				//rescan (any Description.qml property change - e.g. the dev module's own live-JS title
+				//updates) used to destroyAndRecreate EVERY form of the module here; the fresh
+				//setAnalysisUp then consumed only the last-sent options delta as pending (C12) and every
+				//un-sent option reset to its default - silently wiping user state mid-session. QML edits
+				//need no rescan-driven recreation: each Analysis watches its own qml file since
+				//construction (watchQmlForm in the ctor, analysisQMLFileChanged -> reloadForm), and the
+				//pointer correction this rescan exists for happens in checkAnalysisEntry above.
+				if(a->readyToCreateForm() && !a->beingTranslated() && (!a->form() || !a->form()->formCompleted() || a->qmlError() != ""))
 					a->createForm();
-				}
 				a->setBeingTranslated(false);
 			}
 		}

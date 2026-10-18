@@ -176,8 +176,7 @@ public:
 	virtual void					setUp()										{}
 	/// Dataset/filter selection lives on HOSTS (VariablesListBase, TextAreaBase, ...): a host with
 	/// an active selection hands out its own VariableInfo (provider = the selected Filter) here.
-	/// mds-plan D4.1/D4.2: the old resolution walk (effectiveVarInfo/effectiveVarInfoImpl/
-	/// sourceVarInfo/selectionHost/effectiveSelectionFilter) is DELETED - consumers resolve
+	/// mds-plan D4.1/D4.2: the old parent-chain resolution walk is DELETED - consumers resolve
 	/// LOCALLY: their own selection (ownedSelectionVarInfo below), the analysis-wide
 	/// form()->varInfo() (legitimate C13 fallback: analysis filter, else shown filter), or a
 	/// term's filterId through Workspace::filterById.
@@ -197,11 +196,11 @@ public:
 	/// Note this is a name, not a control; JASPControl::selectionDependency() gives the control.
 	virtual QString					ownedSelectionOptionName() const				{ return QString(); }
 	///< The EXPLICIT selection host this control's variables resolve through (mds-plan D4.2,
-	/// the successor of the walk's `selectionHost` out-param), or nullptr when the analysis-wide
+	/// the successor of the walk's explicit-host out-param), or nullptr when the analysis-wide
 	/// VariableInfo serves it (no per-component selection - legacy terms stay -1). Base: nullptr
 	/// (non-lists have no local host); JASPListControl follows its relation chain.
 	virtual JASPControl				* resolvedSelectionHost()						{ return nullptr; }
-	///< The VariableInfo serving this control (mds-plan D4.2, successor of effectiveVarInfo()):
+	///< The VariableInfo serving this control (mds-plan D4.2):
 	///  the resolved host's own selection, else form()->varInfo() (the analysis-level namespace).
 	VariableInfo					* resolvedVarInfo();
 	///< The control that must be bound BEFORE this one for that selection to be in effect: the

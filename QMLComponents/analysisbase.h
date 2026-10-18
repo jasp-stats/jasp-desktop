@@ -125,8 +125,7 @@ public:
 	virtual	const Version	  &	moduleVersion()																									const	{ return AppInfo::version;	}
 
 	// ---- mds-plan C11/D3.4: the components own the state, JSON is generated on demand --------
-	// The `_boundValues` mirror and its whole API (boundValue()/setBoundValue()/boundValues()/
-	// setBoundValues()/clearBoundValues()/optionsMeta()/boundValuesAsJson()) are DELETED here:
+	// The mirror and its whole reader/writer API are DELETED here:
 	// the run request, save, RPC report, QML options() and script rendering all GENERATE from the
 	// controls (createOptionsJson below), and the one value home is BoundControlBase._boundValue.
 	// What survives of "push a tree in" is the explicit C12 PENDING parking below.
@@ -148,8 +147,8 @@ public:
 	Q_INVOKABLE bool	hasPendingOptions()	const	{ return _hasPendingOptions;	}
 	const Json::Value &	pendingOptions()		const	{ return _pendingOptions;		}
 	///< True when this analysis was CREATED with options (file load, RPC create with options,
-	///  duplication): the explicit successor of the old mirror-shaped `boundValues().size() == 0`
-	///  new-analysis heuristic (mds-plan D3.4).
+	///  duplication): the explicit successor of the old mirror-sized new-analysis heuristic
+	///  (mds-plan D3.4).
 	bool				createdWithOptions()	const	{ return _createdWithOptions;	}
 
 	///< mds-plan D3.4: strip the transient `.filterIds` sidecar from a generated Engine tree for
@@ -170,8 +169,8 @@ public:
 	Q_INVOKABLE QString		createOptionsJsonAsJson(int format);
 
 	///< mds-plan D3.1: the ONE path implementation for a nested (row-control) option location
-	///< (extracted from the deleted mirror's _getParentBoundValue; the generators are now its only
-	///< user). parentKeys describe the row chain; parentNames collects the enclosing option names on
+	///< (the generators' own placement walk, sharing the row-chain semantics the mirror's lookup
+	///< used to provide). parentKeys describe the row chain; parentNames collects the enclosing option names on
 	///< the found path (what send-time `.meta` / `.filterIds` are nested under), found says the
 	///< chain resolved, createAnyway materialises the row objects for a control whose parent option
 	///< is generated earlier in the same pass.
@@ -287,7 +286,7 @@ protected:
 private:
 	//mds-plan C12/D3.4: the PENDING pre-attach parking lot (setAnalysisUp consumes it once through
 	//bindTo; nothing else reads it) and the explicit created-with-options flag that replaces the
-	//old `boundValues().size() == 0` new-analysis heuristic. The `_boundValues` mirror itself is
+	//old mirror-sized new-analysis heuristic. The mirror itself is
 	//DELETED (mds-plan C11): components own the state, JSON is generated on demand.
 	Json::Value		_pendingOptions		= Json::objectValue;
 	bool			_hasPendingOptions	= false,

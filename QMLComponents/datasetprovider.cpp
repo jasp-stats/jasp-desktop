@@ -108,7 +108,8 @@ void DataSetProvider::loadDataSet(const std::map<std::string, stringvec > & data
 {
 	// With a title this is a named (multi-)dataset load: a dataset with that title gets its
 	// contents replaced, otherwise a new DataSet is added to the workspace (each through
-	// dbCreate, so they all get a real id and encoder prefix - setupEncoderPrefix). Without a
+	// dbCreate, so they all get a real id and the encoder namespace minted by their per-filter
+	// views). Without a
 	// title the legacy behaviour holds: fill the shown dataset.
 	DataSet * target = nullptr;
 

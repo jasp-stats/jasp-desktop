@@ -414,7 +414,7 @@ bool AnalysisForm::parseOptions(std::string rawOptions, Json::Value& parsedOptio
 			bindTo(parsedOptions);
 			//mds-plan C11/D3.3: report the options as GENERATED from the now-bound components
 			//(Engine shape: values + send-time .meta minus provenance + the transient
-			//`.filterIds` sidecar), not from the _boundValues mirror. The syntax bridge feeds
+			//`.filterIds` sidecar), not from a stored mirror. The syntax bridge feeds
 			//this tree through prepareMultiDataSetRun and back to R, so it must carry the
 			//sidecar the engine-side walk consumes (the mirror's meta stamps are dead input
 			//from the flip on). For a form whose controls are all bound this is what the
@@ -622,7 +622,7 @@ void AnalysisForm::addFormError(const QString & error)
 }
 
 //mds-plan C11/D3.4 - see the header for the contract. This IS the options tree now (the
-//_boundValues mirror it was proved equal to during the transition is deleted; the golden harness
+//the mirror-era equality proof is history (the mirror is deleted; the golden harness
 //tst_generatedOptionsJson*.qml keeps the shape pinned). Two rules define it:
 //  * placement: AnalysisBase::resolveOptionParent / placeOptionMeta / placeOptionFilterIds are
 //    the ONE path implementation (the mirror's former code, now the generators' alone; the
@@ -1134,7 +1134,7 @@ void AnalysisForm::setAnalysisUp()
 
 	// The controls own their values (mds-plan D3.4): bindTo(initialOptions) resets each one to its
 	// initial value (createJson() when the option is absent), so there is no stored tree left over
-	// to clear - the old clearBoundValues() retired with the mirror.
+	// to clear - nothing is parked here once the form attached.
 	bindTo(initialOptions);
 
 	lockOptions();

@@ -81,7 +81,7 @@ public:
 	const QVector<SourceItem*>	&	sourceItems()				const			{ return _sourceItems; }
 			void					applyToAllSources(std::function<void(SourceItem *sourceItem, const Terms& terms)> applyThis);
 
-	///< mds-plan D4.1/D4.2 (successor of the sourceVarInfo chain): a list resolves its namespace
+	///< mds-plan D4.1/D4.2 (successor of the deleted namespace-resolution chain): a list resolves its namespace
 	///  through its RELATION edges - the explicit `source:` list first, else the related
 	///  available list (VariablesListBase::relatedNamespaceList) - hop by hop until a list is an
 	///  active selection host (it serves itself and everyone it feeds, C13 host-bound) or the

@@ -70,7 +70,7 @@ protected:
 	///< mds-plan D3.4: while a bound value awaits its model (valueAwaitsModel) the generated
 	/// Engine value is the control's OWN held raw value (C2/BIND: the option keeps exactly what
 	/// came in, never a coerced/blank model projection) - the same value the deleted
-	/// _boundValues mirror stored for a pending combo. Bound normally, the model-derived
+	/// analysis-wide mirror stored for a pending combo. Bound normally, the model-derived
 	/// createJson() equals the held value, so this override only matters in the pending state.
 	Json::Value			createEngineValue()							const	override;
 

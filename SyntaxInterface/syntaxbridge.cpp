@@ -650,7 +650,7 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 	Json::Value parsedOptions;
 	std::string errorMsg;
 	//mds-plan D3.3: parseOptions now REPORTS the generated Engine tree (values + send-time .meta
-	//minus provenance + the transient .filterIds sidecar), not the _boundValues mirror - the
+	//minus provenance + the transient .filterIds sidecar), not a stored mirror - the
 	//binding below wrote every value through its control, so this is the same state, generated.
 	if (!form->parseOptions(optionsToParse.c_str(), parsedOptions, errorMsg))
 		return statusError(statusBase("syntaxBridgeLoadQmlAndParseOptions"), "Error when parsing options: " + errorMsg);

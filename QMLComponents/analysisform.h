@@ -86,9 +86,10 @@ public:
 	/// transient `.filterIds` sidecar tree (BoundControl::createFilterIds, mds-plan D3.2) at the
 	/// same parent paths the mirror uses. Storage omits both trees and carries term filterIds
 	/// inside the term options themselves (D5.1 preview).
-	/// This is the machinery that replaces reading _boundValues at the consumer flip (D3.3/D3.5);
-	/// until then tst_generatedOptionsJson.qml pins generator == mirror (modulo the intentional
-	/// deltas documented there).
+	/// This is the machinery that replaced reading the analysis-wide mirror at the consumer flip
+	/// (D3.3/D3.5);
+	/// the golden harness tst_generatedOptionsJson.qml keeps the shape pinned (modulo the
+	/// intentional deltas documented there).
 	Json::Value				createOptionsJson(BoundControl::JsonFormat format);
 	///< QML/test surface: 0 = Engine, 1 = Storage, canonical (key-sorted) JSON string.
 	Q_INVOKABLE QString		createOptionsJsonAsJson(int format);
@@ -282,8 +283,8 @@ Q_INVOKABLE JASPControl	*	getControl(const QString& name)											{ return _co
 	stringvecvec			getValuesFromRSource(const QString& sourceID, const QStringList& searchPath);
 	void					addColumnControl(JASPControl* control, bool isComputed);
 
-	//mds-plan D3.4: the boundValues()/boundValue()/setBoundValue()/_getParentBoundValue mirror
-	//plumbing is DELETED with the _boundValues tree - options are generated (createOptionsJson)
+	//mds-plan D3.4: the mirror plumbing (reader/writer API and the nested-placement lookup) is
+	//DELETED with the tree - options are generated (createOptionsJson)
 	//and each control owns its value (BoundControlBase::boundValue).
 	stringset				usedVariables();
 

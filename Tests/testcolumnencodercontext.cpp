@@ -131,8 +131,8 @@ std::string captureError(const std::function<void()> & function)
 	return "";
 }
 
-// The two datasets carry the same raw column name ("Score"); DataSet::setupEncoderPrefix() makes
-// their encoded names differ by embedding the dataset id, the distinct prefixes simulate that.
+// The two datasets carry the same raw column name ("Score"); the per-dataset encoder prefixes
+// (dataset id embedded, as the real per-filter views mint them) make their encoded names differ.
 void makeTwoDataSets(ColumnEncoder & one, ColumnEncoder & two)
 {
 	one.setCurrentNames(names({{"Score", columnType::scale}, {"Group", columnType::nominal}}));
@@ -602,7 +602,8 @@ QTEST_MAIN(TestColumnEncoderContext)
 // The single all-blocks results decoder that Engine::sendString, the syntax bridge, the plotly
 // loader and the computed-column site all use now: it resolves tokens minted by the global current
 // encoder, the extras encoder (C6) AND every live dataset's filter blocks in ONE context-free
-// sweep (decodeJsonAcrossEncoders and its encoder-vector parameter retired at D1.5), and the
+// sweep (the instance-rooted across-encoders decode and its encoder-vector parameter retired at
+// D1.5), and the
 // safeHtml switch must be the only difference between desktop (escaped) and bridge/wrapper
 // (plain) output.
 void TestColumnEncoderContext::decodeJsonCoversEveryBlockAndHonoursSafeHtml()

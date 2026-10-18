@@ -111,7 +111,7 @@ view (filter.cpp:532-606) — the same object the analysis hosts consume (D2.4).
 
 `Column::findDependencies` (column.cpp:2773-2777) scans own-dataset names only
 (`DataSet::findUsedColumnNames`, dataset.cpp:1389-1409 — which scans through `shownEncoder()` +
-`tableDecode`, namespace-blind). Two extensions:
+the static global `ColumnEncoder::decode`, namespace-blind). Two extensions:
 
 1. **Scan the surface form**: the dependency scanner additionally recognizes qualified refs and
    records `(dataSetId, filterId, column)` triples (resolved via the §5 helpers) beside the

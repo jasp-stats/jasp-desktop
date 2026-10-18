@@ -63,8 +63,8 @@ public:
 	///  types live inside the per-term `{name, filterId?, types}` objects now), a single-string
 	///  `types` becoming a one-element array (pre-0.19 files), and the R-syntax-simplified form
 	///  of an interaction list WITHOUT row components (bare strings / arrays of strings) becoming
-	///  `{keyValue: [components]}` rows. This is the successor of the deleted
-	///  BoundControlTerms::_adjustBindingValue/_adjustBindingType + split-parts parsing: the flags
+	///  `{keyValue: [components]}` rows. The shape normalization that used to be split across
+	///  bind-time helpers + split-parts parsing lives here now: the flags
 	///  come from the list (containsInteractions/hasRowComponent), every other caller parses with
 	///  defaults. Provenance (mds-plan D5.1): the ENGINE shape (RPC/syntax/run requests) carries
 	///  no filterId anywhere and parses to all-`-1` terms exactly as before (C15: released files
@@ -151,8 +151,8 @@ public:
 	///< The canonical `{value, types[, optionKey]}` option serialization of these terms (mds-plan
 	///  D3.1/D3.4): row objects (keyValue + optional keyLabel + the term's related child values)
 	///  when the list has row components or interactions, a single value for isSingleRow, bare
-	///  values otherwise. The row assembly is inlined HERE since the D3.4 deletion of the
-	///  separate getOptionsWithRelatedValues shuffle; useValueAndType selects the
+	///  values otherwise. The row assembly is inlined HERE (the separate related-values shuffle
+	///  of the mirror era was deleted with it); useValueAndType selects the
 	///  `{value, types}` entry shape per row (ComponentsList-style variable lists pass true).
 	Json::Value getOptions(const Terms::RelatedValuesPerTerm& relatedValuesPerTerm, const std::string& keyValue, const std::string& keyLabel, bool containsInteractions, bool hasRowComponent, bool isSingleRow, bool useValueAndType = false) const;
 

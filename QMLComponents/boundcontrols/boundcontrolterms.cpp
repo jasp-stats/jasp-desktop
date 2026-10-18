@@ -32,8 +32,8 @@ void BoundControlTerms::bindTo(const Json::Value &value)
 {
 	Terms::RelatedValuesPerTerm allControlValues;
 
-	//mds-plan D3.4: ONE parse step - the Terms json applier absorbs the shape normalization the
-	//deleted _adjustBindingValue/_adjustBindingType helpers used to run here (and the list's
+	//mds-plan D3.4: ONE parse step - the Terms json applier absorbs the shape normalization that
+	//used to run here (and the list's
 	//interaction/row-component flags decide whether the R-syntax-simplified form gets row-wrapped,
 	//exactly as before). The parsed typed Terms are then copied into the model - provenance rides
 	//the Term objects (mds-plan C9), and legacy unqualified JSON parses to -1 terms that the D2.1

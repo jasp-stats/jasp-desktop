@@ -190,7 +190,7 @@ Item
 			return node
 		}
 
-		// The frozen expected trees, captured from the _boundValues mirror at the D3.4 deletion
+		// The frozen expected trees, captured from the deleted mirror at the D3.4 deletion
 		// commit by this harness while it still asserted generated == mirror (so they are the
 		// authoritative old bytes), with the dead stamp keys removed - the harness' one documented
 		// tolerance. goldenAware is the state after _bindAwareForm(); the mid-session switch and

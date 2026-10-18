@@ -73,8 +73,8 @@ Terms::Terms(Terms *parent)
 	_parent = parent;
 }
 
-//mds-plan D3.4: the ONE options-json -> Terms applier (see the header). Absorbs the deleted
-//BoundControlTerms::_adjustBindingValue/_adjustBindingType normalization into this chokepoint:
+//mds-plan D3.4: the ONE options-json -> Terms applier (see the header). Absorbs the bind-time
+//shape normalization into this chokepoint:
 //  * `{value, types}` option objects are unwrapped (a bare string/array value parses too - that
 //    is what R-syntax-simplified and pre-{value,types} files carry),
 //  * a single-string `types` becomes a one-element array (pre-0.19 files),
@@ -762,8 +762,8 @@ const QMap<QString, Json::Value> & Terms::relatedValuesForTerm(const Terms::Rela
 	return emptyValues;
 }
 
-//mds-plan D3.4: the row-with-related-values assembly lives HERE (the separate
-//getOptionsWithRelatedValues shuffle is deleted; ComponentsList/InputList row builders go
+//mds-plan D3.4: the row-with-related-values assembly lives HERE (the separate shuffle of the
+//mirror era is deleted; ComponentsList/InputList row builders go
 //through this one serialization too). The row object is the on-demand aggregation of the
 //term's child values: keyValue (+ keyLabel when the list uses one) plus every related value
 //the model holds for the term - which is exactly what the form-wide generator then merges the

@@ -171,9 +171,8 @@ public:
 	/// Single writer: rebuildBlock() (erase the block's bounded key space, then write).
 	/// These are THE decode entry points; O(1), context-free, strict (no hit ==> raw).
 	/// They cover every live filter block of every loaded dataset plus the extras and fallback
-	/// blocks, so results decoding needs no per-dataset sweep anymore (mds-plan D1.5 retired the
-	/// instance-rooted decode shims, decodeJsonSafeHtml and decodeJsonAcrossEncoders with their
-	/// currentEncoder-flip dance).
+	/// blocks, so results decoding needs no per-dataset sweep anymore (the instance-rooted decode
+	/// shims and their currentEncoder-flip dance retired at mds-plan D1.5).
 	static	std::string			decode(const std::string & in)									{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? in : it->second.name;				}
 	static	bool				shouldDecode(const std::string & in)							{ return _decodeTable().count(in) > 0;																		}
 	static	columnType			columnTypeFromEncoded(const std::string & in)					{ auto it = _decodeTable().find(in);	return it == _decodeTable().end() ? columnType::unknown : it->second.type;	}
@@ -263,7 +262,8 @@ public:
 	//   array(int|null)   POSITIONAL over the option's term values (aligned like `types`): each
 	//                     entry is the term's filterId, null = unqualified term (resolves through
 	//                     the caller's C7 legacy fallback). A positional node never inherits
-	//                     parent->child, which structurally avoids the _filterIdFromMetaNode leak.
+	//                     parent->child, which structurally avoids the old provenance-meta walk's
+	//                     parent-stamp leak into child nodes.
 	//   object            container: named members are child-option nodes (row controls placed
 	//                     under this option's path); the reserved member FILTERIDS_SELF ("$")
 	//                     carries this option's own int|array node when one exists and would
@@ -285,9 +285,8 @@ public:
 	static	Json::Value			sidecarChild(const Json::Value & sidecarNode, const std::string & optionName);
 	///< Collects every int leaf of a `.filterIds` sidecar tree (scalars, positional arrays and
 	///  "$"-containers alike) - the queue input of DataBridge::prepareMultiDataSetRun (D3.3) and
-	///  of the D3.6 component-side reference computation. The provenance-meta collectors this
-	///  replaced (collectDataSetIdsFromMeta/collectFilterIdsFromMeta over the stamped mirror
-	///  .meta) are DELETED with the mirror and its stamping era (mds-plan C8/C11/D3.4): the
+	///  of the D3.6 component-side reference computation. The provenance-meta collectors of the
+	///  stamped-mirror era are DELETED with the mirror itself (mds-plan C8/C11/D3.4): the
 	///  sidecar is now the one place filter ids live.
 	static	void				collectFilterIdsFromSidecar(const Json::Value & sidecarNode, std::set<int> & filterIds);
 	// ----------------------------------------------------------------------------------------------
