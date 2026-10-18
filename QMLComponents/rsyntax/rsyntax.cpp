@@ -248,9 +248,24 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 			result += addDoxygenComment(control->generateDoxygenHelp());
 	}
 
+	if (multiDataSetAware)
+	{
+		//mds-plan D8.3: state the datasets contract on every aware wrapper - the argument is
+		//title-keyed (the same titles the selection options carry), every entry is loaded
+		//standalone, and the analysis receives filter-id-keyed slices (jaspBase contract).
+		result += "#' @param datasets a named list of data.frames keyed by DATASET TITLE - the titles the\n";
+		result += "#'   dataset selection options of this form carry (their defaults below, rendered as the\n";
+		result += "#'   selection surface, e.g. \"Iris\" or \"Iris - myfilter\"). Every entry is loaded standalone\n";
+		result += "#'   into the bridge workspace (runWrappedAnalysis stores them via jaspSyntax::loadDataSets,\n";
+		result += "#'   each under its own name as the dataset title); the analysis itself receives its slices\n";
+		result += "#'   keyed by filter id - the jaspBase datasets contract (see jaspBase::runJaspResults).\n";
+	}
+
 	result += analysisName + " <- function(\n";
 	// A multiDataSetAware analysis takes its data as a named list of datasets (names = dataset
-	// ids, optionally with attr(datasets, "dataSetNames") titles) instead of a single data frame.
+	// TITLES - the title surface the selection options carry, mds-plan D8.3; the slices R
+	// receives at run time are keyed by filter id, the jaspBase contract) instead of a single
+	// data frame.
 	result += FunctionOptionIndent + (multiDataSetAware ? "datasets = NULL,\n" : "data = NULL,\n");
 	result += FunctionOptionIndent + "version = \"" + form()->version() + "\"";
 	for (FormulaBase* formula : _formulas)
@@ -268,6 +283,11 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 		optionsWithFormula += formula->extraOptions(true, true);
 
 	const QStringList selectionOptions = _form->dataSetSelectionOptionNames();   //mds-plan C4/RENDER
+
+	//mds-plan D8.3: the aware wrapper's body resolves its primary dataset (the frame the formula
+	//machinery evaluates against) through the selection options' TITLE surface, so the emitted
+	//argument names of the selection options are collected here while the arguments are emitted.
+	QStringList emittedSelectionArgs;
 
 	QSet<QString> wrapperArgs;	//argument names emitted so far, to keep the generated function valid R
 
@@ -308,6 +328,18 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 			optionsWithFormula.push_back(optionName);
 	}
 
+	//mds-plan D8.3: reorder to REGISTRATION order (dataSetSelectionOptionNames, the form's own
+	//section order - its first selection is the primary slice), not the alphabetically sorted
+	//json member order the emit loop above walks.
+	emittedSelectionArgs.clear();
+	for (const QString & selectionOption : selectionOptions)
+	{
+		JASPControl* selectionControl = _form->getControl(selectionOption);
+		const QString selectionArg = selectionControl ? getRSyntaxFromControlName(selectionControl) : QString();
+		if (!selectionArg.isEmpty() && wrapperArgs.contains(selectionArg))
+			emittedSelectionArgs.push_back(selectionArg);
+	}
+
 	result += ") {\n\n"
 	+ FunctionLineIndent + "defaultArgCalls <- formals(" + moduleName + "::" + analysisName + ")\n"
 	+ FunctionLineIndent + "defaultArgs <- lapply(defaultArgCalls, eval)\n"
@@ -321,11 +353,49 @@ QString RSyntax::generateWrapper(const QString& moduleName, const QString& analy
 	if (multiDataSetAware)
 	{
 		//No store block here on purpose: jaspBase does not export storeDataSets (zero-export
-		//contract) and runWrappedAnalysis already loads the datasets through the bridge itself.
-		// Formulas and the option-formula loop below speak 'data'; for an aware wrapper the
-		// primary (first) dataset of the list plays that role.
+		//contract) and runWrappedAnalysis already loads the datasets through the bridge itself
+		//(jaspBase::storeDataSets -> jaspSyntax::loadDataSets: every entry is loaded standalone,
+		//under its own name as the dataset title).
+		//
+		//mds-plan D8.3: `datasets` must arrive as a named list keyed by DATASET TITLE - the same
+		//title surface the dataset selection options carry (their argument defaults above are
+		//rendered through selectionSurfaceFromBoundValue, never the bound filter id). The
+		//positional `datasets[[1]]` pin is gone: the dataset that plays `data` (the frame the
+		//formula machinery evaluates against) is the first selection option whose effective
+		//value names one of the loaded datasets - resolved at run time from `options`, because
+		//a wrapper file is generated once (empty or session-bound selections) but must run
+		//against any selection the caller passes.
+		QString selectionOptionList;
+		for (const QString & selectionArg : emittedSelectionArgs)
+		{
+			if (!selectionOptionList.isEmpty()) selectionOptionList += ", ";
+			selectionOptionList += "\"" + selectionArg + "\"";
+		}
+
 		result += "\n"
-		+ FunctionLineIndent + "data <- if (!is.null(datasets) && length(datasets)) datasets[[1]] else NULL\n\n";
+		+ FunctionLineIndent + "# mds-plan D8.3: `datasets` must be a named list of data.frames keyed by DATASET TITLE - the\n"
+		+ FunctionLineIndent + "# titles the dataset selection options of this form carry (e.g. list(Iris = iris, Sleep = sleep)).\n"
+		+ FunctionLineIndent + "# No positional pin: the dataset that plays `data` (the frame the formula machinery evaluates\n"
+		+ FunctionLineIndent + "# against) is the first selection option whose effective value names one of the loaded datasets,\n"
+		+ FunctionLineIndent + "# resolved at run time from `options`. Every entry is loaded standalone by runWrappedAnalysis\n"
+		+ FunctionLineIndent + "# (jaspBase::storeDataSets -> jaspSyntax::loadDataSets, each under its own name as the dataset\n"
+		+ FunctionLineIndent + "# title); the analysis itself receives its slices keyed by filter id (jaspBase datasets contract).\n"
+		+ FunctionLineIndent + "selectionOptions <- c(" + selectionOptionList + ")\n"
+		+ FunctionLineIndent + "data <- NULL\n"
+		+ FunctionLineIndent + "if (!is.null(datasets) && length(datasets)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "for (selectionOption in selectionOptions) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "selectionValue <- options[[selectionOption]]\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (!is.character(selectionValue) || length(selectionValue) != 1L || is.na(selectionValue) || !nzchar(selectionValue)) next\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (selectionValue %in% names(datasets)) { data <- datasets[[selectionValue]]; break }\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "bareTitle <- sub(\" - [^-]*$\", \"\", selectionValue) # 'Title - filterName' surface: bare-title fallback, best effort\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "if (bareTitle %in% names(datasets)) { data <- datasets[[bareTitle]]; break }\n"
+		+ FunctionLineIndent + FunctionLineIndent + "}\n"
+		+ FunctionLineIndent + "if (is.null(data)) {\n"
+		+ FunctionLineIndent + FunctionLineIndent + "if (length(selectionOptions))\n"
+		+ FunctionLineIndent + FunctionLineIndent + FunctionLineIndent + "stop(\"`datasets` must be a named list keyed by dataset title (e.g. list(Iris = iris)): the dataset selection option(s) \", paste(selectionOptions, collapse = \", \"), \" select a title matching none of: \", paste(names(datasets), collapse = \", \"))\n"
+		+ FunctionLineIndent + FunctionLineIndent + "data <- datasets[[1L]] # this form has no dataset selection surface: the first entry is the documented primary (jaspSyntax::loadDataSets)\n"
+		+ FunctionLineIndent + "}\n"
+		+ FunctionLineIndent + "}\n\n";
 	} else
 	{
 		result += "\n"

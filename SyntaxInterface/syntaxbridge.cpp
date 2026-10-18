@@ -675,7 +675,8 @@ const char* STDCALL syntaxBridgeLoadQmlAndParseOptionsStatus(const char* moduleN
 		//filter before the lists bound ('depends'), so the .meta stamped per form, the options
 		//encode per dataset and the slice queue feeds the R-side reads. Syntax datasets have no
 		//user filters; a name resolved to the dataset's default filter. The primary is the first
-		//loaded dataset (the wrapper's datasets[[1]]), not whatever the selections left shown.
+		//loaded dataset (mds-plan D8.3: in the generated wrapper this is the documented
+		//no-selection-surface fallback, `datasets[[1L]]`).
 		const int primaryId = DataSetProvider::getProvider(gl_initializedDbInMemory, false)->firstLoadedDataSetId();
 		const DataBridge::MultiDataSetRunPlan plan = gl_dataBridge->prepareMultiDataSetRun(parsedOptions, primaryId, "", analysisNameStr);
 

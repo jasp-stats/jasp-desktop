@@ -1163,7 +1163,8 @@ QString Analysis::generateWrapper()
 					tq(_name),
 					tq(_qml),
 					tq(_title),
-					_moduleData->preloadData()
+					_moduleData->preloadData(),
+					multiDataSetAware()   //mds-plan D8.3: like the bridge path (syntaxbridge.cpp generateWrapper), the live developer-mode button must produce aware wrappers
 	);
 }
 

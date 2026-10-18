@@ -564,5 +564,37 @@ Item
 			compare(ids.length, 2, "the sidecar is positional over the twins")
 			verify(ids[0] !== ids[1], "the twin distinction survives on the frozen wire")
 		}
+		function test_wrapper_generation_uses_the_selection_title_surface()
+		{
+			// mds-plan D8.3: the aware wrapper must not pin `data <- datasets[[1]]` - the primary
+			// dataset is resolved per selection option through the TITLE surface (C4/RENDER), and
+			// the datasets contract is stated on the wrapper itself.
+			const sel = _bindAwareForm()
+			wait(100)
+
+			const wrapper = awareForm.generateWrapper("jaspTestModule", "multiDataSetFunc", "testMultiDataSet.qml", "Test", true, true)
+			verify(wrapper.indexOf("datasets = NULL,") >= 0, "aware wrapper takes the datasets argument")
+			verify(wrapper.indexOf("data = NULL,") < 0, "aware wrapper has no single-dataset data argument")
+			verify(wrapper.indexOf("datasets[[1]]") < 0, "no positional datasets[[1]] pin")
+			verify(wrapper.indexOf("selectionOptions <- c(\"dataSetA\", \"dataSetB\", \"codeSet\")") >= 0,
+				"the selection options are emitted in registration order: " + wrapper)
+			verify(wrapper.indexOf("for (selectionOption in selectionOptions)") >= 0, "the body resolves data per selection option")
+			verify(wrapper.indexOf("must be a named list keyed by dataset title") >= 0, "a mismatch fails loudly naming the datasets contract")
+			verify(wrapper.indexOf("#' @param datasets") >= 0, "the datasets contract is documented on the wrapper")
+			verify(wrapper.indexOf(", datasets = datasets))") >= 0, "runWrappedAnalysis receives the datasets")
+
+			// C4/RENDER: the selection defaults enter the wrapper as surface strings, never ids
+			// (here the unbound FilterSelect default resolves to the first dataset's title).
+			verify(/dataSetA = "[^0-9]/.test(wrapper), "dataSetA default is a title surface, not an id: " + wrapper.match(/dataSetA = "[^"]*"/))
+			verify(/dataSetB = "[^0-9]/.test(wrapper), "dataSetB default is a title surface, not an id")
+			verify(wrapper.indexOf('dataSetA = "' + sel.fA + '"') < 0, "no raw filter id leaks into the wrapper defaults")
+
+			// the same form, generated NON-aware: the classic template is untouched
+			const plain = awareForm.generateWrapper("jaspTestModule", "multiDataSetFunc", "testMultiDataSet.qml", "Test", true, false)
+			verify(plain.indexOf("data = NULL,") >= 0, "non-aware wrapper keeps the data argument")
+			verify(plain.indexOf("datasets = NULL,") < 0, "non-aware wrapper has no datasets argument")
+			verify(plain.indexOf("jaspBase::storeDataSet(data)") >= 0, "non-aware wrapper keeps the store block")
+			verify(plain.indexOf("selectionOptions <- c(") < 0, "non-aware wrapper has no selection resolution block")
+		}
 	}
 }
