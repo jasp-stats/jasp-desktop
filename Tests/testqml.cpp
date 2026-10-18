@@ -71,6 +71,14 @@ void TestQml::qmlEngineAvailable(QQmlEngine *engine)
 	// Initialization requiring the QQmlEngine to be constructed
 	QmlUtils::setupQMLEngine(engine);
 
+	// The multi-dataset fixture workspace (dataset 1 + "Second"), the same object the app
+	// exposes as a context property for the data editors. The qualified-column-ref editor
+	// tests (tst_qualifiedColumnRefs.qml) drive the D7.1/D7.2 picker/validator components
+	// against it; the components take the workspace as a property, exactly like the
+	// FilterWindow/ComputeColumnWindow/ComputeDataSetPanel wiring does.
+	if(Workspace * ws = Workspace::singleton())
+		engine->rootContext()->setContextProperty("workspace", ws);
+
 	// Required: this harness never constructs a MainWindow, and the production
 	// registration happens in the MainWindow constructor (not at static init).
 	qmlRegisterType<ScriptConstructorView>("JASP", 1, 0, "ScriptConstructor");

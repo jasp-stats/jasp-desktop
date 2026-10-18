@@ -1262,11 +1262,9 @@ std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QSt
 					   << "' does not resolve: " << error.toStdString() << " (contributes no slice; the engine will fail the run loudly if it cannot resolve it at run time either)" << std::endl;
 
 			if(firstErrorKind && *firstErrorKind == QualifiedRefError::none)
-			{
 				*firstErrorKind = kind;
-				if(firstError)
-					*firstError = error;
-			}
+			if(firstError && firstError->isEmpty())	//the FIRST error only (scan order)
+				*firstError = error;
 
 			continue;
 		}
@@ -1275,6 +1273,92 @@ std::set<int> Workspace::referencedFilterIdsInCode(const std::string & code, QSt
 	}
 
 	return filterIds;
+}
+
+// --- mds-plan D7.1/D7.2: the editor-side surface, see workspace.h ---------------------------
+
+QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
+{
+	//Non-const on purpose (see header): renderQualifiedColumnRef may materialize named
+	//filters of a reopened file through filterById.
+	QVariantList out;
+
+	Filter * context = contextFilterId >= 0 ? filterById(contextFilterId) : nullptr;
+
+	//The context's own dataset first (the picker's "here" section), the rest in id order.
+	std::vector<DataSet *> ordered;
+	if(context && context->data())
+		ordered.push_back(context->data());
+	for(const auto & idData : _dataSets)
+	{
+		DataSet * dataSet = idData.second;
+		if(dataSet && (!context || !context->data() || dataSet != context->data()))
+			ordered.push_back(dataSet);
+	}
+
+	for(DataSet * dataSet : ordered)
+	{
+		//Columns are the dataset's (a filter filters ROWS, not columns), minted names are the
+		//bare originals; the same column is offered once per filter, because each filter is
+		//its own namespace (C3) and the rendered form differs per namespace.
+		const DataSet::colTypeMap columns = dataSet->getColumnTypesMap();
+
+		for(Filter * filter : dataSet->filters())
+		{
+			const bool isDefault = dataSet->defaultFilter() == filter;
+
+			for(const auto & [columnName, type] : columns)
+			{
+				//The type segment is deliberately not emitted here: insertion emits the
+				//minimal valid form (plan §5 render rule) so stored code stays readable;
+				//a type-tail is something the user adds by hand when disambiguation needs it.
+				const QString code = renderQualifiedColumnRef(contextFilterId, filter->id(), columnName, columnType::unknown);
+
+				if(code.isEmpty())	//dead/unresolvable slice: never offer it (loud-failure doctrine)
+					continue;
+
+				QVariantMap entry;
+				entry["code"]			= code;
+				entry["dataSetTitle"]	= dataSet->title();
+				entry["filterName"]		= tq(filter->name());
+				entry["filterTitle"]	= filter->title();
+				entry["columnName"]		= tq(columnName);
+				entry["filterId"]		= filter->id();
+				entry["isBare"]			= code == tq(columnName);	//the context's own namespace: the plain name
+				entry["label"]			= entry["isBare"].toBool()
+										? tq(columnName)
+										: dataSet->title() + " - " + (isDefault ? QString() : filter->title() + " - ") + tq(columnName);
+
+				out.append(entry);
+			}
+		}
+	}
+
+	return out;
+}
+
+QString Workspace::qualifiedRefErrorInCode(const QString & code) const
+{
+	//Exactly the D7.3 scanner's typed first error; empty string = all references resolve.
+	//Bare names are never errors here (§4: the editors' context fallback is not this helper's
+	//business - it is codified at each editor's insertion context).
+	QString error;
+	referencedFilterIdsInCode(code.toStdString(), &error);
+	return error;
+}
+
+int Workspace::filterIdByName(int dataSetId, const QString & filterName)
+{
+	DataSet * dataSet = dataSetById(dataSetId);
+
+	if(!dataSet)
+		return -1;
+
+	//DataSet::filter(name) also answers the default filter for the "DEFAULT_FILTER" spelling,
+	//which is what Column::computeFilter reports when no filter was picked.
+	Filter * filter = dataSet->filter(fq(filterName));
+
+	return filter ? filter->id() : -1;
 }
 
 bool Workspace::wouldCreateComputedDataSetLoop(DataSet * me, DataSet * target) const

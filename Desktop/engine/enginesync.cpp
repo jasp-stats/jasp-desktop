@@ -597,7 +597,34 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 			auto * waiting = static_cast<RFilterByNameStore*>(script);
 
 			if(waiting->name == name && waiting->module == module && waiting->dataSetId == dataSetId)
+			{
+				//mds-plan D7.1/D7.5 stale-sidecar guard: an identical request is already waiting,
+				//but its `referencedFilterIds` sidecar was stamped when it was queued - and the
+				//filter's code can have gained a NEW outward reference since (the
+				//SetRFilterCommand -> setInvalidated -> sendFilterByName re-queue lands exactly
+				//here while the older request is still queued). The engine loads the code by name
+				//from the db at dispatch time, so the CODE is fresh but the SIDECAR would be
+				//stale: the engine's own re-scan would fail the run loudly on a reference the
+				//sidecar never queued (the D7.5 error surface). Refresh the waiting store's
+				//sidecar from a fresh scan instead - the run then sees exactly the references
+				//the current code holds, without re-queueing a duplicate request.
+				if(Workspace::singleton())
+					if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
+						if(Filter * namedFilter = dataSet->filter(fq(name)))
+						{
+							const std::set<int> fresh = Workspace::singleton()->referencedFilterIdsInCode(namedFilter->rFilter());
+							if(fresh != waiting->referencedFilterIds)
+							{
+								Log::log() << "EngineSync::sendFilterByName: request for '" << name.toStdString()
+										   << "' is already waiting but its referencedFilterIds sidecar went stale ("
+										   << waiting->referencedFilterIds.size() << " -> " << fresh.size()
+										   << " referenced slices); refreshing it in place" << std::endl;
+								waiting->referencedFilterIds = fresh;
+							}
+						}
+
 				return;
+			}
 		}
 
 	//Unique requestId so the reply can be matched to this request (mirrors the default

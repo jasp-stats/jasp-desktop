@@ -272,6 +272,15 @@ private slots:
 	// TestEngine's slice tests.
 	void	testPrepareSliceRunScript();
 
+	// mds-plan D7.1/D7.2: the editor-side catalog + validation surface of the qualified
+	// grammar - Workspace::qualifiedColumnCandidates (every column of every filter of every
+	// loaded dataset rendered through renderQualifiedColumnRef against the editor's context
+	// filter: own context columns bare, everything else the minimal qualified form; the
+	// ambiguous-name case forces the full 3-segment form; dead slices never offered; every
+	// emitted code round-trips through resolveQualifiedColumnRef to the same filterId) and
+	// Workspace::filterIdByName (the compute editors' context resolution).
+	void	testQualifiedColumnCandidates();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

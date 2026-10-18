@@ -5125,6 +5125,135 @@ void TestAll::testWorkspaceReferencedFilterIdsInCode()
 	}
 }
 
+void TestAll::testQualifiedColumnCandidates()
+{
+	//mds-plan D7.1/D7.2: the editor-side catalog + validation surface of the qualified grammar.
+	//qualifiedColumnCandidates(contextFilterId) is what the pickers/autocomplete in
+	//FilterWindow (context = the edited filter, D7.1) and the compute editors (context = the
+	//selected compute/input filter, D7.2) are fed: every column of every filter of every
+	//loaded dataset, rendered through renderQualifiedColumnRef against the context - the
+	//context's own columns bare (that namespace IS the C13 fallback), everything else the
+	//minimal qualified surface form (ambiguous filter names force the full 3-segment form).
+	//Fixture as in testWorkspaceReferencedFilterIdsInCode.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+	Filter * alphaF0 = alpha->createFilter("F0", true);
+	Filter * alphaTwin = alpha->createFilter("Twin", true);
+	QVERIFY(alphaF0 && alphaTwin);
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	Filter * betaTwin = beta->createFilter("Twin", true);
+	QVERIFY(betaKeep && betaTwin);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	auto candidateFor = [&](const QVariantList & candidates, int filterId, const QString & columnName) -> QVariantMap
+	{
+		for(const QVariant & entry : candidates)
+		{
+			QVariantMap map = entry.toMap();
+			if(map["filterId"].toInt() == filterId && map["columnName"].toString() == columnName)
+				return map;
+		}
+		return QVariantMap();
+	};
+
+	//--- Context = the edited filter (D7.1's FilterWindow wiring) ----------------------------
+	const QVariantList candidates = ws->qualifiedColumnCandidates(alphaF0->id());
+	QVERIFY(!candidates.isEmpty());
+
+	//The context's own columns are the ONLY bare ones: the edited filter is the bare-name
+	//fallback namespace BY DEFINITION (C13, "no fallback selection UI" - there is nothing to
+	//select, the context is the filter being edited).
+	{
+		const QVariantMap own = candidateFor(candidates, alphaF0->id(), "contNormal");
+		QVERIFY(!own.isEmpty());
+		QCOMPARE(own["code"].toString(), QString("contNormal"));
+		QCOMPARE(own["isBare"].toBool(), true);
+
+		for(const QVariant & entry : candidates)
+		{
+			const QVariantMap map = entry.toMap();
+			QCOMPARE(map["isBare"].toBool(), map["filterId"].toInt() == alphaF0->id());
+		}
+	}
+
+	//Outward refs are the minimal valid surface form (plan §5 render rule), verbatim what
+	//insertion puts into the editor; the ambiguous filter name forces the full 3-segment form:
+	QCOMPARE(candidateFor(candidates, beta->defaultFilter()->id(), "contNormal")["code"].toString(), QString("\"Beta\".\"contNormal\""));
+	QCOMPARE(candidateFor(candidates, betaKeep->id(),				"contNormal")["code"].toString(), QString("\"KeepMyId\".\"contNormal\""));	//unique name across datasets
+	QCOMPARE(candidateFor(candidates, betaTwin->id(),				"contNormal")["code"].toString(), QString("\"Beta\".\"Twin\".\"contNormal\""));	//"Twin" exists in both datasets
+	QCOMPARE(candidateFor(candidates, alphaTwin->id(),				"contNormal")["code"].toString(), QString("\"Alpha\".\"Twin\".\"contNormal\""));
+
+	//Ordering: the context's own dataset first, the rest after (the picker's "here" section).
+	{
+		int lastAlpha = -1, firstBeta = candidates.size();
+		for(int i = 0; i < candidates.size(); ++i)
+			if(candidates[i].toMap()["dataSetTitle"].toString() == "Alpha")
+				lastAlpha = i;
+			else
+				firstBeta = std::min(firstBeta, i);
+		QVERIFY(lastAlpha >= 0 && firstBeta < candidates.size() && lastAlpha < firstBeta);
+	}
+
+	//Every emitted code round-trips through parse+resolve to exactly the entry it was offered
+	//for (the picker's whole point: insert verbatim, resolve later at run); bare codes are the
+	//context fallback and deliberately resolve to nothing here (§4 boundary).
+	for(const QVariant & entry : candidates)
+	{
+		const QVariantMap map = entry.toMap();
+		const QString code = map["code"].toString();
+		QVERIFY(!code.isEmpty());
+
+		if(map["isBare"].toBool())
+			continue;
+
+		QualifiedColumnRef parsed;
+		QString error;
+		QVERIFY2(QualifiedColumnRef::parse(code, parsed, error), qPrintable(error));
+
+		ResolvedQualifiedColumn resolved;
+		QCOMPARE(ws->resolveQualifiedColumnRef(parsed, resolved, error), QualifiedRefError::none);
+		QCOMPARE(resolved.filterId,		map["filterId"].toInt());
+		QCOMPARE(resolved.columnName,	map["columnName"].toString().toStdString());
+	}
+
+	//--- No context: nothing is bare (the compute panel before an input filter is picked) ----
+	for(const QVariant & entry : ws->qualifiedColumnCandidates(-1))
+		QCOMPARE(entry.toMap()["isBare"].toBool(), false);
+
+	//--- filterIdByName: the compute editors' context resolution (D7.2) ----------------------
+	QCOMPARE(ws->filterIdByName(alpha->id(), "DEFAULT_FILTER"), alpha->defaultFilter()->id());	//Column::computeFilter's empty spelling
+	QCOMPARE(ws->filterIdByName(alpha->id(), "F0"),				alphaF0->id());
+	QCOMPARE(ws->filterIdByName(alpha->id(), "NoSuchFilter"),	-1);
+	QCOMPARE(ws->filterIdByName(-1,			"F0"),				-1);
+
+	//--- qualifiedRefErrorInCode: the D7.3 scanner as editor-side live validation ------------
+	//Bare names are never errors (their fallback is the editor's context, not this helper's
+	//business), resolvable outward refs are clean, unresolvable ones give the typed first
+	//error - the same message the engine fails the run with.
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > 3 & contGamma < 10").isEmpty());
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > mean(\"Beta\".\"contNormal\")").isEmpty());
+	QVERIFY(ws->qualifiedRefErrorInCode("contNormal > mean(\"Beta\".\"Twin\".\"contNormal\")").isEmpty());
+
+	const QString error = ws->qualifiedRefErrorInCode("contNormal > mean(\"Nope\".\"contNormal\")");
+	QVERIFY2(error.contains("Nope"), qPrintable(error));
+	QVERIFY2(ws->qualifiedRefErrorInCode("mean(\"Alpha\".\"Nope\".\"contNormal\")").contains("Nope"), qPrintable(ws->qualifiedRefErrorInCode("mean(\"Alpha\".\"Nope\".\"contNormal\")")));
+}
+
 void TestAll::testPrepareSliceRunScript()
 {
 	//mds-plan D7.3: the engine-side consumption of the transient `referencedFilterIds` sidecar

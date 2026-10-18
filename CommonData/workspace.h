@@ -249,6 +249,38 @@ public slots:
 			///  error surface is the engine's, which is what D7.5's invalidation triggers on).
 			std::set<int>						referencedFilterIdsInCode(const std::string & code, QString * firstError = nullptr, QualifiedRefError * firstErrorKind = nullptr) const;
 
+			// --- mds-plan D7.1/D7.2: the editor-side surface of the same grammar ----------------
+			// The three R editors (FilterWindow's filterEdit, ComputeColumnWindow's
+			// computeColumnEdit, ComputeDataSetPanel's codeEdit) share two needs beyond the D7.3
+			// request-side scan: a CATALOG to pick outward references from, and a cheap
+			// VALIDATION of the code as typed. Both are read-only views over the same helpers:
+			// insertion is always the verbatim output of renderQualifiedColumnRef (the minimal
+			// surface form per plan §5 - the context's own columns come out bare, everything
+			// else qualified), and validation is the D7.3 scanner's typed first error. Neither
+			// writes anything: bare names are never validated here (§4 - their fallback is the
+			// editor's context, codified in the editors) and unresolvable references are a
+			// non-blocking warning, the run itself still fails loudly at the engine (D7.5).
+			///< The slice catalog for the editors' pickers/autocomplete (design doc §1.3): every
+			///< column of every filter of every loaded dataset, rendered through
+			///< renderQualifiedColumnRef against `contextFilterId` (the edited filter / selected
+			///< input filter; -1 = no context, everything renders qualified). Each entry is
+			///< {code, label, dataSetTitle, filterName, filterTitle, columnName, filterId,
+			///< isBare}; `code` is what gets inserted, `label` is display only. Entries whose
+			///< slice does not resolve are skipped (never offer an unresolvable reference).
+			///< The context's own dataset comes first, then the rest by id. Non-const on
+			///< purpose: like renderQualifiedColumnRef it may materialize named filters of a
+			///  reopened file.
+			Q_INVOKABLE QVariantList			qualifiedColumnCandidates(int contextFilterId);
+			///< The D7.3 scanner as editor-side live validation: "" when every qualified
+			///< reference in `code` resolves against this workspace, otherwise the first typed
+			///< error message (ready to show; same message the engine fails the run with).
+			Q_INVOKABLE QString					qualifiedRefErrorInCode(const QString & code) const;
+			///< Filter-id lookup by NAME within one dataset (filter names are unique per
+			///< dataset): how the compute editors resolve the selected compute/input filter's
+			///< id for the render context. "DEFAULT_FILTER" resolves to the dataset's default
+			///< filter (Column::computeFilter's empty-name spelling). -1 when unknown.
+			Q_INVOKABLE int						filterIdByName(int dataSetId, const QString & filterName);
+
 			Q_INVOKABLE void					setDataSetComputed(const QString & name, bool computed);
 			void					setShownDataSet(QString	  name);
 			void					setShownDataSet(DataSet * dataSet);
