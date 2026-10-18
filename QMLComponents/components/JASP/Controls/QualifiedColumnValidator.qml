@@ -72,4 +72,26 @@ QtObject
 				qualifiedColumnValidator._debounce.restart()
 		}
 	}
+
+	//mds-plan D7.5: cross-dataset dependency invalidation, editor side. A reference that was
+	//valid when typed can be invalidated WITHOUT any edit: the referenced dataset is
+	//unloaded or retitled, a referenced filter is renamed or deleted, or a referenced
+	//column is churned (renamed/removed by a sync). The validator re-scans on each of those
+	//lifecycle events (all relayed on the Workspace: dataSetRemoved / dataSetTitleChanged /
+	//filterNameChanged / filtersCountChanged / datasetChanged) so a previously-valid
+	//reference turns invalid IN THE EDITOR - loud, inline, non-blocking (the run itself
+	//still fails loudly at the engine with the same typed message; no tombstoning, C16).
+	property Connections _workspaceWatcher: Connections
+	{
+		target: qualifiedColumnValidator.workspace
+
+		function onDataSetRemoved(dataSetId)				{ qualifiedColumnValidator.validateNow() }
+		function onDataSetTitleChanged(dataSetId)			{ qualifiedColumnValidator.validateNow() }
+		function onFilterNameChanged(dataSetId)				{ qualifiedColumnValidator.validateNow() }
+		function onFiltersCountChanged()					{ qualifiedColumnValidator.validateNow() }
+		function onDatasetChanged(dataSetId, changedColumns, missingColumns, changeNameColumns, rowCountChanged, hasNewColumns)
+		{
+			qualifiedColumnValidator.validateNow()
+		}
+	}
 }

@@ -7028,6 +7028,182 @@ void TestAll::testScriptConstructorQualifiedOutwardToR()
 	QCOMPARE(model.toR(), std::string("as.character(contNormal.nominal)\n"));
 }
 
+void TestAll::testQualifiedRefInvalidatedByFilterRename()
+{
+	//mds-plan D7.5, invalidation kind "renamed": a qualified reference is held BY NAME, so
+	//renaming the referenced filter invalidates every editor holding it - WITHOUT any edit
+	//on their side. The relay is Filter::nameChanged -> Workspace::filterNameChanged (the
+	//default filter's name never changes, so it never relays); the scanner reports the
+	//typed unknownFilterInDataSet error naming the missing slice (the same message the
+	//engine fails the run with). Loud and reversible: renaming back clears the error again
+	//(no tombstoning, C16 spirit).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const QString code = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+
+	//Clean while the referenced filter still answers to its name:
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//The rename relays to the workspace (the editors' invalidation hook):
+	QSignalSpy renameRelay(ws, &Workspace::filterNameChanged);
+	betaKeep->setName("RenamedKeep");
+	QCOMPARE(renameRelay.count(), 1);
+	QCOMPARE(renameRelay.first().first().toInt(), beta->id());
+
+	//And the same code - untouched - now reports the first typed error, naming the slice:
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(code.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownFilterInDataSet);
+		QVERIFY2(error.contains("KeepMyId") && error.contains("no filter named"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(code), error);
+	}
+
+	//Reversible, no tombstone: the old name is simply resolvable again.
+	betaKeep->setName("KeepMyId");
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//And the relay is per-event, not once-only: a second rename relays again.
+	QSignalSpy renameRelay2(ws, &Workspace::filterNameChanged);
+	betaKeep->setName("RenamedAgain");
+	QCOMPARE(renameRelay2.count(), 1);
+	QCOMPARE(renameRelay2.first().first().toInt(), beta->id());
+	betaKeep->setName("KeepMyId");
+	QCOMPARE(ws->qualifiedRefErrorInCode(code), QString(""));
+
+	//The default filter's DEFAULT_FILTER spelling stays resolvable throughout (the relay
+	//only concerns named filters; the default filter's name is the internal constant):
+	QCOMPARE(ws->qualifiedRefErrorInCode("contGamma > mean(\"Beta\".\"DEFAULT_FILTER\".\"contNormal\")"), QString(""));
+}
+
+void TestAll::testQualifiedRefInvalidatedByDataSetUnload()
+{
+	//mds-plan D7.5, invalidation kind "unloaded": deleting a dataset whose slices are
+	//referenced elsewhere invalidates those references loudly - the scanner reports the
+	//typed unknownDataSet error naming the title (the same message the engine fails the
+	//run with); references to OTHER datasets stay clean (only the missing slice errs).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	const QString betaRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+	const QString alphaRef = "contGamma > mean(\"Alpha\".\"contNormal\")";
+
+	QCOMPARE(ws->qualifiedRefErrorInCode(betaRef), QString(""));
+	QCOMPARE(ws->qualifiedRefErrorInCode(alphaRef), QString(""));
+
+	//Unload "Beta": the deletion is announced on the workspace (the editors' invalidation
+	//hook), and the references into it die with it - typed, naming the title:
+	const int betaId = beta->id();	//beta itself is deleted by the unload
+	QSignalSpy removedSpy(ws, &Workspace::dataSetRemoved);
+	ws->setShownDataSet(beta);
+	ws->deleteShownDataSet();
+	QCOMPARE(removedSpy.count(), 1);
+	QCOMPARE(removedSpy.first().first().toInt(), betaId);
+
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(betaRef.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownDataSet);
+		QVERIFY2(error.contains("No loaded dataset is titled 'Beta'"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(betaRef), error);
+	}
+
+	//Unrelated references survive the unload untouched (no collateral invalidation):
+	QCOMPARE(ws->qualifiedRefErrorInCode(alphaRef), QString(""));
+}
+
+void TestAll::testQualifiedRefInvalidatedByColumnChurn()
+{
+	//mds-plan D7.5, invalidation kind "churned": a referenced column that is renamed away
+	//(a sync, an edit - the real churn paths emit Workspace::datasetChanged with
+	//changeNameColumns, which the editors' validator watches) invalidates references to it:
+	//the scanner reports the typed unknownColumn error naming the column (the same message
+	//the engine fails the run with). A reference to a still-existing column stays clean.
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	Column * churned = beta->column("contNormal");
+	QVERIFY(churned);
+
+	const QString churnRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contNormal\")";
+	const QString stableRef = "contGamma > mean(\"Beta\".\"KeepMyId\".\"contGamma\")";
+
+	QCOMPARE(ws->qualifiedRefErrorInCode(churnRef), QString(""));
+	QCOMPARE(ws->qualifiedRefErrorInCode(stableRef), QString(""));
+
+	//The churn: the column's live name moves away from the referenced one.
+	QVERIFY(churned->setName("contNormalChurned"));
+
+	{
+		QString error;
+		QualifiedRefError kind = QualifiedRefError::none;
+		QVERIFY(ws->referencedFilterIdsInCode(churnRef.toStdString(), &error, &kind).empty());
+		QCOMPARE(kind, QualifiedRefError::unknownColumn);
+		QVERIFY2(error.contains("contNormal") && error.contains("no column named"), qPrintable(error));
+		QCOMPARE(ws->qualifiedRefErrorInCode(churnRef), error);
+	}
+
+	//And the reference to the untouched column of the same slice is unaffected:
+	QCOMPARE(ws->qualifiedRefErrorInCode(stableRef), QString(""));
+}
+
 void TestAll::testScriptConstructorCompleteness()
 {
 	QVERIFY(_newPkgWithDataSet());

@@ -4,6 +4,7 @@
 #include "timers.h"
 #include "qutils.h"
 #include "dataset.h"
+#include "workspace.h"	//mds-plan D7.5: the Filter::nameChanged -> Workspace::filterNameChanged relay
 #include "dataenums.h"
 #include "filtereddata.h"
 #include "columnencoder.h"
@@ -60,6 +61,14 @@ void Filter::connectionCreation()
 	connect(this,	&Filter::refreshAllCompCols,	_data,	&DataSet::refreshAllCompCols);
 	connect(_data,	&DataSet::datasetChanged,		this,	&Filter::datasetChanged		);
 	connect(this,	&Filter::nameChanged,			_data,	[&](){_data->incRevision();});
+
+	//mds-plan D7.5: relay named-filter renames to the workspace so editors holding qualified
+	//references to this filter BY NAME can revalidate (the invalidation is loud, no edit
+	//needed on the editor side). The default filter's name never changes.
+	connect(this,	&Filter::nameChanged,			_data,	[this](){
+		if(_data->workspace() && _name != DEFAULT_FILTER_NAME)
+			emit _data->workspace()->filterNameChanged(_data->id());
+	});
 		
 	_data->registerFilter(this);
 	

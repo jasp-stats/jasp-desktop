@@ -36,8 +36,12 @@ import JASP.Controls
 // it cannot disturb the tests that alphabetically surround it.
 Item
 {
+	id:		root
 	width:	800
 	height:	600
+
+	//mds-plan D7.5: how often the lifecycle stub below was consulted (see the lifecycle test).
+	property int lifecycleValidationCalls: 0
 
 	//The filter editor's context (D7.1): the edited filter's id.
 	readonly property int filterContextId:
@@ -114,6 +118,29 @@ Item
 		workspace:			ws
 		target:				validatedEditor
 		debounceInterval:	20
+	}
+
+	//mds-plan D7.5: a stand-in workspace to drive the validator's lifecycle watcher. QML cannot
+	//reach the C++ mutators that really announce these signals (the C++ side proves those: the
+	//Filter::nameChanged -> Workspace::filterNameChanged relay, deleteShownDataSet's
+	//dataSetRemoved, DataSet's filtersCountChanged/datasetChanged relays - and this file must
+	//not mutate the shared fixture anyway), so the WIRING is proven here against a stub that
+	//announces the same invalidation set and counts every validation consult.
+	QtObject
+	{
+		id: stubWorkspace
+
+		signal dataSetRemoved(int dataSetId)
+		signal dataSetTitleChanged(int dataSetId)
+		signal filterNameChanged(int dataSetId)
+		signal filtersCountChanged()
+		signal datasetChanged(int dataSetId, var changedColumns, var missingColumns, var changeNameColumns, bool rowCountChanged, bool hasNewColumns)
+
+		function qualifiedRefErrorInCode(code)
+		{
+			root.lifecycleValidationCalls++
+			return "STUB-LIFECYCLE-ERROR"
+		}
 	}
 
 	//mds-plan D7.4: the visual script constructor shares the qualified grammar - an outward
@@ -326,6 +353,44 @@ Item
 			validatedEditor.text = ""
 			wait(validator.debounceInterval * 4)	//restore: leave nothing dirty behind
 			compare(validator.error, "")
+		}
+
+		//mds-plan D7.5: the lifecycle invalidation wiring, editor side. A reference that was
+		//valid when typed must turn invalid IN THE EDITOR - without any edit - on each
+		//workspace lifecycle event (dataset unloaded/retitled, referenced filter renamed or
+		//deleted, column churn). The real emitters are proven in C++ (Tests/testall.cpp);
+		//here the validator's Connections wiring is driven against the stub workspace: every
+		//announced event re-scans synchronously and the consulted verdict is what surfaces.
+		function test_validator_revalidates_on_workspace_lifecycle_signals()
+		{
+			validatedEditor.text = '"Second"."ReopenMe"."SecondOnly"'
+			wait(validator.debounceInterval * 4)
+			compare(validator.error, "")			//the reference is resolvable: clean
+
+			const before = root.lifecycleValidationCalls
+
+			validator.workspace = stubWorkspace		//onWorkspaceChanged validates immediately
+			compare(validator.error, "STUB-LIFECYCLE-ERROR")
+			compare(root.lifecycleValidationCalls, before + 1)
+
+			//Each lifecycle event of the invalidation set re-scans, synchronously (no debounce):
+			stubWorkspace.dataSetRemoved(1)
+			compare(root.lifecycleValidationCalls, before + 2)
+			stubWorkspace.dataSetTitleChanged(1)
+			compare(root.lifecycleValidationCalls, before + 3)
+			stubWorkspace.filterNameChanged(1)
+			compare(root.lifecycleValidationCalls, before + 4)
+			stubWorkspace.filtersCountChanged()
+			compare(root.lifecycleValidationCalls, before + 5)
+			stubWorkspace.datasetChanged(1, [], [], {}, false, false)
+			compare(root.lifecycleValidationCalls, before + 6)
+			compare(validator.error, "STUB-LIFECYCLE-ERROR")	//the consulted verdict surfaces
+
+			//Restore: the real workspace is consulted again and the (still resolvable)
+			//reference is clean - the stub is out of the loop.
+			validator.workspace = ws
+			compare(validator.error, "")
+			compare(root.lifecycleValidationCalls, before + 6)
 		}
 
 		//mds-plan D7.4: the constructor's generated R for an OUTWARD column node is the FULL

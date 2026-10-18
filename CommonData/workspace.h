@@ -312,6 +312,11 @@ signals:
 			void					dataSetCreated(int dataSetId);
 			void					dataSetRemoved(int dataSetId);
 			void					dataSetTitleChanged(int dataSetId);
+			///< mds-plan D7.5: relay of Filter::nameChanged for every named filter of every
+			///  loaded dataset (DataSet::workspace() is the hub) - the invalidation hook for
+			///  editors holding qualified references to that filter BY NAME: a renamed
+			///  referenced filter invalidates them (loudly, D7.5) without any edit on their side.
+			void					filterNameChanged(int dataSetId);
 			void					filterByNameDone(int dataSetId, const QString & name, const QString & error);
 			void					dataModeChanged(bool dataMode);
 			void					showRSyntaxChanged(bool showIt);

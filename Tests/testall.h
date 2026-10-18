@@ -290,6 +290,16 @@ private slots:
 	// Own-dataset nodes stay byte-identical (the known-red golden payloads must not move).
 	void	testScriptConstructorQualifiedOutwardToR();
 
+	// mds-plan D7.5: cross-dataset dependency invalidation - a qualified reference that was
+	// valid when typed can be invalidated WITHOUT any edit on the editor side, and every kind
+	// invalidates LOUDLY and TYPED (no tombstoning, C16): a renamed referenced filter (the
+	// Filter::nameChanged -> Workspace::filterNameChanged relay), an unloaded dataset
+	// (deleteShownDataSet), and column churn. Per invalidation kind, the scanner's first
+	// typed error names the missing slice (the same message the engine fails the run with).
+	void	testQualifiedRefInvalidatedByFilterRename();
+	void	testQualifiedRefInvalidatedByDataSetUnload();
+	void	testQualifiedRefInvalidatedByColumnChurn();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values
