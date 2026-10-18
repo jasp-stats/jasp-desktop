@@ -7204,6 +7204,214 @@ void TestAll::testQualifiedRefInvalidatedByColumnChurn()
 	QCOMPARE(ws->qualifiedRefErrorInCode(stableRef), QString(""));
 }
 
+void TestAll::testQualifiedTermComponentsParseTyped()
+{
+	//mds-plan D8.1 (wiring 1 + 3): the D3.4 single JSON->Terms parse chokepoint
+	//(Terms(json)/Term(json)) resolves STRING term components that ARE qualified surface
+	//forms (plan §5) into typed terms - bare name + filterId (ids only, D1.2). Bare
+	//components stay context-fallback byte-identically (§4).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha && alpha->defaultFilter());
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	Filter * betaShared = beta->createFilter("Shared", true);
+	QVERIFY(betaKeep && betaShared);
+
+	DataSet * gamma = ws->createDataSet();
+	QVERIFY(gamma);
+	importer.loadDataSet(fq(csv), gamma, [](int){});
+	gamma->setTitle("Gamma");
+	Filter * gammaShared = gamma->createFilter("Shared", true);
+	QVERIFY(gammaShared);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal") && gamma->column("contNormal"));
+
+	const int betaDefaultId = beta->defaultFilter()->id();
+
+	Terms::RelatedValuesPerTerm allControlValues;
+
+	//(a) The flagship: same-name column via two filters in ONE list - the qualified one
+	//parses to the typed twin, the bare one stays -1 (the list would stamp it on intake).
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("contNormal");
+		values.append("\"Beta\".\"contNormal\"");
+		option["value"] = values;
+		Json::Value types(Json::arrayValue);
+		types.append("scale");
+		types.append("scale");
+		option["types"] = types;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(2));
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(0).filterId(), -1);						//bare: untouched (§4)
+		QCOMPARE(parsed.at(1).value(), QString("contNormal"));		//the plain name, not the surface form
+		QCOMPARE(parsed.at(1).filterId(), betaDefaultId);			//the resolved slice (ids only)
+		QCOMPARE(parsed.at(1).type(), columnType::scale);			//positional type kept (no segment)
+
+		//The twins are distinct terms in one list (C9 strict equality):
+		QVERIFY(parsed.at(0) != parsed.at(1));
+	}
+
+	//(b) The ("Type") segment wins over the positional type (plan §5):
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Beta\".\"contNormal\"(\"ordinal\")");
+		option["value"] = values;
+		Json::Value types(Json::arrayValue);
+		types.append("scale");
+		option["types"] = types;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).type(), columnType::ordinal);
+	}
+
+	//(c) The 2-segment unique-filter form and the bare pass-through:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"KeepMyId\".\"contNormal\"");
+		values.append("contGamma");			//bare, untouched
+		values.append("a.b");				//no reference at all (unquoted dots): untouched
+		option["value"] = values;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(3));
+		QCOMPARE(parsed.at(0).filterId(), betaKeep->id());
+		QCOMPARE(parsed.at(0).value(), QString("contNormal"));
+		QCOMPARE(parsed.at(1).filterId(), -1);
+		QCOMPARE(parsed.at(1).value(), QString("contGamma"));
+		QCOMPARE(parsed.at(2).filterId(), -1);
+		QCOMPARE(parsed.at(2).value(), QString("a.b"));
+	}
+
+	//(d) Unresolvable references fail the parse LOUDLY with the typed message (D7.5): the
+	//2-segment form reports filterNameMatchesNothing, the full form unknownDataSet:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Nope\".\"contNormal\"");
+		option["value"] = values;
+
+		std::string message;
+		try { Terms parsed(option, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("'Nope' matches no loaded dataset title and no filter name") != std::string::npos, message.c_str());
+
+		Json::Value fullForm(Json::objectValue);
+		Json::Value fullValues(Json::arrayValue);
+		fullValues.append("\"Nope\".\"SomeFilter\".\"contNormal\"");
+		fullForm["value"] = fullValues;
+
+		message.clear();
+		try { Terms parsed(fullForm, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("No loaded dataset is titled 'Nope'") != std::string::npos, message.c_str());
+	}
+
+	//(e) Ambiguity is a rejection listing the candidate datasets:
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("\"Shared\".\"contNormal\"");
+		option["value"] = values;
+
+		std::string message;
+		try { Terms parsed(option, "value", "", allControlValues, false, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("several datasets") != std::string::npos && message.find("Beta") != std::string::npos && message.find("Gamma") != std::string::npos, message.c_str());
+	}
+
+	//(f) A uniform-qualified interaction row parses as ONE term stamped with the shared slice,
+	//its components the bare names:
+	{
+		Json::Value optionValue(Json::arrayValue);
+		Json::Value row(Json::arrayValue);
+		row.append("\"Beta\".\"contNormal\"");
+		row.append("\"Beta\".\"contGamma\"");
+		optionValue.append(row);
+
+		Terms parsed(optionValue, "components", "", allControlValues, true, false);
+		QCOMPARE(parsed.size(), size_t(1));
+		QCOMPARE(parsed.at(0).filterId(), betaDefaultId);
+		QCOMPARE(parsed.at(0).components(), QStringList({"contNormal", "contGamma"}));
+	}
+
+	//(g) Mixed provenance in one term is a loud typed error - a term carries ONE filterId (C9),
+	//and uniformly stamping it would re-route the bare component's data (§4):
+	{
+		Json::Value optionValue(Json::arrayValue);
+		Json::Value row(Json::arrayValue);
+		row.append("contNormal");					//bare
+		row.append("\"Beta\".\"contNormal\"");		//qualified
+		optionValue.append(row);
+
+		std::string message;
+		try { Terms parsed(optionValue, "components", "", allControlValues, true, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("mixes the bare component") != std::string::npos, message.c_str());
+
+		//and so do two references into DIFFERENT slices:
+		Json::Value optionValue2(Json::arrayValue);
+		Json::Value row2(Json::arrayValue);
+		row2.append("\"Beta\".\"contNormal\"");
+		row2.append("\"Alpha\".\"contNormal\"");
+		optionValue2.append(row2);
+
+		message.clear();
+		try { Terms parsed(optionValue2, "components", "", allControlValues, true, false); }
+		catch (const std::exception & e) { message = e.what(); }
+		QVERIFY2(message.find("different datasets/filters") != std::string::npos, message.c_str());
+	}
+
+	//(h) Storage roundtrip: the typed terms serialize with their ids (D5.1) and the applier
+	//parses them back to the same typed state - the D8.1 parse direction and the file format
+	//agree (the re-parse of D8.2's scripts lands in the same chokepoint).
+	{
+		Json::Value option(Json::objectValue);
+		Json::Value values(Json::arrayValue);
+		values.append("contNormal");
+		values.append("\"Beta\".\"contNormal\"");
+		values.append("\"KeepMyId\".\"contNormal\"");
+		option["value"] = values;
+
+		Terms parsed(option, "value", "", allControlValues, false, false);
+		QCOMPARE(parsed.size(), size_t(3));
+
+		Json::Value storage(Json::objectValue);
+		Json::Value storageValues(Json::arrayValue);
+		for (const Term & term : parsed)
+			storageValues.append(term.toJsonStorage());
+		storage["value"] = storageValues;
+
+		Terms reparsed(storage, "value", "", allControlValues, false, false);
+		QCOMPARE(reparsed.size(), size_t(3));
+		QCOMPARE(reparsed.at(0).filterId(), -1);
+		QCOMPARE(reparsed.at(1).filterId(), betaDefaultId);
+		QCOMPARE(reparsed.at(2).filterId(), betaKeep->id());
+		QCOMPARE(reparsed.at(1).value(), QString("contNormal"));
+	}
+}
+
+
 void TestAll::testScriptConstructorCompleteness()
 {
 	QVERIFY(_newPkgWithDataSet());

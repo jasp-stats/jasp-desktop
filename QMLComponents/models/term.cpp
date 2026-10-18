@@ -18,6 +18,9 @@
 
 #include "term.h"
 #include "qutils.h"
+#include "workspace.h"
+
+#include <stdexcept>
 
 const char * Term::separator =
 #ifdef _WIN32
@@ -76,16 +79,82 @@ Term::Term(const Json::Value &json, const std::string& keyValue, const std::stri
 		return;
 	}
 
-	if (jsonValue.isArray())
+	if (jsonValue.isArray() || jsonValue.isString())
 	{
-		for (const Json::Value& component : jsonValue)
-			components.push_back(tq(component.asString()));
-	}
-	else if (jsonValue.isString())
-		components.push_back(tq(jsonValue.asString()));
+		//mds-plan D8.1: resolve qualified surface forms in the STRING components (plan §5) at
+		//the parse chokepoint: each component that *is* a reference ("DS"."Col", "F"."Col",
+		//the full form, optional ("Type") tail) becomes the plain column name plus the typed
+		//filterId (C9) - the flagship same-name-different-filter twins stay distinct terms.
+		//Bare components (and non-reference strings) pass through untouched (§4: their
+		//fallback is the caller's context, behavior unchanged). A term carries ONE filterId,
+		//so a qualified interaction row must be uniformly qualified into the SAME slice;
+		//anything else qualified is a loud typed error - keeping the surface strings would
+		//send an unencodable term to the engine, and uniform stamping would re-route the
+		//bare components' data.
+		QStringList				rawComponents;
+		std::vector<bool>		typeSegmentFlag;
+		std::vector<columnType>	resolvedTypes;
+		QString					firstQualifiedBareName;
+		int						uniformFilterId	= -1;
+		bool					anyQualified	= false;
+		bool					anyBare			= false;
 
-	while (realTypes.size() < components.size())
-		realTypes.push_back(columnType::unknown);
+		if (jsonValue.isArray())
+			for (const Json::Value& component : jsonValue)
+				rawComponents.push_back(tq(component.asString()));
+		else
+			rawComponents.push_back(tq(jsonValue.asString()));
+
+		for (const QString& rawComponent : rawComponents)
+		{
+			const QualifiedTermComponent resolved = resolveQualifiedTermComponent(rawComponent);
+
+			if (resolved.qualified)
+			{
+				if (!anyQualified)
+				{
+					anyQualified			= true;
+					uniformFilterId			= resolved.filterId;
+					firstQualifiedBareName	= resolved.bareName;
+				}
+				else if (uniformFilterId != resolved.filterId)
+					throw std::runtime_error("The term '" + fq(rawComponents.join(", "))
+						+ "' mixes qualified references from different datasets/filters ("
+						+ fq(firstQualifiedBareName) + "@" + std::to_string(uniformFilterId) + " vs "
+						+ fq(resolved.bareName) + "@" + std::to_string(resolved.filterId)
+						+ "); a single term's components must all come from one slice.");
+			}
+			else
+				anyBare = true;
+
+			components.push_back(resolved.bareName);
+			typeSegmentFlag.push_back(resolved.qualified && resolved.hasTypeSegment);
+			resolvedTypes.push_back(resolved.type);
+		}
+
+		//A term carries ONE filterId (C9): bare and qualified components in one term cannot
+		//coexist - uniformly stamping it would re-route the bare components' data (§4: bare
+		//behavior must not change), keeping the surface strings would send an unencodable
+		//term to the engine. Loud and typed either way.
+		if (anyQualified && anyBare)
+			throw std::runtime_error("The term '" + fq(rawComponents.join(", "))
+				+ "' mixes the bare component with qualified references; a term's components "
+				"must all be bare (the caller's context fallback) or all qualified into the "
+				"same slice.");
+
+		while (realTypes.size() < components.size())
+			realTypes.push_back(columnType::unknown);
+
+		//The ("Type") segment wins over the lookup/positional type (plan §5); everything else
+		//(the positional types, the real-type checks downstream in BoundControlTerms::bindTo)
+		//keeps today's discipline.
+		for (size_t i = 0; i < components.size(); ++i)
+			if (i < typeSegmentFlag.size() && typeSegmentFlag[i])
+				realTypes[i] = resolvedTypes[i];
+
+		if (anyQualified)
+			_filterId = uniformFilterId;
+	}
 
 	initFrom(components, label, realTypes);
 }
@@ -375,3 +444,34 @@ Term Term::fromStorageTermObject(const Json::Value & json, const columnTypeVec &
 
 	return term;
 }
+
+//mds-plan D8.1: see the header block on QualifiedTermComponent. Wiring only: the D7.0a grammar
+//helpers (QualifiedColumnRef::parse + Workspace::resolveQualifiedColumnRef) do all the work -
+//ids only come back out (D1.2), the resolution runs against the LIVE workspace per call.
+QualifiedTermComponent resolveQualifiedTermComponent(const QString & component)
+{
+	QualifiedTermComponent out;
+	out.bareName = component;
+
+	QualifiedColumnRef ref;
+	QString parseError;
+	if (!QualifiedColumnRef::parse(component, ref, parseError) || ref.isBare())
+		return out;	//no reference at all, or the bare production (§4 boundary: untouched)
+
+	Workspace * workspace = Workspace::singleton();
+	if (!workspace)
+		throw std::runtime_error("Cannot resolve the qualified column reference '" + fq(component) + "': no dataset is loaded.");
+
+	ResolvedQualifiedColumn resolved;
+	QString error;
+	if (workspace->resolveQualifiedColumnRef(ref, resolved, error) != QualifiedRefError::none)
+		throw std::runtime_error(fq(error));	//typed, ready-to-show (the D7.5 loud doctrine)
+
+	out.bareName		= tq(resolved.columnName);
+	out.filterId		= resolved.filterId;
+	out.type			= resolved.type;
+	out.qualified		= true;
+	out.hasTypeSegment	= !ref.typeName.isEmpty();
+	return out;
+}
+

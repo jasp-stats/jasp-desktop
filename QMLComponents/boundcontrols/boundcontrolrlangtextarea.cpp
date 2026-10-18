@@ -85,7 +85,32 @@ void BoundControlRlangTextArea::checkSyntax()
 
 	// get the column names of the data set
 	_prefixedUsedColumnNames.clear();
-	_textEncoded = tq(_encoder()->encodeRScript(stringUtils::stripRComments(fq(text)), _prefixedUsedColumnNames, _allowedVarPrefixes));
+
+	//mds-plan D8.1 wiring 2: resolve the qualified column references (plan §5) BEFORE the
+	//bare-name encode pass - each becomes the referenced slice's token (the D7.3 rewrite
+	//primitive), so the encoded tokens form under the right namespaces and the surface form
+	//is never mangled into the context namespace nor handed to R's parser. Bare names keep
+	//encoding against the context encoder exactly as before (§4 fallback, unchanged).
+	QStringList qualifiedTokens;
+	QString resolvedText;
+	try
+	{
+		resolvedText = encodeQualifiedColumnRefs(tq(stringUtils::stripRComments(fq(text))), &qualifiedTokens);
+	}
+	catch (const std::exception & e)
+	{
+		//Loud and typed, but non-blocking (the D7.5 editor doctrine): the message shows in
+		//the text area and the text is left UNencoded - running the bare pass over an
+		//unresolved reference would mangle its components into the context namespace - so
+		//the run fails on the surface form until the reference resolves again.
+		_textArea->setHasScriptError(true);
+		_textArea->setProperty("infoText", QString::fromStdString(e.what()));
+		_textEncoded = text;
+		_setBoundValues();
+		return;
+	}
+
+	_textEncoded = tq(_encoder()->encodeRScript(fq(resolvedText), _prefixedUsedColumnNames, _allowedVarPrefixes));
 
 	if(_prefixedUsedColumnNames.find("") != _prefixedUsedColumnNames.end()) 
 	{
@@ -121,6 +146,16 @@ void BoundControlRlangTextArea::checkSyntax()
 			encodedColNames.append("'" + tq(prefixSet.first) + tq(_encoder()->encode(column)) + "'");
 			firstCol = false;
 		}
+
+	//mds-plan D8.1: the qualified references' tokens are already fully encoded (each under its
+	//referenced slice's view) - they join the checker's column list verbatim, never re-encoded
+	//against the context encoder.
+	for (const QString & token : qualifiedTokens)
+	{
+		if (!firstCol) encodedColNames.append(", ");
+		encodedColNames.append("'" + token + "'");
+		firstCol = false;
+	}
 
 	if (_langType == RLangType::MetaSem)
 	{

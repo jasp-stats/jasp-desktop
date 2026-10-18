@@ -158,7 +158,21 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 			type = columnTypeFromString(typesPart[0].asString(), columnType::unknown);
 
 		if (!str.empty())
-			add(Term(str, type));
+		{
+			//mds-plan D8.1: a single-string option value that IS a qualified surface form
+			//(plan §5) resolves into the typed term - ids only (D1.2), the ("Type") segment
+			//wins over the positional/lookup type when present. Bare values keep today's
+			//path byte-identically (§4: their fallback is the caller's context).
+			const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(str));
+			Term term(fq(resolved.bareName), type);
+			if (resolved.qualified)
+			{
+				term.setFilterId(resolved.filterId);
+				if (resolved.hasTypeSegment)
+					term.setType(resolved.type);
+			}
+			add(term);
+		}
 	}
 	else if (Term::isStorageTermObject(valuesPart))
 		//mds-plan D5.1: single-row Storage option - one term object as the value.
@@ -188,9 +202,27 @@ Terms::Terms(const Json::Value &optionValue, const std::string &keyValue, const 
 			//factor-level rows out of the new branch.
 			const bool isTermObject = row.isObject() && Term::isStorageTermObject(row);
 
-			Term term = row.isString() ? Term(row.asString(), types)
-									  : isTermObject ? Term::fromStorageTermObject(row, types)
-												   : Term(row, keyValue, keyLabel, types);
+			Term term = [&]()
+			{
+				if (row.isString())
+				{
+					//mds-plan D8.1: a string row that IS a qualified surface form (plan §5)
+					//resolves into the typed term - the bare string rows around it keep today's
+					//path (and today's -1, which the list stamps with its host on intake, D5.1).
+					const QualifiedTermComponent resolved = resolveQualifiedTermComponent(tq(row.asString()));
+					Term parsed(fq(resolved.bareName), types);
+					if (resolved.qualified)
+					{
+						parsed.setFilterId(resolved.filterId);
+						if (resolved.hasTypeSegment)	//the ("Type") segment wins over the positional type (§5)
+							parsed.setType(resolved.type);
+					}
+					return parsed;
+				}
+
+				return isTermObject ? Term::fromStorageTermObject(row, types)
+									: Term(row, keyValue, keyLabel, types);
+			}();
 			if (term.size() > 0)
 			{
 				add(term);

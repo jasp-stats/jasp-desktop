@@ -300,6 +300,15 @@ private slots:
 	void	testQualifiedRefInvalidatedByDataSetUnload();
 	void	testQualifiedRefInvalidatedByColumnChurn();
 
+	// mds-plan D8.1 (wiring 1 + 3, the D3.4 single JSON->Terms parse chokepoint): a STRING term
+	// component that *is* a qualified surface form (plan §5) resolves into a TYPED term - the
+	// plain column name plus its filterId (ids only, D1.2) - so same-name terms from different
+	// filters stay distinct through parse/bind; bare components and non-references pass through
+	// untouched (§4), the ("Type") segment wins over the positional type, uniform-qualified
+	// interaction rows stamp as one term and anything mixed/unresolvable fails the parse LOUDLY
+	// with the typed message. Storage roundtrip keeps the ids.
+	void	testQualifiedTermComponentsParseTyped();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

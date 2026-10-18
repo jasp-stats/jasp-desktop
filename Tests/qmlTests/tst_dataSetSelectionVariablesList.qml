@@ -108,6 +108,19 @@ Item
 		}
 	}
 
+	// mds-plan D8.1 wiring 2: an R-code TextArea host for the qualified-reference encode test
+	// below (same late-host pattern as lateHostComponent, created and destroyed per test).
+	Component
+	{
+		id:			qualifiedCodeHostComponent
+		TextArea
+		{
+			name:					"qualifiedCodeBox"
+			textType:				JASPControl.TextTypeRcode
+			dataSetSelectionOption:	"qualifiedCodeSet"
+		}
+	}
+
 	TestCase
 	{
 		id:		testCase
@@ -707,12 +720,67 @@ Item
 			compare(String(options.dataSetA), String(allVarsA.selectedFilterId), "the other options stay put")
 		}
 
-		// Agent-2's scratch probe (tst_reopenCoerce.qml) promoted: a selection value naming no
-		// filter at all (id 987654: no live filter, no db row - the deleted/corrupted case eager
-		// loading cannot rescue) must NOT be coerced to the first dropdown entry. The option keeps
-		// the saved value while it waits for a model that can serve it, the host keeps its own
-		// selection, and the control reports the problem instead of rewriting the file's content
-		// behind the user's back (mds-plan C2/BIND). Restores anyway.
+		// mds-plan D8.1 wiring 2: a textarea's code text replays through the encoder on every
+		// commit. A qualified surface form (plan §5) in the code must resolve and become the
+		// REFERENCED slice's token - never mangled into the context namespace by the bare-name
+		// pass, never handed to R's parser - while bare names keep encoding under the context's
+		// own namespace (§4 fallback, unchanged). An unresolvable reference is loud and typed,
+		// but non-blocking: the message shows in the text area and the text stays raw.
+		function test_textarea_qualified_reference_encodes_into_referenced_slice()
+		{
+			var host = qualifiedCodeHostComponent.createObject(jaspForm)
+			verify(host !== null, "the R-code host was created")
+			host.formIsKnown(jaspForm)
+			//The plain createObject took the static branch (componentComplete -> addControl), so
+			//the host sits in the form's _controls cache - but _dependsOrderedCtrls (what
+			//createOptionsJson walks) is only rebuilt by a setAnalysisUp pass, i.e. a bind pass.
+			//That is the same entry the other tests use; without it the host's option would not
+			//be generated yet.
+			jaspForm.setOptions({})
+			wait(20)
+
+			try
+			{
+				//The host's default selection is the shown dataset's current filter (dataset 1's
+				//default) - that is the CONTEXT namespace for bare names; the qualified
+				//reference points at "Second"'s default-filter slice.
+				host.text = 'x <- TestInts + "Second"."SecondOnly"'
+				host.applyRequest()
+				wait(50)
+
+				var options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
+				var model = String(options.qualifiedCodeBox.model)
+
+				var tokens = model.match(/JASPColumn_D\d+_F\d+_\d+_Encoded/g)
+				verify(tokens !== null && tokens.length === 2,
+						"both references encode as tokens, got: " + model)
+				verify(tokens[0] !== tokens[1],
+						"the bare name (context namespace) and the qualified reference (Second's slice) form DIFFERENT tokens: " + tokens)
+
+				compare(String(options.qualifiedCodeBox.modelOriginal),
+						'x <- TestInts + "Second"."SecondOnly"',
+						"the original text stays raw (rCode stays raw in storage)")
+
+				//An unresolvable reference: loud, typed, non-blocking - the text is left
+				//unencoded (the bare pass must not mangle it) and the error shows.
+				host.text = 'y <- "Nope"."SecondOnly"'
+				host.applyRequest()
+				wait(50)
+
+				options = JSON.parse(jaspForm.createOptionsJsonAsJson(0))
+				compare(String(options.qualifiedCodeBox.model), 'y <- "Nope"."SecondOnly"',
+						"an unresolvable reference is left raw, not mangled into context tokens")
+				verify(host.hasScriptError, "the text area reports the error state")
+				verify(String(host.infoText).indexOf("'Nope'") !== -1,
+						"the typed message names the missing slice, got: " + host.infoText)
+			}
+			finally
+			{
+				host.destroy()
+				wait(20)
+			}
+		}
+
 		function test_unknown_saved_filter_id_waits_not_coerced()
 		{
 			var unknownId = 987654

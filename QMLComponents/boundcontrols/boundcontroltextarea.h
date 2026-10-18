@@ -49,6 +49,20 @@ protected:
 	///< provider of the resolved VariableInfo (see JASPControl::resolvedVarInfo).
 	ColumnEncoder			*	_encoder()							const;
 
+	///< mds-plan D8.1 wiring 2 (textarea code encode): resolve every qualified column reference
+	///  (plan §5 surface form) in `code` and rewrite it into the REFERENCED filter's view token,
+	///  so the encoded tokens that form encode under the right namespaces - the surface form
+	///  must never reach R's parser, and the bare-name encode pass that runs afterwards must
+	///  never mangle a reference's components into the CONTEXT namespace. Bare names are not
+	///  touched here: the context encoder (the host's filter view; the captured D<ds>_F<f>
+	///  prefix in the bridge, D1.7) stays their fallback namespace (§4). Comments and R string
+	///  literals are never references (QualifiedColumnRef::scanText rules). A reference that
+	///  does not resolve throws filterException with the typed ready-to-show message (the loud
+	///  D7.5 doctrine, no tombstoning) - the textareas surface it through their checkSyntax
+	///  error handling. `tokensFormed` (when given) receives the encoded tokens in order of
+	///  appearance, for the callers' used-column bookkeeping.
+	static QString				encodeQualifiedColumnRefs(const QString & code, QStringList * tokensFormed = nullptr);
+
 	///< mds-plan D3.1: a TextArea commits its option on APPLY (typing alone never writes) and a
 	/// re-initialisation deliberately restores the editor's draft text (TextAreaBase::
 	/// _setInitialized) - so the widget text is NOT the option value and cannot be generated
