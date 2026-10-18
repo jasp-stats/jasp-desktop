@@ -6708,13 +6708,21 @@ namespace
 		}
 	};
 
-	Json::Value colNode(const std::string & name, int typeUser = -1, int typeDrop = -1)
+	Json::Value colNode(const std::string & name, int typeUser = -1, int typeDrop = -1, const std::string & dataSetName = "", const std::string & filterName = "")
 	{
 		Json::Value v;
 		v["nodeType"]			= "Column";
 		v["columnName"]			= name;
 		v["columnTypeUser"]		= typeUser;
 		v["columnTypeDrop"]		= typeDrop;
+
+		//mds-plan D7.4: an outward node carries its source slice (dataset title + optional
+		//filter name) - the serialization contract ScriptNodeColumn::toJson/fromJson implement.
+		if(!dataSetName.empty())
+			v["dataSetName"] = dataSetName;
+		if(!filterName.empty())
+			v["filterName"] = filterName;
+
 		return v;
 	}
 
@@ -6897,6 +6905,127 @@ void TestAll::testScriptConstructorGoldenR()
 
 	// ! (operator-bar-only function) wraps a single boolean argument
 	checkR(formulas({funcNode("!", {funcArg("logical(s)", {"boolean"}, boolNode(true))})}), "!(TRUE)\n");
+}
+
+void TestAll::testScriptConstructorQualifiedOutwardToR()
+{
+	//mds-plan D7.4: ScriptNodeColumn::toR emits the FULL qualified surface form
+	//("Dataset"."Filter"."Column"("Type")) for outward nodes (_dataSetName set), composed
+	//from the RESOLVED slice (Workspace::fullQualifiedColumnRef) - the owner refinement on
+	//D7.0-Q3: the constructor's output is visible R code, so every outward reference uses
+	//the full surface grammar (picker cut != output cut). Own-dataset nodes stay
+	//byte-identical (pinned by testScriptConstructorGoldenR's payloads, which must not move).
+	QVERIFY(_newPkgWithDataSet());
+
+	Workspace * ws = _pkg->workspace();
+	QVERIFY(ws);
+
+	CSVImporter importer;
+	const QString csv = _testLibrary().absoluteFilePath("csv/debug.csv");
+
+	DataSet * alpha = ws->shownDataSet();
+	QVERIFY(alpha);
+	alpha->setTitle("Alpha");
+
+	DataSet * beta = ws->createDataSet();
+	QVERIFY(beta);
+	importer.loadDataSet(fq(csv), beta, [](int){});
+	beta->setTitle("Beta");
+	Filter * betaKeep = beta->createFilter("KeepMyId", true);
+	QVERIFY(betaKeep);
+
+	QVERIFY(alpha->column("contNormal") && beta->column("contNormal"));
+
+	//The provider deliberately claims a WRONG type for contNormal: outward nodes must not
+	//consult it (it only knows the own dataset's columns) - the source type comes from the
+	//referenced dataset's column, or from the node's user type override.
+	FixedColumnTypeProvider provider;
+	provider.types["contNormal"] = 3;	//nominal - a lie for the outward refs below
+
+	ScriptConstructorModel model;
+	model.setColumnTypeProvider(&provider);
+	model.setMode(ScriptConstructorMode::Filter);
+
+	//(a) Dataset-level outward reference (no filter name): the full form with the default
+	//filter's internal DEFAULT_FILTER spelling, the type segment from the LIVE source column
+	//(scale, NOT the provider's lie), unwrapped.
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"(\"scale\")\n"));
+
+	//(b) Named-filter outward reference:
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta", "KeepMyId")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"KeepMyId\".\"contNormal\"(\"scale\")\n"));
+
+	//(c) The user type override wins for both the type segment and the wrapping:
+	model.fromJson(formulas({colNode("contNormal", 2, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("as.integer(\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"(\"ordinal\"))\n"));
+
+	//(d) Outward nodes nest like bare ones (operator composition):
+	model.fromJson(formulas({opNode(">", colNode("contNormal", -1, -1, "Beta", "KeepMyId"), numNode(0))}));
+	QCOMPARE(model.toR(), std::string("(\"Beta\".\"KeepMyId\".\"contNormal\"(\"scale\") > 0)\n"));
+
+	//(e) The emitted code is exactly what the request builders scan (D7.3): the constructor
+	//output's references resolve to the referenced filter's id - the referencedFilterIds
+	//sidecar is stamped from this very text, so a qualified constructor output needs no
+	//further builder machinery:
+	QCOMPARE(ws->referencedFilterIdsInCode(model.toR()), std::set<int>({ betaKeep->id() }));
+
+	//(f) Every emitted reference also parses and resolves back to the same slice and column:
+	for(const QualifiedRefOccurrence & occurrence : QualifiedColumnRef::scanText(model.toR()))
+	{
+		ResolvedQualifiedColumn resolved;
+		QString error;
+		QCOMPARE(ws->resolveQualifiedColumnRef(occurrence.ref, resolved, error), QualifiedRefError::none);
+		QCOMPARE(resolved.filterId, betaKeep->id());
+		QCOMPARE(resolved.columnName, std::string("contNormal"));
+	}
+
+	//(g) A stale dataset title degrades LOUDLY, not silently: toR keeps emitting the stored
+	//names (compose-from-stored when the title no longer resolves) and the scan reports the
+	//typed unknownDataSet error - D7.5's surface, no tombstoning (C16 spirit).
+	beta->setTitle("Beta2");
+	model.fromJson(formulas({colNode("contNormal", -1, -1, "Beta")}));
+	QCOMPARE(model.toR(), std::string("\"Beta\".\"DEFAULT_FILTER\".\"contNormal\"\n"));
+	{
+		QString error;
+		QVERIFY(ws->referencedFilterIdsInCode(model.toR(), &error).empty());
+		QVERIFY2(error.contains("No loaded dataset is titled 'Beta'"), qPrintable(error));
+	}
+	beta->setTitle("Beta");
+
+	//(h) Serialization roundtrip: dataSetName + filterName survive toJson -> fromJson, and
+	//cloneEmpty keeps the outward stamp (the palette spawns drag nodes through cloneEmpty).
+	{
+		ScriptNodeColumn original("contNormal", 2);
+		original.setDataSetName("Beta");
+		original.setFilterName("KeepMyId");
+
+		Json::Value json = original.toJson();
+		QVERIFY(json.isMember("dataSetName"));
+		QVERIFY(json.isMember("filterName"));
+
+		ScriptNode * parsed = ScriptNode::fromJson(json);
+		QVERIFY(parsed);
+		auto * column = dynamic_cast<ScriptNodeColumn*>(parsed);
+		QVERIFY(column);
+		QCOMPARE(column->dataSetName(), std::string("Beta"));
+		QCOMPARE(column->filterName(), std::string("KeepMyId"));
+		QCOMPARE(column->columnTypeUser(), 2);
+		ScriptNode::deleteTree(parsed);
+
+		ScriptNode * clone = original.cloneEmpty();
+		auto * cloneColumn = dynamic_cast<ScriptNodeColumn*>(clone);
+		QVERIFY(cloneColumn);
+		QCOMPARE(cloneColumn->dataSetName(), std::string("Beta"));
+		QCOMPARE(cloneColumn->filterName(), std::string("KeepMyId"));
+		QCOMPARE(cloneColumn->columnTypeUser(), 2);
+		ScriptNode::deleteTree(clone);
+	}
+
+	//(i) Own-dataset nodes are untouched by the outward branch: the provider is consulted
+	//again (the lie above now shows through - the golden payloads stay byte-identical).
+	model.fromJson(formulas({colNode("contNormal")}));
+	QCOMPARE(model.toR(), std::string("as.character(contNormal.nominal)\n"));
 }
 
 void TestAll::testScriptConstructorCompleteness()

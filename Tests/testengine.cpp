@@ -871,5 +871,179 @@ void TestEngine::testQualifiedSliceReferencesEndToEnd()
 	disconnect(_pkg, &DataSetPackage::sendFilterByName,	_engines, &EngineSync::sendFilterByName);
 }
 
+void TestEngine::testQualifiedConstructorReferencesEndToEnd()
+{
+	//mds-plan D7.4: the easy constructor's generated code (Filter::constructorR ->
+	//generatedFilter) carrying an outward qualified reference must run end-to-end through
+	//the by-name request path - which is how EVERY filter run is queued in production
+	//(Filter::setInvalidated -> sendFilterByName). EngineSync::sendFilterByName stamps the
+	//referencedFilterIds sidecar from BOTH halves of the run code (rFilter + the
+	//constructor-generated generatedFilter; D7.4's union fix) - without it the engine's own
+	//re-scan would fail the run with "did not list as a referenced slice (stale request?)".
+	//Also pins the D7.5 invalidation surface end-to-end: renaming the referenced filter
+	//makes the re-run fail LOUDLY with the typed message (no tombstoning, C16 spirit).
+	QVERIFY2(_data,			"No dataset!");
+	QVERIFY2(_engines,		"No EngineSync!");
+	QVERIFY2(_engineRep,	"No EngineRepresentation!");
+
+	_engines->startStoppedEngine(_engineRep);
+
+	connect(_pkg, &DataSetPackage::sendFilterByName, _engines, &EngineSync::sendFilterByName,	Qt::QueuedConnection);
+
+	//Second dataset "Beta" with a named filter keeping contNormal > 0 (fixture as in
+	//testQualifiedSliceReferencesEndToEnd).
+	DataSet * beta = _pkg->createDataSet();
+	QVERIFY2(beta, "Could not create the second dataset!");
+	_importer->loadDataSet(fq(_testLibrary().absoluteFilePath("csv/debug.csv")), beta, [](int){});
+	beta->setTitle("Beta");
+	QVERIFY2(beta->column("contNormal"), "Beta should have contNormal");
+
+	Filter * keepPos = beta->createFilter("KeepPos", true);
+	QVERIFY2(keepPos, "Could not create KeepPos!");
+	keepPos->setRFilter("contNormal > 0");
+
+	QSignalSpy filterByNameSpy(_engineRep, SIGNAL(filterByNameDone(int, QString, QString)));
+	QVERIFY2(filterByNameSpy.isValid(), "Spy is broken!");
+
+	bool keepPosRan = false;
+	while(!keepPosRan && filterByNameSpy.wait(120000))
+		while(filterByNameSpy.count() > 0)
+		{
+			const QVariantList response = filterByNameSpy.takeFirst();
+			if(response[1].toString() == "KeepPos")
+				keepPosRan = response[2].toString().isEmpty();	//only a run without an error counts
+		}
+
+	QVERIFY2(keepPosRan, "KeepPos never ran engine-side");
+
+	//The expected slice mean, computed from the very same db values the engine reads.
+	const Json::Value betaContNormal = beta->column("contNormal")->jsonForCompare()["data"];
+	QVERIFY2(betaContNormal.isArray() && betaContNormal.size() > 0, "Beta's contNormal has no data!");
+
+	double expectedMean = 0;
+	int		expectedSliceRows = 0;
+
+	for(const Json::Value & v : betaContNormal)
+	{
+		const double value = std::stod(v.asString());
+		if(value > 0)
+		{
+			expectedMean += value;
+			expectedSliceRows++;
+		}
+	}
+	expectedMean /= expectedSliceRows;
+
+	QVERIFY2(expectedSliceRows > 0, "KeepPos's filter would keep no rows - fixture is wrong");
+
+	//The constructor-generated code, built through the real ScriptConstructorModel -> toR
+	//emission (D7.4): contNormal > mean("Beta"."KeepPos"."contNormal"("scale"), na.rm=TRUE).
+	ScriptConstructorModel model;
+	model.setMode(ScriptConstructorMode::Filter);
+
+	Json::Value outward;
+	outward["nodeType"]			= "Column";
+	outward["columnName"]		= "contNormal";
+	outward["columnTypeUser"]	= -1;
+	outward["columnTypeDrop"]	= -1;
+	outward["dataSetName"]		= "Beta";
+	outward["filterName"]		= "KeepPos";
+
+	Json::Value own;
+	own["nodeType"]			= "Column";
+	own["columnName"]		= "contNormal";
+	own["columnTypeUser"]	= -1;
+	own["columnTypeDrop"]	= -1;
+
+	Json::Value meanArg;
+	meanArg["name"]		= "values";
+	meanArg["dropKeys"]	= Json::arrayValue;
+	meanArg["argument"]	= outward;
+
+	Json::Value mean;
+	mean["nodeType"]		= "Function";
+	mean["functionName"]	= "mean";
+	mean["arguments"]		= Json::arrayValue;
+	mean["arguments"].append(meanArg);
+
+	Json::Value greater;
+	greater["nodeType"]			= "Operator";
+	greater["operator"]			= ">";
+	greater["leftArgument"]		= own;
+	greater["rightArgument"]	= mean;
+
+	Json::Value tree;
+	tree["formulas"] = Json::arrayValue;
+	tree["formulas"].append(greater);
+
+	model.fromJson(tree);
+
+	const QString generated = tq(model.toR());
+	QVERIFY2(generated.contains("\"Beta\".\"KeepPos\".\"contNormal\""), qPrintable("Unexpected constructor emission: " + generated));
+
+	//A by-name filter whose constructor half carries the outward reference: applying it
+	//(setConstructorR, the FilterWindow easy-constructor path) auto-queues the run.
+	Filter * ctorRef = _data->createFilter("CtorRef", true);
+	QVERIFY2(ctorRef, "Could not create CtorRef!");
+	ctorRef->setConstructorR(fq(generated));
+
+	bool ctorRefRan		= false;
+	QString ctorRefError;
+	while(!ctorRefRan && filterByNameSpy.wait(120000))
+		while(filterByNameSpy.count() > 0)
+		{
+			const QVariantList response = filterByNameSpy.takeFirst();
+			if(response[1].toString() == "CtorRef")
+			{
+				ctorRefError	= response[2].toString();
+				ctorRefRan		= ctorRefError.isEmpty();
+			}
+		}
+
+	QVERIFY2(ctorRefRan, qPrintable("The constructor-ref filter never ran cleanly: " + ctorRefError));
+
+	//The filter keeps exactly ds1's rows above Beta's filtered-slice mean.
+	_data->checkForUpdates();
+
+	{
+		const Json::Value ownContNormal = _data->column("contNormal")->jsonForCompare()["data"];
+		QVERIFY2(ownContNormal.isArray() && int(ownContNormal.size()) == _data->rowCount(), "ds1's contNormal has the wrong shape");
+
+		const boolvec & filtered = ctorRef->filtered();
+		QCOMPARE(int(filtered.size()), int(ownContNormal.size()));
+
+		for(int i = 0; i < int(ownContNormal.size()); ++i)
+			QCOMPARE(filtered[i], std::stod(ownContNormal[i].asString()) > expectedMean);
+	}
+
+	//(b) D7.5 invalidation leg: renaming the REFERENCED filter invalidates the reference.
+	//The re-run fails LOUDLY with the typed message - on the reply AND on the filter's own
+	//error surface (Filter::errorMsg, what FilterWindow shows) - and nothing is tombstoned.
+	keepPos->setName("KeepPosRenamed");
+	_engines->sendFilterByName(_data->id(), "CtorRef", "*");
+
+	bool invalidatedReply = false;
+	QString invalidationError;
+	while(!invalidatedReply && filterByNameSpy.wait(120000))
+		while(filterByNameSpy.count() > 0)
+		{
+			const QVariantList response = filterByNameSpy.takeFirst();
+			if(response[1].toString() == "CtorRef")
+			{
+				invalidationError	= response[2].toString();
+				invalidatedReply	= true;
+			}
+		}
+
+	QVERIFY2(invalidatedReply, "The invalidated filter never answered");
+	QVERIFY2(invalidationError.contains("does not resolve"), qPrintable("Expected the loud typed error, got: " + invalidationError));
+	QVERIFY2(invalidationError.contains("KeepPos"), qPrintable("The typed error should name the missing filter, got: " + invalidationError));
+
+	_data->checkForUpdates();
+	QTRY_VERIFY2(tq(ctorRef->errorMsg()).contains("KeepPos"), qPrintable("The filter error surface should carry the typed invalidation error, got: " + QString::fromStdString(ctorRef->errorMsg())));
+
+	disconnect(_pkg, &DataSetPackage::sendFilterByName,	_engines, &EngineSync::sendFilterByName);
+}
+
 
 QTEST_MAIN(TestEngine)

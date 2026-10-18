@@ -1,6 +1,7 @@
 import QtTest
 import QtQuick
 import QtQuick.Controls	as QTC
+import JASP
 import JASP.Controls
 
 //NOTE: QtQuick.Controls is imported ALIASED on purpose: JASP.Controls registers its own
@@ -113,6 +114,29 @@ Item
 		workspace:			ws
 		target:				validatedEditor
 		debounceInterval:	20
+	}
+
+	//mds-plan D7.4: the visual script constructor shares the qualified grammar - an outward
+	//column node (dataSetName [+ filterName] set) generates the FULL qualified surface form
+	//in its R output. This drives the production view/model through the QML properties
+	//(chrome build deferred: the palette is not needed for the emission).
+	ScriptConstructor
+	{
+		id:					constructor
+		mode:				ScriptConstructorMode.Filter
+		deferUntilVisible:	true
+		contextFilterId:	filterContextId
+		constructorJson:	constructorOutwardJson
+	}
+
+	//contNormal-style numeric column "TestInts" of "Second"'s default filter, compared > 0:
+	readonly property string constructorOutwardJson:
+	{
+		const outward = { nodeType: "Column", columnName: "TestInts", columnTypeUser: -1, columnTypeDrop: -1,
+						  dataSetName: "Second", filterName: "DEFAULT_FILTER" }
+		const own     = { nodeType: "Column", columnName: "TestInts", columnTypeUser: -1, columnTypeDrop: -1 }
+		const formula = { nodeType: "Operator", operator: ">", leftArgument: own, rightArgument: outward }
+		return JSON.stringify({ formulas: [formula] })
 	}
 
 	function findCandidate(candidates, dataSetTitle, filterName, columnName)
@@ -302,6 +326,25 @@ Item
 			validatedEditor.text = ""
 			wait(validator.debounceInterval * 4)	//restore: leave nothing dirty behind
 			compare(validator.error, "")
+		}
+
+		//mds-plan D7.4: the constructor's generated R for an OUTWARD column node is the FULL
+		//qualified surface form (owner refinement: picker cut != output cut) - emitted through
+		//the production view/model path (constructorJson property -> model -> rCode property).
+		//The type segment comes from the referenced dataset's column ("TestInts" is scale in
+		//both fixture datasets), the default filter surfaces as its DEFAULT_FILTER spelling.
+		function test_constructor_generates_qualified_r_for_outward_node()
+		{
+			verify(constructor)
+			//The outward node's type segment comes from the REFERENCED dataset's column -
+			//"TestInts" is ordinal in "Second" (scale in dataset 1, whose provider the own
+			//node on the left still consults: that one stays the bare "TestInts.scale").
+			compare(constructor.rCode, '(TestInts.scale > as.integer("Second"."DEFAULT_FILTER"."TestInts"("ordinal")))\n')
+
+			//And the emission resolves back through the same grammar (the sidecar D7.3 stamps
+			//from this text will carry exactly the referenced filter):
+			const error = workspace.qualifiedRefErrorInCode(constructor.rCode)
+			compare(error, "")
 		}
 	}
 }

@@ -281,6 +281,15 @@ private slots:
 	// Workspace::filterIdByName (the compute editors' context resolution).
 	void	testQualifiedColumnCandidates();
 
+	// mds-plan D7.4: the visual constructors' outward emission - ScriptNodeColumn::toR emits
+	// the FULL qualified surface form ("Dataset"."Filter"."Column"("Type")) for outward nodes
+	// (dataSetName set), composed from the resolved slice (Workspace::fullQualifiedColumnRef):
+	// dataset-level and named-filter forms, the source column's type segment (+ wrapping)
+	// without consulting the own-dataset type provider, serialization/clone round-trips, and
+	// the loud stale-slice degradation (stored names kept, typed unknownDataSet at scan).
+	// Own-dataset nodes stay byte-identical (the known-red golden payloads must not move).
+	void	testScriptConstructorQualifiedOutwardToR();
+
 	// mds-plan C4/REGISTRY: the bridge leaves the raw options JSON of its parse on the form; a
 	// selection host registering after that parse (async instantiation, the M9 case) resolves
 	// its own option out of the pending JSON and writes the filter id into the bound values

@@ -178,6 +178,13 @@ FocusScope
 				filterErrorMsg:		filterModel.filter.filterErrorMsg
 				clip:				true
 
+				//mds-plan D7.4: the column palette gains outward column sourcing - the picker
+				//catalog (every column of every other loaded slice) joins the own dataset's
+				//columns; dropping one stamps the node with its source slice and the generated
+				//R carries the full qualified surface form. The context is the EDITED filter
+				//(the same bare-name fallback namespace the R editor's picker uses, C13).
+				contextFilterId:	filterModel.currentFilterId
+
 				anchors
 				{
 					bottom:	applyEasyFilter.top

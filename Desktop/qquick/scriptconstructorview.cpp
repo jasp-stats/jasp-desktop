@@ -6,6 +6,7 @@
 #include "variableinfo.h"
 #include "timers.h"
 #include "log.h"
+#include "workspace.h"
 
 // QtQuick items are constructed natively (they live in the QtQuick private headers).
 #include <QtQuick/private/qquicktext_p.h>
@@ -52,6 +53,20 @@ ScriptConstructorView::ScriptConstructorView(QQuickItem * parent)
 		if(_rCodeDisplay && _showGeneratedRCode)
 			_rCodeDisplay->setProperty("text", rCode());
 	});
+
+	//mds-plan D7.4: the outward palette section mirrors the loaded slices, so it must
+	//rebuild whenever the workspace's dataset/filter/column catalog changes - the same
+	//lifecycle the pickers answer by rebuilding their catalog fresh on every open.
+	//schedulePaletteRebuild() is already debounced, and the outward entries are skipped
+	//when the slices they came from are gone (the catalog never offers unresolvable refs).
+	if(Workspace * ws = Workspace::singleton())
+	{
+		connect(ws, &Workspace::dataSetCreated,			this, [this](){ schedulePaletteRebuild(); });
+		connect(ws, &Workspace::dataSetRemoved,			this, [this](int){ schedulePaletteRebuild(); });
+		connect(ws, &Workspace::dataSetTitleChanged,	this, [this](int){ schedulePaletteRebuild(); });
+		connect(ws, &Workspace::filtersCountChanged,	this, [this](){ schedulePaletteRebuild(); });
+		connect(ws, &Workspace::datasetChanged,			this, [this](int, QStringList, QStringList, QMap<QString,QString>, bool, bool){ schedulePaletteRebuild(); });
+	}
 }
 
 // -------------------------------------------------------------------------------------
@@ -146,6 +161,19 @@ void ScriptConstructorView::setDeferUntilVisible(bool v)
 	if(v == _deferUntilVisible) return;
 	_deferUntilVisible = v;
 	emit deferUntilVisibleChanged();
+}
+
+void ScriptConstructorView::setContextFilterId(int id)
+{
+	if(id == _contextFilterId) return;
+
+	_contextFilterId = id;
+	emit contextFilterIdChanged();
+
+	//The outward palette section is rendered against this context (which columns come out
+	//bare), so it must rebuild with it - e.g. the filter editor switching filters.
+	if(_chromeBuilt)
+		schedulePaletteRebuild();
 }
 
 void ScriptConstructorView::setColumnsModel(QAbstractItemModel * m)
@@ -1074,6 +1102,52 @@ void ScriptConstructorView::buildColumnPalette()
 		item->setY(y);
 		y += item->preferredHeight() + spacing();
 		maxW = std::max(maxW, item->preferredWidth());
+	}
+
+	//mds-plan D7.4: outward column sourcing - the picker catalog's non-bare entries (every
+	//column of every OTHER loaded slice, rendered by the D7.0a grammar against
+	//contextFilterId) join the palette as draggable prototypes. Dropping one stamps the
+	//node with its source slice (dataSetName + filterName, plus the source column's type
+	//as the user type), and ScriptNodeColumn::toR emits the full qualified surface form
+	//for it - the v1 picker cut limits what is OFFERED, never what is EMITTED (D7.0a owner
+	//refinement: picker cut != output cut). The context's own columns are already offered
+	//above (bare there), so only the outward refs are added here.
+	if(Workspace * ws = Workspace::singleton())
+	{
+		const QVariantList outward = ws->qualifiedColumnCandidates(_contextFilterId);
+		//Without a context (-1) nothing renders bare, so the shown dataset's own columns
+		//would duplicate the plain prototypes built above: they stay out of the outward
+		//section (a context is required to separate "here" from "outward" - the wired
+		//editors always provide one).
+		const int shownDataSetId = ws->shownDataSetId();
+
+		for(const QVariant & entryVar : outward)
+		{
+			const QVariantMap entry = entryVar.toMap();
+
+			if(entry.value("isBare", false).toBool())
+				continue;	//the context's own namespace: already listed above
+
+			if(_contextFilterId < 0 && entry["dataSetId"].toInt() == shownDataSetId)
+				continue;	//no context: the shown dataset's columns are the plain section's
+
+			auto * proto = new ScriptNodeColumn(fq(entry["columnName"].toString()));
+			proto->setDataSetName(fq(entry["dataSetTitle"].toString()));
+			proto->setFilterName(fq(entry["filterName"].toString()));
+
+			//The source column's type: the own-dataset type provider cannot answer for
+			//another dataset, so it rides on the node (and with it the type segment of the
+			//emitted reference and the as.character/as.integer wrapping).
+			const int sourceType = entry["columnType"].toInt();
+			if(sourceType > 0)
+				proto->setColumnTypeUser(sourceType);
+
+			ScriptNodeItem * item = addPrototypeItem(proto, content, maxTextW);
+			item->setX(spacing());
+			item->setY(y);
+			y += item->preferredHeight() + spacing();
+			maxW = std::max(maxW, item->preferredWidth());
+		}
 	}
 
 	_columnPaletteContentWidth = maxW + spacing() * 2;

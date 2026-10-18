@@ -3,6 +3,8 @@
 #include "jasptheme.h"
 #include "qutils.h"
 #include "data/columnsmodel.h"
+#include "workspace.h"
+#include "filter.h"
 #include "timers.h"
 
 // Leaf items are constructed natively (these classes live in the QtQuick/QtQuickTemplates2
@@ -777,7 +779,15 @@ void ScriptNodeItem::rebuild()
 		auto * col = static_cast<ScriptNodeColumn*>(_node.data());
 
 		int actual = int(columnType::scale);
-		if(_view->model()->columnTypeProvider())
+		if(!col->dataSetName().empty())
+		{
+			//mds-plan D7.4: an outward node's type lives on the node (the source column's
+			//type, stamped at drag time); the type provider only knows the own dataset's
+			//columns and would answer with a wrong (same-named) column's type here.
+			if(col->columnTypeUser() > 0)
+				actual = col->columnTypeUser();
+		}
+		else if(_view->model()->columnTypeProvider())
 			actual = _view->model()->columnTypeProvider()->columnType(col->columnName());
 		int effective = col->effectiveColumnType(actual);
 
@@ -785,7 +795,21 @@ void ScriptNodeItem::rebuild()
 		// icon (the one with the asterisk).
 		varIconType iconType = (effective == actual) ? varIconType::DefaultIconType : varIconType::TransformedIconType;
 		makeImage(getIconFilename(static_cast<columnType>(effective), iconType));
-		makeText(QString::fromStdString(col->columnName()));
+
+		//mds-plan D7.4: an outward node displays the surface form it emits (sans type tail),
+		//"DS"."F"."Col", so the palette item and the dropped node are distinguishable from the
+		//own-dataset columns that carry the same bare name.
+		QString displayText = tq(col->columnName());
+		if(!col->dataSetName().empty())
+		{
+			QStringList segments;
+			segments << '"' + QualifiedColumnRef::escapeSegment(tq(col->dataSetName())) + '"';
+			if(!col->filterName().empty() && col->filterName() != DEFAULT_FILTER_NAME)
+				segments << '"' + QualifiedColumnRef::escapeSegment(tq(col->filterName())) + '"';
+			segments << '"' + QualifiedColumnRef::escapeSegment(displayText) + '"';
+			displayText = segments.join('.');
+		}
+		makeText(displayText);
 		break;
 	}
 	case ScriptNode::Type::Operator:
@@ -965,20 +989,32 @@ void ScriptNodeItem::refreshToolTip()
 		if(_textElided)
 			parts << tq(col->columnName());
 
-		if(_acceptsDrops)
-			parts << tr("Click icon to change column type");
-
-		const QString description = _view->columnDescription(tq(col->columnName()));
-		if(!description.isEmpty())
-			parts << tr("Column description: ") + description;
-
-		if(effective != actual)
+		if(!col->dataSetName().empty())
 		{
-			// Preview the type the column is shown (and generated) as: a type forced by the drop slot
-			// leaves columnTypeUser() at -1.
-			const QString preview = _view->columnTransformedPreview(tq(col->columnName()), effective);
-			if(!preview.isEmpty())
-				parts << preview;
+			//mds-plan D7.4: an outward node's source slice; the own-dataset column
+			//description/preview below would describe the WRONG (same-named) column.
+			parts << tr("From dataset: ") + tq(col->dataSetName())
+					+ (col->filterName().empty() || col->filterName() == DEFAULT_FILTER_NAME
+						? QString()
+						: " - " + tq(col->filterName()));
+		}
+		else
+		{
+			if(_acceptsDrops)
+				parts << tr("Click icon to change column type");
+
+			const QString description = _view->columnDescription(tq(col->columnName()));
+			if(!description.isEmpty())
+				parts << tr("Column description: ") + description;
+
+			if(effective != actual)
+			{
+				// Preview the type the column is shown (and generated) as: a type forced by the drop slot
+				// leaves columnTypeUser() at -1.
+				const QString preview = _view->columnTransformedPreview(tq(col->columnName()), effective);
+				if(!preview.isEmpty())
+					parts << preview;
+			}
 		}
 
 		tip = parts.join("\n\n");

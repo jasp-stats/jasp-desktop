@@ -1095,6 +1095,48 @@ QString Workspace::renderQualifiedColumnRef(int contextFilterId, int filterId, c
 	return ref.render();
 }
 
+QString Workspace::fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const
+{
+	//mds-plan D7.4: the constructors' outward emission composes the FULL surface form from
+	//the resolved pieces (see the header). The type segment is the caller's effective type;
+	//it is omitted when unknown (plan §5: the type segment is optional, and stamping
+	//"unknown" would poison the type-wins rule at run).
+	QualifiedColumnRef ref;
+
+	ref.columnName	= tq(columnName);
+
+	if(type != columnType::unknown)
+		ref.typeName = tq(columnTypeToString(type));
+
+	//Resolve the slice live: a resolvable reference emits its CURRENT title/name (the
+	//resolved objects are the emission's source of truth - never re-parsed text). An
+	//unresolvable dataset title keeps the stored names verbatim: the emitted form then
+	//no longer resolves, and the run fails LOUDLY with the typed unknownDataSet error
+	//(D7.5's invalidation surface) instead of silently degrading to a bare name. An
+	//empty stored filter name still means the default filter (the DEFAULT_FILTER
+	//spelling), so the emitted form stays the full form the node meant.
+	DataSet * dataSet = dataSetByTitle(dataSetTitle);
+
+	if(!dataSet)
+	{
+		ref.dataSetName	= dataSetTitle;
+		ref.filterName	= filterName.isEmpty() ? tq(DEFAULT_FILTER_NAME) : filterName;
+		return ref.render();
+	}
+
+	ref.dataSetName = dataSet->title();
+
+	//"" means the dataset's default filter (the v1 constructor nodes carry the dataset
+	//only); a stored filter name is resolved by NAME - the default filter's own name is
+	//the internal DEFAULT_FILTER spelling, which the D7.0a grammar accepts in the full
+	//form. An unresolvable stored name keeps verbatim (loud unknownFilterInDataSet at run).
+	Filter * filter = filterName.isEmpty() ? dataSet->defaultFilter() : dataSet->filter(fq(filterName));
+
+	ref.filterName = filter ? tq(filter->name()) : filterName;
+
+	return ref.render();
+}
+
 std::vector<QualifiedRefOccurrence> QualifiedColumnRef::scanText(const std::string & code)
 {
 	//mds-plan D7.3: the in-code scanner of the plan §5 surface forms. The grammar is
@@ -1319,11 +1361,16 @@ QVariantList Workspace::qualifiedColumnCandidates(int contextFilterId)
 
 				QVariantMap entry;
 				entry["code"]			= code;
+				entry["dataSetId"]		= dataSet->id();
 				entry["dataSetTitle"]	= dataSet->title();
 				entry["filterName"]		= tq(filter->name());
 				entry["filterTitle"]	= filter->title();
 				entry["columnName"]		= tq(columnName);
 				entry["filterId"]		= filter->id();
+				//mds-plan D7.4: the source column's type, so the constructors' outward
+				//palette can stamp it on the dragged node (the type segment of its toR
+				//emission - the own-dataset type provider cannot answer for other datasets).
+				entry["columnType"]		= static_cast<int>(type);
 				entry["isBare"]			= code == tq(columnName);	//the context's own namespace: the plain name
 				entry["label"]			= entry["isBare"].toBool()
 										? tq(columnName)

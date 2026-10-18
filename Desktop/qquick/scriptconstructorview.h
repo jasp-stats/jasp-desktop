@@ -40,6 +40,13 @@ class ScriptConstructorView : public QQuickItem, public ScriptColumnTypeProvider
 	Q_PROPERTY( bool				canUndo					READ canUndo				NOTIFY canUndoChanged				)
 	Q_PROPERTY( bool				canRedo					READ canRedo				NOTIFY canRedoChanged				)
 	Q_PROPERTY( bool				deferUntilVisible		READ deferUntilVisible		WRITE setDeferUntilVisible	NOTIFY deferUntilVisibleChanged	)
+	///< mds-plan D7.4: the bare-name fallback namespace (C13) of the editor hosting this
+	///  constructor - the edited filter (FilterWindow), the selected compute filter
+	///  (ComputeColumnWindow). The outward section of the column palette is the picker
+	///  catalog (Workspace::qualifiedColumnCandidates) rendered against it: the context's
+	///  own columns are already offered as the plain prototypes above it, so only non-bare
+	///  entries join the palette. -1 = no context: every candidate renders qualified.
+	Q_PROPERTY( int					contextFilterId			READ contextFilterId		WRITE setContextFilterId	NOTIFY contextFilterIdChanged	)
 
 public:
 	explicit ScriptConstructorView(QQuickItem * parent = nullptr);
@@ -95,6 +102,9 @@ public:
 	bool				deferUntilVisible() const { return _deferUntilVisible; }
 	void				setDeferUntilVisible(bool v);
 
+	int					contextFilterId() const { return _contextFilterId; }
+	void				setContextFilterId(int id);
+
 	// Builds the chrome (idempotent). Called at completion when visible or deferred
 	// until the view first becomes visible (deferUntilVisible).
 	void				ensureChromeBuilt();
@@ -145,6 +155,7 @@ public:
 	void				canUndoChanged();
 	void				canRedoChanged();
 	void				deferUntilVisibleChanged();
+	void				contextFilterIdChanged();
 
 	/// Emitted when the user applies a valid formula. The surrounding window persists it
 	/// (FilterModel::applyConstructorJson or Column::setConstructorJson/setRCode).
@@ -240,6 +251,7 @@ private:
 											_chromeBuilt			= false,
 											_deferUntilVisible		= false,
 											_componentComplete		= false;
+	int										_contextFilterId		= -1;
 	QString									_lastAppliedJson;
 	QString									_filterErrorMsg;
 	QString									_hintText;

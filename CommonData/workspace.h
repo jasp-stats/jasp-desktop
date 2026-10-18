@@ -236,6 +236,20 @@ public slots:
 			///< filterById it may materialize a named filter of a reopened file.
 			QString								renderQualifiedColumnRef(int contextFilterId, int filterId, const std::string & columnName, columnType type);
 
+			///< mds-plan D7.4: the visual constructors' outward emission (ScriptNodeColumn::toR):
+			///< the FULL qualified surface form ("Dataset"."Filter"."Column"("Type")) composed
+			///< from the RESOLVED pieces - the slice is resolved live from `dataSetTitle` (+
+			///< `filterName`, "" meaning the dataset's default filter), so a resolvable
+			///< reference emits its current title/name and the default filter emits its
+			///< internal DEFAULT_FILTER spelling (the full form always names the filter; the
+			///< D7.0a grammar resolves that spelling). This is the compose-from-resolved-ids
+			///< helper: the emission is built from the resolved segments, never by parsing
+			///< rendered text back. An unresolvable dataset title emits the STORED names
+			///< verbatim - the run then fails loudly with the typed unknownDataSet error
+			///< (D7.5) instead of degrading quietly. `type` unknown means no type segment
+			///  (nothing meaningful to stamp; the plan §5 type segment is optional).
+			QString								fullQualifiedColumnRef(const QString & dataSetTitle, const QString & filterName, const std::string & columnName, columnType type) const;
+
 			///< mds-plan D7.3: scan R code text (a filter expression, computed-column code,
 			///< computed-dataset code) for qualified references, resolve each against this
 			///< workspace and collect the referenced FILTER ids - the transient

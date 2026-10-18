@@ -39,6 +39,28 @@ using namespace boost::interprocess;
 
 EngineSync * EngineSync::_singleton = nullptr;
 
+//mds-plan D7.4: a filter's run code is BOTH halves - the hand-written rFilter AND the
+//constructor-generated code (generatedFilter; Engine::runFilterByName/runDefaultFilter pass
+//both into rbridge_applyFilter, which prepares them as ONE script). The referencedFilterIds
+//sidecar must therefore list the references of both, exactly like sendFilter's union scan
+//(D7.3): the constructor output can carry qualified outward refs (ScriptNodeColumn::toR
+//emits them for outward nodes). Bare/label-generated code holds no references, so scanning
+//the generated half is always safe.
+static std::set<int> referencedFilterIdsOf(const Filter * filter)
+{
+	std::set<int> ids;
+
+	if(Workspace::singleton() && filter)
+	{
+		ids = Workspace::singleton()->referencedFilterIdsInCode(filter->rFilter());
+		for(const int id : Workspace::singleton()->referencedFilterIdsInCode(filter->generatedFilter()))
+			ids.insert(id);
+	}
+
+	return ids;
+}
+
+
 EngineSync::EngineSync(QObject *parent)
 	: QAbstractListModel(parent)
 {
@@ -612,7 +634,9 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 					if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
 						if(Filter * namedFilter = dataSet->filter(fq(name)))
 						{
-							const std::set<int> fresh = Workspace::singleton()->referencedFilterIdsInCode(namedFilter->rFilter());
+							//mds-plan D7.4: the fresh scan covers both halves of the run code
+							//(see referencedFilterIdsOf) - the constructor-generated half too.
+							const std::set<int> fresh = referencedFilterIdsOf(namedFilter);
 							if(fresh != waiting->referencedFilterIds)
 							{
 								Log::log() << "EngineSync::sendFilterByName: request for '" << name.toStdString()
@@ -633,14 +657,16 @@ void EngineSync::sendFilterByName(int dataSetId, const QString & name, const QSt
 	RFilterByNameStore * store = new RFilterByNameStore(dataSetId, ++_waitingFilterRequestIDCounter, name, module);
 
 	//mds-plan D7.3: stamp the transient referencedFilterIds sidecar (D3.3 doctrine: desktop
-	//owns provenance, engine consumes and strips). For a by-name run the code lives inside the
-	//named filter object, so the scan runs over that filter's rFilter here; when the dataset
-	//is not loaded desktop-side the sidecar stays empty and the engine's own re-scan of the
-	//code it loads fails the run loudly instead of guessing.
+	//owns provenance, engine consumes and strips). For a by-name run the code lives inside
+	//the named filter object, so the scan runs over BOTH halves of its run code here - the
+	//hand-written rFilter and the constructor-generated code (generatedFilter), which D7.4's
+	//outward constructor emission can qualify - when the dataset is not loaded desktop-side
+	//the sidecar stays empty and the engine's own re-scan of the code it loads fails the run
+	//loudly instead of guessing.
 	if(Workspace::singleton())
 		if(DataSet * dataSet = Workspace::singleton()->dataSetById(dataSetId))
 			if(Filter * namedFilter = dataSet->filter(fq(name)))
-				store->referencedFilterIds = Workspace::singleton()->referencedFilterIdsInCode(namedFilter->rFilter());
+				store->referencedFilterIds = referencedFilterIdsOf(namedFilter);
 
 	_waitingScripts.push(store);
 }

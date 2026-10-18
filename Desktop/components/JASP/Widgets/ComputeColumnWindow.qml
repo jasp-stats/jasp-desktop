@@ -198,6 +198,16 @@ FocusScope
 
 				showGeneratedRCode:		false
 				KeyNavigation.tab:		applyComputedColumnButton
+
+				//mds-plan D7.4: the constructor palette gains outward column sourcing too (this
+				//supersedes the D7.2 v1 own-dataset palette cut for the constructor only - the
+				//emitted code is visible R, so the full grammar applies). The context is the
+				//column's COMPUTE FILTER - the same filter the run encodes the output name and
+				//reads the slice through (D7.3), and the same context the R editor's picker
+				//uses (D7.2).
+				contextFilterId:		columnModel.column
+										? dataSetPackage.workspace.filterIdByName(dataSetPackage.workspace.shownDataSetId(), columnModel.column.computeFilter)
+										: -1
 			}
 
 		}
